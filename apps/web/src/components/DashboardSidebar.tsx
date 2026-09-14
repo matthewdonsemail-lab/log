@@ -1,9 +1,11 @@
 import type { ComponentType, MouseEvent, SVGProps } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import {
+  BookOpenIcon,
   ChatBubbleLeftRightIcon,
   ChartBarIcon,
   Cog6ToothIcon,
+  CommandLineIcon,
   KeyIcon,
   Squares2X2Icon,
   TagIcon,
@@ -16,13 +18,15 @@ import { DashboardSidebarUser } from './DashboardSidebarUser'
 type NavIcon = ComponentType<SVGProps<SVGSVGElement>>
 
 const NAV: Array<{ label: string; Icon: NavIcon; to?: string }> = [
-  { label: 'Overview', Icon: Squares2X2Icon, to: '/dashboard' },
+  { label: 'Feed', Icon: Squares2X2Icon, to: '/dashboard' },
   { label: 'Groups', Icon: UsersIcon, to: '/dashboard/groups' },
   { label: 'Listings', Icon: TagIcon, to: '/dashboard/facebook/listings' },
   { label: 'Keywords', Icon: KeyIcon, to: '/dashboard/keywords' },
   { label: 'Analytics', Icon: ChartBarIcon, to: '/dashboard/analytics' },
   { label: 'Accounts', Icon: UserCircleIcon, to: '/dashboard/accounts' },
   { label: 'Messages', Icon: ChatBubbleLeftRightIcon, to: '/dashboard/messages' },
+  { label: 'Docs', Icon: BookOpenIcon, to: '/dashboard/docs' },
+  { label: 'API', Icon: CommandLineIcon, to: '/dashboard/api' },
   { label: 'Settings', Icon: Cog6ToothIcon, to: '/dashboard/settings' },
 ]
 

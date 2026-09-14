@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Cable, Globe, Plus, Settings, Unplug } from 'lucide-react'
+import { Cable, Globe, Plus, Settings, Trash, Unplug } from 'lucide-react'
 import {
   Badge,
   Dropdown,
@@ -15,18 +15,15 @@ import {
 } from '@listeningkit/ui'
 import {
   createAccount,
+  deleteAccount,
   disconnectAccount,
   getAccounts,
   platformLabel,
   type ConnectionPlatform,
   type ConnectionRecord
 } from '../lib/connections'
-import {
-  accountIssueSnapshot,
-  effectiveSeverity,
-  type IssueSeverity
-} from '../lib/account-issues'
 import { SocialBadge, SOCIAL_ICONS } from '../lib/social-icons'
+import { AccountStatusBadge } from './AccountStatus'
 
 const PLATFORMS: ConnectionPlatform[] = ['facebook', 'x', 'reddit']
 
@@ -48,36 +45,6 @@ function formatConnectedAt(iso: string | null): string {
   const date = new Date(iso)
   if (Number.isNaN(date.getTime())) return '—'
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
-
-const SEVERITY_BADGE: Record<IssueSeverity, 'success' | 'warning' | 'danger'> = {
-  healthy: 'success',
-  degraded: 'warning',
-  unhealthy: 'danger'
-}
-
-/**
- * The row's status badge: the active normalized issue wins when the client
- * has observed one ("Checkpoint challenge", "Rate limited"), falling back to
- * the lifecycle state ("Connected" / "Stale" / "Not connected").
- */
-function StatusBadge({ account }: { account: ConnectionRecord }) {
-  const snapshot = accountIssueSnapshot(account)
-  const severity = effectiveSeverity(snapshot)
-  const issue = snapshot.issue
-  const label = issue
-    ? issue.label
-    : severity === 'healthy'
-      ? 'Connected'
-      : severity === 'degraded'
-        ? 'Stale'
-        : 'Not connected'
-  const title = issue ? issue.detail : snapshot.health.reason
-  return (
-    <Badge variant={SEVERITY_BADGE[severity]} title={title}>
-      {label}
-    </Badge>
-  )
 }
 
 export function DashboardAccounts() {
@@ -104,6 +71,15 @@ export function DashboardAccounts() {
       success(`${account.label} disconnected`)
     } catch (err: unknown) {
       notifyError('Disconnect failed', err instanceof Error ? err.message : 'Could not disconnect.')
+    }
+  }
+
+  async function handleDelete(account: ConnectionRecord) {
+    try {
+      setAccounts(await deleteAccount(account.id))
+      success(`“${account.label}” deleted`)
+    } catch (err: unknown) {
+      notifyError('Delete failed', err instanceof Error ? err.message : 'Could not delete the account.')
     }
   }
 
@@ -194,7 +170,7 @@ export function DashboardAccounts() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <StatusBadge account={account} />
+                      <AccountStatusBadge account={account} />
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-text-secondary">
                       {formatConnectedAt(account.connectedAt)}
@@ -231,6 +207,13 @@ export function DashboardAccounts() {
                                   icon: <Unplug aria-hidden="true" className="size-4" />,
                                   danger: true,
                                   onSelect: () => handleDisconnect(account)
+                                },
+                                {
+                                  id: 'delete',
+                                  label: 'Delete',
+                                  icon: <Trash aria-hidden="true" className="size-4" />,
+                                  danger: true,
+                                  onSelect: () => handleDelete(account)
                                 }
                               ]
                             : [
@@ -245,6 +228,13 @@ export function DashboardAccounts() {
                                   label: 'Open in Settings',
                                   icon: <Settings aria-hidden="true" className="size-4" />,
                                   onSelect: () => navigate('/dashboard/settings')
+                                },
+                                {
+                                  id: 'delete',
+                                  label: 'Delete',
+                                  icon: <Trash aria-hidden="true" className="size-4" />,
+                                  danger: true,
+                                  onSelect: () => handleDelete(account)
                                 }
                               ]
                         }

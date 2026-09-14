@@ -9,6 +9,8 @@ import { SOCIAL_ICONS, SocialGlyph } from '../lib/social-icons'
 import { DashboardAnalytics } from './DashboardAnalytics'
 import { DashboardAnalyticsConsole } from './DashboardAnalyticsConsole'
 import { DashboardEventInspectForm } from './DashboardEventInspectForm'
+import { DashboardRelatedCommunitiesForm } from './DashboardRelatedCommunitiesForm'
+import { DashboardRelatedKeywordsForm } from './DashboardRelatedKeywordsForm'
 import { useDashboardFormSlot } from './DashboardFormSlot'
 
 /**
@@ -48,6 +50,8 @@ export function DashboardAnalyticsPage() {
   const setFormSlot = useDashboardFormSlot()
   const [keyword, setKeyword] = useState<Keyword | null | undefined>(undefined)
   const [inspectedEvent, setInspectedEvent] = useState<FirehoseEvent | null>(null)
+  const [relatedEvent, setRelatedEvent] = useState<FirehoseEvent | null>(null)
+  const [communityEvent, setCommunityEvent] = useState<FirehoseEvent | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -67,6 +71,11 @@ export function DashboardAnalyticsPage() {
     () => (keyword ? getKeywordAnalytics(keyword.id, keyword.phrase, keyword.platform) : null),
     [keyword]
   )
+
+  // Shared with both the inspect form (post highlight) and the
+  // related-keywords form (dedup beat) — memoized so the slot nodes keep a
+  // stable array identity across page re-renders.
+  const phrases = useMemo(() => [keyword?.phrase ?? ''], [keyword?.phrase])
 
   // Deep-link from the overview firehose: a row there navigates here with
   // ?eventId= so that exact post auto-opens in the inspect sheet.
@@ -107,6 +116,8 @@ export function DashboardAnalyticsPage() {
   useEffect(() => {
     const onExternalDismiss = () => {
       setInspectedEvent(null)
+      setRelatedEvent(null)
+      setCommunityEvent(null)
       setSearchParams(
         (prev) => {
           const next = new URLSearchParams(prev)
@@ -122,19 +133,36 @@ export function DashboardAnalyticsPage() {
 
   // The post inspect form docks in the dashboard form slot — a row here has
   // no analytics page to navigate to (it's already this keyword's), so it
-  // opens the sheet over the content instead.
+  // opens the sheet over the content instead. "Find related mentions" and
+  // "Find related groups/communities" hand off to their dedicated forms in
+  // the same slot; closing either drops back to the inspect form (the event
+  // is still selected underneath).
   useEffect(() => {
     setFormSlot(
-      inspectedEvent ? (
+      relatedEvent ? (
+        <DashboardRelatedKeywordsForm
+          event={relatedEvent}
+          phrases={phrases}
+          onClose={() => setRelatedEvent(null)}
+        />
+      ) : communityEvent ? (
+        <DashboardRelatedCommunitiesForm
+          event={communityEvent}
+          phrases={phrases}
+          onClose={() => setCommunityEvent(null)}
+        />
+      ) : inspectedEvent ? (
           <DashboardEventInspectForm
             event={inspectedEvent}
-            phrases={[keyword?.phrase ?? '']}
+            phrases={phrases}
             onClose={handleCloseInspect}
+            onFindRelated={(found) => setRelatedEvent(found)}
+            onFindCommunities={(found) => setCommunityEvent(found)}
           />
         ) : null
     )
     return () => setFormSlot(null)
-  }, [inspectedEvent, keyword, setFormSlot])
+  }, [relatedEvent, communityEvent, inspectedEvent, phrases, setFormSlot])
 
   if (keyword === undefined) {
     return (

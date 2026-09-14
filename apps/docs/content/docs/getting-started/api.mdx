@@ -1,0 +1,41 @@
+---
+title: API
+description: Private keys, auth headers, and how your programs talk to ListeningKit.
+---
+
+# API
+
+Programs talk to ListeningKit with a **private API key** — a named secret you create on the dashboard's [API tab](http://localhost:3000/dashboard/api). Each key authenticates as your workspace.
+
+## Create a key
+
+<Tabs items={["Dashboard"]}>
+<Tab value="Dashboard">
+
+1. Open the dashboard's **API** tab.
+2. Name the key for where it will live (e.g. `Production`).
+3. Click **Create key** and copy the secret it shows.
+
+</Tab>
+</Tabs>
+
+The full secret appears exactly once — right after creation. After that the dashboard only shows a masked form (`lk_live_4f7ak2••••••••`), the same way it does for [tokens](/docs/getting-started/tokens).
+
+## Authenticate
+
+Send the key as a bearer token on every request:
+
+```bash
+curl https://api.listeningkit.com/v1/signals \
+  -H "Authorization: Bearer lk_live_4f7ak2m9qz3v8w1t5x6j0hb4ne7c2d"
+```
+
+Name keys per environment so a leak stays small: revoke the one key instead of rotating everything.
+
+## Revoke a key
+
+Revoking is immediate — the key stops authenticating the moment you revoke it on the API tab. There is no grace period, so cut over traffic to the replacement key first.
+
+<Callout type="warning">
+Treat API keys like passwords. Anyone with a key can read signals as your workspace. The demo keeps keys in your browser's local storage only.
+</Callout>

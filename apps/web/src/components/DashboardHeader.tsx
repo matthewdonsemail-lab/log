@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { BellIcon } from '@heroicons/react/24/outline'
+import { BellIcon, BookOpenIcon } from '@heroicons/react/24/outline'
 import { Button, useSquircleClip } from '@listeningkit/ui'
 import { SOCIAL_ICONS, SocialBadge } from '@/lib/social-icons'
 
@@ -10,6 +10,12 @@ export function DashboardHeader() {
   return (
     <header ref={clip.ref} style={clip.style} className="m-4 flex shrink-0 items-center justify-end bg-white px-6 py-4 sm:px-8">
       <div className="flex items-center gap-3">
+        <Button asChild variant="blue" size="xl" shadow="hard" className="gap-2 font-bold" aria-label="Documentation">
+          <Link to="/dashboard/docs">
+            <BookOpenIcon aria-hidden="true" className="size-5" />
+            DOCS
+          </Link>
+        </Button>
         <Button asChild variant="gray" size="xl" shadow="hard" className="font-bold">
           <Link to="/onboarding">
             Connect your Socials

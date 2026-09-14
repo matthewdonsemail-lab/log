@@ -50,7 +50,7 @@ export function DashboardLayout() {
             <DashboardHeader />
 
             <div className="flex min-h-0 flex-1 items-stretch">
-              <main className="lk-no-scrollbar flex min-h-0 min-w-0 flex-1 flex-col gap-6 overflow-y-auto bg-[#FBFCFE] px-6 pb-0 pt-6 sm:px-8 sm:pb-0 sm:pt-8">
+              <main className="lk-no-scrollbar flex min-h-0 min-w-0 flex-1 flex-col gap-6 overflow-y-auto bg-[#FBFCFE] px-3 pb-0 pt-3 sm:px-4 sm:pb-0 sm:pt-4">
                 <Outlet />
               </main>
             </div>

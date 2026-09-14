@@ -28,6 +28,21 @@ export const LISTING_STATUS_LABELS: Record<ListingStatus, string> = {
 }
 
 /**
+ * Marketplace targeting point. Coordinates pinpoint the listing the way
+ * Facebook Marketplace does when a location is dropped — the text
+ * `location` stays the human label, this carries the machine target plus
+ * the delivery radius in km (rendered as a Leaflet `Circle`, metres).
+ */
+export interface ListingLocation {
+  lat: number
+  lng: number
+  radiusKm: number
+}
+
+/** Galway city centre — the mock geography every seed lives in. */
+export const DEFAULT_LISTING_LOCATION: ListingLocation = { lat: 53.2707, lng: -9.0568, radiusKm: 10 }
+
+/**
  * A Facebook Marketplace listing row. Mirrors the `MarketplaceCreateInput`
  * and `MarketplaceStatusOutput` pydantic schemas from
  * facebook-camofox-client (github.com/PRACE1/facebook-camofox-client):
@@ -46,6 +61,8 @@ export interface ListingRecord {
   condition: string | null
   location: string
   account: string
+  /** Pinpoint + delivery radius for marketplace targeting; older persisted rows may lack it. */
+  locationPoint?: ListingLocation
   /** 1–4 marketplace photos, cycled in the row's 9:16 photo frame. */
   images: string[]
   status: ListingStatus
@@ -73,6 +90,8 @@ export interface ListingDraft {
   condition: string | null
   location: string
   account: string
+  /** Always sent by the form (defaults to Galway centre); the map picker adjusts it. */
+  locationPoint: ListingLocation
   images: string[]
 }
 

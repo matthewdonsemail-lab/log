@@ -29,26 +29,86 @@ const AUTHORS = [
 ]
 
 const TEXTS: Record<FirehoseEventType, string[]> = {
+  // Every post carries the tracked {phrase} plus one companion {related}
+  // service phrase — the surroundings the related-keywords chain reads to
+  // find its candidates. Companion sentences use stopword-only filler so
+  // they never leak junk tokens into the suggestions.
   mention: [
-    'Anyone dealt with {phrase} lately? Looking for pointers.',
-    'Saw three threads about {phrase} this week alone.',
-    'Adding {phrase} to the weekend job list.',
+    'Anyone dealt with {phrase} lately? Looking for pointers. Anyone for {related}?',
+    'Saw three threads about {phrase} this week alone. Need {related} too.',
+    'Adding {phrase} to the weekend job list. And {related} too.',
   ],
   question: [
-    'Quick one — who do you call for {phrase}?',
-    '{phrase} — DIY or call someone? What did it cost you?',
-    'Is {phrase} supposed to take all day?',
+    'Quick one — who do you call for {phrase}? Anyone for {related}?',
+    '{phrase} — DIY or call someone? What did it cost you? Need {related} too.',
+    'Is {phrase} supposed to take all day? And {related} too.',
   ],
   complaint: [
-    'Still waiting on someone for {phrase} — third no-show this month.',
-    'Quoted double for {phrase} what my neighbour paid. Fuming.',
-    '{phrase} has flooded the utility room. Again.',
+    'Still waiting on someone for {phrase} — third no-show this month. Need {related} too.',
+    'Quoted double for {phrase} what my neighbour paid. Fuming. Anyone for {related}?',
+    '{phrase} has flooded the utility room. Again. Need {related} too.',
   ],
   praise: [
-    'Shoutout to the crew who sorted {phrase} in one visit. Legends.',
-    '{phrase} done and dusted — half the quote I feared.',
-    'Recommendations for {phrase} paid off, spotless work.',
+    'Shoutout to the crew who sorted {phrase} in one visit. Legends. Anyone for {related}?',
+    '{phrase} done and dusted — half the quote I feared. Need {related} too.',
+    'Recommendations for {phrase} paid off, spotless work. And {related} too.',
   ],
+}
+
+/**
+ * Companion service phrases for the {related} slot above — generic
+ * home-services work that reads naturally next to any tracked phrase.
+ * Cycled by event index (never the tracked phrase itself), so every post
+ * offers follow-up candidates without consuming a PRNG draw.
+ */
+const RELATED_PHRASES = [
+  'water heater',
+  'leak repair',
+  'drain cleaning',
+  'boiler service',
+  'radiator valves',
+  'shower pressure',
+  'pipe insulation',
+  'gutter cleaning',
+]
+
+/**
+ * Second-round phrases — these live in the replies, somewhere the first
+ * pass didn't look. The related-keywords retry round reads these when the
+ * post body yields nothing worth keeping.
+ */
+const RETRY_PHRASES = [
+  'furnace service',
+  'mould removal',
+  'lead flashing',
+  'trap cleaning',
+  'valve replacement',
+  'tank insulation',
+]
+
+const COMMENT_TEMPLATES = ['Need {related} too.', 'Anyone for {related}?']
+
+export interface MockComment {
+  author: string
+  text: string
+}
+
+/**
+ * Two mock replies for an event, carrying round-two phrases in
+ * stopword-only filler (so they suggest cleanly). Deterministic off the
+ * event id — the same post always shows the same replies.
+ */
+export function eventComments(event: { id: string }): MockComment[] {
+  let hash = 0
+  for (let i = 0; i < event.id.length; i++) hash = (hash * 31 + event.id.charCodeAt(i)) | 0
+  const positive = Math.abs(hash)
+  return [0, 1].map((round) => ({
+    author: AUTHORS[(positive + round * 3) % AUTHORS.length],
+    text: COMMENT_TEMPLATES[round % COMMENT_TEMPLATES.length].replace(
+      '{related}',
+      RETRY_PHRASES[(positive + round) % RETRY_PHRASES.length]
+    ),
+  }))
 }
 
 const EVENT_TYPES: FirehoseEventType[] = ['mention', 'question', 'complaint', 'praise']
@@ -140,6 +200,7 @@ export function getKeywordAnalytics(
   // Which connected account on the platform captured each signal — the live
   // pipeline stamps this the moment a reader hands the post over.
   const platformAccounts = MOCK_CONNECTIONS.filter((account) => account.platform === platform)
+  const companions = RELATED_PHRASES.filter((candidate) => candidate !== phrase)
   const events: FirehoseEvent[] = Array.from({ length: EVENT_COUNT }, (_, index) => {
     const type = EVENT_TYPES[Math.floor(rand() * EVENT_TYPES.length)]
     const groups = PLATFORM_GROUPS[platform]
@@ -147,6 +208,7 @@ export function getKeywordAnalytics(
     const author = AUTHORS[Math.floor(rand() * AUTHORS.length)]
     const group = groups[Math.floor(rand() * groups.length)]
     const account = platformAccounts[Math.floor(rand() * platformAccounts.length)]
+    const related = companions[index % companions.length]
     return {
       id: `${keywordId.slice(0, 8)}-${String(index).padStart(4, '0')}-4e2a-9b1c-${String(index * 7919).padStart(12, '0').slice(-12)}`,
       keywordId,
@@ -157,7 +219,9 @@ export function getKeywordAnalytics(
       author,
       group,
       accountId: account ? account.id : null,
-      text: templates[Math.floor(rand() * templates.length)].replace(/\{phrase\}/g, phrase),
+      text: templates[Math.floor(rand() * templates.length)]
+        .replace(/\{phrase\}/g, phrase)
+        .replace(/\{related\}/g, related),
       url: eventUrl(platform, author, group, index),
     }
   }).sort((a, b) => (a.ts < b.ts ? 1 : -1))

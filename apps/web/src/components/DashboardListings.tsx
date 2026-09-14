@@ -1,26 +1,20 @@
-import * as Flags from 'country-flag-icons/react/3x2'
-import { useCallback, useEffect, useState, type ComponentType, type ReactNode, type SVGProps } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { useLocation } from 'react-router-dom'
-import { CircleCheck, Clock, Copy, ExternalLink, Globe, HelpCircle, LogIn, Pencil, Plus, Tag, Trash2 } from 'lucide-react'
-import { Badge, Button, type BadgeColor, Dropdown, Select, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, useToast } from '@listeningkit/ui'
+import { CircleCheck, Clock, Copy, ExternalLink, Globe, HelpCircle, LogIn, Pencil, Plus, Tag, Trash, Trash2 } from 'lucide-react'
+import { Badge, Button, Dropdown, Select, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, useToast } from '@listeningkit/ui'
 import { getAccounts, type ConnectionRecord } from '../lib/connections'
-import { getListings, LISTING_STATUSES, LISTING_STATUS_LABELS, setListingStatus, type ListingRecord, type ListingStatus } from '../lib/listings'
+import { healthForLabel } from '../lib/health'
+import { getListings, LISTING_STATUSES, LISTING_STATUS_LABELS, deleteListing, setListingStatus, type ListingRecord, type ListingStatus } from '../lib/listings'
 import { SocialBadge, SocialGlyph, SOCIAL_ICONS } from '../lib/social-icons'
 import { MarketplaceImages } from './MarketplaceImages'
-import { DashboardListingsForm } from './DashboardListingsForm'
+import { STATUS_COLOR, flagForLocation, formatPublished } from './listing-shared'
+import { AccountHealthBadge } from './AccountHealthBadge'
+import { AccountTooltip } from './AccountTooltip'
+import { DashboardListingCreateForm } from './DashboardListingCreateForm'
+import { DashboardListingInspectForm } from './DashboardListingInspectForm'
 import { useDashboardFormSlot } from './DashboardFormSlot'
 
 const facebookIcon = SOCIAL_ICONS.find((icon) => icon.id === 'facebook')
-
-const STATUS_COLOR: Record<ListingStatus, BadgeColor> = {
-  active: 'success',
-  'under-review': 'warning',
-  'under-review-duplicate': 'warning',
-  sold: 'info',
-  removed: 'danger',
-  'login-wall': 'danger',
-  unknown: 'muted'
-}
 
 // One glyph per status so the trigger icon follows the selection, the same
 // way the Accounts platform filter's trigger icon follows its selection.
@@ -34,52 +28,6 @@ const STATUS_ICON: Record<ListingStatus, ReactNode> = {
   unknown: <HelpCircle aria-hidden="true" className="size-3.5" strokeWidth={2.25} />
 }
 
-function formatPublished(iso: string): string {
-  const date = new Date(iso)
-  if (Number.isNaN(date.getTime())) return '—'
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-}
-
-const COUNTRY_CODES: Record<string, string> = {
-  ireland: 'IE',
-  'united states': 'US',
-  'united kingdom': 'GB',
-  canada: 'CA',
-  germany: 'DE',
-  france: 'FR',
-  italy: 'IT',
-  spain: 'ES',
-  portugal: 'PT',
-  netherlands: 'NL',
-  belgium: 'BE',
-  austria: 'AT',
-  switzerland: 'CH',
-  denmark: 'DK',
-  sweden: 'SE',
-  norway: 'NO',
-  finland: 'FI',
-  poland: 'PL',
-  japan: 'JP',
-  australia: 'AU',
-  'new zealand': 'NZ',
-  mexico: 'MX',
-  brazil: 'BR',
-  india: 'IN',
-  china: 'CN'
-}
-
-// The country sits after the last comma in a "City, Country" location string.
-// Rendered as an inlined SVG from country-flag-icons so it looks identical
-// on every OS (Unicode flag emoji don't render on Windows).
-function flagForLocation(location: string): ReactNode {
-  const country = location.split(',').pop()?.trim().toLowerCase() ?? ''
-  const code = COUNTRY_CODES[country]
-  if (!code) return null
-  const Flag = (Flags as Record<string, ComponentType<SVGProps<SVGSVGElement>>>)[code]
-  if (!Flag) return null
-  return <Flag className="h-3.5 w-auto rounded-[3px]" aria-hidden="true" />
-}
-
 export function DashboardListings() {
   const { success, error: notifyError } = useToast()
   const location = useLocation()
@@ -90,6 +38,9 @@ export function DashboardListings() {
   // Edit scope: set alongside formOpen to jump the form straight to the
   // details step for this listing; null means create mode.
   const [editScope, setEditScope] = useState<ListingRecord | null>(null)
+  // Inspect scope: the listing whose photos + meta show in the inspect form.
+  // Opening inspect closes create/edit and vice versa (one slot node).
+  const [inspectedListing, setInspectedListing] = useState<ListingRecord | null>(null)
 
   const load = useCallback(() => {
     getListings()
@@ -102,15 +53,27 @@ export function DashboardListings() {
   }, [load])
 
   // The form lives in the layout overlay, not in the page: register it
-  // when open, clear it when closed or when the page unmounts.
+  // when open, clear it when closed or when the page unmounts. The slot
+  // holds one node — inspect wins over create/edit when both are open.
   const setFormSlot = useDashboardFormSlot()
   useEffect(() => {
+    if (inspectedListing) {
+      setFormSlot(
+        <DashboardListingInspectForm
+          listing={inspectedListing}
+          onClose={() => setInspectedListing(null)}
+          onEdit={handleEdit}
+          onChanged={load}
+        />
+      )
+      return () => setFormSlot(null)
+    }
     if (!formOpen) {
       setFormSlot(null)
       return
     }
     setFormSlot(
-      <DashboardListingsForm
+      <DashboardListingCreateForm
         open
         onClose={() => setFormOpen(false)}
         onCreated={load}
@@ -118,16 +81,14 @@ export function DashboardListings() {
       />
     )
     return () => setFormSlot(null)
-  }, [formOpen, editScope, load, setFormSlot])
+  }, [inspectedListing, formOpen, editScope, load, setFormSlot])
   useEffect(() => {
     getAccounts().then(setAccounts).catch(() => setAccounts([]))
   }, [location])
 
-  const connectedAccounts = new Set(
-    (accounts ?? []).filter((account) => account.platform === 'facebook' && account.connectedAt !== null).map((account) => account.label)
-  )
-  const isConnected = (account: string) => connectedAccounts.has(account)
-
+  // Account badges read their health from the roster through
+  // `healthForLabel` (label lookup is the dashboard-wide join) — the same
+  // assessment every other account badge uses.
   // Status changes round-trip the API — the store (mock now, facebook
   // client later) is the source of truth, never local table state.
   async function handleStatusChange(listing: ListingRecord, status: ListingStatus) {
@@ -145,8 +106,29 @@ export function DashboardListings() {
 
   // Jump the form straight to the details step for this listing.
   function handleEdit(listing: ListingRecord) {
+    setInspectedListing(null)
     setEditScope(listing)
     setFormOpen(true)
+  }
+
+  // Hard delete — the row leaves the store entirely (unlike Remove listing,
+  // which flips it to the removed status for record-keeping).
+  async function handleDelete(listing: ListingRecord) {
+    try {
+      const res = await deleteListing(listing.listingId)
+      setListings(res.listings)
+      if (inspectedListing?.listingId === listing.listingId) setInspectedListing(null)
+      success(`“${listing.title}” deleted`)
+    } catch (err: unknown) {
+      notifyError('Could not delete the listing', err instanceof Error ? err.message : 'Something went wrong.')
+    }
+  }
+
+  // Row click opens the inspect form (the row dropdown stops propagation,
+  // so its actions never trigger inspect).
+  function handleOpen(listing: ListingRecord) {
+    setFormOpen(false)
+    setInspectedListing(listing)
   }
 
   const copyLink = async (url: string) => {    try {
@@ -175,7 +157,7 @@ export function DashboardListings() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button type="button" variant="blue" size="lg" shadow="hard" onClick={() => { setEditScope(null); setFormOpen(true) }}>
+          <Button type="button" variant="blue" size="lg" shadow="hard" onClick={() => { setInspectedListing(null); setEditScope(null); setFormOpen(true) }}>
             <Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />
             Add listing
           </Button>
@@ -211,8 +193,15 @@ export function DashboardListings() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {rows.map((listing) => (
-                  <TableRow key={listing.listingId}>
+                {rows.map((listing) => {
+                  const health = healthForLabel(accounts ?? [], listing.account)
+                  return (
+                  <TableRow
+                    key={listing.listingId}
+                    onClick={() => handleOpen(listing)}
+                    title={`Inspect “${listing.title}”`}
+                    className="cursor-pointer"
+                  >
                     <TableCell>
                       <div className="flex items-center gap-4">
                         <MarketplaceImages images={listing.images} title={listing.title} />
@@ -226,17 +215,42 @@ export function DashboardListings() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant={isConnected(listing.account) ? 'info' : 'muted'}
-                        icon={facebookIcon ? <SocialGlyph icon={facebookIcon} className="size-3.5" /> : undefined}
+                      <AccountTooltip
+                        label={listing.account}
+                        health={health}
+                        labelIcon={
+                          facebookIcon ? (
+                            <SocialGlyph icon={facebookIcon} className="size-3" />
+                          ) : null
+                        }
+                        badge={
+                          health ? (
+                            <AccountHealthBadge
+                              label={listing.account}
+                              health={health}
+                              icon={facebookIcon ? <SocialGlyph icon={facebookIcon} className="size-3.5" /> : undefined}
+                            />
+                          ) : (
+                            <Badge
+                              variant="muted"
+                              icon={facebookIcon ? <SocialGlyph icon={facebookIcon} className="size-3.5" /> : undefined}
+                            >
+                              {listing.account}
+                            </Badge>
+                          )
+                        }
                       >
-                        {listing.account}
-                      </Badge>
+                        <span className="flex items-center gap-1.5 whitespace-nowrap text-white/80">
+                          <span className="block max-w-48 truncate">{listing.title}</span>
+                          <span aria-hidden="true">·</span>
+                          <span className="block max-w-48 truncate" title={listing.location}>{listing.location}</span>
+                        </span>
+                      </AccountTooltip>
                     </TableCell>
-                    <TableCell className="whitespace-nowrap text-text-secondary">
-                      <span className="inline-flex items-center gap-1.5">
+                    <TableCell className="max-w-48 text-text-secondary">
+                      <span className="flex min-w-0 items-center gap-1.5">
                         {flagForLocation(listing.location)}
-                        {listing.location}
+                        <span className="min-w-0 flex-1 truncate" title={listing.location}>{listing.location}</span>
                       </span>
                     </TableCell>
                     <TableCell className="whitespace-nowrap">
@@ -280,14 +294,21 @@ export function DashboardListings() {
               id: 'remove',
               label: 'Remove listing',
               icon: <Trash2 aria-hidden="true" className="size-4" />,
-              danger: true,
               onSelect: () => handleStatusChange(listing, 'removed')
+            },
+            {
+              id: 'delete',
+              label: 'Delete',
+              icon: <Trash aria-hidden="true" className="size-4" />,
+              danger: true,
+              onSelect: () => handleDelete(listing)
             }
           ]}
         />
-      </TableCell>
+       </TableCell>
                   </TableRow>
-                ))}
+                  )
+                })}
               </TableBody>
             </table>
           </Table>

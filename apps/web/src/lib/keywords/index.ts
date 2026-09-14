@@ -79,3 +79,14 @@ export async function deleteKeyword(id: string): Promise<Keyword[]> {
   const body = (await res.json()) as KeywordsResponse
   return body.keywords
 }
+
+/**
+ * Rebuild the base sample set through `POST /keywords/reset` — replaces the
+ * whole store with SEED_KEYWORDS and returns it.
+ */
+export async function resetKeywords(): Promise<Keyword[]> {
+  const res = await request('/keywords/reset', { method: 'POST' })
+  if (!res.ok) throw new Error(`Could not restore sample keywords (${res.status})`)
+  const body = (await res.json()) as KeywordsResponse
+  return body.keywords
+}

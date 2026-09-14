@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { MOCK_LISTINGS } from './mock'
-import { LISTING_STATUSES } from './types'
-import type { ListingDraft, ListingRecord, ListingStatus } from './types'
+import { DEFAULT_LISTING_LOCATION, LISTING_STATUSES } from './types'
+import type { ListingDraft, ListingLocation, ListingRecord, ListingStatus } from './types'
 import { isArray, isRecord, loadPersistedState, savePersistedState } from '../persist'
 
 const LISTINGS_KEY = 'listings'
@@ -28,6 +28,30 @@ function persistListings(): void {
 /** Marketplace-style numeric id (17 digits, like the captured live ids). */
 function nextListingId(): string {
   return String(10 ** 16 + Math.floor(Math.random() * 9 * 10 ** 16))
+}
+
+/**
+ * Normalize a draft's targeting point: finite lat/lng pass through, radius
+ * clamps to 1–200 km, anything else falls back (edit keeps the stored
+ * point, create takes the Galway default).
+ */
+function toLocationPoint(value: unknown, fallback?: ListingLocation): ListingLocation {
+  if (isRecord(value)) {
+    const record = value as { lat?: unknown; lng?: unknown; radiusKm?: unknown }
+    if (
+      typeof record.lat === 'number' &&
+      Number.isFinite(record.lat) &&
+      typeof record.lng === 'number' &&
+      Number.isFinite(record.lng)
+    ) {
+      const radius =
+        typeof record.radiusKm === 'number' && Number.isFinite(record.radiusKm)
+          ? Math.min(200, Math.max(1, Math.round(record.radiusKm)))
+          : (fallback?.radiusKm ?? DEFAULT_LISTING_LOCATION.radiusKm)
+      return { lat: record.lat, lng: record.lng, radiusKm: radius }
+    }
+  }
+  return fallback ?? DEFAULT_LISTING_LOCATION
 }
 
 /**
@@ -60,6 +84,7 @@ export const listingsApp = new Hono()
       category: (body.category ?? '').trim() || 'Household',
       condition: (body.condition ?? '').trim() || 'Used - fair',
       location,
+      locationPoint: toLocationPoint(body.locationPoint),
       // The form only offers connected facebook accounts, so the label is
       // trusted here; the live client re-validates it against the account.
       account: (body.account ?? '').trim() || 'Facebook',
@@ -97,6 +122,7 @@ export const listingsApp = new Hono()
       category: (body.category ?? '').trim() || current.category,
       condition: (body.condition ?? '').trim() || null,
       location,
+      locationPoint: toLocationPoint(body.locationPoint, current.locationPoint),
       account: (body.account ?? '').trim() || current.account,
       images: images.slice(0, 4),
     }
@@ -129,6 +155,16 @@ export const listingsApp = new Hono()
       status: listing.status satisfies ListingStatus,
       title: listing.title
     })
+  })
+  .delete('/listings/:listingId', (c) => {
+    // Hard delete — the row leaves the store entirely (unlike the removed
+    // status, which keeps it visible for record-keeping).
+    const listingId = c.req.param('listingId')
+    const current = listings.find((row) => row.listingId === listingId)
+    if (!current) return c.json({ error: 'Listing not found' }, 404)
+    listings = listings.filter((row) => row.listingId !== listingId)
+    persistListings()
+    return c.json({ listings: [...listings] })
   })
 
 export type ListingsApp = typeof listingsApp

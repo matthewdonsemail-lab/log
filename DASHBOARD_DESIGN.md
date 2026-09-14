@@ -34,6 +34,7 @@ Everything rounded in the dashboard is a **squircle** (continuous corner curve, 
 | Sidebar active tab | 7 | left edge squared (`topLeft: 0, bottomLeft: 0`), right corners rounded |
 | Collapse toggle button | 14 | near-circular squircle |
 | Social avatar badge | 12 | two-layer (see below) |
+| Form-sheet field | 14 | `FormInput` + `Select` lg trigger share one recipe — h-12, px-4 — so inputs and selects line up |
 
 Two-layer pattern (clip + stroke): a `clipPath` erases outer box-shadows, so any squircle that needs a border composes `useSquircleClip` on the element with a `useSquircleBorder` SVG path (radius +1, 1–2px stroke) rendered as an absolute child. Used by the select surface and `SocialBadge`.
 
@@ -58,7 +59,9 @@ Collapse is **one continuous width animation** — nothing re-centers or snaps:
 
 ## Shared primitives used by the dashboard
 
-- **`Select`** (`packages/ui/src/select.tsx`) — floating listbox via `@floating-ui/react` + `motion`. RADIUS 16 squircle surface; `visibility: hidden` until first position resolves (no 0,0 flash); `matchWidth` middleware; icon-per-option support (platform glyphs, `Plus` for action selects); `value=""` + `placeholder` + `icon` = action-select pattern used by the Accounts "Add account" control.
+- **`Select`** (`packages/ui/src/select.tsx`) — floating listbox via `@floating-ui/react` + `motion`. RADIUS 16 squircle surface; `visibility: hidden` until first position resolves (no 0,0 flash); `matchWidth` middleware; icon-per-option support (platform glyphs, `Plus` for action selects); `value=""` + `placeholder` + `icon` = action-select pattern used by the Accounts "Add account" control. Two trigger sizes: `sm` (default, h-9 `rounded-md` — toolbar filters, matches `Button` lg) and `lg` (form-sheet field: h-12 + squircle clip r14 / stroke r15 that flips neutral→blue on focus/open, pixel-matched to `FormInput`). No `rounded-md` triggers inside form sheets.
+- **`FormInput`** (`apps/web/src/components/DashboardFormPrimitives.tsx`) — form-sheet text field: h-12, px-4, squircle r14 + two-layer stroke (neutral `#E4E7EC` 1.5px, focused `#2A8CFF` 2px). The reference recipe `Select` lg matches.
+- **`LocationField`** (`apps/web/src/components/DashboardLocationPicker.tsx`) — listing location field: an inline grey Leaflet **picker panel** (CartoDB Positron, no key) sitting **above** an h-12 squircle **typeahead input** (Nominatim geocode, 300 ms debounce, 6 results). The map is always visible; click drops the blue `CircleMarker` pinpoint, an adjustable delivery-radius slider (1–50 km) drives a metre `Circle`, and every change commits **live** to the draft (no confirm step). The search dropdown is a floating-ui **portal** under the input (keyboard: arrows / Home / End / Enter / Esc; click-outside + Esc close); picking a place autofills the text and drops the pinpoint there (the map recenters via its `center` prop). Writes `ListingLocation` (`lat`/`lng`/`radiusKm`) onto the draft. `react-leaflet` is pinned to v4 (v5 needs React 19).
 - **`Table`** (`packages/ui/src/table.tsx`) — headless structure, squircle bands: header band (r14, `#EFF6FF` — deliberately the **same blue as the `gray` Button variant**), alternating even row bands (r12, `#F4F9FF`), no dividers, `py-4` cells.
 - **`Badge`** (`packages/ui/src/badge.tsx`) — single source of status styling: `muted` (slate pill), `success` (+ `dot`), `warning`, `danger`, `info`, `brand`. **All** dashboard status pills must use it — no hand-rolled `rounded-full` pills.
 - **`Button`** — variants in play: `blue` (primary actions), `gray` (secondary, e.g. table Connect), `ghost` (row Disconnect), `destructive` (Delete).
@@ -204,6 +207,7 @@ the note via `sr-only` (the visual is `aria-hidden`).
 4. **One status vocabulary** — all status pills through `Badge`; table header blue = gray-Button blue (`#EFF6FF`).
 5. **One source of truth** — Settings and Accounts render from the same id-keyed store.
 6. **Continuous collapse** — sidebar state changes animate as one width/gap/opacity transition; no mount/unmount or re-centering frames.
+7. **Uniform form fields** — every form-sheet field is h-12 on the r14 squircle recipe (`FormInput`, `Select size="lg"`); selects and inputs share one row height, no mixed radii.
 
 ## File map
 
@@ -216,6 +220,7 @@ the note via `sr-only` (the visual is `aria-hidden`).
 | `apps/web/src/components/DashboardSettingsConnections.tsx` | Store-driven connect/duplicate/delete flow |
 | `apps/web/src/components/DashboardAccounts.tsx` | Store-driven table, filter, add-account |
 | `apps/web/src/components/DashboardKeywords.tsx` | Keywords cards/table, account badge + tooltip, keyword form slot |
+| `apps/web/src/components/DashboardLocationPicker.tsx` | Location field: inline grey Leaflet picker (click-to-set pin + radius slider) above typeahead search (portal) |
 | `apps/web/src/components/DashboardAnalytics.tsx` | Per-keyword graphs: brand-blue board, Satoshi Black values, Badge headers, tooltip minis |
 | `apps/web/src/components/DashboardAnalyticsConsole.tsx` | Firehose console: type filter tabs, capped event list |
 | `apps/web/src/components/DashboardAnalyticsOverview.tsx` | Analytics landing: platform filter + full firehose |

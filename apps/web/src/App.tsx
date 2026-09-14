@@ -3,7 +3,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ToastProvider } from '@listeningkit/ui'
 import { OnboardingPage } from './pages/onboarding/OnboardingPage'
 import { DashboardLayout } from './components/DashboardLayout'
-import { DashboardOverview } from './components/DashboardOverview'
 import { DashboardSettings } from './components/DashboardSettings'
 import { DashboardGroups } from './components/DashboardGroups'
 import { DashboardAccounts } from './components/DashboardAccounts'
@@ -13,6 +12,10 @@ import { DashboardKeywords } from './components/DashboardKeywords'
 import { DashboardAnalyticsOverview } from './components/DashboardAnalyticsOverview'
 import { DashboardAnalyticsPage } from './components/DashboardAnalyticsPage'
 import { DashboardAccountPage } from './components/DashboardAccountPage'
+import { DashboardFeed } from './components/DashboardFeed'
+import { DashboardDocs } from './components/DashboardDocs'
+import { DashboardAPI } from './components/DashboardAPI'
+import { DashboardApiKeyPage } from './components/DashboardApiKeyPage'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,7 +46,7 @@ export function App() {
             <Route path="/" element={<Navigate to="/onboarding" replace />} />
             <Route path="/onboarding" element={<OnboardingPage />} />
             <Route path="/dashboard" element={<DashboardLayout />}>
-              <Route index element={<DashboardOverview />} />
+              <Route index element={<DashboardFeed />} />
               <Route path="groups" element={<DashboardGroups />} />
               <Route path="facebook/listings" element={<DashboardListings />} />
               <Route path="keywords" element={<DashboardKeywords />} />
@@ -53,6 +56,9 @@ export function App() {
               <Route path="accounts/:accountId" element={<DashboardAccountPage />} />
               <Route path="messages" element={<DashboardMessages />} />
               <Route path="settings" element={<DashboardSettings />} />
+              <Route path="api" element={<DashboardAPI />} />
+              <Route path="api/:keyId" element={<DashboardApiKeyPage />} />
+              <Route path="docs/*" element={<DashboardDocs />} />
             </Route>
             <Route path="/health" element={<HealthPage />} />
             <Route path="*" element={<Navigate to="/onboarding" replace />} />

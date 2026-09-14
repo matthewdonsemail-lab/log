@@ -13,27 +13,10 @@ import {
   type RawSignal
 } from '../lib/account-issues'
 import { DashboardTab, type DashboardTabAccent } from './DashboardTab'
+import { SEVERITY_BADGE, SEVERITY_DOT, SEVERITY_LABEL, accountStatusLabel } from './AccountStatus'
 
 /** The console never renders the whole history — it caps the list and says how much more the filter is hiding. */
 const RENDER_CAP = 50
-
-const SEVERITY_DOT: Record<IssueSeverity, string> = {
-  healthy: 'bg-emerald-500',
-  degraded: 'bg-amber-500',
-  unhealthy: 'bg-red-500'
-}
-
-const SEVERITY_BADGE: Record<IssueSeverity, 'success' | 'warning' | 'danger'> = {
-  healthy: 'success',
-  degraded: 'warning',
-  unhealthy: 'danger'
-}
-
-const SEVERITY_LABEL: Record<IssueSeverity, string> = {
-  healthy: 'Healthy',
-  degraded: 'Degraded',
-  unhealthy: 'Critical'
-}
 
 const FILTER_META: Record<'all' | 'degraded' | 'unhealthy', { label: string; icon: ReactNode; accent: DashboardTabAccent }> = {
   all: { label: 'All', icon: <Globe className="size-4" aria-hidden="true" />, accent: 'blue' },
@@ -161,18 +144,13 @@ export function DashboardAccountConsole({
 
   const events = useMemo(() => getAccountIssueEvents(record), [record])
 
-  // The current state, as its own first row. When an issue is active it is
+// The current state, as its own first row. When an issue is active it is
   // the one the client last observed (click-through to inspect); otherwise
   // the row reads the lifecycle state ("Connected" / "Stale") and is not a
-  // click target — there is no issue to open. The label matches the badge
-  // the page header wears, so the two always agree.
-const currentLabel = issue
-    ? issue.label
-    : severity === 'healthy'
-      ? 'Connected'
-      : severity === 'degraded'
-        ? 'Stale'
-        : 'Not connected'
+  // click target — there is no issue to open. The label comes from the same
+  // shared vocabulary as the badge the page header wears, so the two always
+  // agree.
+  const currentLabel = accountStatusLabel(snapshot)
   const currentEvent: AccountIssueEvent =
     events[0] ?? {
       id: `${record.id}-current`,

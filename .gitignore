@@ -7,6 +7,10 @@ dist/
 dist-ssr/
 *.local
 
+# fumadocs (runs as its own Next server on :3001, proxied by the web app)
+apps/docs/.next/
+apps/docs/.source/
+
 # vite
 .vite/
 vite.config.*.timestamp-*
@@ -52,3 +56,6 @@ yarn-error.log*
 *.mp3
 *.mp4
 *.srt
+
+# documents (never commit binary office files)
+*.docx

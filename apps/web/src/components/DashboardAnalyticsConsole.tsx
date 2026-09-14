@@ -13,6 +13,7 @@ import {
 import { getAccounts, platformLabel, type ConnectionRecord } from '../lib/connections'
 import { accountIssueSnapshot } from '../lib/account-issues'
 import { AccountHealthBadge } from './AccountHealthBadge'
+import { AccountTooltip } from './AccountTooltip'
 import { SOCIAL_ICONS, SocialGlyph } from '../lib/social-icons'
 import { highlightQuote } from './cards/QuoteHighlight'
 import { DashboardTab, type DashboardTabAccent } from './DashboardTab'
@@ -225,12 +226,29 @@ events,
                   {EVENT_SENTIMENT_LABELS[event.sentiment]}
                 </Badge>
                 {capturing ? (
-                  <AccountHealthBadge
+                  <AccountTooltip
                     label={capturing.label}
                     health={accountIssueSnapshot(capturing).health}
-                    icon={platformIcon ? <SocialGlyph icon={platformIcon} className="size-3.5" /> : undefined}
-                    className="shrink-0"
-                  />
+                    labelIcon={
+                      platformIcon ? (
+                        <SocialGlyph icon={platformIcon} className="size-3" />
+                      ) : null
+                    }
+                    badge={
+                      <AccountHealthBadge
+                        label={capturing.label}
+                        health={accountIssueSnapshot(capturing).health}
+                        icon={platformIcon ? <SocialGlyph icon={platformIcon} className="size-3.5" /> : undefined}
+                        className="shrink-0"
+                      />
+                    }
+                  >
+                    <span className="flex items-center gap-1.5 whitespace-nowrap text-white/80">
+                      <span className="block max-w-48 truncate">{event.group}</span>
+                      <span aria-hidden="true">·</span>
+                      <span className="block max-w-48 truncate">{event.author}</span>
+                    </span>
+                  </AccountTooltip>
                 ) : platformIcon ? (
                   <Badge
                     variant="brand"

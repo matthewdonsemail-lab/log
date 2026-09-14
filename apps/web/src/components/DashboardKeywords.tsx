@@ -1,16 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-  autoUpdate,
-  flip,
-  FloatingPortal,
-  offset,
-  shift,
-  useFloating,
-  useHover,
-  useInteractions
-} from '@floating-ui/react'
-import { LayoutGrid, Pause, Pencil, Play, Plus, Table2, Trash } from 'lucide-react'
+import { LayoutGrid, Pause, Pencil, Play, Plus, RotateCcw, Table2, Trash } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -27,6 +17,7 @@ import {
 import {
   deleteKeyword,
   getKeywords,
+  resetKeywords,
   saveKeyword,
   type Keyword,
   type KeywordStatus
@@ -37,6 +28,7 @@ import { healthForAccountId } from '../lib/health'
 import { getKeywordAnalytics } from '../lib/analytics'
 import { SOCIAL_ICONS, SocialBadge, SocialGlyph, type SocialIcon } from '../lib/social-icons'
 import { AccountHealthBadge } from './AccountHealthBadge'
+import { AccountTooltip } from './AccountTooltip'
 import { DashboardKeywordsForm } from './DashboardKeywordsForm'
 import { useDashboardFormSlot } from './DashboardFormSlot'
 
@@ -101,11 +93,6 @@ function MiniSpark({ values }: { values: number[] }) {
  * An unhealthy (or missing) joining account flags the badge red so the
  * issue reads without hovering; a stale one flags amber. Scopes without an
  * account (subreddits) carry no health — the badge stays neutral.
- *
- * The tooltip portals to document.body (same pattern as the kit's
- * Dropdown/Select) because each table row carries a squircle `clip-path` —
- * an in-cell absolutely-positioned popup would be clipped to the row and
- * trapped in its stacking context.
  */
 function AccountHealthCell({
   keyword,
@@ -121,20 +108,7 @@ function AccountHealthCell({
     [keyword.id, keyword.phrase, keyword.platform]
   )
   const label = group?.accountLabel
-  const [tooltipOpen, setTooltipOpen] = useState(false)
-  const { refs, floatingStyles, context } = useFloating({
-    open: tooltipOpen,
-    onOpenChange: setTooltipOpen,
-    placement: 'right',
-    strategy: 'fixed',
-    transform: false,
-    whileElementsMounted: autoUpdate,
-    middleware: [offset(8), flip({ padding: 8 }), shift({ padding: 8 })]
-  })
-  const hover = useHover(context, { delay: { open: 120, close: 100 }, move: false })
-  const { getReferenceProps, getFloatingProps } = useInteractions([hover])
   const health = healthForAccountId(accounts, group?.accountId ?? null)
-  const flagged = health !== null && health.state !== 'healthy'
   const platformIcon = group ? SOCIAL_ICONS.find((i) => i.id === group.platform) : undefined
   // X's brand hex is #000000 — invisible on the dark tooltip, so fall back to white.
   const platformIconColor = platformIcon
@@ -144,69 +118,43 @@ function AccountHealthCell({
     : undefined
   if (!label) return <span className="text-text-secondary">—</span>
   return (
-    <span ref={refs.setReference} {...getReferenceProps()} className="inline-flex">
-      {health ? (
-        <AccountHealthBadge label={label} health={health} />
-      ) : (
-        <Badge variant="neutral">{label}</Badge>
-      )}
-      {tooltipOpen && (
-        <FloatingPortal>
-          <span
-            ref={refs.setFloating}
-            style={floatingStyles}
-            {...getFloatingProps()}
-            role="tooltip"
-            className="z-50 flex w-max max-w-sm gap-2.5 whitespace-normal bg-text-primary p-4 text-xs leading-snug text-white shadow-lg [border-radius:14px]"
-          >
-            <span className="flex w-40 shrink-0 self-stretch items-center justify-center overflow-hidden bg-white/10 [border-radius:10px]">
-              <MiniSpark values={trend} />
-            </span>
-            <span className="flex shrink-0 flex-col">
-              <span className="flex items-center gap-1.5 whitespace-nowrap font-bold">
-                {platformIcon ? (
-                  <span className="inline-flex shrink-0" style={{ color: platformIconColor }} aria-hidden="true">
-                    <SocialGlyph icon={platformIcon} className="size-3" />
-                  </span>
-                ) : null}
-                {label}
-              </span>
-              <span className="flex items-center gap-1.5 whitespace-nowrap text-white/80">
-                {group?.url ? (
-                  <a
-                    href={group.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-[#2A8CFF] underline decoration-dashed decoration-[#2A8CFF]/50 underline-offset-2 hover:decoration-[#2A8CFF]"
-                  >
-                    {group.name}
-                  </a>
-                ) : (
-                  <span>{group?.name}</span>
-                )}
-                <span aria-hidden="true">·</span>
-                <span className="tabular-nums">{keyword.signalsCount} signals</span>
-              </span>
-              {health ? (
-                <span
-                  className={`mt-0.5 flex items-center gap-1.5 whitespace-nowrap font-semibold ${flagged ? 'text-red-300' : 'text-emerald-300'}`}
-                >
-                  <span
-                    aria-hidden="true"
-                    className={`inline-block size-1.5 shrink-0 rounded-full ${flagged ? 'bg-red-300' : 'bg-emerald-300'}`}
-                  />
-                  {health.state === 'unhealthy'
-                    ? 'Not connected — flagged'
-                    : health.state === 'degraded'
-                      ? 'Stale — verify the connection'
-                      : 'Connected — signals flowing'}
-                </span>
-              ) : null}
-            </span>
+    <AccountTooltip
+      label={label}
+      health={health}
+      connectedLabel="Connected — signals flowing"
+      labelIcon={
+        platformIcon ? (
+          <span className="inline-flex shrink-0" style={{ color: platformIconColor }} aria-hidden="true">
+            <SocialGlyph icon={platformIcon} className="size-3" />
           </span>
-        </FloatingPortal>
-      )}
-    </span>
+        ) : null
+      }
+      visual={<MiniSpark values={trend} />}
+      badge={
+        health ? (
+          <AccountHealthBadge label={label} health={health} />
+        ) : (
+          <Badge variant="neutral">{label}</Badge>
+        )
+      }
+    >
+      <span className="flex items-center gap-1.5 whitespace-nowrap text-white/80">
+        {group?.url ? (
+          <a
+            href={group.url}
+            target="_blank"
+            rel="noreferrer"
+            className="text-[#2A8CFF] underline decoration-dashed decoration-[#2A8CFF]/50 underline-offset-2 hover:decoration-[#2A8CFF]"
+          >
+            {group.name}
+          </a>
+        ) : (
+          <span>{group?.name}</span>
+        )}
+        <span aria-hidden="true">·</span>
+        <span className="tabular-nums">{keyword.signalsCount} signals</span>
+      </span>
+    </AccountTooltip>
   )
 }
 
@@ -309,6 +257,7 @@ export function DashboardKeywords() {
   // Edit scope: set alongside formOpen to jump the form straight to the
   // phrase step for this keyword; null means create mode.
   const [editScope, setEditScope] = useState<Keyword | null>(null)
+  const [resetting, setResetting] = useState(false)
 
   const load = useCallback(() => {
     getKeywords().then(setKeywords).catch(() => setKeywords([]))
@@ -379,6 +328,23 @@ export function DashboardKeywords() {
       success(`“${keyword.phrase}” removed`)
     } catch (err: unknown) {
       notifyError('Remove failed', err instanceof Error ? err.message : 'Could not remove the keyword.')
+    }
+  }
+
+  // Rebuild the base sample set after everything was deleted — replaces the
+  // whole store with SEED_KEYWORDS. Only offered from the empty state, so
+  // there is nothing to lose when it runs.
+  async function handleRestoreSamples() {
+    if (resetting) return
+    setResetting(true)
+    try {
+      const restored = await resetKeywords()
+      setKeywords(restored)
+      success('Sample keywords restored', `${restored.length} base keywords are listening again.`)
+    } catch (err: unknown) {
+      notifyError('Restore failed', err instanceof Error ? err.message : 'Could not restore the sample keywords.')
+    } finally {
+      setResetting(false)
     }
   }
 
@@ -526,9 +492,13 @@ export function DashboardKeywords() {
       )}
 
       {keywords !== null && rows.length === 0 && (
-        <p className="rounded-xl border border-dashed border-slate-300 p-5 text-sm text-text-secondary">
-          No keywords yet — add one to start listening.
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-dashed border-slate-300 p-5">
+          <p className="text-sm text-text-secondary">No keywords yet — add one to start listening.</p>
+          <Button type="button" variant="blue" size="lg" disabled={resetting} onClick={() => void handleRestoreSamples()}>
+            <RotateCcw aria-hidden="true" className="size-3.5" strokeWidth={2.25} />
+            {resetting ? 'Restoring…' : 'Restore sample keywords'}
+          </Button>
+        </div>
       )}
     </div>
   )

@@ -1,0 +1,40 @@
+---
+title: Chrome Extension
+description: Where the ListeningKit extension comes from and how to set it up.
+---
+
+# Chrome Extension
+
+The extension is the listener: it captures public signals from the platforms you browse while you're logged in.
+
+## Install
+
+<Tabs items={["Chrome Web Store", "From source"]}>
+<Tab value="Chrome Web Store">
+
+The fastest path — one click from the [Chrome Web Store](https://chromewebstore.google.com/):
+
+1. Click **Add to Chrome**.
+2. Pin it to the toolbar for quick access.
+
+</Tab>
+<Tab value="From source">
+
+Prefer to self-host? Clone the repo and unpack it:
+
+1. Clone the repo and build the extension.
+2. Open `chrome://extensions` and enable **Developer mode**.
+3. Click **Load unpacked** and pick the built extension folder.
+
+</Tab>
+</Tabs>
+
+## Enable it for a platform
+
+1. Make sure you're logged into the platform in Chrome.
+2. Open the extension — it shows a token field for the site you're on.
+3. That token is what the dashboard asks for on its connect screen.
+
+<Callout type="info">
+The extension never sees your dashboard credentials and only reads the signals you ask it to capture.
+</Callout>

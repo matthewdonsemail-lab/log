@@ -701,6 +701,7 @@ function FacebookScopeEditor({
       <label className="block">
         <span className="mb-1.5 block text-sm font-semibold text-slate-700">Facebook group</span>
         <Select
+          size="lg"
           value={value ?? undefined}
           onChange={onSelect}
           aria-label="Facebook group"
@@ -817,6 +818,7 @@ function RedditScopeEditor({
       <label className="block">
         <span className="mb-1.5 block text-sm font-semibold text-slate-700">Subreddit scope</span>
         <Select
+          size="lg"
           value={value ?? undefined}
           onChange={onSelect}
           aria-label="Subreddit scope"

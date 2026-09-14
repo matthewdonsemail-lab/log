@@ -76,6 +76,48 @@ sequenceDiagram
 
 The join REST call returns the **actual content required to get into the group** (forms, questions); the respective platform client submits it through the humanized browser.
 
+## Follow-ups — inspect → suggest → map
+
+Every captured post opens an inspect sheet (`DashboardEventInspectForm`), and every inspect ends in the same question: what do we do about this? The follow-up loop answers it three ways — and all three feed one growing **map of keywords × communities**: the phrases worth listening for, and the places worth listening in.
+
+```mermaid
+flowchart TD
+  INSPECT[Inspect post] --> RK[Find related mentions]
+  INSPECT --> RC[Find related groups/communities]
+  INSPECT --> DR[Draft a response + resource]
+  RK --> PICK[Pick promising keywords]
+  PICK --> RETRY[None relevant? dig the replies]
+  PICK --> ONLINE[Look online?]
+  RC --> ONLINE
+  ONLINE --> DORK[Google dorking]
+  DORK --> GROUPS[Sibling communities + joins]
+  GROUPS --> MAP([keyword × community map])
+  PICK --> MAP
+  MAP --> LISTEN[Start listening]
+  DR --> SEND[Reply with attached resource]
+```
+
+### The three follow-ups
+
+| Action | Platforms | What happens |
+|---|---|---|
+| **Find related mentions** | all | `DashboardRelatedKeywordsForm`: the chain reads the post and its comments, suggests keywords, and asks which look promising. Continue moves on; "none of these are relevant" digs through the replies for a second round. Then: look online? → Google dorks → sibling communities → joins → the map → Start listening. |
+| **Find related groups / communities** | facebook + reddit | `DashboardRelatedCommunitiesForm`: the same chain entered at the online search with the tracked phrase preset — dorking → joins → map. (X has no groups, so the action hides there.) |
+| **Draft a response** | all | Inline panel: the post answered in the brand's voice, plus a suggested resource — a video, guide, or page built from the brand's own site matched to what the post is about — attachable to the draft before sending. |
+
+### How the chain works (client)
+
+- `RelatedMentionsChain` renders the branching chain-of-thought in the `brand-blue` tone (blue rails/tracks, white-glyph icons, navy labels — `ChainOfThoughtStep` `tone` plus the matching `chain-joints` tone).
+- [`lib/related-mentions.ts`](apps/web/src/lib/related-mentions.ts) owns the forward-only machine: `scanning → picking → retrying → repicking → onlineAsk → searching → groups → mapReady → saving → saved` (a second rejection lands in `dismissed`). Streaming phases are timer-driven in the component; the machine owns the interactive half.
+- Mock data that feeds it: [`lib/analytics/mock.ts`](apps/web/src/lib/analytics/mock.ts) (post templates carry the tracked `{phrase}` plus a companion `{related}` phrase; `eventComments` carries round-two phrases in the replies) and [`lib/brand/query.ts`](apps/web/src/lib/brand/query.ts) (`suggestKeywords`, `suggestAcross`, `suggestResource`, `draftReply`).
+- Joins and keyword creation are real store calls, not stubs: `joinCommunity` / `joinCommunityByUrl` (+ `acceptCommunity` standing in for the group admin), and `createKeyword` scoped to joined groups — facebook/reddit phrases ride on a group, X phrases ride free.
+
+### The map, and where it's going
+
+The map is the product of the loop: keywords that look worth listening to, pinned to the communities (this one plus newly joined ones) where they're actually said — built out post by post, round-robin, until it covers everything the brand cares about. Accounts do the listening; the same accounts do the responding, with brand-matched resources attached.
+
+Direction, not built yet: expose each follow-up step as a callable surface — platform REST today, model context protocol tomorrow — so a keyword inspection can run end-to-end on its own: inspect the hit, suggest what else to listen for, find the groups that talk like that, join them, and draft the reply with the resource attached. The map is what keeps growing underneath.
+
 ## This repo — the client architecture
 
 The important part of the architecture lives in `apps/web/src/lib/`. Every data surface is a **Hono-shaped API** — mock-backed today, same routes and response shapes when pointed at the real Hono/Railcode backend, so the client never changes.

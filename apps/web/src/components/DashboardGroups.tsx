@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react'
-import { Check, Clock, LayoutGrid, LogOut, Plus, Table2, X } from 'lucide-react'
+import { Check, LayoutGrid, LogOut, Plus, Table2, X } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -12,7 +12,7 @@ import {
   TableRow,
   useSquircleClip
 } from '@listeningkit/ui'
-import { SOCIAL_ICONS, SocialGlyph, type SocialIcon } from '@/lib/social-icons'
+import { SOCIAL_ICONS, SocialBadge, SocialGlyph, type SocialIcon } from '@/lib/social-icons'
 import {
   acceptCommunity,
   getCommunities,
@@ -23,6 +23,7 @@ import {
 import { getAccounts, type ConnectionPlatform, type ConnectionRecord } from '@/lib/connections'
 import { healthForAccountId } from '@/lib/health'
 import { AccountHealthBadge } from './AccountHealthBadge'
+import { AccountTooltip } from './AccountTooltip'
 import { DashboardGroupsForm } from './DashboardGroupsForm'
 import { useDashboardFormSlot } from './DashboardFormSlot'
 import { DashboardTab } from './DashboardTab'
@@ -38,9 +39,81 @@ function GroupsTab({ icon, active, onClick }: { icon: SocialIcon; active: boolea
   )
 }
 
-function initials(name: string): string {
-  const words = name.replace(/^r\//, '').split(/\s+/)
-  return ((words[0]?.[0] ?? '') + (words[1]?.[0] ?? '')).toUpperCase() || '?'
+type CommunityHandlers = {
+  onJoin: (community: Community) => void
+  onLeave: (community: Community) => void
+  onAccept: (community: Community) => void
+  onCancel: (community: Community) => void
+}
+
+/**
+ * Blue community card — same card language as `KeywordCard` in
+ * DashboardKeywords: brand-blue squircle, platform glyph left, identity
+ * middle, metric + status + row actions right. One component covers all
+ * three join states; the dropdown owns Join / Leave / Simulate acceptance
+ * / Cancel request via `communityActions`.
+ */
+function CommunityCard({
+  community,
+  busy,
+  handlers
+}: {
+  community: Community
+  busy: boolean
+  handlers: CommunityHandlers
+}) {
+  const clip = useSquircleClip<HTMLDivElement>(20)
+  const icon = SOCIAL_ICONS.find((i) => i.id === community.platform) as SocialIcon | undefined
+  const pending = community.joinState === 'pending'
+
+  return (
+    <div ref={clip.ref} style={clip.style} className="flex items-center gap-4 bg-[#2A8CFF] p-5">
+      {icon ? (
+        <SocialGlyph icon={icon} className="size-12 shrink-0 text-white" />
+      ) : (
+        <span className="size-12 rounded-full bg-white/20" aria-hidden="true" />
+      )}
+      <span className="flex min-w-0 flex-1 flex-col">
+        <span className="truncate text-xl font-bold text-white" title={community.name}>{community.name}</span>
+        <span className="truncate text-sm text-white/75" title={`${community.handle} · ${community.members}`}>
+          {community.handle} · {community.members}
+        </span>
+        {pending ? (
+          <span className="truncate text-sm text-white/75">
+            Request sent — waiting on the group to accept
+            {community.accountLabel ? ` · ${community.accountLabel}` : ''}
+            {community.answers.length > 0
+              ? ` · ${community.answers.length} answer${community.answers.length === 1 ? '' : 's'} sent`
+              : ''}
+          </span>
+        ) : (
+          <span className="truncate text-sm text-white/75" title={community.description}>{community.description}</span>
+        )}
+        {community.joinState === 'accepted' && community.accountLabel ? (
+          <span className="truncate text-xs text-white/75">Joined as {community.accountLabel}</span>
+        ) : null}
+      </span>
+      <span className="flex shrink-0 flex-col items-end gap-1.5">
+        <span className="text-sm font-bold tabular-nums text-white">
+          {busy
+            ? pending
+              ? 'Updating…'
+              : community.joinState === 'accepted'
+                ? 'Leaving…'
+                : 'Joining…'
+            : community.members}
+        </span>
+        <span className="flex items-center gap-2">
+          <JoinStateBadge community={community} />
+          <Dropdown
+            aria-label={`${community.name} community actions`}
+            items={communityActions(community, handlers)}
+            className="text-white hover:text-white"
+          />
+        </span>
+      </span>
+    </div>
+  )
 }
 
 type ViewMode = 'cards' | 'table'
@@ -62,12 +135,7 @@ function JoinStateBadge({ community }: { community: Community }) {
 
 function communityActions(
   community: Community,
-  handlers: {
-    onJoin: (community: Community) => void
-    onLeave: (community: Community) => void
-    onAccept: (community: Community) => void
-    onCancel: (community: Community) => void
-  }
+  handlers: CommunityHandlers
 ) {
   if (community.joinState === 'accepted') {
     return [
@@ -107,95 +175,6 @@ function communityActions(
   ]
 }
 
-function CommunityCard({
-  community,
-  busy,
-  onJoin,
-  onLeave
-}: {
-  community: Community
-  busy: boolean
-  onJoin: () => void
-  onLeave: () => void
-}) {
-  const clip = useSquircleClip<HTMLDivElement>(20)
-
-  return (
-    <div ref={clip.ref} style={clip.style} className="flex flex-col gap-4 bg-white p-5">
-      <div className="flex items-center gap-3">
-        <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#2A8CFF]/10 text-sm font-bold text-[#2A8CFF]">
-          {initials(community.name)}
-        </span>
-        <span className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate font-bold text-text-primary" title={community.name}>{community.name}</span>
-          <span className="truncate text-sm text-text-secondary" title={`${community.handle} · ${community.members}`}>
-            {community.handle} · {community.members}
-          </span>
-        </span>
-      </div>
-      <p className="line-clamp-2 min-h-10 text-sm text-text-secondary" title={community.description}>{community.description}</p>
-      {community.joinState === 'accepted' && community.accountLabel ? (
-        <p className="-mt-2 text-xs text-text-secondary">Joined as {community.accountLabel}</p>
-      ) : null}
-      {community.joinState === 'accepted' ? (
-        <Button type="button" variant="ghost" size="lg" disabled={busy} onClick={onLeave} className="w-full">
-          {busy ? 'Leaving…' : 'Leave'}
-        </Button>
-      ) : (
-        <Button type="button" variant="blue" size="lg" disabled={busy} onClick={onJoin} className="w-full font-bold text-white">
-          {busy ? 'Joining…' : 'Join'}
-        </Button>
-      )}
-    </div>
-  )
-}
-
-function PendingCommunityCard({
-  community,
-  busy,
-  onAccept,
-  onCancel
-}: {
-  community: Community
-  busy: boolean
-  onAccept: () => void
-  onCancel: () => void
-}) {
-  const clip = useSquircleClip<HTMLDivElement>(20)
-
-  return (
-    <div ref={clip.ref} style={clip.style} className="flex flex-col gap-4 bg-white p-5">
-      <div className="flex items-center gap-3">
-        <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-amber-500/10 text-sm font-bold text-amber-600">
-          <Clock size={18} strokeWidth={2.25} aria-hidden="true" />
-        </span>
-        <span className="flex min-w-0 flex-1 flex-col">
-          <span className="truncate font-bold text-text-primary" title={community.name}>{community.name}</span>
-          <span className="truncate text-sm text-text-secondary" title={`${community.handle} · ${community.members}`}>
-            {community.handle} · {community.members}
-          </span>
-        </span>
-      </div>
-      <p className="-mt-2 text-xs text-text-secondary">
-        Request sent — waiting on the group to accept
-        {community.accountLabel ? ` · requested with ${community.accountLabel}` : ''}
-        {community.answers.length > 0
-          ? ` · ${community.answers.length} answer${community.answers.length === 1 ? '' : 's'} sent`
-          : ''}
-        .
-      </p>
-      <div className="flex flex-col gap-2">
-        <Button type="button" variant="blue" size="lg" disabled={busy} onClick={onAccept} className="w-full">
-          {busy ? 'Accepting…' : 'Simulate acceptance'}
-        </Button>
-        <Button type="button" variant="ghost" size="lg" disabled={busy} onClick={onCancel} className="w-full">
-          Cancel request
-        </Button>
-      </div>
-    </div>
-  )
-}
-
 function CommunitySection({
   title,
   sub,
@@ -209,7 +188,7 @@ function CommunitySection({
     <div>
       <h2 className="text-lg font-bold text-text-primary">{title}</h2>
       <p className="text-sm text-text-secondary">{sub}</p>
-      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{children}</div>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{children}</div>
     </div>
   )
 }
@@ -373,7 +352,17 @@ export function DashboardGroups() {
               </p>
             ) : (
               current.map((c) => (
-                <CommunityCard key={c.id} community={c} busy={busyId === c.id} onJoin={() => handleJoin(c)} onLeave={() => handleLeave(c)} />
+                <CommunityCard
+                  key={c.id}
+                  community={c}
+                  busy={busyId === c.id}
+                  handlers={{
+                    onJoin: handleJoin,
+                    onLeave: handleLeave,
+                    onAccept: handleAccept,
+                    onCancel: handleCancelRequest
+                  }}
+                />
               ))
             )}
           </CommunitySection>
@@ -383,12 +372,16 @@ export function DashboardGroups() {
               sub="Join requests waiting on the group — they move up once accepted."
             >
               {pending.map((c) => (
-                <PendingCommunityCard
+                <CommunityCard
                   key={c.id}
                   community={c}
                   busy={busyId === c.id}
-                  onAccept={() => handleAccept(c)}
-                  onCancel={() => handleCancelRequest(c)}
+                  handlers={{
+                    onJoin: handleJoin,
+                    onLeave: handleLeave,
+                    onAccept: handleAccept,
+                    onCancel: handleCancelRequest
+                  }}
                 />
               ))}
             </CommunitySection>
@@ -405,7 +398,17 @@ export function DashboardGroups() {
               </p>
             ) : (
               recommended.map((c) => (
-                <CommunityCard key={c.id} community={c} busy={busyId === c.id} onJoin={() => handleJoin(c)} onLeave={() => handleLeave(c)} />
+                <CommunityCard
+                  key={c.id}
+                  community={c}
+                  busy={busyId === c.id}
+                  handlers={{
+                    onJoin: handleJoin,
+                    onLeave: handleLeave,
+                    onAccept: handleAccept,
+                    onCancel: handleCancelRequest
+                  }}
+                />
               ))
             )}
           </CommunitySection>
@@ -416,36 +419,45 @@ export function DashboardGroups() {
         </p>
       ) : (
         <Table>
-          <table className="w-full min-w-[780px] text-left">
+          <table className="w-full min-w-[840px] text-left">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead>Community</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Account</TableHead>
-                <TableHead>Members</TableHead>
+                <TableHead className="text-right">Members</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {all.map((c) => {
                 const health = healthForAccountId(accounts, c.accountId)
+                const icon = SOCIAL_ICONS.find((i) => i.id === c.platform)
                 return (
                   <TableRow key={c.id}>
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#2A8CFF]/10 text-xs font-bold text-[#2A8CFF]">
-                          {initials(c.name)}
-                        </span>
+                        {icon ? (
+                          <SocialBadge icon={icon} variant="blue" />
+                        ) : (
+                          <span className="size-8 rounded-full bg-black/5" aria-hidden="true" />
+                        )}
                         <span className="min-w-0">
-                          <span className="block truncate font-semibold" title={c.name}>
-                            {c.name}
-                          </span>
-                          <span
-                            className="block truncate text-xs text-text-secondary"
-                            title={`${c.handle} · ${c.members}`}
-                          >
-                            {c.handle} · {c.members}
-                          </span>
+                          {c.url ? (
+                            <a
+                              href={c.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              title={`Open ${c.name} in a new tab`}
+                              className="block max-w-48 truncate font-semibold text-[#2A8CFF] underline decoration-dashed decoration-[#2A8CFF]/50 underline-offset-2 hover:decoration-[#2A8CFF]"
+                            >
+                              {c.name}
+                            </a>
+                          ) : (
+                            <span className="block max-w-48 truncate font-semibold" title={c.name}>
+                              {c.name}
+                            </span>
+                          )}
                         </span>
                       </div>
                     </TableCell>
@@ -453,13 +465,40 @@ export function DashboardGroups() {
                       <JoinStateBadge community={c} />
                     </TableCell>
                     <TableCell className="whitespace-nowrap">
-                      {health ? (
-                        <AccountHealthBadge label={c.accountLabel ?? c.accountId ?? ''} health={health} />
+                      {!c.accountLabel ? (
+                        <span className="text-text-secondary">—</span>
                       ) : (
-                        <span className="text-text-secondary">{c.accountLabel ?? '—'}</span>
+                        <AccountTooltip
+                          label={c.accountLabel}
+                          health={health}
+                          badge={
+                            health ? (
+                              <AccountHealthBadge label={c.accountLabel} health={health} />
+                            ) : (
+                              <Badge variant="neutral">{c.accountLabel}</Badge>
+                            )
+                          }
+                        >
+                          <span className="flex items-center gap-1.5 whitespace-nowrap text-white/80">
+                            {c.url ? (
+                              <a
+                                href={c.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-[#2A8CFF] underline decoration-dashed decoration-[#2A8CFF]/50 underline-offset-2 hover:decoration-[#2A8CFF]"
+                              >
+                                {c.name}
+                              </a>
+                            ) : (
+                              <span>{c.name}</span>
+                            )}
+                            <span aria-hidden="true">·</span>
+                            <span className="tabular-nums">{c.members}</span>
+                          </span>
+                        </AccountTooltip>
                       )}
                     </TableCell>
-                  <TableCell className="whitespace-nowrap text-text-secondary">{c.members}</TableCell>
+                  <TableCell className="text-right tabular-nums">{c.members}</TableCell>
                     <TableCell className="text-right">
                       <Dropdown
                         aria-label={`${c.name} community actions`}

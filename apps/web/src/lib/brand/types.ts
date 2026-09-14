@@ -35,8 +35,8 @@ export interface BrandProfile {
   updatedAt: string
 }
 
-/** The two follow-up actions on the event inspect sheet. */
-export type AiFollowUpAction = 'related' | 'reply'
+/** The three follow-up actions on the event inspect sheet. */
+export type AiFollowUpAction = 'related' | 'communities' | 'reply'
 
 /** A keyword target the brand wants to rank for, with example ranking pages. */
 export interface KeywordTargetEntry {

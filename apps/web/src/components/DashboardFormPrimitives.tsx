@@ -7,10 +7,10 @@ import {
 import { Check } from 'lucide-react'
 import {
   cn,
+  SquircleBorder,
   useComposedRef,
   useSquircleBorder,
   useSquircleClip,
-  type SquircleBorderState
 } from '@listeningkit/ui'
 import type { ConnectionPlatform } from '../lib/connections'
 import { SOCIAL_ICONS, SocialGlyph, type SocialIcon } from '../lib/social-icons'
@@ -35,37 +35,7 @@ export const SQUIRCLE_NEUTRAL_STROKE = NEUTRAL_STROKE
 export const SQUIRCLE_ACTIVE_STROKE = ACTIVE_STROKE
 
 /** Stroke overlay for a squircle surface: the border path, never a CSS border. */
-export function SquircleStroke({
-  border,
-  stroke,
-  strokeWidth = 1.5,
-  transitionStroke = true
-}: {
-  border: SquircleBorderState
-  stroke: string
-  strokeWidth?: number
-  /** Card selects snap — pass false so the stroke flips immediately too. */
-  transitionStroke?: boolean
-}) {
-  if (!border.path) return null
-  return (
-    <svg
-      className="pointer-events-none absolute inset-0 block size-full overflow-visible"
-      width={border.width}
-      height={border.height}
-      viewBox={`0 0 ${border.width} ${border.height}`}
-      aria-hidden="true"
-    >
-      <path
-        d={border.path}
-        fill="none"
-        stroke={stroke}
-        strokeWidth={strokeWidth}
-        style={transitionStroke ? { transition: 'stroke 150ms ease, stroke-width 150ms ease' } : undefined}
-      />
-    </svg>
-  )
-}
+export { SquircleBorder, SquircleStroke } from '@listeningkit/ui'
 
 export function PlatformPick({
   value,
@@ -120,7 +90,7 @@ function PlatformTile({
         active ? 'bg-[#2A8CFF]' : 'bg-white hover:bg-black/[0.02]'
       )}
     >
-      <SquircleStroke
+      <SquircleBorder
         border={border.state}
         stroke={active ? '#FFFFFF' : NEUTRAL_STROKE}
         strokeWidth={active ? 2 : 1.5}
@@ -179,7 +149,7 @@ export function PickRow({
         active ? (solid ? 'bg-[#2A8CFF]' : 'bg-[#F4F9FF]') : 'bg-white hover:bg-black/[0.02]'
       )}
     >
-      <SquircleStroke
+      <SquircleBorder
         border={border.state}
         stroke={active ? (solid ? '#FFFFFF' : ACTIVE_STROKE) : NEUTRAL_STROKE}
         strokeWidth={active ? 2 : 1.5}
@@ -265,7 +235,7 @@ export function FormInput({
           className
         )}
       />
-      <SquircleStroke
+      <SquircleBorder
         border={border.state}
         stroke={focused ? ACTIVE_STROKE : NEUTRAL_STROKE}
         strokeWidth={focused ? 2 : 1.5}
@@ -289,7 +259,7 @@ export function EmptyLine({ label }: { label: string }) {
   const setRef = useComposedRef(clip.ref, border.ref)
   return (
     <p ref={setRef} style={clip.style} className="relative bg-white p-5 text-sm text-text-secondary">
-      <SquircleStroke border={border.state} stroke={NEUTRAL_STROKE} />
+      <SquircleBorder border={border.state} stroke={NEUTRAL_STROKE} />
       <span className="relative z-10">{label}</span>
     </p>
   )

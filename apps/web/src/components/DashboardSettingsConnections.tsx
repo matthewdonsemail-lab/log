@@ -261,6 +261,9 @@ function ConnectionRow({
                 <Button type="button" variant="gray" size="lg" disabled={busy || testing} onClick={runTest}>
                   {testing ? 'Testing…' : 'Test Connection'}
                 </Button>
+                <Button type="button" variant="red" size="lg" shadow="hard" onClick={remove}>
+                  Delete
+                </Button>
               </>
             )}
             <button

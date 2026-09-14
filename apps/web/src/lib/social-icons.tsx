@@ -1,5 +1,5 @@
 import { siFacebook, siReddit, siX } from 'simple-icons'
-import { useComposedRef, useSquircleBorder, useSquircleClip } from '@listeningkit/ui'
+import { SquircleBorder, useComposedRef, useSquircleBorder, useSquircleClip } from '@listeningkit/ui'
 
 export type SocialIcon = {
   id: string
@@ -50,22 +50,14 @@ export function SocialBadge({
       // inside a 28px parent) and the squircle measures the wrong geometry.
       className={`relative flex size-8 shrink-0 items-center justify-center ${className ?? ''}`}
     >
-      <svg
-        width={border.state.width}
-        height={border.state.height}
-        viewBox={border.state.path ? `0 0 ${border.state.width} ${border.state.height}` : undefined}
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-10 size-full overflow-visible"
-      >
-        {border.state.path ? (
-          <path
-            d={border.state.path}
-            fill={isBlue ? '#2A8CFF' : '#FFFFFF'}
-            stroke={isBlue ? '#FFFFFF' : '#2A8CFF'}
-            strokeWidth={2}
-          />
-        ) : null}
-      </svg>
+      <SquircleBorder
+        border={border.state}
+        fill={isBlue ? '#2A8CFF' : '#FFFFFF'}
+        stroke={isBlue ? '#FFFFFF' : '#2A8CFF'}
+        strokeWidth={2}
+        transitionStroke={false}
+        className="z-10"
+      />
       <SocialGlyph
         icon={icon}
         className={`relative z-10 size-4 ${isBlue ? 'text-white' : 'text-[#2A8CFF]'}`}

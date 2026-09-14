@@ -90,6 +90,57 @@ export type SquircleBorderState = {
   path: string | undefined
 }
 
+/**
+ * Stroke overlay for a squircle surface: renders the `useSquircleBorder`
+ * path as an absolute SVG sibling — never a CSS `border-*` class (clipPath
+ * would clip a real border). Pair with `useSquircleClip` on the parent:
+ * clip radius N, border radius N+1.
+ *
+ * Parent must be `relative`; inputs can't host children so wrap them in a
+ * `relative` span like `FormInput` does.
+ */
+export function SquircleBorder({
+  border,
+  stroke,
+  strokeWidth = 1.5,
+  fill = 'none',
+  transitionStroke = true,
+  className,
+}: {
+  border: SquircleBorderState
+  stroke: string
+  strokeWidth?: number
+  fill?: string
+  /** Card selects snap — pass false so the stroke flips immediately too. */
+  transitionStroke?: boolean
+  className?: string
+}) {
+  if (!border.path) return null
+  return (
+    <svg
+      className={cn(
+        'pointer-events-none absolute inset-0 block size-full overflow-visible',
+        className
+      )}
+      width={border.width}
+      height={border.height}
+      viewBox={`0 0 ${border.width} ${border.height}`}
+      aria-hidden="true"
+    >
+      <path
+        d={border.path}
+        fill={fill}
+        stroke={stroke}
+        strokeWidth={strokeWidth}
+        style={transitionStroke ? { transition: 'stroke 150ms ease, stroke-width 150ms ease' } : undefined}
+      />
+    </svg>
+  )
+}
+
+/** Deprecated alias — prefer `SquircleBorder`. Kept so older imports keep working. */
+export const SquircleStroke = SquircleBorder
+
 export function useSquircleBorder<T extends HTMLElement>(
   cornerRadius: number,
   cornerSmoothing = 1,

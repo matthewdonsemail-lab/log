@@ -15,7 +15,7 @@ import { AnimatePresence, motion, type HTMLMotionProps } from 'motion/react'
 import { MoreVertical } from 'lucide-react'
 
 import { cn } from './ui'
-import { squircleClipPath, useComposedRef, useSquircleBorder, useSquircleClip } from './squircle'
+import { SquircleBorder, squircleClipPath, useComposedRef, useSquircleBorder, useSquircleClip } from './squircle'
 
 const RADIUS = 16
 // Same timing as the Select surface so menus and selects feel identical.
@@ -226,17 +226,7 @@ const DropdownMenuSurface = React.forwardRef<HTMLDivElement, SurfaceProps>(funct
       className="z-50 w-full overflow-hidden bg-white"
     >
       <div ref={border.ref} aria-hidden="true" className="relative">
-        <svg
-          width={border.state.width}
-          height={border.state.height}
-          viewBox={border.state.path ? `0 0 ${border.state.width} ${border.state.height}` : undefined}
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-10 size-full overflow-visible"
-        >
-          {border.state.path ? (
-            <path d={border.state.path} fill="none" stroke="#E4E7EC" strokeWidth={1} />
-          ) : null}
-        </svg>
+        <SquircleBorder border={border.state} stroke="#E4E7EC" strokeWidth={1} transitionStroke={false} className="z-10" />
         <div className="relative max-h-72 overflow-y-auto p-2">
           {items.map((item) => {
             const active = activeId === item.id
@@ -247,7 +237,14 @@ const DropdownMenuSurface = React.forwardRef<HTMLDivElement, SurfaceProps>(funct
                 role="menuitem"
                 tabIndex={-1}
                 onMouseMove={() => onHover(item.id)}
-                onClick={() => onSelect(item.id)}
+                onClick={(event) => {
+                  // The menu lives in a portal, but React events bubble
+                  // through the React tree — without this, picking an item
+                  // inside a clickable row/card also fires the row's own
+                  // onClick (e.g. navigating to analytics right after Remove).
+                  event.stopPropagation()
+                  onSelect(item.id)
+                }}
                 className={cn(
                   'flex cursor-pointer items-center gap-3 rounded-xl p-2 transition-colors',
                   active ? 'bg-black/[0.04]' : '',

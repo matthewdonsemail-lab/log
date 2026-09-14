@@ -12,7 +12,7 @@
 - **Auth:** none
 - **AI models:** none
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-14T07:37:57Z
+- **Last updated:** 2026-09-14T15:30:00Z
 
 ## Log
 
@@ -63,3 +63,30 @@ onboarding steps. Deps: xstate, @xstate/react (`apps/web/package.json`).
 Two ~80-100MB mp4s that rode along in history were deleted from the tree and
 `*.mp4` joined `*.mp3`/`*.srt` in `.gitignore` so binary media can't be
 committed again (`.gitignore`). Blobs still exist earlier in history.
+
+### 2026-09-14 - working tree
+Follow-up loop on the post inspect sheet: Find related mentions runs a
+branching chain-of-thought (scan beats, pick round, reply-digging retry,
+Google dorking, sibling-community joins) ending on a keyword × community
+map the sheet footer saves; Find related groups/communities enters the same
+chain at the online search (facebook/reddit only); Draft a response pairs
+the brand-voiced draft with an attachable brand-matched resource (video,
+guide, page). New `brand-blue` chain tone for white surfaces; mock posts
+carry companion phrases plus comment replies so suggestions stay clean
+(`apps/web/src/components/RelatedMentionsChain.tsx`,
+`DashboardRelatedKeywordsForm.tsx`, `DashboardRelatedCommunitiesForm.tsx`,
+`DashboardEventInspectForm.tsx`, `apps/web/src/lib/related-mentions.ts`,
+`apps/web/src/lib/analytics/mock.ts`, `apps/web/src/lib/brand/query.ts`,
+`apps/web/src/components/ai-elements/chain-of-thought.tsx`,
+`chain-joints.ts`). API keys grew scopes (account, groups, send/receive),
+SHA-256 hash storage with a one-time reveal, a route registry plus
+`authorizeApiKey` gate, a stepped create form, a shared-table key list, and
+a per-key scope-activity firehose with its own detail page
+(`apps/web/src/lib/api/`, `apps/web/src/components/DashboardAPI.tsx`,
+`DashboardApiCreateForm.tsx`, `DashboardApiKeyPage.tsx`,
+`DashboardApiKeyConsole.tsx`). Fixes along the way: dropdown item clicks
+stop propagating so row actions never navigate
+(`packages/ui/src/dropdown.tsx`), listings Location truncates
+(`DashboardListings.tsx`), hard deletes for listings/accounts/settings
+alongside the soft remove actions, and `*.docx` joined the binary ignore
+list (`.gitignore`). Follow-up loop documented in `README.md`.

@@ -7,6 +7,7 @@ import { BrainIcon, DotIcon } from "lucide-react";
 import { motion } from "motion/react";
 import type { ComponentProps, ReactNode } from "react";
 import { memo } from "react";
+import type { ChainTone } from "./chain-joints";
 
 export type ChainOfThoughtProps = ComponentProps<"div">;
 
@@ -37,6 +38,14 @@ export type ChainOfThoughtStepProps = ComponentProps<"div"> & {
   label: ReactNode;
   description?: ReactNode;
   status?: "complete" | "active" | "pending";
+  /**
+   * Color tone. `white` (default) is the onboarding look — white rails,
+   * white elbows, white icon boxes with blue glyphs — for chains sitting on
+   * blue panels. `brand-blue` flips it for the white card — brand-blue
+   * rails/elbows, blue icon boxes with white glyphs, navy labels. Pass the
+   * same tone to the chain-joints so the label ink matches.
+   */
+  tone?: ChainTone;
   /**
    * Nested sub-chain joints. The pattern, end to end:
    *
@@ -71,6 +80,12 @@ const stepStatusStyles = {
   pending: "bg-black/5 text-muted-foreground/50",
 };
 
+const stepStatusStylesBrandBlue = {
+  active: "border-[#2A8CFF]/30 bg-[#2A8CFF] text-white",
+  complete: "bg-[#2A8CFF] text-white",
+  pending: "bg-black/5 text-muted-foreground/50",
+};
+
 export const ChainOfThoughtStep = memo(
   ({
     className,
@@ -78,12 +93,16 @@ export const ChainOfThoughtStep = memo(
     label,
     description,
     status = "complete",
+    tone = "white",
     elbow = false,
     compact = false,
     children,
     ...props
   }: ChainOfThoughtStepProps) => {
     const elbowMode = elbow === true ? "in" : elbow;
+    const styles = tone === "brand-blue" ? stepStatusStylesBrandBlue : stepStatusStyles;
+    const railColor = tone === "brand-blue" ? "bg-[#2A8CFF]" : "bg-white";
+    const elbowStroke = tone === "brand-blue" ? "#2A8CFF" : "white";
 
     return (
       <div className={cn("flex gap-2 text-sm", className)} {...props}>
@@ -91,7 +110,7 @@ export const ChainOfThoughtStep = memo(
         <span
           className={cn(
             "shadow-hard flex size-7 items-center justify-center rounded-md",
-            stepStatusStyles[status]
+            styles[status]
           )}
         >
             <Icon className="size-4" />
@@ -108,7 +127,7 @@ export const ChainOfThoughtStep = memo(
             >
               <motion.path
                 d="M1 0 L1 13 Q1 25 13 25 L29 25"
-                stroke="white"
+                stroke={elbowStroke}
                 strokeWidth="2"
                 strokeLinecap="butt"
                 initial={{ pathLength: 0 }}
@@ -143,7 +162,7 @@ export const ChainOfThoughtStep = memo(
               >
                 <motion.path
                   d="M1 26 L1 13 Q1 1 13 1 L29 1"
-                  stroke="white"
+                  stroke={elbowStroke}
                   strokeWidth="2"
                   strokeLinecap="butt"
                   initial={{ pathLength: 0 }}
@@ -152,7 +171,7 @@ export const ChainOfThoughtStep = memo(
                 />
               </motion.svg>
               <motion.div
-                className="absolute top-[46px] -bottom-6 left-[-29px] w-[1.75px] origin-top bg-white"
+                className={cn("absolute top-[46px] -bottom-6 left-[-29px] w-[1.75px] origin-top", railColor)}
                 initial={{ scaleY: 0 }}
                 animate={{ scaleY: status === "complete" ? 1 : 0 }}
                 transition={{ duration: 0.45, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
@@ -164,8 +183,8 @@ export const ChainOfThoughtStep = memo(
             <motion.div
               className={
                 compact
-                  ? "absolute top-7 -bottom-1 left-1/2 ml-[-0.875px] w-[1.75px] origin-top bg-white"
-                  : "absolute top-7 -bottom-6 left-1/2 ml-[-0.875px] mt-2 w-[1.75px] origin-top bg-white"
+                  ? cn("absolute top-7 -bottom-1 left-1/2 ml-[-0.875px] w-[1.75px] origin-top", railColor)
+                  : cn("absolute top-7 -bottom-6 left-1/2 ml-[-0.875px] mt-2 w-[1.75px] origin-top", railColor)
               }
               initial={{ scaleY: 0 }}
               animate={{ scaleY: status === "complete" ? 1 : 0 }}
@@ -180,7 +199,11 @@ export const ChainOfThoughtStep = memo(
         <div className="flex-1 space-y-1 overflow-hidden pb-1">
           <div
             className={cn(
-              status === "active" ? "text-foreground" : "text-muted-foreground"
+              tone === "brand-blue"
+                ? "text-[#0B3E91]"
+                : status === "active"
+                  ? "text-foreground"
+                  : "text-muted-foreground"
             )}
           >
             {label}

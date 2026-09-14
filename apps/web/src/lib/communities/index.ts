@@ -4,7 +4,7 @@ import type { ConnectionPlatform } from '../connections'
 
 export type { Community, CommunityJoinState } from './types'
 export { communitiesApp, type CommunitiesApp } from './server'
-export { COMMUNITIES_BASE, SEED_JOINED, resolveAccountLabel } from './mock'
+export { COMMUNITIES_BASE, SEED_JOINED, COMMUNITY_TOPICS, resolveAccountLabel } from './mock'
 export { parseFacebookGroupUrl, parseSubredditName } from './mock'
 
 async function request(path: string, init?: RequestInit): Promise<Response> {

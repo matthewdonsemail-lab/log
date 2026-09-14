@@ -703,6 +703,7 @@ function RedditGroupPick({
     <label className="block">
       <span className="mb-1.5 block text-sm font-semibold text-slate-700">Subreddit</span>
       <Select
+        size="lg"
         value={value ?? undefined}
         onChange={onSelect}
         aria-label="Subreddit to join"

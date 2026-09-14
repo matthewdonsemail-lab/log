@@ -5,22 +5,12 @@ import { Badge } from '@listeningkit/ui'
 import { getAccounts, platformLabel, type ConnectionRecord } from '../lib/connections'
 import { getCommunities } from '../lib/communities'
 import { getKeywords } from '../lib/keywords'
-import {
-  accountIssueSnapshot,
-  effectiveSeverity,
-  type AccountIssueEvent,
-  type IssueSeverity
-} from '../lib/account-issues'
+import type { AccountIssueEvent } from '../lib/account-issues'
 import { SOCIAL_ICONS, SocialGlyph } from '../lib/social-icons'
+import { AccountStatusBadge } from './AccountStatus'
 import { DashboardAccountConsole } from './DashboardAccountConsole'
 import { DashboardAccountInspectForm } from './DashboardAccountInspectForm'
 import { useDashboardFormSlot } from './DashboardFormSlot'
-
-const SEVERITY_BADGE: Record<IssueSeverity, 'success' | 'warning' | 'danger'> = {
-  healthy: 'success',
-  degraded: 'warning',
-  unhealthy: 'danger'
-}
 
 function formatTime(iso: string | null): string {
   if (!iso) return '—'
@@ -30,23 +20,14 @@ function formatTime(iso: string | null): string {
 }
 
 /**
- * Header meta row: platform badge with its logo, the status badge (the
- * normalized issue when one is observed, else the lifecycle state), the
- * routing badge, and the last-check timestamp. The account id stays in the
- * route — it never renders as a cryptic fragment here.
+ * Header meta row: platform badge with its logo, the shared status badge (via
+ * AccountStatusBadge — the normalized issue when one is observed, else the
+ * lifecycle state), the routing badge, and the last-check timestamp. The
+ * account id stays in the route — it never renders as a cryptic fragment
+ * here.
  */
 function AccountMeta({ account }: { account: ConnectionRecord }) {
   const platformIcon = SOCIAL_ICONS.find((icon) => icon.id === account.platform)
-  const snapshot = accountIssueSnapshot(account)
-  const severity = effectiveSeverity(snapshot)
-  const issue = snapshot.issue
-  const statusLabel = issue
-    ? issue.label
-    : severity === 'healthy'
-      ? 'Connected'
-      : severity === 'degraded'
-        ? 'Stale'
-        : 'Not connected'
 
   return (
     <div className="mt-1.5 flex flex-wrap items-center gap-2">
@@ -59,12 +40,7 @@ function AccountMeta({ account }: { account: ConnectionRecord }) {
           {platformLabel(account.platform)}
         </Badge>
       ) : null}
-      <Badge
-        variant={SEVERITY_BADGE[severity]}
-        title={issue ? issue.detail : snapshot.health.reason}
-      >
-        {statusLabel}
-      </Badge>
+      <AccountStatusBadge account={account} />
       {account.connectedAt ? (
         <Badge variant={account.viaProxy ? 'info' : 'neutral'}>
           {account.viaProxy ? 'Via proxy' : 'Direct'}

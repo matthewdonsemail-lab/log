@@ -17,12 +17,18 @@ import { AnimatePresence, motion, type HTMLMotionProps } from 'motion/react'
 import { Check, ChevronDown } from 'lucide-react'
 
 import { cn } from './ui'
-import { squircleClipPath, useComposedRef, useSquircleBorder, useSquircleClip } from './squircle'
+import { SquircleBorder, squircleClipPath, useComposedRef, useSquircleBorder, useSquircleClip } from './squircle'
 
 const RADIUS = 16
 // ui-kit header timing: soft ease with a longer tail
 const SURFACE_TRANSITION = { duration: 0.42, ease: [0.22, 1, 0.36, 1] as const }
 const ITEM_EASE = { duration: 0.2, ease: 'easeOut' as const }
+
+// The `lg` trigger mirrors the dashboard form sheets' `FormInput` exactly —
+// h-12, squircle radius 14 (clip) / 15 (stroke) — so fields line up pixel-for-pixel.
+const FORM_RADIUS = 14
+const FORM_NEUTRAL_STROKE = '#E4E7EC'
+const FORM_ACTIVE_STROKE = '#2A8CFF'
 
 export interface SelectOption {
   value: string
@@ -46,6 +52,12 @@ export interface SelectProps {
    * inside the portal, so it floats with the menu instead of the page flow.
    */
   menuFooter?: React.ReactNode
+  /**
+   * 'sm' (default) is the compact table/toolbar trigger (h-9, rounded) that
+   * matches the toolbar buttons. 'lg' is the form-sheet field: h-12 with the
+   * squircle clip + stroke recipe, so it lines up exactly with `FormInput`.
+   */
+  size?: 'sm' | 'lg'
   className?: string
   'aria-label'?: string
 }
@@ -58,13 +70,20 @@ export function Select({
   placeholder = 'Select…',
   icon,
   menuFooter,
+  size = 'sm',
   className,
   'aria-label': ariaLabel
 }: SelectProps) {
   const [open, setOpen] = React.useState(false)
   const [highlight, setHighlight] = React.useState(value ?? '')
+  const [triggerFocused, setTriggerFocused] = React.useState(false)
   const selectRootRef = React.useRef<HTMLSpanElement | null>(null)
   const nodeRef = React.useRef<HTMLDivElement | null>(null)
+  const lg = size === 'lg'
+  // Hooks always run; in 'sm' the clip style is simply not applied and the
+  // trigger keeps its plain rounded-md border.
+  const triggerClip = useSquircleClip<HTMLButtonElement>(FORM_RADIUS)
+  const triggerBorder = useSquircleBorder<HTMLButtonElement>(FORM_RADIUS + 1)
 
   const { refs, floatingStyles, context, isPositioned } = useFloating({
     open,
@@ -105,6 +124,9 @@ middleware: [
   const dismiss = useDismiss(context, { escapeKey: true })
   const role = useRole(context, { role: 'listbox' })
   const { getReferenceProps, getFloatingProps } = useInteractions([toggle, dismiss, role])
+
+  // Composed trigger ref: floating-ui positioning + squircle clip + stroke measure.
+  const setTriggerRef = useComposedRef<HTMLButtonElement>(refs.setReference, triggerClip.ref, triggerBorder.ref)
 
   // Re-sync the squircle clip whenever the layout-driven height changes mid-animation,
   // and when the trigger resizes while the menu is open.
@@ -163,15 +185,20 @@ middleware: [
   })
 
   return (
-    <span ref={selectRootRef} className="relative inline-flex">
+    <span ref={selectRootRef} className={cn('relative inline-flex', lg && 'w-full')}>
       <button
         type="button"
-        ref={refs.setReference}
+        ref={setTriggerRef}
+        style={lg ? triggerClip.style : undefined}
         {...referenceProps}
+        onFocus={() => setTriggerFocused(true)}
+        onBlur={() => setTriggerFocused(false)}
         aria-expanded={open}
         className={cn(
-          'inline-flex h-9 w-full items-center justify-between gap-2 rounded-md border border-black/10 bg-white px-3 text-sm font-medium text-text-primary outline-none transition-colors',
-          'hover:bg-black/[0.02] focus-visible:ring-2 focus-visible:ring-brand-500/40',
+          'inline-flex w-full items-center justify-between gap-2 bg-white text-sm font-medium text-text-primary outline-none transition-colors',
+          lg
+            ? 'h-12 px-4'
+            : 'h-9 rounded-md border border-black/10 px-3 hover:bg-black/[0.02] focus-visible:ring-2 focus-visible:ring-brand-500/40',
           className
         )}
       >
@@ -189,6 +216,14 @@ middleware: [
           className={cn('shrink-0 stroke-current text-text-secondary transition-transform duration-150', open && 'rotate-180')}
         />
       </button>
+      {lg ? (
+        <SquircleBorder
+          border={triggerBorder.state}
+          stroke={open || triggerFocused ? FORM_ACTIVE_STROKE : FORM_NEUTRAL_STROKE}
+          strokeWidth={open || triggerFocused ? 2 : 1.5}
+          transitionStroke={false}
+        />
+      ) : null}
 
       <FloatingPortal root={typeof document !== 'undefined' ? document.body : undefined}>
         <AnimatePresence initial={false}>
@@ -261,17 +296,7 @@ const SelectMenuSurface = React.forwardRef<HTMLDivElement, SurfaceProps>(functio
         ref={border.ref}
         className="relative"
       >
-        <svg
-          width={border.state.width}
-          height={border.state.height}
-          viewBox={border.state.path ? `0 0 ${border.state.width} ${border.state.height}` : undefined}
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-10 size-full overflow-visible"
-        >
-          {border.state.path ? (
-            <path d={border.state.path} fill="none" stroke="#E4E7EC" strokeWidth={1} />
-          ) : null}
-        </svg>
+        <SquircleBorder border={border.state} stroke="#E4E7EC" strokeWidth={1} transitionStroke={false} className="z-10" />
       <div className="relative max-h-72 overflow-y-auto p-2">
         {options.map((option) => {
           const active = activeValue === option.value

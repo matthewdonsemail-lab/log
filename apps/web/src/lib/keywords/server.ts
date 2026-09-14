@@ -47,6 +47,13 @@ export const keywordsApp = new Hono()
     else if (noGroup) all = all.filter((keyword) => keyword.groupId === null)
     return c.json({ keywords: [...all] })
   })
+  .post('/keywords/reset', (c) => {
+    // Rebuild the base sample set — replaces the whole store with
+    // SEED_KEYWORDS, so an emptied workspace reads populated again.
+    keywords = [...SEED_KEYWORDS]
+    persistKeywords()
+    return c.json({ keywords: [...keywords] })
+  })
   .post('/keywords', async (c) => {
     const body = await c.req.json<CreateKeywordInput>().catch(() => null)
     if (!body) return c.json({ error: 'Invalid request body' }, 400)

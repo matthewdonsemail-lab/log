@@ -5,6 +5,7 @@ import './chat-theme.css'
 import { ArrowUp, Mic, Paperclip, Smile, X } from 'lucide-react'
 import {
   Button,
+  SquircleBorder,
   useComposedRef,
   useSquircleBorder,
   useSquircleClip,
@@ -143,24 +144,11 @@ function PromptComposer({ onSend }: { onSend: (body: string, image?: string) => 
       onClick={() => textareaRef.current?.focus()}
       className="relative w-full cursor-text bg-white transition-shadow"
     >
-      {border.state.path && (
-        <svg
-          className="pointer-events-none absolute inset-0 block"
-          width={border.state.width}
-          height={border.state.height}
-          viewBox={`0 0 ${border.state.width} ${border.state.height}`}
-          style={{ overflow: 'visible' }}
-          aria-hidden="true"
-        >
-          <path
-            d={border.state.path}
-            fill="none"
-            stroke={focused ? '#2A8CFF' : '#E4E7EC'}
-            strokeWidth={focused ? 2 : 1.5}
-            style={{ transition: 'stroke 150ms ease, stroke-width 150ms ease' }}
-          />
-        </svg>
-      )}
+      <SquircleBorder
+        border={border.state}
+        stroke={focused ? '#2A8CFF' : '#E4E7EC'}
+        strokeWidth={focused ? 2 : 1.5}
+      />
       <div className="flex h-full flex-col">
         <textarea
           ref={textareaRef}
@@ -392,18 +380,7 @@ setMessagesByThread((prev) => ({ ...prev, [activeId]: [...(prev[activeId] ?? [])
           style={chatClip.style}
           className="relative flex min-h-80 min-w-0 flex-col overflow-hidden bg-white lg:min-h-0"
         >
-          {chatBorder.state.path && (
-            <svg
-              className="pointer-events-none absolute inset-0 block z-10"
-              width={chatBorder.state.width}
-              height={chatBorder.state.height}
-              viewBox={`0 0 ${chatBorder.state.width} ${chatBorder.state.height}`}
-              style={{ overflow: 'visible' }}
-              aria-hidden="true"
-            >
-              <path d={chatBorder.state.path} fill="none" stroke="#E4E7EC" strokeWidth={2} />
-            </svg>
-          )}
+          <SquircleBorder border={chatBorder.state} stroke="#E4E7EC" strokeWidth={2} className="z-10" />
           {!active ? (
             <p className="m-auto text-sm text-text-secondary">Select a conversation to read it.</p>
           ) : (

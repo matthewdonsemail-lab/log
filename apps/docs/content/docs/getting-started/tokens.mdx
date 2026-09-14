@@ -1,0 +1,29 @@
+---
+title: Tokens
+description: What a token is, where it lives, and what it lets ListeningKit access.
+---
+
+# Tokens
+
+A token is the extension's proof that **you** are the one browsing that platform. It's a compact export of your session for a single site.
+
+## Where to copy it
+
+<Tabs items={["Any platform"]}>
+<Tab value="Any platform">
+
+1. Log into the platform in Chrome.
+2. Open the ListeningKit extension.
+3. Copy the token it shows and paste it on the [connect screen](http://localhost:3000/onboarding).
+
+</Tab>
+</Tabs>
+
+## What it grants
+
+- Read-only access to the public signals you browse as that account.
+- No posting, no DMs, no account settings — ever.
+
+<Callout type="warning">
+Treat tokens like passwords. Anyone with a token can read signals as that account. The demo keeps tokens in your browser's local storage only.
+</Callout>

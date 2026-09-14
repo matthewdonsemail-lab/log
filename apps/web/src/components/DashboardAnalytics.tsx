@@ -1,4 +1,4 @@
-import { useMemo, type ReactNode } from 'react'
+import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import {
   Area,
   AreaChart,
@@ -17,6 +17,8 @@ import {
 import { Info } from 'lucide-react'
 import { Badge, useSquircleClip } from '@listeningkit/ui'
 import { FIREHOSE_TYPE_LABELS, getKeywordAnalytics } from '../lib/analytics'
+import { getCommunities, type Community } from '../lib/communities'
+import { getKeywords, type Keyword } from '../lib/keywords'
 import { type ConnectionPlatform } from '../lib/connections'
 
 // Custom single-hue board derived from the brand blue (#2A8CFF), per the
@@ -161,8 +163,40 @@ function MiniDonut() {
 const tooltipCard = { borderRadius: 12, borderColor: GRID, fontSize: 12 }
 
 /**
- * Three graphs for a keyword UUID, restyled on the lieflat Basics grammar in
- * a brand-blue custom board (single hue, darkest = most important):
+ * Header stat card: one workspace-level total above the per-keyword graphs.
+ * Same squircle + brand-badge grammar as ChartCard, number up front, no chart.
+ */
+function StatCard({ label, value, sub }: { label: string; value: string; sub: string }) {
+  const clip = useSquircleClip<HTMLDivElement>(20)
+  return (
+    <div
+      ref={clip.ref}
+      style={{ ...clip.style, backgroundColor: HERO }}
+      className="flex flex-col justify-between gap-3 p-5"
+    >
+      <p>
+        <Badge variant="trigger" color="info" className="border-white/30 bg-white/15 text-white">
+          {label}
+        </Badge>
+      </p>
+      <p className="flex items-baseline gap-1.5">
+        <span
+          className="text-4xl tabular-nums"
+          style={{ fontFamily: "'Satoshi', Inter, system-ui, sans-serif", fontWeight: 900, color: '#FFFFFF' }}
+        >
+          {value}
+        </span>
+        <span className="text-xs font-semibold text-white/80">{sub}</span>
+      </p>
+    </div>
+  )
+}
+
+/**
+ * Analytics board for a keyword UUID: row one is three header stat cards
+ * with the workspace totals (keywords tracking, groups joined, signals in
+ * the firehose), row two the lieflat Basics grammar graphs in a brand-blue
+ * custom board (single hue, darkest = most important):
  *
  * - F2 Hairline Line: 14-day mentions, one dot = one day.
  * - F5 Tick Rows: signal mix by event kind (mention/question/complaint/praise),
@@ -180,6 +214,45 @@ export function DashboardAnalytics({
   platform: ConnectionPlatform
 }) {
   const data = useMemo(() => getKeywordAnalytics(keywordId, phrase, platform), [keywordId, phrase, platform])
+
+  // Workspace totals for the header row — the graphs below stay scoped to
+  // this keyword, the cards read the whole listening set.
+  const [keywords, setKeywords] = useState<Keyword[] | null>(null)
+  const [communities, setCommunities] = useState<Community[] | null>(null)
+  useEffect(() => {
+    let cancelled = false
+    getKeywords()
+      .then((list) => {
+        if (!cancelled) setKeywords(list)
+      })
+      .catch(() => {
+        if (!cancelled) setKeywords([])
+      })
+    getCommunities()
+      .then((list) => {
+        if (!cancelled) setCommunities(list)
+      })
+      .catch(() => {
+        if (!cancelled) setCommunities([])
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const stats = useMemo(() => {
+    const listening = (keywords ?? []).filter((keyword) => keyword.status === 'listening')
+    const signals = listening.reduce(
+      (sum, keyword) => sum + getKeywordAnalytics(keyword.id, keyword.phrase, keyword.platform).eventTotal,
+      0
+    )
+    return {
+      keywords: listening.length,
+      groups: (communities ?? []).filter((community) => community.joinState === 'accepted').length,
+      signals,
+      ready: keywords !== null && communities !== null,
+    }
+  }, [keywords, communities])
 
   const peak = useMemo(
     () => data.trend.reduce((best, day) => (day.mentions > best.mentions ? day : best), data.trend[0]),
@@ -210,7 +283,26 @@ export function DashboardAnalytics({
   const positive = data.sentiment.find((slice) => slice.name === 'Positive')
 
   return (
-    <div className="grid gap-4 lg:grid-cols-3">
+    <div className="flex flex-col gap-4">
+      <div className="grid gap-4 lg:grid-cols-3">
+        <StatCard
+          label="Keywords"
+          value={stats.ready ? String(stats.keywords) : '—'}
+          sub="being tracked"
+        />
+        <StatCard
+          label="Groups"
+          value={stats.ready ? String(stats.groups) : '—'}
+          sub="joined"
+        />
+        <StatCard
+          label="Signals"
+          value={stats.ready ? String(stats.signals) : '—'}
+          sub="in the firehose"
+        />
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
       <ChartCard
         title={peak ? `Mentions peaked at ${peak.mentions} on ${peak.date}` : 'Mentions over the last 14 days'}
         metric={`${data.totalMentions} mentions`}
@@ -369,6 +461,7 @@ export function DashboardAnalytics({
           ))}
         </div>
       </ChartCard>
+      </div>
     </div>
   )
 }

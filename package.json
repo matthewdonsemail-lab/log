@@ -6,14 +6,17 @@
   "description": "ListeningKit hackathon monorepo — Vite + React + TS apps with shared UI package (matches open-offer-builder / Open-Cold-Dialer / ui-kit stack).",
   "packageManager": "pnpm@10.5.2",
   "scripts": {
-    "dev": "pnpm --filter web dev",
+    "dev": "concurrently -n web,docs -c blue,green \"pnpm --filter web dev\" \"pnpm --filter docs dev\"",
     "dev:web": "pnpm --filter web dev",
+    "dev:docs": "pnpm --filter docs dev",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck",
-    "preview": "pnpm --filter web preview"
+    "preview": "pnpm --filter web preview",
+    "start": "concurrently -n web,docs -c blue,green \"pnpm --filter web preview\" \"pnpm --filter docs start\""
   },
   "devDependencies": {
+    "concurrently": "^9.1.0",
     "lefthook": "^2.1.12",
     "typescript": "~5.6.2"
   },

@@ -30,7 +30,7 @@ export function buildAiQuery(
 }
 
 const STOPWORDS = new Set(
-  'a,an,and,are,as,at,be,but,by,can,could,did,do,does,for,from,had,has,have,here,how,if,in,into,is,it,its,just,like,look,looking,me,my,need,not,now,of,off,on,one,or,our,out,over,said,so,some,supposed,take,than,that,the,their,there,they,this,three,through,to,too,very,was,we,were,what,when,where,which,who,will,with,you,your,anyone,dealt,lately,pointers,week,alone,weekend,list,adding,quick,call,someone,cost,supposed,whole,still,waiting,third,month,quoted,double,neighbour,paid,again,shoutout,crew,sorted,visit,done,dusted,half,feared,spotless,work,anybody,dealt'.split(
+  'a,an,and,are,as,at,be,but,by,can,could,did,do,does,for,from,had,has,have,here,how,if,in,into,is,it,its,just,like,look,looking,me,my,need,not,now,of,off,on,one,or,our,out,over,said,so,some,supposed,take,than,that,the,their,there,they,this,three,through,to,too,very,was,we,were,what,when,where,which,who,will,with,you,your,anyone,dealt,lately,pointers,week,alone,weekend,list,adding,quick,call,someone,cost,supposed,whole,still,waiting,third,month,quoted,double,neighbour,paid,again,shoutout,crew,sorted,visit,done,dusted,half,feared,spotless,work,anybody,dealt,threads,about,show,fuming,flooded,utility,room,legends,quote,recommendations'.split(
     ','
   )
 )
@@ -68,6 +68,23 @@ export function suggestKeywords(event: FirehoseEvent, trackedPhrases: string[], 
 }
 
 /**
+ * Suggestions across several texts (post body plus replies): each text is
+ * read on its own so phrases never straddle a boundary, earlier picks win,
+ * and everything excluded stays out.
+ */
+export function suggestAcross(texts: string[], event: FirehoseEvent, excluded: string[], limit = 5): string[] {
+  const out: string[] = []
+  for (const text of texts) {
+    if (out.length >= limit) break
+    for (const phrase of suggestKeywords({ ...event, text }, [...excluded, ...out], limit)) {
+      if (out.length >= limit) break
+      if (!out.includes(phrase)) out.push(phrase)
+    }
+  }
+  return out
+}
+
+/**
  * Mock reply draft: the event's own words answered in the brand's voice.
  * Without a brand (onboarding skipped) it falls back to generic phrasing —
  * never invents a business name.
@@ -88,4 +105,86 @@ export function draftReply(query: AiQuery): string {
     default:
       return `Hi ${query.author} — thanks for posting this.${serviceBit} Give us a shout if we can help.${signoff}`
   }
+}
+
+export interface SuggestedResource {
+  kind: 'video' | 'guide' | 'page'
+  title: string
+  url: string
+  blurb: string
+}
+
+function slugify(text: string): string {
+  return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'topic'
+}
+
+function youtubeSearchUrl(brandName: string, topic: string): string {
+  return `https://www.youtube.com/results?search_query=${encodeURIComponent(`${brandName} ${topic}`)}`
+}
+
+/**
+ * Mock resource to attach to a reply: what the brand already has (its site,
+ * its offerings) matched to what the post is about — a video, a guide, or a
+ * page. Deterministic off the event id; video links go to a YouTube search
+ * (always resolves), site links build off the brand's own website. Without
+ * a brand it still suggests by topic, brand-voiced once onboarding exists.
+ */
+export function suggestResource(query: AiQuery): SuggestedResource {
+  const brand = query.brand
+  const topic = query.trackedPhrases[0]?.trim() || 'this'
+  const site = brand?.identity.website.replace(/\/$/, '')
+  const brandName = brand?.identity.name ?? 'the team'
+  let hash = 0
+  for (let i = 0; i < query.eventId.length; i++) hash = (hash * 31 + query.eventId.charCodeAt(i)) | 0
+  const roll = Math.abs(hash)
+
+  const video: SuggestedResource = {
+    kind: 'video',
+    title: `${brandName} on ${topic} — worth a watch`,
+    url: youtubeSearchUrl(brand?.identity.name ?? topic, topic),
+    blurb: `Someone talking through ${topic} on camera — lands better than a wall of text.`,
+  }
+  const siteGuide: SuggestedResource | null = site
+    ? {
+        kind: 'guide',
+        title: `${topic} — how we handle it`,
+        url: `${site}/guides/${slugify(topic)}`,
+        blurb: `The write-up on ${topic}, straight from the site.`,
+      }
+    : null
+  const supportPage: SuggestedResource | null = site
+    ? {
+        kind: 'page',
+        title: `Support — ${brandName}`,
+        url: `${site}/support`,
+        blurb: `Somewhere to send them that isn't the thread.`,
+      }
+    : null
+  const reviewsPage: SuggestedResource | null = site
+    ? {
+        kind: 'page',
+        title: `Reviews — ${brandName}`,
+        url: `${site}/reviews`,
+        blurb: `Strike while they're happy — point them at the reviews page.`,
+      }
+    : null
+  const servicesPage: SuggestedResource | null = site
+    ? {
+        kind: 'page',
+        title: `${brandName} — services`,
+        url: `${site}/services`,
+        blurb: `The services page, for when curiosity turns into intent.`,
+      }
+    : null
+
+  const pools: Record<string, (SuggestedResource | null)[]> = {
+    question: [video, siteGuide],
+    complaint: [supportPage, video],
+    praise: [reviewsPage, video],
+    mention: [servicesPage, video],
+  }
+  const pool = (pools[query.type] ?? [video]).filter(
+    (resource): resource is SuggestedResource => resource !== null
+  )
+  return pool[roll % pool.length] ?? video
 }

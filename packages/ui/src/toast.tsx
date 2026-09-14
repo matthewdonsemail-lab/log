@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 
-import { useComposedRef, useSquircleBorder, useSquircleClip } from './squircle';
+import { SquircleBorder, useComposedRef, useSquircleBorder, useSquircleClip } from './squircle';
 
 interface Toast {
   id: string;
@@ -129,18 +129,7 @@ function ToastItem({ toast, onDismiss }: { toast: Toast; onDismiss: (id: string)
           </svg>
         </button>
       </div>
-      {border.state.path && (
-        <svg
-          className="pointer-events-none absolute inset-0 block"
-          width={border.state.width}
-          height={border.state.height}
-          viewBox={`0 0 ${border.state.width} ${border.state.height}`}
-          style={{ overflow: 'visible' }}
-          aria-hidden="true"
-        >
-          <path d={border.state.path} fill="none" stroke={borderColors[toast.type]} strokeWidth={2} />
-        </svg>
-      )}
+      <SquircleBorder border={border.state} stroke={borderColors[toast.type]} strokeWidth={2} transitionStroke={false} />
     </div>
   );
 }

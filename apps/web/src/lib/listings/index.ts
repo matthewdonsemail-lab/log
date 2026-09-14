@@ -65,6 +65,19 @@ export async function setListingStatus(
 }
 
 /**
+ * Delete a listing entirely through `DELETE /listings/:listingId`.
+ * Unlike the removed status, the row leaves the store. Returns the roster.
+ */
+export async function deleteListing(listingId: string): Promise<ListingsResponse> {
+  const res = await listingsApp.request(`/listings/${listingId}`, { method: 'DELETE' })
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null
+    throw new Error(body?.error ?? `Could not delete the listing (${res.status})`)
+  }
+  return (await res.json()) as ListingsResponse
+}
+
+/**
  * Publish a new listing through `POST /listings`. Returns the created row
  * (status `under-review` until the client clears it).
  */
