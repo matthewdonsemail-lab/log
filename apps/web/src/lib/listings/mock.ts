@@ -1,4 +1,5 @@
 import { MOCK_CONNECTIONS, MOCK_FACEBOOK_ACCOUNTS } from '../connections/mock'
+import { uuid } from '../ids'
 import type { ListingRecord } from './types'
 
 export { MOCK_FACEBOOK_ACCOUNTS }
@@ -43,6 +44,7 @@ export const DEFAULT_LISTING_IMAGE = img('photo-1558618666-fcd25c85cd64')
  */
 export const MOCK_LISTINGS: ListingRecord[] = [
   {
+    id: uuid(),
     listingId: '38629807913299080',
     title: 'Rubbish Removal in Galway',
     price: '50',
@@ -58,6 +60,7 @@ export const MOCK_LISTINGS: ListingRecord[] = [
     publishedAt: '2026-09-09T18:42:00+00:00'
   },
   {
+    id: uuid(),
     listingId: '1583545526797714',
     title: 'Junk Clearance — Salthill',
     price: '40',
@@ -73,6 +76,7 @@ export const MOCK_LISTINGS: ListingRecord[] = [
     publishedAt: '2026-09-10T09:15:00+00:00'
   },
   {
+    id: uuid(),
     listingId: '104277813520114',
     title: 'Garden Waste Hauling — Galway Bay',
     price: '60',
@@ -88,6 +92,7 @@ export const MOCK_LISTINGS: ListingRecord[] = [
     publishedAt: '2026-09-11T14:05:00+00:00'
   },
   {
+    id: uuid(),
     listingId: '882133740619252',
     title: 'Man with a Van — Galway & Surrounds',
     price: '35',
@@ -103,6 +108,7 @@ export const MOCK_LISTINGS: ListingRecord[] = [
     publishedAt: '2026-09-12T08:30:00+00:00'
   },
   {
+    id: uuid(),
     listingId: '775091462828331',
     title: 'Patio Set — 6 Pieces, Bamboo',
     price: '120',

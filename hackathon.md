@@ -12,7 +12,7 @@
 - **Auth:** none
 - **AI models:** none
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-16T02:45:00Z
+- **Last updated:** 2026-09-16T03:56:00Z
 
 ## Log
 
@@ -359,3 +359,26 @@ slug literal for the exported constants (the intentional `x-t404` bogus id
 stays, since it must 404). The README's stale "`${threadId}-m${n}`"
 message-id note is corrected to describe the opaque UUIDs. typecheck clean,
 lint clean (one pre-existing, unrelated warning), 33/33 vitest pass.
+
+### 2026-09-16 - working tree
+Id generation consolidates into a single generator and the last derived / weak
+id sites become random UUIDs v4. New shared `apps/web/src/lib/ids.ts`
+(`crypto.randomUUID()` with the same v4-hex fallback); the four copy-pasted
+implementations now delegate to it — `messaging/uuid.ts` re-exports it, and
+`api/mock.ts#apiKeyId`, `keywords/mock.ts#keywordId`, and
+`connections/store.ts#newAccountId` each return `uuid()`. Five remaining
+non-UUID id sites are fixed: the accounts create route
+(`connections/server.ts`) calls `newAccountId()` instead of its own
+`account-<ts>-<rand>`; the v1→v2 account migration mints a UUID per row
+instead of keying by bare `platform` (which collided two Facebook accounts);
+Bark connections mint a UUID instead of `bark-<ts>-<rand>`
+(`notifications/bark.ts`); `communities/mock.ts` resolves pasted Facebook group
+links and typed subreddits to UUID ids (was `facebook-link-<slug>` /
+`reddit-link-<key>`, which collided on slug reuse); and `ListingRecord` gains an
+opaque `id: string` — the native 17-digit `listingId` stays as the marketplace
+id, the same `id` / `platformThreadId` split messaging has — minted at the
+create route, on every persisted-row backfill, and on all five `MOCK_LISTINGS`
+seeds. Stable cross-referenced fixtures keep their literal ids (seeded
+`MOCK_CONNECTIONS`, the keyword / api-key seed UUIDs). The accounts route's
+OpenAPI description drops the stale `account-<timestamp>-<rand>` note. typecheck
+clean, lint clean (two pre-existing warnings, unchanged), 33/33 vitest pass.

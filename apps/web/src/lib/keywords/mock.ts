@@ -1,3 +1,4 @@
+import { uuid } from '../ids'
 import type { Keyword } from './types'
 
 /**
@@ -37,14 +38,7 @@ export const SEED_KEYWORDS: Keyword[] = [
   },
 ]
 
+/** Opaque key for a newly created keyword — delegates to the shared id generator. */
 export function keywordId(): string {
-  // Real UUIDs like the live client assigns — with a v4 fallback for
-  // non-secure contexts where crypto.randomUUID is unavailable.
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-    return crypto.randomUUID()
-  }
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (char) => {
-    const rand = Math.floor(Math.random() * 16)
-    return (char === 'x' ? rand : (rand & 0x3) | 0x8).toString(16)
-  })
+  return uuid()
 }

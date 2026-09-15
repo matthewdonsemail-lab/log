@@ -56,6 +56,9 @@ export const DEFAULT_LISTING_LOCATION: ListingLocation = { lat: 53.2707, lng: -9
  * Unknown stays unknown — statuses are never fabricated.
  */
 export interface ListingRecord {
+  /** Opaque internal key for correlation — mirrors messaging's `id`; never rendered. */
+  id: string
+
   listingId: string
   title: string
   price: string

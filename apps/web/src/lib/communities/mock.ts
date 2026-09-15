@@ -1,3 +1,4 @@
+import { uuid } from '../ids'
 import type { ConnectionPlatform } from '../connections'
 import { MOCK_CONNECTIONS } from '../connections/mock'
 import type { Community, CommunityJoinState } from './types'
@@ -345,7 +346,7 @@ export function communityFromSubreddit(parsed: ParsedSubreddit): {
   entryQuestions: string[]
 } {
   return {
-    id: `reddit-link-${parsed.key}`,
+    id: uuid(),
     platform: 'reddit',
     name: `r/${parsed.name}`,
     handle: `r/${parsed.name}`,
@@ -374,7 +375,7 @@ export function communityFromGroupUrl(parsed: ParsedGroupUrl): {
 } {
   const name = titleFromSlug(parsed.slug)
   return {
-    id: `facebook-link-${parsed.slug.toLowerCase()}`,
+    id: uuid(),
     platform: 'facebook',
     name,
     handle: `@${parsed.slug.toLowerCase()}`,

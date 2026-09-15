@@ -1,3 +1,5 @@
+import { uuid } from '../ids'
+
 export const DEFAULT_BARK_SERVER = 'https://api.day.app'
 
 const STORAGE_KEY = 'listeningkit.bark.v1'
@@ -119,7 +121,7 @@ export interface BarkConnection {
 export const DEFAULT_BARK_LABEL = 'Bark push'
 
 function barkConnectionId(): string {
-  return `bark-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
+  return uuid()
 }
 
 function readList(): BarkConnection[] {

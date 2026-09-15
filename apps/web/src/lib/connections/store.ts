@@ -1,3 +1,4 @@
+import { uuid } from '../ids'
 import type { ConnectionPlatform, ConnectionRecord } from './types'
 
 const STORAGE_KEY = 'listeningkit.accounts.v2'
@@ -17,9 +18,7 @@ export function platformLabel(platform: ConnectionPlatform): string {
 }
 
 export function newAccountId(): string {
-  return typeof crypto !== 'undefined' && 'randomUUID' in crypto
-    ? crypto.randomUUID()
-    : `account-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
+  return uuid()
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -51,7 +50,7 @@ function migrateLegacy(): ConnectionRecord[] {
           isRecord(r) && typeof r.platform === 'string'
       )
       .map((r) => ({
-        id: r.platform,
+        id: newAccountId(),
         platform: r.platform,
         label: platformLabel(r.platform),
         viaProxy: !!r.viaProxy,

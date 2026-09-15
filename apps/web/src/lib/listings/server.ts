@@ -4,6 +4,7 @@ import { MOCK_LISTINGS, resolveListingAccountId, resolveListingAccountLabel } fr
 import { MOCK_CONNECTIONS } from '../connections/mock'
 import { DEFAULT_LISTING_LOCATION, LISTING_STATUSES } from './types'
 import type { ListingDraft, ListingLocation, ListingRecord, ListingStatus } from './types'
+import { uuid } from '../ids'
 import { isArray, isRecord, loadPersistedState, savePersistedState } from '../persist'
 import { ListingResponseJson, ListingsResponseJson, ListingStatusResponseJson, errorResponse } from '../openapi'
 
@@ -18,10 +19,12 @@ function isListingArray(value: unknown): value is ListingRecord[] {
 
 /** Backfill the `accountId` FK on legacy persisted rows that only carry a label. */
 function migrateListingRow(row: ListingRecord): ListingRecord {
-  if (typeof (row as { accountId?: unknown }).accountId === 'string') return row
+  // Every row carries the opaque `id`; rows persisted before it existed get one minted.
+  const ensured: ListingRecord = { ...row, id: typeof row.id === 'string' ? row.id : uuid() }
+  if (typeof (row as { accountId?: unknown }).accountId === 'string') return ensured
   const legacyLabel = typeof row.account === 'string' ? row.account : 'Facebook'
   const accountId = resolveListingAccountId(legacyLabel)
-  return { ...row, accountId, account: resolveListingAccountLabel(accountId) }
+  return { ...ensured, accountId, account: resolveListingAccountLabel(accountId) }
 }
 
 /**
@@ -101,6 +104,7 @@ export const listingsApp = new Hono()
     }
     const listingId = nextListingId()
     const listing: ListingRecord = {
+      id: uuid(),
       listingId,
       title,
       price,
