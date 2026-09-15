@@ -32,7 +32,6 @@ import { highlightQuote } from './QuoteHighlight'
 // ---------------------------------------------------------------------------
 const COLOR = {
   brandBlue: '#2A8CFF',
-  mediaPlaceholder: '#00C8FF',
   threadGrey: '#536471',
   mentionerBg: '#EAEDEF',
   mentionerText: '#576F76',
@@ -119,20 +118,12 @@ function ThreadConnector() {
 }
 
 function ThreadMedia({ src, alt }: { src?: string; alt: string }) {
-  if (src) {
-    return (
-      <img
-        src={src}
-        alt={alt}
-        className="mt-2 max-h-[420px] w-full rounded-2xl object-cover"
-      />
-    )
-  }
+  if (!src) return null
   return (
-    <div
-      aria-hidden="true"
-      className="mt-2 h-48 w-full rounded-2xl"
-      style={{ backgroundColor: COLOR.mediaPlaceholder }}
+    <img
+      src={src}
+      alt={alt}
+      className="mt-2 max-h-[420px] w-full rounded-2xl object-cover"
     />
   )
 }
@@ -141,15 +132,17 @@ function ThreadAction({
   icon: Icon,
   count,
   label,
+  color,
 }: {
   icon: ComponentType<{ size?: string | number; className?: string }>
   count: number
   label: string
+  color: string
 }) {
   return (
     <span
       className="flex items-center gap-1.5 text-[13px]"
-      style={{ color: COLOR.replyMuted }}
+      style={{ color }}
       title={label}
     >
       <span aria-hidden="true" className="flex">
@@ -164,17 +157,19 @@ function ThreadActions({
   replyCount,
   repostCount,
   likeCount,
+  color,
 }: {
   replyCount: number
   repostCount: number
   likeCount: number
+  color: string
 }) {
   return (
     <div className="mt-2 flex max-w-md items-center justify-between">
-      <ThreadAction icon={MessageCircle} count={replyCount} label="Replies" />
-      <ThreadAction icon={Repeat2} count={repostCount} label="Reposts" />
-      <ThreadAction icon={Heart} count={likeCount} label="Likes" />
-      <span className="flex" style={{ color: COLOR.replyMuted }} title="Share">
+      <ThreadAction icon={MessageCircle} count={replyCount} label="Replies" color={color} />
+      <ThreadAction icon={Repeat2} count={repostCount} label="Reposts" color={color} />
+      <ThreadAction icon={Heart} count={likeCount} label="Likes" color={color} />
+      <span className="flex" style={{ color }} title="Share">
         <span aria-hidden="true" className="flex">
           <Share size={18} />
         </span>
@@ -227,7 +222,12 @@ export function TwitterThreads({
           <p className="mt-2 text-[13px]" style={{ color: COLOR.threadGrey }}>
             {timestamp}
           </p>
-          <ThreadActions replyCount={replyCount} repostCount={repostCount} likeCount={likeCount} />
+          <ThreadActions
+            replyCount={replyCount}
+            repostCount={repostCount}
+            likeCount={likeCount}
+            color={COLOR.threadGrey}
+          />
         </div>
         <MoreButton />
       </div>
@@ -282,7 +282,7 @@ export function TwitterThreadReply({
               {highlightQuote(agentReplyText, highlight)}
             </p>
           ) : (
-            <p className="mt-0.5 rounded-xl bg-white/15 p-3 text-sm italic text-white/85">
+            <p className="mt-0.5 text-[15px] italic leading-6" style={{ color: COLOR.replyMuted }}>
               The agent&apos;s reply previews here.
             </p>
           )}
@@ -290,6 +290,7 @@ export function TwitterThreadReply({
             replyCount={replyReplyCount}
             repostCount={replyRepostCount}
             likeCount={replyLikeCount}
+            color={COLOR.replyMuted}
           />
           {replyHint ? (
             <p className="mt-1 text-[11px]" style={{ color: COLOR.replyMuted }}>
