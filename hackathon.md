@@ -12,7 +12,7 @@
 - **Auth:** none
 - **AI models:** none
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-16T02:36:00Z
+- **Last updated:** 2026-09-16T02:45:00Z
 
 ## Log
 
@@ -281,3 +281,13 @@ per-platform native id shapes, multi-account proxying, group discovery
 onboarding reveal, and the self-healing brand record — each section with
 Mermaid diagrams and hyperlinks to the code or docs it's grounded in
 (`README.md`).
+
+### 2026-09-16 - working tree
+README review fixes, all checked against source: keywords really is 5
+routes (`apps/web/src/lib/keywords/server.ts` has no single-item GET —
+the earlier "6" was wrong, the table stands); Layout tree corrected —
+`manifest.yaml` + `railcode.json` sit at the repo root and `.railcode`
+is a CLI state file, not a folder; every `apps/docs/content/...` mdx
+path and every component path linked from the README verified to exist
+on disk, including all eight generated `api-reference/endpoints/*.mdx`
+tag pages (`API keys` → `api-keys.mdx` confirmed).

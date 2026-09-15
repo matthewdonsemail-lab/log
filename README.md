@@ -442,7 +442,9 @@ listeningkit-hackathon/
       scripts/        # generate-api-docs.mjs
   packages/
     ui/               # @listeningkit/ui shared package
-  .railcode/          # Railcode deploy scaffolding (manifest.yaml, railcode.json)
+  manifest.yaml       # Railcode deploy manifest
+  railcode.json       # Railcode project config
+  .railcode           # Railcode CLI state (org/app binding)
   pnpm-workspace.yaml
 ```
 
