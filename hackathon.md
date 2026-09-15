@@ -154,3 +154,19 @@ rather than a grey thread line: extracted it from `TwitterThreads` into its own
 white-circle avatar, and a thread connector, then mounted it under a
 rounded/overflow-hidden white shell below the opening post (`apps/web/src/components/cards/TwitterThreads.tsx`,
 `apps/web/src/components/DashboardBrand.tsx`).
+
+### 2026-09-15 - 4f585a6
+Locked the brand page to the outbound-hunting mental model. The tone readout is
+now an inline `Select` (the shared UI `Select` gained a `disabled` prop with a
+muted trigger) that persists through `saveBrandAsync` and disables while a save
+is in flight; the simulator is reframed end-to-end as first-touch outbound —
+`prompt.ts` swaps the marketplace-buyer `FALLBACK_REPLY` ("still available") for
+a `FIRST_TOUCH_FALLBACK` and renames `simulateReply` → `simulateOutbound` (arg
+`inbound` → `context`), `DashboardBrand.tsx` renames the simulator state to
+`leadContext` ("Detected post / lead context", shed-clear placeholder, no more
+"is this still available? / can you do 40?"), and the lead's post renders as a
+grey ChatBubble `quote` tone instead of `incoming`
+(`packages/ui/src/select.tsx`, `apps/web/src/lib/brand/prompt.ts`,
+`apps/web/src/lib/brand/index.ts`, `apps/web/src/components/DashboardBrand.tsx`,
+`DashboardBrandForm.tsx`, `DashboardFormPrimitives.tsx`,
+`cards/TwitterThreads.tsx`).
