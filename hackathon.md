@@ -12,7 +12,7 @@
 - **Auth:** none
 - **AI models:** none
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-16T00:30:00Z
+- **Last updated:** 2026-09-16T01:48:00Z
 
 ## Log
 
@@ -252,4 +252,19 @@ sheet, and scope visuals; brand page copy refresh with EmptyBanner
 pointing at the channel Edit buttons; docs get Mermaid diagrams on the
 brand ramp plus channel-texting and keywords pages.
 ### 2026-09-16 - 8030e1e
-Mobile dashboard shell + full Scalar API reference. Viewport hook (useIsMobileViewport) and responsive DashboardLayout/Header/Sidebar/FormOverlay: header logo top-left on mobile, bottom fixed nav with hamburger overflow, full-bleed forms, blue stage suppressed below sm. Mock now exposes a real HTTP surface (mockApiApp + openApiDocumentation): 31 routes (accounts, communities, listings, keywords, feed, messaging, brand, api-keys) with describeRoute code refs and Zod-derived schemas, pnpm --filter web openapi:export writes pps/docs/openapi.json and pnpm --filter docs gen:api generates per-tag pages with visible markdown headings (## tag intro + ### METHOD /path — summary) for the right-hand On This Page. Scalar playground embedded via official umadocs-openapi/scalar (APIPlayground) with @scalar/api-client-react on the try pages. Cross-links added (pi.mdx ? errors.mdx ? pi-reference). Verified with pi-coverage.test.ts smoke and docs build 28/28.
+Mobile dashboard shell + full Scalar API reference. Viewport hook (useIsMobileViewport) and responsive DashboardLayout/Header/Sidebar/FormOverlay: header logo top-left on mobile, bottom fixed nav with hamburger overflow, full-bleed forms, blue stage suppressed below sm. Mock now exposes a real HTTP surface (mockApiApp + openApiDocumentation): 31 routes (accounts, communities, listings, keywords, feed, messaging, brand, api-keys) with describeRoute code refs and Zod-derived schemas, pnpm --filter web openapi:export writes pps/docs/openapi.json and pnpm --filter docs gen:api generates per-tag pages with visible markdown headings (## tag intro + ### METHOD /path ï¿½ summary) for the right-hand On This Page. Scalar playground embedded via official umadocs-openapi/scalar (APIPlayground) with @scalar/api-client-react on the try pages. Cross-links added (pi.mdx ? errors.mdx ? pi-reference). Verified with pi-coverage.test.ts smoke and docs build 28/28.
+
+### 2026-09-16 - a45f500
+Outbound messaging landed: compose (POST /threads, 201 starts the conversation),
+send (POST /threads/:threadId/messages), and read-ack
+(POST /threads/:threadId/ack) across X, Facebook, and Reddit, backed by a shared
+thread/message store and per-platform identity resolution
+(`apps/web/src/lib/messaging/store.ts`, `identities.ts`, `routes.ts`). Every thread
+route now gates on the connected account (`account` scope bit alongside
+send/receive, `apps/web/src/lib/api/scopes.ts`), and the normalized Thread/
+ChatMessage shapes carry each platform's native ids (X `dm_conversation_id`,
+Facebook conversation id, Reddit `first_message_name`). Vitest added to the web
+app with messaging + API-coverage tests (`apps/web/vitest.config.ts`,
+`apps/web/src/lib/__tests__/`), and the OpenAPI spec, generator, and messaging
+docs page regenerated with the new endpoints (`apps/web/src/lib/openapi.ts`,
+`apps/docs/openapi.json`, `apps/docs/content/docs/api-reference/endpoints/messaging.mdx`).
