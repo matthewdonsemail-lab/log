@@ -12,7 +12,7 @@
 - **Auth:** none
 - **AI models:** none
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-15T09:47:40Z
+- **Last updated:** 2026-09-15T17:08:36Z
 
 ## Log
 
@@ -146,3 +146,11 @@ the simulator input box, and the brand form's Test-it bubble plus dashed
 add-row button were aligned to the outgoing-voice styling
 (`apps/web/src/components/DashboardFormPrimitives.tsx`,
 `DashboardBrandForm.tsx`).
+
+### 2026-09-15 - dc698cf
+Reworked the X thread so the agent reply is a distinct self-contained blue card
+rather than a grey thread line: extracted it from `TwitterThreads` into its own
+`TwitterThreadReply` that fills with brand blue, white ink, a brand-blue mark on a
+white-circle avatar, and a thread connector, then mounted it under a
+rounded/overflow-hidden white shell below the opening post (`apps/web/src/components/cards/TwitterThreads.tsx`,
+`apps/web/src/components/DashboardBrand.tsx`).
