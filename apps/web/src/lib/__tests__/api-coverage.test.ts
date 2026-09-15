@@ -59,6 +59,36 @@ describe('accounts slice', () => {
     const bad = await req('/accounts', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ platform: 'bogus' }) })
     expect(bad.res.status).toBe(400)
   })
+
+  it('resolves challenges only when the API says one is pending', async () => {
+    const unknown = await req('/accounts/no-such-account/resolve', { method: 'POST' })
+    expect(unknown.res.status).toBe(404)
+
+    // The x-challenge seed carries challenge_interstitial: resolvable once.
+    const seed = await req('/accounts/x-challenge/resolve', { method: 'POST' })
+    expect(seed.res.status).toBe(200)
+    expect((seed.body as { account: { lastIssue: unknown } }).account.lastIssue).toBeNull()
+    const seedAgain = await req('/accounts/x-challenge/resolve', { method: 'POST' })
+    expect(seedAgain.res.status).toBe(409)
+
+    // A healthy account has nothing to resolve.
+    const created = await req('/accounts', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ platform: 'reddit' }) })
+    expect(created.res.status).toBe(201)
+    const id = (created.body as { account: { id: string } }).account.id
+    const healthy = await req(`/accounts/${id}/resolve`, { method: 'POST' })
+    expect(healthy.res.status).toBe(409)
+
+    // Flag it, resolve it, confirm the state the dashboard gates on.
+    const flagged = await req(`/accounts/${id}`, { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ lastIssue: 'captcha_html', rawSignal: { status: 200, marker: 'captcha' } }) })
+    expect(flagged.res.status).toBe(200)
+    const ok = await req(`/accounts/${id}/resolve`, { method: 'POST' })
+    expect(ok.res.status).toBe(200)
+    const resolved = (ok.body as { account: { lastIssue: unknown; rawSignal: unknown; lastCheckedAt: unknown; connectedAt: unknown } }).account
+    expect(resolved.lastIssue).toBeNull()
+    expect(resolved.rawSignal).toBeNull()
+    expect(typeof resolved.lastCheckedAt).toBe('string')
+    expect(typeof resolved.connectedAt).toBe('string')
+  })
 })
 
 describe('communities slice', () => {

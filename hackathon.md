@@ -325,3 +325,19 @@ Read/unread ack moved into an effect so deep-linked threads mark read
 like clicked ones. Verified: no hardcoded threads/messages in the
 view — all rows flow from the seeded mock store through the messaging
 client; typecheck, lint and all 32 vitest tests pass.
+
+### 2026-09-16 - working tree
+Challenge resolver becomes a real route + API source of truth. New
+`POST /accounts/:accountId/resolve` (`apps/web/src/lib/connections/
+server.ts`, operationId `resolveChallenge`): 404 unknown id, 409 unless
+the account's `lastIssue` is in `CHALLENGE_RESOLVABLE_ISSUES`, else
+clears issue/signal/retry and stamps time; client `resolveChallenge`
+now calls it instead of a bare PATCH. New `DashboardChallengePage`
+at `accounts/:accountId/challenge` hosts the existing `ChallengeResolver`
+iframe, returns via `state.from`, and states unknown / no-challenge
+explicitly. Messages shows an account-level gate on empty inboxes
+driven by the account's own API state (resolvable → resolver route,
+other issues → account page) instead of a dead empty list. Spec
+regenerated (Accounts 4→5 ops, 55 total) plus docs pages. Tests: new
+resolve-gate cases (404/409/200-clears/409-again, x-challenge seed);
+typecheck, lint, 33/33 vitest pass.

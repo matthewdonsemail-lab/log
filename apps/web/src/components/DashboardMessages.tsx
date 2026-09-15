@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Message, MessageList } from '@chatscope/chat-ui-kit-react'
 import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css'
 import './chat-theme.css'
-import { ArrowUp, Mic, Paperclip, Smile, X } from 'lucide-react'
+import { ArrowUp, Mic, Paperclip, ShieldCheck, Smile, X } from 'lucide-react'
 import {
   Button,
   Select,
@@ -14,6 +14,7 @@ import {
   useToast
 } from '@listeningkit/ui'
 import { getAccounts } from '@/lib/connections'
+import { CHALLENGE_RESOLVABLE_ISSUES, ISSUE_CATALOG, type AccountIssue } from '@/lib/account-issues'
 import {
   acknowledgeThread,
   DEFAULT_MESSAGING_ACCOUNT,
@@ -339,7 +340,7 @@ export function DashboardMessages() {
   const [accountSelection, setAccountSelection] = useState<Partial<Record<MessagingPlatform, string>>>({
     ...DEFAULT_MESSAGING_ACCOUNT
   })
-  const [accounts, setAccounts] = useState<{ id: string; label: string; handle: string | null }[] | null>(null)
+  const [accounts, setAccounts] = useState<{ id: string; label: string; handle: string | null; lastIssue: AccountIssue | null }[] | null>(null)
   const [threads, setThreads] = useState<Thread[] | null>(null)
   const [messagesByThread, setMessagesByThread] = useState<Record<string, ChatMessage[]>>({})
   const [loadingMessages, setLoadingMessages] = useState(false)
@@ -379,7 +380,10 @@ export function DashboardMessages() {
                 label: account.label,
                 // X shows @handle, Reddit the bare username, Facebook none.
                 handle:
-                  account.platform === 'x' ? (identity?.handle ?? account.label) : account.platform === 'reddit' ? identity?.handle ?? account.id : null
+                  account.platform === 'x' ? (identity?.handle ?? account.label) : account.platform === 'reddit' ? identity?.handle ?? account.id : null,
+                // Carried through (not rendered by the picker) so an empty
+                // inbox can explain itself: blocked, challenged, or proxy.
+                lastIssue: account.lastIssue ?? null
               }
             })
         )
@@ -527,6 +531,14 @@ export function DashboardMessages() {
   const active = threads?.find((t) => t.id === activeId) ?? null
   const messages = activeId ? (messagesByThread[activeId] ?? []) : []
   const pickerAccounts = accounts ?? []
+  // The API is the source of truth for account state: when the inbox is
+  // empty, the selected account's own issue (not a guess) decides what the
+  // view explains — a resolvable challenge links to the resolver route,
+  // any other recorded issue links to the account page.
+  const gateAccount = (accounts ?? []).find((account) => account.id === selectedAccountId) ?? null
+  const gateIssue = gateAccount?.lastIssue ?? null
+  const gateResolvable = gateIssue != null && CHALLENGE_RESOLVABLE_ISSUES.has(gateIssue)
+  const gateEntry = gateIssue ? ISSUE_CATALOG[gateIssue] : null
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -555,7 +567,43 @@ export function DashboardMessages() {
                 <div className="h-16 animate-pulse rounded-xl bg-black/5" />
               </>
             ) : visible.length === 0 ? (
-              <p className="rounded-xl bg-black/5 p-4 text-sm text-text-secondary">No conversations here yet.</p>
+              gateResolvable && gateEntry ? (
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+                  <p className="flex items-center gap-2 text-sm font-bold text-amber-900">
+                    <ShieldCheck size={15} strokeWidth={2.25} aria-hidden="true" />
+                    {gateEntry.label} — inbox paused
+                  </p>
+                  <p className="mt-1 text-sm leading-relaxed text-amber-800">{gateEntry.detail[messagesPlatform]}</p>
+                  <p className="mt-1 text-sm text-amber-800">{gateEntry.remediation[messagesPlatform]}</p>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      navigate(`/dashboard/accounts/${selectedAccountId}/challenge`, {
+                        state: { from: messagesUrl(platform, selectedAccountId) }
+                      })
+                    }
+                    className="mt-3 rounded-xl bg-[#2A8CFF] px-4 py-2 text-sm font-bold text-white"
+                  >
+                    Resolve challenge
+                  </button>
+                </div>
+              ) : gateEntry ? (
+                <div className="rounded-xl border border-black/10 bg-black/[0.02] p-4">
+                  <p className="text-sm font-bold text-text-primary">{gateEntry.label}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-text-secondary">
+                    {gateEntry.detail[messagesPlatform]}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => navigate(`/dashboard/accounts/${selectedAccountId}`)}
+                    className="mt-3 rounded-xl bg-black/5 px-4 py-2 text-sm font-bold text-text-primary"
+                  >
+                    View in Accounts
+                  </button>
+                </div>
+              ) : (
+                <p className="rounded-xl bg-black/5 p-4 text-sm text-text-secondary">No conversations here yet.</p>
+              )
             ) : (
               visible.map((thread) => (
                 <button

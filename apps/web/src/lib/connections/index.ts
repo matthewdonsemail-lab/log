@@ -133,21 +133,20 @@ export async function disconnectAccount(id: string): Promise<ConnectionRecord[]>
 }
 
 /**
- * Clear a human-resolved challenge: the visitor passed the checkpoint /
- * interstitial / captcha in the session view, so the persisted issue and its
- * raw signal go away and the account resumes. Throws when the id is unknown.
+ * Clear a human-resolved challenge through `POST /accounts/:id/resolve`:
+ * the visitor passed the checkpoint / interstitial / captcha in the session
+ * view, so the persisted issue and its raw signal go away and the account
+ * resumes. Throws when the id is unknown (404) or when the account carries
+ * no resolvable challenge (409) — the server, not the client, owns that
+ * gate.
  */
 export async function resolveChallenge(id: string): Promise<ConnectionRecord[]> {
-  const accounts = await getAccounts()
-  const existing = accounts.find((a) => a.id === id)
-  if (!existing) throw new Error('Account not found.')
-  const now = new Date().toISOString()
-  return saveAccount({
-    ...existing,
-    connectedAt: existing.connectedAt ?? now,
-    lastIssue: null,
-    rawSignal: null,
-    lastCheckedAt: now,
-    retryAfter: null
-  })
+  const res = await request(`/accounts/${id}/resolve`, { method: 'POST' })
+  if (res.status === 404) throw new Error('Account not found.')
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null
+    throw new Error(body?.error ?? `Could not clear the challenge (${res.status})`)
+  }
+  const body = (await res.json()) as { accounts: ConnectionRecord[] }
+  return body.accounts
 }

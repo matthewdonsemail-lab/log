@@ -1,8 +1,9 @@
 import { Hono } from 'hono'
 import { describeRoute } from 'hono-openapi'
+import { CHALLENGE_RESOLVABLE_ISSUES } from '../account-issues/challenge'
 import { MOCK_CONNECTIONS } from './mock'
 import type { ConnectionPlatform, ConnectionRecord } from './types'
-import { AccountsResponseJson, AccountCreateResponseJson, errorResponse } from '../openapi'
+import { AccountsResponseJson, AccountCreateResponseJson, AccountResolveResponseJson, errorResponse } from '../openapi'
 
 /**
  * Hono-shaped connections API. In-memory mock backed by MOCK_CONNECTIONS —
@@ -47,6 +48,24 @@ export const connectionsApp = new Hono()
     if (index === -1) return c.json({ error: 'Account not found' }, 404)
     accounts.splice(index, 1)
     return c.json({ accounts: [...accounts] })
+  })
+  .post('/accounts/:accountId/resolve', describeRoute({ operationId: 'resolveChallenge', tags: ['Accounts'], summary: 'Resolve account challenge', description: 'Clears a human-resolved challenge on `:accountId`: the visitor passed the checkpoint / interstitial / captcha in the session view, so `lastIssue`, `rawSignal` and `retryAfter` go away, `lastCheckedAt` is stamped, and a missing `connectedAt` is backfilled. Only accounts whose `lastIssue` is in the resolvable set (checkpointed, challenge_interstitial, captcha_html) qualify — anything else (including a healthy account) returns `409 No resolvable challenge on this account`. Unknown ids return `404 Account not found`. Dashboard-only: human verification happens in the resolver view, so API keys never call this. Code: apps/web/src/lib/connections/server.ts:50', parameters: [{ name: 'accountId', in: 'path', required: true, schema: { type: 'string', description: 'Account id.' } }], responses: { 200: { description: 'Resolved account and list.', content: { 'application/json': { schema: AccountResolveResponseJson } } }, 404: errorResponse('Account not found'), 409: errorResponse('No resolvable challenge on this account') } }), (c) => {
+    const index = accounts.findIndex((a) => a.id === c.req.param('accountId'))
+    if (index === -1) return c.json({ error: 'Account not found' }, 404)
+    const record = accounts[index]
+    if (record.lastIssue == null || !CHALLENGE_RESOLVABLE_ISSUES.has(record.lastIssue)) {
+      return c.json({ error: 'No resolvable challenge on this account' }, 409)
+    }
+    const now = new Date().toISOString()
+    accounts[index] = {
+      ...record,
+      connectedAt: record.connectedAt ?? now,
+      lastIssue: null,
+      rawSignal: null,
+      lastCheckedAt: now,
+      retryAfter: null
+    }
+    return c.json({ account: accounts[index], accounts: [...accounts] })
   })
 
 export type ConnectionsApp = typeof connectionsApp

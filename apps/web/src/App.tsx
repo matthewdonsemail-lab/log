@@ -12,6 +12,7 @@ import { DashboardKeywords } from './components/DashboardKeywords'
 import { DashboardAnalyticsOverview } from './components/DashboardAnalyticsOverview'
 import { DashboardAnalyticsPage } from './components/DashboardAnalyticsPage'
 import { DashboardAccountPage } from './components/DashboardAccountPage'
+import { DashboardChallengePage } from './components/DashboardChallengePage'
 import { DashboardFeed } from './components/DashboardFeed'
 import { DashboardDocs } from './components/DashboardDocs'
 import { DashboardAPI } from './components/DashboardAPI'
@@ -55,6 +56,7 @@ export function App() {
               <Route path="analytics/:keywordId" element={<DashboardAnalyticsPage />} />
               <Route path="accounts" element={<DashboardAccounts />} />
               <Route path="accounts/:accountId" element={<DashboardAccountPage />} />
+              <Route path="accounts/:accountId/challenge" element={<DashboardChallengePage />} />
               <Route path="brand" element={<DashboardBrand />} />
               <Route path="messages" element={<DashboardMessages />} />
               <Route path="messages/:platform" element={<DashboardMessages />} />

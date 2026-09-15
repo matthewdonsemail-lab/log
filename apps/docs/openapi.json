@@ -2575,6 +2575,106 @@
         }
       }
     },
+    "/accounts/{accountId}/resolve": {
+      "post": {
+        "operationId": "resolveChallenge",
+        "tags": [
+          "Accounts"
+        ],
+        "summary": "Resolve account challenge",
+        "description": "Clears a human-resolved challenge on `:accountId`: the visitor passed the checkpoint / interstitial / captcha in the session view, so `lastIssue`, `rawSignal` and `retryAfter` go away, `lastCheckedAt` is stamped, and a missing `connectedAt` is backfilled. Only accounts whose `lastIssue` is in the resolvable set (checkpointed, challenge_interstitial, captcha_html) qualify — anything else (including a healthy account) returns `409 No resolvable challenge on this account`. Unknown ids return `404 Account not found`. Dashboard-only: human verification happens in the resolver view, so API keys never call this. Code: apps/web/src/lib/connections/server.ts:50",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Account id."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Resolved account and list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "account": {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": {},
+                      "description": "ConnectionRecord — connected platform account."
+                    },
+                    "accounts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "ConnectionRecord — connected platform account."
+                      }
+                    }
+                  },
+                  "required": [
+                    "account",
+                    "accounts"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "No resolvable challenge on this account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/communities": {
       "get": {
         "operationId": "listCommunities",
