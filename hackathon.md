@@ -12,7 +12,7 @@
 - **Auth:** none
 - **AI models:** none
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-15T01:27:36Z
+- **Last updated:** 2026-09-15T09:47:40Z
 
 ## Log
 
@@ -132,3 +132,17 @@ unsaved draft and saves via `PUT /brand` (`apps/web/src/components/DashboardBran
 into the versioned system prompt (`apps/web/src/lib/brand/prompt.ts`). README gained
 the Brand pipelines → agent context → self-healing section; lint moved eslint →
 oxlint with the `@shadcn/lint` plugin (`.oxlintrc.json`, `AGENTS.md`, `README.md`).
+
+### 2026-09-15 - 6feb610
+The brand tab's live simulator now renders real per-channel threads instead of
+stubs: Reddit gets a full `RedditThread` card (community post, selftext, nested
+blue ListeningKit agent reply) and X gets a `TwitterThreads` card (hardcoded
+mentioner opening post with media block, nested agent reply with thread
+connector and the ListeningKit logo avatar) — in both, the simulator input is
+outbound only and renders as the agent's reply, never the inbound side
+(`apps/web/src/components/cards/RedditThread.tsx`, `TwitterThreads.tsx`,
+`DashboardBrand.tsx`). `FormInput` gained a `shape='rounded-md'` treatment for
+the simulator input box, and the brand form's Test-it bubble plus dashed
+add-row button were aligned to the outgoing-voice styling
+(`apps/web/src/components/DashboardFormPrimitives.tsx`,
+`DashboardBrandForm.tsx`).
