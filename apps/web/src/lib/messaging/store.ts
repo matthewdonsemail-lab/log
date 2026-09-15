@@ -12,6 +12,7 @@ import type {
   Thread,
   ThreadResult,
 } from './types'
+import { uuid } from './uuid'
 
 /**
  * In-memory multi-account messaging store.
@@ -186,9 +187,11 @@ export class StoreError extends Error {
   }
 }
 
-function buildMessage(platform: MessagingPlatform, threadId: string, input: SendInput, localSeq: number): ChatMessage {
+function buildMessage(platform: MessagingPlatform, threadId: string, input: SendInput): ChatMessage {
   return {
-    id: `${threadId}-m${localSeq}`,
+    // A fresh opaque UUID — identity independent of the thread's id and any
+    // participant name, so renames can never collide or invalidate it.
+    id: uuid(),
     threadId,
     from: 'me',
     platformMessageId: synthesizeMessageId(platform),
@@ -218,7 +221,7 @@ export function sendMessage(platform: MessagingPlatform, accountId: string, thre
   ) {
     throw new StoreError(400, 'reply_target_missing', 'Reply target is not in this thread.')
   }
-  const message = buildMessage(platform, threadId, input, (slice.messages[threadId] ?? []).length + 1)
+  const message = buildMessage(platform, threadId, input)
   slice.messages[threadId] = [...(slice.messages[threadId] ?? []), message]
   thread.preview = input.body || 'Photo'
   thread.updatedAt = message.sentAt
@@ -244,8 +247,8 @@ export function startThread(platform: MessagingPlatform, accountId: string, inpu
   // The native client already carries the participant profile when composing,
   // so start accepts display hints; the mock falls back to the id itself.
   const name = input.name ?? (platform === 'x' ? `@${input.handle ?? input.platformParticipantId}` : input.handle ?? input.platformParticipantId)
-  const threadId = `gen-${rand36(8)}`
-  const message = buildMessage(platform, threadId, input, 1)
+  const threadId = uuid()
+  const message = buildMessage(platform, threadId, input)
   const thread: Thread = {
     id: threadId,
     platform,

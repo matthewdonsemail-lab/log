@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { mockApiApp } from '../mock-api'
 import { DEFAULT_MESSAGING_ACCOUNT, identityFor } from '../messaging/identities'
+import { FB_THREAD_IDS } from '../messaging/facebook/mock'
 import {
   acknowledgeThread,
   getThread,
@@ -12,6 +13,7 @@ import {
   StoreError,
 } from '../messaging/store'
 import type { Thread } from '../messaging/types'
+import { X_T1_M1, X_THREAD_IDS } from '../messaging/twitter/mock'
 
 /**
  * Multi-account messaging contract. The store is the source of truth and the
@@ -19,6 +21,10 @@ import type { Thread } from '../messaging/types'
  * cases drive the store directly (isolation, native id shapes, write rules)
  * and a final block drives `mockApiApp.request` for the HTTP surface:
  * `?accountId=` required, per-platform mounts, and the `/twitter` alias.
+ *
+ * Seeded thread/message ids are generated UUIDs; the tests pin them by the
+ * mocks' exported constants (`X_THREAD_IDS`, `FB_THREAD_IDS`, `X_T1_M1`)
+ * rather than literals, so they hold regardless of the loaded UUID values.
  */
 
 async function req(path: string, init?: RequestInit) {
@@ -34,9 +40,9 @@ beforeEach(() => resetMessagingStore())
 describe('seeded inboxes are per-account', () => {
   it('each seeded account lists only its own threads, newest first', () => {
     const ops = listThreads('x', 'x-ops')
-    expect(ops.map((t) => t.id)).toEqual(['x-t1', 'x-t2'])
+    expect(ops.map((t) => t.id)).toEqual([X_THREAD_IDS.t1, X_THREAD_IDS.t2])
     const listeningkit = listThreads('x', 'x-listeningkit')
-    expect(listeningkit.map((t) => t.id)).toEqual(['x-t3'])
+    expect(listeningkit.map((t) => t.id)).toEqual([X_THREAD_IDS.t3])
     expect(ops.every((t) => t.accountId === 'x-ops')).toBe(true)
     expect(listeningkit.every((t) => t.accountId === 'x-listeningkit')).toBe(true)
   })
@@ -54,32 +60,32 @@ describe('seeded inboxes are per-account', () => {
 
 describe('thread isolation between accounts and platforms', () => {
   it('a thread only resolves under the account that owns it', () => {
-    expect(getThread('x', 'x-listeningkit', 'x-t3')).toBeTruthy()
-    expect(getThread('x', 'x-ops', 'x-t3')).toBeUndefined()
-    expect(getThread('x', 'x-archived', 'x-t3')).toBeUndefined()
+    expect(getThread('x', 'x-listeningkit', X_THREAD_IDS.t3)).toBeTruthy()
+    expect(getThread('x', 'x-ops', X_THREAD_IDS.t3)).toBeUndefined()
+    expect(getThread('x', 'x-archived', X_THREAD_IDS.t3)).toBeUndefined()
   })
 
   it('platforms never share threads', () => {
-    expect(getThread('facebook', 'fb-personal', 'x-t3')).toBeUndefined()
-    expect(getThread('reddit', 'reddit-listeningkit', 'x-t3')).toBeUndefined()
-    expect(getThread('x', 'x-ops', 'fb-t1')).toBeUndefined()
+    expect(getThread('facebook', 'fb-personal', X_THREAD_IDS.t3)).toBeUndefined()
+    expect(getThread('reddit', 'reddit-listeningkit', X_THREAD_IDS.t3)).toBeUndefined()
+    expect(getThread('x', 'x-ops', FB_THREAD_IDS.t1)).toBeUndefined()
   })
 
   it('messages follow the same isolation', () => {
-    expect(getThreadMessages('x', 'x-ops', 'x-t1')).toHaveLength(5)
-    expect(getThreadMessages('x', 'x-listeningkit', 'x-t1')).toBeUndefined()
-    expect(getThreadMessages('x', 'x-archived', 'x-t3')).toBeUndefined()
+    expect(getThreadMessages('x', 'x-ops', X_THREAD_IDS.t1)).toHaveLength(5)
+    expect(getThreadMessages('x', 'x-listeningkit', X_THREAD_IDS.t1)).toBeUndefined()
+    expect(getThreadMessages('x', 'x-archived', X_THREAD_IDS.t3)).toBeUndefined()
   })
 })
 
 describe('platform-native id shapes', () => {
   it('X threads are dm_conversation_ids (selfId-participantId) with 19-digit event ids', () => {
-    const t = getThread('x', 'x-ops', 'x-t1') as Thread
+    const t = getThread('x', 'x-ops', X_THREAD_IDS.t1) as Thread
     const selfId = identityFor('x-ops')?.platformUserId
     expect(t).toBeTruthy()
     expect(t.platformThreadId).toBe(`${selfId}-${t.platformParticipantId}`)
     expect(t.platformThreadId).toMatch(/^\d{19}-\d{19}$/)
-    for (const m of getThreadMessages('x', 'x-ops', 'x-t1') ?? []) {
+    for (const m of getThreadMessages('x', 'x-ops', X_THREAD_IDS.t1) ?? []) {
       expect(m.platformMessageId).toMatch(/^\d{19}$/)
       expect(m.sentAt).toMatch(ISO)
     }
@@ -110,34 +116,34 @@ describe('platform-native id shapes', () => {
 
 describe('sendMessage', () => {
   it('appends a message and syncs the thread preview + updatedAt', () => {
-    const result = sendMessage('x', 'x-ops', 'x-t1', { body: 'Thanks, see you Thursday' })
+    const result = sendMessage('x', 'x-ops', X_THREAD_IDS.t1, { body: 'Thanks, see you Thursday' })
     expect(result.message.from).toBe('me')
     expect(result.message.platformMessageId).toMatch(/^\d{19}$/)
-    expect(getThreadMessages('x', 'x-ops', 'x-t1')?.at(-1)?.id).toBe(result.message.id)
+    expect(getThreadMessages('x', 'x-ops', X_THREAD_IDS.t1)?.at(-1)?.id).toBe(result.message.id)
     expect(result.thread.preview).toBe('Thanks, see you Thursday')
     expect(result.thread.updatedAt).toBe(result.message.sentAt)
     expect(result.message.sentAt).toMatch(ISO)
   })
 
   it('never crosses an account boundary', () => {
-    expect(() => sendMessage('x', 'x-listeningkit', 'x-t1', { body: 'hello' })).toThrowError(StoreError)
+    expect(() => sendMessage('x', 'x-listeningkit', X_THREAD_IDS.t1, { body: 'hello' })).toThrowError(StoreError)
     try {
-      sendMessage('x', 'x-listeningkit', 'x-t1', { body: 'hello' })
+      sendMessage('x', 'x-listeningkit', X_THREAD_IDS.t1, { body: 'hello' })
     } catch (err) {
       expect((err as StoreError).status).toBe(404)
     }
   })
 
   it('rejects empty bodies and unresolvable reply targets', () => {
-    expect(() => sendMessage('x', 'x-ops', 'x-t1', { body: '   ' })).toThrowError(StoreError)
-    expect(() => sendMessage('x', 'x-ops', 'x-t1', { body: 'reply', replyToPlatformMessageId: 't4_nobody' })).toThrowError(StoreError)
-    const existing = getThreadMessages('x', 'x-ops', 'x-t1')?.[0]
+    expect(() => sendMessage('x', 'x-ops', X_THREAD_IDS.t1, { body: '   ' })).toThrowError(StoreError)
+    expect(() => sendMessage('x', 'x-ops', X_THREAD_IDS.t1, { body: 'reply', replyToPlatformMessageId: 't4_nobody' })).toThrowError(StoreError)
+    const existing = getThreadMessages('x', 'x-ops', X_THREAD_IDS.t1)?.[0]
     try {
-      sendMessage('x', 'x-ops', 'x-t1', { body: 'reply', replyToPlatformMessageId: 't4_nobody' })
+      sendMessage('x', 'x-ops', X_THREAD_IDS.t1, { body: 'reply', replyToPlatformMessageId: 't4_nobody' })
     } catch (err) {
       expect((err as StoreError).status).toBe(400)
     }
-    const replied = sendMessage('x', 'x-ops', 'x-t1', { body: 'replying', replyToPlatformMessageId: existing?.platformMessageId })
+    const replied = sendMessage('x', 'x-ops', X_THREAD_IDS.t1, { body: 'replying', replyToPlatformMessageId: existing?.platformMessageId })
     expect(replied.message.replyTo?.platformMessageId).toBe(existing?.platformMessageId)
   })
 })
@@ -201,10 +207,10 @@ describe('startThread', () => {
 
 describe('acknowledgeThread', () => {
   it('clears unread and is idempotent', () => {
-    const first = acknowledgeThread('x', 'x-ops', 'x-t1')
-    expect(first).toEqual({ threadId: 'x-t1', acknowledged: 1 })
-    expect((getThread('x', 'x-ops', 'x-t1') as Thread).unread).toBe(0)
-    const second = acknowledgeThread('x', 'x-ops', 'x-t1')
+    const first = acknowledgeThread('x', 'x-ops', X_THREAD_IDS.t1)
+    expect(first).toEqual({ threadId: X_THREAD_IDS.t1, acknowledged: 1 })
+    expect((getThread('x', 'x-ops', X_THREAD_IDS.t1) as Thread).unread).toBe(0)
+    const second = acknowledgeThread('x', 'x-ops', X_THREAD_IDS.t1)
     expect(second.acknowledged).toBe(0)
     expect(() => acknowledgeThread('x', 'x-ops', 'x-t404')).toThrowError(StoreError)
   })
@@ -212,17 +218,17 @@ describe('acknowledgeThread', () => {
 
 describe('HTTP surface', () => {
   it('requires ?accountId= on every route', async () => {
-    for (const path of ['/messaging/x/threads', '/messaging/x/threads?accountId=', '/messaging/x/threads/x-t1/messages']) {
+    for (const path of ['/messaging/x/threads', '/messaging/x/threads?accountId=', `/messaging/x/threads/${X_THREAD_IDS.t1}/messages`]) {
       const { res } = await req(path)
       expect(res.status).toBe(400)
     }
-    const sendNoAccount = await req('/messaging/x/threads/x-t1/messages', {
+    const sendNoAccount = await req(`/messaging/x/threads/${X_THREAD_IDS.t1}/messages`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ body: 'hi' }),
     })
     expect(sendNoAccount.res.status).toBe(400)
-    const ackNoAccount = await req('/messaging/x/threads/x-t1/ack', { method: 'POST' })
+    const ackNoAccount = await req(`/messaging/x/threads/${X_THREAD_IDS.t1}/ack`, { method: 'POST' })
     expect(ackNoAccount.res.status).toBe(400)
     const postNoAccount = await req('/messaging/x/threads', {
       method: 'POST',
@@ -236,7 +242,7 @@ describe('HTTP surface', () => {
     const { res, body } = await req('/messaging/x/threads?accountId=x-ops')
     expect(res.status).toBe(200)
     const threads = (body as { threads: Thread[] }).threads
-    expect(threads.map((t) => t.id)).toEqual(['x-t1', 'x-t2'])
+    expect(threads.map((t) => t.id)).toEqual([X_THREAD_IDS.t1, X_THREAD_IDS.t2])
     expect(threads.every((t) => t.accountId === 'x-ops')).toBe(true)
 
     const empty = await req('/messaging/x/threads?accountId=x-archived')
@@ -244,9 +250,9 @@ describe('HTTP surface', () => {
   })
 
   it('404s a thread that belongs to another account', async () => {
-    const { res } = await req('/messaging/x/threads/x-t3/messages?accountId=x-ops')
+    const { res } = await req(`/messaging/x/threads/${X_THREAD_IDS.t3}/messages?accountId=x-ops`)
     expect(res.status).toBe(404)
-    const ok = await req('/messaging/x/threads/x-t3/messages?accountId=x-listeningkit')
+    const ok = await req(`/messaging/x/threads/${X_THREAD_IDS.t3}/messages?accountId=x-listeningkit`)
     expect(ok.res.status).toBe(200)
     expect((ok.body as { messages: unknown[] }).messages).toHaveLength(2)
   })
@@ -308,11 +314,11 @@ describe('HTTP surface', () => {
   it('round-trips through the dashboard client', async () => {
     const { getThreads, getThreadMessages, acknowledgeThread: ackClient } = await import('../messaging')
     const inbox = await getThreads(DEFAULT_MESSAGING_ACCOUNT.x)
-    const t1 = inbox.threads.find((t) => t.id === 'x-t1')
+    const t1 = inbox.threads.find((t) => t.id === X_THREAD_IDS.t1)
     expect(t1).toBeTruthy()
-    const messages = await getThreadMessages('x', 'x-ops', 'x-t1')
-    expect(messages.messages.map((m) => m.id)).toContain('x-t1-m1')
-    const ack = await ackClient('x', 'x-ops', 'x-t1')
+    const messages = await getThreadMessages('x', 'x-ops', X_THREAD_IDS.t1)
+    expect(messages.messages.map((m) => m.id)).toContain(X_T1_M1)
+    const ack = await ackClient('x', 'x-ops', X_THREAD_IDS.t1)
     expect(ack.acknowledged).toBe(1)
   })
 })

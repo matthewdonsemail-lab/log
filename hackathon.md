@@ -341,3 +341,21 @@ other issues → account page) instead of a dead empty list. Spec
 regenerated (Accounts 4→5 ops, 55 total) plus docs pages. Tests: new
 resolve-gate cases (404/409/200-clears/409-again, x-challenge seed);
 typecheck, lint, 33/33 vitest pass.
+
+### 2026-09-16 - working tree
+Messaging thread + message app-ids switch from human-readable slugs
+(`x-t1`, `fb-t1`, `${threadId}-m${n}`, `gen-…`) to real generated UUIDs v4.
+New shared `apps/web/src/lib/messaging/uuid.ts` (`crypto.randomUUID()` with
+the same v4-hex fallback as `apiKeyId`/`keywordId`, so no `node:crypto`
+import and the browser bundle is untouched). Each platform mock
+(`messaging/{twitter,facebook,reddit}/mock.ts`) mints every seeded thread and
+message id via `uuid()` at module load and exports the thread-id maps
+(`X_THREAD_IDS`, `FB_THREAD_IDS`, `REDDIT_THREAD_IDS`) plus `X_T1_M1`, so the
+contract tests pin the loaded values by constant instead of literal. Store
+runtime ids change too: `startThread`'s thread id and `buildMessage`'s id use
+`uuid()`, dropping the `gen-` and `-m${n}` schemes and the now-unused
+`localSeq` argument. `messaging.test.ts` + `api-coverage.test.ts` swap every
+slug literal for the exported constants (the intentional `x-t404` bogus id
+stays, since it must 404). The README's stale "`${threadId}-m${n}`"
+message-id note is corrected to describe the opaque UUIDs. typecheck clean,
+lint clean (one pre-existing, unrelated warning), 33/33 vitest pass.

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { mockApiApp } from '../mock-api'
+import { X_THREAD_IDS } from '../messaging/twitter/mock'
 
 /**
  * Full API coverage smokes: every described route is hit via `mockApiApp.request`
@@ -141,7 +142,7 @@ describe('messaging slice', () => {
     const rd = await req('/messaging/reddit/threads?accountId=reddit-listeningkit')
     expect(rd.res.status).toBe(200)
     // A thread only resolves under the account that owns it.
-    const leaked = await req('/messaging/x/threads/x-t3/messages?accountId=x-ops')
+    const leaked = await req(`/messaging/x/threads/${X_THREAD_IDS.t3}/messages?accountId=x-ops`)
     expect(leaked.res.status).toBe(404)
   })
 })
