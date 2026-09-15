@@ -14,6 +14,7 @@ import {
 import type { Community, CommunityJoinState } from './types'
 import { isArray, isRecord, loadPersistedState, savePersistedState } from '../persist'
 import { CommunitiesResponseJson, CommunityResponseJson, CommunitySingleResponseJson, errorResponse } from '../openapi'
+import { requestLogger } from '../request-log'
 
 /**
  * In-memory join relation for the communities API. Membership is the only
@@ -179,6 +180,7 @@ async function transitionToJoined(
  * Routes and response shapes stay the same when the backend lands.
  */
 export const communitiesApp = new Hono()
+  .use('*', requestLogger())
   .get('/communities', describeRoute({ operationId: 'listCommunities', tags: ['Communities'], summary: 'List communities', description: 'Lists the full catalog plus any client-resolved rows (from pasted Facebook links or typed subreddits) materialized with current `joinState` (none/pending/accepted), `accountId` for Facebook joins, and `accountLabel`. Optional `?platform=facebook|x|reddit` filters server-side. This is the source for the Groups page and every keyword/listings scope picker. Code: apps/web/src/lib/communities/server.ts:180', parameters: [{ name: 'platform', in: 'query', required: false, schema: { type: 'string', enum: ['facebook','x','reddit'], description: 'Platform filter.' } }], responses: { 200: { description: 'Community list.', content: { 'application/json': { schema: CommunitiesResponseJson } } } } }), (c) => {
     const platform = c.req.query('platform') as ConnectionPlatform | undefined
     const all = materialize() as Community[]

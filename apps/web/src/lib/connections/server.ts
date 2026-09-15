@@ -5,6 +5,7 @@ import { MOCK_CONNECTIONS } from './mock'
 import { newAccountId } from './store'
 import type { ConnectionPlatform, ConnectionRecord } from './types'
 import { AccountsResponseJson, AccountCreateResponseJson, AccountResolveResponseJson, errorResponse } from '../openapi'
+import { requestLogger } from '../request-log'
 
 /**
  * Hono-shaped connections API. In-memory mock backed by MOCK_CONNECTIONS —
@@ -16,6 +17,7 @@ import { AccountsResponseJson, AccountCreateResponseJson, AccountResolveResponse
 const accounts: ConnectionRecord[] = [...MOCK_CONNECTIONS]
 
 export const connectionsApp = new Hono()
+  .use('*', requestLogger())
   .get('/accounts', describeRoute({ operationId: 'listAccounts', tags: ['Accounts'], summary: 'List accounts', description: 'Returns all connected platform accounts (`ConnectionRecord[]` with `id`, `platform` facebook/x/reddit, `label`, and `connectedAt`). This is the roster the dashboard\'s Accounts table and every group/listings scope picker reads. No parameters. Code: apps/web/src/lib/connections/server.ts:15', responses: { 200: { description: 'Account list.', content: { 'application/json': { schema: AccountsResponseJson } } } } }), (c) => c.json({ accounts: [...accounts] }))
   .post('/accounts', describeRoute({ operationId: 'createAccount', tags: ['Accounts'], summary: 'Create account', description: 'Creates a new `ConnectionRecord` for `platform` facebook/x/reddit. Generates a stable random-UUID `id`, sets `label` from the platform name, and `connectedAt: null` until the extension verifies the session. Returns `201` with the created record and the full list. Rejects unknown platforms with `400 platform must be facebook, x, or reddit`. Code: apps/web/src/lib/connections/server.ts:16', requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { platform: { type: 'string', enum: ['facebook','x','reddit'], description: 'Platform to connect.' } }, required: ['platform'] } } } }, responses: { 201: { description: 'Created.', content: { 'application/json': { schema: AccountCreateResponseJson } } }, 400: errorResponse('platform must be facebook, x, or reddit') } }), async (c) => {
     const body = await c.req.json<{ platform?: string }>().catch(() => null)

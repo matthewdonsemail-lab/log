@@ -6,6 +6,7 @@ import type { BrandChannel, BrandEntity, BrandOffering, BrandPage, ChannelProfil
 import { defaultChannels } from './types'
 import { resolveSitemap } from './sources'
 import { BrandResponseJson, BrandWithSourcesJson, SourcesResponseJson, errorResponse } from '../openapi'
+import { requestLogger } from '../request-log'
 
 const BRAND_KEY = 'brand-entity'
 
@@ -66,6 +67,7 @@ export interface BrandIntelligenceInput {
  * - `DELETE /brand` → clears the record
  */
 export const brandApp = new Hono()
+  .use('*', requestLogger())
   .get('/brand', describeRoute({ operationId: 'getBrand', tags: ['Brand'], summary: 'Get brand', description: 'Returns the single workspace BrandEntity or `null` when onboarding was skipped or the brand was cleared. This is the source-of-truth the Brand tab, onboarding reveal, and AI reply drafts all read — polling here is how the dashboard knows whether to show the brand form. No parameters. Code: apps/web/src/lib/brand/server.ts:67', responses: { 200: { description: 'Brand record (or null).', content: { 'application/json': { schema: BrandResponseJson } } } } }), (c) => c.json({ brand }))
   .put('/brand', describeRoute({ operationId: 'upsertBrand', tags: ['Brand'], summary: 'Upsert brand', description: 'Creates the brand if none exists or deep-merges the `Partial<BrandEntity>` patch into the existing record. Merges identity, location, voice (formality/dos/donts/examples), channels per platform (facebook/x/reddit), offerings filtered by `isBrandOffering`, memory.rules, intelligence, and sources by URL. Stamps `updatedAt`, persists to `brand-entity` in localStorage, and validates the merged result with `isBrandEntity` — returns `400 Invalid brand payload` if validation fails. Code: apps/web/src/lib/brand/server.ts:68', requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', description: 'Partial<BrandEntity> — unknown fields ignored, offerings filtered, channels merged per platform' } } } }, responses: { 200: { description: 'Saved brand.', content: { 'application/json': { schema: BrandResponseJson } } }, 400: errorResponse('Invalid request body / Invalid brand payload') } }), async (c) => {
     const body = await c.req.json<Partial<BrandEntity>>().catch(() => null)

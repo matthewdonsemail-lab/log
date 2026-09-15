@@ -6,6 +6,7 @@ import { keywordId, SEED_KEYWORDS } from './mock'
 import type { CreateKeywordInput, Keyword } from './types'
 import { isArray, isRecord, loadPersistedState, savePersistedState } from '../persist'
 import { KeywordsResponseJson, KeywordResponseJson, errorResponse } from '../openapi'
+import { requestLogger } from '../request-log'
 
 const KEYWORDS_KEY = 'keywords'
 
@@ -39,6 +40,7 @@ async function joinedGroupsFor(platform: ConnectionPlatform) {
 }
 
 export const keywordsApp = new Hono()
+  .use('*', requestLogger())
   .get('/keywords', describeRoute({ operationId: 'listKeywords', tags: ['Keywords'], summary: 'List keywords', description: 'Optional ?platform ?groupId ?noGroup. Code: apps/web/src/lib/keywords/server.ts:40', parameters: [{ name: 'platform', in: 'query', required: false, schema: { type: 'string', enum: ['facebook','x','reddit'] } }, { name: 'groupId', in: 'query', required: false, schema: { type: 'string' } }, { name: 'noGroup', in: 'query', required: false, schema: { type: 'string' } }], responses: { 200: { description: 'Keywords.', content: { 'application/json': { schema: KeywordsResponseJson } } } } }), (c) => {
     const platform = c.req.query('platform') as ConnectionPlatform | undefined
     const groupId = c.req.query('groupId')

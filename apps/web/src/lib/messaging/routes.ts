@@ -20,6 +20,7 @@ import {
 } from '../openapi'
 import { acknowledgeThread, getThread, getThreadMessages, listThreads, sendMessage, startThread, StoreError } from './store'
 import type { MessagingPlatform, ThreadResult } from './types'
+import { requestLogger } from '../request-log'
 
 /**
  * The shared messaging route factory.
@@ -69,6 +70,7 @@ export function buildMessagingRoutes(platform: MessagingPlatform): Hono {
   }
 
   return new Hono()
+    .use('*', requestLogger())
     .get(
       '/threads',
       describeRoute({

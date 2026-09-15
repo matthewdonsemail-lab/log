@@ -12,7 +12,7 @@
 - **Auth:** none
 - **AI models:** none
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-15T21:16:42Z
+- **Last updated:** 2026-09-15T21:29:09Z
 
 ## Log
 
@@ -401,3 +401,18 @@ the gate. Messaging store deliberately untouched: the in-place thread mutation
 with no pub/sub stays as-is until Part B, whose transition trigger should
 double as the UI invalidation path rather than a second bolt-on. typecheck
 clean, lint clean (two pre-existing warnings, unchanged), 36/36 vitest pass.
+
+### 2026-09-16 - working tree
+Request logging moves from the `mockApiApp` root onto each leaf domain app:
+dashboard clients call the sub-apps directly (`connectionsApp.request(…)`,
+`messagingApp.request(…)`, …), so the root mount never saw dashboard traffic.
+Each of the seven domain servers plus the shared messaging route factory mounts
+the same `requestLogger`; the root mount is removed. Two Hono behaviors found
+by test: `.route()` replays leaf middleware once per mount (5–8 duplicate
+lines per root request), so the first copy logs and stamps a context flag
+while replays skip; and the first merged copy to run isn't the handling
+domain, so the tag is derived from the request path (`accounts`,
+`messaging/x`, …) instead of the mount. `apps/web/.env` (gitignored) sets
+`VITE_MOCK_API_LOG_REQUESTS=1` for local dashboard debugging — restart
+`vite dev` after changing it, since Vite bakes env at startup. typecheck
+clean, lint clean (two pre-existing warnings, unchanged), 39/39 vitest pass.

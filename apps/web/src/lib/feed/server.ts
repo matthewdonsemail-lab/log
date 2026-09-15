@@ -3,6 +3,7 @@ import { describeRoute } from 'hono-openapi'
 import { MOCK_FEED_ITEMS, type FeedItem } from './mock'
 import { isPlatform } from '../platform'
 import { FeedResponseJson, errorResponse } from '../openapi'
+import { requestLogger } from '../request-log'
 
 /** Case-insensitive substring match across the searchable text of an item. */
 function matchesSearch(item: FeedItem, search: string): boolean {
@@ -40,6 +41,7 @@ function filterFeed(platform?: string, search?: string): FeedItem[] {
  * per-platform shortcut (also with optional `?search=`).
  */
 export const feedApp = new Hono()
+  .use('*', requestLogger())
   .get('/feed', describeRoute({ operationId: 'listFeed', tags: ['Feed'], summary: 'List feed', description: 'Optional ?platform ?search. Code: apps/web/src/lib/feed/server.ts:41', parameters: [{ name: 'platform', in: 'query', required: false, schema: { type: 'string', enum: ['facebook','x','reddit'] } }, { name: 'search', in: 'query', required: false, schema: { type: 'string' } }], responses: { 200: { description: 'Feed items.', content: { 'application/json': { schema: FeedResponseJson } } }, 400: errorResponse('platform must be facebook, x, or reddit') } }), (c) => {
     const platform = c.req.query('platform')
     const search = c.req.query('search')

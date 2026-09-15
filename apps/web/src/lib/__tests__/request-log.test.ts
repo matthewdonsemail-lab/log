@@ -1,5 +1,7 @@
 import { Hono } from 'hono'
 import { describe, expect, it, vi } from 'vitest'
+import { connectionsApp } from '../connections/server'
+import { mockApiApp } from '../mock-api'
 import { redactForLog, requestLogger } from '../request-log'
 
 describe('redactForLog', () => {
@@ -40,6 +42,7 @@ describe('requestLogger', () => {
       })
       expect(log).toHaveBeenCalledTimes(1)
       const line = String(log.mock.calls[0]?.[0] ?? '')
+      expect(line).toContain('[mock-api:api-keys]')
       expect(line).toContain('POST /api-keys')
       expect(line).toContain('201')
       expect(line).toContain('[redacted]')
@@ -61,6 +64,56 @@ describe('requestLogger', () => {
       expect(res.status).toBe(200)
       expect(log).not.toHaveBeenCalled()
     } finally {
+      log.mockRestore()
+    }
+  })
+
+  it('logs exactly once per request arriving through the mounted root, labeled by domain', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
+    vi.stubEnv('MOCK_API_LOG_REQUESTS', '1')
+    try {
+      const res = await mockApiApp.request('/accounts')
+      expect(res.status).toBe(200)
+      await res.json()
+      const lines = log.mock.calls.map((call) => String(call[0] ?? ''))
+      expect(lines).toHaveLength(1)
+      expect(lines[0]).toContain('[mock-api:accounts]')
+      expect(lines[0]).toContain('GET /accounts')
+    } finally {
+      vi.unstubAllEnvs()
+      log.mockRestore()
+    }
+  })
+
+  it('labels messaging traffic per platform', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
+    vi.stubEnv('MOCK_API_LOG_REQUESTS', '1')
+    try {
+      const res = await mockApiApp.request('/messaging/x/threads?accountId=probe')
+      expect(res.status).toBe(200)
+      await res.json()
+      const lines = log.mock.calls.map((call) => String(call[0] ?? ''))
+      expect(lines).toHaveLength(1)
+      expect(lines[0]).toContain('[mock-api:messaging/x]')
+    } finally {
+      vi.unstubAllEnvs()
+      log.mockRestore()
+    }
+  })
+
+  it('logs direct leaf-app calls the way dashboard clients invoke them', async () => {
+    const log = vi.spyOn(console, 'log').mockImplementation(() => {})
+    vi.stubEnv('MOCK_API_LOG_REQUESTS', '1')
+    try {
+      const res = await connectionsApp.request('/accounts')
+      expect(res.status).toBe(200)
+      await res.json()
+      const lines = log.mock.calls.map((call) => String(call[0] ?? ''))
+      expect(lines).toHaveLength(1)
+      expect(lines[0]).toContain('[mock-api:accounts]')
+      expect(lines[0]).toContain('GET /accounts')
+    } finally {
+      vi.unstubAllEnvs()
       log.mockRestore()
     }
   })

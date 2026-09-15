@@ -7,6 +7,7 @@ import type { ListingDraft, ListingLocation, ListingRecord, ListingStatus } from
 import { uuid } from '../ids'
 import { isArray, isRecord, loadPersistedState, savePersistedState } from '../persist'
 import { ListingResponseJson, ListingsResponseJson, ListingStatusResponseJson, errorResponse } from '../openapi'
+import { requestLogger } from '../request-log'
 
 const LISTINGS_KEY = 'listings'
 
@@ -78,6 +79,7 @@ function toLocationPoint(value: unknown, fallback?: ListingLocation): ListingLoc
  * client at it; routes and response shapes stay the same.
  */
 export const listingsApp = new Hono()
+  .use('*', requestLogger())
   .get('/listings', describeRoute({ operationId: 'listListings', tags: ['Listings'], summary: 'List listings', description: 'Lists all Marketplace listings — seeded `MOCK_LISTINGS` plus any user-created rows (persisted to localStorage, migrated for legacy `accountId` FKs). Each has `listingId`, title/price/location, 1–4 images (first is cover), `accountId` FK, `locationPoint` (lat/lng + radius 1–200km), and `status`. This is the source for the dashboard Listings table. Code: apps/web/src/lib/listings/server.ts:77', responses: { 200: { description: 'Listings.', content: { 'application/json': { schema: ListingsResponseJson } } } } }), (c) => c.json({ listings: [...listings] }))
   .post('/listings', describeRoute({ operationId: 'createListing', tags: ['Listings'], summary: 'Create listing', description: 'Creates a new Marketplace listing. Validates `title`, `price`, `location` (all trimmed non-empty), at least one `images` string, and a Facebook `accountId` (resolves legacy label via `resolveListingAccountId`, falls back to `fb-personal`). Generates a 17-digit `listingId`, sets `category`/`condition` defaults, `locationPoint` clamped 1–200km, `status: under-review`, and `listingUrl`. Persists and returns 201. Code: apps/web/src/lib/listings/server.ts:79', requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { title: { type: 'string', description: 'Listing title.' }, price: { type: 'string', description: 'Price string.' }, location: { type: 'string', description: 'Human location.' }, images: { type: 'array', items: { type: 'string' }, description: 'Photo URLs, first is cover.' }, accountId: { type: 'string', description: 'Facebook account id.' }, category: { type: 'string' }, condition: { type: 'string' }, locationPoint: { type: 'object', description: 'lat/lng/radiusKm.' } }, required: ['title','price','location','images'] } } } }, responses: { 201: { description: 'Created (under-review).', content: { 'application/json': { schema: ListingResponseJson } } }, 400: errorResponse('A listing needs a title/price/location/photo/account') } }), async (c) => {
     const body = await c.req.json<ListingDraft & { account?: string }>().catch(() => null)

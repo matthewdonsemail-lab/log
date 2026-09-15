@@ -7,7 +7,6 @@ import { connectionsApp } from './connections/server'
 import { communitiesApp } from './communities/server'
 import { feedApp } from './feed/server'
 import { messagingApp } from './messaging/index'
-import { requestLogger } from './request-log'
 
 /**
  * All mock apps on one root, for the OpenAPI export and the dev mock
@@ -16,14 +15,15 @@ import { requestLogger } from './request-log'
  * routes carrying `describeRoute` appear in the generated spec — the rest
  * still serve over HTTP for the playground.
  *
- * The request logger is the single middleware on this root: one redacted
- * method/path/status line per request, from every domain, on both
- * consumption paths (in-process `app.request()` and the standalone HTTP
- * server). Opt-in via `VITE_MOCK_API_LOG_REQUESTS=1` (dashboard / vitest)
- * or `MOCK_API_LOG_REQUESTS=1` (standalone `mock:server`); silent otherwise.
+ * Request logging lives on the leaf apps, not here: each domain mounts the
+ * shared `requestLogger` middleware (see `request-log.ts`) on its own app,
+ * so dashboard traffic — which calls each sub-app directly — is logged
+ * exactly once, and requests arriving through this root inherit the same
+ * single line via `.route()`. Opt-in via `VITE_MOCK_API_LOG_REQUESTS=1`
+ * (dashboard / vitest) or `MOCK_API_LOG_REQUESTS=1` (standalone
+ * `mock:server`); silent otherwise.
  */
 export const mockApiApp = new Hono()
-  .use('*', requestLogger())
   .route('/', apiKeysApp)
   .route('/', brandApp)
   .route('/', keywordsApp)

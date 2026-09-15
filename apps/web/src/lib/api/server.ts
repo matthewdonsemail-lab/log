@@ -9,6 +9,7 @@ import {
   CreateApiKeyInputJson,
   errorResponse
 } from '../openapi'
+import { requestLogger } from '../request-log'
 
 const API_KEYS_KEY = 'api-keys'
 
@@ -70,6 +71,7 @@ export async function verifyApiKey(secret: string): Promise<ApiKey | null> {
 }
 
 export const apiKeysApp = new Hono()
+  .use('*', requestLogger())
   .get(
     '/api-keys',
     describeRoute({
