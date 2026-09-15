@@ -334,32 +334,32 @@ Direction, not built yet: expose each follow-up step as a callable surface — p
 
 #### Onboarding reveal — the first listening scope
 
-Before keywords exist, the [onboarding reveal](apps/web/src/components/onboarding/BrandRevealStep.tsx) builds the initial scope: a forward-only XState machine ([`reveal/machine.ts`](apps/web/src/lib/reveal/machine.ts)) walks competitors → related keywords → keywords confirmed → familiar groups → interested groups, with inline retry self-loops — a *No* appends a retry round and re-asks in place, and the machine never goes backwards. Acceptance is recorded *where* the Yes happened: each step is stamped with its `…AcceptedAt` index (`-1` = the initial ask, `≥0` = the retry round). The content — questions, competitor sets, retry search sets, group sets — lives in [`reveal/flow.ts`](apps/web/src/lib/reveal/flow.ts); accepted sets write back through `POST /brand/intelligence` into the brand's `intelligence` block, which seeds the keywords and groups listening.
+Before keywords exist, the [onboarding reveal](apps/web/src/components/onboarding/BrandRevealStep.tsx) builds the initial scope: a forward-only XState machine ([`reveal/machine.ts`](apps/web/src/lib/reveal/machine.ts)) walks competitors → related keywords → keywords confirmed → familiar groups → interested groups, with inline retry self-loops — a *No* appends a retry round and re-asks in place, and the machine never goes backwards. Acceptance is recorded *where* the Yes happened: each step is stamped with its `…AcceptedAt` index (`-1` = the initial ask, `≥0` = the retry round). The content — questions, competitor sets, retry search sets, group sets — lives in [`reveal/flow.ts`](apps/web/src/lib/reveal/flow.ts); accepted picks persist locally through `saveKeywordMapping` (localStorage `keyword-strategy-mapping`). `POST /brand/intelligence` exists to fold the same discoveries into the brand's `intelligence` block (competitors deduped, communities merged by id, `selectedKeyword` overwrite), but neither the route nor the saved mapping has a reader yet — reveal → listening seeding is the next wiring step, the same exists-not-yet-wired shape as the scope gate.
 
 ## Brand — gathered info → agent context → self-healing
 
-Everything the app knows about the business lives in one `BrandEntity` record ([`apps/web/src/lib/brand/`](apps/web/src/lib/brand/types.ts)). Four pipelines fill it, one compiler turns it into agent context, and every loop back into the record is what makes it self-healing. Full contract: [docs /brand](apps/docs/content/docs/brand/index.mdx) (voice, channels, website indexing, agent context).
+Everything the app knows about the business lives in one `BrandEntity` record ([`apps/web/src/lib/brand/`](apps/web/src/lib/brand/types.ts)). Four pipelines fill it (one still unwired), one compiler turns it into reply context — and prompt versioning keeps history honest as the record improves. Full contract: [docs /brand](apps/docs/content/docs/brand/index.mdx) (voice, channels, website indexing, agent context).
 
 ```mermaid
 flowchart TD
   URL[Website URL] --> EXTRACT[extractBrandFromUrl]
   EXTRACT --> IDENT[identity<br/>name, site, tagline]
   URL --> SITEMAP[sitemap]
-  SITEMAP --> INDEX[POST /brand/index]
+  SITEMAP --> INDEX[POST /brand/index<br/>appends unseen URLs, skips seen]
   INDEX --> SOURCES[sources<br/>pages: url, title, text, status]
-  REVEAL[Onboarding reveal] --> INTEL[intelligence<br/>keyword, competitors, communities]
+  REVEAL[Onboarding reveal] -. not yet wired .-> INTEL[intelligence<br/>keyword, competitors, communities]
   EDITS[Brand tab edits] --> VOICE[voice<br/>tone, formality, rules, examples]
   EDITS --> OFF[offerings<br/>name + detail]
   EDITS --> LOC[location<br/>label, pinpoint, radius]
 
   IDENT & SOURCES & INTEL & VOICE & OFF & LOC --> ENTITY([BrandEntity<br/>one record])
 
-  ENTITY --> COMPILER[buildBrandSystemPrompt<br/>versioned, deterministic]
-  COMPILER --> PROMPT([system prompt<br/>previewed on the Brand tab])
-  PROMPT --> AGENT[Convex agent<br/>instructions]
-  SOURCES --> RAG[brand namespace<br/>RAG add / search]
-  RAG --> AGENT
-  AGENT --> DRAFT[Draft reply + cited sources]
+  ENTITY --> COMPILER[buildBrandSystemPrompt<br/>v2, deterministic]
+  COMPILER --> CTX[buildReplyContext<br/>prompt + version + sourceRefs]
+  SOURCES --> RETR[retrieveSourceRefs<br/>keyword overlap — mock mirror<br/>of the live RAG namespace]
+  RETR --> CTX
+  CTX --> DRAFT[draftReply<br/>cites url + excerpt]
+  CTX -. live target .-> AGENT[Convex agent<br/>instructions + RAG messages]
 ```
 
 | Information gathered | Where it lives | How the agent uses it |
@@ -368,30 +368,26 @@ flowchart TD
 | Tone, formality, dos/don'ts, gold replies | `voice` | Compiled verbatim into the system prompt |
 | Services with one-line details | `offerings` | Quoted in replies, passed as tool/RAG context |
 | Service area + pinpoint | `location` | Listings default, group scoping, reply area |
-| Indexed site pages | `sources` | RAG namespace content; drafts cite url + excerpt |
-| Keyword, competitors, communities | `intelligence` | Seeds keywords/groups listening |
-| Per-channel style, triage, autoreplies | `channels` | Channel-toned drafts; matching autoreplies fire verbatim |
+| Indexed site pages | `sources` | Retrieval corpus for `retrieveSourceRefs` (keyword overlap; the RAG namespace is the live target); drafts cite url + 160-char excerpt |
+| Keyword, competitors, communities | `intelligence` | Holds reveal discoveries; nothing reads it into listening yet |
+| Per-channel style, examples, triage, autoreplies | `channels` | `simulateOutbound` scores autoreplies + examples by word overlap, applies channel style, appends triage |
 
-Self-healing — the record repairs and improves itself without re-onboarding:
+What loops back into the record today — and what doesn't yet:
 
 ```mermaid
 flowchart LR
-  EVENT[New post event] --> DRAFT2[Draft stamped<br/>prompt vN + source refs]
-  DRAFT2 --> SEND2[Reply sent]
-  SEND2 --> GOLD[Good reply → saved<br/>as gold example]
-  GOLD --> VOICE2[voice grows]
-  VOICE2 --> COMPILER2[prompt vN+1]
-  COMPILER2 --> DRAFT2
+  EDIT[Voice edit<br/>on the Brand tab] --> COMPILER2[prompt vN+1]
+  COMPILER2 --> DRAFT2[future drafts]
   DRAFT2 -.->|old drafts keep vN| HIST([history never rewrites])
 
-  REINDEX[Re-index site] --> FRESH[fresh page text<br/>replaces stale]
-  FRESH --> RAG2[RAG namespace]
-  FAIL[source failed] --> RETRY[per-row retry]
-  RETRY --> FRESH
+  REINDEX[POST /brand/index] --> MERGE[unseen URLs appended<br/>seen rows untouched]
+  FAIL[source failed] --> STAY[stays failed<br/>no retry path yet]
   V1[v1 persisted rows] --> MIGRATE[migrate on load<br/>written back clean]
+  HAND[Gold examples<br/>curated by hand] --> COMPILER2
+  REVEAL2[Reveal picks] -.->|no reader yet| INTEL2[intelligence block]
 ```
 
-Concretely: drafts record the prompt version that produced them, so a voice edit upgrades future replies without rewriting history; re-index swaps stale page text in place while failed rows stay visible with retry; v1 rows (string offerings, `voice.serviceAreas`) migrate to v2 on load; accepted competitors/keywords/communities flow back into listening scope, which produces new events, which produce new drafts. Each loop leaves the record richer than it found it. The deterministic preview of what *exactly* would be sent is `simulateOutbound` in [`brand/query.ts`](apps/web/src/lib/brand/query.ts) — it scores gold examples and enabled autoreplies the same way the agent would, and the Brand tab renders the result as a real per-channel thread ([`cards/`](apps/web/src/components/cards)).
+Concretely: drafts are stamped with the prompt version that produced them (`ReplyContext.promptVersion`), so a voice edit upgrades future replies without rewriting history; v1 rows (string offerings, `voice.serviceAreas`) migrate to v2 on load. Still open loops: re-index never refreshes stale page text, failed rows have no retry, good replies aren't auto-saved as gold examples (examples are curated by hand on the Brand tab), and reveal picks don't flow into listening scope. The deterministic preview of what *exactly* would be sent first-touch is `simulateOutbound` in [`brand/prompt.ts`](apps/web/src/lib/brand/prompt.ts) — it scores the channel's enabled autoreplies and examples by word overlap against the lead context, applies the channel style, and appends the first triage step; the Brand tab renders the result as a real per-channel thread ([`cards/`](apps/web/src/components/cards)).
 
 ## Shell & design system
 
@@ -408,7 +404,7 @@ The app shell, sidebar, and pages live in [`apps/web/src/components/`](apps/web/
 
 ```bash
 pnpm install
-pnpm dev           # apps/web on http://localhost:3000
+pnpm dev           # web on http://localhost:3000 + docs on http://localhost:3001
 ```
 
 Useful extras:
@@ -422,7 +418,7 @@ pnpm --filter docs dev           # the docs site on http://localhost:3001
 
 | Command | What it does |
 |---|---|
-| `pnpm dev` | dev server for `apps/web` (3000), proxying `/api` → 4000 and `/docs`/`/_next` → the docs app |
+| `pnpm dev` | web (3000) + docs (3001) side by side; the web server proxies `/api` → 4000 and `/docs`/`/_next` → the docs app |
 | `pnpm build` | `pnpm -r build` across workspaces |
 | `pnpm typecheck` | `pnpm -r typecheck` across workspaces |
 | `pnpm lint` | `pnpm -r lint` across workspaces (oxlint, `@shadcn/lint` — see [available rules](https://github.com/shadcn-ui/lint/blob/main/README.md#rules)) |

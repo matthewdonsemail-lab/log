@@ -298,3 +298,18 @@ was only implicit before: `ChatMessage.threadId`, the per-account
 `messages: Record<threadId, …>` map, `${threadId}-m${n}` message ids, and
 the resolve-through-the-thread read/write rules (`apps/web/src/lib/
 messaging/store.ts`, `types.ts`).
+
+### 2026-09-16 - working tree
+Full README audit, every verifiable claim re-checked against source.
+Confirmed as-written: all eight route tables (incl. keywords = 5, no
+single-item GET), all localStorage keys, seed counts, the 26×10 issue
+catalog, the follow-up XState chain + components, the join/create store
+calls, the X-hides-communities rule, design-system terms, ui exports,
+the /dashboard/docs embed, ports and scripts. Fixed: brand section
+rewritten where it overstated — `simulateOutbound` lives in
+`brand/prompt.ts`; autoreplies are styled + triaged, not verbatim;
+`retrieveSourceRefs` is the mock mirror, the RAG namespace is the live
+target; re-index appends unseen URLs only; failed rows have no retry;
+gold examples are hand-curated; reveal → intelligence is unwired
+(`saveKeywordMapping` persists locally, nothing reads it yet). Also:
+onboarding write-back corrected, `pnpm dev` row covers web + docs.
