@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Brain, Globe, MapPin, Pencil, RotateCcw } from 'lucide-react'
-import { Button, Select, buttonVariants, useSquircleClip, useToast } from '@listeningkit/ui'
+import { Button, Select, useSquircleClip, useToast } from '@listeningkit/ui'
 import { SOCIAL_ICONS, SocialGlyph, type SocialIcon } from '../lib/social-icons'
 import {
   clearBrandAsync,
@@ -132,6 +132,15 @@ export function DashboardBrand() {
     return () => setFormSlot(null)
   }, [formNamespace, brand, load, setFormSlot])
 
+  // Scrim (backdrop) dismiss clears the rendered slot without touching page
+  // state — without this reset the selection goes stale and a later click
+  // on the same row no-ops.
+  useEffect(() => {
+    const onExternalDismiss = () => setFormNamespace(null)
+    window.addEventListener('lk:form-dismissed', onExternalDismiss)
+    return () => window.removeEventListener('lk:form-dismissed', onExternalDismiss)
+  }, [])
+
   // Simulator follows the active tab and always reads the saved record.
   const simChannel = TAB_CHANNEL[tab]
   const preview = useMemo(
@@ -194,10 +203,11 @@ export function DashboardBrand() {
         <LoadingLine label="Loading the brand…" />
       ) : brand === null ? (
         <EmptyBanner
-          title="Nothing here yet"
-          body="Run onboarding to pull your brand profile."
+          icon={<Globe aria-hidden="true" className="size-6" />}
+          title="You've not configured your brand yet"
+          body="One onboarding run pulls your identity, channels and voice."
           action={
-            <Link to="/onboarding" className={buttonVariants({ size: 'sm' })}>
+            <Link to="/onboarding">
               Run onboarding
             </Link>
           }
@@ -273,18 +283,17 @@ export function DashboardBrand() {
                   <h3 className="mt-4 text-sm font-semibold text-text-primary">
                     How we actually text
                   </h3>
-                  <p className="mt-0.5 text-xs text-text-secondary">
-                    Real conversational fragments. No formal sign-offs or canned corporate lines.
-                  </p>
+                  <SnippetsBlurb />
                   <GoldExamples
                     profile={brand.channels.facebook}
                     channelLabel="Facebook"
-                    onEdit={() => setFormNamespace('facebook')}
+                    icon={<SocialGlyph icon={fbIcon} className="size-6" />}
                   />
 
                   <h3 className="mt-4 text-sm font-semibold text-text-primary">Triage flow</h3>
                   <p className="mt-0.5 text-xs text-text-secondary">
-                    What the agent pushes to qualify the deal before booking.
+                    Item 1 rides along on every send. The rest is the order the agent works
+                    through before booking.
                   </p>
                   {brand.channels.facebook.triage.length > 0 ? (
                     <ol className="mt-2 flex flex-col gap-1.5">
@@ -306,12 +315,13 @@ export function DashboardBrand() {
                   ) : (
                     <EmptyBanner
                       className="mt-2"
-                      title="No triage flow yet"
+                      icon={<SocialGlyph icon={fbIcon} className="size-6" />}
+                      title="You've not configured this yet"
                       body="e.g. ask for photos of the job, then lock in a pickup time."
                       action={
-                        <Button type="button" size="sm" onClick={() => setFormNamespace('facebook')}>
-                          Edit Facebook
-                        </Button>
+                        <span>
+                          Configure it inside the Edit Facebook button above
+                        </span>
                       }
                     />
                   )}
@@ -319,10 +329,10 @@ export function DashboardBrand() {
                   <AutorepliesSection
                     channel="facebook"
                     label="Facebook"
+                    icon={<SocialGlyph icon={fbIcon} className="size-6" />}
                     profile={brand.channels.facebook}
                     disabled={busy || channelBusy}
                     onToggle={saveAutoreplies}
-                    onEdit={() => setFormNamespace('facebook')}
                   />
                 </BrandSurface>
               </div>
@@ -331,8 +341,12 @@ export function DashboardBrand() {
                 <BrandSurface className="sticky top-6">
                   <h2 className="text-base font-bold text-text-primary">Live simulator</h2>
                   <p className="text-xs text-text-secondary">
-                    Paste the detected post / lead context — the blue bubble is the first-touch
-                    outbound message the agent sends.
+                    Paste the lead&apos;s post — it picks the enabled autoreply or snippet whose
+                    words overlap most, appends triage ask #1, and previews it as the blue first
+                    touch.{' '}
+                    <Link to="/dashboard/docs/brand/channels#the-pick-exactly" className="font-semibold text-[#2A8CFF] hover:underline">
+                      How the pick works
+                    </Link>
                   </p>
                   <div className="mt-3 flex items-center gap-2">
                     <div className="min-w-0 flex-1">
@@ -376,11 +390,14 @@ export function DashboardBrand() {
             <BrandSurface>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-base font-bold text-text-primary">Working facts</h2>
-                  <p className="text-xs text-text-secondary">
-                    What the agent remembers on every reply — pricing baselines, boundaries, jobs
-                    taken and declined.
-                  </p>
+                      <h2 className="text-base font-bold text-text-primary">Working facts</h2>
+                      <p className="text-xs text-text-secondary">
+                        Compiled verbatim into the agent&apos;s instructions — facts it must never
+                        contradict: pricing baselines, boundaries, jobs taken and declined.{' '}
+                        <Link to="/dashboard/docs/brand/voice" className="font-semibold text-[#2A8CFF] hover:underline">
+                          Learn more
+                        </Link>
+                      </p>
                 </div>
                 <EditButton label="Edit memory" onClick={() => setFormNamespace('memory')} />
               </div>
@@ -399,12 +416,13 @@ export function DashboardBrand() {
               ) : (
                 <EmptyBanner
                   className="mt-3"
-                  title="No working facts yet"
+                  icon={<Brain aria-hidden="true" className="size-6" />}
+                  title="You've not configured this yet"
                   body="Add pricing baselines, boundaries, jobs taken and declined."
                   action={
-                    <Button type="button" size="sm" onClick={() => setFormNamespace('memory')}>
-                      Edit memory
-                    </Button>
+                    <span>
+                      Configure it inside the Edit memory button above
+                    </span>
                   }
                 />
               )}
@@ -439,19 +457,20 @@ export function DashboardBrand() {
                     />
 
                   <h3 className="mt-4 text-sm font-semibold text-text-primary">How we actually text</h3>
+                  <SnippetsBlurb />
                   <GoldExamples
                     profile={brand.channels[tab]}
                     channelLabel={tab === 'x' ? 'X' : 'Reddit'}
-                    onEdit={() => setFormNamespace(tab)}
+                    icon={<SocialGlyph icon={tab === 'x' ? xIcon : rdIcon} className="size-6" />}
                   />
 
                   <AutorepliesSection
                     channel={tab}
                     label={tab === 'x' ? 'X' : 'Reddit'}
+                    icon={<SocialGlyph icon={tab === 'x' ? xIcon : rdIcon} className="size-6" />}
                     profile={brand.channels[tab]}
                     disabled={busy || channelBusy}
                     onToggle={saveAutoreplies}
-                    onEdit={() => setFormNamespace(tab)}
                   />
                 </BrandSurface>
               </div>
@@ -517,6 +536,19 @@ function EditButton({ label, onClick }: { label: string; onClick: () => void }) 
   )
 }
 
+/** Shared "how snippets work" sub-line — one copy for all three channel tabs. */
+function SnippetsBlurb() {
+  return (
+    <p className="mt-0.5 text-xs text-text-secondary">
+      Sent verbatim as first touch: the snippet closest to the lead&apos;s own words wins,
+      then your first triage ask is tacked on. Keep them short and human — no sign-offs.{' '}
+      <Link to="/dashboard/docs/brand/channels" className="font-semibold text-[#2A8CFF] hover:underline">
+        Learn more
+      </Link>
+    </p>
+  )
+}
+
 /** Tone readout: eyebrow label plus a live Select bound to the saved style. */
 function StyleRow({
   style,
@@ -544,6 +576,9 @@ function StyleRow({
           ]}
         />
       </div>
+      <p className="mt-1.5 text-xs text-text-secondary">
+        Casual sends lowercase, like a human typing fast · standard sends it as written.
+      </p>
     </div>
   )
 }
@@ -556,22 +591,23 @@ function StyleRow({
 function GoldExamples({
   profile,
   channelLabel,
-  onEdit,
+  icon,
 }: {
   profile: ChannelProfile
   channelLabel: string
-  onEdit: () => void
+  icon: ReactNode
 }) {
   if (profile.examples.length === 0) {
     return (
       <EmptyBanner
         className="mt-2"
-        title="No snippets yet"
-        body="Paste 3–5 messages you would actually send here."
+        icon={icon}
+        title="You've not configured this yet"
+        body="Paste 3–5 lines you'd actually send — one topic each, no sign-offs, safest opener first."
         action={
-          <Button type="button" size="sm" onClick={onEdit}>
-            Edit {channelLabel}
-          </Button>
+          <span>
+            Configure it inside the Edit {channelLabel} button above
+          </span>
         }
       />
     )
@@ -595,17 +631,17 @@ function GoldExamples({
 function AutorepliesSection({
   channel,
   label,
+  icon,
   profile,
   disabled,
   onToggle,
-  onEdit,
 }: {
   channel: BrandChannel
   label: string
+  icon: ReactNode
   profile: ChannelProfile
   disabled: boolean
   onToggle: (channel: BrandChannel, next: Autoreply[]) => void
-  onEdit: () => void
 }) {
   const enabledCount = profile.autoreplies.filter((entry) => entry.enabled).length
   return (
@@ -614,17 +650,18 @@ function AutorepliesSection({
       {profile.autoreplies.length === 0 ? (
         <EmptyBanner
           className="mt-2"
-          title="No base replies yet"
+          icon={icon}
+          title="You've not configured this yet"
           body="Add the lines that send as-is when the lead context matches."
           action={
-            <Button type="button" size="sm" onClick={onEdit}>
-              Edit {label}
-            </Button>
+            <span>
+              Configure it inside the Edit {label} button above
+            </span>
           }
         />
       ) : (
         <p className="mt-0.5 text-xs text-text-secondary">
-          {`Base lines that send when the lead context matches — ${enabledCount} of ${profile.autoreplies.length} on.`}
+          {`When a post's words match a trigger harder than any snippet, that line sends instead — ${enabledCount} of ${profile.autoreplies.length} on.`}
         </p>
       )}
       {profile.autoreplies.length > 0 ? (

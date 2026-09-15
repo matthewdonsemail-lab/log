@@ -82,6 +82,19 @@ export function DashboardListings() {
     )
     return () => setFormSlot(null)
   }, [inspectedListing, formOpen, editScope, load, setFormSlot])
+
+  // Scrim (backdrop) dismiss clears the rendered slot without touching page
+  // state — without this reset the selection goes stale and a later click
+  // on the same row no-ops.
+  useEffect(() => {
+    const onExternalDismiss = () => {
+      setFormOpen(false)
+      setEditScope(null)
+      setInspectedListing(null)
+    }
+    window.addEventListener('lk:form-dismissed', onExternalDismiss)
+    return () => window.removeEventListener('lk:form-dismissed', onExternalDismiss)
+  }, [])
   useEffect(() => {
     getAccounts().then(setAccounts).catch(() => setAccounts([]))
   }, [location])

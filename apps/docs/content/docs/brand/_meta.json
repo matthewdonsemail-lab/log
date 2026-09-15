@@ -1,6 +1,7 @@
 {
   "index": "Brand",
   "voice": "Voice to system prompt",
+  "channels": "Channel texting",
   "website-index": "Website index",
   "agent-context": "Agent context"
 }

@@ -1,0 +1,51 @@
+---
+title: Channel texting
+description: The four dials per channel — style, raw snippets, triage, autoreplies — and the exact pick the agent runs before every send.
+---
+
+# Channel texting
+
+Global [voice](/docs/brand/voice) compiles into the agent's system prompt. Each channel (`facebook`, `x`, `reddit`) carries its own `ChannelProfile` on top — **how the agent texts there**: a style dial, raw snippets it sends, the triage flow it pushes, and toggleable autoreplies. Everything below is what the mock `simulateOutbound()` actually does, and what the live agent will do with the same inputs.
+
+## The four dials
+
+| Dial | Holds | Effect on a send |
+|---|---|---|
+| **Style** | `casual` or `standard` | `casual` lowercases the whole picked line before it goes out — like a human typing fast. `standard` sends it as written. |
+| **Raw snippets** | `examples: string[]` — chat fragments, no sign-offs | The pick pool. The snippet with the most word overlap against the post the agent detected is sent verbatim as first touch. |
+| **Triage flow** | `triage: string[]` — ordered asks | The **first** item is appended to every send. The full list is the order the agent pushes to qualify the deal. |
+| **Autoreplies** | `autoreplies: { trigger, reply, enabled }[]` | When a post's words match a trigger harder than any snippet, that line sends instead — it's the one you approved for sending. |
+
+## Why snippets are fragments, not sentences
+
+Snippets are sent **verbatim as the first touch**, and the first triage ask rides behind them. A snippet ending in "Best regards, The Team" would ship as-is and read corporate on a Marketplace thread — which is exactly the thing the dial exists to avoid. Practical rule:
+
+1. **Write it as you'd text it.** Fragments, lowercase, no greeting, no sign-off. `anyone around know someone with a van` — not `Hello, do you by chance know a van operator…`.
+2. **One topic per snippet.** The picker matches on word overlap — the post's own words (`van`, `shed`, `salthill`) have to appear in the snippet you want to trigger it.
+3. **Put your safest general opener first.** When nothing scores above zero, the first snippet is the fallback send, so slot #1 is your default line.
+4. **Don't end snippets with a question.** The triage nudge gets appended as the question.
+5. **Keep triage item #1 to one short ask.** It rides along on *every* send on that channel.
+
+## The pick, exactly
+
+Deterministic — the same post always previews (and sends) the same message:
+
+1. Score every **enabled autoreply** by word overlap (words of 4+ chars) against the detected post. The best wins; ties keep the autoreply, because it's the line you approved.
+2. Score every **raw snippet** the same way; a snippet that scores strictly higher replaces the current pick.
+3. Nothing scored above zero → first snippet, else the house fallback line for the channel's style.
+4. Append **triage item #1** (question-marked if the base doesn't already end in one).
+5. `casual` applies last, lowercasing the joined line.
+
+These same strings also reach the live agent verbatim — snippets as `Example replies to mimic:`, enabled autoreplies as `Enabled base replies — adapt to their actual words and send:`. What the simulator previews is byte-for-byte what the agent is told.
+
+## Live simulator labels
+
+The Brand tab's simulator types the detected post and labels the result with one of three lines — they map to the pick above:
+
+| Label under the blue bubble | The pick |
+|---|---|
+| `Matched autoreply · <trigger>` | An enabled line won on word overlap; the trigger names why. |
+| `Matched a gold example` | A snippet won the scoring. |
+| `No close match — style fallback` | Nothing scored — first snippet or house line sent, so read it as "this post won't match anything you've written yet." |
+
+If the preview reads wrong, the snippets are wrong — fix the snippets, not the drafts.

@@ -296,6 +296,18 @@ export function DashboardKeywords() {
     return () => setFormSlot(null)
   }, [formOpen, editScope, load, setFormSlot])
 
+  // Scrim (backdrop) dismiss clears the rendered slot without touching page
+  // state — without this reset the selection goes stale and a later click
+  // on the same row no-ops.
+  useEffect(() => {
+    const onExternalDismiss = () => {
+      setFormOpen(false)
+      setEditScope(null)
+    }
+    window.addEventListener('lk:form-dismissed', onExternalDismiss)
+    return () => window.removeEventListener('lk:form-dismissed', onExternalDismiss)
+  }, [])
+
   function groupFor(keyword: Keyword): Community | null {
     return keyword.groupId ? (communityMap.get(keyword.groupId) ?? null) : null
   }

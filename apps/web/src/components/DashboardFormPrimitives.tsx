@@ -352,27 +352,38 @@ export function Toggle({
 }
 
 /**
- * Empty-state banner: light brand-blue tint that says there is no data here
- * yet and drives the reader to enter it. Title + body plus an action slot —
- * pass a small overlay-form `Button` or a router `Link`; the banner lays
- * the CTA out, the caller owns what it opens.
+ * Empty-state banner: solid brand-blue card that says there is no data here
+ * yet. The platform glyph sits top-left inline with the large white
+ * headline, then the body, then the CTA line — dashed-underline link
+ * styling that the action node inherits (pass a plain `<span>` to point
+ * the reader at the real edit control above the banner, or a router
+ * `Link` where the banner IS the only path, e.g. onboarding).
  */
 export function EmptyBanner({
+  icon,
   title,
   body,
   action,
   className = '',
 }: {
+  icon?: ReactNode
   title: string
   body: string
   action?: ReactNode
   className?: string
 }) {
   return (
-    <div className={`rounded-xl bg-[#2A8CFF]/[0.07] p-4 ${className}`}>
-      <p className="text-sm font-bold text-[#0B3E91]">{title}</p>
-      <p className="mt-0.5 text-sm text-text-secondary">{body}</p>
-      {action ? <div className="mt-2.5">{action}</div> : null}
+    <div className={`rounded-xl bg-[#2A8CFF] p-5 text-white ${className}`}>
+      <div className="flex items-center gap-2.5">
+        {icon ? <span aria-hidden="true" className="shrink-0">{icon}</span> : null}
+        <p className="text-lg font-bold leading-snug">{title}</p>
+      </div>
+      <p className="mt-1.5 text-sm text-white/80">{body}</p>
+      {action ? (
+        <div className="mt-3 text-sm font-semibold underline decoration-dashed decoration-white/80 decoration-2 underline-offset-4">
+          {action}
+        </div>
+      ) : null}
     </div>
   )
 }

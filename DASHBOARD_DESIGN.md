@@ -138,6 +138,11 @@ Derived from the brand blue `#2A8CFF`:
   positive/neutral/negative meaning is carried by labels, never color alone.
 - Chart fills are `HERO` at 0.32 → 0.02 opacity; stroke width ~2.75 (ink boost)
   so thin lines survive on white.
+- Docs Mermaid diagrams use the same ramp: `theme: "base"` with `PALE` node
+  fills, `HERO` borders + lines, value ink text, `#EFF6FF` clusters, `DEEP`
+  titles (`apps/docs/app/components/mdx/mermaid.tsx` — a wrapper over
+  `fumadocs-mermaid` that applies this by default; dark site theme falls back
+  to Mermaid's `dark`).
 
 ### Value typography — Satoshi Black, always
 

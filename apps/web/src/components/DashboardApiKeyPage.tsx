@@ -1,19 +1,28 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, KeyRound, Waves } from 'lucide-react'
 import { Badge } from '@listeningkit/ui'
-import { apiActivityFor, getApiKeys, type ApiKey } from '../lib/api'
+import { apiActivityFor, getApiKeys, type ApiActivityEvent, type ApiKey } from '../lib/api'
 import { DashboardApiKeyConsole } from './DashboardApiKeyConsole'
+import { DashboardApiKeyScopes } from './DashboardApiKeyScopes'
+import { DashboardApiActivityInspectForm } from './DashboardApiActivityInspectForm'
+import { DashboardTab } from './DashboardTab'
+import { useDashboardFormSlot } from './DashboardFormSlot'
 
 /**
  * Per-key observability, keyed by the key UUID in the route
  * (`/dashboard/api/:keyId`). Header carries the key's identity and scopes;
- * below it the scope-activity firehose replays what the key calls and what
- * its scopes stop. A row click on the API table lands here.
+ * tabs below switch between the scope panel (the exact permissions chosen
+ * at setup) and the scope-activity firehose (what the key calls and what
+ * its scopes stop). A row click on the API table lands here; a firehose
+ * row opens that call in the inspect sheet.
  */
 export function DashboardApiKeyPage() {
   const { keyId } = useParams()
+  const setFormSlot = useDashboardFormSlot()
   const [apiKey, setApiKey] = useState<ApiKey | null | undefined>(undefined)
+  const [tab, setTab] = useState<'scope' | 'activity'>('scope')
+  const [inspectedEvent, setInspectedEvent] = useState<ApiActivityEvent | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -30,6 +39,31 @@ export function DashboardApiKeyPage() {
   }, [keyId])
 
   const activity = useMemo(() => (apiKey ? apiActivityFor(apiKey) : []), [apiKey])
+
+  // A firehose row opens that call in the inspect sheet over the content —
+  // there is no deeper page to navigate to, so it docks in the dashboard
+  // form slot like the analytics post inspect does.
+  useEffect(() => {
+    setFormSlot(
+      inspectedEvent && apiKey ? (
+        <DashboardApiActivityInspectForm
+          apiKey={apiKey}
+          event={inspectedEvent}
+          onClose={() => setInspectedEvent(null)}
+        />
+      ) : null
+    )
+    return () => setFormSlot(null)
+  }, [inspectedEvent, apiKey, setFormSlot])
+
+  // Scrim (backdrop) dismiss clears the rendered slot without touching page
+  // state — without this reset the selection goes stale and a later click
+  // on the same row no-ops.
+  useEffect(() => {
+    const onExternalDismiss = () => setInspectedEvent(null)
+    window.addEventListener('lk:form-dismissed', onExternalDismiss)
+    return () => window.removeEventListener('lk:form-dismissed', onExternalDismiss)
+  }, [])
 
   if (apiKey === undefined) {
     return (
@@ -87,7 +121,32 @@ export function DashboardApiKeyPage() {
         </div>
       </div>
 
-      <DashboardApiKeyConsole keyName={apiKey.name} activity={activity} />
+      <div className="flex flex-wrap gap-2" role="group" aria-label="Key detail view">
+        <DashboardTab
+          active={tab === 'scope'}
+          onClick={() => setTab('scope')}
+          label="Scope"
+          icon={<KeyRound className="size-4" aria-hidden="true" />}
+          accent="blue"
+        />
+        <DashboardTab
+          active={tab === 'activity'}
+          onClick={() => setTab('activity')}
+          label="Activity"
+          icon={<Waves className="size-4" aria-hidden="true" />}
+          accent="sky"
+        />
+      </div>
+
+      {tab === 'scope' ? (
+        <DashboardApiKeyScopes apiKey={apiKey} />
+      ) : (
+        <DashboardApiKeyConsole
+          keyName={apiKey.name}
+          activity={activity}
+          onSelect={setInspectedEvent}
+        />
+      )}
     </div>
   )
 }

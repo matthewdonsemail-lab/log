@@ -241,6 +241,18 @@ export function DashboardGroups() {
     return () => setFormSlot(null)
   }, [formOpen, formScope, load, setFormSlot])
 
+  // Scrim (backdrop) dismiss clears the rendered slot without touching page
+  // state — without this reset the selection goes stale and a later click
+  // on the same row no-ops.
+  useEffect(() => {
+    const onExternalDismiss = () => {
+      setFormOpen(false)
+      setFormScope(null)
+    }
+    window.addEventListener('lk:form-dismissed', onExternalDismiss)
+    return () => window.removeEventListener('lk:form-dismissed', onExternalDismiss)
+  }, [])
+
   const active = SOCIAL_ICONS.find((i) => i.id === platform) ?? SOCIAL_ICONS[0]
   const current = (communities ?? []).filter((c) => c.joinState === 'accepted')
   const pending = (communities ?? []).filter((c) => c.joinState === 'pending')

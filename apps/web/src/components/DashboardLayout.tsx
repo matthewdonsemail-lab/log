@@ -1,4 +1,4 @@
-import { memo, useState, type ReactNode } from 'react'
+import { memo, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Outlet } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
@@ -101,6 +101,23 @@ const FormOverlay = memo(function FormOverlay({
   // scrim is the backdrop-click close path (same as Cancel/Escape) — the
   // form panel is a sibling, so clicks inside it never reach it.
   const overlayClip = useSquircleClip<HTMLDivElement>(20)
+  // While the exit fade runs, the scrim and panel must not swallow clicks
+  // aimed at the dashboard underneath (e.g. the very button that reopens
+  // the form): pointer-events drop to none for the exit duration, then
+  // return once the animation has fully committed out.
+  const [isExiting, setIsExiting] = useState(false)
+  const exitTimer = useRef<number | null>(null)
+  useEffect(
+    () => () => {
+      if (exitTimer.current !== null) window.clearTimeout(exitTimer.current)
+    },
+    []
+  )
+  const onOverlayAnimationStart = (def: string) => {
+    if (def !== 'exit') return
+    setIsExiting(true)
+    exitTimer.current = window.setTimeout(() => setIsExiting(false), 250)
+  }
   return (
     <AnimatePresence initial={false}>
       {formSlot ? (
@@ -110,6 +127,7 @@ const FormOverlay = memo(function FormOverlay({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          onAnimationStart={onOverlayAnimationStart}
           className="pointer-events-none absolute inset-2 z-30"
           aria-hidden={false}
         >
@@ -118,10 +136,15 @@ const FormOverlay = memo(function FormOverlay({
               className="absolute inset-0 bg-[#0A1830]/45"
               aria-hidden="true"
               onClick={onDismiss}
-              style={{ pointerEvents: 'auto', cursor: 'pointer' }}
+              style={{ pointerEvents: isExiting ? 'none' : 'auto', cursor: 'pointer' }}
             />
-            <div className="absolute inset-y-0 right-0 py-6 pr-6 sm:py-8 sm:pr-8">
-              <div className="pointer-events-auto h-full w-[400px]">{formSlot}</div>
+            <div
+              className="absolute inset-y-0 right-0 py-6 pr-6 sm:py-8 sm:pr-8"
+              style={{ pointerEvents: isExiting ? 'none' : 'auto' }}
+            >
+              <div className="h-full w-[400px]" style={{ pointerEvents: isExiting ? 'none' : 'auto' }}>
+                {formSlot}
+              </div>
             </div>
           </div>
         </motion.div>

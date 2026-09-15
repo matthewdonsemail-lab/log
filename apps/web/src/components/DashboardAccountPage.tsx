@@ -128,6 +128,15 @@ export function DashboardAccountPage() {
     return () => setFormSlot(null)
   }, [inspected, account, setFormSlot, navigate])
 
+  // Scrim (backdrop) dismiss clears the rendered slot without touching page
+  // state — without this reset the selection goes stale and a later click
+  // on the same row no-ops.
+  useEffect(() => {
+    const onExternalDismiss = () => setInspected(null)
+    window.addEventListener('lk:form-dismissed', onExternalDismiss)
+    return () => window.removeEventListener('lk:form-dismissed', onExternalDismiss)
+  }, [])
+
   if (account === undefined) {
     return (
       <div className="flex flex-col gap-6 pb-6">

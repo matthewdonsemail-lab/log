@@ -75,6 +75,15 @@ export function DashboardAPI() {
     return () => setFormSlot(null)
   }, [formOpen, load, setFormSlot])
 
+  // Scrim (backdrop) dismiss clears the rendered slot without touching page
+  // state — without this reset the selection goes stale and a later click
+  // on the same row no-ops.
+  useEffect(() => {
+    const onExternalDismiss = () => setFormOpen(false)
+    window.addEventListener('lk:form-dismissed', onExternalDismiss)
+    return () => window.removeEventListener('lk:form-dismissed', onExternalDismiss)
+  }, [])
+
   async function revoke(id: string) {
     if (revokingId) return
     setRevokingId(id)

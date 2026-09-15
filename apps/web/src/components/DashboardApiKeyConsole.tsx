@@ -34,13 +34,17 @@ function formatTs(iso: string): string {
  * made, newest first — allowed rows show what it actually does, denied rows
  * say exactly which scope dimension stopped it. The observability half of
  * the key table row. Caps the list the same way the analytics console does.
+ * Clicking a row opens that call in the activity inspect sheet.
  */
 export function DashboardApiKeyConsole({
   keyName,
   activity,
+  onSelect,
 }: {
   keyName: string
   activity: ApiActivityEvent[]
+  /** Row click override — the key page passes its inspect-sheet opener. */
+  onSelect?: (event: ApiActivityEvent) => void
 }) {
   const clip = useSquircleClip<HTMLDivElement>(20)
   const [filter, setFilter] = useState<'all' | 'allowed' | 'denied'>('all')
@@ -96,7 +100,17 @@ export function DashboardApiKeyConsole({
 
         <div className="lk-no-scrollbar mt-4 flex max-h-80 min-h-0 flex-col gap-2 overflow-y-auto">
           {visible.map((event) => (
-            <div key={event.id} className="rounded-xl bg-black/[0.02] px-3 py-2">
+            <button
+              type="button"
+              key={event.id}
+              onClick={() => onSelect?.(event)}
+              title={
+                onSelect
+                  ? `Open the details of this call — ${event.method} ${event.path}`
+                  : `${event.method} ${event.path}`
+              }
+              className="rounded-xl bg-black/[0.02] px-3 py-2 text-left transition-colors hover:bg-black/[0.05]"
+            >
               <div className="flex w-full items-center gap-2.5">
                 <Badge variant={METHOD_BADGE[event.method] ?? 'muted'} className="w-[70px] shrink-0 justify-center">
                   {event.method}
@@ -119,7 +133,7 @@ export function DashboardApiKeyConsole({
                   {event.reason}
                 </p>
               ) : null}
-            </div>
+            </button>
           ))}
           {visible.length === 0 ? (
             <p className="py-4 text-sm text-text-secondary">
