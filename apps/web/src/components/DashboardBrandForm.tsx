@@ -241,9 +241,9 @@ export function DashboardBrandForm({
             />
           </Field>
           {preview ? (
-            <div className="flex flex-col items-start gap-1.5">
+            <div className="flex flex-col items-end gap-1.5">
               <ChatBubble tone="outgoing">{preview.text}</ChatBubble>
-              <p className="text-xs text-text-secondary">
+              <p className="text-right text-xs text-text-secondary">
                 {preview.matched ? 'Matched a gold example.' : 'Style fallback — add a closer snippet.'}
               </p>
             </div>
@@ -328,7 +328,7 @@ function StringListEditor({
       {rows.map((row, index) => (
         <div key={index} className="flex items-center gap-2">
           {numbered ? (
-            <span aria-hidden="true" className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#2A8CFF]/10 text-xs font-bold text-[#2A8CFF]">
+            <span aria-hidden="true" className="flex size-6 shrink-0 items-center justify-center rounded-full bg-black/5 text-xs font-semibold text-text-secondary">
               {index + 1}
             </span>
           ) : null}
@@ -353,10 +353,14 @@ function StringListEditor({
           </Button>
         </div>
       ))}
-      <Button type="button" variant="outline" size="lg" onClick={() => onChange([...rows, ''])}>
-        <Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />
+      <button
+        type="button"
+        onClick={() => onChange([...rows, ''])}
+        className="inline-flex h-9 items-center gap-1.5 self-start rounded-lg border-2 border-dashed border-slate-300 px-3 text-sm font-medium text-text-secondary hover:border-[#2a8cff] hover:text-[#2a8cff]"
+      >
+        <Plus size={16} strokeWidth={2.25} aria-hidden="true" />
         {addLabel}
-      </Button>
+      </button>
     </div>
   )
 }

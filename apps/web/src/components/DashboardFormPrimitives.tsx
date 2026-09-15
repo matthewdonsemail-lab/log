@@ -201,21 +201,45 @@ export function PickRow({
  * Form input whose border is the squircle path: the element is clipped to a
  * squircle and the stroke is an SVG sibling overlay (inputs can't contain
  * children), so focus is a stroke-color change — never a CSS border/ring.
+ * Pass `shape="rounded-md"` for a plain small-radius CSS border instead.
  */
 export function FormInput({
   className,
   onFocus,
   onBlur,
   radius = 14,
+  shape = 'squircle',
   ...props
 }: Omit<InputHTMLAttributes<HTMLInputElement>, 'ref'> & {
   /** Squircle radius — defaults to 14; pass 8 to match button rounding. */
   radius?: number
+  /** Shape treatment: squircle clip (default) or a plain `rounded-md` border. */
+  shape?: 'squircle' | 'rounded-md'
 }) {
   const clip = useSquircleClip<HTMLInputElement>(radius)
   const border = useSquircleBorder<HTMLInputElement>(radius + 1)
   const setRef = useComposedRef(clip.ref, border.ref)
   const [focused, setFocused] = useState(false)
+  if (shape === 'rounded-md') {
+    return (
+      <input
+        {...props}
+        onFocus={(event: FocusEvent<HTMLInputElement>) => {
+          setFocused(true)
+          onFocus?.(event)
+        }}
+        onBlur={(event: FocusEvent<HTMLInputElement>) => {
+          setFocused(false)
+          onBlur?.(event)
+        }}
+        className={cn(
+          'h-12 w-full rounded-md border bg-white px-4 text-slate-900 placeholder:text-slate-400 focus:outline-none',
+          focused ? 'border-[#2A8CFF]' : 'border-[#E4E7EC]',
+          className
+        )}
+      />
+    )
+  }
   return (
     <span className="relative block w-full">
       <input
@@ -266,8 +290,9 @@ export function EmptyLine({ label }: { label: string }) {
 
 /**
  * Chat bubble with the Messages shape: squircle r10 with a tightened tail
- * corner on the sending side — incoming (grey, tail bottom-left) for gold
- * examples, outgoing (blue, tail bottom-right) for simulator previews.
+ * corner on the sending side — outgoing (blue, tail bottom-right) for the
+ * agent's own voice (gold examples, simulated replies), incoming (grey,
+ * tail bottom-left) for the buyer's side of the simulator.
  */
 export function ChatBubble({ tone, children }: { tone: 'incoming' | 'outgoing'; children: ReactNode }) {
   const clip = useSquircleClip<HTMLDivElement>(
