@@ -211,3 +211,14 @@ simulator's "Matched autoreply · trigger" label already covers the
 which-reply-fires need). No form changes — `AutorepliesEditor` already
 lives in `ChannelFields`, and the existing per-channel Edit buttons open
 it (`apps/web/src/components/DashboardBrand.tsx`).
+
+### 2026-09-15 - fec4a7f
+Empty states on the Brand page are now light-blue-tint banners that drive
+entry: new shared `EmptyBanner` (title + body + action slot) in
+`DashboardFormPrimitives`, adopted by all five no-data spots — no-brand
+(onboarding link styled via `buttonVariants`), triage ("Edit Facebook"),
+memory ("Edit memory"), gold snippets (per-channel "Edit {Channel}" —
+`GoldExamples` gained channelLabel/onEdit), and autoreplies
+(`AutorepliesSection` gained onEdit) — every CTA opens the right overlay
+form, no step logic touched (`apps/web/src/components/
+DashboardFormPrimitives.tsx`, `DashboardBrand.tsx`).
