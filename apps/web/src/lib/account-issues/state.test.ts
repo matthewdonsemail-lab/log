@@ -22,7 +22,7 @@ describe('account state contract', () => {
     expect(view.state).toBe('action_required')
     expect(view.action).toBe('open_challenge')
     expect(view.requiresAction).toBe(true)
-    expect(view.issue?.label).toBe('Bot challenge pending')
+    expect(view.issue?.label).toBe('Captcha interstitial (false success)')
   })
 
   it('does not require user action for a transient rate limit', () => {
@@ -41,6 +41,14 @@ describe('account state contract', () => {
     expect(event?.type).toBe('account-state-changed')
     expect(event?.issue).toBe('checkpointed')
     expect(event?.requiresAction).toBe(true)
+  })
+
+  it('surfaces the platform-specific remediation copy in the notification', () => {
+    const next = { ...base, lastIssue: 'checkpointed' as const, rawSignal: { code: 190, subcode: 459 } }
+    const event = accountStateNotification(base, next)
+
+    expect(event?.title).toBe('Checkpoint challenge')
+    expect(event?.detail).toBe('Log in at facebook.com in a normal browser and clear the checkpoint, then re-export the cookie.')
   })
 
   it('emits a recovery notification when the issue clears', () => {

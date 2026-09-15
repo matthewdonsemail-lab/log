@@ -107,7 +107,7 @@ export function accountStateNotification(
   if (previousView?.state === nextView.state && previousIssue === nextIssue) return null
 
   const title = nextView.issue?.label ?? (nextView.state === 'healthy' ? 'Account recovered' : 'Account state changed')
-  const detail = nextView.issue?.remediation[next.platform] ??
+  const detail = nextView.issue?.remediation ||
     (nextView.state === 'healthy' ? 'The account is healthy again.' : 'Review the account state and required action.')
 
   return {
