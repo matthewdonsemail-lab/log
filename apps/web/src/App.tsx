@@ -57,6 +57,13 @@ export function App() {
               <Route path="accounts/:accountId" element={<DashboardAccountPage />} />
               <Route path="brand" element={<DashboardBrand />} />
               <Route path="messages" element={<DashboardMessages />} />
+              <Route path="messages/:platform" element={<DashboardMessages />} />
+              <Route path="messages/:platform/:accountId" element={<DashboardMessages />} />
+              <Route path="messages/:platform/:accountId/:threadId" element={<DashboardMessages />} />
+              <Route
+                path="messages/:platform/:accountId/:threadId/:messageId"
+                element={<DashboardMessages />}
+              />
               <Route path="settings" element={<DashboardSettings />} />
               <Route path="api" element={<DashboardAPI />} />
               <Route path="api/:keyId" element={<DashboardApiKeyPage />} />

@@ -262,7 +262,7 @@ Messaging is the most complete domain: every connected account gets an isolated 
   - **Reddit** — no conversation object at all; inbox/outbox listings are flattened messages the client groups by `first_message_name` (the `t4_` fullname of the thread's first message), with a PM `subject` line on the thread.
   
   The [messaging tests](apps/web/src/lib/__tests__/messaging.test.ts) pin these shapes as regressions (`^\d{19}-\d{19}$` thread ids on X, `^\d{13,17}$` on Facebook, `^t4_[a-z0-9]+$` on Reddit), and the per-field contract is in the [Messaging docs page](apps/docs/content/docs/api-reference/endpoints/messaging.mdx).
-- **Dashboard** — [`DashboardMessages.tsx`](apps/web/src/components/DashboardMessages.tsx) renders per-account inboxes from the client helpers in [`messaging/index.ts`](apps/web/src/lib/messaging/index.ts) (`getThreads`, `getThreadMessages`, `sendMessage`, `startThread`, `acknowledgeThread`) — the same calls an API client would issue.
+- **Dashboard** — [`DashboardMessages.tsx`](apps/web/src/components/DashboardMessages.tsx) renders per-account inboxes from the client helpers in [`messaging/index.ts`](apps/web/src/lib/messaging/index.ts) (`getThreads`, `getThreadMessages`, `sendMessage`, `startThread`, `acknowledgeThread`) — the same calls an API client would issue. Selection is URL-driven (`/dashboard/messages/:platform/:accountId/:threadId/:messageId`, every level optional): the view deep-links the first conversation on load, unknown segments redirect up instead of rendering a dead view, and clicking a bubble links that message (scroll + flash). Nothing is hardcoded in the view — every row comes from the seeded mock store through those client calls.
 
 ### Multi-account proxying
 

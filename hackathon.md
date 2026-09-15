@@ -313,3 +313,15 @@ target; re-index appends unseen URLs only; failed rows have no retry;
 gold examples are hand-curated; reveal → intelligence is unwired
 (`saveKeywordMapping` persists locally, nothing reads it yet). Also:
 onboarding write-back corrected, `pnpm dev` row covers web + docs.
+
+### 2026-09-16 - working tree
+Messages view is now URL-driven: `/dashboard/messages/:platform/
+:accountId/:threadId/:messageId` (every level optional, routes in
+`apps/web/src/App.tsx`), selection derives from the segments in
+`DashboardMessages.tsx`, unknown platform/account/thread segments
+redirect up with a toast, the first conversation deep-links on load,
+and clicking a bubble links that message (scroll-into-view + flash).
+Read/unread ack moved into an effect so deep-linked threads mark read
+like clicked ones. Verified: no hardcoded threads/messages in the
+view — all rows flow from the seeded mock store through the messaging
+client; typecheck, lint and all 32 vitest tests pass.

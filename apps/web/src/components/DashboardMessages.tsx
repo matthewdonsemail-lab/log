@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { Message, MessageList } from '@chatscope/chat-ui-kit-react'
 import '@chatscope/chat-ui-kit-styles/dist/default/styles.min.css'
 import './chat-theme.css'
@@ -55,6 +56,24 @@ function PlatformTab({ icon, active, onClick }: { icon: SocialIcon; active: bool
   )
 }
 
+function isKnownPlatform(value: string | undefined): value is string {
+  return value !== undefined && value in MESSAGING_PLATFORM_BY_ICON
+}
+
+/**
+ * Deep-link shape for the Messages view, scoped platform → account → thread
+ * → message. Every level is optional: `/dashboard/messages` alone renders
+ * platform defaults, each deeper segment pins one more selection. Anything
+ * the view shows can be reconstructed from the URL alone.
+ */
+function messagesUrl(platform: string, accountId?: string, threadId?: string, messageId?: string): string {
+  let url = `/dashboard/messages/${platform}`
+  if (accountId) url += `/${accountId}`
+  if (threadId) url += `/${threadId}`
+  if (messageId) url += `/${messageId}`
+  return url
+}
+
 function ThreadAvatar({ name, initials, color }: { name: string; initials: string; color: string }) {
   return (
     <span
@@ -103,7 +122,23 @@ function AccountPicker({
 const BUBBLE_RADIUS = 10
 const BUBBLE_TAIL_RADIUS = 2
 
-function MessageBubble({ tone, image, children }: { tone: 'incoming' | 'outgoing'; image?: string; children: ReactNode }) {
+function MessageBubble({
+  tone,
+  image,
+  id,
+  flash,
+  onPick,
+  children
+}: {
+  tone: 'incoming' | 'outgoing'
+  image?: string
+  /** DOM anchor (`msg-<messageId>`) so a :messageId URL segment can scroll here. */
+  id?: string
+  flash?: boolean
+  /** Deep-link this message (click, not text-selection drag). */
+  onPick?: () => void
+  children: ReactNode
+}) {
   const clip = useSquircleClip<HTMLDivElement>(
     BUBBLE_RADIUS,
     1,
@@ -115,10 +150,16 @@ function MessageBubble({ tone, image, children }: { tone: 'incoming' | 'outgoing
   return (
     <div
       ref={clip.ref}
+      id={id}
+      onClick={() => {
+        if (window.getSelection()?.toString()) return
+        onPick?.()
+      }}
+      title={onPick ? 'Link to this message' : undefined}
       style={clip.style}
       className={`max-w-[420px] text-sm leading-relaxed ${imageOnly ? 'overflow-hidden' : 'px-4 py-2.5'} ${
         tone === 'outgoing' ? 'bg-[#2A8CFF] text-white' : 'bg-[#F1F5F9] text-text-primary'
-      }`}
+      }${flash ? ' outline outline-2 outline-offset-2 outline-[#2A8CFF]' : ''}${onPick ? ' cursor-pointer' : ''}`}
     >
       {image && <img src={image} alt={altText} loading="lazy" className="block w-full max-h-[320px] object-cover" />}
       {children}
@@ -285,16 +326,25 @@ function PromptComposer({
 
 export function DashboardMessages() {
   const { error: notifyError } = useToast()
-  const [platform, setPlatform] = useState(SOCIAL_ICONS[0].id)
+  const navigate = useNavigate()
+  const {
+    platform: paramPlatform,
+    accountId: paramAccountId,
+    threadId: paramThreadId,
+    messageId: paramMessageId
+  } = useParams()
+  // The URL is the source of truth for the selection: platform tab, account
+  // pick, open thread and flashed message all derive from its segments.
+  const [platform, setPlatform] = useState(isKnownPlatform(paramPlatform) ? paramPlatform : SOCIAL_ICONS[0].id)
   const [accountSelection, setAccountSelection] = useState<Partial<Record<MessagingPlatform, string>>>({
     ...DEFAULT_MESSAGING_ACCOUNT
   })
   const [accounts, setAccounts] = useState<{ id: string; label: string; handle: string | null }[] | null>(null)
   const [threads, setThreads] = useState<Thread[] | null>(null)
-  const [activeIds, setActiveIds] = useState<Partial<Record<MessagingPlatform, string>>>({})
   const [messagesByThread, setMessagesByThread] = useState<Record<string, ChatMessage[]>>({})
   const [loadingMessages, setLoadingMessages] = useState(false)
   const [sending, setSending] = useState(false)
+  const [flashId, setFlashId] = useState<string | null>(null)
 
   const CHAT_SQUIRCLE_RADIUS = 20
   const chatClip = useSquircleClip<HTMLDivElement>(CHAT_SQUIRCLE_RADIUS)
@@ -302,8 +352,19 @@ export function DashboardMessages() {
   const chatPaneRef = useComposedRef(chatClip.ref, chatBorder.ref)
 
   const messagesPlatform = MESSAGING_PLATFORM_BY_ICON[platform] ?? 'facebook'
-  const selectedAccountId = accountSelection[messagesPlatform] ?? DEFAULT_MESSAGING_ACCOUNT[messagesPlatform]
-  const activeId: string | null = activeIds[messagesPlatform] ?? null
+  const selectedAccountId = paramAccountId ?? accountSelection[messagesPlatform] ?? DEFAULT_MESSAGING_ACCOUNT[messagesPlatform]
+  const activeId: string | null = paramThreadId ?? null
+
+  // Browser back/forward moves the platform tab; an unknown platform segment
+  // bounces to the base view instead of rendering a stranger's inbox.
+  useEffect(() => {
+    if (paramPlatform === undefined) return
+    if (isKnownPlatform(paramPlatform)) {
+      if (paramPlatform !== platform) setPlatform(paramPlatform)
+    } else {
+      navigate('/dashboard/messages', { replace: true })
+    }
+  }, [paramPlatform, platform, navigate])
 
   useEffect(() => {
     getAccounts()
@@ -326,27 +387,40 @@ export function DashboardMessages() {
       .catch(() => setAccounts([]))
   }, [messagesPlatform])
 
+  // An account segment that isn't one of this platform's connected accounts
+  // drops back to the platform view instead of rendering a stranger's inbox.
+  useEffect(() => {
+    if (!paramAccountId || accounts === null) return
+    if (!accounts.some((account) => account.id === paramAccountId)) {
+      notifyError('Account not found', 'That account is not connected on this platform.')
+      navigate(messagesUrl(platform), { replace: true })
+    }
+  }, [paramAccountId, accounts, platform, navigate, notifyError])
+
   // Load the selected account's inbox whenever the platform tab or the
   // account pick changes; threads are an account-scoped resource.
   useEffect(() => {
     let cancelled = false
     setThreads(null)
-    setActiveIds((prev) => {
-      const next = { ...prev }
-      delete next[messagesPlatform]
-      return next
-    })
     getThreads(selectedAccountId)
       .then((res) => {
         if (cancelled) return
         setThreads(res.threads)
         setMessagesByThread({})
         setAccountSelection((prev) => (prev[messagesPlatform] === selectedAccountId ? prev : { ...prev, [messagesPlatform]: selectedAccountId }))
-        setActiveIds((prev) => {
+        if (paramThreadId && !res.threads.some((t) => t.id === paramThreadId && t.platform === messagesPlatform)) {
+          // A thread segment that isn't in this account's inbox: drop it and
+          // stay on the account (or platform) level instead of a dead view.
+          notifyError('Conversation not found', 'That conversation is not in this inbox.')
+          navigate(paramAccountId ? messagesUrl(platform, paramAccountId) : messagesUrl(platform), { replace: true })
+          return
+        }
+        if (!paramThreadId) {
+          // No thread pinned: deep-link the first conversation so the URL
+          // always shows exactly what the view shows.
           const first = res.threads.find((t) => t.platform === messagesPlatform)
-          if (!first || prev[messagesPlatform]) return prev
-          return { ...prev, [messagesPlatform]: first.id }
-        })
+          if (first) navigate(messagesUrl(platform, selectedAccountId, first.id), { replace: true })
+        }
       })
       .catch((err: unknown) => {
         if (!cancelled) {
@@ -357,7 +431,7 @@ export function DashboardMessages() {
     return () => {
       cancelled = true
     }
-  }, [messagesPlatform, selectedAccountId, notifyError])
+  }, [messagesPlatform, selectedAccountId, notifyError, navigate, paramThreadId, paramAccountId, platform])
 
   useEffect(() => {
     if (!activeId || messagesByThread[activeId]) return
@@ -382,17 +456,52 @@ export function DashboardMessages() {
     }
   }, [activeId, messagesByThread, threads, messagesPlatform, selectedAccountId, notifyError])
 
+  // What opening a conversation does natively — instant local read state plus
+  // the server-side ack — whether the thread was clicked or deep-linked.
+  useEffect(() => {
+    if (!activeId) return
+    const thread = threads?.find((t) => t.id === activeId)
+    if (!thread || thread.unread === 0) return
+    setThreads((prev) => prev?.map((t) => (t.id === activeId ? { ...t, unread: 0 } : t)) ?? prev)
+    acknowledgeThread(messagesPlatform, selectedAccountId, activeId).catch(() => {})
+  }, [activeId, threads, messagesPlatform, selectedAccountId])
+
+  // A :messageId segment scrolls the message into view and flashes it; an
+  // unknown id drops the segment instead of stranding the view.
+  useEffect(() => {
+    if (!paramMessageId || !activeId) {
+      setFlashId(null)
+      return
+    }
+    const list = messagesByThread[activeId] ?? []
+    if (list.length === 0) return
+    if (!list.some((message) => message.id === paramMessageId)) {
+      navigate(messagesUrl(platform, selectedAccountId, activeId), { replace: true })
+      return
+    }
+    setFlashId(paramMessageId)
+    requestAnimationFrame(() => {
+      document.getElementById(`msg-${paramMessageId}`)?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    })
+    const timer = setTimeout(() => setFlashId(null), 2800)
+    return () => clearTimeout(timer)
+  }, [paramMessageId, activeId, messagesByThread, navigate, platform, selectedAccountId])
+
   function openThread(id: string) {
-    setActiveIds((prev) => ({ ...prev, [messagesPlatform]: id }))
-    setThreads((prev) => prev?.map((t) => (t.id === id ? { ...t, unread: 0 } : t)) ?? prev)
-    // What opening a conversation does natively; the local unread: 0 above
-    // is the instant UI, this is the server-side read state.
-    const thread = threads?.find((t) => t.id === id)
-    if (thread) acknowledgeThread(messagesPlatform, selectedAccountId, id).catch(() => {})
+    navigate(messagesUrl(platform, selectedAccountId, id))
   }
 
   function pickAccount(accountId: string) {
-    setAccountSelection((prev) => ({ ...prev, [messagesPlatform]: accountId }))
+    navigate(messagesUrl(platform, accountId))
+  }
+
+  function pickPlatform(iconId: string) {
+    navigate(messagesUrl(iconId))
+  }
+
+  function pickMessage(messageId: string) {
+    if (!activeId) return
+    navigate(messagesUrl(platform, selectedAccountId, activeId, messageId), { replace: true })
   }
 
   async function sendMessage(body: string, image?: string) {
@@ -425,7 +534,7 @@ export function DashboardMessages() {
         <div className="lk-no-scrollbar flex min-h-0 min-w-0 flex-col gap-4 overflow-y-auto">
           <div className="flex flex-wrap items-center gap-2">
             {SOCIAL_ICONS.map((icon) => (
-              <PlatformTab key={icon.id} icon={icon} active={icon.id === platform} onClick={() => setPlatform(icon.id)} />
+              <PlatformTab key={icon.id} icon={icon} active={icon.id === platform} onClick={() => pickPlatform(icon.id)} />
             ))}
             {pickerAccounts.length > 0 && (
               <div className="ml-auto">
@@ -522,7 +631,13 @@ export function DashboardMessages() {
                         }}
                       >
                         <Message.CustomContent>
-                          <MessageBubble tone={message.from === 'me' ? 'outgoing' : 'incoming'} image={message.image}>
+                          <MessageBubble
+                            tone={message.from === 'me' ? 'outgoing' : 'incoming'}
+                            image={message.image}
+                            id={`msg-${message.id}`}
+                            flash={flashId === message.id}
+                            onPick={() => pickMessage(message.id)}
+                          >
                             {message.body}
                           </MessageBubble>
                         </Message.CustomContent>
