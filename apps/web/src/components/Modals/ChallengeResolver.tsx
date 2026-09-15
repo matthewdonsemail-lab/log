@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { CheckCircle2, ShieldCheck } from 'lucide-react'
+import { ShieldCheck } from 'lucide-react'
+import { useToast } from '@listeningkit/ui'
 import { platformLabel, type ConnectionRecord } from '../../lib/connections'
 import {
   CHALLENGE_RESOLVABLE_ISSUES,
@@ -26,6 +27,7 @@ export function ChallengeResolver({
   /** Persist the cleared challenge (parent owns the mutation + toast). */
   onResolve: () => Promise<void>
 }) {
+  const { success: toast } = useToast()
   const [solved, setSolved] = useState(false)
   const [frameError, setFrameError] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -48,6 +50,11 @@ export function ChallengeResolver({
     window.addEventListener('message', onMessage)
     return () => window.removeEventListener('message', onMessage)
   }, [account.platform])
+
+  // Solve detected (iframe postMessage or the fallback button) → toast.
+  useEffect(() => {
+    if (solved) toast('Challenge cleared')
+  }, [solved, toast])
 
   async function handleConfirm() {
     setBusy(true)
@@ -95,12 +102,7 @@ export function ChallengeResolver({
               className="h-[420px] w-full rounded-xl border border-black/10 bg-white md:h-[520px]"
             />
           )}
-          {solved ? (
-            <p className="flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2.5 text-sm font-semibold text-emerald-700">
-              <CheckCircle2 size={15} strokeWidth={2.25} aria-hidden="true" />
-              Challenge cleared
-            </p>
-          ) : (
+          {!solved && (
             <button
               type="button"
               onClick={() => setSolved(true)}
