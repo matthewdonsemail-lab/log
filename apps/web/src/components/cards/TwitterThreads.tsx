@@ -12,8 +12,8 @@
  * remote Paper asset URLs, except the agent's own avatar (ListeningKit logo).
  *
  * IDENTITY, on purpose:
- * - `TwitterThreads` is the opening post only — a hardcoded inbound mention
- *   from someone else (plain initials avatar). Static demo copy; the Live
+ * - `TwitterThreads` is the opening post only — a hardcoded detected post
+ *   from a lead (plain initials avatar). Static demo copy; the Live
  *   simulator does NOT drive it.
  * - `TwitterThreadReply` is the agent's own reply — a self-contained blue
  *   card (brand blue, white text) with the ListeningKit logo avatar,
@@ -45,7 +45,7 @@ export type TwitterThreadsProps = {
   /** Name/handle of the person mentioning the brand — the opening tweet, not the agent. */
   authorName?: string
   handle?: string
-  /** Hardcoded inbound mention copy — static demo content, never driven by the simulator. */
+  /** Hardcoded detected-post copy — static demo content, never driven by the simulator. */
   openingBody?: string
   openingImageSrc?: string
   openingImageAlt?: string
@@ -210,7 +210,7 @@ export function TwitterThreads({
 
   return (
     <article className={`w-full rounded-xl bg-white pt-4 antialiased ${className}`}>
-      {/* --- Opening tweet: the inbound mention from someone else --- */}
+      {/* --- Opening tweet: the detected post from a lead --- */}
       <div className="flex gap-3">
         <MentionerAvatar name={authorName} />
         <div className="min-w-0 flex-1">

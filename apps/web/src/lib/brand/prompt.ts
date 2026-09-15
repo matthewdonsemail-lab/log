@@ -108,15 +108,15 @@ export function buildReplyContext(brand: BrandEntity | null, eventText: string):
 }
 
 export interface SimulatedReply {
-  /** The exact raw text the agent would send on this channel. */
+  /** The exact raw first-touch text the agent would send on this channel. */
   text: string
   /** True when a gold example was matched; false = style fallback. */
   matched: boolean
 }
 
-const FALLBACK_REPLY = {
-  casual: 'yeah still available, what do you need to know',
-  standard: 'Hi — yes, still available. How can I help?',
+const FIRST_TOUCH_FALLBACK = {
+  casual: 'hey, saw your post — we could have a hand on that this week, want the details?',
+  standard: 'Hi — saw your post, we can help with that. Happy to send over the details?',
 } as const
 
 function wordsOf(text: string): string[] {
@@ -128,30 +128,30 @@ function wordsOf(text: string): string[] {
 }
 
 /**
- * Live preview of the agent on one channel: picks the gold example with the
- * most word overlap against the inbound message (first example wins ties),
- * applies the channel style (casual = all-lowercase, like a human typing
- * fast), then pushes the first triage step. Deterministic — the same inbound
- * message always previews the same reply.
+ * Live preview of the agent's outbound first touch on one channel: picks the
+ * gold example with the most word overlap against the detected post / lead
+ * context (first example wins ties), applies the channel style (casual =
+ * all-lowercase, like a human typing fast), then pushes the first triage
+ * step. Deterministic — the same context always previews the same message.
  */
-export function simulateReply(
+export function simulateOutbound(
   brand: BrandEntity | null,
   channel: BrandChannel,
-  inbound: string,
+  context: string,
 ): SimulatedReply {
   const profile = brand?.channels[channel]
-  const incoming = wordsOf(inbound)
+  const detected = wordsOf(context)
   let best: string | null = null
   let bestScore = 0
   for (const example of profile?.examples ?? []) {
     const haystack = example.toLowerCase()
-    const score = incoming.filter((token) => haystack.includes(token)).length
+    const score = detected.filter((token) => haystack.includes(token)).length
     if (score > bestScore) {
       bestScore = score
       best = example
     }
   }
-  const base = best ?? profile?.examples[0] ?? FALLBACK_REPLY[profile?.style ?? 'casual']
+  const base = best ?? profile?.examples[0] ?? FIRST_TOUCH_FALLBACK[profile?.style ?? 'casual']
   const style = profile?.style ?? 'casual'
   const styled = style === 'casual' ? base.toLowerCase() : base
   const nudge = profile?.triage[0]?.trim()

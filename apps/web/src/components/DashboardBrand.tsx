@@ -2,12 +2,13 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Brain, Globe, MapPin, Pencil, RotateCcw } from 'lucide-react'
-import { Badge, Button, useSquircleClip, useToast } from '@listeningkit/ui'
+import { Button, Select, useSquircleClip, useToast } from '@listeningkit/ui'
 import { SOCIAL_ICONS, SocialGlyph, type SocialIcon } from '../lib/social-icons'
 import {
   clearBrandAsync,
   getBrandAsync,
-  simulateReply,
+  saveBrandAsync,
+  simulateOutbound,
   type BrandChannel,
   type BrandEntity,
   type ChannelProfile,
@@ -54,8 +55,24 @@ export function DashboardBrand() {
   // Form scope: which namespace the overlay form edits; null means closed.
   const [formNamespace, setFormNamespace] = useState<BrandNamespace | null>(null)
 
-  const [inbound, setInbound] = useState('')
+  const [leadContext, setLeadContext] = useState('')
   const [simulated, setSimulated] = useState(false)
+  const [styleBusy, setStyleBusy] = useState(false)
+
+  async function changeStyle(channel: BrandChannel, style: ChannelStyle) {
+    if (!brand || busy || styleBusy) return
+    setStyleBusy(true)
+    try {
+      const next = await saveBrandAsync({
+        channels: { ...brand.channels, [channel]: { ...brand.channels[channel], style } },
+      })
+      setBrand(next)
+    } catch (err: unknown) {
+      notifyError('Could not update the tone', err instanceof Error ? err.message : 'Something went wrong.')
+    } finally {
+      setStyleBusy(false)
+    }
+  }
 
   const load = useCallback(() => {
     getBrandAsync()
@@ -100,8 +117,8 @@ export function DashboardBrand() {
   // Simulator follows the active tab and always reads the saved record.
   const simChannel = TAB_CHANNEL[tab]
   const preview = useMemo(
-    () => (brand && inbound.trim() ? simulateReply(brand, simChannel, inbound) : null),
-    [brand, simChannel, inbound]
+    () => (brand && leadContext.trim() ? simulateOutbound(brand, simChannel, leadContext) : null),
+    [brand, simChannel, leadContext]
   )
 
   async function handleReset() {
@@ -131,7 +148,7 @@ export function DashboardBrand() {
           <p className="text-sm text-text-secondary">
             {brand
               ? `The agent's communication brain & memory hub for ${brand.identity.name}.`
-              : 'Configure how your agent texts buyers and what it remembers.'}
+              : 'Configure how your agent reaches out to leads and what it remembers.'}
           </p>
         </div>
         {brand ? (
@@ -227,7 +244,11 @@ export function DashboardBrand() {
                     <EditButton label="Edit Facebook" onClick={() => setFormNamespace('facebook')} />
                   </div>
 
-                  <StyleRow style={brand.channels.facebook.style} />
+                  <StyleRow
+                      style={brand.channels.facebook.style}
+                      disabled={busy || styleBusy}
+                      onChange={(style) => changeStyle('facebook', style)}
+                    />
 
                   <h3 className="mt-4 text-sm font-semibold text-text-primary">
                     How we actually text
@@ -270,28 +291,28 @@ export function DashboardBrand() {
                 <BrandSurface className="sticky top-6">
                   <h2 className="text-base font-bold text-text-primary">Live simulator</h2>
                   <p className="text-xs text-text-secondary">
-                    Type an inbound buyer message — the blue bubble is the exact reply the agent
-                    would send.
+                    Paste the detected post / lead context — the blue bubble is the first-touch
+                    outbound message the agent sends.
                   </p>
                   <div className="mt-3 flex items-center gap-2">
                     <div className="min-w-0 flex-1">
                       <FormInput
                         type="text"
                         shape="rounded-md"
-                        value={inbound}
+                        value={leadContext}
                         onChange={(event) => {
-                          setInbound(event.target.value)
+                          setLeadContext(event.target.value)
                           setSimulated(true)
                         }}
-                        placeholder="e.g. is this still available and can you do 40?"
-                        aria-label="Inbound test message"
+                        placeholder="e.g. anyone know someone with a van in salthill to clear an old shed?"
+                        aria-label="Detected post / lead context"
                         autoComplete="off"
                       />
                     </div>
                   </div>
-                  {inbound.trim() ? (
+                  {leadContext.trim() ? (
                     <div className="mt-3 flex justify-start">
-                      <ChatBubble tone="incoming">{inbound}</ChatBubble>
+                      <ChatBubble tone="quote">{leadContext}</ChatBubble>
                     </div>
                   ) : null}
                   {simulated && preview ? (
@@ -361,7 +382,11 @@ export function DashboardBrand() {
                     />
                   </div>
 
-                  <StyleRow style={brand.channels[tab].style} />
+                  <StyleRow
+                      style={brand.channels[tab].style}
+                      disabled={busy || styleBusy}
+                      onChange={(style) => changeStyle(tab, style)}
+                    />
 
                   <h3 className="mt-4 text-sm font-semibold text-text-primary">How we actually text</h3>
                   <GoldExamples profile={brand.channels[tab]} />
@@ -382,11 +407,11 @@ export function DashboardBrand() {
                         <FormInput
                           type="text"
                           shape="rounded-md"
-                          value={inbound}
-                          onChange={(event) => {
-                            setInbound(event.target.value)
-                            setSimulated(true)
-                          }}
+value={leadContext}
+                           onChange={(event) => {
+                             setLeadContext(event.target.value)
+                             setSimulated(true)
+                           }}
                           placeholder={
                             tab === 'reddit'
                               ? 'e.g. good flag — the ban usually comes from the login fingerprint…'
@@ -400,13 +425,13 @@ export function DashboardBrand() {
                   </div>
                   {tab === 'reddit' ? (
                     <div className="mt-3">
-                      <RedditThread reply={inbound} />
+                      <RedditThread reply={leadContext} />
                     </div>
                   ) : (
                     <div className="mt-3 flex flex-col">
                       <TwitterThreads />
                       <div className="w-full overflow-hidden rounded-xl bg-white">
-                        <TwitterThreadReply reply={inbound} />
+                        <TwitterThreadReply reply={leadContext} />
                       </div>
                     </div>
                   )}
@@ -429,17 +454,32 @@ function EditButton({ label, onClick }: { label: string; onClick: () => void }) 
   )
 }
 
-/** Tone readout: eyebrow label plus the neutral descriptor pill. */
-function StyleRow({ style }: { style: ChannelStyle }) {
+/** Tone readout: eyebrow label plus a live Select bound to the saved style. */
+function StyleRow({
+  style,
+  disabled,
+  onChange,
+}: {
+  style: ChannelStyle
+  disabled: boolean
+  onChange: (style: ChannelStyle) => void
+}) {
   return (
     <div className="mt-5 border-t border-slate-100 pt-4">
       <div className="flex items-center gap-2">
         <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
           Tone
         </span>
-        <Badge variant="muted">
-          {style === 'casual' ? 'Natural casual (all-lowercase)' : 'Standard'}
-        </Badge>
+        <Select
+          size="sm"
+          value={style}
+          disabled={disabled}
+          onChange={(value) => onChange(value as ChannelStyle)}
+          options={[
+            { value: 'casual', label: 'Natural casual' },
+            { value: 'standard', label: 'Standard' },
+          ]}
+        />
       </div>
     </div>
   )
@@ -447,8 +487,8 @@ function StyleRow({ style }: { style: ChannelStyle }) {
 
 /**
  * Gold examples are the agent's own voice, so they render as outgoing blue
- * bubbles — the grey incoming tone is reserved for the buyer's side of the
- * simulator.
+ * bubbles — the grey quote tone is reserved for the lead's detected post in
+ * the simulator.
  */
 function GoldExamples({ profile }: { profile: ChannelProfile }) {
   if (profile.examples.length === 0) {
@@ -477,12 +517,12 @@ function GoldExamples({ profile }: { profile: ChannelProfile }) {
  */
 
 /** Stubbed Facebook thread — Messenger chat stays the live path for now. */
-export function FacebookThreadStub({ inbound }: { inbound: string }) {
+export function FacebookThreadStub({ leadContext }: { leadContext: string }) {
   return (
     <div className="flex flex-col gap-2 rounded-2xl border border-slate-200 bg-white p-4">
-      {inbound.trim() ? (
+      {leadContext.trim() ? (
         <div className="flex justify-start">
-          <ChatBubble tone="incoming">{inbound}</ChatBubble>
+          <ChatBubble tone="quote">{leadContext}</ChatBubble>
         </div>
       ) : (
         <p className="rounded-xl bg-black/5 p-3 text-sm text-text-secondary">

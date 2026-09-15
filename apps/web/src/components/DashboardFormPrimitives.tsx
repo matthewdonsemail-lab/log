@@ -291,10 +291,10 @@ export function EmptyLine({ label }: { label: string }) {
 /**
  * Chat bubble with the Messages shape: squircle r10 with a tightened tail
  * corner on the sending side — outgoing (blue, tail bottom-right) for the
- * agent's own voice (gold examples, simulated replies), incoming (grey,
- * tail bottom-left) for the buyer's side of the simulator.
+ * agent's own voice (gold examples, first-touch messages), quote (grey,
+ * tail bottom-left) for the lead's detected post in the simulator.
  */
-export function ChatBubble({ tone, children }: { tone: 'incoming' | 'outgoing'; children: ReactNode }) {
+export function ChatBubble({ tone, children }: { tone: 'quote' | 'outgoing'; children: ReactNode }) {
   const clip = useSquircleClip<HTMLDivElement>(
     10,
     1,

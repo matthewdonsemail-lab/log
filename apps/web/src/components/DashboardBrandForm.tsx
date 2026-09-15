@@ -3,7 +3,7 @@ import { Plus, Trash2 } from 'lucide-react'
 import { Button, Select, useToast } from '@listeningkit/ui'
 import {
   saveBrandAsync,
-  simulateReply,
+  simulateOutbound,
   type BrandChannel,
   type BrandEntity,
   type ChannelProfile,
@@ -80,7 +80,7 @@ export function DashboardBrandForm({
   const [locationLabel, setLocationLabel] = useState('')
   const [channels, setChannels] = useState<Record<BrandChannel, ChannelProfile>>(blankChannels)
   const [memoryRules, setMemoryRules] = useState<string[]>([])
-  const [testInbound, setTestInbound] = useState('')
+  const [testContext, setTestContext] = useState('')
 
   useEffect(() => {
     if (!open) return
@@ -88,7 +88,7 @@ export function DashboardBrandForm({
     // page's record is never touched until confirm.
     setStep(1)
     setBusy(false)
-    setTestInbound('')
+    setTestContext('')
     setName(initialBrand.identity.name)
     setWebsite(initialBrand.identity.website)
     setLocationLabel(initialBrand.location.label)
@@ -134,7 +134,7 @@ export function DashboardBrandForm({
     [initialBrand, name, channels, memoryRules]
   )
 
-  const preview = testInbound.trim() ? simulateReply(draftBrand, testChannel, testInbound) : null
+  const preview = testContext.trim() ? simulateOutbound(draftBrand, testChannel, testContext) : null
 
   function patchChannel(channel: BrandChannel, patch: Partial<ChannelProfile>) {
     setChannels((prev) => ({ ...prev, [channel]: { ...prev[channel], ...patch } }))
@@ -231,12 +231,12 @@ export function DashboardBrandForm({
         </div>
       ) : (
         <div className="flex flex-col gap-3">
-          <Field label={`Inbound ${testChannel === 'x' ? 'X mention' : testChannel === 'reddit' ? 'Reddit comment' : 'buyer message'}`}>
+          <Field label={`Detected ${testChannel === 'x' ? 'X mention' : testChannel === 'reddit' ? 'Reddit comment' : 'lead context'}`}>
             <FormInput
               type="text"
-              value={testInbound}
-              onChange={(event) => setTestInbound(event.target.value)}
-              placeholder="e.g. is this still available and can you do 40?"
+              value={testContext}
+              onChange={(event) => setTestContext(event.target.value)}
+              placeholder="e.g. anyone know someone with a van in salthill to clear an old shed?"
               autoComplete="off"
             />
           </Field>
@@ -249,7 +249,7 @@ export function DashboardBrandForm({
             </div>
           ) : (
             <p className="rounded-xl bg-black/5 p-4 text-sm text-text-secondary">
-              Type an inbound message above to hear this draft reply.
+              Paste the detected post / lead above to hear this first-touch draft.
             </p>
           )}
         </div>
@@ -287,7 +287,7 @@ function ChannelFields({
         <StringListEditor
           rows={profile.examples}
           onChange={(examples) => onChange({ examples })}
-          placeholder="e.g. yeah still got it mate, when can you collect?"
+          placeholder="e.g. hey, saw you're after a shed clear — we're out your way thursday, want a spot?"
           itemLabel="snippet"
           addLabel="Add snippet"
         />

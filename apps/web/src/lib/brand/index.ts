@@ -31,7 +31,13 @@ export type {
 export { defaultChannels } from './types'
 export { brandApp, type BrandApp } from './server'
 export type { BrandIntelligenceInput } from './server'
-export { PROMPT_VERSION, buildBrandSystemPrompt, buildReplyContext, retrieveSourceRefs, simulateReply } from './prompt'
+export {
+  PROMPT_VERSION,
+  buildBrandSystemPrompt,
+  buildReplyContext,
+  retrieveSourceRefs,
+  simulateOutbound
+} from './prompt'
 export { resolveSitemap, seedSourcesFor } from './sources'
 
 /**

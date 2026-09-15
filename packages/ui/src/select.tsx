@@ -58,6 +58,8 @@ export interface SelectProps {
    * squircle clip + stroke recipe, so it lines up exactly with `FormInput`.
    */
   size?: 'sm' | 'lg'
+  /** Disable the trigger — the menu cannot open while a save is in flight. */
+  disabled?: boolean
   className?: string
   'aria-label'?: string
 }
@@ -71,6 +73,7 @@ export function Select({
   icon,
   menuFooter,
   size = 'sm',
+  disabled = false,
   className,
   'aria-label': ariaLabel
 }: SelectProps) {
@@ -190,6 +193,7 @@ middleware: [
         type="button"
         ref={setTriggerRef}
         style={lg ? triggerClip.style : undefined}
+        disabled={disabled}
         {...referenceProps}
         onFocus={() => setTriggerFocused(true)}
         onBlur={() => setTriggerFocused(false)}
@@ -198,7 +202,7 @@ middleware: [
           'inline-flex w-full items-center justify-between gap-2 bg-white text-sm font-medium text-text-primary outline-none transition-colors',
           lg
             ? 'h-12 px-4'
-            : 'h-9 rounded-md border border-black/10 px-3 hover:bg-black/[0.02] focus-visible:ring-2 focus-visible:ring-brand-500/40',
+            : 'h-9 rounded-md border border-black/10 px-3 hover:bg-black/[0.02] focus-visible:ring-2 focus-visible:ring-brand-500/40 disabled:cursor-not-allowed disabled:opacity-60',
           className
         )}
       >
