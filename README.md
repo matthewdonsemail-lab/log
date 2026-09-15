@@ -2,7 +2,7 @@
 
 A live log of what's happening on the social channels that matter to your business — **Facebook, X (Twitter), and Reddit** — with push notifications the moment a word, keyword, or phrase you care about shows up in the channels you own, the groups you're a member of, and the communities you follow.
 
-This is the **open-source client** for ListeningKit, a **Convex hackathon** submission. The whole stack is built directly on top of **OpenMagpie** — the open-source social-listening tool that the team works on — and on the shared Camoufox action clients below.
+This is the **open-source client** for ListeningKit, a **Convex hackathon** submission. The stack is built directly on top of **OpenMagpie** — the open-source social-listening tool the team works on — and the shared Camoufox action clients described below.
 
 ## The goal, in one sentence
 
@@ -18,7 +18,7 @@ flowchart LR
     RD[Reddit communities]
   end
 
-  subgraph action["Camofox action clients"]
+  subgraph action["Camoufox action clients"]
     FBC["facebook-camofox-client"]
     TWK["twtkit"]
     RDC["reddit-camofox-client"]
@@ -48,11 +48,226 @@ flowchart LR
 | **Community research (Firecrawl)** | Finds and curates communities **scoped by area** using [Firecrawl](https://firecrawl.dev) with Google search operators / dorking strategies, then curates against the stored, indexed posts across the communities and areas you're targeting. |
 | **Bark** | [Bark](https://bark.app) push notifications — keyword hits and group-acceptance events land on your phone. |
 
-## Multi-account proxying
+## What's actually in this repo
 
-Connect **every account you own**, each with its own cookie and an optional proxy route. Accounts are **id-keyed** (not platform-keyed), so multiple accounts per platform are first-class, and traffic can be pinned to a per-account proxy for isolation. The client's connection store, connect/test handshakes, and duplicate-flow all live in `apps/web/src/lib/connections`.
+Everything above is the **live target**; the client in this repo is built against the full API contract *today*, with the live clients stubbed by an in-repo mock that speaks the same route table. Concretely:
 
-## Group discovery → join → auto-listen
+- The dashboard's data layer is a set of **Hono apps** under [`apps/web/src/lib/`](apps/web/src/lib/) — one per domain — mounted onto a single root app in [`mock-api.ts`](apps/web/src/lib/mock-api.ts), with mock-backed stores and seed data.
+- The clients in each domain call the Hono apps **in-process** (`app.request(…)`), so the whole dashboard runs in the browser with no server. State that should survive a refresh persists to **localStorage**; everything else is in-memory per boot.
+- The same root app also serves as a standalone **mock server** on `http://localhost:5174` ([`scripts/mock-server.ts`](apps/web/scripts/mock-server.ts)) with fresh seeds on every boot, which the docs' **Scalar try-it consoles** execute against.
+- Pointing the clients at the live Hono/Railcode backend later is a **transport change only** — no route, response shape, or client call changes. The Vite dev server already proxies [`/api`](apps/web/vite.config.ts) to `http://localhost:4000` for that day.
+
+## The API
+
+One Hono surface, **8 tags, 54 documented operations** (the `/messaging/twitter` legacy alias is documented as its own five operations beside `/messaging/x`). Every route carries `describeRoute(...)`, and every request/response **Zod schema lives in one file** — [`openapi.ts`](apps/web/src/lib/openapi.ts) — so the generated spec, the docs site, and the mock can't drift from each other. The generated contract is committed at [`apps/docs/openapi.json`](apps/docs/openapi.json), and each tag page renders with a live try-it console: see the [API reference](apps/docs/content/docs/api-reference/index.mdx).
+
+| Tag | Routes | Implementation | Docs |
+|---|---|---|---|
+| **API keys** | `GET/POST /api-keys`, `DELETE /api-keys/:id` | [`api/server.ts`](apps/web/src/lib/api/server.ts) | [page](apps/docs/content/docs/api-reference/endpoints/api-keys.mdx) |
+| **Brand** | `GET/PUT/DELETE /brand`, `POST /brand/intelligence`, `POST /brand/index`, `GET/DELETE /brand/sources` | [`brand/server.ts`](apps/web/src/lib/brand/server.ts) | [page](apps/docs/content/docs/api-reference/endpoints/brand.mdx) |
+| **Accounts** | `GET/POST /accounts`, `PATCH/DELETE /accounts/:accountId` | [`connections/server.ts`](apps/web/src/lib/connections/server.ts) | [page](apps/docs/content/docs/api-reference/endpoints/accounts.mdx) |
+| **Communities** | `GET /communities[?platform=]`, `POST /communities/:id/join`, `POST /communities/join-by-url`, `POST /communities/resolve`, `POST /communities/resolve-reddit`, `POST /communities/:id/accept`, `DELETE /communities/:id` | [`communities/server.ts`](apps/web/src/lib/communities/server.ts) | [page](apps/docs/content/docs/api-reference/endpoints/communities.mdx) |
+| **Listings** | `GET/POST /listings`, `PATCH /listings/:listingId`, `PATCH /listings/:listingId/status`, `GET /listings/:listingId/status`, `DELETE /listings/:listingId` | [`listings/server.ts`](apps/web/src/lib/listings/server.ts) | [page](apps/docs/content/docs/api-reference/endpoints/listings.mdx) |
+| **Keywords** | `GET /keywords[?platform=&groupId=&noGroup=]`, `POST /keywords`, `POST /keywords/reset`, `PATCH/DELETE /keywords/:id` | [`keywords/server.ts`](apps/web/src/lib/keywords/server.ts) | [page](apps/docs/content/docs/api-reference/endpoints/keywords.mdx) |
+| **Feed** | `GET /feed[?platform=&search=]`, `GET /feed/:platform[?search=]` | [`feed/server.ts`](apps/web/src/lib/feed/server.ts) | [page](apps/docs/content/docs/api-reference/endpoints/feed.mdx) |
+| **Messaging** | per platform at `/messaging/{facebook,x,reddit}`, plus the legacy `/messaging/twitter` alias of the `x` routes: `GET /threads`, `POST /threads`, `GET /threads/:threadId/messages`, `POST /threads/:threadId/messages`, `POST /threads/:threadId/ack` — 20 operations in the spec | [`messaging/routes.ts`](apps/web/src/lib/messaging/routes.ts) | [page](apps/docs/content/docs/api-reference/endpoints/messaging.mdx) |
+
+### Data model
+
+The mock's stores keep one record shape per domain; the foreign keys (account ids, community ids) are what tie the workspace together:
+
+```mermaid
+erDiagram
+  CONNECTION ||--o{ COMMUNITY : "facebook joins"
+  CONNECTION ||--o{ LISTING : "accountId"
+  CONNECTION ||--o{ THREAD : "accountId"
+  APIKEY }o--o| CONNECTION : "scopes.accountId (null = all)"
+  APIKEY }o--o{ COMMUNITY : "scopes.groupIds ([] = all)"
+  COMMUNITY ||--o{ KEYWORD : "groupId (facebook/reddit only)"
+  THREAD ||--o{ CHAT_MESSAGE : "threadId"
+  KEYWORD ||--o{ ANALYTICS : "keywordId (in-memory fan-out)"
+  BRAND }o--o{ COMMUNITY : "intelligence.targetCommunities"
+
+  CONNECTION {
+    string id PK
+    string platform "facebook | x | reddit"
+    string label
+    bool viaProxy
+    string connectedAt "null until the extension verifies"
+  }
+  COMMUNITY {
+    string id PK
+    string platform
+    string name
+    string url "nullable; set for resolved rows"
+    string[] entryQuestions "facebook join gates"
+    string[] answers
+    string joinState "none | pending | accepted"
+    string accountId FK "facebook joins only"
+  }
+  KEYWORD {
+    string id PK
+    string phrase
+    string platform
+    string groupId FK "null on x; must be a joined community elsewhere"
+    string status "listening | paused"
+    int signalsCount
+  }
+  LISTING {
+    string listingId PK "numeric Marketplace id"
+    string title
+    string price
+    string location
+    string accountId FK
+    locationPoint locationPoint "lat/lng + radiusKm 1-200"
+    string images "1-4 URLs, first is cover"
+    string status "under-review | under-review-duplicate | active | sold | removed"
+  }
+  THREAD {
+    string id PK "normalized"
+    string platform
+    string accountId FK
+    string platformThreadId "dm_conversation_id / thread_key / t4_ first_message_name"
+    string platformParticipantId
+    string subject "reddit only"
+    string preview
+    int unread
+  }
+  CHAT_MESSAGE {
+    string id PK "normalized"
+    string threadId FK
+    string from "me | them"
+    string platformMessageId
+    string body
+    string sentAt
+    string replyTo "platformMessageId of the replied message (is_self_reply on facebook)"
+  }
+  FEED_ITEM {
+    string id PK
+    string platform
+    string variant "post-text | post-image | comment"
+    string body
+    metrics likes "comments shares views replies reposts"
+  }
+  APIKEY {
+    string id PK
+    string name
+    string prefix "lk_live_4f7ak2***** — only secret-derived value stored"
+    string secretHash "SHA-256 of the secret"
+    scope scopes "accountId, groupIds[], canSendMessages, canReceiveMessages"
+  }
+  BRAND {
+    string id PK "'brand-default' — one workspace record"
+    identity identity "name, website, tagline, logoUrl"
+    location location "label, lat/lng, radiusKm"
+    voice voice "tone, formality, dos/donts, gold examples"
+    offerings offerings "name + detail"
+    sources sources "indexed site pages: url, title, text, status"
+    channels channels "per-platform style, examples, triage, autoreplies"
+    memory memory "working-facts rules"
+    intelligence intelligence "selectedKeyword, competitors, targetCommunities"
+  }
+```
+
+| Record | Defined in | Storage | Notes |
+|---|---|---|---|
+| `ApiKey` / `ApiKeyScope` | [`api/types.ts`](apps/web/src/lib/api/types.ts) | localStorage `api-keys`, seeded from [`api/mock.ts`](apps/web/src/lib/api/mock.ts) | Only the SHA-256 **hash** of the secret is ever stored; the plaintext exists for exactly one moment — the create response. |
+| `ConnectionRecord` | [`connections/types.ts`](apps/web/src/lib/connections/types.ts) | localStorage `listeningkit.accounts.v2` via [`connections/store.ts`](apps/web/src/lib/connections/store.ts) | Id-keyed, not platform-keyed: multiple accounts per platform, optional per-account proxy. v1 rows migrate on load; stale platforms are filtered out. |
+| `Community` | [`communities/types.ts`](apps/web/src/lib/communities/types.ts) | localStorage `communities.catalog` + `communities.joins` (merged on read by `materialize()`) | 20-row seed catalog ([`communities/mock.ts`](apps/web/src/lib/communities/mock.ts)); pasted Facebook URLs and typed subreddits register as first-class rows. |
+| `Keyword` | [`keywords/types.ts`](apps/web/src/lib/keywords/types.ts) | localStorage `keywords`, seeded from [`keywords/mock.ts`](apps/web/src/lib/keywords/mock.ts) | X keywords are word-based (`groupId: null`); facebook/reddit keywords must scope to a **joined** community, checked live against the communities store. Duplicates 409 per scope. |
+| `ListingRecord` | [`listings/types.ts`](apps/web/src/lib/listings/types.ts) | localStorage `listings` | 5 seed rows, including two live-verified marketplace captures; legacy rows without `accountId` migrate on load via `migrateListingRow`. |
+| `FeedItem` | [`feed/mock.ts`](apps/web/src/lib/feed/mock.ts) | in-memory seed (10 rows) | Filterable by `?platform=` / `?search=`; metrics are numbers, formatted for display by `formatCount`. |
+| `Thread` / `ChatMessage` | [`messaging/types.ts`](apps/web/src/lib/messaging/types.ts) | localStorage `messaging` — one per-platform/per-account map in [`messaging/store.ts`](apps/web/src/lib/messaging/store.ts) | Native platform ids are preserved alongside the normalized ones (see [Messaging](#messaging--the-full-chat-contract)); the normalized `id` is what the dashboard uses. |
+| `BrandEntity` | [`brand/types.ts`](apps/web/src/lib/brand/types.ts) | localStorage `brand-entity` | One record per workspace (`brand-default`); v1 rows (string offerings, `voice.serviceAreas`) migrate to v2 on load. |
+| `FirehoseEvent` + analytics shapes | [`analytics/types.ts`](apps/web/src/lib/analytics/types.ts) | in-memory, deterministic per keyword | No HTTP route on purpose: [`getKeywordAnalytics`](apps/web/src/lib/analytics/mock.ts) is consumed directly by the analytics pages, seeded from the keyword's UUID (14-day trend, 120 events, companion phrases for the follow-up chain). |
+| `AccountIssue` / `IssueFix` | [`account-issues/types.ts`](apps/web/src/lib/account-issues/types.ts) | catalog-driven, not persisted | 26 normalized codes × 10 remediation verbs in [`account-issues/catalog.ts`](apps/web/src/lib/account-issues/catalog.ts); the three platform normalizers in [`account-issues/normalize.ts`](apps/web/src/lib/account-issues/normalize.ts) map raw signals (Graph code/subcode, X `type`, Reddit status/body) onto it. Human guide: [docs /getting-started/errors](apps/docs/content/docs/getting-started/errors.mdx). |
+
+Cross-cutting persistence uses one guarded helper — [`persist.ts`](apps/web/src/lib/persist.ts) (`loadPersistedState` / `savePersistedState` with runtime shape checks, so a stale or malformed row falls back to seeds instead of crashing the store). The canonical platform type `facebook | x | reddit` is defined once in [`platform.ts`](apps/web/src/lib/platform.ts) and reused by every domain.
+
+### API keys & scopes
+
+Keys are minted from the dashboard's API tab, never from the API: the `/api-keys` routes are dashboard-only, and **keys never mint or revoke keys**. Model in [`api/types.ts`](apps/web/src/lib/api/types.ts):
+
+- A key is `{ name, prefix, secretHash, scopes }` — the `prefix` (e.g. `lk_live_4f7ak2••••••••`) is the only secret-derived value lists ever show; the full secret is returned exactly once, in the `POST /api-keys` response.
+- A scope is four dimensions: `accountId` (`null` = all accounts), `groupIds` (`[]` = all joined groups), `canSendMessages`, `canReceiveMessages`.
+
+Authorization is table-driven. Every route an external key may call is declared in the [`API_ROUTES`](apps/web/src/lib/api/scopes.ts) registry (28 entries, no `planned` ones left — every declared route is implemented) with what that route **needs** from a key (`account`, `group`, `send`, `receive`); a route only checks the dimensions it names. `checkAccess` is pure (which is why the per-key activity firehose can replay recorded calls through it), and `authorizeApiKey` layers on secret verification:
+
+```mermaid
+sequenceDiagram
+  participant C as Client
+  participant G as authorizeApiKey (scopes.ts)
+  participant V as verifyApiKey (server.ts)
+  participant S as Route store
+
+  C->>G: Bearer lk_live_… + route + ctx { accountId?, groupId? }
+  G->>V: SHA-256 the presented secret
+  V->>V: match hash against stored keys
+  alt unknown / revoked
+    G-->>C: { ok: false, "Unknown or revoked API key." }
+  else scope mismatch
+    G-->>C: { ok: false, first failing reason }
+  else allowed
+    G->>V: key — its `lastUsedAt` stamped
+    G->>S: route runs under the key's scope
+    S-->>C: normal response
+  end
+```
+
+The registry, the pure check, and the gate already exist and are shared: the dashboard's per-key **scope-activity firehose** is exactly `checkAccess` replayed over recorded calls ([`api/activity.ts`](apps/web/src/lib/api/activity.ts)), and the same check drives the scope visuals in the [key inspect form](apps/web/src/components/DashboardApiActivityInspectForm.tsx) — so what the UI shows is provably the logic the live gate runs. Wiring `authorizeApiKey` into the route handlers is the remaining cutover step when the live backend lands. Keys also carry **bits ahead of their routes**: an entry in the registry can be `planned` (`planned` in [`ApiRouteDef`](apps/web/src/lib/api/scopes.ts)), so a key minted today already has the permission when the route ships.
+
+### The OpenAPI pipeline
+
+Nothing about the API contract is authored twice:
+
+```mermaid
+flowchart LR
+  subgraph code["apps/web/src/lib"]
+    S["domain server.ts — routes + describeRoute(operationId, tags, responses)"]
+    Z["openapi.ts — Zod schemas for requests/responses, error envelope, issue vocab"]
+    C["mock-api.ts — one root app mounting every domain app"]
+  end
+  S -->|imports| Z
+  C --> E["pnpm --filter web openapi:export<br/>hono-openapi generateSpecs"]
+  S --> E
+  E --> O[("apps/docs/openapi.json — committed")]
+  O --> G["pnpm --filter docs gen:api<br/>(scripts/generate-api-docs.mjs)"]
+  G --> P["per-tag endpoint pages<br/>mdx + Scalar try-it consoles"]
+  C --> M["pnpm --filter web mock:server<br/>localhost:5174 — /openapi.json + /scalar<br/>fresh seeds, no persistence"]
+  P -->|consoles execute against| M
+  D["browser dashboard"] -->|in-process app.request| C
+```
+
+- The **same Zod schemas** describe routes at runtime (`describeRoute`) and serialize to the spec via `z.toJSONSchema` — a schema change cannot silently desync the docs.
+- The spec's **error vocabulary** is derived from the dashboard's own [`ISSUE_CATALOG` / `FIX_LABELS`](apps/web/src/lib/account-issues/catalog.ts): add a code to the catalog and it flows into `openapi.json` and the [Errors](apps/docs/content/docs/getting-started/errors.mdx) contract with no second authoring pass.
+- The docs site (fumadocs, `apps/docs`) renders the committed spec and its generated per-tag pages; the [API reference index](apps/docs/content/docs/api-reference/index.mdx) explains the try-it setup. Regenerate after any route or schema change: `pnpm --filter web openapi:export` then `pnpm --filter docs gen:api`.
+
+### Messaging — the full chat contract
+
+Messaging is the most complete domain: every connected account gets an isolated inbox per platform, and the surface covers the whole of chat, not just reading.
+
+- **One factory, three platforms** — [`messaging/routes.ts`](apps/web/src/lib/messaging/routes.ts) is `buildMessagingRoutes(platform)`, producing the same five operations on each platform; [`messaging/index.ts`](apps/web/src/lib/messaging/index.ts) mounts them at `/messaging/{facebook,x,reddit}` (with `/messaging/twitter` kept as a legacy alias of `/messaging/x`):
+  - `GET /threads` — the account's threads, newest first
+  - `POST /threads` — **compose**: the first message *is* the thread (201; no platform allows an empty conversation), 409 `thread_already_exists` if that participant's conversation already exists
+  - `GET /threads/:threadId/messages` — the thread plus its full message list; any non-owning account gets **404, never a leak**
+  - `POST /threads/:threadId/messages` — send into an existing thread (Zod-validated `SendInput`; image and reply-to supported; 400 on empty body or an unresolvable reply id)
+  - `POST /threads/:threadId/ack` — idempotent mark-read
+  - Every route requires `?accountId=` (400 without) — account isolation is a route rule, not a convention.
+- **State** — [`messaging/store.ts`](apps/web/src/lib/messaging/store.ts) keeps per-platform/per-account maps, seeds them from the platform mocks, and recomputes `preview` / `updatedAt` / `unread` on every send or start; `resetMessagingStore()` exists for tests.
+- **Identities** — [`messaging/identities.ts`](apps/web/src/lib/messaging/identities.ts) pins the mock's eleven user accounts (fb-personal, fb-galway-rubbish, fb-pacer, x-ops, x-listeningkit, …) with display names and avatar styling, plus a default inbox per platform.
+- **Native ids, normalized on top** — the point of the mock is that it mirrors what the real unofficial browser clients actually see, so every `Thread` / `ChatMessage` carries the platform-native id beside the normalized one:
+  - **X** — no conversation object in the shipped payloads; a DM is identified by the `dm_conversation_id` (`<senderId>-<participantId>`, two 19-digit user ids) carried on each `dm_event`.
+  - **Facebook** — explicit conversation object: numeric conversation id (the `thread_key`), messages with `mid` ids and `from`/`to` participants, `reply_to` with `is_self_reply`.
+  - **Reddit** — no conversation object at all; inbox/outbox listings are flattened messages the client groups by `first_message_name` (the `t4_` fullname of the thread's first message), with a PM `subject` line on the thread.
+  
+  The [messaging tests](apps/web/src/lib/__tests__/messaging.test.ts) pin these shapes as regressions (`^\d{19}-\d{19}$` thread ids on X, `^\d{13,17}$` on Facebook, `^t4_[a-z0-9]+$` on Reddit), and the per-field contract is in the [Messaging docs page](apps/docs/content/docs/api-reference/endpoints/messaging.mdx).
+- **Dashboard** — [`DashboardMessages.tsx`](apps/web/src/components/DashboardMessages.tsx) renders per-account inboxes from the client helpers in [`messaging/index.ts`](apps/web/src/lib/messaging/index.ts) (`getThreads`, `getThreadMessages`, `sendMessage`, `startThread`, `acknowledgeThread`) — the same calls an API client would issue.
+
+### Multi-account proxying
+
+Connect **every account you own**, each with its own cookie and an optional proxy route. Accounts are **id-keyed** (not platform-keyed), so multiple accounts per platform are first-class, and traffic can be pinned to a per-account proxy for isolation. The store, cookie validation, and proxy normalization all live in [`lib/connections/`](apps/web/src/lib/connections/store.ts); the extension handshake side is documented at [docs /getting-started/chrome-extension](apps/docs/content/docs/getting-started/chrome-extension.mdx).
+
+### Group discovery → join → auto-listen
 
 Per platform you get **listings** of communities. On Facebook, listings drive the join flow end-to-end:
 
@@ -74,9 +289,9 @@ sequenceDiagram
   H-->>W: new posts stream into the log
 ```
 
-The join REST call returns the **actual content required to get into the group** (forms, questions); the respective platform client submits it through the humanized browser.
+The join REST call returns the **actual content required to get into the group** (forms, questions); the respective platform client submits it through the humanized browser. Today that lifecycle runs against the mock's communities store — `none → pending → accepted`, where facebook joins require a connected account plus an answer to *every* entry question (reddit/x resolve straight to `accepted`), and `POST /communities/:id/accept` stands in for the admin ([`communities/server.ts`](apps/web/src/lib/communities/server.ts)). URL entry is first-class too: pasted Facebook group links (`resolve` / `join-by-url`) and typed subreddits (`resolve-reddit`) register unseen communities as catalog rows before anything else happens.
 
-## Follow-ups — inspect → suggest → map
+### Follow-ups — inspect → suggest → map
 
 Every captured post opens an inspect sheet (`DashboardEventInspectForm`), and every inspect ends in the same question: what do we do about this? The follow-up loop answers it three ways — and all three feed one growing **map of keywords × communities**: the phrases worth listening for, and the places worth listening in.
 
@@ -97,30 +312,32 @@ flowchart TD
   DR --> SEND[Reply with attached resource]
 ```
 
-### The three follow-ups
-
 | Action | Platforms | What happens |
 |---|---|---|
 | **Find related mentions** | all | `DashboardRelatedKeywordsForm`: the chain reads the post and its comments, suggests keywords, and asks which look promising. Continue moves on; "none of these are relevant" digs through the replies for a second round. Then: look online? → Google dorks → sibling communities → joins → the map → Start listening. |
 | **Find related groups / communities** | facebook + reddit | `DashboardRelatedCommunitiesForm`: the same chain entered at the online search with the tracked phrase preset — dorking → joins → map. (X has no groups, so the action hides there.) |
 | **Draft a response** | all | Inline panel: the post answered in the brand's voice, plus a suggested resource — a video, guide, or page built from the brand's own site matched to what the post is about — attachable to the draft before sending. |
 
-### How the chain works (client)
+#### How the chain works (client)
 
 - `RelatedMentionsChain` renders the branching chain-of-thought in the `brand-blue` tone (blue rails/tracks, white-glyph icons, navy labels — `ChainOfThoughtStep` `tone` plus the matching `chain-joints` tone).
-- [`lib/related-mentions.ts`](apps/web/src/lib/related-mentions.ts) owns the forward-only machine: `scanning → picking → retrying → repicking → onlineAsk → searching → groups → mapReady → saving → saved` (a second rejection lands in `dismissed`). Streaming phases are timer-driven in the component; the machine owns the interactive half.
+- [`lib/related-mentions.ts`](apps/web/src/lib/related-mentions.ts) owns the forward-only XState machine: `scanning → picking → (retrying → repicking)* → onlineAsk → searching → groups → mapReady → saving → saved` (a second rejection lands in the final `dismissed`; `onlineAsk` can skip straight to the map). Streaming phases are timer-driven in the component; the machine owns the interactive half — rejected picks accumulate in context so later rounds never re-offer them.
 - Mock data that feeds it: [`lib/analytics/mock.ts`](apps/web/src/lib/analytics/mock.ts) (post templates carry the tracked `{phrase}` plus a companion `{related}` phrase; `eventComments` carries round-two phrases in the replies) and [`lib/brand/query.ts`](apps/web/src/lib/brand/query.ts) (`suggestKeywords`, `suggestAcross`, `suggestResource`, `draftReply`).
 - Joins and keyword creation are real store calls, not stubs: `joinCommunity` / `joinCommunityByUrl` (+ `acceptCommunity` standing in for the group admin), and `createKeyword` scoped to joined groups — facebook/reddit phrases ride on a group, X phrases ride free.
 
-### The map, and where it's going
+#### The map, and where it's going
 
 The map is the product of the loop: keywords that look worth listening to, pinned to the communities (this one plus newly joined ones) where they're actually said — built out post by post, round-robin, until it covers everything the brand cares about. Accounts do the listening; the same accounts do the responding, with brand-matched resources attached.
 
 Direction, not built yet: expose each follow-up step as a callable surface — platform REST today, model context protocol tomorrow — so a keyword inspection can run end-to-end on its own: inspect the hit, suggest what else to listen for, find the groups that talk like that, join them, and draft the reply with the resource attached. The map is what keeps growing underneath.
 
+#### Onboarding reveal — the first listening scope
+
+Before keywords exist, the [onboarding reveal](apps/web/src/components/onboarding/BrandRevealStep.tsx) builds the initial scope: a forward-only XState machine ([`reveal/machine.ts`](apps/web/src/lib/reveal/machine.ts)) walks competitors → related keywords → keywords confirmed → familiar groups → interested groups, with inline retry self-loops — a *No* appends a retry round and re-asks in place, and the machine never goes backwards. Acceptance is recorded *where* the Yes happened: each step is stamped with its `…AcceptedAt` index (`-1` = the initial ask, `≥0` = the retry round). The content — questions, competitor sets, retry search sets, group sets — lives in [`reveal/flow.ts`](apps/web/src/lib/reveal/flow.ts); accepted sets write back through `POST /brand/intelligence` into the brand's `intelligence` block, which seeds the keywords and groups listening.
+
 ## Brand — gathered info → agent context → self-healing
 
-Everything the app knows about the business lives in one `BrandEntity` record (`apps/web/src/lib/brand/`). Four pipelines fill it, one compiler turns it into agent context, and every loop back into the record is what makes it self-healing.
+Everything the app knows about the business lives in one `BrandEntity` record ([`apps/web/src/lib/brand/`](apps/web/src/lib/brand/types.ts)). Four pipelines fill it, one compiler turns it into agent context, and every loop back into the record is what makes it self-healing. Full contract: [docs /brand](apps/docs/content/docs/brand/index.mdx) (voice, channels, website indexing, agent context).
 
 ```mermaid
 flowchart TD
@@ -152,6 +369,7 @@ flowchart TD
 | Service area + pinpoint | `location` | Listings default, group scoping, reply area |
 | Indexed site pages | `sources` | RAG namespace content; drafts cite url + excerpt |
 | Keyword, competitors, communities | `intelligence` | Seeds keywords/groups listening |
+| Per-channel style, triage, autoreplies | `channels` | Channel-toned drafts; matching autoreplies fire verbatim |
 
 Self-healing — the record repairs and improves itself without re-onboarding:
 
@@ -172,71 +390,59 @@ flowchart LR
   V1[v1 persisted rows] --> MIGRATE[migrate on load<br/>written back clean]
 ```
 
-Concretely: drafts record the prompt version that produced them, so a voice edit upgrades future replies without rewriting history; re-index swaps stale page text in place while failed rows stay visible with retry; v1 rows (string offerings, `serviceAreas`) migrate to v2 on load; accepted competitors/keywords/communities flow back into listening scope, which produces new events, which produce new drafts. Each loop leaves the record richer than it found it. Full contract in [`apps/docs/content/docs/brand/`](apps/docs/content/docs/brand/).
+Concretely: drafts record the prompt version that produced them, so a voice edit upgrades future replies without rewriting history; re-index swaps stale page text in place while failed rows stay visible with retry; v1 rows (string offerings, `voice.serviceAreas`) migrate to v2 on load; accepted competitors/keywords/communities flow back into listening scope, which produces new events, which produce new drafts. Each loop leaves the record richer than it found it. The deterministic preview of what *exactly* would be sent is `simulateOutbound` in [`brand/query.ts`](apps/web/src/lib/brand/query.ts) — it scores gold examples and enabled autoreplies the same way the agent would, and the Brand tab renders the result as a real per-channel thread ([`cards/`](apps/web/src/components/cards)).
 
-## This repo — the client architecture
+## Shell & design system
 
-The important part of the architecture lives in `apps/web/src/lib/`. Every data surface is a **Hono-shaped API** — mock-backed today, same routes and response shapes when pointed at the real Hono/Railcode backend, so the client never changes.
+The app shell, sidebar, and pages live in [`apps/web/src/components/`](apps/web/src/components) — see **[DASHBOARD_DESIGN.md](DASHBOARD_DESIGN.md)** for the full design record (squircle system, continuous collapse, status vocabulary, hard rules). Shared primitives come from [`packages/ui`](packages/ui) (`select`, `table`, `badge`, `button`, `squircle`, `toast`). The docs site under [`apps/docs`](apps/docs) is fumadocs, embedded in the dashboard at `/dashboard/docs` (the Vite dev server proxies `/docs` and `/_next` to the docs app on 3001).
 
-### [`lib/connections/`](apps/web/src/lib/connections) — accounts & proxies
+## Testing
 
-| File | Responsibility |
-|---|---|
-| [`types.ts`](apps/web/src/lib/connections/types.ts) | `ConnectionPlatform` (`facebook \| x \| reddit`), id-keyed `ConnectionRecord { id, platform, label, viaProxy, connectedAt }`, `ConnectInput` |
-| [`store.ts`](apps/web/src/lib/connections/store.ts) | `listeningkit.accounts.v2` persistence, v1→v2 migration, first-run seeding, strict record validation (stale platforms are filtered out on read) |
-| [`index.ts`](apps/web/src/lib/connections/index.ts) | `connectAccount` (handshake + persist), `testConnection` (dry-run), `disconnectAccount`, and the store re-exports — all `AbortSignal`-aware with fake-latency delays that mirror the real backends |
-| [`cookie.ts`](apps/web/src/lib/connections/cookie.ts) / [`proxy.ts`](apps/web/src/lib/connections/proxy.ts) | Cookie validation and proxy-URL normalization shared by test + connect |
+`vitest` runs in-process against the same Hono apps the dashboard uses (`pnpm --filter web test`):
 
-### [`lib/feed/`](apps/web/src/lib/feed) — the log
-
-| File | Responsibility |
-|---|---|
-| [`server.ts`](apps/web/src/lib/feed/server.ts) | Hono-shaped feed app: `GET /feed`, `GET /feed/:platform` — mock rows today, real backend tomorrow, same contract |
-| [`mock.ts`](apps/web/src/lib/feed/mock.ts) | Seed rows for the three platforms |
-| [`index.ts`](apps/web/src/lib/feed/index.ts) | Client that requests through the Hono app |
-
-Rendered in `DashboardFeed` as per-platform columns with real platform card layouts (post-text, post-image, comment).
-
-### [`lib/messaging/`](apps/web/src/lib/messaging) — in-app messaging
-
-Mirror of the feed pattern: a Hono app per platform ([`facebook/server.ts`](apps/web/src/lib/messaging/facebook/server.ts), [`twitter/server.ts`](apps/web/src/lib/messaging/twitter/server.ts), [`reddit/server.ts`](apps/web/src/lib/messaging/reddit/server.ts)) mounted at `/facebook`, `/twitter`, `/reddit` by [`index.ts`](apps/web/src/lib/messaging/index.ts), which aggregates `getThreads()` across all three. Shared shapes in [`types.ts`](apps/web/src/lib/messaging/types.ts) (`Thread`, `ChatMessage`, `Participant`).
-
-### [`lib/notifications/bark.ts`](apps/web/src/lib/notifications/bark.ts) — push
-
-Bark client: configurable server (defaults to `https://api.day.app`), device-key validation, a GET-form **test URL** (open it directly — no CORS), and `sendBarkPush` (POST JSON; Bark returns HTTP 200 even on failure, so the response `code` is what decides). Config persists to `listeningkit.bark.v1`.
-
-### [`lib/communities.ts`](apps/web/src/lib/communities.ts) & [`lib/social-icons.tsx`](apps/web/src/lib/social-icons.tsx)
-
-Community directory model (the listings the Groups screen joins/leaves, persisted to `listeningkit.joined.v1`), and the shared social identity: `simple-icons` paths for the three platforms plus the two-layer squircle `SocialBadge` used across header and tables.
-
-### Shell & design system
-
-The app shell, sidebar, and pages live in [`apps/web/src/components/`](apps/web/src/components) — see **[DASHBOARD_DESIGN.md](DASHBOARD_DESIGN.md)** for the full design record (squircle system, continuous collapse, status vocabulary, hard rules). Shared primitives come from [`packages/ui`](packages/ui) (`select`, `table`, `badge`, `button`, `squircle`, `toast`).
+- [`api-coverage.test.ts`](apps/web/src/lib/__tests__/api-coverage.test.ts) smokes **every** API domain through `mockApiApp.request` — key CRUD, all seven brand routes, accounts, community resolution in both flavors, listings, keyword scoping rejections, feed filters, and messaging account-ownership rules — so a route or schema change fails here before it fails in the docs.
+- [`messaging.test.ts`](apps/web/src/lib/__tests__/messaging.test.ts) locks the full chat contract: per-account seeded inboxes, account/platform isolation and the 404-not-a-leak rule, native id shapes as regex regressions, send/start preview + `updatedAt` sync, 409 duplicate compose, reply validation, idempotent ack, and byte-identical `/messaging/twitter` ↔ `/messaging/x` aliasing.
 
 ## Quickstart
 
 ```bash
 pnpm install
-pnpm dev        # runs apps/web on http://localhost:3000, proxies /api -> http://localhost:4000
+pnpm dev           # apps/web on http://localhost:3000
+```
+
+Useful extras:
+
+```bash
+pnpm --filter web mock:server    # same API over HTTP on http://localhost:5174 (/openapi.json, /scalar)
+pnpm --filter docs dev           # the docs site on http://localhost:3001
 ```
 
 ## Scripts
 
 | Command | What it does |
 |---|---|
-| `pnpm dev` | dev server for `apps/web` |
+| `pnpm dev` | dev server for `apps/web` (3000), proxying `/api` → 4000 and `/docs`/`/_next` → the docs app |
 | `pnpm build` | `pnpm -r build` across workspaces |
 | `pnpm typecheck` | `pnpm -r typecheck` across workspaces |
-| `pnpm lint` | `pnpm -r lint` across workspaces |
+| `pnpm lint` | `pnpm -r lint` across workspaces (oxlint, `@shadcn/lint` — see [available rules](https://github.com/shadcn-ui/lint/blob/main/README.md#rules)) |
+| `pnpm --filter web test` | vitest run (API coverage + messaging contract) |
+| `pnpm --filter web mock:server` | standalone mock API on 5174 |
+| `pnpm --filter web openapi:export` | regenerate `apps/docs/openapi.json` from the mock |
+| `pnpm --filter docs gen:api` | regenerate the endpoint pages from the committed spec |
 
 ## Layout
 
 ```
 listeningkit-hackathon/
   apps/
-    web/              # Vite React client (port 3000)
+    web/              # Vite React client (3000) — dashboard + the in-repo mock API
+      scripts/        # mock-server.ts, export-openapi.ts
+    docs/             # fumadocs site (3001) — OpenAPI reference + brand/keywords guides
+      openapi.json    # committed generated spec
+      scripts/        # generate-api-docs.mjs
   packages/
     ui/               # @listeningkit/ui shared package
+  .railcode/          # Railcode deploy scaffolding (manifest.yaml, railcode.json)
   pnpm-workspace.yaml
 ```
 

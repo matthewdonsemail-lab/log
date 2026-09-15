@@ -12,7 +12,7 @@
 - **Auth:** none
 - **AI models:** none
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-16T01:48:00Z
+- **Last updated:** 2026-09-16T02:36:00Z
 
 ## Log
 
@@ -268,3 +268,16 @@ app with messaging + API-coverage tests (`apps/web/vitest.config.ts`,
 `apps/web/src/lib/__tests__/`), and the OpenAPI spec, generator, and messaging
 docs page regenerated with the new endpoints (`apps/web/src/lib/openapi.ts`,
 `apps/docs/openapi.json`, `apps/docs/content/docs/api-reference/endpoints/messaging.mdx`).
+
+### 2026-09-16 - working tree
+Full README rewrite written from the current implementation rather than
+the original placeholder: pins the in-repo reality (one Hono mock app,
+in-process client calls, localStorage persistence, standalone mock server)
+then documents the API surface (8 tags / 54 operations), the data model as
+an ER diagram plus per-record table, the table-driven API-key scope gate,
+the OpenAPI generation pipeline, the full messaging chat contract with
+per-platform native id shapes, multi-account proxying, group discovery
+→ join → auto-listen, the follow-up chain (inspect → suggest → map) and
+onboarding reveal, and the self-healing brand record — each section with
+Mermaid diagrams and hyperlinks to the code or docs it's grounded in
+(`README.md`).
