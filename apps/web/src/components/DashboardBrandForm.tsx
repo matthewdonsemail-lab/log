@@ -4,13 +4,14 @@ import { Button, Select, useToast } from '@listeningkit/ui'
 import {
   saveBrandAsync,
   simulateOutbound,
+  type Autoreply,
   type BrandChannel,
   type BrandEntity,
   type ChannelProfile,
   type ChannelStyle,
 } from '../lib/brand'
 import { DashboardFormSheet } from './DashboardFormSheet'
-import { ChatBubble, FormInput } from './DashboardFormPrimitives'
+import { ChatBubble, FormInput, Toggle } from './DashboardFormPrimitives'
 
 /** Form scope — one namespace per open. The page's per-tab Edit buttons set it. */
 export type BrandNamespace = 'business' | 'facebook' | 'memory' | 'x' | 'reddit'
@@ -44,8 +45,37 @@ const NAMESPACE_META: Record<BrandNamespace, { title: string; subtitle: string; 
 }
 
 function blankChannels(): Record<BrandChannel, ChannelProfile> {
-  const blank = (style: ChannelStyle): ChannelProfile => ({ style, examples: [], triage: [] })
+  const blank = (style: ChannelStyle): ChannelProfile => ({ style, examples: [], triage: [], autoreplies: [] })
   return { facebook: blank('casual'), x: blank('standard'), reddit: blank('standard') }
+}
+
+/** Deep copy for draft state — the form never mutates the saved record. */
+function cloneProfile(profile: ChannelProfile): ChannelProfile {
+  return {
+    ...profile,
+    examples: [...profile.examples],
+    triage: [...profile.triage],
+    autoreplies: profile.autoreplies.map((entry) => ({ ...entry })),
+  }
+}
+
+/** Clean a draft profile for save: trim lines, drop empty base replies. */
+function cleanProfile(profile: ChannelProfile): ChannelProfile {
+  return {
+    style: profile.style,
+    examples: profile.examples.map((line) => line.trim()).filter(Boolean),
+    triage: profile.triage.map((line) => line.trim()).filter(Boolean),
+    autoreplies: profile.autoreplies
+      .map((entry) => ({ ...entry, trigger: entry.trigger.trim(), reply: entry.reply.trim() }))
+      .filter((entry) => entry.reply.length > 0),
+  }
+}
+
+/** Stable ids for new rows — same recipe as the connections store. */
+function newAutoreplyId(): string {
+  return typeof crypto !== 'undefined' && 'randomUUID' in crypto
+    ? crypto.randomUUID()
+    : `autoreply-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`
 }
 
 /**
@@ -93,9 +123,9 @@ export function DashboardBrandForm({
     setWebsite(initialBrand.identity.website)
     setLocationLabel(initialBrand.location.label)
     setChannels({
-      facebook: { ...initialBrand.channels.facebook, examples: [...initialBrand.channels.facebook.examples], triage: [...initialBrand.channels.facebook.triage] },
-      x: { ...initialBrand.channels.x, examples: [...initialBrand.channels.x.examples], triage: [...initialBrand.channels.x.triage] },
-      reddit: { ...initialBrand.channels.reddit, examples: [...initialBrand.channels.reddit.examples], triage: [...initialBrand.channels.reddit.triage] },
+      facebook: cloneProfile(initialBrand.channels.facebook),
+      x: cloneProfile(initialBrand.channels.x),
+      reddit: cloneProfile(initialBrand.channels.reddit),
     })
     setMemoryRules([...initialBrand.memory.rules])
   }, [open, initialBrand, initialNamespace])
@@ -113,21 +143,9 @@ export function DashboardBrandForm({
       ...initialBrand,
       identity: { ...initialBrand.identity, name: name.trim() || initialBrand.identity.name },
       channels: {
-        facebook: {
-          style: channels.facebook.style,
-          examples: channels.facebook.examples.map((line) => line.trim()).filter(Boolean),
-          triage: channels.facebook.triage.map((line) => line.trim()).filter(Boolean),
-        },
-        x: {
-          style: channels.x.style,
-          examples: channels.x.examples.map((line) => line.trim()).filter(Boolean),
-          triage: channels.x.triage.map((line) => line.trim()).filter(Boolean),
-        },
-        reddit: {
-          style: channels.reddit.style,
-          examples: channels.reddit.examples.map((line) => line.trim()).filter(Boolean),
-          triage: channels.reddit.triage.map((line) => line.trim()).filter(Boolean),
-        },
+        facebook: cleanProfile(channels.facebook),
+        x: cleanProfile(channels.x),
+        reddit: cleanProfile(channels.reddit),
       },
       memory: { rules: memoryRules.map((line) => line.trim()).filter(Boolean) },
     }),
@@ -244,7 +262,11 @@ export function DashboardBrandForm({
             <div className="flex flex-col items-end gap-1.5">
               <ChatBubble tone="outgoing">{preview.text}</ChatBubble>
               <p className="text-right text-xs text-text-secondary">
-                {preview.matched ? 'Matched a gold example.' : 'Style fallback — add a closer snippet.'}
+                {preview.matchedSource === 'autoreply'
+                ? `Matched autoreply${preview.matchedTrigger ? ` · ${preview.matchedTrigger}` : ''}.`
+                : preview.matchedSource === 'example'
+                  ? 'Matched a gold example.'
+                  : 'Style fallback — add a closer snippet.'}
               </p>
             </div>
           ) : (
@@ -304,7 +326,78 @@ function ChannelFields({
           />
         </Field>
       ) : null}
+      <Field label="Auto-replies — base lines that send when toggled on">
+        <AutorepliesEditor
+          rows={profile.autoreplies}
+          onChange={(autoreplies) => onChange({ autoreplies })}
+        />
+      </Field>
     </>
+  )
+}
+
+function AutorepliesEditor({
+  rows,
+  onChange,
+}: {
+  rows: Autoreply[]
+  onChange: (next: Autoreply[]) => void
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      {rows.map((row, index) => (
+        <div key={row.id} className="flex flex-col gap-2 rounded-xl bg-black/[0.03] p-3">
+          <div className="flex items-center gap-2">
+            <div className="min-w-0 flex-1">
+              <FormInput
+                type="text"
+                value={row.trigger}
+                onChange={(event) =>
+                  onChange(rows.map((entry, i) => (i === index ? { ...entry, trigger: event.target.value } : entry)))
+                }
+                placeholder="e.g. same-day quote request"
+                aria-label={`Autoreply ${index + 1} trigger`}
+                autoComplete="off"
+              />
+            </div>
+            <Toggle
+              checked={row.enabled}
+              onChange={(enabled) =>
+                onChange(rows.map((entry, i) => (i === index ? { ...entry, enabled } : entry)))
+              }
+              label={`Autoreply ${index + 1} enabled`}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="icon-lg"
+              aria-label={`Remove autoreply ${index + 1}`}
+              onClick={() => onChange(rows.filter((_, i) => i !== index))}
+            >
+              <Trash2 size={16} aria-hidden="true" />
+            </Button>
+          </div>
+          <FormInput
+            type="text"
+            value={row.reply}
+            onChange={(event) =>
+              onChange(rows.map((entry, i) => (i === index ? { ...entry, reply: event.target.value } : entry)))
+            }
+            placeholder="e.g. hey, saw you're after a shed clear — we're out your way thursday, want a spot?"
+            aria-label={`Autoreply ${index + 1} reply`}
+            autoComplete="off"
+          />
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={() => onChange([...rows, { id: newAutoreplyId(), trigger: '', reply: '', enabled: true }])}
+        className="inline-flex h-9 items-center gap-1.5 self-start rounded-lg border-2 border-dashed border-slate-300 px-3 text-sm font-medium text-text-secondary hover:border-[#2a8cff] hover:text-[#2a8cff]"
+      >
+        <Plus size={16} strokeWidth={2.25} aria-hidden="true" />
+        Add autoreply
+      </button>
+    </div>
   )
 }
 

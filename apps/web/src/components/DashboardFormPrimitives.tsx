@@ -312,3 +312,41 @@ export function ChatBubble({ tone, children }: { tone: 'quote' | 'outgoing'; chi
     </div>
   )
 }
+
+/**
+ * Toggle switch: pill track with a sliding knob — brand blue when on, grey
+ * when off. A plain button with `role="switch"` so it stays keyboard- and
+ * screen-reader-friendly without a form library.
+ */
+export function Toggle({
+  checked,
+  onChange,
+  disabled = false,
+  label,
+}: {
+  checked: boolean
+  onChange: (next: boolean) => void
+  disabled?: boolean
+  label: string
+}) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={checked}
+      aria-label={label}
+      disabled={disabled}
+      onClick={() => onChange(!checked)}
+      className={`relative h-6 w-11 shrink-0 rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
+        checked ? 'bg-[#2A8CFF]' : 'bg-black/15 hover:bg-black/20'
+      }`}
+    >
+      <span
+        aria-hidden="true"
+        className={`absolute top-0.5 size-5 rounded-full bg-white shadow transition-all ${
+          checked ? 'left-[22px]' : 'left-0.5'
+        }`}
+      />
+    </button>
+  )
+}

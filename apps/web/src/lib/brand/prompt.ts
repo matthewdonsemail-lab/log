@@ -5,7 +5,7 @@ import type { BrandChannel, BrandEntity, BrandSourceRef } from './types'
  * brand always compiles to the same prompt, and every draft records the
  * version that produced it so voice edits never silently rewrite history.
  */
-export const PROMPT_VERSION = 1
+export const PROMPT_VERSION = 2
 
 const FORMALITY_LINES: Record<BrandEntity['voice']['formality'], string> = {
   casual: 'Keep it casual: contractions, short sentences, first names, a warm sign-off.',
@@ -50,6 +50,18 @@ export function buildBrandSystemPrompt(brand: BrandEntity): string {
     lines.push('Example replies to mimic:')
     for (const example of brand.voice.examples) {
       lines.push(`[${example.situation}] ${example.reply}`)
+    }
+  }
+  const enabledAutoreplies = (['facebook', 'x', 'reddit'] as const).flatMap((channel) =>
+    brand.channels[channel].autoreplies
+      .filter((entry) => entry.enabled && entry.reply.trim())
+      .map((entry) => ({ channel, entry }))
+  )
+  if (enabledAutoreplies.length > 0) {
+    lines.push('Enabled base replies — when the lead context matches a trigger, adapt that reply to their actual words and send it:')
+    for (const { channel, entry } of enabledAutoreplies) {
+      const trigger = entry.trigger.trim() ? `[${channel} · ${entry.trigger.trim()}] ` : `[${channel}] `
+      lines.push(`- ${trigger}${entry.reply.trim()}`)
     }
   }
   return lines.join('\n')
@@ -110,8 +122,12 @@ export function buildReplyContext(brand: BrandEntity | null, eventText: string):
 export interface SimulatedReply {
   /** The exact raw first-touch text the agent would send on this channel. */
   text: string
-  /** True when a gold example was matched; false = style fallback. */
+  /** True when a gold example or an enabled autoreply was matched; false = style fallback. */
   matched: boolean
+  /** Which pool the base text came from — the UI labels autoreply hits. */
+  matchedSource: 'autoreply' | 'example' | 'fallback'
+  /** The trigger of the matched autoreply, when matchedSource is 'autoreply'. */
+  matchedTrigger?: string
 }
 
 const FIRST_TOUCH_FALLBACK = {
@@ -142,21 +158,39 @@ export function simulateOutbound(
   const profile = brand?.channels[channel]
   const detected = wordsOf(context)
   let best: string | null = null
+  let bestSource: 'autoreply' | 'example' = 'autoreply'
+  let bestTrigger: string | undefined
   let bestScore = 0
+  // Enabled autoreplies score first so ties keep the base reply — it is the
+  // line the user approved for sending.
+  for (const entry of profile?.autoreplies.filter((candidate) => candidate.enabled && candidate.reply.trim()) ?? []) {
+    const haystack = `${entry.trigger} ${entry.reply}`.toLowerCase()
+    const score = detected.filter((token) => haystack.includes(token)).length
+    if (score > bestScore) {
+      bestScore = score
+      best = entry.reply
+      bestSource = 'autoreply'
+      bestTrigger = entry.trigger.trim() || undefined
+    }
+  }
   for (const example of profile?.examples ?? []) {
     const haystack = example.toLowerCase()
     const score = detected.filter((token) => haystack.includes(token)).length
     if (score > bestScore) {
       bestScore = score
       best = example
+      bestSource = 'example'
+      bestTrigger = undefined
     }
   }
   const base = best ?? profile?.examples[0] ?? FIRST_TOUCH_FALLBACK[profile?.style ?? 'casual']
   const style = profile?.style ?? 'casual'
   const styled = style === 'casual' ? base.toLowerCase() : base
+  const source: SimulatedReply['matchedSource'] = best === null ? 'fallback' : bestSource
+  const outcome = { matched: best !== null, matchedSource: source, ...(bestTrigger ? { matchedTrigger: bestTrigger } : {}) }
   const nudge = profile?.triage[0]?.trim()
-  if (!nudge) return { text: styled, matched: best !== null }
+  if (!nudge) return { text: styled, ...outcome }
   const styledNudge = style === 'casual' ? nudge.toLowerCase() : nudge
   const joined = styled.endsWith('?') ? styled : `${styled}?`
-  return { text: `${joined} ${styledNudge}`, matched: best !== null }
+  return { text: `${joined} ${styledNudge}`, ...outcome }
 }

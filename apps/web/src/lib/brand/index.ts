@@ -8,6 +8,7 @@ import type { BrandIntelligenceInput } from './server'
 export type {
   AiFollowUpAction,
   AiQuery,
+  Autoreply,
   BrandChannel,
   BrandEntity,
   BrandFormality,
@@ -26,6 +27,7 @@ export type {
   CommunityPick,
   KeywordStrategyMapping,
   KeywordTargetEntry,
+  MatchedAutoreply,
   SearchStrategyEntry,
 } from './types'
 export { defaultChannels } from './types'

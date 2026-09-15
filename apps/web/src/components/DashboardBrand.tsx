@@ -1,7 +1,7 @@
 // apps/web/src/components/DashboardBrand.tsx
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Brain, Globe, MapPin, Pencil, RotateCcw } from 'lucide-react'
+import { ArrowRight, Brain, Globe, MapPin, Pencil, RotateCcw, Zap } from 'lucide-react'
 import { Button, Select, useSquircleClip, useToast } from '@listeningkit/ui'
 import { SOCIAL_ICONS, SocialGlyph, type SocialIcon } from '../lib/social-icons'
 import {
@@ -9,25 +9,33 @@ import {
   getBrandAsync,
   saveBrandAsync,
   simulateOutbound,
+  type Autoreply,
   type BrandChannel,
   type BrandEntity,
   type ChannelProfile,
   type ChannelStyle,
 } from '../lib/brand'
-import { ChatBubble, FormInput, LoadingLine } from './DashboardFormPrimitives'
+import { ChatBubble, FormInput, LoadingLine, Toggle } from './DashboardFormPrimitives'
 import { RedditThread } from './cards/RedditThread'
 import { TwitterThreads, TwitterThreadReply } from './cards/TwitterThreads'
 import { DashboardTab } from './DashboardTab'
 import { useDashboardFormSlot } from './DashboardFormSlot'
 import { DashboardBrandForm, type BrandNamespace } from './DashboardBrandForm'
 
-type BrandTab = 'facebook' | 'memory' | 'x' | 'reddit'
+type BrandTab = 'facebook' | 'memory' | 'x' | 'reddit' | 'autoreplies'
 
 const TAB_CHANNEL: Record<BrandTab, BrandChannel> = {
   facebook: 'facebook',
   memory: 'facebook',
   x: 'x',
   reddit: 'reddit',
+  autoreplies: 'facebook',
+}
+
+const CHANNEL_LABEL: Record<BrandChannel, string> = {
+  facebook: 'Facebook',
+  x: 'X',
+  reddit: 'Reddit',
 }
 
 /** Page section card: r20 squircle, white — the Analytics card recipe. */
@@ -41,11 +49,13 @@ function BrandSurface({ children, className = '' }: { children: ReactNode; class
 }
 
 /**
- * The agent's communication brain & memory hub — read-only display. All
- * configuration lives in `DashboardBrandForm`, registered into the layout
- * overlay through `DashboardFormSlot`; the page opens it pre-scoped to the
- * tab being edited and reloads on save. The Live simulator previews the
- * saved record only — drafts are heard inside the form before they commit.
+ * The agent's communication brain & memory hub — display with two instant
+ * controls (the channel tone Select, the autoreply toggles) that save
+ * direct through `PUT /brand`. All other configuration lives in
+ * `DashboardBrandForm`, registered into the layout overlay through
+ * `DashboardFormSlot`; the page opens it pre-scoped to the tab being edited
+ * and reloads on save. The Live simulator previews the saved record only —
+ * drafts are heard inside the form before they commit.
  */
 export function DashboardBrand() {
   const { success, error: notifyError } = useToast()
@@ -57,11 +67,12 @@ export function DashboardBrand() {
 
   const [leadContext, setLeadContext] = useState('')
   const [simulated, setSimulated] = useState(false)
-  const [styleBusy, setStyleBusy] = useState(false)
+  const [channelBusy, setChannelBusy] = useState(false)
+  const [testChannel, setTestChannel] = useState<BrandChannel>('facebook')
 
   async function changeStyle(channel: BrandChannel, style: ChannelStyle) {
-    if (!brand || busy || styleBusy) return
-    setStyleBusy(true)
+    if (!brand || busy || channelBusy) return
+    setChannelBusy(true)
     try {
       const next = await saveBrandAsync({
         channels: { ...brand.channels, [channel]: { ...brand.channels[channel], style } },
@@ -70,7 +81,22 @@ export function DashboardBrand() {
     } catch (err: unknown) {
       notifyError('Could not update the tone', err instanceof Error ? err.message : 'Something went wrong.')
     } finally {
-      setStyleBusy(false)
+      setChannelBusy(false)
+    }
+  }
+
+  async function saveAutoreplies(channel: BrandChannel, autoreplies: Autoreply[]) {
+    if (!brand || busy || channelBusy) return
+    setChannelBusy(true)
+    try {
+      const next = await saveBrandAsync({
+        channels: { ...brand.channels, [channel]: { ...brand.channels[channel], autoreplies } },
+      })
+      setBrand(next)
+    } catch (err: unknown) {
+      notifyError('Could not update the autoreplies', err instanceof Error ? err.message : 'Something went wrong.')
+    } finally {
+      setChannelBusy(false)
     }
   }
 
@@ -119,6 +145,12 @@ export function DashboardBrand() {
   const preview = useMemo(
     () => (brand && leadContext.trim() ? simulateOutbound(brand, simChannel, leadContext) : null),
     [brand, simChannel, leadContext]
+  )
+
+  // Autoreplies test block: same saved record, but its own channel scope.
+  const testPreview = useMemo(
+    () => (brand && leadContext.trim() ? simulateOutbound(brand, testChannel, leadContext) : null),
+    [brand, testChannel, leadContext]
   )
 
   async function handleReset() {
@@ -228,6 +260,13 @@ export function DashboardBrand() {
               onClick={() => setTab('memory')}
               accent="amber"
             />
+            <DashboardTab
+              label="Autoreplies"
+              icon={<Zap aria-hidden="true" className="size-4" />}
+              active={tab === 'autoreplies'}
+              onClick={() => setTab('autoreplies')}
+              accent="emerald"
+            />
           </div>
 
           {tab === 'facebook' ? (
@@ -246,7 +285,7 @@ export function DashboardBrand() {
 
                   <StyleRow
                       style={brand.channels.facebook.style}
-                      disabled={busy || styleBusy}
+                      disabled={busy || channelBusy}
                       onChange={(style) => changeStyle('facebook', style)}
                     />
 
@@ -319,7 +358,11 @@ export function DashboardBrand() {
                     <div className="mt-1.5 flex flex-col items-end gap-1">
                       <ChatBubble tone="outgoing">{preview.text}</ChatBubble>
                       <p className="text-[11px] text-text-secondary">
-                        {preview.matched ? 'Matched a gold example' : 'No close example — style fallback'}
+                        {preview.matchedSource === 'autoreply'
+                          ? `Matched autoreply${preview.matchedTrigger ? ` · ${preview.matchedTrigger}` : ''}`
+                          : preview.matchedSource === 'example'
+                            ? 'Matched a gold example'
+                            : 'No close match — style fallback'}
                       </p>
                     </div>
                   ) : null}
@@ -361,6 +404,117 @@ export function DashboardBrand() {
             </BrandSurface>
           ) : null}
 
+          {tab === 'autoreplies' ? (
+            <div className="grid gap-6 lg:grid-cols-5">
+              <div className="flex flex-col lg:col-span-3">
+                <BrandSurface>
+                  <div>
+                    <h2 className="text-base font-bold text-text-primary">Autoreplies</h2>
+                    <p className="text-xs text-text-secondary">
+                      Base lines the agent sends when the lead context matches — toggled-on
+                      replies flow into every outbound draft with the rest of the brand.
+                    </p>
+                  </div>
+                  {(['facebook', 'x', 'reddit'] as const).map((channel) => {
+                    const profile = brand.channels[channel]
+                    const enabledCount = profile.autoreplies.filter((entry) => entry.enabled).length
+                    return (
+                      <div key={channel} className="mt-5 border-t border-slate-100 pt-4">
+                        <div className="flex flex-wrap items-center justify-between gap-3">
+                          <div>
+                            <h3 className="text-sm font-semibold text-text-primary">{CHANNEL_LABEL[channel]}</h3>
+                            <p className="mt-0.5 text-xs text-text-secondary">
+                              {profile.autoreplies.length === 0
+                                ? 'No base replies yet.'
+                                : `${enabledCount} of ${profile.autoreplies.length} on — on replies flow into outbound drafts.`}
+                            </p>
+                          </div>
+                          <EditButton label={`Edit ${CHANNEL_LABEL[channel]}`} onClick={() => setFormNamespace(channel)} />
+                        </div>
+                        {profile.autoreplies.length > 0 ? (
+                          <ul className="mt-2 flex flex-col gap-1.5">
+                            {profile.autoreplies.map((entry) => (
+                              <li
+                                key={entry.id}
+                                className="flex items-center gap-2.5 rounded-lg bg-black/[0.03] px-3 py-2"
+                              >
+                                <Toggle
+                                  checked={entry.enabled}
+                                  disabled={busy || channelBusy}
+                                  onChange={(enabled) =>
+                                    saveAutoreplies(
+                                      channel,
+                                      profile.autoreplies.map((candidate) =>
+                                        candidate.id === entry.id ? { ...candidate, enabled } : candidate
+                                      )
+                                    )
+                                  }
+                                  label={`${CHANNEL_LABEL[channel]} autoreply ${entry.trigger || 'base reply'} enabled`}
+                                />
+                                <div className="min-w-0 flex-1">
+                                  <p className="truncate text-sm font-semibold text-text-primary">
+                                    {entry.trigger || 'Base reply'}
+                                  </p>
+                                  <p className="truncate text-xs text-text-secondary">{entry.reply}</p>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : null}
+                      </div>
+                    )
+                  })}
+                </BrandSurface>
+              </div>
+
+              <div className="lg:col-span-2">
+                <BrandSurface className="sticky top-6">
+                  <h2 className="text-base font-bold text-text-primary">Test it</h2>
+                  <p className="text-xs text-text-secondary">
+                    Type a lead post — the label shows which base reply fires, the blue
+                    bubble is the exact first touch.
+                  </p>
+                  <div className="mt-3">
+                    <Select
+                      size="sm"
+                      value={testChannel}
+                      onChange={(value) => setTestChannel(value as BrandChannel)}
+                      aria-label="Test channel"
+                      options={[
+                        { value: 'facebook', label: 'Facebook' },
+                        { value: 'x', label: 'X' },
+                        { value: 'reddit', label: 'Reddit' },
+                      ]}
+                    />
+                  </div>
+                  <div className="mt-2">
+                    <FormInput
+                      type="text"
+                      shape="rounded-md"
+                      value={leadContext}
+                      onChange={(event) => setLeadContext(event.target.value)}
+                      placeholder="e.g. anyone know someone with a van in salthill to clear an old shed?"
+                      aria-label="Detected post / lead context"
+                      autoComplete="off"
+                    />
+                  </div>
+                  {leadContext.trim() && testPreview ? (
+                    <div className="mt-3 flex flex-col items-end gap-1">
+                      <ChatBubble tone="outgoing">{testPreview.text}</ChatBubble>
+                      <p className="text-[11px] text-text-secondary">
+                        {testPreview.matchedSource === 'autoreply'
+                          ? `Matched autoreply${testPreview.matchedTrigger ? ` · ${testPreview.matchedTrigger}` : ''}`
+                          : testPreview.matchedSource === 'example'
+                            ? 'Matched a gold example'
+                            : 'No close match — style fallback'}
+                      </p>
+                    </div>
+                  ) : null}
+                </BrandSurface>
+              </div>
+            </div>
+          ) : null}
+
           {(tab === 'x' || tab === 'reddit') ? (
             <div className="grid gap-6 lg:grid-cols-5">
               <div className="flex flex-col lg:col-span-3">
@@ -384,7 +538,7 @@ export function DashboardBrand() {
 
                   <StyleRow
                       style={brand.channels[tab].style}
-                      disabled={busy || styleBusy}
+                      disabled={busy || channelBusy}
                       onChange={(style) => changeStyle(tab, style)}
                     />
 

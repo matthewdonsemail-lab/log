@@ -88,14 +88,32 @@ export type ChannelStyle = 'casual' | 'standard'
 export type BrandChannel = 'facebook' | 'x' | 'reddit'
 
 /**
+ * One base auto-reply on a channel. When enabled, it is passed through with
+ * the rest of the brand metadata into the reply context, so the outbound
+ * reply stays tailored in-context to the actual thing that was said.
+ */
+export interface Autoreply {
+  /** Stable id for list edits. */
+  id: string
+  /** When this base reply applies, e.g. "same-day quote request". */
+  trigger: string
+  /** The exact base reply the agent sends (and adapts to context). */
+  reply: string
+  /** Only enabled entries reach the reply context. */
+  enabled: boolean
+}
+
+/**
  * How the agent talks on one channel. Examples are raw chat snippets typed
  * like a human on that channel — fragments, no sign-offs — never brand-book
- * rules. Triage is what the agent pushes for first, in order.
+ * rules. Triage is what the agent pushes for first, in order. Autoreplies
+ * are the toggleable base lines that flow into the reply context when on.
  */
 export interface ChannelProfile {
   style: ChannelStyle
   examples: string[]
   triage: string[]
+  autoreplies: Autoreply[]
 }
 
 /** Working facts & boundaries the agent must keep in mind. */
@@ -218,12 +236,24 @@ function isBrandPage(value: unknown): value is BrandPage {
   )
 }
 
+function isAutoreply(value: unknown): value is Autoreply {
+  return (
+    isRecord(value) &&
+    typeof value.id === 'string' &&
+    typeof value.trigger === 'string' &&
+    typeof value.reply === 'string' &&
+    typeof value.enabled === 'boolean'
+  )
+}
+
 function isChannelProfile(value: unknown): value is ChannelProfile {
   return (
     isRecord(value) &&
     (value.style === 'casual' || value.style === 'standard') &&
     isStringArray(value.examples) &&
-    isStringArray(value.triage)
+    isStringArray(value.triage) &&
+    Array.isArray(value.autoreplies) &&
+    (value.autoreplies as unknown[]).every(isAutoreply)
   )
 }
 
@@ -231,7 +261,7 @@ const BRAND_CHANNELS: BrandChannel[] = ['facebook', 'x', 'reddit']
 
 /** Fresh channel profiles: casual where buyers haggle, standard elsewhere. */
 export function defaultChannels(): Record<BrandChannel, ChannelProfile> {
-  const blank = (style: ChannelStyle): ChannelProfile => ({ style, examples: [], triage: [] })
+  const blank = (style: ChannelStyle): ChannelProfile => ({ style, examples: [], triage: [], autoreplies: [] })
   return { facebook: blank('casual'), x: blank('standard'), reddit: blank('standard') }
 }
 
@@ -240,6 +270,36 @@ function isChannelMap(value: unknown): value is Record<BrandChannel, ChannelProf
     isRecord(value) &&
     BRAND_CHANNELS.every((channel) => isChannelProfile(value[channel]))
   )
+}
+
+/**
+ * Old rows predate per-channel autoreplies — keep the saved style, examples
+ * and triage per channel and default the list to empty, instead of dropping
+ * the whole map back to blanks.
+ */
+function migrateChannelMap(value: Record<string, unknown>): Record<BrandChannel, ChannelProfile> {
+  const fallback = defaultChannels()
+  const next = { ...fallback }
+  for (const channel of BRAND_CHANNELS) {
+    const raw = value[channel]
+    if (isChannelProfile(raw)) {
+      next[channel] = raw
+    } else if (isRecord(raw)) {
+      next[channel] = {
+        style: raw.style === 'casual' || raw.style === 'standard' ? raw.style : fallback[channel].style,
+        examples: Array.isArray(raw.examples)
+          ? (raw.examples as unknown[]).filter((line): line is string => typeof line === 'string')
+          : [],
+        triage: Array.isArray(raw.triage)
+          ? (raw.triage as unknown[]).filter((line): line is string => typeof line === 'string')
+          : [],
+        autoreplies: Array.isArray(raw.autoreplies)
+          ? (raw.autoreplies as unknown[]).filter(isAutoreply)
+          : [],
+      }
+    }
+  }
+  return next
 }
 
 /** Runtime guard for the persisted brand row (shared by the store + server). */
@@ -341,7 +401,7 @@ export function migrateBrandEntity(value: unknown): BrandEntity | null {
       },
       offerings,
       sources: rawSources.filter(isBrandPage),
-      channels: isChannelMap(record.channels) ? record.channels : defaultChannels(),
+      channels: migrateChannelMap(isRecord(record.channels) ? record.channels : {}),
       memory: {
         rules: isRecord(record.memory) && Array.isArray(record.memory.rules)
           ? (record.memory.rules as unknown[]).filter((line): line is string => typeof line === 'string')
@@ -369,6 +429,14 @@ export function migrateBrandEntity(value: unknown): BrandEntity | null {
  * exclude, and the brand snapshot the mock AI drafts against. A null brand
  * means the user skipped onboarding — drafts fall back to generic phrasing.
  */
+export interface MatchedAutoreply {
+  /** Channel whose list held the winning entry. */
+  channel: BrandChannel
+  /** Trigger of the winning entry (may be empty when it matched on reply words). */
+  trigger: string
+  /** Base reply text the draft sends verbatim. */
+  reply: string
+}
 export interface AiQuery {
   action: AiFollowUpAction
   eventId: string
@@ -386,4 +454,6 @@ export interface AiQuery {
   promptVersion: number
   /** Cited pages behind the draft — the mock mirror of RAG hits. */
   sourceRefs: BrandSourceRef[]
+  /** Enabled autoreply the event matched — the draft sends its reply verbatim. */
+  matchedAutoreply?: MatchedAutoreply
 }

@@ -1,5 +1,5 @@
 import type { FirehoseEvent } from '../analytics'
-import type { AiFollowUpAction, AiQuery, BrandEntity } from './types'
+import type { AiFollowUpAction, AiQuery, BrandChannel, BrandEntity, MatchedAutoreply } from './types'
 import { buildReplyContext, PROMPT_VERSION } from './prompt'
 
 /**
@@ -16,6 +16,7 @@ export function buildAiQuery(
   trackedPhrases: string[]
 ): AiQuery {
   const context = buildReplyContext(brand, event.text)
+  const matchedAutoreply = matchAutoreply(brand, event.platform, event.text)
   return {
     action,
     eventId: event.id,
@@ -31,6 +32,7 @@ export function buildAiQuery(
     brand,
     promptVersion: context.promptVersion,
     sourceRefs: context.sourceRefs,
+    ...(matchedAutoreply ? { matchedAutoreply } : {}),
   }
 }
 
@@ -91,13 +93,58 @@ export function suggestAcross(texts: string[], event: FirehoseEvent, excluded: s
   return out
 }
 
+const BRAND_CHANNELS: BrandChannel[] = ['facebook', 'x', 'reddit']
+
+function channelForPlatform(platform: string): BrandChannel | null {
+  const normalized = platform.toLowerCase()
+  if (normalized.includes('facebook') || normalized.includes('marketplace')) return 'facebook'
+  if (normalized === 'x' || normalized.includes('twitter')) return 'x'
+  if (normalized.includes('reddit')) return 'reddit'
+  return null
+}
+
 /**
- * Mock reply draft: the event's own words answered in the brand's voice —
- * the same rules `buildBrandSystemPrompt()` compiles (name sign-off, first
- * offering, service area). Without a brand (onboarding skipped) it falls
- * back to generic phrasing — never invents a business name.
+ * Best enabled autoreply for an event: scores the event text against each
+ * candidate's trigger + reply (same overlap rule as the simulator) — the
+ * event's own channel first, then the other channels. Null when nothing
+ * overlaps. Deterministic — the same event always matches the same entry.
+ */
+export function matchAutoreply(
+  brand: BrandEntity | null,
+  platform: string,
+  text: string
+): MatchedAutoreply | null {
+  if (!brand) return null
+  const tokens = tokensOf(text)
+  if (tokens.length === 0) return null
+  const preferred = channelForPlatform(platform)
+  const ordered = [...(preferred ? [preferred] : []), ...BRAND_CHANNELS.filter((channel) => channel !== preferred)]
+  let best: MatchedAutoreply | null = null
+  let bestScore = 0
+  for (const channel of ordered) {
+    for (const entry of brand.channels[channel].autoreplies) {
+      if (!entry.enabled || !entry.reply.trim()) continue
+      const haystack = `${entry.trigger} ${entry.reply}`.toLowerCase()
+      const score = tokens.filter((token) => haystack.includes(token)).length
+      if (score > bestScore) {
+        bestScore = score
+        best = { channel, trigger: entry.trigger.trim(), reply: entry.reply.trim() }
+      }
+    }
+  }
+  return best
+}
+
+/**
+ * Mock reply draft: a matched enabled autoreply sends verbatim — it is the
+ * approved base line for that situation. Otherwise the event's own words
+ * answered in the brand's voice — the same rules `buildBrandSystemPrompt()`
+ * compiles (name sign-off, first offering, service area). Without a brand
+ * (onboarding skipped) it falls back to generic phrasing — never invents a
+ * business name.
  */
 export function draftReply(query: AiQuery): string {
+  if (query.matchedAutoreply) return query.matchedAutoreply.reply
   const brandName = query.brand?.identity.name
   const offering = query.brand?.offerings[0]?.name
   const area = query.brand?.location.label || undefined

@@ -161,6 +161,11 @@ function ReplyDraftPanel({ query }: { query: AiQuery }) {
             Send reply
           </button>
           <div className="mt-2 rounded-lg bg-white p-3">
+            {query.matchedAutoreply ? (
+              <p className="mb-1.5 text-xs font-semibold text-emerald-700">
+                Using autoreply{query.matchedAutoreply.trigger ? ` · ${query.matchedAutoreply.trigger}` : ''} ({query.matchedAutoreply.channel})
+              </p>
+            ) : null}
             <p className="whitespace-pre-line text-sm leading-relaxed text-slate-800">{fullReply}</p>
           </div>
           <div className="mt-2 rounded-lg border border-slate-200 bg-white p-3">
