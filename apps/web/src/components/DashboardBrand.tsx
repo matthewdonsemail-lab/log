@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Brain, Globe, MapPin, Pencil, RotateCcw } from 'lucide-react'
-import { Button, Select, useSquircleClip, useToast } from '@listeningkit/ui'
+import { Button, Select, buttonVariants, useSquircleClip, useToast } from '@listeningkit/ui'
 import { SOCIAL_ICONS, SocialGlyph, type SocialIcon } from '../lib/social-icons'
 import {
   clearBrandAsync,
@@ -15,7 +15,7 @@ import {
   type ChannelProfile,
   type ChannelStyle,
 } from '../lib/brand'
-import { ChatBubble, FormInput, LoadingLine, Toggle } from './DashboardFormPrimitives'
+import { ChatBubble, EmptyBanner, FormInput, LoadingLine, Toggle } from './DashboardFormPrimitives'
 import { RedditThread } from './cards/RedditThread'
 import { TwitterThreads, TwitterThreadReply } from './cards/TwitterThreads'
 import { DashboardTab } from './DashboardTab'
@@ -193,13 +193,15 @@ export function DashboardBrand() {
       {brand === undefined ? (
         <LoadingLine label="Loading the brand…" />
       ) : brand === null ? (
-        <p className="rounded-xl border border-dashed border-slate-300 p-5 text-sm text-text-secondary">
-          Nothing here yet —{' '}
-          <Link to="/onboarding" className="font-semibold text-[#2A8CFF] hover:underline">
-            run onboarding
-          </Link>{' '}
-          to pull your brand profile.
-        </p>
+        <EmptyBanner
+          title="Nothing here yet"
+          body="Run onboarding to pull your brand profile."
+          action={
+            <Link to="/onboarding" className={buttonVariants({ size: 'sm' })}>
+              Run onboarding
+            </Link>
+          }
+        />
       ) : (
         <>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded-xl bg-black/[0.03] px-4 py-2.5 text-xs text-text-secondary">
@@ -274,7 +276,11 @@ export function DashboardBrand() {
                   <p className="mt-0.5 text-xs text-text-secondary">
                     Real conversational fragments. No formal sign-offs or canned corporate lines.
                   </p>
-                  <GoldExamples profile={brand.channels.facebook} />
+                  <GoldExamples
+                    profile={brand.channels.facebook}
+                    channelLabel="Facebook"
+                    onEdit={() => setFormNamespace('facebook')}
+                  />
 
                   <h3 className="mt-4 text-sm font-semibold text-text-primary">Triage flow</h3>
                   <p className="mt-0.5 text-xs text-text-secondary">
@@ -298,9 +304,16 @@ export function DashboardBrand() {
                       ))}
                     </ol>
                   ) : (
-                    <p className="mt-2 rounded-xl bg-black/5 p-4 text-sm text-text-secondary">
-                      No triage flow yet — e.g. ask for photos of the job, then lock in a pickup time.
-                    </p>
+                    <EmptyBanner
+                      className="mt-2"
+                      title="No triage flow yet"
+                      body="e.g. ask for photos of the job, then lock in a pickup time."
+                      action={
+                        <Button type="button" size="sm" onClick={() => setFormNamespace('facebook')}>
+                          Edit Facebook
+                        </Button>
+                      }
+                    />
                   )}
 
                   <AutorepliesSection
@@ -309,6 +322,7 @@ export function DashboardBrand() {
                     profile={brand.channels.facebook}
                     disabled={busy || channelBusy}
                     onToggle={saveAutoreplies}
+                    onEdit={() => setFormNamespace('facebook')}
                   />
                 </BrandSurface>
               </div>
@@ -383,10 +397,16 @@ export function DashboardBrand() {
                   ))}
                 </ul>
               ) : (
-                <p className="mt-3 rounded-xl bg-black/5 p-4 text-sm text-text-secondary">
-                  No working facts yet — open the memory form and add the lines the agent must never
-                  forget.
-                </p>
+                <EmptyBanner
+                  className="mt-3"
+                  title="No working facts yet"
+                  body="Add pricing baselines, boundaries, jobs taken and declined."
+                  action={
+                    <Button type="button" size="sm" onClick={() => setFormNamespace('memory')}>
+                      Edit memory
+                    </Button>
+                  }
+                />
               )}
             </BrandSurface>
           ) : null}
@@ -419,7 +439,11 @@ export function DashboardBrand() {
                     />
 
                   <h3 className="mt-4 text-sm font-semibold text-text-primary">How we actually text</h3>
-                  <GoldExamples profile={brand.channels[tab]} />
+                  <GoldExamples
+                    profile={brand.channels[tab]}
+                    channelLabel={tab === 'x' ? 'X' : 'Reddit'}
+                    onEdit={() => setFormNamespace(tab)}
+                  />
 
                   <AutorepliesSection
                     channel={tab}
@@ -427,6 +451,7 @@ export function DashboardBrand() {
                     profile={brand.channels[tab]}
                     disabled={busy || channelBusy}
                     onToggle={saveAutoreplies}
+                    onEdit={() => setFormNamespace(tab)}
                   />
                 </BrandSurface>
               </div>
@@ -528,12 +553,27 @@ function StyleRow({
  * bubbles — the grey quote tone is reserved for the lead's detected post in
  * the simulator.
  */
-function GoldExamples({ profile }: { profile: ChannelProfile }) {
+function GoldExamples({
+  profile,
+  channelLabel,
+  onEdit,
+}: {
+  profile: ChannelProfile
+  channelLabel: string
+  onEdit: () => void
+}) {
   if (profile.examples.length === 0) {
     return (
-      <p className="mt-2 rounded-xl bg-black/5 p-4 text-sm text-text-secondary">
-        No snippets yet — open the form and paste 3–5 messages you would actually send here.
-      </p>
+      <EmptyBanner
+        className="mt-2"
+        title="No snippets yet"
+        body="Paste 3–5 messages you would actually send here."
+        action={
+          <Button type="button" size="sm" onClick={onEdit}>
+            Edit {channelLabel}
+          </Button>
+        }
+      />
     )
   }
   return (
@@ -558,22 +598,35 @@ function AutorepliesSection({
   profile,
   disabled,
   onToggle,
+  onEdit,
 }: {
   channel: BrandChannel
   label: string
   profile: ChannelProfile
   disabled: boolean
   onToggle: (channel: BrandChannel, next: Autoreply[]) => void
+  onEdit: () => void
 }) {
   const enabledCount = profile.autoreplies.filter((entry) => entry.enabled).length
   return (
     <>
       <h3 className="mt-4 text-sm font-semibold text-text-primary">Autoreplies</h3>
-      <p className="mt-0.5 text-xs text-text-secondary">
-        {profile.autoreplies.length === 0
-          ? `No base replies yet — open Edit ${label} to add the lines that send as-is.`
-          : `Base lines that send when the lead context matches — ${enabledCount} of ${profile.autoreplies.length} on.`}
-      </p>
+      {profile.autoreplies.length === 0 ? (
+        <EmptyBanner
+          className="mt-2"
+          title="No base replies yet"
+          body="Add the lines that send as-is when the lead context matches."
+          action={
+            <Button type="button" size="sm" onClick={onEdit}>
+              Edit {label}
+            </Button>
+          }
+        />
+      ) : (
+        <p className="mt-0.5 text-xs text-text-secondary">
+          {`Base lines that send when the lead context matches — ${enabledCount} of ${profile.autoreplies.length} on.`}
+        </p>
+      )}
       {profile.autoreplies.length > 0 ? (
         <ul className="mt-2 flex flex-col gap-1.5">
           {profile.autoreplies.map((entry) => (

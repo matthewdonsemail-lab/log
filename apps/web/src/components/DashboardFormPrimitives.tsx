@@ -350,3 +350,29 @@ export function Toggle({
     </button>
   )
 }
+
+/**
+ * Empty-state banner: light brand-blue tint that says there is no data here
+ * yet and drives the reader to enter it. Title + body plus an action slot —
+ * pass a small overlay-form `Button` or a router `Link`; the banner lays
+ * the CTA out, the caller owns what it opens.
+ */
+export function EmptyBanner({
+  title,
+  body,
+  action,
+  className = '',
+}: {
+  title: string
+  body: string
+  action?: ReactNode
+  className?: string
+}) {
+  return (
+    <div className={`rounded-xl bg-[#2A8CFF]/[0.07] p-4 ${className}`}>
+      <p className="text-sm font-bold text-[#0B3E91]">{title}</p>
+      <p className="mt-0.5 text-sm text-text-secondary">{body}</p>
+      {action ? <div className="mt-2.5">{action}</div> : null}
+    </div>
+  )
+}
