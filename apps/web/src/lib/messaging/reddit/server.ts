@@ -1,13 +1,14 @@
-import { Hono } from 'hono'
-import { describeRoute } from 'hono-openapi'
-import { REDDIT_MESSAGES, REDDIT_THREADS } from './mock'
-import { ThreadsResponseJson, MessagesResponseJson, errorResponse } from '../../openapi'
+import { buildMessagingRoutes } from '../routes'
 
-export const redditMessagingApp = new Hono()
-  .get('/threads', describeRoute({ operationId: 'listRedditThreads', tags: ['Messaging'], summary: 'List Reddit threads', description: 'Code: apps/web/src/lib/messaging/reddit/server.ts:5', responses: { 200: { description: 'Threads.', content: { 'application/json': { schema: ThreadsResponseJson } } } } }), (c) => c.json({ threads: REDDIT_THREADS }))
-  .get('/threads/:threadId/messages', describeRoute({ operationId: 'listRedditMessages', tags: ['Messaging'], summary: 'List Reddit messages', description: 'Code: apps/web/src/lib/messaging/reddit/server.ts:6', parameters: [{ name: 'threadId', in: 'path', required: true, schema: { type: 'string' } }], responses: { 200: { description: 'Messages.', content: { 'application/json': { schema: MessagesResponseJson } } }, 404: errorResponse('Thread not found') } }), (c) => {
-    const threadId = c.req.param('threadId')
-    const messages = REDDIT_MESSAGES[threadId]
-    if (!messages) return c.json({ error: 'Thread not found' }, 404)
-    return c.json({ threadId, messages })
-  })
+/**
+ * Reddit private-message routes, mounted at `/messaging/reddit` in
+ * `index.ts`.
+ *
+ * Stands in for the unofficial browser client's inbox/outbox surface:
+ * flattened message listings (`t4_` fullnames, `created_utc`) that the
+ * client groups into threads by `first_message_name`, plus compose-to-
+ * username. The shared handler lives in `routes.ts`; the id shapes are
+ * described in the OpenAPI schemas (`openapi.ts` → RedditThreadSchema /
+ * RedditMessageSchema).
+ */
+export const redditMessagingApp = buildMessagingRoutes('reddit')

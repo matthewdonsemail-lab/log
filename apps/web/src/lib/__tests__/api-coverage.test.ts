@@ -101,14 +101,17 @@ describe('feed slice', () => {
 })
 
 describe('messaging slice', () => {
-  it('lists threads per platform', async () => {
-    const fb = await req('/messaging/facebook/threads')
+  it('requires accountId and serves per-account inboxes', async () => {
+    const noAccount = await req('/messaging/facebook/threads')
+    expect(noAccount.res.status).toBe(400)
+    const fb = await req('/messaging/facebook/threads?accountId=fb-personal')
     expect(fb.res.status).toBe(200)
-    const x = await req('/messaging/x/threads')
+    const x = await req('/messaging/x/threads?accountId=x-ops')
     expect(x.res.status).toBe(200)
-    const rd = await req('/messaging/reddit/threads')
+    const rd = await req('/messaging/reddit/threads?accountId=reddit-listeningkit')
     expect(rd.res.status).toBe(200)
-    const bad = await req('/messaging/facebook/threads/bogus/messages')
-    expect(bad.res.status).toBe(404)
+    // A thread only resolves under the account that owns it.
+    const leaked = await req('/messaging/x/threads/x-t3/messages?accountId=x-ops')
+    expect(leaked.res.status).toBe(404)
   })
 })

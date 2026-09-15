@@ -1,6 +1,8 @@
 ---
 title: Messaging
-description: Threads + messages per platform (facebook / x / reddit).
+description: >-
+  Multi-account chat: threads + messages per connected account on facebook / x /
+  reddit (send, start, mark read).
 full: true
 _openapi:
   toc:
@@ -8,109 +10,333 @@ _openapi:
       title: List Facebook threads
       url: '#list-facebook-threads'
     - depth: 2
+      title: Start a Facebook conversation
+      url: '#start-a-facebook-conversation'
+    - depth: 2
       title: List Facebook messages
       url: '#list-facebook-messages'
+    - depth: 2
+      title: Send a Facebook message
+      url: '#send-a-facebook-message'
+    - depth: 2
+      title: Mark a Facebook thread read
+      url: '#mark-a-facebook-thread-read'
     - depth: 2
       title: List X threads
       url: '#list-x-threads'
     - depth: 2
+      title: Start an X conversation
+      url: '#start-an-x-conversation'
+    - depth: 2
       title: List X messages
       url: '#list-x-messages'
+    - depth: 2
+      title: Send an X message
+      url: '#send-an-x-message'
+    - depth: 2
+      title: Mark an X thread read
+      url: '#mark-an-x-thread-read'
     - depth: 2
       title: List X threads
       url: '#list-x-threads-1'
     - depth: 2
+      title: Start an X conversation
+      url: '#start-an-x-conversation-1'
+    - depth: 2
       title: List X messages
       url: '#list-x-messages-1'
+    - depth: 2
+      title: Send an X message
+      url: '#send-an-x-message-1'
+    - depth: 2
+      title: Mark an X thread read
+      url: '#mark-an-x-thread-read-1'
     - depth: 2
       title: List Reddit threads
       url: '#list-reddit-threads'
     - depth: 2
+      title: Start a Reddit conversation
+      url: '#start-a-reddit-conversation'
+    - depth: 2
       title: List Reddit messages
       url: '#list-reddit-messages'
+    - depth: 2
+      title: Send a Reddit message
+      url: '#send-a-reddit-message'
+    - depth: 2
+      title: Mark a Reddit thread read
+      url: '#mark-a-reddit-thread-read'
   structuredData:
     headings:
       - content: List Facebook threads
         id: list-facebook-threads
+      - content: Start a Facebook conversation
+        id: start-a-facebook-conversation
       - content: List Facebook messages
         id: list-facebook-messages
+      - content: Send a Facebook message
+        id: send-a-facebook-message
+      - content: Mark a Facebook thread read
+        id: mark-a-facebook-thread-read
       - content: List X threads
         id: list-x-threads
+      - content: Start an X conversation
+        id: start-an-x-conversation
       - content: List X messages
         id: list-x-messages
+      - content: Send an X message
+        id: send-an-x-message
+      - content: Mark an X thread read
+        id: mark-an-x-thread-read
       - content: List X threads
         id: list-x-threads-1
+      - content: Start an X conversation
+        id: start-an-x-conversation-1
       - content: List X messages
         id: list-x-messages-1
+      - content: Send an X message
+        id: send-an-x-message-1
+      - content: Mark an X thread read
+        id: mark-an-x-thread-read-1
       - content: List Reddit threads
         id: list-reddit-threads
+      - content: Start a Reddit conversation
+        id: start-a-reddit-conversation
       - content: List Reddit messages
         id: list-reddit-messages
+      - content: Send a Reddit message
+        id: send-a-reddit-message
+      - content: Mark a Reddit thread read
+        id: mark-a-reddit-thread-read
     contents:
-      - content: 'Code: apps/web/src/lib/messaging/facebook/server.ts:5'
+      - content: >-
+          The connected account's inbox, newest first. Every thread carries the
+          platform-native ids the unofficial browser client sees (the numeric
+          conversation id (thread_key) of the Messenger conversation object).
+          Code: apps/web/src/lib/messaging/routes.ts.
         heading: list-facebook-threads
-      - content: 'Code: apps/web/src/lib/messaging/facebook/server.ts:6'
+      - content: >-
+          The normalized compose: stands in for send-to-user with no existing
+          thread — the first message creates the conversation. None of the three
+          platforms allow an empty conversation, so composing always sends the
+          first message. Media is uploaded through the platform first (see
+          body.image). Starting a thread a participant already has is 409. Code:
+          apps/web/src/lib/messaging/routes.ts.
+        heading: start-a-facebook-conversation
+      - content: >-
+          The thread plus its full message list, oldest first — the normalized
+          view of the conversation message set. A thread only resolves under the
+          account that owns it: any other account gets 404, never a leak. Code:
+          apps/web/src/lib/messaging/routes.ts.
         heading: list-facebook-messages
       - content: >-
-          Also served at legacy /twitter alias. Code:
-          apps/web/src/lib/messaging/twitter/server.ts:5
+          Send into an existing thread as the calling account — normalized from
+          the POSTed conversation message; it comes back with its mid. The
+          response echoes the created message plus the thread with
+          preview/updatedAt in sync, so a client can reconcile its optimistic
+          bubble. Code: apps/web/src/lib/messaging/routes.ts.
+        heading: send-a-facebook-message
+      - content: >-
+          Clears the thread's unread count for the calling account — what
+          opening a conversation does in each native client. Idempotent: acking
+          an already-read thread is a 200 with acknowledged: 0. Code:
+          apps/web/src/lib/messaging/routes.ts.
+        heading: mark-a-facebook-thread-read
+      - content: >-
+          The connected account's inbox, newest first. Every thread carries the
+          platform-native ids the unofficial browser client sees
+          (dm_conversation_id — for 1:1 DMs the two participant user ids joined
+          with a dash, on each dm_event). Code:
+          apps/web/src/lib/messaging/routes.ts.
         heading: list-x-threads
       - content: >-
-          Also at /twitter alias. Code:
-          apps/web/src/lib/messaging/twitter/server.ts:6
+          The normalized compose: stands in for POST
+          /2/dm_conversations/with/:participant_id/messages — the conversation
+          is created and the first message lands in one call. None of the three
+          platforms allow an empty conversation, so composing always sends the
+          first message. Media is uploaded through the platform first (see
+          body.image). Starting a thread a participant already has is 409. Code:
+          apps/web/src/lib/messaging/routes.ts.
+        heading: start-an-x-conversation
+      - content: >-
+          The thread plus its full message list, oldest first — the normalized
+          view of the dm_events stream filtered by dm_conversation_id
+          (event_type MessageCreate) message set. A thread only resolves under
+          the account that owns it: any other account gets 404, never a leak.
+          Code: apps/web/src/lib/messaging/routes.ts.
         heading: list-x-messages
       - content: >-
-          Also served at legacy /twitter alias. Code:
-          apps/web/src/lib/messaging/twitter/server.ts:5
+          Send into an existing thread as the calling account — normalized from
+          the dm_event MessageCreate write; the created event comes back with
+          its 19-digit event id. The response echoes the created message plus
+          the thread with preview/updatedAt in sync, so a client can reconcile
+          its optimistic bubble. Code: apps/web/src/lib/messaging/routes.ts.
+        heading: send-an-x-message
+      - content: >-
+          Clears the thread's unread count for the calling account — what
+          opening a conversation does in each native client. Idempotent: acking
+          an already-read thread is a 200 with acknowledged: 0. Code:
+          apps/web/src/lib/messaging/routes.ts.
+        heading: mark-an-x-thread-read
+      - content: >-
+          The connected account's inbox, newest first. Every thread carries the
+          platform-native ids the unofficial browser client sees
+          (dm_conversation_id — for 1:1 DMs the two participant user ids joined
+          with a dash, on each dm_event). Code:
+          apps/web/src/lib/messaging/routes.ts.
         heading: list-x-threads-1
       - content: >-
-          Also at /twitter alias. Code:
-          apps/web/src/lib/messaging/twitter/server.ts:6
+          The normalized compose: stands in for POST
+          /2/dm_conversations/with/:participant_id/messages — the conversation
+          is created and the first message lands in one call. None of the three
+          platforms allow an empty conversation, so composing always sends the
+          first message. Media is uploaded through the platform first (see
+          body.image). Starting a thread a participant already has is 409. Code:
+          apps/web/src/lib/messaging/routes.ts.
+        heading: start-an-x-conversation-1
+      - content: >-
+          The thread plus its full message list, oldest first — the normalized
+          view of the dm_events stream filtered by dm_conversation_id
+          (event_type MessageCreate) message set. A thread only resolves under
+          the account that owns it: any other account gets 404, never a leak.
+          Code: apps/web/src/lib/messaging/routes.ts.
         heading: list-x-messages-1
-      - content: 'Code: apps/web/src/lib/messaging/reddit/server.ts:5'
+      - content: >-
+          Send into an existing thread as the calling account — normalized from
+          the dm_event MessageCreate write; the created event comes back with
+          its 19-digit event id. The response echoes the created message plus
+          the thread with preview/updatedAt in sync, so a client can reconcile
+          its optimistic bubble. Code: apps/web/src/lib/messaging/routes.ts.
+        heading: send-an-x-message-1
+      - content: >-
+          Clears the thread's unread count for the calling account — what
+          opening a conversation does in each native client. Idempotent: acking
+          an already-read thread is a 200 with acknowledged: 0. Code:
+          apps/web/src/lib/messaging/routes.ts.
+        heading: mark-an-x-thread-read-1
+      - content: >-
+          The connected account's inbox, newest first. Every thread carries the
+          platform-native ids the unofficial browser client sees
+          (first_message_name — inbox and outbox message listings grouped by the
+          t4_ id of the thread first message). Code:
+          apps/web/src/lib/messaging/routes.ts.
         heading: list-reddit-threads
-      - content: 'Code: apps/web/src/lib/messaging/reddit/server.ts:6'
+      - content: >-
+          The normalized compose: stands in for Reddit compose-to-username,
+          which opens a private-message thread by its first message. None of the
+          three platforms allow an empty conversation, so composing always sends
+          the first message. Media is uploaded through the platform first (see
+          body.image). Starting a thread a participant already has is 409. Code:
+          apps/web/src/lib/messaging/routes.ts.
+        heading: start-a-reddit-conversation
+      - content: >-
+          The thread plus its full message list, oldest first — the normalized
+          view of the inbox + outbox children sharing this first_message_name
+          message set. A thread only resolves under the account that owns it:
+          any other account gets 404, never a leak. Code:
+          apps/web/src/lib/messaging/routes.ts.
         heading: list-reddit-messages
+      - content: >-
+          Send into an existing thread as the calling account — normalized from
+          the posted inbox message; it comes back with its t4_ id. The response
+          echoes the created message plus the thread with preview/updatedAt in
+          sync, so a client can reconcile its optimistic bubble. Code:
+          apps/web/src/lib/messaging/routes.ts.
+        heading: send-a-reddit-message
+      - content: >-
+          Clears the thread's unread count for the calling account — what
+          opening a conversation does in each native client. Idempotent: acking
+          an already-read thread is a 200 with acknowledged: 0. Code:
+          apps/web/src/lib/messaging/routes.ts.
+        heading: mark-a-reddit-thread-read
 ---
 
 {/* This file was generated by Fumadocs. Do not edit this file directly. Any changes should be made by running the generation command again. */}
 
-## Messaging — threads and messages per platform
+## Messaging — threads and messages, per connected account
 
-Messaging mirrors `lib/feed` for chat: three platforms each expose `/threads` and `/threads/{threadId}/messages` from static mocks (`FACEBOOK_THREADS` etc). They are mounted at `/messaging/facebook`, `/messaging/x` (canonical) + legacy `/messaging/twitter` alias, and `/messaging/reddit`. The dashboard Messages view reads these via `getThreads()`/`getThreadMessages()`.
+An inbox belongs to a connected account: every route requires `?accountId=` (FK to /accounts) and a thread only resolves under the account that owns it — another account gets 404, never a leak. Threads carry the platform-native ids the unofficial browser client sees (X: `dm_conversation_id` = the two participant user ids joined with a dash, messages are 19-digit `dm_event` ids; Facebook: the numeric conversation `thread_key` + `mid`; Reddit: threads grouped by `first_message_name` = the `t4_` id of the thread's first message, message ids are `t4_`). Timestamps are ISO 8601.
 
-Six primary routes (+ 2 alias routes for `/twitter`). Unknown thread ids 404. Code: `apps/web/src/lib/messaging/{facebook,twitter,reddit}/server.ts` and `index.ts`.
+Five routes per platform: list the account's threads, start a conversation (normalizes each platform's compose — none allow an empty conversation, so composing always sends the first message; 409 when the participant already has a thread), fetch a thread with its full message list, send into an existing thread (echoes the created message plus the thread with preview/updatedAt in sync, so clients can reconcile an optimistic bubble), and mark read (clears unread, idempotent). Mounted at `/messaging/facebook`, `/messaging/x` (canonical) + legacy `/messaging/twitter` alias, and `/messaging/reddit`. Code: `apps/web/src/lib/messaging/routes.ts` (shared factory) and `index.ts` (client).
 ### `GET /messaging/facebook/threads` — List Facebook threads
 
-Code: apps/web/src/lib/messaging/facebook/server.ts:5
+The connected account's inbox, newest first. Every thread carries the platform-native ids the unofficial browser client sees (the numeric conversation id (thread_key) of the Messenger conversation object). Code: apps/web/src/lib/messaging/routes.ts.
+
+### `POST /messaging/facebook/threads` — Start a Facebook conversation
+
+The normalized compose: stands in for send-to-user with no existing thread — the first message creates the conversation. None of the three platforms allow an empty conversation, so composing always sends the first message. Media is uploaded through the platform first (see body.image). Starting a thread a participant already has is 409. Code: apps/web/src/lib/messaging/routes.ts.
 
 ### `GET /messaging/facebook/threads/{threadId}/messages` — List Facebook messages
 
-Code: apps/web/src/lib/messaging/facebook/server.ts:6
+The thread plus its full message list, oldest first — the normalized view of the conversation message set. A thread only resolves under the account that owns it: any other account gets 404, never a leak. Code: apps/web/src/lib/messaging/routes.ts.
+
+### `POST /messaging/facebook/threads/{threadId}/messages` — Send a Facebook message
+
+Send into an existing thread as the calling account — normalized from the POSTed conversation message; it comes back with its mid. The response echoes the created message plus the thread with preview/updatedAt in sync, so a client can reconcile its optimistic bubble. Code: apps/web/src/lib/messaging/routes.ts.
+
+### `POST /messaging/facebook/threads/{threadId}/ack` — Mark a Facebook thread read
+
+Clears the thread's unread count for the calling account — what opening a conversation does in each native client. Idempotent: acking an already-read thread is a 200 with acknowledged: 0. Code: apps/web/src/lib/messaging/routes.ts.
 
 ### `GET /messaging/x/threads` — List X threads
 
-Also served at legacy /twitter alias. Code: apps/web/src/lib/messaging/twitter/server.ts:5
+The connected account's inbox, newest first. Every thread carries the platform-native ids the unofficial browser client sees (dm_conversation_id — for 1:1 DMs the two participant user ids joined with a dash, on each dm_event). Code: apps/web/src/lib/messaging/routes.ts.
+
+### `POST /messaging/x/threads` — Start an X conversation
+
+The normalized compose: stands in for POST /2/dm_conversations/with/:participant_id/messages — the conversation is created and the first message lands in one call. None of the three platforms allow an empty conversation, so composing always sends the first message. Media is uploaded through the platform first (see body.image). Starting a thread a participant already has is 409. Code: apps/web/src/lib/messaging/routes.ts.
 
 ### `GET /messaging/x/threads/{threadId}/messages` — List X messages
 
-Also at /twitter alias. Code: apps/web/src/lib/messaging/twitter/server.ts:6
+The thread plus its full message list, oldest first — the normalized view of the dm_events stream filtered by dm_conversation_id (event_type MessageCreate) message set. A thread only resolves under the account that owns it: any other account gets 404, never a leak. Code: apps/web/src/lib/messaging/routes.ts.
+
+### `POST /messaging/x/threads/{threadId}/messages` — Send an X message
+
+Send into an existing thread as the calling account — normalized from the dm_event MessageCreate write; the created event comes back with its 19-digit event id. The response echoes the created message plus the thread with preview/updatedAt in sync, so a client can reconcile its optimistic bubble. Code: apps/web/src/lib/messaging/routes.ts.
+
+### `POST /messaging/x/threads/{threadId}/ack` — Mark an X thread read
+
+Clears the thread's unread count for the calling account — what opening a conversation does in each native client. Idempotent: acking an already-read thread is a 200 with acknowledged: 0. Code: apps/web/src/lib/messaging/routes.ts.
 
 ### `GET /messaging/twitter/threads` — List X threads
 
-Also served at legacy /twitter alias. Code: apps/web/src/lib/messaging/twitter/server.ts:5
+The connected account's inbox, newest first. Every thread carries the platform-native ids the unofficial browser client sees (dm_conversation_id — for 1:1 DMs the two participant user ids joined with a dash, on each dm_event). Code: apps/web/src/lib/messaging/routes.ts.
+
+### `POST /messaging/twitter/threads` — Start an X conversation
+
+The normalized compose: stands in for POST /2/dm_conversations/with/:participant_id/messages — the conversation is created and the first message lands in one call. None of the three platforms allow an empty conversation, so composing always sends the first message. Media is uploaded through the platform first (see body.image). Starting a thread a participant already has is 409. Code: apps/web/src/lib/messaging/routes.ts.
 
 ### `GET /messaging/twitter/threads/{threadId}/messages` — List X messages
 
-Also at /twitter alias. Code: apps/web/src/lib/messaging/twitter/server.ts:6
+The thread plus its full message list, oldest first — the normalized view of the dm_events stream filtered by dm_conversation_id (event_type MessageCreate) message set. A thread only resolves under the account that owns it: any other account gets 404, never a leak. Code: apps/web/src/lib/messaging/routes.ts.
+
+### `POST /messaging/twitter/threads/{threadId}/messages` — Send an X message
+
+Send into an existing thread as the calling account — normalized from the dm_event MessageCreate write; the created event comes back with its 19-digit event id. The response echoes the created message plus the thread with preview/updatedAt in sync, so a client can reconcile its optimistic bubble. Code: apps/web/src/lib/messaging/routes.ts.
+
+### `POST /messaging/twitter/threads/{threadId}/ack` — Mark an X thread read
+
+Clears the thread's unread count for the calling account — what opening a conversation does in each native client. Idempotent: acking an already-read thread is a 200 with acknowledged: 0. Code: apps/web/src/lib/messaging/routes.ts.
 
 ### `GET /messaging/reddit/threads` — List Reddit threads
 
-Code: apps/web/src/lib/messaging/reddit/server.ts:5
+The connected account's inbox, newest first. Every thread carries the platform-native ids the unofficial browser client sees (first_message_name — inbox and outbox message listings grouped by the t4_ id of the thread first message). Code: apps/web/src/lib/messaging/routes.ts.
+
+### `POST /messaging/reddit/threads` — Start a Reddit conversation
+
+The normalized compose: stands in for Reddit compose-to-username, which opens a private-message thread by its first message. None of the three platforms allow an empty conversation, so composing always sends the first message. Media is uploaded through the platform first (see body.image). Starting a thread a participant already has is 409. Code: apps/web/src/lib/messaging/routes.ts.
 
 ### `GET /messaging/reddit/threads/{threadId}/messages` — List Reddit messages
 
-Code: apps/web/src/lib/messaging/reddit/server.ts:6
+The thread plus its full message list, oldest first — the normalized view of the inbox + outbox children sharing this first_message_name message set. A thread only resolves under the account that owns it: any other account gets 404, never a leak. Code: apps/web/src/lib/messaging/routes.ts.
+
+### `POST /messaging/reddit/threads/{threadId}/messages` — Send a Reddit message
+
+Send into an existing thread as the calling account — normalized from the posted inbox message; it comes back with its t4_ id. The response echoes the created message plus the thread with preview/updatedAt in sync, so a client can reconcile its optimistic bubble. Code: apps/web/src/lib/messaging/routes.ts.
+
+### `POST /messaging/reddit/threads/{threadId}/ack` — Mark a Reddit thread read
+
+Clears the thread's unread count for the calling account — what opening a conversation does in each native client. Idempotent: acking an already-read thread is a 200 with acknowledged: 0. Code: apps/web/src/lib/messaging/routes.ts.
 
 
-<APIPage document={"openapi.json"} operations={[{"path":"/messaging/facebook/threads","method":"get"},{"path":"/messaging/facebook/threads/{threadId}/messages","method":"get"},{"path":"/messaging/x/threads","method":"get"},{"path":"/messaging/x/threads/{threadId}/messages","method":"get"},{"path":"/messaging/twitter/threads","method":"get"},{"path":"/messaging/twitter/threads/{threadId}/messages","method":"get"},{"path":"/messaging/reddit/threads","method":"get"},{"path":"/messaging/reddit/threads/{threadId}/messages","method":"get"}]} webhooks={[]} hasHead={true} />
+<APIPage document={"openapi.json"} operations={[{"path":"/messaging/facebook/threads","method":"get"},{"path":"/messaging/facebook/threads","method":"post"},{"path":"/messaging/facebook/threads/{threadId}/messages","method":"get"},{"path":"/messaging/facebook/threads/{threadId}/messages","method":"post"},{"path":"/messaging/facebook/threads/{threadId}/ack","method":"post"},{"path":"/messaging/x/threads","method":"get"},{"path":"/messaging/x/threads","method":"post"},{"path":"/messaging/x/threads/{threadId}/messages","method":"get"},{"path":"/messaging/x/threads/{threadId}/messages","method":"post"},{"path":"/messaging/x/threads/{threadId}/ack","method":"post"},{"path":"/messaging/twitter/threads","method":"get"},{"path":"/messaging/twitter/threads","method":"post"},{"path":"/messaging/twitter/threads/{threadId}/messages","method":"get"},{"path":"/messaging/twitter/threads/{threadId}/messages","method":"post"},{"path":"/messaging/twitter/threads/{threadId}/ack","method":"post"},{"path":"/messaging/reddit/threads","method":"get"},{"path":"/messaging/reddit/threads","method":"post"},{"path":"/messaging/reddit/threads/{threadId}/messages","method":"get"},{"path":"/messaging/reddit/threads/{threadId}/messages","method":"post"},{"path":"/messaging/reddit/threads/{threadId}/ack","method":"post"}]} webhooks={[]} hasHead={true} />

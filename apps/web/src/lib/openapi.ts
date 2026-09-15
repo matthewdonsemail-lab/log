@@ -115,8 +115,108 @@ export const ListingStatusResponseSchema = z.object({ listingId: z.string(), sta
 export const KeywordsResponseSchema = z.object({ keywords: z.array(KeywordSchema) })
 export const KeywordResponseSchema = z.object({ keyword: KeywordSchema, keywords: z.array(KeywordSchema) })
 export const FeedResponseSchema = z.object({ items: z.array(FeedItemSchema) })
-export const ThreadsResponseSchema = z.object({ threads: z.array(z.object({}).passthrough()) })
-export const MessagesResponseSchema = z.object({ messages: z.array(z.object({}).passthrough()) })
+
+// --- Messaging: normalized multi-account threads + messages -----------
+// The chat types mirror the platform-native payloads (X dm_events with
+// dm_conversation_id, Facebook conversation objects with mid ids, Reddit
+// inbox/outbox listings grouped by first_message_name) — each schema pins
+// the platform literal and describes its native id shape.
+export const ParticipantSchema = z
+  .object({
+    name: z.string(),
+    handle: z.string().optional().describe('Platform handle when one exists: @handle (X), u/name (Reddit); absent on Facebook.'),
+    initials: z.string(),
+    color: z.string()
+  })
+  .describe('Participant — how the other side of a thread renders in the UI.')
+
+export const ReplyToSchema = z
+  .object({
+    platformMessageId: z.string(),
+    isSelfReply: z.boolean().optional().describe('Facebook is_self_reply: the message replies to one of my own. Absent elsewhere.')
+  })
+  .describe('ReplyTo — an earlier platform-native message this one replies to.')
+
+function threadSchema(platform: 'facebook' | 'x' | 'reddit', platformThreadId: string, subjectDescription?: string) {
+  return z.object({
+    id: z.string().describe('Normalized thread id (internal).'),
+    platform: z.literal(platform),
+    accountId: z.string().describe('FK to /accounts — the connected account that owns this thread; every message in it is from or to that account.'),
+    platformThreadId: z.string().describe(platformThreadId),
+    platformParticipantId: z.string().describe('The other participant platform-native id (X user id / Facebook user id / Reddit username).'),
+    participant: ParticipantSchema,
+    ...(subjectDescription ? { subject: z.string().describe(subjectDescription) } : {}),
+    preview: z.string().describe('Latest message body (Photo when the tail is an image).'),
+    updatedAt: z.string().datetime().describe('ISO 8601 — normalized from the native clock (X created_at / Facebook created_time / Reddit created_utc x 1000). The client formats it.'),
+    unread: z.number().int().min(0)
+  })
+}
+
+export const FacebookThreadSchema = threadSchema('facebook', 'Numeric conversation id — the thread_key the Messenger payloads carry.')
+export const XThreadSchema = threadSchema('x', 'The dm_conversation_id — for 1:1 conversations, senderId-participantId (the two user ids joined with a dash).')
+export const RedditThreadSchema = threadSchema('reddit', 'The first_message_name — the t4_ fullname of the thread first message; the client groups inbox/outbox listings by it.', 'Reddit PM subject line; absent on X and Facebook.')
+
+function messageSchema(platformMessageId: string, replyTo?: string) {
+  return z.object({
+    id: z.string().describe('Normalized message id (internal).'),
+    threadId: z.string().describe('FK to the normalized thread id.'),
+    from: z.enum(['me', 'them']).describe('me is the calling account side; them is the participant.'),
+    platformMessageId: z.string().describe(platformMessageId),
+    body: z.string(),
+    sentAt: z.string().datetime().describe('ISO 8601, same normalization as Thread.updatedAt.'),
+    image: z.string().url().optional(),
+    replyTo: ReplyToSchema.optional().describe(replyTo ?? 'Reply to an earlier message in this thread.')
+  })
+}
+
+export const FacebookMessageSchema = messageSchema('The mid — the Facebook message id.', 'A Facebook reply_to: the replied mid, plus is_self_reply when it replies to my own message.')
+export const XMessageSchema = messageSchema('The dm event id — a 19-digit base36-lookalike event identifier from the dm_events stream.')
+export const RedditMessageSchema = messageSchema('The t4_ fullname — the postbase id of the message in the inbox/outbox listing.')
+
+export const SendMessageInputSchema = z.object({
+  body: z.string().min(1).describe('Plain text; empty after trimming is 400.'),
+  image: z.string().url().optional().describe('Image URL. The native client uploads media through the platform first (X attachments[].media_id, Facebook attachment upload) and passes the result here — this endpoint stays a chat-message endpoint, not an upload endpoint.'),
+  replyToPlatformMessageId: z.string().optional().describe('Reply to this message in the thread; unknown platform ids are 400.')
+})
+
+export const StartThreadInputSchema = z.object({
+  platformParticipantId: z.string().min(1).describe('The recipient platform-native id: X user id / Facebook user id / Reddit username (no u/ prefix).'),
+  body: z.string().min(1).describe('The first message — the compose body. None of the platforms allow an empty conversation, so composing always sends the first message with it.'),
+  image: z.string().url().optional(),
+  name: z.string().optional().describe('Participant display name, when the client has it open (DM list, profile, comment page). The mock renders the id itself when absent.'),
+  handle: z.string().optional(),
+  subject: z.string().optional().describe('Reddit PM subject line; ignored on X and Facebook (they have none).')
+})
+
+export const AckSchema = z
+  .object({
+    threadId: z.string(),
+    acknowledged: z.number().int().min(0).describe('Unread messages that were cleared.')
+  })
+  .describe('Ack — read state cleared for the account session (what opening a conversation does natively).')
+
+function threadsJson(threads: z.ZodType) {
+  return json(z.object({ threads: z.array(threads) }))
+}
+function messagesJson(thread: z.ZodType, message: z.ZodType) {
+  return json(z.object({ threadId: z.string(), accountId: z.string(), thread, messages: z.array(message) }))
+}
+function sendResultJson(message: z.ZodType, thread: z.ZodType) {
+  return json(z.object({ message, thread }))
+}
+
+export const FacebookThreadsJson = threadsJson(FacebookThreadSchema)
+export const XThreadsJson = threadsJson(XThreadSchema)
+export const RedditThreadsJson = threadsJson(RedditThreadSchema)
+export const FacebookMessagesJson = messagesJson(FacebookThreadSchema, FacebookMessageSchema)
+export const XMessagesJson = messagesJson(XThreadSchema, XMessageSchema)
+export const RedditMessagesJson = messagesJson(RedditThreadSchema, RedditMessageSchema)
+export const FacebookSendResultJson = sendResultJson(FacebookMessageSchema, FacebookThreadSchema)
+export const XSendResultJson = sendResultJson(XMessageSchema, XThreadSchema)
+export const RedditSendResultJson = sendResultJson(RedditMessageSchema, RedditThreadSchema)
+export const SendMessageInputJson = json(SendMessageInputSchema)
+export const StartThreadInputJson = json(StartThreadInputSchema)
+export const AckJson = json(AckSchema)
 
 /** Standard `{ error }` failure response for `describeRoute` maps. */
 export function errorResponse(description: string) {
@@ -158,8 +258,6 @@ export const ListingStatusResponseJson = json(ListingStatusResponseSchema)
 export const KeywordsResponseJson = json(KeywordsResponseSchema)
 export const KeywordResponseJson = json(KeywordResponseSchema)
 export const FeedResponseJson = json(FeedResponseSchema)
-export const ThreadsResponseJson = json(ThreadsResponseSchema)
-export const MessagesResponseJson = json(MessagesResponseSchema)
 
 /**
  * Contract schemas serialized to plain JSON Schema for the document's
@@ -172,7 +270,10 @@ function contractComponents() {
     AccountIssue: z.toJSONSchema(AccountIssueSchema),
     IssueFix: z.toJSONSchema(IssueFixSchema),
     RawSignal: z.toJSONSchema(RawSignalSchema),
-    AccountIssueInfo: z.toJSONSchema(AccountIssueInfoSchema)
+    AccountIssueInfo: z.toJSONSchema(AccountIssueInfoSchema),
+    Participant: z.toJSONSchema(ParticipantSchema),
+    ReplyTo: z.toJSONSchema(ReplyToSchema),
+    Ack: z.toJSONSchema(AckSchema)
   }
 }
 
@@ -203,7 +304,7 @@ export const openApiDocumentation = {
     { name: 'Listings', 'x-displayName': 'Listings', description: 'Facebook Marketplace listings (mock of facebook-camofox-client).' },
     { name: 'Keywords', 'x-displayName': 'Keywords', description: 'Tracked phrases scoped to joined groups (or word-based on X).' },
     { name: 'Feed', 'x-displayName': 'Feed', description: 'Signal feed — filterable by platform and search.' },
-    { name: 'Messaging', 'x-displayName': 'Messaging', description: 'Threads + messages per platform (facebook / x / reddit).' }
+    { name: 'Messaging', 'x-displayName': 'Messaging', description: 'Multi-account chat: threads + messages per connected account on facebook / x / reddit (send, start, mark read).' }
   ],
   components: {
     schemas: contractComponents()

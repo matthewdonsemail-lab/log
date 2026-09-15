@@ -23,9 +23,9 @@ export interface ApiRouteDef {
   path: string
   needs: ApiRouteNeeds
   /**
-   * No server route implements this yet (e.g. outbound message sends) —
-   * the scope bit exists ahead of it so keys minted today already carry
-   * the right permission when the route lands.
+   * No server route implements this yet — the scope bit exists ahead of
+   * the route so keys minted today already carry the right permission when
+   * the route lands.
    */
   planned?: boolean
 }
@@ -59,9 +59,11 @@ export const API_ROUTES: ApiRouteDef[] = [
   { method: 'DELETE', path: '/listings/:listingId', needs: { account: true } },
   { method: 'GET', path: '/feed', needs: { receive: true } },
   { method: 'GET', path: '/feed/:platform', needs: { receive: true } },
-  { method: 'GET', path: '/threads', needs: { receive: true } },
-  { method: 'GET', path: '/threads/:threadId/messages', needs: { receive: true } },
-  { method: 'POST', path: '/threads/:threadId/messages', needs: { send: true }, planned: true },
+  { method: 'GET', path: '/threads', needs: { account: true, receive: true } },
+  { method: 'POST', path: '/threads', needs: { account: true, send: true } },
+  { method: 'GET', path: '/threads/:threadId/messages', needs: { account: true, receive: true } },
+  { method: 'POST', path: '/threads/:threadId/messages', needs: { account: true, send: true } },
+  { method: 'POST', path: '/threads/:threadId/ack', needs: { account: true, receive: true } },
 ]
 
 export interface ApiAccessContext {

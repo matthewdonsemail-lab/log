@@ -67,11 +67,11 @@ Five routes: list (filters by \`?platform\`, \`?groupId\`, \`?noGroup\`), reset 
 
 The feed is the mock of the platform clients' signal stream — each \`FeedItem\` has author, handle, community, title, body, sentiment. Two routes serve the Feed tab: a global list with optional \`?platform\` + \`?search\` (case-insensitive substring across author/handle/community/title/body), and a per-platform shortcut that also accepts \`?search\`. Both validate \`isPlatform\` and return 400 otherwise. Code: \`apps/web/src/lib/feed/server.ts\`.`,
 
-  'Messaging': `## Messaging — threads and messages per platform
+  'Messaging': `## Messaging — threads and messages, per connected account
 
-Messaging mirrors \`lib/feed\` for chat: three platforms each expose \`/threads\` and \`/threads/{threadId}/messages\` from static mocks (\`FACEBOOK_THREADS\` etc). They are mounted at \`/messaging/facebook\`, \`/messaging/x\` (canonical) + legacy \`/messaging/twitter\` alias, and \`/messaging/reddit\`. The dashboard Messages view reads these via \`getThreads()\`/\`getThreadMessages()\`.
+An inbox belongs to a connected account: every route requires \`?accountId=\` (FK to /accounts) and a thread only resolves under the account that owns it — another account gets 404, never a leak. Threads carry the platform-native ids the unofficial browser client sees (X: \`dm_conversation_id\` = the two participant user ids joined with a dash, messages are 19-digit \`dm_event\` ids; Facebook: the numeric conversation \`thread_key\` + \`mid\`; Reddit: threads grouped by \`first_message_name\` = the \`t4_\` id of the thread's first message, message ids are \`t4_\`). Timestamps are ISO 8601.
 
-Six primary routes (+ 2 alias routes for \`/twitter\`). Unknown thread ids 404. Code: \`apps/web/src/lib/messaging/{facebook,twitter,reddit}/server.ts\` and \`index.ts\`.`
+Five routes per platform: list the account's threads, start a conversation (normalizes each platform's compose — none allow an empty conversation, so composing always sends the first message; 409 when the participant already has a thread), fetch a thread with its full message list, send into an existing thread (echoes the created message plus the thread with preview/updatedAt in sync, so clients can reconcile an optimistic bubble), and mark read (clears unread, idempotent). Mounted at \`/messaging/facebook\`, \`/messaging/x\` (canonical) + legacy \`/messaging/twitter\` alias, and \`/messaging/reddit\`. Code: \`apps/web/src/lib/messaging/routes.ts\` (shared factory) and \`index.ts\` (client).`
 }
 
 const spec = JSON.parse(readFileSync('./openapi.json', 'utf8'))

@@ -1,13 +1,16 @@
-import { Hono } from 'hono'
-import { describeRoute } from 'hono-openapi'
-import { TWITTER_MESSAGES, TWITTER_THREADS } from './mock'
-import { ThreadsResponseJson, MessagesResponseJson, errorResponse } from '../../openapi'
+import { buildMessagingRoutes } from '../routes'
 
-export const twitterMessagingApp = new Hono()
-  .get('/threads', describeRoute({ operationId: 'listXThreads', tags: ['Messaging'], summary: 'List X threads', description: 'Also served at legacy /twitter alias. Code: apps/web/src/lib/messaging/twitter/server.ts:5', responses: { 200: { description: 'Threads.', content: { 'application/json': { schema: ThreadsResponseJson } } } } }), (c) => c.json({ threads: TWITTER_THREADS }))
-  .get('/threads/:threadId/messages', describeRoute({ operationId: 'listXMessages', tags: ['Messaging'], summary: 'List X messages', description: 'Also at /twitter alias. Code: apps/web/src/lib/messaging/twitter/server.ts:6', parameters: [{ name: 'threadId', in: 'path', required: true, schema: { type: 'string' } }], responses: { 200: { description: 'Messages.', content: { 'application/json': { schema: MessagesResponseJson } } }, 404: errorResponse('Thread not found') } }), (c) => {
-    const threadId = c.req.param('threadId')
-    const messages = TWITTER_MESSAGES[threadId]
-    if (!messages) return c.json({ error: 'Thread not found' }, 404)
-    return c.json({ threadId, messages })
-  })
+/**
+ * X (Twitter) DM routing.
+ *
+ * Stands in for the unofficial browser client's dm surface: a flat
+ * dm_events stream grouped by `dm_conversation_id` (1:1 = the two
+ * participant user ids joined with a dash), plus the
+ * `POST /2/dm_conversations/with/:participant_id/messages` compose. The
+ * shared handler lives in `routes.ts`; the id shapes are described in the
+ * OpenAPI schemas (`openapi.ts` → XThreadSchema / XMessageSchema).
+ */
+export const xMessagingApp = buildMessagingRoutes('x')
+
+/** Legacy alias — the same app instance, kept so pre-rename `/messaging/twitter` clients don't 404. */
+export const twitterMessagingApp = xMessagingApp

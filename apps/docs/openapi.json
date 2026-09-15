@@ -50,7 +50,7 @@
     {
       "name": "Messaging",
       "x-displayName": "Messaging",
-      "description": "Threads + messages per platform (facebook / x / reddit)."
+      "description": "Multi-account chat: threads + messages per connected account on facebook / x / reddit (send, start, mark read)."
     }
   ],
   "components": {
@@ -286,6 +286,71 @@
         ],
         "additionalProperties": false,
         "description": "Fully-resolved issue descriptor (see docs: Errors)."
+      },
+      "Participant": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "handle": {
+            "description": "Platform handle when one exists: @handle (X), u/name (Reddit); absent on Facebook.",
+            "type": "string"
+          },
+          "initials": {
+            "type": "string"
+          },
+          "color": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "initials",
+          "color"
+        ],
+        "additionalProperties": false,
+        "description": "Participant — how the other side of a thread renders in the UI."
+      },
+      "ReplyTo": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "platformMessageId": {
+            "type": "string"
+          },
+          "isSelfReply": {
+            "description": "Facebook is_self_reply: the message replies to one of my own. Absent elsewhere.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "platformMessageId"
+        ],
+        "additionalProperties": false,
+        "description": "ReplyTo — an earlier platform-native message this one replies to."
+      },
+      "Ack": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "threadId": {
+            "type": "string"
+          },
+          "acknowledged": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991,
+            "description": "Unread messages that were cleared."
+          }
+        },
+        "required": [
+          "threadId",
+          "acknowledged"
+        ],
+        "additionalProperties": false,
+        "description": "Ack — read state cleared for the account session (what opening a conversation does natively)."
       }
     }
   },
@@ -1349,8 +1414,10 @@
                     ]
                   },
                   "groupId": {
-                    "type": "string",
-                    "nullable": true
+                    "type": [
+                      "string",
+                      "null"
+                    ]
                   }
                 },
                 "required": [
@@ -1509,8 +1576,10 @@
                     "type": "string"
                   },
                   "groupId": {
-                    "type": "string",
-                    "nullable": true
+                    "type": [
+                      "string",
+                      "null"
+                    ]
                   },
                   "status": {
                     "type": "string",
@@ -3340,7 +3409,18 @@
           "Messaging"
         ],
         "summary": "List Facebook threads",
-        "description": "Code: apps/web/src/lib/messaging/facebook/server.ts:5",
+        "description": "The connected account's inbox, newest first. Every thread carries the platform-native ids the unofficial browser client sees (the numeric conversation id (thread_key) of the Messenger conversation object). Code: apps/web/src/lib/messaging/routes.ts.",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Threads.",
@@ -3354,8 +3434,80 @@
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "properties": {},
-                        "additionalProperties": {}
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Normalized thread id (internal)."
+                          },
+                          "platform": {
+                            "type": "string",
+                            "const": "facebook"
+                          },
+                          "accountId": {
+                            "type": "string",
+                            "description": "FK to /accounts — the connected account that owns this thread; every message in it is from or to that account."
+                          },
+                          "platformThreadId": {
+                            "type": "string",
+                            "description": "Numeric conversation id — the thread_key the Messenger payloads carry."
+                          },
+                          "platformParticipantId": {
+                            "type": "string",
+                            "description": "The other participant platform-native id (X user id / Facebook user id / Reddit username)."
+                          },
+                          "participant": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string"
+                              },
+                              "handle": {
+                                "description": "Platform handle when one exists: @handle (X), u/name (Reddit); absent on Facebook.",
+                                "type": "string"
+                              },
+                              "initials": {
+                                "type": "string"
+                              },
+                              "color": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "name",
+                              "initials",
+                              "color"
+                            ],
+                            "additionalProperties": false,
+                            "description": "Participant — how the other side of a thread renders in the UI."
+                          },
+                          "preview": {
+                            "type": "string",
+                            "description": "Latest message body (Photo when the tail is an image)."
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                            "description": "ISO 8601 — normalized from the native clock (X created_at / Facebook created_time / Reddit created_utc x 1000). The client formats it."
+                          },
+                          "unread": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "platform",
+                          "accountId",
+                          "platformThreadId",
+                          "platformParticipantId",
+                          "participant",
+                          "preview",
+                          "updatedAt",
+                          "unread"
+                        ],
+                        "additionalProperties": false
                       }
                     }
                   },
@@ -3363,6 +3515,295 @@
                     "threads"
                   ],
                   "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing ?accountId=",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "startFacebookThread",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Start a Facebook conversation",
+        "description": "The normalized compose: stands in for send-to-user with no existing thread — the first message creates the conversation. None of the three platforms allow an empty conversation, so composing always sends the first message. Media is uploaded through the platform first (see body.image). Starting a thread a participant already has is 409. Code: apps/web/src/lib/messaging/routes.ts.",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "platformParticipantId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The recipient platform-native id: X user id / Facebook user id / Reddit username (no u/ prefix)."
+                  },
+                  "body": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The first message — the compose body. None of the platforms allow an empty conversation, so composing always sends the first message with it."
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "name": {
+                    "description": "Participant display name, when the client has it open (DM list, profile, comment page). The mock renders the id itself when absent.",
+                    "type": "string"
+                  },
+                  "handle": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "description": "Reddit PM subject line; ignored on X and Facebook (they have none).",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "platformParticipantId",
+                  "body"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created thread plus its first message.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized message id (internal)."
+                        },
+                        "threadId": {
+                          "type": "string",
+                          "description": "FK to the normalized thread id."
+                        },
+                        "from": {
+                          "type": "string",
+                          "enum": [
+                            "me",
+                            "them"
+                          ],
+                          "description": "me is the calling account side; them is the participant."
+                        },
+                        "platformMessageId": {
+                          "type": "string",
+                          "description": "The mid — the Facebook message id."
+                        },
+                        "body": {
+                          "type": "string"
+                        },
+                        "sentAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601, same normalization as Thread.updatedAt."
+                        },
+                        "image": {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "replyTo": {
+                          "description": "A Facebook reply_to: the replied mid, plus is_self_reply when it replies to my own message.",
+                          "type": "object",
+                          "properties": {
+                            "platformMessageId": {
+                              "type": "string"
+                            },
+                            "isSelfReply": {
+                              "description": "Facebook is_self_reply: the message replies to one of my own. Absent elsewhere.",
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "platformMessageId"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "threadId",
+                        "from",
+                        "platformMessageId",
+                        "body",
+                        "sentAt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "thread": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized thread id (internal)."
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "facebook"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "description": "FK to /accounts — the connected account that owns this thread; every message in it is from or to that account."
+                        },
+                        "platformThreadId": {
+                          "type": "string",
+                          "description": "Numeric conversation id — the thread_key the Messenger payloads carry."
+                        },
+                        "platformParticipantId": {
+                          "type": "string",
+                          "description": "The other participant platform-native id (X user id / Facebook user id / Reddit username)."
+                        },
+                        "participant": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "handle": {
+                              "description": "Platform handle when one exists: @handle (X), u/name (Reddit); absent on Facebook.",
+                              "type": "string"
+                            },
+                            "initials": {
+                              "type": "string"
+                            },
+                            "color": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "initials",
+                            "color"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Participant — how the other side of a thread renders in the UI."
+                        },
+                        "preview": {
+                          "type": "string",
+                          "description": "Latest message body (Photo when the tail is an image)."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601 — normalized from the native clock (X created_at / Facebook created_time / Reddit created_utc x 1000). The client formats it."
+                        },
+                        "unread": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "platform",
+                        "accountId",
+                        "platformThreadId",
+                        "platformParticipantId",
+                        "participant",
+                        "preview",
+                        "updatedAt",
+                        "unread"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "thread"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed body, missing ?accountId=, or empty compose.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A thread with that participant already exists for this account.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
                 }
               }
             }
@@ -3377,7 +3818,7 @@
           "Messaging"
         ],
         "summary": "List Facebook messages",
-        "description": "Code: apps/web/src/lib/messaging/facebook/server.ts:6",
+        "description": "The thread plus its full message list, oldest first — the normalized view of the conversation message set. A thread only resolves under the account that owns it: any other account gets 404, never a leak. Code: apps/web/src/lib/messaging/routes.ts.",
         "parameters": [
           {
             "name": "threadId",
@@ -3386,27 +3827,181 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
           }
         ],
         "responses": {
           "200": {
-            "description": "Messages.",
+            "description": "Thread + messages.",
             "content": {
               "application/json": {
                 "schema": {
                   "$schema": "https://json-schema.org/draft/2020-12/schema",
                   "type": "object",
                   "properties": {
+                    "threadId": {
+                      "type": "string"
+                    },
+                    "accountId": {
+                      "type": "string"
+                    },
+                    "thread": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized thread id (internal)."
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "facebook"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "description": "FK to /accounts — the connected account that owns this thread; every message in it is from or to that account."
+                        },
+                        "platformThreadId": {
+                          "type": "string",
+                          "description": "Numeric conversation id — the thread_key the Messenger payloads carry."
+                        },
+                        "platformParticipantId": {
+                          "type": "string",
+                          "description": "The other participant platform-native id (X user id / Facebook user id / Reddit username)."
+                        },
+                        "participant": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "handle": {
+                              "description": "Platform handle when one exists: @handle (X), u/name (Reddit); absent on Facebook.",
+                              "type": "string"
+                            },
+                            "initials": {
+                              "type": "string"
+                            },
+                            "color": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "initials",
+                            "color"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Participant — how the other side of a thread renders in the UI."
+                        },
+                        "preview": {
+                          "type": "string",
+                          "description": "Latest message body (Photo when the tail is an image)."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601 — normalized from the native clock (X created_at / Facebook created_time / Reddit created_utc x 1000). The client formats it."
+                        },
+                        "unread": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "platform",
+                        "accountId",
+                        "platformThreadId",
+                        "platformParticipantId",
+                        "participant",
+                        "preview",
+                        "updatedAt",
+                        "unread"
+                      ],
+                      "additionalProperties": false
+                    },
                     "messages": {
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "properties": {},
-                        "additionalProperties": {}
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Normalized message id (internal)."
+                          },
+                          "threadId": {
+                            "type": "string",
+                            "description": "FK to the normalized thread id."
+                          },
+                          "from": {
+                            "type": "string",
+                            "enum": [
+                              "me",
+                              "them"
+                            ],
+                            "description": "me is the calling account side; them is the participant."
+                          },
+                          "platformMessageId": {
+                            "type": "string",
+                            "description": "The mid — the Facebook message id."
+                          },
+                          "body": {
+                            "type": "string"
+                          },
+                          "sentAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                            "description": "ISO 8601, same normalization as Thread.updatedAt."
+                          },
+                          "image": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "replyTo": {
+                            "description": "A Facebook reply_to: the replied mid, plus is_self_reply when it replies to my own message.",
+                            "type": "object",
+                            "properties": {
+                              "platformMessageId": {
+                                "type": "string"
+                              },
+                              "isSelfReply": {
+                                "description": "Facebook is_self_reply: the message replies to one of my own. Absent elsewhere.",
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "platformMessageId"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "threadId",
+                          "from",
+                          "platformMessageId",
+                          "body",
+                          "sentAt"
+                        ],
+                        "additionalProperties": false
                       }
                     }
                   },
                   "required": [
+                    "threadId",
+                    "accountId",
+                    "thread",
                     "messages"
                   ],
                   "additionalProperties": false
@@ -3414,8 +4009,396 @@
               }
             }
           },
+          "400": {
+            "description": "Missing ?accountId=",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
           "404": {
-            "description": "Thread not found",
+            "description": "Thread not found for this account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "sendFacebookMessage",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Send a Facebook message",
+        "description": "Send into an existing thread as the calling account — normalized from the POSTed conversation message; it comes back with its mid. The response echoes the created message plus the thread with preview/updatedAt in sync, so a client can reconcile its optimistic bubble. Code: apps/web/src/lib/messaging/routes.ts.",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "body": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Plain text; empty after trimming is 400."
+                  },
+                  "image": {
+                    "description": "Image URL. The native client uploads media through the platform first (X attachments[].media_id, Facebook attachment upload) and passes the result here — this endpoint stays a chat-message endpoint, not an upload endpoint.",
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "replyToPlatformMessageId": {
+                    "description": "Reply to this message in the thread; unknown platform ids are 400.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "body"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created message plus the updated thread.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized message id (internal)."
+                        },
+                        "threadId": {
+                          "type": "string",
+                          "description": "FK to the normalized thread id."
+                        },
+                        "from": {
+                          "type": "string",
+                          "enum": [
+                            "me",
+                            "them"
+                          ],
+                          "description": "me is the calling account side; them is the participant."
+                        },
+                        "platformMessageId": {
+                          "type": "string",
+                          "description": "The mid — the Facebook message id."
+                        },
+                        "body": {
+                          "type": "string"
+                        },
+                        "sentAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601, same normalization as Thread.updatedAt."
+                        },
+                        "image": {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "replyTo": {
+                          "description": "A Facebook reply_to: the replied mid, plus is_self_reply when it replies to my own message.",
+                          "type": "object",
+                          "properties": {
+                            "platformMessageId": {
+                              "type": "string"
+                            },
+                            "isSelfReply": {
+                              "description": "Facebook is_self_reply: the message replies to one of my own. Absent elsewhere.",
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "platformMessageId"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "threadId",
+                        "from",
+                        "platformMessageId",
+                        "body",
+                        "sentAt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "thread": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized thread id (internal)."
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "facebook"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "description": "FK to /accounts — the connected account that owns this thread; every message in it is from or to that account."
+                        },
+                        "platformThreadId": {
+                          "type": "string",
+                          "description": "Numeric conversation id — the thread_key the Messenger payloads carry."
+                        },
+                        "platformParticipantId": {
+                          "type": "string",
+                          "description": "The other participant platform-native id (X user id / Facebook user id / Reddit username)."
+                        },
+                        "participant": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "handle": {
+                              "description": "Platform handle when one exists: @handle (X), u/name (Reddit); absent on Facebook.",
+                              "type": "string"
+                            },
+                            "initials": {
+                              "type": "string"
+                            },
+                            "color": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "initials",
+                            "color"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Participant — how the other side of a thread renders in the UI."
+                        },
+                        "preview": {
+                          "type": "string",
+                          "description": "Latest message body (Photo when the tail is an image)."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601 — normalized from the native clock (X created_at / Facebook created_time / Reddit created_utc x 1000). The client formats it."
+                        },
+                        "unread": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "platform",
+                        "accountId",
+                        "platformThreadId",
+                        "platformParticipantId",
+                        "participant",
+                        "preview",
+                        "updatedAt",
+                        "unread"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "thread"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed body, missing ?accountId=, empty message, or unknown reply target.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Thread not found for this account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messaging/facebook/threads/{threadId}/ack": {
+      "post": {
+        "operationId": "ackFacebookThreads",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Mark a Facebook thread read",
+        "description": "Clears the thread's unread count for the calling account — what opening a conversation does in each native client. Idempotent: acking an already-read thread is a 200 with acknowledged: 0. Code: apps/web/src/lib/messaging/routes.ts.",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Read state cleared.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "threadId": {
+                      "type": "string"
+                    },
+                    "acknowledged": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991,
+                      "description": "Unread messages that were cleared."
+                    }
+                  },
+                  "required": [
+                    "threadId",
+                    "acknowledged"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Ack — read state cleared for the account session (what opening a conversation does natively)."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing ?accountId=",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Thread not found for this account",
             "content": {
               "application/json": {
                 "schema": {
@@ -3446,7 +4429,18 @@
           "Messaging"
         ],
         "summary": "List X threads",
-        "description": "Also served at legacy /twitter alias. Code: apps/web/src/lib/messaging/twitter/server.ts:5",
+        "description": "The connected account's inbox, newest first. Every thread carries the platform-native ids the unofficial browser client sees (dm_conversation_id — for 1:1 DMs the two participant user ids joined with a dash, on each dm_event). Code: apps/web/src/lib/messaging/routes.ts.",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Threads.",
@@ -3460,8 +4454,80 @@
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "properties": {},
-                        "additionalProperties": {}
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Normalized thread id (internal)."
+                          },
+                          "platform": {
+                            "type": "string",
+                            "const": "x"
+                          },
+                          "accountId": {
+                            "type": "string",
+                            "description": "FK to /accounts — the connected account that owns this thread; every message in it is from or to that account."
+                          },
+                          "platformThreadId": {
+                            "type": "string",
+                            "description": "The dm_conversation_id — for 1:1 conversations, senderId-participantId (the two user ids joined with a dash)."
+                          },
+                          "platformParticipantId": {
+                            "type": "string",
+                            "description": "The other participant platform-native id (X user id / Facebook user id / Reddit username)."
+                          },
+                          "participant": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string"
+                              },
+                              "handle": {
+                                "description": "Platform handle when one exists: @handle (X), u/name (Reddit); absent on Facebook.",
+                                "type": "string"
+                              },
+                              "initials": {
+                                "type": "string"
+                              },
+                              "color": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "name",
+                              "initials",
+                              "color"
+                            ],
+                            "additionalProperties": false,
+                            "description": "Participant — how the other side of a thread renders in the UI."
+                          },
+                          "preview": {
+                            "type": "string",
+                            "description": "Latest message body (Photo when the tail is an image)."
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                            "description": "ISO 8601 — normalized from the native clock (X created_at / Facebook created_time / Reddit created_utc x 1000). The client formats it."
+                          },
+                          "unread": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "platform",
+                          "accountId",
+                          "platformThreadId",
+                          "platformParticipantId",
+                          "participant",
+                          "preview",
+                          "updatedAt",
+                          "unread"
+                        ],
+                        "additionalProperties": false
                       }
                     }
                   },
@@ -3469,6 +4535,295 @@
                     "threads"
                   ],
                   "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing ?accountId=",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "startXThread",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Start an X conversation",
+        "description": "The normalized compose: stands in for POST /2/dm_conversations/with/:participant_id/messages — the conversation is created and the first message lands in one call. None of the three platforms allow an empty conversation, so composing always sends the first message. Media is uploaded through the platform first (see body.image). Starting a thread a participant already has is 409. Code: apps/web/src/lib/messaging/routes.ts.",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "platformParticipantId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The recipient platform-native id: X user id / Facebook user id / Reddit username (no u/ prefix)."
+                  },
+                  "body": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The first message — the compose body. None of the platforms allow an empty conversation, so composing always sends the first message with it."
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "name": {
+                    "description": "Participant display name, when the client has it open (DM list, profile, comment page). The mock renders the id itself when absent.",
+                    "type": "string"
+                  },
+                  "handle": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "description": "Reddit PM subject line; ignored on X and Facebook (they have none).",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "platformParticipantId",
+                  "body"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created thread plus its first message.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized message id (internal)."
+                        },
+                        "threadId": {
+                          "type": "string",
+                          "description": "FK to the normalized thread id."
+                        },
+                        "from": {
+                          "type": "string",
+                          "enum": [
+                            "me",
+                            "them"
+                          ],
+                          "description": "me is the calling account side; them is the participant."
+                        },
+                        "platformMessageId": {
+                          "type": "string",
+                          "description": "The dm event id — a 19-digit base36-lookalike event identifier from the dm_events stream."
+                        },
+                        "body": {
+                          "type": "string"
+                        },
+                        "sentAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601, same normalization as Thread.updatedAt."
+                        },
+                        "image": {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "replyTo": {
+                          "description": "Reply to an earlier message in this thread.",
+                          "type": "object",
+                          "properties": {
+                            "platformMessageId": {
+                              "type": "string"
+                            },
+                            "isSelfReply": {
+                              "description": "Facebook is_self_reply: the message replies to one of my own. Absent elsewhere.",
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "platformMessageId"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "threadId",
+                        "from",
+                        "platformMessageId",
+                        "body",
+                        "sentAt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "thread": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized thread id (internal)."
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "x"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "description": "FK to /accounts — the connected account that owns this thread; every message in it is from or to that account."
+                        },
+                        "platformThreadId": {
+                          "type": "string",
+                          "description": "The dm_conversation_id — for 1:1 conversations, senderId-participantId (the two user ids joined with a dash)."
+                        },
+                        "platformParticipantId": {
+                          "type": "string",
+                          "description": "The other participant platform-native id (X user id / Facebook user id / Reddit username)."
+                        },
+                        "participant": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "handle": {
+                              "description": "Platform handle when one exists: @handle (X), u/name (Reddit); absent on Facebook.",
+                              "type": "string"
+                            },
+                            "initials": {
+                              "type": "string"
+                            },
+                            "color": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "initials",
+                            "color"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Participant — how the other side of a thread renders in the UI."
+                        },
+                        "preview": {
+                          "type": "string",
+                          "description": "Latest message body (Photo when the tail is an image)."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601 — normalized from the native clock (X created_at / Facebook created_time / Reddit created_utc x 1000). The client formats it."
+                        },
+                        "unread": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "platform",
+                        "accountId",
+                        "platformThreadId",
+                        "platformParticipantId",
+                        "participant",
+                        "preview",
+                        "updatedAt",
+                        "unread"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "thread"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed body, missing ?accountId=, or empty compose.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A thread with that participant already exists for this account.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
                 }
               }
             }
@@ -3483,7 +4838,7 @@
           "Messaging"
         ],
         "summary": "List X messages",
-        "description": "Also at /twitter alias. Code: apps/web/src/lib/messaging/twitter/server.ts:6",
+        "description": "The thread plus its full message list, oldest first — the normalized view of the dm_events stream filtered by dm_conversation_id (event_type MessageCreate) message set. A thread only resolves under the account that owns it: any other account gets 404, never a leak. Code: apps/web/src/lib/messaging/routes.ts.",
         "parameters": [
           {
             "name": "threadId",
@@ -3492,27 +4847,181 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
           }
         ],
         "responses": {
           "200": {
-            "description": "Messages.",
+            "description": "Thread + messages.",
             "content": {
               "application/json": {
                 "schema": {
                   "$schema": "https://json-schema.org/draft/2020-12/schema",
                   "type": "object",
                   "properties": {
+                    "threadId": {
+                      "type": "string"
+                    },
+                    "accountId": {
+                      "type": "string"
+                    },
+                    "thread": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized thread id (internal)."
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "x"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "description": "FK to /accounts — the connected account that owns this thread; every message in it is from or to that account."
+                        },
+                        "platformThreadId": {
+                          "type": "string",
+                          "description": "The dm_conversation_id — for 1:1 conversations, senderId-participantId (the two user ids joined with a dash)."
+                        },
+                        "platformParticipantId": {
+                          "type": "string",
+                          "description": "The other participant platform-native id (X user id / Facebook user id / Reddit username)."
+                        },
+                        "participant": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "handle": {
+                              "description": "Platform handle when one exists: @handle (X), u/name (Reddit); absent on Facebook.",
+                              "type": "string"
+                            },
+                            "initials": {
+                              "type": "string"
+                            },
+                            "color": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "initials",
+                            "color"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Participant — how the other side of a thread renders in the UI."
+                        },
+                        "preview": {
+                          "type": "string",
+                          "description": "Latest message body (Photo when the tail is an image)."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601 — normalized from the native clock (X created_at / Facebook created_time / Reddit created_utc x 1000). The client formats it."
+                        },
+                        "unread": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "platform",
+                        "accountId",
+                        "platformThreadId",
+                        "platformParticipantId",
+                        "participant",
+                        "preview",
+                        "updatedAt",
+                        "unread"
+                      ],
+                      "additionalProperties": false
+                    },
                     "messages": {
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "properties": {},
-                        "additionalProperties": {}
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Normalized message id (internal)."
+                          },
+                          "threadId": {
+                            "type": "string",
+                            "description": "FK to the normalized thread id."
+                          },
+                          "from": {
+                            "type": "string",
+                            "enum": [
+                              "me",
+                              "them"
+                            ],
+                            "description": "me is the calling account side; them is the participant."
+                          },
+                          "platformMessageId": {
+                            "type": "string",
+                            "description": "The dm event id — a 19-digit base36-lookalike event identifier from the dm_events stream."
+                          },
+                          "body": {
+                            "type": "string"
+                          },
+                          "sentAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                            "description": "ISO 8601, same normalization as Thread.updatedAt."
+                          },
+                          "image": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "replyTo": {
+                            "description": "Reply to an earlier message in this thread.",
+                            "type": "object",
+                            "properties": {
+                              "platformMessageId": {
+                                "type": "string"
+                              },
+                              "isSelfReply": {
+                                "description": "Facebook is_self_reply: the message replies to one of my own. Absent elsewhere.",
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "platformMessageId"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "threadId",
+                          "from",
+                          "platformMessageId",
+                          "body",
+                          "sentAt"
+                        ],
+                        "additionalProperties": false
                       }
                     }
                   },
                   "required": [
+                    "threadId",
+                    "accountId",
+                    "thread",
                     "messages"
                   ],
                   "additionalProperties": false
@@ -3520,8 +5029,396 @@
               }
             }
           },
+          "400": {
+            "description": "Missing ?accountId=",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
           "404": {
-            "description": "Thread not found",
+            "description": "Thread not found for this account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "sendXMessage",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Send an X message",
+        "description": "Send into an existing thread as the calling account — normalized from the dm_event MessageCreate write; the created event comes back with its 19-digit event id. The response echoes the created message plus the thread with preview/updatedAt in sync, so a client can reconcile its optimistic bubble. Code: apps/web/src/lib/messaging/routes.ts.",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "body": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Plain text; empty after trimming is 400."
+                  },
+                  "image": {
+                    "description": "Image URL. The native client uploads media through the platform first (X attachments[].media_id, Facebook attachment upload) and passes the result here — this endpoint stays a chat-message endpoint, not an upload endpoint.",
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "replyToPlatformMessageId": {
+                    "description": "Reply to this message in the thread; unknown platform ids are 400.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "body"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created message plus the updated thread.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized message id (internal)."
+                        },
+                        "threadId": {
+                          "type": "string",
+                          "description": "FK to the normalized thread id."
+                        },
+                        "from": {
+                          "type": "string",
+                          "enum": [
+                            "me",
+                            "them"
+                          ],
+                          "description": "me is the calling account side; them is the participant."
+                        },
+                        "platformMessageId": {
+                          "type": "string",
+                          "description": "The dm event id — a 19-digit base36-lookalike event identifier from the dm_events stream."
+                        },
+                        "body": {
+                          "type": "string"
+                        },
+                        "sentAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601, same normalization as Thread.updatedAt."
+                        },
+                        "image": {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "replyTo": {
+                          "description": "Reply to an earlier message in this thread.",
+                          "type": "object",
+                          "properties": {
+                            "platformMessageId": {
+                              "type": "string"
+                            },
+                            "isSelfReply": {
+                              "description": "Facebook is_self_reply: the message replies to one of my own. Absent elsewhere.",
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "platformMessageId"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "threadId",
+                        "from",
+                        "platformMessageId",
+                        "body",
+                        "sentAt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "thread": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized thread id (internal)."
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "x"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "description": "FK to /accounts — the connected account that owns this thread; every message in it is from or to that account."
+                        },
+                        "platformThreadId": {
+                          "type": "string",
+                          "description": "The dm_conversation_id — for 1:1 conversations, senderId-participantId (the two user ids joined with a dash)."
+                        },
+                        "platformParticipantId": {
+                          "type": "string",
+                          "description": "The other participant platform-native id (X user id / Facebook user id / Reddit username)."
+                        },
+                        "participant": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "handle": {
+                              "description": "Platform handle when one exists: @handle (X), u/name (Reddit); absent on Facebook.",
+                              "type": "string"
+                            },
+                            "initials": {
+                              "type": "string"
+                            },
+                            "color": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "initials",
+                            "color"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Participant — how the other side of a thread renders in the UI."
+                        },
+                        "preview": {
+                          "type": "string",
+                          "description": "Latest message body (Photo when the tail is an image)."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601 — normalized from the native clock (X created_at / Facebook created_time / Reddit created_utc x 1000). The client formats it."
+                        },
+                        "unread": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "platform",
+                        "accountId",
+                        "platformThreadId",
+                        "platformParticipantId",
+                        "participant",
+                        "preview",
+                        "updatedAt",
+                        "unread"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "thread"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed body, missing ?accountId=, empty message, or unknown reply target.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Thread not found for this account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messaging/x/threads/{threadId}/ack": {
+      "post": {
+        "operationId": "ackXThreads",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Mark an X thread read",
+        "description": "Clears the thread's unread count for the calling account — what opening a conversation does in each native client. Idempotent: acking an already-read thread is a 200 with acknowledged: 0. Code: apps/web/src/lib/messaging/routes.ts.",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Read state cleared.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "threadId": {
+                      "type": "string"
+                    },
+                    "acknowledged": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991,
+                      "description": "Unread messages that were cleared."
+                    }
+                  },
+                  "required": [
+                    "threadId",
+                    "acknowledged"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Ack — read state cleared for the account session (what opening a conversation does natively)."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing ?accountId=",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Thread not found for this account",
             "content": {
               "application/json": {
                 "schema": {
@@ -3552,7 +5449,18 @@
           "Messaging"
         ],
         "summary": "List X threads",
-        "description": "Also served at legacy /twitter alias. Code: apps/web/src/lib/messaging/twitter/server.ts:5",
+        "description": "The connected account's inbox, newest first. Every thread carries the platform-native ids the unofficial browser client sees (dm_conversation_id — for 1:1 DMs the two participant user ids joined with a dash, on each dm_event). Code: apps/web/src/lib/messaging/routes.ts.",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Threads.",
@@ -3566,8 +5474,80 @@
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "properties": {},
-                        "additionalProperties": {}
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Normalized thread id (internal)."
+                          },
+                          "platform": {
+                            "type": "string",
+                            "const": "x"
+                          },
+                          "accountId": {
+                            "type": "string",
+                            "description": "FK to /accounts — the connected account that owns this thread; every message in it is from or to that account."
+                          },
+                          "platformThreadId": {
+                            "type": "string",
+                            "description": "The dm_conversation_id — for 1:1 conversations, senderId-participantId (the two user ids joined with a dash)."
+                          },
+                          "platformParticipantId": {
+                            "type": "string",
+                            "description": "The other participant platform-native id (X user id / Facebook user id / Reddit username)."
+                          },
+                          "participant": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string"
+                              },
+                              "handle": {
+                                "description": "Platform handle when one exists: @handle (X), u/name (Reddit); absent on Facebook.",
+                                "type": "string"
+                              },
+                              "initials": {
+                                "type": "string"
+                              },
+                              "color": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "name",
+                              "initials",
+                              "color"
+                            ],
+                            "additionalProperties": false,
+                            "description": "Participant — how the other side of a thread renders in the UI."
+                          },
+                          "preview": {
+                            "type": "string",
+                            "description": "Latest message body (Photo when the tail is an image)."
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                            "description": "ISO 8601 — normalized from the native clock (X created_at / Facebook created_time / Reddit created_utc x 1000). The client formats it."
+                          },
+                          "unread": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "platform",
+                          "accountId",
+                          "platformThreadId",
+                          "platformParticipantId",
+                          "participant",
+                          "preview",
+                          "updatedAt",
+                          "unread"
+                        ],
+                        "additionalProperties": false
                       }
                     }
                   },
@@ -3575,6 +5555,295 @@
                     "threads"
                   ],
                   "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing ?accountId=",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "startXThread",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Start an X conversation",
+        "description": "The normalized compose: stands in for POST /2/dm_conversations/with/:participant_id/messages — the conversation is created and the first message lands in one call. None of the three platforms allow an empty conversation, so composing always sends the first message. Media is uploaded through the platform first (see body.image). Starting a thread a participant already has is 409. Code: apps/web/src/lib/messaging/routes.ts.",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "platformParticipantId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The recipient platform-native id: X user id / Facebook user id / Reddit username (no u/ prefix)."
+                  },
+                  "body": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The first message — the compose body. None of the platforms allow an empty conversation, so composing always sends the first message with it."
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "name": {
+                    "description": "Participant display name, when the client has it open (DM list, profile, comment page). The mock renders the id itself when absent.",
+                    "type": "string"
+                  },
+                  "handle": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "description": "Reddit PM subject line; ignored on X and Facebook (they have none).",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "platformParticipantId",
+                  "body"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created thread plus its first message.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized message id (internal)."
+                        },
+                        "threadId": {
+                          "type": "string",
+                          "description": "FK to the normalized thread id."
+                        },
+                        "from": {
+                          "type": "string",
+                          "enum": [
+                            "me",
+                            "them"
+                          ],
+                          "description": "me is the calling account side; them is the participant."
+                        },
+                        "platformMessageId": {
+                          "type": "string",
+                          "description": "The dm event id — a 19-digit base36-lookalike event identifier from the dm_events stream."
+                        },
+                        "body": {
+                          "type": "string"
+                        },
+                        "sentAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601, same normalization as Thread.updatedAt."
+                        },
+                        "image": {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "replyTo": {
+                          "description": "Reply to an earlier message in this thread.",
+                          "type": "object",
+                          "properties": {
+                            "platformMessageId": {
+                              "type": "string"
+                            },
+                            "isSelfReply": {
+                              "description": "Facebook is_self_reply: the message replies to one of my own. Absent elsewhere.",
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "platformMessageId"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "threadId",
+                        "from",
+                        "platformMessageId",
+                        "body",
+                        "sentAt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "thread": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized thread id (internal)."
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "x"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "description": "FK to /accounts — the connected account that owns this thread; every message in it is from or to that account."
+                        },
+                        "platformThreadId": {
+                          "type": "string",
+                          "description": "The dm_conversation_id — for 1:1 conversations, senderId-participantId (the two user ids joined with a dash)."
+                        },
+                        "platformParticipantId": {
+                          "type": "string",
+                          "description": "The other participant platform-native id (X user id / Facebook user id / Reddit username)."
+                        },
+                        "participant": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "handle": {
+                              "description": "Platform handle when one exists: @handle (X), u/name (Reddit); absent on Facebook.",
+                              "type": "string"
+                            },
+                            "initials": {
+                              "type": "string"
+                            },
+                            "color": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "initials",
+                            "color"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Participant — how the other side of a thread renders in the UI."
+                        },
+                        "preview": {
+                          "type": "string",
+                          "description": "Latest message body (Photo when the tail is an image)."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601 — normalized from the native clock (X created_at / Facebook created_time / Reddit created_utc x 1000). The client formats it."
+                        },
+                        "unread": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "platform",
+                        "accountId",
+                        "platformThreadId",
+                        "platformParticipantId",
+                        "participant",
+                        "preview",
+                        "updatedAt",
+                        "unread"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "thread"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed body, missing ?accountId=, or empty compose.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A thread with that participant already exists for this account.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
                 }
               }
             }
@@ -3589,7 +5858,7 @@
           "Messaging"
         ],
         "summary": "List X messages",
-        "description": "Also at /twitter alias. Code: apps/web/src/lib/messaging/twitter/server.ts:6",
+        "description": "The thread plus its full message list, oldest first — the normalized view of the dm_events stream filtered by dm_conversation_id (event_type MessageCreate) message set. A thread only resolves under the account that owns it: any other account gets 404, never a leak. Code: apps/web/src/lib/messaging/routes.ts.",
         "parameters": [
           {
             "name": "threadId",
@@ -3598,27 +5867,181 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
           }
         ],
         "responses": {
           "200": {
-            "description": "Messages.",
+            "description": "Thread + messages.",
             "content": {
               "application/json": {
                 "schema": {
                   "$schema": "https://json-schema.org/draft/2020-12/schema",
                   "type": "object",
                   "properties": {
+                    "threadId": {
+                      "type": "string"
+                    },
+                    "accountId": {
+                      "type": "string"
+                    },
+                    "thread": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized thread id (internal)."
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "x"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "description": "FK to /accounts — the connected account that owns this thread; every message in it is from or to that account."
+                        },
+                        "platformThreadId": {
+                          "type": "string",
+                          "description": "The dm_conversation_id — for 1:1 conversations, senderId-participantId (the two user ids joined with a dash)."
+                        },
+                        "platformParticipantId": {
+                          "type": "string",
+                          "description": "The other participant platform-native id (X user id / Facebook user id / Reddit username)."
+                        },
+                        "participant": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "handle": {
+                              "description": "Platform handle when one exists: @handle (X), u/name (Reddit); absent on Facebook.",
+                              "type": "string"
+                            },
+                            "initials": {
+                              "type": "string"
+                            },
+                            "color": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "initials",
+                            "color"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Participant — how the other side of a thread renders in the UI."
+                        },
+                        "preview": {
+                          "type": "string",
+                          "description": "Latest message body (Photo when the tail is an image)."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601 — normalized from the native clock (X created_at / Facebook created_time / Reddit created_utc x 1000). The client formats it."
+                        },
+                        "unread": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "platform",
+                        "accountId",
+                        "platformThreadId",
+                        "platformParticipantId",
+                        "participant",
+                        "preview",
+                        "updatedAt",
+                        "unread"
+                      ],
+                      "additionalProperties": false
+                    },
                     "messages": {
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "properties": {},
-                        "additionalProperties": {}
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Normalized message id (internal)."
+                          },
+                          "threadId": {
+                            "type": "string",
+                            "description": "FK to the normalized thread id."
+                          },
+                          "from": {
+                            "type": "string",
+                            "enum": [
+                              "me",
+                              "them"
+                            ],
+                            "description": "me is the calling account side; them is the participant."
+                          },
+                          "platformMessageId": {
+                            "type": "string",
+                            "description": "The dm event id — a 19-digit base36-lookalike event identifier from the dm_events stream."
+                          },
+                          "body": {
+                            "type": "string"
+                          },
+                          "sentAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                            "description": "ISO 8601, same normalization as Thread.updatedAt."
+                          },
+                          "image": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "replyTo": {
+                            "description": "Reply to an earlier message in this thread.",
+                            "type": "object",
+                            "properties": {
+                              "platformMessageId": {
+                                "type": "string"
+                              },
+                              "isSelfReply": {
+                                "description": "Facebook is_self_reply: the message replies to one of my own. Absent elsewhere.",
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "platformMessageId"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "threadId",
+                          "from",
+                          "platformMessageId",
+                          "body",
+                          "sentAt"
+                        ],
+                        "additionalProperties": false
                       }
                     }
                   },
                   "required": [
+                    "threadId",
+                    "accountId",
+                    "thread",
                     "messages"
                   ],
                   "additionalProperties": false
@@ -3626,8 +6049,396 @@
               }
             }
           },
+          "400": {
+            "description": "Missing ?accountId=",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
           "404": {
-            "description": "Thread not found",
+            "description": "Thread not found for this account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "sendXMessage",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Send an X message",
+        "description": "Send into an existing thread as the calling account — normalized from the dm_event MessageCreate write; the created event comes back with its 19-digit event id. The response echoes the created message plus the thread with preview/updatedAt in sync, so a client can reconcile its optimistic bubble. Code: apps/web/src/lib/messaging/routes.ts.",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "body": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Plain text; empty after trimming is 400."
+                  },
+                  "image": {
+                    "description": "Image URL. The native client uploads media through the platform first (X attachments[].media_id, Facebook attachment upload) and passes the result here — this endpoint stays a chat-message endpoint, not an upload endpoint.",
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "replyToPlatformMessageId": {
+                    "description": "Reply to this message in the thread; unknown platform ids are 400.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "body"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created message plus the updated thread.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized message id (internal)."
+                        },
+                        "threadId": {
+                          "type": "string",
+                          "description": "FK to the normalized thread id."
+                        },
+                        "from": {
+                          "type": "string",
+                          "enum": [
+                            "me",
+                            "them"
+                          ],
+                          "description": "me is the calling account side; them is the participant."
+                        },
+                        "platformMessageId": {
+                          "type": "string",
+                          "description": "The dm event id — a 19-digit base36-lookalike event identifier from the dm_events stream."
+                        },
+                        "body": {
+                          "type": "string"
+                        },
+                        "sentAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601, same normalization as Thread.updatedAt."
+                        },
+                        "image": {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "replyTo": {
+                          "description": "Reply to an earlier message in this thread.",
+                          "type": "object",
+                          "properties": {
+                            "platformMessageId": {
+                              "type": "string"
+                            },
+                            "isSelfReply": {
+                              "description": "Facebook is_self_reply: the message replies to one of my own. Absent elsewhere.",
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "platformMessageId"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "threadId",
+                        "from",
+                        "platformMessageId",
+                        "body",
+                        "sentAt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "thread": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized thread id (internal)."
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "x"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "description": "FK to /accounts — the connected account that owns this thread; every message in it is from or to that account."
+                        },
+                        "platformThreadId": {
+                          "type": "string",
+                          "description": "The dm_conversation_id — for 1:1 conversations, senderId-participantId (the two user ids joined with a dash)."
+                        },
+                        "platformParticipantId": {
+                          "type": "string",
+                          "description": "The other participant platform-native id (X user id / Facebook user id / Reddit username)."
+                        },
+                        "participant": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "handle": {
+                              "description": "Platform handle when one exists: @handle (X), u/name (Reddit); absent on Facebook.",
+                              "type": "string"
+                            },
+                            "initials": {
+                              "type": "string"
+                            },
+                            "color": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "initials",
+                            "color"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Participant — how the other side of a thread renders in the UI."
+                        },
+                        "preview": {
+                          "type": "string",
+                          "description": "Latest message body (Photo when the tail is an image)."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601 — normalized from the native clock (X created_at / Facebook created_time / Reddit created_utc x 1000). The client formats it."
+                        },
+                        "unread": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "platform",
+                        "accountId",
+                        "platformThreadId",
+                        "platformParticipantId",
+                        "participant",
+                        "preview",
+                        "updatedAt",
+                        "unread"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "thread"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed body, missing ?accountId=, empty message, or unknown reply target.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Thread not found for this account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messaging/twitter/threads/{threadId}/ack": {
+      "post": {
+        "operationId": "ackXThreads",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Mark an X thread read",
+        "description": "Clears the thread's unread count for the calling account — what opening a conversation does in each native client. Idempotent: acking an already-read thread is a 200 with acknowledged: 0. Code: apps/web/src/lib/messaging/routes.ts.",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Read state cleared.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "threadId": {
+                      "type": "string"
+                    },
+                    "acknowledged": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991,
+                      "description": "Unread messages that were cleared."
+                    }
+                  },
+                  "required": [
+                    "threadId",
+                    "acknowledged"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Ack — read state cleared for the account session (what opening a conversation does natively)."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing ?accountId=",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Thread not found for this account",
             "content": {
               "application/json": {
                 "schema": {
@@ -3658,7 +6469,18 @@
           "Messaging"
         ],
         "summary": "List Reddit threads",
-        "description": "Code: apps/web/src/lib/messaging/reddit/server.ts:5",
+        "description": "The connected account's inbox, newest first. Every thread carries the platform-native ids the unofficial browser client sees (first_message_name — inbox and outbox message listings grouped by the t4_ id of the thread first message). Code: apps/web/src/lib/messaging/routes.ts.",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Threads.",
@@ -3672,8 +6494,85 @@
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "properties": {},
-                        "additionalProperties": {}
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Normalized thread id (internal)."
+                          },
+                          "platform": {
+                            "type": "string",
+                            "const": "reddit"
+                          },
+                          "accountId": {
+                            "type": "string",
+                            "description": "FK to /accounts — the connected account that owns this thread; every message in it is from or to that account."
+                          },
+                          "platformThreadId": {
+                            "type": "string",
+                            "description": "The first_message_name — the t4_ fullname of the thread first message; the client groups inbox/outbox listings by it."
+                          },
+                          "platformParticipantId": {
+                            "type": "string",
+                            "description": "The other participant platform-native id (X user id / Facebook user id / Reddit username)."
+                          },
+                          "participant": {
+                            "type": "object",
+                            "properties": {
+                              "name": {
+                                "type": "string"
+                              },
+                              "handle": {
+                                "description": "Platform handle when one exists: @handle (X), u/name (Reddit); absent on Facebook.",
+                                "type": "string"
+                              },
+                              "initials": {
+                                "type": "string"
+                              },
+                              "color": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "name",
+                              "initials",
+                              "color"
+                            ],
+                            "additionalProperties": false,
+                            "description": "Participant — how the other side of a thread renders in the UI."
+                          },
+                          "subject": {
+                            "type": "string",
+                            "description": "Reddit PM subject line; absent on X and Facebook."
+                          },
+                          "preview": {
+                            "type": "string",
+                            "description": "Latest message body (Photo when the tail is an image)."
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                            "description": "ISO 8601 — normalized from the native clock (X created_at / Facebook created_time / Reddit created_utc x 1000). The client formats it."
+                          },
+                          "unread": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "platform",
+                          "accountId",
+                          "platformThreadId",
+                          "platformParticipantId",
+                          "participant",
+                          "subject",
+                          "preview",
+                          "updatedAt",
+                          "unread"
+                        ],
+                        "additionalProperties": false
                       }
                     }
                   },
@@ -3681,6 +6580,300 @@
                     "threads"
                   ],
                   "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing ?accountId=",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "startRedditThread",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Start a Reddit conversation",
+        "description": "The normalized compose: stands in for Reddit compose-to-username, which opens a private-message thread by its first message. None of the three platforms allow an empty conversation, so composing always sends the first message. Media is uploaded through the platform first (see body.image). Starting a thread a participant already has is 409. Code: apps/web/src/lib/messaging/routes.ts.",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "platformParticipantId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The recipient platform-native id: X user id / Facebook user id / Reddit username (no u/ prefix)."
+                  },
+                  "body": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "The first message — the compose body. None of the platforms allow an empty conversation, so composing always sends the first message with it."
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "name": {
+                    "description": "Participant display name, when the client has it open (DM list, profile, comment page). The mock renders the id itself when absent.",
+                    "type": "string"
+                  },
+                  "handle": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "description": "Reddit PM subject line; ignored on X and Facebook (they have none).",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "platformParticipantId",
+                  "body"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created thread plus its first message.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized message id (internal)."
+                        },
+                        "threadId": {
+                          "type": "string",
+                          "description": "FK to the normalized thread id."
+                        },
+                        "from": {
+                          "type": "string",
+                          "enum": [
+                            "me",
+                            "them"
+                          ],
+                          "description": "me is the calling account side; them is the participant."
+                        },
+                        "platformMessageId": {
+                          "type": "string",
+                          "description": "The t4_ fullname — the postbase id of the message in the inbox/outbox listing."
+                        },
+                        "body": {
+                          "type": "string"
+                        },
+                        "sentAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601, same normalization as Thread.updatedAt."
+                        },
+                        "image": {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "replyTo": {
+                          "description": "Reply to an earlier message in this thread.",
+                          "type": "object",
+                          "properties": {
+                            "platformMessageId": {
+                              "type": "string"
+                            },
+                            "isSelfReply": {
+                              "description": "Facebook is_self_reply: the message replies to one of my own. Absent elsewhere.",
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "platformMessageId"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "threadId",
+                        "from",
+                        "platformMessageId",
+                        "body",
+                        "sentAt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "thread": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized thread id (internal)."
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "reddit"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "description": "FK to /accounts — the connected account that owns this thread; every message in it is from or to that account."
+                        },
+                        "platformThreadId": {
+                          "type": "string",
+                          "description": "The first_message_name — the t4_ fullname of the thread first message; the client groups inbox/outbox listings by it."
+                        },
+                        "platformParticipantId": {
+                          "type": "string",
+                          "description": "The other participant platform-native id (X user id / Facebook user id / Reddit username)."
+                        },
+                        "participant": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "handle": {
+                              "description": "Platform handle when one exists: @handle (X), u/name (Reddit); absent on Facebook.",
+                              "type": "string"
+                            },
+                            "initials": {
+                              "type": "string"
+                            },
+                            "color": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "initials",
+                            "color"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Participant — how the other side of a thread renders in the UI."
+                        },
+                        "subject": {
+                          "type": "string",
+                          "description": "Reddit PM subject line; absent on X and Facebook."
+                        },
+                        "preview": {
+                          "type": "string",
+                          "description": "Latest message body (Photo when the tail is an image)."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601 — normalized from the native clock (X created_at / Facebook created_time / Reddit created_utc x 1000). The client formats it."
+                        },
+                        "unread": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "platform",
+                        "accountId",
+                        "platformThreadId",
+                        "platformParticipantId",
+                        "participant",
+                        "subject",
+                        "preview",
+                        "updatedAt",
+                        "unread"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "thread"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed body, missing ?accountId=, or empty compose.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A thread with that participant already exists for this account.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
                 }
               }
             }
@@ -3695,7 +6888,7 @@
           "Messaging"
         ],
         "summary": "List Reddit messages",
-        "description": "Code: apps/web/src/lib/messaging/reddit/server.ts:6",
+        "description": "The thread plus its full message list, oldest first — the normalized view of the inbox + outbox children sharing this first_message_name message set. A thread only resolves under the account that owns it: any other account gets 404, never a leak. Code: apps/web/src/lib/messaging/routes.ts.",
         "parameters": [
           {
             "name": "threadId",
@@ -3704,27 +6897,186 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
           }
         ],
         "responses": {
           "200": {
-            "description": "Messages.",
+            "description": "Thread + messages.",
             "content": {
               "application/json": {
                 "schema": {
                   "$schema": "https://json-schema.org/draft/2020-12/schema",
                   "type": "object",
                   "properties": {
+                    "threadId": {
+                      "type": "string"
+                    },
+                    "accountId": {
+                      "type": "string"
+                    },
+                    "thread": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized thread id (internal)."
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "reddit"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "description": "FK to /accounts — the connected account that owns this thread; every message in it is from or to that account."
+                        },
+                        "platformThreadId": {
+                          "type": "string",
+                          "description": "The first_message_name — the t4_ fullname of the thread first message; the client groups inbox/outbox listings by it."
+                        },
+                        "platformParticipantId": {
+                          "type": "string",
+                          "description": "The other participant platform-native id (X user id / Facebook user id / Reddit username)."
+                        },
+                        "participant": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "handle": {
+                              "description": "Platform handle when one exists: @handle (X), u/name (Reddit); absent on Facebook.",
+                              "type": "string"
+                            },
+                            "initials": {
+                              "type": "string"
+                            },
+                            "color": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "initials",
+                            "color"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Participant — how the other side of a thread renders in the UI."
+                        },
+                        "subject": {
+                          "type": "string",
+                          "description": "Reddit PM subject line; absent on X and Facebook."
+                        },
+                        "preview": {
+                          "type": "string",
+                          "description": "Latest message body (Photo when the tail is an image)."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601 — normalized from the native clock (X created_at / Facebook created_time / Reddit created_utc x 1000). The client formats it."
+                        },
+                        "unread": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "platform",
+                        "accountId",
+                        "platformThreadId",
+                        "platformParticipantId",
+                        "participant",
+                        "subject",
+                        "preview",
+                        "updatedAt",
+                        "unread"
+                      ],
+                      "additionalProperties": false
+                    },
                     "messages": {
                       "type": "array",
                       "items": {
                         "type": "object",
-                        "properties": {},
-                        "additionalProperties": {}
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Normalized message id (internal)."
+                          },
+                          "threadId": {
+                            "type": "string",
+                            "description": "FK to the normalized thread id."
+                          },
+                          "from": {
+                            "type": "string",
+                            "enum": [
+                              "me",
+                              "them"
+                            ],
+                            "description": "me is the calling account side; them is the participant."
+                          },
+                          "platformMessageId": {
+                            "type": "string",
+                            "description": "The t4_ fullname — the postbase id of the message in the inbox/outbox listing."
+                          },
+                          "body": {
+                            "type": "string"
+                          },
+                          "sentAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                            "description": "ISO 8601, same normalization as Thread.updatedAt."
+                          },
+                          "image": {
+                            "type": "string",
+                            "format": "uri"
+                          },
+                          "replyTo": {
+                            "description": "Reply to an earlier message in this thread.",
+                            "type": "object",
+                            "properties": {
+                              "platformMessageId": {
+                                "type": "string"
+                              },
+                              "isSelfReply": {
+                                "description": "Facebook is_self_reply: the message replies to one of my own. Absent elsewhere.",
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "platformMessageId"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "threadId",
+                          "from",
+                          "platformMessageId",
+                          "body",
+                          "sentAt"
+                        ],
+                        "additionalProperties": false
                       }
                     }
                   },
                   "required": [
+                    "threadId",
+                    "accountId",
+                    "thread",
                     "messages"
                   ],
                   "additionalProperties": false
@@ -3732,8 +7084,401 @@
               }
             }
           },
+          "400": {
+            "description": "Missing ?accountId=",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
           "404": {
-            "description": "Thread not found",
+            "description": "Thread not found for this account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "sendRedditMessage",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Send a Reddit message",
+        "description": "Send into an existing thread as the calling account — normalized from the posted inbox message; it comes back with its t4_ id. The response echoes the created message plus the thread with preview/updatedAt in sync, so a client can reconcile its optimistic bubble. Code: apps/web/src/lib/messaging/routes.ts.",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "body": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Plain text; empty after trimming is 400."
+                  },
+                  "image": {
+                    "description": "Image URL. The native client uploads media through the platform first (X attachments[].media_id, Facebook attachment upload) and passes the result here — this endpoint stays a chat-message endpoint, not an upload endpoint.",
+                    "type": "string",
+                    "format": "uri"
+                  },
+                  "replyToPlatformMessageId": {
+                    "description": "Reply to this message in the thread; unknown platform ids are 400.",
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "body"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The created message plus the updated thread.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized message id (internal)."
+                        },
+                        "threadId": {
+                          "type": "string",
+                          "description": "FK to the normalized thread id."
+                        },
+                        "from": {
+                          "type": "string",
+                          "enum": [
+                            "me",
+                            "them"
+                          ],
+                          "description": "me is the calling account side; them is the participant."
+                        },
+                        "platformMessageId": {
+                          "type": "string",
+                          "description": "The t4_ fullname — the postbase id of the message in the inbox/outbox listing."
+                        },
+                        "body": {
+                          "type": "string"
+                        },
+                        "sentAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601, same normalization as Thread.updatedAt."
+                        },
+                        "image": {
+                          "type": "string",
+                          "format": "uri"
+                        },
+                        "replyTo": {
+                          "description": "Reply to an earlier message in this thread.",
+                          "type": "object",
+                          "properties": {
+                            "platformMessageId": {
+                              "type": "string"
+                            },
+                            "isSelfReply": {
+                              "description": "Facebook is_self_reply: the message replies to one of my own. Absent elsewhere.",
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "platformMessageId"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "threadId",
+                        "from",
+                        "platformMessageId",
+                        "body",
+                        "sentAt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "thread": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "description": "Normalized thread id (internal)."
+                        },
+                        "platform": {
+                          "type": "string",
+                          "const": "reddit"
+                        },
+                        "accountId": {
+                          "type": "string",
+                          "description": "FK to /accounts — the connected account that owns this thread; every message in it is from or to that account."
+                        },
+                        "platformThreadId": {
+                          "type": "string",
+                          "description": "The first_message_name — the t4_ fullname of the thread first message; the client groups inbox/outbox listings by it."
+                        },
+                        "platformParticipantId": {
+                          "type": "string",
+                          "description": "The other participant platform-native id (X user id / Facebook user id / Reddit username)."
+                        },
+                        "participant": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "handle": {
+                              "description": "Platform handle when one exists: @handle (X), u/name (Reddit); absent on Facebook.",
+                              "type": "string"
+                            },
+                            "initials": {
+                              "type": "string"
+                            },
+                            "color": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "initials",
+                            "color"
+                          ],
+                          "additionalProperties": false,
+                          "description": "Participant — how the other side of a thread renders in the UI."
+                        },
+                        "subject": {
+                          "type": "string",
+                          "description": "Reddit PM subject line; absent on X and Facebook."
+                        },
+                        "preview": {
+                          "type": "string",
+                          "description": "Latest message body (Photo when the tail is an image)."
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$",
+                          "description": "ISO 8601 — normalized from the native clock (X created_at / Facebook created_time / Reddit created_utc x 1000). The client formats it."
+                        },
+                        "unread": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "platform",
+                        "accountId",
+                        "platformThreadId",
+                        "platformParticipantId",
+                        "participant",
+                        "subject",
+                        "preview",
+                        "updatedAt",
+                        "unread"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message",
+                    "thread"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Malformed body, missing ?accountId=, empty message, or unknown reply target.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Thread not found for this account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messaging/reddit/threads/{threadId}/ack": {
+      "post": {
+        "operationId": "ackRedditThreads",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "Mark a Reddit thread read",
+        "description": "Clears the thread's unread count for the calling account — what opening a conversation does in each native client. Idempotent: acking an already-read thread is a 200 with acknowledged: 0. Code: apps/web/src/lib/messaging/routes.ts.",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "accountId",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "FK to /accounts — whose inbox this. Required: an inbox belongs to one connected account."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Read state cleared.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "threadId": {
+                      "type": "string"
+                    },
+                    "acknowledged": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991,
+                      "description": "Unread messages that were cleared."
+                    }
+                  },
+                  "required": [
+                    "threadId",
+                    "acknowledged"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Ack — read state cleared for the account session (what opening a conversation does natively)."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing ?accountId=",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Thread not found for this account",
             "content": {
               "application/json": {
                 "schema": {
