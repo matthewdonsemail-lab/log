@@ -170,3 +170,32 @@ grey ChatBubble `quote` tone instead of `incoming`
 `apps/web/src/lib/brand/index.ts`, `apps/web/src/components/DashboardBrand.tsx`,
 `DashboardBrandForm.tsx`, `DashboardFormPrimitives.tsx`,
 `cards/TwitterThreads.tsx`).
+
+### 2026-09-15 - c18d385
+Three Twitter thread card fixes: the empty-reply placeholder lost its inset
+`bg-white/15` box and now renders as inline muted text inside the blue card
+(like Reddit already did), the cyan media placeholder block is gone
+(`ThreadMedia` returns null without a `src`, token removed), and the main
+post's replies/reposts/likes row is visible again — it was rendering in
+`replyMuted` white-on-white, so `ThreadAction(s)` take a `color` prop now
+(`threadGrey` on the white post, `replyMuted` on the blue reply card)
+(`apps/web/src/components/cards/TwitterThreads.tsx`).
+
+### 2026-09-15 - f3cf44a
+New Brand "Autoreplies" tab (emerald `Zap` tab): per-channel base replies with
+inline instant toggles that save direct through `PUT /brand`, per-channel Edit
+buttons opening the existing channel overlay forms, and a Test-it block
+(channel select + lead-context input) showing which base reply fires with the
+exact first-touch bubble. Model: `Autoreply { id, trigger, reply, enabled }`
+on `ChannelProfile`, guarded + migrated (old rows keep saved style/examples/
+triage, list defaults to `[]`); `ChannelFields` gained an `AutorepliesEditor`
+(trigger/reply/toggle/delete/add, draft-only until Save); shared `Toggle`
+switch in `DashboardFormPrimitives`. Enabled replies flow into every outbound
+draft with the rest of the brand: new "Enabled base replies" section in
+`buildBrandSystemPrompt` (`PROMPT_VERSION` 1 → 2), `simulateOutbound` scores
+enabled autoreplies alongside gold examples (ties keep the base reply,
+`matchedSource`/`matchedTrigger` label the hit), and the inspect-sheet
+`draftReply` sends a matched base reply verbatim with a "Using autoreply"
+label (`apps/web/src/lib/brand/types.ts`, `prompt.ts`, `query.ts`, `index.ts`,
+`apps/web/src/components/DashboardBrand.tsx`, `DashboardBrandForm.tsx`,
+`DashboardFormPrimitives.tsx`, `DashboardEventInspectForm.tsx`).
