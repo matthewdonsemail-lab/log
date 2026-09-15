@@ -222,3 +222,18 @@ memory ("Edit memory"), gold snippets (per-channel "Edit {Channel}" —
 (`AutorepliesSection` gained onEdit) — every CTA opens the right overlay
 form, no step logic touched (`apps/web/src/components/
 DashboardFormPrimitives.tsx`, `DashboardBrand.tsx`).
+
+### 2026-09-15 - 0f6efe1
+Started consolidating buttons on the canonical kit `Button` after the
+audit found ~63 raw `<button>`s in 8 pattern families (bespoke blue with a
+divergent `#1E66C9` hover, outline, dashed add-row, quiet text, media
+overlay pills, on-dark hero pairs, segmented cells, dashed-underline
+links). This pass: added `dashed` and `quiet` variants to
+`packages/ui/src/button.tsx` (canonical blue hover `#1F6FE6` kept), then
+migrated the brand edit sheet stack - Close X and Cancel inside
+`DashboardFormSheet` (now `quiet` icon/large) and both add-rows in
+`DashboardBrandForm` (AutorepliesEditor + StringListEditor, now `dashed`
+large). Remaining families (9 bespoke blues, 2 outlines, 4 sibling
+dashed adds, overlay pills, on-dark heroes, dashed-underline links) are
+queued; squircle tiles, the toggle switch, and segmented cells stay raw
+by design (they need clipPath refs / aria-pressed).
