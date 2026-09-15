@@ -199,3 +199,15 @@ enabled autoreplies alongside gold examples (ties keep the base reply,
 label (`apps/web/src/lib/brand/types.ts`, `prompt.ts`, `query.ts`, `index.ts`,
 `apps/web/src/components/DashboardBrand.tsx`, `DashboardBrandForm.tsx`,
 `DashboardFormPrimitives.tsx`, `DashboardEventInspectForm.tsx`).
+
+### 2026-09-15 - 68dfc23
+Folded autoreplies into the channel tabs to cut five tabs back to four:
+new shared `AutorepliesSection` (heading, toggle rows saving direct,
+empty-state pointing at the channel Edit button) mounted in the Facebook
+panel after triage and in the X/Reddit panel after gold examples; the
+standalone Autoreplies tab, its Test-it block, and the `testChannel` /
+`testPreview` / `CHANNEL_LABEL` scaffolding are gone (the Facebook
+simulator's "Matched autoreply · trigger" label already covers the
+which-reply-fires need). No form changes — `AutorepliesEditor` already
+lives in `ChannelFields`, and the existing per-channel Edit buttons open
+it (`apps/web/src/components/DashboardBrand.tsx`).
