@@ -291,3 +291,10 @@ is a CLI state file, not a folder; every `apps/docs/content/...` mdx
 path and every component path linked from the README verified to exist
 on disk, including all eight generated `api-reference/endpoints/*.mdx`
 tag pages (`API keys` → `api-keys.mdx` confirmed).
+
+### 2026-09-16 - working tree
+README messaging section gains the thread ↔ message linkage bullet that
+was only implicit before: `ChatMessage.threadId`, the per-account
+`messages: Record<threadId, …>` map, `${threadId}-m${n}` message ids, and
+the resolve-through-the-thread read/write rules (`apps/web/src/lib/
+messaging/store.ts`, `types.ts`).
