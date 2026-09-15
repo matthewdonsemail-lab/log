@@ -389,14 +389,16 @@ function AutorepliesEditor({
           />
         </div>
       ))}
-      <button
+      <Button
         type="button"
+        variant="dashed"
+        size="lg"
+        className="self-start px-3"
         onClick={() => onChange([...rows, { id: newAutoreplyId(), trigger: '', reply: '', enabled: true }])}
-        className="inline-flex h-9 items-center gap-1.5 self-start rounded-lg border-2 border-dashed border-slate-300 px-3 text-sm font-medium text-text-secondary hover:border-[#2a8cff] hover:text-[#2a8cff]"
       >
         <Plus size={16} strokeWidth={2.25} aria-hidden="true" />
         Add autoreply
-      </button>
+      </Button>
     </div>
   )
 }
@@ -446,14 +448,16 @@ function StringListEditor({
           </Button>
         </div>
       ))}
-      <button
+      <Button
         type="button"
+        variant="dashed"
+        size="lg"
+        className="self-start px-3"
         onClick={() => onChange([...rows, ''])}
-        className="inline-flex h-9 items-center gap-1.5 self-start rounded-lg border-2 border-dashed border-slate-300 px-3 text-sm font-medium text-text-secondary hover:border-[#2a8cff] hover:text-[#2a8cff]"
       >
         <Plus size={16} strokeWidth={2.25} aria-hidden="true" />
         {addLabel}
-      </button>
+      </Button>
     </div>
   )
 }

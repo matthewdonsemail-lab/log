@@ -25,6 +25,10 @@ const buttonVariants = cva(
           'bg-gradient-to-b from-[#3B9BFF] to-[#2B7FFF] text-white hover:from-[#2B7FFF] hover:to-[#1F6FE6] [&:not(.shadow-hard)]:active:translate-y-px',
         gray: 'border border-[rgba(43,127,255,0.1)] bg-[#EFF6FF] text-[#2B7FFF] hover:bg-[#E0EDFE] [&:not(.shadow-hard)]:active:translate-y-px',
         red: 'bg-[#DC2626] text-white hover:bg-[#B91C1C] [&:not(.shadow-hard)]:active:translate-y-px',
+        dashed:
+          'border-2 border-dashed border-slate-300 bg-transparent text-text-secondary transition-colors hover:border-[#2A8CFF] hover:text-[#2A8CFF] [&:not(.shadow-hard)]:active:translate-y-px',
+        quiet:
+          'text-text-secondary transition-colors hover:bg-black/5 hover:text-text-primary [&:not(.shadow-hard)]:active:translate-y-px',
       },
       shadow: {
         none: '',

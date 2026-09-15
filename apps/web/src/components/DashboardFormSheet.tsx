@@ -174,14 +174,9 @@ function FormSheetSurface({
             </p>
           ) : null}
         </div>
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close"
-          className="flex size-8 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-black/5 hover:text-text-primary"
-        >
+        <Button type="button" variant="quiet" size="icon" onClick={onClose} aria-label="Close">
           <X size={16} strokeWidth={2.25} aria-hidden="true" />
-        </button>
+        </Button>
       </div>
 
       {stepCount !== undefined ? <StepProgress step={step ?? 0} stepCount={stepCount} /> : null}
@@ -198,14 +193,9 @@ function FormSheetSurface({
               Back
             </Button>
           ) : null}
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={busy}
-            className="rounded-lg px-3 py-2 text-sm font-semibold text-text-secondary transition-colors hover:bg-black/[0.04] hover:text-text-primary disabled:opacity-50"
-          >
+          <Button type="button" variant="quiet" size="lg" disabled={busy} onClick={onClose}>
             Cancel
-          </button>
+          </Button>
         </div>
         {confirmLabel ? (
           <Button
