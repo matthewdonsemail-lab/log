@@ -12,7 +12,7 @@
 - **Auth:** none
 - **AI models:** none
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-16T03:56:00Z
+- **Last updated:** 2026-09-15T21:16:42Z
 
 ## Log
 
@@ -382,3 +382,22 @@ seeds. Stable cross-referenced fixtures keep their literal ids (seeded
 `MOCK_CONNECTIONS`, the keyword / api-key seed UUIDs). The accounts route's
 OpenAPI description drops the stale `account-<timestamp>-<rand>` note. typecheck
 clean, lint clean (two pre-existing warnings, unchanged), 33/33 vitest pass.
+
+### 2026-09-16 - working tree
+Review follow-ups on the id-consolidation commit: the accounts create route's
+OpenAPI description regains its dropped `id` (now "stable random-UUID
+`id`, sets `label`…"); the README data model catches up to `ListingRecord.id`
+(LISTING block: `id PK "normalized"`, `listingId` demoted to the native
+numeric field, same as THREAD; table row notes the split) plus a shared
+`ids.ts` note next to `persist.ts`. New opt-in request logging —
+`apps/web/src/lib/request-log.ts` mounts one Hono middleware on `mockApiApp`
+(`.use('*', …)`), covering every domain on both consumption paths (in-process
+`app.request()` and the standalone HTTP server); it logs method/path/status/ms
+with request/response bodies redacted by field NAME before stringifying
+(`key`, `secretHash`, `deviceKey`, `cookie` → `[redacted]`, recursive,
+2000-char cap), silent unless `VITE_MOCK_API_LOG_REQUESTS=1` /
+`MOCK_API_LOG_REQUESTS=1`. New `request-log.test.ts` pins the redaction and
+the gate. Messaging store deliberately untouched: the in-place thread mutation
+with no pub/sub stays as-is until Part B, whose transition trigger should
+double as the UI invalidation path rather than a second bolt-on. typecheck
+clean, lint clean (two pre-existing warnings, unchanged), 36/36 vitest pass.

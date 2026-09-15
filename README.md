@@ -114,7 +114,8 @@ erDiagram
     int signalsCount
   }
   LISTING {
-    string listingId PK "numeric Marketplace id"
+    string id PK "normalized"
+    string listingId "numeric Marketplace id"
     string title
     string price
     string location
@@ -175,14 +176,14 @@ erDiagram
 | `ConnectionRecord` | [`connections/types.ts`](apps/web/src/lib/connections/types.ts) | localStorage `listeningkit.accounts.v2` via [`connections/store.ts`](apps/web/src/lib/connections/store.ts) | Id-keyed, not platform-keyed: multiple accounts per platform, optional per-account proxy. v1 rows migrate on load; stale platforms are filtered out. |
 | `Community` | [`communities/types.ts`](apps/web/src/lib/communities/types.ts) | localStorage `communities.catalog` + `communities.joins` (merged on read by `materialize()`) | 20-row seed catalog ([`communities/mock.ts`](apps/web/src/lib/communities/mock.ts)); pasted Facebook URLs and typed subreddits register as first-class rows. |
 | `Keyword` | [`keywords/types.ts`](apps/web/src/lib/keywords/types.ts) | localStorage `keywords`, seeded from [`keywords/mock.ts`](apps/web/src/lib/keywords/mock.ts) | X keywords are word-based (`groupId: null`); facebook/reddit keywords must scope to a **joined** community, checked live against the communities store. Duplicates 409 per scope. |
-| `ListingRecord` | [`listings/types.ts`](apps/web/src/lib/listings/types.ts) | localStorage `listings` | 5 seed rows, including two live-verified marketplace captures; legacy rows without `accountId` migrate on load via `migrateListingRow`. |
+| `ListingRecord` | [`listings/types.ts`](apps/web/src/lib/listings/types.ts) | localStorage `listings` | 5 seed rows, including two live-verified marketplace captures; legacy rows without `accountId` migrate on load via `migrateListingRow`, which also backfills the normalized `id` — the native numeric `listingId` is preserved alongside it, and the normalized `id` is what the dashboard uses. |
 | `FeedItem` | [`feed/mock.ts`](apps/web/src/lib/feed/mock.ts) | in-memory seed (10 rows) | Filterable by `?platform=` / `?search=`; metrics are numbers, formatted for display by `formatCount`. |
 | `Thread` / `ChatMessage` | [`messaging/types.ts`](apps/web/src/lib/messaging/types.ts) | localStorage `messaging` — one per-platform/per-account map in [`messaging/store.ts`](apps/web/src/lib/messaging/store.ts) | Native platform ids are preserved alongside the normalized ones (see [Messaging](#messaging--the-full-chat-contract)); the normalized `id` is what the dashboard uses. |
 | `BrandEntity` | [`brand/types.ts`](apps/web/src/lib/brand/types.ts) | localStorage `brand-entity` | One record per workspace (`brand-default`); v1 rows (string offerings, `voice.serviceAreas`) migrate to v2 on load. |
 | `FirehoseEvent` + analytics shapes | [`analytics/types.ts`](apps/web/src/lib/analytics/types.ts) | in-memory, deterministic per keyword | No HTTP route on purpose: [`getKeywordAnalytics`](apps/web/src/lib/analytics/mock.ts) is consumed directly by the analytics pages, seeded from the keyword's UUID (14-day trend, 120 events, companion phrases for the follow-up chain). |
 | `AccountIssue` / `IssueFix` | [`account-issues/types.ts`](apps/web/src/lib/account-issues/types.ts) | catalog-driven, not persisted | 26 normalized codes × 10 remediation verbs in [`account-issues/catalog.ts`](apps/web/src/lib/account-issues/catalog.ts); the three platform normalizers in [`account-issues/normalize.ts`](apps/web/src/lib/account-issues/normalize.ts) map raw signals (Graph code/subcode, X `type`, Reddit status/body) onto it. Human guide: [docs /getting-started/errors](apps/docs/content/docs/getting-started/errors.mdx). |
 
-Cross-cutting persistence uses one guarded helper — [`persist.ts`](apps/web/src/lib/persist.ts) (`loadPersistedState` / `savePersistedState` with runtime shape checks, so a stale or malformed row falls back to seeds instead of crashing the store). The canonical platform type `facebook | x | reddit` is defined once in [`platform.ts`](apps/web/src/lib/platform.ts) and reused by every domain.
+Cross-cutting persistence uses one guarded helper — [`persist.ts`](apps/web/src/lib/persist.ts) (`loadPersistedState` / `savePersistedState` with runtime shape checks, so a stale or malformed row falls back to seeds instead of crashing the store). Id generation is centralized the same way — [`ids.ts`](apps/web/src/lib/ids.ts) exports the single `uuid()` every domain mints opaque keys from, so no two stores can drift into colliding schemes. The canonical platform type `facebook | x | reddit` is defined once in [`platform.ts`](apps/web/src/lib/platform.ts) and reused by every domain.
 
 ### API keys & scopes
 
