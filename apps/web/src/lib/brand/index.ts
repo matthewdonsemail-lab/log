@@ -1,78 +1,144 @@
 import { isRecord, loadPersistedState, savePersistedState } from '../persist'
-import type { BrandEntity, KeywordStrategyMapping } from './types'
+import type { BrandEntity, BrandPage, KeywordStrategyMapping } from './types'
+import { brandApp, clearBrandRecord, getBrandRecord, setBrandRecord } from './server'
+import { seedSourcesFor } from './sources'
+import type { BrandIntelligenceInput } from './server'
 
 export type {
   AiFollowUpAction,
   AiQuery,
   BrandEntity,
+  BrandFormality,
   BrandIdentity,
   BrandIntelligence,
   BrandLocation,
+  BrandOffering,
+  BrandPage,
+  BrandPageStatus,
+  BrandSourceRef,
   BrandVoice,
+  BrandVoiceExample,
   CommunityPick,
   KeywordStrategyMapping,
   KeywordTargetEntry,
   SearchStrategyEntry,
 } from './types'
-
-const STORAGE_KEY = 'brand-entity'
-
-function isStringArray(value: unknown): value is string[] {
-  return Array.isArray(value) && value.every((item) => typeof item === 'string')
-}
-
-function isBrandEntity(value: unknown): value is BrandEntity {
-  if (!isRecord(value)) return false
-  const { id, identity, location, voice, offerings, intelligence, sourceUrl, updatedAt } = value
-  if (typeof id !== 'string') return false
-  if (!isRecord(identity) || typeof identity.name !== 'string' || typeof identity.website !== 'string') return false
-  if (typeof identity.tagline !== 'string') return false
-  if (
-    !isRecord(location) ||
-    typeof location.label !== 'string' ||
-    typeof location.lat !== 'number' ||
-    typeof location.lng !== 'number' ||
-    typeof location.radiusKm !== 'number'
-  )
-    return false
-  if (!isStringArray(offerings)) return false
-  if (!isRecord(voice) || typeof voice.tone !== 'string' || !isStringArray(voice.serviceAreas)) return false
-  if (!isRecord(intelligence) || !isStringArray(intelligence.competitors)) return false
-  if (
-    intelligence.selectedKeyword !== undefined &&
-    typeof intelligence.selectedKeyword !== 'string'
-  )
-    return false
-  if (!Array.isArray(intelligence.targetCommunities)) return false
-  return typeof sourceUrl === 'string' && typeof updatedAt === 'string'
-}
+export { brandApp, type BrandApp } from './server'
+export type { BrandIntelligenceInput } from './server'
+export { PROMPT_VERSION, buildBrandSystemPrompt, buildReplyContext, retrieveSourceRefs } from './prompt'
+export { resolveSitemap, seedSourcesFor } from './sources'
 
 /**
  * Read the brand entity; null when skipped or never set. One key, one
  * record — the legacy 'brand-profile' rows are intentionally not carried
  * over (the old mount effect wiped that key on every onboarding visit, so
- * nothing durable ever lived there).
+ * nothing durable ever lived there). Reads the same memory the Hono
+ * routes serve, so onboarding writes show up in the dashboard instantly.
  */
 export function getBrand(): BrandEntity | null {
-  return loadPersistedState(STORAGE_KEY, isBrandEntity)
+  return getBrandRecord()
 }
 
 /** Persist the brand entity (stamps updatedAt). */
 export function saveBrand(entity: Omit<BrandEntity, 'updatedAt'>): BrandEntity {
-  const next: BrandEntity = { ...entity, updatedAt: new Date().toISOString() }
-  savePersistedState(STORAGE_KEY, next)
-  return next
+  return setBrandRecord(entity)
 }
 
 /** Forget the brand entity (user reset it — nothing calls this on mount). */
 export function clearBrand(): void {
-  savePersistedState(STORAGE_KEY, null)
+  clearBrandRecord()
+}
+
+/** Fetch the brand through `GET /brand` (the route the dashboard uses). */
+export async function getBrandAsync(): Promise<BrandEntity | null> {
+  const res = await brandApp.request('/brand')
+  if (!res.ok) throw new Error(`Brand request failed (${res.status})`)
+  const body = (await res.json()) as { brand: BrandEntity | null }
+  return body.brand
+}
+
+/** Upsert identity/location/voice/offerings through `PUT /brand`. */
+export async function saveBrandAsync(patch: Partial<BrandEntity>): Promise<BrandEntity> {
+  const res = await brandApp.request('/brand', {
+    method: 'PUT',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(patch),
+  })
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null
+    throw new Error(body?.error ?? `Could not save the brand (${res.status})`)
+  }
+  const parsed = (await res.json()) as { brand: BrandEntity }
+  return parsed.brand
+}
+
+/** Append reveal discoveries through `POST /brand/intelligence`. */
+export async function appendBrandIntelligenceAsync(input: BrandIntelligenceInput): Promise<BrandEntity> {
+  const res = await brandApp.request('/brand/intelligence', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(input),
+  })
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null
+    throw new Error(body?.error ?? `Could not save brand intelligence (${res.status})`)
+  }
+  const parsed = (await res.json()) as { brand: BrandEntity }
+  return parsed.brand
+}
+
+/** Clear the brand through `DELETE /brand`. */
+export async function clearBrandAsync(): Promise<void> {
+  const res = await brandApp.request('/brand', { method: 'DELETE' })
+  if (!res.ok) throw new Error(`Could not clear the brand (${res.status})`)
+}
+
+/** List indexed pages through `GET /brand/sources`. */
+export async function getSourcesAsync(): Promise<BrandPage[]> {
+  const res = await brandApp.request('/brand/sources')
+  if (!res.ok) throw new Error(`Sources request failed (${res.status})`)
+  const body = (await res.json()) as { sources: BrandPage[] }
+  return body.sources
+}
+
+/** Run the sitemap index through `POST /brand/index`. */
+export async function indexBrandAsync(input?: { urls?: string[]; sitemap?: boolean }): Promise<BrandEntity> {
+  const res = await brandApp.request('/brand/index', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(input ?? { sitemap: true }),
+  })
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null
+    throw new Error(body?.error ?? `Could not index the brand site (${res.status})`)
+  }
+  const parsed = (await res.json()) as { brand: BrandEntity }
+  return parsed.brand
+}
+
+/** Remove one indexed page through `DELETE /brand/sources`. */
+export async function removeSourceAsync(url: string): Promise<BrandEntity> {
+  const res = await brandApp.request('/brand/sources', {
+    method: 'DELETE',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ url }),
+  })
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null
+    throw new Error(body?.error ?? `Could not remove the source (${res.status})`)
+  }
+  const parsed = (await res.json()) as { brand: BrandEntity }
+  return parsed.brand
 }
 
 const MAPPING_KEY = 'keyword-strategy-mapping'
 
 function isPage(value: unknown): value is { title: string; href: string } {
   return isRecord(value) && typeof value.title === 'string' && typeof value.href === 'string'
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === 'string')
 }
 
 function isKeywordStrategyMapping(value: unknown): value is KeywordStrategyMapping {
@@ -133,10 +199,11 @@ function humanizeHost(host: string): string {
 /**
  * Mock brand extraction from a website URL: normalizes the URL, derives a
  * display name from the hostname, and seeds a base BrandEntity — voice gets
- * the house default, location the Galway default, intelligence empty for the
- * reveal to fill in. Offerings come back empty — inventing services would
- * be fake data, so the follow-up drafts fall back to generic phrasing until
- * real ones are added. Throws a human-readable error for unparseable input.
+ * the house default, location the Galway default, sources the deterministic
+ * seed pages, intelligence empty for the reveal to fill in. Offerings come
+ * back empty — inventing services would be fake data, so the follow-up
+ * drafts fall back to generic phrasing until real ones are added. Throws a
+ * human-readable error for unparseable input.
  */
 export function extractBrandFromUrl(input: string): Omit<BrandEntity, 'updatedAt'> {
   const trimmed = input.trim()
@@ -150,19 +217,24 @@ export function extractBrandFromUrl(input: string): Omit<BrandEntity, 'updatedAt
   }
   if (!url.hostname.includes('.')) throw new Error('That URL needs a domain, e.g. acmeplumbing.com.')
   const name = humanizeHost(url.hostname) || url.hostname
+  const website = url.origin + (url.pathname === '/' ? '' : url.pathname)
   return {
     id: 'brand-default',
     identity: {
       name,
-      website: url.origin + (url.pathname === '/' ? '' : url.pathname),
+      website,
       tagline: `${name} — heard across social`,
     },
     location: { label: '', lat: 53.2707, lng: -9.0568, radiusKm: 10 },
     offerings: [],
     voice: {
       tone: 'Friendly, plain-spoken local pro',
-      serviceAreas: [],
+      formality: 'professional',
+      dos: [],
+      donts: [],
+      examples: [],
     },
+    sources: seedSourcesFor(website, name),
     intelligence: { competitors: [], targetCommunities: [] },
     sourceUrl: url.href,
   }

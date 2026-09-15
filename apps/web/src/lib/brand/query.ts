@@ -1,11 +1,13 @@
 import type { FirehoseEvent } from '../analytics'
 import type { AiFollowUpAction, AiQuery, BrandEntity } from './types'
+import { buildReplyContext, PROMPT_VERSION } from './prompt'
 
 /**
  * Build the query a follow-up action runs: the captured event plus the
  * brand snapshot the mock AI drafts against. The sheet snapshots the brand
  * when the action opens so later onboarding edits can't shift a draft
- * mid-read.
+ * mid-read. The query carries the prompt version and cited source refs, so
+ * drafts look exactly like future RAG-backed replies.
  */
 export function buildAiQuery(
   action: AiFollowUpAction,
@@ -13,6 +15,7 @@ export function buildAiQuery(
   brand: BrandEntity | null,
   trackedPhrases: string[]
 ): AiQuery {
+  const context = buildReplyContext(brand, event.text)
   return {
     action,
     eventId: event.id,
@@ -26,8 +29,12 @@ export function buildAiQuery(
     url: event.url,
     trackedPhrases,
     brand,
+    promptVersion: context.promptVersion,
+    sourceRefs: context.sourceRefs,
   }
 }
+
+export { PROMPT_VERSION }
 
 const STOPWORDS = new Set(
   'a,an,and,are,as,at,be,but,by,can,could,did,do,does,for,from,had,has,have,here,how,if,in,into,is,it,its,just,like,look,looking,me,my,need,not,now,of,off,on,one,or,our,out,over,said,so,some,supposed,take,than,that,the,their,there,they,this,three,through,to,too,very,was,we,were,what,when,where,which,who,will,with,you,your,anyone,dealt,lately,pointers,week,alone,weekend,list,adding,quick,call,someone,cost,supposed,whole,still,waiting,third,month,quoted,double,neighbour,paid,again,shoutout,crew,sorted,visit,done,dusted,half,feared,spotless,work,anybody,dealt,threads,about,show,fuming,flooded,utility,room,legends,quote,recommendations'.split(
@@ -85,14 +92,15 @@ export function suggestAcross(texts: string[], event: FirehoseEvent, excluded: s
 }
 
 /**
- * Mock reply draft: the event's own words answered in the brand's voice.
- * Without a brand (onboarding skipped) it falls back to generic phrasing —
- * never invents a business name.
+ * Mock reply draft: the event's own words answered in the brand's voice —
+ * the same rules `buildBrandSystemPrompt()` compiles (name sign-off, first
+ * offering, service area). Without a brand (onboarding skipped) it falls
+ * back to generic phrasing — never invents a business name.
  */
 export function draftReply(query: AiQuery): string {
   const brandName = query.brand?.identity.name
-  const offering = query.brand?.offerings[0]
-  const area = query.brand?.voice.serviceAreas[0]
+  const offering = query.brand?.offerings[0]?.name
+  const area = query.brand?.location.label || undefined
   const signoff = brandName ? ` — ${brandName}` : ' — the team'
   const serviceBit = offering ? ` We do ${offering.toLowerCase()}${area ? ` across ${area}` : ''}.` : ''
   switch (query.type) {

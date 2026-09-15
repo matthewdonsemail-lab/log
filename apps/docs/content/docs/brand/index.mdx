@@ -1,0 +1,46 @@
+---
+title: Brand
+description: The single record every reply, draft, and agent call reads — what it holds and who consumes it.
+---
+
+# Brand
+
+One workspace, one brand record. Onboarding creates it from the website URL, the reveal enriches it, the dashboard's **Brand** tab edits it, and every reply draft and (soon) agent call reads it. Nothing in the app invents business facts — anything the brand hasn't provided falls back to generic phrasing.
+
+<Callout type="info">
+This is the hackathon build: the brand store is a mock (in-memory + localStorage) with deterministic seed data. The live backend replaces the transport; the shapes below stay the same.
+</Callout>
+
+## Sections
+
+Every field has exactly one defined consumer. If a field has no consumer, it doesn't belong on the record.
+
+| Section | Holds | Consumed by |
+|---|---|---|
+| `identity` | name, website, tagline, logo URL | Reply sign-off, resource URLs, dashboard header |
+| `voice` | tone, formality, dos / don'ts, gold-example replies | `buildBrandSystemPrompt()` → agent `instructions` |
+| `offerings` | `{ name, detail }[]` services / products | Reply service-bit, agent tool/RAG context |
+| `location` | label, lat / lng, radius km | Listings default, group scoping, reply area |
+| `sources` | indexed website pages (url, title, headings, text, status) | RAG namespace content, reply citations |
+| `intelligence` | selected keyword, competitor domains, target communities | Keywords / groups seeding |
+
+Two rules the model enforces:
+
+- **Areas live in `location`, never in `voice`.** Voice is purely about language — how replies read, not where they apply.
+- **Offerings are objects, not strings.** The agent quotes the one-line `detail` per service instead of dropping a bare name into a reply.
+
+## Quick links
+
+<Cards>
+<Card title="Voice to system prompt" href="/docs/brand/voice">
+  How tone, formality, and examples compile into the exact prompt the agent receives.
+</Card>
+
+<Card title="Website index" href="/docs/brand/website-index">
+  Sitemap to indexed pages: routes, statuses, and the Sources UI.
+</Card>
+
+<Card title="Agent context" href="/docs/brand/agent-context">
+  How the brand record becomes Convex agent context: threads, RAG namespaces, embeddings.
+</Card>
+</Cards>

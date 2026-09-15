@@ -4,6 +4,7 @@
  * discovers — and the query object the inspect-form follow-ups build from
  * an event + brand.
  */
+import { isRecord } from '../persist'
 
 export interface BrandIdentity {
   /** Display name, e.g. "Acme Plumbing". */
@@ -27,11 +28,57 @@ export interface BrandLocation {
   radiusKm: number
 }
 
+export interface BrandVoiceExample {
+  /** Post type this gold reply answers, e.g. "question" | "complaint" | "praise". */
+  situation: string
+  /** The exact reply the agent should mimic. */
+  reply: string
+}
+
+/** Machine-readable language dial: greeting style, contractions, sign-off length. */
+export type BrandFormality = 'casual' | 'professional' | 'formal'
+
+/**
+ * How replies should read. Purely about language — never geography (areas
+ * live in `location`). The single consumer is `buildBrandSystemPrompt()`,
+ * which compiles these fields into the agent's `instructions`.
+ */
 export interface BrandVoice {
-  /** How replies should read, e.g. "Friendly, plain-spoken local pro". */
+  /** One-line headline, e.g. "Friendly, plain-spoken local pro". */
   tone: string
-  /** Areas served, e.g. ["Dallas", "Fort Worth"]. */
-  serviceAreas: string[]
+  formality: BrandFormality
+  /** Hard rules, each independently enforceable, e.g. "Lead with the fix". */
+  dos: string[]
+  /** Hard prohibitions, e.g. "Never quote a price in a reply". */
+  donts: string[]
+  /** 2–3 gold replies the agent mimics before it improvises. */
+  examples: BrandVoiceExample[]
+}
+
+/** One service / product with the one-line detail the agent quotes. */
+export interface BrandOffering {
+  name: string
+  detail: string
+}
+
+/** Index state of one website page: quotable, queued, or retryable. */
+export type BrandPageStatus = 'indexed' | 'pending' | 'failed'
+
+/** One indexed website page — the unit the RAG namespace stores. */
+export interface BrandPage {
+  url: string
+  title: string
+  headings: string[]
+  text: string
+  status: BrandPageStatus
+  /** ISO timestamp of the last fetch. */
+  fetchedAt: string
+}
+
+/** A cited source attached to a draft — the mock mirror of RAG hits. */
+export interface BrandSourceRef {
+  url: string
+  excerpt: string
 }
 
 export interface BrandIntelligence {
@@ -57,8 +104,10 @@ export interface BrandEntity {
   identity: BrandIdentity
   location: BrandLocation
   voice: BrandVoice
-  /** Services / products, e.g. ["Emergency callouts", "Boiler installs"]. */
-  offerings: string[]
+  /** Services / products with quotable one-line details. */
+  offerings: BrandOffering[]
+  /** Indexed website pages — the future RAG namespace content. */
+  sources: BrandPage[]
   intelligence: BrandIntelligence
   /** URL the profile was extracted from (mock lookup for now). */
   sourceUrl: string
@@ -106,6 +155,157 @@ export interface CommunityPick {
   name: string
   detail: string
 }
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === 'string')
+}
+
+function isCommunityPick(value: unknown): value is CommunityPick {
+  return (
+    isRecord(value) &&
+    typeof value.id === 'string' &&
+    typeof value.platform === 'string' &&
+    typeof value.name === 'string' &&
+    typeof value.detail === 'string'
+  )
+}
+
+function isBrandVoiceExample(value: unknown): value is BrandVoiceExample {
+  return (
+    isRecord(value) && typeof value.situation === 'string' && typeof value.reply === 'string'
+  )
+}
+
+function isBrandOffering(value: unknown): value is BrandOffering {
+  return isRecord(value) && typeof value.name === 'string' && typeof value.detail === 'string'
+}
+
+function isBrandPage(value: unknown): value is BrandPage {
+  return (
+    isRecord(value) &&
+    typeof value.url === 'string' &&
+    typeof value.title === 'string' &&
+    isStringArray(value.headings) &&
+    typeof value.text === 'string' &&
+    (value.status === 'indexed' || value.status === 'pending' || value.status === 'failed') &&
+    typeof value.fetchedAt === 'string'
+  )
+}
+
+/** Runtime guard for the persisted brand row (shared by the store + server). */
+export function isBrandEntity(value: unknown): value is BrandEntity {
+  if (!isRecord(value)) return false
+  const { id, identity, location, voice, offerings, sources, intelligence, sourceUrl, updatedAt } = value
+  if (typeof id !== 'string') return false
+  if (!isRecord(identity) || typeof identity.name !== 'string' || typeof identity.website !== 'string') return false
+  if (typeof identity.tagline !== 'string') return false
+  if (
+    !isRecord(location) ||
+    typeof location.label !== 'string' ||
+    typeof location.lat !== 'number' ||
+    typeof location.lng !== 'number' ||
+    typeof location.radiusKm !== 'number'
+  )
+    return false
+  if (
+    !isRecord(voice) ||
+    typeof voice.tone !== 'string' ||
+    (voice.formality !== 'casual' && voice.formality !== 'professional' && voice.formality !== 'formal') ||
+    !isStringArray(voice.dos) ||
+    !isStringArray(voice.donts) ||
+    !Array.isArray(voice.examples) ||
+    !(voice.examples as unknown[]).every(isBrandVoiceExample)
+  )
+    return false
+  if (!Array.isArray(offerings) || !(offerings as unknown[]).every(isBrandOffering)) return false
+  if (!Array.isArray(sources) || !(sources as unknown[]).every(isBrandPage)) return false
+  if (!isRecord(intelligence) || !isStringArray(intelligence.competitors)) return false
+  if (
+    intelligence.selectedKeyword !== undefined &&
+    typeof intelligence.selectedKeyword !== 'string'
+  )
+    return false
+  if (!Array.isArray(intelligence.targetCommunities)) return false
+  if (
+    !(intelligence.targetCommunities as unknown[]).every(isCommunityPick)
+  )
+    return false
+  return typeof sourceUrl === 'string' && typeof updatedAt === 'string'
+}
+
+/**
+ * Migrate a persisted row into the v2 shape. Accepts v1 rows (bare-string
+ * offerings, `voice.serviceAreas`, no `sources`/formality/dos/donts) and
+ * returns null for anything unrecognizable. Service areas merge into
+ * `location.label` when no label was set — areas live in location now.
+ */
+export function migrateBrandEntity(value: unknown): BrandEntity | null {
+  if (isBrandEntity(value)) return value
+  if (!isRecord(value)) return null
+  try {
+    const record = value as Record<string, unknown>
+    const voice = (isRecord(record.voice) ? record.voice : {}) as Record<string, unknown>
+    const location = (isRecord(record.location) ? record.location : {}) as Record<string, unknown>
+    const identity = (isRecord(record.identity) ? record.identity : {}) as Record<string, unknown>
+    const intelligence = (isRecord(record.intelligence) ? record.intelligence : {}) as Record<string, unknown>
+    const rawOfferings = Array.isArray(record.offerings) ? (record.offerings as unknown[]) : []
+    const offerings: BrandOffering[] = rawOfferings.map((offering) =>
+      typeof offering === 'string'
+        ? { name: offering, detail: '' }
+        : isBrandOffering(offering)
+          ? offering
+          : { name: String((offering as { name?: unknown })?.name ?? ''), detail: '' }
+    ).filter((offering) => offering.name.length > 0)
+    const legacyAreas = Array.isArray(voice.serviceAreas)
+      ? (voice.serviceAreas as unknown[]).filter((area): area is string => typeof area === 'string')
+      : []
+    const label = typeof location.label === 'string' && location.label.length > 0
+      ? location.label
+      : legacyAreas.join(', ')
+    const rawSources = Array.isArray(record.sources) ? (record.sources as unknown[]) : []
+    const formality = voice.formality === 'casual' || voice.formality === 'professional' || voice.formality === 'formal'
+      ? voice.formality
+      : 'professional'
+    const candidate: BrandEntity = {
+      id: typeof record.id === 'string' ? record.id : 'brand-default',
+      identity: {
+        name: typeof identity.name === 'string' ? identity.name : '',
+        website: typeof identity.website === 'string' ? identity.website : '',
+        tagline: typeof identity.tagline === 'string' ? identity.tagline : '',
+        ...(typeof identity.logoUrl === 'string' ? { logoUrl: identity.logoUrl } : {}),
+      },
+      location: {
+        label,
+        lat: typeof location.lat === 'number' ? location.lat : 53.2707,
+        lng: typeof location.lng === 'number' ? location.lng : -9.0568,
+        radiusKm: typeof location.radiusKm === 'number' ? location.radiusKm : 10,
+      },
+      voice: {
+        tone: typeof voice.tone === 'string' ? voice.tone : 'Friendly, plain-spoken local pro',
+        formality,
+        dos: Array.isArray(voice.dos) ? (voice.dos as unknown[]).filter((line): line is string => typeof line === 'string') : [],
+        donts: Array.isArray(voice.donts) ? (voice.donts as unknown[]).filter((line): line is string => typeof line === 'string') : [],
+        examples: Array.isArray(voice.examples) ? (voice.examples as unknown[]).filter(isBrandVoiceExample) : [],
+      },
+      offerings,
+      sources: rawSources.filter(isBrandPage),
+      intelligence: {
+        ...(typeof intelligence.selectedKeyword === 'string' ? { selectedKeyword: intelligence.selectedKeyword } : {}),
+        competitors: Array.isArray(intelligence.competitors)
+          ? (intelligence.competitors as unknown[]).filter((line): line is string => typeof line === 'string')
+          : [],
+        targetCommunities: Array.isArray(intelligence.targetCommunities)
+          ? (intelligence.targetCommunities as unknown[]).filter(isCommunityPick)
+          : [],
+      },
+      sourceUrl: typeof record.sourceUrl === 'string' ? record.sourceUrl : '',
+      updatedAt: typeof record.updatedAt === 'string' ? record.updatedAt : new Date(0).toISOString(),
+    }
+    return isBrandEntity(candidate) ? candidate : null
+  } catch {
+    return null
+  }
+}
 /**
  * The query a follow-up runs: the captured event, the tracked phrases to
  * exclude, and the brand snapshot the mock AI drafts against. A null brand
@@ -124,4 +324,8 @@ export interface AiQuery {
   url: string
   trackedPhrases: string[]
   brand: BrandEntity | null
+  /** Prompt version that must render this draft — voice edits never rewrite history. */
+  promptVersion: number
+  /** Cited pages behind the draft — the mock mirror of RAG hits. */
+  sourceRefs: BrandSourceRef[]
 }

@@ -1,0 +1,35 @@
+---
+title: Agent context
+description: How the brand record becomes Convex agent context — threads, RAG namespaces, and embeddings.
+---
+
+# Agent context
+
+When the live backend lands, the brand record stops being read by hand and starts being passed as LLM context through the [Convex Agent SDK](https://docs.convex.dev/agents) (`@convex-dev/agent`). This page is the wiring map — every claim links the real docs it was modeled from.
+
+## Agent definition
+
+One agent per workspace. Its `instructions` are the output of `buildBrandSystemPrompt(brand)` — the exact text the Brand tab previews. The embedding model (`text-embedding-3-small`) powers vector search over message history. See [Agent Definition and Usage](https://docs.convex.dev/agents/agent-usage).
+
+## Reply drafting: one thread per event
+
+Each incoming event gets its own thread (`createThread` / `continueThread`), and the reply is generated with `thread.generateText({ prompt })`. Thread-per-event keeps per-reply context isolated and auditable — the thread *is* the paper trail. See [Threads](https://docs.convex.dev/agents/threads).
+
+## Context injection
+
+Brand + source context reaches the LLM two ways, in this documented input order — system prompt, context messages, `messages` arg, prompt ([LLM Context](https://docs.convex.dev/agents/context)):
+
+- `contextOptions`: recent messages plus `searchOptions` (`vectorSearch`, `textSearch`, `limit`) over the thread, with opt-in `searchOtherThreads`.
+- `contextHandler`: prepends the brand system message and the top-k source chunks before the event text.
+
+## Website content as RAG
+
+Each brand gets one namespace (`brand-<id>`) in the [RAG component](https://convex.dev/components/rag) (`@convex-dev/rag` v0.7.6): every indexed `BrandPage.text` goes through `rag.add()`, retrieval through `rag.search()` (score thresholds, chunk expansion) or combined `generateText()`. Re-index uses key-based graceful replacement. Embeddings live in Convex tables behind a schema `vectorIndex({ vectorField, dimensions: 1536 })` queried with `ctx.vectorSearch` ([Vector Search](https://docs.convex.dev/search/vector-search)), following the documents → chunks → embeddings split from the [convex-ai-chat example](https://stack.convex.dev/ai-chat-with-convex-vector-search).
+
+<Callout type="info">
+Agents: read the [RAG SKILL.md](https://www.convex.dev/components/rag/SKILL.md) fully before writing any code that uses `@convex-dev/rag`. It contains the exact setup and usage patterns.
+</Callout>
+
+## Mock mirror
+
+Today's `AiQuery` already mirrors this shape — event + brand snapshot + tracked phrases — extended with `promptVersion` and `sourceRefs: [{ url, excerpt }][]`. The mock cites seed pages exactly the way RAG results will arrive, so the UI (draft + cited sources) is built once and never rewritten for the cutover.

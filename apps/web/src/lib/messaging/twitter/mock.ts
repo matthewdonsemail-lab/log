@@ -3,7 +3,7 @@ import type { ChatMessage, Thread } from '../types'
 export const TWITTER_THREADS: Thread[] = [
   {
     id: 'tw-t1',
-    platform: 'twitter',
+    platform: 'x',
     participant: { name: 'Dallas Homeowner', handle: '@dallasplumb911', initials: 'DH', color: '#0F1419' },
     preview: 'You’re a lifesaver, thank you!',
     updatedAt: '10:02 AM',
@@ -11,7 +11,7 @@ export const TWITTER_THREADS: Thread[] = [
   },
   {
     id: 'tw-t2',
-    platform: 'twitter',
+    platform: 'x',
     participant: { name: 'Mike Torres', handle: '@mike_torres', initials: 'MT', color: '#1D9BF0' },
     preview: 'Can you quote a water heater replacement?',
     updatedAt: 'Tue',

@@ -1,4 +1,8 @@
 import type { ConnectionPlatform } from '../connections'
+import type { Platform } from '../platform'
+
+/** Canonical platform alias — keywords speak the same union everywhere. */
+export type KeywordPlatform = Platform
 
 export type KeywordStatus = 'listening' | 'paused'
 

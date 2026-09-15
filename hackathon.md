@@ -12,7 +12,7 @@
 - **Auth:** none
 - **AI models:** none
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-15T00:05:00Z
+- **Last updated:** 2026-09-15T00:56:54Z
 
 ## Log
 
@@ -101,3 +101,20 @@ single `brand-entity` store key, with all readers migrated
 mount effect that wiped the brand on every visit is gone — revisits hydrate
 instead (`apps/web/src/pages/onboarding/OnboardingSteps.tsx`). Reveal
 accumulation, the `/dashboard/brand` route, and the reactive hook come next.
+
+### 2026-09-15 - ce11a2f
+Mock contracts tightened before any live backend: one canonical `Platform`
+type (`apps/web/src/lib/platform.ts`) fixing the `x` vs `twitter` split
+across feed, connections, and messaging; `FeedItem` metrics are numbers with
+a `formatCount` display helper and `GET /feed` gained `?platform=`/`?search=`
+filtering; listings carry an `accountId` FK into connections with label
+resolution and legacy-row migration. Brand model v2: structured voice
+(tone, formality, dos/donts, gold examples) compiling through
+`buildBrandSystemPrompt()` with a versioned prompt, object offerings,
+indexed `sources` pages with seed data and `POST /brand/index` / source
+routes, and v1-row migration. New `DashboardBrand` page (identity, voice +
+system-prompt preview, offerings, location, sources, intelligence) on
+`/dashboard/brand` with sidebar entry, plus a five-page brand section in the
+docs (`apps/docs/content/docs/brand/`). Convex features: none yet — the
+agent/RAG/embedding wiring is documented from official docs as the cutover
+target, not implemented.

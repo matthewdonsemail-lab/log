@@ -1,4 +1,7 @@
-export type MessagingPlatform = 'facebook' | 'twitter' | 'reddit'
+import type { Platform } from '../platform'
+
+/** Canonical platform — X is always `x`, never `twitter`. */
+export type MessagingPlatform = Platform
 
 export interface Participant {
   name: string

@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 import { CircleCheck, Clock, Copy, ExternalLink, Globe, HelpCircle, LogIn, Pencil, Plus, Tag, Trash, Trash2 } from 'lucide-react'
 import { Badge, Button, Dropdown, Select, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, useToast } from '@listeningkit/ui'
 import { getAccounts, type ConnectionRecord } from '../lib/connections'
-import { healthForLabel } from '../lib/health'
+import { healthForAccountId, healthForLabel } from '../lib/health'
 import { getListings, LISTING_STATUSES, LISTING_STATUS_LABELS, deleteListing, setListingStatus, type ListingRecord, type ListingStatus } from '../lib/listings'
 import { SocialBadge, SocialGlyph, SOCIAL_ICONS } from '../lib/social-icons'
 import { MarketplaceImages } from './MarketplaceImages'
@@ -86,9 +86,9 @@ export function DashboardListings() {
     getAccounts().then(setAccounts).catch(() => setAccounts([]))
   }, [location])
 
-  // Account badges read their health from the roster through
-  // `healthForLabel` (label lookup is the dashboard-wide join) — the same
-  // assessment every other account badge uses.
+  // Account badges read their health from the roster through the account
+  // FK (`healthForAccountId`, label lookup as the legacy fallback) — the
+  // same assessment every other account badge uses.
   // Status changes round-trip the API — the store (mock now, facebook
   // client later) is the source of truth, never local table state.
   async function handleStatusChange(listing: ListingRecord, status: ListingStatus) {
@@ -194,7 +194,9 @@ export function DashboardListings() {
               </TableHeader>
               <TableBody>
                 {rows.map((listing) => {
-                  const health = healthForLabel(accounts ?? [], listing.account)
+                  const health =
+                    healthForAccountId(accounts ?? [], listing.accountId) ??
+                    healthForLabel(accounts ?? [], listing.account)
                   return (
                   <TableRow
                     key={listing.listingId}

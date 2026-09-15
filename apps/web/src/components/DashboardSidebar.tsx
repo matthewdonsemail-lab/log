@@ -2,6 +2,7 @@ import type { ComponentType, MouseEvent, SVGProps } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import {
   BookOpenIcon,
+  BuildingStorefrontIcon,
   ChatBubbleLeftRightIcon,
   ChartBarIcon,
   Cog6ToothIcon,
@@ -24,6 +25,7 @@ const NAV: Array<{ label: string; Icon: NavIcon; to?: string }> = [
   { label: 'Keywords', Icon: KeyIcon, to: '/dashboard/keywords' },
   { label: 'Analytics', Icon: ChartBarIcon, to: '/dashboard/analytics' },
   { label: 'Accounts', Icon: UserCircleIcon, to: '/dashboard/accounts' },
+  { label: 'Brand', Icon: BuildingStorefrontIcon, to: '/dashboard/brand' },
   { label: 'Messages', Icon: ChatBubbleLeftRightIcon, to: '/dashboard/messages' },
   { label: 'Docs', Icon: BookOpenIcon, to: '/dashboard/docs' },
   { label: 'API', Icon: CommandLineIcon, to: '/dashboard/api' },

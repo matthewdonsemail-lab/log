@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
-import { MOCK_LISTINGS } from './mock'
+import { MOCK_LISTINGS, resolveListingAccountId, resolveListingAccountLabel } from './mock'
+import { MOCK_CONNECTIONS } from '../connections/mock'
 import { DEFAULT_LISTING_LOCATION, LISTING_STATUSES } from './types'
 import type { ListingDraft, ListingLocation, ListingRecord, ListingStatus } from './types'
 import { isArray, isRecord, loadPersistedState, savePersistedState } from '../persist'
@@ -13,13 +14,24 @@ function isListingArray(value: unknown): value is ListingRecord[] {
   )
 }
 
+/** Backfill the `accountId` FK on legacy persisted rows that only carry a label. */
+function migrateListingRow(row: ListingRecord): ListingRecord {
+  if (typeof (row as { accountId?: unknown }).accountId === 'string') return row
+  const legacyLabel = typeof row.account === 'string' ? row.account : 'Facebook'
+  const accountId = resolveListingAccountId(legacyLabel)
+  return { ...row, accountId, account: resolveListingAccountLabel(accountId) }
+}
+
 /**
  * In-memory listing store. Seeds with MOCK_LISTINGS; form-created listings
  * are appended at the top and polled by status like the seeded rows.
  * Persisted to localStorage on every write and rehydrated on load, so
  * edits and status changes survive a refresh instead of resetting to seeds.
+ * Legacy rows without `accountId` are migrated on load.
  */
-let listings: ListingRecord[] = loadPersistedState(LISTINGS_KEY, isListingArray) ?? [...MOCK_LISTINGS]
+let listings: ListingRecord[] = (
+  loadPersistedState(LISTINGS_KEY, isListingArray) ?? [...MOCK_LISTINGS]
+).map(migrateListingRow)
 
 function persistListings(): void {
   savePersistedState(LISTINGS_KEY, listings)
@@ -63,7 +75,7 @@ function toLocationPoint(value: unknown, fallback?: ListingLocation): ListingLoc
 export const listingsApp = new Hono()
   .get('/listings', (c) => c.json({ listings: [...listings] }))
   .post('/listings', async (c) => {
-    const body = await c.req.json<ListingDraft>().catch(() => null)
+    const body = await c.req.json<ListingDraft & { account?: string }>().catch(() => null)
     if (!body) return c.json({ error: 'Invalid request body' }, 400)
     const title = (body.title ?? '').trim()
     const price = (body.price ?? '').trim()
@@ -75,6 +87,16 @@ export const listingsApp = new Hono()
     // one too; this keeps the route honest if called directly.
     const images = (body.images ?? []).filter((image) => typeof image === 'string' && image.length > 0)
     if (images.length === 0) return c.json({ error: 'A listing needs at least one photo' }, 400)
+    // FK first: the draft carries the stable account id; legacy callers may
+    // still send a label — resolve either way, then validate the account.
+    const rawAccount = (body.accountId ?? body.account ?? '').trim()
+    const accountId = rawAccount.includes(' ')
+      ? resolveListingAccountId(rawAccount)
+      : rawAccount || 'fb-personal'
+    const account = MOCK_CONNECTIONS.find((row) => row.id === accountId)
+    if (!account || account.platform !== 'facebook') {
+      return c.json({ error: 'A listing needs a connected Facebook account' }, 400)
+    }
     const listingId = nextListingId()
     const listing: ListingRecord = {
       listingId,
@@ -85,9 +107,8 @@ export const listingsApp = new Hono()
       condition: (body.condition ?? '').trim() || 'Used - fair',
       location,
       locationPoint: toLocationPoint(body.locationPoint),
-      // The form only offers connected facebook accounts, so the label is
-      // trusted here; the live client re-validates it against the account.
-      account: (body.account ?? '').trim() || 'Facebook',
+      accountId: account.id,
+      account: account.label,
       // First photo is the cover; up to four fan out in the row.
       images: images.slice(0, 4),
       // Every new listing sits in review before the client confirms it live.
@@ -105,7 +126,7 @@ export const listingsApp = new Hono()
     const listingId = c.req.param('listingId')
     const current = listings.find((row) => row.listingId === listingId)
     if (!current) return c.json({ error: 'Listing not found' }, 404)
-    const body = await c.req.json<Partial<ListingDraft>>().catch(() => null)
+    const body = await c.req.json<Partial<ListingDraft> & { account?: string }>().catch(() => null)
     if (!body) return c.json({ error: 'Invalid request body' }, 400)
     const title = (body.title ?? '').trim()
     const price = (body.price ?? '').trim()
@@ -115,6 +136,17 @@ export const listingsApp = new Hono()
     if (!location) return c.json({ error: 'A listing needs a location' }, 400)
     const images = (body.images ?? []).filter((image) => typeof image === 'string' && image.length > 0)
     if (images.length === 0) return c.json({ error: 'A listing needs at least one photo' }, 400)
+    // Account scope may move on edit: resolve the incoming id (or legacy
+    // label) and fall back to the stored FK when nothing was sent.
+    const rawAccount = ((body.accountId ?? body.account ?? '') as string).trim()
+    const nextAccountId = rawAccount
+      ? rawAccount.includes(' ')
+        ? resolveListingAccountId(rawAccount)
+        : rawAccount
+      : current.accountId
+    const nextAccount =
+      MOCK_CONNECTIONS.find((row) => row.id === nextAccountId) ??
+      MOCK_CONNECTIONS.find((row) => row.id === current.accountId)
     const updated: ListingRecord = {
       ...current,
       title,
@@ -123,7 +155,8 @@ export const listingsApp = new Hono()
       condition: (body.condition ?? '').trim() || null,
       location,
       locationPoint: toLocationPoint(body.locationPoint, current.locationPoint),
-      account: (body.account ?? '').trim() || current.account,
+      accountId: nextAccount?.id ?? current.accountId,
+      account: nextAccount?.label ?? current.account,
       images: images.slice(0, 4),
     }
     listings = listings.map((row) => (row.listingId === listingId ? updated : row))

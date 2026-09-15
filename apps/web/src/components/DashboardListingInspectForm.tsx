@@ -8,7 +8,7 @@ import {
   type ListingStatus
 } from '../lib/listings'
 import { getAccounts, type ConnectionRecord } from '../lib/connections'
-import { healthForLabel } from '../lib/health'
+import { healthForAccountId, healthForLabel } from '../lib/health'
 import { SOCIAL_ICONS, SocialGlyph } from '../lib/social-icons'
 import { AccountHealthBadge } from './AccountHealthBadge'
 import { AccountTooltip } from './AccountTooltip'
@@ -207,7 +207,8 @@ export function DashboardListingInspectForm({
 
   const [busyAction, setBusyAction] = useState<ListingStatus | null>(null)
 
-  const health = healthForLabel(accounts ?? [], listing.account)
+  const health =
+    healthForAccountId(accounts ?? [], listing.accountId) ?? healthForLabel(accounts ?? [], listing.account)
 
   async function handleStatusChange(status: ListingStatus) {
     if (busyAction) return

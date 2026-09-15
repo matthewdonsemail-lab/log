@@ -1,0 +1,35 @@
+---
+title: Website index
+description: Sitemap to indexed pages — routes, statuses, seeds, and the Sources UI.
+---
+
+# Website index
+
+The brand website is not a link on the record — it is indexed content. The sitemap resolves to pages, pages resolve to text, and text becomes the RAG namespace the agent quotes from.
+
+## Flow
+
+1. Onboarding (or the Brand tab) provides the website URL.
+2. `POST /brand/index` resolves the sitemap into a page list — or accepts an explicit `{ urls[] }`.
+3. Each page is fetched and stored as a `BrandPage`: url, title, headings, text, `status`, `fetchedAt`.
+4. Statuses: `indexed` (quotable), `pending` (queued), `failed` (retryable from the UI).
+
+```ts
+sources: [
+  { url: 'https://acmeplumbing.com/services', title: 'Services', headings: ['…'], text: '…', status: 'indexed', fetchedAt: '…' }
+]
+```
+
+## Mock rules
+
+- Deterministic seed pages for the demo brand (homepage, services, about, contact) — no network in the hackathon build.
+- Re-index replaces page text in place; failed rows stay visible with a retry action, never silently dropped.
+- Replies cite sources via `sourceRefs: [{ url, excerpt }]` on the query, so today's mock citations look exactly like tomorrow's RAG hits.
+
+## Sources UI
+
+The Brand tab's **Sources** section lists every page: title, URL, status dot, fetched-at. **Re-index site** re-runs the pipeline with progress state; per-row retry clears `failed` rows one at a time.
+
+<Callout type="warning">
+The mock never fetches the live web. The live indexer swaps the fetch step only — page shape, statuses, and routes stay identical.
+</Callout>

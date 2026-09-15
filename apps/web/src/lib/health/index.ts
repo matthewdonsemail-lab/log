@@ -62,9 +62,10 @@ export function healthForConnectedAt(connectedAt: string | null, now: Date = new
 }
 
 /**
- * Resolve a record's health by display label. Listings and communities
- * reference accounts by label (the shared label space), so label lookup is
- * the dashboard-wide join.
+ * Resolve a record's health by display label. Communities reference accounts
+ * by label in some legacy paths; listings now join by `accountId` first
+ * (`healthForAccountId`) with this as the fallback for rows that predate
+ * the FK — so label lookup stays the dashboard-wide backstop.
  */
 export function healthForLabel(
   accounts: readonly ConnectionRecord[],

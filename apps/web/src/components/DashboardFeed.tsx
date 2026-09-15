@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSquircleClip, useToast } from '@listeningkit/ui'
 import { SOCIAL_ICONS, type SocialIcon } from '@/lib/social-icons'
-import { getFeed, type FeedItem, type FeedPlatform } from '@/lib/feed'
+import { getFeed, formatCount, type FeedItem, type FeedPlatform } from '@/lib/feed'
 import { getKeywords } from '@/lib/keywords'
 import { DashboardFeedHeader } from './DashboardFeedHeader'
 import { FeedCardFrame, CARD_NATURAL_WIDTHS } from './cards/FeedCardFrame'
@@ -19,9 +19,9 @@ function FeedCard({ item, highlight }: { item: FeedItem; highlight: string[] }) 
           lines={item.body}
           imageSrc={item.imageSrc}
           avatarUrl={item.avatarUrl}
-          likes={item.likes}
-          comments={item.comments}
-          shares={item.shares ?? '0 shares'}
+          likes={`${formatCount(item.likes)}`}
+          comments={`${formatCount(item.comments)} comments`}
+          shares={`${formatCount(item.shares ?? 0)} shares`}
           highlight={highlight}
         />
       ) : (
@@ -30,9 +30,9 @@ function FeedCard({ item, highlight }: { item: FeedItem; highlight: string[] }) 
           timeAgo={item.timeAgo}
           lines={item.body}
           avatarUrl={item.avatarUrl}
-          likes={item.likes}
-          comments={item.comments}
-          shares={item.shares ?? '0 shares'}
+          likes={`${formatCount(item.likes)}`}
+          comments={`${formatCount(item.comments)} comments`}
+          shares={`${formatCount(item.shares ?? 0)} shares`}
           highlight={highlight}
         />
       )
@@ -45,10 +45,10 @@ function FeedCard({ item, highlight }: { item: FeedItem; highlight: string[] }) 
           timestamp={item.timestamp ?? item.timeAgo}
           avatarUrl={item.avatarUrl}
           imageSrc={item.imageSrc}
-          views={item.views}
-          replies={item.replies}
-          reposts={item.reposts}
-          likes={item.likes}
+          views={item.views !== undefined ? formatCount(item.views) : undefined}
+          replies={item.replies !== undefined ? formatCount(item.replies) : undefined}
+          reposts={item.reposts !== undefined ? formatCount(item.reposts) : undefined}
+          likes={formatCount(item.likes)}
           highlight={highlight}
         />
       ) : (
@@ -58,10 +58,10 @@ function FeedCard({ item, highlight }: { item: FeedItem; highlight: string[] }) 
           body={item.body.join(' ')}
           timestamp={item.timestamp ?? item.timeAgo}
           avatarUrl={item.avatarUrl}
-          views={item.views}
-          replies={item.replies}
-          reposts={item.reposts}
-          likes={item.likes}
+          views={item.views !== undefined ? formatCount(item.views) : undefined}
+          replies={item.replies !== undefined ? formatCount(item.replies) : undefined}
+          reposts={item.reposts !== undefined ? formatCount(item.reposts) : undefined}
+          likes={formatCount(item.likes)}
           highlight={highlight}
         />
       )
@@ -70,16 +70,16 @@ function FeedCard({ item, highlight }: { item: FeedItem; highlight: string[] }) 
         <RedditComment
           authorName={item.authorName}
           body={item.body.join(' ')}
-          likes={item.likes}
-          shares={item.shares ?? '0'}
+          likes={formatCount(item.likes)}
+          shares={formatCount(item.shares ?? 0)}
           highlight={highlight}
         />
       ) : (
         <RedditPostText
           communityName={item.community ?? item.authorName}
           title={item.title ?? item.body.join(' ')}
-          likes={item.likes}
-          shares={item.shares ?? '0'}
+          likes={formatCount(item.likes)}
+          shares={formatCount(item.shares ?? 0)}
           highlight={highlight}
         />
       )

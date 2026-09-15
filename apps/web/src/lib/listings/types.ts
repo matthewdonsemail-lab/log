@@ -48,9 +48,11 @@ export const DEFAULT_LISTING_LOCATION: ListingLocation = { lat: 53.2707, lng: -9
  * facebook-camofox-client (github.com/PRACE1/facebook-camofox-client):
  * create carries title/price/category/condition/location, status polling
  * classifies into `status` and resolves the `listingUrl`.
- * `account` is the connection account label that published the listing —
- * the same label space as lib/connections, so the dashboard can match it
- * against the user's connected accounts.
+ * `accountId` is the foreign key into lib/connections (stable account id,
+ * so multiple accounts per platform work) — `account` is the denormalized
+ * display label resolved from that id, the same label space as
+ * lib/connections, so the dashboard can match it against the user's
+ * connected accounts without an extra lookup.
  * Unknown stays unknown — statuses are never fabricated.
  */
 export interface ListingRecord {
@@ -60,6 +62,9 @@ export interface ListingRecord {
   category: string
   condition: string | null
   location: string
+  /** FK into lib/connections — the account that published the listing. */
+  accountId: string
+  /** Denormalized display label for `accountId` (resolved at write time). */
   account: string
   /** Pinpoint + delivery radius for marketplace targeting; older persisted rows may lack it. */
   locationPoint?: ListingLocation
@@ -75,8 +80,8 @@ export interface ListingsResponse {
 }
 
 /**
- * A new-listing draft submitted by the dashboard form. `account` is the
- * connected account label that will publish it — the same label space as
+ * A new-listing draft submitted by the dashboard form. `accountId` is the
+ * connected facebook account id that will publish it — the same id space as
  * lib/connections, so the form is shown only for connected facebook accounts.
  * `images` are data URLs from the form's file picker (up to four; the first
  * is the cover) — the mock store keeps them in memory, and the live client
@@ -89,7 +94,8 @@ export interface ListingDraft {
   category: string
   condition: string | null
   location: string
-  account: string
+  /** FK into lib/connections (legacy `account` labels still accepted by the route). */
+  accountId: string
   /** Always sent by the form (defaults to Galway centre); the map picker adjusts it. */
   locationPoint: ListingLocation
   images: string[]

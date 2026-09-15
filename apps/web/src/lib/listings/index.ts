@@ -8,7 +8,7 @@ import type {
 } from './types'
 
 export * from './types'
-export { MOCK_FACEBOOK_ACCOUNTS, MOCK_LISTINGS } from './mock'
+export { MOCK_FACEBOOK_ACCOUNTS, MOCK_LISTINGS, resolveListingAccountId, resolveListingAccountLabel } from './mock'
 export { listingsApp, type ListingsApp } from './server'
 
 /** Fetch listings through the Hono app (in-memory mock for now). */

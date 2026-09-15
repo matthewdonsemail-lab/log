@@ -23,7 +23,7 @@ import { DashboardTab } from './DashboardTab'
 
 const MESSAGING_PLATFORM_BY_ICON: Record<string, MessagingPlatform> = {
   facebook: 'facebook',
-  x: 'twitter',
+  x: 'x',
   reddit: 'reddit'
 }
 

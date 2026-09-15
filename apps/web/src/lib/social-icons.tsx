@@ -1,8 +1,9 @@
 import { siFacebook, siReddit, siX } from 'simple-icons'
 import { SquircleBorder, useComposedRef, useSquircleBorder, useSquircleClip } from '@listeningkit/ui'
+import type { Platform } from './platform'
 
 export type SocialIcon = {
-  id: string
+  id: Platform
   label: string
   path: string
   hex: string

@@ -9,16 +9,18 @@ export * from './types'
 /**
  * Hono-shaped messaging API, mirroring lib/feed. Mock-backed for now —
  * when the real backend lands, point these clients at it; routes and
- * response shapes stay the same.
+ * response shapes stay the same. X lives at `/x` (canonical Platform);
+ * `/twitter` stays as a legacy alias so old clients don't 404.
  */
 export const messagingApp = new Hono()
   .route('/facebook', facebookMessagingApp)
+  .route('/x', twitterMessagingApp)
   .route('/twitter', twitterMessagingApp)
   .route('/reddit', redditMessagingApp)
 
 export type MessagingApp = typeof messagingApp
 
-const PLATFORMS: MessagingPlatform[] = ['facebook', 'twitter', 'reddit']
+const PLATFORMS: MessagingPlatform[] = ['facebook', 'x', 'reddit']
 
 /** All threads across platforms. */
 export async function getThreads(): Promise<ThreadsResponse> {

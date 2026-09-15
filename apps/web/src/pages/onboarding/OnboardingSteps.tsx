@@ -440,7 +440,7 @@ export function OnboardingSteps() {  const [step, setStep] = useState<Step>(0)
                 </p>
                 <p className="mt-1 text-sm text-slate-600">
                   <span className="font-semibold text-slate-900">Offerings:</span>{' '}
-                  {profile.offerings.length > 0 ? profile.offerings.join(', ') : 'None detected yet'}
+                  {profile.offerings.length > 0 ? profile.offerings.map((offering) => offering.name).join(', ') : 'None detected yet'}
                 </p>
                 <button
                   type="button"

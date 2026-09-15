@@ -1,6 +1,8 @@
 import type { AccountIssue, RawSignal } from '../account-issues/types'
+import type { Platform } from '../platform'
 
-export type ConnectionPlatform = 'facebook' | 'x' | 'reddit'
+/** Canonical platform — re-exported here so connections callers don't drift. */
+export type ConnectionPlatform = Platform
 
 export type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'error'
 

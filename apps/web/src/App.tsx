@@ -16,6 +16,7 @@ import { DashboardFeed } from './components/DashboardFeed'
 import { DashboardDocs } from './components/DashboardDocs'
 import { DashboardAPI } from './components/DashboardAPI'
 import { DashboardApiKeyPage } from './components/DashboardApiKeyPage'
+import { DashboardBrand } from './components/DashboardBrand'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -54,6 +55,7 @@ export function App() {
               <Route path="analytics/:keywordId" element={<DashboardAnalyticsPage />} />
               <Route path="accounts" element={<DashboardAccounts />} />
               <Route path="accounts/:accountId" element={<DashboardAccountPage />} />
+              <Route path="brand" element={<DashboardBrand />} />
               <Route path="messages" element={<DashboardMessages />} />
               <Route path="settings" element={<DashboardSettings />} />
               <Route path="api" element={<DashboardAPI />} />

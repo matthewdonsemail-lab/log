@@ -1,7 +1,27 @@
-import { MOCK_FACEBOOK_ACCOUNTS } from '../connections/mock'
+import { MOCK_CONNECTIONS, MOCK_FACEBOOK_ACCOUNTS } from '../connections/mock'
 import type { ListingRecord } from './types'
 
 export { MOCK_FACEBOOK_ACCOUNTS }
+
+/**
+ * Resolve a connection label from its stable id — the same join communities
+ * use via `resolveAccountLabel()`, so listings never point into the void.
+ */
+export function resolveListingAccountLabel(accountId: string): string {
+  return MOCK_CONNECTIONS.find((account) => account.id === accountId)?.label ?? 'Facebook'
+}
+
+/**
+ * Resolve a legacy label (or id) back to its stable account id. Used to
+ * migrate persisted rows that predate the `accountId` FK.
+ */
+export function resolveListingAccountId(labelOrId: string): string {
+  const direct = MOCK_CONNECTIONS.find((account) => account.id === labelOrId)
+  if (direct) return direct.id
+  const byLabel = MOCK_CONNECTIONS.find((account) => account.label === labelOrId)
+  if (byLabel) return byLabel.id
+  return 'fb-personal'
+}
 
 const img = (id: string) =>
   `https://images.unsplash.com/${id}?auto=format&fit=crop&w=640&q=80`
@@ -29,6 +49,7 @@ export const MOCK_LISTINGS: ListingRecord[] = [
     category: 'Household',
     condition: 'Used - fair',
     location: 'Galway, Ireland',
+    accountId: 'fb-galway-rubbish',
     account: 'Galway Rubbish Co',
     locationPoint: { lat: 53.2707, lng: -9.0568, radiusKm: 10 },
     images: [img('photo-1558618666-fcd25c85cd64'), img('photo-1618221195710-dd6b41faaea6')],
@@ -44,6 +65,7 @@ export const MOCK_LISTINGS: ListingRecord[] = [
     condition: 'Used - fair',
     location: 'Salthill, Ireland',
     locationPoint: { lat: 53.2598, lng: -9.076, radiusKm: 5 },
+    accountId: 'fb-galway-rubbish',
     account: 'Galway Rubbish Co',
     images: [img('photo-1585060544812-6b45742d762f'), img('photo-1581578731548-c64695cc6952')],
     status: 'active',
@@ -58,6 +80,7 @@ export const MOCK_LISTINGS: ListingRecord[] = [
     condition: 'Used - good',
     location: 'Moycullen, Ireland',
     locationPoint: { lat: 53.3833, lng: -9.1667, radiusKm: 8 },
+    accountId: 'fb-personal',
     account: 'Facebook',
     images: [img('photo-1416879595882-3373a0480b5b'), img('photo-1558618666-fcd25c85cd64')],
     status: 'sold',
@@ -72,6 +95,7 @@ export const MOCK_LISTINGS: ListingRecord[] = [
     condition: null,
     location: 'Oranmore, Ireland',
     locationPoint: { lat: 53.2667, lng: -8.9333, radiusKm: 8 },
+    accountId: 'fb-pacer',
     account: 'Pacer Marketplace',
     images: [img('photo-1600518464441-9154a4beb221'), img('photo-1558618666-fcd25c85cd64')],
     status: 'under-review',
@@ -85,6 +109,7 @@ export const MOCK_LISTINGS: ListingRecord[] = [
     category: 'Furniture',
     condition: 'Used - good',
     location: 'Galway, Ireland',
+    accountId: 'fb-pacer',
     account: 'Pacer Marketplace',
     locationPoint: { lat: 53.2707, lng: -9.0568, radiusKm: 10 },
     images: [img('photo-1618221195710-dd6b41faaea6'), img('photo-1493809842364-78817add7ffb')],

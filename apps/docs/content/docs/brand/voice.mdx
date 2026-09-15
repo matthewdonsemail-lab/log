@@ -1,0 +1,45 @@
+---
+title: Voice to system prompt
+description: What "voice" means, how it compiles into the exact prompt the agent receives, and how to preview it.
+---
+
+# Voice to system prompt
+
+"Voice" is not a vibe string. It is structured language instruction with exactly one consumer: `buildBrandSystemPrompt()`, whose output becomes the agent's `instructions` (and, in the mock, the rules `draftReply()` follows).
+
+## The model
+
+```ts
+voice: {
+  tone: 'Friendly, plain-spoken local pro' // one line, human-readable
+  formality: 'casual' | 'professional' | 'formal'
+  dos: ['Lead with the fix, not the apology']
+  donts: ['Never quote a price in a reply']
+  examples: [{ situation: 'question', reply: '…' }] // 2–3 gold replies
+}
+```
+
+- `tone` is the headline a human reads on the Brand tab.
+- `formality` is the machine-readable dial: greeting style, contraction use, sign-off length.
+- `dos` / `donts` are hard rules — short imperative lines, each independently enforceable.
+- `examples` are few-shot gold replies keyed by post type (`question`, `complaint`, `praise`). The agent mimics these before it improvises.
+
+## The compiler
+
+`buildBrandSystemPrompt(brand)` is deterministic and versioned (`PROMPT_VERSION = 1`):
+
+1. Identity line — who the agent speaks as.
+2. Tone + formality rules.
+3. Offerings list with one-line details.
+4. Dos / don'ts, verbatim.
+5. Gold examples, in full.
+
+Every draft records the prompt version that produced it, so a voice edit never silently rewrites history — drafts stamped v1 stay v1.
+
+## Preview
+
+The Brand tab's **System prompt preview** section renders the compiled prompt read-only with a copy button. What you see there is byte-for-byte what the agent will be told. If the preview reads wrong, the voice fields are wrong — fix the fields, not the drafts.
+
+<Callout type="info">
+In the mock, `draftReply()` follows the same rules by hand (sign-off, service-bit, area). When the agent lands, the mock hands over: same prompt in, same voice out.
+</Callout>

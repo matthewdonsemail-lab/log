@@ -133,13 +133,13 @@ export function DashboardListingCreateForm({
     setBusy(true)
     try {
       if (editing) {
-        // Account scope is fixed in edit mode — the stored label rides along.
-        const record = await saveListing(editing.listingId, { ...draft, account: editing.account })
+        // Account scope is fixed in edit mode — the stored id rides along.
+        const record = await saveListing(editing.listingId, { ...draft, accountId: editing.accountId })
         success(`“${record.title}” updated`, 'Changes are live on the listing.')
       } else {
         const account = fbAccounts.find((fb) => fb.id === accountId)
         if (!account) return
-        const record = await createListing({ ...draft, account: account.label })
+        const record = await createListing({ ...draft, accountId: account.id })
         success(`“${record.title}” published`, 'Under review on Facebook Marketplace.')
       }
       onCreated()
