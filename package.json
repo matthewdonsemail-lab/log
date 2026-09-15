@@ -16,8 +16,10 @@
     "start": "concurrently -n web,docs -c blue,green \"pnpm --filter web preview\" \"pnpm --filter docs start\""
   },
   "devDependencies": {
+    "@shadcn/lint": "^0.1.0",
     "concurrently": "^9.1.0",
     "lefthook": "^2.1.12",
+    "oxlint": "^1.83.0",
     "typescript": "~5.6.2"
   },
   "engines": {

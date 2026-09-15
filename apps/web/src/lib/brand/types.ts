@@ -81,6 +81,28 @@ export interface BrandSourceRef {
   excerpt: string
 }
 
+/** How the agent texts on one channel: raw and human, or standard. */
+export type ChannelStyle = 'casual' | 'standard'
+
+/** Channels with distinct response profiles. */
+export type BrandChannel = 'facebook' | 'x' | 'reddit'
+
+/**
+ * How the agent talks on one channel. Examples are raw chat snippets typed
+ * like a human on that channel — fragments, no sign-offs — never brand-book
+ * rules. Triage is what the agent pushes for first, in order.
+ */
+export interface ChannelProfile {
+  style: ChannelStyle
+  examples: string[]
+  triage: string[]
+}
+
+/** Working facts & boundaries the agent must keep in mind. */
+export interface BrandMemory {
+  rules: string[]
+}
+
 export interface BrandIntelligence {
   /** The related keyword the user picked during the reveal. */
   selectedKeyword?: string
@@ -108,6 +130,10 @@ export interface BrandEntity {
   offerings: BrandOffering[]
   /** Indexed website pages — the future RAG namespace content. */
   sources: BrandPage[]
+  /** Per-channel response profiles — how the agent texts each place. */
+  channels: Record<BrandChannel, ChannelProfile>
+  /** Agent memory bank: pricing baselines, boundaries, jobs taken/declined. */
+  memory: BrandMemory
   intelligence: BrandIntelligence
   /** URL the profile was extracted from (mock lookup for now). */
   sourceUrl: string
@@ -192,10 +218,34 @@ function isBrandPage(value: unknown): value is BrandPage {
   )
 }
 
+function isChannelProfile(value: unknown): value is ChannelProfile {
+  return (
+    isRecord(value) &&
+    (value.style === 'casual' || value.style === 'standard') &&
+    isStringArray(value.examples) &&
+    isStringArray(value.triage)
+  )
+}
+
+const BRAND_CHANNELS: BrandChannel[] = ['facebook', 'x', 'reddit']
+
+/** Fresh channel profiles: casual where buyers haggle, standard elsewhere. */
+export function defaultChannels(): Record<BrandChannel, ChannelProfile> {
+  const blank = (style: ChannelStyle): ChannelProfile => ({ style, examples: [], triage: [] })
+  return { facebook: blank('casual'), x: blank('standard'), reddit: blank('standard') }
+}
+
+function isChannelMap(value: unknown): value is Record<BrandChannel, ChannelProfile> {
+  return (
+    isRecord(value) &&
+    BRAND_CHANNELS.every((channel) => isChannelProfile(value[channel]))
+  )
+}
+
 /** Runtime guard for the persisted brand row (shared by the store + server). */
 export function isBrandEntity(value: unknown): value is BrandEntity {
   if (!isRecord(value)) return false
-  const { id, identity, location, voice, offerings, sources, intelligence, sourceUrl, updatedAt } = value
+  const { id, identity, location, voice, offerings, sources, channels, memory, intelligence, sourceUrl, updatedAt } = value
   if (typeof id !== 'string') return false
   if (!isRecord(identity) || typeof identity.name !== 'string' || typeof identity.website !== 'string') return false
   if (typeof identity.tagline !== 'string') return false
@@ -219,6 +269,8 @@ export function isBrandEntity(value: unknown): value is BrandEntity {
     return false
   if (!Array.isArray(offerings) || !(offerings as unknown[]).every(isBrandOffering)) return false
   if (!Array.isArray(sources) || !(sources as unknown[]).every(isBrandPage)) return false
+  if (!isChannelMap(channels)) return false
+  if (!isRecord(memory) || !isStringArray(memory.rules)) return false
   if (!isRecord(intelligence) || !isStringArray(intelligence.competitors)) return false
   if (
     intelligence.selectedKeyword !== undefined &&
@@ -289,6 +341,12 @@ export function migrateBrandEntity(value: unknown): BrandEntity | null {
       },
       offerings,
       sources: rawSources.filter(isBrandPage),
+      channels: isChannelMap(record.channels) ? record.channels : defaultChannels(),
+      memory: {
+        rules: isRecord(record.memory) && Array.isArray(record.memory.rules)
+          ? (record.memory.rules as unknown[]).filter((line): line is string => typeof line === 'string')
+          : [],
+      },
       intelligence: {
         ...(typeof intelligence.selectedKeyword === 'string' ? { selectedKeyword: intelligence.selectedKeyword } : {}),
         competitors: Array.isArray(intelligence.competitors)

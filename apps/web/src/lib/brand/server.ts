@@ -1,7 +1,8 @@
 import { Hono } from 'hono'
 import { isRecord, loadPersistedState, savePersistedState } from '../persist'
 import { isBrandEntity, migrateBrandEntity } from './types'
-import type { BrandEntity, BrandOffering, BrandPage, CommunityPick } from './types'
+import type { BrandChannel, BrandEntity, BrandOffering, BrandPage, ChannelProfile, CommunityPick } from './types'
+import { defaultChannels } from './types'
 import { resolveSitemap } from './sources'
 
 const BRAND_KEY = 'brand-entity'
@@ -74,8 +75,16 @@ export const brandApp = new Hono()
       voice: { tone: 'Friendly, plain-spoken local pro', formality: 'professional', dos: [], donts: [], examples: [] },
       offerings: [],
       sources: [],
+      channels: defaultChannels(),
+      memory: { rules: [] },
       intelligence: { competitors: [], targetCommunities: [] },
       sourceUrl: '',
+    }
+    const channelPatch = (isRecord(body.channels) ? body.channels : {}) as Partial<Record<BrandChannel, Partial<ChannelProfile>>>
+    const mergedChannels = { ...base.channels }
+    for (const channel of ['facebook', 'x', 'reddit'] as const) {
+      const patch = channelPatch[channel]
+      if (patch) mergedChannels[channel] = { ...mergedChannels[channel], ...patch }
     }
     const next = stamp({
       ...base,
@@ -88,6 +97,12 @@ export const brandApp = new Hono()
         ? (body.offerings as unknown[]).filter(isBrandOffering)
         : base.offerings,
       sources: Array.isArray(body.sources) ? body.sources : base.sources,
+      channels: mergedChannels,
+      memory: {
+        rules: Array.isArray(body.memory?.rules)
+          ? (body.memory.rules as unknown[]).filter((line): line is string => typeof line === 'string')
+          : base.memory.rules,
+      },
       intelligence: { ...base.intelligence, ...body.intelligence },
     })
     if (!isBrandEntity(next)) return c.json({ error: 'Invalid brand payload' }, 400)

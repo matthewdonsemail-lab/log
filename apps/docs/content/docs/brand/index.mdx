@@ -19,6 +19,8 @@ Every field has exactly one defined consumer. If a field has no consumer, it doe
 |---|---|---|
 | `identity` | name, website, tagline, logo URL | Reply sign-off, resource URLs, dashboard header |
 | `voice` | tone, formality, dos / don'ts, gold-example replies | `buildBrandSystemPrompt()` → agent `instructions` |
+| `channels` | per-channel style, raw texting snippets, triage flow | `simulateReply()` preview, per-channel agent generation |
+| `memory` | working facts & boundaries (pricing, jobs taken/declined) | Compiled into the system prompt; retrieved, never dumped raw |
 | `offerings` | `{ name, detail }[]` services / products | Reply service-bit, agent tool/RAG context |
 | `location` | label, lat / lng, radius km | Listings default, group scoping, reply area |
 | `sources` | indexed website pages (url, title, headings, text, status) | RAG namespace content, reply citations |

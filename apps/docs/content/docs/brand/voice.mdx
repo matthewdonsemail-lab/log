@@ -38,7 +38,11 @@ Every draft records the prompt version that produced it, so a voice edit never s
 
 ## Preview
 
-The Brand tab's **System prompt preview** section renders the compiled prompt read-only with a copy button. What you see there is byte-for-byte what the agent will be told. If the preview reads wrong, the voice fields are wrong — fix the fields, not the drafts.
+The Brand tab previews the compiled prompt per channel through the **Test it** simulator: type an inbound message, get the exact raw reply. What you see there is what the agent will send. If the preview reads wrong, the channel snippets are wrong — fix the snippets, not the drafts.
+
+## Channels and memory
+
+Global voice is only half the story. Each channel (`facebook`, `x`, `reddit`) carries its own `ChannelProfile` — `casual` vs `standard` style, raw texting snippets, and (on Facebook) the triage flow the agent pushes for first. The memory bank (`memory.rules`) compiles into the prompt as working facts the agent must never contradict.
 
 <Callout type="info">
 In the mock, `draftReply()` follows the same rules by hand (sign-off, service-bit, area). When the agent lands, the mock hands over: same prompt in, same voice out.

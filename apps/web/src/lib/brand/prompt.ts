@@ -1,4 +1,4 @@
-import type { BrandEntity, BrandSourceRef } from './types'
+import type { BrandChannel, BrandEntity, BrandSourceRef } from './types'
 
 /**
  * Voice → system prompt compiler. Deterministic and versioned: the same
@@ -33,6 +33,12 @@ export function buildBrandSystemPrompt(brand: BrandEntity): string {
   }
   if (brand.location.label) {
     lines.push(`Service area: ${brand.location.label}.`)
+  }
+  if (brand.memory.rules.length > 0) {
+    lines.push('Working facts — never contradict these:')
+    for (const rule of brand.memory.rules) {
+      lines.push(`- ${rule}`)
+    }
   }
   for (const rule of brand.voice.dos) {
     lines.push(`Do: ${rule}`)
@@ -99,4 +105,58 @@ export function buildReplyContext(brand: BrandEntity | null, eventText: string):
     promptVersion: PROMPT_VERSION,
     sourceRefs: retrieveSourceRefs(brand, eventText),
   }
+}
+
+export interface SimulatedReply {
+  /** The exact raw text the agent would send on this channel. */
+  text: string
+  /** True when a gold example was matched; false = style fallback. */
+  matched: boolean
+}
+
+const FALLBACK_REPLY = {
+  casual: 'yeah still available, what do you need to know',
+  standard: 'Hi — yes, still available. How can I help?',
+} as const
+
+function wordsOf(text: string): string[] {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter((token) => token.length >= 4)
+}
+
+/**
+ * Live preview of the agent on one channel: picks the gold example with the
+ * most word overlap against the inbound message (first example wins ties),
+ * applies the channel style (casual = all-lowercase, like a human typing
+ * fast), then pushes the first triage step. Deterministic — the same inbound
+ * message always previews the same reply.
+ */
+export function simulateReply(
+  brand: BrandEntity | null,
+  channel: BrandChannel,
+  inbound: string,
+): SimulatedReply {
+  const profile = brand?.channels[channel]
+  const incoming = wordsOf(inbound)
+  let best: string | null = null
+  let bestScore = 0
+  for (const example of profile?.examples ?? []) {
+    const haystack = example.toLowerCase()
+    const score = incoming.filter((token) => haystack.includes(token)).length
+    if (score > bestScore) {
+      bestScore = score
+      best = example
+    }
+  }
+  const base = best ?? profile?.examples[0] ?? FALLBACK_REPLY[profile?.style ?? 'casual']
+  const style = profile?.style ?? 'casual'
+  const styled = style === 'casual' ? base.toLowerCase() : base
+  const nudge = profile?.triage[0]?.trim()
+  if (!nudge) return { text: styled, matched: best !== null }
+  const styledNudge = style === 'casual' ? nudge.toLowerCase() : nudge
+  const joined = styled.endsWith('?') ? styled : `${styled}?`
+  return { text: `${joined} ${styledNudge}`, matched: best !== null }
 }

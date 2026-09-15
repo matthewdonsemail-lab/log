@@ -118,6 +118,62 @@ The map is the product of the loop: keywords that look worth listening to, pinne
 
 Direction, not built yet: expose each follow-up step as a callable surface — platform REST today, model context protocol tomorrow — so a keyword inspection can run end-to-end on its own: inspect the hit, suggest what else to listen for, find the groups that talk like that, join them, and draft the reply with the resource attached. The map is what keeps growing underneath.
 
+## Brand — gathered info → agent context → self-healing
+
+Everything the app knows about the business lives in one `BrandEntity` record (`apps/web/src/lib/brand/`). Four pipelines fill it, one compiler turns it into agent context, and every loop back into the record is what makes it self-healing.
+
+```mermaid
+flowchart TD
+  URL[Website URL] --> EXTRACT[extractBrandFromUrl]
+  EXTRACT --> IDENT[identity<br/>name, site, tagline]
+  URL --> SITEMAP[sitemap]
+  SITEMAP --> INDEX[POST /brand/index]
+  INDEX --> SOURCES[sources<br/>pages: url, title, text, status]
+  REVEAL[Onboarding reveal] --> INTEL[intelligence<br/>keyword, competitors, communities]
+  EDITS[Brand tab edits] --> VOICE[voice<br/>tone, formality, rules, examples]
+  EDITS --> OFF[offerings<br/>name + detail]
+  EDITS --> LOC[location<br/>label, pinpoint, radius]
+
+  IDENT & SOURCES & INTEL & VOICE & OFF & LOC --> ENTITY([BrandEntity<br/>one record])
+
+  ENTITY --> COMPILER[buildBrandSystemPrompt<br/>versioned, deterministic]
+  COMPILER --> PROMPT([system prompt<br/>previewed on the Brand tab])
+  PROMPT --> AGENT[Convex agent<br/>instructions]
+  SOURCES --> RAG[brand namespace<br/>RAG add / search]
+  RAG --> AGENT
+  AGENT --> DRAFT[Draft reply + cited sources]
+```
+
+| Information gathered | Where it lives | How the agent uses it |
+|---|---|---|
+| Business name, site, tagline | `identity` | Sign-off, resource URLs built from the brand's own site |
+| Tone, formality, dos/don'ts, gold replies | `voice` | Compiled verbatim into the system prompt |
+| Services with one-line details | `offerings` | Quoted in replies, passed as tool/RAG context |
+| Service area + pinpoint | `location` | Listings default, group scoping, reply area |
+| Indexed site pages | `sources` | RAG namespace content; drafts cite url + excerpt |
+| Keyword, competitors, communities | `intelligence` | Seeds keywords/groups listening |
+
+Self-healing — the record repairs and improves itself without re-onboarding:
+
+```mermaid
+flowchart LR
+  EVENT[New post event] --> DRAFT2[Draft stamped<br/>prompt vN + source refs]
+  DRAFT2 --> SEND2[Reply sent]
+  SEND2 --> GOLD[Good reply → saved<br/>as gold example]
+  GOLD --> VOICE2[voice grows]
+  VOICE2 --> COMPILER2[prompt vN+1]
+  COMPILER2 --> DRAFT2
+  DRAFT2 -.->|old drafts keep vN| HIST([history never rewrites])
+
+  REINDEX[Re-index site] --> FRESH[fresh page text<br/>replaces stale]
+  FRESH --> RAG2[RAG namespace]
+  FAIL[source failed] --> RETRY[per-row retry]
+  RETRY --> FRESH
+  V1[v1 persisted rows] --> MIGRATE[migrate on load<br/>written back clean]
+```
+
+Concretely: drafts record the prompt version that produced them, so a voice edit upgrades future replies without rewriting history; re-index swaps stale page text in place while failed rows stay visible with retry; v1 rows (string offerings, `serviceAreas`) migrate to v2 on load; accepted competitors/keywords/communities flow back into listening scope, which produces new events, which produce new drafts. Each loop leaves the record richer than it found it. Full contract in [`apps/docs/content/docs/brand/`](apps/docs/content/docs/brand/).
+
 ## This repo — the client architecture
 
 The important part of the architecture lives in `apps/web/src/lib/`. Every data surface is a **Hono-shaped API** — mock-backed today, same routes and response shapes when pointed at the real Hono/Railcode backend, so the client never changes.

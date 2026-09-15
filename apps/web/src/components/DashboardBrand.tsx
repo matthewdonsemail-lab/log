@@ -1,63 +1,67 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { Copy, Plus, RotateCw, X } from 'lucide-react'
-import { Badge, Button, Select, useToast } from '@listeningkit/ui'
-import { SOCIAL_ICONS, SocialBadge } from '../lib/social-icons'
+import { ArrowUp, Brain, Pencil } from 'lucide-react'
+import { Button, useSquircleClip, useToast } from '@listeningkit/ui'
+import { SOCIAL_ICONS, SocialBadge, SocialGlyph } from '../lib/social-icons'
 import {
-  buildBrandSystemPrompt,
   clearBrandAsync,
   getBrandAsync,
-  indexBrandAsync,
-  PROMPT_VERSION,
-  removeSourceAsync,
-  saveBrandAsync,
+  simulateReply,
+  type BrandChannel,
   type BrandEntity,
-  type BrandFormality,
-  type BrandOffering,
-  type BrandVoiceExample,
+  type ChannelProfile,
 } from '../lib/brand'
-import { FormInput, LoadingLine } from './DashboardFormPrimitives'
+import { ChatBubble, FormInput, LoadingLine } from './DashboardFormPrimitives'
+import { DashboardTab } from './DashboardTab'
+import { useDashboardFormSlot } from './DashboardFormSlot'
+import { DashboardBrandForm, type BrandNamespace } from './DashboardBrandForm'
 
-const FORMALITY_OPTIONS: Array<{ value: BrandFormality; label: string }> = [
-  { value: 'casual', label: 'Casual' },
-  { value: 'professional', label: 'Professional' },
-  { value: 'formal', label: 'Formal' },
-]
+type BrandTab = 'facebook' | 'memory' | 'x' | 'reddit'
 
-const SOURCE_STATUS_COLOR = {
-  indexed: 'success',
-  pending: 'warning',
-  failed: 'danger',
-} as const
+const TAB_CHANNEL: Record<BrandTab, BrandChannel> = {
+  facebook: 'facebook',
+  memory: 'facebook',
+  x: 'x',
+  reddit: 'reddit',
+}
 
-const globeIcon = SOCIAL_ICONS.find((icon) => icon.id === 'facebook')
+const facebookIcon = SOCIAL_ICONS.find((icon) => icon.id === 'facebook')
+const xIcon = SOCIAL_ICONS.find((icon) => icon.id === 'x')
+const redditIcon = SOCIAL_ICONS.find((icon) => icon.id === 'reddit')
+
+/** Page section card: r20 squircle, white — the Analytics card recipe. */
+function BrandCard({ children }: { children: ReactNode }) {
+  const clip = useSquircleClip<HTMLElement>(20)
+  return (
+    <section ref={clip.ref} style={clip.style} className="bg-white p-5">
+      {children}
+    </section>
+  )
+}
 
 /**
- * Dashboard home for the brand saved during onboarding — identity, voice
- * (+ the exact system prompt it compiles to), offerings, location, indexed
- * sources, and the reveal's intelligence. Reads through `GET /brand`, edits
- * round-trip `PUT /brand`, re-index runs `POST /brand/index`, reset clears
- * via `DELETE /brand`. The mock stays the source of truth throughout.
+ * The agent's communication brain & memory hub — read-only display. All
+ * configuration lives in `DashboardBrandForm`, registered into the layout
+ * overlay through `DashboardFormSlot`; the page opens it pre-scoped to the
+ * tab being edited and reloads on save. The Test-it simulator previews the
+ * saved record only — drafts are heard inside the form before they commit.
  */
 export function DashboardBrand() {
   const { success, error: notifyError } = useToast()
   const [brand, setBrand] = useState<BrandEntity | null | undefined>(undefined)
-  const [editing, setEditing] = useState(false)
+  const [tab, setTab] = useState<BrandTab>('facebook')
   const [busy, setBusy] = useState(false)
-  const [indexing, setIndexing] = useState(false)
-  const [copied, setCopied] = useState(false)
+  // Form scope: which namespace the overlay form edits; null means closed.
+  const [formNamespace, setFormNamespace] = useState<BrandNamespace | null>(null)
 
-  const [name, setName] = useState('')
-  const [website, setWebsite] = useState('')
-  const [tagline, setTagline] = useState('')
-  const [tone, setTone] = useState('')
-  const [formality, setFormality] = useState<BrandFormality>('professional')
-  const [dos, setDos] = useState('')
-  const [donts, setDonts] = useState('')
-  const [examples, setExamples] = useState<BrandVoiceExample[]>([])
-  const [offerings, setOfferings] = useState<BrandOffering[]>([])
-  const [locationLabel, setLocationLabel] = useState('')
-  const [radiusKm, setRadiusKm] = useState('10')
+  const [inbound, setInbound] = useState('')
+  const [simulated, setSimulated] = useState(false)
+
+  const load = useCallback(() => {
+    getBrandAsync()
+      .then(setBrand)
+      .catch(() => setBrand(null))
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -73,65 +77,32 @@ export function DashboardBrand() {
     }
   }, [])
 
-  const prompt = useMemo(() => (brand ? buildBrandSystemPrompt(brand) : ''), [brand])
-
-  function beginEdit(record: BrandEntity) {
-    setName(record.identity.name)
-    setWebsite(record.identity.website)
-    setTagline(record.identity.tagline)
-    setTone(record.voice.tone)
-    setFormality(record.voice.formality)
-    setDos(record.voice.dos.join('\n'))
-    setDonts(record.voice.donts.join('\n'))
-    setExamples(record.voice.examples.map((example) => ({ ...example })))
-    setOfferings(record.offerings.map((offering) => ({ ...offering })))
-    setLocationLabel(record.location.label)
-    setRadiusKm(String(record.location.radiusKm))
-    setEditing(true)
-  }
-
-  function linesOf(text: string): string[] {
-    return text
-      .split('\n')
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0)
-  }
-
-  async function handleSave() {
-    if (!brand || busy) return
-    const radius = Math.min(200, Math.max(1, Math.round(Number(radiusKm) || 10)))
-    setBusy(true)
-    try {
-      const next = await saveBrandAsync({
-        identity: {
-          ...brand.identity,
-          name: name.trim() || brand.identity.name,
-          website: website.trim() || brand.identity.website,
-          tagline: tagline.trim(),
-        },
-        voice: {
-          tone: tone.trim() || brand.voice.tone,
-          formality,
-          dos: linesOf(dos),
-          donts: linesOf(donts),
-          examples: examples.filter((example) => example.situation.trim() && example.reply.trim()),
-        },
-        offerings: offerings.filter((offering) => offering.name.trim()),
-        location: {
-          ...brand.location,
-          label: locationLabel.trim(),
-          radiusKm: radius,
-        },
-      })
-      setBrand(next)
-      setEditing(false)
-      success('Brand updated', 'Drafts and replies will sound like you.')
-    } catch (err: unknown) {
-      notifyError('Could not save the brand', err instanceof Error ? err.message : 'Something went wrong.')
-    } finally {
-      setBusy(false)
+  // The form lives in the layout overlay, not in the page: register it
+  // when open, clear it when closed or when the page unmounts.
+  const setFormSlot = useDashboardFormSlot()
+  useEffect(() => {
+    if (!formNamespace || !brand) {
+      setFormSlot(null)
+      return
     }
-  }
+    setFormSlot(
+      <DashboardBrandForm
+        open
+        onClose={() => setFormNamespace(null)}
+        onSaved={load}
+        initialBrand={brand}
+        initialNamespace={formNamespace}
+      />
+    )
+    return () => setFormSlot(null)
+  }, [formNamespace, brand, load, setFormSlot])
+
+  // Simulator follows the active tab and always reads the saved record.
+  const simChannel = TAB_CHANNEL[tab]
+  const preview = useMemo(
+    () => (brand && inbound.trim() ? simulateReply(brand, simChannel, inbound) : null),
+    [brand, simChannel, inbound]
+  )
 
   async function handleReset() {
     if (busy) return
@@ -139,7 +110,7 @@ export function DashboardBrand() {
     try {
       await clearBrandAsync()
       setBrand(null)
-      setEditing(false)
+      setFormNamespace(null)
       success('Brand cleared', 'Onboarding will ask for it again.')
     } catch (err: unknown) {
       notifyError('Could not clear the brand', err instanceof Error ? err.message : 'Something went wrong.')
@@ -148,44 +119,11 @@ export function DashboardBrand() {
     }
   }
 
-  async function handleIndex() {
-    if (indexing) return
-    setIndexing(true)
-    try {
-      const next = await indexBrandAsync({ sitemap: true })
-      setBrand(next)
-      success('Site indexed', `${next.sources.length} pages ready to quote.`)
-    } catch (err: unknown) {
-      notifyError('Could not index the site', err instanceof Error ? err.message : 'Something went wrong.')
-    } finally {
-      setIndexing(false)
-    }
-  }
-
-  async function handleRemoveSource(url: string) {
-    try {
-      const next = await removeSourceAsync(url)
-      setBrand(next)
-    } catch (err: unknown) {
-      notifyError('Could not remove the source', err instanceof Error ? err.message : 'Something went wrong.')
-    }
-  }
-
-  async function handleCopyPrompt() {
-    try {
-      await navigator.clipboard.writeText(prompt)
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 1500)
-    } catch {
-      // Clipboard unavailable on non-secure origins — non-fatal nicety.
-    }
-  }
-
   return (
-    <div className="flex flex-col gap-6 pb-6">
+    <div className="flex flex-col gap-4 pb-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex items-center gap-3">
-          {globeIcon ? <SocialBadge icon={globeIcon} variant="blue" /> : null}
+          {facebookIcon ? <SocialBadge icon={facebookIcon} variant="blue" /> : null}
           <div>
             <h1 className="text-xl font-bold text-text-primary">Brand</h1>
             <p className="text-sm text-text-secondary">
@@ -193,15 +131,12 @@ export function DashboardBrand() {
                 ? 'Loading brand…'
                 : brand === null
                   ? 'No brand saved yet — onboarding creates it.'
-                  : `Listening for ${brand.identity.name} · prompt v${PROMPT_VERSION}.`}
+                  : `The agent's communication brain & memory hub for ${brand.identity.name}.`}
             </p>
           </div>
         </div>
-        {brand && !editing ? (
+        {brand ? (
           <div className="flex items-center gap-2">
-            <Button type="button" variant="blue" size="lg" shadow="hard" onClick={() => beginEdit(brand)}>
-              Edit brand
-            </Button>
             <Button type="button" variant="outline" size="lg" disabled={busy} onClick={handleReset}>
               Reset
             </Button>
@@ -219,335 +154,234 @@ export function DashboardBrand() {
           </Link>{' '}
           to pull your brand profile.
         </p>
-      ) : editing ? (
-        <div className="flex flex-col gap-4 rounded-2xl bg-white p-5">
-          <SectionTitle>Identity</SectionTitle>
-          <Field label="Brand name">
-            <FormInput type="text" value={name} onChange={(event) => setName(event.target.value)} placeholder="Acme Plumbing" autoComplete="off" />
-          </Field>
-          <Field label="Website">
-            <FormInput type="text" value={website} onChange={(event) => setWebsite(event.target.value)} placeholder="https://acmeplumbing.com" autoComplete="off" />
-          </Field>
-          <Field label="Tagline">
-            <FormInput type="text" value={tagline} onChange={(event) => setTagline(event.target.value)} placeholder="Heard across social" autoComplete="off" />
-          </Field>
-
-          <SectionTitle>Voice — what the agent is told</SectionTitle>
-          <Field label="Tone">
-            <FormInput type="text" value={tone} onChange={(event) => setTone(event.target.value)} placeholder="Friendly, plain-spoken local pro" autoComplete="off" />
-          </Field>
-          <Field label="Formality">
-            <Select
-              size="lg"
-              value={formality}
-              onChange={(value) => setFormality(value as BrandFormality)}
-              aria-label="Voice formality"
-              options={FORMALITY_OPTIONS}
-            />
-          </Field>
-          <Field label="Dos — one rule per line">
-            <textarea
-              value={dos}
-              onChange={(event) => setDos(event.target.value)}
-              rows={3}
-              placeholder={'Lead with the fix\nName the arrival window'}
-              className="min-h-24 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-[#2A8CFF] focus:outline-none"
-            />
-          </Field>
-          <Field label="Don'ts — one rule per line">
-            <textarea
-              value={donts}
-              onChange={(event) => setDonts(event.target.value)}
-              rows={3}
-              placeholder={'Never quote a price in a reply\nNever promise same-day'}
-              className="min-h-24 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 placeholder:text-slate-400 focus:border-[#2A8CFF] focus:outline-none"
-            />
-          </Field>
-          <Field label="Gold examples — replies the agent mimics">
-            <ExampleEditor examples={examples} onChange={setExamples} />
-          </Field>
-
-          <SectionTitle>Offerings</SectionTitle>
-          <OfferingEditor offerings={offerings} onChange={setOfferings} />
-
-          <SectionTitle>Location</SectionTitle>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_160px]">
-            <Field label="Service area">
-              <FormInput type="text" value={locationLabel} onChange={(event) => setLocationLabel(event.target.value)} placeholder="Galway, Ireland" autoComplete="off" />
-            </Field>
-            <Field label="Radius (km)">
-              <FormInput type="number" min={1} value={radiusKm} onChange={(event) => setRadiusKm(event.target.value)} placeholder="10" />
-            </Field>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button type="button" variant="blue" size="lg" shadow="hard" disabled={busy} onClick={handleSave}>
-              {busy ? 'Saving…' : 'Save changes'}
-            </Button>
-            <Button type="button" variant="outline" size="lg" disabled={busy} onClick={() => setEditing(false)}>
-              Cancel
-            </Button>
-          </div>
-        </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <section className="rounded-2xl bg-white p-5">
-            <SectionTitle>Identity</SectionTitle>
-            <p className="mt-1 text-2xl font-bold text-text-primary">{brand.identity.name}</p>
-            <p className="mt-0.5 text-sm text-text-secondary">{brand.identity.tagline || 'No tagline yet.'}</p>
-            <dl className="mt-3 space-y-2 text-sm">
-              <MetaRow term="Site" value={brand.identity.website || '—'} />
-              <MetaRow term="Source" value={brand.sourceUrl || '—'} />
-            </dl>
-          </section>
-
-          <section className="rounded-2xl bg-white p-5">
-            <SectionTitle>Location</SectionTitle>
-            <p className="mt-1 text-2xl font-bold text-text-primary">{brand.location.label || 'No area set'}</p>
-            <dl className="mt-3 space-y-2 text-sm">
-              <MetaRow
-                term="Pinpoint"
-                value={`${brand.location.lat.toFixed(4)}, ${brand.location.lng.toFixed(4)} · ${brand.location.radiusKm} km radius`}
-              />
-            </dl>
-          </section>
-
-          <section className="rounded-2xl bg-white p-5">
-            <SectionTitle>Voice</SectionTitle>
-            <div className="mt-1 flex flex-wrap items-center gap-2">
-              <span className="text-lg font-bold text-text-primary">{brand.voice.tone}</span>
-              <Badge variant="trigger" color="info">
-                {FORMALITY_OPTIONS.find((option) => option.value === brand.voice.formality)?.label ?? brand.voice.formality}
-              </Badge>
+        <>
+          <BrandCard>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-base font-bold text-text-primary">{brand.identity.name}</h2>
+                <p className="text-xs text-text-secondary">
+                  {brand.identity.website || 'No site yet'}
+                  {brand.location.label ? ` · ${brand.location.label}` : ''}
+                </p>
+              </div>
+              <EditButton label="Edit business" onClick={() => setFormNamespace('business')} />
             </div>
-            <dl className="mt-3 space-y-2 text-sm">
-              <MetaRow term="Do" value={brand.voice.dos.length > 0 ? brand.voice.dos.join(' · ') : '—'} />
-              <MetaRow term="Never" value={brand.voice.donts.length > 0 ? brand.voice.donts.join(' · ') : '—'} />
-              <MetaRow
-                term="Examples"
-                value={brand.voice.examples.length > 0 ? `${brand.voice.examples.length} gold replies` : '—'}
-              />
-            </dl>
-          </section>
+          </BrandCard>
 
-          <section className="rounded-2xl bg-white p-5">
-            <SectionTitle>Offerings</SectionTitle>
-            {brand.offerings.length === 0 ? (
-              <p className="mt-1 text-sm text-text-secondary">None detected yet — add services so replies can quote them.</p>
-            ) : (
-              <dl className="mt-1 space-y-2 text-sm">
-                {brand.offerings.map((offering) => (
-                  <MetaRow key={offering.name} term={offering.name} value={offering.detail || '—'} />
-                ))}
-              </dl>
-            )}
-          </section>
+          <div className="flex flex-wrap gap-2">
+            <DashboardTab
+              label="Facebook"
+              icon={facebookIcon ? <SocialGlyph icon={facebookIcon} className="size-4" /> : null}
+              active={tab === 'facebook'}
+              onClick={() => setTab('facebook')}
+            />
+            <DashboardTab
+              label="Agent Memory"
+              icon={<Brain size={16} aria-hidden="true" />}
+              active={tab === 'memory'}
+              onClick={() => setTab('memory')}
+              accent="amber"
+            />
+            <DashboardTab
+              label="X"
+              icon={xIcon ? <SocialGlyph icon={xIcon} className="size-4" /> : null}
+              active={tab === 'x'}
+              onClick={() => setTab('x')}
+              accent="sky"
+            />
+            <DashboardTab
+              label="Reddit"
+              icon={redditIcon ? <SocialGlyph icon={redditIcon} className="size-4" /> : null}
+              active={tab === 'reddit'}
+              onClick={() => setTab('reddit')}
+              accent="red"
+            />
+          </div>
 
-          <section className="rounded-2xl bg-white p-5 lg:col-span-2">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <SectionTitle>System prompt — exactly what the agent is told</SectionTitle>
-              <Button type="button" variant="outline" size="lg" onClick={handleCopyPrompt}>
-                <Copy aria-hidden="true" className="size-3.5" strokeWidth={2.25} />
-                {copied ? 'Copied' : `Copy v${PROMPT_VERSION}`}
-              </Button>
-            </div>
-            <pre className="mt-3 max-h-72 overflow-y-auto whitespace-pre-wrap rounded-xl bg-slate-900 p-4 font-mono text-xs leading-relaxed text-slate-100">
-              {prompt || 'No brand — the agent falls back to generic phrasing.'}
-            </pre>
-          </section>
+          {tab === 'facebook' ? (
+            <ChannelSection
+              title="Messenger Cadence"
+              subtitle="How the agent drafts replies to inbound buyer inquiries on Marketplace and Groups."
+              profile={brand.channels.facebook}
+              showTriage
+              editLabel="Edit Facebook"
+              onEdit={() => setFormNamespace('facebook')}
+            />
+          ) : null}
 
-          <section className="rounded-2xl bg-white p-5 lg:col-span-2">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <SectionTitle>Sources — indexed from your site</SectionTitle>
-              <Button type="button" variant="blue" size="lg" shadow="hard" disabled={indexing} onClick={handleIndex}>
-                <RotateCw aria-hidden="true" className="size-3.5" strokeWidth={2.25} />
-                {indexing ? 'Indexing…' : 'Re-index site'}
-              </Button>
-            </div>
-            {brand.sources.length === 0 ? (
-              <p className="mt-2 text-sm text-text-secondary">No pages indexed yet — run the indexer to quote real copy.</p>
-            ) : (
-              <ul className="mt-2 flex flex-col gap-2">
-                {brand.sources.map((page) => (
-                  <li key={page.url} className="flex items-center gap-3 rounded-xl border border-slate-200 px-3 py-2">
-                    <Badge variant="trigger" color={SOURCE_STATUS_COLOR[page.status]}>
-                      {page.status}
-                    </Badge>
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-sm font-semibold text-text-primary">{page.title}</span>
-                      <span className="block truncate text-xs text-text-secondary">{page.url}</span>
-                    </span>
-                    <button
-                      type="button"
-                      aria-label={`Remove ${page.title}`}
-                      onClick={() => handleRemoveSource(page.url)}
-                      className="flex size-7 shrink-0 items-center justify-center rounded-full text-text-secondary transition-colors hover:bg-black/5 hover:text-text-primary"
-                    >
-                      <X size={14} strokeWidth={2.5} aria-hidden="true" />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-
-          <section className="rounded-2xl bg-white p-5 lg:col-span-2">
-            <SectionTitle>Intelligence</SectionTitle>
-            <dl className="mt-1 space-y-2 text-sm">
-              <MetaRow term="Keyword" value={brand.intelligence.selectedKeyword ?? '—'} />
-              <MetaRow
-                term="Competitors"
-                value={brand.intelligence.competitors.length > 0 ? brand.intelligence.competitors.join(', ') : '—'}
-              />
-            </dl>
-            <div className="mt-2 flex flex-col gap-1.5">
-              {brand.intelligence.targetCommunities.length === 0 ? (
-                <p className="text-sm text-text-secondary">No target communities yet.</p>
-              ) : (
-                brand.intelligence.targetCommunities.map((pick) => (
-                  <p key={pick.id} className="text-sm text-text-secondary">
-                    <span className="font-semibold text-text-primary">{pick.name}</span> · {pick.detail}
+          {tab === 'memory' ? (
+            <BrandCard>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-base font-bold text-text-primary">Working facts</h2>
+                  <p className="text-xs text-text-secondary">
+                    What the agent remembers on every reply — pricing baselines, boundaries, jobs taken and declined.
                   </p>
-                ))
+                </div>
+                <EditButton label="Edit memory" onClick={() => setFormNamespace('memory')} />
+              </div>
+              {brand.memory.rules.length > 0 ? (
+                <ul className="mt-3 flex flex-col gap-1.5">
+                  {brand.memory.rules.map((rule) => (
+                    <li key={rule} className="flex items-start gap-2 rounded-xl bg-black/[0.03] px-3 py-2 text-sm text-text-primary">
+                      <span aria-hidden="true" className="mt-0.5 font-bold text-[#2A8CFF]">•</span>
+                      <span>{rule}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-3 rounded-xl bg-black/5 p-4 text-sm text-text-secondary">
+                  No working facts yet — open the memory form and add the lines the agent must never forget.
+                </p>
               )}
+            </BrandCard>
+          ) : null}
+
+          {tab === 'x' ? (
+            <ChannelSection
+              title="X replies"
+              subtitle="Quick, sharp one-liners. In and out."
+              profile={brand.channels.x}
+              editLabel="Edit X"
+              onEdit={() => setFormNamespace('x')}
+            />
+          ) : null}
+
+          {tab === 'reddit' ? (
+            <ChannelSection
+              title="Reddit replies"
+              subtitle="Helpful community member with technical context — answers the question, skips the pitch."
+              profile={brand.channels.reddit}
+              editLabel="Edit Reddit"
+              onEdit={() => setFormNamespace('reddit')}
+            />
+          ) : null}
+
+          <BrandCard>
+            <h2 className="text-base font-bold text-text-primary">Test it</h2>
+            <p className="text-xs text-text-secondary">
+              Type an inbound {simChannel === 'x' ? 'X mention' : simChannel === 'reddit' ? 'Reddit comment' : 'buyer message'} — the bubble shows the exact raw
+              reply the agent would send{preview ? (preview.matched ? ' (matched a gold example)' : ' (style fallback — add a closer example)') : ''}.
+            </p>
+            <div className="mt-3 flex items-center gap-2">
+              <div className="min-w-0 flex-1">
+                <FormInput
+                  type="text"
+                  value={inbound}
+                  onChange={(event) => {
+                    setInbound(event.target.value)
+                    setSimulated(true)
+                  }}
+                  placeholder={simChannel === 'facebook' ? 'e.g. is this still available and can you do 40?' : 'e.g. my boiler packed it in again ffs'}
+                  aria-label="Inbound test message"
+                  autoComplete="off"
+                />
+              </div>
+              <Button
+                type="button"
+                variant="blue"
+                size="icon-lg"
+                className="shrink-0 rounded-full"
+                title="Preview reply"
+                aria-label="Preview reply"
+                onClick={() => setSimulated(true)}
+              >
+                <ArrowUp size={18} aria-hidden="true" />
+              </Button>
             </div>
-          </section>
-        </div>
+            {simulated && preview ? (
+              <div className="mt-3 flex justify-start">
+                <ChatBubble tone="outgoing">{preview.text}</ChatBubble>
+              </div>
+            ) : null}
+          </BrandCard>
+        </>
       )}
     </div>
   )
 }
 
-function SectionTitle({ children }: { children: ReactNode }) {
-  return <p className="text-xs font-bold uppercase tracking-wide text-[#2A8CFF]">{children}</p>
-}
-
-function MetaRow({ term, value }: { term: string; value: string }) {
+function EditButton({ label, onClick }: { label: string; onClick: () => void }) {
   return (
-    <div className="flex items-center justify-between gap-3">
-      <dt className="shrink-0 text-text-secondary">{term}</dt>
-      <dd className="min-w-0 truncate font-medium text-text-primary" title={value}>
-        {value}
-      </dd>
-    </div>
+    <Button type="button" variant="outline" size="lg" onClick={onClick}>
+      <Pencil aria-hidden="true" className="size-3.5" strokeWidth={2.25} />
+      {label}
+    </Button>
   )
 }
 
-function Field({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <label className="block">
-      <span className="mb-1.5 block text-sm font-semibold text-slate-700">{label}</span>
-      {children}
-    </label>
-  )
-}
-
-function OfferingEditor({
-  offerings,
-  onChange,
+function ChannelSection({
+  title,
+  subtitle,
+  profile,
+  showTriage = false,
+  editLabel,
+  onEdit,
 }: {
-  offerings: BrandOffering[]
-  onChange: (next: BrandOffering[]) => void
+  title: string
+  subtitle: string
+  profile: ChannelProfile
+  showTriage?: boolean
+  editLabel: string
+  onEdit: () => void
 }) {
   return (
-    <div className="flex flex-col gap-2">
-      {offerings.map((offering, index) => (
-        <div key={index} className="grid grid-cols-1 gap-2 sm:grid-cols-[1fr_1fr_auto]">
-          <FormInput
-            type="text"
-            value={offering.name}
-            onChange={(event) =>
-              onChange(offerings.map((row, i) => (i === index ? { ...row, name: event.target.value } : row)))
-            }
-            placeholder="Service name"
-            aria-label={`Offering ${index + 1} name`}
-            autoComplete="off"
-          />
-          <FormInput
-            type="text"
-            value={offering.detail}
-            onChange={(event) =>
-              onChange(offerings.map((row, i) => (i === index ? { ...row, detail: event.target.value } : row)))
-            }
-            placeholder="One-line detail the agent quotes"
-            aria-label={`Offering ${index + 1} detail`}
-            autoComplete="off"
-          />
-          <Button
-            type="button"
-            variant="outline"
-            size="icon-lg"
-            aria-label={`Remove offering ${index + 1}`}
-            onClick={() => onChange(offerings.filter((_, i) => i !== index))}
-          >
-            <X size={16} aria-hidden="true" />
-          </Button>
+    <BrandCard>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-base font-bold text-text-primary">{title}</h2>
+          <p className="text-xs text-text-secondary">{subtitle}</p>
         </div>
-      ))}
-      <Button
-        type="button"
-        variant="outline"
-        size="lg"
-        onClick={() => onChange([...offerings, { name: '', detail: '' }])}
-      >
-        <Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />
-        Add offering
-      </Button>
-    </div>
-  )
-}
+        <EditButton label={editLabel} onClick={onEdit} />
+      </div>
 
-function ExampleEditor({
-  examples,
-  onChange,
-}: {
-  examples: BrandVoiceExample[]
-  onChange: (next: BrandVoiceExample[]) => void
-}) {
-  return (
-    <div className="flex flex-col gap-2">
-      {examples.map((example, index) => (
-        <div key={index} className="grid grid-cols-1 gap-2 sm:grid-cols-[160px_1fr_auto]">
-          <FormInput
-            type="text"
-            value={example.situation}
-            onChange={(event) =>
-              onChange(examples.map((row, i) => (i === index ? { ...row, situation: event.target.value } : row)))
-            }
-            placeholder="question"
-            aria-label={`Example ${index + 1} situation`}
-            autoComplete="off"
-          />
-          <FormInput
-            type="text"
-            value={example.reply}
-            onChange={(event) =>
-              onChange(examples.map((row, i) => (i === index ? { ...row, reply: event.target.value } : row)))
-            }
-            placeholder="Gold reply the agent mimics"
-            aria-label={`Example ${index + 1} reply`}
-            autoComplete="off"
-          />
-          <Button
-            type="button"
-            variant="outline"
-            size="icon-lg"
-            aria-label={`Remove example ${index + 1}`}
-            onClick={() => onChange(examples.filter((_, i) => i !== index))}
-          >
-            <X size={16} aria-hidden="true" />
-          </Button>
+      <h3 className="mt-4 text-sm font-semibold text-text-primary">Communication style</h3>
+      <p className="mt-1 text-sm text-text-secondary">
+        <span className="font-semibold text-text-primary">
+          {profile.style === 'casual' ? 'Natural casual' : 'Standard'}
+        </span>{' '}
+        — {profile.style === 'casual'
+          ? 'All-lowercase, short 1–2 sentence replies, typed fast like a human. No sign-offs.'
+          : 'Complete sentences with normal punctuation. Still direct, never corporate.'}
+      </p>
+
+      <h3 className="mt-4 text-sm font-semibold text-text-primary">How we actually text</h3>
+      {profile.examples.length > 0 ? (
+        <div className="mt-2 flex max-w-[480px] flex-col items-start gap-1.5">
+          {profile.examples.map((example) => (
+            <ChatBubble key={example} tone="incoming">
+              {example}
+            </ChatBubble>
+          ))}
         </div>
-      ))}
-      <Button
-        type="button"
-        variant="outline"
-        size="lg"
-        onClick={() => onChange([...examples, { situation: '', reply: '' }])}
-      >
-        <Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />
-        Add example
-      </Button>
-    </div>
+      ) : (
+        <p className="mt-2 rounded-xl bg-black/5 p-4 text-sm text-text-secondary">
+          No snippets yet — open the form and paste 3–5 messages you would actually send here.
+        </p>
+      )}
+
+      {showTriage ? (
+        <>
+          <h3 className="mt-4 text-sm font-semibold text-text-primary">Messenger triage flow</h3>
+          {profile.triage.length > 0 ? (
+            <ol className="mt-2 flex flex-col gap-1.5">
+              {profile.triage.map((step, index) => (
+                <li key={step} className="flex items-center gap-2.5 text-sm text-text-primary">
+                  <span aria-hidden="true" className="flex size-7 shrink-0 items-center justify-center rounded-full bg-[#2A8CFF]/10 text-xs font-bold text-[#2A8CFF]">
+                    {index + 1}
+                  </span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p className="mt-2 rounded-xl bg-black/5 p-4 text-sm text-text-secondary">
+              No triage flow yet — e.g. ask for photos of the job, then lock in a pickup time.
+            </p>
+          )}
+        </>
+      ) : null}
+    </BrandCard>
   )
 }

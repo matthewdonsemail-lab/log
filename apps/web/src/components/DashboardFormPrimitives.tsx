@@ -244,8 +244,7 @@ export function FormInput({
   )
 }
 
-export function LoadingLine({ label }: { label: string }) {
-  const clip = useSquircleClip<HTMLParagraphElement>(14)
+export function LoadingLine({ label }: { label: string }) {  const clip = useSquircleClip<HTMLParagraphElement>(14)
   return (
     <p ref={clip.ref} style={clip.style} className="bg-black/5 p-4 text-sm text-text-secondary" aria-busy="true">
       {label}
@@ -262,5 +261,29 @@ export function EmptyLine({ label }: { label: string }) {
       <SquircleBorder border={border.state} stroke={NEUTRAL_STROKE} />
       <span className="relative z-10">{label}</span>
     </p>
+  )
+}
+
+/**
+ * Chat bubble with the Messages shape: squircle r10 with a tightened tail
+ * corner on the sending side — incoming (grey, tail bottom-left) for gold
+ * examples, outgoing (blue, tail bottom-right) for simulator previews.
+ */
+export function ChatBubble({ tone, children }: { tone: 'incoming' | 'outgoing'; children: ReactNode }) {
+  const clip = useSquircleClip<HTMLDivElement>(
+    10,
+    1,
+    tone === 'outgoing' ? { bottomRight: 2 } : { bottomLeft: 2 }
+  )
+  return (
+    <div
+      ref={clip.ref}
+      style={clip.style}
+      className={`max-w-[480px] px-4 py-2.5 text-sm leading-relaxed ${
+        tone === 'outgoing' ? 'bg-[#2A8CFF] text-white' : 'bg-[#F1F5F9] text-text-primary'
+      }`}
+    >
+      {children}
+    </div>
   )
 }

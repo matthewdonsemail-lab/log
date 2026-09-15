@@ -10,7 +10,7 @@
   },
   "scripts": {
     "build": "tsc --noEmit --skipLibCheck",
-    "lint": "eslint src",
+    "lint": "oxlint",
     "typecheck": "tsc --noEmit --skipLibCheck"
   },
   "dependencies": {

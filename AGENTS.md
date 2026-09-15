@@ -1,5 +1,14 @@
 # AGENTS.md — listeningkit-hackathon
 
+## Lint
+
+- After making changes, run `pnpm run lint` and fix all errors.
+- Design-system rules live in `.oxlintrc.json` (`@shadcn/lint` via Oxlint).
+  No `@shadcn/lint` rules are enabled yet — see the
+  [available rules](https://github.com/shadcn-ui/lint/blob/main/README.md#rules)
+  and [configuration examples](https://github.com/shadcn-ui/lint/blob/main/docs/design-systems.md)
+  when adding them.
+
 ## Form Rules (2026-09-13)
 
 - **No auto-advance on card select inside forms.** Selecting a card/row/tile

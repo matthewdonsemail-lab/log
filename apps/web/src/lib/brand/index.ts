@@ -1,31 +1,37 @@
 import { isRecord, loadPersistedState, savePersistedState } from '../persist'
 import type { BrandEntity, BrandPage, KeywordStrategyMapping } from './types'
 import { brandApp, clearBrandRecord, getBrandRecord, setBrandRecord } from './server'
+import { defaultChannels } from './types'
 import { seedSourcesFor } from './sources'
 import type { BrandIntelligenceInput } from './server'
 
 export type {
   AiFollowUpAction,
   AiQuery,
+  BrandChannel,
   BrandEntity,
   BrandFormality,
   BrandIdentity,
   BrandIntelligence,
   BrandLocation,
+  BrandMemory,
   BrandOffering,
   BrandPage,
   BrandPageStatus,
   BrandSourceRef,
   BrandVoice,
   BrandVoiceExample,
+  ChannelProfile,
+  ChannelStyle,
   CommunityPick,
   KeywordStrategyMapping,
   KeywordTargetEntry,
   SearchStrategyEntry,
 } from './types'
+export { defaultChannels } from './types'
 export { brandApp, type BrandApp } from './server'
 export type { BrandIntelligenceInput } from './server'
-export { PROMPT_VERSION, buildBrandSystemPrompt, buildReplyContext, retrieveSourceRefs } from './prompt'
+export { PROMPT_VERSION, buildBrandSystemPrompt, buildReplyContext, retrieveSourceRefs, simulateReply } from './prompt'
 export { resolveSitemap, seedSourcesFor } from './sources'
 
 /**
@@ -235,6 +241,8 @@ export function extractBrandFromUrl(input: string): Omit<BrandEntity, 'updatedAt
       examples: [],
     },
     sources: seedSourcesFor(website, name),
+    channels: defaultChannels(),
+    memory: { rules: [] },
     intelligence: { competitors: [], targetCommunities: [] },
     sourceUrl: url.href,
   }
