@@ -12,7 +12,7 @@
 - **Auth:** none
 - **AI models:** none
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-15T00:56:54Z
+- **Last updated:** 2026-09-15T01:27:36Z
 
 ## Log
 
@@ -102,7 +102,7 @@ mount effect that wiped the brand on every visit is gone — revisits hydrate
 instead (`apps/web/src/pages/onboarding/OnboardingSteps.tsx`). Reveal
 accumulation, the `/dashboard/brand` route, and the reactive hook come next.
 
-### 2026-09-15 - ce11a2f
+### 2026-09-15 - a048ca1
 Mock contracts tightened before any live backend: one canonical `Platform`
 type (`apps/web/src/lib/platform.ts`) fixing the `x` vs `twitter` split
 across feed, connections, and messaging; `FeedItem` metrics are numbers with
@@ -118,3 +118,17 @@ system-prompt preview, offerings, location, sources, intelligence) on
 docs (`apps/docs/content/docs/brand/`). Convex features: none yet — the
 agent/RAG/embedding wiring is documented from official docs as the cutover
 target, not implemented.
+
+### 2026-09-15 - 25f2235
+Brand tab became the agent's communication brain & memory: per-channel response
+profiles (facebook/x/reddit — casual vs standard style, raw chat snippets, triage
+flow) plus a working-facts memory bank, with v1 rows migrated on load
+(`apps/web/src/lib/brand/types.ts`). New deterministic `simulateReply` previews the
+exact send text on one channel — most word-overlapping gold example, channel style
+applied, triage nudge appended — and the page is now a read-only hub with a Test-it
+pane while all editing moved to a namespaced sheet form that previews against the
+unsaved draft and saves via `PUT /brand` (`apps/web/src/components/DashboardBrand.tsx`,
+`DashboardBrandForm.tsx`, `DashboardFormPrimitives.tsx`), memory rules compiling
+into the versioned system prompt (`apps/web/src/lib/brand/prompt.ts`). README gained
+the Brand pipelines → agent context → self-healing section; lint moved eslint →
+oxlint with the `@shadcn/lint` plugin (`.oxlintrc.json`, `AGENTS.md`, `README.md`).
