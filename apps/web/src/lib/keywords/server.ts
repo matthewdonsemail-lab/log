@@ -1,9 +1,11 @@
 import { Hono } from 'hono'
+import { describeRoute } from 'hono-openapi'
 import { communitiesApp, type CommunityJoinState } from '../communities'
 import type { ConnectionPlatform } from '../connections'
 import { keywordId, SEED_KEYWORDS } from './mock'
 import type { CreateKeywordInput, Keyword } from './types'
 import { isArray, isRecord, loadPersistedState, savePersistedState } from '../persist'
+import { KeywordsResponseJson, KeywordResponseJson, errorResponse } from '../openapi'
 
 const KEYWORDS_KEY = 'keywords'
 
@@ -37,7 +39,7 @@ async function joinedGroupsFor(platform: ConnectionPlatform) {
 }
 
 export const keywordsApp = new Hono()
-  .get('/keywords', (c) => {
+  .get('/keywords', describeRoute({ operationId: 'listKeywords', tags: ['Keywords'], summary: 'List keywords', description: 'Optional ?platform ?groupId ?noGroup. Code: apps/web/src/lib/keywords/server.ts:40', parameters: [{ name: 'platform', in: 'query', required: false, schema: { type: 'string', enum: ['facebook','x','reddit'] } }, { name: 'groupId', in: 'query', required: false, schema: { type: 'string' } }, { name: 'noGroup', in: 'query', required: false, schema: { type: 'string' } }], responses: { 200: { description: 'Keywords.', content: { 'application/json': { schema: KeywordsResponseJson } } } } }), (c) => {
     const platform = c.req.query('platform') as ConnectionPlatform | undefined
     const groupId = c.req.query('groupId')
     const noGroup = c.req.query('noGroup') === 'true'
@@ -47,14 +49,14 @@ export const keywordsApp = new Hono()
     else if (noGroup) all = all.filter((keyword) => keyword.groupId === null)
     return c.json({ keywords: [...all] })
   })
-  .post('/keywords/reset', (c) => {
+  .post('/keywords/reset', describeRoute({ operationId: 'resetKeywords', tags: ['Keywords'], summary: 'Reset keywords to seeds', description: 'Code: apps/web/src/lib/keywords/server.ts:50', responses: { 200: { description: 'Reset keywords.', content: { 'application/json': { schema: KeywordsResponseJson } } } } }), (c) => {
     // Rebuild the base sample set — replaces the whole store with
     // SEED_KEYWORDS, so an emptied workspace reads populated again.
     keywords = [...SEED_KEYWORDS]
     persistKeywords()
     return c.json({ keywords: [...keywords] })
   })
-  .post('/keywords', async (c) => {
+  .post('/keywords', describeRoute({ operationId: 'createKeyword', tags: ['Keywords'], summary: 'Create keyword', description: 'Validates platform↔group relation, rejects dupes. Code: apps/web/src/lib/keywords/server.ts:57', requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { phrase: { type: 'string' }, platform: { type: 'string', enum: ['facebook','x','reddit'] }, groupId: { type: 'string', nullable: true } }, required: ['phrase','platform'] } } } }, responses: { 201: { description: 'Created.', content: { 'application/json': { schema: KeywordResponseJson } } }, 400: errorResponse('Invalid body / platform / group scoping'), 409: errorResponse('That keyword already exists in this group') } }), async (c) => {
     const body = await c.req.json<CreateKeywordInput>().catch(() => null)
     if (!body) return c.json({ error: 'Invalid request body' }, 400)
     const phrase = (body.phrase ?? '').trim()
@@ -96,7 +98,7 @@ export const keywordsApp = new Hono()
     persistKeywords()
     return c.json({ keyword: record, keywords: [...keywords] }, 201)
   })
-  .patch('/keywords/:id', async (c) => {
+  .patch('/keywords/:id', describeRoute({ operationId: 'updateKeyword', tags: ['Keywords'], summary: 'Update keyword', description: 'Patch phrase/group/status. Code: apps/web/src/lib/keywords/server.ts:99', parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { phrase: { type: 'string' }, groupId: { type: 'string', nullable: true }, status: { type: 'string', enum: ['listening','paused'] } } } } } }, responses: { 200: { description: 'Updated.', content: { 'application/json': { schema: KeywordResponseJson } } }, 400: errorResponse('Invalid update / group scoping'), 404: errorResponse('Keyword not found'), 409: errorResponse('That keyword already exists in this group') } }), async (c) => {
     // The body is the form's shape: phrase, scope and status may all move
     // in one save. Platform is fixed — a keyword never changes platform.
     const id = c.req.param('id')
@@ -136,7 +138,7 @@ export const keywordsApp = new Hono()
     persistKeywords()
     return c.json({ keyword: next, keywords: [...keywords] })
   })
-  .delete('/keywords/:id', (c) => {
+  .delete('/keywords/:id', describeRoute({ operationId: 'deleteKeyword', tags: ['Keywords'], summary: 'Delete keyword', description: 'Code: apps/web/src/lib/keywords/server.ts:139', parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }], responses: { 200: { description: 'Remaining keywords.', content: { 'application/json': { schema: KeywordsResponseJson } } } } }), (c) => {
     const id = c.req.param('id')
     keywords = keywords.filter((keyword) => keyword.id !== id)
     persistKeywords()

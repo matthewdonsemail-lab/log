@@ -1,7 +1,7 @@
 import { useEffect, type ReactNode } from 'react'
 import { motion } from 'motion/react'
 import { X } from 'lucide-react'
-import { Button, useSquircleClip } from '@listeningkit/ui'
+import { Button, useIsMobileViewport, useSquircleClip } from '@listeningkit/ui'
 
 /**
  * Shared form surface for the dashboard form components. Renders a squircle
@@ -158,12 +158,15 @@ function FormSheetSurface({
   onClose: () => void
 }) {
   const clip = useSquircleClip<HTMLDivElement>(RADIUS)
+  // Full-bleed on mobile: no squircle clip, no drop shadow — the overlay
+  // dock already goes edge-to-edge (see DashboardLayout FormOverlay).
+  const isMobile = useIsMobileViewport()
 
   return (
     <div
       ref={clip.ref}
-      style={clip.style}
-      className="flex h-full min-h-0 flex-col bg-white shadow-[0_24px_64px_-16px_rgba(15,30,51,0.35)]"
+      style={isMobile ? undefined : clip.style}
+      className="flex h-full min-h-0 flex-col bg-white sm:shadow-[0_24px_64px_-16px_rgba(15,30,51,0.35)]"
     >
       <div className="flex items-start justify-between gap-4 px-6 pt-5">
         <div className="min-w-0">

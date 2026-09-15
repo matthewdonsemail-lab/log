@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { describeRoute } from 'hono-openapi'
 import { MOCK_CONNECTIONS } from '../connections/mock'
 import type { ConnectionPlatform } from '../connections'
 import {
@@ -12,6 +13,7 @@ import {
 } from './mock'
 import type { Community, CommunityJoinState } from './types'
 import { isArray, isRecord, loadPersistedState, savePersistedState } from '../persist'
+import { CommunitiesResponseJson, CommunityResponseJson, CommunitySingleResponseJson, errorResponse } from '../openapi'
 
 /**
  * In-memory join relation for the communities API. Membership is the only
@@ -177,13 +179,13 @@ async function transitionToJoined(
  * Routes and response shapes stay the same when the backend lands.
  */
 export const communitiesApp = new Hono()
-  .get('/communities', (c) => {
+  .get('/communities', describeRoute({ operationId: 'listCommunities', tags: ['Communities'], summary: 'List communities', description: 'Lists the full catalog plus any client-resolved rows (from pasted Facebook links or typed subreddits) materialized with current `joinState` (none/pending/accepted), `accountId` for Facebook joins, and `accountLabel`. Optional `?platform=facebook|x|reddit` filters server-side. This is the source for the Groups page and every keyword/listings scope picker. Code: apps/web/src/lib/communities/server.ts:180', parameters: [{ name: 'platform', in: 'query', required: false, schema: { type: 'string', enum: ['facebook','x','reddit'], description: 'Platform filter.' } }], responses: { 200: { description: 'Community list.', content: { 'application/json': { schema: CommunitiesResponseJson } } } } }), (c) => {
     const platform = c.req.query('platform') as ConnectionPlatform | undefined
     const all = materialize() as Community[]
     const communities = platform ? all.filter((community) => community.platform === platform) : all
     return c.json({ communities })
   })
-  .post('/communities/:id/join', async (c) => {
+  .post('/communities/:id/join', describeRoute({ operationId: 'joinCommunity', tags: ['Communities'], summary: 'Join community', description: 'Attempts to join `:id`. Facebook requires `accountId` of a connected Facebook account and `answers` matching every `entryQuestions` — missing/blank answers or wrong platform account returns 400. Facebook transitions to `pending` (awaits admin accept), other platforms (reddit/x) auto-set `accepted`. Already pending/accepted is a no-op 200. Persists to localStorage. Code: apps/web/src/lib/communities/server.ts:186', parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', description: 'Community id.' } }], requestBody: { required: false, content: { 'application/json': { schema: { type: 'object', properties: { accountId: { type: 'string', description: 'Facebook account id (facebook only).' }, answers: { type: 'array', items: { type: 'string' }, description: 'Answers to entryQuestions, one per question.' } } } } } }, responses: { 201: { description: 'Joined (now pending/accepted).', content: { 'application/json': { schema: CommunityResponseJson } } }, 200: { description: 'Already joined.', content: { 'application/json': { schema: CommunityResponseJson } } }, 400: errorResponse('Facebook groups must be joined with a connected Facebook account / Answer all entry questions'), 404: errorResponse('Community not found') } }), async (c) => {
     const id = c.req.param('id')
     const base = findBaseById(id)
     if (!base) return c.json({ error: 'Community not found' }, 404)
@@ -198,7 +200,7 @@ export const communitiesApp = new Hono()
     const communities = materialize() as Community[]
     return c.json({ community: communities.find((community) => community.id === id)!, communities }, 201)
   })
-  .post('/communities/join-by-url', async (c) => {
+  .post('/communities/join-by-url', describeRoute({ operationId: 'joinCommunityByUrl', tags: ['Communities'], summary: 'Join community by URL', description: 'Parses a `facebook.com/groups/…` URL via `parseFacebookGroupUrl`, registers it as a new catalog row if unseen (`registerBase`), then runs the same Facebook join transition (account + answers). Dedupes by URL — already tracked rows return 200. Registers unknown URLs before joining so pasted links become first-class communities. Code: apps/web/src/lib/communities/server.ts:201', requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { url: { type: 'string', description: 'Facebook group URL.' }, accountId: { type: 'string' }, answers: { type: 'array', items: { type: 'string' } } }, required: ['url'] } } } }, responses: { 201: { description: 'Joined.', content: { 'application/json': { schema: CommunityResponseJson } } }, 200: { description: 'Already tracked.', content: { 'application/json': { schema: CommunityResponseJson } } }, 400: errorResponse('That does not look like a Facebook group link') } }), async (c) => {
     const body = await c.req.json<{ url?: string; accountId?: string; answers?: string[] }>().catch(() => null)
     const parsed = body?.url ? parseFacebookGroupUrl(body.url) : null
     if (!parsed) {
@@ -215,7 +217,7 @@ export const communitiesApp = new Hono()
     const communities = materialize() as Community[]
     return c.json({ community: communities.find((community) => community.id === base.id)!, communities }, 201)
   })
-  .post('/communities/resolve', async (c) => {
+  .post('/communities/resolve', describeRoute({ operationId: 'resolveCommunity', tags: ['Communities'], summary: 'Resolve community URL', description: 'Resolves a pasted Facebook group URL into its `Community` without changing `joinState`. Registers unknown URLs as new rows so the form can read `entryQuestions` before the user answers. Persists the catalog even though no join occurs — it\'s a read-ahead for the join form. Code: apps/web/src/lib/communities/server.ts:218', requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { url: { type: 'string', description: 'Facebook group URL.' } }, required: ['url'] } } } }, responses: { 200: { description: 'Resolved.', content: { 'application/json': { schema: CommunitySingleResponseJson } } }, 400: errorResponse('That does not look like a Facebook group link') } }), async (c) => {
     // Resolve a pasted group link into its catalog row (registering it when
     // unseen) WITHOUT changing join state — the form reads the entry
     // questions off this before the user answers and joins.
@@ -229,7 +231,7 @@ export const communitiesApp = new Hono()
     persistCommunities()
     return c.json({ community: materialize(base.id) as Community })
   })
-  .post('/communities/resolve-reddit', async (c) => {
+  .post('/communities/resolve-reddit', describeRoute({ operationId: 'resolveRedditCommunity', tags: ['Communities'], summary: 'Resolve Reddit community', description: 'Resolves a typed `r/name` (via `parseSubredditName`) into its `Community` and immediately marks it `accepted` — subreddits have no entry gate, so a resolved row is instantly usable as a keyword scope. Creates a new row via `communityFromSubreddit` if unseen. Code: apps/web/src/lib/communities/server.ts:232', requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { name: { type: 'string', description: 'Subreddit name, e.g. r/test or test.' } }, required: ['name'] } } } }, responses: { 200: { description: 'Resolved + joined (accepted).', content: { 'application/json': { schema: CommunitySingleResponseJson } } }, 400: errorResponse('That does not look like a subreddit') } }), async (c) => {
     // Resolve a typed subreddit into its community and join it on the spot:
     // subreddits don't gate entry, so a resolved row is immediately accepted
     // and usable as a keyword scope. Already-tracked rows are a no-op.
@@ -245,7 +247,7 @@ export const communitiesApp = new Hono()
     persistCommunities()
     return c.json({ community: materialize(base.id) as Community })
   })
-  .post('/communities/:id/accept', (c) => {
+  .post('/communities/:id/accept', describeRoute({ operationId: 'acceptCommunityJoin', tags: ['Communities'], summary: 'Accept pending join', description: 'Mock admin accept — transitions `:id` from `pending` → `accepted`. Simulates the group admin approving the join request in the Groups page \'Approve\' action and tests. Returns `400 No join request to accept` if state is `none`, `404` if unknown id. Code: apps/web/src/lib/communities/server.ts:248', parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', description: 'Community id.' } }], responses: { 200: { description: 'Accepted.', content: { 'application/json': { schema: CommunityResponseJson } } }, 400: errorResponse('No join request to accept'), 404: errorResponse('Community not found') } }), (c) => {
     const id = c.req.param('id')
     const base = findBaseById(id)
     if (!base) return c.json({ error: 'Community not found' }, 404)
@@ -258,7 +260,7 @@ export const communitiesApp = new Hono()
     const communities = materialize() as Community[]
     return c.json({ community: communities.find((community) => community.id === id)!, communities })
   })
-  .delete('/communities/:id', (c) => {
+  .delete('/communities/:id', describeRoute({ operationId: 'leaveCommunity', tags: ['Communities'], summary: 'Leave community', description: 'Leaves `:id` — resets its `joinState` to `none`, clears `accountId` and `answers`. The catalog row stays (so pasted links remain) but is no longer a member and cannot scope keywords/listings. Persists. Code: apps/web/src/lib/communities/server.ts:261', parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', description: 'Community id.' } }], responses: { 200: { description: 'Remaining communities.', content: { 'application/json': { schema: CommunitiesResponseJson } } }, 404: errorResponse('Community not found') } }), (c) => {
     const id = c.req.param('id')
     if (!findBaseById(id)) return c.json({ error: 'Community not found' }, 404)
     joins[id] = { state: 'none', accountId: null, answers: [] }

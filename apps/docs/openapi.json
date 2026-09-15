@@ -1,0 +1,3761 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "ListeningKit Mock API",
+    "description": "In-browser mock backing the dashboard; the live platform client exposes the same route table. Error vocabulary: docs /getting-started/errors.",
+    "version": "0.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5174",
+      "description": "Local mock server (pnpm --filter web mock:server)."
+    }
+  ],
+  "tags": [
+    {
+      "name": "API keys",
+      "x-displayName": "API keys",
+      "description": "Private keys: list, create (secret shown once), revoke."
+    },
+    {
+      "name": "Brand",
+      "x-displayName": "Brand",
+      "description": "Onboarding record: identity, voice, offerings, sources & intelligence."
+    },
+    {
+      "name": "Accounts",
+      "x-displayName": "Accounts",
+      "description": "Connected platform accounts (facebook, x, reddit)."
+    },
+    {
+      "name": "Communities",
+      "x-displayName": "Communities",
+      "description": "Joinable groups / subreddits + join lifecycle."
+    },
+    {
+      "name": "Listings",
+      "x-displayName": "Listings",
+      "description": "Facebook Marketplace listings (mock of facebook-camofox-client)."
+    },
+    {
+      "name": "Keywords",
+      "x-displayName": "Keywords",
+      "description": "Tracked phrases scoped to joined groups (or word-based on X)."
+    },
+    {
+      "name": "Feed",
+      "x-displayName": "Feed",
+      "description": "Signal feed — filterable by platform and search."
+    },
+    {
+      "name": "Messaging",
+      "x-displayName": "Messaging",
+      "description": "Threads + messages per platform (facebook / x / reddit)."
+    }
+  ],
+  "components": {
+    "schemas": {
+      "ErrorEnvelope": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "additionalProperties": false,
+        "description": "Failure envelope returned with 4xx statuses."
+      },
+      "AccountIssue": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "string",
+        "enum": [
+          "never_connected",
+          "disconnected",
+          "stale",
+          "session_expired",
+          "session_invalidated_changed",
+          "checkpointed",
+          "unconfirmed_user",
+          "cookie_invalid",
+          "suspended",
+          "read_only_limited",
+          "automated_flagged",
+          "rate_limited",
+          "proxy_rate_limited",
+          "challenge_interstitial",
+          "ip_or_account_blocked",
+          "restricted_policy",
+          "permission_denied",
+          "join_gate",
+          "removed_from_group",
+          "proxy_unreachable",
+          "proxy_auth_failed",
+          "proxy_malformed",
+          "login_wall",
+          "captcha_html",
+          "unknown_platform",
+          "unknown"
+        ],
+        "description": "Normalized account issue code (see docs: Errors)."
+      },
+      "IssueFix": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "string",
+        "enum": [
+          "connect",
+          "reconnect",
+          "reexport_cookie",
+          "login_in_browser",
+          "wait",
+          "use_proxy",
+          "appeal",
+          "rejoin",
+          "resolve",
+          "none"
+        ],
+        "description": "Remediation verb for the issue."
+      },
+      "RawSignal": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "status": {
+            "description": "HTTP status the client saw (200 for false-success cases).",
+            "type": "number"
+          },
+          "code": {
+            "description": "Platform error code, e.g. Facebook Graph 190.",
+            "type": "number"
+          },
+          "subcode": {
+            "description": "Platform error subcode, e.g. Facebook 459 (checkpointed).",
+            "type": "number"
+          },
+          "type": {
+            "description": "Machine error type, e.g. X rate-limit-exceeded.",
+            "type": "string"
+          },
+          "marker": {
+            "description": "Lowercased phrase matched against the body/URL.",
+            "type": "string"
+          },
+          "url": {
+            "description": "URL that produced the response.",
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Raw platform signal normalized into the issue."
+      },
+      "AccountIssueInfo": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "issue": {
+            "type": "string",
+            "enum": [
+              "never_connected",
+              "disconnected",
+              "stale",
+              "session_expired",
+              "session_invalidated_changed",
+              "checkpointed",
+              "unconfirmed_user",
+              "cookie_invalid",
+              "suspended",
+              "read_only_limited",
+              "automated_flagged",
+              "rate_limited",
+              "proxy_rate_limited",
+              "challenge_interstitial",
+              "ip_or_account_blocked",
+              "restricted_policy",
+              "permission_denied",
+              "join_gate",
+              "removed_from_group",
+              "proxy_unreachable",
+              "proxy_auth_failed",
+              "proxy_malformed",
+              "login_wall",
+              "captcha_html",
+              "unknown_platform",
+              "unknown"
+            ],
+            "description": "Normalized account issue code (see docs: Errors)."
+          },
+          "label": {
+            "type": "string",
+            "description": "Human label, e.g. \"Session expired\"."
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "healthy",
+              "degraded",
+              "unhealthy"
+            ],
+            "description": "Badge band the issue maps to."
+          },
+          "transient": {
+            "type": "boolean",
+            "description": "True when it typically clears without action."
+          },
+          "detail": {
+            "type": "string",
+            "description": "One-line platform-agnostic explanation."
+          },
+          "signal": {
+            "type": "object",
+            "properties": {
+              "status": {
+                "description": "HTTP status the client saw (200 for false-success cases).",
+                "type": "number"
+              },
+              "code": {
+                "description": "Platform error code, e.g. Facebook Graph 190.",
+                "type": "number"
+              },
+              "subcode": {
+                "description": "Platform error subcode, e.g. Facebook 459 (checkpointed).",
+                "type": "number"
+              },
+              "type": {
+                "description": "Machine error type, e.g. X rate-limit-exceeded.",
+                "type": "string"
+              },
+              "marker": {
+                "description": "Lowercased phrase matched against the body/URL.",
+                "type": "string"
+              },
+              "url": {
+                "description": "URL that produced the response.",
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "description": "Observed signal (canonical detector signature when unobserved)."
+          },
+          "fix": {
+            "type": "string",
+            "enum": [
+              "connect",
+              "reconnect",
+              "reexport_cookie",
+              "login_in_browser",
+              "wait",
+              "use_proxy",
+              "appeal",
+              "rejoin",
+              "resolve",
+              "none"
+            ],
+            "description": "Remediation verb for the issue."
+          },
+          "remediation": {
+            "type": "string",
+            "description": "Platform-specific remediation copy."
+          },
+          "platforms": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "facebook",
+                "x",
+                "reddit"
+              ]
+            },
+            "description": "Platforms that can emit this."
+          }
+        },
+        "required": [
+          "issue",
+          "label",
+          "severity",
+          "transient",
+          "detail",
+          "signal",
+          "fix",
+          "remediation",
+          "platforms"
+        ],
+        "additionalProperties": false,
+        "description": "Fully-resolved issue descriptor (see docs: Errors)."
+      }
+    }
+  },
+  "paths": {
+    "/api-keys": {
+      "get": {
+        "operationId": "listApiKeys",
+        "tags": [
+          "API keys"
+        ],
+        "summary": "List API keys",
+        "description": "Records carry the prefix only — there is no secret field to leak.",
+        "responses": {
+          "200": {
+            "description": "Key list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "apiKeys": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "prefix": {
+                            "type": "string",
+                            "description": "Public prefix; the full secret is never stored."
+                          },
+                          "secretHash": {
+                            "type": "string"
+                          },
+                          "scopes": {
+                            "type": "object",
+                            "properties": {
+                              "accountId": {
+                                "description": "Act-as account id, or null for all accounts.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "groupIds": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "Scoped groups; empty means all groups."
+                              },
+                              "canSendMessages": {
+                                "type": "boolean"
+                              },
+                              "canReceiveMessages": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "accountId",
+                              "groupIds",
+                              "canSendMessages",
+                              "canReceiveMessages"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "createdAt": {
+                            "type": "string"
+                          },
+                          "lastUsedAt": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "prefix",
+                          "secretHash",
+                          "scopes",
+                          "createdAt",
+                          "lastUsedAt"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "apiKeys"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createApiKey",
+        "tags": [
+          "API keys"
+        ],
+        "summary": "Create an API key",
+        "description": "The full secret appears exactly once, in this response.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$schema": "https://json-schema.org/draft/2020-12/schema",
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Key name; unique case-insensitively."
+                  },
+                  "scopes": {
+                    "type": "object",
+                    "properties": {
+                      "accountId": {
+                        "description": "Act-as account id, or null for all accounts.",
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "groupIds": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        },
+                        "description": "Scoped groups; empty means all groups."
+                      },
+                      "canSendMessages": {
+                        "type": "boolean"
+                      },
+                      "canReceiveMessages": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "accountId",
+                      "groupIds",
+                      "canSendMessages",
+                      "canReceiveMessages"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "name",
+                  "scopes"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created; `key` is the full secret (once-only).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "apiKey": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "prefix": {
+                          "type": "string",
+                          "description": "Public prefix; the full secret is never stored."
+                        },
+                        "secretHash": {
+                          "type": "string"
+                        },
+                        "scopes": {
+                          "type": "object",
+                          "properties": {
+                            "accountId": {
+                              "description": "Act-as account id, or null for all accounts.",
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "groupIds": {
+                              "type": "array",
+                              "items": {
+                                "type": "string"
+                              },
+                              "description": "Scoped groups; empty means all groups."
+                            },
+                            "canSendMessages": {
+                              "type": "boolean"
+                            },
+                            "canReceiveMessages": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "accountId",
+                            "groupIds",
+                            "canSendMessages",
+                            "canReceiveMessages"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "createdAt": {
+                          "type": "string"
+                        },
+                        "lastUsedAt": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "prefix",
+                        "secretHash",
+                        "scopes",
+                        "createdAt",
+                        "lastUsedAt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "apiKeys": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "prefix": {
+                            "type": "string",
+                            "description": "Public prefix; the full secret is never stored."
+                          },
+                          "secretHash": {
+                            "type": "string"
+                          },
+                          "scopes": {
+                            "type": "object",
+                            "properties": {
+                              "accountId": {
+                                "description": "Act-as account id, or null for all accounts.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "groupIds": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "Scoped groups; empty means all groups."
+                              },
+                              "canSendMessages": {
+                                "type": "boolean"
+                              },
+                              "canReceiveMessages": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "accountId",
+                              "groupIds",
+                              "canSendMessages",
+                              "canReceiveMessages"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "createdAt": {
+                            "type": "string"
+                          },
+                          "lastUsedAt": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "prefix",
+                          "secretHash",
+                          "scopes",
+                          "createdAt",
+                          "lastUsedAt"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "key": {
+                      "type": "string",
+                      "description": "Full secret — returned exactly once, never again."
+                    }
+                  },
+                  "required": [
+                    "apiKey",
+                    "apiKeys",
+                    "key"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body · A key needs a name · Scopes are missing or malformed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "A key with that name already exists.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api-keys/{id}": {
+      "delete": {
+        "operationId": "deleteApiKey",
+        "tags": [
+          "API keys"
+        ],
+        "summary": "Revoke an API key",
+        "description": "Revoking is immediate; unknown ids are a no-op returning the list.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Key id."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Remaining key list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "apiKeys": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "prefix": {
+                            "type": "string",
+                            "description": "Public prefix; the full secret is never stored."
+                          },
+                          "secretHash": {
+                            "type": "string"
+                          },
+                          "scopes": {
+                            "type": "object",
+                            "properties": {
+                              "accountId": {
+                                "description": "Act-as account id, or null for all accounts.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "groupIds": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "description": "Scoped groups; empty means all groups."
+                              },
+                              "canSendMessages": {
+                                "type": "boolean"
+                              },
+                              "canReceiveMessages": {
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "accountId",
+                              "groupIds",
+                              "canSendMessages",
+                              "canReceiveMessages"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "createdAt": {
+                            "type": "string"
+                          },
+                          "lastUsedAt": {
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "prefix",
+                          "secretHash",
+                          "scopes",
+                          "createdAt",
+                          "lastUsedAt"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "apiKeys"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/brand": {
+      "get": {
+        "operationId": "getBrand",
+        "tags": [
+          "Brand"
+        ],
+        "summary": "Get brand",
+        "description": "Returns the single workspace BrandEntity or `null` when onboarding was skipped or the brand was cleared. This is the source-of-truth the Brand tab, onboarding reveal, and AI reply drafts all read — polling here is how the dashboard knows whether to show the brand form. No parameters. Code: apps/web/src/lib/brand/server.ts:67",
+        "responses": {
+          "200": {
+            "description": "Brand record (or null).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "brand": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {},
+                          "additionalProperties": {},
+                          "description": "BrandEntity — single workspace brand record (see docs: Brand)."
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "brand"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "upsertBrand",
+        "tags": [
+          "Brand"
+        ],
+        "summary": "Upsert brand",
+        "description": "Creates the brand if none exists or deep-merges the `Partial<BrandEntity>` patch into the existing record. Merges identity, location, voice (formality/dos/donts/examples), channels per platform (facebook/x/reddit), offerings filtered by `isBrandOffering`, memory.rules, intelligence, and sources by URL. Stamps `updatedAt`, persists to `brand-entity` in localStorage, and validates the merged result with `isBrandEntity` — returns `400 Invalid brand payload` if validation fails. Code: apps/web/src/lib/brand/server.ts:68",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Partial<BrandEntity> — unknown fields ignored, offerings filtered, channels merged per platform"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Saved brand.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "brand": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {},
+                          "additionalProperties": {},
+                          "description": "BrandEntity — single workspace brand record (see docs: Brand)."
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "brand"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body / Invalid brand payload",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteBrand",
+        "tags": [
+          "Brand"
+        ],
+        "summary": "Delete brand",
+        "description": "Clears the entire workspace brand record — identity, location, voice, offerings, sources, channels, memory, and intelligence are discarded (sets `brand` to `null`). Persists the cleared state so the dashboard returns to the onboarding prompt. Idempotent. Code: apps/web/src/lib/brand/server.ts:186",
+        "responses": {
+          "200": {
+            "description": "Cleared (brand is null).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "brand": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {},
+                          "additionalProperties": {},
+                          "description": "BrandEntity — single workspace brand record (see docs: Brand)."
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "brand"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/brand/intelligence": {
+      "post": {
+        "operationId": "appendBrandIntelligence",
+        "tags": [
+          "Brand"
+        ],
+        "summary": "Append brand intelligence",
+        "description": "Appends reveal discoveries to the brand's intelligence block. `competitors` are deduped by exact string (trimmed), `targetCommunities` are merged by `id` via `isCommunityPick`, and `selectedKeyword` overwrites if provided. Returns `404 No brand yet` if onboarding hasn't created a record yet. Stamps `updatedAt` and persists. Code: apps/web/src/lib/brand/server.ts:113",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "competitors": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Competitor domains to append (deduped)."
+                  },
+                  "targetCommunities": {
+                    "type": "array",
+                    "items": {
+                      "type": "object"
+                    },
+                    "description": "CommunityPick[] merged by id."
+                  },
+                  "selectedKeyword": {
+                    "type": "string",
+                    "description": "Keyword chosen in reveal."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated brand.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "brand": {
+                      "anyOf": [
+                        {
+                          "type": "object",
+                          "properties": {},
+                          "additionalProperties": {},
+                          "description": "BrandEntity — single workspace brand record (see docs: Brand)."
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "brand"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No brand yet — complete onboarding first",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/brand/sources": {
+      "get": {
+        "operationId": "listBrandSources",
+        "tags": [
+          "Brand"
+        ],
+        "summary": "List brand sources",
+        "description": "Returns the indexed `BrandPage[]` for the brand's website — each page has `url`, `title`, `headings`, `text`, `status` (`indexed`/`pending`/`failed`), and `fetchedAt`. Returns an empty array when no brand exists yet (the brand itself is the guard, not the sources). Code: apps/web/src/lib/brand/server.ts:142",
+        "responses": {
+          "200": {
+            "description": "Indexed pages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "sources": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {}
+                      }
+                    }
+                  },
+                  "required": [
+                    "sources"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteBrandSource",
+        "tags": [
+          "Brand"
+        ],
+        "summary": "Delete brand source",
+        "description": "Removes a single indexed page by exact `url` string match. Filters `brand.sources` by URL, stamps `updatedAt`, and persists. Returns `404` if no brand exists — the URL itself is not validated beyond string match (unknown URLs are a no-op that still returns the filtered list). Code: apps/web/src/lib/brand/server.ts:178",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "description": "Exact URL of the page to remove."
+                  }
+                },
+                "required": [
+                  "url"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Remaining sources.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "brand": {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": {},
+                      "description": "BrandEntity — single workspace brand record (see docs: Brand)."
+                    },
+                    "sources": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {}
+                      }
+                    }
+                  },
+                  "required": [
+                    "brand",
+                    "sources"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No brand yet — complete onboarding first",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/brand/index": {
+      "post": {
+        "operationId": "indexBrand",
+        "tags": [
+          "Brand"
+        ],
+        "summary": "Index brand site",
+        "description": "Mock sitemap indexer. With `{ urls: string[] }` it registers each new URL as a `pending` BrandPage (deduped by URL). Without `urls` (or with `{ sitemap: true }` / empty body) it re-resolves the brand site (`identity.website` or `sourceUrl`) into the deterministic seed pages via `resolveSitemap` and merges them by URL as `indexed`. Always stamps and persists. Returns `404` if no brand exists. Code: apps/web/src/lib/brand/server.ts:143",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "urls": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Explicit URLs to register as pending."
+                  },
+                  "sitemap": {
+                    "type": "boolean",
+                    "description": "When true (or no urls), re-resolve the sitemap."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Indexed pages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "brand": {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": {},
+                      "description": "BrandEntity — single workspace brand record (see docs: Brand)."
+                    },
+                    "sources": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {}
+                      }
+                    }
+                  },
+                  "required": [
+                    "brand",
+                    "sources"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No brand yet — complete onboarding first",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/keywords": {
+      "get": {
+        "operationId": "listKeywords",
+        "tags": [
+          "Keywords"
+        ],
+        "summary": "List keywords",
+        "description": "Optional ?platform ?groupId ?noGroup. Code: apps/web/src/lib/keywords/server.ts:40",
+        "parameters": [
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "facebook",
+                "x",
+                "reddit"
+              ]
+            }
+          },
+          {
+            "name": "groupId",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "noGroup",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Keywords.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "keywords": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "Keyword — tracked phrase + scope."
+                      }
+                    }
+                  },
+                  "required": [
+                    "keywords"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createKeyword",
+        "tags": [
+          "Keywords"
+        ],
+        "summary": "Create keyword",
+        "description": "Validates platform↔group relation, rejects dupes. Code: apps/web/src/lib/keywords/server.ts:57",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phrase": {
+                    "type": "string"
+                  },
+                  "platform": {
+                    "type": "string",
+                    "enum": [
+                      "facebook",
+                      "x",
+                      "reddit"
+                    ]
+                  },
+                  "groupId": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "phrase",
+                  "platform"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "keyword": {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": {},
+                      "description": "Keyword — tracked phrase + scope."
+                    },
+                    "keywords": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "Keyword — tracked phrase + scope."
+                      }
+                    }
+                  },
+                  "required": [
+                    "keyword",
+                    "keywords"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid body / platform / group scoping",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "That keyword already exists in this group",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/keywords/reset": {
+      "post": {
+        "operationId": "resetKeywords",
+        "tags": [
+          "Keywords"
+        ],
+        "summary": "Reset keywords to seeds",
+        "description": "Code: apps/web/src/lib/keywords/server.ts:50",
+        "responses": {
+          "200": {
+            "description": "Reset keywords.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "keywords": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "Keyword — tracked phrase + scope."
+                      }
+                    }
+                  },
+                  "required": [
+                    "keywords"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/keywords/{id}": {
+      "patch": {
+        "operationId": "updateKeyword",
+        "tags": [
+          "Keywords"
+        ],
+        "summary": "Update keyword",
+        "description": "Patch phrase/group/status. Code: apps/web/src/lib/keywords/server.ts:99",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "phrase": {
+                    "type": "string"
+                  },
+                  "groupId": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "listening",
+                      "paused"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "keyword": {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": {},
+                      "description": "Keyword — tracked phrase + scope."
+                    },
+                    "keywords": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "Keyword — tracked phrase + scope."
+                      }
+                    }
+                  },
+                  "required": [
+                    "keyword",
+                    "keywords"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid update / group scoping",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Keyword not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "That keyword already exists in this group",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteKeyword",
+        "tags": [
+          "Keywords"
+        ],
+        "summary": "Delete keyword",
+        "description": "Code: apps/web/src/lib/keywords/server.ts:139",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Remaining keywords.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "keywords": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "Keyword — tracked phrase + scope."
+                      }
+                    }
+                  },
+                  "required": [
+                    "keywords"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/listings": {
+      "get": {
+        "operationId": "listListings",
+        "tags": [
+          "Listings"
+        ],
+        "summary": "List listings",
+        "description": "Lists all Marketplace listings — seeded `MOCK_LISTINGS` plus any user-created rows (persisted to localStorage, migrated for legacy `accountId` FKs). Each has `listingId`, title/price/location, 1–4 images (first is cover), `accountId` FK, `locationPoint` (lat/lng + radius 1–200km), and `status`. This is the source for the dashboard Listings table. Code: apps/web/src/lib/listings/server.ts:77",
+        "responses": {
+          "200": {
+            "description": "Listings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "listings": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "ListingRecord — Marketplace listing."
+                      }
+                    }
+                  },
+                  "required": [
+                    "listings"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createListing",
+        "tags": [
+          "Listings"
+        ],
+        "summary": "Create listing",
+        "description": "Creates a new Marketplace listing. Validates `title`, `price`, `location` (all trimmed non-empty), at least one `images` string, and a Facebook `accountId` (resolves legacy label via `resolveListingAccountId`, falls back to `fb-personal`). Generates a 17-digit `listingId`, sets `category`/`condition` defaults, `locationPoint` clamped 1–200km, `status: under-review`, and `listingUrl`. Persists and returns 201. Code: apps/web/src/lib/listings/server.ts:79",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Listing title."
+                  },
+                  "price": {
+                    "type": "string",
+                    "description": "Price string."
+                  },
+                  "location": {
+                    "type": "string",
+                    "description": "Human location."
+                  },
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Photo URLs, first is cover."
+                  },
+                  "accountId": {
+                    "type": "string",
+                    "description": "Facebook account id."
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "condition": {
+                    "type": "string"
+                  },
+                  "locationPoint": {
+                    "type": "object",
+                    "description": "lat/lng/radiusKm."
+                  }
+                },
+                "required": [
+                  "title",
+                  "price",
+                  "location",
+                  "images"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created (under-review).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "listing": {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": {},
+                      "description": "ListingRecord — Marketplace listing."
+                    },
+                    "listings": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "ListingRecord — Marketplace listing."
+                      }
+                    }
+                  },
+                  "required": [
+                    "listing",
+                    "listings"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "A listing needs a title/price/location/photo/account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/listings/{listingId}": {
+      "patch": {
+        "operationId": "updateListing",
+        "tags": [
+          "Listings"
+        ],
+        "summary": "Update listing",
+        "description": "Patches a listing's details/photos in place — `listingId`, `listingUrl`, `publishedAt`, and `status` stay put; only `title`, `price`, `location`, `category`, `condition`, `images` (sliced to 4), `locationPoint`, and `accountId` (resolves legacy label or keeps stored FK) move. Validates title/price/location + photo presence, 404 if unknown. Code: apps/web/src/lib/listings/server.ts:123",
+        "parameters": [
+          {
+            "name": "listingId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Marketplace listingId."
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "price": {
+                    "type": "string"
+                  },
+                  "location": {
+                    "type": "string"
+                  },
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "accountId": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "condition": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "listing": {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": {},
+                      "description": "ListingRecord — Marketplace listing."
+                    },
+                    "listings": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "ListingRecord — Marketplace listing."
+                      }
+                    }
+                  },
+                  "required": [
+                    "listing",
+                    "listings"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request body / missing title/price/location/photo",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Listing not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteListing",
+        "tags": [
+          "Listings"
+        ],
+        "summary": "Delete listing",
+        "description": "Hard-deletes `:listingId` — the row leaves the store entirely (unlike the `removed` status which keeps it visible for record-keeping). Persists and returns the remaining list. 404 if unknown. Code: apps/web/src/lib/listings/server.ts:192",
+        "parameters": [
+          {
+            "name": "listingId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Remaining listings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "listings": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "ListingRecord — Marketplace listing."
+                      }
+                    }
+                  },
+                  "required": [
+                    "listings"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Listing not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/listings/{listingId}/status": {
+      "patch": {
+        "operationId": "updateListingStatus",
+        "tags": [
+          "Listings"
+        ],
+        "summary": "Update listing status",
+        "description": "Transitions a listing's `status` via the status route — never local state. The dashboard's Sold/Remove actions round-trip here so the mock stays the source of truth and the live facebook-camofox-client can implement the same shape. Validates `status` against `LISTING_STATUSES`; 404 if unknown id. Code: apps/web/src/lib/listings/server.ts:166",
+        "parameters": [
+          {
+            "name": "listingId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "active",
+                      "under-review",
+                      "under-review-duplicate",
+                      "sold",
+                      "removed",
+                      "login-wall",
+                      "unknown"
+                    ],
+                    "description": "New status."
+                  }
+                },
+                "required": [
+                  "status"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status updated.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "listing": {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": {},
+                      "description": "ListingRecord — Marketplace listing."
+                    },
+                    "listings": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "ListingRecord — Marketplace listing."
+                      }
+                    }
+                  },
+                  "required": [
+                    "listing",
+                    "listings"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Status must be one of: ...",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Listing not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "getListingStatus",
+        "tags": [
+          "Listings"
+        ],
+        "summary": "Get listing status",
+        "description": "Returns the lightweight status probe for `:listingId` — `{ listingId, status, title }` (status typed as `ListingStatus`). Used by the dashboard to poll `under-review → active` transitions without fetching the full record. Code: apps/web/src/lib/listings/server.ts:183",
+        "parameters": [
+          {
+            "name": "listingId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Status probe.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "listingId": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "listingId",
+                    "status",
+                    "title"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Listing not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts": {
+      "get": {
+        "operationId": "listAccounts",
+        "tags": [
+          "Accounts"
+        ],
+        "summary": "List accounts",
+        "description": "Returns all connected platform accounts (`ConnectionRecord[]` with `id`, `platform` facebook/x/reddit, `label`, and `connectedAt`). This is the roster the dashboard's Accounts table and every group/listings scope picker reads. No parameters. Code: apps/web/src/lib/connections/server.ts:15",
+        "responses": {
+          "200": {
+            "description": "Account list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "accounts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "ConnectionRecord — connected platform account."
+                      }
+                    }
+                  },
+                  "required": [
+                    "accounts"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "createAccount",
+        "tags": [
+          "Accounts"
+        ],
+        "summary": "Create account",
+        "description": "Creates a new `ConnectionRecord` for `platform` facebook/x/reddit. Generates a stable `id` (`account-<timestamp>-<rand>`), sets `label` from the platform name, and `connectedAt: null` until the extension verifies the session. Returns `201` with the created record and the full list. Rejects unknown platforms with `400 platform must be facebook, x, or reddit`. Code: apps/web/src/lib/connections/server.ts:16",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "platform": {
+                    "type": "string",
+                    "enum": [
+                      "facebook",
+                      "x",
+                      "reddit"
+                    ],
+                    "description": "Platform to connect."
+                  }
+                },
+                "required": [
+                  "platform"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "account": {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": {},
+                      "description": "ConnectionRecord — connected platform account."
+                    },
+                    "accounts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "ConnectionRecord — connected platform account."
+                      }
+                    }
+                  },
+                  "required": [
+                    "account",
+                    "accounts"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "platform must be facebook, x, or reddit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/accounts/{accountId}": {
+      "patch": {
+        "operationId": "updateAccount",
+        "tags": [
+          "Accounts"
+        ],
+        "summary": "Update account",
+        "description": "Patches the `ConnectionRecord` for `:accountId` — merges the JSON body over the stored record but keeps `id` immutable (`id` from the path always wins). Used by the dashboard to toggle `viaProxy`, update labels, or stamp `connectedAt` after extension verification. Returns `404 Account not found` if the id is unknown. Code: apps/web/src/lib/connections/server.ts:32",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Account id."
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Partial ConnectionRecord patch (id is ignored)."
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "accounts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "ConnectionRecord — connected platform account."
+                      }
+                    }
+                  },
+                  "required": [
+                    "accounts"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "operationId": "deleteAccount",
+        "tags": [
+          "Accounts"
+        ],
+        "summary": "Delete account",
+        "description": "Hard-deletes the account row by `accountId`. The row leaves the store entirely and is removed from any community join relations on next read. Returns `404 Account not found` for unknown ids. Code: apps/web/src/lib/connections/server.ts:43",
+        "parameters": [
+          {
+            "name": "accountId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Account id."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Remaining list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "accounts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "ConnectionRecord — connected platform account."
+                      }
+                    }
+                  },
+                  "required": [
+                    "accounts"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Account not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/communities": {
+      "get": {
+        "operationId": "listCommunities",
+        "tags": [
+          "Communities"
+        ],
+        "summary": "List communities",
+        "description": "Lists the full catalog plus any client-resolved rows (from pasted Facebook links or typed subreddits) materialized with current `joinState` (none/pending/accepted), `accountId` for Facebook joins, and `accountLabel`. Optional `?platform=facebook|x|reddit` filters server-side. This is the source for the Groups page and every keyword/listings scope picker. Code: apps/web/src/lib/communities/server.ts:180",
+        "parameters": [
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "facebook",
+                "x",
+                "reddit"
+              ],
+              "description": "Platform filter."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Community list.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "communities": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "Community — joinable group / subreddit."
+                      }
+                    }
+                  },
+                  "required": [
+                    "communities"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/communities/{id}/join": {
+      "post": {
+        "operationId": "joinCommunity",
+        "tags": [
+          "Communities"
+        ],
+        "summary": "Join community",
+        "description": "Attempts to join `:id`. Facebook requires `accountId` of a connected Facebook account and `answers` matching every `entryQuestions` — missing/blank answers or wrong platform account returns 400. Facebook transitions to `pending` (awaits admin accept), other platforms (reddit/x) auto-set `accepted`. Already pending/accepted is a no-op 200. Persists to localStorage. Code: apps/web/src/lib/communities/server.ts:186",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Community id."
+            }
+          }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "accountId": {
+                    "type": "string",
+                    "description": "Facebook account id (facebook only)."
+                  },
+                  "answers": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Answers to entryQuestions, one per question."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Already joined.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "community": {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": {},
+                      "description": "Community — joinable group / subreddit."
+                    },
+                    "communities": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "Community — joinable group / subreddit."
+                      }
+                    }
+                  },
+                  "required": [
+                    "community",
+                    "communities"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Joined (now pending/accepted).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "community": {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": {},
+                      "description": "Community — joinable group / subreddit."
+                    },
+                    "communities": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "Community — joinable group / subreddit."
+                      }
+                    }
+                  },
+                  "required": [
+                    "community",
+                    "communities"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Facebook groups must be joined with a connected Facebook account / Answer all entry questions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Community not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/communities/join-by-url": {
+      "post": {
+        "operationId": "joinCommunityByUrl",
+        "tags": [
+          "Communities"
+        ],
+        "summary": "Join community by URL",
+        "description": "Parses a `facebook.com/groups/…` URL via `parseFacebookGroupUrl`, registers it as a new catalog row if unseen (`registerBase`), then runs the same Facebook join transition (account + answers). Dedupes by URL — already tracked rows return 200. Registers unknown URLs before joining so pasted links become first-class communities. Code: apps/web/src/lib/communities/server.ts:201",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "description": "Facebook group URL."
+                  },
+                  "accountId": {
+                    "type": "string"
+                  },
+                  "answers": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "required": [
+                  "url"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Already tracked.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "community": {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": {},
+                      "description": "Community — joinable group / subreddit."
+                    },
+                    "communities": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "Community — joinable group / subreddit."
+                      }
+                    }
+                  },
+                  "required": [
+                    "community",
+                    "communities"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Joined.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "community": {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": {},
+                      "description": "Community — joinable group / subreddit."
+                    },
+                    "communities": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "Community — joinable group / subreddit."
+                      }
+                    }
+                  },
+                  "required": [
+                    "community",
+                    "communities"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "That does not look like a Facebook group link",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/communities/resolve": {
+      "post": {
+        "operationId": "resolveCommunity",
+        "tags": [
+          "Communities"
+        ],
+        "summary": "Resolve community URL",
+        "description": "Resolves a pasted Facebook group URL into its `Community` without changing `joinState`. Registers unknown URLs as new rows so the form can read `entryQuestions` before the user answers. Persists the catalog even though no join occurs — it's a read-ahead for the join form. Code: apps/web/src/lib/communities/server.ts:218",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "description": "Facebook group URL."
+                  }
+                },
+                "required": [
+                  "url"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resolved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "community": {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": {},
+                      "description": "Community — joinable group / subreddit."
+                    }
+                  },
+                  "required": [
+                    "community"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "That does not look like a Facebook group link",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/communities/resolve-reddit": {
+      "post": {
+        "operationId": "resolveRedditCommunity",
+        "tags": [
+          "Communities"
+        ],
+        "summary": "Resolve Reddit community",
+        "description": "Resolves a typed `r/name` (via `parseSubredditName`) into its `Community` and immediately marks it `accepted` — subreddits have no entry gate, so a resolved row is instantly usable as a keyword scope. Creates a new row via `communityFromSubreddit` if unseen. Code: apps/web/src/lib/communities/server.ts:232",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Subreddit name, e.g. r/test or test."
+                  }
+                },
+                "required": [
+                  "name"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resolved + joined (accepted).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "community": {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": {},
+                      "description": "Community — joinable group / subreddit."
+                    }
+                  },
+                  "required": [
+                    "community"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "That does not look like a subreddit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/communities/{id}/accept": {
+      "post": {
+        "operationId": "acceptCommunityJoin",
+        "tags": [
+          "Communities"
+        ],
+        "summary": "Accept pending join",
+        "description": "Mock admin accept — transitions `:id` from `pending` → `accepted`. Simulates the group admin approving the join request in the Groups page 'Approve' action and tests. Returns `400 No join request to accept` if state is `none`, `404` if unknown id. Code: apps/web/src/lib/communities/server.ts:248",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Community id."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Accepted.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "community": {
+                      "type": "object",
+                      "properties": {},
+                      "additionalProperties": {},
+                      "description": "Community — joinable group / subreddit."
+                    },
+                    "communities": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "Community — joinable group / subreddit."
+                      }
+                    }
+                  },
+                  "required": [
+                    "community",
+                    "communities"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No join request to accept",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Community not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/communities/{id}": {
+      "delete": {
+        "operationId": "leaveCommunity",
+        "tags": [
+          "Communities"
+        ],
+        "summary": "Leave community",
+        "description": "Leaves `:id` — resets its `joinState` to `none`, clears `accountId` and `answers`. The catalog row stays (so pasted links remain) but is no longer a member and cannot scope keywords/listings. Persists. Code: apps/web/src/lib/communities/server.ts:261",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Community id."
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Remaining communities.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "communities": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "Community — joinable group / subreddit."
+                      }
+                    }
+                  },
+                  "required": [
+                    "communities"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Community not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/feed": {
+      "get": {
+        "operationId": "listFeed",
+        "tags": [
+          "Feed"
+        ],
+        "summary": "List feed",
+        "description": "Optional ?platform ?search. Code: apps/web/src/lib/feed/server.ts:41",
+        "parameters": [
+          {
+            "name": "platform",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "facebook",
+                "x",
+                "reddit"
+              ]
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Feed items.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "FeedItem — one signal in the feed."
+                      }
+                    }
+                  },
+                  "required": [
+                    "items"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "platform must be facebook, x, or reddit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/feed/{platform}": {
+      "get": {
+        "operationId": "listFeedByPlatform",
+        "tags": [
+          "Feed"
+        ],
+        "summary": "List feed by platform",
+        "description": "Code: apps/web/src/lib/feed/server.ts:49",
+        "parameters": [
+          {
+            "name": "platform",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "facebook",
+                "x",
+                "reddit"
+              ]
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Feed items.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {},
+                        "description": "FeedItem — one signal in the feed."
+                      }
+                    }
+                  },
+                  "required": [
+                    "items"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "platform must be facebook, x, or reddit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messaging/facebook/threads": {
+      "get": {
+        "operationId": "listFacebookThreads",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "List Facebook threads",
+        "description": "Code: apps/web/src/lib/messaging/facebook/server.ts:5",
+        "responses": {
+          "200": {
+            "description": "Threads.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "threads": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {}
+                      }
+                    }
+                  },
+                  "required": [
+                    "threads"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messaging/facebook/threads/{threadId}/messages": {
+      "get": {
+        "operationId": "listFacebookMessages",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "List Facebook messages",
+        "description": "Code: apps/web/src/lib/messaging/facebook/server.ts:6",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "messages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {}
+                      }
+                    }
+                  },
+                  "required": [
+                    "messages"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Thread not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messaging/x/threads": {
+      "get": {
+        "operationId": "listXThreads",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "List X threads",
+        "description": "Also served at legacy /twitter alias. Code: apps/web/src/lib/messaging/twitter/server.ts:5",
+        "responses": {
+          "200": {
+            "description": "Threads.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "threads": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {}
+                      }
+                    }
+                  },
+                  "required": [
+                    "threads"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messaging/x/threads/{threadId}/messages": {
+      "get": {
+        "operationId": "listXMessages",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "List X messages",
+        "description": "Also at /twitter alias. Code: apps/web/src/lib/messaging/twitter/server.ts:6",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "messages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {}
+                      }
+                    }
+                  },
+                  "required": [
+                    "messages"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Thread not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messaging/twitter/threads": {
+      "get": {
+        "operationId": "listXThreads",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "List X threads",
+        "description": "Also served at legacy /twitter alias. Code: apps/web/src/lib/messaging/twitter/server.ts:5",
+        "responses": {
+          "200": {
+            "description": "Threads.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "threads": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {}
+                      }
+                    }
+                  },
+                  "required": [
+                    "threads"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messaging/twitter/threads/{threadId}/messages": {
+      "get": {
+        "operationId": "listXMessages",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "List X messages",
+        "description": "Also at /twitter alias. Code: apps/web/src/lib/messaging/twitter/server.ts:6",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "messages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {}
+                      }
+                    }
+                  },
+                  "required": [
+                    "messages"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Thread not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messaging/reddit/threads": {
+      "get": {
+        "operationId": "listRedditThreads",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "List Reddit threads",
+        "description": "Code: apps/web/src/lib/messaging/reddit/server.ts:5",
+        "responses": {
+          "200": {
+            "description": "Threads.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "threads": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {}
+                      }
+                    }
+                  },
+                  "required": [
+                    "threads"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/messaging/reddit/threads/{threadId}/messages": {
+      "get": {
+        "operationId": "listRedditMessages",
+        "tags": [
+          "Messaging"
+        ],
+        "summary": "List Reddit messages",
+        "description": "Code: apps/web/src/lib/messaging/reddit/server.ts:6",
+        "parameters": [
+          {
+            "name": "threadId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "messages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {},
+                        "additionalProperties": {}
+                      }
+                    }
+                  },
+                  "required": [
+                    "messages"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Thread not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$schema": "https://json-schema.org/draft/2020-12/schema",
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Human-readable failure reason, e.g. \"A key needs a name\"."
+                    }
+                  },
+                  "required": [
+                    "error"
+                  ],
+                  "additionalProperties": false,
+                  "description": "Failure envelope returned with 4xx statuses."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

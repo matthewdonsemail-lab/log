@@ -1,0 +1,22 @@
+---
+title: API reference
+description: Endpoint and error contract for the ListeningKit mock API, generated from the mock itself.
+---
+
+# API reference
+
+Every page under [Endpoints](/docs/api-reference/endpoints/api-keys) is generated from `openapi.json` — itself exported from the mock (`pnpm --filter web openapi:export`) — so the documented contract cannot drift from the implementation. Each endpoint renders its parameters, request/response schemas, and error responses with a Scalar try-it console.
+
+- [API keys](/docs/api-reference/endpoints/api-keys) — list, create (secret shown once), revoke.
+- [Errors](/docs/getting-started/errors) — the human guide to the error vocabulary: what each code means and what to do.
+- [API keys & auth](/docs/getting-started/api) — creating keys, bearer auth, revoking.
+
+## Try it live
+
+The try-it consoles execute against the mock server, not the docs site:
+
+```bash
+pnpm --filter web mock:server
+```
+
+The server boots the same mock apps the dashboard uses, with fresh seeds — writes never persist past a restart. Requests go to the spec's `servers` entry (`http://localhost:5174`); without the server running, sends fail and the reference still reads fine.

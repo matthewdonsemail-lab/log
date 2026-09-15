@@ -59,7 +59,10 @@ export default {
         md: 'var(--radius-md)'
       },
       fontFamily: {
-        sans: ['Satoshi', 'Inter', 'system-ui', 'sans-serif']
+        sans: ['Satoshi', 'Inter', 'system-ui', 'sans-serif'],
+        // Brand rule — no monospace renders anywhere (see check-no-font-mono.mjs):
+        // point `font-mono` at the sans stack so it can never paint a mono face.
+        mono: ['Satoshi', 'Inter', 'system-ui', 'sans-serif']
       },
       keyframes: {
         'lk-cycle': {

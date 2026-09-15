@@ -6,8 +6,9 @@ import defaultMdxComponents from "fumadocs-ui/mdx";
 import { Tabs, Tab } from "fumadocs-ui/components/tabs";
 import { source } from "../../lib/source";
 import { Mermaid } from "../../components/mdx/mermaid";
+import { APIPage } from "../../components/api-page";
 
-const components = { ...defaultMdxComponents, Tabs, Tab, Mermaid };
+const components = { ...defaultMdxComponents, Tabs, Tab, Mermaid, APIPage };
 
 interface PageProps {
   params: Promise<{ slug?: string[] }>;

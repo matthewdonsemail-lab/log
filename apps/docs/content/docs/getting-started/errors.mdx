@@ -1,0 +1,334 @@
+---
+title: Errors
+description: The normalized error codes behind every account health badge — what each code means, what triggers it, and what to do.
+---
+
+# Errors
+
+Every platform fails differently — Facebook Graph codes, X GraphQL codes, Reddit statuses, proxy transport errors. ListeningKit normalizes all of it into one platform-agnostic vocabulary: the `AccountIssue` codes in `apps/web/src/lib/account-issues`. Raw signals (HTTP status, `code`/`subcode`, error `type`, body `marker`) are mapped onto these codes by `normalizeSignal`; the health badges, the accounts console, and API error responses all speak this same list. This page is that list, kept in sync with `ISSUE_CATALOG`.
+
+Machine-readable mirror: [API reference](/docs/api-reference/endpoints/api-keys) (the `AccountIssue` enum, generated from the mock — each endpoint carries a Scalar try-it console).
+
+## How to read an entry
+
+- **Severity** — `unhealthy` (reads stopped, act now) or `degraded` (reads limping, act soon). No code is `healthy`: healthy is the absence of an issue.
+- **Clears on its own** — `transient` codes (rate limits, temporary challenges) clear without action; the record carries `retryAfter` seconds derived from the platform's reset header (`x-rate-limit-reset` / `X-Ratelimit-Reset`).
+- **Fix** — the verb from `FIX_LABELS`, the console's consistent "Next step" row:
+
+| Verb | Label |
+|---|---|
+| `connect` | Connect account |
+| `reconnect` | Reconnect |
+| `reexport_cookie` | Re-export cookie |
+| `login_in_browser` | Verify in your browser |
+| `wait` | Backs off automatically |
+| `use_proxy` | Route via proxy |
+| `appeal` | Appeal with the platform |
+| `rejoin` | Re-join group |
+| `resolve` | Resolve in your browser |
+| `none` | No action needed |
+
+## Quick reference
+
+| Code | Label | Severity | Self-clears | Fix |
+|---|---|---|---|---|
+| `never_connected` | Not connected | unhealthy | no | Connect account |
+| `disconnected` | Disconnected | unhealthy | no | Reconnect |
+| `stale` | Stale connection | degraded | no | Reconnect |
+| `session_expired` | Session expired | unhealthy | no | Re-export cookie |
+| `session_invalidated_changed` | Session invalidated (password change) | unhealthy | no | Re-export cookie |
+| `checkpointed` | Checkpoint challenge | unhealthy | no | Verify in your browser |
+| `unconfirmed_user` | Account needs confirmation | unhealthy | no | Verify in your browser |
+| `cookie_invalid` | Cookie rejected | unhealthy | no | Re-export cookie |
+| `suspended` | Account suspended | unhealthy | no | Appeal with the platform |
+| `read_only_limited` | Read-only (shadow-limited) | degraded | no | Resolve in your browser |
+| `automated_flagged` | Flagged as automated | unhealthy | no | Resolve in your browser |
+| `rate_limited` | Rate limited | degraded | yes | Backs off automatically |
+| `proxy_rate_limited` | Proxy rate limited | degraded | yes | Backs off automatically |
+| `challenge_interstitial` | Bot challenge pending | degraded | yes | Resolve in your browser |
+| `ip_or_account_blocked` | Blocked (IP / bot detection) | degraded | no | Route via proxy |
+| `restricted_policy` | Temporarily restricted (policy) | degraded | yes | Backs off automatically |
+| `permission_denied` | Permission denied | degraded | no | Re-join group |
+| `join_gate` | Join gate (entry questions) | degraded | no | Re-join group |
+| `removed_from_group` | Removed from group | degraded | no | Re-join group |
+| `proxy_unreachable` | Proxy unreachable | degraded | no | Route via proxy |
+| `proxy_auth_failed` | Proxy auth failed | degraded | no | Route via proxy |
+| `proxy_malformed` | Proxy URL invalid | degraded | no | Route via proxy |
+| `login_wall` | Login wall (false success) | unhealthy | no | Re-export cookie |
+| `captcha_html` | Captcha interstitial (false success) | unhealthy | no | Resolve in your browser |
+| `unknown_platform` | Unsupported platform | unhealthy | no | No action needed |
+| `unknown` | Unrecognized failure | degraded | no | Resolve in your browser |
+
+## Lifecycle — from our model, not the platform
+
+These three are derived from the connection record itself; no platform signal produces them.
+
+### `never_connected` — Not connected
+
+**Severity:** unhealthy · **Clears on its own:** no · **Fix:** Connect account
+
+No session has been verified for this account yet — nothing is being read.
+
+**Do this:** paste the platform cookie from the extension in Settings to connect.
+
+### `disconnected` — Disconnected
+
+**Severity:** unhealthy · **Clears on its own:** no · **Fix:** Reconnect
+
+The account was intentionally disconnected; the row is kept so its groups stay linked.
+
+**Do this:** reconnect with a fresh cookie in Settings.
+
+### `stale` — Stale connection
+
+**Severity:** degraded · **Clears on its own:** no · **Fix:** Reconnect
+
+Last successful connect is more than 7 days old — the session may have expired silently.
+
+**Do this:** run Test Connection, or re-export the cookie if it fails.
+
+## Session / credential
+
+### `session_expired` — Session expired
+
+**Severity:** unhealthy · **Clears on its own:** no · **Fix:** Re-export cookie
+
+The saved session outlived its lifetime — the platform serves login pages / 401s instead of data.
+
+**Detects on:** Facebook Graph `code 190` (subcode 463) · X GraphQL `code 89` · Reddit HTTP `401`
+
+**Do this:** log in at the platform in a normal browser, then re-export the cookie (X: `auth_token` + `ct0`) to Settings.
+
+### `session_invalidated_changed` — Session invalidated (password change)
+
+**Severity:** unhealthy · **Clears on its own:** no · **Fix:** Re-export cookie
+
+The platform invalidated the session because the account password changed — the cookie is dead even though nothing was typed wrong.
+
+**Detects on:** Facebook Graph `code 190` (subcode 460) · X GraphQL `code 89` · Reddit HTTP `401`
+
+**Do this:** confirm the current password at the platform, then re-export the fresh cookie to Settings.
+
+### `checkpointed` — Checkpoint challenge
+
+**Severity:** unhealthy · **Clears on its own:** no · **Fix:** Verify in your browser · **Platforms:** Facebook only
+
+Facebook placed the account on a checkpoint — a human must clear a login-confirmation step; the cookie alone cannot clear it.
+
+**Detects on:** Facebook Graph `code 190` (subcode 459)
+
+**Do this:** log in at facebook.com in a normal browser and clear the checkpoint, then re-export the cookie.
+
+### `unconfirmed_user` — Account needs confirmation
+
+**Severity:** unhealthy · **Clears on its own:** no · **Fix:** Verify in your browser · **Platforms:** Facebook only
+
+Facebook requires the account to confirm an identity or contact detail before the session works.
+
+**Detects on:** Facebook Graph `code 190` (subcode 464)
+
+**Do this:** complete the confirmation at facebook.com in a normal browser, then re-export the cookie.
+
+### `cookie_invalid` — Cookie rejected
+
+**Severity:** unhealthy · **Clears on its own:** no · **Fix:** Re-export cookie
+
+The pasted credential was rejected at connect time — too short, malformed, or exported from the wrong browser. No platform signal; the connect form itself reports it.
+
+**Do this:** re-export from a browser you are currently logged into the platform on.
+
+## Suspended / banned
+
+### `suspended` — Account suspended
+
+**Severity:** unhealthy · **Clears on its own:** no · **Fix:** Appeal with the platform
+
+The platform restricted the account itself — every page returns a restriction notice instead of data. The cookie cannot be fixed.
+
+**Detects on:** Facebook body marker `restricted` · X GraphQL `code 97` ("This account is suspended") · Reddit HTTP `403` + marker `suspended`
+
+**Do this:** appeal via the platform's suspension notice in a normal browser.
+
+### `read_only_limited` — Read-only (shadow-limited)
+
+**Severity:** degraded · **Clears on its own:** no · **Fix:** Resolve in your browser · **Platforms:** X only
+
+X flagged the account to read-only mode: some data still serves, but the rate-limit ceiling collapses (~10 reqs vs ~50) and the `x-rate-limit-*` headers stop being reliable.
+
+**Detects on:** X GraphQL `code 88`
+
+**Do this:** stop automating this account, warm it up with a normal browser on a residential IP, then re-test.
+
+### `automated_flagged` — Flagged as automated
+
+**Severity:** unhealthy · **Clears on its own:** no · **Fix:** Resolve in your browser
+
+Automation detection is blocking the session — a challenge wall sits between the account and its data.
+
+**Detects on:** Facebook body marker `challenge` · X `code 226` ("this request looks like it might be automated", Arkose challenge) · Reddit body marker `challenge`
+
+**Do this:** clear the challenge in a real browser on a residential IP, then re-export the cookie.
+
+## Rate / limit — transient
+
+### `rate_limited` — Rate limited
+
+**Severity:** degraded · **Clears on its own:** yes · **Fix:** Backs off automatically
+
+The account is temporarily throttled; it clears when the window resets. `retryAfter` comes from the platform's reset header.
+
+**Detects on:** Facebook `code 4` / `17` · X HTTP `429` / GraphQL `code 88` (`x-rate-limit-reset`) · Reddit HTTP `429` (`X-Ratelimit-Reset`, 100 req/min OAuth window plus per-endpoint limits)
+
+**Do this:** nothing — ListeningKit backs off until the limit resets.
+
+### `proxy_rate_limited` — Proxy rate limited
+
+**Severity:** degraded · **Clears on its own:** yes · **Fix:** Backs off automatically
+
+The proxy provider itself is returning a rate-limit response before the request reaches the platform — no platform signal involved.
+
+**Do this:** nothing urgent — but check the proxy billing / concurrent-connection plan, or rotate to a fresh proxy endpoint.
+
+## Blocked / challenged
+
+### `challenge_interstitial` — Bot challenge pending
+
+**Severity:** degraded · **Clears on its own:** yes · **Fix:** Resolve in your browser
+
+A challenge page is interposed before the data; it usually clears once a real browser passes it.
+
+**Detects on:** Facebook marker `recaptcha` · X marker `arkose` · Reddit marker `captcha` (Reddit serves 200 HTML where data should be until it's solved)
+
+**Do this:** open the account in a real browser and clear the challenge, then resume.
+
+### `ip_or_account_blocked` — Blocked (IP / bot detection)
+
+**Severity:** degraded · **Clears on its own:** no · **Fix:** Route via proxy · **Platforms:** X, Reddit
+
+The request is refused (403) because the exit IP is flagged — not the account itself. Reddit datacenter IPs get throttled to ~10 req/min; the cookie is fine.
+
+**Detects on:** X HTTP `403` · Reddit HTTP `403` (`blocked`)
+
+**Do this:** route the account through a residential proxy in Settings.
+
+## Policy / permission / group
+
+### `restricted_policy` — Temporarily restricted (policy)
+
+**Severity:** degraded · **Clears on its own:** yes · **Fix:** Backs off automatically · **Platforms:** Facebook only
+
+Facebook is temporarily blocking the account for policy violations — "wait and retry".
+
+**Detects on:** Facebook `code 368`
+
+**Do this:** reduce activity on this account and retry after the restriction window.
+
+### `permission_denied` — Permission denied
+
+**Severity:** degraded · **Clears on its own:** no · **Fix:** Re-join group
+
+The account lost permission for a resource — most often removed from, or locked out of, a group; on X/Reddit, protected content it can no longer see.
+
+**Detects on:** Facebook `code 10` · X HTTP `403` (`type client-forbidden`) · Reddit HTTP `403`
+
+**Do this:** re-join the group (re-establish access) from a real browser, then resume polling.
+
+### `join_gate` — Join gate (entry questions)
+
+**Severity:** degraded · **Clears on its own:** no · **Fix:** Re-join group · **Platforms:** Facebook only
+
+The group requires entry-question answers (or admin approval) before the account can read it — the join form was rejected until answered.
+
+**Detects on:** Facebook body marker `entry questions`
+
+**Do this:** answer the entry questions in a real browser, then re-run the join from Settings.
+
+### `removed_from_group` — Removed from group
+
+**Severity:** degraded · **Clears on its own:** no · **Fix:** Re-join group
+
+Group admins removed the account; polling returns "content not available" instead of posts.
+
+**Detects on:** Facebook marker `content not available` · X HTTP `404` (`type resource-not-found`) · Reddit HTTP `404`
+
+**Do this:** re-join the group from a real browser, then resume polling.
+
+## Transport (proxy)
+
+All three are proxy-layer failures — the request never reached the platform, so there is no platform signal.
+
+### `proxy_unreachable` — Proxy unreachable
+
+**Severity:** degraded · **Clears on its own:** no · **Fix:** Route via proxy
+
+DNS failure, host down, or TLS handshake error at the configured proxy.
+
+**Do this:** verify the proxy URL scheme/credentials, or switch the account to Direct.
+
+### `proxy_auth_failed` — Proxy auth failed
+
+**Severity:** degraded · **Clears on its own:** no · **Fix:** Route via proxy
+
+The proxy rejected the credentials (HTTP 407) — bad username/password or a lapsed subscription.
+
+**Do this:** fix the proxy credentials in Settings, or route the account Direct.
+
+### `proxy_malformed` — Proxy URL invalid
+
+**Severity:** degraded · **Clears on its own:** no · **Fix:** Route via proxy
+
+The stored proxy URL has no scheme or is malformed.
+
+**Do this:** fix the proxy URL in Settings — `http://`, `https://`, or `socks5://user:pass@host:port`, including host:port.
+
+## False success — HTTP 200 whose body is not data
+
+The status code says nothing; the detector keys on the body marker.
+
+### `login_wall` — Login wall (false success)
+
+**Severity:** unhealthy · **Clears on its own:** no · **Fix:** Re-export cookie
+
+The platform answered 200 OK but returned a login page instead of data — the session is dead.
+
+**Detects on:** Facebook HTTP `200` + marker `log in to facebook` · X HTTP `200` + marker `login|x.com` · Reddit HTTP `200` + marker `login`
+
+**Do this:** log in at the platform in a normal browser, then re-export the cookie to Settings.
+
+### `captcha_html` — Captcha interstitial (false success)
+
+**Severity:** unhealthy · **Clears on its own:** no · **Fix:** Resolve in your browser
+
+The platform answered 200 OK but served a challenge page — the body is HTML, not the expected payload.
+
+**Detects on:** Facebook HTTP `200` + marker `recaptcha` · X HTTP `200` + marker `arkose` · Reddit HTTP `200` + marker `captcha`
+
+**Do this:** solve the challenge in a real browser on a residential IP, then resume polling.
+
+## Roster / catch-all
+
+### `unknown_platform` — Unsupported platform
+
+**Severity:** unhealthy · **Clears on its own:** no · **Fix:** No action needed
+
+The account's platform was retired from ListeningKit; the row is hidden from live polling until removed.
+
+**Do this:** delete the row, or restore the platform when it ships again.
+
+### `unknown` — Unrecognized failure
+
+**Severity:** degraded · **Clears on its own:** no · **Fix:** Resolve in your browser
+
+The client saw a failure that maps to no known error — the raw signal is preserved on the record for triage.
+
+**Do this:** retry a manual check; if it persists, inspect the raw signal and extend the detector.
+
+## API transport
+
+Over HTTP, failures arrive as JSON with the status code carrying the class:
+
+```json
+{ "error": "A key with that name already exists" }
+```
+
+Validation problems return `400`, name collisions `409`. Key-scope denials (`This key is not scoped to that account.` and friends) arrive the same way. The `AccountIssue` codes above are what those transport errors normalize into on the accounts side — see [API](/docs/getting-started/api) for auth and keys.

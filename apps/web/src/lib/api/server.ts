@@ -1,7 +1,14 @@
 import { Hono } from 'hono'
+import { describeRoute } from 'hono-openapi'
 import { SEED_API_KEYS, apiKeyId, generateApiKey, hashSecret, prefixOfSecret } from './mock'
 import type { ApiKey, ApiKeyScope, CreateApiKeyInput } from './types'
 import { isArray, isRecord, loadPersistedState, savePersistedState } from '../persist'
+import {
+  ApiKeyCreateJson,
+  ApiKeyListJson,
+  CreateApiKeyInputJson,
+  errorResponse
+} from '../openapi'
 
 const API_KEYS_KEY = 'api-keys'
 
@@ -63,11 +70,46 @@ export async function verifyApiKey(secret: string): Promise<ApiKey | null> {
 }
 
 export const apiKeysApp = new Hono()
-  .get('/api-keys', (c) => {
-    // Records carry the prefix only — there is no secret field to leak.
-    return c.json({ apiKeys: [...apiKeys] })
-  })
-  .post('/api-keys', async (c) => {
+  .get(
+    '/api-keys',
+    describeRoute({
+      operationId: 'listApiKeys',
+      tags: ['API keys'],
+      summary: 'List API keys',
+      description: 'Records carry the prefix only — there is no secret field to leak.',
+      responses: {
+        200: {
+          description: 'Key list.',
+          content: { 'application/json': { schema: ApiKeyListJson } }
+        }
+      }
+    }),
+    (c) => {
+      // Records carry the prefix only — there is no secret field to leak.
+      return c.json({ apiKeys: [...apiKeys] })
+    }
+  )
+  .post(
+    '/api-keys',
+    describeRoute({
+      operationId: 'createApiKey',
+      tags: ['API keys'],
+      summary: 'Create an API key',
+      description: 'The full secret appears exactly once, in this response.',
+      requestBody: {
+        required: true,
+        content: { 'application/json': { schema: CreateApiKeyInputJson } }
+      },
+      responses: {
+        201: {
+          description: 'Created; `key` is the full secret (once-only).',
+          content: { 'application/json': { schema: ApiKeyCreateJson } }
+        },
+        400: errorResponse('Invalid request body · A key needs a name · Scopes are missing or malformed.'),
+        409: errorResponse('A key with that name already exists.')
+      }
+    }),
+    async (c) => {
     const body = await c.req.json<CreateApiKeyInput>().catch(() => null)
     if (!body) return c.json({ error: 'Invalid request body' }, 400)
     const name = (body.name ?? '').trim()
@@ -96,7 +138,30 @@ export const apiKeysApp = new Hono()
     persistApiKeys()
     return c.json({ apiKey: record, apiKeys: [...apiKeys], key: secret }, 201)
   })
-  .delete('/api-keys/:id', (c) => {
+  .delete(
+    '/api-keys/:id',
+    describeRoute({
+      operationId: 'deleteApiKey',
+      tags: ['API keys'],
+      summary: 'Revoke an API key',
+      description: 'Revoking is immediate; unknown ids are a no-op returning the list.',
+      parameters: [
+        {
+          name: 'id',
+          in: 'path',
+          required: true,
+          schema: { type: 'string' },
+          description: 'Key id.'
+        }
+      ],
+      responses: {
+        200: {
+          description: 'Remaining key list.',
+          content: { 'application/json': { schema: ApiKeyListJson } }
+        }
+      }
+    }),
+    (c) => {
     const id = c.req.param('id')
     apiKeys = apiKeys.filter((apiKey) => apiKey.id !== id)
     persistApiKeys()

@@ -1,9 +1,11 @@
 import { Hono } from 'hono'
+import { describeRoute } from 'hono-openapi'
 import { isRecord, loadPersistedState, savePersistedState } from '../persist'
 import { isBrandEntity, migrateBrandEntity } from './types'
 import type { BrandChannel, BrandEntity, BrandOffering, BrandPage, ChannelProfile, CommunityPick } from './types'
 import { defaultChannels } from './types'
 import { resolveSitemap } from './sources'
+import { BrandResponseJson, BrandWithSourcesJson, SourcesResponseJson, errorResponse } from '../openapi'
 
 const BRAND_KEY = 'brand-entity'
 
@@ -64,8 +66,8 @@ export interface BrandIntelligenceInput {
  * - `DELETE /brand` → clears the record
  */
 export const brandApp = new Hono()
-  .get('/brand', (c) => c.json({ brand }))
-  .put('/brand', async (c) => {
+  .get('/brand', describeRoute({ operationId: 'getBrand', tags: ['Brand'], summary: 'Get brand', description: 'Returns the single workspace BrandEntity or `null` when onboarding was skipped or the brand was cleared. This is the source-of-truth the Brand tab, onboarding reveal, and AI reply drafts all read — polling here is how the dashboard knows whether to show the brand form. No parameters. Code: apps/web/src/lib/brand/server.ts:67', responses: { 200: { description: 'Brand record (or null).', content: { 'application/json': { schema: BrandResponseJson } } } } }), (c) => c.json({ brand }))
+  .put('/brand', describeRoute({ operationId: 'upsertBrand', tags: ['Brand'], summary: 'Upsert brand', description: 'Creates the brand if none exists or deep-merges the `Partial<BrandEntity>` patch into the existing record. Merges identity, location, voice (formality/dos/donts/examples), channels per platform (facebook/x/reddit), offerings filtered by `isBrandOffering`, memory.rules, intelligence, and sources by URL. Stamps `updatedAt`, persists to `brand-entity` in localStorage, and validates the merged result with `isBrandEntity` — returns `400 Invalid brand payload` if validation fails. Code: apps/web/src/lib/brand/server.ts:68', requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', description: 'Partial<BrandEntity> — unknown fields ignored, offerings filtered, channels merged per platform' } } } }, responses: { 200: { description: 'Saved brand.', content: { 'application/json': { schema: BrandResponseJson } } }, 400: errorResponse('Invalid request body / Invalid brand payload') } }), async (c) => {
     const body = await c.req.json<Partial<BrandEntity>>().catch(() => null)
     if (!body) return c.json({ error: 'Invalid request body' }, 400)
     const base: Omit<BrandEntity, 'updatedAt'> = brand ?? {
@@ -110,7 +112,7 @@ export const brandApp = new Hono()
     persistBrand()
     return c.json({ brand })
   })
-  .post('/brand/intelligence', async (c) => {
+  .post('/brand/intelligence', describeRoute({ operationId: 'appendBrandIntelligence', tags: ['Brand'], summary: 'Append brand intelligence', description: 'Appends reveal discoveries to the brand\'s intelligence block. `competitors` are deduped by exact string (trimmed), `targetCommunities` are merged by `id` via `isCommunityPick`, and `selectedKeyword` overwrites if provided. Returns `404 No brand yet` if onboarding hasn\'t created a record yet. Stamps `updatedAt` and persists. Code: apps/web/src/lib/brand/server.ts:113', requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { competitors: { type: 'array', items: { type: 'string' }, description: 'Competitor domains to append (deduped).' }, targetCommunities: { type: 'array', items: { type: 'object' }, description: 'CommunityPick[] merged by id.' }, selectedKeyword: { type: 'string', description: 'Keyword chosen in reveal.' } } } } } }, responses: { 200: { description: 'Updated brand.', content: { 'application/json': { schema: BrandResponseJson } } }, 400: errorResponse('Invalid request body'), 404: errorResponse('No brand yet — complete onboarding first') } }), async (c) => {
     const body = await c.req.json<BrandIntelligenceInput>().catch(() => null)
     if (!body) return c.json({ error: 'Invalid request body' }, 400)
     if (!brand) return c.json({ error: 'No brand yet — complete onboarding first' }, 404)
@@ -139,8 +141,8 @@ export const brandApp = new Hono()
     persistBrand()
     return c.json({ brand })
   })
-  .get('/brand/sources', (c) => c.json({ sources: brand?.sources ?? [] }))
-  .post('/brand/index', async (c) => {
+  .get('/brand/sources', describeRoute({ operationId: 'listBrandSources', tags: ['Brand'], summary: 'List brand sources', description: 'Returns the indexed `BrandPage[]` for the brand\'s website — each page has `url`, `title`, `headings`, `text`, `status` (`indexed`/`pending`/`failed`), and `fetchedAt`. Returns an empty array when no brand exists yet (the brand itself is the guard, not the sources). Code: apps/web/src/lib/brand/server.ts:142', responses: { 200: { description: 'Indexed pages.', content: { 'application/json': { schema: SourcesResponseJson } } } } }), (c) => c.json({ sources: brand?.sources ?? [] }))
+  .post('/brand/index', describeRoute({ operationId: 'indexBrand', tags: ['Brand'], summary: 'Index brand site', description: 'Mock sitemap indexer. With `{ urls: string[] }` it registers each new URL as a `pending` BrandPage (deduped by URL). Without `urls` (or with `{ sitemap: true }` / empty body) it re-resolves the brand site (`identity.website` or `sourceUrl`) into the deterministic seed pages via `resolveSitemap` and merges them by URL as `indexed`. Always stamps and persists. Returns `404` if no brand exists. Code: apps/web/src/lib/brand/server.ts:143', requestBody: { required: false, content: { 'application/json': { schema: { type: 'object', properties: { urls: { type: 'array', items: { type: 'string' }, description: 'Explicit URLs to register as pending.' }, sitemap: { type: 'boolean', description: 'When true (or no urls), re-resolve the sitemap.' } } } } } }, responses: { 200: { description: 'Indexed pages.', content: { 'application/json': { schema: BrandWithSourcesJson } } }, 404: errorResponse('No brand yet — complete onboarding first') } }), async (c) => {
     // Mock sitemap resolution: explicit urls register as pending rows, the
     // `{ sitemap: true }` (or empty) form re-resolves the brand site into
     // the deterministic seed pages, marked indexed. Merge by url — the live
@@ -175,7 +177,7 @@ export const brandApp = new Hono()
     persistBrand()
     return c.json({ brand, sources: next })
   })
-  .delete('/brand/sources', async (c) => {
+  .delete('/brand/sources', describeRoute({ operationId: 'deleteBrandSource', tags: ['Brand'], summary: 'Delete brand source', description: 'Removes a single indexed page by exact `url` string match. Filters `brand.sources` by URL, stamps `updatedAt`, and persists. Returns `404` if no brand exists — the URL itself is not validated beyond string match (unknown URLs are a no-op that still returns the filtered list). Code: apps/web/src/lib/brand/server.ts:178', requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { url: { type: 'string', description: 'Exact URL of the page to remove.' } }, required: ['url'] } } } }, responses: { 200: { description: 'Remaining sources.', content: { 'application/json': { schema: BrandWithSourcesJson } } }, 404: errorResponse('No brand yet — complete onboarding first') } }), async (c) => {
     if (!brand) return c.json({ error: 'No brand yet — complete onboarding first' }, 404)
     const body = await c.req.json<{ url?: unknown }>().catch(() => null)
     const url = typeof body?.url === 'string' ? body.url : ''
@@ -183,7 +185,7 @@ export const brandApp = new Hono()
     persistBrand()
     return c.json({ brand, sources: brand.sources })
   })
-  .delete('/brand', (c) => {
+  .delete('/brand', describeRoute({ operationId: 'deleteBrand', tags: ['Brand'], summary: 'Delete brand', description: 'Clears the entire workspace brand record — identity, location, voice, offerings, sources, channels, memory, and intelligence are discarded (sets `brand` to `null`). Persists the cleared state so the dashboard returns to the onboarding prompt. Idempotent. Code: apps/web/src/lib/brand/server.ts:186', responses: { 200: { description: 'Cleared (brand is null).', content: { 'application/json': { schema: BrandResponseJson } } } } }), (c) => {
     brand = null
     persistBrand()
     return c.json({ brand })

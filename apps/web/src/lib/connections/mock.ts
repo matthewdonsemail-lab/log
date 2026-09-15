@@ -16,7 +16,10 @@ export const MOCK_FACEBOOK_ACCOUNTS = ['Facebook', 'Galway Rubbish Co', 'Pacer M
  * The rows span the full normalized issue state space so the dashboard
  * badges and the account console have real material to render: healthy,
  * stale, never connected, checkpointed, proxy unreachable, read-only
- * limited, rate limited (with a countdown), IP blocked, and session expired.
+ * limited, rate limited (with a countdown), IP blocked, session expired —
+ * plus one bot-challenge row per platform (facebook checkpoint, x arkose
+ * interstitial, reddit captcha page) so the challenge resolver's session
+ * view is reachable for every mock page flavor.
  */
 export const MOCK_CONNECTIONS: ConnectionRecord[] = [
   {
@@ -100,5 +103,25 @@ export const MOCK_CONNECTIONS: ConnectionRecord[] = [
     lastIssue: 'session_expired',
     rawSignal: { code: 89 },
     lastCheckedAt: '2026-09-14T05:55:00+00:00'
+  },
+  {
+    id: 'x-challenge',
+    platform: 'x',
+    label: 'flowwatch_x',
+    viaProxy: false,
+    connectedAt: '2026-09-12T19:30:00+00:00',
+    lastIssue: 'challenge_interstitial',
+    rawSignal: { status: 200, marker: 'arkose' },
+    lastCheckedAt: '2026-09-14T07:20:00+00:00'
+  },
+  {
+    id: 'reddit-captcha',
+    platform: 'reddit',
+    label: 'captcha_curtain',
+    viaProxy: true,
+    connectedAt: '2026-09-11T10:05:00+00:00',
+    lastIssue: 'captcha_html',
+    rawSignal: { status: 200, marker: 'captcha' },
+    lastCheckedAt: '2026-09-14T06:40:00+00:00'
   }
 ]

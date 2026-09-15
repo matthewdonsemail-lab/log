@@ -156,6 +156,18 @@ style={{ fontFamily: "'Satoshi', Inter, system-ui, sans-serif", fontWeight: 900,
 
 Blue is reserved for the geometry and the header badge — values are never blue.
 
+### No monospace anywhere (Satoshi/Inter only)
+
+No monospace face may render in the app, docs, or UI kit — no `font-mono`
+class, no mono stack (`ui-monospace`, `Menlo`, `Monaco`, `Courier`, …) in
+inline styles. The enforcer is `scripts/check-no-font-mono.mjs`, wired into
+lefthook as a **pre-push** gate (bypass: `SKIP_FONT_MONO_CHECK=1 git push`):
+it scans app/docs/UI source, prints every offending `file:line`, and fails
+the push. Defense in depth: the docs re-point their `--font-mono` variable at
+the sans stack (`apps/docs/app/globals.css`) and the web app maps `font-mono`
+to the same stack (`apps/web/tailwind.config.js`), so even a violation that
+slips the hook cannot paint a mono face.
+
 ### Card anatomy (top to bottom)
 
 1. **Header** — a `Badge` (`variant="brand"`, per rule 4) with the conclusion

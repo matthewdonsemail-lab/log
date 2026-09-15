@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "fumadocs-ui/css/preset.css";
+@import "@scalar/api-client-react/style.css" layer(base);
 
 @source "../node_modules/fumadocs-ui/dist/**/*.js";
 
@@ -78,10 +79,10 @@
 @theme {
   --font-sans: "Satoshi", "Inter", system-ui, sans-serif;
   /* Satoshi-only rule: fumadocs-ui internals (search dialog, code, kbd)
-   * use the `font-mono` utility / mono element defaults, which resolve
-   * from --font-mono. Point it at Satoshi too so no monospace stack can
-   * ever render in the docs. Same for serif — nothing should fall back
-   * to a Georgia stack either. */
+   * use the mono font utility / mono element defaults, which resolve
+   * from the mono font variable. Point it at Satoshi too so no
+   * monospace stack can ever render in the docs. Same for serif —
+   * nothing should fall back to a Georgia stack either. */
   --font-mono: "Satoshi", "Inter", system-ui, sans-serif;
   --font-serif: "Satoshi", "Inter", system-ui, sans-serif;
 

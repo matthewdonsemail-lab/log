@@ -98,7 +98,7 @@ function FirehoseRow({ row, onInspect }: { row: FirehoseRowData; onInspect: (eve
           Current
         </Badge>
       ) : null}
-      <span className="min-w-0 flex-1 truncate font-mono text-xs text-text-secondary" title={signal}>
+      <span className="min-w-0 flex-1 truncate text-xs text-text-secondary" title={signal}>
         {signal}
       </span>
       <span className="shrink-0 text-xs tabular-nums text-text-secondary">{ts}</span>

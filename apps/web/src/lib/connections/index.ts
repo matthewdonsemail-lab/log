@@ -131,3 +131,23 @@ export async function disconnectAccount(id: string): Promise<ConnectionRecord[]>
   if (!existing) return deleteAccount(id)
   return saveAccount({ ...existing, viaProxy: false, connectedAt: null, lastIssue: 'disconnected', rawSignal: null })
 }
+
+/**
+ * Clear a human-resolved challenge: the visitor passed the checkpoint /
+ * interstitial / captcha in the session view, so the persisted issue and its
+ * raw signal go away and the account resumes. Throws when the id is unknown.
+ */
+export async function resolveChallenge(id: string): Promise<ConnectionRecord[]> {
+  const accounts = await getAccounts()
+  const existing = accounts.find((a) => a.id === id)
+  if (!existing) throw new Error('Account not found.')
+  const now = new Date().toISOString()
+  return saveAccount({
+    ...existing,
+    connectedAt: existing.connectedAt ?? now,
+    lastIssue: null,
+    rawSignal: null,
+    lastCheckedAt: now,
+    retryAfter: null
+  })
+}

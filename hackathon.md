@@ -12,7 +12,7 @@
 - **Auth:** none
 - **AI models:** none
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-15T17:08:36Z
+- **Last updated:** 2026-09-16T00:30:00Z
 
 ## Log
 
@@ -251,3 +251,5 @@ Scope/Activity tabs, clickable firehose rows opening an activity inspect
 sheet, and scope visuals; brand page copy refresh with EmptyBanner
 pointing at the channel Edit buttons; docs get Mermaid diagrams on the
 brand ramp plus channel-texting and keywords pages.
+### 2026-09-16 - 8030e1e
+Mobile dashboard shell + full Scalar API reference. Viewport hook (useIsMobileViewport) and responsive DashboardLayout/Header/Sidebar/FormOverlay: header logo top-left on mobile, bottom fixed nav with hamburger overflow, full-bleed forms, blue stage suppressed below sm. Mock now exposes a real HTTP surface (mockApiApp + openApiDocumentation): 31 routes (accounts, communities, listings, keywords, feed, messaging, brand, api-keys) with describeRoute code refs and Zod-derived schemas, pnpm --filter web openapi:export writes pps/docs/openapi.json and pnpm --filter docs gen:api generates per-tag pages with visible markdown headings (## tag intro + ### METHOD /path — summary) for the right-hand On This Page. Scalar playground embedded via official umadocs-openapi/scalar (APIPlayground) with @scalar/api-client-react on the try pages. Cross-links added (pi.mdx ? errors.mdx ? pi-reference). Verified with pi-coverage.test.ts smoke and docs build 28/28.

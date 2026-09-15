@@ -15,6 +15,11 @@ export {
 } from './catalog'
 export { FIX_LABELS, normalizeSignal } from './normalize'
 export { getAccountIssueEvents, type AccountIssueEvent } from './events'
+export {
+  CHALLENGE_RESOLVABLE_ISSUES,
+  CHALLENGE_SOLVED_MESSAGE,
+  challengePageFor
+} from './challenge'
 
 import { assessAccountHealth, type AccountHealth } from '../health'
 import type { ConnectionRecord } from '../connections/types'

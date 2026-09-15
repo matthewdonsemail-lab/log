@@ -144,7 +144,7 @@ export function OnboardingSteps() {  const [step, setStep] = useState<Step>(0)
   return (
     <div className="relative mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 pb-16 pt-24 text-center sm:px-10">
       {import.meta.env.DEV ? (
-        <div className="fixed left-2 top-2 z-[60] flex items-center gap-0.5 rounded-full bg-black/60 px-2 py-1 font-mono text-[11px] text-white backdrop-blur">
+        <div className="fixed left-2 top-2 z-[60] flex items-center gap-0.5 rounded-full bg-black/60 px-2 py-1 text-[11px] text-white backdrop-blur">
           <span className="px-1 font-bold text-amber-300">DEV</span>
           {(['Sources', 'Video', 'Tokens', 'Brand', 'Reveal', 'Fill'] as const).map((label, index) => (
             <button

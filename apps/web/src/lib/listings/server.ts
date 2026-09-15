@@ -1,9 +1,11 @@
 import { Hono } from 'hono'
+import { describeRoute } from 'hono-openapi'
 import { MOCK_LISTINGS, resolveListingAccountId, resolveListingAccountLabel } from './mock'
 import { MOCK_CONNECTIONS } from '../connections/mock'
 import { DEFAULT_LISTING_LOCATION, LISTING_STATUSES } from './types'
 import type { ListingDraft, ListingLocation, ListingRecord, ListingStatus } from './types'
 import { isArray, isRecord, loadPersistedState, savePersistedState } from '../persist'
+import { ListingResponseJson, ListingsResponseJson, ListingStatusResponseJson, errorResponse } from '../openapi'
 
 const LISTINGS_KEY = 'listings'
 
@@ -73,8 +75,8 @@ function toLocationPoint(value: unknown, fallback?: ListingLocation): ListingLoc
  * client at it; routes and response shapes stay the same.
  */
 export const listingsApp = new Hono()
-  .get('/listings', (c) => c.json({ listings: [...listings] }))
-  .post('/listings', async (c) => {
+  .get('/listings', describeRoute({ operationId: 'listListings', tags: ['Listings'], summary: 'List listings', description: 'Lists all Marketplace listings — seeded `MOCK_LISTINGS` plus any user-created rows (persisted to localStorage, migrated for legacy `accountId` FKs). Each has `listingId`, title/price/location, 1–4 images (first is cover), `accountId` FK, `locationPoint` (lat/lng + radius 1–200km), and `status`. This is the source for the dashboard Listings table. Code: apps/web/src/lib/listings/server.ts:77', responses: { 200: { description: 'Listings.', content: { 'application/json': { schema: ListingsResponseJson } } } } }), (c) => c.json({ listings: [...listings] }))
+  .post('/listings', describeRoute({ operationId: 'createListing', tags: ['Listings'], summary: 'Create listing', description: 'Creates a new Marketplace listing. Validates `title`, `price`, `location` (all trimmed non-empty), at least one `images` string, and a Facebook `accountId` (resolves legacy label via `resolveListingAccountId`, falls back to `fb-personal`). Generates a 17-digit `listingId`, sets `category`/`condition` defaults, `locationPoint` clamped 1–200km, `status: under-review`, and `listingUrl`. Persists and returns 201. Code: apps/web/src/lib/listings/server.ts:79', requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { title: { type: 'string', description: 'Listing title.' }, price: { type: 'string', description: 'Price string.' }, location: { type: 'string', description: 'Human location.' }, images: { type: 'array', items: { type: 'string' }, description: 'Photo URLs, first is cover.' }, accountId: { type: 'string', description: 'Facebook account id.' }, category: { type: 'string' }, condition: { type: 'string' }, locationPoint: { type: 'object', description: 'lat/lng/radiusKm.' } }, required: ['title','price','location','images'] } } } }, responses: { 201: { description: 'Created (under-review).', content: { 'application/json': { schema: ListingResponseJson } } }, 400: errorResponse('A listing needs a title/price/location/photo/account') } }), async (c) => {
     const body = await c.req.json<ListingDraft & { account?: string }>().catch(() => null)
     if (!body) return c.json({ error: 'Invalid request body' }, 400)
     const title = (body.title ?? '').trim()
@@ -120,7 +122,7 @@ export const listingsApp = new Hono()
     persistListings()
     return c.json({ listing, listings: [...listings] }, 201)
   })
-  .patch('/listings/:listingId', async (c) => {
+  .patch('/listings/:listingId', describeRoute({ operationId: 'updateListing', tags: ['Listings'], summary: 'Update listing', description: 'Patches a listing\'s details/photos in place — `listingId`, `listingUrl`, `publishedAt`, and `status` stay put; only `title`, `price`, `location`, `category`, `condition`, `images` (sliced to 4), `locationPoint`, and `accountId` (resolves legacy label or keeps stored FK) move. Validates title/price/location + photo presence, 404 if unknown. Code: apps/web/src/lib/listings/server.ts:123', parameters: [{ name: 'listingId', in: 'path', required: true, schema: { type: 'string', description: 'Marketplace listingId.' } }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { title: { type: 'string' }, price: { type: 'string' }, location: { type: 'string' }, images: { type: 'array', items: { type: 'string' } }, accountId: { type: 'string' }, category: { type: 'string' }, condition: { type: 'string' } } } } } }, responses: { 200: { description: 'Updated.', content: { 'application/json': { schema: ListingResponseJson } } }, 400: errorResponse('Invalid request body / missing title/price/location/photo'), 404: errorResponse('Listing not found') } }), async (c) => {
     // Edit a listing's details/photos in place — id, url, timestamps and
     // review status stay put; only the form-owned fields move.
     const listingId = c.req.param('listingId')
@@ -163,7 +165,7 @@ export const listingsApp = new Hono()
     persistListings()
     return c.json({ listing: updated, listings: [...listings] })
   })
-  .patch('/listings/:listingId/status', async (c) => {
+  .patch('/listings/:listingId/status', describeRoute({ operationId: 'updateListingStatus', tags: ['Listings'], summary: 'Update listing status', description: 'Transitions a listing\'s `status` via the status route — never local state. The dashboard\'s Sold/Remove actions round-trip here so the mock stays the source of truth and the live facebook-camofox-client can implement the same shape. Validates `status` against `LISTING_STATUSES`; 404 if unknown id. Code: apps/web/src/lib/listings/server.ts:166', parameters: [{ name: 'listingId', in: 'path', required: true, schema: { type: 'string' } }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { status: { type: 'string', enum: [...LISTING_STATUSES], description: 'New status.' } }, required: ['status'] } } } }, responses: { 200: { description: 'Status updated.', content: { 'application/json': { schema: ListingResponseJson } } }, 400: errorResponse('Status must be one of: ...'), 404: errorResponse('Listing not found') } }), async (c) => {
     // Status transitions go through this route — never local state. The
     // dashboard's sold/remove row actions round-trip here so the mock stays
     // the source of truth and the live client can implement the same shape.
@@ -180,7 +182,7 @@ export const listingsApp = new Hono()
     persistListings()
     return c.json({ listing: updated, listings: [...listings] })
   })
-  .get('/listings/:listingId/status', (c) => {
+  .get('/listings/:listingId/status', describeRoute({ operationId: 'getListingStatus', tags: ['Listings'], summary: 'Get listing status', description: 'Returns the lightweight status probe for `:listingId` — `{ listingId, status, title }` (status typed as `ListingStatus`). Used by the dashboard to poll `under-review → active` transitions without fetching the full record. Code: apps/web/src/lib/listings/server.ts:183', parameters: [{ name: 'listingId', in: 'path', required: true, schema: { type: 'string' } }], responses: { 200: { description: 'Status probe.', content: { 'application/json': { schema: ListingStatusResponseJson } } }, 404: errorResponse('Listing not found') } }), (c) => {
     const listing = listings.find((row) => row.listingId === c.req.param('listingId'))
     if (!listing) return c.json({ error: 'Listing not found' }, 404)
     return c.json({
@@ -189,7 +191,7 @@ export const listingsApp = new Hono()
       title: listing.title
     })
   })
-  .delete('/listings/:listingId', (c) => {
+  .delete('/listings/:listingId', describeRoute({ operationId: 'deleteListing', tags: ['Listings'], summary: 'Delete listing', description: 'Hard-deletes `:listingId` — the row leaves the store entirely (unlike the `removed` status which keeps it visible for record-keeping). Persists and returns the remaining list. 404 if unknown. Code: apps/web/src/lib/listings/server.ts:192', parameters: [{ name: 'listingId', in: 'path', required: true, schema: { type: 'string' } }], responses: { 200: { description: 'Remaining listings.', content: { 'application/json': { schema: ListingsResponseJson } } }, 404: errorResponse('Listing not found') } }), (c) => {
     // Hard delete — the row leaves the store entirely (unlike the removed
     // status, which keeps it visible for record-keeping).
     const listingId = c.req.param('listingId')

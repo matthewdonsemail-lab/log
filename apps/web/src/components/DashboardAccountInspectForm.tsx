@@ -73,7 +73,7 @@ export function DashboardAccountInspectForm({
           <span className="text-[11px] font-bold uppercase tracking-wide text-text-secondary">Console log</span>
         </div>
         <div
-          className="rounded-b-lg bg-white px-3 py-1 font-mono text-xs leading-relaxed text-text-primary"
+          className="rounded-b-lg bg-white px-3 py-1 text-xs leading-relaxed text-text-primary"
           title={signalToText(event.signal)}
         >
           {signalToText(event.signal)}

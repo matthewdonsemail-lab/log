@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Cable, Globe, Plus, Settings, Trash, Unplug } from 'lucide-react'
+import { Cable, Globe, Plus, Settings, ShieldCheck, Trash, Unplug } from 'lucide-react'
 import {
   Badge,
   Dropdown,
@@ -19,11 +19,15 @@ import {
   disconnectAccount,
   getAccounts,
   platformLabel,
+  resolveChallenge,
   type ConnectionPlatform,
   type ConnectionRecord
 } from '../lib/connections'
+import { CHALLENGE_RESOLVABLE_ISSUES } from '../lib/account-issues'
 import { SocialBadge, SOCIAL_ICONS } from '../lib/social-icons'
 import { AccountStatusBadge } from './AccountStatus'
+import { useDashboardFormSlot } from './DashboardFormSlot'
+import { ChallengeResolver } from './Modals/ChallengeResolver'
 
 const PLATFORMS: ConnectionPlatform[] = ['facebook', 'x', 'reddit']
 
@@ -53,6 +57,9 @@ export function DashboardAccounts() {
   const { success, error: notifyError } = useToast()
   const [accounts, setAccounts] = useState<ConnectionRecord[] | null>(null)
   const [filter, setFilter] = useState('all')
+  const [issueFilter, setIssueFilter] = useState('all')
+  const [resolverAccount, setResolverAccount] = useState<ConnectionRecord | null>(null)
+  const setFormSlot = useDashboardFormSlot()
 
   const load = () =>
     getAccounts().then(setAccounts).catch(() => setAccounts([]))
@@ -63,7 +70,51 @@ export function DashboardAccounts() {
     load()
   }, [location])
 
-  const rows = (accounts ?? []).filter((account) => filter === 'all' || filter === account.platform)
+  // The challenge resolver docks in the dashboard form slot at double width
+  // — register it when an account is picked, clear it on close or unmount.
+  useEffect(() => {
+    if (!resolverAccount) {
+      setFormSlot(null)
+      return
+    }
+    const target = resolverAccount
+    setFormSlot(
+      <ChallengeResolver
+        account={target}
+        onClose={() => setResolverAccount(null)}
+        onResolve={async () => {
+          try {
+            setAccounts(await resolveChallenge(target.id))
+            success(`Challenge cleared — ${target.label} is listening again`)
+            setResolverAccount(null)
+          } catch (err: unknown) {
+            notifyError('Resolve failed', err instanceof Error ? err.message : 'Could not clear the challenge.')
+          }
+        }}
+      />,
+      { slots: 2 }
+    )
+    return () => setFormSlot(null)
+  }, [resolverAccount, setFormSlot, success, notifyError])
+
+  // Scrim (backdrop) dismiss clears the rendered slot without touching page
+  // state — without this reset the pick goes stale and reopening the same
+  // row no-ops.
+  useEffect(() => {
+    const onExternalDismiss = () => setResolverAccount(null)
+    window.addEventListener('lk:form-dismissed', onExternalDismiss)
+    return () => window.removeEventListener('lk:form-dismissed', onExternalDismiss)
+  }, [])
+
+  const rows = (accounts ?? []).filter((account) => {
+    const platformOk = filter === 'all' || filter === account.platform
+    const challengeOk =
+      issueFilter === 'all' ||
+      (issueFilter === 'challenge' &&
+        account.lastIssue != null &&
+        CHALLENGE_RESOLVABLE_ISSUES.has(account.lastIssue))
+    return platformOk && challengeOk
+  })
 
   async function handleDisconnect(account: ConnectionRecord) {
     try {
@@ -122,6 +173,16 @@ export function DashboardAccounts() {
           />
           <Select
             matchWidth
+            value={issueFilter}
+            onChange={setIssueFilter}
+            aria-label="Filter by issue"
+            options={[
+              { value: 'all', label: 'All statuses', icon: <Globe className="size-3.5" strokeWidth={2.25} /> },
+              { value: 'challenge', label: 'Needs challenge', icon: <ShieldCheck className="size-3.5" strokeWidth={2.25} /> }
+            ]}
+          />
+          <Select
+            matchWidth
             value=""
             onChange={(value) => {
               if (value) handleAddAccount(value as ConnectionPlatform)
@@ -153,6 +214,10 @@ export function DashboardAccounts() {
             <TableBody>
               {rows.map((account) => {
                 const icon = socialIconFor(account.platform)
+                // Only accounts stuck behind a human-verification wall offer
+                // the resolver — every other row keeps the current menu.
+                const canResolve =
+                  account.lastIssue != null && CHALLENGE_RESOLVABLE_ISSUES.has(account.lastIssue)
                 return (
                   <TableRow
                     key={account.id}
@@ -201,6 +266,16 @@ export function DashboardAccounts() {
                                   icon: <Settings aria-hidden="true" className="size-4" />,
                                   onSelect: () => navigate('/dashboard/settings')
                                 },
+                                ...(canResolve
+                                  ? [
+                                      {
+                                        id: 'resolve',
+                                        label: 'Resolve challenge',
+                                        icon: <ShieldCheck aria-hidden="true" className="size-4" />,
+                                        onSelect: () => setResolverAccount(account)
+                                      }
+                                    ]
+                                  : []),
                                 {
                                   id: 'disconnect',
                                   label: 'Disconnect',
@@ -252,7 +327,9 @@ export function DashboardAccounts() {
         <p className="rounded-xl border border-dashed border-slate-300 p-5 text-sm text-text-secondary">
           {accounts.length === 0
             ? 'No accounts yet — add one to start listening.'
-            : `No ${filter === 'all' ? '' : platformLabel(filter as ConnectionPlatform) + ' '}accounts yet.`}
+            : issueFilter === 'challenge'
+              ? `No accounts need a challenge${filter === 'all' ? '' : ` on ${platformLabel(filter as ConnectionPlatform)}`} — try a different filter.`
+              : `No ${filter === 'all' ? '' : platformLabel(filter as ConnectionPlatform) + ' '}accounts yet.`}
         </p>
       )}
 
