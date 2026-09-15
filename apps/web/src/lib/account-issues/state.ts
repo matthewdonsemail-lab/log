@@ -1,5 +1,6 @@
 import type { ConnectionRecord } from '../connections/types'
-import { ISSUE_CATALOG, accountIssueSnapshot } from './index'
+import { assessAccountHealth } from '../health'
+import { issueInfo } from './catalog'
 import type { AccountIssue, AccountIssueInfo, RawSignal } from './types'
 
 export type AccountState = 'not_connected' | 'healthy' | 'degraded' | 'action_required'
@@ -49,15 +50,16 @@ function actionFor(issue: AccountIssueInfo | null): AccountUserAction {
   }
 }
 
-/**
- * Converts the persisted account record into the component's render model.
- * Components should consume this model instead of interpreting platform
- * errors or `lastIssue` directly.
- */
+/** Converts persisted data into the component's render model. */
 export function accountStateView(record: ConnectionRecord, now = new Date()): AccountStateViewModel {
-  const snapshot = accountIssueSnapshot(record, now)
+  const health = assessAccountHealth(record, now)
+  const issue = record.lastIssue
+    ? issueInfo(record.lastIssue, record.platform)
+    : health.state === 'unhealthy' && record.connectedAt === null
+      ? issueInfo('never_connected', record.platform)
+      : null
+
   if (!record.connectedAt) {
-    const issue = snapshot.issue ?? ISSUE_CATALOG.never_connected && null
     return {
       account: record,
       state: 'not_connected',
@@ -67,7 +69,7 @@ export function accountStateView(record: ConnectionRecord, now = new Date()): Ac
     }
   }
 
-  if (!snapshot.issue) {
+  if (!issue) {
     return {
       account: record,
       state: 'healthy',
@@ -77,12 +79,12 @@ export function accountStateView(record: ConnectionRecord, now = new Date()): Ac
     }
   }
 
-  const action = actionFor(snapshot.issue)
-  const requiresAction = !snapshot.issue.transient && action !== 'none'
+  const action = actionFor(issue)
+  const requiresAction = !issue.transient && action !== 'none'
   return {
     account: record,
     state: requiresAction ? 'action_required' : 'degraded',
-    issue: snapshot.issue,
+    issue,
     action,
     requiresAction
   }
@@ -90,8 +92,7 @@ export function accountStateView(record: ConnectionRecord, now = new Date()): Ac
 
 /**
  * Pure transition detector. A backend subscription, polling adapter, or
- * Convex query can feed old/new records into this function; the component
- * does not need to know how the state was delivered.
+ * Convex query can feed old/new records into this function.
  */
 export function accountStateNotification(
   previous: ConnectionRecord | null,
