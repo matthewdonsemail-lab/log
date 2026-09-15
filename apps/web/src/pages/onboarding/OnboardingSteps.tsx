@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { siGithub, siGooglechrome } from 'simple-icons'
 import { Button } from '@listeningkit/ui'
 import { SOCIAL_ICONS, SocialGlyph } from '@/lib/social-icons'
-import { clearBrand, extractBrandFromUrl, saveBrand, type BrandProfile } from '@/lib/brand'
+import { extractBrandFromUrl, getBrand, saveBrand, type BrandEntity } from '@/lib/brand'
 import { BrandRevealStep } from '@/components/onboarding/BrandRevealStep'
 import { FunnelVideo } from '@/components/FunnelVideo'
 import { ReadyFill } from '@/components/ReadyFill'
@@ -44,7 +44,7 @@ export function OnboardingSteps() {  const [step, setStep] = useState<Step>(0)
   // Brand profile: always starts blank — visiting onboarding flushes any
   // previously saved brand so a refresh never restores an old one. Typing
   // never advances the step — only the Look up / Skip buttons move forward.
-  const [profile, setProfile] = useState<BrandProfile | null>(null)
+  const [profile, setProfile] = useState<BrandEntity | null>(null)
   const [brandUrl, setBrandUrl] = useState('')
   const [looking, setLooking] = useState(false)
   const [lookupError, setLookupError] = useState<string | null>(null)
@@ -80,8 +80,11 @@ export function OnboardingSteps() {  const [step, setStep] = useState<Step>(0)
     setStep(next)
   }
 
+  // Visiting onboarding never wipes the saved brand — a reset happens only
+  // through an explicit start-over action, so data actually survives.
   useEffect(() => {
-    clearBrand()
+    if (profile) return
+    setProfile(getBrand())
   }, [])
 
   // Keep the reveal scrolled to the incoming stream: stickiness is tracked
@@ -437,7 +440,7 @@ export function OnboardingSteps() {  const [step, setStep] = useState<Step>(0)
                 </p>
                 <p className="mt-1 text-sm text-slate-600">
                   <span className="font-semibold text-slate-900">Offerings:</span>{' '}
-                  {profile.offerings.items.length > 0 ? profile.offerings.items.join(', ') : 'None detected yet'}
+                  {profile.offerings.length > 0 ? profile.offerings.join(', ') : 'None detected yet'}
                 </p>
                 <button
                   type="button"

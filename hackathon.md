@@ -12,7 +12,7 @@
 - **Auth:** none
 - **AI models:** none
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-14T15:30:00Z
+- **Last updated:** 2026-09-15T00:05:00Z
 
 ## Log
 
@@ -90,3 +90,14 @@ stop propagating so row actions never navigate
 (`DashboardListings.tsx`), hard deletes for listings/accounts/settings
 alongside the soft remove actions, and `*.docx` joined the binary ignore
 list (`.gitignore`). Follow-up loop documented in `README.md`.
+
+### 2026-09-15 - working tree
+Brand data consolidated: `BrandProfile` retired in favor of `BrandEntity`
+(identity, location, voice, flat offerings, reveal intelligence) on a
+single `brand-entity` store key, with all readers migrated
+(`apps/web/src/lib/brand/types.ts`, `index.ts`, `query.ts`,
+`DashboardEventInspectForm.tsx` via `AiQuery`,
+`apps/web/src/components/onboarding/BrandRevealStep.tsx`). The onboarding
+mount effect that wiped the brand on every visit is gone — revisits hydrate
+instead (`apps/web/src/pages/onboarding/OnboardingSteps.tsx`). Reveal
+accumulation, the `/dashboard/brand` route, and the reactive hook come next.

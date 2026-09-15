@@ -1,5 +1,5 @@
 import type { FirehoseEvent } from '../analytics'
-import type { AiFollowUpAction, AiQuery, BrandProfile } from './types'
+import type { AiFollowUpAction, AiQuery, BrandEntity } from './types'
 
 /**
  * Build the query a follow-up action runs: the captured event plus the
@@ -10,7 +10,7 @@ import type { AiFollowUpAction, AiQuery, BrandProfile } from './types'
 export function buildAiQuery(
   action: AiFollowUpAction,
   event: FirehoseEvent,
-  brand: BrandProfile | null,
+  brand: BrandEntity | null,
   trackedPhrases: string[]
 ): AiQuery {
   return {
@@ -91,7 +91,7 @@ export function suggestAcross(texts: string[], event: FirehoseEvent, excluded: s
  */
 export function draftReply(query: AiQuery): string {
   const brandName = query.brand?.identity.name
-  const offering = query.brand?.offerings.items[0]
+  const offering = query.brand?.offerings[0]
   const area = query.brand?.voice.serviceAreas[0]
   const signoff = brandName ? ` — ${brandName}` : ' — the team'
   const serviceBit = offering ? ` We do ${offering.toLowerCase()}${area ? ` across ${area}` : ''}.` : ''

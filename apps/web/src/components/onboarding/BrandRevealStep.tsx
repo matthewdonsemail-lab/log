@@ -5,7 +5,7 @@ import { Check, GlobeIcon, HelpCircle, KeyRound, Map, SearchIcon, Swords, Target
 import { SOCIAL_ICONS, SocialGlyph } from '@/lib/social-icons'
 import PixelBlast from '@/components/PixelBlast'
 import { highlightQuote } from '@/components/cards/QuoteHighlight'
-import type { BrandProfile } from '@/lib/brand'
+import type { BrandEntity } from '@/lib/brand'
 import { saveKeywordMapping } from '@/lib/brand'
 import { COMPETITORS, GROUP_QUERIES, GROUP_SETS, KEYWORD_TARGETS, RETRY_SEARCH_SETS, revealQuestion, SITE_PAGE_PATHS } from '@/lib/reveal/flow'
 import { revealMachine } from '@/lib/reveal/machine'
@@ -161,7 +161,7 @@ export function BrandRevealStep({
   onContinue,
   leaving = false,
 }: {
-  profile: BrandProfile
+  profile: BrandEntity
   onContinue: () => void
   leaving?: boolean
 }) {

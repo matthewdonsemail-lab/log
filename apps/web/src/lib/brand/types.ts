@@ -1,7 +1,8 @@
 /**
- * Brand profile shapes: the three info types the app collects about the
- * business being listened for — identity, offerings, and voice — plus the
- * query object the inspect-form follow-ups build from an event + profile.
+ * Brand shapes: the single BrandEntity the whole app reads — identity,
+ * location, voice, offerings, plus the intelligence the reveal step
+ * discovers — and the query object the inspect-form follow-ups build from
+ * an event + brand.
  */
 
 export interface BrandIdentity {
@@ -11,11 +12,19 @@ export interface BrandIdentity {
   website: string
   /** One-line description; empty when the lookup could not infer one. */
   tagline: string
+  /** Logo URL, when the lookup finds one. */
+  logoUrl?: string
 }
 
-export interface BrandOfferings {
-  /** Services / products, e.g. ["Emergency callouts", "Boiler installs"]. */
-  items: string[]
+export interface BrandLocation {
+  /** Human label, e.g. "Galway, County Galway, Ireland". */
+  label: string
+  /** Default latitude. */
+  lat: number
+  /** Default longitude. */
+  lng: number
+  /** Service / delivery radius in km. */
+  radiusKm: number
 }
 
 export interface BrandVoice {
@@ -25,10 +34,32 @@ export interface BrandVoice {
   serviceAreas: string[]
 }
 
-export interface BrandProfile {
+export interface BrandIntelligence {
+  /** The related keyword the user picked during the reveal. */
+  selectedKeyword?: string
+  /** Competitor domains confirmed during the reveal. */
+  competitors: string[]
+  /** Communities the user chose to listen in. */
+  targetCommunities: CommunityPick[]
+}
+
+/**
+ * The central brand record — one entity, one store key. Onboarding creates
+ * the base (identity, location defaults, voice); the reveal enriches
+ * `intelligence` as each machine step completes; DashboardBrand edits it;
+ * listings, groups, and reply drafting all read it. Replaces the old split
+ * of BrandProfile + keyword-strategy-mapping (the mapping key stays around
+ * for the reveal's own bookkeeping until it migrates onto `intelligence`).
+ */
+export interface BrandEntity {
+  /** "brand-default" (single workspace for now). */
+  id: string
   identity: BrandIdentity
-  offerings: BrandOfferings
+  location: BrandLocation
   voice: BrandVoice
+  /** Services / products, e.g. ["Emergency callouts", "Boiler installs"]. */
+  offerings: string[]
+  intelligence: BrandIntelligence
   /** URL the profile was extracted from (mock lookup for now). */
   sourceUrl: string
   /** ISO timestamp of the last save. */
@@ -92,5 +123,5 @@ export interface AiQuery {
   text: string
   url: string
   trackedPhrases: string[]
-  brand: BrandProfile | null
+  brand: BrandEntity | null
 }

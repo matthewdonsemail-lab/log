@@ -1,12 +1,13 @@
 import { isRecord, loadPersistedState, savePersistedState } from '../persist'
-import type { BrandProfile, KeywordStrategyMapping } from './types'
+import type { BrandEntity, KeywordStrategyMapping } from './types'
 
 export type {
   AiFollowUpAction,
   AiQuery,
+  BrandEntity,
   BrandIdentity,
-  BrandOfferings,
-  BrandProfile,
+  BrandIntelligence,
+  BrandLocation,
   BrandVoice,
   CommunityPick,
   KeywordStrategyMapping,
@@ -14,35 +15,56 @@ export type {
   SearchStrategyEntry,
 } from './types'
 
-const STORAGE_KEY = 'brand-profile'
+const STORAGE_KEY = 'brand-entity'
 
 function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((item) => typeof item === 'string')
 }
 
-function isBrandProfile(value: unknown): value is BrandProfile {
+function isBrandEntity(value: unknown): value is BrandEntity {
   if (!isRecord(value)) return false
-  const { identity, offerings, voice, sourceUrl, updatedAt } = value
+  const { id, identity, location, voice, offerings, intelligence, sourceUrl, updatedAt } = value
+  if (typeof id !== 'string') return false
   if (!isRecord(identity) || typeof identity.name !== 'string' || typeof identity.website !== 'string') return false
   if (typeof identity.tagline !== 'string') return false
-  if (!isRecord(offerings) || !isStringArray(offerings.items)) return false
+  if (
+    !isRecord(location) ||
+    typeof location.label !== 'string' ||
+    typeof location.lat !== 'number' ||
+    typeof location.lng !== 'number' ||
+    typeof location.radiusKm !== 'number'
+  )
+    return false
+  if (!isStringArray(offerings)) return false
   if (!isRecord(voice) || typeof voice.tone !== 'string' || !isStringArray(voice.serviceAreas)) return false
+  if (!isRecord(intelligence) || !isStringArray(intelligence.competitors)) return false
+  if (
+    intelligence.selectedKeyword !== undefined &&
+    typeof intelligence.selectedKeyword !== 'string'
+  )
+    return false
+  if (!Array.isArray(intelligence.targetCommunities)) return false
   return typeof sourceUrl === 'string' && typeof updatedAt === 'string'
 }
 
-/** Read the saved brand profile; null when skipped or never set. */
-export function getBrand(): BrandProfile | null {
-  return loadPersistedState(STORAGE_KEY, isBrandProfile)
+/**
+ * Read the brand entity; null when skipped or never set. One key, one
+ * record — the legacy 'brand-profile' rows are intentionally not carried
+ * over (the old mount effect wiped that key on every onboarding visit, so
+ * nothing durable ever lived there).
+ */
+export function getBrand(): BrandEntity | null {
+  return loadPersistedState(STORAGE_KEY, isBrandEntity)
 }
 
-/** Persist the brand profile (stamps updatedAt). */
-export function saveBrand(profile: Omit<BrandProfile, 'updatedAt'>): BrandProfile {
-  const next: BrandProfile = { ...profile, updatedAt: new Date().toISOString() }
+/** Persist the brand entity (stamps updatedAt). */
+export function saveBrand(entity: Omit<BrandEntity, 'updatedAt'>): BrandEntity {
+  const next: BrandEntity = { ...entity, updatedAt: new Date().toISOString() }
   savePersistedState(STORAGE_KEY, next)
   return next
 }
 
-/** Forget the brand profile (user skipped or reset onboarding). */
+/** Forget the brand entity (user reset it — nothing calls this on mount). */
 export function clearBrand(): void {
   savePersistedState(STORAGE_KEY, null)
 }
@@ -110,12 +132,13 @@ function humanizeHost(host: string): string {
 
 /**
  * Mock brand extraction from a website URL: normalizes the URL, derives a
- * display name from the hostname, and seeds the voice with the house default.
- * Offerings come back empty — inventing services would be fake data, so the
- * follow-up drafts fall back to generic phrasing until real ones are added.
- * Throws a human-readable error for unparseable input.
+ * display name from the hostname, and seeds a base BrandEntity — voice gets
+ * the house default, location the Galway default, intelligence empty for the
+ * reveal to fill in. Offerings come back empty — inventing services would
+ * be fake data, so the follow-up drafts fall back to generic phrasing until
+ * real ones are added. Throws a human-readable error for unparseable input.
  */
-export function extractBrandFromUrl(input: string): Omit<BrandProfile, 'updatedAt'> {
+export function extractBrandFromUrl(input: string): Omit<BrandEntity, 'updatedAt'> {
   const trimmed = input.trim()
   if (!trimmed) throw new Error('Paste your website URL first.')
   const normalized = /^[a-z][a-z0-9+.-]*:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`
@@ -128,16 +151,19 @@ export function extractBrandFromUrl(input: string): Omit<BrandProfile, 'updatedA
   if (!url.hostname.includes('.')) throw new Error('That URL needs a domain, e.g. acmeplumbing.com.')
   const name = humanizeHost(url.hostname) || url.hostname
   return {
+    id: 'brand-default',
     identity: {
       name,
       website: url.origin + (url.pathname === '/' ? '' : url.pathname),
       tagline: `${name} — heard across social`,
     },
-    offerings: { items: [] },
+    location: { label: '', lat: 53.2707, lng: -9.0568, radiusKm: 10 },
+    offerings: [],
     voice: {
       tone: 'Friendly, plain-spoken local pro',
       serviceAreas: [],
     },
+    intelligence: { competitors: [], targetCommunities: [] },
     sourceUrl: url.href,
   }
 }
