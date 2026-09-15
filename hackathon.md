@@ -237,3 +237,17 @@ large). Remaining families (9 bespoke blues, 2 outlines, 4 sibling
 dashed adds, overlay pills, on-dark heroes, dashed-underline links) are
 queued; squircle tiles, the toggle switch, and segmented cells stay raw
 by design (they need clipPath refs / aria-pressed).
+
+### 2026-09-15 - 13e77fb
+Fixed the form-slot reopen bug: clicking the backdrop cleared the
+rendered slot without touching page state, so clicking the same Edit
+button again no-op'd (same value, no state change, effect never re-ran).
+All six slot-holding pages (Brand, Account, API, Groups, Keywords,
+Listings) now reset their open state on `lk:form-dismissed`, matching the
+pattern Analytics and ApiKey already had. The layout overlay also drops
+pointer-events during its 200ms exit fade, so a fast reopen click is no
+longer swallowed by the dissolving scrim. Same commit: API key page gets
+Scope/Activity tabs, clickable firehose rows opening an activity inspect
+sheet, and scope visuals; brand page copy refresh with EmptyBanner
+pointing at the channel Edit buttons; docs get Mermaid diagrams on the
+brand ramp plus channel-texting and keywords pages.
