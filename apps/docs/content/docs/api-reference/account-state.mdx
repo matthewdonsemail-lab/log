@@ -1,0 +1,206 @@
+---
+title: Account state and component flow
+description: The contract between account state, notifications, React, and the account API.
+---
+
+# Account state and component flow
+
+Account health is server/client state. React should render a normalized account state and should not interpret Facebook, X, or Reddit errors itself.
+
+The current mock API already persists `lastIssue`, `rawSignal`, `lastCheckedAt`, `retryAfter`, and `connectedAt`. The component contract added in `apps/web/src/lib/account-issues/state.ts` turns that persisted record into a render model and a transition notification.
+
+## The component contract
+
+The component should receive an `AccountStateViewModel` rather than a platform-specific error:
+
+```ts
+interface AccountStateViewModel {
+  account: ConnectionRecord
+  state: 'not_connected' | 'healthy' | 'degraded' | 'action_required'
+  issue: AccountIssueInfo | null
+  action:
+    | 'connect'
+    | 'reconnect'
+    | 'wait'
+    | 'use_proxy'
+    | 'open_challenge'
+    | 'login_in_browser'
+    | 'appeal'
+    | 'rejoin'
+    | 'none'
+  requiresAction: boolean
+}
+```
+
+This keeps rendering simple:
+
+1. `healthy` — show normal account status.
+2. `degraded` — show the issue, but do not require a user action when the issue is transient.
+3. `action_required` — show the issue, remediation, and the concrete action button.
+4. `not_connected` — show the connection action.
+
+The issue catalog remains the single source of truth for labels, severity, remediation, supported platforms, and the underlying normalized issue vocabulary.
+
+## State transition flow
+
+```mermaid
+flowchart TD
+    A[Account state changes] --> B[Detector observes platform signal]
+    B --> C[normalizeSignal(platform, rawSignal)]
+    C --> D[Persist normalized account state]
+    D --> E[Reactive store / Convex subscription]
+    E --> F[React receives new ConnectionRecord]
+    F --> G[accountStateView(record)]
+    G --> H{Requires user action?}
+    H -- No --> I[Render healthy or degraded state]
+    H -- Yes --> J[Render notification + remediation]
+    J --> K[User selects action]
+    K --> L{Action type}
+    L -- Challenge --> M[Open challenge resolver]
+    L -- Reconnect --> N[Open connection flow]
+    L -- Proxy --> O[Open proxy settings]
+    L -- Other --> P[Run action-specific workflow]
+    M --> Q[Challenge emits solved event]
+    Q --> R[POST /accounts/:id/resolve]
+    N --> S[Connect / save account]
+    O --> T[Update account configuration]
+    P --> U[Action-specific API operation]
+    R --> V[Backend returns authoritative account state]
+    S --> V
+    T --> V
+    U --> V
+    V --> E
+    E --> F
+    F --> W[accountStateNotification(previous, next)]
+    W --> X[Toast / inbox notification when state changed]
+```
+
+## What happens for CAPTCHA or human verification?
+
+For the existing mock flow:
+
+```text
+platform response
+  -> normalizeSignal(...)
+  -> captcha_html / challenge_interstitial / checkpointed
+  -> account.lastIssue
+  -> React derives action = open_challenge
+  -> ChallengeResolver opens the platform mock challenge page
+  -> challenge page posts lk:challenge-solved
+  -> resolver unlocks “Mark resolved & resume”
+  -> POST /accounts/:id/resolve
+  -> lastIssue = null
+  -> React receives the updated account
+  -> accountStateView() becomes healthy
+```
+
+The challenge resolver already validates the message origin and platform before accepting the solved event. Only the explicit resolver endpoint clears the persisted issue.
+
+## API contract
+
+### `GET /accounts`
+
+Returns the authoritative account records consumed by the component.
+
+```json
+{
+  "accounts": [
+    {
+      "id": "fb-personal",
+      "platform": "facebook",
+      "label": "Matthew",
+      "viaProxy": false,
+      "connectedAt": "2026-09-15T12:00:00.000Z",
+      "lastIssue": "checkpointed",
+      "rawSignal": { "code": 190, "subcode": 459 },
+      "lastCheckedAt": "2026-09-16T03:00:00.000Z",
+      "retryAfter": null
+    }
+  ]
+}
+```
+
+### `POST /accounts/:id/resolve`
+
+Used only after a human has completed a challenge that is in `CHALLENGE_RESOLVABLE_ISSUES`.
+
+On success the mock API clears `lastIssue`, `rawSignal`, and `retryAfter`, records `lastCheckedAt`, and restores `connectedAt` when required.
+
+The endpoint must reject an account that has no resolvable challenge. This prevents a stale resolver from blindly overwriting a newer account state.
+
+## Notification rules
+
+A notification is a consequence of a state transition, not a second source of truth.
+
+`accountStateNotification(previous, next)` compares the previous and next authoritative records. It should produce a notification only when the effective state or normalized issue changes.
+
+Examples:
+
+| Transition | User notification | User action |
+| --- | --- | --- |
+| `null → checkpointed` | Yes | Verify in browser |
+| `null → captcha_html` | Yes | Open challenge |
+| `null → challenge_interstitial` | Yes | Open challenge |
+| `null → rate_limited` | Optional/informational | Wait |
+| `rate_limited → null` | Recovery | None |
+| `checkpointed → null` | Recovery | None |
+| `session_expired → session_expired` | No duplicate | Re-export cookie |
+
+Do not emit a toast every time a reactive query re-renders. Emit only for an actual transition.
+
+## Mock data strategy
+
+The mock layer should model the same contract as the production store. `createMockAccountStateStore()` provides:
+
+- `getAccounts()`
+- `getAccount(id)`
+- `updateIssue(id, issue, signal, retryAfter)`
+- `resolveChallenge(id)`
+- `subscribe(listener)`
+
+This lets React components be developed against deterministic state transitions without waiting for Convex.
+
+The mock adapter should remain an adapter. Components should not import `MOCK_CONNECTIONS` directly.
+
+## Convex mapping
+
+When Convex becomes the production state source, keep the component contract unchanged:
+
+- Convex query → `ConnectionRecord[]` snapshot.
+- Convex reactive updates → store subscription equivalent.
+- Convex mutation → explicit account action.
+- Convex function/server action → detector and normalized state persistence.
+- `accountStateView()` → unchanged client projection.
+- `accountStateNotification()` → unchanged transition detector.
+
+This is the important boundary: **Convex owns authoritative state and reactivity; the shared account-state library owns normalization and presentation semantics; React owns rendering and user interaction.**
+
+## Implementation checklist
+
+### Foundation
+
+- [x] Define normalized issue vocabulary.
+- [x] Define raw signal shape.
+- [x] Define issue catalog and remediation.
+- [x] Define challenge-resolvable issues.
+- [x] Define `AccountStateViewModel`.
+- [x] Define pure transition notification generation.
+- [x] Define a mock reactive store contract.
+
+### Next implementation work
+
+- [ ] Move `DashboardAccounts` from direct `lastIssue` branching to `accountStateView()`.
+- [ ] Centralize action dispatch so every rendered action maps to one store/API operation.
+- [ ] Add transition tests for every actionable issue and recovery path.
+- [ ] Add a mock UI/demo that programmatically changes an account through the full state machine.
+- [ ] Add a production store adapter backed by Convex subscriptions and mutations.
+- [ ] Make the notification surface consume transition events instead of mutation-local success toasts.
+- [ ] Document the Convex schema and mutation/query names once the production schema is fixed.
+
+## Design rule
+
+The component should answer one question: **“Given this account state, what should I show and what can the user do?”**
+
+It should not answer: **“What did Facebook/X/Reddit mean by this HTTP response?”**
+
+That interpretation belongs in the detector and normalization layer before the state reaches React.

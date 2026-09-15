@@ -1,4 +1,5 @@
 {
   "index": "API reference",
-  "endpoints": "Endpoints"
+  "endpoints": "Endpoints",
+  "account-state": "Account state & component flow"
 }
