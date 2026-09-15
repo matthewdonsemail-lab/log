@@ -12,7 +12,7 @@
 - **Auth:** none
 - **AI models:** none
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-15T21:29:09Z
+- **Last updated:** 2026-09-15T23:32:48Z
 
 ## Log
 
@@ -416,3 +416,54 @@ domain, so the tag is derived from the request path (`accounts`,
 `VITE_MOCK_API_LOG_REQUESTS=1` for local dashboard debugging — restart
 `vite dev` after changing it, since Vite bakes env at startup. typecheck
 clean, lint clean (two pre-existing warnings, unchanged), 39/39 vitest pass.
+
+### 2026-09-16 - working tree
+Synced main with the merged account-state contract (PR #2,
+feat/account-state-component-contract) and added three agent-facing
+reference docs under `docs/okf/`. The account-state module
+(`apps/web/src/lib/account-issues/`) adds `state.ts` — a pure,
+dependency-free contract: `accountStateView` (ConnectionRecord →
+render model), `accountStateNotification` (old/new pure transition
+detector returning `AccountNotification | null`), and
+`accountIssuePatch` (canonical persisted-issue patch) — plus
+`store.ts` (in-memory `AccountStateStore` matching the shape a future
+Convex-backed adapter will expose, so the component never binds to the
+HTTP transport) and `api-reference/account-state.mdx`. This is what
+Part B's transition trigger and notification surfaces build against.
+The three OKF docs crystallise rules that were previously scattered
+across README, test comments, and commit history: `ids.md` (single
+UUID v4 generator, the native-id-preserved-alongside rule, the five
+never-derive-from-input regressions the consolidation fixed, literal
+seed/fixture ids to keep byte-identical, live-client mint/preserve
+rules), `mock_transport.md` (the route-round-trip rule every page
+follows, the per-domain client→sub-app table, the messaging send/ack
+contract, the in-place-mutation/no-pub-sub store caveat explicitly
+assigned to Part B, and the live-swap-is-transport-only guarantee),
+and `request_logging.md` (the three invariants the logger must
+preserve: env-gated opt-in with the same variable names, redaction by
+field name before `JSON.stringify` so no second copy of a secret ever
+exists in a log, exactly-once-per-request on every consumption path
+including the leaf-level `.route()` replay behavior, and the line
+shape). `marketplace_update.md` existed before as the pattern
+document; these three follow the same
+"rule → why → what it looks like" structure so an agent can work
+from the docs alone. typecheck clean, 39/39 vitest pass, lint clean.
+
+### 2026-09-16 - working tree
+Merged the account-state component contract (PR #2, branch
+feat/account-state-component-contract) into `main` and fixed the two
+defects its review miss: (1) `state.ts` indexed `issue.remediation` —
+an already-resolved string — with `next.platform`, so the
+platform-specific remediation copy (e.g. "Log in at facebook.com and
+clear the checkpoint…") was silently dropped from every notification's
+`detail` field; now reads the resolved string and falls back to the
+appropriate recovery/generic copy when it is empty; (2) the PR's own
+`state.test.ts` asserted `label: 'Bot challenge pending'` (the
+`challenge_interstitial` label) on a record seeded with
+`lastIssue: 'captcha_html'`, whose three other assertions
+(`action_required`, `open_challenge`, `requiresAction: true`) only hold
+for `captcha_html` (transient: false) — corrected the label assertion
+to the catalog's actual `captcha_html` label. Added a regression test
+pinning that the platform-specific remediation string survives into the
+notification payload, so Part B's push flow gets the real copy, not the
+generic fallback. typecheck clean, 45/45 vitest pass, lint clean.
