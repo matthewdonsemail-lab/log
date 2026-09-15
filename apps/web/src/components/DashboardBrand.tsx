@@ -15,7 +15,7 @@ import {
 } from '../lib/brand'
 import { ChatBubble, FormInput, LoadingLine } from './DashboardFormPrimitives'
 import { RedditThread } from './cards/RedditThread'
-import { TwitterThreads } from './cards/TwitterThreads'
+import { TwitterThreads, TwitterThreadReply } from './cards/TwitterThreads'
 import { DashboardTab } from './DashboardTab'
 import { useDashboardFormSlot } from './DashboardFormSlot'
 import { DashboardBrandForm, type BrandNamespace } from './DashboardBrandForm'
@@ -375,7 +375,7 @@ export function DashboardBrand() {
                     <p className="text-xs text-white/70">
                       {tab === 'reddit'
                         ? 'Type the agent’s reply — it renders as the blue ListeningKit Agent comment in the thread.'
-                        : 'Type the agent’s reply — it renders as the threaded ListeningKit reply below the opening post.'}
+                        : 'Type the agent’s reply — it threads below the opening post.'}
                     </p>
                     <div className="mt-3 flex items-center gap-2">
                       <div className="min-w-0 flex-1">
@@ -403,8 +403,11 @@ export function DashboardBrand() {
                       <RedditThread reply={inbound} />
                     </div>
                   ) : (
-                    <div className="mt-3">
-                      <TwitterThreads reply={inbound} />
+                    <div className="mt-3 flex flex-col">
+                      <TwitterThreads />
+                      <div className="w-full overflow-hidden rounded-xl bg-white">
+                        <TwitterThreadReply reply={inbound} />
+                      </div>
                     </div>
                   )}
                 </BrandSurface>
