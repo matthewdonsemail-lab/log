@@ -63,6 +63,13 @@ export const COMMUNITY_JOIN_STATE_LABELS: Record<CommunityJoinState, string> = {
  */
 export type CommunityRemovalProvenance = 'user' | 'platform'
 
+/**
+ * A joinable group the dashboard tracks: a Facebook group (joined through a
+ * connected account) or a subreddit (workspace-scoped). X has no community
+ * primitive — X listening is a keyword phrase (see the keywords domain), so
+ * no `x` rows ever materialize here even though `platform` keeps the shared
+ * `ConnectionPlatform` union.
+ */
 export interface Community {
   id: string
   platform: ConnectionPlatform
@@ -121,13 +128,13 @@ export interface Community {
   /**
    * Client-modal mirror for facebook pre-submit phases (`idle` when no
    * modal is or was open). Drives the Resume menu item and the
-   * "answering paused" notice; `idle` for reddit/x rows.
+   * "answering paused" notice; `idle` for reddit rows.
    */
   formPhase: StoredFormPhase
   /**
    * Reddit detail for exact menu gating (workspace-scoped rows carry no
    * account, so the row itself holds what the poller last observed).
-   * Defaults for facebook/x rows.
+   * Defaults for facebook rows.
    */
   subredditType: string | null
   userIsContributor: boolean
@@ -150,8 +157,8 @@ export interface Community {
    * The account the request was sent / joined with. Facebook groups are
    * joined through a connected account, so this is set for any facebook
    * community that has ever been joined (pending, limited, accepted,
-   * declined, removed); null for workspace-scoped rows (subreddits, X
-   * communities) and for accounts that were deleted from the roster.
+   * declined, removed); null for workspace-scoped rows (subreddits) and
+   * for accounts that were deleted from the roster.
    */
   accountId: string | null
   /**

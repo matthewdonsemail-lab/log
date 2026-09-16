@@ -173,7 +173,7 @@ describe('facebook approve / decline / remove / leave', () => {
 
   it('400s admin routes on non-facebook rows', async () => {
     expect((await postRoute('reddit-diy', 'accept')).status).toBe(400)
-    expect((await postRoute('x-dallas-tx', 'decline')).status).toBe(400)
+    expect((await postRoute('reddit-plumbing', 'decline')).status).toBe(400)
     expect((await postRoute('reddit-diy', 'remove')).status).toBe(400)
   })
 })
@@ -236,16 +236,6 @@ describe('reddit observations and gates', () => {
   it('400s empty observations and no-ops the accepted join', async () => {
     expect((await postRoute('reddit-diy', 'observe', {})).status).toBe(400)
     expect((await postJoin('reddit-plumbing', {})).status).toBe(200)
-  })
-})
-
-describe('x subscribe flow and walls', () => {
-  it('joins and leaves with no gates', async () => {
-    expect((await postJoin('x-plumbing-tips', {})).status).toBe(201)
-    expect((await getRow('x-plumbing-tips')).joinState).toBe('accepted')
-    expect((await deleteCommunity('x-plumbing-tips')).status).toBe(200)
-    expect((await getRow('x-plumbing-tips')).joinState).toBe('none')
-    expect((await postJoin('x-plumbing-tips', {})).status).toBe(201)
   })
 })
 

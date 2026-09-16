@@ -499,3 +499,24 @@ awaiting_input/done/failed/abandoned/expired) with heartbeat leases and
 draft-preserving resume. Store drives ephemeral actors per request from a
 versioned flat row (`communities.joins.v2`); UI menus dispatch to the same
 machines. typecheck clean, 109/109 vitest pass, lint clean.
+
+### 2026-09-16 - working tree
+Removed X-as-community from the communities domain: X has no joinable
+community primitive (twikit listens via `search_tweet`, never via
+membership), so the six `x-*` catalog rows
+(`COMMUNITIES_BASE` + `COMMUNITY_TOPICS` in `lib/communities/mock.ts`) and
+the trivial `lib/communities/x/` machine (`machine.ts`, `types.ts`,
+`machine.test.ts`) are deleted. `server.ts` drops the X imports, drive
+helpers, and join/observe/leave branches (unknown platforms now 400/deny);
+`menus.ts` denies all moves for unknown platforms; `types.ts` documents
+that only facebook groups + subreddits materialize. The Groups page tabs
+and form offer facebook + reddit only (`PlatformPick` gains an opt-in
+`platforms` filter; the X-only `GroupPick` rows are gone, reddit keeps its
+dropdown). X listening stays where it already lives: free-form
+`groupId: null` phrases in the keywords domain (server-enforced), X
+session health on the `x-*` connection rows (`normalize.ts` +
+`WRITE_BLOCKING_ISSUES`), DMs in `messaging/twitter/`, signals in `feed/`.
+Persisted pre-removal X catalog/orphan join rows are filtered on load.
+typecheck clean, 105/105 vitest pass (109 minus the 3 x-machine + 1 x-flow
+tests), lint clean (one pre-existing spread-fallback warning in
+communities/index.ts).

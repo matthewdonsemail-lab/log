@@ -39,14 +39,24 @@ export { SquircleBorder, SquircleStroke } from '@listeningkit/ui'
 
 export function PlatformPick({
   value,
-  onChange
+  onChange,
+  platforms
 }: {
   value: ConnectionPlatform | null
   onChange: (platform: ConnectionPlatform) => void
+  /**
+   * Restrict the tiles to these platforms (defaults to every social icon).
+   * The groups form passes facebook + reddit only — X has no joinable
+   * communities, its listening lives in the keywords form.
+   */
+  platforms?: readonly ConnectionPlatform[]
 }) {
+  const tiles = platforms
+    ? SOCIAL_ICONS.filter((icon) => (platforms as readonly string[]).includes(icon.id))
+    : SOCIAL_ICONS
   return (
     <div className="flex flex-col gap-3" role="radiogroup" aria-label="Platform">
-      {SOCIAL_ICONS.map((icon) => (
+      {tiles.map((icon) => (
         <PlatformTile
           key={icon.id}
           icon={icon}

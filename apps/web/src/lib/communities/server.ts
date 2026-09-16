@@ -39,17 +39,6 @@ import {
   type RedditEvent,
   type RedditStateValue
 } from './reddit/machine'
-import {
-  bootstrapXEvents,
-  deriveXValue,
-  xInputFromRow,
-  xMachine,
-  xToJoinState,
-  xUserVerdict,
-  type XContext,
-  type XEvent,
-  type XStateValue
-} from './x/machine'
 import type {
   Community,
   StoredCommunityJoin
@@ -65,7 +54,7 @@ import { requestLogger } from '../request-log'
  * register new rows (the stand-in for the client resolving an unknown URL).
  *
  * Every mutation dispatches by platform to its xstate machine
- * (`facebook/`, `reddit/`, `x/`) — never to hand-rolled transitions. Actors
+ * (`facebook/`, `reddit/`) — never to hand-rolled transitions. Actors
  * are ephemeral per request: the flat row below is replayed through the
  * platform bootstrap events, the new events are sent, and the snapshot is
  * written back to flat fields. User intents run a verdict pre-check first
@@ -154,7 +143,10 @@ function defaultJoin(): JoinState {
  * refresh instead of resetting to seeds.
  */
 const catalog: BaseCommunity[] =
-  loadPersistedState(CATALOG_KEY, isBaseCommunityArray) ?? [...COMMUNITIES_BASE]
+  (loadPersistedState(CATALOG_KEY, isBaseCommunityArray) ?? [...COMMUNITIES_BASE])
+    // X search scopes are keywords, not communities — drop any X rows a
+    // previous session persisted before the X catalog was removed.
+    .filter((row) => row.platform !== 'x')
 
 function createJoinState(): Record<string, JoinState> {
   const state: Record<string, JoinState> = {}
@@ -180,6 +172,13 @@ function communityPlatformOf(id: string): ConnectionPlatform | undefined {
 
 const joins: Record<string, JoinState> =
   loadPersistedState(JOINS_KEY, isJoinStateRecord) ?? createJoinState()
+
+// Drop orphaned join rows (e.g. X rows persisted before the X catalog was
+// removed) — materialize only walks the catalog, so these never render;
+// the next mutation persists the cleaned map.
+for (const id of Object.keys(joins)) {
+  if (!catalog.some((row) => row.id === id)) delete joins[id]
+}
 
 function persistCommunities(): void {
   savePersistedState(CATALOG_KEY, catalog)
@@ -254,8 +253,8 @@ function rowNotice(base: BaseCommunity, row: JoinState): string | null {
 function materialize(id?: string): Community | Community[] {
   const all: Community[] = catalog.map((base) => {
     const state = joins[base.id]
-    // The account relation only exists for facebook — subreddits and X
-    // communities are joined without an account.
+    // The account relation only exists for facebook — subreddits are joined
+    // without an account.
     const accountId =
       base.platform === 'facebook' && state?.state !== 'none' ? (state.accountId ?? null) : null
     const questions = state ? effectiveQuestions(base, state) : base.entryQuestions
@@ -352,41 +351,22 @@ function driveReddit(id: string, extra: RedditEvent[]): { value: RedditStateValu
   return snapshot
 }
 
-function writeXBack(id: string, value: XStateValue, context: XContext): void {
-  const row = joins[id]
-  row.state = xToJoinState(value, context.wallType)
-}
-
-function driveX(id: string, extra: XEvent[]): { value: XStateValue; context: XContext } {
-  const row = joins[id]
-  const prev = row.state
-  const input = xInputFromRow(row)
-  const boot = bootstrapXEvents(row)
-  const snapshot = driveMachine<XStateValue, XContext>(xMachine, input, [...boot, ...extra])
-  writeXBack(id, snapshot.value, snapshot.context)
-  const after = joins[id]
-  const walled = after.state === 'login-wall' || after.state === 'unknown'
-  const wasWalled = prev === 'login-wall' || prev === 'unknown'
-  after.priorJoinState = walled ? (wasWalled ? after.priorJoinState : prev) : null
-  persistCommunities()
-  return snapshot
-}
-
 /**
  * Hono-shaped communities API. Mock-backed for now — the real endpoints come
  * from the platform clients (facebook group joins via connected accounts,
- * reddit subscriptions, X follows). Routes and response shapes stay the same
+ * reddit subscriptions). X listening is keyword-scoped, not a community, so
+ * it lives in the keywords domain. Routes and response shapes stay the same
  * when the backends land; each route dispatches to its platform machine.
  */
 export const communitiesApp = new Hono()
   .use('*', requestLogger())
-  .get('/communities', describeRoute({ operationId: 'listCommunities', tags: ['Communities'], summary: 'List communities', description: 'Lists the full catalog plus any client-resolved rows (from pasted Facebook links or typed subreddits) materialized with current `joinState` (none/pending/accepted), `accountId` for Facebook joins, and `accountLabel`. Optional `?platform=facebook|x|reddit` filters server-side. This is the source for the Groups page and every keyword/listings scope picker. Code: apps/web/src/lib/communities/server.ts:180', parameters: [{ name: 'platform', in: 'query', required: false, schema: { type: 'string', enum: ['facebook','x','reddit'], description: 'Platform filter.' } }], responses: { 200: { description: 'Community list.', content: { 'application/json': { schema: CommunitiesResponseJson } } } } }), (c) => {
+  .get('/communities', describeRoute({ operationId: 'listCommunities', tags: ['Communities'], summary: 'List communities', description: 'Lists the full catalog plus any client-resolved rows (from pasted Facebook links or typed subreddits) materialized with current `joinState` (none/pending/accepted), `accountId` for Facebook joins, and `accountLabel`. Optional `?platform=facebook|reddit` filters server-side. This is the source for the Groups page and every keyword/listings scope picker. Code: apps/web/src/lib/communities/server.ts:180', parameters: [{ name: 'platform', in: 'query', required: false, schema: { type: 'string', enum: ['facebook','reddit'], description: 'Platform filter.' } }], responses: { 200: { description: 'Community list.', content: { 'application/json': { schema: CommunitiesResponseJson } } } } }), (c) => {
     const platform = c.req.query('platform') as ConnectionPlatform | undefined
     const all = materialize() as Community[]
     const communities = platform ? all.filter((community) => community.platform === platform) : all
     return c.json({ communities })
   })
-  .post('/communities/:id/join', describeRoute({ operationId: 'joinCommunity', tags: ['Communities'], summary: 'Join community', description: 'Attempts to join `:id` through its platform machine. Facebook requires `accountId` of a connected Facebook account; `answers` ride along and partial submits are accepted with `answersComplete: false` (Facebook lets requests through unanswered). Facebook transitions to `pending`, reddit/x to `accepted` (restricted subreddits land `limited`). A refused user move 409s with the machine reason. Already in-flight/member rows are a no-op 200. Persists to localStorage. Code: apps/web/src/lib/communities/server.ts:join', parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', description: 'Community id.' } }], requestBody: { required: false, content: { 'application/json': { schema: { type: 'object', properties: { accountId: { type: 'string', description: 'Facebook account id (facebook only).' }, answers: { type: 'array', items: { type: 'string' }, description: 'Answers to entryQuestions; partial accepted and flagged.' } } } } } }, responses: { 201: { description: 'Joined (now pending/accepted).', content: { 'application/json': { schema: CommunityResponseJson } } }, 200: { description: 'Already joined.', content: { 'application/json': { schema: CommunityResponseJson } } }, 400: errorResponse('Facebook groups must be joined with a connected Facebook account'), 404: errorResponse('Community not found'), 409: errorResponse('Refused by the platform machine') } }), async (c) => {
+  .post('/communities/:id/join', describeRoute({ operationId: 'joinCommunity', tags: ['Communities'], summary: 'Join community', description: 'Attempts to join `:id` through its platform machine. Facebook requires `accountId` of a connected Facebook account; `answers` ride along and partial submits are accepted with `answersComplete: false` (Facebook lets requests through unanswered). Facebook transitions to `pending`, reddit to `accepted` (restricted subreddits land `limited`). A refused user move 409s with the machine reason. Already in-flight/member rows are a no-op 200. Persists to localStorage. Code: apps/web/src/lib/communities/server.ts:join', parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', description: 'Community id.' } }], requestBody: { required: false, content: { 'application/json': { schema: { type: 'object', properties: { accountId: { type: 'string', description: 'Facebook account id (facebook only).' }, answers: { type: 'array', items: { type: 'string' }, description: 'Answers to entryQuestions; partial accepted and flagged.' } } } } } }, responses: { 201: { description: 'Joined (now pending/accepted).', content: { 'application/json': { schema: CommunityResponseJson } } }, 200: { description: 'Already joined.', content: { 'application/json': { schema: CommunityResponseJson } } }, 400: errorResponse('Facebook groups must be joined with a connected Facebook account'), 404: errorResponse('Community not found'), 409: errorResponse('Refused by the platform machine') } }), async (c) => {
     const id = c.req.param('id')
     const base = findBaseById(id)
     if (!base) return c.json({ error: 'Community not found' }, 404)
@@ -463,15 +443,7 @@ export const communitiesApp = new Hono()
       const communities = materialize() as Community[]
       return c.json({ community: communities.find((community) => community.id === id)!, communities }, 201)
     }
-    const xValue = deriveXValue(row)
-    if (xValue === 'subscribed') {
-      return c.json({ community: materialize(id) as Community, communities: materialize() as Community[] })
-    }
-    const xVerdict = xUserVerdict(xValue, {}, 'subscribe')
-    if (!xVerdict.allowed) return c.json({ error: xVerdict.reason ?? 'Join refused.' }, 409)
-    driveX(id, [{ type: 'SUBSCRIBE' }])
-    const communities = materialize() as Community[]
-    return c.json({ community: communities.find((community) => community.id === id)!, communities }, 201)
+    return c.json({ error: 'Unknown platform — communities only track facebook groups and subreddits' }, 400)
   })
   .post('/communities/join-by-url', describeRoute({ operationId: 'joinCommunityByUrl', tags: ['Communities'], summary: 'Join community by URL', description: 'Parses a `facebook.com/groups/…` URL via `parseFacebookGroupUrl`, registers it as a new catalog row if unseen (`registerBase`), then runs the same Facebook join transition (account + answers, partial accepted and flagged). Dedupes by URL — already tracked rows return 200. Registers unknown URLs before joining so pasted links become first-class communities. Code: apps/web/src/lib/communities/server.ts:join-by-url', requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { url: { type: 'string', description: 'Facebook group URL.' }, accountId: { type: 'string' }, answers: { type: 'array', items: { type: 'string' } } }, required: ['url'] } } } }, responses: { 201: { description: 'Joined.', content: { 'application/json': { schema: CommunityResponseJson } } }, 200: { description: 'Already tracked.', content: { 'application/json': { schema: CommunityResponseJson } } }, 400: errorResponse('That does not look like a Facebook group link') } }), async (c) => {
     const body = await c.req.json<{ url?: string; accountId?: string; answers?: string[] }>().catch(() => null)
@@ -627,7 +599,7 @@ export const communitiesApp = new Hono()
     const base = findBaseById(id)
     if (!base) return c.json({ error: 'Community not found' }, 404)
     if (base.platform !== 'facebook') {
-      return c.json({ error: 'Only Facebook groups have admin removals — reddit/x leave via DELETE' }, 400)
+      return c.json({ error: 'Only Facebook groups have admin removals — reddit leaves via DELETE' }, 400)
     }
     const row = joins[id]
     if (!row || (row.state !== 'accepted' && row.state !== 'limited')) {
@@ -727,7 +699,7 @@ export const communitiesApp = new Hono()
     const communities = materialize() as Community[]
     return c.json({ community: communities.find((community) => community.id === id)!, communities })
   })
-  .post('/communities/:id/observe', describeRoute({ operationId: 'observeCommunity', tags: ['Communities'], summary: 'Client observation webhook', description: 'Camoufox poller webhook (platform source): report what the client actually saw. Reddit/x accept `subredditType`, `subscribed`, `contributor`, `quarantineOptIn`, `karmaGated` (+`karmaEvidence`); any platform accepts `wallType` (`login`, `challenge`, `unclassified`) and `cleared: true` to resolve a wall back to the prior state. Observations always land — the poller reports regardless of session health. Code: apps/web/src/lib/communities/server.ts:observe', parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', description: 'Community id.' } }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { subredditType: { type: 'string' }, subscribed: { type: 'boolean' }, contributor: { type: 'boolean' }, quarantineOptIn: { type: 'boolean' }, karmaGated: { type: 'boolean' }, karmaEvidence: { type: 'string' }, wallType: { type: 'string' }, cleared: { type: 'boolean' } } } } } }, responses: { 200: { description: 'Observed.', content: { 'application/json': { schema: CommunityResponseJson } } }, 400: errorResponse('Nothing observable in the payload'), 404: errorResponse('Community not found') } }), async (c) => {
+  .post('/communities/:id/observe', describeRoute({ operationId: 'observeCommunity', tags: ['Communities'], summary: 'Client observation webhook', description: 'Camoufox poller webhook (platform source): report what the client actually saw. Reddit accepts `subredditType`, `subscribed`, `contributor`, `quarantineOptIn`, `karmaGated` (+`karmaEvidence`); any platform accepts `wallType` (`login`, `challenge`, `unclassified`) and `cleared: true` to resolve a wall back to the prior state. Observations always land — the poller reports regardless of session health. Code: apps/web/src/lib/communities/server.ts:observe', parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', description: 'Community id.' } }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { subredditType: { type: 'string' }, subscribed: { type: 'boolean' }, contributor: { type: 'boolean' }, quarantineOptIn: { type: 'boolean' }, karmaGated: { type: 'boolean' }, karmaEvidence: { type: 'string' }, wallType: { type: 'string' }, cleared: { type: 'boolean' } } } } } }, responses: { 200: { description: 'Observed.', content: { 'application/json': { schema: CommunityResponseJson } } }, 400: errorResponse('Nothing observable in the payload'), 404: errorResponse('Community not found') } }), async (c) => {
     const id = c.req.param('id')
     const base = findBaseById(id)
     if (!base) return c.json({ error: 'Community not found' }, 404)
@@ -757,16 +729,10 @@ export const communitiesApp = new Hono()
         writeFacebookBack(id, snapshot.value, snapshot.context)
         joins[id].priorJoinState = null
         persistCommunities()
-      } else if (base.platform === 'reddit') {
+      } else {
         const input = redditInputFromRow(joins[id])
         const snapshot = driveMachine<RedditStateValue, RedditContext>(redditMachine, input, bootstrapRedditEvents(joins[id]))
         writeRedditBack(id, snapshot.value, snapshot.context)
-        joins[id].priorJoinState = null
-        persistCommunities()
-      } else {
-        const input = xInputFromRow(joins[id])
-        const snapshot = driveMachine<XStateValue, XContext>(xMachine, input, bootstrapXEvents(joins[id]))
-        writeXBack(id, snapshot.value, snapshot.context)
         joins[id].priorJoinState = null
         persistCommunities()
       }
@@ -784,10 +750,8 @@ export const communitiesApp = new Hono()
           undefined,
           effectiveQuestions(base, row)
         )
-      } else if (base.platform === 'reddit') {
-        driveReddit(id, [{ type: 'OBSERVE_WALL', wallType: body.wallType }])
       } else {
-        driveX(id, [{ type: 'OBSERVE_WALL', wallType: body.wallType === 'challenge' ? 'unclassified' : body.wallType }])
+        driveReddit(id, [{ type: 'OBSERVE_WALL', wallType: body.wallType }])
       }
       const communities = materialize() as Community[]
       return c.json({ community: communities.find((community) => community.id === id)!, communities })
@@ -848,7 +812,7 @@ export const communitiesApp = new Hono()
     const communities = materialize() as Community[]
     return c.json({ community: communities.find((community) => community.id === id)!, communities })
   })
-  .delete('/communities/:id', describeRoute({ operationId: 'leaveCommunity', tags: ['Communities'], summary: 'Leave community', description: 'Leaves `:id` through its platform machine: Facebook `pending` withdraws to `none` (account + answers kept for the re-join prefill), `accepted`/`limited` become `removed` stamped `removedBy: "user"`; reddit/x subscriptions end back to `none`. `none`/`declined`/`removed`/walled rows are a no-op 200. Persists. Code: apps/web/src/lib/communities/server.ts:leave', parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', description: 'Community id.' } }], responses: { 200: { description: 'Remaining communities.', content: { 'application/json': { schema: CommunitiesResponseJson } } }, 404: errorResponse('Community not found'), 409: errorResponse('Refused by the platform machine') } }), (c) => {
+  .delete('/communities/:id', describeRoute({ operationId: 'leaveCommunity', tags: ['Communities'], summary: 'Leave community', description: 'Leaves `:id` through its platform machine: Facebook `pending` withdraws to `none` (account + answers kept for the re-join prefill), `accepted`/`limited` become `removed` stamped `removedBy: "user"`; reddit subscriptions end back to `none`. `none`/`declined`/`removed`/walled rows are a no-op 200. Persists. Code: apps/web/src/lib/communities/server.ts:leave', parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string', description: 'Community id.' } }], responses: { 200: { description: 'Remaining communities.', content: { 'application/json': { schema: CommunitiesResponseJson } } }, 404: errorResponse('Community not found'), 409: errorResponse('Refused by the platform machine') } }), (c) => {
     const id = c.req.param('id')
     const base = findBaseById(id)
     if (!base) return c.json({ error: 'Community not found' }, 404)
@@ -864,19 +828,12 @@ export const communitiesApp = new Hono()
         if (!verdict.allowed) return c.json({ error: verdict.reason ?? 'Leave refused.' }, 409)
         driveFacebook(id, [{ type: 'LEAVE' }], liveAccountIssue(row.accountId), effectiveQuestions(base, row))
       }
-    } else if (base.platform === 'reddit') {
+    } else {
       const value = deriveRedditValue(row)
       if (value === 'subscribed' || value === 'restrictedReadOnly' || value === 'quarantineGate') {
         const verdict = redditUserVerdict(value, {}, 'unsubscribe')
         if (!verdict.allowed) return c.json({ error: verdict.reason ?? 'Leave refused.' }, 409)
         driveReddit(id, [{ type: 'UNSUBSCRIBE' }])
-      }
-    } else {
-      const value = deriveXValue(row)
-      if (value === 'subscribed') {
-        const verdict = xUserVerdict(value, {}, 'unsubscribe')
-        if (!verdict.allowed) return c.json({ error: verdict.reason ?? 'Leave refused.' }, 409)
-        driveX(id, [{ type: 'UNSUBSCRIBE' }])
       }
     }
     persistCommunities()

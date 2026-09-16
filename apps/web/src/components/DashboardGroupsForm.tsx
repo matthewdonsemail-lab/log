@@ -30,7 +30,6 @@ import {
   EmptyLine,
   FormInput,
   LoadingLine,
-  PickRow,
   PlatformPick
 } from './DashboardFormPrimitives'
 
@@ -52,8 +51,10 @@ function iconFor(platform: ConnectionPlatform): SocialIcon {
  *    the join. Answering every question unlocks Join, and the answers ride
  *    along on `POST /communities/join-by-url`. Facebook gates entry, so a
  *    fresh request lands in `pending` until the group accepts.
- *  - x / reddit: platform → group (2 steps) — pick from the tracked roster,
- *    accepted immediately.
+ *  - reddit: platform → group (2 steps) — pick from the tracked roster,
+ *    accepted immediately. X has no joinable communities: X listening is a
+ *    keyword phrase, so the keywords form owns X and this sheet only offers
+ *    facebook + reddit.
  * No step auto-advances on select: every step moves exclusively through the
  * sheet's Continue button (see AGENTS.md form rules).
  */
@@ -151,7 +152,7 @@ export function DashboardGroupsForm({
 
   // The full roster, split into the visible paths plus what's joinable:
   // pending requests (waiting on acceptance), accepted members, and the
-  // joinable remainder. x / reddit join straight to `accepted`, so declined
+  // joinable remainder. Reddit joins straight to `accepted`, so declined
   // and self-removed rows rejoin through the same pick — the unified menu
   // helper decides exactly which states those are (platform-removed and
   // unobserved rows stay out). Facebook joins by URL so it never picks from
@@ -301,12 +302,12 @@ export function DashboardGroupsForm({
   }
 
   // Step one's Continue: confirm the platform pick and unlock the next
-  // step. x / reddit land on the group step immediately, so fetch it here —
+  // step. Reddit lands on the group step immediately, so fetch it here —
   // the roster drives the busy state until it resolves.
   function continueFromPlatform() {
     if (platform === null || platformConfirmed || busy) return
     setPlatformConfirmed(true)
-    if (platform !== 'facebook') void loadRoster(platform)
+    if (platform === 'reddit') void loadRoster(platform)
   }
 
   // Account step's Continue: confirm the account pick and unlock the group
@@ -462,6 +463,7 @@ export function DashboardGroupsForm({
       {step === 1 ? (
         <PlatformPick
           value={platform}
+          platforms={['facebook', 'reddit']}
           onChange={(next) => {
             setPlatform(next)
             setAccountId(null)
@@ -515,20 +517,11 @@ export function DashboardGroupsForm({
           <LoadingLine label={`Loading ${platformLabel(platform)} communities…`} />
         ) : (
           <div className="flex flex-col gap-4">
-            {platform === 'reddit' ? (
-              <RedditGroupPick
-                communities={joinable}
-                value={communityId}
-                onSelect={setCommunityId}
-              />
-            ) : (
-              <GroupPick
-                platform={platform}
-                communities={joinable}
-                value={communityId}
-                onSelect={setCommunityId}
-              />
-            )}
+            <RedditGroupPick
+              communities={joinable}
+              value={communityId}
+              onSelect={setCommunityId}
+            />
             <RelationLists pending={pending} accepted={accepted} declined={declined} removed={removed} />
           </div>
         )
@@ -842,42 +835,5 @@ function RedditGroupPick({
         }))}
       />
     </label>
-  )
-}
-
-function GroupPick({
-  platform,
-  communities,
-  value,
-  onSelect
-}: {
-  platform: ConnectionPlatform
-  communities: Community[]
-  value: string | null
-  onSelect: (id: string) => void
-}) {
-  if (communities.length === 0) {
-    return (
-      <EmptyLine
-        label={`You're already in every ${platformLabel(platform)} group we track.`}
-      />
-    )
-  }
-  return (
-    <div className="flex flex-col gap-2">
-      {communities.map((community) => {
-        const active = value === community.id
-        return (
-          <PickRow
-            key={community.id}
-            active={active}
-            onClick={() => onSelect(community.id)}
-            label={community.name}
-            sub={`${community.handle} · ${community.members}`}
-            icon={<SocialBadge icon={iconFor(community.platform)} />}
-          />
-        )
-      })}
-    </div>
   )
 }

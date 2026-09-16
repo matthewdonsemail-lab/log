@@ -3,7 +3,7 @@ import type { AccountIssue } from '../account-issues'
 
 /**
  * Shared transition vocabulary for the per-platform community machines
- * (`facebook/`, `reddit/`, `x/`). Every machine answers membership moves
+ * (`facebook/`, `reddit/`). Every machine answers membership moves
  * with this shape so the store (409 with the reason) and the dashboard
  * (hiding the action, toasting the refusal) stay in lockstep.
  */

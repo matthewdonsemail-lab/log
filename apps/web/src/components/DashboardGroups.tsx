@@ -471,7 +471,7 @@ export function DashboardGroups() {
   }
 
   // Facebook joins need the connected account that joins, so they open the
-  // form pre-scoped to this community; x / reddit go straight to the API.
+  // form pre-scoped to this community; reddit goes straight to the API.
   // Re-joins ride the same path — the store machines declined and
   // self-removed rows back in and 409s platform-removed ones.
   async function handleJoin(community: Community) {
@@ -543,7 +543,7 @@ export function DashboardGroups() {
         </div>
       </div>
       <div className="flex flex-wrap gap-2">
-        {SOCIAL_ICONS.map((icon) => (
+        {SOCIAL_ICONS.filter((icon) => icon.id !== 'x').map((icon) => (
           <GroupsTab key={icon.id} icon={icon} active={icon.id === platform} onClick={() => setPlatform(icon.id as ConnectionPlatform)} />
         ))}
       </div>

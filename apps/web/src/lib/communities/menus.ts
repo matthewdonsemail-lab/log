@@ -1,7 +1,6 @@
 import type { ConnectionRecord } from '../connections'
 import { deriveFacebookValue, facebookMenu } from './facebook/machine'
 import { deriveRedditValue, redditMenu, redditUserVerdict } from './reddit/machine'
-import { deriveXValue, xMenu } from './x/machine'
 import type { Community, StoredCommunityJoin } from './types'
 
 /**
@@ -75,6 +74,7 @@ export function communityMenuAvailability(
       optIn: redditUserVerdict(value, {}, 'optIn').allowed
     }
   }
-  const menu = xMenu(deriveXValue(row), { accountIssue })
-  return { ...menu, resume: false, requestAccess: false, optIn: false }
+  // Communities only track facebook groups and subreddits — X listening is
+  // keyword-scoped (see the keywords domain). Unknown platforms expose no moves.
+  return { join: false, withdraw: false, leave: false, resume: false, requestAccess: false, optIn: false }
 }
