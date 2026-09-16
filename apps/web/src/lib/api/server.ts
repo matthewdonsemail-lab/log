@@ -18,10 +18,11 @@ function isApiKeyScope(value: unknown): value is ApiKeyScope {
     isRecord(value) &&
     (typeof (value as { accountId?: unknown }).accountId === 'string' ||
       (value as { accountId?: unknown }).accountId === null) &&
-    isArray((value as { groupIds?: unknown }).groupIds) &&
-    ((value as { groupIds?: unknown }).groupIds as unknown[]).every((id) => typeof id === 'string') &&
+    isArray((value as { communityIds?: unknown }).communityIds) &&
+    ((value as { communityIds?: unknown }).communityIds as unknown[]).every((id) => typeof id === 'string') &&
     typeof (value as { canSendMessages?: unknown }).canSendMessages === 'boolean' &&
-    typeof (value as { canReceiveMessages?: unknown }).canReceiveMessages === 'boolean'
+    typeof (value as { canReceiveMessages?: unknown }).canReceiveMessages === 'boolean' &&
+    typeof (value as { canPublishListings?: unknown }).canPublishListings === 'boolean'
   )
 }
 
@@ -129,9 +130,10 @@ export const apiKeysApp = new Hono()
       secretHash: await hashSecret(secret),
       scopes: {
         accountId: body.scopes.accountId,
-        groupIds: [...body.scopes.groupIds],
+        communityIds: [...body.scopes.communityIds],
         canSendMessages: body.scopes.canSendMessages,
         canReceiveMessages: body.scopes.canReceiveMessages,
+        canPublishListings: body.scopes.canPublishListings,
       },
       createdAt: new Date().toISOString(),
       lastUsedAt: null,
