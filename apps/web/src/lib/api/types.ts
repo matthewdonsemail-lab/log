@@ -1,12 +1,14 @@
 export interface ApiKeyScope {
   /** Account the key acts as; null = all connected accounts. */
   accountId: string | null
-  /** Group ids the key may touch; empty = all joined groups. */
-  groupIds: string[]
+  /** Community ids the key may touch; empty = all tracked communities. */
+  communityIds: string[]
   /** Whether the key may send messages through the platform clients. */
   canSendMessages: boolean
   /** Whether the key may read messages and signals back. */
   canReceiveMessages: boolean
+  /** Whether the key may create, patch, or delete marketplace listings. */
+  canPublishListings: boolean
 }
 
 export interface ApiKey {

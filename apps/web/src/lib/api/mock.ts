@@ -44,7 +44,7 @@ export const SEED_API_KEYS: ApiKey[] = [
     name: 'Production',
     prefix: 'lk_live_4f7ak2••••••••',
     secretHash: '0f7108da17078975ef027b08940fb6bf8d4dbca4fc4661113bb687cf5130982d',
-    scopes: { accountId: null, groupIds: [], canSendMessages: true, canReceiveMessages: true },
+    scopes: { accountId: null, communityIds: [], canSendMessages: true, canReceiveMessages: true, canPublishListings: true },
     createdAt: '2026-09-10T16:00:00.000Z',
     lastUsedAt: null,
   },

@@ -4,9 +4,10 @@ import { API_ROUTES } from '../lib/api'
 import type { ApiActivityEvent, ApiKey } from '../lib/api'
 import {
   AccountScopeVisuals,
-  GroupScopeVisuals,
+  CommunityScopeVisuals,
+  ListingScopeVisuals,
   MessageScopeVisuals,
-  NamedGroupRows,
+  NamedCommunityRows,
   ScopeVisual,
   useScopeDirectory,
 } from './DashboardScopeRows'
@@ -25,7 +26,7 @@ function formatTs(iso: string): string {
   return date.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
 }
 
-type BlockedDimension = 'account' | 'group' | 'send' | 'receive' | null
+type BlockedDimension = 'account' | 'community' | 'send' | 'receive' | 'listing' | null
 
 /**
  * The denial reason text names exactly which scope dimension stopped the
@@ -35,18 +36,19 @@ type BlockedDimension = 'account' | 'group' | 'send' | 'receive' | null
 function blockedDimensionByReason(reason: string | null): BlockedDimension {
   if (!reason) return null
   if (reason.includes('not scoped to that account')) return 'account'
-  if (reason.includes('not scoped to that group')) return 'group'
+  if (reason.includes('not scoped to that community')) return 'community'
   if (reason.includes('cannot send messages')) return 'send'
   if (reason.includes('cannot receive messages')) return 'receive'
+  if (reason.includes('cannot publish or modify')) return 'listing'
   return null
 }
 
 /**
- * The group dimension under a group denial: a flagged summary row carries
- * the exact reason, and the key's own named groups render beneath it as
- * their valid checked rows — the denied call touched a group outside them.
+ * The community dimension under a community denial: a flagged summary row carries
+ * the exact reason, and the key's own named communities render beneath it as
+ * their valid checked rows — the denied call touched a community outside them.
  */
-function GroupScopeDenialRow({
+function CommunityScopeDenialRow({
   scope,
   reason,
 }: {
@@ -54,17 +56,17 @@ function GroupScopeDenialRow({
   reason: string
 }) {
   const { communities, loaded } = useScopeDirectory()
-  if (scope.groupIds.length === 0) {
+  if (scope.communityIds.length === 0) {
     return (
       <ScopeVisual
         tone="flagged"
         leading={<Users className="size-6" />}
-        title="All groups"
+        title="All communities"
         detail={reason}
       />
     )
   }
-  const names = scope.groupIds
+  const names = scope.communityIds
     .map((id) => communities.find((row) => row.id === id)?.name ?? (loaded ? id : undefined))
     .filter((name): name is string => name !== undefined)
   return (
@@ -74,14 +76,14 @@ function GroupScopeDenialRow({
         leading={<Users className="size-6" />}
         title={
           loaded
-            ? names.length === scope.groupIds.length
-              ? `${scope.groupIds.length} ${scope.groupIds.length === 1 ? 'group' : 'groups'}`
-              : 'Scoped groups'
+            ? names.length === scope.communityIds.length
+              ? `${scope.communityIds.length} ${scope.communityIds.length === 1 ? 'community' : 'communities'}`
+              : 'Scoped communities'
             : 'Resolving…'
         }
         detail={reason}
       />
-      <NamedGroupRows groupIds={scope.groupIds} />
+      <NamedCommunityRows communityIds={scope.communityIds} />
     </div>
   )
 }
@@ -144,11 +146,11 @@ export function DashboardApiActivityInspectForm({
             {route.needs.account ? (
               <AccountScopeVisuals scope={apiKey.scopes} tone={blocked === 'account' ? 'flagged' : 'on'} />
             ) : null}
-            {route.needs.group ? (
-              blocked === 'group' && event.reason ? (
-                <GroupScopeDenialRow scope={apiKey.scopes} reason={event.reason} />
+            {route.needs.community ? (
+              blocked === 'community' && event.reason ? (
+                <CommunityScopeDenialRow scope={apiKey.scopes} reason={event.reason} />
               ) : (
-                <GroupScopeVisuals scope={apiKey.scopes} />
+                <CommunityScopeVisuals scope={apiKey.scopes} />
               )
             ) : null}
             {route.needs.send || route.needs.receive ? (
@@ -156,6 +158,9 @@ export function DashboardApiActivityInspectForm({
                 scope={apiKey.scopes}
                 flagged={(blocked === 'send' || blocked === 'receive' ? blocked : null) as 'send' | 'receive' | null}
               />
+            ) : null}
+            {route.needs.listing ? (
+              <ListingScopeVisuals scope={apiKey.scopes} flagged={blocked === 'listing'} />
             ) : null}
             {route.planned ? (
               <p className="text-xs text-text-secondary">

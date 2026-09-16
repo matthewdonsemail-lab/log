@@ -40,7 +40,7 @@ export function DashboardAPI() {
   const navigate = useNavigate()
   const [keys, setKeys] = useState<ApiKey[] | null>(null)
   const [accountLabels, setAccountLabels] = useState<Map<string, string>>(new Map())
-  const [groupNames, setGroupNames] = useState<Map<string, string>>(new Map())
+  const [communityNames, setCommunityNames] = useState<Map<string, string>>(new Map())
   const [formOpen, setFormOpen] = useState(false)
   const [revokingId, setRevokingId] = useState<string | null>(null)
   const { error: notifyError, success: notifySuccess } = useToast()
@@ -59,8 +59,8 @@ export function DashboardAPI() {
       .then((list) => setAccountLabels(new Map(list.map((account) => [account.id, account.label]))))
       .catch(() => setAccountLabels(new Map()))
     getCommunities()
-      .then((list) => setGroupNames(new Map(list.map((community) => [community.id, community.name]))))
-      .catch(() => setGroupNames(new Map()))
+      .then((list) => setCommunityNames(new Map(list.map((community) => [community.id, community.name]))))
+      .catch(() => setCommunityNames(new Map()))
   }, [load])
 
   // The create form lives in the layout overlay, not in the page: register
@@ -134,7 +134,7 @@ export function DashboardAPI() {
                 <TableRow className="hover:bg-transparent">
                   <TableHead>Key</TableHead>
                   <TableHead>Account</TableHead>
-                  <TableHead>Groups</TableHead>
+                  <TableHead>Communities</TableHead>
                   <TableHead>Permissions</TableHead>
                   <TableHead>Created</TableHead>
                   <TableHead>Last used</TableHead>
@@ -143,7 +143,7 @@ export function DashboardAPI() {
               </TableHeader>
               <TableBody>
                 {rows.map((apiKey) => {
-                  const groupNamesForKey = apiKey.scopes.groupIds.map((id) => groupNames.get(id) ?? id)
+                  const communityNamesForKey = apiKey.scopes.communityIds.map((id) => communityNames.get(id) ?? id)
                   return (
                     <TableRow
                       key={apiKey.id}
@@ -165,16 +165,17 @@ export function DashboardAPI() {
                         </span>
                       </TableCell>
                       <TableCell className="max-w-48">
-                        <span className="block truncate text-text-secondary" title={groupNamesForKey.join(', ') || undefined}>
-                          {groupNamesForKey.length > 0
-                            ? `${groupNamesForKey.length} ${groupNamesForKey.length === 1 ? 'group' : 'groups'}`
-                            : 'All groups'}
+                        <span className="block truncate text-text-secondary" title={communityNamesForKey.join(', ') || undefined}>
+                          {communityNamesForKey.length > 0
+                            ? `${communityNamesForKey.length} ${communityNamesForKey.length === 1 ? 'community' : 'communities'}`
+                            : 'All communities'}
                         </span>
                       </TableCell>
                       <TableCell>
                         <span className="flex flex-wrap gap-1">
                           <ScopeChip>{apiKey.scopes.canSendMessages ? 'Send' : 'No send'}</ScopeChip>
                           <ScopeChip>{apiKey.scopes.canReceiveMessages ? 'Receive' : 'No receive'}</ScopeChip>
+                          <ScopeChip>{apiKey.scopes.canPublishListings ? 'Publish' : 'No publish'}</ScopeChip>
                         </span>
                       </TableCell>
                       <TableCell className="whitespace-nowrap text-text-secondary">

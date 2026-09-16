@@ -21,7 +21,7 @@ describe('api-keys slice', () => {
     expect(list.res.status).toBe(200)
     expect(Array.isArray((list.body as { apiKeys: unknown[] }).apiKeys)).toBe(true)
 
-    const created = await req('/api-keys', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: `test-${Date.now()}`, scopes: { accountId: null, groupIds: [], canSendMessages: true, canReceiveMessages: true } }) })
+    const created = await req('/api-keys', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: `test-${Date.now()}`, scopes: { accountId: null, communityIds: [], canSendMessages: true, canReceiveMessages: true, canPublishListings: true } }) })
     expect(created.res.status).toBe(201)
     const id = (created.body as { apiKey: { id: string } }).apiKey.id
     const del = await req(`/api-keys/${id}`, { method: 'DELETE' })
@@ -30,6 +30,22 @@ describe('api-keys slice', () => {
     const bad = await req('/api-keys', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({}) })
     expect(bad.res.status).toBe(400)
     expect((bad.body as { error: string }).error).toMatch(/needs a name|Invalid/i)
+  })
+
+  it('enforces the community scope shape', async () => {
+    // Legacy groupIds-only payloads fail validation — scopes must use
+    // communityIds plus the listing bit.
+    const legacy = await req('/api-keys', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: `legacy-${Date.now()}`, scopes: { accountId: null, groupIds: [], canSendMessages: true, canReceiveMessages: true } }) })
+    expect(legacy.res.status).toBe(400)
+
+    const created = await req('/api-keys', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ name: `scoped-${Date.now()}`, scopes: { accountId: null, communityIds: [], canSendMessages: true, canReceiveMessages: true, canPublishListings: false } }) })
+    expect(created.res.status).toBe(201)
+    const scopes = (created.body as { apiKey: { scopes: { communityIds: unknown; canPublishListings: unknown } } }).apiKey.scopes
+    expect(scopes.communityIds).toEqual([])
+    expect(scopes.canPublishListings).toBe(false)
+    const id = (created.body as { apiKey: { id: string } }).apiKey.id
+    const del = await req(`/api-keys/${id}`, { method: 'DELETE' })
+    expect(del.res.status).toBe(200)
   })
 })
 
