@@ -1,64 +1,88 @@
-# Communities lifecycle (join-state machine)
+# Communities lifecycle (platform machines)
 
-Companion to `marketplace_update.md`. Covers the group-membership lifecycle
-the dashboard's Groups UI round-trips: join, withdraw, accept, decline,
-leave, and platform removal. Every mutation runs through the state machine
-(`apps/web/src/lib/communities/machine.ts`) in the store before writing —
-a refused move 409s with the machine's human reason, and the row menu
-(`communityMenuItems` in `DashboardGroups.tsx`) only offers the moves the
-same machine allows, so the menu and the store can never disagree.
+Companion to `marketplace_update.md`. Group membership is enforced by
+per-platform xstate v5 machines — `apps/web/src/lib/communities/facebook/`,
+`reddit/`, `x/` — never by hand in routes. Actors are ephemeral per
+request: the flat row (`StoredCommunityJoin`, store key
+`communities.joins.v2`) replays through the platform bootstrap events, the
+new events are sent, and the snapshot writes back to flat fields. User
+intents run a verdict pre-check first and 409 with the machine reason, so
+the row menu (`lib/communities/menus.ts`, which dispatches to the same
+machines) and the store agree by construction.
 
-## States
+Shared pieces: `transition.ts` (verdict type, account write gate,
+question-set hashing), `account-state.ts` (terminal/stalled gate,
+`WRITE_BLOCKING_ISSUES`), `actors.ts` (`driveMachine`).
 
-`CommunityJoinState` (`apps/web/src/lib/communities/types.ts`):
-`none | pending | limited | accepted | declined | removed | login-wall |
-unknown`. `removed` carries `removedBy: 'user' | 'platform'` provenance —
-a self-leave rejoins freely, a group removal rejoins only at the group's
-discretion (mirrors the listings takedown-vs-delist relist split).
-`login-wall` / `unknown` are poller observations: only a platform run can
-write one and only the next platform run resolves out of one.
+## Facebook (`facebook/`)
 
-## Transition table
+No official API exposes entry questions — the browser client scrapes the
+join dialog and reports back, so `entryQuestions` is the scraped set when
+`questionsHash` is set, else the catalog fallback. Answers are keyed by
+question-set hash; a changed set re-asks from blanks.
 
-| From | User (dashboard) | Platform (poller / mock admin) |
-|---|---|---|
-| `none` | → `pending` (facebook join), → `accepted` (x/reddit join) | → `pending`, → `accepted` (out-of-band join observed) |
-| `pending` | → `none` (withdraw) | → `accepted` (approved), → `declined` (rejected) |
-| `limited` | → `removed` (leave, `removedBy: 'user'`) | → `accepted` (full membership), → `pending` (re-gated), → `removed` (purged) |
-| `accepted` | → `removed` (leave, `removedBy: 'user'`) | → `removed` (kicked, `removedBy: 'platform'`) |
-| `declined` | → `pending`, → `accepted` (re-ask, answers kept) | → `pending`, → `accepted` (re-ask observed) |
-| `removed` (`user`) | → `pending`, → `accepted` (rejoin) | → `pending`, → `accepted` |
-| `removed` (`platform`) | refused (409, group discretion) | → `pending`, → `accepted` |
-| `login-wall`, `unknown` | refused until next clean observation | → any state |
+Lifecycle: `notMember → inspectingGate → formRendered → formIncomplete →
+formSubmitting → pendingApproval → fullMember`, with `formAbandoned`
+(modal idled past `FACEBOOK_MODAL_LEASE_MS`, drafts kept),
+`limitedMember` (auto-accept path + observed demotion, `PROMOTED` back),
+`declined` (answers kept), `removed` (`removedBy` provenance — self-leave
+rejoins freely, platform removal gated on the group), and
+`observationWall` (platform-only, restore replays the stashed
+`priorJoinState`).
 
-Same-state moves are refused (no-op guard lives in the routes, not the
-machine). User moves compose with the joining account's issue: `suspended`
-and `read_only_limited` (`WRITE_BLOCKING_ISSUES`, shared with the listings
-machine via `apps/web/src/lib/account-state.ts`) refuse every user move —
-the platform would reject the write, so the store 409s first.
+Partial submits are accepted: Facebook lets requests through unanswered,
+so the row records `answersComplete: false` and reads
+"Request sent with N of M answers". Pre-submit modal phases map to the
+shared `none` join state — no request has reached the group yet.
 
-## Routes (`apps/web/src/lib/communities/server.ts`)
+## Reddit (`reddit/`)
 
-| Route | Move | Responses |
-|---|---|---|
-| `POST /communities/:id/join` | user join / rejoin (facebook needs `accountId` + full `answers`) | `201` joined, `200` already pending/accepted/limited, `400` bad answers/account, `404` unknown id, `409` machine refusal |
-| `POST /communities/join-by-url` | same, by pasted URL (registers unseen groups) | same as join |
-| `POST /communities/:id/accept` | mock admin approve (`pending`/`limited` → `accepted`) | `200`, `400` nothing to accept, `404`, `409` |
-| `POST /communities/:id/decline` | mock admin reject (`pending` → `declined`, answers kept) | `200`, `400` nothing to decline, `404`, `409` |
-| `POST /communities/:id/remove` | mock platform removal (`accepted`/`limited` → `removed`, `removedBy: 'platform'`) | `200`, `400` not a member, `404`, `409` |
-| `DELETE /communities/:id` | user exit (`pending` → `none` withdraw, `accepted`/`limited` → `removed` self-leave) | `200 { communities }`, `404`, `409` |
+No questionnaires, no approval queue — subscription plus access gates
+observed from `about.json` (`subreddit_type`, `user_is_subscriber`) and
+contributor flags: `unsubscribed`, `subscribed`, `restrictedReadOnly`
+(read-only listening, outreach off), `privateGated` (modmail is the only
+move), `quarantineGate` (opt-in intent, confirmed on observation),
+`gone` (banned/archived, untrack note), `observationWall`. One root
+`METADATA_OBSERVED` dispatch table routes every poller observation from
+any state; a clean fetch supersedes walls. `karmaGated` is a tag with
+alt-observer evidence, never a state — and never inferred from an
+unauthenticated probe (those 403 since May 2026). Tail `subreddit_type`
+values normalize to `unclassified`, never to a wrong state.
 
-## Client surface (`apps/web/src/lib/communities/index.ts`)
+## X (`x/`)
 
-`getCommunities`, `joinCommunity`, `joinCommunityByUrl`,
-`resolveCommunityByUrl`, `acceptCommunity`, `declineCommunity`,
-`removeCommunityMember`, `leaveCommunity` — each throws the server's
-`{ error }` message so toasts read the machine reason verbatim.
+Deliberately trivial: `unsubscribed ↔ subscribed` plus the shared wall.
+Exists so every platform dispatches through the same seam.
 
-## Live-client mapping (facebook-camofox-client)
+## Client tasks (`lib/client-tasks/`)
 
-The poller owns the platform column: reporting approvals, declines,
-limited promotions, removals, and login-wall/unknown observations through
-these same transitions. The dashboard keeps the user column. Swapping the
-mock for the live backend stays a transport change: the Groups page and
-the join form keep calling the client functions above unchanged.
+The dashboard half of a long-lived platform job: the manager holds intent
++ drafts + lease, the browser client holds the live modal. States
+`queued → running → awaiting_input → submitting → done`, plus `failed`,
+`abandoned` (explicit cancel), `expired` (lease lapsed with no heartbeat).
+Time passes only through event timestamps, so expiry is deterministic.
+A dead client never silently completes — drafts survive for resume, and
+the form reopens tasks, heartbeats while open, and completes them on
+join.
+
+## Routes (`communities/server.ts`)
+
+| Route | Move |
+|---|---|
+| `POST /communities/:id/join` | per-platform join/submit (partial FB answers flagged) |
+| `POST /communities/join-by-url` | same, by pasted FB URL |
+| `POST /communities/resolve` | FB read-ahead + scrape provenance stamp |
+| `POST /communities/resolve-reddit` | typed subreddit → observed public + subscribed |
+| `POST /communities/:id/accept`, `/decline`, `/remove` | FB mock-admin (platform source) |
+| `POST /communities/:id/form` | client modal webhook: rendered/incomplete/abandoned |
+| `POST /communities/:id/resume` | reopen an abandoned FB form with drafts |
+| `POST /communities/:id/observe` | poller webhook: metadata, karma, walls, clears |
+| `POST /communities/:id/request-access`, `/quarantine-opt-in` | reddit user intents |
+| `DELETE /communities/:id` | per-platform leave/withdraw/unsubscribe |
+
+## Live-client mapping
+
+The poller owns the platform column (approvals, declines, metadata,
+walls, karma evidence) via the webhook routes; the dashboard keeps the
+user column. Swapping the mock for live backends stays a transport
+change: page, form, and client functions keep their shapes.

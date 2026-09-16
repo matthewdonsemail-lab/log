@@ -21,7 +21,9 @@ import {
   resolveCommunityByUrl,
   type Community
 } from '../lib/communities'
-import { communityAllowedTransition } from '../lib/communities/machine'
+import { communityMenuAvailability } from '../lib/communities/menus'
+import { hashQuestionSet } from '../lib/communities/transition'
+import { createTask, sendTaskEvent, taskForCommunity } from '../lib/client-tasks/store'
 import { SocialBadge, SOCIAL_ICONS, SocialGlyph, type SocialIcon } from '../lib/social-icons'
 import { DashboardFormSheet } from './DashboardFormSheet'
 import {
@@ -150,19 +152,16 @@ export function DashboardGroupsForm({
   // The full roster, split into the visible paths plus what's joinable:
   // pending requests (waiting on acceptance), accepted members, and the
   // joinable remainder. x / reddit join straight to `accepted`, so declined
-  // and self-removed rows rejoin through the same pick — the machine decides
-  // exactly which states those are (platform-removed and unobserved rows
-  // stay out). Facebook joins by URL so it never picks from the roster.
+  // and self-removed rows rejoin through the same pick — the unified menu
+  // helper decides exactly which states those are (platform-removed and
+  // unobserved rows stay out). Facebook joins by URL so it never picks from
+  // the roster.
   const roster = communities ?? []
   const pending = roster.filter((community) => community.joinState === 'pending')
   const accepted = roster.filter((community) => community.joinState === 'accepted')
   const declined = roster.filter((community) => community.joinState === 'declined')
   const removed = roster.filter((community) => community.joinState === 'removed')
-  const joinable = roster.filter((community) =>
-    communityAllowedTransition(community.joinState, 'accepted', 'user', {
-      removedBy: community.removedBy
-    }).allowed
-  )
+  const joinable = roster.filter((community) => communityMenuAvailability(community, accounts).join)
 
   const parsedUrl = platform === 'facebook' ? parseFacebookGroupUrl(groupUrl) : null
   const resolvedUrl = parsedUrl?.url ?? null
@@ -171,7 +170,12 @@ export function DashboardGroupsForm({
   // questions step covers the fetch with a spinner, exactly like the live
   // client will, so each step lines up with a client round-trip instead of
   // rendering under the input. Answers survive re-resolves of the same
-  // group so Back/Continue never wipes in-progress answers.
+  // group so Back/Continue never wipes in-progress answers. Resolving also
+  // opens (or refreshes) the client-task for this join: the task holds the
+  // scraped question set, the drafts, and the heartbeat lease, so a modal
+  // left hanging is resumable instead of lost.
+  const taskIdRef = useRef<string | null>(null)
+  const [taskNote, setTaskNote] = useState<string | null>(null)
   useEffect(() => {
     if (platform !== 'facebook' || !urlConfirmed || !resolvedUrl) {
       if (!urlConfirmed) {
@@ -193,9 +197,45 @@ export function DashboardGroupsForm({
         if (cancelled) return
         console.log('[groups-form] resolve response:', community)
         setResolvedGroup(community)
+        const now = new Date().toISOString()
+        const hash = community.questionsHash ?? hashQuestionSet(community.entryQuestions)
+        const prior = taskForCommunity(community.id, now)
+        if (!prior || prior.questionsHash !== hash) {
+          if (prior && prior.questionsHash !== null && prior.draftAnswers.some((draft) => draft.trim() !== '')) {
+            setTaskNote('The group\u2019s questions changed since last time — starting fresh.')
+          } else {
+            setTaskNote(null)
+          }
+          const created = createTask({
+            communityId: community.id,
+            platform: 'facebook',
+            accountId,
+            start: true,
+            at: now
+          })
+          sendTaskEvent(created.id, [
+            { type: 'DISPATCHED', at: now },
+            { type: 'QUESTIONS_RECEIVED', questions: community.entryQuestions, questionsHash: hash, at: now }
+          ])
+          taskIdRef.current = created.id
+        } else {
+          sendTaskEvent(prior.id, [{ type: 'HEARTBEAT', at: now }])
+          taskIdRef.current = prior.id
+          const kept = prior.draftAnswers.filter((draft) => draft.trim() !== '').length
+          setTaskNote(
+            kept > 0
+              ? `Picking up where you left off — ${kept} answer${kept === 1 ? '' : 's'} kept.`
+              : null
+          )
+        }
         if (lastResolvedId.current !== community.id) {
           lastResolvedId.current = community.id
-          setGroupAnswers(community.entryQuestions.map((_, index) => prefillAnswers.current[index] ?? ''))
+          const live = taskForCommunity(community.id, now)
+          const seeded =
+            live && live.questionsHash === hash && live.draftAnswers.length > 0
+              ? live.draftAnswers
+              : prefillAnswers.current
+          setGroupAnswers(community.entryQuestions.map((_, index) => seeded[index] ?? ''))
         }
       } catch {
         if (!cancelled) setResolvedGroup(null)
@@ -206,7 +246,21 @@ export function DashboardGroupsForm({
     return () => {
       cancelled = true
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [platform, urlConfirmed, resolvedUrl])
+
+  // Heartbeat while the questions step is open: renews the client-task
+  // lease so a slow operator doesn't read as a dead client. Ranges from
+  // the task id captured at resolve; nothing fires with no task.
+  useEffect(() => {
+    if (!(pickingGroup && platform === 'facebook')) return undefined
+    const timer = setInterval(() => {
+      if (taskIdRef.current) {
+        sendTaskEvent(taskIdRef.current, [{ type: 'HEARTBEAT', at: new Date().toISOString() }])
+      }
+    }, 30_000)
+    return () => clearInterval(timer)
+  }, [pickingGroup, platform])
 
   // Questions render only when they belong to the current input; Join needs
   // every one answered.
@@ -304,6 +358,14 @@ export function DashboardGroupsForm({
         const res = await joinCommunityByUrl(parsedUrl.url, { accountId: account.id, answers })
         console.log('[groups-form] join response:', res.community)
         const joined = res.community
+        if (taskIdRef.current) {
+          const at = new Date().toISOString()
+          sendTaskEvent(taskIdRef.current, [
+            { type: 'SUBMIT', at },
+            { type: 'SUBMIT_OK', at }
+          ])
+          taskIdRef.current = null
+        }
         if (joined.joinState === 'accepted') {
           success(`You're already in ${joined.name}`)
         } else {
@@ -433,9 +495,18 @@ export function DashboardGroupsForm({
           groupName={questionsForUrl?.name ?? null}
           questions={questionsForUrl?.entryQuestions ?? null}
           answers={groupAnswers}
-          onAnswerChange={(index, value) =>
-            setGroupAnswers((current) => current.map((answer, i) => (i === index ? value : answer)))
-          }
+          note={taskNote}
+          onAnswerChange={(index, value) => {
+            setGroupAnswers((current) => {
+              const next = current.map((answer, i) => (i === index ? value : answer))
+              if (taskIdRef.current) {
+                sendTaskEvent(taskIdRef.current, [
+                  { type: 'ANSWERS_UPDATED', draftAnswers: next, at: new Date().toISOString() }
+                ])
+              }
+              return next
+            })
+          }}
         />
       ) : null}
 
@@ -615,12 +686,14 @@ function FacebookQuestionsStep({
   groupName,
   questions,
   answers,
+  note,
   onAnswerChange
 }: {
   resolving: boolean
   groupName: string | null
   questions: string[] | null
   answers: string[]
+  note: string | null
   onAnswerChange: (index: number, value: string) => void
 }) {
   if (questions === null || groupName === null) {
@@ -637,6 +710,9 @@ function FacebookQuestionsStep({
         <p className="text-sm font-bold text-text-primary">
           Answer {questions.length} entry question{questions.length === 1 ? '' : 's'} for {groupName}
         </p>
+        {note ? (
+          <p className="text-xs text-text-secondary">{note}</p>
+        ) : null}
         {questions.map((question, index) => (
           <label key={`${groupName}-${index}`} className="block">
             <span className="mb-1.5 block text-sm font-semibold text-slate-700">{question}</span>

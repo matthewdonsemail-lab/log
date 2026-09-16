@@ -79,19 +79,68 @@ export interface Community {
    */
   url: string | null
   /**
-   * Hardcoded entry questions the group asks before accepting (facebook
-   * groups gate entry). The form resolves the pasted URL into these and
-   * sends the typed answers along with the join request.
+   * The entry questions as the dashboard currently knows them. Facebook
+   * renders these dynamically into the join dialog — there is no official
+   * API for them, so the client scrapes the dialog and reports back; this
+   * field is the scraped set when `questionsHash` is set, else the catalog
+   * fallback the mock seeds for the form's read-ahead.
    */
   entryQuestions: string[]
+  /**
+   * Opaque hash of the question set `entryQuestions` was taken from. Answers
+   * are only prefillable when the hash matches — a changed set means the
+   * group edited its gate and the form re-asks from blanks.
+   */
+  questionsHash: string | null
+  /**
+   * ISO timestamp of the scrape (client report) or resolve (mock
+   * read-ahead) that produced `entryQuestions`. Null when neither has run
+   * and the field is still the catalog fallback.
+   */
+  questionsScrapedAt: string | null
   /**
    * Answers sent with the join request — kept for `pending`, `accepted`
    * (for the record) and `declined` (the admin saw THESE; editing them is
    * the re-ask path).
    */
   answers: string[]
+  /**
+   * Whether `answers` covers every question in `entryQuestions` with
+   * non-blank text. Facebook lets requests through unanswered, so a join
+   * can land `pending` with this false — the row says how many were
+   * answered and admins may decline it.
+   */
+  answersComplete: boolean
+  /**
+   * Latest unsent drafts for the current question set (client modal or
+   * dashboard form). Survives abandon so resume never starts from blanks.
+   */
+  draftAnswers: string[]
   /** Where the join request / membership for this community stands. */
   joinState: CommunityJoinState
+  /**
+   * Client-modal mirror for facebook pre-submit phases (`idle` when no
+   * modal is or was open). Drives the Resume menu item and the
+   * "answering paused" notice; `idle` for reddit/x rows.
+   */
+  formPhase: StoredFormPhase
+  /**
+   * Reddit detail for exact menu gating (workspace-scoped rows carry no
+   * account, so the row itself holds what the poller last observed).
+   * Defaults for facebook/x rows.
+   */
+  subredditType: string | null
+  userIsContributor: boolean
+  quarantineOptIn: boolean
+  karmaGated: boolean
+  accessRequested: boolean
+  /**
+   * Per-row platform truth that doesn't fit the shared vocabulary — the
+   * dashboard renders it as a note under the state badge (e.g. "read-only
+   * until approved", "opt-in required", "request via modmail"). Derived at
+   * materialize time from the platform detail, never written by hand.
+   */
+  notice: string | null
   /**
    * Set when `joinState === 'removed'` — who took the membership away
    * (see {@link CommunityRemovalProvenance}).
@@ -120,4 +169,44 @@ export interface CommunitiesResponse {
 export interface CommunityResponse {
   community: Community
   communities: Community[]
+}
+
+/**
+ * The durable flat projection of the platform actor snapshots — the only
+ * thing the store persists per row. Actors are ephemeral (rebuilt per
+ * request by replaying {@link StoredCommunityJoin} through the platform
+ * bootstrap events), so this stays human-readable in localStorage and the
+ * roster renders without ever starting an actor.
+ *
+ * Versioned by the store key (`communities.joins.v2`): a key bump resets
+ * rows to seeds instead of running lossy migrations.
+ */
+export type StoredFormPhase = 'idle' | 'rendered' | 'incomplete' | 'submitting' | 'abandoned'
+
+export interface StoredCommunityJoin {
+  state: CommunityJoinState
+  accountId: string | null
+  answers: string[]
+  answersComplete: boolean
+  questionsHash: string | null
+  questionsScrapedAt: string | null
+  /** Last scraped question set — overrides the catalog fallback when set. */
+  scrapedQuestions: string[] | null
+  draftAnswers: string[]
+  submittedAt: string | null
+  removedBy?: CommunityRemovalProvenance
+  /** Client-modal mirror (facebook pre-submit phases); `idle` otherwise. */
+  formPhase: StoredFormPhase
+  /**
+   * Flat state overwritten when a wall landed — `cleared` replays from
+   * this instead of guessing. Null whenever the row is not walled.
+   */
+  priorJoinState: CommunityJoinState | null
+  /** Reddit detail (nulls until the poller observes). */
+  subredditType: string | null
+  userIsContributor: boolean
+  quarantineOptIn: boolean
+  karmaGated: boolean
+  karmaEvidence: string | null
+  accessRequested: boolean
 }

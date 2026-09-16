@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react'
-import { Check, LayoutGrid, LogOut, Plus, Table2, ThumbsDown, X } from 'lucide-react'
+import { Check, LayoutGrid, LogOut, Mail, Plus, RotateCcw, ShieldCheck, Table2, ThumbsDown, X } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -20,9 +20,12 @@ import {
   getCommunities,
   joinCommunity,
   leaveCommunity,
+  optInCommunityQuarantine,
+  requestCommunityAccess,
+  resumeCommunityForm,
   type Community
 } from '@/lib/communities'
-import { communityActions as machineActions } from '@/lib/communities/machine'
+import { communityMenuAvailability } from '@/lib/communities/menus'
 import { describeGate, gateAccount } from '@/lib/account-state'
 import { getAccounts, type ConnectionPlatform, type ConnectionRecord } from '@/lib/connections'
 import { healthForAccountId } from '@/lib/health'
@@ -49,6 +52,9 @@ type CommunityHandlers = {
   onAccept: (community: Community) => void
   onDecline: (community: Community) => void
   onCancel: (community: Community) => void
+  onResume: (community: Community) => void
+  onRequestAccess: (community: Community) => void
+  onOptIn: (community: Community) => void
 }
 
 /**
@@ -128,6 +134,9 @@ function CommunityCard({
         {community.joinState === 'accepted' && community.accountLabel ? (
           <span className="truncate text-xs text-white/75">Joined as {community.accountLabel}</span>
         ) : null}
+        {community.notice ? (
+          <span className="truncate text-xs text-white/75" title={community.notice}>{community.notice}</span>
+        ) : null}
         {gateNote ? (
           <span className="truncate text-xs text-white/75" title={gateNote}>{gateNote}</span>
         ) : null}
@@ -197,28 +206,19 @@ type CommunityMenuItem = {
 }
 
 /**
- * The row menu, gated by the same machine that 409s in the store: only the
- * user edges from this row's state (composed with the joining account's
- * issue and the row's removal provenance) appear, so the menu never offers
- * a refused move. Refusals that only the server can see (a race, a stale
- * row) still 409 with the machine reason and surface through the toast.
- * Platform-side simulation (accept / decline) mirrors the mock admin
- * routes; removal stays poller-observed, so it has no menu twin.
+ * The row menu, gated by the unified platform-menu helper: only the moves
+ * the row's own machine allows appear, so the menu never offers a move the
+ * store would 409. Mock-admin simulation (accept / decline) stays
+ * Facebook-only; resume / modmail / opt-in surface the new platform moves.
  */
 function communityMenuItems(
   community: Community,
   accounts: ConnectionRecord[],
   handlers: CommunityHandlers
 ): CommunityMenuItem[] {
-  const accountIssue = community.accountId
-    ? (accounts.find((row) => row.id === community.accountId)?.lastIssue ?? undefined)
-    : undefined
-  const allowed = machineActions(community.joinState, {
-    accountIssue,
-    removedBy: community.removedBy
-  })
+  const allowed = communityMenuAvailability(community, accounts)
   const items: CommunityMenuItem[] = []
-  if (community.joinState === 'pending' || community.joinState === 'limited') {
+  if (community.platform === 'facebook' && (community.joinState === 'pending' || community.joinState === 'limited')) {
     items.push({
       id: 'accept',
       label: 'Simulate acceptance',
@@ -226,12 +226,20 @@ function communityMenuItems(
       onSelect: () => handlers.onAccept(community)
     })
   }
-  if (community.joinState === 'pending') {
+  if (community.platform === 'facebook' && community.joinState === 'pending') {
     items.push({
       id: 'decline',
       label: 'Simulate decline',
       icon: <ThumbsDown aria-hidden="true" className="size-4" />,
       onSelect: () => handlers.onDecline(community)
+    })
+  }
+  if (allowed.resume) {
+    items.push({
+      id: 'resume',
+      label: 'Resume form',
+      icon: <RotateCcw aria-hidden="true" className="size-4" />,
+      onSelect: () => handlers.onResume(community)
     })
   }
   if (allowed.withdraw) {
@@ -250,6 +258,22 @@ function communityMenuItems(
       icon: <LogOut aria-hidden="true" className="size-4" />,
       danger: true,
       onSelect: () => handlers.onLeave(community)
+    })
+  }
+  if (allowed.requestAccess) {
+    items.push({
+      id: 'request-access',
+      label: 'Request access',
+      icon: <Mail aria-hidden="true" className="size-4" />,
+      onSelect: () => handlers.onRequestAccess(community)
+    })
+  }
+  if (allowed.optIn) {
+    items.push({
+      id: 'opt-in',
+      label: 'Opt in to quarantine',
+      icon: <ShieldCheck aria-hidden="true" className="size-4" />,
+      onSelect: () => handlers.onOptIn(community)
     })
   }
   if (allowed.join) {
@@ -404,6 +428,48 @@ export function DashboardGroups() {
     await handleLeave(community)
   }
 
+  // Reopening an abandoned entry form with its preserved drafts.
+  async function handleResume(community: Community) {
+    setBusyId(community.id)
+    try {
+      await resumeCommunityForm(community.id)
+      success(`Resumed the request to ${community.name}`, 'Answering')
+      load()
+    } catch (err: unknown) {
+      notifyError('Could not resume the form', err instanceof Error ? err.message : 'Something went wrong.')
+    } finally {
+      setBusyId(null)
+    }
+  }
+
+  // Dispatching a modmail access request for a private subreddit.
+  async function handleRequestAccess(community: Community) {
+    setBusyId(community.id)
+    try {
+      await requestCommunityAccess(community.id)
+      success(`Access requested for ${community.name}`, 'Waiting on the mods')
+      load()
+    } catch (err: unknown) {
+      notifyError('Could not request access', err instanceof Error ? err.message : 'Something went wrong.')
+    } finally {
+      setBusyId(null)
+    }
+  }
+
+  // Recording the quarantine opt-in intent for a gated subreddit.
+  async function handleOptIn(community: Community) {
+    setBusyId(community.id)
+    try {
+      await optInCommunityQuarantine(community.id)
+      success(`Opted in to ${community.name}`, 'Quarantine')
+      load()
+    } catch (err: unknown) {
+      notifyError('Could not opt in', err instanceof Error ? err.message : 'Something went wrong.')
+    } finally {
+      setBusyId(null)
+    }
+  }
+
   // Facebook joins need the connected account that joins, so they open the
   // form pre-scoped to this community; x / reddit go straight to the API.
   // Re-joins ride the same path — the store machines declined and
@@ -431,7 +497,10 @@ export function DashboardGroups() {
     onLeave: handleLeave,
     onAccept: handleAccept,
     onDecline: handleDecline,
-    onCancel: handleCancelRequest
+    onCancel: handleCancelRequest,
+    onResume: handleResume,
+    onRequestAccess: handleRequestAccess,
+    onOptIn: handleOptIn
   }
 
   return (

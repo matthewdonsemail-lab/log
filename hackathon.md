@@ -484,3 +484,18 @@ rows). New `docs/okf/communities_lifecycle.md` transition table for the
 live-client handoff. typecheck clean, 71/71 vitest pass (15 new community
 machine tests), lint clean (one pre-existing spread-fallback warning in
 communities/index.ts).
+
+### 2026-09-16 - working tree
+Split communities into platform-native xstate v5 machines
+(`lib/communities/facebook|reddit|x/` + `lib/client-tasks/`), replacing the
+single facebook-shaped funnel. Facebook models the dynamic modal lifecycle
+(inspect/render/incomplete/abandon/resume/submit) with scraped question
+provenance, question-set hashing, partial submits flagged via
+`answersComplete`, and lease-based abandon. Reddit models observed access
+gates (restricted read-only, private modmail, quarantine opt-in,
+banned/archived, karma as tag-only evidence) behind one root metadata
+dispatch table. Client tasks track long-lived jobs (queued/running/
+awaiting_input/done/failed/abandoned/expired) with heartbeat leases and
+draft-preserving resume. Store drives ephemeral actors per request from a
+versioned flat row (`communities.joins.v2`); UI menus dispatch to the same
+machines. typecheck clean, 109/109 vitest pass, lint clean.

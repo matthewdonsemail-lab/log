@@ -8,7 +8,26 @@ import type { Community, CommunityJoinState } from './types'
  * exposed. Membership state (joinState / accountId) lives in the server, not
  * here, so the catalog stays pure and the API owns the relation.
  */
-export const COMMUNITIES_BASE: Array<Omit<Community, 'joinState' | 'accountId' | 'accountLabel' | 'answers'>> = [
+export const COMMUNITIES_BASE: Array<
+  Omit<
+    Community,
+    | 'joinState'
+    | 'accountId'
+    | 'accountLabel'
+    | 'answers'
+    | 'answersComplete'
+    | 'questionsHash'
+    | 'questionsScrapedAt'
+    | 'draftAnswers'
+    | 'formPhase'
+    | 'subredditType'
+    | 'userIsContributor'
+    | 'quarantineOptIn'
+    | 'karmaGated'
+    | 'accessRequested'
+    | 'notice'
+  >
+> = [
   {
     id: 'facebook-dallas-homeowners',
     platform: 'facebook' satisfies ConnectionPlatform,

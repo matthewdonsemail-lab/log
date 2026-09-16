@@ -170,3 +170,103 @@ export async function leaveCommunity(id: string): Promise<Community[]> {
   const body = (await res.json()) as CommunitiesResponse
   return body.communities
 }
+
+/**
+ * Camoufox client webhook through `POST /communities/:id/form` (platform
+ * source): the browser intercepted the Facebook entry-question modal and
+ * reports its phase. The row stays `none` until submit; drafts survive
+ * abandon for resume. Facebook rows only.
+ */
+export async function reportCommunityForm(
+  id: string,
+  payload: {
+    accountId: string
+    phase: 'rendered' | 'incomplete' | 'abandoned'
+    questions?: string[]
+    questionsHash?: string
+    draftAnswers?: string[]
+  }
+): Promise<Community> {
+  const res = await request(`/communities/${id}/form`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null
+    throw new Error(body?.error ?? `Could not report the form (${res.status})`)
+  }
+  return ((await res.json()) as { community: Community }).community
+}
+
+/**
+ * Resume an abandoned Facebook entry form through `POST /communities/:id/resume`
+ * — the modal reopens with the preserved drafts. Facebook rows only.
+ */
+export async function resumeCommunityForm(id: string): Promise<Community> {
+  const res = await request(`/communities/${id}/resume`, { method: 'POST' })
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null
+    throw new Error(body?.error ?? `Could not resume the form (${res.status})`)
+  }
+  return ((await res.json()) as { community: Community }).community
+}
+
+export interface CommunityObservation {
+  subredditType?: string
+  subscribed?: boolean
+  contributor?: boolean
+  quarantineOptIn?: boolean
+  karmaGated?: boolean
+  karmaEvidence?: string
+  wallType?: 'login' | 'challenge' | 'unclassified'
+  cleared?: boolean
+}
+
+/**
+ * Poller observation webhook through `POST /communities/:id/observe`
+ * (platform source): report what the client actually saw — subscription
+ * metadata, karma gates, walls, or a cleared wall. Observations always
+ * land; the poller reports regardless of session health.
+ */
+export async function observeCommunity(id: string, observation: CommunityObservation): Promise<Community> {
+  const res = await request(`/communities/${id}/observe`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(observation)
+  })
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null
+    throw new Error(body?.error ?? `Could not record the observation (${res.status})`)
+  }
+  return ((await res.json()) as { community: Community }).community
+}
+
+/**
+ * Dispatch a modmail access request for a private-gated subreddit through
+ * `POST /communities/:id/request-access`. Records the request; the approval
+ * arrives later through the observe webhook. Reddit rows only.
+ */
+export async function requestCommunityAccess(id: string): Promise<Community> {
+  const res = await request(`/communities/${id}/request-access`, { method: 'POST' })
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null
+    throw new Error(body?.error ?? `Could not request access (${res.status})`)
+  }
+  return ((await res.json()) as { community: Community }).community
+}
+
+/**
+ * Opt in to a quarantined subreddit through
+ * `POST /communities/:id/quarantine-opt-in` — records the intent; the
+ * unlocked read stream is confirmed when the poller observes the
+ * subscription. Reddit rows only.
+ */
+export async function optInCommunityQuarantine(id: string): Promise<Community> {
+  const res = await request(`/communities/${id}/quarantine-opt-in`, { method: 'POST' })
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null
+    throw new Error(body?.error ?? `Could not opt in (${res.status})`)
+  }
+  return ((await res.json()) as { community: Community }).community
+}
