@@ -38,9 +38,11 @@ export const DEFAULT_LISTING_IMAGE = img('photo-1558618666-fcd25c85cd64')
  * listings captured by facebook-camofox-client (docs/okf/marketplace_create.md):
  * 38629807913299080 published 2026-09-09 and sat in duplicate hold, while
  * 1583545526797714 cleared review to `active` on 2026-09-10. The rest are
- * mocked to exercise the remaining status badges. All rows are spread across
- * the three mock Facebook accounts above. Every row carries exactly two
- * photos, so each row's fan shows the two-card stack.
+ * mocked to exercise the remaining status badges, including both `removed`
+ * provenances — a seller delist (Patio Set, relistable) and a platform
+ * takedown (Wardrobe, relist blocked). All rows are spread across the three
+ * mock Facebook accounts above. Every row carries exactly two photos, so
+ * each row's fan shows the two-card stack.
  */
 export const MOCK_LISTINGS: ListingRecord[] = [
   {
@@ -120,7 +122,25 @@ export const MOCK_LISTINGS: ListingRecord[] = [
     locationPoint: { lat: 53.2707, lng: -9.0568, radiusKm: 10 },
     images: [img('photo-1618221195710-dd6b41faaea6'), img('photo-1493809842364-78817add7ffb')],
     status: 'removed',
+    removedBy: 'seller',
     listingUrl: 'https://facebook.com/marketplace/item/775091462828331',
     publishedAt: '2026-09-12T16:48:00+00:00'
+  },
+  {
+    id: uuid(),
+    listingId: '664120887304197',
+    title: 'Wardrobe — 3 Doors, Teak',
+    price: '85',
+    category: 'Furniture',
+    condition: 'Used - good',
+    location: 'Galway, Ireland',
+    locationPoint: { lat: 53.2667, lng: -9.0333, radiusKm: 10 },
+    accountId: 'fb-personal',
+    account: 'Facebook',
+    images: [img('photo-1532372320572-cda25653a26d'), img('photo-1558618666-fcd25c85cd64')],
+    status: 'removed',
+    removedBy: 'platform',
+    listingUrl: 'https://facebook.com/marketplace/item/664120887304197',
+    publishedAt: '2026-09-13T10:22:00+00:00'
   }
 ]

@@ -7,6 +7,9 @@ export type ListingStatus =
   | 'login-wall'
   | 'unknown'
 
+/** Which side took a `removed` listing down. */
+export type RemovalProvenance = 'seller' | 'platform'
+
 export const LISTING_STATUSES: ListingStatus[] = [
   'active',
   'under-review',
@@ -56,9 +59,10 @@ export const DEFAULT_LISTING_LOCATION: ListingLocation = { lat: 53.2707, lng: -9
  * Unknown stays unknown — statuses are never fabricated.
  */
 export interface ListingRecord {
-  /** Opaque internal key for correlation — mirrors messaging's `id`; never rendered. */
+  /** Opaque primary key (UUID) — the route + store key; rendered in the inspect form and deep-link URL. */
   id: string
 
+  /** Marketplace-native id — display / open-link only, never the key. */
   listingId: string
   title: string
   price: string
@@ -74,6 +78,13 @@ export interface ListingRecord {
   /** 1–4 marketplace photos, cycled in the row's 9:16 photo frame. */
   images: string[]
   status: ListingStatus
+  /**
+   * Who set `status` to `removed` — the seller's own delist (relistable via
+   * the dashboard) or a platform takedown (violation / rejection / inactivity
+   * expiry — only the request-review appeal brings it back). Only meaningful
+   * while `status === 'removed'`; cleared on the move out.
+   */
+  removedBy?: RemovalProvenance
   listingUrl: string
   publishedAt: string
 }
@@ -110,7 +121,7 @@ export interface ListingCreatedResponse {
 }
 
 export interface ListingStatusResponse {
-  listingId: string
+  id: string
   status: ListingStatus
   title: string | null
 }

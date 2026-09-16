@@ -51,6 +51,7 @@ export function App() {
               <Route index element={<DashboardFeed />} />
               <Route path="groups" element={<DashboardGroups />} />
               <Route path="facebook/listings" element={<DashboardListings />} />
+              <Route path="facebook/listings/:id" element={<DashboardListings />} />
               <Route path="keywords" element={<DashboardKeywords />} />
               <Route path="analytics" element={<DashboardAnalyticsOverview />} />
               <Route path="analytics/:keywordId" element={<DashboardAnalyticsPage />} />

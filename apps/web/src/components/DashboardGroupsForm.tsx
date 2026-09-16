@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import { Check, Clock } from 'lucide-react'
+import { Check, Clock, LogOut, X } from 'lucide-react'
 import {
   cn,
   Select,
@@ -21,6 +21,7 @@ import {
   resolveCommunityByUrl,
   type Community
 } from '../lib/communities'
+import { communityAllowedTransition } from '../lib/communities/machine'
 import { SocialBadge, SOCIAL_ICONS, SocialGlyph, type SocialIcon } from '../lib/social-icons'
 import { DashboardFormSheet } from './DashboardFormSheet'
 import {
@@ -99,6 +100,10 @@ export function DashboardGroupsForm({
   const [groupAnswers, setGroupAnswers] = useState<string[]>([])
   const lastResolvedId = useRef<string | null>(null)
   const [busy, setBusy] = useState(false)
+  // Declined rows keep the answers the admin actually saw — the re-ask
+  // starts from them instead of blanks. Read through a ref so the resolve
+  // effect below doesn't re-fire when the roster lands.
+  const prefillAnswers = useRef<string[]>([])
 
   // One reset per open; accounts load up front so the facebook step is ready.
   // Pre-scoped opens fetch the platform roster immediately so the group link
@@ -142,14 +147,22 @@ export function DashboardGroupsForm({
   const onAccountStep = platformConfirmed && platform === 'facebook' && !accountConfirmed
   const onUrlStep = platformConfirmed && platform === 'facebook' && accountConfirmed && !urlConfirmed
 
-  // The full roster, split into the two visible paths plus what's joinable:
+  // The full roster, split into the visible paths plus what's joinable:
   // pending requests (waiting on acceptance), accepted members, and the
-  // untouched remainder. Facebook joins by URL so it never picks from the
-  // roster; x / reddit pick from the `none` slice.
+  // joinable remainder. x / reddit join straight to `accepted`, so declined
+  // and self-removed rows rejoin through the same pick — the machine decides
+  // exactly which states those are (platform-removed and unobserved rows
+  // stay out). Facebook joins by URL so it never picks from the roster.
   const roster = communities ?? []
   const pending = roster.filter((community) => community.joinState === 'pending')
   const accepted = roster.filter((community) => community.joinState === 'accepted')
-  const joinable = roster.filter((community) => community.joinState === 'none')
+  const declined = roster.filter((community) => community.joinState === 'declined')
+  const removed = roster.filter((community) => community.joinState === 'removed')
+  const joinable = roster.filter((community) =>
+    communityAllowedTransition(community.joinState, 'accepted', 'user', {
+      removedBy: community.removedBy
+    }).allowed
+  )
 
   const parsedUrl = platform === 'facebook' ? parseFacebookGroupUrl(groupUrl) : null
   const resolvedUrl = parsedUrl?.url ?? null
@@ -182,7 +195,7 @@ export function DashboardGroupsForm({
         setResolvedGroup(community)
         if (lastResolvedId.current !== community.id) {
           lastResolvedId.current = community.id
-          setGroupAnswers(community.entryQuestions.map(() => ''))
+          setGroupAnswers(community.entryQuestions.map((_, index) => prefillAnswers.current[index] ?? ''))
         }
       } catch {
         if (!cancelled) setResolvedGroup(null)
@@ -340,14 +353,20 @@ export function DashboardGroupsForm({
   }
 
   // Pre-scoped opens read their title from the roster once it lands.
+  // Declined and removed rows rejoin through the same flow, so the title
+  // says so instead of promising a first join.
   const targetGroup = initialCommunityId
     ? (communities ?? []).find((community) => community.id === initialCommunityId)
     : undefined
+  const rejoining = targetGroup !== undefined && targetGroup.joinState !== 'none'
+  useEffect(() => {
+    prefillAnswers.current = targetGroup?.answers ?? []
+  })
 
   return (
     <DashboardFormSheet
       open={open}
-      title={targetGroup ? `Join ${targetGroup.name}` : 'Add a group'}
+      title={targetGroup ? `${rejoining ? 'Rejoin' : 'Join'} ${targetGroup.name}` : 'Add a group'}
       subtitle="ListeningKit follows communities and flags posts that match your keywords."
       step={step}
       stepCount={stepCount}
@@ -439,7 +458,7 @@ export function DashboardGroupsForm({
                 onSelect={setCommunityId}
               />
             )}
-            <RelationLists pending={pending} accepted={accepted} />
+            <RelationLists pending={pending} accepted={accepted} declined={declined} removed={removed} />
           </div>
         )
       ) : null}
@@ -648,12 +667,23 @@ function GuideStep({ n, children }: { n: number; children: ReactNode }) {
 }
 
 /**
- * The two visible join paths under the group step: requests still waiting
- * on acceptance, and groups already joined. Compact text rows — the join
- * action itself lives above (URL input or pick list).
+ * The visible relation under the group step: requests still waiting on
+ * acceptance, groups already joined, and the refusal states with their way
+ * back. Compact text rows — the join action itself lives above (URL input
+ * or pick list).
  */
-function RelationLists({ pending, accepted }: { pending: Community[]; accepted: Community[] }) {
-  if (pending.length === 0 && accepted.length === 0) return null
+function RelationLists({
+  pending,
+  accepted,
+  declined,
+  removed
+}: {
+  pending: Community[]
+  accepted: Community[]
+  declined: Community[]
+  removed: Community[]
+}) {
+  if (pending.length === 0 && accepted.length === 0 && declined.length === 0 && removed.length === 0) return null
   return (
     <div className="flex flex-col gap-1.5">
       {pending.map((community) => (
@@ -672,6 +702,26 @@ function RelationLists({ pending, accepted }: { pending: Community[]; accepted: 
           <span className="min-w-0 truncate">
             <span className="font-semibold text-text-primary">{community.name}</span>
             {' — member'}
+          </span>
+        </p>
+      ))}
+      {declined.map((community) => (
+        <p key={community.id} className="flex items-center gap-2 text-xs text-text-secondary">
+          <X size={13} strokeWidth={2.5} className="shrink-0 text-red-600" aria-hidden="true" />
+          <span className="min-w-0 truncate">
+            <span className="font-semibold text-text-primary">{community.name}</span>
+            {' — declined, fix the answers and re-ask'}
+          </span>
+        </p>
+      ))}
+      {removed.map((community) => (
+        <p key={community.id} className="flex items-center gap-2 text-xs text-text-secondary">
+          <LogOut size={13} strokeWidth={2.25} className="shrink-0 text-slate-400" aria-hidden="true" />
+          <span className="min-w-0 truncate">
+            <span className="font-semibold text-text-primary">{community.name}</span>
+            {community.removedBy === 'platform'
+              ? ' — removed by the group'
+              : ' — you left, rejoin any time'}
           </span>
         </p>
       ))}

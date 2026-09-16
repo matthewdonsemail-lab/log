@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState, type ReactNode } from 'react'
+import { memo, useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { Outlet } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
@@ -21,9 +21,13 @@ export function DashboardLayout() {
   // reflow while a form is up. `slots` widens the docked panel to two
   // columns for content that needs the room (e.g. an embedded browser view).
   const [formSlot, setFormSlot] = useState<{ node: ReactNode; slots: FormSlotWidth } | null>(null)
-  const registerFormSlot = (node: ReactNode | null, options?: FormSlotOptions) => {
+  // The registration callback the pages hold in their slot-effect dep
+  // arrays: an inline arrow here gets a fresh identity every layout render,
+  // so a page effect that registers its own form node (re)runs forever —
+  // register → layout re-render → new identity → effect re-runs → register.
+  const registerFormSlot = useCallback((node: ReactNode | null, options?: FormSlotOptions) => {
     setFormSlot(node ? { node, slots: options?.slots ?? 1 } : null)
-  }
+  }, [])
 
   return (
     <DashboardFormProvider value={registerFormSlot}>

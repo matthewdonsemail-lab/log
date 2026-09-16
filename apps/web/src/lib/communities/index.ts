@@ -27,8 +27,10 @@ export async function getCommunities(params?: { platform?: ConnectionPlatform })
 }
 
 /**
- * Join a community through `POST /communities/:id/join`.
- * Facebook groups require the connected account that joins them.
+ * Join a community through `POST /communities/:id/join`. Facebook groups
+ * require the connected account that joins them. Declined and self-removed
+ * rows re-join through the machine; a suspended joining account or a
+ * platform-removed group is refused (409) and surfaces the machine reason.
  */
 export async function joinCommunity(id: string, opts?: { accountId?: string }): Promise<Community> {
   const res = await request(`/communities/${id}/join`, {
@@ -104,8 +106,10 @@ export async function resolveRedditCommunity(name: string): Promise<Community> {
 }
 
 /**
- * Accept a pending join request through `POST /communities/:id/accept` —
- * the mock stands in for the group admin side until the live client exists.
+ * Mock admin accept through `POST /communities/:id/accept` — the platform
+ * side of the machine. `pending` (and `limited`, when the group opens full
+ * membership) move to `accepted`; anything else 409s with the machine reason.
+ * Stands in for the live client reporting the group's approval.
  */
 export async function acceptCommunity(id: string): Promise<Community> {
   const res = await request(`/communities/${id}/accept`, { method: 'POST' })
@@ -117,10 +121,52 @@ export async function acceptCommunity(id: string): Promise<Community> {
   return body.community
 }
 
-/** Leave a community through `DELETE /communities/:id`. */
+/**
+ * Mock admin decline through `POST /communities/:id/decline` — the group
+ * rejects a pending request. The row keeps its answers so the edit +
+ * re-ask path starts from what the admin actually saw.
+ */
+export async function declineCommunity(id: string): Promise<Community> {
+  const res = await request(`/communities/${id}/decline`, { method: 'POST' })
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null
+    throw new Error(body?.error ?? `Could not decline the join request (${res.status})`)
+  }
+  const body = (await res.json()) as { community: Community }
+  return body.community
+}
+
+/**
+ * Mock platform removal through `POST /communities/:id/remove` — the group
+ * kicks its member (`accepted`/`limited` → `removed`, stamped
+ * `removedBy: "platform"`). This is what the poller will observe against a
+ * real account; the user cannot rejoin such a row at will (the machine
+ * gates it on the group's discretion).
+ */
+export async function removeCommunityMember(id: string): Promise<Community> {
+  const res = await request(`/communities/${id}/remove`, { method: 'POST' })
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null
+    throw new Error(body?.error ?? `Could not remove the member (${res.status})`)
+  }
+  const body = (await res.json()) as { community: Community }
+  return body.community
+}
+
+/**
+ * User-initiated exit through `DELETE /communities/:id`, machines as source
+ * "user": `pending` withdraws to `none` (account + answers kept),
+ * `accepted`/`limited` become `removed` stamped `removedBy: "user"` (a
+ * self-leave — rejoins freely). Already-exited rows are a no-op; rows the
+ * poller last saw as login-wall / unclassified refuse the move (409) until
+ * the next clean observation.
+ */
 export async function leaveCommunity(id: string): Promise<Community[]> {
   const res = await request(`/communities/${id}`, { method: 'DELETE' })
-  if (!res.ok) throw new Error(`Could not leave the community (${res.status})`)
+  if (!res.ok) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null
+    throw new Error(body?.error ?? `Could not leave the community (${res.status})`)
+  }
   const body = (await res.json()) as CommunitiesResponse
   return body.communities
 }

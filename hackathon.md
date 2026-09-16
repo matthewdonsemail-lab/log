@@ -467,3 +467,20 @@ to the catalog's actual `captcha_html` label. Added a regression test
 pinning that the platform-specific remediation string survives into the
 notification payload, so Part B's push flow gets the real copy, not the
 generic fallback. typecheck clean, 45/45 vitest pass, lint clean.
+
+### 2026-09-16 - working tree
+State machines for listings and communities plus the shared account gate
+(`apps/web/src/lib/account-state.ts`: `gateAccount`, `describeGate`,
+`WRITE_BLOCKING_ISSUES`, terminal vs stalled). Listings
+(`lib/listings/machine.ts`) and communities (`lib/communities/machine.ts`)
+enforce every mutation in the store (409 with the machine reason) and gate
+the row menus through the same pure functions, so menu and store agree.
+Communities grow the full FB lifecycle: 8 join states, `removedBy`
+provenance (self-leave rejoins freely, platform removal gated on the
+group), new mock `decline`/`remove` routes, machine-gated Groups page
+(badges, per-state copy, gate notes, toast-wired handlers) and join form
+(machine-filtered pick list, rejoin title, answer prefill from declined
+rows). New `docs/okf/communities_lifecycle.md` transition table for the
+live-client handoff. typecheck clean, 71/71 vitest pass (15 new community
+machine tests), lint clean (one pre-existing spread-fallback warning in
+communities/index.ts).

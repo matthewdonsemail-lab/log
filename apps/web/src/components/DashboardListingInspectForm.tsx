@@ -3,6 +3,7 @@ import { Badge, Button, useToast } from '@listeningkit/ui'
 import { ChevronLeft, ChevronRight, Pencil, Tag, Trash2 } from 'lucide-react'
 import {
   LISTING_STATUS_LABELS,
+  listingActions,
   setListingStatus,
   type ListingRecord,
   type ListingStatus
@@ -17,6 +18,34 @@ import { STATUS_COLOR, flagForLocation, formatPublished } from './listing-shared
 import Dither from './Dither'
 
 const facebookIcon = SOCIAL_ICONS.find((icon) => icon.id === 'facebook')
+
+/**
+ * One line per status — what this listing's state means and what can happen
+ * to it next. The platform-removed variant of `removed` gets its own copy:
+ * that one is Facebook's removal (violation / rejection / inactivity), not
+ * the seller's own delist, so relist is off the table and the appeal is the
+ * only way back.
+ */
+function statusNote(listing: ListingRecord): string {
+  switch (listing.status) {
+    case 'active':
+      return 'Live — buyers can see it and buy it. Facebook approved it out of review.'
+    case 'under-review':
+      return 'With Facebook for review. It goes live on approval, or lands in a duplicate hold / gets removed on rejection.'
+    case 'under-review-duplicate':
+      return 'Facebook is holding this as a duplicate of an existing listing. Change the title or price and re-save — that is the usual unblock.'
+    case 'sold':
+      return 'You marked this sold — buyers who inquired get notified. Mark it available again or remove it to archive.'
+    case 'removed':
+      return listing.removedBy === 'platform'
+        ? 'Facebook removed this (policy violation, a rejected review, or inactivity). Re-listing is blocked — request a review from the listing page if you believe it was a mistake.'
+        : 'You took this down. Relist it to put it back on the feed, or delete the row for good.'
+    case 'login-wall':
+      return 'The poller hit a login wall and cannot see this listing right now. Fix the account session on the Accounts page — the next poll re-reads the real state.'
+    case 'unknown':
+      return 'The poller could not classify this listing. Nothing to act on until the next poll resolves its real state.'
+  }
+}
 
 /** Horizontal pixels of drag before the carousel commits to a page turn. */
 const DRAG_THRESHOLD = 48
@@ -197,7 +226,7 @@ export function DashboardListingInspectForm({
   // the parent reloads the table rows behind it.
   const [listing, setListing] = useState(initialListing)
   useEffect(() => {
-    setListing((prev) => (prev.listingId === initialListing.listingId ? prev : initialListing))
+    setListing((prev) => (prev.id === initialListing.id ? prev : initialListing))
   }, [initialListing])
 
   const [accounts, setAccounts] = useState<ConnectionRecord[] | null>(null)
@@ -210,15 +239,38 @@ export function DashboardListingInspectForm({
   const health =
     healthForAccountId(accounts ?? [], listing.accountId) ?? healthForLabel(accounts ?? [], listing.account)
 
+  // The machine (allowedTransition via listingActions) decides which
+  // seller actions this status — combined with the owning account's issue
+  // — actually allows; the store 409s the same set, so a hidden button and
+  // a rejected round-trip never diverge.
+  const accountIssue = accounts?.find((row) => row.id === listing.accountId)?.lastIssue ?? undefined
+  const actions = listingActions(listing.status, {
+    removedBy: listing.removedBy,
+    accountIssue
+  })
+
   async function handleStatusChange(status: ListingStatus) {
     if (busyAction) return
     setBusyAction(status)
+    const from = listing.status
     try {
-      const res = await setListingStatus(listing.listingId, status)
+      const res = await setListingStatus(listing.id, status)
       setListing(res.listing)
       onChanged()
       success(
-        status === 'sold' ? `“${listing.title}” marked as sold` : `“${listing.title}” removed`,
+        `“${listing.title}” ${
+          status === 'sold'
+            ? 'marked as sold'
+            : status === 'removed'
+              ? from === 'sold'
+                ? 'archived'
+                : 'removed from Marketplace'
+              : status === 'active'
+                ? from === 'sold'
+                  ? 'is back on sale'
+                  : 'relisted'
+                : `moved to ${LISTING_STATUS_LABELS[status].toLowerCase()}`
+        }`,
         LISTING_STATUS_LABELS[status]
       )
     } catch (err: unknown) {
@@ -301,32 +353,35 @@ export function DashboardListingInspectForm({
           <ListingCarousel images={listing.images} title={listing.title} />
         </div>
       </div>
-      <dl className="space-y-2 rounded-xl border border-slate-200 bg-white p-4 text-sm">
-        <div className="flex items-center justify-between gap-3">
-          <dt className="shrink-0 text-text-secondary">Price</dt>
-          <dd className="truncate text-lg font-bold text-text-primary">€{listing.price}</dd>
-        </div>
-        <div className="flex items-center justify-between gap-3">
-          <dt className="shrink-0 text-text-secondary">Location</dt>
-          <dd className="flex min-w-0 items-center gap-1.5 font-medium text-text-primary">
-            {flagForLocation(listing.location)}
-            <span className="truncate">{listing.location}</span>
-          </dd>
-        </div>
-        <div className="flex items-center justify-between gap-3">
-          <dt className="shrink-0 text-text-secondary">Category</dt>
-          <dd className="truncate font-medium text-text-primary">
-            {listing.category}
-            {listing.condition ? ` · ${listing.condition}` : ''}
-          </dd>
-        </div>
-        <div className="flex items-center justify-between gap-3">
-          <dt className="shrink-0 text-text-secondary">Published</dt>
-          <dd className="font-medium tabular-nums text-text-primary">{formatPublished(listing.publishedAt)}</dd>
-        </div>
-      </dl>
-      <div className="flex gap-2">
-        {onEdit ? (
+      <div className="rounded-xl border border-slate-200 bg-white p-4 text-sm">
+        <p className="mb-3 leading-5 text-text-secondary">{statusNote(listing)}</p>
+        <dl className="space-y-2">
+          <div className="flex items-center justify-between gap-3">
+            <dt className="shrink-0 text-text-secondary">Price</dt>
+            <dd className="truncate text-lg font-bold text-text-primary">€{listing.price}</dd>
+          </div>
+          <div className="flex items-center justify-between gap-3">
+            <dt className="shrink-0 text-text-secondary">Location</dt>
+            <dd className="flex min-w-0 items-center gap-1.5 font-medium text-text-primary">
+              {flagForLocation(listing.location)}
+              <span className="truncate">{listing.location}</span>
+            </dd>
+          </div>
+          <div className="flex items-center justify-between gap-3">
+            <dt className="shrink-0 text-text-secondary">Category</dt>
+            <dd className="truncate font-medium text-text-primary">
+              {listing.category}
+              {listing.condition ? ` · ${listing.condition}` : ''}
+            </dd>
+          </div>
+          <div className="flex items-center justify-between gap-3">
+            <dt className="shrink-0 text-text-secondary">Published</dt>
+            <dd className="font-medium tabular-nums text-text-primary">{formatPublished(listing.publishedAt)}</dd>
+          </div>
+        </dl>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {onEdit && actions.edit ? (
           <Button
             type="button"
             variant="blue"
@@ -339,7 +394,7 @@ export function DashboardListingInspectForm({
             Edit
           </Button>
         ) : null}
-        {listing.status !== 'sold' ? (
+        {actions.markSold ? (
           <Button
             type="button"
             variant="blue"
@@ -352,17 +407,43 @@ export function DashboardListingInspectForm({
             {busyAction === 'sold' ? 'Working…' : 'Mark as sold'}
           </Button>
         ) : null}
-        <Button
-          type="button"
-          variant="destructive"
-          size="lg"
-disabled={busyAction !== null}
+        {actions.markAvailable ? (
+          <Button
+            type="button"
+            variant="blue"
+            size="lg"
+            disabled={busyAction !== null}
+            onClick={() => handleStatusChange('active')}
+            className="flex-1 font-bold text-white"
+          >
+            {busyAction === 'active' ? 'Working…' : 'Mark as available'}
+          </Button>
+        ) : null}
+        {actions.relist ? (
+          <Button
+            type="button"
+            variant="blue"
+            size="lg"
+            disabled={busyAction !== null}
+            onClick={() => handleStatusChange('active')}
+            className="flex-1 font-bold text-white"
+          >
+            {busyAction === 'active' ? 'Working…' : 'Relist'}
+          </Button>
+        ) : null}
+        {actions.remove ? (
+          <Button
+            type="button"
+            variant="destructive"
+            size="lg"
+            disabled={busyAction !== null}
             onClick={() => handleStatusChange('removed')}
             className="flex-1"
-        >
-          <Trash2 aria-hidden="true" className="size-3.5" strokeWidth={2.25} />
-          {busyAction === 'removed' ? 'Working…' : 'Remove'}
-        </Button>
+          >
+            <Trash2 aria-hidden="true" className="size-3.5" strokeWidth={2.25} />
+            {busyAction === 'removed' ? 'Working…' : listing.status === 'sold' ? 'Archive listing' : 'Remove listing'}
+          </Button>
+        ) : null}
       </div>
     </DashboardFormSheet>
   )

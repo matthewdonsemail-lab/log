@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react'
-import { Check, LayoutGrid, LogOut, Plus, Table2, X } from 'lucide-react'
+import { Check, LayoutGrid, LogOut, Plus, Table2, ThumbsDown, X } from 'lucide-react'
 import {
   Badge,
   Button,
@@ -10,16 +10,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  useSquircleClip
+  useSquircleClip,
+  useToast
 } from '@listeningkit/ui'
 import { SOCIAL_ICONS, SocialBadge, SocialGlyph, type SocialIcon } from '@/lib/social-icons'
 import {
   acceptCommunity,
+  declineCommunity,
   getCommunities,
   joinCommunity,
   leaveCommunity,
   type Community
 } from '@/lib/communities'
+import { communityActions as machineActions } from '@/lib/communities/machine'
+import { describeGate, gateAccount } from '@/lib/account-state'
 import { getAccounts, type ConnectionPlatform, type ConnectionRecord } from '@/lib/connections'
 import { healthForAccountId } from '@/lib/health'
 import { AccountHealthBadge } from './AccountHealthBadge'
@@ -43,28 +47,68 @@ type CommunityHandlers = {
   onJoin: (community: Community) => void
   onLeave: (community: Community) => void
   onAccept: (community: Community) => void
+  onDecline: (community: Community) => void
   onCancel: (community: Community) => void
+}
+
+/**
+ * One-line card copy per join state — the poller-observed states
+ * (`login-wall`, `unknown`) and the refusal states (`declined`,
+ * `removed`) explain themselves instead of falling back to the catalog
+ * description, so a row never reads as joined when it isn't.
+ */
+function communitySubtitle(community: Community): string {
+  switch (community.joinState) {
+    case 'pending':
+      return `Request sent — waiting on the group to accept${community.accountLabel ? ` · ${community.accountLabel}` : ''}${
+        community.answers.length > 0
+          ? ` · ${community.answers.length} answer${community.answers.length === 1 ? '' : 's'} sent`
+          : ''
+      }`
+    case 'limited':
+      return `Limited member — full posting isn't open yet${community.accountLabel ? ` · ${community.accountLabel}` : ''}`
+    case 'declined':
+      return 'The group declined the request — update the answers and ask again'
+    case 'removed':
+      return community.removedBy === 'platform'
+        ? "Removed by the group — rejoining is at the group's discretion"
+        : 'You left this group — rejoin any time'
+    case 'login-wall':
+      return 'The last check hit a login wall — reconnect and it will re-observe'
+    case 'unknown':
+      return "The last check couldn't classify the membership — it will re-observe"
+    default:
+      return community.description
+  }
 }
 
 /**
  * Blue community card — same card language as `KeywordCard` in
  * DashboardKeywords: brand-blue squircle, platform glyph left, identity
  * middle, metric + status + row actions right. One component covers all
- * three join states; the dropdown owns Join / Leave / Simulate acceptance
- * / Cancel request via `communityActions`.
+ * eight join states; the dropdown only offers the moves the machine allows
+ * for this row (see `communityMenuItems`), so the menu never offers a move
+ * the store would 409.
  */
 function CommunityCard({
   community,
+  accounts,
   busy,
   handlers
 }: {
   community: Community
+  accounts: ConnectionRecord[]
   busy: boolean
   handlers: CommunityHandlers
 }) {
   const clip = useSquircleClip<HTMLDivElement>(20)
   const icon = SOCIAL_ICONS.find((i) => i.id === community.platform) as SocialIcon | undefined
   const pending = community.joinState === 'pending'
+  // The account gate cascades into the row: a terminated or stalled joining
+  // account reads as a stale/session note, never as a state rewrite.
+  const gate = gateAccount(community.accountId, accounts)
+  const gateNote = describeGate(gate, 'This group')
+  const items = communityMenuItems(community, accounts, handlers)
 
   return (
     <div ref={clip.ref} style={clip.style} className="flex items-center gap-4 bg-[#2A8CFF] p-5">
@@ -78,19 +122,14 @@ function CommunityCard({
         <span className="truncate text-sm text-white/75" title={`${community.handle} · ${community.members}`}>
           {community.handle} · {community.members}
         </span>
-        {pending ? (
-          <span className="truncate text-sm text-white/75">
-            Request sent — waiting on the group to accept
-            {community.accountLabel ? ` · ${community.accountLabel}` : ''}
-            {community.answers.length > 0
-              ? ` · ${community.answers.length} answer${community.answers.length === 1 ? '' : 's'} sent`
-              : ''}
-          </span>
-        ) : (
-          <span className="truncate text-sm text-white/75" title={community.description}>{community.description}</span>
-        )}
+        <span className="truncate text-sm text-white/75" title={communitySubtitle(community)}>
+          {communitySubtitle(community)}
+        </span>
         {community.joinState === 'accepted' && community.accountLabel ? (
           <span className="truncate text-xs text-white/75">Joined as {community.accountLabel}</span>
+        ) : null}
+        {gateNote ? (
+          <span className="truncate text-xs text-white/75" title={gateNote}>{gateNote}</span>
         ) : null}
       </span>
       <span className="flex shrink-0 flex-col items-end gap-1.5">
@@ -98,18 +137,20 @@ function CommunityCard({
           {busy
             ? pending
               ? 'Updating…'
-              : community.joinState === 'accepted'
+              : community.joinState === 'accepted' || community.joinState === 'limited'
                 ? 'Leaving…'
                 : 'Joining…'
             : community.members}
         </span>
         <span className="flex items-center gap-2">
           <JoinStateBadge community={community} />
-          <Dropdown
-            aria-label={`${community.name} community actions`}
-            items={communityActions(community, handlers)}
-            className="text-white hover:text-white"
-          />
+          {items.length > 0 ? (
+            <Dropdown
+              aria-label={`${community.name} community actions`}
+              items={items}
+              className="text-white hover:text-white"
+            />
+          ) : null}
         </span>
       </span>
     </div>
@@ -128,51 +169,98 @@ function JoinStateBadge({ community }: { community: Community }) {
       )
     case 'pending':
       return <Badge variant="warning">Pending</Badge>
+    case 'limited':
+      return <Badge variant="info">Limited</Badge>
+    case 'declined':
+      return <Badge variant="danger">Declined</Badge>
+    case 'removed':
+      return community.removedBy === 'platform' ? (
+        <Badge variant="danger">Removed by group</Badge>
+      ) : (
+        <Badge variant="muted">Left</Badge>
+      )
+    case 'login-wall':
+      return <Badge variant="warning">Login wall</Badge>
+    case 'unknown':
+      return <Badge variant="muted">Unclassified</Badge>
     default:
       return <Badge variant="muted">Not joined</Badge>
   }
 }
 
-function communityActions(
+type CommunityMenuItem = {
+  id: string
+  label: string
+  icon: ReactNode
+  danger?: boolean
+  onSelect: () => void
+}
+
+/**
+ * The row menu, gated by the same machine that 409s in the store: only the
+ * user edges from this row's state (composed with the joining account's
+ * issue and the row's removal provenance) appear, so the menu never offers
+ * a refused move. Refusals that only the server can see (a race, a stale
+ * row) still 409 with the machine reason and surface through the toast.
+ * Platform-side simulation (accept / decline) mirrors the mock admin
+ * routes; removal stays poller-observed, so it has no menu twin.
+ */
+function communityMenuItems(
   community: Community,
+  accounts: ConnectionRecord[],
   handlers: CommunityHandlers
-) {
-  if (community.joinState === 'accepted') {
-    return [
-      {
-        id: 'leave',
-        label: 'Leave',
-        icon: <LogOut aria-hidden="true" className="size-4" />,
-        danger: true,
-        onSelect: () => handlers.onLeave(community)
-      }
-    ]
+): CommunityMenuItem[] {
+  const accountIssue = community.accountId
+    ? (accounts.find((row) => row.id === community.accountId)?.lastIssue ?? undefined)
+    : undefined
+  const allowed = machineActions(community.joinState, {
+    accountIssue,
+    removedBy: community.removedBy
+  })
+  const items: CommunityMenuItem[] = []
+  if (community.joinState === 'pending' || community.joinState === 'limited') {
+    items.push({
+      id: 'accept',
+      label: 'Simulate acceptance',
+      icon: <Check aria-hidden="true" className="size-4" />,
+      onSelect: () => handlers.onAccept(community)
+    })
   }
   if (community.joinState === 'pending') {
-    return [
-      {
-        id: 'accept',
-        label: 'Simulate acceptance',
-        icon: <Check aria-hidden="true" className="size-4" />,
-        onSelect: () => handlers.onAccept(community)
-      },
-      {
-        id: 'cancel',
-        label: 'Cancel request',
-        icon: <X aria-hidden="true" className="size-4" />,
-        danger: true,
-        onSelect: () => handlers.onCancel(community)
-      }
-    ]
+    items.push({
+      id: 'decline',
+      label: 'Simulate decline',
+      icon: <ThumbsDown aria-hidden="true" className="size-4" />,
+      onSelect: () => handlers.onDecline(community)
+    })
   }
-  return [
-    {
+  if (allowed.withdraw) {
+    items.push({
+      id: 'cancel',
+      label: 'Cancel request',
+      icon: <X aria-hidden="true" className="size-4" />,
+      danger: true,
+      onSelect: () => handlers.onCancel(community)
+    })
+  }
+  if (allowed.leave) {
+    items.push({
+      id: 'leave',
+      label: 'Leave',
+      icon: <LogOut aria-hidden="true" className="size-4" />,
+      danger: true,
+      onSelect: () => handlers.onLeave(community)
+    })
+  }
+  if (allowed.join) {
+    items.push({
       id: 'join',
-      label: 'Join',
+      label: community.joinState === 'none' ? 'Join' : 'Re-join',
       icon: <Plus aria-hidden="true" className="size-4" />,
       onSelect: () => handlers.onJoin(community)
-    }
-  ]
+    })
+  }
+  return items
 }
 
 function CommunitySection({
@@ -253,30 +341,59 @@ export function DashboardGroups() {
     return () => window.removeEventListener('lk:form-dismissed', onExternalDismiss)
   }, [])
 
+  const { success, error: notifyError } = useToast()
   const active = SOCIAL_ICONS.find((i) => i.id === platform) ?? SOCIAL_ICONS[0]
-  const current = (communities ?? []).filter((c) => c.joinState === 'accepted')
+  const current = (communities ?? []).filter((c) => c.joinState === 'accepted' || c.joinState === 'limited')
   const pending = (communities ?? []).filter((c) => c.joinState === 'pending')
+  const attention = (communities ?? []).filter((c) => c.joinState === 'login-wall' || c.joinState === 'unknown')
+  const declined = (communities ?? []).filter((c) => c.joinState === 'declined')
+  const removed = (communities ?? []).filter((c) => c.joinState === 'removed')
   const recommended = (communities ?? []).filter((c) => c.joinState === 'none')
   // Flat table order mirrors the card sections: members, then pending,
-  // then not joined.
-  const all = [...current, ...pending, ...recommended]
+  // then needs-attention, declined, removed, then not joined.
+  const all = [...current, ...pending, ...attention, ...declined, ...removed, ...recommended]
 
   async function handleLeave(community: Community) {
     setBusyId(community.id)
     try {
       setCommunities(await leaveCommunity(community.id))
+      success(
+        community.joinState === 'pending'
+          ? `Withdrew the request to ${community.name}`
+          : `Left ${community.name}`
+      )
+    } catch (err: unknown) {
+      notifyError('Could not leave the community', err instanceof Error ? err.message : 'Something went wrong.')
     } finally {
       setBusyId(null)
     }
   }
 
   // The group side accepting a request — the mock stands in for the admin
-  // until the live client reports real acceptances.
+  // until the live client reports real approvals.
   async function handleAccept(community: Community) {
     setBusyId(community.id)
     try {
       await acceptCommunity(community.id)
+      success(`${community.name} accepted the request`, 'Member')
       load()
+    } catch (err: unknown) {
+      notifyError('Could not simulate the acceptance', err instanceof Error ? err.message : 'Something went wrong.')
+    } finally {
+      setBusyId(null)
+    }
+  }
+
+  // The group side declining a request — same mock-admin stand-in. The row
+  // keeps its answers so the next ask starts from what the admin saw.
+  async function handleDecline(community: Community) {
+    setBusyId(community.id)
+    try {
+      await declineCommunity(community.id)
+      success(`${community.name} declined the request`, 'Declined')
+      load()
+    } catch (err: unknown) {
+      notifyError('Could not simulate the decline', err instanceof Error ? err.message : 'Something went wrong.')
     } finally {
       setBusyId(null)
     }
@@ -289,6 +406,8 @@ export function DashboardGroups() {
 
   // Facebook joins need the connected account that joins, so they open the
   // form pre-scoped to this community; x / reddit go straight to the API.
+  // Re-joins ride the same path — the store machines declined and
+  // self-removed rows back in and 409s platform-removed ones.
   async function handleJoin(community: Community) {
     if (community.platform === 'facebook') {
       setFormScope({ platform: community.platform, communityId: community.id })
@@ -298,10 +417,21 @@ export function DashboardGroups() {
     setBusyId(community.id)
     try {
       await joinCommunity(community.id)
+      success(community.joinState === 'none' ? `Joined ${community.name}` : `Rejoined ${community.name}`)
       load()
+    } catch (err: unknown) {
+      notifyError('Could not join the community', err instanceof Error ? err.message : 'Something went wrong.')
     } finally {
       setBusyId(null)
     }
+  }
+
+  const handlers: CommunityHandlers = {
+    onJoin: handleJoin,
+    onLeave: handleLeave,
+    onAccept: handleAccept,
+    onDecline: handleDecline,
+    onCancel: handleCancelRequest
   }
 
   return (
@@ -367,13 +497,9 @@ export function DashboardGroups() {
                 <CommunityCard
                   key={c.id}
                   community={c}
+                  accounts={accounts}
                   busy={busyId === c.id}
-                  handlers={{
-                    onJoin: handleJoin,
-                    onLeave: handleLeave,
-                    onAccept: handleAccept,
-                    onCancel: handleCancelRequest
-                  }}
+                  handlers={handlers}
                 />
               ))
             )}
@@ -387,13 +513,57 @@ export function DashboardGroups() {
                 <CommunityCard
                   key={c.id}
                   community={c}
+                  accounts={accounts}
                   busy={busyId === c.id}
-                  handlers={{
-                    onJoin: handleJoin,
-                    onLeave: handleLeave,
-                    onAccept: handleAccept,
-                    onCancel: handleCancelRequest
-                  }}
+                  handlers={handlers}
+                />
+              ))}
+            </CommunitySection>
+          ) : null}
+          {attention.length > 0 ? (
+            <CommunitySection
+              title="Needs attention"
+              sub="The last check couldn't confirm these memberships — reconnect the account and they'll re-observe."
+            >
+              {attention.map((c) => (
+                <CommunityCard
+                  key={c.id}
+                  community={c}
+                  accounts={accounts}
+                  busy={busyId === c.id}
+                  handlers={handlers}
+                />
+              ))}
+            </CommunitySection>
+          ) : null}
+          {declined.length > 0 ? (
+            <CommunitySection
+              title="Declined requests"
+              sub="The group turned these down — fix the answers and ask again."
+            >
+              {declined.map((c) => (
+                <CommunityCard
+                  key={c.id}
+                  community={c}
+                  accounts={accounts}
+                  busy={busyId === c.id}
+                  handlers={handlers}
+                />
+              ))}
+            </CommunitySection>
+          ) : null}
+          {removed.length > 0 ? (
+            <CommunitySection
+              title="Left or removed"
+              sub="Past memberships — the ones you left rejoin freely; group removals are at the group's discretion."
+            >
+              {removed.map((c) => (
+                <CommunityCard
+                  key={c.id}
+                  community={c}
+                  accounts={accounts}
+                  busy={busyId === c.id}
+                  handlers={handlers}
                 />
               ))}
             </CommunitySection>
@@ -404,8 +574,8 @@ export function DashboardGroups() {
           >
             {recommended.length === 0 ? (
               <p className="py-4 text-sm text-text-secondary">
-                {pending.length > 0
-                  ? 'Nothing new to join — the rest are waiting on acceptance above.'
+                {pending.length + attention.length + declined.length + removed.length > 0
+                  ? 'Nothing new to join — the rest are listed above.'
                   : "You're in all of them. Nice."}
               </p>
             ) : (
@@ -413,13 +583,9 @@ export function DashboardGroups() {
                 <CommunityCard
                   key={c.id}
                   community={c}
+                  accounts={accounts}
                   busy={busyId === c.id}
-                  handlers={{
-                    onJoin: handleJoin,
-                    onLeave: handleLeave,
-                    onAccept: handleAccept,
-                    onCancel: handleCancelRequest
-                  }}
+                  handlers={handlers}
                 />
               ))
             )}
@@ -445,6 +611,7 @@ export function DashboardGroups() {
               {all.map((c) => {
                 const health = healthForAccountId(accounts, c.accountId)
                 const icon = SOCIAL_ICONS.find((i) => i.id === c.platform)
+                const items = communityMenuItems(c, accounts, handlers)
                 return (
                   <TableRow key={c.id}>
                     <TableCell>
@@ -512,15 +679,12 @@ export function DashboardGroups() {
                     </TableCell>
                   <TableCell className="text-right tabular-nums">{c.members}</TableCell>
                     <TableCell className="text-right">
-                      <Dropdown
-                        aria-label={`${c.name} community actions`}
-                        items={communityActions(c, {
-                          onJoin: handleJoin,
-                          onLeave: handleLeave,
-                          onAccept: handleAccept,
-                          onCancel: handleCancelRequest
-                        })}
-                      />
+                      {items.length > 0 ? (
+                        <Dropdown
+                          aria-label={`${c.name} community actions`}
+                          items={items}
+                        />
+                      ) : null}
                     </TableCell>
                   </TableRow>
                 )

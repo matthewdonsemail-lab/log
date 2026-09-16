@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useState, type ReactNode } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { CircleCheck, Clock, Copy, ExternalLink, Globe, HelpCircle, LogIn, Pencil, Plus, Tag, Trash, Trash2 } from 'lucide-react'
 import { Badge, Button, Dropdown, Select, Table, TableBody, TableCell, TableHead, TableHeader, TableRow, useToast } from '@listeningkit/ui'
 import { getAccounts, type ConnectionRecord } from '../lib/connections'
 import { healthForAccountId, healthForLabel } from '../lib/health'
-import { getListings, LISTING_STATUSES, LISTING_STATUS_LABELS, deleteListing, setListingStatus, type ListingRecord, type ListingStatus } from '../lib/listings'
+import { getListings, LISTING_STATUSES, LISTING_STATUS_LABELS, deleteListing, listingActions, setListingStatus, type ListingRecord, type ListingStatus } from '../lib/listings'
 import { SocialBadge, SocialGlyph, SOCIAL_ICONS } from '../lib/social-icons'
 import { MarketplaceImages } from './MarketplaceImages'
 import { STATUS_COLOR, flagForLocation, formatPublished } from './listing-shared'
@@ -15,6 +15,9 @@ import { DashboardListingInspectForm } from './DashboardListingInspectForm'
 import { useDashboardFormSlot } from './DashboardFormSlot'
 
 const facebookIcon = SOCIAL_ICONS.find((icon) => icon.id === 'facebook')
+
+/** Base list view; a clicked row deep-links to `${LISTINGS_URL}/{uuid}`. */
+const LISTINGS_URL = '/dashboard/facebook/listings'
 
 // One glyph per status so the trigger icon follows the selection, the same
 // way the Accounts platform filter's trigger icon follows its selection.
@@ -31,6 +34,8 @@ const STATUS_ICON: Record<ListingStatus, ReactNode> = {
 export function DashboardListings() {
   const { success, error: notifyError } = useToast()
   const location = useLocation()
+  const navigate = useNavigate()
+  const { id: paramId } = useParams()
   const [listings, setListings] = useState<ListingRecord[] | null>(null)
   const [accounts, setAccounts] = useState<ConnectionRecord[] | null>(null)
   const [filter, setFilter] = useState('all')
@@ -38,9 +43,21 @@ export function DashboardListings() {
   // Edit scope: set alongside formOpen to jump the form straight to the
   // details step for this listing; null means create mode.
   const [editScope, setEditScope] = useState<ListingRecord | null>(null)
-  // Inspect scope: the listing whose photos + meta show in the inspect form.
-  // Opening inspect closes create/edit and vice versa (one slot node).
-  const [inspectedListing, setInspectedListing] = useState<ListingRecord | null>(null)
+
+  // The URL is the source of truth for the inspect view: the `:id` segment
+  // is the record's opaque id (UUID), so a shared
+  // `/dashboard/facebook/listings/{uuid}` link opens exactly this inspect
+  // form. Opening, closing and browser back all just move the URL.
+  const inspectedListing = useMemo(
+    () => (paramId && listings ? (listings.find((row) => row.id === paramId) ?? null) : null),
+    [paramId, listings]
+  )
+  function inspectUrl(row: ListingRecord): string {
+    return `${LISTINGS_URL}/${row.id}`
+  }
+  function closeInspect() {
+    if (paramId) navigate(LISTINGS_URL, { replace: true })
+  }
 
   const load = useCallback(() => {
     getListings()
@@ -52,6 +69,17 @@ export function DashboardListings() {
     load()
   }, [load])
 
+  // An `:id` segment that isn't in the loaded roster (deleted or hand-typed):
+  // drop it back to the list instead of rendering a dead inspect view — the
+  // same guard the Messages thread segment uses.
+  useEffect(() => {
+    if (!paramId || listings === null) return
+    if (!listings.some((row) => row.id === paramId)) {
+      notifyError('Listing not found', 'That listing is not in this workspace.')
+      navigate(LISTINGS_URL, { replace: true })
+    }
+  }, [paramId, listings, navigate, notifyError])
+
   // The form lives in the layout overlay, not in the page: register it
   // when open, clear it when closed or when the page unmounts. The slot
   // holds one node — inspect wins over create/edit when both are open.
@@ -61,7 +89,7 @@ export function DashboardListings() {
       setFormSlot(
         <DashboardListingInspectForm
           listing={inspectedListing}
-          onClose={() => setInspectedListing(null)}
+          onClose={closeInspect}
           onEdit={handleEdit}
           onChanged={load}
         />
@@ -90,11 +118,11 @@ export function DashboardListings() {
     const onExternalDismiss = () => {
       setFormOpen(false)
       setEditScope(null)
-      setInspectedListing(null)
+      if (paramId) navigate(LISTINGS_URL, { replace: true })
     }
     window.addEventListener('lk:form-dismissed', onExternalDismiss)
     return () => window.removeEventListener('lk:form-dismissed', onExternalDismiss)
-  }, [])
+  }, [paramId, navigate])
   useEffect(() => {
     getAccounts().then(setAccounts).catch(() => setAccounts([]))
   }, [location])
@@ -105,11 +133,24 @@ export function DashboardListings() {
   // Status changes round-trip the API — the store (mock now, facebook
   // client later) is the source of truth, never local table state.
   async function handleStatusChange(listing: ListingRecord, status: ListingStatus) {
+    const from = listing.status
     try {
-      const res = await setListingStatus(listing.listingId, status)
+      const res = await setListingStatus(listing.id, status)
       setListings(res.listings)
       success(
-        status === 'sold' ? `“${listing.title}” marked as sold` : `“${listing.title}” removed`,
+        `“${listing.title}” ${
+          status === 'sold'
+            ? 'marked as sold'
+            : status === 'removed'
+              ? from === 'sold'
+                ? 'archived'
+                : 'removed from Marketplace'
+              : status === 'active'
+                ? from === 'sold'
+                  ? 'is back on sale'
+                  : 'relisted'
+                : `moved to ${LISTING_STATUS_LABELS[status].toLowerCase()}`
+        }`,
         LISTING_STATUS_LABELS[status]
       )
     } catch (err: unknown) {
@@ -119,7 +160,7 @@ export function DashboardListings() {
 
   // Jump the form straight to the details step for this listing.
   function handleEdit(listing: ListingRecord) {
-    setInspectedListing(null)
+    if (paramId) navigate(LISTINGS_URL, { replace: true })
     setEditScope(listing)
     setFormOpen(true)
   }
@@ -128,20 +169,20 @@ export function DashboardListings() {
   // which flips it to the removed status for record-keeping).
   async function handleDelete(listing: ListingRecord) {
     try {
-      const res = await deleteListing(listing.listingId)
+      const res = await deleteListing(listing.id)
+      if (paramId === listing.id) navigate(LISTINGS_URL, { replace: true })
       setListings(res.listings)
-      if (inspectedListing?.listingId === listing.listingId) setInspectedListing(null)
       success(`“${listing.title}” deleted`)
     } catch (err: unknown) {
       notifyError('Could not delete the listing', err instanceof Error ? err.message : 'Something went wrong.')
     }
   }
 
-  // Row click opens the inspect form (the row dropdown stops propagation,
-  // so its actions never trigger inspect).
+  // Row click deep-links the inspect view (the row dropdown stops
+  // propagation, so its actions never trigger inspect).
   function handleOpen(listing: ListingRecord) {
     setFormOpen(false)
-    setInspectedListing(listing)
+    navigate(inspectUrl(listing))
   }
 
   const copyLink = async (url: string) => {    try {
@@ -170,7 +211,7 @@ export function DashboardListings() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button type="button" variant="blue" size="lg" shadow="hard" onClick={() => { setInspectedListing(null); setEditScope(null); setFormOpen(true) }}>
+          <Button type="button" variant="blue" size="lg" shadow="hard" onClick={() => { if (paramId) navigate(LISTINGS_URL, { replace: true }); setEditScope(null); setFormOpen(true) }}>
             <Plus aria-hidden="true" className="size-3.5" strokeWidth={2.25} />
             Add listing
           </Button>
@@ -210,9 +251,84 @@ export function DashboardListings() {
                   const health =
                     healthForAccountId(accounts ?? [], listing.accountId) ??
                     healthForLabel(accounts ?? [], listing.account)
+                  // The same machine gates the row menu as the store 409s:
+                  // only the status's seller edges (composed with the account
+                  // issue) appear, so the menu never offers a refused move.
+                  const accountIssue = accounts?.find((row) => row.id === listing.accountId)?.lastIssue ?? undefined
+                  const actions = listingActions(listing.status, {
+                    removedBy: listing.removedBy,
+                    accountIssue
+                  })
+                  const menuItems = [
+                    actions.edit
+                      ? {
+                          id: 'edit',
+                          label: 'Edit',
+                          icon: <Pencil aria-hidden="true" className="size-4" />,
+                          onSelect: () => handleEdit(listing)
+                        }
+                      : null,
+                    {
+                      id: 'view',
+                      label: 'View listing',
+                      icon: <ExternalLink aria-hidden="true" className="size-4" />,
+                      onSelect: () => window.open(listing.listingUrl, '_blank', 'noreferrer')
+                    },
+                    {
+                      id: 'copy',
+                      label: 'Copy link',
+                      icon: <Copy aria-hidden="true" className="size-4" />,
+                      onSelect: () => copyLink(listing.listingUrl)
+                    },
+                    actions.markSold
+                      ? {
+                          id: 'sold',
+                          label: 'Mark as sold',
+                          icon: <Tag aria-hidden="true" className="size-4" />,
+                          onSelect: () => handleStatusChange(listing, 'sold')
+                        }
+                      : null,
+                    actions.markAvailable
+                      ? {
+                          id: 'available',
+                          label: 'Mark as available',
+                          icon: <CircleCheck aria-hidden="true" className="size-4" />,
+                          onSelect: () => handleStatusChange(listing, 'active')
+                        }
+                      : null,
+                    actions.relist
+                      ? {
+                          id: 'relist',
+                          label: 'Relist',
+                          icon: <CircleCheck aria-hidden="true" className="size-4" />,
+                          onSelect: () => handleStatusChange(listing, 'active')
+                        }
+                      : null,
+                    actions.remove
+                      ? {
+                          id: 'remove',
+                          label: listing.status === 'sold' ? 'Archive listing' : 'Remove listing',
+                          icon: <Trash2 aria-hidden="true" className="size-4" />,
+                          onSelect: () => handleStatusChange(listing, 'removed')
+                        }
+                      : null,
+                    {
+                      id: 'delete',
+                      label: 'Delete',
+                      icon: <Trash aria-hidden="true" className="size-4" />,
+                      danger: true,
+                      onSelect: () => handleDelete(listing)
+                    }
+                  ].filter(Boolean) as {
+                    id: string
+                    label: string
+                    icon: ReactNode
+                    danger?: boolean
+                    onSelect: () => void
+                  }[]
                   return (
                   <TableRow
-                    key={listing.listingId}
+                    key={listing.id}
                     onClick={() => handleOpen(listing)}
                     title={`Inspect “${listing.title}”`}
                     className="cursor-pointer"
@@ -277,50 +393,12 @@ export function DashboardListings() {
                     <TableCell className="whitespace-nowrap text-right text-text-secondary">
                       {formatPublished(listing.publishedAt)}
                     </TableCell>
-                    <TableCell className="text-right">
+<TableCell className="text-right">
         <Dropdown
           aria-label="Listing actions"
-          items={[
-            {
-              id: 'edit',
-              label: 'Edit',
-              icon: <Pencil aria-hidden="true" className="size-4" />,
-              onSelect: () => handleEdit(listing)
-            },
-            {
-              id: 'view',
-              label: 'View listing',
-              icon: <ExternalLink aria-hidden="true" className="size-4" />,
-              onSelect: () => window.open(listing.listingUrl, '_blank', 'noreferrer')
-            },
-            {
-              id: 'copy',
-              label: 'Copy link',
-              icon: <Copy aria-hidden="true" className="size-4" />,
-              onSelect: () => copyLink(listing.listingUrl)
-            },
-            {
-              id: 'sold',
-              label: 'Mark as sold',
-              icon: <Tag aria-hidden="true" className="size-4" />,
-              onSelect: () => handleStatusChange(listing, 'sold')
-            },
-            {
-              id: 'remove',
-              label: 'Remove listing',
-              icon: <Trash2 aria-hidden="true" className="size-4" />,
-              onSelect: () => handleStatusChange(listing, 'removed')
-            },
-            {
-              id: 'delete',
-              label: 'Delete',
-              icon: <Trash aria-hidden="true" className="size-4" />,
-              danger: true,
-              onSelect: () => handleDelete(listing)
-            }
-          ]}
+          items={menuItems}
         />
-       </TableCell>
+        </TableCell>
                   </TableRow>
                   )
                 })}

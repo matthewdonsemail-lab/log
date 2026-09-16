@@ -134,7 +134,7 @@ export function DashboardListingCreateForm({
     try {
       if (editing) {
         // Account scope is fixed in edit mode — the stored id rides along.
-        const record = await saveListing(editing.listingId, { ...draft, accountId: editing.accountId })
+        const record = await saveListing(editing.id, { ...draft, accountId: editing.accountId })
         success(`“${record.title}” updated`, 'Changes are live on the listing.')
       } else {
         const account = fbAccounts.find((fb) => fb.id === accountId)
