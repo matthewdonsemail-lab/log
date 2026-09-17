@@ -1,7 +1,8 @@
+import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ToastProvider } from '@listeningkit/ui'
-import { OnboardingPage } from './pages/onboarding/OnboardingPage'
+import { OnboardingRoute, AuthSetup, RequireAuth, SignInRoute, SignUpRoute } from './components/AuthGate'
 import { DashboardLayout } from './components/DashboardLayout'
 import { DashboardSettings } from './components/DashboardSettings'
 import { DashboardGroups } from './components/DashboardGroups'
@@ -19,7 +20,7 @@ import { DashboardAPI } from './components/DashboardAPI'
 import { DashboardApiKeyPage } from './components/DashboardApiKeyPage'
 import { DashboardBrand } from './components/DashboardBrand'
 
-const queryClient = new QueryClient({
+const createQueryClient = () => new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
@@ -40,14 +41,19 @@ function HealthPage() {
 }
 
 export function App() {
+  // AuthSetup remounts on session changes; do not share cached queries across users.
+  const [queryClient] = useState(createQueryClient)
   return (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
         <Router>
+          <AuthSetup>
           <Routes>
             <Route path="/" element={<Navigate to="/onboarding" replace />} />
-            <Route path="/onboarding" element={<OnboardingPage />} />
-            <Route path="/dashboard" element={<DashboardLayout />}>
+            <Route path="/onboarding" element={<OnboardingRoute />} />
+            <Route path="/sign-in/*" element={<SignInRoute />} />
+            <Route path="/sign-up/*" element={<SignUpRoute />} />
+            <Route path="/dashboard" element={<RequireAuth><DashboardLayout /></RequireAuth>}>
               <Route index element={<DashboardFeed />} />
               <Route path="groups" element={<DashboardGroups />} />
               <Route path="facebook/listings" element={<DashboardListings />} />
@@ -75,6 +81,7 @@ export function App() {
             <Route path="/health" element={<HealthPage />} />
             <Route path="*" element={<Navigate to="/onboarding" replace />} />
           </Routes>
+          </AuthSetup>
         </Router>
       </ToastProvider>
     </QueryClientProvider>

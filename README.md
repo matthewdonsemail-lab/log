@@ -57,6 +57,15 @@ Everything above is the **live target**; the client in this repo is built agains
 - The same root app also serves as a standalone **mock server** on `http://localhost:5174` ([`scripts/mock-server.ts`](apps/web/scripts/mock-server.ts)) with fresh seeds on every boot, which the docs' **Scalar try-it consoles** execute against.
 - Pointing the clients at the live Hono/Railcode backend later is a **transport change only** — no route, response shape, or client call changes. The Vite dev server already proxies [`/api`](apps/web/vite.config.ts) to `http://localhost:4000` for that day.
 
+## Live backend (dev)
+
+Alongside the mock, a real authenticated slice runs in development — Clerk sign-in, the Hono bridge in [`apps/api`](apps/api/README.md), and Convex storage/queries in [`convex`](convex/README.md):
+
+- **Auth** — Clerk (`VITE_CLERK_PUBLISHABLE_KEY` in `apps/web/.env.local`, pulled with `clerk env pull`). Signed-out visitors get platform selection; Continue routes through `/sign-in` / `/sign-up`, rendered as onboarding-styled screens with Google/GitHub provider cards plus email. `/dashboard` stays behind `RequireAuth`; the sidebar user card shows the Clerk account. No auto-advance on card select — every step moves on Continue only.
+- **Transport** — `VITE_API_MODE=live` + `VITE_API_BASE_URL=/api` switches accounts/feed to the bridge; every other domain stays mocked. Live failures throw honestly, never substitute demo rows.
+- **Reddit sync** — the dashboard feed has a Sync now control (`r/<subreddit>`, default `marketing`) that calls `POST /api/feed/sync` → Convex action `reddit:syncSubreddit`: newest public posts via the keyless Arctic Shift mirror, normalized and ingested under the caller's own `Reddit public ingest` account (created on first sync), deduplicated on native post id. Junk rows are skipped and counted, never fabricated.
+- **Run it** — `pnpm dev` (web) + `pnpm --filter api dev` (bridge on 4000) + `pnpm exec convex dev --once` (push functions to the dev deployment). Convex `AUTH_ISSUER`/`AUTH_AUDIENCE` live on the deployment, never in the repo.
+
 ## The API
 
 One Hono surface, **8 tags, 55 documented operations** (the `/messaging/twitter` legacy alias is documented as its own five operations beside `/messaging/x`). Every route carries `describeRoute(...)`, and every request/response **Zod schema lives in one file** — [`openapi.ts`](apps/web/src/lib/openapi.ts) — so the generated spec, the docs site, and the mock can't drift from each other. The generated contract is committed at [`apps/docs/openapi.json`](apps/docs/openapi.json), and each tag page renders with a live try-it console: see the [API reference](apps/docs/content/docs/api-reference/index.mdx).
@@ -400,6 +409,9 @@ The app shell, sidebar, and pages live in [`apps/web/src/components/`](apps/web/
 
 - [`api-coverage.test.ts`](apps/web/src/lib/__tests__/api-coverage.test.ts) smokes **every** API domain through `mockApiApp.request` — key CRUD, all seven brand routes, accounts, community resolution in both flavors, listings, keyword scoping rejections, feed filters, and messaging account-ownership rules — so a route or schema change fails here before it fails in the docs.
 - [`messaging.test.ts`](apps/web/src/lib/__tests__/messaging.test.ts) locks the full chat contract: per-account seeded inboxes, account/platform isolation and the 404-not-a-leak rule, native id shapes as regex regressions, send/start preview + `updatedAt` sync, 409 duplicate compose, reply validation, idempotent ack, and byte-identical `/messaging/twitter` ↔ `/messaging/x` aliasing.
+- [`feed-transport.test.ts`](apps/web/src/lib/__tests__/feed-transport.test.ts) covers the live transport: filter forwarding with bearer auth, honest HTTP/network/schema errors, and the Reddit sync client (`syncFeed` posts the subreddit, validates the summary, refuses mock mode).
+- [`auth-gate.test.tsx`](apps/web/src/lib/__tests__/auth-gate.test.tsx) locks the auth routes: onboarding gating while signed out, provider cards on the sign-in/up screens, redirects for signed-in visitors, and dashboard protection with token-provider setup.
+- Backend: `pnpm test:backend` runs the Convex suite (`convex/*.test.ts` via `convex-test`, offline) — account/feed ownership and isolation plus Reddit normalization, mirror-error honesty, and per-owner ingest accounts. `pnpm --filter api test` covers the bridge boundary including `POST /api/feed/sync` validation.
 
 ## Quickstart
 
@@ -413,6 +425,8 @@ Useful extras:
 ```bash
 pnpm --filter web mock:server    # same API over HTTP on http://localhost:5174 (/openapi.json, /scalar)
 pnpm --filter docs dev           # the docs site on http://localhost:3001
+pnpm --filter api dev            # live bridge on http://localhost:4000 (needs apps/api/.env.local)
+pnpm exec convex dev --once      # push Convex functions to the dev deployment (no watch)
 ```
 
 ## Scripts
@@ -423,7 +437,10 @@ pnpm --filter docs dev           # the docs site on http://localhost:3001
 | `pnpm build` | `pnpm -r build` across workspaces |
 | `pnpm typecheck` | `pnpm -r typecheck` across workspaces |
 | `pnpm lint` | `pnpm -r lint` across workspaces (oxlint, `@shadcn/lint` — see [available rules](https://github.com/shadcn-ui/lint/blob/main/README.md#rules)) |
-| `pnpm --filter web test` | vitest run (API coverage + messaging contract) |
+| `pnpm --filter web test` | vitest run (API coverage + messaging contract + feed transport + auth routes) |
+| `pnpm test:backend` | Convex suite via convex-test (offline, `convex/*.test.ts`) |
+| `pnpm typecheck:backend` | `tsc -p convex/tsconfig.json` |
+| `pnpm --filter api test` | bridge boundary tests (auth, routes, sync validation) |
 | `pnpm --filter web mock:server` | standalone mock API on 5174 |
 | `pnpm --filter web openapi:export` | regenerate `apps/docs/openapi.json` from the mock |
 | `pnpm --filter docs gen:api` | regenerate the endpoint pages from the committed spec |
@@ -435,9 +452,11 @@ listeningkit-hackathon/
   apps/
     web/              # Vite React client (3000) — dashboard + the in-repo mock API
       scripts/        # mock-server.ts, export-openapi.ts
+    api/              # Hono live bridge (4000) — Clerk-JWT-verified accounts/feed/sync to Convex
     docs/             # fumadocs site (3001) — OpenAPI reference + brand/keywords guides
       openapi.json    # committed generated spec
       scripts/        # generate-api-docs.mjs
+  convex/             # Convex storage/queries/actions (dev deployment) + offline tests
   packages/
     ui/               # @listeningkit/ui shared package
   manifest.yaml       # Railcode deploy manifest

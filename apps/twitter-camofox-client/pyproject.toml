@@ -1,0 +1,21 @@
+[project]
+name = "twitter-camofox-client"
+version = "0.1.0"
+description = "X/Twitter client for OpenMagpie, backed by twikit. Same /api/* + /healthz contract as reddit-camofox-client and facebook-camofox-client."
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn>=0.29",
+    "pydantic>=2.6",
+    "twikit>=2.3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-asyncio", "httpx"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/twitter_camofox_client"]

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { siGithub, siGooglechrome } from 'simple-icons'
 import { Button } from '@listeningkit/ui'
 import { SOCIAL_ICONS, SocialGlyph } from '@/lib/social-icons'
@@ -6,6 +7,8 @@ import { extractBrandFromUrl, getBrand, saveBrand, type BrandEntity } from '@/li
 import { BrandRevealStep } from '@/components/onboarding/BrandRevealStep'
 import { FunnelVideo } from '@/components/FunnelVideo'
 import { ReadyFill } from '@/components/ReadyFill'
+import { BrandHeader } from './OnboardingShell'
+import { readAuthSource, saveAuthSource, clearAuthSource } from './auth-handoff'
 
 type Step = 0 | 1 | 2 | 3 | 4 | 5
 
@@ -21,29 +24,19 @@ const PLATFORM_SITES: Record<string, { label: string; url: string }> = {
 }
 
 const EXTENSION_URL = 'https://chromewebstore.google.com/'
-// Centered brand header — same pattern as
-// open-offer-builder/frontend/src/pages/PreviewPage.tsx (lines ~431-453):
-// logo left, name right + sub beneath, centered by the parent column.
-function BrandHeader() {
-  return (
-    <div className="flex items-center gap-3 text-left">
-      <img src="/logo.svg" alt="ListeningKit logo" className="size-11 shrink-0 rounded-[10px] object-contain" />
-      <div className="flex flex-col gap-0.5">
-        <p className="text-[17px] font-bold leading-tight text-white">ListeningKit</p>
-        <p className="text-[13px] leading-snug text-white/70">Live social listening</p>
-      </div>
-    </div>
-  )
-}
-
-export function OnboardingSteps() {  const [step, setStep] = useState<Step>(0)
-  const [sources, setSources] = useState<string[]>([])
+export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boolean }) {
+  const navigate = useNavigate()
+  const [authSource] = useState(readAuthSource)
+  const [step, setStep] = useState<Step>(!requireSignIn && authSource ? 1 : 0)
+  const [sources, setSources] = useState<string[]>(authSource ? [authSource] : [])
+  useEffect(() => {
+    if (!requireSignIn) clearAuthSource()
+  }, [requireSignIn])
   const [tokens, setTokens] = useState<Record<string, string>>({})
   const [saved, setSaved] = useState(false)
   const [saving, setSaving] = useState(false)
-  // Brand profile: always starts blank — visiting onboarding flushes any
-  // previously saved brand so a refresh never restores an old one. Typing
-  // never advances the step — only the Look up / Skip buttons move forward.
+  // Restore the brand only inside the authenticated flow. Typing never
+  // advances the step — only the Continue / Skip buttons move forward.
   const [profile, setProfile] = useState<BrandEntity | null>(null)
   const [brandUrl, setBrandUrl] = useState('')
   const [looking, setLooking] = useState(false)
@@ -83,9 +76,9 @@ export function OnboardingSteps() {  const [step, setStep] = useState<Step>(0)
   // Visiting onboarding never wipes the saved brand — a reset happens only
   // through an explicit start-over action, so data actually survives.
   useEffect(() => {
-    if (profile) return
+    if (requireSignIn || profile) return
     setProfile(getBrand())
-  }, [])
+  }, [requireSignIn])
 
   // Keep the reveal scrolled to the incoming stream: stickiness is tracked
   // from scroll position (pre-mutation), so big blocks landing at once —
@@ -117,6 +110,11 @@ export function OnboardingSteps() {  const [step, setStep] = useState<Step>(0)
 
   function continueFromSources() {
     if (sources.length === 0) return
+    if (requireSignIn) {
+      saveAuthSource(sources[0])
+      navigate('/sign-in')
+      return
+    }
     setStep(1)
   }
 
@@ -143,7 +141,7 @@ export function OnboardingSteps() {  const [step, setStep] = useState<Step>(0)
 
   return (
     <div className="relative mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 pb-16 pt-24 text-center sm:px-10">
-      {import.meta.env.DEV ? (
+      {import.meta.env.DEV && !requireSignIn ? (
         <div className="fixed left-2 top-2 z-[60] flex items-center gap-0.5 rounded-full bg-black/60 px-2 py-1 text-[11px] text-white backdrop-blur">
           <span className="px-1 font-bold text-amber-300">DEV</span>
           {(['Sources', 'Video', 'Tokens', 'Brand', 'Reveal', 'Fill'] as const).map((label, index) => (
@@ -226,6 +224,15 @@ export function OnboardingSteps() {  const [step, setStep] = useState<Step>(0)
             )}
           </Button>
         </div>
+      )}
+
+      {step === 0 && requireSignIn && (
+        <p className="mt-6 text-sm text-white/70">
+          Already have a workspace?{' '}
+          <a href="/sign-in" className="font-semibold text-white underline decoration-dashed underline-offset-4">Sign in</a>
+          {' · '}
+          <a href="/sign-up" className="font-semibold text-white underline decoration-dashed underline-offset-4">Create account</a>
+        </p>
       )}
 
       {step === 1 && (

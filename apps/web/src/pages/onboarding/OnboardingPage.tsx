@@ -1,14 +1,10 @@
 import { OnboardingSteps } from './OnboardingSteps'
+import { OnboardingShell } from './OnboardingShell'
 
-const BG = '#2a8cff'
-
-export function OnboardingPage() {
+export function OnboardingPage({ requireSignIn = false }: { requireSignIn?: boolean }) {
   return (
-    <div
-      className="flex min-h-screen flex-col text-white"
-      style={{ backgroundColor: BG, fontFamily: "'Satoshi', 'Inter', system-ui, sans-serif" }}
-    >
-      <OnboardingSteps />
-    </div>
+    <OnboardingShell>
+      <OnboardingSteps requireSignIn={requireSignIn} />
+    </OnboardingShell>
   )
 }

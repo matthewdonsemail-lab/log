@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { useSquircleClip, useToast } from '@listeningkit/ui'
+import { Button, useSquircleClip, useToast } from '@listeningkit/ui'
 import { SOCIAL_ICONS, type SocialIcon } from '@/lib/social-icons'
-import { getFeed, formatCount, type FeedItem, type FeedPlatform } from '@/lib/feed'
+import { getFeed, syncFeed, formatCount, type FeedItem, type FeedPlatform } from '@/lib/feed'
+import { apiMode } from '@/lib/transport'
 import { getKeywords } from '@/lib/keywords'
 import { DashboardFeedHeader } from './DashboardFeedHeader'
 import { FeedCardFrame, CARD_NATURAL_WIDTHS } from './cards/FeedCardFrame'
@@ -124,7 +125,12 @@ export function DashboardFeed() {
   const [items, setItems] = useState<FeedItem[] | null>(null)
   // Phrases currently listened for — cards quote-highlight these words.
   const [phrases, setPhrases] = useState<string[]>([])
-  const { error: notifyError } = useToast()
+  // Live Reddit sync: subreddit picker + refresh counter that re-runs the feed load.
+  const [subreddit, setSubreddit] = useState('marketing')
+  const [syncing, setSyncing] = useState(false)
+  const [reloads, setReloads] = useState(0)
+  const { error: notifyError, success: notifySuccess } = useToast()
+  const live = apiMode() === 'live'
 
   useEffect(() => {
     let cancelled = false
@@ -141,7 +147,7 @@ export function DashboardFeed() {
     return () => {
       cancelled = true
     }
-  }, [notifyError])
+  }, [notifyError, reloads])
 
   useEffect(() => {
     let cancelled = false
@@ -161,15 +167,50 @@ export function DashboardFeed() {
 
   const byPlatform = (platform: FeedPlatform) => (items ?? []).filter((item) => item.platform === platform)
 
+  async function syncNow() {
+    if (syncing) return
+    setSyncing(true)
+    try {
+      const result = await syncFeed(subreddit)
+      notifySuccess(`Synced r/${subreddit.trim()}`, `${result.ingested} new posts in your feed.`)
+      setReloads((n) => n + 1)
+    } catch (err: unknown) {
+      notifyError('Reddit sync failed', err instanceof Error ? err.message : 'Could not sync.')
+    } finally {
+      setSyncing(false)
+    }
+  }
+
   return (
-    <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-3 gap-4 sm:grid-cols-2 sm:grid-rows-2 sm:gap-5 xl:grid-cols-3 xl:grid-rows-1">
-      {SOCIAL_ICONS.map((icon) =>
-        items === null ? (
-          <FeedSkeletonColumn key={icon.id} icon={icon} />
-        ) : (
-          <FeedColumn key={icon.id} icon={icon} items={byPlatform(icon.id as FeedPlatform)} highlight={phrases} />
-        )
-      )}
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
+      {live ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="flex h-10 items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-500">
+            r/
+            <input
+              value={subreddit}
+              onChange={(e) => setSubreddit(e.target.value)}
+              placeholder="marketing"
+              autoComplete="off"
+              spellCheck={false}
+              aria-label="Subreddit to sync"
+              className="w-36 bg-transparent text-sm font-semibold text-slate-900 placeholder:font-normal placeholder:text-slate-400 focus:outline-none"
+            />
+          </label>
+          <Button type="button" variant="blue" disabled={syncing} onClick={syncNow} className="h-10 rounded-xl px-4 text-sm font-bold">
+            {syncing ? 'Syncing…' : 'Sync now'}
+          </Button>
+        </div>
+      ) : null}
+      <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-3 gap-4 sm:grid-cols-2 sm:grid-rows-2 sm:gap-5 xl:grid-cols-3 xl:grid-rows-1">
+        {SOCIAL_ICONS.map((icon) =>
+          items === null ? (
+            <FeedSkeletonColumn key={icon.id} icon={icon} />
+          ) : (
+            <FeedColumn key={icon.id} icon={icon} items={byPlatform(icon.id as FeedPlatform)} highlight={phrases} />
+          )
+        )}
+      </div>
     </div>
   )
 }

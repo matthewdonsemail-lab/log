@@ -6,15 +6,38 @@
 - **Live app:** not deployed
 - **Repo:** https://github.com/matthewdonsemail-lab/log
 - **Frontend:** Convex static hosting
-- **Convex deployment:** not deployed
+- **Convex deployment:** dev `determined-cheetah-971` (functions pushed; prod untouched)
 - **Components:** none
-- **Convex features:** none yet
-- **Auth:** none
+- **Convex features:** accounts/feed queries + mutations, Reddit public ingest action
+- **Auth:** Clerk dev instance (Google/GitHub provider cards + email, onboarding-gated routes)
 - **AI models:** none
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-15T23:32:48Z
+- **Last updated:** 2026-09-17T00:00:00Z
 
 ## Log
+
+### 2026-09-17 - working tree
+Clerk onboarding auth is live in dev: `/sign-in` + `/sign-up/*` routes render
+onboarding-styled screens (brand headline per mode, Google/GitHub platform
+cards driving the OAuth handoff, Clerk email form below), signed-out visitors
+start at platform selection with Continue routing through sign-in, `/dashboard`
+sits behind `RequireAuth`, and the sidebar user card shows the Clerk account
+(`apps/web/src/components/AuthGate.tsx`,
+`apps/web/src/pages/onboarding/OnboardingAuth.tsx`). Clerk's runtime-injected
+styles are beaten with scoped higher-specificity overrides in `index.css`
+(input height + hidden max-height pin, real input borders, transparent
+footer). First real data slice: `POST /api/feed/sync` → Convex action
+`reddit:syncSubreddit` pulls newest posts for one public subreddit through
+the keyless Arctic Shift mirror, normalizes and ingests them under the
+caller's auto-created `Reddit public ingest` account (dedupe on native id,
+junk skipped and counted, failures throw — never demo rows), and the
+dashboard feed's Sync now control reloads them (`convex/reddit.ts`,
+`apps/api/src/app.ts` + `backend.ts`, `apps/web/src/lib/feed/`,
+`DashboardFeed.tsx`). Verified live with a real Google session: accounts
+and feed return 200 owner-scoped. Tests: web 55, backend 10, api 8;
+typecheck + lint clean. Still open: real session verification, ingestion
+scheduling/scopes, action workflows, brand AI, notifications, all of
+production.
 
 ### 2026-09-13 - 1ca849b
 Initial commit of the ListeningKit Logbook open-source client. README lays out

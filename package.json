@@ -10,17 +10,22 @@
     "dev:web": "pnpm --filter web dev",
     "dev:docs": "pnpm --filter docs dev",
     "build": "pnpm -r build",
-    "lint": "pnpm -r lint",
-    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint && oxlint convex",
+    "typecheck": "pnpm -r typecheck && pnpm typecheck:backend",
+    "typecheck:backend": "tsc -p convex/tsconfig.json",
+    "test:backend": "vitest run --config vitest.backend.config.ts",
     "preview": "pnpm --filter web preview",
     "start": "concurrently -n web,docs -c blue,green \"pnpm --filter web preview\" \"pnpm --filter docs start\""
   },
   "devDependencies": {
     "@shadcn/lint": "^0.1.0",
+    "@types/node": "^22",
     "concurrently": "^9.1.0",
+    "convex-test": "^0.0.58",
     "lefthook": "^2.1.12",
     "oxlint": "^1.83.0",
-    "typescript": "~5.6.2"
+    "typescript": "~5.6.2",
+    "vitest": "^3"
   },
   "engines": {
     "node": ">=20"
@@ -30,5 +35,8 @@
       "fumadocs-ui": "15.7.8",
       "fumadocs-core": "15.7.8"
     }
+  },
+  "dependencies": {
+    "convex": "^1.45.0"
   }
 }

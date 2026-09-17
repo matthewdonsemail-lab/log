@@ -141,10 +141,36 @@ media-outlet video {
 
 
 /* torph injects [torph-root]{display:inline-block; white-space:nowrap} into <head>
-   at runtime � same specificity but ordered after our stylesheets, so long phrases
+   at runtime — same specificity but ordered after our stylesheets, so long phrases
    overflow. Override with a higher-specificity selector. */
 .morph-line[torph-root] {
   display: block;
   white-space: normal;
   text-align: center;
+}
+
+/* Clerk injects its emotion stylesheet into <head> at runtime — same specificity
+   but ordered after our utilities, so plain appearance classes lose ties (input
+   height, footer bands). These scoped overrides win on specificity instead, keeping
+   Clerk's chrome on the onboarding form-sheet recipe (h-12 fields, one white panel). */
+.lk-clerk input.cl-formFieldInput.cl-formFieldInput {
+  height: 3rem;
+  max-height: none;
+  border: 1.5px solid #CBD5E1;
+  box-shadow: none;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+.lk-clerk input.cl-formFieldInput.cl-formFieldInput:focus {
+  border-color: #2A8CFF;
+  box-shadow: 0 0 0 3px rgb(42 140 255 / 0.15);
+  outline: none;
+}
+.lk-clerk .cl-footer.cl-footer,
+.lk-clerk .cl-footerAction.cl-footerAction,
+.lk-clerk .cl-footer.cl-footer *,
+.lk-clerk .cl-footerAction.cl-footerAction * {
+  background-color: transparent;
+  background-image: none;
+  box-shadow: none;
 }

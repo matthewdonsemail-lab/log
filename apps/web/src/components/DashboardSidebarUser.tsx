@@ -1,4 +1,5 @@
 import { cn, useSquircleClip } from '@listeningkit/ui'
+import { UserButton, useUser } from '@clerk/react'
 
 export type DashboardSidebarUserProps = {
   /** Display name shown in the card. Defaults to the guest fallback. */
@@ -17,11 +18,14 @@ function initialsOf(name: string) {
 }
 
 export function DashboardSidebarUser({
-  name = 'Guest User',
-  plan = 'Free plan',
+  name: suppliedName,
+  plan: suppliedPlan,
   collapsed = false,
 }: DashboardSidebarUserProps) {
   const clip = useSquircleClip<HTMLDivElement>(16)
+  const { user } = useUser()
+  const name = suppliedName ?? user?.fullName ?? user?.username ?? 'Your account'
+  const plan = suppliedPlan ?? (import.meta.env.VITE_API_MODE === 'live' ? 'Dev · accounts/feed live' : 'Demo workspace')
 
   return (
     <div
@@ -32,11 +36,10 @@ export function DashboardSidebarUser({
         collapsed ? 'gap-0 p-1.5' : 'gap-3 p-3'
       )}
     >
-      <span
-        title={name}
-        className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#2A8CFF] text-sm font-bold text-white"
-      >
-        {initialsOf(name)}
+      <span title={name} className="flex size-10 shrink-0 items-center justify-center">
+        {user ? <UserButton appearance={{ elements: { avatarBox: 'size-10' } }} /> : (
+          <span className="flex size-10 items-center justify-center rounded-full bg-[#2A8CFF] text-sm font-bold text-white">{initialsOf(name)}</span>
+        )}
       </span>
       {/* Stays mounted; collapses to zero width/opacity instead of truncating into a sliver. */}
       <span

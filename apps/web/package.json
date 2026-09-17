@@ -17,6 +17,7 @@
   "dependencies": {
     "@chatscope/chat-ui-kit-react": "^2.1.1",
     "@chatscope/chat-ui-kit-styles": "^1.4.0",
+    "@clerk/react": "^6.16.1",
     "@dilukangelo/fluidkit": "^0.5.0",
     "@floating-ui/react": "^0.26.24",
     "@heroicons/react": "^2.2.0",

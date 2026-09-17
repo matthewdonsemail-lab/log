@@ -1,3 +1,4 @@
+import { apiMode, apiRequest } from '../transport'
 import { assertCookie } from './cookie'
 import { normalizeProxy } from './proxy'
 import { connectionsApp } from './server'
@@ -18,7 +19,7 @@ export {
 export { connectionsApp, type ConnectionsApp } from './server'
 
 async function request(path: string, init?: RequestInit): Promise<Response> {
-  return connectionsApp.request(path, init)
+  return apiMode() === 'live' ? apiRequest(path, init) : connectionsApp.request(path, init)
 }
 
 /**
@@ -89,6 +90,7 @@ export async function testConnection(
   input: ConnectInput,
   signal?: AbortSignal,
 ): Promise<{ ok: true; viaProxy: boolean }> {
+  if (apiMode() === 'live') throw new Error('Live platform verification is not implemented yet')
   assertCookie(input.cookie)
   const proxy = normalizeProxy(input.proxy)
   await delay(800, signal)
@@ -104,6 +106,7 @@ export async function connectAccount(
   input: ConnectInput,
   signal?: AbortSignal,
 ): Promise<ConnectionRecord> {
+  if (apiMode() === 'live') throw new Error('Live platform connection is not implemented yet')
   assertCookie(input.cookie)
   const proxy = normalizeProxy(input.proxy)
   await delay(1100, signal)
