@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "ListeningKit Connect",
+  "version": "0.1.0",
+  "description": "Copy a one-time connection token for Reddit, X or Facebook so ListeningKit can listen as you. Nothing is sent anywhere until you paste it.",
+  "permissions": ["activeTab", "cookies", "clipboardWrite"],
+  "host_permissions": [
+    "https://*.reddit.com/*",
+    "https://*.x.com/*",
+    "https://*.twitter.com/*",
+    "https://*.facebook.com/*"
+  ],
+  "action": {
+    "default_title": "ListeningKit Connect",
+    "default_popup": "popup.html",
+    "default_icon": { "16": "icons/16.png", "32": "icons/32.png", "48": "icons/48.png", "128": "icons/128.png" }
+  },
+  "icons": { "16": "icons/16.png", "32": "icons/32.png", "48": "icons/48.png", "128": "icons/128.png" }
+}
