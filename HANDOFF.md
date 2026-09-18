@@ -29,7 +29,13 @@ Checks that were green at the last commit: backend 53, web 162, `clients` 19, re
 `pnpm typecheck`, `pnpm typecheck:backend`, `pnpm run lint` (one old oxlint warning in
 `communities/index.ts`), `pnpm --filter web build`.
 
-## TODO for Matthew (needs an account or credential only the account owner holds)
+## TODO for Matthew (repo owner: needs an account, a credential or owner rights)
+
+**Who owns what** (checked 2026-09-18):
+- **GitHub repo** `matthewdonsemail-lab/log`: owned by Matthew (public). Work has been pushed as the collaborator `deepmroot` (write access), so repo *settings* (visibility, branch protection, collaborators) are Matthew's to change.
+- **Convex project** `listeningkit-hackathon`, team `max-kentan` (dev `determined-cheetah-971`, prod `tremendous-seahorse-330`): team owner not verified. Matthew needs to be a member of that team to run any `convex env set` / `convex deploy` below. Invite from the Convex dashboard, then `npx convex login`.
+- **Clerk app** "Log" (dev instance `internal-piglet-2301`): owned by the personal Clerk account that created it, which is not Matthew's. For items 5-6, either be invited to that Clerk application or create a new one and repoint `VITE_CLERK_PUBLISHABLE_KEY`, `AUTH_ISSUER` and `AUTH_AUDIENCE`.
+- **OpenAI, Reddit, Luma, vibeapps.dev**: whichever account Matthew registers under; the key and the submission should belong to the same person who registered for the hackathon.
 
 Do these in order. None of them needs code changes; the code for each is already in `main`.
 Run every command in your own terminal and never paste a key into chat, a commit or a doc.
@@ -54,10 +60,10 @@ Deadline for the whole list: **Tue 22 Sep 2026, 12:00 PM PT**.
 - [ ] **3. Confirm hackathon registration** at https://luma.com/convex-allgas-hackathon (no confirmation email was found in the inbox that was searched).
 - [ ] **4. Check the extension in your real browser.** In Chrome, Edge or Brave open `chrome://extensions`, turn on Developer mode, Load unpacked, choose `apps/extension`. Log in to reddit.com, click the icon, expect "Ready. You are logged in to Reddit", copy the token and paste it in onboarding. It was only tested in Chromium 145 with fake cookies. If the popup says anything else, send the exact words.
 - [ ] **5. Sign in on the production URL** https://tremendous-seahorse-330.convex.site with a brand-new Google account (an incognito window is fine). Expect to go straight to "Where should we listen?" with no username prompt.
-- [ ] **6. Production Clerk instance (optional but cleaner).** Needs a domain you own: `clerk deploy`, add custom Google/GitHub OAuth credentials in the Clerk dashboard, `clerk env pull --instance prod`, set `AUTH_ISSUER` / `AUTH_AUDIENCE` on the prod Convex deployment, rebuild with `pk_live_...`, `pnpm deploy:site`. Until then production runs on the Clerk dev instance, which works but is not for real customers. Any new instance also needs username made optional (see "Clerk instance settings changed outside git").
-- [ ] **7. Convex plan (optional).** The Convex AI Gateway needs a paid plan; with an OpenAI key it is not needed.
+- [ ] **6. Production Clerk instance (optional but cleaner).** Needs a domain Matthew owns and access to the Clerk application (see "Who owns what"): `clerk deploy`, add custom Google/GitHub OAuth credentials in the Clerk dashboard, `clerk env pull --instance prod`, set `AUTH_ISSUER` / `AUTH_AUDIENCE` on the prod Convex deployment, rebuild with `pk_live_...`, `pnpm deploy:site`. Until then production runs on the Clerk dev instance, which works but is not for real customers. Any new instance also needs username made optional (see "Clerk instance settings changed outside git").
+- [ ] **7. Convex plan (optional).** The Convex AI Gateway needs a paid plan on team `max-kentan` (a team owner must upgrade); with an OpenAI key it is not needed.
 - [ ] **8. Chrome Web Store (optional, after the deadline).** Publish `apps/extension` so people can skip Developer mode.
-- [ ] **9. Submission package.** Record the ≤ 3-minute video of the real product (sign in, add a phrase, matches with scores appear, connect an account), post about it on X or LinkedIn, then submit at https://vibeapps.dev/judging/convex-all-gas-hackathon-openai/submit with the public repo, the live URL https://tremendous-seahorse-330.convex.site and the video. The repo is public and `hackathon.md` is at its root.
+- [ ] **9. Submission package** (the person who registered for the hackathon submits). Record the ≤ 3-minute video of the real product (sign in, add a phrase, matches with scores appear, connect an account), post about it on X or LinkedIn, then submit at https://vibeapps.dev/judging/convex-all-gas-hackathon-openai/submit with the public repo, the live URL https://tremendous-seahorse-330.convex.site and the video. The repo is public and `hackathon.md` is at its root.
 
 The other open to-dos (X and Facebook adapters, real brand step, phone alerts, Firecrawl discovery, deleting posts from the UI, pagination, and the rest) are listed below under "To do".
 
@@ -106,7 +112,7 @@ The other open to-dos (X and Facebook adapters, real brand step, phone alerts, F
 - Convex dev deployment `determined-cheetah-971`. Push functions: `pnpm exec convex dev --once --typecheck=disable`. Run a function: `pnpm exec convex run watch:tick`. Never run `convex logs` without `--history`/a timeout (it tails forever).
 - Web: `pnpm --filter web exec vite --port 3000`. **Restart Vite after editing `apps/web/.env.local`** (env is baked at startup). Live mode needs `VITE_API_MODE=live` and `VITE_CONVEX_URL` (public URL, safe to expose).
 - Env files (`apps/web/.env.local`, `apps/api/.env.local`) are git-ignored. Convex-side secrets live only in the deployment env.
-- Git: push with `git push origin main`. Excluded from commits on purpose: `.omo/` (tool state), the two Convex skill folders `.agents/skills` and `.claude/skills` (42 MB of tool-installed files; reinstall with `npx convex ai-files install`), `skills-lock.json`, and the nested-git repos `apps/facebook-camofox-client`, `apps/reddit-camofox-client`, `apps/twikit`.
+- Git: push with `git push origin main` (authenticated as the collaborator `deepmroot`; the repo owner is `matthewdonsemail-lab`). Excluded from commits on purpose: `.omo/` (tool state), the two Convex skill folders `.agents/skills` and `.claude/skills` (42 MB of tool-installed files; reinstall with `npx convex ai-files install`), `skills-lock.json`, and the nested-git repos `apps/facebook-camofox-client`, `apps/reddit-camofox-client`, `apps/twikit`.
 - Browser testing used Camoufox (headed, saved Clerk session, human-signed-in once) for the app and Playwright's Chromium for the extension. Chrome 137+ ignores `--load-extension`, and Camoufox (Firefox) cannot load a Chrome extension. The throwaway check scripts were kept outside the repo.
 
 ## Secrets and personal data (hard rules)
