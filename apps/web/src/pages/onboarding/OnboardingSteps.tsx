@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { siGithub, siGooglechrome } from 'simple-icons'
-import { Button } from '@listeningkit/ui'
+import { Button, useToast } from '@listeningkit/ui'
+import { describeExpiry, saveSession, sessionsOnConvex, tokenPlatform } from '@/lib/live-sessions'
 import { SOCIAL_ICONS, SocialGlyph } from '@/lib/social-icons'
 import { extractBrandFromUrl, getBrand, saveBrand, type BrandEntity } from '@/lib/brand'
 import { BrandRevealStep } from '@/components/onboarding/BrandRevealStep'
@@ -23,7 +24,9 @@ const PLATFORM_SITES: Record<string, { label: string; url: string }> = {
   reddit: { label: 'reddit.com', url: 'https://reddit.com' }
 }
 
-const EXTENSION_URL = 'https://chromewebstore.google.com/'
+const EXTENSION_ZIP = '/listeningkit-extension.zip'
+const EXTENSION_SOURCE = 'https://github.com/matthewdonsemail-lab/log/tree/main/apps/extension'
+
 export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boolean }) {
   const navigate = useNavigate()
   const [authSource] = useState(readAuthSource)
@@ -35,6 +38,10 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
   const [tokens, setTokens] = useState<Record<string, string>>({})
   const [saved, setSaved] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [showInstall, setShowInstall] = useState(false)
+  // Platforms whose token the server has accepted, with a plain-words expiry.
+  const [connected, setConnected] = useState<Record<string, string>>({})
+  const { error: notifyError, success: notifySuccess } = useToast()
   // Restore the brand only inside the authenticated flow. Typing never
   // advances the step — only the Continue / Skip buttons move forward.
   const [profile, setProfile] = useState<BrandEntity | null>(null)
@@ -120,6 +127,58 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
 
   function finish() {
     setStep(2)
+  }
+
+  async function saveTokens() {
+    if (saving) return
+    if (!sessionsOnConvex()) {
+      setSaving(true)
+      setSaved(false)
+      window.setTimeout(() => {
+        setSaving(false)
+        setSaved(true)
+        window.setTimeout(() => {
+          setStep(3)
+          setSaved(false)
+        }, 900)
+      }, 1500)
+      return
+    }
+    const waiting = sources.filter((id) => connected[id] === undefined)
+    const filled = waiting.filter((id) => (tokens[id] ?? '').trim())
+    if (filled.length === 0) {
+      notifyError('Paste a token first', 'Copy it with the ListeningKit extension, then paste it here.')
+      return
+    }
+    setSaving(true)
+    setSaved(false)
+    const done = new Set(sources.filter((id) => connected[id] !== undefined))
+    for (const id of filled) {
+      const label = SOCIAL_ICONS.find((icon) => icon.id === id)?.label ?? id
+      const meant = tokenPlatform(tokens[id])
+      if (meant && meant !== id) {
+        const other = SOCIAL_ICONS.find((icon) => icon.id === meant)?.label ?? meant
+        notifyError(`That is a ${other} token`, `This box is for ${label}. Copy the token while you are on ${PLATFORM_SITES[id]?.label ?? label}.`)
+        continue
+      }
+      try {
+        const result = await saveSession(tokens[id])
+        setConnected((prev) => ({ ...prev, [id]: describeExpiry(result.expiresAt) }))
+        setTokens((prev) => ({ ...prev, [id]: '' }))
+        done.add(id)
+        notifySuccess(`${label} connected`, 'Your login is saved and encrypted.')
+      } catch (err) {
+        notifyError(`${label} was not connected`, err instanceof Error ? err.message : 'Try copying the token again.')
+      }
+    }
+    setSaving(false)
+    if (sources.every((id) => done.has(id))) {
+      setSaved(true)
+      window.setTimeout(() => {
+        setStep(3)
+        setSaved(false)
+      }, 900)
+    }
   }
 
   function lookupBrand() {
@@ -247,10 +306,10 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
             Install the Chrome Extension
           </h2>
           <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <a
-              href="https://chromewebstore.google.com/"
-              target="_blank"
-              rel="noreferrer"
+            <button
+              type="button"
+              onClick={() => setShowInstall((open) => !open)}
+              aria-expanded={showInstall}
               className="flex items-center gap-4 rounded-3xl border border-white/30 bg-white/10 p-5 text-left text-white transition-colors hover:bg-white/20"
             >
               <svg viewBox="0 0 24 24" role="img" aria-label="Google Chrome" className="size-12 shrink-0" fill="currentColor">
@@ -258,11 +317,11 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
               </svg>
               <span>
                 <span className="block text-xl font-bold">Install the Chrome Extension</span>
-                <span className="mt-0.5 block text-sm text-white/70">Capture signals right from your browser</span>
+                <span className="mt-0.5 block text-sm text-white/70">Works in Chrome, Edge and Brave. Takes a minute.</span>
               </span>
-            </a>
+            </button>
             <a
-              href="https://github.com/"
+              href={EXTENSION_SOURCE}
               target="_blank"
               rel="noreferrer"
               className="flex items-center gap-4 rounded-3xl border border-white/30 bg-white/10 p-5 text-left text-white transition-colors hover:bg-white/20"
@@ -272,10 +331,43 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
               </svg>
               <span>
                 <span className="block text-xl font-bold">Install from Github</span>
-                <span className="mt-0.5 block text-sm text-white/70">Self-host and hack on the source</span>
+                <span className="mt-0.5 block text-sm text-white/70">Read the source, or build it yourself</span>
               </span>
             </a>
           </div>
+          {showInstall && (
+            <div className="mx-auto mt-4 w-full max-w-3xl rounded-3xl border border-white/30 bg-white/10 p-6 text-left">
+              <p className="text-lg font-bold">Four steps, one time</p>
+              <ol className="mt-3 flex flex-col gap-3 text-white/90">
+                <li className="flex gap-3">
+                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-white text-xs font-bold text-[#2a8cff]">1</span>
+                  <span>
+                    <a href={EXTENSION_ZIP} download className="font-bold underline decoration-dashed underline-offset-4">Download the extension</a>{' '}
+                    and unzip it anywhere you like.
+                  </span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-white text-xs font-bold text-[#2a8cff]">2</span>
+                  <span>
+                    In your browser&apos;s address bar, type <code className="rounded bg-black/20 px-1.5 py-0.5">chrome://extensions</code> and press Enter.
+                  </span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-white text-xs font-bold text-[#2a8cff]">3</span>
+                  <span>Turn on <strong>Developer mode</strong> (top right).</span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-white text-xs font-bold text-[#2a8cff]">4</span>
+                  <span>
+                    Click <strong>Load unpacked</strong> and choose the unzipped <strong>listeningkit-extension</strong> folder. Then pin it with the puzzle icon.
+                  </span>
+                </li>
+              </ol>
+              <p className="mt-4 text-sm text-white/70">
+                We ask for cookie access only on reddit.com, x.com and facebook.com. The extension sends nothing anywhere. It just copies a token to your clipboard.
+              </p>
+            </div>
+          )}
           <Button
             type="button"
             onClick={finish}
@@ -303,7 +395,9 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
             <div className="w-full rounded-3xl border border-slate-200 bg-slate-50 p-6 sm:p-8">
               <p className="text-2xl font-bold">Paste your tokens</p>
               <p className="mt-1 text-sm text-slate-600">
-                Tokens stay in your browser for this hackathon demo — nothing is uploaded.
+                {sessionsOnConvex()
+                  ? 'We check your token, then keep it encrypted so ListeningKit can listen as you. You can disconnect anytime in Settings.'
+                  : 'Tokens stay in your browser for this hackathon demo — nothing is uploaded.'}
               </p>
               <div className="mt-5 flex flex-col gap-5">
                 {SOCIAL_ICONS.filter((icon) => sources.includes(icon.id)).map((icon) => (
@@ -320,7 +414,7 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
                         <span>
                           Make sure you&apos;ve got the{' '}
                           <a
-                            href={EXTENSION_URL}
+                            href={EXTENSION_ZIP}
                             target="_blank"
                             rel="noreferrer"
                             className="font-semibold underline decoration-dashed underline-offset-4 hover:text-[#2a8cff]"
@@ -351,13 +445,13 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
                         <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[#eaf0f6] text-[11px] font-bold text-slate-900">
                           3
                         </span>
-                        <span>Open up the Chrome extension and copy the cookie information it pulls out.</span>
+                        <span>Click the ListeningKit Connect icon in your browser, then press &ldquo;Copy your {icon.label} token&rdquo;.</span>
                       </li>
                       <li className="flex gap-2.5 text-sm text-slate-600">
                         <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-[#eaf0f6] text-[11px] font-bold text-slate-900">
                           4
                         </span>
-                        <span>Enter the information below into the input.</span>
+                        <span>Paste it below.</span>
                       </li>
                     </ol>
                     <label className="mt-3 block">
@@ -371,29 +465,23 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
                           setTokens((prev) => ({ ...prev, [icon.id]: e.target.value }))
                           setSaved(false)
                         }}
-                        placeholder={`Paste your ${icon.label} token`}
+                        disabled={connected[icon.id] !== undefined}
+                        placeholder={connected[icon.id] !== undefined ? 'Connected' : `Paste your ${icon.label} token`}
                         autoComplete="off"
-                        className="h-14 w-full rounded-xl border border-slate-300 bg-white px-4 text-slate-900 placeholder:text-slate-400 focus:border-[#2a8cff] focus:outline-none"
+                        className="h-14 w-full rounded-xl border border-slate-300 bg-white px-4 text-slate-900 placeholder:text-slate-400 focus:border-[#2a8cff] focus:outline-none disabled:bg-slate-100"
                       />
                     </label>
+                    {connected[icon.id] !== undefined && (
+                      <p className="mt-2 text-sm font-semibold text-emerald-600">
+                        Connected &middot; {connected[icon.id]}
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>
 <Button
                 type="button"
-                onClick={() => {
-        if (saving) return
-        setSaving(true)
-        setSaved(false)
-        window.setTimeout(() => {
-          setSaving(false)
-          setSaved(true)
-          window.setTimeout(() => {
-            setStep(3)
-            setSaved(false)
-          }, 900)
-        }, 1500)
-      }}
+                onClick={saveTokens}
                 disabled={saving}
                 size="xl"
                 shadow="hard"
@@ -420,6 +508,17 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
 'Save tokens'
 )}
                 </Button>
+                {sessionsOnConvex() && (
+                  <div className="mt-3 text-center">
+                    <button
+                      type="button"
+                      onClick={() => setStep(3)}
+                      className="bg-transparent p-0 text-sm font-semibold text-slate-500 underline decoration-dashed underline-offset-4 hover:text-slate-800"
+                    >
+                      Skip for now. You can connect later in Settings.
+                    </button>
+                  </div>
+                )}
               </div>
            </div>
            </div>

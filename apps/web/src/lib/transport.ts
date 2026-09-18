@@ -6,6 +6,12 @@ export function setApiTokenProvider(provider: TokenProvider): void {
   tokenProvider = provider
 }
 
+export async function requireApiToken(): Promise<string> {
+  const token = await tokenProvider()
+  if (!token) throw new Error('Sign in before using the live API')
+  return token
+}
+
 export function apiMode(): 'mock' | 'live' {
   const mode = import.meta.env.VITE_API_MODE ?? 'mock'
   if (mode !== 'mock' && mode !== 'live') throw new Error('VITE_API_MODE must be mock or live')

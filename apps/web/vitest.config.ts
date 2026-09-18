@@ -8,6 +8,8 @@ export default defineConfig({
     }
   },
   test: {
-    environment: 'node'
+    environment: 'node',
+    // Tests stay hermetic: a developer's .env.local Convex URL must not reroute the bridge tests.
+    env: { VITE_CONVEX_URL: '' }
   }
 })

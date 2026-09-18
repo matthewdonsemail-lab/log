@@ -1,4 +1,6 @@
 import { apiMode, apiRequest } from '../transport'
+import { listSessions, removeSession, saveSession, tokenPlatform } from '../live-sessions'
+import { accountsCreateRef, accountsListRef, convexClient, convexErrorMessage, convexUrl } from '../convex'
 import { assertCookie } from './cookie'
 import { normalizeProxy } from './proxy'
 import { connectionsApp } from './server'
@@ -18,7 +20,13 @@ export {
 } from './mock'
 export { connectionsApp, type ConnectionsApp } from './server'
 
+/** Live mode with a Convex deployment configured skips the Hono bridge entirely. */
+function liveOnConvex(): boolean {
+  return apiMode() === 'live' && convexUrl() !== undefined
+}
+
 async function request(path: string, init?: RequestInit): Promise<Response> {
+  if (liveOnConvex()) throw new Error('This account operation is not implemented on the live backend yet')
   return apiMode() === 'live' ? apiRequest(path, init) : connectionsApp.request(path, init)
 }
 
@@ -30,6 +38,16 @@ async function request(path: string, init?: RequestInit): Promise<Response> {
 
 /** List every account through `GET /accounts`. */
 export async function getAccounts(): Promise<ConnectionRecord[]> {
+  if (liveOnConvex()) {
+    const client = await convexClient()
+    let data: unknown
+    try { data = await client.query(accountsListRef, {}) } catch (error) {
+      throw convexErrorMessage(error, 'Accounts request failed')
+    }
+    const accounts = (data as { accounts?: unknown } | null)?.accounts
+    if (!Array.isArray(accounts)) throw new Error('Accounts request returned an invalid response')
+    return accounts as ConnectionRecord[]
+  }
   const res = await request('/accounts')
   if (!res.ok) throw new Error(`Accounts request failed (${res.status})`)
   const body = (await res.json()) as { accounts: ConnectionRecord[] }
@@ -38,6 +56,18 @@ export async function getAccounts(): Promise<ConnectionRecord[]> {
 
 /** Add a fresh, not-yet-connected account through `POST /accounts`. */
 export async function createAccount(platform: ConnectionPlatform): Promise<ConnectionRecord> {
+  if (liveOnConvex()) {
+    const client = await convexClient()
+    let data: unknown
+    try {
+      data = await client.mutation(accountsCreateRef, { platform, label: platformLabel(platform) })
+    } catch (error) {
+      throw convexErrorMessage(error, 'Could not add an account')
+    }
+    const account = (data as { account?: unknown } | null)?.account
+    if (typeof account !== 'object' || account === null) throw new Error('Could not add an account: invalid response')
+    return account as ConnectionRecord
+  }
   const res = await request('/accounts', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -62,6 +92,7 @@ export async function saveAccount(record: ConnectionRecord): Promise<ConnectionR
 
 /** Delete an account through `DELETE /accounts/:id`. */
 export async function deleteAccount(id: string): Promise<ConnectionRecord[]> {
+  if (liveOnConvex()) return disconnectLive(id)
   const res = await request(`/accounts/${id}`, { method: 'DELETE' })
   if (!res.ok) throw new Error(`Could not delete the account (${res.status})`)
   const body = (await res.json()) as { accounts: ConnectionRecord[] }
@@ -90,6 +121,12 @@ export async function testConnection(
   input: ConnectInput,
   signal?: AbortSignal,
 ): Promise<{ ok: true; viaProxy: boolean }> {
+  if (liveOnConvex()) {
+    const session = (await listSessions()).find((row) => row.platform === input.platform)
+    if (!session) throw new Error('Not connected yet. Paste a token and press Connect.')
+    if (session.expiresAt !== null && session.expiresAt <= Date.now()) throw new Error('This login has expired. Paste a fresh token.')
+    return { ok: true, viaProxy: false }
+  }
   if (apiMode() === 'live') throw new Error('Live platform verification is not implemented yet')
   assertCookie(input.cookie)
   const proxy = normalizeProxy(input.proxy)
@@ -106,6 +143,18 @@ export async function connectAccount(
   input: ConnectInput,
   signal?: AbortSignal,
 ): Promise<ConnectionRecord> {
+  if (liveOnConvex()) {
+    const meant = tokenPlatform(input.cookie)
+    if (meant && meant !== input.platform) {
+      throw new Error(`That is a ${platformLabel(meant)} token, but this account is ${platformLabel(input.platform)}. Copy it while you are on ${input.platform === 'x' ? 'x.com' : `${input.platform}.com`}.`)
+    }
+    await saveSession(input.cookie)
+    const saved = (await getAccounts()).find((a) => a.id === input.id)
+    return saved ?? {
+      id: input.id, platform: input.platform, label: platformLabel(input.platform), viaProxy: false,
+      connectedAt: new Date().toISOString(), lastIssue: null, lastCheckedAt: new Date().toISOString(), retryAfter: null,
+    }
+  }
   if (apiMode() === 'live') throw new Error('Live platform connection is not implemented yet')
   assertCookie(input.cookie)
   const proxy = normalizeProxy(input.proxy)
@@ -128,7 +177,14 @@ export async function connectAccount(
 }
 
 /** Mark the account as disconnected (keeps the row, clears the connection). */
+async function disconnectLive(id: string): Promise<ConnectionRecord[]> {
+  const account = (await getAccounts()).find((a) => a.id === id)
+  if (account?.connectedAt) await removeSession(account.platform)
+  return getAccounts()
+}
+
 export async function disconnectAccount(id: string): Promise<ConnectionRecord[]> {
+  if (liveOnConvex()) return disconnectLive(id)
   const accounts = await getAccounts()
   const existing = accounts.find((a) => a.id === id)
   if (!existing) return deleteAccount(id)

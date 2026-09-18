@@ -189,6 +189,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      convex:
+        specifier: ^1.45.0
+        version: 1.45.0(@clerk/react@6.16.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       country-flag-icons:
         specifier: ^1.6.20
         version: 1.6.20
@@ -8589,6 +8592,18 @@ snapshots:
   convex-test@0.0.58(convex@1.45.0(@clerk/react@6.16.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)):
     dependencies:
       convex: 1.45.0(@clerk/react@6.16.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
+
+  convex@1.45.0(@clerk/react@6.16.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1):
+    dependencies:
+      esbuild: 0.27.0
+      prettier: 3.9.6
+      ws: 8.21.0
+    optionalDependencies:
+      '@clerk/react': 6.16.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
 
   convex@1.45.0(@clerk/react@6.16.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0):
     dependencies:

@@ -1,6 +1,8 @@
 import { z } from 'zod'
 import type { FeedResponse } from './mock'
 import { apiRequest } from '../transport'
+import { convexClient, convexErrorMessage, feedListRef, syncSubredditRef } from '../convex'
+import type { Platform } from '../platform'
 
 /** Only the unified API is browser-facing. Platform credentials belong on the server. */
 export const remoteFeedSchema = z.object({
@@ -34,6 +36,20 @@ export async function fetchRemoteFeed(suffix: string): Promise<FeedResponse> {
   return parsed.data
 }
 
+/** Direct Convex read (no Hono bridge); the same wire shape, validated the same way. */
+export async function fetchConvexFeed(filters: { platform?: Platform; search?: string }): Promise<FeedResponse> {
+  const client = await convexClient()
+  let data: unknown
+  try {
+    data = await client.query(feedListRef, filters)
+  } catch (error) {
+    throw convexErrorMessage(error, 'Live feed request failed')
+  }
+  const parsed = remoteFeedSchema.safeParse(data)
+  if (!parsed.success) throw new Error('Live feed returned an invalid response')
+  return parsed.data
+}
+
 export const remoteSyncSchema = z.object({
   accountId: z.string(),
   fetched: z.number().int(),
@@ -42,6 +58,19 @@ export const remoteSyncSchema = z.object({
 })
 
 export type FeedSyncResult = z.infer<typeof remoteSyncSchema>
+
+export async function syncConvexFeed(subreddit: string, limit = 25): Promise<FeedSyncResult> {
+  const client = await convexClient()
+  let data: unknown
+  try {
+    data = await client.action(syncSubredditRef, { subreddit, limit })
+  } catch (error) {
+    throw convexErrorMessage(error, 'Live sync failed')
+  }
+  const parsed = remoteSyncSchema.safeParse(data)
+  if (!parsed.success) throw new Error('Live sync returned an invalid response')
+  return parsed.data
+}
 
 /** Pull the newest posts from one public subreddit into the caller's live feed. */
 export async function syncRemoteFeed(subreddit: string, limit = 25): Promise<FeedSyncResult> {

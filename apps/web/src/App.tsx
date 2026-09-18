@@ -10,6 +10,8 @@ import { DashboardAccounts } from './components/DashboardAccounts'
 import { DashboardMessages } from './components/DashboardMessages'
 import { DashboardListings } from './components/DashboardListings'
 import { DashboardKeywords } from './components/DashboardKeywords'
+import { DashboardKeywordsLive } from './components/DashboardKeywordsLive'
+import { keywordsOnConvex } from './lib/live-keywords'
 import { DashboardAnalyticsOverview } from './components/DashboardAnalyticsOverview'
 import { DashboardAnalyticsPage } from './components/DashboardAnalyticsPage'
 import { DashboardAccountPage } from './components/DashboardAccountPage'
@@ -58,7 +60,7 @@ export function App() {
               <Route path="groups" element={<DashboardGroups />} />
               <Route path="facebook/listings" element={<DashboardListings />} />
               <Route path="facebook/listings/:id" element={<DashboardListings />} />
-              <Route path="keywords" element={<DashboardKeywords />} />
+              <Route path="keywords" element={keywordsOnConvex() ? <DashboardKeywordsLive /> : <DashboardKeywords />} />
               <Route path="analytics" element={<DashboardAnalyticsOverview />} />
               <Route path="analytics/:keywordId" element={<DashboardAnalyticsPage />} />
               <Route path="accounts" element={<DashboardAccounts />} />

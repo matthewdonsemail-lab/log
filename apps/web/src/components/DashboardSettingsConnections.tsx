@@ -158,7 +158,7 @@ function ConnectionRow({
         <span className="flex min-w-0 flex-1 flex-col">
           <span className="truncate font-bold text-text-primary">{account.label}</span>
           <span className="truncate text-sm text-text-secondary">
-            {status === 'connected' ? 'Listening for signals' : 'Paste a cookie to connect'}
+            {status === 'connected' ? 'Connected' : 'Paste a token to connect'}
           </span>
         </span>
         {status !== 'error' &&
@@ -209,14 +209,14 @@ function ConnectionRow({
           </label>
           <label className="block">
             <span className="mb-1.5 block text-sm font-semibold text-slate-700">
-              {icon.label} cookie
+              {icon.label} token
             </span>
             <input
               type="password"
               value={cookie}
               onChange={(e) => onCookieChange(e.target.value)}
               disabled={busy || status === 'connected'}
-              placeholder={`Paste your ${icon.label} cookie`}
+              placeholder={`Paste your ${icon.label} token`}
               autoComplete="off"
               className="h-14 w-full rounded-xl border border-slate-300 bg-white px-4 text-slate-900 placeholder:text-slate-400 focus:border-[#2a8cff] focus:outline-none disabled:opacity-60"
             />
@@ -335,7 +335,7 @@ export function DashboardSettingsConnections() {
       <div>
         <h2 className="text-lg font-bold text-text-primary">Where we listen</h2>
         <p className="text-sm text-text-secondary">
-          Connect each account with a cookie from the extension. Traffic can go through your proxy.
+          Connect each account with a token from the ListeningKit extension.
         </p>
       </div>
       {(accounts ?? []).map((account) => (

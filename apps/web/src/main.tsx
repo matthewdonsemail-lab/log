@@ -1,7 +1,9 @@
-import { ClerkProvider } from '@clerk/react'
+import { ClerkProvider, useAuth } from '@clerk/react'
+import { ConvexProviderWithClerk } from 'convex/react-clerk'
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { App } from './App'
+import { convexReactClient } from './lib/convex'
 import './globals.css'
 import './index.css'
 
@@ -18,7 +20,13 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         signUpForceRedirectUrl="/onboarding"
         afterSignOutUrl="/"
       >
-        <App />
+        {convexReactClient ? (
+          <ConvexProviderWithClerk client={convexReactClient} useAuth={useAuth}>
+            <App />
+          </ConvexProviderWithClerk>
+        ) : (
+          <App />
+        )}
       </ClerkProvider>
     ) : (
       <main className="p-8" role="alert">Set VITE_CLERK_PUBLISHABLE_KEY in apps/web/.env.local to enable sign-in.</main>

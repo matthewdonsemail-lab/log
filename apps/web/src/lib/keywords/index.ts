@@ -1,6 +1,9 @@
 import { keywordsApp } from './server'
 import type { CreateKeywordInput, Keyword, KeywordsResponse } from './types'
 import type { ConnectionPlatform } from '../connections'
+import {
+  createLiveKeyword, keywordsOnConvex, listLiveKeywords, removeLiveKeyword, setLiveKeywordStatus, toKeyword,
+} from '../live-keywords'
 
 export type { Keyword, KeywordStatus } from './types'
 export type { CreateKeywordInput } from './types'
@@ -25,6 +28,12 @@ export interface GetKeywordsParams {
 
 /** List keywords, optionally filtered, through `GET /keywords`. */
 export async function getKeywords(params?: GetKeywordsParams): Promise<Keyword[]> {
+  if (keywordsOnConvex()) {
+    const all = (await listLiveKeywords()).map(toKeyword)
+    return all.filter((row) =>
+      (!params?.platform || row.platform === params.platform) &&
+      (params?.groupId === undefined || row.groupId === params.groupId))
+  }
   const query = new URLSearchParams()
   if (params?.platform) query.set('platform', params.platform)
   if (params && params.groupId !== undefined) {
@@ -47,6 +56,11 @@ export async function createKeyword(input: {
   platform: ConnectionPlatform
   groupId?: string | null
 }): Promise<Keyword> {
+  if (keywordsOnConvex()) {
+    return toKeyword(await createLiveKeyword({
+      phrase: input.phrase, platform: input.platform, ...(input.groupId ? { subreddit: input.groupId } : {}),
+    }))
+  }
   const res = await request('/keywords', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -62,6 +76,10 @@ export async function createKeyword(input: {
 
 /** Upsert one keyword (status toggle) through `PATCH /keywords/:id`. */
 export async function saveKeyword(record: Keyword): Promise<Keyword[]> {
+  if (keywordsOnConvex()) {
+    await setLiveKeywordStatus(record.id, record.status)
+    return getKeywords()
+  }
   const res = await request(`/keywords/${record.id}`, {
     method: 'PATCH',
     headers: { 'content-type': 'application/json' },
@@ -74,6 +92,10 @@ export async function saveKeyword(record: Keyword): Promise<Keyword[]> {
 
 /** Delete a keyword through `DELETE /keywords/:id`. */
 export async function deleteKeyword(id: string): Promise<Keyword[]> {
+  if (keywordsOnConvex()) {
+    await removeLiveKeyword(id)
+    return getKeywords()
+  }
   const res = await request(`/keywords/${id}`, { method: 'DELETE' })
   if (!res.ok) throw new Error(`Could not delete the keyword (${res.status})`)
   const body = (await res.json()) as KeywordsResponse

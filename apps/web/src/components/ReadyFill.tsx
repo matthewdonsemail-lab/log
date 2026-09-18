@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { landingPath } from '@/lib/platform-support'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@listeningkit/ui'
 import { FluidCanvas } from '@dilukangelo/fluidkit/react'
@@ -214,7 +215,7 @@ export function ReadyFill({ onReady }: { onReady?: () => void }) {
             variant="blue"
             size="xl"
             shadow="hard"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate(landingPath())}
             className="h-14 rounded-xl px-10 font-bold text-white"
           >
             Start listening
