@@ -146,6 +146,20 @@ class TestRound:
         err = capsys.readouterr().err
         assert "RuntimeError" in err and "boom" not in err
 
+    def test_verbose_shows_why_with_cookie_values_hidden(self, capsys):
+        secret = "SUPERSECRETCOOKIEVALUE"
+        client = FakeClient([RuntimeError(f"Couldn't get KEY_BYTE indices for {secret}")])
+        status, _ = run(client, ["a"], verbose=True, secrets=[secret])
+        err = capsys.readouterr().err
+        assert status == 0
+        assert "RuntimeError: Couldn't get KEY_BYTE indices for <hidden>" in err
+        assert secret not in err and "at test_x_push.py" in err
+
+    def test_default_output_points_at_verbose_without_the_message(self, capsys):
+        run(FakeClient([RuntimeError("secret detail")]), ["a"])
+        err = capsys.readouterr().err
+        assert "run again with --verbose" in err and "secret detail" not in err
+
     def test_a_rejected_ingest_key_stops_the_round(self, capsys):
         def rejected(*a, **k):
             raise ingest.IngestError(401, "Invalid ingest key")
@@ -236,4 +250,4 @@ class TestMain:
     def test_twikit_missing_gives_the_install_command(self, monkeypatch):
         monkeypatch.setitem(sys.modules, "twikit", None)
         with pytest.raises(x_push.HelperError, match="pip install -r apps/twikit/requirements.txt"):
-            x_push.make_client({"auth_token": "a", "ct0": "c"})
+            x_push.make_client({"auth_token": "a", "ct0": "c"}, engine="twikit")

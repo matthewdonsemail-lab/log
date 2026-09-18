@@ -100,8 +100,9 @@ Convex agent skills for common tasks can be installed by running
 
 - A helper reads a platform from the person's own computer and only pushes to `/ingest`. It gets its login from `GET /session` and its phrases from `GET /phrases`, both authenticated by the owner's ingest key; never add a way to fetch someone else's login or phrases.
 - Helpers must be polite: spaced requests with jitter, a floor on the polling interval (X: 2 minutes), a cap on phrases per round, and a clean stop when the platform says slow down. A refused login is reported in plain words and stops the run.
-- X reading uses X's private web API (twikit). Keep the "use an account you can afford to lose" notice wherever it is described.
-- Test helpers with fake clients injected into `run_once`; check the real library's call shape once by building its real `Client` (no network).
+- X is read in a real browser (`clients/x_browser.py`, Camoufox) because twikit's request signing breaks whenever X changes its site. The reader depends on X's page structure (`article[data-testid="tweet"]`, `time`, `tweetText`, `reply`, `like`), so when X changes it, fix the selectors in `x_browser.py` and re-check against the real site with no login (it must report a login wall as `Unauthorized`). Never trust a stand-in page alone. Keep the "use an account you can afford to lose" notice wherever it is described.
+- Browser tests start a real browser and take about a minute or two; `x_browser.py` retries page reads that race a redirect.
+- Test helpers with fake clients injected into `run_once`, and test the browser reader in a real headless browser against a stand-in page, then once against the real site with no login.
 
 ## Secrets And Logins (hard rules)
 

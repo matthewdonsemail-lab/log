@@ -6,14 +6,16 @@
 
 It uses the X login you connected in ListeningKit (onboarding or Settings): no password,
 no cookies file. It asks ListeningKit which X phrases you have, searches X for each one
-through twikit (apps/twikit), and pushes the newest tweets to /ingest. Use --dry-run to
-print what would be sent, and --phrases "a" "b" to search specific phrases instead.
+in a real browser window (Camoufox) logged in with that login, and pushes the newest tweets
+to /ingest. Use --dry-run to print what would be sent, --phrases "a" "b" to search specific
+phrases instead, and --show to watch the browser.
 
-Install twikit's requirements once: pip install -r apps/twikit/requirements.txt
+It reads X's pages the way a person does, so it survives changes to X's private API. The older
+twikit engine (--engine twikit) is kept but is currently broken by X's site changes.
 
-Heads up: this reads X's private web API through your own logged-in session. That can go
-against X's terms, and X may rate-limit or lock accounts that automate. Use an account you
-can afford to lose, and keep the interval at 5 minutes or more.
+Heads up: this automates a logged-in X session. That can go against X's terms, and X may
+rate-limit or lock accounts that automate. Use an account you can afford to lose, and keep
+the interval at 5 minutes or more.
 """
 from __future__ import annotations
 
@@ -22,6 +24,7 @@ import asyncio
 import os
 import random
 import sys
+import traceback
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Awaitable, Callable
@@ -99,7 +102,22 @@ def classify(error: BaseException) -> str:
     return "other"
 
 
-def make_client(cookies: dict[str, str]) -> Any:
+def describe_error(error: BaseException, secrets: list[str] | None = None) -> str:
+    """Type, message and where it happened, with every cookie value blanked out, for --verbose."""
+    message = str(error) or "(no message)"
+    for secret in secrets or []:
+        if secret:
+            message = message.replace(secret, "<hidden>")
+    frames = traceback.extract_tb(error.__traceback__)
+    where = f" at {Path(frames[-1].filename).name}:{frames[-1].lineno}" if frames else ""
+    return f"{type(error).__name__}: {message[:300]}{where}"
+
+
+def make_client(cookies: dict[str, str], jar: list[dict] | None = None, engine: str = "browser", show: bool = False) -> Any:
+    if engine == "browser":
+        from x_browser import BrowserXClient
+
+        return BrowserXClient(jar or [], show=show)
     try:
         from twikit import Client
     except ImportError:
@@ -137,7 +155,9 @@ async def run_once(
             if kind == "rate":
                 print("X asked us to slow down, so this round stops here. It will try again next time.")
                 return 0
-            print(f'"{phrase}": could not read X ({type(error).__name__}), skipping', file=sys.stderr)
+            detail = describe_error(error, list(getattr(args, "secrets", []))) if getattr(args, "verbose", False) else type(error).__name__
+            hint = "" if getattr(args, "verbose", False) else " (run again with --verbose for details)"
+            print(f'"{phrase}": could not read X ({detail}), skipping{hint}', file=sys.stderr)
             continue
         posts = []
         for tweet in tweets:
@@ -162,8 +182,19 @@ async def run_once(
 
 async def main_async(args: argparse.Namespace) -> int:
     print(NOTICE)
-    cookies = cookie_dict(fetch_session("x", endpoint=args.endpoint, key=args.key))
-    client = make_client(cookies)
+    jar = fetch_session("x", endpoint=args.endpoint, key=args.key)
+    cookies = cookie_dict(jar)
+    args.secrets = [value for value in cookies.values() if len(value) >= 8]
+    client = make_client(cookies, jar, getattr(args, "engine", "browser"), getattr(args, "show", False))
+    try:
+        return await loop_rounds(args, client)
+    finally:
+        close = getattr(client, "close", None)
+        if close is not None:
+            await close()
+
+
+async def loop_rounds(args: argparse.Namespace, client: Any) -> int:
     while True:
         phrases = args.phrases or fetch_phrases("x", endpoint=args.endpoint, key=args.key)
         if not phrases:
@@ -182,6 +213,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--count", type=int, default=20, help="tweets per phrase, 1-20")
     parser.add_argument("--interval", type=int, default=0, help=f"seconds between rounds (at least {MIN_INTERVAL}); 0 runs once")
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--verbose", action="store_true", help="show why a search failed (cookie values are hidden)")
+    parser.add_argument("--engine", choices=["browser", "twikit"], default="browser", help="browser (default) reads X's pages; twikit uses its private API and is currently broken")
+    parser.add_argument("--show", action="store_true", help="show the browser window instead of hiding it")
     args = parser.parse_args(argv)
     args.count = max(1, min(20, args.count))
     if args.interval:
