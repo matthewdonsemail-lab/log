@@ -29,6 +29,38 @@ Checks that were green at the last commit: backend 53, web 162, `clients` 19, re
 `pnpm typecheck`, `pnpm typecheck:backend`, `pnpm run lint` (one old oxlint warning in
 `communities/index.ts`), `pnpm --filter web build`.
 
+## TODO for Matthew (needs an account or credential only the account owner holds)
+
+Do these in order. None of them needs code changes; the code for each is already in `main`.
+Run every command in your own terminal and never paste a key into chat, a commit or a doc.
+Deadline for the whole list: **Tue 22 Sep 2026, 12:00 PM PT**.
+
+- [ ] **1. OpenAI API key (turns on match scoring).** Get a key at platform.openai.com (check the hackathon Luma / confirmation email first: OpenAI is a sponsor and may have given credits). Then:
+  ```
+  pnpm exec convex env set OPENAI_API_KEY <key>
+  pnpm exec convex env set --prod OPENAI_API_KEY <key>
+  pnpm exec convex run scoring:tryScore '{"phrase":"need a plumber","title":"Need a plumber in Austin"}'
+  ```
+  Expect `{ provider: "openai", model: "gpt-4o-mini", score: { score: ~90, ... } }`. Then add the phrase `ipad` in r/ipad on the site, press Check now, and confirm badges and reasons appear. Then deploy: `pnpm exec convex deploy --yes`. This is the hackathon's sponsor-integration gate.
+- [ ] **2. Reddit app (makes Reddit reads fresh).** Log in to Reddit, open reddit.com/prefs/apps, "create another app", type **script**, redirect `http://localhost:8080`. Copy the client id (under the app name) and the secret, then:
+  ```
+  pnpm exec convex env set REDDIT_CLIENT_ID <id>
+  pnpm exec convex env set REDDIT_CLIENT_SECRET <secret>
+  pnpm exec convex env set --prod REDDIT_CLIENT_ID <id>
+  pnpm exec convex env set --prod REDDIT_CLIENT_SECRET <secret>
+  pnpm exec convex run watch:tick
+  ```
+  Expect `sources.reddit` to be at least 1 and no "backup source" warning on the Keywords page. Reddit's free API terms cover non-commercial use only.
+- [ ] **3. Confirm hackathon registration** at https://luma.com/convex-allgas-hackathon (no confirmation email was found in the inbox that was searched).
+- [ ] **4. Check the extension in your real browser.** In Chrome, Edge or Brave open `chrome://extensions`, turn on Developer mode, Load unpacked, choose `apps/extension`. Log in to reddit.com, click the icon, expect "Ready. You are logged in to Reddit", copy the token and paste it in onboarding. It was only tested in Chromium 145 with fake cookies. If the popup says anything else, send the exact words.
+- [ ] **5. Sign in on the production URL** https://tremendous-seahorse-330.convex.site with a brand-new Google account (an incognito window is fine). Expect to go straight to "Where should we listen?" with no username prompt.
+- [ ] **6. Production Clerk instance (optional but cleaner).** Needs a domain you own: `clerk deploy`, add custom Google/GitHub OAuth credentials in the Clerk dashboard, `clerk env pull --instance prod`, set `AUTH_ISSUER` / `AUTH_AUDIENCE` on the prod Convex deployment, rebuild with `pk_live_...`, `pnpm deploy:site`. Until then production runs on the Clerk dev instance, which works but is not for real customers. Any new instance also needs username made optional (see "Clerk instance settings changed outside git").
+- [ ] **7. Convex plan (optional).** The Convex AI Gateway needs a paid plan; with an OpenAI key it is not needed.
+- [ ] **8. Chrome Web Store (optional, after the deadline).** Publish `apps/extension` so people can skip Developer mode.
+- [ ] **9. Submission package.** Record the ≤ 3-minute video of the real product (sign in, add a phrase, matches with scores appear, connect an account), post about it on X or LinkedIn, then submit at https://vibeapps.dev/judging/convex-all-gas-hackathon-openai/submit with the public repo, the live URL https://tremendous-seahorse-330.convex.site and the video. The repo is public and `hackathon.md` is at its root.
+
+The other open to-dos (X and Facebook adapters, real brand step, phone alerts, Firecrawl discovery, deleting posts from the UI, pagination, and the rest) are listed below under "To do".
+
 ## Hackathon gates — what is still missing
 
 1. **A sponsor integration that works** (OpenAI, Firecrawl or AgentMail). **OpenAI scoring is built and tested but not yet run live**: set `OPENAI_API_KEY` on dev and prod (`convex env set`), then check with `pnpm exec convex run scoring:tryScore '{"phrase":"need a plumber","title":"Need a plumber in Austin"}'`. The Convex AI Gateway is not enabled on the free plan. Still open: Firecrawl for community discovery, OpenAI to draft replies.
@@ -40,14 +72,14 @@ Checks that were green at the last commit: backend 53, web 162, `clients` 19, re
 ## To do — in priority order
 
 ### Must do before Tuesday
-- [ ] **Turn OpenAI scoring on:** set `OPENAI_API_KEY` (dev, then prod), run `scoring:tryScore`, add a phrase such as `ipad` in r/ipad, press Check now, and confirm scored matches appear. Then `pnpm exec convex deploy --yes` to prod. Kill switch: `AI_SCORING=off`. Optional model override: `AI_MODEL`.
+- [ ] **Turn OpenAI scoring on**: see "TODO for Matthew" item 1. Kill switch `AI_SCORING=off`; model override `AI_MODEL`.
 - [ ] **Second sponsor integration** (optional): Firecrawl `communities:discover`.
 - [x] **Deployed to `convex.site`** (prod `tremendous-seahorse-330`). Google sign-in verified on the public dev copy; test it on the prod URL too.
 - [ ] **Clerk stays on the dev instance** (`internal-piglet-2301`), which works on the public URL but shows dev-mode behaviour. A production Clerk instance needs an owned domain.
 - [x] **Prod env set:** `AUTH_ISSUER`, `AUTH_AUDIENCE`, `SESSION_ENCRYPTION_KEY` (its own key, never printed). Still to set on prod: `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET`.
-- [ ] **Reddit app for dependable freshness.** Create a free "script" app at reddit.com/prefs/apps, set `REDDIT_CLIENT_ID` and `REDDIT_CLIENT_SECRET` on dev and prod. Until then the hosted check mostly falls back to a mirror that can be ~9 h old (Reddit's plain feed returns 429 to Convex's shared address). The API path is unit-tested but **never run live**. Reddit's free API terms are non-commercial only.
+- [ ] **Reddit app for dependable freshness**: see "TODO for Matthew" item 2. Until then the hosted check mostly falls back to a mirror that can be ~9 h old (Reddit's plain feed returns 429 to Convex's shared address); the API path is unit-tested but never run live.
 - [ ] **Phone alerts (Bark).** Action calling Bark when a hit is recorded; per-user device key stored like a session (sealed, never returned to the browser).
-- [ ] **Record the video, post, submit.**
+- [ ] **Record the video, post, submit**: see "TODO for Matthew" item 9.
 
 ### Next product work
 - [ ] **X adapter** (twikit, `apps/twikit`, nested repo) using the connected token via `GET /session?platform=x`. Reuse `clients/listeningkit_ingest.py` (`push`, `fetch_session`).
