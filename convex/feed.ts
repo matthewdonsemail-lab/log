@@ -1,11 +1,14 @@
 import { ConvexError, v, type Infer } from 'convex/values'
+import { internal } from './_generated/api'
 import type { Doc, Id } from './_generated/dataModel'
 import { internalMutation, query, requireOwner, type MutationCtx } from './lib/server'
 import { listeningKeywords, recordHits } from './hits'
+import { scoringEnabled } from './lib/scoring'
 import { platform, postFields } from './schema'
 
 const post = v.object(postFields)
 export const MAX_POSTS_PER_BATCH = 100
+const MAX_SCORED_PER_BATCH = 20
 
 /** Native post identity is stable within its account: re-ingesting replaces, never duplicates. */
 export async function writePosts(
@@ -18,6 +21,7 @@ export async function writePosts(
   const keywords = await listeningKeywords(ctx, account)
   const gains = new Map<Id<'keywords'>, number>()
   let newHits = 0
+  const newHitIds: Id<'hits'>[] = []
   for (const item of posts) {
     if (!item.externalId.trim()) throw new ConvexError('Native post ID is required')
     if (![item.likes, item.comments].every(Number.isFinite)) throw new ConvexError('Metrics must be finite')
@@ -35,14 +39,19 @@ export async function writePosts(
     } else {
       postId = await ctx.db.insert('posts', record)
     }
-    for (const keywordId of await recordHits(ctx, keywords, { ...record, _id: postId })) {
+    for (const { keywordId, hitId } of await recordHits(ctx, keywords, { ...record, _id: postId })) {
       gains.set(keywordId, (gains.get(keywordId) ?? 0) + 1)
       newHits += 1
+      newHitIds.push(hitId)
     }
   }
   for (const [keywordId, gained] of gains) {
     const keyword = keywords.find(row => row._id === keywordId)
     if (keyword) await ctx.db.patch(keywordId, { signalsCount: (keyword.signalsCount ?? 0) + gained })
+  }
+  // Score new matches in the background; a backfill cron catches anything this misses.
+  if (newHitIds.length > 0 && scoringEnabled()) {
+    await ctx.scheduler.runAfter(0, internal.scoring.scoreHits, { hitIds: newHitIds.slice(0, MAX_SCORED_PER_BATCH) })
   }
   return { processed: posts.length, newHits }
 }

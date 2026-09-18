@@ -31,8 +31,7 @@ Checks that were green at the last commit: backend 53, web 162, `clients` 19, re
 
 ## Hackathon gates — what is still missing
 
-1. **A sponsor integration that works** (OpenAI, Firecrawl or AgentMail). None wired. Best fits:
-   Firecrawl for community discovery, OpenAI for scoring hits and drafting replies.
+1. **A sponsor integration that works** (OpenAI, Firecrawl or AgentMail). **OpenAI scoring is built and tested but not yet run live**: set `OPENAI_API_KEY` on dev and prod (`convex env set`), then check with `pnpm exec convex run scoring:tryScore '{"phrase":"need a plumber","title":"Need a plumber in Austin"}'`. The Convex AI Gateway is not enabled on the free plan. Still open: Firecrawl for community discovery, OpenAI to draft replies.
 2. ~~A live public URL~~ **Done:** https://tremendous-seahorse-330.convex.site (prod). Republish with `pnpm deploy:site`; backend with `pnpm exec convex deploy --yes`. Dev rehearsal copy: https://determined-cheetah-971.convex.site (`pnpm deploy:site:dev`).
 3. **Repo public + `hackathon.md` at root** (done once pushed; confirm the repo is public).
 4. **Video ≤ 3 minutes** of the real product. **Post on X or LinkedIn.**
@@ -41,7 +40,8 @@ Checks that were green at the last commit: backend 53, web 162, `clients` 19, re
 ## To do — in priority order
 
 ### Must do before Tuesday
-- [ ] **Sponsor integration** (gate 1). Suggested: `communities:discover` action calling Firecrawl search; OpenAI action scoring each hit.
+- [ ] **Turn OpenAI scoring on:** set `OPENAI_API_KEY` (dev, then prod), run `scoring:tryScore`, add a phrase such as `ipad` in r/ipad, press Check now, and confirm scored matches appear. Then `pnpm exec convex deploy --yes` to prod. Kill switch: `AI_SCORING=off`. Optional model override: `AI_MODEL`.
+- [ ] **Second sponsor integration** (optional): Firecrawl `communities:discover`.
 - [x] **Deployed to `convex.site`** (prod `tremendous-seahorse-330`). Google sign-in verified on the public dev copy; test it on the prod URL too.
 - [ ] **Clerk stays on the dev instance** (`internal-piglet-2301`), which works on the public URL but shows dev-mode behaviour. A production Clerk instance needs an owned domain.
 - [x] **Prod env set:** `AUTH_ISSUER`, `AUTH_AUDIENCE`, `SESSION_ENCRYPTION_KEY` (its own key, never printed). Still to set on prod: `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET`.

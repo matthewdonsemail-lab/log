@@ -5,7 +5,7 @@ import { SOCIAL_ICONS, SocialGlyph } from '@/lib/social-icons'
 import { hitsListRef, keywordsListRef } from '@/lib/convex'
 import { syncFeed } from '@/lib/feed'
 import {
-  createLiveKeyword, liveHitsSchema, liveKeywordsSchema, removeLiveKeyword, setLiveKeywordStatus,
+  createLiveKeyword, intentLabel, liveHitsSchema, liveKeywordsSchema, removeLiveKeyword, scoreBand, setLiveKeywordStatus, sortHits,
   type LiveHit, type LiveKeyword,
 } from '@/lib/live-keywords'
 import { LIVE_PLATFORMS } from '@/lib/platform-support'
@@ -44,9 +44,15 @@ function HitCard({ hit }: { hit: LiveHit }) {
       <div className="flex flex-wrap items-center gap-2 text-xs text-text-secondary">
         {icon ? <SocialGlyph icon={icon} className="size-4 text-slate-500" /> : null}
         <Badge variant="muted">{hit.phrase}</Badge>
+        {hit.score !== null ? (
+          <Badge variant={{ strong: 'success', maybe: 'warning', weak: 'muted' }[scoreBand(hit.score)] as 'success' | 'warning' | 'muted'}>
+            {hit.score} · {intentLabel(hit.intent)}
+          </Badge>
+        ) : null}
         <span>by {hit.post.authorName}</span>
         <span>· matched {ago(hit.matchedAt)}</span>
       </div>
+      {hit.reason ? <span className="text-sm italic text-slate-600">{hit.reason}</span> : null}
       <span className="font-bold text-text-primary">{hit.post.title ?? hit.post.snippet ?? 'Untitled post'}</span>
       {hit.post.title && hit.post.snippet ? (
         <span className="line-clamp-3 text-sm text-text-secondary">{hit.post.snippet}</span>
@@ -84,6 +90,7 @@ export function DashboardKeywordsLive() {
   const [subreddit, setSubreddit] = useState('')
   const [adding, setAdding] = useState(false)
   const [checking, setChecking] = useState(false)
+  const [order, setOrder] = useState<'newest' | 'best'>('newest')
 
   const keywords = useMemo(() => {
     const parsed = keywordData === undefined ? null : liveKeywordsSchema.safeParse(keywordData)
@@ -243,8 +250,25 @@ export function DashboardKeywordsLive() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-lg font-bold text-text-primary">Latest matches</h2>
-        {(hits ?? []).map((hit) => <HitCard key={hit.id} hit={hit} />)}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-lg font-bold text-text-primary">Latest matches</h2>
+          <div className="flex gap-2" role="group" aria-label="Order matches">
+            {(['newest', 'best'] as const).map((choice) => (
+              <button
+                key={choice}
+                type="button"
+                aria-pressed={order === choice}
+                onClick={() => setOrder(choice)}
+                className={`rounded-full border px-3 py-1 text-sm font-semibold ${
+                  order === choice ? 'border-[#2a8cff] bg-[#eaf3ff] text-[#1f6fe6]' : 'border-slate-200 text-text-secondary hover:border-[#2a8cff]'
+                }`}
+              >
+                {choice === 'newest' ? 'Newest first' : 'Best matches first'}
+              </button>
+            ))}
+          </div>
+        </div>
+        {sortHits(hits ?? [], order).map((hit) => <HitCard key={hit.id} hit={hit} />)}
         {hits === null ? (
           <p className="rounded-xl border border-dashed border-slate-300 p-5 text-sm text-text-secondary">Loading matches…</p>
         ) : null}

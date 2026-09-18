@@ -83,3 +83,27 @@ describe('freshness wording', () => {
     expect(freshness({ lastCheckedAt: Date.now() - 4 * 60_000, lastSource: 'mirror' })).toBe('checked 4 min ago from a backup source, posts may be hours old')
   })
 })
+
+describe('score display helpers', () => {
+  const hit = (id: string, score: number | null, matchedAt: number) => ({
+    id, phrase: 'p', platform: 'reddit' as const, matchedAt, score, intent: null, reason: null,
+    post: { id, title: id, authorName: 'a', url: 'https://reddit.com/x', snippet: null, timestamp: null },
+  })
+
+  it('names the intent in plain words and bands the score', async () => {
+    const { intentLabel, scoreBand } = await import('../live-keywords')
+    expect(intentLabel('looking_for_help')).toBe('Wants help')
+    expect(intentLabel('buying')).toBe('Ready to buy')
+    expect(intentLabel('anything-else')).toBe('Other')
+    expect(intentLabel(null)).toBe('Other')
+    expect([scoreBand(85), scoreBand(70), scoreBand(69), scoreBand(40), scoreBand(39)]).toEqual(['strong', 'strong', 'maybe', 'maybe', 'weak'])
+  })
+
+  it('puts the best matches first, keeps unscored ones after, and leaves newest-first alone', async () => {
+    const { sortHits } = await import('../live-keywords')
+    const list = [hit('new-unscored', null, 300), hit('mid', 60, 200), hit('best', 95, 100), hit('tie-newer', 60, 250)]
+    expect(sortHits(list, 'newest').map((h) => h.id)).toEqual(['new-unscored', 'mid', 'best', 'tie-newer'])
+    expect(sortHits(list, 'best').map((h) => h.id)).toEqual(['best', 'tie-newer', 'mid', 'new-unscored'])
+    expect(list.map((h) => h.id)).toEqual(['new-unscored', 'mid', 'best', 'tie-newer'])
+  })
+})

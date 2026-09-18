@@ -12,26 +12,26 @@ export async function listeningKeywords(ctx: MutationCtx, account: Doc<'accounts
 
 /**
  * Match one stored post against the keywords and record each new (keyword, post) pair.
- * Returns the keywords that gained a hit so the caller can bump their counters once per batch.
+ * Returns each new hit with its keyword so the caller can bump counters once per batch and schedule scoring.
  */
 export async function recordHits(
   ctx: MutationCtx,
   keywords: Doc<'keywords'>[],
   post: Pick<Doc<'posts'>, 'owner' | 'platform' | 'title' | 'body' | 'url'> & { _id: Id<'posts'> },
-): Promise<Id<'keywords'>[]> {
+): Promise<{ keywordId: Id<'keywords'>; hitId: Id<'hits'> }[]> {
   const text = [post.title ?? '', ...post.body].join('\n')
   const subreddit = post.platform === 'reddit' ? subredditOf(post.url) : null
-  const gained: Id<'keywords'>[] = []
+  const gained: { keywordId: Id<'keywords'>; hitId: Id<'hits'> }[] = []
   for (const keyword of keywords) {
     if (keyword.subreddit && keyword.subreddit !== subreddit) continue
     if (!phraseMatches(keyword.phrase, text)) continue
     const seen = await ctx.db.query('hits')
       .withIndex('by_keyword_and_post', q => q.eq('keywordId', keyword._id).eq('postId', post._id)).first()
     if (seen) continue
-    await ctx.db.insert('hits', {
+    const hitId = await ctx.db.insert('hits', {
       owner: post.owner, keywordId: keyword._id, postId: post._id, phrase: keyword.phrase, platform: post.platform,
     })
-    gained.push(keyword._id)
+    gained.push({ keywordId: keyword._id, hitId })
   }
   return gained
 }
@@ -48,6 +48,7 @@ export const list = query({
       if (!post) continue
       hits.push({
         id: row._id, phrase: row.phrase, platform: row.platform, matchedAt: row._creationTime,
+        score: row.score ?? null, intent: row.intent ?? null, reason: row.reason ?? null,
         post: {
           id: post._id, title: post.title ?? null, authorName: post.authorName, url: post.url,
           snippet: post.body[0]?.slice(0, 280) ?? null, timestamp: post.timestamp ?? null,

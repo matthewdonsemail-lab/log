@@ -21,9 +21,11 @@ import type * as lib_hash from "../lib/hash.js";
 import type * as lib_match from "../lib/match.js";
 import type * as lib_posts from "../lib/posts.js";
 import type * as lib_redditFeed from "../lib/redditFeed.js";
+import type * as lib_scoring from "../lib/scoring.js";
 import type * as lib_server from "../lib/server.js";
 import type * as lib_token from "../lib/token.js";
 import type * as reddit from "../reddit.js";
+import type * as scoring from "../scoring.js";
 import type * as sessions from "../sessions.js";
 import type * as watch from "../watch.js";
 
@@ -47,9 +49,11 @@ declare const fullApi: ApiFromModules<{
   "lib/match": typeof lib_match;
   "lib/posts": typeof lib_posts;
   "lib/redditFeed": typeof lib_redditFeed;
+  "lib/scoring": typeof lib_scoring;
   "lib/server": typeof lib_server;
   "lib/token": typeof lib_token;
   reddit: typeof reddit;
+  scoring: typeof scoring;
   sessions: typeof sessions;
   watch: typeof watch;
 }>;

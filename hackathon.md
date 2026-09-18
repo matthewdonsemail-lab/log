@@ -8,9 +8,9 @@
 - **Frontend:** Convex static hosting
 - **Convex deployment:** https://tremendous-seahorse-330.convex.cloud (prod); dev `determined-cheetah-971`
 - **Components:** @convex-dev/static-hosting
-- **Convex features:** schema, indexes, queries, mutations, actions, HTTP actions, crons, live queries (useQuery)
+- **Convex features:** schema, indexes, queries, mutations, actions, HTTP actions, crons, scheduled functions, live queries (useQuery)
 - **Auth:** Clerk dev instance (Google/GitHub provider cards + email, onboarding-gated routes)
-- **AI models:** none
+- **AI models:** gpt-4o-mini (OpenAI, direct API; or the Convex AI Gateway when enabled). Built and tested, not yet run live: needs `OPENAI_API_KEY` on the deployment
 - **Started:** 2026-09-12T21:03:28Z
 - **Last updated:** 2026-09-18T17:28:12Z
 
@@ -607,3 +607,16 @@ intact), then deployed the backend and uploaded the site to production with its 
 and sign-in settings set in deployment env. The production bundle points only at the production
 backend. `pnpm deploy:site` republishes the site. Not built yet: X and Facebook adapters, phone
 alerts, keyword scoring, community discovery.
+
+### 2026-09-18 - working tree
+OpenAI scoring of matches. Every new match is scored in the background (0 to 100, an intent such
+as "wants help" or "promotion", and a one-line reason) by a scheduled action, with a 10-minute
+backfill cron as a safety net (`convex/scoring.ts`, `convex/lib/scoring.ts`, `convex/crons.ts`).
+The Keywords page shows a colored badge and the reason on each match and can list the best
+matches first (`apps/web/src/components/DashboardKeywordsLive.tsx`). The model call goes to
+OpenAI directly when `OPENAI_API_KEY` is set on the deployment, otherwise through the Convex AI
+Gateway; the gateway is not enabled on the free Convex plan, so it was not usable here. Posts
+are treated as untrusted text (fenced in the prompt, reply validated and clamped), errors never
+echo the response or key, retries stop after three attempts, and `AI_SCORING=off` stops all model
+calls. Backend 72 tests, web 164; verified only against fake model replies, so a live run is
+still to do. Not built yet: X and Facebook adapters, phone alerts, community discovery.

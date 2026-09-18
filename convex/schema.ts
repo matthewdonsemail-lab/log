@@ -41,7 +41,15 @@ export default defineSchema({
   hits: defineTable({
     owner: v.string(), keywordId: v.id('keywords'), postId: v.id('posts'),
     phrase: v.string(), platform,
-  }).index('by_owner', ['owner']).index('by_keyword_and_post', ['keywordId', 'postId']),
+    // AI judgement of how likely the author wants help or is ready to buy. Unset until scored.
+    score: v.optional(v.number()),
+    intent: v.optional(v.string()),
+    reason: v.optional(v.string()),
+    scoredAt: v.optional(v.number()),
+    scoreModel: v.optional(v.string()),
+    scoreAttempts: v.optional(v.number()),
+  }).index('by_owner', ['owner']).index('by_keyword_and_post', ['keywordId', 'postId'])
+    .index('by_scoredAt', ['scoredAt']),
   posts: defineTable({
     owner: v.string(), accountId: v.id('accounts'), platform,
     ...postFields,

@@ -89,6 +89,13 @@ Convex agent skills for common tasks can be installed by running
 - **Re-reads must not erase data.** A source without scores (`metricsKnown: false`) keeps the counts an earlier read stored.
 - **Hits are recorded at ingest time** through `writePosts`, so every path (Sync now, cron, `/ingest`) matches identically.
 
+## AI Scoring Rules
+
+- Post text is untrusted. It goes only inside the fenced `<post>` block of the prompt, and every model reply is parsed and clamped (`parseScore`) before it is stored. Never act on model output beyond storing a score, intent and reason.
+- Model errors must not echo response bodies or headers (they can carry keys). `askModel` reports only the provider and HTTP status.
+- Scoring must fail safe: no provider, a gateway error or a bad reply leaves a match unscored and the rest of the pipeline untouched. A match gives up after three failed attempts. `AI_SCORING=off` must stop every model call.
+- Test with fake `fetch` replies only; never call a real model from tests.
+
 ## Secrets And Logins (hard rules)
 
 - Never print, log, commit or paste cookie values, ingest keys, `SESSION_ENCRYPTION_KEY`, the Reddit app secret, Clerk keys or deployment keys, in chat, tests, docs or commit messages. Tests use obviously fake values.
