@@ -83,6 +83,9 @@ Checks that were green at the last commit: backend 53, web 162, `clients` 19, re
 - Generate keys in the shell and pipe them straight into `convex env set`; check with names only (`convex env list | sed 's/=.*/=<hidden>/'`).
 - `hackathon.md` is public: no email addresses, no account ids.
 
+## Clerk instance settings changed outside git (dev instance `internal-piglet-2301`)
+- `auth_username.required_for_sign_up = false` (2026-09-18): new Google sign-ups no longer get a "choose a username" prompt. Username is still usable for sign-in. Change or revert with `clerk config patch --instance dev --json '{"auth_username":{"required_for_sign_up":true}}'`. Any production Clerk instance must be configured the same way.
+
 ## Gotchas already paid for
 - Clerk emotion CSS injects after our utilities. Beat it with scoped doubled-class selectors under `.lk-clerk` in `apps/web/src/index.css`; inputs need `max-height: none` and a real border.
 - Installed `@clerk/react` uses signal-style hooks. Custom OAuth cards must use the classic `authenticateWithRedirect` handoff (`OnboardingAuth.tsx:startOAuth`).
