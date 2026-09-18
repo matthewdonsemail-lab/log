@@ -57,14 +57,79 @@ Everything above is the **live target**; the client in this repo is built agains
 - The same root app also serves as a standalone **mock server** on `http://localhost:5174` ([`scripts/mock-server.ts`](apps/web/scripts/mock-server.ts)) with fresh seeds on every boot, which the docs' **Scalar try-it consoles** execute against.
 - Pointing the clients at the live Hono/Railcode backend later is a **transport change only** — no route, response shape, or client call changes. The Vite dev server already proxies [`/api`](apps/web/vite.config.ts) to `http://localhost:4000` for that day.
 
-## Live backend (dev)
+## Current architecture (live, dev)
 
-Alongside the mock, a real authenticated slice runs in development — Clerk sign-in, the Hono bridge in [`apps/api`](apps/api/README.md), and Convex storage/queries in [`convex`](convex/README.md):
+The dashboard talks to **Convex directly**. There is no bridge server on the live path. Reddit works end to end; X and Facebook can be connected but nothing reads them yet.
 
-- **Auth** — Clerk (`VITE_CLERK_PUBLISHABLE_KEY` in `apps/web/.env.local`, pulled with `clerk env pull`). Signed-out visitors get platform selection; Continue routes through `/sign-in` / `/sign-up`, rendered as onboarding-styled screens with Google/GitHub provider cards plus email. `/dashboard` stays behind `RequireAuth`; the sidebar user card shows the Clerk account. No auto-advance on card select — every step moves on Continue only.
-- **Transport** — `VITE_API_MODE=live` + `VITE_API_BASE_URL=/api` switches accounts/feed to the bridge; every other domain stays mocked. Live failures throw honestly, never substitute demo rows.
-- **Reddit sync** — the dashboard feed has a Sync now control (`r/<subreddit>`, default `marketing`) that calls `POST /api/feed/sync` → Convex action `reddit:syncSubreddit`: newest public posts via the keyless Arctic Shift mirror, normalized and ingested under the caller's own `Reddit public ingest` account (created on first sync), deduplicated on native post id. Junk rows are skipped and counted, never fabricated.
-- **Run it** — `pnpm dev` (web) + `pnpm --filter api dev` (bridge on 4000) + `pnpm exec convex dev --once` (push functions to the dev deployment). Convex `AUTH_ISSUER`/`AUTH_AUDIENCE` live on the deployment, never in the repo.
+```mermaid
+flowchart LR
+  subgraph browser["Your browser"]
+    UI["ListeningKit dashboard<br/>React + Clerk sign-in"]
+    EXT["ListeningKit Connect<br/>Chrome extension"]
+  end
+  subgraph convex["Convex"]
+    FN["queries, mutations, actions<br/>live subscriptions (useQuery)"]
+    CRON["cron every 10 min<br/>watch.tick"]
+    HTTP["HTTP actions<br/>POST /ingest · GET /session"]
+    DB[("accounts · posts · keywords<br/>hits · sessions · ingestKeys")]
+  end
+  subgraph reddit["Reddit sources, freshest first"]
+    API["Reddit API<br/>app OAuth"]
+    RSS["Reddit plain feed"]
+    MIR["public mirror"]
+  end
+  subgraph local["Your machine (optional)"]
+    CAMO["reddit-camofox-client<br/>+ clients/reddit_push.py"]
+  end
+  UI <-->|"useQuery / mutations"| FN
+  EXT -.->|"token, pasted by you"| UI
+  CRON --> API
+  CRON -.->|"if refused"| RSS
+  CRON -.->|"if refused"| MIR
+  CAMO -->|"POST /ingest (ingest key)"| HTTP
+  CAMO -->|"GET /session (ingest key)"| HTTP
+  FN --- DB
+  CRON --- DB
+  HTTP --- DB
+```
+
+**One user's path, in plain words.** Sign in with Google (Clerk) → onboarding: watch the video, install the extension, paste a token → "What should we listen for?": type a phrase and pick a subreddit → a cron reads that subreddit every 10 minutes, matches every new post as a whole-word phrase, and the matches appear on screen live.
+
+| Piece | What it does | Where |
+|---|---|---|
+| **Auth** | Clerk dev instance; the Clerk `convex` JWT is verified by Convex. Every function derives the owner from the token, never from an argument. | [`convex/auth.config.ts`](convex/auth.config.ts), [`convex/lib/server.ts`](convex/lib/server.ts) |
+| **Feed** | Live `useQuery` subscription to `feed:list`; "Sync now" runs `reddit:syncSubreddit`. | [`DashboardFeed.tsx`](apps/web/src/components/DashboardFeed.tsx), [`convex/feed.ts`](convex/feed.ts) |
+| **Keywords + matches** | Phrases scoped to a subreddit. Every ingested post is matched as it arrives; each (phrase, post) pair is one `hits` row. | [`keywords.ts`](convex/keywords.ts), [`hits.ts`](convex/hits.ts), [`lib/match.ts`](convex/lib/match.ts), [`DashboardKeywordsLive.tsx`](apps/web/src/components/DashboardKeywordsLive.tsx) |
+| **Reddit reading** | Cron `watch.tick` reads each watched subreddit once, in order: official API (needs app creds) → Reddit plain feed → public mirror. Each phrase records when it was read and from where; the page shows "checked 4 min ago" and warns when the backup source answered. | [`watch.ts`](convex/watch.ts), [`reddit.ts`](convex/reddit.ts), [`lib/redditFeed.ts`](convex/lib/redditFeed.ts) |
+| **Ingest door** | `POST /ingest` takes batches of posts for facebook, x or reddit, authenticated by a per-user ingest key (only its SHA-256 is stored). The owner comes from the key, not the request. | [`http.ts`](convex/http.ts), [`ingest.ts`](convex/ingest.ts) |
+| **Connect an account** | The extension copies a token (`lk1.` + base64url JSON cookie jar) for the site you are logged in to. Pasting it calls `sessions:save`, which validates it in plain words, drops cookies outside the platform's domains, and seals the jar with AES-256-GCM. No query returns the jar to a browser. | [`apps/extension`](apps/extension), [`sessions.ts`](convex/sessions.ts), [`lib/token.ts`](convex/lib/token.ts), [`lib/crypto.ts`](convex/lib/crypto.ts) |
+| **Local clients** | `GET /session?platform=` returns the owner's own decrypted jar to their ingest key, so a local adapter needs no cookies file. `reddit_push.py` polls reddit-camofox-client and pushes to `/ingest`. | [`clients/`](clients) |
+
+### Security model
+- **Owner isolation is structural.** `requireOwner(ctx)` runs in every public function; ingest keys resolve to an owner server-side.
+- **Secrets never reach a browser or a log.** The jar is sealed with a key held only in deployment env (`SESSION_ENCRYPTION_KEY`); ingest keys are stored as hashes and shown once; error messages never echo cookie values.
+- **The extension is minimal.** It requests cookies only for reddit.com, x.com, twitter.com and facebook.com, uses `activeTab` and `clipboardWrite`, and has no network permission.
+
+### Environment
+| Variable | Where | Purpose |
+|---|---|---|
+| `VITE_API_MODE=live`, `VITE_CONVEX_URL` | `apps/web/.env.local` | Use Convex directly. Unset `VITE_CONVEX_URL` falls back to the Hono bridge. Restart Vite after editing. |
+| `VITE_CLERK_PUBLISHABLE_KEY` | `apps/web/.env.local` | Clerk sign-in. |
+| `AUTH_ISSUER`, `AUTH_AUDIENCE` | Convex deployment env | Verify the Clerk JWT. |
+| `SESSION_ENCRYPTION_KEY` | Convex deployment env | 32 random bytes, base64. Needed to connect accounts. |
+| `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET` | Convex deployment env | Reddit "script" app for dependable freshness. Optional; without it the plain feed and mirror are used. |
+| `LISTENINGKIT_INGEST_URL`, `LISTENINGKIT_INGEST_KEY` | local adapter shell | Where and how an adapter pushes. |
+
+### What is real and what is still mock
+Real on Convex: sign-in, feed, keywords, matches, the Reddit cron, ingest keys, connected accounts, the ingest and session endpoints. Still the in-browser mock described above: messaging, listings, groups, brand, analytics, API keys, and the onboarding brand step. X and Facebook adapters, phone alerts (Bark), OpenAI scoring, Firecrawl discovery and any deployment are on the to-do list in [`HANDOFF.md`](HANDOFF.md).
+
+### Run it
+```bash
+pnpm install
+pnpm exec convex dev --once --typecheck=disable          # push functions to the dev deployment
+pnpm --filter web exec vite --port 3000                  # web, with VITE_API_MODE=live + VITE_CONVEX_URL set
+python scripts/build-extension.py                        # rebuild the downloadable extension zip after editing apps/extension
+```
 
 ## The API
 
@@ -405,13 +470,12 @@ The app shell, sidebar, and pages live in [`apps/web/src/components/`](apps/web/
 
 ## Testing
 
-`vitest` runs in-process against the same Hono apps the dashboard uses (`pnpm --filter web test`):
+`vitest` runs in-process against the same Hono apps the dashboard uses (`pnpm --filter web test`, 162 tests), the Convex functions run offline with `convex-test` (`pnpm test:backend`, 53 tests), and the Python pieces have their own suites:
 
-- [`api-coverage.test.ts`](apps/web/src/lib/__tests__/api-coverage.test.ts) smokes **every** API domain through `mockApiApp.request` — key CRUD, all seven brand routes, accounts, community resolution in both flavors, listings, keyword scoping rejections, feed filters, and messaging account-ownership rules — so a route or schema change fails here before it fails in the docs.
-- [`messaging.test.ts`](apps/web/src/lib/__tests__/messaging.test.ts) locks the full chat contract: per-account seeded inboxes, account/platform isolation and the 404-not-a-leak rule, native id shapes as regex regressions, send/start preview + `updatedAt` sync, 409 duplicate compose, reply validation, idempotent ack, and byte-identical `/messaging/twitter` ↔ `/messaging/x` aliasing.
-- [`feed-transport.test.ts`](apps/web/src/lib/__tests__/feed-transport.test.ts) covers the live transport: filter forwarding with bearer auth, honest HTTP/network/schema errors, and the Reddit sync client (`syncFeed` posts the subreddit, validates the summary, refuses mock mode).
-- [`auth-gate.test.tsx`](apps/web/src/lib/__tests__/auth-gate.test.tsx) locks the auth routes: onboarding gating while signed out, provider cards on the sign-in/up screens, redirects for signed-in visitors, and dashboard protection with token-provider setup.
-- Backend: `pnpm test:backend` runs the Convex suite (`convex/*.test.ts` via `convex-test`, offline) — account/feed ownership and isolation plus Reddit normalization, mirror-error honesty, and per-owner ingest accounts. `pnpm --filter api test` covers the bridge boundary including `POST /api/feed/sync` validation.
+- **Backend** (`convex/*.test.ts`): ingest keys and the `/ingest` endpoint, keyword rules, whole-word matching, hits and owner isolation, the scheduled poll, every Reddit source and the fallback order, token validation, sealing (round trip, wrong key, tampering), and the `/session` endpoint.
+- **Web** (`apps/web/src/lib/__tests__`): API coverage of the mock, messaging contract, the live transport (feed, keywords, connected accounts, ingest keys), the extension-and-server token contract, onboarding, and auth routes. A developer's `.env.local` is blanked in tests so they stay hermetic.
+- **Python** (`python -m pytest clients/tests`, 19 tests; reddit-camofox-client has 25): mapping, batching and retries, session fetching, and post-card extraction.
+- **Real browser checks** were run by hand with Camoufox (the app) and Playwright's Chromium (the extension); they are not part of `pnpm test`.
 
 ## Quickstart
 
@@ -444,26 +508,35 @@ pnpm exec convex dev --once      # push Convex functions to the dev deployment (
 | `pnpm --filter web mock:server` | standalone mock API on 5174 |
 | `pnpm --filter web openapi:export` | regenerate `apps/docs/openapi.json` from the mock |
 | `pnpm --filter docs gen:api` | regenerate the endpoint pages from the committed spec |
+| `pnpm exec convex dev --once --typecheck=disable` | push Convex functions to the dev deployment |
+| `pnpm exec convex run watch:tick` | run the Reddit poll once, by hand |
+| `python scripts/build-extension.py` | rebuild `apps/web/public/listeningkit-extension.zip` from `apps/extension` |
+| `python -m pytest clients/tests` | adapter tests |
 
 ## Layout
 
 ```
 listeningkit-hackathon/
   apps/
-    web/              # Vite React client (3000) — dashboard + the in-repo mock API
+    web/              # Vite React client (3000) — dashboard, onboarding, the in-repo mock API
+      public/         # listeningkit-extension.zip (built by scripts/build-extension.py)
       scripts/        # mock-server.ts, export-openapi.ts
-    api/              # Hono live bridge (4000) — Clerk-JWT-verified accounts/feed/sync to Convex
+    extension/        # ListeningKit Connect — Chrome (Manifest V3) extension that copies a connection token
+    api/              # Hono bridge (4000) — legacy transport, used only when VITE_CONVEX_URL is unset
     docs/             # fumadocs site (3001) — OpenAPI reference + brand/keywords guides
-      openapi.json    # committed generated spec
-      scripts/        # generate-api-docs.mjs
-  convex/             # Convex storage/queries/actions (dev deployment) + offline tests
+  convex/             # the backend: schema, functions, HTTP endpoints, cron, offline tests
+    lib/              # match, token, crypto, redditFeed, posts, accounts helpers
+  clients/            # local adapters that push into /ingest (reddit_push.py, listeningkit_ingest.py)
   packages/
     ui/               # @listeningkit/ui shared package
+  scripts/            # build-extension.py
+  HANDOFF.md          # current state and the to-do list
   manifest.yaml       # Railcode deploy manifest
   railcode.json       # Railcode project config
-  .railcode           # Railcode CLI state (org/app binding)
   pnpm-workspace.yaml
 ```
+
+Nested repos kept out of this one (each has its own git history): `apps/reddit-camofox-client`, `apps/facebook-camofox-client`, `apps/twikit`.
 
 Add a new app: copy `apps/web` to `apps/<name>`, rename `name` in its `package.json`, and `pnpm install`.
 

@@ -8,11 +8,11 @@
 - **Frontend:** Convex static hosting
 - **Convex deployment:** dev `determined-cheetah-971` (functions pushed; prod untouched)
 - **Components:** none
-- **Convex features:** accounts/feed queries + mutations, Reddit public ingest action
+- **Convex features:** schema, indexes, queries, mutations, actions, HTTP actions, crons, live queries (useQuery)
 - **Auth:** Clerk dev instance (Google/GitHub provider cards + email, onboarding-gated routes)
 - **AI models:** none
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-17T00:00:00Z
+- **Last updated:** 2026-09-18T17:28:12Z
 
 ## Log
 
@@ -543,3 +543,57 @@ Persisted pre-removal X catalog/orphan join rows are filtered on load.
 typecheck clean, 105/105 vitest pass (109 minus the 3 x-machine + 1 x-flow
 tests), lint clean (one pre-existing spread-fallback warning in
 communities/index.ts).
+
+### 2026-09-18 - working tree
+Two steps toward all three platforms feeding one live log. First, a push door:
+`POST /ingest` (HTTP action) takes batches of posts for Facebook, X or Reddit
+from any client, authenticated by a per-user ingest key. Only the SHA-256 of the
+key is stored and the secret is shown once; the owner comes from the key, never
+the request, so users cannot read or write each other's posts. Junk rows are
+skipped and counted, and posts dedupe on their native id (`convex/http.ts`,
+`convex/ingest.ts`, `convex/feed.ts`, `convex/lib/posts.ts`, new `ingestKeys`
+table and `by_owner_and_platform` index in `convex/schema.ts`). Second, the
+dashboard now talks to Convex directly when `VITE_CONVEX_URL` is set: the feed
+is a live `useQuery` subscription, so synced or pushed posts appear with no
+reload, and the Hono bridge is no longer on that path
+(`apps/web/src/lib/convex.ts`, `apps/web/src/components/DashboardFeed.tsx`,
+`apps/web/src/main.tsx`, `apps/web/src/lib/connections/index.ts`). Tests: backend
+17 (7 new for ingest), web 139 (12 new for the Convex transport and key client);
+typecheck, lint and the production build pass. A "Send posts in" settings tab
+creates, lists and revokes ingest keys (`apps/web/src/components/
+DashboardSettingsIngest.tsx`, `apps/web/src/lib/ingest-keys.ts`). Checked in a
+real Camoufox browser session: Sync now pulled 25 Reddit posts live, and a key
+made in the UI accepted a pushed X post that appeared in the feed with no
+reload, then was revoked and rejected. A Reddit push adapter (`clients/reddit_push.py`,
+shared `clients/listeningkit_ingest.py`, 14 Python tests) polls the camofox
+client and pushes to `/ingest`; against a stand-in client it landed 3 posts in
+the live feed, deduped on rerun, and failed cleanly once the key was revoked.
+Run against a real logged-in Reddit session it first skipped every post: the
+camofox client's extractor returned only card text, so it now reads each post
+card's attributes (id, title, link, author, counts, time) and pushed 10 real
+r/marketing posts that appeared in the live feed. Then the normal-user Reddit path: a plain
+"What should we listen for?" page (`apps/web/src/components/DashboardKeywordsLive.tsx`)
+where you type a phrase and pick a subreddit; phrases and matches live in Convex
+(`convex/keywords.ts`, `convex/hits.ts`, whole-word matching in
+`convex/lib/match.ts`), every ingested post is matched as it arrives, and a cron
+(`convex/crons.ts` -> `convex/watch.ts`) polls each watched subreddit every 10
+minutes. Backend 30 tests, web 143; walked through in the real browser: add a
+phrase, Check now, 11 live matches, pause, resume, remove. Onboarding keeps its video, extension and token steps and makes them real. A
+Chrome extension (`apps/extension`, Manifest V3) reads your logged-in cookies for
+Reddit, X or Facebook and copies a one-time token; the install guide offers the zip
+(`scripts/build-extension.py`); pasting the token calls `convex/sessions.ts`, which
+validates it in plain words, seals the cookie jar with AES-256-GCM
+(`convex/lib/crypto.ts`, key kept in deployment env only) and marks the account
+connected. No query returns the jar to a browser; local clients fetch it through
+`GET /session` with an ingest key, so the Reddit adapter needs no cookies file.
+Settings can test and disconnect. Backend 42 tests, web 161, Python 19; the real
+extension was loaded into Chromium and its token pasted in the real app. The Reddit
+path also lands on the Keywords page at the end (`apps/web/src/lib/platform-support.ts`).
+Freshness: the hosted check was reading a mirror that was about nine hours behind, so it
+now tries Reddit's official API (when an app is set up), then Reddit's own feed, then the
+mirror (`convex/lib/redditFeed.ts`, `convex/reddit.ts`), records which source answered on
+each phrase, and shows "checked 4 min ago" or a backup-data warning on the Keywords page.
+Measured from Convex's servers: Reddit's plain feed is mostly rate-limited (HTTP 429), so
+the official API needs an app set up to be dependable. Backend 53 tests, web 162. Not built
+yet: X and Facebook adapters, phone alerts, keyword scoring, community discovery, and any
+deployment.

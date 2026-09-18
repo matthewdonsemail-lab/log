@@ -1,93 +1,100 @@
-# Agent handoff — ListeningKit dev session (2026-09-17)
+# Agent handoff — ListeningKit (2026-09-18)
 
-Pushed and clean at `75969c8` on `main` (`matthewdonsemail-lab/log`).
-This file is local-only context for the next agent. Do not assume it is
-committed — re-read the listed source files before acting.
+Convex All Gas hackathon. **Submission deadline: Tue 22 Sep 2026, 12:00 PM PT.**
+This is the working state for the next person or agent. Read `README.md` (architecture),
+`AGENTS.md` (rules) and `hackathon.md` (build log) first.
 
-## What works right now (all verified live today unless noted)
+## Where things stand
 
-- **Auth (Clerk dev instance):** onboarding → provider cards (Google/GitHub)
-  → OAuth → session → guarded `/dashboard`. Sign-out lands clean.
-  Last live session seen: Google OAuth as mandeepsinghwani@gmail.com.
-- **Live reads:** `GET /api/accounts` + `GET /api/feed` return 200,
-  owner-scoped, through Clerk convex-JWT → API JWKS verify → Convex.
-- **Live Reddit sync (new, NOT yet clicked by a human):** dashboard feed has
-  an `r/[subreddit]` + **Sync now** control (live mode only) →
-  `POST /api/feed/sync` → Convex action `reddit:syncSubreddit` (Arctic Shift
-  public mirror, no keys) → ingest under the caller's auto-created
-  `Reddit public ingest` account → feed reloads. Junk skipped/counted,
-  failures throw, never demo rows.
-- **Gates:** web 127 / backend 10 / api 8 tests pass; `pnpm typecheck`,
-  `pnpm run lint` clean (one pre-existing oxlint warning in
-  `communities/index.ts`).
+The product now runs on a real backend for **Reddit**, end to end, with no bridge server:
 
-## Pending — in order
+```
+Sign in (Clerk) → onboarding (video, extension, token) → "What should we listen for?"
+   → phrase + subreddit → Convex cron reads Reddit every 10 min → matches appear live
+```
 
-1. **Human Sync-now click.** Needs the user's Google session (agents can't
-   complete Google OAuth). Ask them to sign in at
-   `http://localhost:3000/sign-in`, open the dashboard feed, click Sync now,
-   and report the toast. Then verify rows in `feed:list`.
-2. **Clerk production.** Deferred — needs a user-owned domain.
-   `clerk deploy` is interactive (human terminal only). Then enable
-   Google/GitHub with custom OAuth creds in the Dashboard (dev shared keys
-   don't work in prod), `clerk env pull --instance prod`, Convex prod env,
-   rebuild with `pk_live_...`, `railcode deploy`.
-3. **API bridge has no prod home.** `apps/api` is localhost:4000 only; the
-   Railcode static frontend has no `/api`. Decide hosting before claiming
-   live-mode prod.
-4. **Next product slice (per docs order):** real account session
-   verification → ingestion scheduling/scopes → actions → brand AI.
-   (`docs/backend-integration-audit.md` §Proposed implementation order.)
+| Area | State |
+|---|---|
+| Auth | Clerk **dev** instance, Google/GitHub. Prod not set up. |
+| Feed | Live `useQuery` subscription straight from Convex (`VITE_CONVEX_URL`). Hono bridge is off this path. |
+| Keywords + matches | Real: `convex/keywords.ts`, `convex/hits.ts`, whole-word matching in `convex/lib/match.ts`. Page: `DashboardKeywordsLive.tsx`. |
+| Reddit reading | Cron `watch.tick` every 10 min. Sources in order: official API (needs app creds) → Reddit plain feed → public mirror. Phrases show "checked N min ago" and a backup-data warning. |
+| Ingest door | `POST /ingest` (per-user ingest key, hashed). Keys made on Settings → "Send posts in". |
+| Connect an account | Chrome extension (`apps/extension`) copies a token → onboarding/Settings paste → `convex/sessions.ts` validates it and seals the cookie jar (AES-256-GCM). Local clients read it with `GET /session` + an ingest key. |
+| Reddit adapter | `clients/reddit_push.py` → reddit-camofox-client → `/ingest`. Verified with a real login. |
+| X / Facebook | **Not built.** Connectable (token saved) but nothing reads them. Keywords page marks them "Soon". |
+| Everything else in the dashboard | Still the in-browser mock (messaging, listings, brand, analytics, API keys, groups). |
 
-## Environment (dev, all local)
+Checks that were green at the last commit: backend 53, web 162, `clients` 19, reddit-camofox-client 25;
+`pnpm typecheck`, `pnpm typecheck:backend`, `pnpm run lint` (one old oxlint warning in
+`communities/index.ts`), `pnpm --filter web build`.
 
-- Web `pnpm dev` → :3000 · API `pnpm --filter api dev` → :4000 ·
-  Vite proxies `/api` → 4000. Convex dev deployment
-  `determined-cheetah-971` (push: `pnpm exec convex dev --once
-  --typecheck=disable`).
-- Env files (`apps/web/.env.local`, `apps/api/.env.local`) are git-ignored
-  and hold dev keys. `VITE_API_MODE=live`. Railcode never ships `.env*`.
-- Browser automation: Chrome on remote-debugging `:9222`; puppeteer-core
-  via `C:/Users/mande/.pi/agent/skills/pi-skills/browser-tools/`.
-  The user's main profile may hold their Google + Clerk session — prefer a
-  fresh incognito context (`browser.createBrowserContext()`) for signed-out
-  checks so you never disturb their login. Beware stale tabs: close
-  `localhost:3000` duplicates before asserting (mixed auth states across
-  tabs look exactly like redirect loops). `waitForFunction` needs
-  `polling: 500` (rAF stalls in background tabs).
-- Git auth is `deepmroot` (write access granted). Push with plain
-  `git push origin main`. Excluded from commits on purpose: `.omo/`
-  (tool state) + nested-git repos `apps/{facebook,reddit-camofox-client}`
-  + `apps/twikit` (would record broken gitlinks).
+## Hackathon gates — what is still missing
 
-## Gotchas already paid for (see AGENTS.md)
+1. **A sponsor integration that works** (OpenAI, Firecrawl or AgentMail). None wired. Best fits:
+   Firecrawl for community discovery, OpenAI for scoring hits and drafting replies.
+2. **A live public URL** on `convex.site` (Convex static hosting) or `chatgpt.site`. Not deployed.
+   `hackathon.md` says `Frontend: Convex static hosting` as the chosen route; the component is not installed.
+3. **Repo public + `hackathon.md` at root** (done once pushed; confirm the repo is public).
+4. **Video ≤ 3 minutes** of the real product. **Post on X or LinkedIn.**
+5. **Submit** at `https://vibeapps.dev/judging/convex-all-gas-hackathon-openai/submit`.
 
-- Clerk emotion CSS injects after our utilities: beat it with scoped
-  doubled-class selectors under `.lk-clerk` in `apps/web/src/index.css`.
-  Inputs also need `max-height: none` (hidden 36px pin) and a real border
-  (Clerk draws a faint `box-shadow` ring, `border-width` computes to 0).
-- Installed `@clerk/react` uses signal-style hooks (`{ fetchStatus,
-  signIn/signUp }`, no `isLoaded`). Custom OAuth cards must use the
-  classic `authenticateWithRedirect` handoff (what path-routed
-  `<SignIn>`/`<SignUp>` finalizes at `…/sso-callback`), with `sso()` as
-  fallback only — `OnboardingAuth.tsx:startOAuth`. A past `sso()`-only
-  version caused a user-visible redirect loop.
-- After adding Convex functions run `pnpm exec convex codegen`
-  (`convex/_generated` is committed). `convex-test` needs EVERY module in
-  the test file's `modules` map or calls fail with `Could not find
-  module for`.
-- `feed:list` always returns `variant: 'post-text'`, `timeAgo: ''` — cards
-  render text-only for live rows. Keywords/scopes are not wired to live
-  fetch (`DashboardFeed` calls `getFeed()` with no args).
-- `hackathon.md` header + log, `README.md` Live-backend section, and
-  `AGENTS.md` rules were updated for all of the above — read them.
+## To do — in priority order
 
-## Key files for the next slice
+### Must do before Tuesday
+- [ ] **Sponsor integration** (gate 1). Suggested: `communities:discover` action calling Firecrawl search; OpenAI action scoring each hit.
+- [ ] **Deploy to `convex.site`.** Run `@convex-dev/static-hosting` setup, then `npx convex deploy` to prod (`tremendous-seahorse-330`). Use the `convex-deploy-guard` skill; prod has never been touched.
+- [ ] **Auth on the public URL.** Prod Clerk needs an owned domain. Fallback: test the Clerk dev instance on the `convex.site` URL early; plan B is Convex Auth.
+- [ ] **Prod env vars** (set with `convex env set`, never print): `SESSION_ENCRYPTION_KEY` (32 random bytes, base64), `AUTH_ISSUER`, `AUTH_AUDIENCE`, and `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET`. Without the session key, connecting an account fails with "not set up on this deployment yet".
+- [ ] **Reddit app for dependable freshness.** Create a free "script" app at reddit.com/prefs/apps, set `REDDIT_CLIENT_ID` and `REDDIT_CLIENT_SECRET` on dev and prod. Until then the hosted check mostly falls back to a mirror that can be ~9 h old (Reddit's plain feed returns 429 to Convex's shared address). The API path is unit-tested but **never run live**. Reddit's free API terms are non-commercial only.
+- [ ] **Phone alerts (Bark).** Action calling Bark when a hit is recorded; per-user device key stored like a session (sealed, never returned to the browser).
+- [ ] **Record the video, post, submit.**
 
-- `convex/reddit.ts` (action + normalize + ensurePublicAccount),
-  `convex/reddit.test.ts`, `convex/feed.ts`, `convex/accounts.ts`
-- `apps/api/src/app.ts` + `backend.ts` (+ `app.test.ts`)
-- `apps/web/src/lib/feed/{index,remote}.ts`,
-  `apps/web/src/components/DashboardFeed.tsx`
-- `apps/web/src/pages/onboarding/OnboardingAuth.tsx`,
-  `apps/web/src/components/AuthGate.tsx`
+### Next product work
+- [ ] **X adapter** (twikit, `apps/twikit`, nested repo) using the connected token via `GET /session?platform=x`. Reuse `clients/listeningkit_ingest.py` (`push`, `fetch_session`).
+- [ ] **Facebook adapter** (facebook-camofox-client, nested repo), same pattern. Flip `LIVE_PLATFORMS` in `apps/web/src/lib/platform-support.ts` as each ships.
+- [ ] **Brand step is mock.** "Paste your website and we'll pull your brand info" only guesses a name from the domain (`extractBrandFromUrl`); nothing is fetched. Make it real (Firecrawl) and store the brand in Convex. The reveal step after it is mock too.
+- [ ] **Chrome Web Store.** The extension is installed unpacked (Developer mode). Publishing needs review time. Also: Firefox build (add `browser_specific_settings`, test in Camoufox), and a check in real Chrome/Edge/Brave with a real login (only tested in Chromium 145 with fake cookies and a stubbed active tab).
+- [ ] **Delete a post from the UI** (only an operator function exists: `feed.purgeAuthor`, run with `convex run`).
+- [ ] **Replace remaining mock screens** with Convex-backed ones: messaging, listings, groups, brand, analytics, API keys.
+- [ ] **Return validators** on Convex functions (the `convex-lint` hook flags them everywhere).
+- [ ] **Pagination** for `feed.list` (today `take(200)` then filter in memory) and `hits.list` (`take(100)`).
+- [ ] **Auto-reply / actions** (post, DM, join group) through the camofox clients using the connected login.
+- [ ] Retire `apps/api` (the Hono bridge) once nothing depends on it; it is only used when `VITE_CONVEX_URL` is unset.
+
+### Known rough edges
+- Link posts read through Reddit's plain feed have no scores; the code keeps scores from an earlier read (`keepMetrics`).
+- `hits` are recorded when a post is ingested, so a phrase added later will not match posts already stored until they are re-read ("Check now" re-reads).
+- Removing a phrase deletes up to 500 of its matches per call.
+- Onboarding shows a **DEV** step bar in dev builds only.
+- The video on the onboarding step is a placeholder demo clip.
+- `apps/reddit-camofox-client` got an extractor fix (reads each post card's attributes, link posts get an empty body); it lives in that **nested repo** and is not part of this commit. Commit it there.
+
+## Environment (dev)
+
+- Convex dev deployment `determined-cheetah-971`. Push functions: `pnpm exec convex dev --once --typecheck=disable`. Run a function: `pnpm exec convex run watch:tick`. Never run `convex logs` without `--history`/a timeout (it tails forever).
+- Web: `pnpm --filter web exec vite --port 3000`. **Restart Vite after editing `apps/web/.env.local`** (env is baked at startup). Live mode needs `VITE_API_MODE=live` and `VITE_CONVEX_URL` (public URL, safe to expose).
+- Env files (`apps/web/.env.local`, `apps/api/.env.local`) are git-ignored. Convex-side secrets live only in the deployment env.
+- Git: push with `git push origin main`. Excluded from commits on purpose: `.omo/` (tool state), the two Convex skill folders `.agents/skills` and `.claude/skills` (42 MB of tool-installed files; reinstall with `npx convex ai-files install`), `skills-lock.json`, and the nested-git repos `apps/facebook-camofox-client`, `apps/reddit-camofox-client`, `apps/twikit`.
+- Browser testing used Camoufox (headed, saved Clerk session, human-signed-in once) for the app and Playwright's Chromium for the extension. Chrome 137+ ignores `--load-extension`, and Camoufox (Firefox) cannot load a Chrome extension. The throwaway check scripts were kept outside the repo.
+
+## Secrets and personal data (hard rules)
+- Never print, log, commit or paste: cookie values, ingest keys, `SESSION_ENCRYPTION_KEY`, Reddit app secret, Clerk keys, deployment keys.
+- Real cookie files stay in a gitignored folder (`apps/reddit-camofox-client/state/`). Delete them when done; Reddit's expire in about a day.
+- Generate keys in the shell and pipe them straight into `convex env set`; check with names only (`convex env list | sed 's/=.*/=<hidden>/'`).
+- `hackathon.md` is public: no email addresses, no account ids.
+
+## Gotchas already paid for
+- Clerk emotion CSS injects after our utilities. Beat it with scoped doubled-class selectors under `.lk-clerk` in `apps/web/src/index.css`; inputs need `max-height: none` and a real border.
+- Installed `@clerk/react` uses signal-style hooks. Custom OAuth cards must use the classic `authenticateWithRedirect` handoff (`OnboardingAuth.tsx:startOAuth`).
+- After adding Convex functions run `pnpm exec convex codegen` (`convex/_generated` is committed). `convex-test` needs EVERY function module in the test's `modules` map.
+- A developer's `.env.local` leaks into Vitest; `apps/web/vitest.config.ts` blanks `VITE_CONVEX_URL` so tests stay hermetic.
+- Extension pages forbid string `eval`, so Playwright `wait_for_function("...")` fails there; poll text instead.
+- `old.reddit.com` feeds redirect bots to a login page. Fetch with `redirect: 'manual'` or a "200" may be the login page.
+- Multi-line shell heredocs with quotes break in this environment; write files with the editor tool.
+
+## Key files
+- Backend: `convex/{keywords,hits,watch,reddit,sessions,ingest,feed,http,crons}.ts`, `convex/lib/{match,token,crypto,redditFeed,posts,accounts}.ts`, `convex/schema.ts`
+- Web live path: `apps/web/src/lib/{convex,live-keywords,live-sessions,ingest-keys,platform-support}.ts`, `apps/web/src/components/{DashboardKeywordsLive,DashboardSettingsIngest,DashboardFeed}.tsx`, `apps/web/src/pages/onboarding/OnboardingSteps.tsx`
+- Extension: `apps/extension/*`, packaged by `python scripts/build-extension.py` into `apps/web/public/listeningkit-extension.zip`
+- Adapters: `clients/listeningkit_ingest.py`, `clients/reddit_push.py`
