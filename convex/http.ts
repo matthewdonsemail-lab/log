@@ -1,6 +1,7 @@
+import { registerStaticRoutes } from '@convex-dev/static-hosting'
 import { httpActionGeneric, httpRouter } from 'convex/server'
 import { ConvexError } from 'convex/values'
-import { internal } from './_generated/api'
+import { components, internal } from './_generated/api'
 import { MAX_POSTS_PER_BATCH } from './feed'
 import { decryptText } from './lib/crypto'
 import { sha256Hex } from './lib/hash'
@@ -66,5 +67,8 @@ http.route({
     }
   }),
 })
+
+// The website itself. Exact routes above win over this catch-all.
+registerStaticRoutes(http, components.staticHosting)
 
 export default http

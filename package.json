@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "ListeningKit hackathon monorepo — Vite + React + TS apps with shared UI package (matches open-offer-builder / Open-Cold-Dialer / ui-kit stack).",
+  "description": "ListeningKit hackathon monorepo \u2014 Vite + React + TS apps with shared UI package (matches open-offer-builder / Open-Cold-Dialer / ui-kit stack).",
   "packageManager": "pnpm@10.5.2",
   "scripts": {
     "dev": "concurrently -n web,docs -c blue,green \"pnpm --filter web dev\" \"pnpm --filter docs dev\"",
@@ -15,7 +15,9 @@
     "typecheck:backend": "tsc -p convex/tsconfig.json",
     "test:backend": "vitest run --config vitest.backend.config.ts",
     "preview": "pnpm --filter web preview",
-    "start": "concurrently -n web,docs -c blue,green \"pnpm --filter web preview\" \"pnpm --filter docs start\""
+    "start": "concurrently -n web,docs -c blue,green \"pnpm --filter web preview\" \"pnpm --filter docs start\"",
+    "deploy:site": "static-hosting upload --prod --build --build-command \"pnpm --filter web build\" --dist apps/web/dist",
+    "deploy:site:dev": "static-hosting upload --build --build-command \"pnpm --filter web build\" --dist apps/web/dist"
   },
   "devDependencies": {
     "@shadcn/lint": "^0.1.0",
@@ -37,6 +39,7 @@
     }
   },
   "dependencies": {
+    "@convex-dev/static-hosting": "^0.2.1",
     "convex": "^1.45.0"
   }
 }

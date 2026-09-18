@@ -33,8 +33,7 @@ Checks that were green at the last commit: backend 53, web 162, `clients` 19, re
 
 1. **A sponsor integration that works** (OpenAI, Firecrawl or AgentMail). None wired. Best fits:
    Firecrawl for community discovery, OpenAI for scoring hits and drafting replies.
-2. **A live public URL** on `convex.site` (Convex static hosting) or `chatgpt.site`. Not deployed.
-   `hackathon.md` says `Frontend: Convex static hosting` as the chosen route; the component is not installed.
+2. ~~A live public URL~~ **Done:** https://tremendous-seahorse-330.convex.site (prod). Republish with `pnpm deploy:site`; backend with `pnpm exec convex deploy --yes`. Dev rehearsal copy: https://determined-cheetah-971.convex.site (`pnpm deploy:site:dev`).
 3. **Repo public + `hackathon.md` at root** (done once pushed; confirm the repo is public).
 4. **Video ≤ 3 minutes** of the real product. **Post on X or LinkedIn.**
 5. **Submit** at `https://vibeapps.dev/judging/convex-all-gas-hackathon-openai/submit`.
@@ -43,9 +42,9 @@ Checks that were green at the last commit: backend 53, web 162, `clients` 19, re
 
 ### Must do before Tuesday
 - [ ] **Sponsor integration** (gate 1). Suggested: `communities:discover` action calling Firecrawl search; OpenAI action scoring each hit.
-- [ ] **Deploy to `convex.site`.** Run `@convex-dev/static-hosting` setup, then `npx convex deploy` to prod (`tremendous-seahorse-330`). Use the `convex-deploy-guard` skill; prod has never been touched.
-- [ ] **Auth on the public URL.** Prod Clerk needs an owned domain. Fallback: test the Clerk dev instance on the `convex.site` URL early; plan B is Convex Auth.
-- [ ] **Prod env vars** (set with `convex env set`, never print): `SESSION_ENCRYPTION_KEY` (32 random bytes, base64), `AUTH_ISSUER`, `AUTH_AUDIENCE`, and `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET`. Without the session key, connecting an account fails with "not set up on this deployment yet".
+- [x] **Deployed to `convex.site`** (prod `tremendous-seahorse-330`). Google sign-in verified on the public dev copy; test it on the prod URL too.
+- [ ] **Clerk stays on the dev instance** (`internal-piglet-2301`), which works on the public URL but shows dev-mode behaviour. A production Clerk instance needs an owned domain.
+- [x] **Prod env set:** `AUTH_ISSUER`, `AUTH_AUDIENCE`, `SESSION_ENCRYPTION_KEY` (its own key, never printed). Still to set on prod: `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET`.
 - [ ] **Reddit app for dependable freshness.** Create a free "script" app at reddit.com/prefs/apps, set `REDDIT_CLIENT_ID` and `REDDIT_CLIENT_SECRET` on dev and prod. Until then the hosted check mostly falls back to a mirror that can be ~9 h old (Reddit's plain feed returns 429 to Convex's shared address). The API path is unit-tested but **never run live**. Reddit's free API terms are non-commercial only.
 - [ ] **Phone alerts (Bark).** Action calling Bark when a hit is recorded; per-user device key stored like a session (sealed, never returned to the browser).
 - [ ] **Record the video, post, submit.**

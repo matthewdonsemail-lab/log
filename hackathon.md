@@ -3,11 +3,11 @@
 - **Project:** ListeningKit Logbook
 - **Event:** Convex All Gas Hackathon
 - **What it does:** Social-listening dashboard that watches Facebook, X, and Reddit for keywords you care about and pushes a notification on hits.
-- **Live app:** not deployed
+- **Live app:** https://tremendous-seahorse-330.convex.site
 - **Repo:** https://github.com/matthewdonsemail-lab/log
 - **Frontend:** Convex static hosting
-- **Convex deployment:** dev `determined-cheetah-971` (functions pushed; prod untouched)
-- **Components:** none
+- **Convex deployment:** https://tremendous-seahorse-330.convex.cloud (prod); dev `determined-cheetah-971`
+- **Components:** @convex-dev/static-hosting
 - **Convex features:** schema, indexes, queries, mutations, actions, HTTP actions, crons, live queries (useQuery)
 - **Auth:** Clerk dev instance (Google/GitHub provider cards + email, onboarding-gated routes)
 - **AI models:** none
@@ -597,3 +597,13 @@ Measured from Convex's servers: Reddit's plain feed is mostly rate-limited (HTTP
 the official API needs an app set up to be dependable. Backend 53 tests, web 162. Not built
 yet: X and Facebook adapters, phone alerts, keyword scoring, community discovery, and any
 deployment.
+
+### 2026-09-18 - working tree
+The site is live on a public Convex URL. `@convex-dev/static-hosting` is registered in
+`convex/convex.config.ts` and mounted as the catch-all in `convex/http.ts`; app-owned root routing
+keeps `/ingest` and `/session` at their URLs instead of moving them under `/api`. Rehearsed on the
+dev deployment first (Google sign-in works on the public address, single-page routing, API routes
+intact), then deployed the backend and uploaded the site to production with its own encryption key
+and sign-in settings set in deployment env. The production bundle points only at the production
+backend. `pnpm deploy:site` republishes the site. Not built yet: X and Facebook adapters, phone
+alerts, keyword scoring, community discovery.
