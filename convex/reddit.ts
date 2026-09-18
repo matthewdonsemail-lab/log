@@ -1,7 +1,7 @@
 import { ConvexError, v } from 'convex/values'
+import { fetchRedditApi, fetchRedditRss, type RedditAppCredentials } from './lib/redditFeed'
 import { action, mutation, requireOwner } from './lib/server'
-import { api, internal } from './_generated/api'
-import type { Id } from './_generated/dataModel'
+import { internal } from './_generated/api'
 
 const MIRROR_BASE = 'https://arctic-shift.photon-reddit.com'
 const SYNC_LABEL = 'Reddit public ingest'
@@ -75,6 +75,53 @@ export async function fetchSubredditPosts(
   return parsed.data
 }
 
+
+export type LatestPosts = {
+  posts: NormalizedPost[]; source: 'reddit' | 'mirror'; skipped: number; fallbackReason?: string
+  /** Reddit's plain feed carries no scores or comment counts; every other source does. */
+  metricsKnown: boolean
+}
+
+/** The app-level Reddit API login, set once on the deployment. Unset means that source is skipped. */
+export function redditAppCredentials(): RedditAppCredentials | null {
+  const id = process.env.REDDIT_CLIENT_ID
+  const secret = process.env.REDDIT_CLIENT_SECRET
+  return id && secret ? { id, secret } : null
+}
+
+/**
+ * Newest posts for a subreddit, freshest source first: Reddit's official API (when the app is
+ * set up), then Reddit's own feed, then the public mirror. Reddit rate-limits shared server
+ * addresses, and the mirror can be hours behind, so callers record which source answered.
+ * Throws only if every source fails.
+ */
+export async function fetchLatestPosts(
+  fetcher: typeof fetch,
+  subreddit: string,
+  limit: number,
+  creds: RedditAppCredentials | null = redditAppCredentials(),
+): Promise<LatestPosts> {
+  const reasons: string[] = []
+  type Attempt = { run: () => Promise<NormalizedPost[]>; metricsKnown: boolean }
+  const attempts: Attempt[] = []
+  if (creds) attempts.push({ run: () => fetchRedditApi(fetcher, subreddit, limit, creds), metricsKnown: true })
+  attempts.push({ run: () => fetchRedditRss(fetcher, subreddit, limit), metricsKnown: false })
+  for (const attempt of attempts) {
+    try {
+      return { posts: await attempt.run(), source: 'reddit', skipped: 0, metricsKnown: attempt.metricsKnown }
+    } catch (error) {
+      reasons.push(error instanceof Error ? error.message : 'Reddit failed')
+    }
+  }
+  const raw = await fetchSubredditPosts(fetcher, subreddit, limit)
+  const posts: NormalizedPost[] = []
+  for (const row of raw) {
+    const normalized = normalizeArcticPost(row)
+    if (normalized) posts.push(normalized)
+  }
+  return { posts, source: 'mirror', skipped: raw.length - posts.length, fallbackReason: reasons.join('; '), metricsKnown: true }
+}
+
 /** The caller's Reddit row for public ingestion, created on first sync. Never another owner's. */
 export const ensurePublicAccount = mutation({
   args: {},
@@ -91,24 +138,22 @@ export const ensurePublicAccount = mutation({
 })
 
 /**
- * User-triggered read-only sync: pull the newest posts from one public
- * subreddit through the mirror and ingest them under the caller's account.
- * Failures throw honestly — no demo rows are ever substituted.
+ * User-triggered read-only sync: pull the newest posts from one public subreddit (Reddit first,
+ * the mirror as a fallback) and ingest them under the caller's account.
+ * Failures throw honestly: no demo rows are ever substituted.
  */
 export const syncSubreddit = action({
   args: { subreddit: v.string(), limit: v.optional(v.number()) },
-  handler: async (ctx, args): Promise<{ accountId: string; fetched: number; ingested: number; skipped: number }> => {
-    const limit = args.limit ?? 25
-    const raw = await fetchSubredditPosts(fetch, args.subreddit, limit)
-    const posts: NormalizedPost[] = []
-    let skipped = 0
-    for (const row of raw) {
-      const normalized = normalizeArcticPost(row)
-      if (normalized) posts.push(normalized)
-      else skipped += 1
+  handler: async (ctx, args): Promise<{ accountId: string; fetched: number; ingested: number; skipped: number; source: 'reddit' | 'mirror' }> => {
+    const owner = await requireOwner(ctx)
+    const subreddit = args.subreddit.trim()
+    const latest = await fetchLatestPosts(fetch, subreddit, args.limit ?? 25)
+    const result: { accountId: string } = await ctx.runMutation(internal.watch.ingestFor, {
+      owner, subreddit: subreddit.toLowerCase(), source: latest.source, metricsKnown: latest.metricsKnown, posts: latest.posts,
+    })
+    return {
+      accountId: result.accountId, fetched: latest.posts.length + latest.skipped, ingested: latest.posts.length,
+      skipped: latest.skipped, source: latest.source,
     }
-    const accountId: Id<'accounts'> = await ctx.runMutation(api.reddit.ensurePublicAccount, {})
-    if (posts.length > 0) await ctx.runMutation(internal.feed.ingest, { accountId, posts })
-    return { accountId, fetched: raw.length, ingested: posts.length, skipped }
   },
 })

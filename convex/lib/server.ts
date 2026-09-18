@@ -1,5 +1,5 @@
 import {
-  queryGeneric, mutationGeneric, internalMutationGeneric, actionGeneric,
+  queryGeneric, mutationGeneric, internalMutationGeneric, internalQueryGeneric, internalActionGeneric, actionGeneric,
   type ActionBuilder,
   type DataModelFromSchemaDefinition, type QueryBuilder, type MutationBuilder,
   type GenericQueryCtx, type GenericMutationCtx,
@@ -14,6 +14,8 @@ export const query = queryGeneric as QueryBuilder<DataModel, 'public'>
 export const mutation = mutationGeneric as MutationBuilder<DataModel, 'public'>
 export const internalMutation = internalMutationGeneric as MutationBuilder<DataModel, 'internal'>
 export const action = actionGeneric as ActionBuilder<DataModel, 'public'>
+export const internalAction = internalActionGeneric as ActionBuilder<DataModel, 'internal'>
+export const internalQuery = internalQueryGeneric as QueryBuilder<DataModel, 'internal'>
 
 export async function requireOwner(ctx: Pick<GenericQueryCtx<DataModel>, 'auth'>): Promise<string> {
   const identity = await ctx.auth.getUserIdentity()

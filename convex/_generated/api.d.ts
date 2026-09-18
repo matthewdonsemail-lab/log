@@ -9,9 +9,23 @@
  */
 
 import type * as accounts from "../accounts.js";
+import type * as crons from "../crons.js";
 import type * as feed from "../feed.js";
+import type * as hits from "../hits.js";
+import type * as http from "../http.js";
+import type * as ingest from "../ingest.js";
+import type * as keywords from "../keywords.js";
+import type * as lib_accounts from "../lib/accounts.js";
+import type * as lib_crypto from "../lib/crypto.js";
+import type * as lib_hash from "../lib/hash.js";
+import type * as lib_match from "../lib/match.js";
+import type * as lib_posts from "../lib/posts.js";
+import type * as lib_redditFeed from "../lib/redditFeed.js";
 import type * as lib_server from "../lib/server.js";
+import type * as lib_token from "../lib/token.js";
 import type * as reddit from "../reddit.js";
+import type * as sessions from "../sessions.js";
+import type * as watch from "../watch.js";
 
 import type {
   ApiFromModules,
@@ -21,9 +35,23 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   accounts: typeof accounts;
+  crons: typeof crons;
   feed: typeof feed;
+  hits: typeof hits;
+  http: typeof http;
+  ingest: typeof ingest;
+  keywords: typeof keywords;
+  "lib/accounts": typeof lib_accounts;
+  "lib/crypto": typeof lib_crypto;
+  "lib/hash": typeof lib_hash;
+  "lib/match": typeof lib_match;
+  "lib/posts": typeof lib_posts;
+  "lib/redditFeed": typeof lib_redditFeed;
   "lib/server": typeof lib_server;
+  "lib/token": typeof lib_token;
   reddit: typeof reddit;
+  sessions: typeof sessions;
+  watch: typeof watch;
 }>;
 
 /**

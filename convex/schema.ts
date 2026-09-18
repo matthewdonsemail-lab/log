@@ -19,19 +19,41 @@ export default defineSchema({
   accounts: defineTable({
     owner: v.string(), platform, label: v.string(),
     connectedAt: v.union(v.string(), v.null()),
-  }).index('by_owner', ['owner']),
+  }).index('by_owner', ['owner']).index('by_owner_and_platform', ['owner', 'platform']),
   communities: defineTable({
     owner: v.string(), accountId: v.id('accounts'), platform,
     externalId: v.string(), name: v.string(), url: v.string(),
     joinState: v.union(v.literal('none'), v.literal('pending'), v.literal('accepted')),
   }).index('by_owner', ['owner']).index('by_account_external', ['accountId', 'externalId']),
   keywords: defineTable({
-    owner: v.string(), accountId: v.id('accounts'),
+    owner: v.string(), accountId: v.id('accounts'), platform,
     communityId: v.optional(v.id('communities')), phrase: v.string(),
     status: v.union(v.literal('listening'), v.literal('paused')),
-  }).index('by_owner', ['owner']).index('by_account', ['accountId']),
+    // Reddit scope: lowercase subreddit name without "r/". Unset = listen everywhere the account reads.
+    subreddit: v.optional(v.string()),
+    signalsCount: v.optional(v.number()),
+    // Freshness, shown to the person: when this phrase's community was last read, and from where.
+    lastCheckedAt: v.optional(v.number()),
+    lastSource: v.optional(v.union(v.literal('reddit'), v.literal('mirror'))),
+  }).index('by_owner', ['owner']).index('by_account', ['accountId'])
+    .index('by_status_and_platform', ['status', 'platform']),
+  // One row per (keyword, post) match; the pair is unique.
+  hits: defineTable({
+    owner: v.string(), keywordId: v.id('keywords'), postId: v.id('posts'),
+    phrase: v.string(), platform,
+  }).index('by_owner', ['owner']).index('by_keyword_and_post', ['keywordId', 'postId']),
   posts: defineTable({
     owner: v.string(), accountId: v.id('accounts'), platform,
     ...postFields,
   }).index('by_owner', ['owner']).index('by_account_external', ['accountId', 'externalId']),
+  // A connected login: the cookie jar sealed with AES-GCM. Plain metadata only beside it; no query returns the jar to a browser.
+  sessions: defineTable({
+    owner: v.string(), platform, iv: v.string(), data: v.string(),
+    cookieCount: v.number(), expiresAt: v.union(v.number(), v.null()), updatedAt: v.number(),
+  }).index('by_owner_and_platform', ['owner', 'platform']),
+  // Only the SHA-256 of the secret is stored; the plaintext exists once, in the create response.
+  ingestKeys: defineTable({
+    owner: v.string(), label: v.string(), prefix: v.string(), keyHash: v.string(),
+    lastUsedAt: v.optional(v.number()),
+  }).index('by_owner', ['owner']).index('by_hash', ['keyHash']),
 })
