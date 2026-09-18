@@ -1,0 +1,131 @@
+"""Push helper shared by the platform clients (stdlib only).
+
+Sends batches of normalized posts to the ListeningKit `/ingest` endpoint with an
+ingest key made on the dashboard's "Send posts in" tab. Configure with
+LISTENINGKIT_INGEST_URL and LISTENINGKIT_INGEST_KEY; never hardcode the key.
+"""
+from __future__ import annotations
+
+import json
+import time
+import urllib.error
+import urllib.request
+from typing import Callable, Iterable, Iterator
+
+MAX_BATCH = 100
+PLATFORMS = ("facebook", "x", "reddit")
+
+
+class SessionError(RuntimeError):
+    pass
+
+
+class IngestError(RuntimeError):
+    def __init__(self, status: int, message: str):
+        super().__init__(f"ingest failed ({status}): {message}")
+        self.status = status
+
+
+def chunked(items: list[dict], size: int = MAX_BATCH) -> Iterator[list[dict]]:
+    for start in range(0, len(items), size):
+        yield items[start:start + size]
+
+
+def _send(url: str, key: str, body: dict) -> tuple[int, str]:
+    request = urllib.request.Request(
+        url,
+        data=json.dumps(body).encode(),
+        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            return response.status, response.read().decode()
+    except urllib.error.HTTPError as error:
+        return error.code, error.read().decode()
+
+
+def push(
+    platform: str,
+    posts: Iterable[dict],
+    *,
+    endpoint: str,
+    key: str,
+    send: Callable[[str, str, dict], tuple[int, str]] = _send,
+    sleep: Callable[[float], None] = time.sleep,
+    retries: int = 2,
+) -> dict:
+    """Push posts in batches of 100. Returns totals; raises IngestError on a rejected batch.
+
+    Client errors (4xx) fail immediately: a bad key or payload will not fix itself.
+    Server errors and network failures retry with a short backoff.
+    """
+    if platform not in PLATFORMS:
+        raise ValueError(f"platform must be one of {PLATFORMS}")
+    totals = {"ingested": 0, "skipped": 0, "batches": 0}
+    for batch in chunked(list(posts)):
+        attempt = 0
+        while True:
+            try:
+                status, text = send(endpoint, key, {"platform": platform, "posts": batch})
+            except (urllib.error.URLError, TimeoutError, ConnectionError) as error:
+                status, text = 0, str(error)
+            if status == 200:
+                summary = json.loads(text)
+                totals["ingested"] += int(summary.get("ingested", 0))
+                totals["skipped"] += int(summary.get("skipped", 0))
+                totals["batches"] += 1
+                break
+            retryable = status == 0 or status >= 500
+            if not retryable or attempt >= retries:
+                try:
+                    message = json.loads(text).get("error", text)
+                except (ValueError, AttributeError):
+                    message = text
+                raise IngestError(status, str(message)[:200])
+            attempt += 1
+            sleep(attempt)
+    return totals
+
+
+def session_url(endpoint: str, platform: str) -> str:
+    """The /session address that sits beside the /ingest endpoint on the same deployment."""
+    base = endpoint.rstrip("/")
+    if base.endswith("/ingest"):
+        base = base[: -len("/ingest")]
+    return f"{base}/session?platform={platform}"
+
+
+def _get(url: str, key: str) -> tuple[int, str]:
+    request = urllib.request.Request(url, headers={"Authorization": f"Bearer {key}"}, method="GET")
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            return response.status, response.read().decode()
+    except urllib.error.HTTPError as error:
+        return error.code, error.read().decode()
+
+
+def fetch_session(
+    platform: str,
+    *,
+    endpoint: str,
+    key: str,
+    get: Callable[[str, str], tuple[int, str]] = _get,
+) -> list[dict]:
+    """The cookie jar you connected in ListeningKit, so no cookies file is needed."""
+    if platform not in PLATFORMS:
+        raise ValueError(f"platform must be one of {PLATFORMS}")
+    try:
+        status, text = get(session_url(endpoint, platform), key)
+    except (urllib.error.URLError, TimeoutError, ConnectionError) as error:
+        raise SessionError(f"could not reach ListeningKit: {error}") from error
+    if status == 404:
+        raise SessionError(f"No {platform} account is connected. Connect it in ListeningKit (onboarding or Settings), then try again.")
+    if status == 401:
+        raise SessionError("The ingest key was rejected. Make a new one on the Send posts in tab.")
+    if status != 200:
+        raise SessionError(f"could not load the connected {platform} login ({status})")
+    cookies = json.loads(text).get("cookies")
+    if not isinstance(cookies, list) or not cookies:
+        raise SessionError(f"the connected {platform} login is empty. Connect it again.")
+    return cookies

@@ -59,3 +59,6 @@ yarn-error.log*
 
 # documents (never commit binary office files)
 *.docx
+
+__pycache__/
+*.pyc
