@@ -88,12 +88,16 @@ def push(
     return totals
 
 
-def session_url(endpoint: str, platform: str) -> str:
-    """The /session address that sits beside the /ingest endpoint on the same deployment."""
+def sibling_url(endpoint: str, path: str, platform: str) -> str:
+    """An address that sits beside the /ingest endpoint on the same deployment."""
     base = endpoint.rstrip("/")
     if base.endswith("/ingest"):
         base = base[: -len("/ingest")]
-    return f"{base}/session?platform={platform}"
+    return f"{base}/{path}?platform={platform}"
+
+
+def session_url(endpoint: str, platform: str) -> str:
+    return sibling_url(endpoint, "session", platform)
 
 
 def _get(url: str, key: str) -> tuple[int, str]:
@@ -129,3 +133,32 @@ def fetch_session(
     if not isinstance(cookies, list) or not cookies:
         raise SessionError(f"the connected {platform} login is empty. Connect it again.")
     return cookies
+
+
+def fetch_phrases(
+    platform: str,
+    *,
+    endpoint: str,
+    key: str,
+    get: Callable[[str, str], tuple[int, str]] = _get,
+) -> list[str]:
+    """The phrases this person is listening for on one platform, so the helper needs no list of its own."""
+    if platform not in PLATFORMS:
+        raise ValueError(f"platform must be one of {PLATFORMS}")
+    try:
+        status, text = get(sibling_url(endpoint, "phrases", platform), key)
+    except (urllib.error.URLError, TimeoutError, ConnectionError) as error:
+        raise SessionError(f"could not reach ListeningKit: {error}") from error
+    if status == 401:
+        raise SessionError("The ingest key was rejected. Make a new one on the Send posts in tab.")
+    if status != 200:
+        raise SessionError(f"could not load your {platform} phrases ({status})")
+    rows = json.loads(text).get("phrases")
+    if not isinstance(rows, list):
+        raise SessionError(f"your {platform} phrases came back in an unexpected shape")
+    seen: list[str] = []
+    for row in rows:
+        phrase = str(row.get("phrase", "")).strip() if isinstance(row, dict) else ""
+        if phrase and phrase not in seen:
+            seen.append(phrase)
+    return seen

@@ -18,7 +18,7 @@ export const liveKeywordSchema = z.object({
   signalsCount: z.number().finite(),
   addedAt: z.number().finite(),
   lastCheckedAt: z.number().finite().nullable(),
-  lastSource: z.enum(['reddit', 'mirror']).nullable(),
+  lastSource: z.enum(['reddit', 'mirror', 'helper']).nullable(),
 })
 export const liveKeywordsSchema = z.object({ keywords: z.array(liveKeywordSchema) })
 

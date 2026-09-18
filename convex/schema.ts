@@ -34,7 +34,7 @@ export default defineSchema({
     signalsCount: v.optional(v.number()),
     // Freshness, shown to the person: when this phrase's community was last read, and from where.
     lastCheckedAt: v.optional(v.number()),
-    lastSource: v.optional(v.union(v.literal('reddit'), v.literal('mirror'))),
+    lastSource: v.optional(v.union(v.literal('reddit'), v.literal('mirror'), v.literal('helper'))),
   }).index('by_owner', ['owner']).index('by_account', ['accountId'])
     .index('by_status_and_platform', ['status', 'platform']),
   // One row per (keyword, post) match; the pair is unique.

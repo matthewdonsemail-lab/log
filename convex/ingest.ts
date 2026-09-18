@@ -55,7 +55,18 @@ export const commit = internalMutation({
     if (!key) throw new ConvexError('Invalid ingest key')
     const account = await ensureAccount(ctx, key.owner, args.platform)
     const { processed, newHits } = await writePosts(ctx, account, args.posts)
-    await ctx.db.patch(key._id, { lastUsedAt: Date.now() })
+    const now = Date.now()
+    await ctx.db.patch(key._id, { lastUsedAt: now })
+    // X and Facebook are read by the person's own helper, so a push counts as checking all of their phrases there.
+    // Reddit phrases are per community, so the Reddit poll stamps those.
+    if (args.platform !== 'reddit') {
+      const phrases = await ctx.db.query('keywords').withIndex('by_owner', q => q.eq('owner', key.owner)).take(100)
+      for (const phrase of phrases) {
+        if (phrase.platform === args.platform && phrase.status === 'listening') {
+          await ctx.db.patch(phrase._id, { lastCheckedAt: now, lastSource: 'helper' })
+        }
+      }
+    }
     return { accountId: account._id, processed, newHits }
   },
 })

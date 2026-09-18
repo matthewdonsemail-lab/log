@@ -104,6 +104,7 @@ flowchart LR
 | **AI scoring** | Each new match is scored 0-100 with an intent and a one-line reason by an action scheduled at ingest time (10-minute backfill cron as a safety net). Model call: OpenAI directly when `OPENAI_API_KEY` is set, else the Convex AI Gateway (paid Convex plans). Post text is treated as untrusted; replies are validated; `AI_SCORING=off` stops all calls. | [`scoring.ts`](convex/scoring.ts), [`lib/scoring.ts`](convex/lib/scoring.ts) |
 | **Ingest door** | `POST /ingest` takes batches of posts for facebook, x or reddit, authenticated by a per-user ingest key (only its SHA-256 is stored). The owner comes from the key, not the request. | [`http.ts`](convex/http.ts), [`ingest.ts`](convex/ingest.ts) |
 | **Connect an account** | The extension copies a token (`lk1.` + base64url JSON cookie jar) for the site you are logged in to. Pasting it calls `sessions:save`, which validates it in plain words, drops cookies outside the platform's domains, and seals the jar with AES-256-GCM. No query returns the jar to a browser. | [`apps/extension`](apps/extension), [`sessions.ts`](convex/sessions.ts), [`lib/token.ts`](convex/lib/token.ts), [`lib/crypto.ts`](convex/lib/crypto.ts) |
+| **X helper** | `clients/x_push.py` runs on the person's own computer: loads their connected X login (`GET /session`), asks for their X phrases (`GET /phrases`), searches X through twikit for each exact phrase, and pushes tweets to `/ingest`. It spaces requests, stops when X asks it to slow down, and reports a refused login in plain words. Reading X this way uses X's private web API and can go against X's terms; use an account you can afford to lose. | [`clients/x_push.py`](clients/x_push.py), [`http.ts`](convex/http.ts) |
 | **Local clients** | `GET /session?platform=` returns the owner's own decrypted jar to their ingest key, so a local adapter needs no cookies file. `reddit_push.py` polls reddit-camofox-client and pushes to `/ingest`. | [`clients/`](clients) |
 
 ### Security model
@@ -120,10 +121,10 @@ flowchart LR
 | `SESSION_ENCRYPTION_KEY` | Convex deployment env | 32 random bytes, base64. Needed to connect accounts. |
 | `OPENAI_API_KEY` | Convex deployment env | Scores matches with OpenAI (`AI_MODEL` overrides the default `gpt-4o-mini`; `AI_SCORING=off` disables). Optional; without it matches stay unscored. |
 | `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET` | Convex deployment env | Reddit "script" app for dependable freshness. Optional; without it the plain feed and mirror are used. |
-| `LISTENINGKIT_INGEST_URL`, `LISTENINGKIT_INGEST_KEY` | local adapter shell | Where and how an adapter pushes. |
+| `LISTENINGKIT_INGEST_URL`, `LISTENINGKIT_INGEST_KEY` | local adapter shell | Where and how an adapter pushes (`reddit_push.py`, `x_push.py`). |
 
 ### What is real and what is still mock
-Real on Convex: sign-in, feed, keywords, matches, the Reddit cron, ingest keys, connected accounts, the ingest and session endpoints. Still the in-browser mock described above: messaging, listings, groups, brand, analytics, API keys, and the onboarding brand step. X and Facebook adapters, phone alerts (Bark), OpenAI scoring, Firecrawl discovery and any deployment are on the to-do list in [`HANDOFF.md`](HANDOFF.md).
+Real on Convex: sign-in, feed, keywords, matches, scoring, the Reddit cron, ingest keys, connected accounts, and the ingest, session and phrases endpoints. X works through the helper above (not yet run against a real X account). Still the in-browser mock described above: messaging, listings, groups, brand, analytics, API keys, and the onboarding brand step. A Facebook helper, phone alerts (Bark) and Firecrawl discovery are on the to-do list in [`HANDOFF.md`](HANDOFF.md).
 
 ### Run it
 ```bash

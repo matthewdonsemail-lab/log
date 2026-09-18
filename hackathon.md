@@ -620,3 +620,16 @@ are treated as untrusted text (fenced in the prompt, reply validated and clamped
 echo the response or key, retries stop after three attempts, and `AI_SCORING=off` stops all model
 calls. Backend 72 tests, web 164; verified only against fake model replies, so a live run is
 still to do. Not built yet: X and Facebook adapters, phone alerts, community discovery.
+
+### 2026-09-18 - working tree
+X support. A helper that runs on the person's own computer (`clients/x_push.py`, twikit) loads
+the X login they connected in the app, asks the app for their X phrases (new `GET /phrases`
+endpoint, ingest-key authenticated), searches X for each exact phrase without retweets, spaces
+requests out, stops politely when X asks it to slow down, and pushes the tweets to `/ingest`.
+The Keywords page now lets a person choose X, explains the helper in plain steps, and shows
+"checked N min ago by your helper" once it has run (`convex/keywords.ts`, `convex/http.ts`,
+`convex/ingest.ts`, `apps/web/src/components/DashboardKeywordsLive.tsx`). Backend 75 tests,
+web 164, Python 39. Walked through in the real app with a real saved login record, the real
+phrase list and the real push, with only X's search results replaced by a stand-in: two tweets
+matched, the retweet was dropped, and the phrase showed as checked by the helper. Not yet run
+against a real X account. Not built yet: a Facebook helper, phone alerts, community discovery.

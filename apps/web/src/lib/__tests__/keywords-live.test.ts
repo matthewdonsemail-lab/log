@@ -81,6 +81,9 @@ describe('freshness wording', () => {
     expect(freshness({ lastCheckedAt: null, lastSource: null })).toBe('not checked yet')
     expect(freshness({ lastCheckedAt: Date.now() - 4 * 60_000, lastSource: 'reddit' })).toBe('checked 4 min ago')
     expect(freshness({ lastCheckedAt: Date.now() - 4 * 60_000, lastSource: 'mirror' })).toBe('checked 4 min ago from a backup source, posts may be hours old')
+    expect(freshness({ lastCheckedAt: Date.now() - 4 * 60_000, lastSource: 'helper', platform: 'x' })).toBe('checked 4 min ago by your helper')
+    expect(freshness({ lastCheckedAt: null, lastSource: null, platform: 'x' })).toBe('waiting for the helper on your computer')
+    expect(freshness({ lastCheckedAt: null, lastSource: null, platform: 'reddit' })).toBe('not checked yet')
   })
 })
 

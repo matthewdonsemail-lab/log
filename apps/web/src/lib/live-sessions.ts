@@ -7,12 +7,12 @@ import type { Platform } from './platform'
 
 const platformSchema = z.enum(['facebook', 'x', 'reddit'])
 const savedSchema = z.object({ platform: platformSchema, cookieCount: z.number(), expiresAt: z.number().nullable() })
-const listSchema = z.object({
+export const liveSessionsSchema = z.object({
   sessions: z.array(z.object({ platform: platformSchema, cookieCount: z.number(), expiresAt: z.number().nullable(), savedAt: z.number() })),
 })
 
 export type SavedSession = z.infer<typeof savedSchema>
-export type SessionSummary = z.infer<typeof listSchema>['sessions'][number]
+export type SessionSummary = z.infer<typeof liveSessionsSchema>['sessions'][number]
 
 /** Connected logins live in Convex, so they exist only on the live backend. */
 export const sessionsOnConvex = keywordsOnConvex
@@ -35,7 +35,7 @@ export async function listSessions(): Promise<SessionSummary[]> {
   try { data = await client.query(sessionsListRef, {}) } catch (error) {
     throw convexErrorMessage(error, 'Could not load connected accounts')
   }
-  const parsed = listSchema.safeParse(data)
+  const parsed = liveSessionsSchema.safeParse(data)
   if (!parsed.success) throw new Error('Connected accounts returned an invalid response')
   return parsed.data.sessions
 }

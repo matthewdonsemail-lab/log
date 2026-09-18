@@ -96,6 +96,13 @@ Convex agent skills for common tasks can be installed by running
 - Scoring must fail safe: no provider, a gateway error or a bad reply leaves a match unscored and the rest of the pipeline untouched. A match gives up after three failed attempts. `AI_SCORING=off` must stop every model call.
 - Test with fake `fetch` replies only; never call a real model from tests.
 
+## Local Helpers (X, Reddit)
+
+- A helper reads a platform from the person's own computer and only pushes to `/ingest`. It gets its login from `GET /session` and its phrases from `GET /phrases`, both authenticated by the owner's ingest key; never add a way to fetch someone else's login or phrases.
+- Helpers must be polite: spaced requests with jitter, a floor on the polling interval (X: 2 minutes), a cap on phrases per round, and a clean stop when the platform says slow down. A refused login is reported in plain words and stops the run.
+- X reading uses X's private web API (twikit). Keep the "use an account you can afford to lose" notice wherever it is described.
+- Test helpers with fake clients injected into `run_once`; check the real library's call shape once by building its real `Client` (no network).
+
 ## Secrets And Logins (hard rules)
 
 - Never print, log, commit or paste cookie values, ingest keys, `SESSION_ENCRYPTION_KEY`, the Reddit app secret, Clerk keys or deployment keys, in chat, tests, docs or commit messages. Tests use obviously fake values.

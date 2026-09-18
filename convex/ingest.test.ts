@@ -11,6 +11,7 @@ const modules = {
   './accounts.ts': () => import('./accounts'),
   './feed.ts': () => import('./feed'),
   './ingest.ts': () => import('./ingest'),
+  './keywords.ts': () => import('./keywords'),
   './http.ts': () => import('./http'),
 }
 
@@ -137,5 +138,57 @@ describe('operator cleanup', () => {
     const left = (await alice.query(anyApi.feed.list, {})).items.map((i: { authorName: string }) => i.authorName)
     expect(left).toEqual(['real_person'])
     expect((await bob.query(anyApi.feed.list, {})).items).toHaveLength(1)
+  })
+})
+
+describe('the /phrases endpoint for the local helper', () => {
+  const get = (t: ReturnType<typeof setup>['t'], secret: string, platform = 'x') =>
+    t.fetch(`/phrases?platform=${platform}`, { headers: { Authorization: `Bearer ${secret}` } })
+
+  it("lists only the owner's listening phrases for that platform", async () => {
+    const { t, alice, bob } = setup()
+    const a = await alice.mutation(anyApi.ingest.createKey, { label: 'helper' })
+    await alice.mutation(anyApi.keywords.create, { phrase: 'switching accountants', platform: 'x' })
+    await alice.mutation(anyApi.keywords.create, { phrase: 'paused one', platform: 'x' })
+    await alice.mutation(anyApi.keywords.create, { phrase: 'reddit phrase', platform: 'reddit', subreddit: 'ipad' })
+    await bob.mutation(anyApi.keywords.create, { phrase: 'bobs private phrase', platform: 'x' })
+    const list = await alice.query(anyApi.keywords.list, {})
+    const paused = list.keywords.find((k: { phrase: string }) => k.phrase === 'paused one')
+    await alice.mutation(anyApi.keywords.setStatus, { id: paused.id, status: 'paused' })
+
+    const res = await get(t, a.secret)
+    expect(res.status).toBe(200)
+    expect(res.headers.get('Cache-Control')).toBe('no-store')
+    expect(await res.json()).toEqual({ platform: 'x', phrases: [{ phrase: 'switching accountants', subreddit: null }] })
+    const reddit = await (await get(t, a.secret, 'reddit')).json()
+    expect(reddit.phrases).toEqual([{ phrase: 'reddit phrase', subreddit: 'ipad' }])
+  })
+
+  it('rejects missing, wrong and revoked keys and unknown platforms', async () => {
+    const { t, alice } = setup()
+    const key = await alice.mutation(anyApi.ingest.createKey, { label: 'k' })
+    expect((await t.fetch('/phrases?platform=x')).status).toBe(401)
+    expect((await get(t, `lk_ingest_${'a'.repeat(64)}`)).status).toBe(401)
+    expect((await get(t, key.secret, 'myspace')).status).toBe(400)
+    await alice.mutation(anyApi.ingest.revokeKey, { id: key.id })
+    expect((await get(t, key.secret)).status).toBe(401)
+  })
+
+  it("marks the owner's X phrases as checked by the helper when it pushes, and no one else's", async () => {
+    const { t, alice, bob } = setup()
+    const key = await alice.mutation(anyApi.ingest.createKey, { label: 'helper' })
+    await alice.mutation(anyApi.keywords.create, { phrase: 'switching accountants', platform: 'x' })
+    await bob.mutation(anyApi.keywords.create, { phrase: 'switching accountants', platform: 'x' })
+    await alice.mutation(anyApi.keywords.create, { phrase: 'ipad', platform: 'reddit', subreddit: 'ipad' })
+    const before = Date.now()
+    await push(t, key.secret, { platform: 'x', posts: [{ externalId: '1', url: 'https://x.com/a/status/1', authorName: 'a', body: ['thinking about switching accountants'], likes: 0, comments: 0 }] })
+    const mine = (await alice.query(anyApi.keywords.list, {})).keywords
+    const xPhrase = mine.find((k: { platform: string }) => k.platform === 'x')
+    const redditPhrase = mine.find((k: { platform: string }) => k.platform === 'reddit')
+    expect(xPhrase.lastSource).toBe('helper')
+    expect(xPhrase.lastCheckedAt).toBeGreaterThanOrEqual(before)
+    expect(xPhrase.signalsCount).toBe(1)
+    expect(redditPhrase.lastCheckedAt).toBeNull()
+    expect((await bob.query(anyApi.keywords.list, {})).keywords[0].lastCheckedAt).toBeNull()
   })
 })

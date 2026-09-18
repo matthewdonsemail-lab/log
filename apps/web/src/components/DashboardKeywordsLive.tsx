@@ -1,13 +1,15 @@
 import { useMemo, useState } from 'react'
 import { useConvexAuth, useQuery } from 'convex/react'
+import { Link } from 'react-router-dom'
 import { Badge, Button, useToast } from '@listeningkit/ui'
 import { SOCIAL_ICONS, SocialGlyph } from '@/lib/social-icons'
-import { hitsListRef, keywordsListRef } from '@/lib/convex'
+import { hitsListRef, keywordsListRef, sessionsListRef } from '@/lib/convex'
 import { syncFeed } from '@/lib/feed'
 import {
   createLiveKeyword, intentLabel, liveHitsSchema, liveKeywordsSchema, removeLiveKeyword, scoreBand, setLiveKeywordStatus, sortHits,
   type LiveHit, type LiveKeyword,
 } from '@/lib/live-keywords'
+import { liveSessionsSchema } from '@/lib/live-sessions'
 import { LIVE_PLATFORMS } from '@/lib/platform-support'
 import type { Platform } from '@/lib/platform'
 
@@ -26,10 +28,33 @@ function ago(ms: number): string {
 }
 
 /** When this phrase's community was last read, and a plain warning when the data may be old. */
-export function freshness(keyword: Pick<LiveKeyword, 'lastCheckedAt' | 'lastSource'>): string {
-  if (keyword.lastCheckedAt === null) return 'not checked yet'
+export function freshness(keyword: Pick<LiveKeyword, 'lastCheckedAt' | 'lastSource'> & { platform?: LiveKeyword['platform'] }): string {
+  if (keyword.lastCheckedAt === null) {
+    return keyword.platform && keyword.platform !== 'reddit' ? 'waiting for the helper on your computer' : 'not checked yet'
+  }
   const when = `checked ${ago(keyword.lastCheckedAt)}`
-  return keyword.lastSource === 'mirror' ? `${when} from a backup source, posts may be hours old` : when
+  if (keyword.lastSource === 'mirror') return `${when} from a backup source, posts may be hours old`
+  return keyword.lastSource === 'helper' ? `${when} by your helper` : when
+}
+
+/** What a person needs to do before X phrases start filling in: X is read by a helper on their own computer. */
+function XHelperNote({ connected }: { connected: boolean | null }) {
+  const link = 'font-semibold underline decoration-dashed underline-offset-4'
+  return (
+    <div className="rounded-xl bg-[#eaf3ff] p-4 text-sm text-slate-700">
+      <p className="font-bold text-text-primary">X is read by a small helper on your computer</p>
+      <p className="mt-1">It uses your own connected X login, so your login never leaves your machine unencrypted. Three steps, one time:</p>
+      <ol className="ml-5 mt-2 list-decimal space-y-1">
+        <li>
+          {connected ? 'X is connected.' : (
+            <>Connect X: <Link to="/dashboard/settings" className={link}>open Settings</Link> and paste your X token.</>
+          )}
+        </li>
+        <li>Make a key on <Link to="/dashboard/settings" className={link}>Settings, Send posts in</Link>.</li>
+        <li>Run the helper: <code className="rounded bg-white px-1.5 py-0.5">python clients/x_push.py --interval 300</code></li>
+      </ol>
+    </div>
+  )
 }
 
 function HitCard({ hit }: { hit: LiveHit }) {
@@ -68,7 +93,7 @@ function KeywordRow({ keyword, onToggle, onRemove }: { keyword: LiveKeyword; onT
       <div className="flex min-w-0 flex-1 flex-col">
         <span className="truncate font-bold text-text-primary">“{keyword.phrase}”</span>
         <span className="truncate text-sm text-text-secondary">
-          {keyword.subreddit ? `in r/${keyword.subreddit}` : 'everywhere'} · {keyword.signalsCount}{' '}
+          {keyword.platform === 'x' ? 'on X' : keyword.subreddit ? `in r/${keyword.subreddit}` : 'everywhere'} · {keyword.signalsCount}{' '}
           {keyword.signalsCount === 1 ? 'match' : 'matches'} · {freshness(keyword)}
         </span>
       </div>
@@ -88,9 +113,17 @@ export function DashboardKeywordsLive() {
 
   const [phrase, setPhrase] = useState('')
   const [subreddit, setSubreddit] = useState('')
+  const [platform, setPlatform] = useState<'reddit' | 'x'>('reddit')
   const [adding, setAdding] = useState(false)
   const [checking, setChecking] = useState(false)
   const [order, setOrder] = useState<'newest' | 'best'>('newest')
+
+  const sessionData = useQuery(sessionsListRef, isAuthenticated ? {} : 'skip')
+  const xConnected = useMemo(() => {
+    const parsed = sessionData === undefined ? null : liveSessionsSchema.safeParse(sessionData)
+    return parsed?.success ? parsed.data.sessions.some((session) => session.platform === 'x') : null
+  }, [sessionData])
+  const canAdd = phrase.trim() !== '' && (platform === 'x' || subreddit.trim() !== '')
 
   const keywords = useMemo(() => {
     const parsed = keywordData === undefined ? null : liveKeywordsSchema.safeParse(keywordData)
@@ -107,11 +140,13 @@ export function DashboardKeywordsLive() {
   )
 
   async function add() {
-    if (adding || !phrase.trim() || !subreddit.trim()) return
+    if (adding || !canAdd) return
     setAdding(true)
     try {
-      await createLiveKeyword({ phrase, platform: 'reddit', subreddit })
-      notifySuccess('Listening', `We'll watch r/${subreddit.trim().replace(/^\/?r\//i, '')} for “${phrase.trim()}”.`)
+      await createLiveKeyword({ phrase, platform, ...(platform === 'reddit' ? { subreddit } : {}) })
+      notifySuccess('Listening', platform === 'x'
+        ? `We'll look for “${phrase.trim()}” on X once your helper is running.`
+        : `We'll watch r/${subreddit.trim().replace(/^\/?r\//i, '')} for “${phrase.trim()}”.`)
       setPhrase('')
     } catch (err: unknown) {
       notifyError('Could not add the phrase', err instanceof Error ? err.message : 'Try again.')
@@ -152,15 +187,22 @@ export function DashboardKeywordsLive() {
 
       <div className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-5">
         <div className="flex flex-wrap gap-2">
-          {PLATFORM_CHOICES.map((choice) => (
-            <span
+          {PLATFORM_CHOICES.map((choice) => choice.ready ? (
+            <button
               key={choice.id}
+              type="button"
+              aria-pressed={platform === choice.id}
+              onClick={() => setPlatform(choice.id as 'reddit' | 'x')}
               className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-semibold ${
-                choice.ready ? 'border-[#2a8cff] bg-[#eaf3ff] text-[#1f6fe6]' : 'border-slate-200 text-slate-400'
+                platform === choice.id ? 'border-[#2a8cff] bg-[#eaf3ff] text-[#1f6fe6]' : 'border-slate-200 text-text-secondary hover:border-[#2a8cff]'
               }`}
             >
               {choice.label}
-              {choice.ready ? null : <span className="text-[11px] font-bold uppercase">Soon</span>}
+            </button>
+          ) : (
+            <span key={choice.id} className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-3 py-1 text-sm font-semibold text-slate-400">
+              {choice.label}
+              <span className="text-[11px] font-bold uppercase">Soon</span>
             </span>
           ))}
         </div>
@@ -178,6 +220,8 @@ export function DashboardKeywordsLive() {
             className="h-14 w-full rounded-xl border border-slate-300 bg-white px-4 text-slate-900 placeholder:text-slate-400 focus:border-[#2a8cff] focus:outline-none"
           />
         </label>
+        {platform === 'x' ? <XHelperNote connected={xConnected} /> : null}
+        {platform === 'reddit' ? (
         <label className="block">
           <span className="mb-1.5 block text-sm font-semibold text-slate-700">Community</span>
           <div className="flex h-14 items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-4 focus-within:border-[#2a8cff]">
@@ -196,6 +240,8 @@ export function DashboardKeywordsLive() {
             />
           </div>
         </label>
+        ) : null}
+        {platform === 'reddit' ? (
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-sm text-text-secondary">Popular:</span>
           {SUGGESTED_SUBREDDITS.map((name) => (
@@ -209,13 +255,14 @@ export function DashboardKeywordsLive() {
             </button>
           ))}
         </div>
+        ) : null}
         <div>
           <Button
             type="button"
             variant="blue"
             size="lg"
             shadow="hard"
-            disabled={adding || !phrase.trim() || !subreddit.trim()}
+            disabled={adding || !canAdd}
             onClick={add}
             className="font-bold text-white"
           >

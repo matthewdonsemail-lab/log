@@ -22,10 +22,11 @@ Sign in (Clerk) → onboarding (video, extension, token) → "What should we lis
 | Ingest door | `POST /ingest` (per-user ingest key, hashed). Keys made on Settings → "Send posts in". |
 | Connect an account | Chrome extension (`apps/extension`) copies a token → onboarding/Settings paste → `convex/sessions.ts` validates it and seals the cookie jar (AES-256-GCM). Local clients read it with `GET /session` + an ingest key. |
 | Reddit adapter | `clients/reddit_push.py` → reddit-camofox-client → `/ingest`. Verified with a real login. |
-| X / Facebook | **Not built.** Connectable (token saved) but nothing reads them. Keywords page marks them "Soon". |
+| X | **Built, not yet run against real X.** `clients/x_push.py` (twikit) reads the connected X login and the person's X phrases from the app, searches X, pushes tweets to `/ingest`; verified end to end in the real app with only X's search replaced by a stand-in. Runs on the person's own computer. |
+| Facebook | **Not built.** Connectable (token saved) but nothing reads it. Keywords page marks it "Soon". |
 | Everything else in the dashboard | Still the in-browser mock (messaging, listings, brand, analytics, API keys, groups). |
 
-Checks that were green at the last commit: backend 53, web 162, `clients` 19, reddit-camofox-client 25;
+Checks that were green at the last commit: backend 75, web 164, `clients` 39, reddit-camofox-client 25;
 `pnpm typecheck`, `pnpm typecheck:backend`, `pnpm run lint` (one old oxlint warning in
 `communities/index.ts`), `pnpm --filter web build`.
 
@@ -59,6 +60,7 @@ Deadline for the whole list: **Tue 22 Sep 2026, 12:00 PM PT**.
   Expect `sources.reddit` to be at least 1 and no "backup source" warning on the Keywords page. Reddit's free API terms cover non-commercial use only.
 - [ ] **3. Confirm hackathon registration** at https://luma.com/convex-allgas-hackathon (no confirmation email was found in the inbox that was searched).
 - [ ] **4. Check the extension in your real browser.** In Chrome, Edge or Brave open `chrome://extensions`, turn on Developer mode, Load unpacked, choose `apps/extension`. Log in to reddit.com, click the icon, expect "Ready. You are logged in to Reddit", copy the token and paste it in onboarding. It was only tested in Chromium 145 with fake cookies. If the popup says anything else, send the exact words.
+- [ ] **4b. Try the X helper with a real X account** (use one you can afford to lose: it reads X's private web API, which can go against X's terms). `pip install -r apps/twikit/requirements.txt`, log in to x.com, copy a token with the extension and paste it in Settings, add an X phrase on the Keywords page, make a key under Settings, Send posts in, then `LISTENINGKIT_INGEST_URL=... LISTENINGKIT_INGEST_KEY=... python clients/x_push.py --dry-run` and, if it looks right, without `--dry-run`. Expect tweets to appear as matches and the phrase to say "checked ... by your helper". Report exactly what it prints if anything fails.
 - [ ] **5. Sign in on the production URL** https://tremendous-seahorse-330.convex.site with a brand-new Google account (an incognito window is fine). Expect to go straight to "Where should we listen?" with no username prompt.
 - [ ] **6. Production Clerk instance (optional but cleaner).** Needs a domain Matthew owns and Mandeep's help with the Clerk application (see "Who owns what"): `clerk deploy`, add custom Google/GitHub OAuth credentials in the Clerk dashboard, `clerk env pull --instance prod`, set `AUTH_ISSUER` / `AUTH_AUDIENCE` on the prod Convex deployment, rebuild with `pk_live_...`, `pnpm deploy:site`. Until then production runs on the Clerk dev instance, which works but is not for real customers. Any new instance also needs username made optional (see "Clerk instance settings changed outside git").
 - [ ] **7. Convex plan (optional).** The Convex AI Gateway needs a paid plan on team `max-kentan`; Matthew, as team owner, can upgrade it. With an OpenAI key it is not needed.
@@ -88,7 +90,7 @@ The other open to-dos (X and Facebook adapters, real brand step, phone alerts, F
 - [ ] **Record the video, post, submit**: see "TODO for Matthew" item 9.
 
 ### Next product work
-- [ ] **X adapter** (twikit, `apps/twikit`, nested repo) using the connected token via `GET /session?platform=x`. Reuse `clients/listeningkit_ingest.py` (`push`, `fetch_session`).
+- [x] **X adapter** built (`clients/x_push.py`); needs the real-account check in "TODO for Matthew" item 4b. Later: a hosted worker so a normal person does not have to run anything (today the helper runs on their own computer).
 - [ ] **Facebook adapter** (facebook-camofox-client, nested repo), same pattern. Flip `LIVE_PLATFORMS` in `apps/web/src/lib/platform-support.ts` as each ships.
 - [ ] **Brand step is mock.** "Paste your website and we'll pull your brand info" only guesses a name from the domain (`extractBrandFromUrl`); nothing is fetched. Make it real (Firecrawl) and store the brand in Convex. The reveal step after it is mock too.
 - [ ] **Chrome Web Store.** The extension is installed unpacked (Developer mode). Publishing needs review time. Also: Firefox build (add `browser_specific_settings`, test in Camoufox), and a check in real Chrome/Edge/Brave with a real login (only tested in Chromium 145 with fake cookies and a stubbed active tab).
@@ -109,6 +111,7 @@ The other open to-dos (X and Facebook adapters, real brand step, phone alerts, F
 
 ## Environment (dev)
 
+- The prod site was last deployed before scoring and the X helper: run `pnpm exec convex deploy --yes` then `pnpm deploy:site` to publish them.
 - Convex dev deployment `determined-cheetah-971`. Push functions: `pnpm exec convex dev --once --typecheck=disable`. Run a function: `pnpm exec convex run watch:tick`. Never run `convex logs` without `--history`/a timeout (it tails forever).
 - Web: `pnpm --filter web exec vite --port 3000`. **Restart Vite after editing `apps/web/.env.local`** (env is baked at startup). Live mode needs `VITE_API_MODE=live` and `VITE_CONVEX_URL` (public URL, safe to expose).
 - Env files (`apps/web/.env.local`, `apps/api/.env.local`) are git-ignored. Convex-side secrets live only in the deployment env.

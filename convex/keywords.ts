@@ -1,6 +1,6 @@
 import { ConvexError, v } from 'convex/values'
 import { ensureAccount } from './lib/accounts'
-import { mutation, query, requireOwner } from './lib/server'
+import { internalQuery, mutation, query, requireOwner } from './lib/server'
 import { platform } from './schema'
 
 const MAX_KEYWORDS = 50
@@ -9,7 +9,7 @@ const SUBREDDIT = /^[A-Za-z0-9_]{1,21}$/
 function publicKeyword(row: {
   _id: string; _creationTime: number; phrase: string; platform: 'facebook' | 'x' | 'reddit'
   status: 'listening' | 'paused'; subreddit?: string; signalsCount?: number
-  lastCheckedAt?: number; lastSource?: 'reddit' | 'mirror'
+  lastCheckedAt?: number; lastSource?: 'reddit' | 'mirror' | 'helper'
 }) {
   return {
     id: row._id, phrase: row.phrase, platform: row.platform, status: row.status,
@@ -80,5 +80,18 @@ export const remove = mutation({
     for (const hit of hits) await ctx.db.delete(hit._id)
     await ctx.db.delete(args.id)
     return null
+  },
+})
+
+/** For the local helper: the phrases its owner is listening for on one platform, found by ingest key, never by argument. */
+export const forKey = internalQuery({
+  args: { keyHash: v.string(), platform },
+  handler: async (ctx, args): Promise<{ phrase: string; subreddit: string | null }[]> => {
+    const key = await ctx.db.query('ingestKeys').withIndex('by_hash', q => q.eq('keyHash', args.keyHash)).unique()
+    if (!key) throw new ConvexError('Invalid ingest key')
+    const rows = await ctx.db.query('keywords').withIndex('by_owner', q => q.eq('owner', key.owner)).take(MAX_KEYWORDS)
+    return rows
+      .filter(row => row.platform === args.platform && row.status === 'listening')
+      .map(row => ({ phrase: row.phrase, subreddit: row.subreddit ?? null }))
   },
 })

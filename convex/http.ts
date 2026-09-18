@@ -68,6 +68,25 @@ http.route({
   }),
 })
 
+// The phrases the local helper should search for, so it needs no login of its own beyond the ingest key.
+http.route({
+  path: '/phrases',
+  method: 'GET',
+  handler: httpActionGeneric(async (ctx, req) => {
+    const secret = req.headers.get('Authorization')?.match(/^Bearer (lk_ingest_[A-Za-z0-9]{20,100})$/)?.[1]
+    if (!secret) return json({ error: 'Authentication required' }, 401)
+    const platform = new URL(req.url).searchParams.get('platform')
+    if (!PLATFORMS.includes(platform as Platform)) return json({ error: 'platform must be facebook, x, or reddit' }, 400)
+    try {
+      const phrases = await ctx.runQuery(internal.keywords.forKey, { keyHash: await sha256Hex(secret), platform: platform as Platform })
+      return json({ platform, phrases }, 200)
+    } catch (error) {
+      if (error instanceof ConvexError && error.data === 'Invalid ingest key') return json({ error: 'Invalid ingest key' }, 401)
+      return json({ error: 'Could not load phrases' }, 500)
+    }
+  }),
+})
+
 // The website itself. Exact routes above win over this catch-all.
 registerStaticRoutes(http, components.staticHosting)
 
