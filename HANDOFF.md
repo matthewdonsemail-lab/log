@@ -22,11 +22,11 @@ Sign in (Clerk) → onboarding (video, extension, token) → "What should we lis
 | Ingest door | `POST /ingest` (per-user ingest key, hashed). Keys made on Settings → "Send posts in". |
 | Connect an account | Chrome extension (`apps/extension`) copies a token → onboarding/Settings paste → `convex/sessions.ts` validates it and seals the cookie jar (AES-256-GCM). Local clients read it with `GET /session` + an ingest key. |
 | Reddit adapter | `clients/reddit_push.py` → reddit-camofox-client → `/ingest`. Verified with a real login. |
-| X | **Built; the run with a real X account is the open item.** `clients/x_push.py` reads the connected X login and the person's X phrases from the app, searches X in a real browser (`clients/x_browser.py`, Camoufox) and pushes tweets to `/ingest`. Checked end to end in the real app with only X's results replaced by a stand-in, and against the real X site with no login (it recognises X's login wall). twikit was tried first and is broken by X's site rebuild ("Couldn't get KEY_BYTE indices"); kept as `--engine twikit`. Runs on the person's own computer. |
+| X | **Built; the run with a real X account is the open item.** `clients/x_push.py` reads the connected X login and the person's X phrases from the app, searches X in real Chrome (`clients/x_browser.py`, Playwright; needs Chrome installed) and pushes tweets to `/ingest`. Checked end to end in the real app with only X's results replaced by a stand-in, and against the real X site with no login (it recognises X's login wall). twikit was tried first and is broken by X's site rebuild ("Couldn't get KEY_BYTE indices"); kept as `--engine twikit`. Runs on the person's own computer. |
 | Facebook | **Not built.** Connectable (token saved) but nothing reads it. Keywords page marks it "Soon". |
 | Everything else in the dashboard | Still the in-browser mock (messaging, listings, brand, analytics, API keys, groups). |
 
-Checks that were green at the last commit: backend 75, web 164, `clients` 51, reddit-camofox-client 25;
+Checks that were green at the last commit: backend 75, web 164, `clients` 52, reddit-camofox-client 25;
 `pnpm typecheck`, `pnpm typecheck:backend`, `pnpm run lint` (one old oxlint warning in
 `communities/index.ts`), `pnpm --filter web build`.
 

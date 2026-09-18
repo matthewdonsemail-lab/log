@@ -637,10 +637,20 @@ against a real X account. Not built yet: a Facebook helper, phone alerts, commun
 ### 2026-09-18 - working tree
 Found by trying the X helper with a real throwaway X account: twikit's request signing is broken
 by X's site rebuild ("Couldn't get KEY_BYTE indices" from its transaction code), so the helper now
-reads X's Latest search tab in a real browser (`clients/x_browser.py`, Camoufox) logged in with the
+reads X's Latest search tab in a real browser (`clients/x_browser.py`) logged in with the
 connected login, reusing the same `search_tweet` shape so nothing else changed. It skips ads and
 reposts, parses counts like "1.2K", tells a login wall, a rate limit, a locked account and an
 empty result apart, and retries page reads that race a redirect. Added `--verbose` (shows why a
 search failed with cookie values hidden), `--show` and `--engine`. Python tests 51, including a
 real headless browser against a stand-in page, and a check against the real X site with no login,
 which is recognised as a login wall. Still to do: a run with the real logged-in throwaway account.
+
+### 2026-09-18 - X read for real
+Ran the helper against a real throwaway X account. It logged in with the connected login and reached X's
+search page, but Camoufox got "Something went wrong" on every search, even after logging in by hand, while the
+same account searched fine in normal Chrome: X rejects that browser fingerprint, not the login. The reader now
+drives real Chrome through Playwright, and the same run pushed 20 real tweets for the saved phrase, which the app
+showed as 20 matches "checked by your helper". Also fixed: sidebar and timeline posts were pushed as matches
+when X padded a quiet search, so the helper now keeps only tweets that contain the phrase; it reloads twice on
+X's transient error. Python tests 52.
+

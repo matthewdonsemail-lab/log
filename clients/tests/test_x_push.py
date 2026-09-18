@@ -115,7 +115,8 @@ class TestLogin:
 
 class TestRound:
     def test_searches_each_phrase_and_pushes_new_tweets_once(self):
-        client = FakeClient([[tweet("1"), tweet("2")], [tweet("2"), tweet("3")]])
+        need = "anyone need a bookkeeper?"
+        client = FakeClient([[tweet("1"), tweet("2")], [tweet("2", need), tweet("3", need)]])
         status, pushed = run(client, ["switching accountants", "need a bookkeeper"])
         assert status == 0
         assert [q[0] for q in client.queries] == ['"switching accountants" -filter:retweets', '"need a bookkeeper" -filter:retweets']
@@ -124,7 +125,7 @@ class TestRound:
         assert pushed[0][0] == "x" and pushed[0][2] == {"endpoint": "https://e/ingest", "key": "k"}
 
     def test_dry_run_never_pushes(self, capsys):
-        status, pushed = run(FakeClient([[tweet()]]), ["a phrase"], dry_run=True)
+        status, pushed = run(FakeClient([[tweet()]]), ["switching accountants"], dry_run=True)
         assert (status, pushed) == (0, [])
         assert "would push 1 tweets" in capsys.readouterr().out
 
@@ -141,10 +142,19 @@ class TestRound:
 
     def test_one_odd_error_skips_that_phrase_only(self, capsys):
         client = FakeClient([RuntimeError("boom"), [tweet("7")]])
-        status, pushed = run(client, ["bad", "good"])
+        status, pushed = run(client, ["bad", "switching accountants"])
         assert status == 0 and len(pushed) == 1
         err = capsys.readouterr().err
         assert "RuntimeError" in err and "boom" not in err
+
+    def test_a_tweet_that_does_not_say_the_phrase_is_not_a_match(self, capsys):
+        # X pads a quiet search with unrelated timeline posts; pushing them would flood the person with junk
+        client = FakeClient([[tweet("1", "Watch your favorite games live"), tweet("2", "We are  SWITCHING   Accountants soon")]])
+        status, pushed = run(client, ["switching accountants"])
+        assert status == 0 and [p["externalId"] for p in pushed[0][1]] == ["2"]
+        client = FakeClient([[tweet("3", "nothing relevant")]])
+        status, pushed = run(client, ["switching accountants"])
+        assert pushed == [] and "no new tweets" in capsys.readouterr().out
 
     def test_verbose_shows_why_with_cookie_values_hidden(self, capsys):
         secret = "SUPERSECRETCOOKIEVALUE"

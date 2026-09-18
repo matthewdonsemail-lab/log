@@ -48,8 +48,10 @@ def in_browser(page_name, count=20, redirect=None):
             page = await client._page_ready()
 
             async def handle(route):
-                if redirect:
+                if redirect and "/search" in route.request.url:  # only the search address bounces; the login page it lands on is plain
                     body = f"<script>location.replace('https://x.com{redirect}')</script>"
+                elif redirect:  # where the bounce lands: a page with no results on it
+                    body = "<html><body><main><p>Welcome</p></main></body></html>"
                 else:
                     body = f"<html><body>{PAGES[page_name]}</body></html>"
                 await route.fulfill(status=200, content_type="text/html", body=body)

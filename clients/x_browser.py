@@ -10,6 +10,7 @@ exceptions named Unauthorized, TooManyRequests and AccountLocked so the helper c
 """
 from __future__ import annotations
 
+import os
 import re
 from datetime import datetime
 from types import SimpleNamespace
@@ -20,6 +21,7 @@ X_DOMAINS = ("x.com", "twitter.com")
 SEARCH_URL = "https://x.com/search?q={query}&src=typed_query&f={product}"
 PAGE_TIMEOUT_MS = 25_000
 MAX_SCROLLS = 4
+RELOAD_TRIES = 2
 # Addresses X sends a logged-out browser to (seen on the real site: /i/jf/onboarding/web?redirect_after_login=...).
 LOGIN_URL_MARKS = ("/i/flow/login", "/login", "/onboarding", "redirect_after_login", "/i/jf/")
 
@@ -167,19 +169,31 @@ async def safe_evaluate(page: Any, script: str, tries: int = 4) -> Any:
 class BrowserXClient:
     """Lazily starts one browser window, logs it in with the cookies, and searches X's Latest tab."""
 
-    def __init__(self, jar: list[dict], *, show: bool = False) -> None:
+    def __init__(self, jar: list[dict], *, show: bool = False, browser: str = "chrome") -> None:
         self._cookies = playwright_cookies(jar)
         self._show = show
+        self._browser = browser
         self._manager: Any = None
+        self._playwright: Any = None
         self._page: Any = None
 
     async def _page_ready(self) -> Any:
         if self._page is not None:
             return self._page
-        from camoufox.async_api import AsyncCamoufox  # imported here so the helper still starts without a browser installed
+        if self._browser == "camoufox":
+            from camoufox.async_api import AsyncCamoufox  # imported here so the helper still starts without a browser installed
 
-        self._manager = AsyncCamoufox(headless=not self._show, humanize=True)
-        browser = await self._manager.__aenter__()
+            self._manager = AsyncCamoufox(headless=not self._show, humanize=True)
+            browser = await self._manager.__aenter__()
+        else:
+            # X refuses searches from Camoufox's browser fingerprint even with a good login; real Chrome is accepted.
+            from playwright.async_api import async_playwright
+
+            self._playwright = await async_playwright().start()
+            browser = await self._playwright.chromium.launch(
+                channel="chrome", headless=not self._show, args=["--disable-blink-features=AutomationControlled"],
+            )
+            self._manager = browser
         context = await browser.new_context()
         await context.add_cookies(self._cookies)
         self._page = await context.new_page()
@@ -195,7 +209,25 @@ class BrowserXClient:
         except Exception:  # noqa: BLE001 - a timeout is judged below from what the page shows
             pass
         await page.wait_for_timeout(1500)  # let the first cards finish rendering
-        check_state(await safe_evaluate(page, STATE_JS))
+        state = await safe_evaluate(page, STATE_JS)
+        for _ in range(RELOAD_TRIES):  # X often shows "Something went wrong" once and recovers on a reload
+            if state.get("tweets") or not state.get("failed") or state.get("login") or state.get("rateLimited"):
+                break
+            await page.wait_for_timeout(4000)
+            await page.reload(wait_until="domcontentloaded")
+            try:
+                await page.wait_for_function(SETTLED_JS, timeout=PAGE_TIMEOUT_MS)
+            except Exception:  # noqa: BLE001
+                pass
+            await page.wait_for_timeout(1500)
+            state = await safe_evaluate(page, STATE_JS)
+        shot = os.environ.get("LISTENINGKIT_X_DEBUG_DIR")  # for finding out why X shows a page we cannot read
+        if shot and not state.get("tweets"):
+            await page.screenshot(path=os.path.join(shot, "x_page.png"))
+            text = await safe_evaluate(page, "() => location.href + ' | ' + (document.body?.innerText || '').slice(0, 1500)")
+            with open(os.path.join(shot, "x_page.txt"), "w", encoding="utf-8") as out:
+                out.write(text)
+        check_state(state)
 
         rows: dict[str, dict] = {}
         for _ in range(MAX_SCROLLS):
@@ -210,9 +242,14 @@ class BrowserXClient:
         return tweets[:count]
 
     async def close(self) -> None:
-        if self._manager is not None:
-            try:
+        try:
+            if self._browser == "camoufox" and self._manager is not None:
                 await self._manager.__aexit__(None, None, None)
-            finally:
-                self._manager = None
-                self._page = None
+            elif self._manager is not None:
+                await self._manager.close()
+            if self._playwright is not None:
+                await self._playwright.stop()
+        finally:
+            self._manager = None
+            self._playwright = None
+            self._page = None

@@ -92,6 +92,12 @@ def search_query(phrase: str) -> str:
     return f'"{phrase.replace(chr(34), "").strip()}" -filter:retweets'
 
 
+def contains_phrase(text: str, phrase: str) -> bool:
+    """True when the tweet says the phrase, ignoring case and runs of spaces."""
+    squash = lambda value: " ".join(value.lower().split())  # noqa: E731
+    return squash(phrase.replace(chr(34), "")) in squash(text)
+
+
 def classify(error: BaseException) -> str:
     """'rate' when X asks us to slow down, 'auth' when it refused the login, otherwise 'other'."""
     name = type(error).__name__
@@ -162,6 +168,9 @@ async def run_once(
         posts = []
         for tweet in tweets:
             post = tweet_to_post(tweet)
+            # X can pad a quiet search with unrelated timeline posts; only a tweet that really says the phrase is a match.
+            if post and not contains_phrase(post["body"][0], phrase):
+                continue
             if post and post["externalId"] not in seen:
                 seen.add(post["externalId"])
                 posts.append(post)
