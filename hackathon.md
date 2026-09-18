@@ -633,3 +633,14 @@ web 164, Python 39. Walked through in the real app with a real saved login recor
 phrase list and the real push, with only X's search results replaced by a stand-in: two tweets
 matched, the retweet was dropped, and the phrase showed as checked by the helper. Not yet run
 against a real X account. Not built yet: a Facebook helper, phone alerts, community discovery.
+
+### 2026-09-18 - working tree
+Found by trying the X helper with a real throwaway X account: twikit's request signing is broken
+by X's site rebuild ("Couldn't get KEY_BYTE indices" from its transaction code), so the helper now
+reads X's Latest search tab in a real browser (`clients/x_browser.py`, Camoufox) logged in with the
+connected login, reusing the same `search_tweet` shape so nothing else changed. It skips ads and
+reposts, parses counts like "1.2K", tells a login wall, a rate limit, a locked account and an
+empty result apart, and retries page reads that race a redirect. Added `--verbose` (shows why a
+search failed with cookie values hidden), `--show` and `--engine`. Python tests 51, including a
+real headless browser against a stand-in page, and a check against the real X site with no login,
+which is recognised as a login wall. Still to do: a run with the real logged-in throwaway account.
