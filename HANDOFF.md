@@ -23,10 +23,10 @@ Sign in (Clerk) → onboarding (video, extension, token) → "What should we lis
 | Connect an account | Chrome extension (`apps/extension`) copies a token → onboarding/Settings paste → `convex/sessions.ts` validates it and seals the cookie jar (AES-256-GCM). Local clients read it with `GET /session` + an ingest key. |
 | Reddit adapter | `clients/reddit_push.py` → reddit-camofox-client → `/ingest`. Verified with a real login. |
 | X | **Built; the run with a real X account is the open item.** `clients/x_push.py` reads the connected X login and the person's X phrases from the app, searches X in real Chrome (`clients/x_browser.py`, Playwright; needs Chrome installed) and pushes tweets to `/ingest`. Checked end to end in the real app with only X's results replaced by a stand-in, and against the real X site with no login (it recognises X's login wall). twikit was tried first and is broken by X's site rebuild ("Couldn't get KEY_BYTE indices"); kept as `--engine twikit`. Runs on the person's own computer. |
-| Facebook | **Not built.** Connectable (token saved) but nothing reads it. Keywords page marks it "Soon". |
+| Facebook | **Built; the run with a real Facebook account is the open item.** `clients/facebook_push.py` and `clients/facebook_browser.py` mirror the X helper: connected login in, Facebook phrases in, recent-post search in real Chrome, posts out to `/ingest`. Checked with stand-in pages in real Chrome and against the real site with a fake login (recognised as a refused login). The post-card selectors and the "Recent posts" filter are untested against a logged-in Facebook, so expect a fix round on the first real run (`LISTENINGKIT_FB_DEBUG_DIR` saves what Facebook showed). Keywords page now offers Facebook. |
 | Everything else in the dashboard | Still the in-browser mock (messaging, listings, brand, analytics, API keys, groups). |
 
-Checks that were green at the last commit: backend 75, web 164, `clients` 52, reddit-camofox-client 25;
+Checks that were green at the last commit: backend 75, web 164, `clients` 68, reddit-camofox-client 25;
 `pnpm typecheck`, `pnpm typecheck:backend`, `pnpm run lint` (one old oxlint warning in
 `communities/index.ts`), `pnpm --filter web build`.
 
@@ -91,7 +91,7 @@ The other open to-dos (X and Facebook adapters, real brand step, phone alerts, F
 
 ### Next product work
 - [x] **X adapter** built (`clients/x_push.py`); needs the real-account check in "TODO for Matthew" item 4b. Later: a hosted worker so a normal person does not have to run anything (today the helper runs on their own computer).
-- [ ] **Facebook adapter** (facebook-camofox-client, nested repo), same pattern. Flip `LIVE_PLATFORMS` in `apps/web/src/lib/platform-support.ts` as each ships.
+- [ ] **Facebook: first real run.** Connect a throwaway Facebook account (extension), add a Facebook phrase, make an ingest key, then `python clients/facebook_push.py --phrases "need a bookkeeper" --count 5 --dry-run --verbose --show`. Join a few groups first: Facebook only shows what the account may see.
 - [ ] **Brand step is mock.** "Paste your website and we'll pull your brand info" only guesses a name from the domain (`extractBrandFromUrl`); nothing is fetched. Make it real (Firecrawl) and store the brand in Convex. The reveal step after it is mock too.
 - [ ] **Chrome Web Store.** The extension is installed unpacked (Developer mode). Publishing needs review time. Also: Firefox build (add `browser_specific_settings`, test in Camoufox), and a check in real Chrome/Edge/Brave with a real login (only tested in Chromium 145 with fake cookies and a stubbed active tab).
 - [ ] **Delete a post from the UI** (only an operator function exists: `feed.purgeAuthor`, run with `convex run`).

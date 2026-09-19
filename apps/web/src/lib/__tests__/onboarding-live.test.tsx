@@ -22,7 +22,7 @@ describe('platform support', () => {
     vi.stubEnv('VITE_API_MODE', 'mock')
     vi.stubEnv('VITE_CONVEX_URL', '')
     expect(landingPath()).toBe('/dashboard')
-    expect(LIVE_PLATFORMS).toEqual(['reddit', 'x'])
+    expect(LIVE_PLATFORMS).toEqual(['reddit', 'x', 'facebook'])
   })
 })
 

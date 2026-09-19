@@ -144,30 +144,37 @@ async def run_once(
     *,
     push_posts: Callable[..., dict] = push,
     sleep: Callable[[float], Awaitable[None]] = asyncio.sleep,
+    platform: str = "x",
+    search: Callable[[Any, str, int], Awaitable[Any]] | None = None,
+    to_post: Callable[[Any], dict | None] = tweet_to_post,
 ) -> int:
-    """One round: search each phrase, push the new tweets. 0 ok, 1 a problem the person must fix."""
+    """One round: search each phrase, push the new posts. 0 ok, 1 a problem the person must fix.
+
+    X is the default; facebook_push passes its own search and mapping (`platform`, `search`, `to_post`).
+    """
+    name = "X" if platform == "x" else platform.capitalize()
     seen: set[str] = set()
     for index, phrase in enumerate(phrases[:MAX_PHRASES_PER_ROUND]):
         if index:
             await sleep(random.uniform(2.0, 5.0))  # spaced out so a round never looks like a burst
         try:
-            found = await client.search_tweet(search_query(phrase), "Latest", count=args.count)
+            found = await (search(client, phrase, args.count) if search else client.search_tweet(search_query(phrase), "Latest", count=args.count))
             tweets = list(found)
         except Exception as error:  # noqa: BLE001 - twikit raises many types; classified below
             kind = classify(error)
             if kind == "auth":
-                print("X refused the saved login. Reconnect X in ListeningKit (Settings), then run this again.", file=sys.stderr)
+                print(f"{name} refused the saved login. Reconnect {name} in ListeningKit (Settings), then run this again.", file=sys.stderr)
                 return 1
             if kind == "rate":
-                print("X asked us to slow down, so this round stops here. It will try again next time.")
+                print(f"{name} asked us to slow down, so this round stops here. It will try again next time.")
                 return 0
             detail = describe_error(error, list(getattr(args, "secrets", []))) if getattr(args, "verbose", False) else type(error).__name__
             hint = "" if getattr(args, "verbose", False) else " (run again with --verbose for details)"
-            print(f'"{phrase}": could not read X ({detail}), skipping{hint}', file=sys.stderr)
+            print(f'"{phrase}": could not read {name} ({detail}), skipping{hint}', file=sys.stderr)
             continue
         posts = []
         for tweet in tweets:
-            post = tweet_to_post(tweet)
+            post = to_post(tweet)
             # X can pad a quiet search with unrelated timeline posts; only a tweet that really says the phrase is a match.
             if post and not contains_phrase(post["body"][0], phrase):
                 continue
@@ -175,17 +182,17 @@ async def run_once(
                 seen.add(post["externalId"])
                 posts.append(post)
         if not posts:
-            print(f'"{phrase}": no new tweets')
+            print(f'"{phrase}": no new {"tweets" if platform == "x" else "posts"}')
             continue
         if args.dry_run:
-            print(f'"{phrase}": would push {len(posts)} tweets')
+            print(f'"{phrase}": would push {len(posts)} {"tweets" if platform == "x" else "posts"}')
             continue
         try:
-            totals = push_posts("x", posts, endpoint=args.endpoint, key=args.key)
+            totals = push_posts(platform, posts, endpoint=args.endpoint, key=args.key)
         except IngestError as error:
             print(f'"{phrase}": {error}', file=sys.stderr)
             return 1
-        print(f'"{phrase}": pushed {totals["ingested"]} tweets, {len(posts) - totals["ingested"]} skipped')
+        print(f'"{phrase}": pushed {totals["ingested"]} {"tweets" if platform == "x" else "posts"}, {len(posts) - totals["ingested"]} skipped')
     return 0
 
 

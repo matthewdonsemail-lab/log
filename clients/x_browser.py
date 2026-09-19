@@ -94,14 +94,14 @@ STATE_JS = r"""
 """
 
 
-def playwright_cookies(jar: list[dict]) -> list[dict]:
-    """The connected login as browser cookies, kept to X's own domains."""
+def playwright_cookies(jar: list[dict], domains: tuple[str, ...] = X_DOMAINS) -> list[dict]:
+    """The connected login as browser cookies, kept to the site's own domains (X by default)."""
     cookies = []
     for cookie in jar:
         if not isinstance(cookie, dict) or not cookie.get("name") or not cookie.get("value"):
             continue
         domain = str(cookie.get("domain", "")).lstrip(".").lower()
-        if not any(domain == d or domain.endswith(f".{d}") for d in X_DOMAINS):
+        if not any(domain == d or domain.endswith(f".{d}") for d in domains):
             continue
         same_site = cookie.get("sameSite") if cookie.get("sameSite") in ("Strict", "Lax", "None") else "Lax"
         expires = cookie.get("expires")
@@ -166,6 +166,17 @@ async def safe_evaluate(page: Any, script: str, tries: int = 4) -> Any:
             await page.wait_for_timeout(600)
 
 
+async def launch_chrome(show: bool) -> tuple[Any, Any]:
+    """Start real Google Chrome under Playwright. Returns (playwright, browser); the caller closes both."""
+    from playwright.async_api import async_playwright
+
+    playwright = await async_playwright().start()
+    browser = await playwright.chromium.launch(
+        channel="chrome", headless=not show, args=["--disable-blink-features=AutomationControlled"],
+    )
+    return playwright, browser
+
+
 class BrowserXClient:
     """Lazily starts one browser window, logs it in with the cookies, and searches X's Latest tab."""
 
@@ -187,12 +198,7 @@ class BrowserXClient:
             browser = await self._manager.__aenter__()
         else:
             # X refuses searches from Camoufox's browser fingerprint even with a good login; real Chrome is accepted.
-            from playwright.async_api import async_playwright
-
-            self._playwright = await async_playwright().start()
-            browser = await self._playwright.chromium.launch(
-                channel="chrome", headless=not self._show, args=["--disable-blink-features=AutomationControlled"],
-            )
+            self._playwright, browser = await launch_chrome(self._show)
             self._manager = browser
         context = await browser.new_context()
         await context.add_cookies(self._cookies)

@@ -654,3 +654,12 @@ showed as 20 matches "checked by your helper". Also fixed: sidebar and timeline 
 when X padded a quiet search, so the helper now keeps only tweets that contain the phrase; it reloads twice on
 X's transient error. Python tests 52.
 
+### 2026-09-19 - Facebook helper
+Added Facebook the same way as X: `clients/facebook_push.py` loads the connected Facebook login and the
+person's Facebook phrases from the app, searches Facebook's recent posts in real Chrome and pushes matches
+to the existing `/ingest` door, so no backend change was needed. The X helper's round loop is now shared
+(`platform`, `search`, `to_post`), and the Keywords page offers Facebook with the same "small helper on your
+computer" steps. Checked the reader against stand-in pages in real Chrome and against the real Facebook site,
+which answers a fake login with a bare "Not Found" on search; that is now reported as a refused login.
+Python tests 68. Still to do: a run with a real Facebook login, where the page selectors may need a fix.
+
