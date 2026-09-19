@@ -111,7 +111,7 @@ The other open to-dos (X and Facebook adapters, real brand step, phone alerts, F
 
 ## Environment (dev)
 
-- The prod site was last deployed before scoring and the X helper: run `pnpm exec convex deploy --yes` then `pnpm deploy:site` to publish them.
+- Prod was deployed on 2026-09-19 with scoring and the X helper. Scoring stays idle on prod until `OPENAI_API_KEY` is set (to-do above). Redeploy after code changes with `pnpm exec convex deploy --yes` then `pnpm deploy:site`.
 - Convex dev deployment `determined-cheetah-971`. Push functions: `pnpm exec convex dev --once --typecheck=disable`. Run a function: `pnpm exec convex run watch:tick`. Never run `convex logs` without `--history`/a timeout (it tails forever).
 - Web: `pnpm --filter web exec vite --port 3000`. **Restart Vite after editing `apps/web/.env.local`** (env is baked at startup). Live mode needs `VITE_API_MODE=live` and `VITE_CONVEX_URL` (public URL, safe to expose).
 - Env files (`apps/web/.env.local`, `apps/api/.env.local`) are git-ignored. Convex-side secrets live only in the deployment env.
