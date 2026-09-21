@@ -12,9 +12,12 @@
 - **Auth:** Clerk dev instance (Google/GitHub provider cards + email, onboarding-gated routes)
 - **AI models:** gpt-4o-mini (OpenAI, direct API; or the Convex AI Gateway when enabled). Built and tested, not yet run live: needs `OPENAI_API_KEY` on the deployment
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-18T17:28:12Z
+- **Last updated:** 2026-09-21T23:20:00Z
 
 ## Log
+
+### 2026-09-21 - fc86d54
+Added a dedicated `/auth` entry point with Clerk Google/GitHub OAuth and email sign-in, a connection-risk notice, and redirect into dashboard Settings after authentication. Extended the browser extension UI with ListeningKit branding, supported-site detection, cookie/profile controls, and the sign-in entry point (`apps/extension/`, `apps/web/src/components/AuthGate.tsx`, `apps/web/src/pages/onboarding/OnboardingAuth.tsx`).
 
 ### 2026-09-17 - working tree
 Clerk onboarding auth is live in dev: `/sign-in` + `/sign-up/*` routes render
