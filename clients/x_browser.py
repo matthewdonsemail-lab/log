@@ -166,6 +166,21 @@ async def safe_evaluate(page: Any, script: str, tries: int = 4) -> Any:
             await page.wait_for_timeout(600)
 
 
+SKIPPED_RESOURCES = {"image", "media", "font"}
+
+
+async def save_bandwidth(context: Any) -> None:
+    """Never download pictures, video or fonts: the helper only reads text, and a proxy is paid for by the gigabyte."""
+
+    async def handle(route: Any) -> None:
+        if route.request.resource_type in SKIPPED_RESOURCES:
+            await route.abort()
+        else:
+            await route.continue_()
+
+    await context.route("**/*", handle)
+
+
 async def launch_chrome(show: bool, proxy: dict | None = None) -> tuple[Any, Any]:
     """Start real Google Chrome under Playwright, through the proxy when there is one. Returns (playwright, browser); the caller closes both."""
     from playwright.async_api import async_playwright
@@ -203,6 +218,7 @@ class BrowserXClient:
             self._playwright, browser = await launch_chrome(self._show, self._proxy)
             self._manager = browser
         context = await browser.new_context()
+        await save_bandwidth(context)
         await context.add_cookies(self._cookies)
         self._page = await context.new_page()
         self._page.set_default_timeout(PAGE_TIMEOUT_MS)

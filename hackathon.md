@@ -713,3 +713,8 @@ redirects to its page file. Added `SUBMISSION.md` with the video script, the sho
 Env var names now set on the live deployment: `FIRECRAWL_API_KEY`, `AGENTMAIL_API_KEY`, `AGENTMAIL_INBOX_ID`.
 Still to do: `OPENAI_API_KEY` and `PROXY_URL` on the deployments.
 
+### 2026-09-21 - helpers save proxy traffic
+The X and Facebook helpers now skip pictures, video and fonts, because the proxy is paid for by the gigabyte and the helper only reads
+text. A test with a real proxy that demands a password proves the picture and the video are never fetched, and both helpers still
+read real X (19 tweets) and real Facebook (3 posts) with images off.
+

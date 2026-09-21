@@ -20,7 +20,7 @@ from typing import Any
 from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
 from x_browser import (  # noqa: F401 - the helper classifies errors by these names
-    AccountLocked, TooManyRequests, Unauthorized, launch_chrome, playwright_cookies, safe_evaluate,
+    AccountLocked, TooManyRequests, Unauthorized, launch_chrome, playwright_cookies, safe_evaluate, save_bandwidth,
 )
 
 FACEBOOK_DOMAINS = ("facebook.com",)
@@ -178,6 +178,7 @@ class BrowserFacebookClient:
             return self._page
         self._playwright, self._browser = await launch_chrome(self._show, self._proxy)
         context = await self._browser.new_context(locale="en-US")
+        await save_bandwidth(context)
         await context.add_cookies(self._cookies)
         self._page = await context.new_page()
         self._page.set_default_timeout(PAGE_TIMEOUT_MS)

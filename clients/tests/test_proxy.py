@@ -141,7 +141,8 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("Proxy-Authenticate", 'Basic realm="lk"')
             self.end_headers()
             return
-        body = b"<html><body><main id='r'>reached through the proxy</main></body></html>"
+        img = "<img src='http://lk-proxy-check.test/big-picture.png'><video src='http://lk-proxy-check.test/clip.mp4'></video>" if self.path.endswith('/pictures') else ''
+        body = f"<html><body><main id='r'>reached through the proxy</main>{img}</body></html>".encode()
         self.send_response(200)
         self.send_header("Content-Type", "text/html")
         self.send_header("Content-Length", str(len(body)))
@@ -189,6 +190,24 @@ class TestInARealBrowser:
         with pytest.raises(Exception):
             self.browse(lambda: x_browser.launch_chrome(False, None))
         assert Handler.seen == []
+
+    def test_the_readers_skip_pictures_video_and_fonts_so_the_paid_traffic_lasts(self, proxy_server):
+        proxy = {"server": f"http://127.0.0.1:{proxy_server}", "username": "proxy-user", "password": "s3cret-pass"}
+
+        async def go(client):
+            try:
+                page = await client._page_ready()
+                await page.goto("http://lk-proxy-check.test/pictures", wait_until="load", timeout=20000)
+                await page.wait_for_timeout(800)
+                return await page.inner_text("#r")
+            finally:
+                await client.close()
+
+        for client in (x_browser.BrowserXClient(JAR_X, proxy=proxy), facebook_browser.BrowserFacebookClient(JAR_FB, proxy=proxy)):
+            assert asyncio.run(go(client)) == "reached through the proxy"
+        urls = [hit["url"] for hit in Handler.seen]
+        assert sum(1 for hit in Handler.seen if hit["auth"] and hit["url"].endswith("/pictures")) == 2   # the page itself came through, with the login
+        assert not any(url.endswith((".png", ".mp4")) for url in urls)    # the picture and the video were never fetched
 
     def test_the_readers_pass_the_proxy_to_the_browser(self, proxy_server):
         proxy = {"server": f"http://127.0.0.1:{proxy_server}", "username": "proxy-user", "password": "s3cret-pass"}
