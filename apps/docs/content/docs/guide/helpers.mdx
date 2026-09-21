@@ -1,0 +1,96 @@
+---
+title: X and Facebook helpers
+description: Run the small program on your own computer that reads X and Facebook for your phrases.
+---
+
+# X and Facebook helpers
+
+X and Facebook cannot be read from a server without being blocked, so a small Python program runs **on your own computer**. It opens real Google Chrome, logged in with the login you connected, searches for your phrases, and sends the posts it finds to ListeningKit.
+
+- `clients/x_push.py` reads X's **Latest** search.
+- `clients/facebook_push.py` reads Facebook's **Recent posts** search. It only sees what your account can see: public posts and posts in groups you have joined. **Join the groups where your customers ask for help** before you expect results.
+- `clients/reddit_push.py` is an optional extra for Reddit. Reddit is normally read by the server and does not need a helper.
+
+<Callout type="warning">
+Both helpers automate a logged-in session. That can go against X's and Facebook's terms, and the site may ask for a security check or lock the account. **Use an account you can afford to lose**, keep the interval at 5 minutes or more, and never run it against your main account.
+</Callout>
+
+## Before you start
+
+1. **Python 3.10 or newer** and **Google Chrome** installed on the computer that will run the helper.
+2. The repo: `git clone https://github.com/matthewdonsemail-lab/log` and open a terminal in it.
+3. One package: `pip install playwright`. It drives your installed Chrome, so there is no browser download.
+4. The platform is **connected** (see [Using ListeningKit](/docs/guide/using-listeningkit)) and you added at least one **X** or **Facebook** phrase on the Keywords page.
+
+## 1. Make an ingest key
+
+The helper proves it is you with an **ingest key**.
+
+1. In ListeningKit open **Settings → Send posts in**.
+2. Type a name (for example "my laptop") and click **Create key**.
+3. **Copy it now.** It is shown once. Only a fingerprint of it is stored.
+
+The same page shows your **endpoint**, which looks like `https://<deployment>.convex.site/ingest`.
+
+## 2. Try it without sending anything
+
+<Tabs items={["Windows PowerShell", "macOS / Linux"]}>
+<Tab value="Windows PowerShell">
+
+```powershell
+$env:LISTENINGKIT_INGEST_URL = "https://<your deployment>.convex.site/ingest"
+$env:LISTENINGKIT_INGEST_KEY = "lk_ingest_..."
+python clients\x_push.py --phrases "need a bookkeeper" --count 5 --dry-run --verbose --show
+```
+
+</Tab>
+<Tab value="macOS / Linux">
+
+```bash
+export LISTENINGKIT_INGEST_URL="https://<your deployment>.convex.site/ingest"
+export LISTENINGKIT_INGEST_KEY="lk_ingest_..."
+python clients/x_push.py --phrases "need a bookkeeper" --count 5 --dry-run --verbose --show
+```
+
+</Tab>
+</Tabs>
+
+A Chrome window opens and searches. `--dry-run` prints what it would send (for example `"need a bookkeeper": would push 5 tweets`) and sends nothing. Use `facebook_push.py` instead of `x_push.py` for Facebook.
+
+## 3. Run it for real
+
+Leave off `--dry-run` and `--phrases` so it uses the phrases you saved:
+
+```bash
+python clients/x_push.py --interval 300
+python clients/facebook_push.py --interval 300
+```
+
+`--interval 300` repeats every 5 minutes (the minimum allowed is 120 seconds; 300 or more is kinder to the account). Without it, it runs once and stops. On the Keywords page the phrase should now say **checked … by your helper**, and matches appear below.
+
+## Options
+
+| Option | What it does |
+|---|---|
+| `--phrases "a" "b"` | Search these instead of the phrases saved in ListeningKit. |
+| `--count N` | Posts per phrase, 1 to 20 (default 20). |
+| `--interval SECONDS` | Repeat every N seconds; 0 (default) runs once. |
+| `--dry-run` | Show what would be sent; send nothing. |
+| `--show` | Show the Chrome window instead of hiding it. Use it when something looks wrong. |
+| `--verbose` | Say why a search failed (cookie values are always hidden). |
+
+At most 10 phrases are searched per round, with a short random pause between them.
+
+## What it tells you
+
+| Message | Meaning and fix |
+|---|---|
+| `No x account is connected` | Connect that platform in ListeningKit, then run again. Make sure you are using a key from the **same** ListeningKit account you connected with. |
+| `X refused the saved login` / `Facebook refused the saved login` | The login expired or the site logged it out. Log in again, copy a fresh token, reconnect. |
+| `asked us to slow down` | The site rate-limited it. The round stops and it tries again next time. Raise `--interval`. |
+| `no new tweets` / `no new posts` | Nothing new contains your exact phrase. Try a more common phrase. |
+| `could not read X (…)` | The page showed something unexpected. Re-run with `--verbose --show` and read the [developer guide](/docs/guide/developers#when-x-or-facebook-changes-its-page). |
+
+## When you are done
+
+Delete the key: **Settings → Send posts in → Revoke**. Do not paste an ingest key into chat, a commit or a document. A key lets whoever holds it send posts into your account.

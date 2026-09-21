@@ -1,0 +1,69 @@
+---
+title: Using ListeningKit
+description: A step-by-step guide for users, from sign-in to your first match.
+---
+
+# Using ListeningKit
+
+You do not need to be technical for Reddit. X and Facebook need one extra step (the [helper](/docs/guide/helpers)).
+
+## 1. Sign in
+
+Open **https://tremendous-seahorse-330.convex.site** and choose **Continue with Google**. There is no username or password to make. Your matches and logins belong to your account only.
+
+## 2. Pick where to listen
+
+On the first screen choose the platforms your customers use: Reddit, X, Facebook. You can change this later.
+
+## 3. Install the Chrome extension
+
+The extension does one job: it reads that you are logged in to a site and hands the app a token, so the app can read that site as you.
+
+1. Download **listeningkit-extension.zip** from the onboarding screen, or open `/listeningkit-extension.zip` on the site.
+2. Unzip it.
+3. In Chrome, Edge or Brave open `chrome://extensions`, turn on **Developer mode**, click **Load unpacked**, and choose the unzipped folder.
+4. Pin the ListeningKit icon so it is easy to find.
+
+## 4. Connect a platform
+
+1. In the same browser, open the site (for example reddit.com, x.com or facebook.com) and **log in**.
+2. Click the ListeningKit icon. It should say *Ready. You are logged in to* that site.
+3. Click **Copy token**.
+4. In ListeningKit, paste it into the token box on the connect step (or **Settings → Connections**) and click **Connect**.
+
+<Callout type="warning">
+The token is your login. Treat it like a password. ListeningKit stores it encrypted, never shows it again, and never sends it to your browser. Use **Settings → Connections → Disconnect** to remove it.
+</Callout>
+
+For X and Facebook, **use an account you can afford to lose.** These sites can restrict accounts that are automated (see the helper page).
+
+## 5. Add a phrase
+
+Open **Keywords**, choose a platform, type the phrase, and click add.
+
+- **Reddit:** also choose the community, for example `smallbusiness`. The server checks it about every 10 minutes. Press **Check now** to check straight away.
+- **X and Facebook:** just the phrase. Matches appear once the [helper](/docs/guide/helpers) is running.
+
+Tips for good phrases: use what a customer would say, not your product name. Short, specific phrases such as `need a bookkeeper` work better than single words.
+
+Each phrase row shows when it was last checked and how. "By your helper" means your own computer read it; "from a backup source, posts may be hours old" means Reddit's feed was unavailable and a slower mirror was used.
+
+## 6. Read your matches
+
+Matches appear under the phrase list, newest first. Each card shows:
+
+- the post text, the author and a link that opens the original post;
+- a **score badge** such as `90 · Ready to buy`, with the reason in one line (needs an OpenAI key on the server; otherwise no badge);
+- likes and comments where the platform provides them.
+
+Choose **Best matches first** to sort by score instead of time (the default is **Newest first**).
+
+## Troubleshooting
+
+| You see | What it means | What to do |
+|---|---|---|
+| "not checked yet" (Reddit) | The first check has not run. | Press **Check now**. |
+| "waiting for the helper on your computer" | An X or Facebook phrase has not been read yet. | Run the [helper](/docs/guide/helpers). |
+| "from a backup source, posts may be hours old" | Reddit blocked the fast feed. | Fine to use, or ask the owner to set up Reddit's API keys. |
+| The extension says you are not logged in | You are logged out in that browser. | Log in to the site, click the icon again. |
+| "X refused the saved login" (helper) | The login expired or X logged the account out. | Log in again, copy a fresh token, reconnect. |

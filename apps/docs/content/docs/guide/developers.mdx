@@ -1,0 +1,127 @@
+---
+title: For developers
+description: Set up the repo, understand the backend, run the tests, deploy, and debug a platform reader.
+---
+
+# For developers
+
+## The stack
+
+| Part | Where | What it is |
+|---|---|---|
+| Backend | `convex/` | Convex: schema, queries, mutations, actions, HTTP routes, crons, scheduler. Also hosts the built web app. |
+| Web app | `apps/web` | Vite + React + TypeScript. Signs in with Clerk, talks to Convex directly. |
+| Docs site | `apps/docs` | Next.js + Fumadocs. This site. |
+| Extension | `apps/extension` | Chrome Manifest V3. Reads your cookies for reddit.com, x.com or facebook.com and produces a token. |
+| Helpers | `clients/` | Python. `x_push.py`, `facebook_push.py`, `reddit_push.py`, shared `listeningkit_ingest.py`. |
+| Legacy mock API | `apps/api` | A Hono mock from before the Convex backend. Not on the live path. |
+
+Two Convex deployments: **dev** `determined-cheetah-971` and **prod** `tremendous-seahorse-330`. The prod site is https://tremendous-seahorse-330.convex.site.
+
+## Set up
+
+```bash
+pnpm install
+pnpm exec convex dev          # once, to connect to the dev deployment (needs a seat on the Convex team)
+pnpm dev:web                  # the web app; add pnpm dev:docs for this site
+```
+
+`apps/web/.env.local` needs `VITE_CLERK_PUBLISHABLE_KEY` (public by design) and `VITE_CONVEX_URL`, with `VITE_API_MODE=live`. The full list is in `.env.example`.
+
+### Deployment environment variables (Convex, never `VITE_*`)
+
+| Variable | Purpose |
+|---|---|
+| `AUTH_ISSUER`, `AUTH_AUDIENCE` | Verify the Clerk sign-in token. |
+| `SESSION_ENCRYPTION_KEY` | 32 random bytes, base64. Encrypts connected logins. Without it nobody can connect an account. |
+| `OPENAI_API_KEY` | Scores matches. `AI_MODEL` changes the model (default `gpt-4o-mini`); `AI_SCORING=off` turns scoring off. Optional. |
+| `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET` | Reddit "script" app for fresh reads. Optional. |
+
+Set them with `pnpm exec convex env set NAME value` (add `--prod` for production). Never put a value in a commit, a doc or chat.
+
+## How data flows
+
+1. **Reddit.** A cron (`convex/crons.ts`) runs `watch:tick` every 10 minutes. For each Reddit phrase it reads the community: Reddit's official API if configured, else the www feed, else a mirror. `keepMetrics` stops a feed without scores from zeroing them.
+2. **X and Facebook.** The helper calls `GET /session?platform=x` (your sealed login, decrypted only for that call) and `GET /phrases?platform=x`, reads the site, then calls `POST /ingest`.
+3. **Ingest.** `convex/ingest.ts` validates each post, stores it, matches it against your phrases (`convex/lib/match.ts`), and writes a `hits` row.
+4. **Scoring.** Each new match schedules `scoring:scoreHits`, which asks OpenAI for a 0 to 100 score, an intent and a one-line reason. A 10-minute cron scores anything missed.
+5. **Web app.** Reads `keywords`, `hits` and `sessions` through live Convex queries.
+
+### HTTP API for helpers
+
+All three take `Authorization: Bearer lk_ingest_...`. The owner comes from the key, never from the request.
+
+```http
+POST /ingest
+{ "platform": "facebook",
+  "posts": [ { "externalId": "pfbid0...", "authorName": "Pat", "body": ["need a bookkeeper"],
+               "url": "https://www.facebook.com/...", "likes": 1, "comments": 0 } ] }
+→ 200 { "accountId": "...", "ingested": 1, "skipped": 0 }
+
+GET /session?platform=x     → the cookie jar, decrypted, only for a helper holding a valid key
+GET /phrases?platform=x     → { "platform": "x", "phrases": ["need a helper"] }
+```
+
+Up to 100 posts per batch. Invalid rows are skipped and counted, not fatal. `platform` is `facebook`, `x` or `reddit`.
+
+## Security rules (do not weaken)
+
+- Every query and mutation calls `requireOwner(ctx)` and filters by owner. No table is readable across accounts.
+- Logins are sealed with AES-256-GCM. **No query returns a jar to a browser.**
+- Ingest keys are stored as SHA-256 hashes and shown once.
+- Error messages must never echo cookie values. Tests use obvious fake values.
+- Post text from the internet is untrusted: it is fenced inside the scoring prompt, and the reply is parsed and clamped.
+
+## Commands
+
+| Task | Command |
+|---|---|
+| Backend tests (75) | `pnpm test:backend` |
+| Web tests (164) | `pnpm --filter web test` |
+| Python tests (70) | `python -m pytest clients/tests` (the browser tests start real Chrome and take a few minutes) |
+| Type check | `pnpm typecheck` |
+| Lint | `pnpm lint` |
+| Rebuild the extension zip | `python scripts/build-extension.py` |
+| After adding a Convex function | `pnpm exec convex codegen` |
+| Deploy backend to prod | `pnpm exec convex deploy --yes` |
+| Deploy the web app to prod | `pnpm deploy:site` (dev copy: `pnpm deploy:site:dev`) |
+
+Convex tests use `convex-test`, which finds functions **only** through the `modules` map in the test file. List every module you use. Web tests blank `VITE_CONVEX_URL`, so run them from `apps/web` (or with `--filter web`).
+
+If you change the token format in `apps/extension/lib.js` or `convex/lib/token.ts`, keep `apps/web/src/lib/__tests__/extension-contract.test.ts` green and rebuild the zip.
+
+## Testing a platform reader honestly
+
+A stand-in HTML page proves your code; it does not prove the real site. Both X and Facebook passed their stand-in tests and then needed a fix on the first real run (X rejected Camoufox, Facebook used a different page layout). So:
+
+1. Test the reader in real Chrome against a stand-in page (see `clients/tests/test_x_browser.py`, `test_facebook.py`).
+2. Check it once against the **real site with a fake login**. It must report "login refused", not crash.
+3. Run it with a real throwaway account before you call it done.
+
+## When X or Facebook changes its page
+
+The readers depend on page structure, so they break when the site changes. To fix one:
+
+1. Set the debug folder and re-run with `--show`:
+   ```bash
+   export LISTENINGKIT_FB_DEBUG_DIR=/tmp/fb      # or LISTENINGKIT_X_DEBUG_DIR for X
+   python clients/facebook_push.py --phrases "need a helper" --count 5 --dry-run --verbose --show
+   ```
+2. When it finds nothing it writes `fb_page.png` (or `x_page.png`), the page text `*.txt`, and for Facebook the page HTML `fb_page.html` without scripts.
+3. Read the screenshot first: is the site showing results, a login page, "Something went wrong", or a checkpoint?
+4. If results are showing but not read, find the real markup in the saved HTML and change the selectors in `clients/facebook_browser.py` (`EXTRACT_JS`) or `clients/x_browser.py`.
+5. Add a stand-in test for the new layout, then re-run for real.
+
+Things learned the hard way: **X rejects Camoufox's browser fingerprint** even with a good login, so the readers use real Chrome via Playwright. **Facebook only fills in a post's address while the mouse is over its timestamp**, so the reader hovers each one and falls back to a stable id plus a search link. The reader also keeps only posts whose text contains the phrase, because sites pad quiet searches with unrelated posts.
+
+## Adding another platform
+
+1. Add it to `convex/lib/token.ts` (cookie names and domains), the `platform` union in `convex/schema.ts`, and `apps/extension/lib.js`.
+2. Write a reader class with `search_posts(phrase, count)` like `clients/facebook_browser.py`, raising `Unauthorized`, `TooManyRequests` and `AccountLocked` (matched by class name).
+3. Write a `*_push.py` that calls `x_push.run_once(args, client, phrases, platform=..., search=..., to_post=...)`.
+4. Add it to `LIVE_PLATFORMS` in `apps/web/src/lib/platform-support.ts` and to the helper note in `DashboardKeywordsLive.tsx`.
+5. Test as above, and run the extension contract test.
+
+## Ownership and what is left
+
+Who owns the GitHub repo, the Convex team and the Clerk app, and the ordered to-do list (OpenAI key, Reddit app, submission), are in [`HANDOFF.md`](https://github.com/matthewdonsemail-lab/log/blob/main/HANDOFF.md). The public build log is `hackathon.md`.
