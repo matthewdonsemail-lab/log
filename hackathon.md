@@ -695,3 +695,11 @@ Python tests 85. Also: the landing page website box now leads into onboarding (t
 brand step after sign-in) and the landing header is just the logo, Sign in and Get started. Still to do: a real
 proxy provider and `PROXY_URL` on the deployments.
 
+### 2026-09-21 - Firecrawl and AgentMail run for real on dev
+Set `FIRECRAWL_API_KEY`, `AGENTMAIL_API_KEY` and `AGENTMAIL_INBOX_ID` on the dev deployment and tried both in the
+real app. Firecrawl: pasting a real company website in onboarding saved its real name, tagline, logo, tone and eight
+offerings to the `brands` table, and an internal network address was refused before any call. AgentMail: saving an
+address in Settings and pressing "Send a test email" delivered the message through AgentMail's API, and it arrived in the
+inbox with the expected text. Free-plan limit to know: 10 emails a day. Still to do: the same on the prod deployment, and
+a real strong-match email once OpenAI scoring has a key.
+

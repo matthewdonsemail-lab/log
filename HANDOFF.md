@@ -55,7 +55,7 @@ Deadline for the whole list: **Tue 22 Sep 2026, 12:00 PM PT**.
   pnpm exec convex env set --prod FIRECRAWL_API_KEY <key>
   ```
   Then sign in, paste a real business website in onboarding and confirm the brand shows its real name and offerings. Redeploy first if the code is not on that deployment yet (`pnpm exec convex deploy --yes`).
-- [ ] **1c. AgentMail (turns on email alerts).** Sign up at agentmail.to, create an API key and one inbox to send from (its address is the inbox id), then:
+- [ ] **1c. AgentMail (turns on email alerts).** *Dev is done and checked (2026-09-21): the key and inbox are set on dev and a test email pressed in Settings arrived in the inbox. Prod still needs the same two values and a deploy.* AgentMail's free plan allows 10 emails a day and 300 a month, and that is shared by test emails and alerts: past it AgentMail answers 429 and the alert run retries later. Their emails carry a "Sent via AgentMail" footer. Steps: Sign up at agentmail.to, create an API key and one inbox to send from (its address is the inbox id), then:
   ```
   pnpm exec convex env set AGENTMAIL_API_KEY <key>
   pnpm exec convex env set AGENTMAIL_INBOX_ID <inbox address>
