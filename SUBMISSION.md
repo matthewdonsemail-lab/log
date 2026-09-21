@@ -29,6 +29,14 @@ Do these first so nothing on screen is empty or broken. Use a normal browser win
 - [ ] Clear the terminal so the key you typed is not in the scrollback, and make the font large.
 - [ ] Delete the `demo` key from the API page after recording.
 
+**The MCP scene (optional, 10 seconds)**
+- [ ] On the **API** page, make a key named `agent` with **Read** only. Copy it once.
+- [ ] Set it as a variable **before recording**: PowerShell `$env:LISTENINGKIT_KEY = "lk_api_..."`, or `export LISTENINGKIT_KEY=lk_api_...`.
+- [ ] Add it to Claude Code in a scratch folder: `claude mcp add --transport http listeningkit https://tremendous-seahorse-330.convex.site/mcp --header "Authorization: Bearer $LISTENINGKIT_KEY"` (PowerShell: `--header "Authorization: Bearer $env:LISTENINGKIT_KEY"`). Then `claude mcp list` should say **Connected**. Clear the terminal so the key is not in the scrollback.
+- [ ] Test the prompt you will type: `Use listeningkit to show my plan and my three newest matches.` It should answer with your real data. If you have no matches yet, ask for `my plan` instead.
+- [ ] Delete the `agent` key from the API page after recording, and run `claude mcp remove listeningkit`.
+- [ ] Only Claude Code and Claude Desktop (through `mcp-remote`) were run for real. Cursor and Hermes follow their official docs but were not run. **ChatGPT is not supported yet, so do not show or claim it.**
+
 **Optional, only if you want them**
 - [ ] X and Facebook helpers (the proxy is set on the site): run them on your computer before recording. See the Guide, X and Facebook helpers.
 - [ ] The OpenAI key, so matches show score badges. **If it is not set, skip every scoring mention.**
@@ -41,7 +49,7 @@ Do these first so nothing on screen is empty or broken. Use a normal browser win
 **Screen hygiene**
 - [ ] Close other tabs, hide bookmarks and any window with keys or logins in it. **Never show a token, an ingest key, an API key or a terminal with a key in it.**
 
-What works today, so you only promise that: an MCP server that AI agents (Claude, Cursor, Hermes and other MCP clients) can use with an API key (ChatGPT is not supported yet, do not claim it), Reddit end to end, website reading (Firecrawl), email alerts (AgentMail), Google sign-in, plans and pricing, the docs, the API with scoped keys (read, add and change phrases), and X and Facebook through a helper on your own computer. Match scores need the OpenAI key. Webhooks are built but are a Pro feature and off.
+What works today, so you only promise that: an MCP server that AI agents (Claude, Cursor, Hermes and other MCP clients) can use with an API key (ChatGPT is not supported yet, do not claim it), Reddit end to end, website reading (Firecrawl), email alerts (AgentMail), Google sign-in, plans and pricing, the docs, the API with scoped keys (read, add and change phrases), an MCP server for AI agents (Claude Code and Claude Desktop checked; Cursor and Hermes not run; not ChatGPT), and X and Facebook through a helper on your own computer. Match scores need the OpenAI key. Webhooks are built but are a Pro feature and off.
 
 ## 1. Video script (target 2:45, hard limit 3:00)
 
@@ -66,6 +74,7 @@ Screen recording with your voice. Speak plainly. One idea per scene. If you run 
 Adjustments:
 - No OpenAI key: keep "matches" and skip "scores" everywhere.
 - X and Facebook helpers running: add 10 seconds after 1:23: "X and Facebook work through a helper on my own computer, using a proxy the site provides, so people never handle one."
+- MCP scene done: add 10 seconds after the API scene. Show the terminal, run `claude mcp list` (it says Connected), then ask Claude Code: "Use listeningkit to show my plan and my three newest matches." Say: "The same key also works for AI agents through MCP. Claude reads my matches, and a read-only key cannot change anything." Then cut the docs scene (2:33) to stay under 3:00. Leave this out if you did not do the checklist above.
 - Webhooks demo done: add 15 seconds to the API scene: "And on Pro, a webhook sends a signed message to my server the moment a strong match appears." Show the request arriving. Otherwise leave this sentence out.
 
 Tips: record at 1080p, zoom the browser to 110 percent, keep the cursor slow, cut every pause longer than 2 seconds.
@@ -76,13 +85,13 @@ Post the video with one of these. Add the live link. Do not add any key, token o
 
 **X (under 280 characters):**
 
-> Built ListeningKit for the @convex All Gas hackathon: it watches Reddit, X and Facebook for the phrases your customers use, reads your site with Firecrawl, emails strong matches via AgentMail, and has a scoped API. Live: https://tremendous-seahorse-330.convex.site
+> Built ListeningKit for the @convex All Gas hackathon: it watches Reddit, X and Facebook for the phrases your customers use, reads your site with Firecrawl, emails strong matches via AgentMail, and has a scoped API plus an MCP server for AI agents. Live: https://tremendous-seahorse-330.convex.site
 
 **LinkedIn:**
 
 > I built ListeningKit for the Convex All Gas hackathon. It watches Reddit, X and Facebook for the exact phrases your customers use ("need a bookkeeper", "switching accountants") and shows you the posts the moment they appear.
 >
-> What is inside: Convex for the backend (live queries, crons, scheduled functions, HTTP actions), Clerk for sign-in, Firecrawl to read your website and build your brand profile, AgentMail to email you strong matches, and a small Chrome extension so your logins stay encrypted and out of the browser. There is also a scoped API, so your own code can read your matches and manage your phrases, and signed webhooks are built for the Pro plan.
+> What is inside: Convex for the backend (live queries, crons, scheduled functions, HTTP actions), Clerk for sign-in, Firecrawl to read your website and build your brand profile, AgentMail to email you strong matches, and a small Chrome extension so your logins stay encrypted and out of the browser. There is also a scoped API and an MCP server, so your own code or an AI agent like Claude can read your matches and manage your phrases, and signed webhooks are built for the Pro plan.
 >
 > Try it: https://tremendous-seahorse-330.convex.site
 > Code: https://github.com/matthewdonsemail-lab/log
@@ -92,26 +101,27 @@ Post the video with one of these. Add the live link. Do not add any key, token o
 | Field | What to put |
 |---|---|
 | Project name | ListeningKit |
-| One-line description (under 140 characters) | Social listening for Reddit, X and Facebook: watch for the phrases your customers use and get the best matches by email or API. |
-| Short description (under 400 characters) | ListeningKit watches Reddit, X and Facebook for the exact phrases your customers use and lists every new post that matches. It reads your website with Firecrawl to learn your business, emails the strongest matches through AgentMail, and has a scoped API to read matches and manage phrases from your own code. Built on Convex with live queries, crons, scheduled functions and HTTP actions. |
+| One-line description (under 140 characters) | Social listening for Reddit, X and Facebook: get the best matches by email, API or from your AI agent (MCP). |
+| Short description (under 400 characters) | ListeningKit watches Reddit, X and Facebook for the exact phrases your customers use and lists every new post that matches. It reads your website with Firecrawl to learn your business, emails the strongest matches through AgentMail, and has a scoped API and an MCP server so your code or an AI agent can read matches and manage phrases. Built on Convex with live queries, crons, scheduled functions and HTTP actions. |
 | Live URL | https://tremendous-seahorse-330.convex.site |
 | Repository | https://github.com/matthewdonsemail-lab/log |
 | Video | the link to your upload (YouTube unlisted, Loom or similar) |
 | Sponsor tools used | Firecrawl (website reading), AgentMail (email alerts). OpenAI (match scoring) only if its key is set on the live site. |
 | Convex features | schema and indexes, queries, mutations, actions, HTTP actions, crons, scheduled functions, live queries, static hosting component |
 
-If the form asks what else is in it: plans and pricing (Free limits enforced on the server), a public API with scoped keys and phrase writes, signed webhooks (a Pro feature, off by default), an X and Facebook helper that runs on the user's own computer, and documentation built into the app.
+If the form asks what else is in it: plans and pricing (Free limits enforced on the server), a public API with scoped keys and phrase writes, an MCP server (7 tools, same keys, scopes and plan limits) with setup docs for Claude, Cursor and Hermes, signed webhooks (a Pro feature, off by default), an X and Facebook helper that runs on the user's own computer, and documentation built into the app.
 
 ## 4. Final checks (3 minutes)
 
 - [ ] Open the live URL in a private window: the landing page loads, the Pricing section is there, and **Get started** leads to onboarding.
 - [ ] Open https://tremendous-seahorse-330.convex.site/docs/guide/api.html in a private window: it shows "The API".
+- [ ] Open https://tremendous-seahorse-330.convex.site/docs/guide/mcp.html in a private window: it shows "Use it from an AI agent (MCP)".
 - [ ] The video plays for someone who is not signed in to your account.
 - [ ] The repo is public and `hackathon.md` is at its root.
 - [ ] Nothing in the video, post or repo shows a key, token or password. Watch the video once with the sound off, looking only for keys.
-- [ ] Delete the `demo` API key, and switch webhooks back off if you turned them on.
+- [ ] Delete the `demo` and `agent` API keys, and switch webhooks back off if you turned them on.
 - [ ] Rotate the Firecrawl and AgentMail keys after the deadline (they were pasted in a chat during development).
 
 ## Checked on the live site (2026-09-21)
 
-Everything this kit relies on was tested on the live site, signed in, with cleanup: landing and pricing, the website box, sign-in, Firecrawl reading a real site, the AgentMail test email, Free plan billing, the docs and docs tab, API keys with scopes, reads, phrase writes (with the Free limit and safe retries), a read-only key being refused, webhooks refused on Free and working when switched on (signed, verified at an outside receiver), the proxy endpoint, and the ingest door. Not re-run on the live site: the X and Facebook helpers (checked on dev through the proxy) and OpenAI scoring (no key yet).
+Everything this kit relies on was tested on the live site, signed in, with cleanup: landing and pricing, the website box, sign-in, Firecrawl reading a real site, the AgentMail test email, Free plan billing, the docs and docs tab, API keys with scopes, reads, phrase writes (with the Free limit and safe retries), a read-only key being refused, webhooks refused on Free and working when switched on (signed, verified at an outside receiver), the proxy endpoint, and the ingest door. The MCP server was tested on the live site with the official MCP Python SDK (17 checks: 7 tools, add, pause, resume and remove a phrase, the Free limit refused, a read key refused a write, a bad key refused, keys revoked afterwards). The Claude Code and Claude Desktop setup snippets were run for real against it; Cursor and Hermes were not run, and ChatGPT is not supported. Not re-run on the live site: the X and Facebook helpers (checked on dev through the proxy) and OpenAI scoring (no key yet).
