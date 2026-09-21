@@ -3,6 +3,10 @@ title: Account state and component flow
 description: The contract between account state, notifications, React, and the account API.
 ---
 
+<Callout type="warning">
+**This is not the live API.** This page documents an earlier, in-browser mock API (routes like `/accounts`, `/messaging` and `/brand`), kept for reference. The real, read-only API that runs today is described in [The API](/docs/guide/api).
+</Callout>
+
 # Account state and component flow
 
 Account health is server/client state. React should render a normalized account state and should not interpret Facebook, X, or Reddit errors itself.

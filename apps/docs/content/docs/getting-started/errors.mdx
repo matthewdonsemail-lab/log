@@ -3,6 +3,10 @@ title: Errors
 description: The normalized error codes behind every account health badge — what each code means, what triggers it, and what to do.
 ---
 
+<Callout type="warning">
+This page describes an earlier design of ListeningKit, built on an in-browser demo, so parts of it do not match the app that runs today. For what works now, read the [Guide](/docs/guide).
+</Callout>
+
 # Errors
 
 Every platform fails differently — Facebook Graph codes, X GraphQL codes, Reddit statuses, proxy transport errors. ListeningKit normalizes all of it into one platform-agnostic vocabulary: the `AccountIssue` codes in `apps/web/src/lib/account-issues`. Raw signals (HTTP status, `code`/`subcode`, error `type`, body `marker`) are mapped onto these codes by `normalizeSignal`; the health badges, the accounts console, and API error responses all speak this same list. This page is that list, kept in sync with `ISSUE_CATALOG`.

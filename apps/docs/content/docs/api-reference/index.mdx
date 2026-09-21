@@ -1,9 +1,13 @@
 ---
-title: API reference
-description: Endpoint and error contract for the ListeningKit mock API, generated from the mock itself.
+title: Legacy mock API
+description: The earlier in-browser mock API, kept for reference. The live API is in the Guide.
 ---
 
-# API reference
+<Callout type="warning">
+**This is not the live API.** This page documents an earlier, in-browser mock API (routes like `/accounts`, `/messaging` and `/brand`), kept for reference. The real, read-only API that runs today is described in [The API](/docs/guide/api).
+</Callout>
+
+# Legacy mock API
 
 Every page under [Endpoints](/docs/api-reference/endpoints/api-keys) is generated from `openapi.json` — itself exported from the mock (`pnpm --filter web openapi:export`) — so the documented contract cannot drift from the implementation. Each endpoint renders its parameters, request/response schemas, and error responses with a Scalar try-it console.
 

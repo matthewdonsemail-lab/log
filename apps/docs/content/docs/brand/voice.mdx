@@ -3,6 +3,10 @@ title: Voice to system prompt
 description: What "voice" means, how it compiles into the exact prompt the agent receives, and how to preview it.
 ---
 
+<Callout type="warning">
+This page describes an earlier design of ListeningKit, built on an in-browser demo, so parts of it do not match the app that runs today. For what works now, read the [Guide](/docs/guide).
+</Callout>
+
 # Voice to system prompt
 
 "Voice" is not a vibe string. It is structured language instruction with exactly one consumer: `buildBrandSystemPrompt()`, whose output becomes the agent's `instructions` (and, in the mock, the rules `draftReply()` follows).

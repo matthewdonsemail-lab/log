@@ -26,6 +26,8 @@ await generateFiles({
 // --- Post-process: inject markdown headings + prose -------------------
 // Tag-level overviews — human explanations of what each tag is for, why it
 // exists, and how its operations fit together. Keys are the OpenAPI tag names.
+const LEGACY_BANNER = `<Callout type="warning">\n**This is not the live API.** This page documents an earlier, in-browser mock API, kept for reference. The real, read-only API that runs today is described in [The API](/docs/guide/api).\n</Callout>\n\n`
+
 const TAG_INTROS = {
   'API keys': `## API keys — workspace secrets
 
@@ -111,7 +113,7 @@ for (const file of readdirSync(endpointsDir).filter(f => f.endsWith('.mdx'))) {
   }
   const perOpBlock = ops.length ? `\n${ops.join('\n')}\n` : ''
   // Inject tag intro + per-operation headings before the interactive <APIPage>
-  content = content.replace('<APIPage', `${intro}${perOpBlock}\n<APIPage`)
+  content = content.replace('<APIPage', `${content.includes('This is not the live API') ? '' : LEGACY_BANNER}${intro}${perOpBlock}\n<APIPage`)
   writeFileSync(full, content)
   console.log(`Injected headings into ${file} (${tag}) — ${ops.length} ops`)
 }

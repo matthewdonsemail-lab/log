@@ -3,6 +3,10 @@ title: Reddit keywords
 description: Subreddit-scoped listening on Reddit — resolve the community, join immediately, poll inside it.
 ---
 
+<Callout type="warning">
+This page describes an earlier design of ListeningKit, built on an in-browser demo, so parts of it do not match the app that runs today. For what works now, read the [Guide](/docs/guide).
+</Callout>
+
 # Reddit keywords
 
 Reddit keywords listen **inside one joined subreddit**, under the same rule as Facebook: `groupId` required, and the subreddit must be joined, or the API answers `400`. The difference is the join itself — subreddits don't gate entry, so resolving one joins it immediately.

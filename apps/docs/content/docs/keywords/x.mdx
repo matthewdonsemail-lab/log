@@ -3,6 +3,10 @@ title: X (Twitter) keywords
 description: Everywhere-scoped listening on X — twtkit polls your phrases platform-wide, no groups involved.
 ---
 
+<Callout type="warning">
+This page describes an earlier design of ListeningKit, built on an in-browser demo, so parts of it do not match the app that runs today. For what works now, read the [Guide](/docs/guide).
+</Callout>
+
 # X (Twitter) keywords
 
 X keywords are scoped **everywhere**. There are no groups to join and no `groupId` to set — the API rejects one outright (`400 — X keywords are word-based and have no group`). Phrases are combinable words the client polls across the whole platform, which is also why the "find related groups" action hides on X: there is nothing to join.

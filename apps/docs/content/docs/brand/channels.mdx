@@ -3,6 +3,10 @@ title: Channel texting
 description: The four dials per channel — style, raw snippets, triage, autoreplies — and the exact pick the agent runs before every send.
 ---
 
+<Callout type="warning">
+This page describes an earlier design of ListeningKit, built on an in-browser demo, so parts of it do not match the app that runs today. For what works now, read the [Guide](/docs/guide).
+</Callout>
+
 # Channel texting
 
 Global [voice](/docs/brand/voice) compiles into the agent's system prompt. Each channel (`facebook`, `x`, `reddit`) carries its own `ChannelProfile` on top — **how the agent texts there**: a style dial, raw snippets it sends, the triage flow it pushes, and toggleable autoreplies. Everything below is what the mock `simulateOutbound()` actually does, and what the live agent will do with the same inputs.

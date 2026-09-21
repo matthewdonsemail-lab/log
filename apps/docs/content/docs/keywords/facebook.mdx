@@ -3,6 +3,10 @@ title: Facebook keywords
 description: Community-scoped listening on Facebook — joins first, then the client polls inside the group.
 ---
 
+<Callout type="warning">
+This page describes an earlier design of ListeningKit, built on an in-browser demo, so parts of it do not match the app that runs today. For what works now, read the [Guide](/docs/guide).
+</Callout>
+
 # Facebook keywords
 
 Facebook keywords listen **inside one joined group**. There is no platform-wide Facebook listening: a keyword without a joined `groupId` is rejected (`400 — Facebook keywords must be scoped to a joined group`), because the client can only poll places your account is actually a member of.
