@@ -16,8 +16,8 @@
     "test:backend": "vitest run --config vitest.backend.config.ts",
     "preview": "pnpm --filter web preview",
     "start": "concurrently -n web,docs -c blue,green \"pnpm --filter web preview\" \"pnpm --filter docs start\"",
-    "deploy:site": "static-hosting upload --prod --build --build-command \"pnpm --filter web build\" --dist apps/web/dist",
-    "deploy:site:dev": "static-hosting upload --build --build-command \"pnpm --filter web build\" --dist apps/web/dist"
+    "deploy:site": "static-hosting upload --prod --build --build-command \"node scripts/build-site.mjs\" --dist apps/web/dist --concurrency 3",
+    "deploy:site:dev": "static-hosting upload --build --build-command \"node scripts/build-site.mjs\" --dist apps/web/dist --concurrency 3"
   },
   "devDependencies": {
     "@shadcn/lint": "^0.1.0",

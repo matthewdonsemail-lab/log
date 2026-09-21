@@ -18,6 +18,7 @@ import { DashboardAccountPage } from './components/DashboardAccountPage'
 import { DashboardChallengePage } from './components/DashboardChallengePage'
 import { DashboardFeed } from './components/DashboardFeed'
 import { DashboardDocs } from './components/DashboardDocs'
+import { StaticDocsRedirect } from './components/StaticDocsRedirect'
 import { DashboardAPI } from './components/DashboardAPI'
 import { DashboardApiKeyPage } from './components/DashboardApiKeyPage'
 import { DashboardBrand } from './components/DashboardBrand'
@@ -82,6 +83,8 @@ export function App() {
               <Route path="api/:keyId" element={<DashboardApiKeyPage />} />
               <Route path="docs/*" element={<DashboardDocs />} />
             </Route>
+            <Route path="/docs" element={<StaticDocsRedirect />} />
+            <Route path="/docs/*" element={<StaticDocsRedirect />} />
             <Route path="/health" element={<HealthPage />} />
             <Route path="*" element={<Navigate to="/onboarding" replace />} />
           </Routes>

@@ -132,7 +132,7 @@ The other open to-dos (X and Facebook adapters, real brand step, phone alerts, F
 
 ## Environment (dev)
 
-- Prod was deployed on 2026-09-19 with scoring and the X helper. Scoring stays idle on prod until `OPENAI_API_KEY` is set (to-do above). Redeploy after code changes with `pnpm exec convex deploy --yes` then `pnpm deploy:site`.
+- Prod was redeployed on 2026-09-21 with Firecrawl website reading, AgentMail alerts, the mandatory proxy rule, the landing changes and the docs (checked signed in on the live URL). Earlier, on 2026-09-19, it got scoring and the X helper. Scoring stays idle on prod until `OPENAI_API_KEY` is set (to-do above). Redeploy after code changes with `pnpm exec convex deploy --yes` then `pnpm deploy:site`.
 - Convex dev deployment `determined-cheetah-971`. Push functions: `pnpm exec convex dev --once --typecheck=disable`. Run a function: `pnpm exec convex run watch:tick`. Never run `convex logs` without `--history`/a timeout (it tails forever).
 - Web: `pnpm --filter web exec vite --port 3000`. **Restart Vite after editing `apps/web/.env.local`** (env is baked at startup). Live mode needs `VITE_API_MODE=live` and `VITE_CONVEX_URL` (public URL, safe to expose).
 - Env files (`apps/web/.env.local`, `apps/api/.env.local`) are git-ignored. Convex-side secrets live only in the deployment env.
@@ -162,3 +162,14 @@ The other open to-dos (X and Facebook adapters, real brand step, phone alerts, F
 - Web live path: `apps/web/src/lib/{convex,live-keywords,live-sessions,ingest-keys,platform-support}.ts`, `apps/web/src/components/{DashboardKeywordsLive,DashboardSettingsIngest,DashboardFeed}.tsx`, `apps/web/src/pages/onboarding/OnboardingSteps.tsx`
 - Extension: `apps/extension/*`, packaged by `python scripts/build-extension.py` into `apps/web/public/listeningkit-extension.zip`
 - Adapters: `clients/listeningkit_ingest.py`, `clients/reddit_push.py`
+
+## Deploying the site (docs ship inside it)
+
+`pnpm deploy:site` (prod) and `pnpm deploy:site:dev` run `scripts/build-site.mjs`: it builds the web app, exports the docs app as static files (`DOCS_EXPORT=1 next build`, output `apps/docs/out`) and copies them into `apps/web/dist`, so the docs live at `/docs.html` and `/docs/<page>.html` and the dashboard Docs tab shows them. Convex hosting only serves exact file names, so the app redirects a docs address without `.html` to the page file (`StaticDocsRedirect`). Docs page files over 900 KB (today only the generated messaging API reference) are left out because uploads of files that large kept failing; uploads use 3 connections (`--concurrency 3`) for the same reason. Backend first when the schema changed: `pnpm exec convex deploy --yes`.
+
+## Still open before submitting
+
+- `OPENAI_API_KEY` on dev and prod (scoring, and therefore real alert emails).
+- A proxy: set `PROXY_URL` on dev and prod (see item 1d), or, knowingly and temporarily, `PROXY_REQUIRED=false`. Until one of them is set, X and Facebook helpers refuse to run.
+- Record the video, post, and submit: everything is written down in [`SUBMISSION.md`](SUBMISSION.md).
+- Rotate the Firecrawl and AgentMail keys after the deadline (they were pasted into a chat).

@@ -703,3 +703,13 @@ address in Settings and pressing "Send a test email" delivered the message throu
 inbox with the expected text. Free-plan limit to know: 10 emails a day. Still to do: the same on the prod deployment, and
 a real strong-match email once OpenAI scoring has a key.
 
+### 2026-09-21 - prod redeployed, docs fixed
+Deployed the backend and site to the live deployment and checked it signed in on the live URL: the onboarding brand
+step read a real company website through Firecrawl (name, tagline, eight offerings), the dashboard Docs tab showed
+the docs, and a test email sent from Settings arrived through AgentMail. The Docs tab had been showing the app inside
+itself on the hosted site, because the docs are a separate Next.js app; they are now exported as static files and
+shipped inside the site (`scripts/build-site.mjs`, `apps/docs/next.config.ts`), and a docs address without `.html`
+redirects to its page file. Added `SUBMISSION.md` with the video script, the short post and the submission form text.
+Env var names now set on the live deployment: `FIRECRAWL_API_KEY`, `AGENTMAIL_API_KEY`, `AGENTMAIL_INBOX_ID`.
+Still to do: `OPENAI_API_KEY` and `PROXY_URL` on the deployments.
+

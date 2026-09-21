@@ -10,6 +10,7 @@ dist-ssr/
 # fumadocs (runs as its own Next server on :3001, proxied by the web app)
 apps/docs/.next/
 apps/docs/.source/
+apps/docs/out/
 
 # vite
 .vite/

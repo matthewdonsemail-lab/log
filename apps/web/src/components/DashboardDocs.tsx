@@ -11,11 +11,16 @@ const DASHBOARD_DOCS_PREFIX = '/dashboard/docs'
 // the docs app by apps/web/vite.config.ts, which keeps the iframe
 // same-origin. Do NOT recreate docs pages here as JSX — edit the MDX in
 // apps/docs/content/docs and it shows up here automatically.
-function toDocsSrc(pathname: string, search: string, hash: string): string {
+//
+// On the hosted site there is no docs server: the docs ship as static files (see scripts/build-site.mjs),
+// and the hosting only serves exact file names, so the pages are addressed as `/docs.html` and `/docs/x.html`.
+export function toDocsSrc(pathname: string, search: string, hash: string, hosted = import.meta.env.PROD): string {
   const suffix = pathname.startsWith(DASHBOARD_DOCS_PREFIX)
     ? pathname.slice(DASHBOARD_DOCS_PREFIX.length)
     : ''
-  return `/docs${suffix || ''}${search}${hash}`
+  const page = suffix.replace(/\/+$/, '')
+  if (!hosted) return `/docs${suffix || ''}${search}${hash}`
+  return `${page ? `/docs${page}` : '/docs'}.html${search}${hash}`
 }
 
 // Rendered inside DashboardLayout's <Outlet/> at /dashboard/docs/*.
