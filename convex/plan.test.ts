@@ -34,13 +34,15 @@ const reddit = (phrase: string, subreddit = 'smallbusiness') => ({ phrase, platf
 describe('the Free plan', () => {
   it('is one phrase and one account per platform', () => {
     expect(FREE_PLAN).toMatchObject({ id: 'free', phrasesPerPlatform: 1, accountsPerPlatform: 1 })
-    expect(planLimits({})).toEqual({ phrasesPerPlatform: 1, accountsPerPlatform: 1 })
+    expect(planLimits({})).toEqual({ phrasesPerPlatform: 1, accountsPerPlatform: 1, webhooksPerPerson: 0 })   // webhooks are a Pro feature: none on Free
   })
 
   it('lets the operator raise the limits, and ignores anything that is not a whole number from 1 to 1000', () => {
-    expect(planLimits({ PLAN_PHRASES_PER_PLATFORM: '5', PLAN_ACCOUNTS_PER_PLATFORM: '3' })).toEqual({ phrasesPerPlatform: 5, accountsPerPlatform: 3 })
+    expect(planLimits({ PLAN_PHRASES_PER_PLATFORM: '5', PLAN_ACCOUNTS_PER_PLATFORM: '3', PLAN_WEBHOOKS_PER_PERSON: '2' })).toEqual({ phrasesPerPlatform: 5, accountsPerPlatform: 3, webhooksPerPerson: 2 })
+    expect(planLimits({ PLAN_WEBHOOKS_PER_PERSON: '0' }).webhooksPerPerson).toBe(0)
+    for (const bad of ['', '-1', 'abc', '2.5', '5000', ' ']) expect(planLimits({ PLAN_WEBHOOKS_PER_PERSON: bad }).webhooksPerPerson, bad).toBe(0)
     for (const bad of ['', '0', '-2', 'abc', '2.5', '5000', ' ']) {
-      expect(planLimits({ PLAN_PHRASES_PER_PLATFORM: bad, PLAN_ACCOUNTS_PER_PLATFORM: bad }), bad).toEqual({ phrasesPerPlatform: 1, accountsPerPlatform: 1 })
+      expect(planLimits({ PLAN_PHRASES_PER_PLATFORM: bad, PLAN_ACCOUNTS_PER_PLATFORM: bad }), bad).toEqual({ phrasesPerPlatform: 1, accountsPerPlatform: 1, webhooksPerPerson: 0 })
     }
   })
 
@@ -128,8 +130,8 @@ describe('the plan and usage view', () => {
     const plan = await alice.query(anyApi.plan.mine, {})
     expect(plan).toEqual({
       plan: 'free', name: 'Free',
-      limits: { phrasesPerPlatform: 1, accountsPerPlatform: 1 },
-      usage: { phrases: { reddit: 1, x: 1, facebook: 0 }, accounts: { reddit: 1, x: 1, facebook: 0 } },
+      limits: { phrasesPerPlatform: 1, accountsPerPlatform: 1, webhooksPerPerson: 0 },
+      usage: { phrases: { reddit: 1, x: 1, facebook: 0 }, accounts: { reddit: 1, x: 1, facebook: 0 }, webhooks: 0 },
     })
     expect((await bob.query(anyApi.plan.mine, {})).usage.phrases).toEqual({ reddit: 0, x: 0, facebook: 0 })
   })

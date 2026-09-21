@@ -741,3 +741,14 @@ accepted as a number. Backend tests 146, web tests 194.
 
 ### 2026-09-21 - API and docs fixes deployed
 Deployed the API and the docs fixes to the live deployment and checked them there: a key made in the live dashboard read all three endpoints, unauthenticated and bad calls were refused, and a revoked key stopped working. The stale mock API reference is now labelled as legacy with a warning that it is not the live API.
+
+### 2026-09-21 - scopes, phrase writes and webhooks
+Extended the API. Keys now carry scopes (`read`, `write:phrases`, `webhooks`) chosen when they are made. Added phrase writes
+(create with an idempotency key, pause, resume, delete) that run through the same code and plan limits as the dashboard
+(`convex/lib/keywordOps.ts`), and webhooks (`convex/webhooks.ts`): when a match is scored high enough a signed event is sent to the
+person's server, with retries, automatic switch-off after repeated failures, a delivery log and a test button. Webhooks are a Pro
+feature, so on the Free plan they are refused. Because a webhook address is typed by a stranger, addresses are checked hard (public
+https names only, checked again at send time, no redirects, responses never read). Checked on the dev deployment in a real browser and
+against a real outside receiver, where a delivery's signature was verified with a separate HMAC implementation. Backend tests 190, web
+tests 203.
+

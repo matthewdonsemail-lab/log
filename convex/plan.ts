@@ -8,11 +8,12 @@ const PLATFORMS: PlanPlatform[] = ['reddit', 'x', 'facebook']
 export async function usageFor(ctx: QueryCtx, owner: string) {
   const keywords = await ctx.db.query('keywords').withIndex('by_owner', q => q.eq('owner', owner)).take(200)
   const accounts = await ctx.db.query('accounts').withIndex('by_owner', q => q.eq('owner', owner)).take(200)
+  const webhooks = await ctx.db.query('webhooks').withIndex('by_owner', q => q.eq('owner', owner)).take(50)
   const count = (rows: { platform: PlanPlatform }[]) => Object.fromEntries(PLATFORMS.map(p => [p, rows.filter(r => r.platform === p).length]))
   return {
     plan: FREE_PLAN.id, name: FREE_PLAN.name,
     limits: planLimits(),
-    usage: { phrases: count(keywords) as Record<PlanPlatform, number>, accounts: count(accounts) as Record<PlanPlatform, number> },
+    usage: { phrases: count(keywords) as Record<PlanPlatform, number>, accounts: count(accounts) as Record<PlanPlatform, number>, webhooks: webhooks.length },
   }
 }
 

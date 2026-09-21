@@ -37,7 +37,7 @@ pnpm dev:web                  # the web app; add pnpm dev:docs for this site
 | `OPENAI_API_KEY` | Scores matches. `AI_MODEL` changes the model (default `gpt-4o-mini`); `AI_SCORING=off` turns scoring off. Optional. |
 | `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET` | Reddit "script" app for fresh reads. Optional. |
 | `PROXY_URL` | The proxy every X and Facebook helper must use, like `http://user:pass@host:port` or `socks5://...`. Mandatory: helpers refuse to run without it. |
-| `PLAN_PHRASES_PER_PLATFORM`, `PLAN_ACCOUNTS_PER_PLATFORM` | Operator-only: raise the Free plan limits (default 1 each) for the whole deployment. |
+| `PLAN_PHRASES_PER_PLATFORM`, `PLAN_ACCOUNTS_PER_PLATFORM`, `PLAN_WEBHOOKS_PER_PERSON` | Operator-only: change the plan limits for the whole deployment (defaults 1, 1 and 0: webhooks are a Pro feature). |
 | `PROXY_REQUIRED` | Operator-only: set to `false` to let helpers browse directly on a deployment with no proxy yet. |
 | `FIRECRAWL_API_KEY` | Reads the person's website in onboarding (`brand:extractFromWebsite`). Optional. |
 | `AGENTMAIL_API_KEY`, `AGENTMAIL_INBOX_ID` | Email alerts. The inbox id is the AgentMail inbox the alerts are sent from. Optional. |
@@ -75,7 +75,12 @@ Up to 100 posts per batch. Invalid rows are skipped and counted, not fatal. `pla
 
 ## The public API
 
-Read-only, at `/api/v1` on the deployment's site address: `GET /me`, `/keywords`, `/matches`, authenticated with a key made in the dashboard (`lk_api_...`, stored as a SHA-256 hash, shown once; `convex/apiKeys.ts`). Routes are in `convex/http.ts`, data in `convex/publicApi.ts`. 60 requests a minute per key (a counter on the key row), one JSON error shape, no CORS (keys must not live in browsers). Reference: [The API](/docs/guide/api).
+At `/api/v1` on the deployment's site address, authenticated with a key made in the dashboard (`lk_api_...`, stored as a SHA-256 hash, shown once; `convex/apiKeys.ts`). Every route goes through `apiRoute` in `convex/http.ts`: key check, scope check, a per-minute counter (60 a minute per key), one JSON error shape, no CORS (keys must not live in browsers). Reference: [The API](/docs/guide/api).
+
+- **Scopes** (`convex/lib/scopes.ts`): `read` always, `write:phrases`, `webhooks`. A key made before scopes existed has none stored and means `read`. A route declares the scope it needs.
+- **Writing phrases** goes through `convex/lib/keywordOps.ts`, the same code the dashboard uses, so validation and the plan limit are identical. `POST /keywords` takes an `Idempotency-Key` (table `apiIdempotency`, one day).
+- **Webhooks** (`convex/webhooks.ts`): when scoring stores a score, `webhooks:fanOut` queues a delivery for each active webhook that wants it; `webhooks:deliver` signs (`convex/lib/webhookSign.ts`, HMAC-SHA256 over `timestamp.body`, secret sealed with the same key as connected logins), POSTs with a 5 second timeout and `redirect: 'manual'`, never reads the response body, and retries at 1, 5 and 30 minutes. Five failed deliveries in a row switch the webhook off. Addresses are checked when saved **and again at send time** (`convex/lib/webhookUrl.ts`). They are a Pro feature: `PLAN_WEBHOOKS_PER_PERSON` is 0 unless the operator raises it.
+- **Known limit:** the address check cannot resolve DNS, so a public name that points at a private address is not caught by the check itself. Redirects are never followed and response bodies are never read, which limits what such a name could do.
 
 ## Plans
 
@@ -97,8 +102,8 @@ X and Facebook reading always goes through the operator's proxy, and a person ne
 
 | Task | Command |
 |---|---|
-| Backend tests (146) | `pnpm test:backend` |
-| Web tests (194) | `pnpm --filter web test` |
+| Backend tests (190) | `pnpm test:backend` |
+| Web tests (203) | `pnpm --filter web test` |
 | Python tests (86) | `python -m pytest clients/tests` (the browser tests start real Chrome and take a few minutes) |
 | Type check | `pnpm typecheck` |
 | Lint | `pnpm lint` |

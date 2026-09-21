@@ -18,6 +18,7 @@ const modules = {
   './reddit.ts': () => import('./reddit'),
   './scoring.ts': () => import('./scoring'),
   './watch.ts': () => import('./watch'),
+  './webhooks.ts': () => import('./webhooks'),
 }
 
 const KEY = 'fc-test-key-not-real'

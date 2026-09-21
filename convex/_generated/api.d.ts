@@ -23,20 +23,25 @@ import type * as lib_agentmail from "../lib/agentmail.js";
 import type * as lib_crypto from "../lib/crypto.js";
 import type * as lib_firecrawl from "../lib/firecrawl.js";
 import type * as lib_hash from "../lib/hash.js";
+import type * as lib_keywordOps from "../lib/keywordOps.js";
 import type * as lib_match from "../lib/match.js";
 import type * as lib_plan from "../lib/plan.js";
 import type * as lib_posts from "../lib/posts.js";
 import type * as lib_proxy from "../lib/proxy.js";
 import type * as lib_redditFeed from "../lib/redditFeed.js";
+import type * as lib_scopes from "../lib/scopes.js";
 import type * as lib_scoring from "../lib/scoring.js";
 import type * as lib_server from "../lib/server.js";
 import type * as lib_token from "../lib/token.js";
+import type * as lib_webhookSign from "../lib/webhookSign.js";
+import type * as lib_webhookUrl from "../lib/webhookUrl.js";
 import type * as plan from "../plan.js";
 import type * as publicApi from "../publicApi.js";
 import type * as reddit from "../reddit.js";
 import type * as scoring from "../scoring.js";
 import type * as sessions from "../sessions.js";
 import type * as watch from "../watch.js";
+import type * as webhooks from "../webhooks.js";
 
 import type {
   ApiFromModules,
@@ -60,20 +65,25 @@ declare const fullApi: ApiFromModules<{
   "lib/crypto": typeof lib_crypto;
   "lib/firecrawl": typeof lib_firecrawl;
   "lib/hash": typeof lib_hash;
+  "lib/keywordOps": typeof lib_keywordOps;
   "lib/match": typeof lib_match;
   "lib/plan": typeof lib_plan;
   "lib/posts": typeof lib_posts;
   "lib/proxy": typeof lib_proxy;
   "lib/redditFeed": typeof lib_redditFeed;
+  "lib/scopes": typeof lib_scopes;
   "lib/scoring": typeof lib_scoring;
   "lib/server": typeof lib_server;
   "lib/token": typeof lib_token;
+  "lib/webhookSign": typeof lib_webhookSign;
+  "lib/webhookUrl": typeof lib_webhookUrl;
   plan: typeof plan;
   publicApi: typeof publicApi;
   reddit: typeof reddit;
   scoring: typeof scoring;
   sessions: typeof sessions;
   watch: typeof watch;
+  webhooks: typeof webhooks;
 }>;
 
 /**

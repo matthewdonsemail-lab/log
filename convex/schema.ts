@@ -59,10 +59,32 @@ export default defineSchema({
   // Keys for the public read API (/api/v1). Only the SHA-256 of the secret is stored; the plaintext exists once, in the create response.
   apiKeys: defineTable({
     owner: v.string(), label: v.string(), prefix: v.string(), keyHash: v.string(),
+    // What the key may do (see lib/scopes.ts). Unset on keys made before scopes existed, which means read only.
+    scopes: v.optional(v.array(v.string())),
     lastUsedAt: v.optional(v.number()),
     // A per-minute request counter, so one key cannot hammer the deployment.
     windowStart: v.optional(v.number()), windowCount: v.optional(v.number()),
   }).index('by_owner', ['owner']).index('by_hash', ['keyHash']),
+  // A webhook: ListeningKit POSTs a signed event to this address when a match is scored high enough. The secret is sealed (it is needed to sign).
+  webhooks: defineTable({
+    owner: v.string(), url: v.string(), secretIv: v.string(), secretData: v.string(),
+    minScore: v.number(), platforms: v.optional(v.array(platform)),
+    active: v.boolean(),
+    failureStreak: v.number(),
+    disabledReason: v.optional(v.string()),
+    lastDeliveryAt: v.optional(v.number()),
+  }).index('by_owner', ['owner']),
+  // One attempt series for one event to one webhook. Plain metadata: never the response body, never the secret.
+  webhookDeliveries: defineTable({
+    owner: v.string(), webhookId: v.id('webhooks'), hitId: v.optional(v.id('hits')),
+    event: v.union(v.literal('match.created'), v.literal('ping')),
+    status: v.union(v.literal('pending'), v.literal('delivered'), v.literal('failed')),
+    attempts: v.number(), statusCode: v.optional(v.number()), error: v.optional(v.string()), updatedAt: v.number(),
+  }).index('by_webhook', ['webhookId']).index('by_webhook_and_hit', ['webhookId', 'hitId']),
+  // Lets a program retry POST /api/v1/keywords without creating the phrase twice.
+  apiIdempotency: defineTable({
+    owner: v.string(), key: v.string(), keywordId: v.id('keywords'), createdAt: v.number(),
+  }).index('by_owner_and_key', ['owner', 'key']),
   // What Firecrawl read from the person's own website. Facts only: nothing here is a credential.
   brands: defineTable({
     owner: v.string(), sourceUrl: v.string(), name: v.string(), tagline: v.string(),

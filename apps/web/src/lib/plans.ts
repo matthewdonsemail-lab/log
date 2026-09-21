@@ -41,6 +41,7 @@ export const PLAN_CARDS: PlanCard[] = [
       'Everything in Free',
       'More phrases on every platform',
       'More connected accounts on every platform',
+      'Webhooks: a signed message to your server for every strong match',
     ],
     cta: 'Coming soon',
     href: null,
@@ -51,8 +52,8 @@ export const PLAN_CARDS: PlanCard[] = [
 export const livePlanSchema = z.object({
   plan: z.string(),
   name: z.string(),
-  limits: z.object({ phrasesPerPlatform: z.number(), accountsPerPlatform: z.number() }),
-  usage: z.object({ phrases: z.record(z.string(), z.number()), accounts: z.record(z.string(), z.number()) }),
+  limits: z.object({ phrasesPerPlatform: z.number(), accountsPerPlatform: z.number(), webhooksPerPerson: z.number().optional() }),
+  usage: z.object({ phrases: z.record(z.string(), z.number()), accounts: z.record(z.string(), z.number()), webhooks: z.number().optional() }),
 })
 
 export type LivePlan = z.infer<typeof livePlanSchema>

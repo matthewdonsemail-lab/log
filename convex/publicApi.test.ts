@@ -75,7 +75,7 @@ describe('API keys', () => {
     expect(rows[0].keyHash).toBe(await sha256Hex(created.secret))
     expect(JSON.stringify(rows)).not.toContain(created.secret)
     const listed = await alice.query(anyApi.apiKeys.listKeys, {})
-    expect(listed).toEqual([{ id: created.id, label: 'my script', prefix: created.prefix, createdAt: expect.any(Number), lastUsedAt: null }])
+    expect(listed).toEqual([{ id: created.id, label: 'my script', prefix: created.prefix, scopes: ['read'], createdAt: expect.any(Number), lastUsedAt: null }])
     expect(JSON.stringify(listed)).not.toContain(created.secret)
     expect(JSON.stringify(listed)).not.toContain(rows[0].keyHash)
   })

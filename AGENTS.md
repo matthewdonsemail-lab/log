@@ -107,11 +107,14 @@ Convex agent skills for common tasks can be installed by running
 
 ## Public API Rules
 
-- The API is read-only. Do not add a write route without a scope system and a decision from the owner; a leaked key today can only read.
+- Keys carry scopes (`read`, `write:phrases`, `webhooks`; `convex/lib/scopes.ts`). Every route declares the scope it needs in `apiRoute`, and `read` is the only default. A new route that changes data needs its own scope, never `read`.
 - Keys are stored only as SHA-256 hashes, shown once, and never returned by any query. `lk_api_` and `lk_ingest_` keys must stay unable to stand in for each other.
 - Every route goes through `apiRoute` in `convex/http.ts`: key check, per-minute counter, one JSON error shape. Never put an owner id, a hash, a secret or a cookie in a response, and add a test line for any new field.
 - List endpoints are bounded (a page of at most 100, a scan window of 400) and paged with a cursor. `_creationTime` has fractions of a millisecond, so cursors are numbers, not integers.
 - No CORS headers: API keys must not be used from browsers.
+- Writes go through the shared cores (`convex/lib/keywordOps.ts`, `createCore` and friends in `convex/webhooks.ts`), never a second copy, so the dashboard and the API cannot disagree about validation or plan limits.
+- Webhooks send to an address a stranger typed. Keep every guard: https only, public names only, `checkWebhookUrl` on save **and** at send time, `redirect: 'manual'`, a 5 second timeout, never read or store the response body, errors in plain words with no response text. Never return or log a signing secret after the create response; it is stored sealed.
+- Webhooks are a Pro feature: `planLimits().webhooksPerPerson` is 0 unless the operator raises it, and the plan check lives in the shared create code. Tests that need webhooks stub `PLAN_WEBHOOKS_PER_PERSON`.
 
 ## Plan Rules (Free is enforced, Pro does not exist)
 

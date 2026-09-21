@@ -107,6 +107,8 @@ export const save = internalMutation({
         await ctx.db.patch(hit._id, {
           score: result.score, intent: result.intent, reason: result.reason, scoredAt: Date.now(), scoreModel: args.model,
         })
+        // A scored match may be wanted by a webhook. Cheap when its owner has none.
+        await ctx.scheduler.runAfter(0, internal.webhooks.fanOut, { hitId: hit._id })
       }
     }
     return null

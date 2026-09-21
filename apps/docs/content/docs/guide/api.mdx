@@ -1,26 +1,38 @@
 ---
 title: The API
-description: Read your phrases and matches from your own code with an API key.
+description: Read and manage your phrases and matches from your own code, and get webhooks, with an API key.
 ---
 
 # The API
 
-The API lets your own code read your ListeningKit data: your plan, your phrases and your matches. It is **read-only**: a key can look at your data and cannot change anything.
+The API lets your own code use your ListeningKit data: read your plan, phrases and matches, add and change phrases, and (on Pro) get a webhook when a strong match appears.
 
-Make a key in the dashboard, under **API**. Each key belongs to you and can only read your own data.
+Make a key in the dashboard, under **API**. Each key belongs to you, sees only your own data, and can do only what you allowed when you made it.
 
 ## Getting a key
 
 1. Open **API** in the dashboard.
-2. Type a name (for example "My reporting script") and press **Create key**.
-3. **Copy the key now.** It is shown only once. ListeningKit keeps only a fingerprint of it, so a lost key cannot be recovered: make a new one.
+2. Type a name (for example "My reporting script") and choose the **scopes** the key needs (below).
+3. Press **Create key** and **copy the key now.** It is shown only once. ListeningKit keeps only a fingerprint of it, so a lost key cannot be recovered: make a new one.
 4. Revoke a key any time with **Revoke**. It stops working immediately.
 
 You can have up to 5 keys.
 
+## Scopes
+
+A scope is a permission. Choose the least a key needs.
+
+| Scope | Lets the key |
+|---|---|
+| `read` | Read your plan, phrases and matches. Every key has it. |
+| `write:phrases` | Add, pause, resume and remove phrases. |
+| `webhooks` | Manage webhook subscriptions (a Pro feature). |
+
 <Callout type="warning">
-A key can read all of your matches. Keep it out of code you publish and out of browsers. If one leaks, revoke it.
+A key with `write:phrases` or `webhooks` can change your data. Keep it out of code you publish and out of browsers, and revoke it if it leaks. Keys made before scopes existed can only read.
 </Callout>
+
+A request that needs a scope the key does not have gets `403` with `"code": "forbidden"` and the missing scope named.
 
 ## Calling it
 
@@ -31,9 +43,9 @@ curl "https://<your deployment>.convex.site/api/v1/matches?limit=5&min_score=70"
   -H "Authorization: Bearer lk_api_..."
 ```
 
-Every response is JSON. Every endpoint is `GET`.
+Every response is JSON.
 
-## Endpoints
+## Reading (scope: read)
 
 ### `GET /me`
 
@@ -41,13 +53,13 @@ Your plan, its limits and what you use.
 
 ```json
 { "data": { "plan": "free", "name": "Free",
-    "limits": { "phrasesPerPlatform": 1, "accountsPerPlatform": 1 },
-    "usage": { "phrases": { "reddit": 0, "x": 1, "facebook": 0 }, "accounts": { "reddit": 0, "x": 1, "facebook": 0 } } } }
+    "limits": { "phrasesPerPlatform": 1, "accountsPerPlatform": 1, "webhooksPerPerson": 0 },
+    "usage": { "phrases": { "reddit": 0, "x": 1, "facebook": 0 }, "accounts": { "reddit": 0, "x": 1, "facebook": 0 }, "webhooks": 0 } } }
 ```
 
-### `GET /keywords`
+### `GET /keywords` and `GET /keywords/{id}`
 
-Your phrases.
+Your phrases, or one of them.
 
 ```json
 { "data": [ { "id": "…", "phrase": "need a helper", "platform": "x", "community": null,
@@ -56,9 +68,9 @@ Your phrases.
 
 `community` is the subreddit for Reddit phrases and `null` otherwise. `lastSource` is `reddit`, `mirror` or `helper`.
 
-### `GET /matches`
+### `GET /matches` and `GET /matches/{id}`
 
-Your matches, newest first.
+Your matches, newest first, or one of them.
 
 | Parameter | Meaning |
 |---|---|
@@ -75,13 +87,109 @@ Your matches, newest first.
   "nextCursor": 1789999999000.25 }
 ```
 
-`score`, `intent` and `reason` are `null` until a match has been scored. `text` is cut at 2000 characters. `nextCursor` is `null` when there is nothing older.
+`score`, `intent` and `reason` are `null` until a match has been scored. `text` is cut at 2000 characters. `nextCursor` is `null` when there is nothing older. To read everything, keep calling with `before` set to the last `nextCursor` until it is `null`.
 
-To read everything, keep calling with `before` set to the last `nextCursor` until it is `null`:
+## Writing phrases (scope: write:phrases)
+
+These follow **exactly the same rules as the dashboard**, including the plan limit (the Free plan has 1 phrase per platform). A phrase you add here is a phrase in the dashboard, and the other way round.
+
+### `POST /keywords`
 
 ```bash
-curl "$BASE/matches?limit=100&before=1789999999000.25" -H "Authorization: Bearer $KEY"
+curl -X POST "$BASE/keywords" -H "Authorization: Bearer $KEY" \
+  -H "Content-Type: application/json" -H "Idempotency-Key: order-1042" \
+  -d '{"phrase": "need a bookkeeper", "platform": "reddit", "community": "smallbusiness"}'
 ```
+
+Answers `201` with the phrase. `community` is required for Reddit and not allowed for the others.
+
+**Retrying safely:** send an `Idempotency-Key` header (1 to 64 letters, numbers or `_ . : -`). If you send the same key again within a day, you get the phrase that was already made (status `200`, header `Idempotent-Replayed: true`) instead of a duplicate.
+
+### `PATCH /keywords/{id}`
+
+Pause or resume: `{"status": "paused"}` or `{"status": "listening"}`.
+
+### `DELETE /keywords/{id}`
+
+Removes the phrase **and its matches**. Answers `{"data": {"id": "…", "deleted": true}}`.
+
+## Webhooks (scope: webhooks, a Pro feature)
+
+A webhook sends a signed message to your server the moment a match is **scored** at or above the level you choose, so your code can react without polling.
+
+<Callout type="info">
+Webhooks are part of the Pro plan, which is coming soon. On the Free plan the endpoints answer `403` with `"code": "plan_limit"`. The site's operator can switch them on for a deployment.
+</Callout>
+
+| Endpoint | Does |
+|---|---|
+| `POST /webhooks` | Add one: `{"url": "https://…", "min_score": 70, "platforms": ["x"]}`. `min_score` defaults to 70 and `platforms` to all. The **signing secret is in this response only**. |
+| `GET /webhooks` | List them. |
+| `PATCH /webhooks/{id}` | `{"active": true}` or `{"active": false}`, or change `min_score` and `platforms`. |
+| `DELETE /webhooks/{id}` | Remove it and its delivery log. |
+| `POST /webhooks/{id}/test` | Send one signed `ping` event now and see what your server answered. |
+| `GET /webhooks/{id}/deliveries` | The last 20 deliveries: status, tries, your server's HTTP status, and a plain reason if it failed. |
+
+### What we send
+
+A `POST` with a JSON body:
+
+```json
+{ "id": "<delivery id>", "type": "match.created", "createdAt": "2026-09-21T12:00:00.000Z",
+  "data": { "id": "…", "score": 88, "phrase": "need a helper", "platform": "x", "post": { "…": "…" } } }
+```
+
+`data` is the same match `GET /matches/{id}` returns. The `ping` event sent by the test has `type: "ping"`.
+
+Headers:
+
+| Header | Value |
+|---|---|
+| `X-ListeningKit-Event` | `match.created` or `ping` |
+| `X-ListeningKit-Delivery` | The delivery id (the same as `id` in the body) |
+| `X-ListeningKit-Timestamp` | Seconds since 1970 when we sent it |
+| `X-ListeningKit-Signature` | `v1=` plus the hex HMAC-SHA256 of `timestamp + "." + raw body`, keyed with your signing secret |
+
+Answer with any `2xx` status, quickly (we wait 5 seconds). The body of your answer is ignored and never stored.
+
+### Check the signature
+
+**Always check it**, and reject requests with an old timestamp (more than 5 minutes) so a captured request cannot be replayed.
+
+```js
+// Node.js
+import { createHmac, timingSafeEqual } from 'node:crypto'
+
+export function isFromListeningKit(rawBody, headers, secret) {
+  const timestamp = headers['x-listeningkit-timestamp']
+  if (Math.abs(Date.now() / 1000 - Number(timestamp)) > 300) return false
+  const expected = 'v1=' + createHmac('sha256', secret).update(`${timestamp}.${rawBody}`).digest('hex')
+  const given = headers['x-listeningkit-signature'] ?? ''
+  return expected.length === given.length && timingSafeEqual(Buffer.from(expected), Buffer.from(given))
+}
+```
+
+```python
+# Python
+import hashlib, hmac, time
+
+def is_from_listeningkit(raw_body: bytes, headers: dict, secret: str) -> bool:
+    timestamp = headers["x-listeningkit-timestamp"]
+    if abs(time.time() - int(timestamp)) > 300:
+        return False
+    expected = "v1=" + hmac.new(secret.encode(), f"{timestamp}.".encode() + raw_body, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(expected, headers.get("x-listeningkit-signature", ""))
+```
+
+Use the **raw** body exactly as received, not a re-serialized copy.
+
+### Retries and switching off
+
+If your server does not answer `2xx`, we try again after **1 minute, 5 minutes, then 30 minutes**, four tries in all, then mark the delivery failed. After **5 failed deliveries in a row** the webhook switches itself off (with the reason on it) so it stops sending to a broken address. Fix your server, then turn it back on with `PATCH` and `{"active": true}` or in the dashboard. A failed **test** does not count against it.
+
+### What we refuse
+
+The address must be `https`, a real public website name, on the normal port, with no username or password. We refuse IP addresses, `localhost`, names ending in `.local`, `.internal`, `.lan` and similar, and names that resolve to private addresses through services like nip.io. Deliveries never follow redirects. Some of this is checked again every time we send.
 
 ## Limits and errors
 
@@ -95,11 +203,16 @@ Errors look the same everywhere:
 
 | Status | `code` | Meaning |
 |---|---|---|
-| 400 | `invalid_parameter` | A parameter is out of range. The message says which. |
+| 400 | `invalid_parameter`, `invalid_request`, `invalid_json` | Something in the request is wrong. The message says what. |
 | 401 | `unauthorized` | No key, a malformed key, an unknown key, or a revoked key. |
+| 403 | `forbidden` | The key lacks the scope the request needs. |
+| 403 | `plan_limit` | Your plan does not allow it (for example a second phrase on the Free plan, or webhooks on Free). |
+| 404 | `not_found` | No such phrase, match or webhook, or it is not yours. |
+| 409 | `conflict` | You already have that phrase or webhook. |
+| 413 | `payload_too_large` | The body is over 4 KB. |
 | 429 | `rate_limited` | Too many requests. Wait for `Retry-After` seconds. |
 | 500 | `server_error` | Something went wrong on our side. Try again. |
 
 ## Not the same as an ingest key
 
-**Ingest keys** (Settings, Send posts in) let the X and Facebook helpers send posts *in*, and start with `lk_ingest_`. **API keys** read data *out*, and start with `lk_api_`. Neither works in the other's place.
+**Ingest keys** (Settings, Send posts in) let the X and Facebook helpers send posts *in*, and start with `lk_ingest_`. **API keys** work with your data, and start with `lk_api_`. Neither works in the other's place.

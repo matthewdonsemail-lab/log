@@ -1,13 +1,15 @@
 import { ConvexError, v } from 'convex/values'
 import { sha256Hex } from './lib/hash'
+import { normalizeScopes, scopesOf, type Scope } from './lib/scopes'
 import { internalMutation, mutation, query, requireOwner } from './lib/server'
 
 const MAX_KEYS = 5
+const scopeValidator = v.union(v.literal('read'), v.literal('write:phrases'), v.literal('webhooks'))
 export const RATE_LIMIT_PER_MINUTE = 60
 
 /** Mint a key for the public read API. The secret is returned exactly once; only its hash is kept. */
 export const createKey = mutation({
-  args: { label: v.string() },
+  args: { label: v.string(), scopes: v.optional(v.array(scopeValidator)) },
   handler: async (ctx, args) => {
     const owner = await requireOwner(ctx)
     const label = args.label.trim()
@@ -15,8 +17,9 @@ export const createKey = mutation({
     const existing = await ctx.db.query('apiKeys').withIndex('by_owner', q => q.eq('owner', owner)).take(MAX_KEYS + 1)
     if (existing.length >= MAX_KEYS) throw new ConvexError(`You can have ${MAX_KEYS} API keys; revoke one first`)
     const secret = `lk_api_${crypto.randomUUID().replaceAll('-', '')}${crypto.randomUUID().replaceAll('-', '')}`
-    const id = await ctx.db.insert('apiKeys', { owner, label, prefix: secret.slice(0, 14), keyHash: await sha256Hex(secret) })
-    return { id, secret, prefix: secret.slice(0, 14) }
+    const scopes = normalizeScopes(args.scopes)
+    const id = await ctx.db.insert('apiKeys', { owner, label, scopes, prefix: secret.slice(0, 14), keyHash: await sha256Hex(secret) })
+    return { id, secret, prefix: secret.slice(0, 14), scopes }
   },
 })
 
@@ -26,7 +29,7 @@ export const listKeys = query({
     const owner = await requireOwner(ctx)
     const rows = await ctx.db.query('apiKeys').withIndex('by_owner', q => q.eq('owner', owner)).take(MAX_KEYS)
     return rows.map(row => ({
-      id: row._id, label: row.label, prefix: row.prefix, createdAt: row._creationTime, lastUsedAt: row.lastUsedAt ?? null,
+      id: row._id, label: row.label, prefix: row.prefix, scopes: scopesOf(row), createdAt: row._creationTime, lastUsedAt: row.lastUsedAt ?? null,
     }))
   },
 })
@@ -48,7 +51,7 @@ export const revokeKey = mutation({
  */
 export const authenticate = internalMutation({
   args: { keyHash: v.string(), now: v.number() },
-  handler: async (ctx, args): Promise<{ owner: string; remaining: number }> => {
+  handler: async (ctx, args): Promise<{ owner: string; remaining: number; scopes: Scope[] }> => {
     const key = await ctx.db.query('apiKeys').withIndex('by_hash', q => q.eq('keyHash', args.keyHash)).unique()
     if (!key) throw new ConvexError('Invalid API key')
     const window = Math.floor(args.now / 60_000)
@@ -56,6 +59,6 @@ export const authenticate = internalMutation({
     const count = (sameWindow ? key.windowCount ?? 0 : 0) + 1
     if (count > RATE_LIMIT_PER_MINUTE) throw new ConvexError('Rate limited')
     await ctx.db.patch(key._id, { windowStart: window, windowCount: count, ...(sameWindow ? {} : { lastUsedAt: args.now }) })
-    return { owner: key.owner, remaining: RATE_LIMIT_PER_MINUTE - count }
+    return { owner: key.owner, remaining: RATE_LIMIT_PER_MINUTE - count, scopes: scopesOf(key) }
   },
 })

@@ -8,6 +8,7 @@ import { decryptText } from './lib/crypto'
 import { sha256Hex } from './lib/hash'
 import { normalizePushedPost, type NormalizedPost } from './lib/posts'
 import { mayRead, proxyState } from './lib/proxy'
+import { hasScope, type Scope } from './lib/scopes'
 import { DEFAULT_MATCHES_PER_PAGE, MAX_MATCHES_PER_PAGE } from './publicApi'
 
 const PLATFORMS = ['facebook', 'x', 'reddit'] as const
@@ -109,10 +110,16 @@ http.route({
   }),
 })
 
-// ---- The public read API: /api/v1, authenticated with a key made in the dashboard (Authorization: Bearer lk_api_...). ----
+// ---- The public API: /api/v1, authenticated with a key made in the dashboard (Authorization: Bearer lk_api_...). ----
+// Every key can read. Writing phrases and managing webhooks need the matching scope, ticked when the key was made.
 
 class ApiError extends Error {
-  constructor(readonly status: number, readonly code: string, message: string) { super(message) }
+  constructor(readonly status: number, readonly code: string, message: string, readonly retry?: string) { super(message) }
+}
+
+/** A successful answer that is not a plain 200 (a 201 on create, extra headers). */
+class ApiResult {
+  constructor(readonly body: unknown, readonly status = 200, readonly headers: Record<string, string> = {}) {}
 }
 
 function apiJson(body: unknown, status: number, extra: Record<string, string> = {}): Response {
@@ -123,6 +130,15 @@ function apiJson(body: unknown, status: number, extra: Record<string, string> = 
 
 function apiFailure(error: ApiError, extra: Record<string, string> = {}): Response {
   return apiJson({ error: { code: error.code, message: error.message } }, error.status, extra)
+}
+
+/** A plain-words failure from the shared phrase and webhook code, as the right HTTP status. */
+function fromConvex(error: { data: unknown }): ApiError {
+  const message = typeof error.data === 'string' ? error.data : 'The request could not be completed'
+  if (/not found$/i.test(message)) return new ApiError(404, 'not_found', message)
+  if (/^The Free plan|are part of the Pro plan/.test(message)) return new ApiError(403, 'plan_limit', message)
+  if (/already listening|already has|already have/.test(message)) return new ApiError(409, 'conflict', message)
+  return new ApiError(400, 'invalid_request', message)
 }
 
 /** A whole number within a range, or a plain-words 400. */
@@ -143,61 +159,246 @@ function cursorParam(url: URL): number | undefined {
   return n
 }
 
-/** Checks the key, counts the request against its allowance, runs the handler, and shapes every failure the same way. */
-async function apiRoute(ctx: GenericActionCtx<GenericDataModel>, req: Request, handler: (owner: string, url: URL) => Promise<unknown>): Promise<Response> {
+/** The JSON object in the request body, small and well formed, or a plain-words 400. */
+async function jsonBody(req: Request): Promise<Record<string, unknown>> {
+  const text = await req.text()
+  if (text.length > 4096) throw new ApiError(413, 'payload_too_large', 'The request body is too large')
+  let parsed: unknown
+  try { parsed = JSON.parse(text) } catch { throw new ApiError(400, 'invalid_json', 'The request body must be a JSON object') }
+  if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) throw new ApiError(400, 'invalid_json', 'The request body must be a JSON object')
+  return parsed as Record<string, unknown>
+}
+
+function text(body: Record<string, unknown>, name: string, required = true): string | undefined {
+  const value = body[name]
+  if (value === undefined && !required) return undefined
+  if (typeof value !== 'string') throw new ApiError(400, 'invalid_parameter', `${name} must be a string`)
+  return value
+}
+
+/** The id in /api/v1/<thing>/<id>, or a 404 when the address has anything else after it. */
+function idAfter(url: URL, prefix: string): string {
+  const rest = url.pathname.slice(prefix.length)
+  if (!/^[A-Za-z0-9_-]{8,64}$/.test(rest)) throw new ApiError(404, 'not_found', 'No such address')
+  return rest
+}
+
+/** Checks the key and its scope, counts the request against its allowance, runs the handler, and shapes every failure the same way. */
+async function apiRoute(
+  ctx: GenericActionCtx<GenericDataModel>, req: Request, needs: Scope,
+  handler: (owner: string, url: URL) => Promise<unknown>,
+): Promise<Response> {
   try {
     const secret = req.headers.get('Authorization')?.match(/^Bearer (lk_api_[A-Za-z0-9]{20,100})$/)?.[1]
     if (!secret) throw new ApiError(401, 'unauthorized', 'Send your API key as: Authorization: Bearer lk_api_...')
     const now = Date.now()
     let owner: string
     let remaining: number
+    let scopes: string[]
     try {
-      ;({ owner, remaining } = await ctx.runMutation(internal.apiKeys.authenticate, { keyHash: await sha256Hex(secret), now }))
+      ;({ owner, remaining, scopes } = await ctx.runMutation(internal.apiKeys.authenticate, { keyHash: await sha256Hex(secret), now }))
     } catch (error) {
       if (error instanceof ConvexError && error.data === 'Rate limited') {
-        const retry = String(60 - Math.floor((now % 60_000) / 1000))
-        throw Object.assign(new ApiError(429, 'rate_limited', `Too many requests: ${RATE_LIMIT_PER_MINUTE} per minute per key`), { retry })
+        throw new ApiError(429, 'rate_limited', `Too many requests: ${RATE_LIMIT_PER_MINUTE} per minute per key`, String(60 - Math.floor((now % 60_000) / 1000)))
       }
       if (error instanceof ConvexError && error.data === 'Invalid API key') throw new ApiError(401, 'unauthorized', 'That API key is not valid, or it was revoked')
       throw new ApiError(500, 'server_error', 'Could not check the key')
     }
-    const data = await handler(owner, new URL(req.url))
-    return apiJson(data, 200, { 'X-RateLimit-Limit': String(RATE_LIMIT_PER_MINUTE), 'X-RateLimit-Remaining': String(remaining) })
-  } catch (error) {
-    if (error instanceof ApiError) {
-      const retry = (error as ApiError & { retry?: string }).retry
-      return apiFailure(error, retry ? { 'Retry-After': retry } : {})
+    if (!hasScope(scopes, needs)) {
+      throw new ApiError(403, 'forbidden', `This key does not have the "${needs}" scope. Make a new key with it ticked.`)
     }
+    const result = await handler(owner, new URL(req.url))
+    const headers = { 'X-RateLimit-Limit': String(RATE_LIMIT_PER_MINUTE), 'X-RateLimit-Remaining': String(remaining) }
+    return result instanceof ApiResult ? apiJson(result.body, result.status, { ...headers, ...result.headers }) : apiJson(result, 200, headers)
+  } catch (error) {
+    if (error instanceof ConvexError) return fromConvexResponse(error)
+    if (error instanceof ApiError) return apiFailure(error, error.retry ? { 'Retry-After': error.retry } : {})
     console.error('api: request failed', error instanceof Error ? error.message : error)
     return apiFailure(new ApiError(500, 'server_error', 'Something went wrong on our side'))
   }
 }
 
+function fromConvexResponse(error: { data: unknown }): Response {
+  return apiFailure(fromConvex(error))
+}
+
+// ---- reading (scope: read) ----
 http.route({
   path: '/api/v1/me',
   method: 'GET',
-  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, async owner => ({ data: await ctx.runQuery(internal.publicApi.meFor, { owner }) }))),
+  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, 'read', async owner => ({ data: await ctx.runQuery(internal.publicApi.meFor, { owner }) }))),
 })
 
 http.route({
   path: '/api/v1/keywords',
   method: 'GET',
-  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, async owner => ({ data: await ctx.runQuery(internal.publicApi.keywordsFor, { owner }) }))),
+  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, 'read', async owner => ({ data: await ctx.runQuery(internal.publicApi.keywordsFor, { owner }) }))),
+})
+
+http.route({
+  pathPrefix: '/api/v1/keywords/',
+  method: 'GET',
+  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, 'read', async (owner, url) => ({
+    data: await ctx.runQuery(internal.publicApi.keywordById, { owner, id: idAfter(url, '/api/v1/keywords/') }),
+  }))),
 })
 
 http.route({
   path: '/api/v1/matches',
   method: 'GET',
-  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, async (owner, url) => {
+  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, 'read', async (owner, url) => {
     const platform = url.searchParams.get('platform')
     if (platform !== null && !PLATFORMS.includes(platform as Platform)) throw new ApiError(400, 'invalid_parameter', 'platform must be reddit, x or facebook')
+    const minScore = wholeParam(url, 'min_score', 0, 100)
+    const before = cursorParam(url)
     return await ctx.runQuery(internal.publicApi.matchesFor, {
       owner,
       ...(platform === null ? {} : { platform: platform as Platform }),
-      ...(wholeParam(url, 'min_score', 0, 100) === undefined ? {} : { minScore: wholeParam(url, 'min_score', 0, 100) as number }),
-      ...(cursorParam(url) === undefined ? {} : { before: cursorParam(url) as number }),
+      ...(minScore === undefined ? {} : { minScore }),
+      ...(before === undefined ? {} : { before }),
       limit: wholeParam(url, 'limit', 1, MAX_MATCHES_PER_PAGE) ?? DEFAULT_MATCHES_PER_PAGE,
     })
+  })),
+})
+
+http.route({
+  pathPrefix: '/api/v1/matches/',
+  method: 'GET',
+  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, 'read', async (owner, url) => ({
+    data: await ctx.runQuery(internal.publicApi.matchById, { owner, id: idAfter(url, '/api/v1/matches/') }),
+  }))),
+})
+
+// ---- writing phrases (scope: write:phrases). The plan limits apply exactly as they do in the dashboard. ----
+http.route({
+  path: '/api/v1/keywords',
+  method: 'POST',
+  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, 'write:phrases', async owner => {
+    const body = await jsonBody(req)
+    const platform = text(body, 'platform')
+    if (!PLATFORMS.includes(platform as Platform)) throw new ApiError(400, 'invalid_parameter', 'platform must be reddit, x or facebook')
+    const community = text(body, 'community', false)
+    const key = req.headers.get('Idempotency-Key')
+    if (key !== null && !/^[A-Za-z0-9_.:-]{1,64}$/.test(key)) throw new ApiError(400, 'invalid_parameter', 'Idempotency-Key must be 1 to 64 letters, numbers or _ . : -')
+    const made = await ctx.runMutation(internal.publicApi.createKeyword, {
+      owner, phrase: text(body, 'phrase') as string, platform: platform as Platform,
+      ...(community === undefined ? {} : { community }), ...(key === null ? {} : { idempotencyKey: key }), now: Date.now(),
+    })
+    return new ApiResult({ data: made.keyword }, made.created ? 201 : 200, made.created ? {} : { 'Idempotent-Replayed': 'true' })
+  })),
+})
+
+http.route({
+  pathPrefix: '/api/v1/keywords/',
+  method: 'PATCH',
+  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, 'write:phrases', async (owner, url) => {
+    const id = idAfter(url, '/api/v1/keywords/')
+    const status = text(await jsonBody(req), 'status')
+    if (status !== 'listening' && status !== 'paused') throw new ApiError(400, 'invalid_parameter', 'status must be listening or paused')
+    return { data: await ctx.runMutation(internal.publicApi.setKeywordStatus, { owner, id, status }) }
+  })),
+})
+
+http.route({
+  pathPrefix: '/api/v1/keywords/',
+  method: 'DELETE',
+  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, 'write:phrases', async (owner, url) => ({
+    data: await ctx.runMutation(internal.publicApi.deleteKeyword, { owner, id: idAfter(url, '/api/v1/keywords/') }),
+  }))),
+})
+
+// ---- webhooks (scope: webhooks). A Pro feature: the plan check lives in the shared code, so the dashboard and the API agree. ----
+
+/** The optional platform list in a webhook body. */
+function platformList(body: Record<string, unknown>): Platform[] | undefined {
+  const value = body.platforms
+  if (value === undefined) return undefined
+  if (!Array.isArray(value) || value.some(item => typeof item !== 'string' || !PLATFORMS.includes(item as Platform))) {
+    throw new ApiError(400, 'invalid_parameter', 'platforms must be a list of reddit, x and facebook')
+  }
+  return value as Platform[]
+}
+
+function minScoreField(body: Record<string, unknown>): number | undefined {
+  const value = body.min_score
+  if (value === undefined) return undefined
+  if (typeof value !== 'number') throw new ApiError(400, 'invalid_parameter', 'min_score must be a whole number from 0 to 100')
+  return value
+}
+
+/** /api/v1/webhooks/<id> or /api/v1/webhooks/<id>/<action>. */
+function webhookPath(url: URL): { id: string; action: string | null } {
+  const parts = url.pathname.slice('/api/v1/webhooks/'.length).split('/')
+  if (parts.length > 2 || !/^[A-Za-z0-9_-]{8,64}$/.test(parts[0])) throw new ApiError(404, 'not_found', 'No such address')
+  return { id: parts[0], action: parts[1] ?? null }
+}
+
+http.route({
+  path: '/api/v1/webhooks',
+  method: 'GET',
+  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, 'webhooks', async owner => ({ data: await ctx.runQuery(internal.webhooks.listFor, { owner }) }))),
+})
+
+http.route({
+  path: '/api/v1/webhooks',
+  method: 'POST',
+  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, 'webhooks', async owner => {
+    const body = await jsonBody(req)
+    const minScore = minScoreField(body)
+    const platforms = platformList(body)
+    const made = await ctx.runMutation(internal.webhooks.createFor, {
+      owner, url: text(body, 'url') as string, ...(minScore === undefined ? {} : { minScore }), ...(platforms === undefined ? {} : { platforms }),
+    })
+    return new ApiResult({ data: { ...made.webhook, secret: made.secret } }, 201)
+  })),
+})
+
+http.route({
+  pathPrefix: '/api/v1/webhooks/',
+  method: 'GET',
+  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, 'webhooks', async (owner, url) => {
+    const { id, action } = webhookPath(url)
+    if (action !== 'deliveries') throw new ApiError(404, 'not_found', 'No such address')
+    return { data: await ctx.runQuery(internal.webhooks.deliveriesFor, { owner, id }) }
+  })),
+})
+
+http.route({
+  pathPrefix: '/api/v1/webhooks/',
+  method: 'POST',
+  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, 'webhooks', async (owner, url) => {
+    const { id, action } = webhookPath(url)
+    if (action !== 'test') throw new ApiError(404, 'not_found', 'No such address')
+    return { data: await ctx.runAction(internal.webhooks.testFor, { owner, id }) }
+  })),
+})
+
+http.route({
+  pathPrefix: '/api/v1/webhooks/',
+  method: 'PATCH',
+  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, 'webhooks', async (owner, url) => {
+    const { id, action } = webhookPath(url)
+    if (action !== null) throw new ApiError(404, 'not_found', 'No such address')
+    const body = await jsonBody(req)
+    if (body.active !== undefined && typeof body.active !== 'boolean') throw new ApiError(400, 'invalid_parameter', 'active must be true or false')
+    const minScore = minScoreField(body)
+    const platforms = platformList(body)
+    return {
+      data: await ctx.runMutation(internal.webhooks.updateFor, {
+        owner, id, ...(body.active === undefined ? {} : { active: body.active as boolean }),
+        ...(minScore === undefined ? {} : { minScore }), ...(platforms === undefined ? {} : { platforms }),
+      }),
+    }
+  })),
+})
+
+http.route({
+  pathPrefix: '/api/v1/webhooks/',
+  method: 'DELETE',
+  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, 'webhooks', async (owner, url) => {
+    const { id, action } = webhookPath(url)
+    if (action !== null) throw new ApiError(404, 'not_found', 'No such address')
+    return { data: await ctx.runMutation(internal.webhooks.removeFor, { owner, id }) }
   })),
 })
 
