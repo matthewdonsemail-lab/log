@@ -46,14 +46,14 @@ export function apiActivityFor(key: ApiKey, count = 60): ApiActivityEvent[] {
   const rand = mulberry32(hashSeed(key.id || 'fallback'))
   const liveRoutes = API_ROUTES.filter((route) => !route.planned)
   const ownAccount = key.scopes.accountId ?? 'fb-galway-rubbish'
-  const ownGroups = key.scopes.groupIds.length > 0 ? key.scopes.groupIds : ['facebook-dallas-homeowners']
+  const ownCommunities = key.scopes.communityIds.length > 0 ? key.scopes.communityIds : ['facebook-dallas-homeowners']
 
   const events: ApiActivityEvent[] = Array.from({ length: count }, (_, index) => {
     const route = liveRoutes[Math.floor(rand() * liveRoutes.length)]
     // Foreign ids ~30% of the time so denies appear in the stream.
     const accountId = rand() < 0.7 ? ownAccount : 'fb-unknown-account'
-    const groupId = rand() < 0.7 ? ownGroups[Math.floor(rand() * ownGroups.length)] : 'group-unknown'
-    const reason = checkAccess(key.scopes, route.needs, { accountId, groupId })
+    const communityId = rand() < 0.7 ? ownCommunities[Math.floor(rand() * ownCommunities.length)] : 'community-unknown'
+    const reason = checkAccess(key.scopes, route.needs, { accountId, communityId })
     return {
       id: `${key.id.slice(0, 8)}-act-${String(index).padStart(4, '0')}`,
       keyId: key.id,

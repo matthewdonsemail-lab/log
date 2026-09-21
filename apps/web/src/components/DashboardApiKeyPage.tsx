@@ -90,11 +90,12 @@ export function DashboardApiKeyPage() {
 
   const scopeSummary = [
     apiKey.scopes.accountId ? 'One account' : 'All accounts',
-    apiKey.scopes.groupIds.length > 0
-      ? `${apiKey.scopes.groupIds.length} ${apiKey.scopes.groupIds.length === 1 ? 'group' : 'groups'}`
-      : 'All groups',
+    apiKey.scopes.communityIds.length > 0
+      ? `${apiKey.scopes.communityIds.length} ${apiKey.scopes.communityIds.length === 1 ? 'community' : 'communities'}`
+      : 'All communities',
     apiKey.scopes.canSendMessages ? 'Send' : 'No send',
     apiKey.scopes.canReceiveMessages ? 'Receive' : 'No receive',
+    apiKey.scopes.canPublishListings ? 'Publish' : 'No publish',
   ].join(' · ')
 
   return (
