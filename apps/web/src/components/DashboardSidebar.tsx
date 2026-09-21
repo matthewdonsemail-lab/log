@@ -28,6 +28,7 @@ import {
   UsersIcon,
 } from '@heroicons/react/24/outline'
 import { cn, useSquircleClip } from '@listeningkit/ui'
+import { keywordsOnConvex } from '@/lib/live-keywords'
 import { DashboardSidebarUser } from './DashboardSidebarUser'
 
 type NavIcon = ComponentType<SVGProps<SVGSVGElement>>
@@ -47,6 +48,15 @@ export const NAV: DashboardNavItem[] = [
   { label: 'API', Icon: CommandLineIcon, to: '/dashboard/api' },
   { label: 'Settings', Icon: Cog6ToothIcon, to: '/dashboard/settings' },
 ]
+
+// Pages that only exist as a demo (mock data kept in the browser, no backend). On the live site they are hidden,
+// so everything a person can click is real.
+const DEMO_ONLY = new Set(['Groups', 'Listings', 'Brand', 'Messages'])
+export const DEMO_ONLY_PATHS = NAV.filter((item) => DEMO_ONLY.has(item.label)).map((item) => item.to as string)
+
+export function navItems(): DashboardNavItem[] {
+  return keywordsOnConvex() ? NAV.filter((item) => !DEMO_ONLY.has(item.label)) : NAV
+}
 
 // Sliding indicator travel per nav row: h-12 (48px) item + 4px flex gap.
 const ITEM_PITCH = 52
@@ -132,7 +142,7 @@ export function DashboardSidebar({
   const sideClip = useSquircleClip<HTMLElement>(20, 1, { topRight: 20, bottomRight: 20 })
   const indicatorClip = useSquircleClip<HTMLSpanElement>(7, 1, { topLeft: 0, bottomLeft: 0 })
   const { pathname } = useLocation()
-  const activeIndex = NAV.findIndex((item) => item.to === pathname)
+  const activeIndex = navItems().findIndex((item) => item.to === pathname)
 
   return (
     <aside
@@ -180,12 +190,12 @@ export function DashboardSidebar({
           >
             <span ref={indicatorClip.ref} style={indicatorClip.style} className="block h-full w-1.5 bg-[#2A8CFF]" />
           </span>
-          {NAV.map((item) => (
+          {navItems().map((item) => (
             <span key={item.label} className="block h-12 w-1.5" />
           ))}
         </span>
         <span className={cn('flex min-w-0 flex-1 flex-col gap-1 transition-[padding] duration-300', collapsed ? 'pl-0' : 'pl-2')}>
-          {NAV.map((item) => (
+          {navItems().map((item) => (
             <NavItem
               key={item.label}
               label={item.label}
@@ -236,8 +246,8 @@ export function DashboardMobileNav() {
   const role = useRole(context, { role: 'menu' })
   const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss, role])
 
-  const bottomItems = NAV.filter(isBottomItem)
-  const menuItems = NAV.filter((item) => !isBottomItem(item))
+  const bottomItems = navItems().filter(isBottomItem)
+  const menuItems = navItems().filter((item) => !isBottomItem(item))
 
   return (
     <nav

@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react'
 import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -34,6 +35,11 @@ const createQueryClient = () => new QueryClient({
   }
 })
 
+/** Demo-only pages (mock data, no backend) send people to the feed on the live site. */
+function demoOnly(page: ReactElement): ReactElement {
+  return keywordsOnConvex() ? <Navigate to="/dashboard" replace /> : page
+}
+
 function HealthPage() {
   return (
     <div className="min-h-screen bg-surface-primary p-8 text-text-primary">
@@ -61,23 +67,23 @@ export function App() {
             <Route path="/sign-up/*" element={<SignUpRoute />} />
             <Route path="/dashboard" element={<RequireAuth><DashboardLayout /></RequireAuth>}>
               <Route index element={<DashboardFeed />} />
-              <Route path="groups" element={<DashboardGroups />} />
-              <Route path="facebook/listings" element={<DashboardListings />} />
-              <Route path="facebook/listings/:id" element={<DashboardListings />} />
+              <Route path="groups" element={demoOnly(<DashboardGroups />)} />
+              <Route path="facebook/listings" element={demoOnly(<DashboardListings />)} />
+              <Route path="facebook/listings/:id" element={demoOnly(<DashboardListings />)} />
               <Route path="keywords" element={keywordsOnConvex() ? <DashboardKeywordsLive /> : <DashboardKeywords />} />
               <Route path="analytics" element={<DashboardAnalyticsOverview />} />
               <Route path="analytics/:keywordId" element={<DashboardAnalyticsPage />} />
               <Route path="accounts" element={<DashboardAccounts />} />
               <Route path="accounts/:accountId" element={<DashboardAccountPage />} />
               <Route path="accounts/:accountId/challenge" element={<DashboardChallengePage />} />
-              <Route path="brand" element={<DashboardBrand />} />
-              <Route path="messages" element={<DashboardMessages />} />
-              <Route path="messages/:platform" element={<DashboardMessages />} />
-              <Route path="messages/:platform/:accountId" element={<DashboardMessages />} />
-              <Route path="messages/:platform/:accountId/:threadId" element={<DashboardMessages />} />
+              <Route path="brand" element={demoOnly(<DashboardBrand />)} />
+              <Route path="messages" element={demoOnly(<DashboardMessages />)} />
+              <Route path="messages/:platform" element={demoOnly(<DashboardMessages />)} />
+              <Route path="messages/:platform/:accountId" element={demoOnly(<DashboardMessages />)} />
+              <Route path="messages/:platform/:accountId/:threadId" element={demoOnly(<DashboardMessages />)} />
               <Route
                 path="messages/:platform/:accountId/:threadId/:messageId"
-                element={<DashboardMessages />}
+                element={demoOnly(<DashboardMessages />)}
               />
               <Route path="settings" element={<DashboardSettings />} />
               <Route path="api" element={keywordsOnConvex() ? <DashboardApiLive /> : <DashboardAPI />} />

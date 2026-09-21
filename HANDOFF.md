@@ -192,3 +192,11 @@ Deployed the backend and site to prod and ran one full check on the live site (s
 ## MCP server (2026-09-21)
 
 `POST /mcp` speaks the Model Context Protocol (JSON-RPC 2.0 over HTTP, no sessions, no stream, `GET` answers 405). It authenticates with the same `lk_api_` keys, counts every message against the same 60 a minute, and exposes seven tools (`get_plan`, `list_keywords`, `list_matches`, `get_match`, `add_keyword`, `set_keyword_status`, `remove_keyword`) filtered by the key's scopes. Setup for Claude Code, Claude Desktop, Cursor, Hermes and generic clients is in the docs page `guide/mcp`; the landing "Works with" icons and the dashboard API page point to it. **ChatGPT is documented as not supported**: its custom connectors use OAuth or no sign-in and cannot send an API key. Adding OAuth would be the next step. Checked on the live site: the Claude Code snippet (`claude mcp add`, tool called for real) and the Claude Desktop snippet (`mcp-remote` launched exactly as the config does, tools listed and called). Cursor and Hermes snippets match their official docs but the apps were **not** run; the server itself is covered by 26 tests and answers 401 correctly on dev. Not built: resources, prompts, webhook tools, streaming.
+
+## Demo-only pages hidden on the live site (2026-09-21)
+
+Groups, Listings, Brand and Messages run on mock data kept in the browser (no backend), so the live site hides them from the menu and sends their addresses to the feed (`navItems()` and `demoOnly()` in `DashboardSidebar.tsx` and `App.tsx`). They still show in demo mode (no `VITE_API_MODE=live`). The real brand step is in onboarding.
+
+## Vercel
+
+A Vercel project (listeningkit-hackathon, team listeningkit) is connected to the repo and every deployment on GitHub showed as failed, because the repo had no `vercel.json` and Vercel guessed the build. `vercel.json` now sets the build (`node scripts/build-site.mjs`), the output folder and the single-page-app rewrite. The build itself passes locally. The real site is the Convex one; the Vercel copy has no `VITE_CONVEX_URL`, so it shows demo mode.
