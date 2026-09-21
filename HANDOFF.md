@@ -26,7 +26,7 @@ Sign in (Clerk) → onboarding (video, extension, token) → "What should we lis
 | Facebook | **Built and run against a real throwaway Facebook account: 4 real posts became matches.** `clients/facebook_push.py` and `clients/facebook_browser.py` mirror the X helper: connected login in, Facebook phrases in, recent-post search in real Chrome, posts out to `/ingest`. Checked with stand-in pages in real Chrome and against the real site (a fake login is recognised as a refused login). Known gaps: comment counts read as 0, and a post whose address cannot be read links to a Facebook search for its text. Facebook changes its markup often; `LISTENINGKIT_FB_DEBUG_DIR` saves what Facebook showed. Keywords page now offers Facebook (dev and this commit; prod needs a `pnpm deploy:site`). |
 | Everything else in the dashboard | Still the in-browser mock (messaging, listings, brand, analytics, API keys, groups). |
 
-Checks that were green at the last commit: backend 75, web 164, `clients` 70, reddit-camofox-client 25;
+Checks that were green at the last commit: backend 107, web 174, `clients` 70, reddit-camofox-client 25;
 `pnpm typecheck`, `pnpm typecheck:backend`, `pnpm run lint` (one old oxlint warning in
 `communities/index.ts`), `pnpm --filter web build`.
 
@@ -49,6 +49,20 @@ Deadline for the whole list: **Tue 22 Sep 2026, 12:00 PM PT**.
   pnpm exec convex run scoring:tryScore '{"phrase":"need a plumber","title":"Need a plumber in Austin"}'
   ```
   Expect `{ provider: "openai", model: "gpt-4o-mini", score: { score: ~90, ... } }`. Then add the phrase `ipad` in r/ipad on the site, press Check now, and confirm badges and reasons appear. Then deploy: `pnpm exec convex deploy --yes`. This is the hackathon's sponsor-integration gate.
+- [ ] **1b. Firecrawl key (turns on website reading).** Sign up at firecrawl.dev (free tier; the hackathon may have credits), copy the key, then:
+  ```
+  pnpm exec convex env set FIRECRAWL_API_KEY <key>
+  pnpm exec convex env set --prod FIRECRAWL_API_KEY <key>
+  ```
+  Then sign in, paste a real business website in onboarding and confirm the brand shows its real name and offerings. Redeploy first if the code is not on that deployment yet (`pnpm exec convex deploy --yes`).
+- [ ] **1c. AgentMail (turns on email alerts).** Sign up at agentmail.to, create an API key and one inbox to send from (its address is the inbox id), then:
+  ```
+  pnpm exec convex env set AGENTMAIL_API_KEY <key>
+  pnpm exec convex env set AGENTMAIL_INBOX_ID <inbox address>
+  pnpm exec convex env set --prod AGENTMAIL_API_KEY <key>
+  pnpm exec convex env set --prod AGENTMAIL_INBOX_ID <inbox address>
+  ```
+  Then Settings, Notifications, save your address, press "Send a test email" and confirm it arrives. Real alerts need OpenAI scoring on too (item 1), because only scored matches are emailed.
 - [ ] **2. Reddit app (makes Reddit reads fresh).** Log in to Reddit, open reddit.com/prefs/apps, "create another app", type **script**, redirect `http://localhost:8080`. Copy the client id (under the app name) and the secret, then:
   ```
   pnpm exec convex env set REDDIT_CLIENT_ID <id>
@@ -81,7 +95,8 @@ The other open to-dos (X and Facebook adapters, real brand step, phone alerts, F
 
 ### Must do before Tuesday
 - [ ] **Turn OpenAI scoring on**: see "TODO for Matthew" item 1. Kill switch `AI_SCORING=off`; model override `AI_MODEL`.
-- [ ] **Second sponsor integration** (optional): Firecrawl `communities:discover`.
+- [x] **Firecrawl and AgentMail are built** (2026-09-21): website reading in onboarding and email alerts for strong matches. Both need keys before they do anything on a deployment: see "TODO for Matthew" items 1b and 1c. Firecrawl's scrape was checked against the real service (a real company site came back as a clean brand); the action itself and AgentMail sending have not run live yet.
+- [ ] Firecrawl community discovery (`communities:discover`): still optional.
 - [x] **Deployed to `convex.site`** (prod `tremendous-seahorse-330`). Google sign-in verified on the public dev copy; test it on the prod URL too.
 - [ ] **Clerk stays on the dev instance** (`internal-piglet-2301`), which works on the public URL but shows dev-mode behaviour. A production Clerk instance needs an owned domain.
 - [x] **Prod env set:** `AUTH_ISSUER`, `AUTH_AUDIENCE`, `SESSION_ENCRYPTION_KEY` (its own key, never printed). Still to set on prod: `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET`.
@@ -92,7 +107,7 @@ The other open to-dos (X and Facebook adapters, real brand step, phone alerts, F
 ### Next product work
 - [x] **X adapter** built (`clients/x_push.py`); needs the real-account check in "TODO for Matthew" item 4b. Later: a hosted worker so a normal person does not have to run anything (today the helper runs on their own computer).
 - [ ] **Facebook: polish.** Read comment counts, and read the address for posts whose timestamp link could not be hovered. Join a few relevant groups on the account: Facebook only shows what the account may see.
-- [ ] **Brand step is mock.** "Paste your website and we'll pull your brand info" only guesses a name from the domain (`extractBrandFromUrl`); nothing is fetched. Make it real (Firecrawl) and store the brand in Convex. The reveal step after it is mock too.
+- [x] **Brand step reads the real website** (Firecrawl, stored in the `brands` table) once `FIRECRAWL_API_KEY` is set; without it, it still guesses the name from the domain. The reveal step after it (keywords, competitors, communities) is still mock.
 - [ ] **Chrome Web Store.** The extension is installed unpacked (Developer mode). Publishing needs review time. Also: Firefox build (add `browser_specific_settings`, test in Camoufox), and a check in real Chrome/Edge/Brave with a real login (only tested in Chromium 145 with fake cookies and a stubbed active tab).
 - [ ] **Delete a post from the UI** (only an operator function exists: `feed.purgeAuthor`, run with `convex run`).
 - [ ] **Replace remaining mock screens** with Convex-backed ones: messaging, listings, groups, brand, analytics, API keys.

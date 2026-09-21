@@ -36,6 +36,8 @@ pnpm dev:web                  # the web app; add pnpm dev:docs for this site
 | `SESSION_ENCRYPTION_KEY` | 32 random bytes, base64. Encrypts connected logins. Without it nobody can connect an account. |
 | `OPENAI_API_KEY` | Scores matches. `AI_MODEL` changes the model (default `gpt-4o-mini`); `AI_SCORING=off` turns scoring off. Optional. |
 | `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET` | Reddit "script" app for fresh reads. Optional. |
+| `FIRECRAWL_API_KEY` | Reads the person's website in onboarding (`brand:extractFromWebsite`). Optional. |
+| `AGENTMAIL_API_KEY`, `AGENTMAIL_INBOX_ID` | Email alerts. The inbox id is the AgentMail inbox the alerts are sent from. Optional. |
 
 Set them with `pnpm exec convex env set NAME value` (add `--prod` for production). Never put a value in a commit, a doc or chat.
 
@@ -45,7 +47,9 @@ Set them with `pnpm exec convex env set NAME value` (add `--prod` for production
 2. **X and Facebook.** The helper calls `GET /session?platform=x` (your sealed login, decrypted only for that call) and `GET /phrases?platform=x`, reads the site, then calls `POST /ingest`.
 3. **Ingest.** `convex/ingest.ts` validates each post, stores it, matches it against your phrases (`convex/lib/match.ts`), and writes a `hits` row.
 4. **Scoring.** Each new match schedules `scoring:scoreHits`, which asks OpenAI for a 0 to 100 score, an intent and a one-line reason. A 10-minute cron scores anything missed.
-5. **Web app.** Reads `keywords`, `hits` and `sessions` through live Convex queries.
+5. **Website reading.** `brand:extractFromWebsite` (public action, needs sign-in) calls Firecrawl's `POST /v2/scrape` with a JSON schema, cleans the reply in `parseBrandFacts`, stores it in `brands`, and `scoring:forScoring` adds a short business summary to each scoring prompt.
+6. **Email alerts.** A 5-minute cron runs `alerts:sweep`: for each person with alerts on it picks their strongest fresh unsent matches, sends one plain-text email through AgentMail (`POST /v0/inboxes/{inbox}/messages/send`), and only then marks them sent.
+7. **Web app.** Reads `keywords`, `hits`, `sessions` and the alert settings through live Convex queries.
 
 ### HTTP API for helpers
 
@@ -76,8 +80,8 @@ Up to 100 posts per batch. Invalid rows are skipped and counted, not fatal. `pla
 
 | Task | Command |
 |---|---|
-| Backend tests (75) | `pnpm test:backend` |
-| Web tests (164) | `pnpm --filter web test` |
+| Backend tests (107) | `pnpm test:backend` |
+| Web tests (174) | `pnpm --filter web test` |
 | Python tests (70) | `python -m pytest clients/tests` (the browser tests start real Chrome and take a few minutes) |
 | Type check | `pnpm typecheck` |
 | Lint | `pnpm lint` |

@@ -9,6 +9,8 @@
  */
 
 import type * as accounts from "../accounts.js";
+import type * as alerts from "../alerts.js";
+import type * as brand from "../brand.js";
 import type * as crons from "../crons.js";
 import type * as feed from "../feed.js";
 import type * as hits from "../hits.js";
@@ -16,7 +18,9 @@ import type * as http from "../http.js";
 import type * as ingest from "../ingest.js";
 import type * as keywords from "../keywords.js";
 import type * as lib_accounts from "../lib/accounts.js";
+import type * as lib_agentmail from "../lib/agentmail.js";
 import type * as lib_crypto from "../lib/crypto.js";
+import type * as lib_firecrawl from "../lib/firecrawl.js";
 import type * as lib_hash from "../lib/hash.js";
 import type * as lib_match from "../lib/match.js";
 import type * as lib_posts from "../lib/posts.js";
@@ -37,6 +41,8 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   accounts: typeof accounts;
+  alerts: typeof alerts;
+  brand: typeof brand;
   crons: typeof crons;
   feed: typeof feed;
   hits: typeof hits;
@@ -44,7 +50,9 @@ declare const fullApi: ApiFromModules<{
   ingest: typeof ingest;
   keywords: typeof keywords;
   "lib/accounts": typeof lib_accounts;
+  "lib/agentmail": typeof lib_agentmail;
   "lib/crypto": typeof lib_crypto;
+  "lib/firecrawl": typeof lib_firecrawl;
   "lib/hash": typeof lib_hash;
   "lib/match": typeof lib_match;
   "lib/posts": typeof lib_posts;

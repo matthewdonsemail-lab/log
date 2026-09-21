@@ -23,7 +23,9 @@ The rest of this docs site was written for an earlier mock-based design. This **
 
 Match scoring uses OpenAI and switches on when an `OPENAI_API_KEY` is set on the server. Without it, matches are shown unscored.
 
-Still mock (in-browser demo data, not real): messaging, community listings and joins, the brand step, analytics and API keys. See [HANDOFF.md](https://github.com/matthewdonsemail-lab/log/blob/main/HANDOFF.md) for the full to-do list.
+**Website reading** uses Firecrawl: in onboarding, paste your website and ListeningKit reads your business name and offerings from it (needs `FIRECRAWL_API_KEY`). **Email alerts** use AgentMail: strong matches are emailed to you (needs `AGENTMAIL_API_KEY` and `AGENTMAIL_INBOX_ID`). Both are optional and simply stay off when their keys are not set.
+
+Still mock (in-browser demo data, not real): messaging, community listings and joins, the brand reveal after your website is read, analytics and API keys. See [HANDOFF.md](https://github.com/matthewdonsemail-lab/log/blob/main/HANDOFF.md) for the full to-do list.
 
 ## How the pieces fit
 

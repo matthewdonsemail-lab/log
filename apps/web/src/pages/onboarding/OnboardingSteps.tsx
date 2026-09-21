@@ -5,6 +5,7 @@ import { Button, useToast } from '@listeningkit/ui'
 import { describeExpiry, saveSession, sessionsOnConvex, tokenPlatform } from '@/lib/live-sessions'
 import { SOCIAL_ICONS, SocialGlyph } from '@/lib/social-icons'
 import { extractBrandFromUrl, getBrand, saveBrand, type BrandEntity } from '@/lib/brand'
+import { applyWebsiteFacts, brandOnConvex, readingIsOff, readWebsite } from '@/lib/live-brand'
 import { BrandRevealStep } from '@/components/onboarding/BrandRevealStep'
 import { FunnelVideo } from '@/components/FunnelVideo'
 import { ReadyFill } from '@/components/ReadyFill'
@@ -181,21 +182,31 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
     }
   }
 
-  function lookupBrand() {
+  async function lookupBrand() {
     if (looking) return
     setLooking(true)
     setLookupError(null)
-    // Mock fetch beat — the live lookup will hit the brand service here.
-    window.setTimeout(() => {
-      try {
-        setProfile(saveBrand(extractBrandFromUrl(brandUrl)))
-        setStep(4)
-      } catch (err) {
-        setLookupError(err instanceof Error ? err.message : 'Could not read that URL.')
-      } finally {
-        setLooking(false)
+    try {
+      // Validates the address and seeds the defaults; on the live backend Firecrawl then reads the real site over them.
+      const base = extractBrandFromUrl(brandUrl)
+      let entity = base
+      if (brandOnConvex()) {
+        try {
+          entity = applyWebsiteFacts(base, await readWebsite(brandUrl))
+        } catch (err) {
+          // Reading is not switched on: keep the name guessed from the domain rather than blocking sign-up.
+          if (!readingIsOff(err)) throw err
+        }
+      } else {
+        await new Promise((resolve) => window.setTimeout(resolve, 700)) // the demo's fetch beat
       }
-    }, 700)
+      setProfile(saveBrand(entity))
+      setStep(4)
+    } catch (err) {
+      setLookupError(err instanceof Error ? err.message : 'Could not read that URL.')
+    } finally {
+      setLooking(false)
+    }
   }
 
   return (

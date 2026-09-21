@@ -2,7 +2,8 @@ import { getServiceToken } from 'convex/server'
 import { v } from 'convex/values'
 import { internal } from './_generated/api'
 import type { Id } from './_generated/dataModel'
-import type { ActionCtx } from './_generated/server'
+import type { ActionCtx, QueryCtx } from './_generated/server'
+import { businessSummary } from './lib/firecrawl'
 import { subredditOf } from './lib/match'
 import { buildMessages, parseScore, resolveProvider, scoringEnabled, type Provider, type Score } from './lib/scoring'
 import { internalAction, internalMutation, internalQuery } from './lib/server'
@@ -11,7 +12,7 @@ const MAX_ATTEMPTS = 3
 const BACKFILL_BATCH = 20
 const PARALLEL = 4
 
-type Row = { hitId: Id<'hits'>; phrase: string; title: string | null; body: string | null; subreddit: string | null }
+type Row = { hitId: Id<'hits'>; phrase: string; title: string | null; body: string | null; subreddit: string | null; business: string | null }
 type Outcome = { hitId: Id<'hits'>; score?: Score }
 type Summary = { scored: number; failed: number; skipped?: string }
 
@@ -22,7 +23,7 @@ export async function askModel(fetcher: typeof fetch, provider: Provider, token:
     headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: provider.model,
-      messages: buildMessages(row.phrase, { title: row.title, body: row.body, subreddit: row.subreddit }),
+      messages: buildMessages(row.phrase, { title: row.title, body: row.body, subreddit: row.subreddit }, row.business),
       ...(provider.jsonMode ? { response_format: { type: 'json_object' } } : {}),
     }),
     signal: AbortSignal.timeout(25_000),
@@ -51,11 +52,21 @@ export async function scoreRows(fetcher: typeof fetch, provider: Provider, token
   return outcomes
 }
 
+/** What Firecrawl read from the owner's website, as a short line for the prompt. Null when they have not set one up. */
+async function businessFor(ctx: QueryCtx, seen: Map<string, string | null>, owner: string): Promise<string | null> {
+  if (!seen.has(owner)) {
+    const row = await ctx.db.query('brands').withIndex('by_owner', q => q.eq('owner', owner)).first()
+    seen.set(owner, row && row.fetchedAt > 0 ? businessSummary(row) : null)
+  }
+  return seen.get(owner) ?? null
+}
+
 /** Matches still waiting for a score, with the post text the model needs. */
 export const forScoring = internalQuery({
   args: { hitIds: v.array(v.id('hits')) },
   handler: async (ctx, args): Promise<Row[]> => {
     const rows: Row[] = []
+    const business = new Map<string, string | null>()  // one lookup per owner
     for (const hitId of args.hitIds) {
       const hit = await ctx.db.get(hitId)
       if (!hit || hit.scoredAt !== undefined || (hit.scoreAttempts ?? 0) >= MAX_ATTEMPTS) continue
@@ -64,6 +75,7 @@ export const forScoring = internalQuery({
       rows.push({
         hitId, phrase: hit.phrase, title: post.title ?? null, body: post.body.join('\n') || null,
         subreddit: post.platform === 'reddit' ? subredditOf(post.url) : null,
+        business: await businessFor(ctx, business, hit.owner),
       })
     }
     return rows
@@ -150,7 +162,7 @@ export const tryScore = internalAction({
     const provider = resolveProvider()
     const token = await tokenFor(provider)
     if (token === null) throw new Error('No AI provider is available: set OPENAI_API_KEY, or enable the Convex AI Gateway')
-    const score = await askModel(fetch, provider, token, { phrase: args.phrase, title: args.title ?? null, body: args.body ?? null, subreddit: null })
+    const score = await askModel(fetch, provider, token, { phrase: args.phrase, title: args.title ?? null, body: args.body ?? null, subreddit: null, business: null })
     return { provider: provider.label, model: provider.model, score }
   },
 })

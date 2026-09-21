@@ -674,3 +674,13 @@ the real markup (`aria-posinset` cards in a `role="feed"`, the message in `story
 timestamp, so the reader now hovers to read it and falls back to a stable id. The real run pushed 4 real posts and
 the app showed 4 matches "checked by your helper". Gaps: comment counts read as 0. Python tests 70.
 
+### 2026-09-21 - Firecrawl and AgentMail
+Added two more integrations. Firecrawl: the onboarding brand step now reads the person's own website through
+Firecrawl's scrape API (`convex/brand.ts`, `convex/lib/firecrawl.ts`), keeps the cleaned facts in a `brands` table, and
+feeds a short summary of the business into scoring so scores reflect fit. Run against a real company site it returned
+a clean brand, and it caught a case where the model wrote "N/A" as a location, which is now treated as empty.
+AgentMail: strong matches are emailed as a plain-text digest (`convex/alerts.ts`, `convex/lib/agentmail.ts`) by a
+5-minute cron, with a Settings form and a test email; the limits are 5 matches per email and one email per person per
+10 minutes, and a failed send is retried, never marked as sent. Env vars: `FIRECRAWL_API_KEY`, `AGENTMAIL_API_KEY`,
+`AGENTMAIL_INBOX_ID`. Backend tests 107, web tests 174. Still to do: run both with real keys on a deployment.
+

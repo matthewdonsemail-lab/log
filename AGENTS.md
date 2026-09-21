@@ -96,6 +96,15 @@ Convex agent skills for common tasks can be installed by running
 - Scoring must fail safe: no provider, a gateway error or a bad reply leaves a match unscored and the rest of the pipeline untouched. A match gives up after three failed attempts. `AI_SCORING=off` must stop every model call.
 - Test with fake `fetch` replies only; never call a real model from tests.
 
+## Firecrawl And AgentMail Rules
+
+- Website text (Firecrawl) is untrusted. `parseBrandFacts` checks, trims, caps and de-fillers every field, and only an absolute https logo survives. It never stores "N/A"-style answers as facts. Add a test whenever you add a field.
+- Reading a website spends credits: keep it behind sign-in, the 30-second cooldown (`brand:claim`) and `normalizeWebsite` (no localhost, numeric or internal hosts). Errors are plain words from our own library and never carry the key or a response body.
+- The business summary reaches the scoring prompt only inside the fenced `<business>` block, capped at 500 characters.
+- Email goes out through AgentMail as plain text only, with a fixed subject. Never put post text in a subject, never add an HTML part, and never accept more than one address. Keep the limits: 5 matches per email, one email per person per 10 minutes, one test per minute.
+- A failed send must not mark matches as sent (`alerts:markSent` runs only after a successful send).
+- Tests use fake `fetch` replies. The Firecrawl call was also checked once against the real service; do the same after changing the request or the schema.
+
 ## Local Helpers (X, Reddit)
 
 - A helper reads a platform from the person's own computer and only pushes to `/ingest`. It gets its login from `GET /session` and its phrases from `GET /phrases`, both authenticated by the owner's ingest key; never add a way to fetch someone else's login or phrases.

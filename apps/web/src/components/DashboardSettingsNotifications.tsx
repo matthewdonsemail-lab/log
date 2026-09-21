@@ -9,6 +9,8 @@ import {
   sendBarkPush,
   type BarkConnection,
 } from '@/lib/notifications/bark'
+import { keywordsOnConvex } from '@/lib/live-keywords'
+import { DashboardSettingsEmailAlerts } from './DashboardSettingsEmailAlerts'
 
 type SendStatus = 'idle' | 'sending' | 'sent' | 'error'
 
@@ -286,6 +288,7 @@ export function DashboardSettingsNotifications() {
 
   return (
     <div className="flex flex-col gap-4">
+      {keywordsOnConvex() ? <DashboardSettingsEmailAlerts /> : null}
       <div>
         <h2 className="text-lg font-bold text-text-primary">Push to your phone</h2>
         <p className="text-sm text-text-secondary">
