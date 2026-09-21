@@ -718,3 +718,8 @@ The X and Facebook helpers now skip pictures, video and fonts, because the proxy
 text. A test with a real proxy that demands a password proves the picture and the video are never fetched, and both helpers still
 read real X (19 tweets) and real Facebook (3 posts) with images off.
 
+### 2026-09-21 - proxy set and checked
+Set the operator proxy (`PROXY_URL`, a residential proxy from a paid provider) on the dev and live deployments and checked it end to end:
+Chrome started the helper's way exits at a different address than the machine's own, both real helpers read X and Facebook through it with
+the mandatory rule enforced and no waiver, and the live `/proxy` endpoint gives it only to a valid ingest key. People still cannot see or set one.
+

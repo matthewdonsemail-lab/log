@@ -63,12 +63,12 @@ Deadline for the whole list: **Tue 22 Sep 2026, 12:00 PM PT**.
   pnpm exec convex env set --prod AGENTMAIL_INBOX_ID <inbox address>
   ```
   Then Settings, Notifications, save your address, press "Send a test email" and confirm it arrives. Real alerts need OpenAI scoring on too (item 1), because only scored matches are emailed.
-- [ ] **1d. Proxy (mandatory for X and Facebook reading).** Buy a residential or rotating proxy (any provider that gives a URL like `http://user:pass@host:port`), then:
+- [x] **1d. Proxy (mandatory for X and Facebook reading): set and checked on dev and prod (2026-09-21).** `PROXY_URL` is a 2Captcha residential proxy (North America gateway) in the deployment env. Checked: Chrome through it exits at a different IP, both real helpers read X (20 tweets) and Facebook (3 posts) through it with the rule enforced, and prod hands it only to a valid ingest key (401 otherwise). Watch the traffic: the plan is per gigabyte (the account had 0.9 GB), pages are loaded without pictures, video or fonts to save it, and the IP is not sticky, so X or Facebook may still ask for a security check. If the traffic runs out, helpers fail until it is topped up. Original steps: Buy a residential or rotating proxy (any provider that gives a URL like `http://user:pass@host:port`), then:
   ```
   pnpm exec convex env set PROXY_URL <proxy url>
   pnpm exec convex env set --prod PROXY_URL <proxy url>
   ```
-  **Until you do, X and Facebook helpers refuse to run on a deployment that has this code** ("Reading is paused until the operator sets up the proxy"). If you must demo before you have a proxy, set `PROXY_REQUIRED=false` on that deployment as a knowing, temporary choice, and remove it once `PROXY_URL` is set. People cannot see or set a proxy anywhere in the product.
+  *(Done. Before it was set,)* X and Facebook helpers refused to run on a deployment that has this code ("Reading is paused until the operator sets up the proxy"). If you must demo before you have a proxy, set `PROXY_REQUIRED=false` on that deployment as a knowing, temporary choice, and remove it once `PROXY_URL` is set. People cannot see or set a proxy anywhere in the product.
 - [ ] **2. Reddit app (makes Reddit reads fresh).** Log in to Reddit, open reddit.com/prefs/apps, "create another app", type **script**, redirect `http://localhost:8080`. Copy the client id (under the app name) and the secret, then:
   ```
   pnpm exec convex env set REDDIT_CLIENT_ID <id>
@@ -170,6 +170,5 @@ The other open to-dos (X and Facebook adapters, real brand step, phone alerts, F
 ## Still open before submitting
 
 - `OPENAI_API_KEY` on dev and prod (scoring, and therefore real alert emails).
-- A proxy: set `PROXY_URL` on dev and prod (see item 1d), or, knowingly and temporarily, `PROXY_REQUIRED=false`. Until one of them is set, X and Facebook helpers refuse to run.
 - Record the video, post, and submit: everything is written down in [`SUBMISSION.md`](SUBMISSION.md).
 - Rotate the Firecrawl and AgentMail keys after the deadline (they were pasted into a chat).

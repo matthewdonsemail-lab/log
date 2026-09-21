@@ -16,9 +16,9 @@ Do these first so nothing on screen is empty or broken. Check each one on the li
 - [ ] Settings, Notifications: your email is saved and **Send a test email** arrives.
 - [ ] Have a real business website ready to paste, for example `mailchimp.com`.
 - [ ] Close other tabs, hide bookmarks and any window with keys or logins in it. **Never show a token, an ingest key or a terminal with a key in it.**
-- [ ] Optional, only if these are set up on the site: the OpenAI key (matches show score badges) and the proxy (`PROXY_URL`) for X and Facebook. If they are not, **skip those scenes**. Show only what works.
+- [ ] The proxy is set up, so X and Facebook helpers work (run them on your computer before recording: see the Guide, X and Facebook helpers). Optional: the OpenAI key (matches show score badges). If the OpenAI key is not set, **skip the scoring scenes**. Show only what works.
 
-What works today, so you only promise that: Reddit end to end, website reading (Firecrawl), email alerts (AgentMail), Google sign-in, the docs. X and Facebook work through a helper on your own computer and need the proxy set. Match scores need the OpenAI key.
+What works today, so you only promise that: Reddit end to end, website reading (Firecrawl), email alerts (AgentMail), Google sign-in, the docs, and X and Facebook through a helper on your own computer (the proxy is set on the site). Match scores need the OpenAI key.
 
 ## 1. Video script (target 2:30, hard limit 3:00)
 
@@ -38,7 +38,7 @@ Screen recording with your voice. Speak plainly. One idea per scene.
 | 2:25 | Dashboard, Docs tab | "Guides for users and developers are built in." |
 | 2:35 | Landing page, then the repo | "It runs on Convex: live queries, crons, scheduled functions and HTTP actions. Thanks for watching." |
 
-If OpenAI is not set up, cut "scores" from scene 1:45 and say "matches". If X and Facebook are set up, add 10 seconds after 1:45: "X and Facebook work through a helper on my own computer, using a proxy the site provides, so people never handle one."
+If OpenAI is not set up, cut "scores" from scene 1:45 and say "matches". If the X and Facebook helpers are running, add 10 seconds after 1:45: "X and Facebook work through a helper on my own computer, using a proxy the site provides, so people never handle one."
 
 Tips: record at 1080p, zoom the browser to 110 percent, keep the cursor slow, cut every pause longer than 2 seconds.
 
