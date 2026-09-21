@@ -2431,7 +2431,7 @@
           "Accounts"
         ],
         "summary": "Update account",
-        "description": "Patches the `ConnectionRecord` for `:accountId` — merges the JSON body over the stored record but keeps `id` immutable (`id` from the path always wins). Used by the dashboard to toggle `viaProxy`, update labels, or stamp `connectedAt` after extension verification. Returns `404 Account not found` if the id is unknown. Code: apps/web/src/lib/connections/server.ts:32",
+        "description": "Patches the `ConnectionRecord` for `:accountId` — merges the JSON body over the stored record but keeps `id` immutable (`id` from the path always wins). Used by the dashboard to update labels, or stamp `connectedAt` after extension verification. Returns `404 Account not found` if the id is unknown. Code: apps/web/src/lib/connections/server.ts:32",
         "parameters": [
           {
             "name": "accountId",

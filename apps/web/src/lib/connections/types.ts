@@ -12,8 +12,6 @@ export interface ConnectInput {
   platform: ConnectionPlatform
   /** Raw cookie / token pasted from the browser extension. */
   cookie: string
-  /** Optional proxy URL (e.g. http://user:pass@host:port). */
-  proxy?: string
 }
 
 export interface ConnectionRecord {
@@ -22,8 +20,6 @@ export interface ConnectionRecord {
   platform: ConnectionPlatform
   /** Display label (defaults to the platform name when the account is added). */
   label: string
-  /** Whether the connection routes through a proxy. */
-  viaProxy: boolean
   /** ISO timestamp of the last successful connect; null = added but not connected yet. */
   connectedAt: string | null
   /** Last normalized issue the client observed on this account, if any. */

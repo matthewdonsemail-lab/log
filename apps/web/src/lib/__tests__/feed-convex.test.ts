@@ -72,7 +72,7 @@ describe('live transport on Convex (no bridge)', () => {
   })
 
   it('lists and creates accounts through Convex', async () => {
-    const account = { id: 'acc1', platform: 'x', label: 'X', connectedAt: null, viaProxy: false }
+    const account = { id: 'acc1', platform: 'x', label: 'X', connectedAt: null }
     reply = (method) => (method === 'query' ? { accounts: [account] } : { account, accounts: [account] })
     expect(await getAccounts()).toEqual([account])
     expect(await createAccount('x')).toEqual(account)

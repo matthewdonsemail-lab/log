@@ -41,11 +41,6 @@ function AccountMeta({ account }: { account: ConnectionRecord }) {
         </Badge>
       ) : null}
       <AccountStatusBadge account={account} />
-      {account.connectedAt ? (
-        <Badge variant={account.viaProxy ? 'info' : 'neutral'}>
-          {account.viaProxy ? 'Via proxy' : 'Direct'}
-        </Badge>
-      ) : null}
       {account.lastCheckedAt ? (
         <span className="text-xs text-text-secondary">checked {formatTime(account.lastCheckedAt)}</span>
       ) : null}

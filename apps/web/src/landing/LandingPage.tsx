@@ -1,4 +1,6 @@
-import type { CSSProperties } from 'react'
+import type { CSSProperties, FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { saveLandingWebsite } from '@/pages/onboarding/auth-handoff'
 import { Clouds } from './Clouds'
 import { Control } from './Control'
 import { Header } from './Header'
@@ -45,6 +47,16 @@ const PLUGS = [
  * Sections get built out in <main> as the landing page takes shape.
  */
 export function LandingPage() {
+  const navigate = useNavigate()
+
+  // The website form leads into onboarding: keep what was typed, and it is waiting in the brand step after sign-in.
+  function startOnboarding(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const site = new FormData(event.currentTarget).get('website')
+    if (typeof site === 'string') saveLandingWebsite(site)
+    navigate('/onboarding')
+  }
+
   return (
     <div
       className="flex min-h-screen flex-col text-white"
@@ -63,61 +75,11 @@ export function LandingPage() {
         homeHref="/"
         logoLabel="ListeningKit"
         className="z-[70]"
-        navItems={[
-          { href: '/#features', label: 'Features', variant: 'ghost' },
-          { href: '/#resources', label: 'Resources', variant: 'ghost' },
-          { href: '/#pricing', label: 'Pricing', variant: 'ghost' },
-        ]}
+        navItems={[]}
         accountItems={[
           { href: '/sign-in', label: 'Sign in', variant: 'ghost' },
           { href: '/onboarding', label: 'Get started', variant: 'cta' },
         ]}
-        navMenuItems={{
-          '/#features': [
-            {
-              href: '/#features',
-              label: 'Live listening',
-              action: 'Explore',
-              swatchClassName: 'bg-sky-500',
-              description: 'Watch Reddit, X and Facebook for your keywords in real time.',
-              icon: 'bookmark',
-            },
-            {
-              href: '/#scoring',
-              label: 'AI scoring',
-              action: 'Explore',
-              swatchClassName: 'bg-violet-500',
-              description: 'Every match scored 0-100 with an intent and a one-line reason.',
-              icon: 'demo',
-            },
-            {
-              href: '/#helpers',
-              label: 'Local helpers',
-              action: 'Explore',
-              swatchClassName: 'bg-emerald-500',
-              description: 'Polite readers that run on your own computer, no servers needed.',
-              icon: 'tools',
-            },
-          ],
-          '/#resources': [
-            {
-              href: '/docs',
-              label: 'Docs',
-              action: 'Read',
-              swatchClassName: 'bg-blue-500',
-              description: 'Setup guides and references for the whole product.',
-              icon: 'articles',
-            },
-            {
-              href: '/#changelog',
-              label: 'Changelog',
-              action: 'Read',
-              swatchClassName: 'bg-amber-500',
-              description: 'What shipped lately and what is next.',
-              icon: 'articles',
-            },
-          ],
-        }}
       />
       <div aria-hidden className="h-24 shrink-0" />
       <Clouds>
@@ -134,9 +96,11 @@ export function LandingPage() {
           </p>
           <form
             className="mt-7 flex w-full items-center gap-2 rounded-[14px] bg-white py-[5px] pl-4 pr-[5px] sm:mt-8 sm:gap-2.5 sm:py-[7px] sm:pl-[26px] sm:pr-[7px]"
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={startOnboarding}
           >
             <input
+              name="website"
+              aria-label="Your website"
               placeholder="Enter your website"
               className="min-w-0 grow bg-transparent text-[16px] leading-[1.3] text-[#0D2A4C] outline-none placeholder:text-[#0D2A4C]/60 sm:text-[17px]"
             />
@@ -151,7 +115,7 @@ export function LandingPage() {
                 className="flex h-[42px] shrink-0 cursor-pointer items-center rounded-[10px] bg-[#2A8CFF] px-4 text-white shadow-[0_4px_0_0_#1F6FE6] transition-transform duration-100 active:translate-y-1 active:shadow-none sm:h-[50px] sm:px-[24px]"
               >
                 <span className="whitespace-nowrap text-[16px] font-medium leading-[1.3] sm:text-[17px]">
-                  Find creators
+                  Get started
                 </span>
               </button>
             </span>

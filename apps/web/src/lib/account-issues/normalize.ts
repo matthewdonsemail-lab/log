@@ -121,7 +121,6 @@ export const FIX_LABELS: Record<IssueFix, string> = {
   reexport_cookie: 'Re-export cookie',
   login_in_browser: 'Verify in your browser',
   wait: 'Backs off automatically',
-  use_proxy: 'Route via proxy',
   appeal: 'Appeal with the platform',
   rejoin: 'Re-join group',
   resolve: 'Resolve in your browser',

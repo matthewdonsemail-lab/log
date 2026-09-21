@@ -24,6 +24,7 @@ import type * as lib_firecrawl from "../lib/firecrawl.js";
 import type * as lib_hash from "../lib/hash.js";
 import type * as lib_match from "../lib/match.js";
 import type * as lib_posts from "../lib/posts.js";
+import type * as lib_proxy from "../lib/proxy.js";
 import type * as lib_redditFeed from "../lib/redditFeed.js";
 import type * as lib_scoring from "../lib/scoring.js";
 import type * as lib_server from "../lib/server.js";
@@ -56,6 +57,7 @@ declare const fullApi: ApiFromModules<{
   "lib/hash": typeof lib_hash;
   "lib/match": typeof lib_match;
   "lib/posts": typeof lib_posts;
+  "lib/proxy": typeof lib_proxy;
   "lib/redditFeed": typeof lib_redditFeed;
   "lib/scoring": typeof lib_scoring;
   "lib/server": typeof lib_server;

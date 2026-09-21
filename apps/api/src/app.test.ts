@@ -3,11 +3,11 @@ import { createApp } from './app'
 import type { Backend } from './backend'
 
 function setup() {
-  const stores = new Map<string, Array<{ id: string; platform: 'reddit'; label: string; connectedAt: null; viaProxy: boolean }>>()
+  const stores = new Map<string, Array<{ id: string; platform: 'reddit'; label: string; connectedAt: null }>>()
   const backend = vi.fn((token: string): Backend => ({
     listAccounts: async () => ({ accounts: stores.get(token) ?? [] }),
     createAccount: async input => {
-      const account = { id: `${token}-1`, platform: 'reddit' as const, label: input.label, connectedAt: null, viaProxy: false }
+      const account = { id: `${token}-1`, platform: 'reddit' as const, label: input.label, connectedAt: null }
       stores.set(token, [...(stores.get(token) ?? []), account])
       return { account, accounts: stores.get(token)! }
     },

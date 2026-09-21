@@ -556,7 +556,6 @@ function AccountPick({
           active={value === account.id}
           onClick={() => onSelect(account.id)}
           label={account.label}
-          sub={account.viaProxy ? 'via proxy' : 'direct connection'}
         />
       ))}
     </div>

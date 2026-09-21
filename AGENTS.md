@@ -105,6 +105,13 @@ Convex agent skills for common tasks can be installed by running
 - A failed send must not mark matches as sent (`alerts:markSent` runs only after a successful send).
 - Tests use fake `fetch` replies. The Firecrawl call was also checked once against the real service; do the same after changing the request or the schema.
 
+## Proxy Rules (mandatory, hidden from people)
+
+- A proxy is mandatory for X and Facebook reading and is never the person's to choose or see. Do not add a proxy field, flag, badge, status text or "fix" that asks a person to set one. Issue messages about connection trouble say it is on our side and resolves itself.
+- The proxy comes only from the deployment (`PROXY_URL`) through `GET /proxy`, which needs a valid ingest key. Never return it from any other function, never log it, never put it in an error, and add its username and password to the helper's `args.secrets` (`proxy_secrets`).
+- Helpers call `fetch_proxy` before starting a browser and stop with a plain message on a 503. Do not add a way around it (no `--proxy`, `--no-proxy`, `--direct`). `PROXY_REQUIRED=false` is the operator's switch, not a feature.
+- Tests must include a real-browser check that traffic goes through a proxy demanding credentials (`clients/tests/test_proxy.py`).
+
 ## Local Helpers (X, Reddit)
 
 - A helper reads a platform from the person's own computer and only pushes to `/ingest`. It gets its login from `GET /session` and its phrases from `GET /phrases`, both authenticated by the owner's ingest key; never add a way to fetch someone else's login or phrases.

@@ -30,9 +30,7 @@ function ConnectionRow({
   onDeleted,
   onSaved,
   cookie,
-  proxy,
   onCookieChange,
-  onProxyChange,
 }: {
   account: ConnectionRecord
   open: boolean
@@ -46,9 +44,7 @@ function ConnectionRow({
   /** Called after a successful rename so the parent reconciles with the store. */
   onSaved: () => void
   cookie: string
-  proxy: string
   onCookieChange: (value: string) => void
-  onProxyChange: (value: string) => void
 }) {
   const clip = useSquircleClip<HTMLDivElement>(20)
   const icon = iconFor(account.platform)
@@ -79,7 +75,7 @@ function ConnectionRow({
   useEffect(() => {
     if (status !== 'connecting') return
     let cancelled = false
-    connectAccount({ id, platform, cookie, proxy })
+    connectAccount({ id, platform, cookie })
       .then(() => {
         if (!cancelled) {
           setPhase(null)
@@ -95,7 +91,7 @@ function ConnectionRow({
     return () => {
       cancelled = true
     }
-    // Only re-fire when the user arms the connect; cookie/proxy are captured at press time.
+    // Only re-fire when the user arms the connect; the token is captured at press time.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status])
 
@@ -132,13 +128,8 @@ function ConnectionRow({
     if (testing || busy) return
     setTesting(true)
     try {
-      const res = await testConnection({ id: account.id, platform: account.platform, cookie, proxy })
-      notifySuccess(
-        'Test passed',
-        res.viaProxy
-          ? `${icon.label} connection looks good (via proxy).`
-          : `${icon.label} connection looks good.`,
-      )
+      await testConnection({ id: account.id, platform: account.platform, cookie })
+      notifySuccess('Test passed', `${icon.label} connection looks good.`)
     } catch (err: unknown) {
       notifyError('Test failed', err instanceof Error ? err.message : 'Test failed.')
     } finally {
@@ -221,20 +212,6 @@ function ConnectionRow({
               className="h-14 w-full rounded-xl border border-slate-300 bg-white px-4 text-slate-900 placeholder:text-slate-400 focus:border-[#2a8cff] focus:outline-none disabled:opacity-60"
             />
           </label>
-          <label className="block">
-            <span className="mb-1.5 block text-sm font-semibold text-slate-700">
-              Proxy <span className="font-normal text-slate-400">(optional)</span>
-            </span>
-            <input
-              type="text"
-              value={proxy}
-              onChange={(e) => onProxyChange(e.target.value)}
-              disabled={busy || status === 'connected'}
-              placeholder="http://user:pass@host:port"
-              autoComplete="off"
-              className="h-14 w-full rounded-xl border border-slate-300 bg-white px-4 text-slate-900 placeholder:text-slate-400 focus:border-[#2a8cff] focus:outline-none disabled:opacity-60"
-            />
-          </label>
           <div className="flex flex-wrap items-center gap-3">
             {status === 'connected' ? (
               <>
@@ -285,7 +262,6 @@ export function DashboardSettingsConnections() {
   const [accounts, setAccounts] = useState<ConnectionRecord[] | null>(null)
   const [openId, setOpenId] = useState<string | null>(null)
   const [cookieById, setCookieById] = useState<Record<string, string>>({})
-  const [proxyById, setProxyById] = useState<Record<string, string>>({})
 
   // Fetch the account list through the connections API on mount.
   useEffect(() => {
@@ -296,10 +272,6 @@ export function DashboardSettingsConnections() {
 
   function setCookie(id: string, value: string) {
     setCookieById((prev) => ({ ...prev, [id]: value }))
-  }
-
-  function setProxy(id: string, value: string) {
-    setProxyById((prev) => ({ ...prev, [id]: value }))
   }
 
   async function addAccountAfter(sourceId: string) {
@@ -315,7 +287,6 @@ export function DashboardSettingsConnections() {
     })
     // New account starts as a copy of the one it was duplicated from.
     setCookieById((prev) => ({ ...prev, [record.id]: prev[sourceId] ?? '' }))
-    setProxyById((prev) => ({ ...prev, [record.id]: prev[sourceId] ?? '' }))
     setOpenId(record.id)
   }
 
@@ -325,7 +296,6 @@ export function DashboardSettingsConnections() {
         setAccounts(list)
         const ids = new Set(list.map((a) => a.id))
         setCookieById((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => ids.has(id))))
-        setProxyById((prev) => Object.fromEntries(Object.entries(prev).filter(([id]) => ids.has(id))))
       })
       .catch(() => undefined)
   }
@@ -349,9 +319,7 @@ export function DashboardSettingsConnections() {
           onDeleted={() => reconcile()}
           onSaved={() => reconcile()}
           cookie={cookieById[account.id] ?? ''}
-          proxy={proxyById[account.id] ?? ''}
           onCookieChange={(value) => setCookie(account.id, value)}
-          onProxyChange={(value) => setProxy(account.id, value)}
         />
       ))}
       {accounts === null && (

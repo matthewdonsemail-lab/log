@@ -166,23 +166,25 @@ async def safe_evaluate(page: Any, script: str, tries: int = 4) -> Any:
             await page.wait_for_timeout(600)
 
 
-async def launch_chrome(show: bool) -> tuple[Any, Any]:
-    """Start real Google Chrome under Playwright. Returns (playwright, browser); the caller closes both."""
+async def launch_chrome(show: bool, proxy: dict | None = None) -> tuple[Any, Any]:
+    """Start real Google Chrome under Playwright, through the proxy when there is one. Returns (playwright, browser); the caller closes both."""
     from playwright.async_api import async_playwright
 
     playwright = await async_playwright().start()
-    browser = await playwright.chromium.launch(
-        channel="chrome", headless=not show, args=["--disable-blink-features=AutomationControlled"],
-    )
+    options: dict[str, Any] = {"channel": "chrome", "headless": not show, "args": ["--disable-blink-features=AutomationControlled"]}
+    if proxy:
+        options["proxy"] = proxy
+    browser = await playwright.chromium.launch(**options)
     return playwright, browser
 
 
 class BrowserXClient:
     """Lazily starts one browser window, logs it in with the cookies, and searches X's Latest tab."""
 
-    def __init__(self, jar: list[dict], *, show: bool = False, browser: str = "chrome") -> None:
+    def __init__(self, jar: list[dict], *, show: bool = False, browser: str = "chrome", proxy: dict | None = None) -> None:
         self._cookies = playwright_cookies(jar)
         self._show = show
+        self._proxy = proxy
         self._browser = browser
         self._manager: Any = None
         self._playwright: Any = None
@@ -194,11 +196,11 @@ class BrowserXClient:
         if self._browser == "camoufox":
             from camoufox.async_api import AsyncCamoufox  # imported here so the helper still starts without a browser installed
 
-            self._manager = AsyncCamoufox(headless=not self._show, humanize=True)
+            self._manager = AsyncCamoufox(headless=not self._show, humanize=True, **({"proxy": self._proxy} if self._proxy else {}))
             browser = await self._manager.__aenter__()
         else:
             # X refuses searches from Camoufox's browser fingerprint even with a good login; real Chrome is accepted.
-            self._playwright, browser = await launch_chrome(self._show)
+            self._playwright, browser = await launch_chrome(self._show, self._proxy)
             self._manager = browser
         context = await browser.new_context()
         await context.add_cookies(self._cookies)

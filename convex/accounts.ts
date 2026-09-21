@@ -3,7 +3,7 @@ import { mutation, query, requireOwner, type MutationCtx } from './lib/server'
 import { platform } from './schema'
 
 function publicAccount(row: { _id: string; platform: 'facebook' | 'x' | 'reddit'; label: string; connectedAt: string | null }) {
-  return { id: row._id, platform: row.platform, label: row.label, connectedAt: row.connectedAt, viaProxy: false }
+  return { id: row._id, platform: row.platform, label: row.label, connectedAt: row.connectedAt }
 }
 
 export const list = query({

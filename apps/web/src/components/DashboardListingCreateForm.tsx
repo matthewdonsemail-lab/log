@@ -183,7 +183,6 @@ export function DashboardListingCreateForm({
                 active={accountId === account.id}
                 onClick={() => setAccountId(account.id)}
                 label={account.label}
-                sub={account.viaProxy ? 'via proxy' : 'direct connection'}
                 tone="solid"
                 icon={<SocialGlyph icon={facebookIcon} className="size-8 shrink-0" />}
               />

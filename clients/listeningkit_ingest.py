@@ -135,6 +135,38 @@ def fetch_session(
     return cookies
 
 
+def fetch_proxy(
+    *,
+    endpoint: str,
+    key: str,
+    get: Callable[[str, str], tuple[int, str]] = _get,
+) -> dict | None:
+    """The proxy this helper must browse through, or None when the operator has waived the requirement.
+
+    The person never chooses or sees it: it comes from the deployment, only to a valid ingest key. A deployment
+    with no proxy refuses (503), and the helper must stop rather than browse directly.
+    """
+    base = endpoint.rstrip("/")
+    if base.endswith("/ingest"):
+        base = base[: -len("/ingest")]
+    try:
+        status, text = get(f"{base}/proxy", key)
+    except (urllib.error.URLError, TimeoutError, ConnectionError) as error:
+        raise SessionError(f"could not reach ListeningKit: {error}") from error
+    if status == 401:
+        raise SessionError("The ingest key was rejected. Make a new one on the Send posts in tab.")
+    if status == 503:
+        raise SessionError("Reading is paused until the operator sets up the proxy. Nothing is wrong on your side; try again later.")
+    if status != 200:
+        raise SessionError(f"could not load the connection settings ({status})")
+    proxy = json.loads(text).get("proxy")
+    if proxy is None:
+        return None
+    if not isinstance(proxy, dict) or not str(proxy.get("server", "")).strip():
+        raise SessionError("the connection settings came back in an unexpected shape")
+    return {key_: str(value) for key_, value in proxy.items() if key_ in ("server", "username", "password") and value}
+
+
 def fetch_phrases(
     platform: str,
     *,

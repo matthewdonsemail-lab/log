@@ -6,6 +6,7 @@ import { MAX_POSTS_PER_BATCH } from './feed'
 import { decryptText } from './lib/crypto'
 import { sha256Hex } from './lib/hash'
 import { normalizePushedPost, type NormalizedPost } from './lib/posts'
+import { mayRead, proxyState } from './lib/proxy'
 
 const PLATFORMS = ['facebook', 'x', 'reddit'] as const
 type Platform = typeof PLATFORMS[number]
@@ -84,6 +85,25 @@ http.route({
       if (error instanceof ConvexError && error.data === 'Invalid ingest key') return json({ error: 'Invalid ingest key' }, 401)
       return json({ error: 'Could not load phrases' }, 500)
     }
+  }),
+})
+
+// The proxy the helper must browse through. Only a valid ingest key gets it, and it is never logged or returned elsewhere.
+http.route({
+  path: '/proxy',
+  method: 'GET',
+  handler: httpActionGeneric(async (ctx, req) => {
+    const secret = req.headers.get('Authorization')?.match(/^Bearer (lk_ingest_[A-Za-z0-9]{20,100})$/)?.[1]
+    if (!secret) return json({ error: 'Authentication required' }, 401)
+    try {
+      await ctx.runQuery(internal.ingest.verifyKey, { keyHash: await sha256Hex(secret) })
+    } catch (error) {
+      if (error instanceof ConvexError && error.data === 'Invalid ingest key') return json({ error: 'Invalid ingest key' }, 401)
+      return json({ error: 'Could not check the key' }, 500)
+    }
+    const state = proxyState({ PROXY_URL: process.env.PROXY_URL, PROXY_REQUIRED: process.env.PROXY_REQUIRED })
+    if (!mayRead(state)) return json({ error: 'Reading is paused until the operator sets up the proxy' }, 503)
+    return json({ required: state.required, proxy: state.proxy }, 200)
   }),
 })
 

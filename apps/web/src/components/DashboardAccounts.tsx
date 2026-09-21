@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Cable, Globe, Plus, Settings, ShieldCheck, Trash, Unplug } from 'lucide-react'
 import {
-  Badge,
   Dropdown,
   Select,
   Table,
@@ -207,7 +206,6 @@ export function DashboardAccounts() {
                 <TableHead>Platform</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Connected</TableHead>
-                <TableHead>Proxy</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -239,17 +237,6 @@ export function DashboardAccounts() {
                     </TableCell>
                     <TableCell className="whitespace-nowrap text-text-secondary">
                       {formatConnectedAt(account.connectedAt)}
-                    </TableCell>
-                    <TableCell>
-                      {account.connectedAt ? (
-                        account.viaProxy ? (
-                          <Badge variant="info">Via proxy</Badge>
-                        ) : (
-                          <Badge>Direct</Badge>
-                        )
-                      ) : (
-                        <span className="text-text-secondary">—</span>
-                      )}
                     </TableCell>
                     <TableCell
                       className="text-right"

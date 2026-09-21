@@ -2,7 +2,7 @@ import { ConvexError, v } from 'convex/values'
 import { writePosts } from './feed'
 import { ensureAccount } from './lib/accounts'
 import { sha256Hex } from './lib/hash'
-import { internalMutation, mutation, query, requireOwner } from './lib/server'
+import { internalMutation, internalQuery, mutation, query, requireOwner } from './lib/server'
 import { platform, postFields } from './schema'
 
 const MAX_KEYS = 10
@@ -43,6 +43,16 @@ export const revokeKey = mutation({
     const row = await ctx.db.get(args.id)
     if (!row || row.owner !== owner) throw new ConvexError('Key not found')
     await ctx.db.delete(args.id)
+    return null
+  },
+})
+
+/** For the helper's /proxy endpoint only: proves the key is valid before the proxy is handed to it. */
+export const verifyKey = internalQuery({
+  args: { keyHash: v.string() },
+  handler: async (ctx, args): Promise<null> => {
+    const key = await ctx.db.query('ingestKeys').withIndex('by_hash', q => q.eq('keyHash', args.keyHash)).unique()
+    if (!key) throw new ConvexError('Invalid ingest key')
     return null
   },
 })

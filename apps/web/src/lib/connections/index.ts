@@ -2,7 +2,6 @@ import { apiMode, apiRequest } from '../transport'
 import { listSessions, removeSession, saveSession, tokenPlatform } from '../live-sessions'
 import { accountsCreateRef, accountsListRef, convexClient, convexErrorMessage, convexUrl } from '../convex'
 import { assertCookie } from './cookie'
-import { normalizeProxy } from './proxy'
 import { connectionsApp } from './server'
 import { platformLabel } from './store'
 import type { ConnectInput, ConnectionPlatform, ConnectionRecord } from './types'
@@ -114,29 +113,28 @@ function delay(ms: number, signal?: AbortSignal): Promise<void> {
 }
 
 /**
- * Dry-run validation of the cookie + proxy without persisting anything.
+ * Dry-run validation of the cookie without persisting anything.
  * Throws on invalid input; aborts via signal.
  */
 export async function testConnection(
   input: ConnectInput,
   signal?: AbortSignal,
-): Promise<{ ok: true; viaProxy: boolean }> {
+): Promise<{ ok: true }> {
   if (liveOnConvex()) {
     const session = (await listSessions()).find((row) => row.platform === input.platform)
     if (!session) throw new Error('Not connected yet. Paste a token and press Connect.')
     if (session.expiresAt !== null && session.expiresAt <= Date.now()) throw new Error('This login has expired. Paste a fresh token.')
-    return { ok: true, viaProxy: false }
+    return { ok: true }
   }
   if (apiMode() === 'live') throw new Error('Live platform verification is not implemented yet')
   assertCookie(input.cookie)
-  const proxy = normalizeProxy(input.proxy)
   await delay(800, signal)
   if (signal?.aborted) throw new DOMException('Test cancelled.', 'AbortError')
-  return { ok: true, viaProxy: proxy !== undefined }
+  return { ok: true }
 }
 
 /**
- * Validate the cookie + proxy, run the handshake, persist the connection
+ * Validate the cookie, run the handshake, persist the connection
  * through `PATCH /accounts/:id`. Throws on invalid input; aborts via signal.
  */
 export async function connectAccount(
@@ -151,13 +149,12 @@ export async function connectAccount(
     await saveSession(input.cookie)
     const saved = (await getAccounts()).find((a) => a.id === input.id)
     return saved ?? {
-      id: input.id, platform: input.platform, label: platformLabel(input.platform), viaProxy: false,
+      id: input.id, platform: input.platform, label: platformLabel(input.platform),
       connectedAt: new Date().toISOString(), lastIssue: null, lastCheckedAt: new Date().toISOString(), retryAfter: null,
     }
   }
   if (apiMode() === 'live') throw new Error('Live platform connection is not implemented yet')
   assertCookie(input.cookie)
-  const proxy = normalizeProxy(input.proxy)
   await delay(1100, signal)
   if (signal?.aborted) throw new DOMException('Connection cancelled.', 'AbortError')
   const accounts = await getAccounts()
@@ -166,7 +163,6 @@ export async function connectAccount(
     id: input.id,
     platform: input.platform,
     label: existing?.label ?? platformLabel(input.platform),
-    viaProxy: proxy !== undefined,
     connectedAt: new Date().toISOString(),
     lastIssue: null,
     lastCheckedAt: new Date().toISOString(),
@@ -188,7 +184,7 @@ export async function disconnectAccount(id: string): Promise<ConnectionRecord[]>
   const accounts = await getAccounts()
   const existing = accounts.find((a) => a.id === id)
   if (!existing) return deleteAccount(id)
-  return saveAccount({ ...existing, viaProxy: false, connectedAt: null, lastIssue: 'disconnected', rawSignal: null })
+  return saveAccount({ ...existing, connectedAt: null, lastIssue: 'disconnected', rawSignal: null })
 }
 
 /**

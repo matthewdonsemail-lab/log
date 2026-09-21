@@ -10,7 +10,7 @@ beforeEach(() => {
 afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); setApiTokenProvider(async () => null) })
 
 it('uses live account routes, without falling back to the seeded roster', async () => {
-  const account = { id: 'a', platform: 'reddit', label: 'Reddit', connectedAt: null, viaProxy: false }
+  const account = { id: 'a', platform: 'reddit', label: 'Reddit', connectedAt: null }
   const fetcher = vi.fn().mockResolvedValueOnce(Response.json({ accounts: [] }))
     .mockResolvedValueOnce(Response.json({ account, accounts: [account] }, { status: 201 }))
   vi.stubGlobal('fetch', fetcher)

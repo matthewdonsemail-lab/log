@@ -165,9 +165,10 @@ def check_state(state: dict) -> None:
 class BrowserFacebookClient:
     """Lazily starts one Chrome window, logs it in with the cookies, and searches Facebook's recent posts."""
 
-    def __init__(self, jar: list[dict], *, show: bool = False) -> None:
+    def __init__(self, jar: list[dict], *, show: bool = False, proxy: dict | None = None) -> None:
         self._cookies = playwright_cookies(jar, FACEBOOK_DOMAINS)
         self._show = show
+        self._proxy = proxy
         self._playwright: Any = None
         self._browser: Any = None
         self._page: Any = None
@@ -175,7 +176,7 @@ class BrowserFacebookClient:
     async def _page_ready(self) -> Any:
         if self._page is not None:
             return self._page
-        self._playwright, self._browser = await launch_chrome(self._show)
+        self._playwright, self._browser = await launch_chrome(self._show, self._proxy)
         context = await self._browser.new_context(locale="en-US")
         await context.add_cookies(self._cookies)
         self._page = await context.new_page()

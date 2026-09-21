@@ -55,7 +55,6 @@ export type IssueFix =
   | 'reexport_cookie'
   | 'login_in_browser'
   | 'wait'
-  | 'use_proxy'
   | 'appeal'
   | 'rejoin'
   | 'resolve'

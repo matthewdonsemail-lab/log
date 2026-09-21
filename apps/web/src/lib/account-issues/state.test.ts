@@ -6,7 +6,6 @@ const base: ConnectionRecord = {
   id: 'test-account',
   platform: 'facebook',
   label: 'Test account',
-  viaProxy: false,
   connectedAt: '2026-09-16T00:00:00.000Z',
   lastIssue: null,
   rawSignal: null,

@@ -32,7 +32,6 @@ function isValidRecord(value: unknown): value is ConnectionRecord {
     typeof value.platform === 'string' &&
     value.platform in PLATFORM_LABEL &&
     typeof value.label === 'string' &&
-    typeof value.viaProxy === 'boolean' &&
     (value.connectedAt === null || typeof value.connectedAt === 'string')
   )
 }
@@ -46,14 +45,13 @@ function migrateLegacy(): ConnectionRecord[] {
     if (!Array.isArray(parsed)) return []
     return parsed
       .filter(
-        (r): r is { platform: ConnectionPlatform; connectedAt?: unknown; viaProxy?: unknown } =>
+        (r): r is { platform: ConnectionPlatform; connectedAt?: unknown } =>
           isRecord(r) && typeof r.platform === 'string'
       )
       .map((r) => ({
         id: newAccountId(),
         platform: r.platform,
         label: platformLabel(r.platform),
-        viaProxy: !!r.viaProxy,
         connectedAt: typeof r.connectedAt === 'string' ? r.connectedAt : null
       }))
   } catch {
@@ -96,7 +94,6 @@ function readAll(): ConnectionRecord[] {
     id: newAccountId(),
     platform,
     label: platformLabel(platform),
-    viaProxy: false,
     connectedAt: null
   }))
   writeAll(seeded)
@@ -117,7 +114,6 @@ export function addAccount(platform: ConnectionPlatform): ConnectionRecord {
     id: newAccountId(),
     platform,
     label: platformLabel(platform),
-    viaProxy: false,
     connectedAt: null
   }
   writeAll([...readAll(), record])

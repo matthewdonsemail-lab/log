@@ -7,7 +7,6 @@ export interface Account {
   platform: Platform
   label: string
   connectedAt: string | null
-  viaProxy: boolean
 }
 export interface FeedSyncResult {
   accountId: string

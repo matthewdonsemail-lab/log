@@ -36,6 +36,8 @@ pnpm dev:web                  # the web app; add pnpm dev:docs for this site
 | `SESSION_ENCRYPTION_KEY` | 32 random bytes, base64. Encrypts connected logins. Without it nobody can connect an account. |
 | `OPENAI_API_KEY` | Scores matches. `AI_MODEL` changes the model (default `gpt-4o-mini`); `AI_SCORING=off` turns scoring off. Optional. |
 | `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET` | Reddit "script" app for fresh reads. Optional. |
+| `PROXY_URL` | The proxy every X and Facebook helper must use, like `http://user:pass@host:port` or `socks5://...`. Mandatory: helpers refuse to run without it. |
+| `PROXY_REQUIRED` | Operator-only: set to `false` to let helpers browse directly on a deployment with no proxy yet. |
 | `FIRECRAWL_API_KEY` | Reads the person's website in onboarding (`brand:extractFromWebsite`). Optional. |
 | `AGENTMAIL_API_KEY`, `AGENTMAIL_INBOX_ID` | Email alerts. The inbox id is the AgentMail inbox the alerts are sent from. Optional. |
 
@@ -64,9 +66,15 @@ POST /ingest
 
 GET /session?platform=x     → the cookie jar, decrypted, only for a helper holding a valid key
 GET /phrases?platform=x     → { "platform": "x", "phrases": ["need a helper"] }
+GET /proxy                  → { "required": true, "proxy": { "server": "http://host:8080", "username": "u", "password": "p" } }
+                              (503 when the deployment has no proxy: the helper must stop)
 ```
 
 Up to 100 posts per batch. Invalid rows are skipped and counted, not fatal. `platform` is `facebook`, `x` or `reddit`.
+
+## The mandatory proxy
+
+X and Facebook reading always goes through the operator's proxy, and a person never sees or sets one. `fetch_proxy` in `clients/listeningkit_ingest.py` asks `GET /proxy` before any browser starts; `launch_chrome(show, proxy)` passes it to Chrome. There is deliberately no `--proxy` or `--no-proxy` flag. The proxy is never logged, never in an error, and its username and password are added to the helper's hidden-secrets list. `clients/tests/test_proxy.py` proves with real Chrome and a local proxy that demands a password that traffic goes through it. Limit to know: the helper runs on the person's own computer, so only server-side reading would fully hide the proxy from a technical person. Reddit is read by the Convex server, which cannot use a proxy.
 
 ## Security rules (do not weaken)
 
@@ -80,9 +88,9 @@ Up to 100 posts per batch. Invalid rows are skipped and counted, not fatal. `pla
 
 | Task | Command |
 |---|---|
-| Backend tests (107) | `pnpm test:backend` |
-| Web tests (174) | `pnpm --filter web test` |
-| Python tests (70) | `python -m pytest clients/tests` (the browser tests start real Chrome and take a few minutes) |
+| Backend tests (114) | `pnpm test:backend` |
+| Web tests (179) | `pnpm --filter web test` |
+| Python tests (85) | `python -m pytest clients/tests` (the browser tests start real Chrome and take a few minutes) |
 | Type check | `pnpm typecheck` |
 | Lint | `pnpm lint` |
 | Rebuild the extension zip | `python scripts/build-extension.py` |

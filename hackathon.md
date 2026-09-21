@@ -684,3 +684,14 @@ AgentMail: strong matches are emailed as a plain-text digest (`convex/alerts.ts`
 10 minutes, and a failed send is retried, never marked as sent. Env vars: `FIRECRAWL_API_KEY`, `AGENTMAIL_API_KEY`,
 `AGENTMAIL_INBOX_ID`. Backend tests 107, web tests 174. Still to do: run both with real keys on a deployment.
 
+### 2026-09-21 - proxies made mandatory and hidden
+Reading X and Facebook now always goes through a proxy the operator sets on the deployment, and people can no
+longer see or set one: the proxy box is gone from Settings and the browser extension, the "Via proxy / Direct"
+badges are gone, and connection-trouble messages say it is on our side. A new `GET /proxy` endpoint
+(`convex/http.ts`, `convex/lib/proxy.ts`) gives the proxy only to a helper holding a valid ingest key; helpers
+refuse to start when the deployment has none. Checked with a real Chrome browser through a local proxy that
+demands a password. Env var names: `PROXY_URL`, `PROXY_REQUIRED` (operator-only). Backend tests 114, web tests 179,
+Python tests 85. Also: the landing page website box now leads into onboarding (the typed website waits in the
+brand step after sign-in) and the landing header is just the logo, Sign in and Get started. Still to do: a real
+proxy provider and `PROXY_URL` on the deployments.
+

@@ -5,7 +5,7 @@ import { SOCIAL_ICONS, SocialGlyph } from '../lib/social-icons'
 import { DashboardFormSheet } from './DashboardFormSheet'
 
 /** Fixes that are performed in ListeningKit's Settings tab (as opposed to in a browser). */
-const SETTINGS_FIXES = new Set(['connect', 'reconnect', 'reexport_cookie', 'use_proxy'])
+const SETTINGS_FIXES = new Set(['connect', 'reconnect', 'reexport_cookie'])
 
 /** Flatten a raw signal into one readable trace line. */
 function signalToText(signal: RawSignal): string {

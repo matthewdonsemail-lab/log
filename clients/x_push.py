@@ -25,12 +25,13 @@ import os
 import random
 import sys
 import traceback
+from urllib.parse import quote
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Awaitable, Callable
 
 sys.path.insert(0, str(Path(__file__).parent))
-from listeningkit_ingest import IngestError, SessionError, fetch_phrases, fetch_session, push  # noqa: E402
+from listeningkit_ingest import IngestError, SessionError, fetch_phrases, fetch_proxy, fetch_session, push  # noqa: E402
 
 X_DOMAINS = ("x.com", "twitter.com")
 REQUIRED_COOKIES = ("auth_token", "ct0")
@@ -119,11 +120,25 @@ def describe_error(error: BaseException, secrets: list[str] | None = None) -> st
     return f"{type(error).__name__}: {message[:300]}{where}"
 
 
-def make_client(cookies: dict[str, str], jar: list[dict] | None = None, engine: str = "browser", show: bool = False) -> Any:
+def proxy_url(proxy: dict | None) -> str | None:
+    """A proxy as one address, for the engine that wants that form. None when there is no proxy."""
+    if not proxy:
+        return None
+    scheme, _, host = proxy["server"].partition("://")
+    login = f'{quote(proxy["username"], safe="")}:{quote(proxy.get("password", ""), safe="")}@' if proxy.get("username") else ""
+    return f"{scheme}://{login}{host}"
+
+
+def proxy_secrets(proxy: dict | None) -> list[str]:
+    """Every part of the proxy that must never appear in output."""
+    return [proxy[name] for name in ("username", "password") if proxy and len(proxy.get(name, "")) >= 4]
+
+
+def make_client(cookies: dict[str, str], jar: list[dict] | None = None, engine: str = "browser", show: bool = False, proxy: dict | None = None) -> Any:
     if engine == "browser":
         from x_browser import BrowserXClient
 
-        return BrowserXClient(jar or [], show=show)
+        return BrowserXClient(jar or [], show=show, proxy=proxy)
     try:
         from twikit import Client
     except ImportError:
@@ -132,7 +147,7 @@ def make_client(cookies: dict[str, str], jar: list[dict] | None = None, engine: 
             from twikit import Client  # type: ignore[no-redef]
         except ImportError as error:
             raise HelperError("twikit is not installed. Run: pip install -r apps/twikit/requirements.txt") from error
-    client = Client("en-US")
+    client = Client("en-US", proxy=proxy_url(proxy))
     client.set_cookies(cookies)
     return client
 
@@ -200,8 +215,10 @@ async def main_async(args: argparse.Namespace) -> int:
     print(NOTICE)
     jar = fetch_session("x", endpoint=args.endpoint, key=args.key)
     cookies = cookie_dict(jar)
-    args.secrets = [value for value in cookies.values() if len(value) >= 8]
-    client = make_client(cookies, jar, getattr(args, "engine", "browser"), getattr(args, "show", False))
+    # A proxy is mandatory and is not the person's to choose: it comes from the deployment, and there is no flag to skip it.
+    proxy = fetch_proxy(endpoint=args.endpoint, key=args.key)
+    args.secrets = [value for value in cookies.values() if len(value) >= 8] + proxy_secrets(proxy)
+    client = make_client(cookies, jar, getattr(args, "engine", "browser"), getattr(args, "show", False), proxy)
     try:
         return await loop_rounds(args, client)
     finally:

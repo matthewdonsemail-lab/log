@@ -26,7 +26,7 @@ Sign in (Clerk) → onboarding (video, extension, token) → "What should we lis
 | Facebook | **Built and run against a real throwaway Facebook account: 4 real posts became matches.** `clients/facebook_push.py` and `clients/facebook_browser.py` mirror the X helper: connected login in, Facebook phrases in, recent-post search in real Chrome, posts out to `/ingest`. Checked with stand-in pages in real Chrome and against the real site (a fake login is recognised as a refused login). Known gaps: comment counts read as 0, and a post whose address cannot be read links to a Facebook search for its text. Facebook changes its markup often; `LISTENINGKIT_FB_DEBUG_DIR` saves what Facebook showed. Keywords page now offers Facebook (dev and this commit; prod needs a `pnpm deploy:site`). |
 | Everything else in the dashboard | Still the in-browser mock (messaging, listings, brand, analytics, API keys, groups). |
 
-Checks that were green at the last commit: backend 107, web 174, `clients` 70, reddit-camofox-client 25;
+Checks that were green at the last commit: backend 114, web 179, `clients` 85, reddit-camofox-client 25;
 `pnpm typecheck`, `pnpm typecheck:backend`, `pnpm run lint` (one old oxlint warning in
 `communities/index.ts`), `pnpm --filter web build`.
 
@@ -63,6 +63,12 @@ Deadline for the whole list: **Tue 22 Sep 2026, 12:00 PM PT**.
   pnpm exec convex env set --prod AGENTMAIL_INBOX_ID <inbox address>
   ```
   Then Settings, Notifications, save your address, press "Send a test email" and confirm it arrives. Real alerts need OpenAI scoring on too (item 1), because only scored matches are emailed.
+- [ ] **1d. Proxy (mandatory for X and Facebook reading).** Buy a residential or rotating proxy (any provider that gives a URL like `http://user:pass@host:port`), then:
+  ```
+  pnpm exec convex env set PROXY_URL <proxy url>
+  pnpm exec convex env set --prod PROXY_URL <proxy url>
+  ```
+  **Until you do, X and Facebook helpers refuse to run on a deployment that has this code** ("Reading is paused until the operator sets up the proxy"). If you must demo before you have a proxy, set `PROXY_REQUIRED=false` on that deployment as a knowing, temporary choice, and remove it once `PROXY_URL` is set. People cannot see or set a proxy anywhere in the product.
 - [ ] **2. Reddit app (makes Reddit reads fresh).** Log in to Reddit, open reddit.com/prefs/apps, "create another app", type **script**, redirect `http://localhost:8080`. Copy the client id (under the app name) and the secret, then:
   ```
   pnpm exec convex env set REDDIT_CLIENT_ID <id>

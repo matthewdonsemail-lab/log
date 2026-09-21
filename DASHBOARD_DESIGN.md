@@ -72,26 +72,26 @@ Collapse is **one continuous width animation** — nothing re-centers or snaps:
 ### Model (`apps/web/src/lib/connections/`)
 
 - `ConnectionPlatform = 'facebook' | 'x' | 'reddit'` (Upwork was removed product-wide in this pass).
-- `ConnectionRecord = { id, platform, label, viaProxy, connectedAt: string | null }` — **id-keyed** (UUID), not platform-keyed. Multiple accounts per platform are first-class.
+- `ConnectionRecord = { id, platform, label, connectedAt: string | null }` — **id-keyed** (UUID), not platform-keyed. Multiple accounts per platform are first-class.
 - Store (`store.ts`): persisted to `localStorage['listeningkit.accounts.v2']` as a record list.
   - Auto-migrates legacy platform-keyed `listeningkit.connections.v1`.
   - First-run seed: facebook/x/reddit, not connected. An explicit `[]` is respected (no re-seed after delete-all).
   - `isValidRecord` filters stale/unknown platforms (this is how Upwork rows disappear from existing storage).
-- Lib (`index.ts`): `addAccount`, `loadAccounts`, `findAccount`, `saveAccount`, `removeAccount`, `disconnectAccount` (keeps the row, clears `connectedAt` + `viaProxy`), `connectAccount` / `testConnection` (dry-run vs handshake, share cookie+proxy validation, fake latency, `AbortSignal`-aware).
+- Lib (`index.ts`): `addAccount`, `loadAccounts`, `findAccount`, `saveAccount`, `removeAccount`, `disconnectAccount` (keeps the row, clears `connectedAt`), `connectAccount` / `testConnection` (dry-run vs handshake, share cookie+proxy validation, fake latency, `AbortSignal`-aware).
 
 ### Settings → "Where we listen" (`DashboardSettingsConnections.tsx`)
 
 - Renders the **whole persisted account list** (store-driven, never a fixed platform set).
 - Each row: squircle card (r20), platform glyph, label, and a `Badge` status — `muted` "Not connected" / `warning` (pulsing) "Connecting…" / `success` (dot) "Connected"; errors are toast-only, with a Retry affordance.
-- Expanded row: cookie (password input) + optional proxy inputs, then contextual buttons — Connect / Test Connection (not connected), Test Connection / Delete (connected).
-- **"Add another account"** duplicates the clicked row **directly below it** (same platform, cookie/proxy copied), opens it, assigns a fresh id — no second "add" ritual needed.
+- Expanded row: cookie (password input) only (there is no proxy input: people never set or see a proxy), then contextual buttons — Connect / Test Connection (not connected), Test Connection / Delete (connected).
+- **"Add another account"** duplicates the clicked row **directly below it** (same platform, cookie copied), opens it, assigns a fresh id — no second "add" ritual needed.
 - Connect is **effect-driven**: button sets `phase='connecting'`, an effect dials the lib, cleanup cancels; success reconciles with the store.
 
 ### Accounts (`DashboardAccounts.tsx`)
 
 - Same persisted list — Settings and Accounts can never disagree.
 - Header: title + **filter select** (All platforms, or each platform, with platform glyphs) + **"Add account" action-select** (adds a not-yet-connected row, toasts, jumps to Settings to finish the connect).
-- Table (squircle banded): Platform (squircle `SocialBadge` + label) | Status (`success` dot / `muted`) | Connected (date, `—` if none) | Proxy (`Via proxy` / `Direct`) | Actions (ghost **Disconnect** when connected, `gray` **Connect** → Settings when not).
+- Table (squircle banded): Platform (squircle `SocialBadge` + label) | Status (`success` dot / `muted`) | Connected (date, `—` if none) | Actions (ghost **Disconnect** when connected, `gray` **Connect** → Settings when not).
 - A `useEffect` on `location` re-reads the store so changes made in Settings appear when navigating back.
 - Footer hint when some accounts are not yet connected (with a Settings link), plus empty states for "no accounts" vs "filtered out".
 
@@ -243,7 +243,7 @@ the note via `sr-only` (the visual is `aria-hidden`).
 | `apps/web/src/components/DashboardAnalyticsOverview.tsx` | Analytics landing: platform filter + full firehose |
 | `apps/web/src/components/DashboardAnalyticsPage.tsx` | Per-keyword route: header meta + graphs + console |
 | `apps/web/src/lib/analytics/{types,mock,index}.ts` | Analytics model + deterministic mock aggregates |
-| `apps/web/src/lib/connections/{types,store,index,cookie,proxy}.ts` | Account model, persistence, connect/test lib |
+| `apps/web/src/lib/connections/{types,store,index,cookie}.ts` | Account model, persistence, connect/test lib |
 | `apps/web/src/lib/social-icons.tsx` | Icons, `SocialGlyph`, `SocialBadge` |
 | `packages/ui/src/squircle.tsx` | Squircle path/clip/border hooks |
 | `packages/ui/src/select.tsx` | Floating squircle select |

@@ -22,6 +22,10 @@ Both helpers automate a logged-in session. That can go against X's and Facebook'
 3. One package: `pip install playwright`. It drives your installed Chrome, so there is no browser download.
 4. The platform is **connected** (see [Using ListeningKit](/docs/guide/using-listeningkit)) and you added at least one **X** or **Facebook** phrase on the Keywords page.
 
+## The proxy
+
+Both helpers browse through a **proxy that the operator of the site sets up**. You never choose, type or see it: there is no proxy setting to fill in, and the helper fetches it by itself. If the site's operator has not set one up yet, the helper stops with *"Reading is paused until the operator sets up the proxy"*. Nothing is wrong on your side; try again later.
+
 ## 1. Make an ingest key
 
 The helper proves it is you with an **ingest key**.
@@ -87,6 +91,7 @@ At most 10 phrases are searched per round, with a short random pause between the
 |---|---|
 | `No x account is connected` | Connect that platform in ListeningKit, then run again. Make sure you are using a key from the **same** ListeningKit account you connected with. |
 | `X refused the saved login` / `Facebook refused the saved login` | The login expired or the site logged it out. Log in again, copy a fresh token, reconnect. |
+| `Reading is paused until the operator sets up the proxy` | The site has no proxy configured yet. Nothing to fix on your side; the operator has to set one. |
 | `asked us to slow down` | The site rate-limited it. The round stops and it tries again next time. Raise `--interval`. |
 | `no new tweets` / `no new posts` | Nothing new contains your exact phrase. Try a more common phrase. |
 | `could not read X (…)` | The page showed something unexpected. Re-run with `--verbose --show` and read the [developer guide](/docs/guide/developers#when-x-or-facebook-changes-its-page). |

@@ -29,13 +29,12 @@ export const connectionsApp = new Hono()
       id: newAccountId(),
       platform: platform as ConnectionPlatform,
       label: platform === 'facebook' ? 'Facebook' : platform === 'x' ? 'X' : 'Reddit',
-      viaProxy: false,
       connectedAt: null
     }
     accounts.push(record)
     return c.json({ account: record, accounts: [...accounts] }, 201)
   })
-  .patch('/accounts/:accountId', describeRoute({ operationId: 'updateAccount', tags: ['Accounts'], summary: 'Update account', description: 'Patches the `ConnectionRecord` for `:accountId` — merges the JSON body over the stored record but keeps `id` immutable (`id` from the path always wins). Used by the dashboard to toggle `viaProxy`, update labels, or stamp `connectedAt` after extension verification. Returns `404 Account not found` if the id is unknown. Code: apps/web/src/lib/connections/server.ts:32', parameters: [{ name: 'accountId', in: 'path', required: true, schema: { type: 'string', description: 'Account id.' } }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', description: 'Partial ConnectionRecord patch (id is ignored).' } } } }, responses: { 200: { description: 'Updated list.', content: { 'application/json': { schema: AccountsResponseJson } } }, 404: errorResponse('Account not found') } }), async (c) => {
+  .patch('/accounts/:accountId', describeRoute({ operationId: 'updateAccount', tags: ['Accounts'], summary: 'Update account', description: 'Patches the `ConnectionRecord` for `:accountId` — merges the JSON body over the stored record but keeps `id` immutable (`id` from the path always wins). Used by the dashboard to update labels, or stamp `connectedAt` after extension verification. Returns `404 Account not found` if the id is unknown. Code: apps/web/src/lib/connections/server.ts:32', parameters: [{ name: 'accountId', in: 'path', required: true, schema: { type: 'string', description: 'Account id.' } }], requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', description: 'Partial ConnectionRecord patch (id is ignored).' } } } }, responses: { 200: { description: 'Updated list.', content: { 'application/json': { schema: AccountsResponseJson } } }, 404: errorResponse('Account not found') } }), async (c) => {
     const body = await c.req.json<ConnectionRecord>().catch(() => null)
     const index = accounts.findIndex((a) => a.id === c.req.param('accountId'))
     if (index === -1 || !body) return c.json({ error: 'Account not found' }, 404)

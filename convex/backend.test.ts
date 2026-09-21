@@ -56,7 +56,7 @@ describe('backend foundation', () => {
     const { alice, bob } = setup()
     await alice.mutation(anyApi.accounts.create, { platform: 'reddit', label: ' Research ' })
     expect((await alice.query(anyApi.accounts.list, {})).accounts).toEqual([
-      expect.objectContaining({ label: 'Research', connectedAt: null, viaProxy: false }),
+      expect.objectContaining({ label: 'Research', connectedAt: null }),
     ])
     expect(await bob.query(anyApi.accounts.list, {})).toEqual({ accounts: [] })
     await expect(alice.mutation(anyApi.accounts.create, { platform: 'x', label: ' ' })).rejects.toThrow('Label')

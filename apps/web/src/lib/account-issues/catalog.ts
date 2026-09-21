@@ -259,20 +259,20 @@ export const ISSUE_CATALOG: Record<AccountIssue, CatalogEntry> = {
     }
   },
   proxy_rate_limited: {
-    label: 'Proxy rate limited',
+    label: 'Connection rate limited',
     severity: 'degraded',
     transient: true,
     fix: 'wait',
     platforms: ALL,
     detail: {
-      facebook: 'The proxy provider itself is returning a rate-limit response before the request reaches Facebook.',
-      x: 'The proxy provider itself is returning a rate-limit response before the request reaches X.',
-      reddit: 'The proxy provider itself is returning a rate-limit response before the request reaches Reddit.'
+      facebook: 'The connection we read through is being slowed down before the request reaches the platform.',
+      x: 'The connection we read through is being slowed down before the request reaches the platform.',
+      reddit: 'The connection we read through is being slowed down before the request reaches the platform.'
     },
     remediation: {
-      facebook: 'Check the proxy billing / concurrent-connection plan, or rotate to a fresh proxy endpoint.',
-      x: 'Check the proxy billing / concurrent-connection plan, or rotate to a fresh proxy endpoint.',
-      reddit: 'Check the proxy billing / concurrent-connection plan, or rotate to a fresh proxy endpoint.'
+      facebook: 'Nothing to do: we slow down and retry on our own.',
+      x: 'Nothing to do: we slow down and retry on our own.',
+      reddit: 'Nothing to do: we slow down and retry on our own.'
     },
     defaultSignal: {}
   },
@@ -301,8 +301,8 @@ export const ISSUE_CATALOG: Record<AccountIssue, CatalogEntry> = {
   ip_or_account_blocked: {
     label: 'Blocked (IP / bot detection)',
     severity: 'degraded',
-    transient: false,
-    fix: 'use_proxy',
+    transient: true,
+    fix: 'wait',
     platforms: ['reddit', 'x'],
     detail: {
       facebook: '\u2014',
@@ -311,8 +311,8 @@ export const ISSUE_CATALOG: Record<AccountIssue, CatalogEntry> = {
     },
     remediation: {
       facebook: '\u2014',
-      x: 'Route this account through a residential proxy in Settings.',
-      reddit: 'Route this account through a residential proxy in Settings \u2014 the cookie is fine.'
+      x: 'Nothing to do on your side: reading goes through our own connections and is retried automatically.',
+      reddit: 'Nothing to do on your side \u2014 the cookie is fine. Reading goes through our own connections and is retried automatically.'
     },
     defaultSignal: {
       x: { status: 403 },
@@ -400,56 +400,56 @@ export const ISSUE_CATALOG: Record<AccountIssue, CatalogEntry> = {
     }
   },
   proxy_unreachable: {
-    label: 'Proxy unreachable',
+    label: 'Connection unavailable',
     severity: 'degraded',
-    transient: false,
-    fix: 'use_proxy',
+    transient: true,
+    fix: 'wait',
     platforms: ALL,
     detail: {
-      facebook: 'The configured proxy could not be reached (DNS failure, host down, or TLS handshake error) \u2014 the request never left the proxy layer.',
-      x: 'The configured proxy could not be reached (DNS failure, host down, or TLS handshake error) \u2014 the request never left the proxy layer.',
-      reddit: 'The configured proxy could not be reached (DNS failure, host down, or TLS handshake error) \u2014 the request never left the proxy layer.'
+      facebook: 'The connection we read through could not be reached, so the request never left our side.',
+      x: 'The connection we read through could not be reached, so the request never left our side.',
+      reddit: 'The connection we read through could not be reached, so the request never left our side.'
     },
     remediation: {
-      facebook: 'Verify the proxy URL scheme/credentials, or switch the account to Direct.',
-      x: 'Verify the proxy URL scheme/credentials, or switch the account to Direct.',
-      reddit: 'Verify the proxy URL scheme/credentials, or switch the account to Direct.'
+      facebook: 'This is on our side, not yours. Reading resumes on its own once it is fixed.',
+      x: 'This is on our side, not yours. Reading resumes on its own once it is fixed.',
+      reddit: 'This is on our side, not yours. Reading resumes on its own once it is fixed.'
     },
     defaultSignal: {}
   },
   proxy_auth_failed: {
-    label: 'Proxy auth failed',
+    label: 'Connection unavailable',
     severity: 'degraded',
-    transient: false,
-    fix: 'use_proxy',
+    transient: true,
+    fix: 'wait',
     platforms: ALL,
     detail: {
-      facebook: 'The proxy rejected the credentials (HTTP 407) \u2014 bad username/password or the subscription lapsed.',
-      x: 'The proxy rejected the credentials (HTTP 407) \u2014 bad username/password or the subscription lapsed.',
-      reddit: 'The proxy rejected the credentials (HTTP 407) \u2014 bad username/password or the subscription lapsed.'
+      facebook: 'The connection we read through is not accepting our sign-in right now.',
+      x: 'The connection we read through is not accepting our sign-in right now.',
+      reddit: 'The connection we read through is not accepting our sign-in right now.'
     },
     remediation: {
-      facebook: 'Fix the proxy credentials in Settings, or route the account Direct.',
-      x: 'Fix the proxy credentials in Settings, or route the account Direct.',
-      reddit: 'Fix the proxy credentials in Settings, or route the account Direct.'
+      facebook: 'This is on our side, not yours. Reading resumes on its own once it is fixed.',
+      x: 'This is on our side, not yours. Reading resumes on its own once it is fixed.',
+      reddit: 'This is on our side, not yours. Reading resumes on its own once it is fixed.'
     },
     defaultSignal: {}
   },
   proxy_malformed: {
-    label: 'Proxy URL invalid',
+    label: 'Connection unavailable',
     severity: 'degraded',
-    transient: false,
-    fix: 'use_proxy',
+    transient: true,
+    fix: 'wait',
     platforms: ALL,
     detail: {
-      facebook: 'The stored proxy URL has no scheme or is malformed (expected http://, https://, or socks5://user:pass@host:port).',
-      x: 'The stored proxy URL has no scheme or is malformed (expected http://, https://, or socks5://user:pass@host:port).',
-      reddit: 'The stored proxy URL has no scheme or is malformed (expected http://, https://, or socks5://user:pass@host:port).'
+      facebook: 'The connection we read through is not set up correctly right now.',
+      x: 'The connection we read through is not set up correctly right now.',
+      reddit: 'The connection we read through is not set up correctly right now.'
     },
     remediation: {
-      facebook: 'Fix the proxy URL in Settings — include the scheme and host:port.',
-      x: 'Fix the proxy URL in Settings — include the scheme and host:port.',
-      reddit: 'Fix the proxy URL in Settings — include the scheme and host:port.'
+      facebook: 'This is on our side, not yours. Reading resumes on its own once it is fixed.',
+      x: 'This is on our side, not yours. Reading resumes on its own once it is fixed.',
+      reddit: 'This is on our side, not yours. Reading resumes on its own once it is fixed.'
     },
     defaultSignal: {}
   },

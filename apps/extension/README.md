@@ -10,7 +10,7 @@ This is a Chrome Manifest V3 extension for connecting a browser session to Liste
 4. It reads the complete cookie jar for that platform's domains using `chrome.cookies`.
 5. It checks for the platform's session cookies before offering a token.
 6. The token can be copied locally or saved as a named browser profile.
-7. A saved profile can explicitly fill a token and proxy into a form on the active page.
+7. A saved profile can explicitly fill a token into a form on the active page. The extension has no proxy setting: X and Facebook reading always goes through a proxy the operator sets on the deployment, and a person cannot choose or see it.
 
 ## Session checks
 

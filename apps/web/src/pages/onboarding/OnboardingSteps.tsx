@@ -10,7 +10,7 @@ import { BrandRevealStep } from '@/components/onboarding/BrandRevealStep'
 import { FunnelVideo } from '@/components/FunnelVideo'
 import { ReadyFill } from '@/components/ReadyFill'
 import { BrandHeader } from './OnboardingShell'
-import { readAuthSource, saveAuthSource, clearAuthSource } from './auth-handoff'
+import { readAuthSource, saveAuthSource, clearAuthSource, clearLandingWebsite, readLandingWebsite } from './auth-handoff'
 
 type Step = 0 | 1 | 2 | 3 | 4 | 5
 
@@ -46,7 +46,8 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
   // Restore the brand only inside the authenticated flow. Typing never
   // advances the step — only the Continue / Skip buttons move forward.
   const [profile, setProfile] = useState<BrandEntity | null>(null)
-  const [brandUrl, setBrandUrl] = useState('')
+  // A website typed on the landing page is waiting here, so the visitor does not type it twice.
+  const [brandUrl, setBrandUrl] = useState(readLandingWebsite)
   const [looking, setLooking] = useState(false)
   const [lookupError, setLookupError] = useState<string | null>(null)
   const revealScrollRef = useRef<HTMLDivElement>(null)
@@ -201,6 +202,7 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
         await new Promise((resolve) => window.setTimeout(resolve, 700)) // the demo's fetch beat
       }
       setProfile(saveBrand(entity))
+      clearLandingWebsite()
       setStep(4)
     } catch (err) {
       setLookupError(err instanceof Error ? err.message : 'Could not read that URL.')

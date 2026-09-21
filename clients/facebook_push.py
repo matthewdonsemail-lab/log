@@ -28,8 +28,8 @@ from typing import Any
 from urllib.parse import quote
 
 sys.path.insert(0, str(Path(__file__).parent))
-from listeningkit_ingest import SessionError, fetch_phrases, fetch_session  # noqa: E402
-from x_push import HelperError, run_once  # noqa: E402
+from listeningkit_ingest import SessionError, fetch_phrases, fetch_proxy, fetch_session  # noqa: E402
+from x_push import HelperError, proxy_secrets, run_once  # noqa: E402
 
 FACEBOOK_DOMAINS = ("facebook.com",)
 REQUIRED_COOKIES = ("c_user", "xs")
@@ -77,10 +77,10 @@ async def search(client: Any, phrase: str, count: int) -> Any:
     return await client.search_posts(phrase.replace('"', "").strip(), count)
 
 
-def make_client(jar: list[dict], show: bool = False) -> Any:
+def make_client(jar: list[dict], show: bool = False, proxy: dict | None = None) -> Any:
     from facebook_browser import BrowserFacebookClient
 
-    return BrowserFacebookClient(jar, show=show)
+    return BrowserFacebookClient(jar, show=show, proxy=proxy)
 
 
 async def round_of(args: argparse.Namespace, client: Any, phrases: list[str]) -> int:
@@ -104,8 +104,10 @@ async def main_async(args: argparse.Namespace) -> int:
     print(NOTICE)
     jar = fetch_session("facebook", endpoint=args.endpoint, key=args.key)
     cookies = cookie_dict(jar)
-    args.secrets = [value for value in cookies.values() if len(value) >= 8]
-    client = make_client(jar, getattr(args, "show", False))
+    # A proxy is mandatory and is not the person's to choose: it comes from the deployment, and there is no flag to skip it.
+    proxy = fetch_proxy(endpoint=args.endpoint, key=args.key)
+    args.secrets = [value for value in cookies.values() if len(value) >= 8] + proxy_secrets(proxy)
+    client = make_client(jar, getattr(args, "show", False), proxy)
     try:
         return await loop_rounds(args, client)
     finally:
