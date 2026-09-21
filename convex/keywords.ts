@@ -1,3 +1,4 @@
+import { atLimit, phraseLimitMessage, planLimits } from './lib/plan'
 import { ConvexError, v } from 'convex/values'
 import { ensureAccount } from './lib/accounts'
 import { internalQuery, mutation, query, requireOwner } from './lib/server'
@@ -47,6 +48,11 @@ export const create = mutation({
     const duplicate = rows.some(row =>
       row.platform === args.platform && row.subreddit === subreddit && row.phrase.toLowerCase() === phrase.toLowerCase())
     if (duplicate) throw new ConvexError('You are already listening for that phrase there')
+    // The Free plan: one phrase per platform at a time. Phrases someone already has are left alone; only a new one is refused.
+    const { phrasesPerPlatform } = planLimits()
+    if (atLimit(rows.filter(row => row.platform === args.platform).length, phrasesPerPlatform)) {
+      throw new ConvexError(phraseLimitMessage(args.platform, phrasesPerPlatform))
+    }
     const account = await ensureAccount(ctx, owner, args.platform)
     const id = await ctx.db.insert('keywords', {
       owner, accountId: account._id, platform: args.platform, phrase, status: 'listening',

@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import type { ComponentType, SVGProps } from 'react'
 import { BellIcon, CreditCardIcon, KeyIcon, LinkIcon } from '@heroicons/react/24/outline'
+import { DashboardSettingsBilling } from './DashboardSettingsBilling'
 import { DashboardSettingsConnections } from './DashboardSettingsConnections'
 import { DashboardSettingsIngest } from './DashboardSettingsIngest'
 import { DashboardSettingsNotifications } from './DashboardSettingsNotifications'
 import { DashboardTab } from './DashboardTab'
 
 type TabIcon = ComponentType<SVGProps<SVGSVGElement>>
-type SettingsTabId = 'connections' | 'ingest' | 'notifications'
+type SettingsTabId = 'connections' | 'ingest' | 'notifications' | 'billing'
 
 function SettingsTab({
   label,
@@ -48,11 +49,12 @@ export function DashboardSettings() {
         <SettingsTab label="Connections" active={tab === 'connections'} Icon={LinkIcon} onClick={() => setTab('connections')} />
         <SettingsTab label="Send posts in" active={tab === 'ingest'} Icon={KeyIcon} onClick={() => setTab('ingest')} />
         <SettingsTab label="Notifications" active={tab === 'notifications'} Icon={BellIcon} onClick={() => setTab('notifications')} />
-        <SettingsTab label="Billing" active={false} Icon={CreditCardIcon} />
+        <SettingsTab label="Billing" active={tab === 'billing'} Icon={CreditCardIcon} onClick={() => setTab('billing')} />
       </div>
       {tab === 'connections' ? <DashboardSettingsConnections /> : null}
       {tab === 'ingest' ? <DashboardSettingsIngest /> : null}
       {tab === 'notifications' ? <DashboardSettingsNotifications /> : null}
+      {tab === 'billing' ? <DashboardSettingsBilling /> : null}
     </div>
   )
 }

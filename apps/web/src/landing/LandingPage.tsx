@@ -4,6 +4,7 @@ import { saveLandingWebsite } from '@/pages/onboarding/auth-handoff'
 import { Clouds } from './Clouds'
 import { Control } from './Control'
 import { Header } from './Header'
+import { Pricing } from './Pricing'
 import { ListeningIntro } from './ListeningIntro'
 import { PlugTooltip } from './PlugTooltip'
 import { Socials } from './Socials'
@@ -136,7 +137,9 @@ export function LandingPage() {
           </div>
         </div>
       </Clouds>
-      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 sm:px-10" />
+      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 sm:px-10">
+        <Pricing />
+      </main>
       <section
         id="features"
         className="w-full pb-16"

@@ -1,6 +1,6 @@
 import { convexTest } from 'convex-test'
 import { anyApi } from 'convex/server'
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { internal } from './_generated/api'
 import schema from './schema'
 import { normalizePushedPost } from './lib/posts'
@@ -41,6 +41,9 @@ function push(t: ReturnType<typeof setup>['t'], secret: string, body: unknown) {
     body: JSON.stringify(body),
   })
 }
+
+afterEach(() => { vi.unstubAllEnvs() })
+beforeEach(() => { vi.stubEnv('PLAN_PHRASES_PER_PLATFORM', '100'); vi.stubEnv('PLAN_ACCOUNTS_PER_PLATFORM', '100') })  // these suites are about matching, not the Free plan
 
 describe('pushed post normalization', () => {
   it('keeps the feed contract and drops junk', () => {

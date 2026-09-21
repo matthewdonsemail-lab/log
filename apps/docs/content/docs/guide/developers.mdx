@@ -37,6 +37,7 @@ pnpm dev:web                  # the web app; add pnpm dev:docs for this site
 | `OPENAI_API_KEY` | Scores matches. `AI_MODEL` changes the model (default `gpt-4o-mini`); `AI_SCORING=off` turns scoring off. Optional. |
 | `REDDIT_CLIENT_ID`, `REDDIT_CLIENT_SECRET` | Reddit "script" app for fresh reads. Optional. |
 | `PROXY_URL` | The proxy every X and Facebook helper must use, like `http://user:pass@host:port` or `socks5://...`. Mandatory: helpers refuse to run without it. |
+| `PLAN_PHRASES_PER_PLATFORM`, `PLAN_ACCOUNTS_PER_PLATFORM` | Operator-only: raise the Free plan limits (default 1 each) for the whole deployment. |
 | `PROXY_REQUIRED` | Operator-only: set to `false` to let helpers browse directly on a deployment with no proxy yet. |
 | `FIRECRAWL_API_KEY` | Reads the person's website in onboarding (`brand:extractFromWebsite`). Optional. |
 | `AGENTMAIL_API_KEY`, `AGENTMAIL_INBOX_ID` | Email alerts. The inbox id is the AgentMail inbox the alerts are sent from. Optional. |
@@ -72,6 +73,10 @@ GET /proxy                  → { "required": true, "proxy": { "server": "http:/
 
 Up to 100 posts per batch. Invalid rows are skipped and counted, not fatal. `platform` is `facebook`, `x` or `reddit`.
 
+## Plans
+
+Everyone is on Free, enforced on the server in `keywords:create` and the account creators (`convex/lib/plan.ts`): one phrase and one account per platform. Only new things are refused; existing ones stay. `plan:mine` reports plan and usage for Settings, Billing. Pro is display-only and nothing charges. Tests that create several phrases per platform raise the limits with `vi.stubEnv('PLAN_PHRASES_PER_PLATFORM', '100')`.
+
 ## The mandatory proxy
 
 X and Facebook reading always goes through the operator's proxy, and a person never sees or sets one. `fetch_proxy` in `clients/listeningkit_ingest.py` asks `GET /proxy` before any browser starts; `launch_chrome(show, proxy)` passes it to Chrome. There is deliberately no `--proxy` or `--no-proxy` flag. The proxy is never logged, never in an error, and its username and password are added to the helper's hidden-secrets list. `clients/tests/test_proxy.py` proves with real Chrome and a local proxy that demands a password that traffic goes through it. Limit to know: the helper runs on the person's own computer, so only server-side reading would fully hide the proxy from a technical person. Reddit is read by the Convex server, which cannot use a proxy.
@@ -88,9 +93,9 @@ X and Facebook reading always goes through the operator's proxy, and a person ne
 
 | Task | Command |
 |---|---|
-| Backend tests (114) | `pnpm test:backend` |
-| Web tests (179) | `pnpm --filter web test` |
-| Python tests (85) | `python -m pytest clients/tests` (the browser tests start real Chrome and take a few minutes) |
+| Backend tests (127) | `pnpm test:backend` |
+| Web tests (187) | `pnpm --filter web test` |
+| Python tests (86) | `python -m pytest clients/tests` (the browser tests start real Chrome and take a few minutes) |
 | Type check | `pnpm typecheck` |
 | Lint | `pnpm lint` |
 | Rebuild the extension zip | `python scripts/build-extension.py` |

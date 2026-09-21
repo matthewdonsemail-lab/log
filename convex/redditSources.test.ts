@@ -1,6 +1,6 @@
 import { convexTest } from 'convex-test'
 import { anyApi } from 'convex/server'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { internal } from './_generated/api'
 import { fetchRedditApi, fetchRedditRss, parseRedditAtom } from './lib/redditFeed'
 import { fetchLatestPosts } from './reddit'
@@ -48,6 +48,7 @@ const res = (body: unknown, status = 200) =>
   new Response(typeof body === 'string' ? body : JSON.stringify(body), { status })
 
 afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs() })
+beforeEach(() => { vi.stubEnv('PLAN_PHRASES_PER_PLATFORM', '100'); vi.stubEnv('PLAN_ACCOUNTS_PER_PLATFORM', '100') })  // these suites are about matching, not the Free plan
 
 describe("Reddit's own feed", () => {
   it('reads posts, decodes the text, and ignores comments and foreign links', () => {

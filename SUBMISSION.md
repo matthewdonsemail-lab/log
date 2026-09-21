@@ -15,6 +15,7 @@ Do these first so nothing on screen is empty or broken. Check each one on the li
 - [ ] At least one **Reddit phrase** is saved (for example `need a bookkeeper` in `smallbusiness`) and shows matches. Press **Check now**.
 - [ ] Settings, Notifications: your email is saved and **Send a test email** arrives.
 - [ ] Have a real business website ready to paste, for example `mailchimp.com`.
+- [ ] The Free plan allows **one phrase per platform**, so add only one Reddit phrase in the video (and one each for X and Facebook if you show them). Or raise the limits while you record (see `HANDOFF.md`, Plans and pricing) and put them back afterwards.
 - [ ] Close other tabs, hide bookmarks and any window with keys or logins in it. **Never show a token, an ingest key or a terminal with a key in it.**
 - [ ] The proxy is set up, so X and Facebook helpers work (run them on your computer before recording: see the Guide, X and Facebook helpers). Optional: the OpenAI key (matches show score badges). If the OpenAI key is not set, **skip the scoring scenes**. Show only what works.
 
@@ -35,6 +36,7 @@ Screen recording with your voice. Speak plainly. One idea per scene.
 | 1:25 | Keywords: add a phrase, press **Check now** | "I tell it what to listen for: a phrase, and the community." |
 | 1:45 | Matches list (scores if OpenAI is on) | "Every new post that says my phrase shows up here, newest first. With scoring on, an AI rates how likely the writer is to buy." |
 | 2:05 | Settings, Notifications: **Send a test email**, then the email arriving | "Strong matches are emailed to me through AgentMail, one short digest at a time." |
+| 2:20 | Landing page, Pricing section | "Start free with one of each. Pro is on the way." |
 | 2:25 | Dashboard, Docs tab | "Guides for users and developers are built in." |
 | 2:35 | Landing page, then the repo | "It runs on Convex: live queries, crons, scheduled functions and HTTP actions. Thanks for watching." |
 

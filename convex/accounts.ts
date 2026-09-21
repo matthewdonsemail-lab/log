@@ -1,4 +1,5 @@
 import { ConvexError, v } from 'convex/values'
+import { accountLimitMessage, atLimit, planLimits } from './lib/plan'
 import { mutation, query, requireOwner, type MutationCtx } from './lib/server'
 import { platform } from './schema'
 
@@ -22,6 +23,11 @@ async function insertAccount(ctx: MutationCtx, args: { platform: 'facebook' | 'x
   if (!label || label.length > 120) throw new ConvexError('Label must contain 1-120 characters')
   const rows = await ctx.db.query('accounts').withIndex('by_owner', q => q.eq('owner', owner)).take(200)
   if (rows.length >= 200) throw new ConvexError('Account limit reached')
+  // The Free plan: one account per platform at a time. Accounts someone already has are left alone.
+  const { accountsPerPlatform } = planLimits()
+  if (atLimit(rows.filter(row => row.platform === args.platform).length, accountsPerPlatform)) {
+    throw new ConvexError(accountLimitMessage(args.platform, accountsPerPlatform))
+  }
   const record = { owner, platform: args.platform, label, connectedAt: null }
   const id = await ctx.db.insert('accounts', record)
   const account = publicAccount({ ...record, _id: id })

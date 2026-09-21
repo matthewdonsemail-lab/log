@@ -105,6 +105,13 @@ Convex agent skills for common tasks can be installed by running
 - A failed send must not mark matches as sent (`alerts:markSent` runs only after a successful send).
 - Tests use fake `fetch` replies. The Firecrawl call was also checked once against the real service; do the same after changing the request or the schema.
 
+## Plan Rules (Free is enforced, Pro does not exist)
+
+- Limits are enforced on the server in the mutations that create things (`keywords:create`, `accounts:create*`), never only in the UI. The UI notice is a convenience; the server refuses.
+- Never remove or block what a person already has when limits change: only new phrases and accounts are refused.
+- Nothing charges. Do not add a card form, a checkout link or a "buy" button until real billing exists; Pro is shown as coming soon and its button is disabled.
+- Limits come from `planLimits()` (Free numbers unless the operator sets `PLAN_PHRASES_PER_PLATFORM` or `PLAN_ACCOUNTS_PER_PLATFORM`). Tests about matching or freshness raise the limits with `vi.stubEnv`; do not weaken the defaults.
+
 ## Proxy Rules (mandatory, hidden from people)
 
 - A proxy is mandatory for X and Facebook reading and is never the person's to choose or see. Do not add a proxy field, flag, badge, status text or "fix" that asks a person to set one. Issue messages about connection trouble say it is on our side and resolves itself.

@@ -3,7 +3,7 @@ import { useConvexAuth, useQuery } from 'convex/react'
 import { Link } from 'react-router-dom'
 import { Badge, Button, useToast } from '@listeningkit/ui'
 import { SOCIAL_ICONS, SocialGlyph } from '@/lib/social-icons'
-import { hitsListRef, keywordsListRef, sessionsListRef } from '@/lib/convex'
+import { hitsListRef, keywordsListRef, planMineRef, sessionsListRef } from '@/lib/convex'
 import { syncFeed } from '@/lib/feed'
 import {
   createLiveKeyword, intentLabel, liveHitsSchema, liveKeywordsSchema, removeLiveKeyword, scoreBand, setLiveKeywordStatus, sortHits,
@@ -11,6 +11,7 @@ import {
 } from '@/lib/live-keywords'
 import { liveSessionsSchema } from '@/lib/live-sessions'
 import { LIVE_PLATFORMS } from '@/lib/platform-support'
+import { livePlanSchema, phraseLimitReached, platformLabel } from '@/lib/plans'
 import type { Platform } from '@/lib/platform'
 
 const SUGGESTED_SUBREDDITS = ['smallbusiness', 'marketing', 'entrepreneur', 'startups', 'freelance']
@@ -124,12 +125,18 @@ export function DashboardKeywordsLive() {
   const [checking, setChecking] = useState(false)
   const [order, setOrder] = useState<'newest' | 'best'>('newest')
 
+  const planData = useQuery(planMineRef, isAuthenticated ? {} : 'skip')
+  const plan = useMemo(() => {
+    const parsed = planData === undefined ? null : livePlanSchema.safeParse(planData)
+    return parsed?.success ? parsed.data : null
+  }, [planData])
   const sessionData = useQuery(sessionsListRef, isAuthenticated ? {} : 'skip')
   const helperConnected = useMemo(() => {
     const parsed = sessionData === undefined ? null : liveSessionsSchema.safeParse(sessionData)
     return parsed?.success ? parsed.data.sessions.some((session) => session.platform === platform) : null
   }, [sessionData, platform])
-  const canAdd = phrase.trim() !== '' && (platform !== 'reddit' || subreddit.trim() !== '')
+  const atPlanLimit = phraseLimitReached(plan, platform)
+  const canAdd = phrase.trim() !== '' && (platform !== 'reddit' || subreddit.trim() !== '') && !atPlanLimit
 
   const keywords = useMemo(() => {
     const parsed = keywordData === undefined ? null : liveKeywordsSchema.safeParse(keywordData)
@@ -226,6 +233,11 @@ export function DashboardKeywordsLive() {
             className="h-14 w-full rounded-xl border border-slate-300 bg-white px-4 text-slate-900 placeholder:text-slate-400 focus:border-[#2a8cff] focus:outline-none"
           />
         </label>
+        {atPlanLimit && plan ? (
+          <p className="rounded-xl bg-amber-50 p-3 text-sm text-amber-800">
+            The {plan.name} plan has {plan.limits.phrasesPerPlatform} {platformLabel(platform)} phrase{plan.limits.phrasesPerPlatform === 1 ? '' : 's'} at a time. Remove the one you have to add another.
+          </p>
+        ) : null}
         {platform === 'x' || platform === 'facebook' ? <HelperNote platform={platform} connected={helperConnected} /> : null}
         {platform === 'reddit' ? (
         <label className="block">

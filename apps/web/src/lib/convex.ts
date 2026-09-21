@@ -33,6 +33,7 @@ export const brandExtractRef = makeFunctionReference<'action', { url: string }, 
 export const alertsMineRef = makeFunctionReference<'query', Record<string, never>, unknown>('alerts:mine')
 export const alertsSaveRef = makeFunctionReference<'mutation', { email: string; enabled: boolean; minScore: number }, unknown>('alerts:save')
 export const alertsSendTestRef = makeFunctionReference<'action', Record<string, never>, unknown>('alerts:sendTest')
+export const planMineRef = makeFunctionReference<'query', Record<string, never>, unknown>('plan:mine')
 export const ingestListRef = makeFunctionReference<'query', Record<string, never>, unknown>('ingest:listKeys')
 export const ingestCreateRef = makeFunctionReference<'mutation', { label: string }, unknown>('ingest:createKey')
 export const ingestRevokeRef = makeFunctionReference<'mutation', { id: string }, unknown>('ingest:revokeKey')

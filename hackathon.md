@@ -723,3 +723,11 @@ Set the operator proxy (`PROXY_URL`, a residential proxy from a paid provider) o
 Chrome started the helper's way exits at a different address than the machine's own, both real helpers read X and Facebook through it with
 the mandatory rule enforced and no waiver, and the live `/proxy` endpoint gives it only to a valid ingest key. People still cannot see or set one.
 
+### 2026-09-21 - a Free plan with limits, and pricing
+Added plans. Everyone is on Free, enforced on the server: one phrase and one connected account per platform at a time
+(`convex/lib/plan.ts`, checked in `keywords:create` and the account creators, with a usage query in `convex/plan.ts`). A Pricing
+section on the landing page, a working Billing tab in Settings that shows usage, and a notice that stops the Keywords button
+when a platform is full make it visible. Pro is announced as coming soon and nothing charges. The operator can raise limits per
+deployment with `PLAN_PHRASES_PER_PLATFORM` and `PLAN_ACCOUNTS_PER_PLATFORM`. Checked in a real browser on the dev deployment.
+Backend tests 127, web tests 187.
+

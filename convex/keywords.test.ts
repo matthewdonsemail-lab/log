@@ -1,6 +1,6 @@
 import { convexTest } from 'convex-test'
 import { anyApi } from 'convex/server'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { internal } from './_generated/api'
 import { phraseMatches, subredditOf } from './lib/match'
 import schema from './schema'
@@ -42,7 +42,8 @@ async function pushReddit(t: ReturnType<typeof setup>['t'], secret: string, post
   return res.json() as Promise<{ ingested: number }>
 }
 
-afterEach(() => { vi.unstubAllGlobals() })
+afterEach(() => { vi.unstubAllGlobals(); vi.unstubAllEnvs() })
+beforeEach(() => { vi.stubEnv('PLAN_PHRASES_PER_PLATFORM', '100'); vi.stubEnv('PLAN_ACCOUNTS_PER_PLATFORM', '100') })  // these suites are about matching, not the Free plan
 
 describe('phrase matching', () => {
   it('matches whole words and phrases, ignoring case and spacing', () => {
