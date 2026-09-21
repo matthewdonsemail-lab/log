@@ -43,6 +43,14 @@ export function SignUpRoute() {
   return <OnboardingAuth mode="sign-up" />
 }
 
+/** Dedicated extension/API entry point with the connection risk notice. */
+export function AuthRoute() {
+  const { isLoaded, isSignedIn } = useAuth()
+  if (!isLoaded) return <OnboardingAuthLoading>Loading sign-in…</OnboardingAuthLoading>
+  if (isSignedIn) return <Navigate to="/dashboard/settings" replace />
+  return <OnboardingAuth mode="sign-in" riskNotice redirectTo="/dashboard/settings" />
+}
+
 /** Dashboard content stays protected — signed-out visits bounce to onboarding. */
 export function RequireAuth({ children }: { children: ReactNode }) {
   const { isLoaded, isSignedIn, sessionId } = useAuth()

@@ -6,7 +6,10 @@
 <style>
   :root { color-scheme: light; --blue: #2a8cff; --ink: #0f172a; --muted: #64748b; --line: #e2e8f0; }
   * { box-sizing: border-box; }
-  body { width: 340px; margin: 0; padding: 18px; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--ink); background: #fff; }
+  body { width: 360px; margin: 0; padding: 0 18px 18px; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--ink); background: #fff; }
+  header { margin: 0 -18px 16px; padding: 14px 18px; color: #fff; background: linear-gradient(135deg, #1578ed, #2a8cff); }
+  .brand { display: flex; align-items: center; gap: 9px; font-weight: 800; }
+  .brand-mark { display: grid; width: 27px; height: 27px; place-items: center; border-radius: 8px; color: var(--blue); background: #fff; font-size: 17px; }
   h1 { margin: 0 0 4px; font-size: 17px; }
   p { margin: 0 0 12px; color: var(--muted); }
   .status { margin: 0 0 14px; padding: 10px 12px; border-radius: 10px; background: #f1f5f9; color: var(--ink); }
@@ -17,20 +20,46 @@
   button.primary:disabled { opacity: .6; cursor: default; }
   a.btn { background: #f1f5f9; color: var(--ink); }
   .note { margin: 12px 0 0; font-size: 12px; color: var(--muted); }
+  .section { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .section-title { margin: 0 0 9px; font-size: 13px; font-weight: 800; }
+  label { display: block; margin: 9px 0; color: var(--muted); font-size: 12px; font-weight: 700; }
+  input { display: block; width: 100%; margin-top: 4px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px; font: inherit; color: var(--ink); }
+  .profile { margin: 8px 0; padding: 10px; border: 1px solid var(--line); border-radius: 9px; }
+  .profile-head { display: flex; justify-content: space-between; gap: 8px; }
+  .profile-name { font-weight: 800; }
+  .profile-meta { margin-top: 3px; color: var(--muted); font-size: 12px; }
+  .profile-actions { display: flex; gap: 6px; margin-top: 8px; }
+  .profile-actions button { margin: 0; padding: 7px 8px; font-size: 12px; }
+  button.secondary { background: #eef4fb; color: var(--ink); }
   [hidden] { display: none !important; }
 </style>
 </head>
 <body>
-  <h1>ListeningKit Connect</h1>
-  <p id="lead">Copy a token so ListeningKit can connect this account.</p>
+  <header><div class="brand"><span class="brand-mark">L</span><span>ListeningKit</span></div></header>
+  <section id="signed-out">
+    <h1>Sign in with your ListeningKit account</h1>
+    <p>Sign in to view your saved social accounts and securely connect another browser session.</p>
+    <button id="sign-in" class="primary" type="button">Sign in with ListeningKit</button>
+  </section>
+  <section id="signed-in" hidden>
+    <h1>Browser connections</h1>
+    <p id="lead">View your saved accounts or connect the account open in this tab.</p>
+  </section>
   <div id="status" class="status" role="status" aria-live="polite"></div>
   <button id="copy" class="primary" type="button" hidden>Copy token</button>
+  <div id="save-panel" class="section" hidden>
+    <p class="section-title">Save this browser account</p>
+    <label>Account name<input id="account-name" type="text" placeholder="e.g. Brand X account" autocomplete="off"></label>
+    <label>Proxy <span>(optional)</span><input id="account-proxy" type="text" placeholder="http://user:pass@host:port" autocomplete="off"></label>
+    <button id="save" class="primary" type="button">Save account</button>
+  </div>
+  <div id="saved" class="section" hidden><p class="section-title">Saved accounts</p><div id="profiles"></div></div>
   <div id="sites" hidden>
     <a class="btn" href="https://www.reddit.com/" target="_blank" rel="noreferrer">Open Reddit</a>
     <a class="btn" href="https://x.com/" target="_blank" rel="noreferrer">Open X</a>
     <a class="btn" href="https://www.facebook.com/" target="_blank" rel="noreferrer">Open Facebook</a>
   </div>
-  <p class="note">The token stays on your computer until you paste it into ListeningKit. This extension sends nothing anywhere.</p>
+  <p class="note">Accounts stay in this browser until you delete them. Cookies are never uploaded automatically.</p>
   <script type="module" src="popup.js"></script>
 </body>
 </html>

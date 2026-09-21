@@ -60,6 +60,6 @@ describe('the extension and the server agree on the token', () => {
     const manifest = (await import('../../../../extension/manifest.json')).default
     const hosts = (manifest.host_permissions as string[]).join(' ')
     for (const site of Object.values(SITES)) for (const domain of site.domains) expect(hosts).toContain(domain)
-    expect(manifest.permissions).toEqual(['activeTab', 'cookies', 'clipboardWrite'])
+    expect(manifest.permissions).toEqual(['activeTab', 'cookies', 'clipboardWrite', 'storage', 'scripting'])
   })
 })

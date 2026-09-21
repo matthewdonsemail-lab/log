@@ -74,6 +74,7 @@ async function startOAuth(
   resource: unknown,
   mode: 'sign-in' | 'sign-up',
   provider: OAuthProvider,
+  redirectTo = '/onboarding',
 ): Promise<void> {
   const callback = mode === 'sign-in' ? '/sign-in/sso-callback' : '/sign-up/sso-callback'
   const target = resource as unknown as {
@@ -92,12 +93,12 @@ async function startOAuth(
     await target.authenticateWithRedirect({
       strategy: provider.strategy,
       redirectUrl: callback,
-      redirectUrlComplete: '/onboarding',
+      redirectUrlComplete: redirectTo,
     })
     return
   }
   if (typeof target.sso === 'function') {
-    await target.sso({ strategy: provider.strategy, redirectUrl: '/onboarding', redirectCallbackUrl: callback })
+    await target.sso({ strategy: provider.strategy, redirectUrl: redirectTo, redirectCallbackUrl: callback })
     return
   }
   throw new Error('OAuth is not available right now — try email sign-in instead.')
@@ -109,22 +110,22 @@ async function startOAuth(
  * immediately (the redirect IS the action, not a form step). The email form
  * below stays rendered by Clerk, so password/username flows keep working.
  */
-function OAuthCards({ mode }: { mode: 'sign-in' | 'sign-up' }) {
+function OAuthCards({ mode, redirectTo = '/onboarding' }: { mode: 'sign-in' | 'sign-up'; redirectTo?: string }) {
   const signInState = useSignIn()
   const signUpState = useSignUp()
   const toast = useToast()
   const [pending, setPending] = useState<string | null>(null)
 
-  async function start(provider: OAuthProvider) {
+async function start(provider: OAuthProvider) {
     if (pending) return
     setPending(provider.id)
     try {
       if (mode === 'sign-in') {
         if (signInState.fetchStatus === 'fetching' || !signInState.signIn) throw new Error('Sign-in is still loading — try again in a moment.')
-        await startOAuth(signInState.signIn, mode, provider)
+         await startOAuth(signInState.signIn, mode, provider, redirectTo)
       } else {
         if (signUpState.fetchStatus === 'fetching' || !signUpState.signUp) throw new Error('Sign-up is still loading — try again in a moment.')
-        await startOAuth(signUpState.signUp, mode, provider)
+         await startOAuth(signUpState.signUp, mode, provider, redirectTo)
       }
     } catch (err) {
       setPending(null)
@@ -159,7 +160,7 @@ function OAuthCards({ mode }: { mode: 'sign-in' | 'sign-up' }) {
   )
 }
 
-export function OnboardingAuth({ mode }: { mode: 'sign-in' | 'sign-up' }) {
+export function OnboardingAuth({ mode, riskNotice = false, redirectTo = '/onboarding' }: { mode: 'sign-in' | 'sign-up'; riskNotice?: boolean; redirectTo?: string }) {
   const clip = useSquircleClip<HTMLDivElement>(28)
   const copy = COPY[mode]
   return (
@@ -168,12 +169,21 @@ export function OnboardingAuth({ mode }: { mode: 'sign-in' | 'sign-up' }) {
         <div className="absolute inset-x-0 top-6 flex justify-center"><BrandHeader /></div>
         <h1 className="mt-8 text-4xl font-bold leading-tight sm:text-5xl">{copy.title}</h1>
         <p className="mt-4 text-lg text-white/85">{copy.subtitle}</p>
+        {riskNotice && (
+          <div className="mt-6 w-full max-w-md rounded-2xl border border-amber-200/30 bg-amber-950/30 p-4 text-left text-sm text-amber-50" role="note">
+            <p className="font-bold">You are connecting your account</p>
+            <p className="mt-1 text-amber-100/85">
+              ListeningKit will use your account to connect the services you choose. Only continue on a computer you trust.
+              If your computer is compromised, saved sessions and connected accounts may be at risk.
+            </p>
+          </div>
+        )}
         <div ref={clip.ref} style={clip.style} className="lk-clerk mt-8 w-full max-w-md bg-[#FBFCFE] p-6 text-left sm:p-8">
-          <OAuthCards mode={mode} />
-          {mode === 'sign-in' ? (
-            <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" forceRedirectUrl="/onboarding" appearance={appearance} />
-          ) : (
-            <SignUp routing="path" path="/sign-up" signInUrl="/sign-in" forceRedirectUrl="/onboarding" appearance={appearance} />
+           <OAuthCards mode={mode} redirectTo={redirectTo} />
+           {mode === 'sign-in' ? (
+             <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" forceRedirectUrl={redirectTo} appearance={appearance} />
+           ) : (
+             <SignUp routing="path" path="/sign-up" signInUrl="/sign-in" forceRedirectUrl={redirectTo} appearance={appearance} />
           )}
         </div>
         <a href="/onboarding" className="mt-6 text-sm font-semibold text-white/70 underline decoration-dashed underline-offset-4 hover:text-white">Back to platform selection</a>
