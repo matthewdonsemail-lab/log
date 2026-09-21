@@ -76,7 +76,15 @@ In `~/.cursor/mcp.json` (or the project's `.cursor/mcp.json`):
 
 ### Hermes
 
-Add it to Hermes' MCP servers with the address above and an `Authorization` header holding the key. See Hermes' own MCP documentation for where its config lives.
+Hermes reads MCP servers from `~/.hermes/config.yaml`. Put the key in `~/.hermes/.env` as `LISTENINGKIT_KEY=lk_api_...`, then add:
+
+```yaml
+mcp_servers:
+  listeningkit:
+    url: "https://<your deployment>.convex.site/mcp"
+    headers:
+      Authorization: "Bearer ${LISTENINGKIT_KEY}"
+```
 
 ### Any other MCP client
 
