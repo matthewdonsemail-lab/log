@@ -739,3 +739,5 @@ a real browser: created a key, read the real matches over HTTP, paged without ov
 test that pages through matches caught a real bug: the cursor is a creation time with fractions of a millisecond, so it had to be
 accepted as a number. Backend tests 146, web tests 194.
 
+### 2026-09-21 - API and docs fixes deployed
+Deployed the API and the docs fixes to the live deployment and checked them there: a key made in the live dashboard read all three endpoints, unauthenticated and bad calls were refused, and a revoked key stopped working. The stale mock API reference is now labelled as legacy with a warning that it is not the live API.
