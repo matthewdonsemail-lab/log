@@ -46,6 +46,8 @@ export type ChainOfThoughtStepProps = ComponentProps<"div"> & {
    * same tone to the chain-joints so the label ink matches.
    */
   tone?: ChainTone;
+  /** Optional per-chain accent used by branded comparison columns. */
+  accentColor?: string;
   /**
    * Nested sub-chain joints. The pattern, end to end:
    *
@@ -94,6 +96,7 @@ export const ChainOfThoughtStep = memo(
     description,
     status = "complete",
     tone = "white",
+    accentColor,
     elbow = false,
     compact = false,
     children,
@@ -112,6 +115,7 @@ export const ChainOfThoughtStep = memo(
             "shadow-hard flex size-7 items-center justify-center rounded-md",
             styles[status]
           )}
+          style={accentColor ? { backgroundColor: accentColor, color: "white" } : undefined}
         >
             <Icon className="size-4" />
           </span>
@@ -127,8 +131,8 @@ export const ChainOfThoughtStep = memo(
             >
               <motion.path
                 d="M1 0 L1 13 Q1 25 13 25 L29 25"
-                stroke={elbowStroke}
-                strokeWidth="2"
+                stroke={accentColor ?? elbowStroke}
+                strokeWidth="2.25"
                 strokeLinecap="butt"
                 initial={{ pathLength: 0 }}
                 animate={{ pathLength: status === "complete" ? 1 : 0 }}
@@ -162,8 +166,8 @@ export const ChainOfThoughtStep = memo(
               >
                 <motion.path
                   d="M1 26 L1 13 Q1 1 13 1 L29 1"
-                  stroke={elbowStroke}
-                  strokeWidth="2"
+                  stroke={accentColor ?? elbowStroke}
+                  strokeWidth="2.25"
                   strokeLinecap="butt"
                   initial={{ pathLength: 0 }}
                   animate={{ pathLength: status === "complete" ? 1 : 0 }}
@@ -171,7 +175,8 @@ export const ChainOfThoughtStep = memo(
                 />
               </motion.svg>
               <motion.div
-                className={cn("absolute top-[46px] -bottom-6 left-[-29px] w-[1.75px] origin-top", railColor)}
+                className={cn("absolute top-[46px] -bottom-6 left-[-29px] w-[2.25px] origin-top", railColor)}
+                style={accentColor ? { backgroundColor: accentColor } : undefined}
                 initial={{ scaleY: 0 }}
                 animate={{ scaleY: status === "complete" ? 1 : 0 }}
                 transition={{ duration: 0.45, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
@@ -183,9 +188,10 @@ export const ChainOfThoughtStep = memo(
             <motion.div
               className={
                 compact
-                  ? cn("absolute top-7 -bottom-1 left-1/2 ml-[-0.875px] w-[1.75px] origin-top", railColor)
-                  : cn("absolute top-7 -bottom-6 left-1/2 ml-[-0.875px] mt-2 w-[1.75px] origin-top", railColor)
+                  ? cn("absolute top-7 -bottom-1 left-1/2 ml-[-1.125px] w-[2.25px] origin-top", railColor)
+                  : cn("absolute top-7 -bottom-6 left-1/2 ml-[-1.125px] mt-2 w-[2.25px] origin-top", railColor)
               }
+              style={accentColor ? { backgroundColor: accentColor } : undefined}
               initial={{ scaleY: 0 }}
               animate={{ scaleY: status === "complete" ? 1 : 0 }}
               transition={
@@ -205,6 +211,7 @@ export const ChainOfThoughtStep = memo(
                   ? "text-foreground"
                   : "text-muted-foreground"
             )}
+            style={accentColor ? { color: accentColor } : undefined}
           >
             {label}
           </div>

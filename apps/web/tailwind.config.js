@@ -52,7 +52,9 @@ export default {
         ink: '#0D2A4C',
         'ink-muted': 'oklch(0.32 0.012 72)',
         paper: 'oklch(0.962 0.008 92)',
-        'paper-muted': 'oklch(0.91 0.01 92)'
+        'paper-muted': 'oklch(0.91 0.01 92)',
+        // ui-kit header surface for light-tone pills and menu panels.
+        'dither-frame': '#F7FAFF'
       },
       borderRadius: {
         // Matches ui-kit: --radius-md used by button xs/sm/icon sizes.

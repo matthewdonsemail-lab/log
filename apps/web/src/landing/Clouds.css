@@ -1,0 +1,46 @@
+/* Landing cloud band: three depth rows drifting at different speeds. */
+
+.lk-cloud-row-back {
+  top: 5%;
+}
+
+.lk-cloud-row-mid {
+  top: 13%;
+}
+
+.lk-cloud-row-front {
+  top: 5%;
+}
+
+@keyframes lk-cloud-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    /* The strip holds the cloud sequence twice; sliding one half-width loops seamlessly. */
+    transform: translateX(-50%);
+  }
+}
+
+.lk-cloud-drift-back {
+  animation: lk-cloud-drift 420s linear infinite;
+  will-change: transform;
+}
+
+.lk-cloud-drift-mid {
+  animation: lk-cloud-drift 252s linear infinite;
+  will-change: transform;
+}
+
+.lk-cloud-drift-front {
+  animation: lk-cloud-drift 140s linear infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lk-cloud-drift-back,
+  .lk-cloud-drift-mid,
+  .lk-cloud-drift-front {
+    animation: none;
+  }
+}

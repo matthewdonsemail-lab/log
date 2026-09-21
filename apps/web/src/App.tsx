@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ToastProvider } from '@listeningkit/ui'
-import { OnboardingRoute, AuthSetup, RequireAuth, SignInRoute, SignUpRoute } from './components/AuthGate'
+import { OnboardingRoute, AuthRoute, AuthSetup, RequireAuth, SignInRoute, SignUpRoute } from './components/AuthGate'
 import { DashboardLayout } from './components/DashboardLayout'
 import { DashboardSettings } from './components/DashboardSettings'
 import { DashboardGroups } from './components/DashboardGroups'
@@ -21,6 +21,7 @@ import { DashboardDocs } from './components/DashboardDocs'
 import { DashboardAPI } from './components/DashboardAPI'
 import { DashboardApiKeyPage } from './components/DashboardApiKeyPage'
 import { DashboardBrand } from './components/DashboardBrand'
+import { LandingPage } from './landing/LandingPage'
 
 const createQueryClient = () => new QueryClient({
   defaultOptions: {
@@ -51,8 +52,9 @@ export function App() {
         <Router>
           <AuthSetup>
           <Routes>
-            <Route path="/" element={<Navigate to="/onboarding" replace />} />
+            <Route path="/" element={<LandingPage />} />
             <Route path="/onboarding" element={<OnboardingRoute />} />
+            <Route path="/auth" element={<AuthRoute />} />
             <Route path="/sign-in/*" element={<SignInRoute />} />
             <Route path="/sign-up/*" element={<SignUpRoute />} />
             <Route path="/dashboard" element={<RequireAuth><DashboardLayout /></RequireAuth>}>

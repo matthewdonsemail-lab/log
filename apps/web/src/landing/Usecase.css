@@ -1,0 +1,27 @@
+/* Usecase slide transitions: 3D flip-in for the left copy. */
+
+.lk-usecase-stage {
+  perspective: 1200px;
+}
+
+@keyframes lk-flip-in {
+  from {
+    transform: rotateX(-75deg);
+    opacity: 0;
+  }
+  to {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+}
+
+.lk-flip-in {
+  animation: lk-flip-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-style: preserve-3d;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lk-flip-in {
+    animation: none;
+  }
+}
