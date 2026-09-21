@@ -1,0 +1,105 @@
+---
+title: The API
+description: Read your phrases and matches from your own code with an API key.
+---
+
+# The API
+
+The API lets your own code read your ListeningKit data: your plan, your phrases and your matches. It is **read-only**: a key can look at your data and cannot change anything.
+
+Make a key in the dashboard, under **API**. Each key belongs to you and can only read your own data.
+
+## Getting a key
+
+1. Open **API** in the dashboard.
+2. Type a name (for example "My reporting script") and press **Create key**.
+3. **Copy the key now.** It is shown only once. ListeningKit keeps only a fingerprint of it, so a lost key cannot be recovered: make a new one.
+4. Revoke a key any time with **Revoke**. It stops working immediately.
+
+You can have up to 5 keys.
+
+<Callout type="warning">
+A key can read all of your matches. Keep it out of code you publish and out of browsers. If one leaks, revoke it.
+</Callout>
+
+## Calling it
+
+The base address is shown on the API page. It looks like `https://<your deployment>.convex.site/api/v1`. Send the key in the `Authorization` header:
+
+```bash
+curl "https://<your deployment>.convex.site/api/v1/matches?limit=5&min_score=70" \
+  -H "Authorization: Bearer lk_api_..."
+```
+
+Every response is JSON. Every endpoint is `GET`.
+
+## Endpoints
+
+### `GET /me`
+
+Your plan, its limits and what you use.
+
+```json
+{ "data": { "plan": "free", "name": "Free",
+    "limits": { "phrasesPerPlatform": 1, "accountsPerPlatform": 1 },
+    "usage": { "phrases": { "reddit": 0, "x": 1, "facebook": 0 }, "accounts": { "reddit": 0, "x": 1, "facebook": 0 } } } }
+```
+
+### `GET /keywords`
+
+Your phrases.
+
+```json
+{ "data": [ { "id": "…", "phrase": "need a helper", "platform": "x", "community": null,
+    "status": "listening", "matches": 34, "lastCheckedAt": 1790000000000, "lastSource": "helper" } ] }
+```
+
+`community` is the subreddit for Reddit phrases and `null` otherwise. `lastSource` is `reddit`, `mirror` or `helper`.
+
+### `GET /matches`
+
+Your matches, newest first.
+
+| Parameter | Meaning |
+|---|---|
+| `limit` | How many to return, 1 to 100. Default 25. |
+| `platform` | Only `reddit`, `x` or `facebook`. |
+| `min_score` | Only matches scored at least this, 0 to 100. Unscored matches are left out when you use it. |
+| `before` | The `nextCursor` of the previous page, to get the next page. |
+
+```json
+{ "data": [ { "id": "…", "createdAt": 1790000000000.5, "phrase": "need a helper", "platform": "x",
+      "score": 88, "intent": "looking_for_help", "reason": "Asks for a helper this week",
+      "post": { "author": "someone", "title": null, "text": "…", "url": "https://x.com/…",
+                "likes": 3, "comments": 1, "postedAt": null } } ],
+  "nextCursor": 1789999999000.25 }
+```
+
+`score`, `intent` and `reason` are `null` until a match has been scored. `text` is cut at 2000 characters. `nextCursor` is `null` when there is nothing older.
+
+To read everything, keep calling with `before` set to the last `nextCursor` until it is `null`:
+
+```bash
+curl "$BASE/matches?limit=100&before=1789999999000.25" -H "Authorization: Bearer $KEY"
+```
+
+## Limits and errors
+
+**60 requests per minute per key.** Every response carries `X-RateLimit-Limit` and `X-RateLimit-Remaining`. Past the limit you get `429` and a `Retry-After` header with the seconds to wait.
+
+Errors look the same everywhere:
+
+```json
+{ "error": { "code": "invalid_parameter", "message": "limit must be a whole number from 1 to 100" } }
+```
+
+| Status | `code` | Meaning |
+|---|---|---|
+| 400 | `invalid_parameter` | A parameter is out of range. The message says which. |
+| 401 | `unauthorized` | No key, a malformed key, an unknown key, or a revoked key. |
+| 429 | `rate_limited` | Too many requests. Wait for `Retry-After` seconds. |
+| 500 | `server_error` | Something went wrong on our side. Try again. |
+
+## Not the same as an ingest key
+
+**Ingest keys** (Settings, Send posts in) let the X and Facebook helpers send posts *in*, and start with `lk_ingest_`. **API keys** read data *out*, and start with `lk_api_`. Neither works in the other's place.

@@ -1,12 +1,14 @@
 import { registerStaticRoutes } from '@convex-dev/static-hosting'
-import { httpActionGeneric, httpRouter } from 'convex/server'
+import { httpActionGeneric, httpRouter, type GenericActionCtx, type GenericDataModel } from 'convex/server'
 import { ConvexError } from 'convex/values'
 import { components, internal } from './_generated/api'
+import { RATE_LIMIT_PER_MINUTE } from './apiKeys'
 import { MAX_POSTS_PER_BATCH } from './feed'
 import { decryptText } from './lib/crypto'
 import { sha256Hex } from './lib/hash'
 import { normalizePushedPost, type NormalizedPost } from './lib/posts'
 import { mayRead, proxyState } from './lib/proxy'
+import { DEFAULT_MATCHES_PER_PAGE, MAX_MATCHES_PER_PAGE } from './publicApi'
 
 const PLATFORMS = ['facebook', 'x', 'reddit'] as const
 type Platform = typeof PLATFORMS[number]
@@ -105,6 +107,98 @@ http.route({
     if (!mayRead(state)) return json({ error: 'Reading is paused until the operator sets up the proxy' }, 503)
     return json({ required: state.required, proxy: state.proxy }, 200)
   }),
+})
+
+// ---- The public read API: /api/v1, authenticated with a key made in the dashboard (Authorization: Bearer lk_api_...). ----
+
+class ApiError extends Error {
+  constructor(readonly status: number, readonly code: string, message: string) { super(message) }
+}
+
+function apiJson(body: unknown, status: number, extra: Record<string, string> = {}): Response {
+  return new Response(JSON.stringify(body), {
+    status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...extra },
+  })
+}
+
+function apiFailure(error: ApiError, extra: Record<string, string> = {}): Response {
+  return apiJson({ error: { code: error.code, message: error.message } }, error.status, extra)
+}
+
+/** A whole number within a range, or a plain-words 400. */
+function wholeParam(url: URL, name: string, min: number, max: number): number | undefined {
+  const raw = url.searchParams.get(name)
+  if (raw === null || raw === '') return undefined
+  const n = Number(raw)
+  if (!Number.isInteger(n) || n < min || n > max) throw new ApiError(400, 'invalid_parameter', `${name} must be a whole number from ${min} to ${max}`)
+  return n
+}
+
+/** A non-negative number (the cursor: a creation time, which has fractions of a millisecond), or a plain-words 400. */
+function cursorParam(url: URL): number | undefined {
+  const raw = url.searchParams.get('before')
+  if (raw === null || raw === '') return undefined
+  const n = Number(raw)
+  if (!Number.isFinite(n) || n < 0) throw new ApiError(400, 'invalid_parameter', 'before must be the nextCursor from the previous page')
+  return n
+}
+
+/** Checks the key, counts the request against its allowance, runs the handler, and shapes every failure the same way. */
+async function apiRoute(ctx: GenericActionCtx<GenericDataModel>, req: Request, handler: (owner: string, url: URL) => Promise<unknown>): Promise<Response> {
+  try {
+    const secret = req.headers.get('Authorization')?.match(/^Bearer (lk_api_[A-Za-z0-9]{20,100})$/)?.[1]
+    if (!secret) throw new ApiError(401, 'unauthorized', 'Send your API key as: Authorization: Bearer lk_api_...')
+    const now = Date.now()
+    let owner: string
+    let remaining: number
+    try {
+      ;({ owner, remaining } = await ctx.runMutation(internal.apiKeys.authenticate, { keyHash: await sha256Hex(secret), now }))
+    } catch (error) {
+      if (error instanceof ConvexError && error.data === 'Rate limited') {
+        const retry = String(60 - Math.floor((now % 60_000) / 1000))
+        throw Object.assign(new ApiError(429, 'rate_limited', `Too many requests: ${RATE_LIMIT_PER_MINUTE} per minute per key`), { retry })
+      }
+      if (error instanceof ConvexError && error.data === 'Invalid API key') throw new ApiError(401, 'unauthorized', 'That API key is not valid, or it was revoked')
+      throw new ApiError(500, 'server_error', 'Could not check the key')
+    }
+    const data = await handler(owner, new URL(req.url))
+    return apiJson(data, 200, { 'X-RateLimit-Limit': String(RATE_LIMIT_PER_MINUTE), 'X-RateLimit-Remaining': String(remaining) })
+  } catch (error) {
+    if (error instanceof ApiError) {
+      const retry = (error as ApiError & { retry?: string }).retry
+      return apiFailure(error, retry ? { 'Retry-After': retry } : {})
+    }
+    console.error('api: request failed', error instanceof Error ? error.message : error)
+    return apiFailure(new ApiError(500, 'server_error', 'Something went wrong on our side'))
+  }
+}
+
+http.route({
+  path: '/api/v1/me',
+  method: 'GET',
+  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, async owner => ({ data: await ctx.runQuery(internal.publicApi.meFor, { owner }) }))),
+})
+
+http.route({
+  path: '/api/v1/keywords',
+  method: 'GET',
+  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, async owner => ({ data: await ctx.runQuery(internal.publicApi.keywordsFor, { owner }) }))),
+})
+
+http.route({
+  path: '/api/v1/matches',
+  method: 'GET',
+  handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, async (owner, url) => {
+    const platform = url.searchParams.get('platform')
+    if (platform !== null && !PLATFORMS.includes(platform as Platform)) throw new ApiError(400, 'invalid_parameter', 'platform must be reddit, x or facebook')
+    return await ctx.runQuery(internal.publicApi.matchesFor, {
+      owner,
+      ...(platform === null ? {} : { platform: platform as Platform }),
+      ...(wholeParam(url, 'min_score', 0, 100) === undefined ? {} : { minScore: wholeParam(url, 'min_score', 0, 100) as number }),
+      ...(cursorParam(url) === undefined ? {} : { before: cursorParam(url) as number }),
+      limit: wholeParam(url, 'limit', 1, MAX_MATCHES_PER_PAGE) ?? DEFAULT_MATCHES_PER_PAGE,
+    })
+  })),
 })
 
 // The website itself. Exact routes above win over this catch-all.

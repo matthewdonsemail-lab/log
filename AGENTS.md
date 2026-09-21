@@ -105,6 +105,14 @@ Convex agent skills for common tasks can be installed by running
 - A failed send must not mark matches as sent (`alerts:markSent` runs only after a successful send).
 - Tests use fake `fetch` replies. The Firecrawl call was also checked once against the real service; do the same after changing the request or the schema.
 
+## Public API Rules
+
+- The API is read-only. Do not add a write route without a scope system and a decision from the owner; a leaked key today can only read.
+- Keys are stored only as SHA-256 hashes, shown once, and never returned by any query. `lk_api_` and `lk_ingest_` keys must stay unable to stand in for each other.
+- Every route goes through `apiRoute` in `convex/http.ts`: key check, per-minute counter, one JSON error shape. Never put an owner id, a hash, a secret or a cookie in a response, and add a test line for any new field.
+- List endpoints are bounded (a page of at most 100, a scan window of 400) and paged with a cursor. `_creationTime` has fractions of a millisecond, so cursors are numbers, not integers.
+- No CORS headers: API keys must not be used from browsers.
+
 ## Plan Rules (Free is enforced, Pro does not exist)
 
 - Limits are enforced on the server in the mutations that create things (`keywords:create`, `accounts:create*`), never only in the UI. The UI notice is a convenience; the server refuses.

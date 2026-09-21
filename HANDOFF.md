@@ -26,7 +26,7 @@ Sign in (Clerk) → onboarding (video, extension, token) → "What should we lis
 | Facebook | **Built and run against a real throwaway Facebook account: 4 real posts became matches.** `clients/facebook_push.py` and `clients/facebook_browser.py` mirror the X helper: connected login in, Facebook phrases in, recent-post search in real Chrome, posts out to `/ingest`. Checked with stand-in pages in real Chrome and against the real site (a fake login is recognised as a refused login). Known gaps: comment counts read as 0, and a post whose address cannot be read links to a Facebook search for its text. Facebook changes its markup often; `LISTENINGKIT_FB_DEBUG_DIR` saves what Facebook showed. Keywords page now offers Facebook (dev and this commit; prod needs a `pnpm deploy:site`). |
 | Everything else in the dashboard | Still the in-browser mock (messaging, listings, brand, analytics, API keys, groups). |
 
-Checks that were green at the last commit: backend 127, web 187, `clients` 86, reddit-camofox-client 25;
+Checks that were green at the last commit: backend 146, web 194, `clients` 86, reddit-camofox-client 25;
 `pnpm typecheck`, `pnpm typecheck:backend`, `pnpm run lint` (one old oxlint warning in
 `communities/index.ts`), `pnpm --filter web build`.
 
@@ -176,3 +176,7 @@ The other open to-dos (X and Facebook adapters, real brand step, phone alerts, F
 ## Plans and pricing (2026-09-21)
 
 Everyone is on the **Free** plan: 1 phrase and 1 connected account per platform at a time, enforced on the server (`convex/lib/plan.ts`). A Pricing section is on the landing page, and Settings, Billing shows the plan and usage. **Pro ($19 a month) is a placeholder price and shows as coming soon; nothing charges and there is no way to buy.** Matthew: change the price and copy in `apps/web/src/lib/plans.ts`. **For recording the demo**, one phrase per platform is tight: raise the limits on the deployment while you record (`pnpm exec convex env set --prod PLAN_PHRASES_PER_PLATFORM 5`, and `PLAN_ACCOUNTS_PER_PLATFORM`), then remove them (`convex env remove --prod ...`) so Free is one of each again. Anyone who had more than one already keeps them.
+
+## The API (2026-09-21)
+
+The dashboard's **API** page now makes real keys and there is a real read-only API behind them: `GET /api/v1/me`, `/keywords`, `/matches` (see `apps/docs/content/docs/guide/api.mdx`). Checked end to end on dev in a real browser: create a key, call all three endpoints, page through matches, then revoke and see 401. It needs the backend and site deployed to prod (`pnpm exec convex deploy --yes`, then `pnpm deploy:site`). The older mock API-key screens (scopes, activity console, key detail page) are still in the code and only show when the app is not on the live backend; remove them when convenient. Not built: write endpoints, scopes, webhooks, an official SDK.

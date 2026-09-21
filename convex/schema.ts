@@ -56,6 +56,13 @@ export default defineSchema({
     owner: v.string(), accountId: v.id('accounts'), platform,
     ...postFields,
   }).index('by_owner', ['owner']).index('by_account_external', ['accountId', 'externalId']),
+  // Keys for the public read API (/api/v1). Only the SHA-256 of the secret is stored; the plaintext exists once, in the create response.
+  apiKeys: defineTable({
+    owner: v.string(), label: v.string(), prefix: v.string(), keyHash: v.string(),
+    lastUsedAt: v.optional(v.number()),
+    // A per-minute request counter, so one key cannot hammer the deployment.
+    windowStart: v.optional(v.number()), windowCount: v.optional(v.number()),
+  }).index('by_owner', ['owner']).index('by_hash', ['keyHash']),
   // What Firecrawl read from the person's own website. Facts only: nothing here is a credential.
   brands: defineTable({
     owner: v.string(), sourceUrl: v.string(), name: v.string(), tagline: v.string(),

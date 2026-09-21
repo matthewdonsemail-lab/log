@@ -21,6 +21,7 @@ import { DashboardDocs } from './components/DashboardDocs'
 import { StaticDocsRedirect } from './components/StaticDocsRedirect'
 import { DashboardAPI } from './components/DashboardAPI'
 import { DashboardApiKeyPage } from './components/DashboardApiKeyPage'
+import { DashboardApiLive } from './components/DashboardApiLive'
 import { DashboardBrand } from './components/DashboardBrand'
 import { LandingPage } from './landing/LandingPage'
 
@@ -79,7 +80,7 @@ export function App() {
                 element={<DashboardMessages />}
               />
               <Route path="settings" element={<DashboardSettings />} />
-              <Route path="api" element={<DashboardAPI />} />
+              <Route path="api" element={keywordsOnConvex() ? <DashboardApiLive /> : <DashboardAPI />} />
               <Route path="api/:keyId" element={<DashboardApiKeyPage />} />
               <Route path="docs/*" element={<DashboardDocs />} />
             </Route>

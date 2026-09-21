@@ -73,6 +73,10 @@ GET /proxy                  → { "required": true, "proxy": { "server": "http:/
 
 Up to 100 posts per batch. Invalid rows are skipped and counted, not fatal. `platform` is `facebook`, `x` or `reddit`.
 
+## The public API
+
+Read-only, at `/api/v1` on the deployment's site address: `GET /me`, `/keywords`, `/matches`, authenticated with a key made in the dashboard (`lk_api_...`, stored as a SHA-256 hash, shown once; `convex/apiKeys.ts`). Routes are in `convex/http.ts`, data in `convex/publicApi.ts`. 60 requests a minute per key (a counter on the key row), one JSON error shape, no CORS (keys must not live in browsers). Reference: [The API](/docs/guide/api).
+
 ## Plans
 
 Everyone is on Free, enforced on the server in `keywords:create` and the account creators (`convex/lib/plan.ts`): one phrase and one account per platform. Only new things are refused; existing ones stay. `plan:mine` reports plan and usage for Settings, Billing. Pro is display-only and nothing charges. Tests that create several phrases per platform raise the limits with `vi.stubEnv('PLAN_PHRASES_PER_PLATFORM', '100')`.
@@ -93,8 +97,8 @@ X and Facebook reading always goes through the operator's proxy, and a person ne
 
 | Task | Command |
 |---|---|
-| Backend tests (127) | `pnpm test:backend` |
-| Web tests (187) | `pnpm --filter web test` |
+| Backend tests (146) | `pnpm test:backend` |
+| Web tests (194) | `pnpm --filter web test` |
 | Python tests (86) | `python -m pytest clients/tests` (the browser tests start real Chrome and take a few minutes) |
 | Type check | `pnpm typecheck` |
 | Lint | `pnpm lint` |

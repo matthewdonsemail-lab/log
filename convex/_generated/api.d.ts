@@ -10,6 +10,7 @@
 
 import type * as accounts from "../accounts.js";
 import type * as alerts from "../alerts.js";
+import type * as apiKeys from "../apiKeys.js";
 import type * as brand from "../brand.js";
 import type * as crons from "../crons.js";
 import type * as feed from "../feed.js";
@@ -31,6 +32,7 @@ import type * as lib_scoring from "../lib/scoring.js";
 import type * as lib_server from "../lib/server.js";
 import type * as lib_token from "../lib/token.js";
 import type * as plan from "../plan.js";
+import type * as publicApi from "../publicApi.js";
 import type * as reddit from "../reddit.js";
 import type * as scoring from "../scoring.js";
 import type * as sessions from "../sessions.js";
@@ -45,6 +47,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   accounts: typeof accounts;
   alerts: typeof alerts;
+  apiKeys: typeof apiKeys;
   brand: typeof brand;
   crons: typeof crons;
   feed: typeof feed;
@@ -66,6 +69,7 @@ declare const fullApi: ApiFromModules<{
   "lib/server": typeof lib_server;
   "lib/token": typeof lib_token;
   plan: typeof plan;
+  publicApi: typeof publicApi;
   reddit: typeof reddit;
   scoring: typeof scoring;
   sessions: typeof sessions;

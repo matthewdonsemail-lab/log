@@ -731,3 +731,11 @@ when a platform is full make it visible. Pro is announced as coming soon and not
 deployment with `PLAN_PHRASES_PER_PLATFORM` and `PLAN_ACCOUNTS_PER_PLATFORM`. Checked in a real browser on the dev deployment.
 Backend tests 127, web tests 187.
 
+### 2026-09-21 - a real API in the dashboard
+Built the dashboard's API page for real. It makes API keys (hashed, shown once, revocable, at most five) and behind them is a
+read-only public API on the HTTP layer: `GET /api/v1/me`, `/keywords` and `/matches` with filters and cursor paging, a 60-a-minute
+limit per key and one JSON error shape (`convex/apiKeys.ts`, `convex/publicApi.ts`, `convex/http.ts`). Checked on the dev deployment in
+a real browser: created a key, read the real matches over HTTP, paged without overlap, then revoked the key and saw it refused. The
+test that pages through matches caught a real bug: the cursor is a creation time with fractions of a millisecond, so it had to be
+accepted as a number. Backend tests 146, web tests 194.
+
