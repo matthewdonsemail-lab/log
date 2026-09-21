@@ -34,7 +34,28 @@ RESULTS = "<div role='feed'>" + "".join([
     '<div role="article"><h3>No link</h3><div dir="auto">cards without a permalink are dropped</div></div>',
 ]) + "</div>"
 
+def live_card(author, text, hover_href, likes="Like: 1 person", comments="8"):
+    """Mimics what the real Facebook search page serves: no role=article, the timestamp link is empty until hovered."""
+    return f"""
+<div aria-posinset="1"><div>
+  <div data-ad-rendering-role="profile_name"><span>{author}</span></div>
+  <div aria-label="Actions for this post by {author}" role="button"></div>
+  <a role="link" target="_blank" href="?__cft__[0]=abc#?bia" onmouseover="this.href='{hover_href}'">time</a>
+  <div data-ad-rendering-role="story_message"><div>{text}</div></div>
+  <span aria-label="{likes}">1</span>
+  <div data-ad-rendering-role="comment_button">{comments}</div>
+  <span>Facebook</span><span>Facebook</span>
+</div></div>"""
+
+
+LIVE = "<div role='feed'>" + "".join([
+    live_card("Brandon Dinario", "I need a bookkeeper today.", "https://www.facebook.com/brandon.d/posts/pfbid0Abc123?__cft__[0]=zz&__tn__=-R"),
+    live_card("Nic Richey", "need a  Bookkeeper", "https://www.facebook.com/groups/55/posts/98765/", likes="Like: 12 people", comments="1.5K"),
+    '<div aria-posinset="3"><div data-ad-rendering-role="profile_name">No Stamp</div><div data-ad-rendering-role="story_message">need a bookkeeper, no timestamp link</div></div>',
+]) + "</div>"
+
 PAGES = {
+    "live": LIVE,
     "results": RESULTS,
     "empty": "<div><p>No results found</p></div>",
     "login": '<form id="login_form"><input name="email" type="text"><input name="pass" type="password"></form><h2>Log into Facebook</h2>',
@@ -89,18 +110,28 @@ class TestPure:
             facebook_push.cookie_dict(jar)
         assert facebook_push.cookie_dict(jar + [{"name": "xs", "value": "s", "domain": "facebook.com"}]) == {"c_user": "1", "xs": "s"}
 
-    def test_drops_ads_and_cards_with_no_id_or_text(self):
+    def test_cleans_post_links_and_ignores_other_links(self):
+        clean = facebook_browser.permalink
+        assert clean("https://www.facebook.com/k/posts/pfbid02x?comment_id=9&__cft__[0]=t") == ("pfbid02x", "https://www.facebook.com/k/posts/pfbid02x")
+        assert clean("https://www.facebook.com/permalink.php?story_fbid=77&id=42&__tn__=x") == ("77", "https://www.facebook.com/permalink.php?story_fbid=77&id=42")
+        assert clean("https://www.facebook.com/brandon.d?__cft__[0]=t") == ("", "")
+        assert clean("") == ("", "")
+
+    def test_drops_ads_and_cards_with_no_text(self):
         base = {"id": "1", "text": "hi", "author": "A", "url": "https://www.facebook.com/a/posts/1", "likes": 2, "comments": 1}
         post = facebook_browser.to_post(base)
         assert (post.id, post.text, post.author, post.likes, post.comments) == ("1", "hi", "A", 2, 1)
-        for bad in ({**base, "sponsored": True}, {**base, "id": ""}, {**base, "text": "  "}):
+        for bad in ({**base, "sponsored": True}, {**base, "text": "  "}):
             assert facebook_browser.to_post(bad) is None
+        loose = facebook_browser.to_post({**base, "id": "", "url": "x"})  # no address read: the same post always gets the same id
+        assert loose.id == facebook_browser.to_post({**base, "id": ""}).id and loose.id.startswith("fb-") and loose.url == ""
+        assert facebook_browser.to_post({**base, "id": "", "text": "other"}).id != loose.id
 
     def test_maps_a_post_to_the_ingest_shape(self):
         mapped = facebook_push.post_to_ingest(SimpleNamespace(id="9", text="need a bookkeeper", url="https://www.facebook.com/a/posts/9", author="Pat", likes=3, comments=-4))
         assert mapped == {"externalId": "9", "authorName": "Pat", "body": ["need a bookkeeper"], "url": "https://www.facebook.com/a/posts/9", "likes": 3, "comments": 0}
         loose = facebook_push.post_to_ingest(SimpleNamespace(id="9", text="x", url="", author=""))
-        assert loose["url"] == "https://www.facebook.com/9" and loose["authorName"] == "Facebook user"
+        assert loose["url"] == "https://www.facebook.com/search/posts?q=%22x%22" and loose["authorName"] == "Facebook user"
         assert facebook_push.post_to_ingest(SimpleNamespace(id="", text="x")) is None
 
     def test_reads_the_screen_facebook_is_showing(self):
@@ -192,7 +223,9 @@ pytest.importorskip("playwright", reason="Playwright is not installed")
 class TestInARealBrowser:
     def test_reads_posts_skips_ads_comments_and_cards_without_a_link(self):
         posts = in_browser("results")
-        assert [p.id for p in posts] == ["1001", "pfbid02abcDEF", "777"]
+        assert [p.id for p in posts[:3]] == ["1001", "pfbid02abcDEF", "777"]
+        assert posts[3].id.startswith("fb-") and posts[3].url == "" and "cards without a permalink" in posts[3].text  # kept, with a stable id
+        assert len(posts) == 4
         first = posts[0]
         assert (first.author, first.comments, first.likes) == ("Pat Owner", 1204, 1200)
         assert first.text.startswith("Does anyone know a good bookkeeper")
@@ -200,6 +233,16 @@ class TestInARealBrowser:
         assert first.url == "https://www.facebook.com/groups/123/posts/1001/"  # tracking parameters removed
         assert posts[1].url == "https://www.facebook.com/kim/posts/pfbid02abcDEF"
         assert posts[2].url == "https://www.facebook.com/story.php?story_fbid=777&id=42"
+
+    def test_reads_the_layout_the_real_site_serves_and_hovers_for_the_address(self):
+        posts = in_browser("live")
+        assert [p.id for p in posts[:2]] == ["pfbid0Abc123", "98765"]
+        first = posts[0]
+        assert (first.author, first.likes, first.comments) == ("Brandon Dinario", 1, 8)
+        assert first.text == "I need a bookkeeper today."  # the repeated "Facebook" filler is not part of the message
+        assert first.url == "https://www.facebook.com/brandon.d/posts/pfbid0Abc123"
+        assert (posts[1].likes, posts[1].comments, posts[1].url) == (12, 1500, "https://www.facebook.com/groups/55/posts/98765/")
+        assert posts[2].id.startswith("fb-") and posts[2].author == "No Stamp"  # no timestamp link: stable id, no address
 
     def test_the_helper_maps_them_to_ingest_posts(self):
         mapped = [facebook_push.post_to_ingest(p) for p in in_browser("results")]

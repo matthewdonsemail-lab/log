@@ -666,3 +666,11 @@ computer" steps. Checked the reader against stand-in pages in real Chrome and ag
 which answers a fake login with a bare "Not Found" on search; that is now reported as a refused login.
 Python tests 68. Still to do: a run with a real Facebook login, where the page selectors may need a fix.
 
+### 2026-09-21 - Facebook read for real
+Ran the Facebook helper with a real throwaway account: the login was accepted and search worked, but the reader
+found nothing because Facebook's search results are not `role="article"` cards. Saved the rendered page, found
+the real markup (`aria-posinset` cards in a `role="feed"`, the message in `story_message`, the author in an
+"Actions for this post by" label) and that Facebook only fills in a post's address while the mouse is over its
+timestamp, so the reader now hovers to read it and falls back to a stable id. The real run pushed 4 real posts and
+the app showed 4 matches "checked by your helper". Gaps: comment counts read as 0. Python tests 70.
+

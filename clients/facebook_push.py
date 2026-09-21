@@ -25,6 +25,7 @@ import os
 import sys
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 sys.path.insert(0, str(Path(__file__).parent))
 from listeningkit_ingest import SessionError, fetch_phrases, fetch_session  # noqa: E402
@@ -65,7 +66,8 @@ def post_to_ingest(post: Any) -> dict | None:
         "externalId": post_id,
         "authorName": author or "Facebook user",
         "body": [text[:4000]],
-        "url": url if url.startswith("https://") else f"https://www.facebook.com/{post_id}",
+        # No address could be read for this post: link to a Facebook search for its opening words, which finds it.
+        "url": url if url.startswith("https://") else "https://www.facebook.com/search/posts?q=" + quote(f'"{text[:80]}"'),
         "likes": max(0, int(getattr(post, "likes", 0) or 0)),
         "comments": max(0, int(getattr(post, "comments", 0) or 0)),
     }

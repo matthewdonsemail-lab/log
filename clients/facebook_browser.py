@@ -11,11 +11,13 @@ TooManyRequests and AccountLocked (the same ones the X reader uses) so the helpe
 from __future__ import annotations
 
 import base64
+import hashlib
 import json
 import os
+import re
 from types import SimpleNamespace
 from typing import Any
-from urllib.parse import quote
+from urllib.parse import parse_qsl, quote, urlencode, urlsplit, urlunsplit
 
 from x_browser import (  # noqa: F401 - the helper classifies errors by these names
     AccountLocked, TooManyRequests, Unauthorized, launch_chrome, playwright_cookies, safe_evaluate,
@@ -32,9 +34,12 @@ RECENT_FILTER = base64.b64encode(json.dumps({"recent_posts:0": json.dumps({"name
 LOGIN_URL_MARKS = ("/login", "/checkpoint", "/recover")
 
 
+# Facebook's search results are `aria-posinset` cards inside `role="feed"`; older layouts use `div[role="article"]`.
 # Runs inside the page. Reads every top-level post card currently on screen.
 EXTRACT_JS = r"""
 () => {
+  const cardsOf = () => [...document.querySelectorAll('[role="feed"] [aria-posinset], div[role="article"]')]
+    .filter((card) => !card.parentElement.closest('[aria-posinset], div[role="article"]'));
   const number = (text) => {
     const found = /([\d][\d,.]*)\s*([KMB]?)/i.exec(text || '');
     if (!found) return 0;
@@ -42,35 +47,37 @@ EXTRACT_JS = r"""
     const unit = { K: 1e3, M: 1e6, B: 1e9 }[found[2].toUpperCase()] || 1;
     return Number.isFinite(base) ? Math.round(base * unit) : 0;
   };
-  const link = (card) => {
+  const direct = (card) => {
     for (const anchor of card.querySelectorAll('a[href]')) {
-      const href = anchor.href;
-      const found = /\/(?:posts|permalink|videos|reel)\/(pfbid\w+|\d+)/.exec(href)
-        || /[?&](?:story_fbid|fbid)=(pfbid\w+|\d+)/.exec(href);
-      if (!found) continue;
-      const url = new URL(href);
-      const keep = new URLSearchParams();
-      for (const name of ['story_fbid', 'fbid', 'id']) if (url.searchParams.has(name)) keep.set(name, url.searchParams.get(name));
-      const query = keep.toString();
-      return { id: found[1], url: url.origin + url.pathname + (query ? '?' + query : '') };
+      if (/\/(?:posts|permalink|videos|reel)\/(?:pfbid\w+|\d+)|[?&](?:story_fbid|fbid)=/.test(anchor.href)) return anchor.href;
     }
-    return { id: '', url: '' };
+    return '';
   };
-  const cards = [...document.querySelectorAll('div[role="article"]')].filter((card) => !card.parentElement.closest('div[role="article"]'));
-  return cards.map((card) => {
-    const { id, url } = link(card);
+  window.__lkCards = window.__lkCards || 0;
+  return cardsOf().map((card) => {
+    if (!card.dataset.lkCard) card.dataset.lkCard = String(++window.__lkCards);
+    const tag = card.dataset.lkCard;
+    // Facebook leaves the timestamp link's address empty until the mouse is over it; mark it so we can hover it.
+    let stamp = false;
+    for (const anchor of card.querySelectorAll('a[role="link"][target="_blank"]')) {
+      const href = anchor.getAttribute('href') || '';
+      if (href.startsWith('?') || href.startsWith('#')) { anchor.setAttribute('data-lk-stamp', tag); stamp = true; break; }
+    }
     const message = card.querySelector('[data-ad-rendering-role="story_message"], [data-ad-comet-preview="message"], [data-ad-preview="message"]');
     let text = message?.innerText || '';
     if (!text) {
       text = [...card.querySelectorAll('div[dir="auto"]')].map((el) => el.innerText || '').sort((a, b) => b.length - a.length)[0] || '';
     }
-    const author = card.querySelector('[data-ad-rendering-role="profile_name"]')?.innerText
-      || card.querySelector('h2, h3, h4')?.innerText || '';
     const all = card.innerText || '';
+    const acted = /Actions for this post by (.+)/.exec(card.querySelector('[aria-label^="Actions for this post by"]')?.getAttribute('aria-label') || '');
+    const author = card.querySelector('[data-ad-rendering-role="profile_name"]')?.innerText
+      || (acted ? acted[1] : '') || card.querySelector('h2, h3, h4')?.innerText || '';
+    const liked = card.querySelector('[aria-label^="Like:"]')?.getAttribute('aria-label') || '';
     return {
-      id, url, text, author: author.split('\n')[0].trim(),
-      comments: number((/(\d[\d,.]*\s*[KMB]?)\s+comments?/i.exec(all) || [])[1]),
-      likes: number((/(?:All reactions:|Like:)\s*([\d,.]+\s*[KMB]?)/i.exec(all) || [])[1]),
+      tag, href: direct(card), stamp, text, author: author.split('\n')[0].trim(),
+      comments: number(card.querySelector('[data-ad-rendering-role="comment_button"]')?.innerText)
+        || number((/(\d[\d,.]*\s*[KMB]?)\s+comments?/i.exec(all) || [])[1]),
+      likes: number((/(?:Like:|All reactions:)\s*([\d,.]+\s*[KMB]?)/i.exec(liked + ' ' + all) || [])[1]),
       sponsored: /^\s*Sponsored\s*$/m.test(all.slice(0, 500)) || !!card.querySelector('a[href*="/ads/"]'),
     };
   });
@@ -79,7 +86,7 @@ EXTRACT_JS = r"""
 
 # True once the page shows results, "no results", or a login/lock screen, so we never wait the full timeout for a wall.
 SETTLED_JS = r"""
-() => !!document.querySelector('div[role="article"], form#login_form, input[name="email"]')
+() => !!document.querySelector('[role="feed"] [aria-posinset], div[role="article"], form#login_form, input[name="email"]')
   || /login|checkpoint|recover/.test(location.pathname)
   || /No results found|We couldn.t find anything|Log (in|into) to Facebook|going too fast|temporarily blocked/i.test((document.body?.innerText || '').slice(0, 3000))
 """
@@ -90,7 +97,7 @@ STATE_JS = r"""
   const text = (document.body?.innerText || '').slice(0, 4000);
   return {
     url: location.href,
-    posts: [...document.querySelectorAll('div[role="article"]')].filter((card) => !card.parentElement.closest('div[role="article"]')).length,
+    posts: [...document.querySelectorAll('[role="feed"] [aria-posinset], div[role="article"]')].filter((card) => !card.parentElement.closest('[aria-posinset], div[role="article"]')).length,
     login: !!document.querySelector('form#login_form, input[name="email"][type="text"], input[name="pass"]')
       || /Log (in|into) to Facebook|You must log in to continue/i.test(text),
     empty: /No results found|We couldn.t find anything|didn.t find any/i.test(text),
@@ -103,14 +110,36 @@ STATE_JS = r"""
 """
 
 
+PERMALINK = re.compile(r"/(?:posts|permalink|videos|reel)/(pfbid\w+|\d+)|[?&](?:story_fbid|fbid)=(pfbid\w+|\d+)")
+
+
+def permalink(href: str) -> tuple[str, str]:
+    """(post id, clean address) from a link Facebook filled in, dropping tracking parameters. ('', '') if it is not a post link."""
+    found = PERMALINK.search(href or "")
+    if not found:
+        return "", ""
+    parts = urlsplit(href)
+    keep = [(k, v) for k, v in parse_qsl(parts.query) if k in ("story_fbid", "fbid", "id")]
+    return found.group(1) or found.group(2), urlunsplit((parts.scheme, parts.netloc, parts.path, urlencode(keep), ""))
+
+
+def stable_id(author: str, text: str) -> str:
+    """An id for a post whose permalink could not be read: the same post always gets the same id, so it is never stored twice."""
+    return "fb-" + hashlib.sha1(f"{author}\n{text}".encode()).hexdigest()[:20]
+
+
 def to_post(row: dict) -> Any | None:
-    """A scraped card as the object the helper maps to a post. None for ads, cards with no permalink and cards with no text."""
+    """A scraped card as the object the helper maps to a post. None for ads and cards with no text."""
     text = str(row.get("text", "")).strip()
-    if row.get("sponsored") or not str(row.get("id", "")).strip() or not text:
+    if row.get("sponsored") or not text:
         return None
+    author = str(row.get("author") or "").strip()
+    post_id, url = str(row.get("id") or "").strip(), str(row.get("url") or "")
+    if not post_id:
+        post_id, url = stable_id(author, text), ""
     return SimpleNamespace(
-        id=str(row["id"]).strip(), url=str(row.get("url") or ""), text=text,
-        author=str(row.get("author") or "").strip(),
+        id=post_id, url=url, text=text,
+        author=author,
         likes=int(row.get("likes") or 0), comments=int(row.get("comments") or 0),
     )
 
@@ -161,6 +190,16 @@ class BrowserFacebookClient:
         await page.wait_for_timeout(2000)  # let the first cards finish rendering
         return await safe_evaluate(page, STATE_JS)
 
+    async def _hover_for_link(self, page: Any, tag: str) -> str:
+        """Hover a card's timestamp so Facebook fills in the real post address, then read it. '' if that fails."""
+        selector = f'[data-lk-stamp="{tag}"]'
+        try:
+            await page.hover(selector, timeout=4000)
+            await page.wait_for_timeout(350)
+            return await safe_evaluate(page, f"() => document.querySelector('{selector}')?.href || ''")
+        except Exception:  # noqa: BLE001 - a card we cannot hover still counts, with a stable id instead of an address
+            return ""
+
     async def search_posts(self, phrase: str, count: int = 20) -> list[Any]:
         page = await self._page_ready()
         await page.goto(SEARCH_URL.format(query=quote(f'"{phrase}"'), filters=quote(RECENT_FILTER)), wait_until="domcontentloaded")
@@ -177,13 +216,19 @@ class BrowserFacebookClient:
             text = await safe_evaluate(page, "() => location.href + ' | ' + (document.body?.innerText || '').slice(0, 1500)")
             with open(os.path.join(debug, "fb_page.txt"), "w", encoding="utf-8") as out:
                 out.write(text)
+            html = await safe_evaluate(page, "() => { const copy = document.body.cloneNode(true); copy.querySelectorAll('script, style, svg, img, link, noscript').forEach((el) => el.remove()); return copy.outerHTML.slice(0, 400000) }")
+            with open(os.path.join(debug, "fb_page.html"), "w", encoding="utf-8") as out:
+                out.write(html)
         check_state(state)
 
         rows: dict[str, dict] = {}
         for _ in range(MAX_SCROLLS):
             for row in await safe_evaluate(page, EXTRACT_JS):
-                if row.get("id") and row["id"] not in rows:
-                    rows[row["id"]] = row
+                if row["tag"] in rows:
+                    continue
+                href = row.get("href") or (await self._hover_for_link(page, row["tag"]) if row.get("stamp") else "")
+                row["id"], row["url"] = permalink(href)
+                rows[row["tag"]] = row
             if len(rows) >= count:
                 break
             await page.mouse.wheel(0, 1800)
