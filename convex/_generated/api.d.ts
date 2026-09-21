@@ -25,6 +25,7 @@ import type * as lib_firecrawl from "../lib/firecrawl.js";
 import type * as lib_hash from "../lib/hash.js";
 import type * as lib_keywordOps from "../lib/keywordOps.js";
 import type * as lib_match from "../lib/match.js";
+import type * as lib_mcp from "../lib/mcp.js";
 import type * as lib_plan from "../lib/plan.js";
 import type * as lib_posts from "../lib/posts.js";
 import type * as lib_proxy from "../lib/proxy.js";
@@ -67,6 +68,7 @@ declare const fullApi: ApiFromModules<{
   "lib/hash": typeof lib_hash;
   "lib/keywordOps": typeof lib_keywordOps;
   "lib/match": typeof lib_match;
+  "lib/mcp": typeof lib_mcp;
   "lib/plan": typeof lib_plan;
   "lib/posts": typeof lib_posts;
   "lib/proxy": typeof lib_proxy;

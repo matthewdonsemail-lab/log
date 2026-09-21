@@ -752,3 +752,9 @@ https names only, checked again at send time, no redirects, responses never read
 against a real outside receiver, where a delivery's signature was verified with a separate HMAC implementation. Backend tests 190, web
 tests 203.
 
+### 2026-09-21 - MCP server for AI agents
+Added a Model Context Protocol server (`convex/lib/mcp.ts`, routed in `convex/http.ts`) so AI agents can use ListeningKit as tools:
+read plan, phrases and matches, and, with a write key, add, pause, resume and remove phrases. It reuses the API keys, scopes, rate limit and
+Free plan limits, and a key only sees the tools its scopes allow. Because match text is written by strangers, the tools label it as data and
+the docs recommend read-only keys for agents. Landing "Works with" links and the dashboard API page now point to real setup docs.
+Backend tests 216, web tests 203.

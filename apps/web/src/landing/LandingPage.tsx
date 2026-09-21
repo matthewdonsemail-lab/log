@@ -12,34 +12,34 @@ import { Usecase } from './Usecase'
 
 const PLUGS = [
   {
-    href: 'https://supermemory.ai/docs/supermemory-mcp/chatgpt-web',
+    href: '/docs/guide/mcp.html#chatgpt',
     label: 'ChatGPT',
     src: '/logos/tools/chatgpt.svg',
-    setup: 'Connect listeningkit through the ChatGPT desktop app MCP settings, then ask it to listen in any chat.',
+    setup: 'ChatGPT connectors cannot send an API key yet, so it is not supported. Sign-in for ChatGPT is planned.',
   },
   {
-    href: 'https://supermemory.ai/docs/supermemory-mcp/claude-desktop',
+    href: '/docs/guide/mcp.html#claude-code',
     label: 'Claude',
     src: '/logos/tools/claude-desktop.svg',
-    setup: 'Add listeningkit to your Claude Desktop config and call it by name from any conversation.',
+    setup: 'Add the listeningkit MCP server to Claude Code or Claude Desktop with an API key, then ask about your matches.',
   },
   {
-    href: 'https://supermemory.ai/docs/integrations/cursor',
+    href: '/docs/guide/mcp.html#cursor',
     label: 'Cursor',
     src: '/logos/tools/cursor.svg',
-    setup: 'Drop the listeningkit skill into your Cursor skills folder and Composer picks it up automatically.',
+    setup: 'Add the listeningkit MCP server to Cursor and its agent can read your matches and manage your phrases.',
   },
   {
-    href: 'https://supermemory.ai/docs/integrations/hermes',
+    href: '/docs/guide/mcp.html#hermes',
     label: 'Hermes',
     src: '/logos/tools/hermes.svg',
-    setup: 'Register listeningkit as a Hermes tool to query social signals from your workflows.',
+    setup: 'Register the listeningkit MCP server in Hermes to query your matches from your workflows.',
   },
   {
-    href: 'https://supermemory.ai/docs/supermemory-mcp/mcp',
+    href: '/docs/guide/mcp.html#any-other-mcp-client',
     label: 'MCP',
     src: '/logos/tools/mcp.svg',
-    setup: 'Point any MCP client at the listeningkit server to expose every action as a tool.',
+    setup: 'Point any MCP client at the listeningkit server. Read-only keys can only read.',
   },
 ]
 

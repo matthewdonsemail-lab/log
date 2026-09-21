@@ -13,10 +13,11 @@ import {
   useInteractions,
 } from '@floating-ui/react'
 import { Button } from '@listeningkit/ui'
+import { mcpUrl } from '../lib/api-keys-live'
 
 /**
  * Hover tooltip for a plugs icon. Shows a docs button left of the title,
- * per-tool setup words, plus the `npx install listeningkit` skill command
+ * per-tool setup words, plus the MCP server address to copy,
  * in a white floating panel.
  */
 export function PlugTooltip({
@@ -32,6 +33,8 @@ export function PlugTooltip({
   src: string
   children: ReactNode
 }) {
+  // The address an MCP client connects to: this site's own /mcp (on the live site, the Convex site address).
+  const serverAddress = mcpUrl() ?? '/mcp'
   const [open, setOpen] = useState(false)
   const [copied, setCopied] = useState(false)
   const { refs, floatingStyles, context } = useFloating({
@@ -52,7 +55,7 @@ export function PlugTooltip({
 
   async function copyCommand() {
     try {
-      await navigator.clipboard.writeText('npx install listeningkit')
+      await navigator.clipboard.writeText(serverAddress)
       setCopied(true)
       window.setTimeout(() => setCopied(false), 1500)
     } catch {
@@ -81,14 +84,14 @@ export function PlugTooltip({
             </div>
             <p className="mt-2 text-[13px] leading-snug text-ink/70">{setup}</p>
             <div className="mt-2 flex items-center gap-1 rounded-md bg-ink/5 py-1 pl-2 pr-1">
-              <code className="min-w-0 grow text-[13px] text-ink">
-                npx install listeningkit
+              <code className="min-w-0 grow break-all text-[13px] text-ink">
+                {serverAddress}
               </code>
               <Button
                 variant={copied ? 'blue' : 'ghost'}
                 size="icon-sm"
                 onClick={copyCommand}
-                aria-label="Copy install command"
+                aria-label="Copy the MCP server address"
                 className="shrink-0 text-ink/60"
               >
                 {copied ? <Check size={14} /> : <Copy size={14} />}

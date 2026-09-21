@@ -41,7 +41,7 @@ Do these first so nothing on screen is empty or broken. Use a normal browser win
 **Screen hygiene**
 - [ ] Close other tabs, hide bookmarks and any window with keys or logins in it. **Never show a token, an ingest key, an API key or a terminal with a key in it.**
 
-What works today, so you only promise that: Reddit end to end, website reading (Firecrawl), email alerts (AgentMail), Google sign-in, plans and pricing, the docs, the API with scoped keys (read, add and change phrases), and X and Facebook through a helper on your own computer. Match scores need the OpenAI key. Webhooks are built but are a Pro feature and off.
+What works today, so you only promise that: an MCP server that AI agents (Claude, Cursor, Hermes and other MCP clients) can use with an API key (ChatGPT is not supported yet, do not claim it), Reddit end to end, website reading (Firecrawl), email alerts (AgentMail), Google sign-in, plans and pricing, the docs, the API with scoped keys (read, add and change phrases), and X and Facebook through a helper on your own computer. Match scores need the OpenAI key. Webhooks are built but are a Pro feature and off.
 
 ## 1. Video script (target 2:45, hard limit 3:00)
 

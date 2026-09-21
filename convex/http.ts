@@ -8,6 +8,7 @@ import { decryptText } from './lib/crypto'
 import { sha256Hex } from './lib/hash'
 import { normalizePushedPost, type NormalizedPost } from './lib/posts'
 import { mayRead, proxyState } from './lib/proxy'
+import { handleMcp } from './lib/mcp'
 import { hasScope, type Scope } from './lib/scopes'
 import { DEFAULT_MATCHES_PER_PAGE, MAX_MATCHES_PER_PAGE } from './publicApi'
 
@@ -183,27 +184,29 @@ function idAfter(url: URL, prefix: string): string {
   return rest
 }
 
+/** Checks the API key in the request and counts the request against its allowance. Throws an ApiError when it fails. */
+async function authenticateKey(ctx: GenericActionCtx<GenericDataModel>, req: Request): Promise<{ owner: string; remaining: number; scopes: string[] }> {
+  const secret = req.headers.get('Authorization')?.match(/^Bearer (lk_api_[A-Za-z0-9]{20,100})$/)?.[1]
+  if (!secret) throw new ApiError(401, 'unauthorized', 'Send your API key as: Authorization: Bearer lk_api_...')
+  const now = Date.now()
+  try {
+    return await ctx.runMutation(internal.apiKeys.authenticate, { keyHash: await sha256Hex(secret), now })
+  } catch (error) {
+    if (error instanceof ConvexError && error.data === 'Rate limited') {
+      throw new ApiError(429, 'rate_limited', `Too many requests: ${RATE_LIMIT_PER_MINUTE} per minute per key`, String(60 - Math.floor((now % 60_000) / 1000)))
+    }
+    if (error instanceof ConvexError && error.data === 'Invalid API key') throw new ApiError(401, 'unauthorized', 'That API key is not valid, or it was revoked')
+    throw new ApiError(500, 'server_error', 'Could not check the key')
+  }
+}
+
 /** Checks the key and its scope, counts the request against its allowance, runs the handler, and shapes every failure the same way. */
 async function apiRoute(
   ctx: GenericActionCtx<GenericDataModel>, req: Request, needs: Scope,
   handler: (owner: string, url: URL) => Promise<unknown>,
 ): Promise<Response> {
   try {
-    const secret = req.headers.get('Authorization')?.match(/^Bearer (lk_api_[A-Za-z0-9]{20,100})$/)?.[1]
-    if (!secret) throw new ApiError(401, 'unauthorized', 'Send your API key as: Authorization: Bearer lk_api_...')
-    const now = Date.now()
-    let owner: string
-    let remaining: number
-    let scopes: string[]
-    try {
-      ;({ owner, remaining, scopes } = await ctx.runMutation(internal.apiKeys.authenticate, { keyHash: await sha256Hex(secret), now }))
-    } catch (error) {
-      if (error instanceof ConvexError && error.data === 'Rate limited') {
-        throw new ApiError(429, 'rate_limited', `Too many requests: ${RATE_LIMIT_PER_MINUTE} per minute per key`, String(60 - Math.floor((now % 60_000) / 1000)))
-      }
-      if (error instanceof ConvexError && error.data === 'Invalid API key') throw new ApiError(401, 'unauthorized', 'That API key is not valid, or it was revoked')
-      throw new ApiError(500, 'server_error', 'Could not check the key')
-    }
+    const { owner, remaining, scopes } = await authenticateKey(ctx, req)
     if (!hasScope(scopes, needs)) {
       throw new ApiError(403, 'forbidden', `This key does not have the "${needs}" scope. Make a new key with it ticked.`)
     }
@@ -267,6 +270,73 @@ http.route({
   handler: httpActionGeneric(async (ctx, req) => apiRoute(ctx, req, 'read', async (owner, url) => ({
     data: await ctx.runQuery(internal.publicApi.matchById, { owner, id: idAfter(url, '/api/v1/matches/') }),
   }))),
+})
+
+// ---- MCP: the same data and the same rules, as tools for agents (Claude, Cursor, ChatGPT, Hermes, any MCP client). ----
+// One JSON-RPC message per POST to /mcp, authenticated with the same API keys. Each tool needs the scope its REST twin needs.
+http.route({
+  path: '/mcp',
+  method: 'POST',
+  handler: httpActionGeneric(async (ctx, req) => {
+    try {
+      const { owner, remaining, scopes } = await authenticateKey(ctx, req)
+      const raw = await req.text()
+      if (raw.length > 16_384) return apiJson({ jsonrpc: '2.0', id: null, error: { code: -32600, message: 'The message is too large' } }, 413)
+      let message: unknown
+      try { message = JSON.parse(raw) } catch { return apiJson({ jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error: send one JSON-RPC message' } }, 400) }
+      const reply = await handleMcp(message, {
+        scopes,
+        run: async (tool, args) => {
+          try {
+            switch (tool.name) {
+              case 'get_plan': return await ctx.runQuery(internal.publicApi.meFor, { owner })
+              case 'list_keywords': return await ctx.runQuery(internal.publicApi.keywordsFor, { owner })
+              case 'list_matches':
+                return await ctx.runQuery(internal.publicApi.matchesFor, {
+                  owner,
+                  ...(args.platform === undefined ? {} : { platform: args.platform as Platform }),
+                  ...(args.min_score === undefined ? {} : { minScore: args.min_score as number }),
+                  ...(args.before === undefined ? {} : { before: args.before as number }),
+                  limit: (args.limit as number | undefined) ?? 10,
+                })
+              case 'get_match': return await ctx.runQuery(internal.publicApi.matchById, { owner, id: args.id as string })
+              case 'add_keyword': {
+                const made = await ctx.runMutation(internal.publicApi.createKeyword, {
+                  owner, phrase: args.phrase as string, platform: args.platform as Platform,
+                  ...(args.community === undefined ? {} : { community: args.community as string }), now: Date.now(),
+                })
+                return made.keyword
+              }
+              case 'set_keyword_status': return await ctx.runMutation(internal.publicApi.setKeywordStatus, { owner, id: args.id as string, status: args.status as 'listening' | 'paused' })
+              case 'remove_keyword': return await ctx.runMutation(internal.publicApi.deleteKeyword, { owner, id: args.id as string })
+              default: throw new Error('Unknown tool')
+            }
+          } catch (error) {
+            // Plain-words failures from the shared code (plan limit, not found, invalid) go back to the agent as they are.
+            if (error instanceof ConvexError) throw new Error(fromConvex(error).message)
+            console.error('mcp: tool failed', tool.name, error instanceof Error ? error.message : error)
+            throw new Error('Something went wrong on our side. Try again.')
+          }
+        },
+      })
+      const headers = { 'X-RateLimit-Limit': String(RATE_LIMIT_PER_MINUTE), 'X-RateLimit-Remaining': String(remaining) }
+      return reply === null ? new Response(null, { status: 202, headers }) : apiJson(reply, 200, headers)
+    } catch (error) {
+      if (error instanceof ApiError) {
+        const headers: Record<string, string> = error.status === 401 ? { 'WWW-Authenticate': 'Bearer realm="listeningkit"' } : error.retry ? { 'Retry-After': error.retry } : {}
+        return apiJson({ jsonrpc: '2.0', id: null, error: { code: -32001, message: error.message } }, error.status, headers)
+      }
+      console.error('mcp: request failed', error instanceof Error ? error.message : error)
+      return apiJson({ jsonrpc: '2.0', id: null, error: { code: -32603, message: 'Something went wrong on our side' } }, 500)
+    }
+  }),
+})
+
+// This server keeps no stream open, so a GET has nothing to offer (the MCP spec allows 405 here).
+http.route({
+  path: '/mcp',
+  method: 'GET',
+  handler: httpActionGeneric(async () => apiJson({ error: { code: 'method_not_allowed', message: 'POST JSON-RPC messages to /mcp' } }, 405, { Allow: 'POST' })),
 })
 
 // ---- writing phrases (scope: write:phrases). The plan limits apply exactly as they do in the dashboard. ----

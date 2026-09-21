@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Button, useToast } from '@listeningkit/ui'
 import {
-  API_ENDPOINTS, apiBaseUrl, apiKeysAvailable, createApiKey, exampleCurl, listApiKeys, RATE_LIMIT_TEXT, revokeApiKey, SCOPE_CHOICES, scopesCanWrite,
+  API_ENDPOINTS, apiBaseUrl, mcpUrl, apiKeysAvailable, createApiKey, exampleCurl, listApiKeys, RATE_LIMIT_TEXT, revokeApiKey, SCOPE_CHOICES, scopesCanWrite,
   type ApiKeyRow, type CreatedApiKey,
 } from '@/lib/api-keys-live'
 import { DashboardWebhooks } from './DashboardWebhooks'
@@ -23,6 +23,7 @@ function ScopeChip({ scope }: { scope: string }) {
 export function DashboardApiLive() {
   const available = apiKeysAvailable()
   const base = apiBaseUrl()
+  const mcpAddress = mcpUrl() ?? ''
   const [keys, setKeys] = useState<ApiKeyRow[] | null>(null)
   const [label, setLabel] = useState('')
   const [scopes, setScopes] = useState<string[]>(['read'])
@@ -108,6 +109,18 @@ export function DashboardApiLive() {
           <code className="min-w-0 flex-1 break-all rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-900">{base}</code>
           <Button type="button" variant="gray" size="lg" onClick={() => copy(base, 'The address')}>Copy</Button>
         </div>
+      </div>
+
+      <div className="rounded-xl border border-slate-200 bg-white p-5">
+        <span className="mb-1.5 block text-sm font-semibold text-slate-700">AI agent (MCP) server address</span>
+        <div className="flex flex-wrap items-center gap-3">
+          <code className="min-w-0 flex-1 break-all rounded-lg bg-slate-50 px-3 py-2 text-sm text-slate-900">{mcpAddress}</code>
+          <Button type="button" variant="gray" size="lg" onClick={() => copy(mcpAddress, 'The address')}>Copy</Button>
+        </div>
+        <p className="mt-2 text-sm text-text-secondary">
+          Connect Claude, Cursor, Hermes or any MCP client with one of the keys below (send it as <code>Authorization: Bearer</code>). Use a Read-only key unless the agent should change phrases.{' '}
+          <a className="font-semibold underline" href="/docs/guide/mcp.html" target="_blank" rel="noopener noreferrer">Setup for each agent</a>
+        </p>
       </div>
 
       <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-5">

@@ -28,6 +28,12 @@ export function apiBaseUrl(): string | undefined {
   return site ? `${site}/api/v1` : undefined
 }
 
+/** The address an AI agent (MCP client) connects to. */
+export function mcpUrl(): string | undefined {
+  const site = convexSiteUrl()
+  return site ? `${site}/mcp` : undefined
+}
+
 export async function listApiKeys(): Promise<ApiKeyRow[]> {
   const client = await convexClient()
   let data: unknown
