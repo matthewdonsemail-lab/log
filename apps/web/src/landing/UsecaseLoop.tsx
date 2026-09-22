@@ -162,21 +162,41 @@ export function UsecaseLoop() {
         ))}
       </div>
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[3] hidden md:block">
-          {USECASE_EAR_SETS[step].map((ear, index) => (
-            <motion.img
-              key={`${step}-${ear.src}`}
-              src={ear.src}
-              alt=""
-              className={`absolute object-contain ${ear.className}`}
-              style={{ y: -step * (8 + index * 4) }}
+        {USECASE_EAR_SETS[step].map((ear, index) => (
+          <motion.img
+            key={`${step}-${ear.src}`}
+            src={ear.src}
+            alt=""
+            className={`absolute object-contain ${ear.className}`}
+            style={{
+              y: -step * (8 + index * 4),
+              filter: ear.filter,
+            }}
             initial={{ scale: 0 }}
             whileInView={{ scale: [0, 1.12, 0.97, 1] }}
             viewport={{ once: true, amount: 0.2 }}
-            animate={{ rotate: [ear.rotate, -ear.rotate, ear.rotate] }}
-            transition={{
-              scale: { duration: 0.65, delay: index * 0.12, ease: [0.34, 1.56, 0.64, 1] },
-              rotate: { duration: 4 + index, repeat: Infinity, ease: 'easeInOut' },
-            }}
+            animate={
+              ear.jitter
+                ? {
+                    x: [0, -5, 4, -4, 5, -2, 4, -3, 0],
+                    y: [0, 4, -5, 3, -4, 5, -2, 3, 0],
+                    rotate: [ear.rotate, ear.rotate - 7, ear.rotate + 8, ear.rotate - 6, ear.rotate + 5, ear.rotate],
+                  }
+                : { rotate: [ear.rotate, -ear.rotate, ear.rotate] }
+            }
+            transition={
+              ear.jitter
+                ? {
+                    x: { duration: 0.24, repeat: Infinity, ease: 'easeInOut' },
+                    y: { duration: 0.21, repeat: Infinity, ease: 'easeInOut' },
+                    rotate: { duration: 0.26, repeat: Infinity, ease: 'easeInOut' },
+                    scale: { duration: 0.65, delay: index * 0.12, ease: [0.34, 1.56, 0.64, 1] },
+                  }
+                : {
+                    rotate: { duration: 4 + index, repeat: Infinity, ease: 'easeInOut' },
+                    scale: { duration: 0.65, delay: index * 0.12, ease: [0.34, 1.56, 0.64, 1] },
+                  }
+            }
           />
         ))}
       </div>

@@ -30,26 +30,34 @@ export const USECASE_SLIDES: UsecaseSlide[] = [
   },
 ]
 
-export const USECASE_EAR_SETS = [
+export type EarSpec = {
+  src: string
+  className: string
+  rotate: number
+  filter?: string
+  jitter?: boolean
+}
+
+export const USECASE_EAR_SETS: EarSpec[][] = [
   [
-    { src: '/images/ears/ear1.png', className: 'left-[-4%] top-[8%] size-64', rotate: -3 },
-    { src: '/images/ears/ear4.png', className: 'right-[-3%] top-[34%] size-80', rotate: 2 },
-    { src: '/images/ears/ear7.png', className: 'left-[4%] bottom-[4%] size-72', rotate: -2 },
+    { src: '/images/ears/ear1.png', className: 'left-[-4%] top-[8%] size-64', rotate: -3, filter: 'hue-rotate(190deg) saturate(2.2) brightness(1.05)', jitter: true },
+    { src: '/images/ears/ear4.png', className: 'right-[-3%] top-[34%] size-80', rotate: 2, filter: 'hue-rotate(280deg) saturate(1.8) contrast(1.15)' },
+    { src: '/images/ears/ear7.png', className: 'left-[4%] bottom-[4%] size-72', rotate: -2, filter: 'hue-rotate(90deg) saturate(2) brightness(1.1)' },
   ],
   [
-    { src: '/images/ears/ear2.png', className: 'right-[-4%] top-[6%] size-72', rotate: 2 },
-    { src: '/images/ears/ear5.png', className: 'left-[-4%] top-[40%] size-96', rotate: -3 },
-    { src: '/images/ears/ear8.png', className: 'right-[4%] bottom-[3%] size-64', rotate: 3 },
+    { src: '/images/ears/ear2.png', className: 'right-[-4%] top-[6%] size-72', rotate: 2, filter: 'hue-rotate(325deg) saturate(2.4) brightness(1.1)' },
+    { src: '/images/ears/ear5.png', className: 'left-[-4%] top-[40%] size-96', rotate: -3, filter: 'hue-rotate(175deg) saturate(2.1) contrast(1.1)', jitter: true },
+    { src: '/images/ears/ear8.png', className: 'right-[4%] bottom-[3%] size-64', rotate: 3, filter: 'hue-rotate(45deg) saturate(2.2) brightness(1.05)' },
   ],
   [
-    { src: '/images/ears/ear3.png', className: 'left-[-2%] top-[4%] size-80', rotate: -2 },
-    { src: '/images/ears/ear6.png', className: 'right-[-5%] top-[38%] size-64', rotate: 3 },
-    { src: '/images/ears/ear1.png', className: 'left-[6%] bottom-[2%] size-96', rotate: -3 },
+    { src: '/images/ears/ear3.png', className: 'left-[-2%] top-[4%] size-80', rotate: -2, filter: 'hue-rotate(140deg) saturate(1.9) brightness(1.1)' },
+    { src: '/images/ears/ear6.png', className: 'right-[-5%] top-[38%] size-64', rotate: 3, filter: 'hue-rotate(215deg) saturate(2.5) contrast(1.2)', jitter: true },
+    { src: '/images/ears/ear1.png', className: 'left-[6%] bottom-[2%] size-96', rotate: -3, filter: 'hue-rotate(300deg) saturate(1.8) brightness(1.05)' },
   ],
   [
-    { src: '/images/ears/ear4.png', className: 'right-[-4%] top-[2%] size-96', rotate: 3 },
-    { src: '/images/ears/ear7.png', className: 'left-[-5%] top-[36%] size-72', rotate: -2 },
-    { src: '/images/ears/ear2.png', className: 'right-[5%] bottom-[1%] size-80', rotate: 2 },
+    { src: '/images/ears/ear4.png', className: 'right-[-4%] top-[2%] size-96', rotate: 3, filter: 'hue-rotate(200deg) saturate(2.2) brightness(1.1)', jitter: true },
+    { src: '/images/ears/ear7.png', className: 'left-[-5%] top-[36%] size-72', rotate: -2, filter: 'hue-rotate(75deg) saturate(1.9) contrast(1.1)' },
+    { src: '/images/ears/ear2.png', className: 'right-[5%] bottom-[1%] size-80', rotate: 2, filter: 'hue-rotate(160deg) saturate(2.2) brightness(1.1)' },
   ],
 ]
 
@@ -263,7 +271,7 @@ export function Usecase() {
 
   return (
     <>
-    <section ref={trackRef} className="relative hidden overflow-x-clip bg-white md:block" style={{ height: 'calc(100vh + 4800px)' }}>
+    <section ref={trackRef} id="use-cases" className="relative hidden overflow-x-clip bg-white md:block" style={{ height: 'calc(100vh + 4800px)' }}>
       <div className="h-full w-full">
         <div className="sticky left-0 top-0 grid h-screen w-full grid-cols-2">
           <div className="flex h-screen w-full justify-center">
@@ -344,15 +352,35 @@ export function Usecase() {
                   src={ear.src}
                   alt=""
                   className={`absolute object-contain ${ear.className}`}
-                  style={{ y: -fill * (8 + index * 4) }}
+                  style={{
+                    y: -fill * (8 + index * 4),
+                    filter: ear.filter,
+                  }}
                   initial={{ scale: 0 }}
                   whileInView={{ scale: [0, 1.12, 0.97, 1] }}
                   viewport={{ once: true, amount: 0.2 }}
-                  animate={{ rotate: [ear.rotate, -ear.rotate, ear.rotate] }}
-                  transition={{
-                    scale: { duration: 0.65, delay: index * 0.12, ease: [0.34, 1.56, 0.64, 1] },
-                    rotate: { duration: 4 + index, repeat: Infinity, ease: 'easeInOut' },
-                  }}
+                  animate={
+                    ear.jitter
+                      ? {
+                          x: [0, -5, 4, -4, 5, -2, 4, -3, 0],
+                          y: [0, 4, -5, 3, -4, 5, -2, 3, 0],
+                          rotate: [ear.rotate, ear.rotate - 7, ear.rotate + 8, ear.rotate - 6, ear.rotate + 5, ear.rotate],
+                        }
+                      : { rotate: [ear.rotate, -ear.rotate, ear.rotate] }
+                  }
+                  transition={
+                    ear.jitter
+                      ? {
+                          x: { duration: 0.24, repeat: Infinity, ease: 'easeInOut' },
+                          y: { duration: 0.21, repeat: Infinity, ease: 'easeInOut' },
+                          rotate: { duration: 0.26, repeat: Infinity, ease: 'easeInOut' },
+                          scale: { duration: 0.65, delay: index * 0.12, ease: [0.34, 1.56, 0.64, 1] },
+                        }
+                      : {
+                          rotate: { duration: 4 + index, repeat: Infinity, ease: 'easeInOut' },
+                          scale: { duration: 0.65, delay: index * 0.12, ease: [0.34, 1.56, 0.64, 1] },
+                        }
+                  }
                 />
               ))}
             </div>

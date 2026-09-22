@@ -239,6 +239,7 @@ middleware: [
               }}
               floatingStyle={{
                  ...floatingStyles,
+                 zIndex: 9999,
                  // The portal element mounts before the first autoUpdate measure
                  // resolves; without this it flashes at (0,0) for a frame.
                  visibility: isPositioned ? undefined : 'hidden'
@@ -294,7 +295,7 @@ const SelectMenuSurface = React.forwardRef<HTMLDivElement, SurfaceProps>(functio
       onUpdate={syncClip}
       onAnimationStart={syncClip}
       onAnimationComplete={syncClip}
-      className="z-50 w-max min-w-[180px] max-w-[calc(100vw-16px)] overflow-hidden bg-white"
+      className="z-[9999] w-max min-w-[180px] max-w-[calc(100vw-16px)] overflow-hidden bg-white"
     >
       <div
         ref={border.ref}

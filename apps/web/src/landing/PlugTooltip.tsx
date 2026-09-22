@@ -72,9 +72,9 @@ export function PlugTooltip({
         <FloatingPortal>
           <div
             ref={refs.setFloating}
-            style={floatingStyles}
+            style={{ ...floatingStyles, zIndex: 9999 }}
             {...getFloatingProps()}
-            className="z-50 w-max max-w-[260px] rounded-xl bg-white px-4 py-3 text-left shadow-xl"
+            className="z-[9999] w-max max-w-[260px] rounded-xl bg-white px-4 py-3 text-left shadow-xl"
           >
             <div className="flex items-center gap-2">
               <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#2A8CFF]">
@@ -107,7 +107,7 @@ export function PlugTooltip({
       ) : null}
       {copied ? (
         <FloatingPortal>
-          <div className="fixed bottom-4 right-4 z-[80] rounded-xl bg-ink px-4 py-2.5 text-sm font-medium text-white shadow-xl">
+          <div className="fixed bottom-4 right-4 z-[9999] rounded-xl bg-ink px-4 py-2.5 text-sm font-medium text-white shadow-xl">
             Copied to clipboard
           </div>
         </FloatingPortal>

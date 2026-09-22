@@ -172,6 +172,7 @@ export function Dropdown({ items, className, 'aria-label': ariaLabel }: Dropdown
               }}
               floatingStyle={{
                 ...floatingStyles,
+                zIndex: 9999,
                 // The portal element mounts before the first autoUpdate measure
                 // resolves; without this it flashes at (0,0) for a frame.
                 visibility: isPositioned ? undefined : 'hidden'
@@ -223,7 +224,7 @@ const DropdownMenuSurface = React.forwardRef<HTMLDivElement, SurfaceProps>(funct
       onUpdate={syncClip}
       onAnimationStart={syncClip}
       onAnimationComplete={syncClip}
-      className="z-50 w-full overflow-hidden bg-white"
+      className="z-[9999] w-full overflow-hidden bg-white"
     >
       <div ref={border.ref} aria-hidden="true" className="relative">
         <SquircleBorder border={border.state} stroke="#E4E7EC" strokeWidth={1} transitionStroke={false} className="z-10" />

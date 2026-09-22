@@ -6,13 +6,13 @@ import { saveLandingWebsite } from '@/pages/onboarding/auth-handoff'
 import { Clouds } from './Clouds'
 import { Control } from './Control'
 import { Header } from './Header'
-import { Pricing } from './Pricing'
 import { ListeningIntro } from './ListeningIntro'
 import { OtherCases } from './OtherCases'
 import { PlugTooltip } from './PlugTooltip'
 import { Socials } from './Socials'
 import { Usecase } from './Usecase'
 import { Unemployed } from './Unemployed'
+import { Rasputin } from './rasputin'
 
 const PLUGS = [
   {
@@ -90,7 +90,6 @@ export function LandingPage() {
         homeHref="/"
         logoLabel="ListeningKit"
         className="z-[70]"
-        navItems={[]}
         accountItems={[
           { href: '/sign-in', label: 'Sign in', variant: 'ghost' },
           { href: '/onboarding', label: 'Get started', variant: 'cta' },
@@ -202,9 +201,7 @@ export function LandingPage() {
       <Control />
       <OtherCases />
       <Unemployed />
-      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 sm:px-10">
-        <Pricing />
-      </main>
+      <Rasputin />
     </div>
   )
 }
