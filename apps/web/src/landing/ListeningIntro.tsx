@@ -74,7 +74,7 @@ export function ListeningIntro() {
           alt="ListeningKit logo"
           className="size-24 rounded-[22%] object-contain sm:size-32"
         />
-        <h2 className="mt-8 max-w-4xl text-4xl font-black leading-[0.98] tracking-tight text-[#2A8CFF] sm:text-6xl lg:text-7xl">
+        <h2 className="mt-8 max-w-4xl text-4xl font-black leading-[0.98] text-[#2A8CFF] sm:text-6xl lg:text-7xl">
           Your (potential) customers are{' '}
           <img
             src="/logos/moaning.svg"

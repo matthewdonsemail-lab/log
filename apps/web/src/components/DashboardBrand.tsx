@@ -562,7 +562,7 @@ function StyleRow({
   return (
     <div className="mt-5 border-t border-slate-100 pt-4">
       <div className="flex items-center gap-2">
-        <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
+        <span className="text-xs font-semibold uppercase text-text-secondary">
           Tone
         </span>
         <Select

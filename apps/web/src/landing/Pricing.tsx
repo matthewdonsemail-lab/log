@@ -12,7 +12,7 @@ export function Pricing() {
           <div key={plan.id} className="flex flex-col rounded-2xl bg-white p-6 text-left text-slate-900 shadow-[0_6px_0_0_rgba(13,42,76,0.25)]">
             <div className="flex items-center justify-between">
               <h3 className="text-xl font-extrabold">{plan.name}</h3>
-              {plan.badge ? <span className="rounded-full bg-[#eaf3ff] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#1f6fe6]">{plan.badge}</span> : null}
+              {plan.badge ? <span className="rounded-full bg-[#eaf3ff] px-3 py-1 text-xs font-bold uppercase text-[#1f6fe6]">{plan.badge}</span> : null}
             </div>
             <p className="mt-3"><span className="text-4xl font-black">{plan.price}</span> <span className="text-sm text-slate-500">{plan.period}</span></p>
             <p className="mt-2 text-sm text-slate-600">{plan.blurb}</p>

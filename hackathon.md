@@ -12,7 +12,7 @@
 - **Auth:** Clerk dev instance (Google/GitHub provider cards + email, onboarding-gated routes)
 - **AI models:** gpt-4o-mini (OpenAI, direct API; or the Convex AI Gateway when enabled). Built and tested, not yet run live: needs `OPENAI_API_KEY` on the deployment
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-21T23:20:00Z
+- **Last updated:** 2026-09-22T10:18:57Z
 
 ## Log
 
@@ -758,3 +758,6 @@ read plan, phrases and matches, and, with a write key, add, pause, resume and re
 Free plan limits, and a key only sees the tools its scopes allow. Because match text is written by strangers, the tools label it as data and
 the docs recommend read-only keys for agents. Landing "Works with" links and the dashboard API page now point to real setup docs.
 Backend tests 216, web tests 203.
+
+### 2026-09-22 - d3cbbf8
+Finished the landing page build. The hero form validates the website inline (a real TLD is required) and keeps Get started greyed until it passes, then hands the site into onboarding. Added two new bands: OtherCases (sticky aside plus four cards mirroring the Usecase walkthrough, each with a blue-dither tile playing its Facebook clip) and Unemployed (looping hiring-post cards behind a breaking-news headline). Usecase titles render wordmark SVGs, step markers play per-slide clips with a number-badge fallback, and the onboarding brand-reading state dropped its card for a plain spinner. Added per-client MCP setup docs and a no-tracking-* pre-push brand check (`apps/web/src/landing/`, `apps/web/src/lib/website.ts`, `scripts/check-no-tracking.mjs`).

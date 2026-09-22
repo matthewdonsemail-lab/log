@@ -660,7 +660,7 @@ export function RelatedMentionsChain({
                 className={mainStep('brand-blue')}
               >
                 <div className="flex flex-col gap-1.5">
-                  <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">From the replies</p>
+                  <p className="text-xs font-semibold uppercase text-slate-500">From the replies</p>
                   {retryComments.map((comment) => (
                     <div key={`${comment.author}-${comment.text}`} className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
                       <p className="text-xs font-bold text-[#0B3E91]">{comment.author}</p>

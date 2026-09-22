@@ -44,7 +44,7 @@ export function RedditPostText({
         </div>
         <div className="flex flex-col items-start gap-[0.6875rem]">
           <div className="flex items-center gap-[1.0625rem]">
-            <div className="text-[36px] [letter-spacing:-0.408px] w-max font-['Satoshi',system-ui,sans-serif] font-[700] leading-[2.75rem] text-black">
+            <div className="text-[36px] w-max font-['Satoshi',system-ui,sans-serif] font-[700] leading-[2.75rem] text-black">
               {communityName}
             </div>
             <div className="w-[2.5625rem] h-[2.5625rem] shrink-0 bg-cover bg-position-[50%]" style={{ backgroundImage: 'url(https://app.paper.design/file-assets/01M1DEEQY42BZFA01XT004M9ZZ/17VA2WGYXYN7E6Z8HDJ1HPCCD4.png)' }} />
@@ -72,7 +72,7 @@ export function RedditPostText({
             <svg viewBox="0 0 38 34.83" width="38" height="34.83" xmlns="http://www.w3.org/2000/svg" style={{ width: '38px', height: '34.83px', overflow: 'visible', flexShrink: '0' }}>
               <path d="M28.591 0.000C22.167 0.000 19.000 6.333 19.000 6.333C19.000 6.333 15.834 0.000 9.409 0.000C4.189 0.000 0.054 4.368 0.001 9.580C-0.108 20.398 8.583 28.092 18.109 34.557C18.372 34.736 18.682 34.832 19.000 34.832C19.318 34.832 19.628 34.736 19.891 34.557C29.416 28.092 38.107 20.398 37.999 9.580C37.946 4.368 33.811 0.000 28.591 0.000Z" vectorEffect="non-scaling-stroke" fill="none" stroke="#A4A4A4" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <div className="text-[36px] [letter-spacing:-0.408px] w-max font-['Satoshi',system-ui,sans-serif] font-[500] leading-[2.75rem] text-[#A4A4A4]">
+            <div className="text-[36px] w-max font-['Satoshi',system-ui,sans-serif] font-[500] leading-[2.75rem] text-[#A4A4A4]">
               {likes}
             </div>
           </div>
@@ -85,7 +85,7 @@ export function RedditPostText({
               </svg>
             </div>
             <div className="flex items-center pt-[0.5625rem] gap-2.5">
-              <div className="text-[36px] leading-9 [letter-spacing:-0.408px] w-max font-['Satoshi',system-ui,sans-serif] font-[500] text-[#A4A4A4]">
+              <div className="text-[36px] leading-9 w-max font-['Satoshi',system-ui,sans-serif] font-[500] text-[#A4A4A4]">
                 {shares}
               </div>
             </div>
@@ -124,7 +124,7 @@ export function RedditComment({
         </div>
         <div className="flex flex-col items-start justify-center">
           <div className="flex items-center gap-[1.0625rem]">
-            <div className="text-[36px] [letter-spacing:-0.408px] w-max font-['Satoshi',system-ui,sans-serif] font-[700] leading-[2.75rem] text-black">
+            <div className="text-[36px] w-max font-['Satoshi',system-ui,sans-serif] font-[700] leading-[2.75rem] text-black">
               {authorName}
             </div>
           </div>
@@ -140,7 +140,7 @@ export function RedditComment({
             <svg viewBox="0 0 38 34.83" width="38" height="34.83" xmlns="http://www.w3.org/2000/svg" style={{ width: '38px', height: '34.83px', overflow: 'visible', flexShrink: '0' }}>
               <path d="M28.591 0.000C22.167 0.000 19.000 6.333 19.000 6.333C19.000 6.333 15.834 0.000 9.409 0.000C4.189 0.000 0.054 4.368 0.001 9.580C-0.108 20.398 8.583 28.092 18.109 34.557C18.372 34.736 18.682 34.832 19.000 34.832C19.318 34.832 19.628 34.736 19.891 34.557C29.416 28.092 38.107 20.398 37.999 9.580C37.946 4.368 33.811 0.000 28.591 0.000Z" vectorEffect="non-scaling-stroke" fill="none" stroke="#A4A4A4" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <div className="text-[36px] [letter-spacing:-0.408px] w-max font-['Satoshi',system-ui,sans-serif] font-[500] leading-[2.75rem] text-[#A4A4A4]">
+            <div className="text-[36px] w-max font-['Satoshi',system-ui,sans-serif] font-[500] leading-[2.75rem] text-[#A4A4A4]">
               {likes}
             </div>
           </div>
@@ -153,7 +153,7 @@ export function RedditComment({
               </svg>
             </div>
             <div className="flex items-center pt-[0.5625rem] gap-2.5">
-              <div className="text-[36px] leading-9 [letter-spacing:-0.408px] w-max font-['Satoshi',system-ui,sans-serif] font-[500] text-white">
+              <div className="text-[36px] leading-9 w-max font-['Satoshi',system-ui,sans-serif] font-[500] text-white">
                 {shares}
               </div>
             </div>

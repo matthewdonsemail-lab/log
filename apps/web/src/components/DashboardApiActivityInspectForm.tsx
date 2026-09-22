@@ -119,7 +119,7 @@ export function DashboardApiActivityInspectForm({
       onClose={onClose}
     >
       <div className="flex flex-col gap-1.5">
-        <p className="text-[11px] font-bold uppercase tracking-wide text-text-secondary">Outcome</p>
+        <p className="text-[11px] font-bold uppercase text-text-secondary">Outcome</p>
         <div className="flex items-center gap-2">
           <Badge variant={event.allowed ? 'success' : 'danger'}>
             {event.allowed ? 'Allowed' : 'Denied'}
@@ -134,7 +134,7 @@ export function DashboardApiActivityInspectForm({
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <p className="text-[11px] font-bold uppercase tracking-wide text-text-secondary">
+        <p className="text-[11px] font-bold uppercase text-text-secondary">
           What this route needs — and what {apiKey.name} carries
         </p>
         {!route ? (

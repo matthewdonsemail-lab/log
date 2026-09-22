@@ -365,7 +365,7 @@ function HeaderActions({
       role="group"
       aria-label={label}
       className={cn(
-        "site-header__links tracking-[-0.4px]",
+        "site-header__links",
         light ? "text-ink" : "text-paper",
         className
       )}
@@ -434,7 +434,7 @@ function HeaderActions({
               onClick={onNavigate}
         className={cn(
           "js-header site-header__link",
-          "text-base font-medium tracking-[-0.4px]",
+          "text-base font-medium",
           light
             ? "text-ink hover:bg-ink/10"
             : "text-paper hover:bg-paper/10"
@@ -1071,7 +1071,7 @@ function HeaderMenuList({
               role="menuitem"
               aria-label={`Go to ${item.label}`}
               className={cn(
-                "js-track js-nav js-click js-header flex items-center gap-2 rounded-xl px-2 py-2.5 text-base tracking-[-0.4px] focus-visible:outline-none",
+                "js-track js-nav js-click js-header flex items-center gap-2 rounded-xl px-2 py-2.5 text-base focus-visible:outline-none",
                 light
                   ? "hover:bg-ink/10 focus-visible:bg-ink/10"
                   : "hover:bg-dither-frame/10 focus-visible:bg-dither-frame/10"

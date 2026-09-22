@@ -64,7 +64,7 @@ export function Cards() {
                 <h3 className="text-xl font-bold text-[#0D2A4C]">{card.label}</h3>
               </div>
               <p className="mb-4 mt-3 text-[15px] leading-snug text-[#0D2A4C]/70">{card.caption}</p>
-              <span className="mt-auto flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-[#2A8CFF]">
+              <span className="mt-auto flex items-center gap-2 text-sm font-bold uppercase text-[#2A8CFF]">
                 <span className="underline underline-offset-4">Learn more</span>
                 <ArrowRight size={16} strokeWidth={2.5} />
               </span>

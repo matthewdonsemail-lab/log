@@ -149,10 +149,10 @@ export function TwitterPostText({
           </g>
         </svg>
       </div>
-      <div className="w-[28.25rem] self-stretch min-w-0 text-[24px] tracking-[-0.01em] line-clamp-3 font-['Satoshi',system-ui,sans-serif] font-[300] leading-[1.875rem] text-black">
+      <div className="w-[28.25rem] self-stretch min-w-0 text-[24px] line-clamp-3 font-['Satoshi',system-ui,sans-serif] font-[300] leading-[1.875rem] text-black">
         {highlightQuote(body, highlight)}
       </div>
-      <div className="w-[28.25rem] self-stretch min-w-0 text-[12px] tracking-[-0.01em] font-['Satoshi',system-ui,sans-serif] font-[300] leading-4 text-black">
+      <div className="w-[28.25rem] self-stretch min-w-0 text-[12px] font-['Satoshi',system-ui,sans-serif] font-[300] leading-4 text-black">
         {timestamp}
       </div>
       <svg viewBox="0 0 452 1" width="452" height="1" xmlns="http://www.w3.org/2000/svg" style={{ alignSelf: 'stretch', minWidth: '0px', height: '1px', overflow: 'visible', flexShrink: '0' }}>
@@ -270,11 +270,11 @@ export function TwitterPostImage({
           </g>
         </svg>
       </div>
-      <div className="w-[28.25rem] self-stretch min-w-0 text-[24px] tracking-[-0.01em] line-clamp-3 font-['Satoshi',system-ui,sans-serif] font-[300] leading-[1.875rem] text-black">
+      <div className="w-[28.25rem] self-stretch min-w-0 text-[24px] line-clamp-3 font-['Satoshi',system-ui,sans-serif] font-[300] leading-[1.875rem] text-black">
         {highlightQuote(body, highlight)}
       </div>
       <div className="w-[28.25rem] h-[15.875rem] rounded-[8px] overflow-clip shrink-0 bg-cover bg-position-[50%]" style={{ backgroundImage: `url(${imageSrc})` }} />
-      <div className="w-[28.25rem] self-stretch min-w-0 text-[12px] tracking-[-0.01em] font-['Satoshi',system-ui,sans-serif] font-[300] leading-4 text-black">
+      <div className="w-[28.25rem] self-stretch min-w-0 text-[12px] font-['Satoshi',system-ui,sans-serif] font-[300] leading-4 text-black">
         {timestamp}
       </div>
       <svg viewBox="0 0 452 1" width="452" height="1" xmlns="http://www.w3.org/2000/svg" style={{ alignSelf: 'stretch', minWidth: '0px', height: '1px', overflow: 'visible', flexShrink: '0' }}>

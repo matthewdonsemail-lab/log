@@ -237,7 +237,7 @@ export function Usecase() {
                 <Button
                   variant="blue"
                   asChild
-                  className="w-full whitespace-nowrap rounded-xl px-8 py-5 text-xl font-bold uppercase tracking-wide"
+                  className="w-full whitespace-nowrap rounded-xl px-8 py-5 text-xl font-bold uppercase"
                 >
                   <Link to="/onboarding" className="inline-block w-full text-center">
                     Get started
@@ -338,7 +338,7 @@ export function Usecase() {
                     ) : (
                       <div className="mx-auto flex aspect-[9/16] h-[80vh] max-h-[80vh] w-auto max-w-[80%] items-center justify-center overflow-hidden rounded-[2rem] bg-slate-200 text-center">
                         <div className="max-w-lg p-12">
-                          <p className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500">Use case {i + 1}</p>
+                          <p className="text-sm font-bold uppercase text-slate-500">Use case {i + 1}</p>
                           <p className="mt-4 text-3xl font-black leading-tight text-slate-700">{slide.title}</p>
                         </div>
                       </div>
@@ -362,7 +362,7 @@ export function Usecase() {
         <Button
           variant="blue"
           asChild
-          className="mt-4 w-full rounded-full px-8 py-4 text-sm font-bold uppercase tracking-wide"
+          className="mt-4 w-full rounded-full px-8 py-4 text-sm font-bold uppercase"
         >
           <Link to="/onboarding" className="inline-block w-full text-center">
             Get started

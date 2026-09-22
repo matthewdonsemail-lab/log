@@ -102,7 +102,7 @@ export function Control() {
             <span className="text-4xl font-black leading-none text-[#2A8CFF] sm:text-6xl">ListeningKit</span>
           </div>
           </div>
-        <h2 className="text-3xl font-black leading-[0.98] tracking-tight text-[#2A8CFF] sm:text-5xl lg:text-6xl">
+        <h2 className="text-3xl font-black leading-[0.98] text-[#2A8CFF] sm:text-5xl lg:text-6xl">
           The most Intelligent Social Listening Tools are the ones you control!
         </h2>
         <p className="mx-auto mt-8 max-w-2xl text-xl leading-snug text-[#0D2A4C]/70 sm:text-2xl">

@@ -324,7 +324,7 @@ export function DashboardListingInspectForm({
       onConfirm={() => window.open(listing.listingUrl, '_blank', 'noopener,noreferrer')}
     >
       <div className="flex items-center justify-between gap-2 rounded-lg border border-[#1E66C9] bg-[#2A8CFF] px-3 py-2">
-        <p className="text-[11px] font-bold uppercase tracking-wide text-white">The listing</p>
+        <p className="text-[11px] font-bold uppercase text-white">The listing</p>
         <Badge variant="trigger" color={STATUS_COLOR[listing.status]} className="shrink-0">
           {LISTING_STATUS_LABELS[listing.status]}
         </Badge>

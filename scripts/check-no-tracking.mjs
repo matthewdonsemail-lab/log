@@ -36,6 +36,7 @@ const PATTERNS = [
   'tracking-wide',
   'tracking-wider',
   'tracking-widest',
+  'tracking-\\[',
   'letter-spacing:',
   'letterspacing',
 ];

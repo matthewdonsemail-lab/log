@@ -86,7 +86,7 @@ function VoteCountPill({ count, tone = 'neutral' }: { count: number; tone?: Pill
           />
         </svg>
       </span>
-      <span className={`text-center text-[12px] font-semibold leading-4 tracking-[-0.012px] ${textClass}`}>
+      <span className={`text-center text-[12px] font-semibold leading-4 ${textClass}`}>
         {count}
       </span>
       <span className="flex h-8 w-8 items-center justify-center" aria-hidden="true">
@@ -121,7 +121,7 @@ function ActionChip({
       <svg height="16" viewBox="0 0 20 20" width="16" aria-hidden="true">
         <path d={iconPath} fill="currentColor" />
       </svg>
-      <span className="text-center text-[12px] font-semibold leading-4 tracking-[-0.012px]">
+      <span className="text-center text-[12px] font-semibold leading-4">
         {label}
       </span>
     </span>

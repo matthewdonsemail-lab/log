@@ -152,7 +152,7 @@ export function LandingPage() {
           ) : null}
           </div>
           <div className="plugs is-visible mt-6 flex w-full flex-row items-center justify-start gap-4" data-reveal="load" style={{ '--d': '320ms' } as CSSProperties}>
-            <p className="plugs-text text-sm font-medium uppercase tracking-[0.2em] text-white/70">Works with</p>
+            <p className="plugs-text text-sm font-medium uppercase text-white/70">Works with</p>
             <ul className="plugs-row m-0 flex list-none items-center gap-4 p-0">
               {PLUGS.map((plug) => (
                 <li key={plug.label}>
@@ -173,7 +173,7 @@ export function LandingPage() {
         style={{ background: 'linear-gradient(to bottom, #2a8cff 0%, #2a8cff 40%, #ffffff 100%)' }}
       >
         <div className="mx-auto flex w-full max-w-7xl flex-col items-start px-6 pt-16 sm:px-10">
-          <p className="text-sm font-medium uppercase tracking-[0.2em] text-white/80">Built with</p>
+          <p className="text-sm font-medium uppercase text-white/80">Built with</p>
           <ul className="mt-5 flex list-none flex-wrap items-center gap-x-8 gap-y-4 p-0">
             {[
               { label: 'OpenMagPie', src: '/logos/stack/openmagpie.png', whiten: true, showLabel: true },

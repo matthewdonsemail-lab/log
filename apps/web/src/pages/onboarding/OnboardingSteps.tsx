@@ -615,7 +615,7 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
           <div className="mx-auto mt-8 w-full max-w-4xl text-left">
             {profile ? (
               <div className="rounded-2xl bg-white p-5 text-slate-900">
-                <p className="text-xs font-bold uppercase tracking-wide text-[#2a8cff]">Brand profile</p>
+                <p className="text-xs font-bold uppercase text-[#2a8cff]">Brand profile</p>
                 <p className="mt-1 text-2xl font-bold">{profile.identity.name}</p>
                 <p className="mt-0.5 text-sm text-slate-600">{profile.identity.tagline}</p>
                 <p className="mt-2 text-sm text-slate-600">

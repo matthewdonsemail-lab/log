@@ -213,7 +213,7 @@ export function DashboardApiLive() {
           <tbody>
             {API_ENDPOINTS.map((endpoint) => (
               <tr key={endpoint.path} className="border-t border-slate-100 align-top">
-                <td className="py-2 pr-3 font-mono font-semibold text-text-primary">{endpoint.path}</td>
+                <td className="py-2 pr-3 font-semibold text-text-primary">{endpoint.path}</td>
                 <td className="py-2 pr-3"><ScopeChip scope={endpoint.scope} /></td>
                 <td className="py-2 text-text-secondary">
                   {endpoint.what}

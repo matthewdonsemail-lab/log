@@ -185,7 +185,7 @@ function FormSheetSurface({
       {stepCount !== undefined ? <StepProgress step={step ?? 0} stepCount={stepCount} /> : null}
 
       <div className="lk-no-scrollbar flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-6 py-5">
-        {stepHint ? <p className="text-xs font-semibold uppercase tracking-wide text-text-secondary">{stepHint}</p> : null}
+        {stepHint ? <p className="text-xs font-semibold uppercase text-text-secondary">{stepHint}</p> : null}
         {body}
       </div>
 

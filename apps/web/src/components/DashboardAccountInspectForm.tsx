@@ -63,14 +63,14 @@ export function DashboardAccountInspectForm({
       onConfirm={onOpenSettings}
     >
       <div className="flex flex-col gap-1.5">
-        <p className="text-[11px] font-bold uppercase tracking-wide text-text-secondary">What happened</p>
+        <p className="text-[11px] font-bold uppercase text-text-secondary">What happened</p>
         <p className="text-sm leading-relaxed text-text-primary">{entry.detail[account.platform]}</p>
       </div>
 
       <div className="overflow-hidden rounded-xl border border-black/10">
         <div className="flex items-center gap-1.5 bg-black/[0.04] px-3 py-2">
           <TerminalSquare size={13} aria-hidden="true" className="text-text-secondary" />
-          <span className="text-[11px] font-bold uppercase tracking-wide text-text-secondary">Console log</span>
+          <span className="text-[11px] font-bold uppercase text-text-secondary">Console log</span>
         </div>
         <div
           className="rounded-b-lg bg-white px-3 py-1 text-xs leading-relaxed text-text-primary"

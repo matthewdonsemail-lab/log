@@ -312,7 +312,7 @@ export function DashboardEventInspectForm({
       onConfirm={() => window.open(event.url, '_blank', 'noopener,noreferrer')}
     >
       <div className="flex items-center justify-between gap-2 rounded-lg border border-[#1E66C9] bg-[#2A8CFF] px-3 py-2">
-        <p className="text-[11px] font-bold uppercase tracking-wide text-white">
+        <p className="text-[11px] font-bold uppercase text-white">
           The post
         </p>
         <Badge variant={SENTIMENT_BADGE[event.sentiment]} className="shrink-0">
@@ -383,7 +383,7 @@ export function DashboardEventInspectForm({
         <div className="flex items-center gap-2 rounded-t-xl border border-slate-200 bg-[#EAF3FF] px-3 py-2.5">
           <Brain className="size-4 shrink-0 text-[#2A8CFF]" />
           <span className="text-xs font-semibold text-[#0B3E91]">AI Analysis</span>
-          <span className="rounded-full bg-[#2A8CFF] px-1.5 py-px text-[9px] font-bold uppercase tracking-wide text-white">
+          <span className="rounded-full bg-[#2A8CFF] px-1.5 py-px text-[9px] font-bold uppercase text-white">
             beta
           </span>
           <span className="ml-auto flex cursor-not-allowed items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-400">
