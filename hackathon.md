@@ -12,9 +12,42 @@
 - **Auth:** Clerk dev instance (Google/GitHub provider cards + email, onboarding-gated routes)
 - **AI models:** gpt-4o-mini (OpenAI, direct API; or the Convex AI Gateway when enabled). Built and tested, not yet run live: needs `OPENAI_API_KEY` on the deployment
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-22T14:30:00Z
+- **Last updated:** 2026-09-22T15:40:00Z
 
 ## Log
+
+### 2026-09-22 - 6f5c427
+Feed cards now carry a score + intent verdict and open the post in the inspect
+sheet. `convex/feed.ts` `feed:list` does a per-post join to `hits` and returns
+the best match's `score`/`intent`/`reason` plus a new `keywordId` (all null when
+a post matched no keyword); the wire adds the same fields in
+`apps/web/src/lib/feed/remote.ts` and the mock seeds them on every
+`MOCK_FEED_ITEMS` row in `mock.ts` (two rows stay `score: null` to exercise the
+hidden path). `FeedCardFrame` renders a verdict strip under the card — a solid
+brand-blue `Badge` showing `score · intentLabel(intent)` over a full-width
+50/50 `Reply with AI` / `Auto-Reply` button row (the two buttons are visual
+placeholders, the reply action is not built yet) — and the whole card is the
+click target that opens the inspect sheet (the chip itself is not the button).
+`DashboardFeed` threads `onInspect` through `FeedGrid` → `FeedColumn` →
+`FeedCardFrame` in both the live and mock variants, adapts a `FeedItem` into
+the `FirehoseEvent` the inspect sheet expects (`toInspectEvent`, with
+`keywordId` falling back to `'feed'` on the mock path), and registers the
+inspect + related-keywords + related-communities forms in the dashboard form
+slot — the same recipe as `DashboardAnalyticsPage`.
+
+Also: closed the unused-import issue in `DashboardBrand.tsx` (dropped the
+`useMemo` + `simulateOutbound`/thread-card imports that the rework left
+dangling), and the treg.to component is now a registered workspace package
+(`packages/treg`) with a full README and a public `convex/treg:call` wrapper
+(`convex/treg.ts`) that verifies the owner and runs the catalog call as them,
+with spend ceiling + idempotency + owner tagging and a `calls` receipts table.
+The component still needs its first real deploy. `HANDOFF.md` now opens with a
+"2026-09-22 session" block: what landed, the two open visual bugs to fix next
+("Draft a response" should open its own form sheet instead of an inline expand,
+and `ai-elements/chain-of-thought.tsx` + `chain-joints.ts` need to be made to
+compile/render), plus the follow-ups (tie the dashboard feed to real analytics
+data instead of mocks, an R2 namespace for the per-route "How It {Route} Works"
+videos). Next: deploy treg, then work off that handoff.
 
 ### 2026-09-21 - fc86d54
 Added a dedicated `/auth` entry point with Clerk Google/GitHub OAuth and email sign-in, a connection-risk notice, and redirect into dashboard Settings after authentication. Extended the browser extension UI with ListeningKit branding, supported-site detection, cookie/profile controls, and the sign-in entry point (`apps/extension/`, `apps/web/src/components/AuthGate.tsx`, `apps/web/src/pages/onboarding/OnboardingAuth.tsx`).
