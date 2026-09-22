@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "apps" / "extension"
 OUT = ROOT / "apps" / "web" / "public" / "listeningkit-extension.zip"
-FILES = ["manifest.json", "popup.html", "popup.js", "lib.js", "icons/16.png", "icons/32.png", "icons/48.png", "icons/128.png"]
+FILES = ["manifest.json", "popup.html", "popup.js", "lib.js", "logo.svg", "github.svg", "google.svg", "icons/16.png", "icons/32.png", "icons/48.png", "icons/128.png"]
 
 OUT.parent.mkdir(parents=True, exist_ok=True)
 with zipfile.ZipFile(OUT, "w", zipfile.ZIP_DEFLATED) as archive:

@@ -1,23 +1,24 @@
 import { SITES, buildToken, hasLogin, platformForUrl } from './lib.js'
 
 const $ = (id) => document.getElementById(id)
+const status = $('status')
 const copy = $('copy')
 const savePanel = $('save-panel')
 const save = $('save')
 const profiles = $('profiles')
+const signedOut = $('signed-out')
+const signedIn = $('signed-in')
 const signIn = $('sign-in')
-const github = $('github')
-const google = $('google')
 let current = null
 let currentCookies = []
 
 // The dashboard owns Clerk authentication and Convex ownership. The extension
 // never asks for a password or stores a second copy of the Clerk credential.
-const LISTENINGKIT_AUTH = 'https://listeningkit-hackathon.vercel.app/auth'
+const LISTENINGKIT_SIGN_IN = 'https://app.listeningkit.com/sign-in?redirect_url=/dashboard/settings'
 
 function say(text, tone = '') {
-  void text
-  void tone
+  status.textContent = text
+  status.className = `status ${tone}`.trim()
 }
 
 async function cookiesFor(platform) {
@@ -38,7 +39,7 @@ function tokenFor(profile) { return profile.token }
 async function fillPage(profile) {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
   if (!tab?.id) throw new Error('No active page found')
-  await chrome.scripting.executeScript({ target: { tabId: tab.id }, args: [tokenFor(profile)], func: (token) => {
+  await chrome.scripting.executeScript({ target: { tabId: tab.id }, args: [tokenFor(profile), profile.proxy], func: (token, proxy) => {
     const fields = [...document.querySelectorAll('input')]
     const set = (field, value) => {
       if (!field || !value) return
@@ -48,7 +49,9 @@ async function fillPage(profile) {
       field.dispatchEvent(new Event('change', { bubbles: true }))
     }
     const tokenField = fields.find((field) => field.type === 'password' || /token|cookie|session/i.test(`${field.name} ${field.placeholder}`))
+    const proxyField = fields.find((field) => /proxy/i.test(`${field.name} ${field.placeholder}`))
     set(tokenField, token)
+    set(proxyField, proxy)
   }})
 }
 
@@ -58,7 +61,7 @@ async function renderProfiles() {
   profiles.replaceChildren(...saved.map((profile) => {
     const card = document.createElement('div')
     card.className = 'profile'
-    card.innerHTML = `<div class="profile-head"><span class="profile-name"></span><span>${profile.platform}</span></div><div class="profile-meta">${profile.cookieCount} cookies</div>`
+    card.innerHTML = `<div class="profile-head"><span class="profile-name"></span><span>${profile.platform}</span></div><div class="profile-meta">${profile.cookieCount} cookies${profile.proxy ? ' · proxy saved' : ''}</div>`
     card.querySelector('.profile-name').textContent = profile.name
     const actions = document.createElement('div')
     actions.className = 'profile-actions'
@@ -73,9 +76,15 @@ async function renderProfiles() {
   }))
 }
 
+function showSignedIn() {
+  signedOut.hidden = true
+  signedIn.hidden = false
+}
+
 async function init() {
-  // Cookie access is intentionally blocked behind the sign-in screen.
-  return
+  // Account data is rendered only after the authenticated dashboard handoff.
+  // The current popup remains usable for discovering a new browser session.
+  showSignedIn()
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
   const platform = tab?.url ? platformForUrl(tab.url) : null
   if (!platform) {
@@ -110,20 +119,14 @@ async function init() {
   }
 }
 
-function openAuth(provider = 'email') {
-  chrome.tabs.create({ url: `${LISTENINGKIT_AUTH}?provider=${provider}` })
-}
-
-signIn.addEventListener('click', () => openAuth('email'))
-github.addEventListener('click', () => openAuth('github'))
-google.addEventListener('click', () => openAuth('google'))
+signIn.addEventListener('click', () => chrome.tabs.create({ url: LISTENINGKIT_SIGN_IN }))
 
 save.addEventListener('click', async () => {
   const name = $('account-name').value.trim()
   if (!name || !current) return say('Enter a name before saving.', 'warn')
   const saved = await readProfiles()
-  await writeProfiles([...saved, { id: crypto.randomUUID(), name, platform: current, cookieCount: currentCookies.length, token: buildToken(current, currentCookies), savedAt: Date.now() }])
-  $('account-name').value = ''
+  await writeProfiles([...saved, { id: crypto.randomUUID(), name, platform: current, proxy: $('account-proxy').value.trim(), cookieCount: currentCookies.length, token: buildToken(current, currentCookies), savedAt: Date.now() }])
+  $('account-name').value = ''; $('account-proxy').value = ''
   await renderProfiles(); say('Account saved in this browser.', 'ok')
 })
 

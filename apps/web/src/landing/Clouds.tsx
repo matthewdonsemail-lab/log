@@ -4,6 +4,7 @@
  *   https://github.com/twitter/twemoji (assets/svg/2601.svg)
  */
 import type { ReactNode } from 'react'
+import Dither from '@/components/Dither'
 import './Clouds.css'
 
 const CLOUD_SRC = '/clouds/twemoji-cloud.svg'
@@ -81,10 +82,35 @@ export function Clouds({ children }: { children?: ReactNode }) {
   return (
     <div aria-hidden className="lk-clouds relative h-[40rem] w-full overflow-hidden">
       {ROWS.map((row) => (
-        <div key={row.depth} className={`lk-cloud-row lk-cloud-row-${row.depth} absolute inset-x-0 ${row.rowClass}`}>
-          <div className={`lk-cloud-strip lk-cloud-drift-${row.depth} flex w-max items-center`}>
+        <div key={row.depth} className={`lk-cloud-row lk-cloud-row-${row.depth} absolute inset-x-0 z-[1] ${row.rowClass}`}>
+          <div className={`lk-cloud-strip lk-cloud-drift-${row.depth} relative flex w-max items-center`}>
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 z-[2] opacity-30 mix-blend-screen"
+              style={{
+                maskImage: `url(${CLOUD_SRC})`,
+                WebkitMaskImage: `url(${CLOUD_SRC})`,
+                maskMode: 'alpha',
+                WebkitMaskMode: 'alpha',
+                maskRepeat: 'repeat',
+                WebkitMaskRepeat: 'repeat',
+                maskSize: '180px 120px',
+                WebkitMaskSize: '180px 120px',
+              }}
+            >
+              <Dither
+                waveColor={[0.7, 0.88, 1]}
+                backgroundColor={[0.165, 0.55, 1]}
+                colorNum={4}
+                pixelSize={3}
+                waveAmplitude={0.2}
+                waveFrequency={3}
+                waveSpeed={0.035}
+                enableMouseInteraction={false}
+              />
+            </div>
             {[0, 1].map((half) => (
-              <div key={half} aria-hidden={half === 1} className="flex items-center gap-20 pr-20">
+              <div key={half} aria-hidden={half === 1} className="relative z-[1] flex items-center gap-20 pr-20">
                 {Array.from({ length: REPEATS_PER_HALF }).flatMap((_, repeat) =>
                   row.slots.map((slot, i) => (
                     <img
@@ -103,9 +129,16 @@ export function Clouds({ children }: { children?: ReactNode }) {
       ))}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0"
+        className="pointer-events-none absolute inset-0 z-[3]"
         style={{
           background: 'linear-gradient(to right, #2a8cff 0%, transparent 18%, transparent 82%, #2a8cff 100%)',
+        }}
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-[3]"
+        style={{
+          background: 'radial-gradient(ellipse at center, transparent 42%, rgba(42,140,255,0.18) 72%, #2a8cff 100%)',
         }}
       />
       {children ? (

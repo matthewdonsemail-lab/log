@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "ListeningKit",
+  "name": "ListeningKit Connect",
   "version": "0.1.0",
-  "description": "Extract cookies from Reddit, Twitter and Facebook and store them to use in ListeningKit.",
+  "description": "Copy a one-time connection token for Reddit, X or Facebook so ListeningKit can listen as you. Nothing is sent anywhere until you paste it.",
   "permissions": ["activeTab", "cookies", "clipboardWrite", "storage", "scripting"],
   "host_permissions": [
     "https://*.reddit.com/*",

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { Button, cn } from '@listeningkit/ui'
+import Dither from '@/components/Dither'
 import './Usecase.css'
 
 type UsecaseSlide = {
@@ -11,27 +12,50 @@ type UsecaseSlide = {
 
 const SLIDES: UsecaseSlide[] = [
   {
-    title: 'Turn comments into conversations that sell',
-    body: '“How much is this?” or “Do you ship to Mars?” Instant reply. Boom — wallets open, money lands, and you didn’t even blink.',
+    title: 'Spot the emergency the second it’s posted',
+    body: 'Real posts stream in — “leak in my toilet”, “pipe burst”, “any good plumbers in Dallas?” — each one matched by keyword, each one answered with auto-reply to all brand mentions.',
   },
   {
-    title: 'Personal conversations; Profitable conversations',
-    body: 'Identify high-intent leads, nurture relationships, and close sales — all through rapid, authentic, automated conversation.',
+    title: 'The AI bins the junk, keeps the jobs',
+    body: 'It semantically analyses what’s actually being said — a joke about “kidney pie” is noise, while a genuine “leak in my toilet” signals intent. The noise is filtered out so only real customers reach you.',
   },
   {
-    title: 'Engage followers instantly with automatic replies',
-    body: 'Respond instantly to comments, DMs, and Story mentions across Reddit, X, and Facebook.',
+    title: 'From first message to paid in one chat',
+    body: 'The conversation runs itself — “we can get out in the next 1-2 hours”, a Stripe link takes the card payment, the address lands, “thank you, excellent”. Quote to cash without lifting a finger.',
   },
   {
-    title: 'Expand your empire',
-    body: 'Don’t leave your success to chance: grow across platforms, build your lists, and diversify revenue in one move.',
+    title: 'Let AI manage hundreds of conversations at once',
+    body: 'Keep “every chat” moving without losing the human thread — let AI handle the “follow-ups”, surface the “deals that matter”, and help you close more of them.',
   },
+]
+
+const USECASE_EAR_SETS = [
+  [
+    { src: '/images/ears/ear1.png', className: 'left-[-4%] top-[8%] size-64', rotate: -3 },
+    { src: '/images/ears/ear4.png', className: 'right-[-3%] top-[34%] size-80', rotate: 2 },
+    { src: '/images/ears/ear7.png', className: 'left-[4%] bottom-[4%] size-72', rotate: -2 },
+  ],
+  [
+    { src: '/images/ears/ear2.png', className: 'right-[-4%] top-[6%] size-72', rotate: 2 },
+    { src: '/images/ears/ear5.png', className: 'left-[-4%] top-[40%] size-96', rotate: -3 },
+    { src: '/images/ears/ear8.png', className: 'right-[4%] bottom-[3%] size-64', rotate: 3 },
+  ],
+  [
+    { src: '/images/ears/ear3.png', className: 'left-[-2%] top-[4%] size-80', rotate: -2 },
+    { src: '/images/ears/ear6.png', className: 'right-[-5%] top-[38%] size-64', rotate: 3 },
+    { src: '/images/ears/ear1.png', className: 'left-[6%] bottom-[2%] size-96', rotate: -3 },
+  ],
+  [
+    { src: '/images/ears/ear4.png', className: 'right-[-4%] top-[2%] size-96', rotate: 3 },
+    { src: '/images/ears/ear7.png', className: 'left-[-5%] top-[36%] size-72', rotate: -2 },
+    { src: '/images/ears/ear2.png', className: 'right-[5%] bottom-[1%] size-80', rotate: 2 },
+  ],
 ]
 
 function renderBody(body: string) {
   return body.split(/(“[^”]*”)/g).map((part, index) =>
     /^“[^”]*”$/.test(part) ? (
-      <span key={index} className="font-black text-[#2A8CFF]">
+      <span key={index} className="font-black text-[#2A8CFF] underline decoration-dashed underline-offset-4">
         {part}
       </span>
     ) : (
@@ -89,7 +113,7 @@ export function Usecase() {
 
   return (
     <>
-    <section ref={trackRef} className="relative hidden bg-white md:block" style={{ height: 'calc(100vh + 4800px)' }}>
+    <section ref={trackRef} className="relative hidden overflow-x-clip bg-white md:block" style={{ height: 'calc(100vh + 4800px)' }}>
       <div className="h-full w-full">
         <div className="sticky left-0 top-0 grid h-screen w-full grid-cols-2">
           <div className="flex h-screen w-full justify-center">
@@ -138,10 +162,23 @@ export function Usecase() {
           </div>
           <div
             className="relative flex h-screen w-full items-center justify-center bg-white px-10"
+            style={{ backgroundColor: `rgba(42, 140, 255, ${(enter * 0.09).toFixed(3)})` }}
           >
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 opacity-25">
+              <Dither
+                waveColor={[0.16, 0.55, 1]}
+                backgroundColor={[1, 1, 1]}
+                colorNum={4}
+                pixelSize={3}
+                waveAmplitude={0.2}
+                waveFrequency={3}
+                waveSpeed={0.035}
+                enableMouseInteraction={false}
+              />
+            </div>
             <div
               aria-hidden
-              className="pointer-events-none absolute inset-0"
+              className="pointer-events-none absolute inset-0 z-[1]"
               style={{
                 backgroundImage: `linear-gradient(to right, rgba(42,140,255,${enter.toFixed(3)}) 2px, transparent 2px), linear-gradient(to bottom, rgba(42,140,255,${enter.toFixed(3)}) 2px, transparent 2px)`,
                 backgroundSize: 'calc(100% / 3) calc(100% / 3)',
@@ -149,7 +186,26 @@ export function Usecase() {
                 WebkitMaskImage: `linear-gradient(to top, black ${(enter * 100).toFixed(1)}%, transparent ${Math.min(100, enter * 100 + 15).toFixed(1)}%)`,
               }}
             />
-            <div className="relative z-[1] h-screen w-full overflow-hidden">
+            <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[3] hidden md:block">
+              {USECASE_EAR_SETS[active].map((ear, index) => (
+                <motion.img
+                  key={`${active}-${ear.src}`}
+                  src={ear.src}
+                  alt=""
+                  className={`absolute object-contain ${ear.className}`}
+                  style={{ y: -fill * (8 + index * 4) }}
+                  initial={{ scale: 0 }}
+                  whileInView={{ scale: [0, 1.12, 0.97, 1] }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  animate={{ rotate: [ear.rotate, -ear.rotate, ear.rotate] }}
+                  transition={{
+                    scale: { duration: 0.65, delay: index * 0.12, ease: [0.34, 1.56, 0.64, 1] },
+                    rotate: { duration: 4 + index, repeat: Infinity, ease: 'easeInOut' },
+                  }}
+                />
+              ))}
+            </div>
+            <div className="relative z-[2] h-screen w-full overflow-hidden">
               <motion.div
                 animate={{ y: `${-active * 25}%` }}
                 transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
@@ -157,12 +213,50 @@ export function Usecase() {
               >
                 {SLIDES.map((slide, i) => (
                   <div key={slide.title} className="flex h-1/4 w-full shrink-0 items-center justify-center pt-[9.2rem]">
-                    <div className="mx-auto flex aspect-[9/16] h-[80vh] max-h-[80vh] w-auto max-w-[80%] items-center justify-center rounded-[2rem] bg-slate-200 p-12 text-center">
-                      <div className="max-w-lg">
-                        <p className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500">Use case {i + 1}</p>
-                        <p className="mt-4 text-3xl font-black leading-tight text-slate-700">{slide.title}</p>
+                    {i === 0 ? (
+                      <video
+                        src="/video/Facebook1.webm"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="mx-auto aspect-[9/16] h-[80vh] max-h-[80vh] w-auto max-w-[80%] object-cover"
+                      />
+                    ) : i === 1 ? (
+                      <video
+                        src="/video/Facebook2.webm"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="mx-auto aspect-[9/16] h-[80vh] max-h-[80vh] w-auto max-w-[80%] object-cover"
+                      />
+                    ) : i === 2 ? (
+                      <video
+                        src="/video/Facebook3.webm"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="mx-auto aspect-[9/16] h-[80vh] max-h-[80vh] w-auto max-w-[80%] object-cover"
+                      />
+                    ) : i === 3 ? (
+                      <video
+                        src="/video/Facebook4.webm"
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        className="mx-auto aspect-[9/16] h-[80vh] max-h-[80vh] w-auto max-w-[80%] object-cover"
+                      />
+                    ) : (
+                      <div className="mx-auto flex aspect-[9/16] h-[80vh] max-h-[80vh] w-auto max-w-[80%] items-center justify-center overflow-hidden rounded-[2rem] bg-slate-200 text-center">
+                        <div className="max-w-lg p-12">
+                          <p className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500">Use case {i + 1}</p>
+                          <p className="mt-4 text-3xl font-black leading-tight text-slate-700">{slide.title}</p>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 ))}
               </motion.div>

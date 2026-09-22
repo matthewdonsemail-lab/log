@@ -38,7 +38,7 @@ function tokenFor(profile) { return profile.token }
 async function fillPage(profile) {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
   if (!tab?.id) throw new Error('No active page found')
-  await chrome.scripting.executeScript({ target: { tabId: tab.id }, args: [tokenFor(profile)], func: (token) => {
+  await chrome.scripting.executeScript({ target: { tabId: tab.id }, args: [tokenFor(profile), profile.proxy], func: (token, proxy) => {
     const fields = [...document.querySelectorAll('input')]
     const set = (field, value) => {
       if (!field || !value) return
@@ -48,7 +48,9 @@ async function fillPage(profile) {
       field.dispatchEvent(new Event('change', { bubbles: true }))
     }
     const tokenField = fields.find((field) => field.type === 'password' || /token|cookie|session/i.test(`${field.name} ${field.placeholder}`))
+    const proxyField = fields.find((field) => /proxy/i.test(`${field.name} ${field.placeholder}`))
     set(tokenField, token)
+    set(proxyField, proxy)
   }})
 }
 
@@ -58,7 +60,7 @@ async function renderProfiles() {
   profiles.replaceChildren(...saved.map((profile) => {
     const card = document.createElement('div')
     card.className = 'profile'
-    card.innerHTML = `<div class="profile-head"><span class="profile-name"></span><span>${profile.platform}</span></div><div class="profile-meta">${profile.cookieCount} cookies</div>`
+    card.innerHTML = `<div class="profile-head"><span class="profile-name"></span><span>${profile.platform}</span></div><div class="profile-meta">${profile.cookieCount} cookies${profile.proxy ? ' · proxy saved' : ''}</div>`
     card.querySelector('.profile-name').textContent = profile.name
     const actions = document.createElement('div')
     actions.className = 'profile-actions'
@@ -122,8 +124,8 @@ save.addEventListener('click', async () => {
   const name = $('account-name').value.trim()
   if (!name || !current) return say('Enter a name before saving.', 'warn')
   const saved = await readProfiles()
-  await writeProfiles([...saved, { id: crypto.randomUUID(), name, platform: current, cookieCount: currentCookies.length, token: buildToken(current, currentCookies), savedAt: Date.now() }])
-  $('account-name').value = ''
+  await writeProfiles([...saved, { id: crypto.randomUUID(), name, platform: current, proxy: $('account-proxy').value.trim(), cookieCount: currentCookies.length, token: buildToken(current, currentCookies), savedAt: Date.now() }])
+  $('account-name').value = ''; $('account-proxy').value = ''
   await renderProfiles(); say('Account saved in this browser.', 'ok')
 })
 

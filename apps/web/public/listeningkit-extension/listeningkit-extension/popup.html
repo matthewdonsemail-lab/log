@@ -6,12 +6,12 @@
 <style>
   :root { color-scheme: light; --blue: #2a8cff; --ink: #0f172a; --muted: #64748b; --line: #e2e8f0; }
   * { box-sizing: border-box; }
-  body { display: flex; width: 360px; min-height: 390px; margin: 0; padding: 20px 24px 24px; flex-direction: column; align-items: center; font: 14px/1.45 'Satoshi', 'Inter', system-ui, sans-serif; color: #fff; background: #2a8cff; }
-  header { width: 100%; margin-bottom: 20px; color: #fff; }
-  .brand { display: flex; align-items: center; justify-content: center; gap: 9px; font-weight: 800; }
-  .brand-mark { width: 36px; height: 36px; border-radius: 10px; object-fit: contain; }
-  h1 { margin: 0 0 18px; font-size: 22px; line-height: 1.15; color: #0f172a; text-align: center; }
-  p { margin: 0 0 12px; color: rgba(255,255,255,.8); text-align: center; }
+  body { width: 360px; margin: 0; padding: 0 18px 18px; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; color: var(--ink); background: #fff; }
+  header { margin: 0 -18px 16px; padding: 14px 18px; color: #fff; background: linear-gradient(135deg, #1578ed, #2a8cff); }
+  .brand { display: flex; align-items: center; gap: 9px; font-weight: 800; }
+  .brand-mark { display: grid; width: 27px; height: 27px; place-items: center; border-radius: 8px; color: var(--blue); background: #fff; font-size: 17px; }
+  h1 { margin: 0 0 4px; font-size: 17px; }
+  p { margin: 0 0 12px; color: var(--muted); }
   .status { margin: 0 0 14px; padding: 10px 12px; border-radius: 10px; background: #f1f5f9; color: var(--ink); }
   .status.ok { background: #dcfce7; }
   .status.warn { background: #fef3c7; }
@@ -20,18 +20,10 @@
   button.primary:disabled { opacity: .6; cursor: default; }
   a.btn { background: #f1f5f9; color: var(--ink); }
   .note { margin: 12px 0 0; font-size: 12px; color: var(--muted); }
-  section, #status, #copy, #save-panel, #saved, #sites, .note { margin-left: 0; margin-right: 0; }
-  #signed-out, #signed-in { width: 100%; }
   .section { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--line); }
   .section-title { margin: 0 0 9px; font-size: 13px; font-weight: 800; }
   label { display: block; margin: 9px 0; color: var(--muted); font-size: 12px; font-weight: 700; }
   input { display: block; width: 100%; margin-top: 4px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 8px; font: inherit; color: var(--ink); }
-  .auth-card { width: 100%; padding: 24px; border-radius: 24px; background: #fbfcfe; }
-  .oauth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .oauth-grid button { display: flex; align-items: center; justify-content: center; gap: 8px; background: #eef4fb; color: var(--ink); }
-  .oauth-grid img { width: 20px; height: 20px; }
-  .divider { display: flex; align-items: center; gap: 8px; margin: 16px 0; color: #94a3b8; font-size: 12px; }
-  .divider::before, .divider::after { height: 1px; flex: 1; background: var(--line); content: ''; }
   .profile { margin: 8px 0; padding: 10px; border: 1px solid var(--line); border-radius: 9px; }
   .profile-head { display: flex; justify-content: space-between; gap: 8px; }
   .profile-name { font-weight: 800; }
@@ -43,22 +35,22 @@
 </style>
 </head>
 <body>
-  <header><div class="brand"><img class="brand-mark" src="logo.svg" alt="ListeningKit logo"><span>ListeningKit</span></div></header>
-  <section class="auth-card">
-    <h1>Sign in to use ListeningKit</h1>
-    <div class="oauth-grid">
-      <button id="github" type="button"><img src="github.svg" alt="">GitHub</button>
-      <button id="google" type="button"><img src="google.svg" alt="">Google</button>
-    </div>
-    <div class="divider">or</div>
-    <label>Email<input id="email" type="email" autocomplete="email" placeholder="you@example.com"></label>
-    <label>Password<input id="password" type="password" autocomplete="current-password" placeholder="Your password"></label>
-    <button id="sign-in" class="primary" type="button">Sign in with email</button>
+  <header><div class="brand"><span class="brand-mark">L</span><span>ListeningKit</span></div></header>
+  <section id="signed-out">
+    <h1>Sign in with your ListeningKit account</h1>
+    <p>Sign in to view your saved social accounts and securely connect another browser session.</p>
+    <button id="sign-in" class="primary" type="button">Sign in with ListeningKit</button>
   </section>
+  <section id="signed-in" hidden>
+    <h1>Browser connections</h1>
+    <p id="lead">View your saved accounts or connect the account open in this tab.</p>
+  </section>
+  <div id="status" class="status" role="status" aria-live="polite"></div>
   <button id="copy" class="primary" type="button" hidden>Copy token</button>
   <div id="save-panel" class="section" hidden>
     <p class="section-title">Save this browser account</p>
     <label>Account name<input id="account-name" type="text" placeholder="e.g. Brand X account" autocomplete="off"></label>
+    <label>Proxy <span>(optional)</span><input id="account-proxy" type="text" placeholder="http://user:pass@host:port" autocomplete="off"></label>
     <button id="save" class="primary" type="button">Save account</button>
   </div>
   <div id="saved" class="section" hidden><p class="section-title">Saved accounts</p><div id="profiles"></div></div>
@@ -67,6 +59,7 @@
     <a class="btn" href="https://x.com/" target="_blank" rel="noreferrer">Open X</a>
     <a class="btn" href="https://www.facebook.com/" target="_blank" rel="noreferrer">Open Facebook</a>
   </div>
+  <p class="note">Accounts stay in this browser until you delete them. Cookies are never uploaded automatically.</p>
   <script type="module" src="popup.js"></script>
 </body>
 </html>

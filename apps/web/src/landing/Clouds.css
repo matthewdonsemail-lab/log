@@ -10,6 +10,8 @@
 
 .lk-cloud-row-front {
   top: 5%;
+  mask-image: linear-gradient(to bottom, black 0%, black 68%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 68%, transparent 100%);
 }
 
 @keyframes lk-cloud-drift {
