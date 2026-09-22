@@ -9,6 +9,7 @@ import { DashboardSettings } from './components/DashboardSettings'
 import { DashboardGroups } from './components/DashboardGroups'
 import { DashboardAccounts } from './components/DashboardAccounts'
 import { DashboardMessages } from './components/DashboardMessages'
+import { DashboardMessagesLive } from './components/DashboardMessagesLive'
 import { DashboardListings } from './components/DashboardListings'
 import { DashboardKeywords } from './components/DashboardKeywords'
 import { DashboardKeywordsLive } from './components/DashboardKeywordsLive'
@@ -77,7 +78,7 @@ export function App() {
               <Route path="accounts/:accountId" element={<DashboardAccountPage />} />
               <Route path="accounts/:accountId/challenge" element={<DashboardChallengePage />} />
               <Route path="brand" element={demoOnly(<DashboardBrand />)} />
-              <Route path="messages" element={demoOnly(<DashboardMessages />)} />
+              <Route path="messages" element={keywordsOnConvex() ? <DashboardMessagesLive /> : <DashboardMessages />} />
               <Route path="messages/:platform" element={demoOnly(<DashboardMessages />)} />
               <Route path="messages/:platform/:accountId" element={demoOnly(<DashboardMessages />)} />
               <Route path="messages/:platform/:accountId/:threadId" element={demoOnly(<DashboardMessages />)} />

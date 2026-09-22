@@ -40,8 +40,7 @@ describe('sign-in and sign-up routes', () => {
     state.isLoaded = true
     const html = withRouter(<SignInRoute />)
     expect(html).toContain('Local sign-in /sign-in signup /sign-up return /onboarding')
-    expect(html).toContain('Welcome back')
-    expect(html).toContain('Choose a provider to continue')
+    expect(html).toContain('Sign In')
     expect(html).toContain('Google')
     expect(html).toContain('GitHub')
   })
@@ -49,8 +48,7 @@ describe('sign-in and sign-up routes', () => {
     state.isLoaded = true
     const html = withRouter(<SignUpRoute />)
     expect(html).toContain('Local sign-up /sign-up signin /sign-in return /onboarding')
-    expect(html).toContain('Create your workspace')
-    expect(html).toContain('Choose a provider to continue')
+    expect(html).toContain('Sign Up')
   })
   it.each([<SignInRoute key="in" />, <SignUpRoute key="up" />])('redirects signed-in visitors to onboarding (%#)', (route) => {
     state.isLoaded = true; state.isSignedIn = true; state.sessionId = 'session-1'

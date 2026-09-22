@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import os
 import re
+import time
 from datetime import datetime
 from types import SimpleNamespace
 from typing import Any
@@ -91,6 +92,44 @@ STATE_JS = r"""
     failed: /something went wrong|try reloading/i.test(text),
   };
 }
+"""
+
+
+DM_INBOX_URL = "https://x.com/messages"
+
+# True once the inbox shows conversations, an empty state, or a login wall.
+DM_INBOX_SETTLED_JS = r"""
+() => !!document.querySelector('[data-testid="conversation"], [data-testid="emptyState"], [data-testid="loginButton"]')
+"""
+
+# Runs on x.com/messages. Each row's own address is what we navigate to for its full thread.
+DM_CONVERSATIONS_JS = r"""
+() => [...document.querySelectorAll('[data-testid="conversation"]')].map((row) => {
+  const link = row.querySelector('a[href^="/messages/"]');
+  const nameEl = row.querySelector('[dir="ltr"] span');
+  return { href: link ? link.getAttribute('href') : '', name: nameEl ? nameEl.innerText : '',
+           handle: (row.innerText.match(/@([A-Za-z0-9_]{1,15})/) || [])[1] || '' };
+}).filter((row) => row.href)
+"""
+
+# True once a thread shows messages or a login wall.
+DM_THREAD_SETTLED_JS = r"""
+() => !!document.querySelector('[data-testid="messageEntry"], [data-testid="loginButton"]')
+"""
+
+# Every message bubble currently rendered in an open thread, oldest first (X renders them in DOM order).
+# Known limitation: this reads every bubble as inbound. A thread's own earlier replies (sent from ListeningKit)
+# would be miscategorized if re-read; today `list_dm_threads` is only used for brand-new conversations a lead
+# started, so this has not come up in practice, but it is not distinguishing "from me" from "from them" in the DOM.
+DM_MESSAGES_JS = r"""
+() => [...document.querySelectorAll('[data-testid="messageEntry"]')].map((el, i) => {
+  const time = el.querySelector('time');
+  return {
+    externalId: el.getAttribute('data-message-id') || el.id || String(i),
+    text: (el.querySelector('[data-testid="messageText"]')?.innerText || el.innerText || '').trim(),
+    sentAt: time ? Date.parse(time.getAttribute('datetime') || '') || undefined : undefined,
+  };
+}).filter((m) => m.text)
 """
 
 
@@ -264,6 +303,65 @@ class BrowserXClient:
             await page.wait_for_timeout(1200)
         tweets = [t for t in (to_tweet(row) for row in rows.values()) if t is not None]
         return tweets[:count]
+
+    async def list_dm_threads(self, limit: int = 15) -> list[dict]:
+        """Recent conversations from x.com/messages: peer handle/name and the messages visible on screen."""
+        page = await self._page_ready()
+        await page.goto(DM_INBOX_URL, wait_until="domcontentloaded")
+        try:
+            await page.wait_for_function(DM_INBOX_SETTLED_JS, timeout=PAGE_TIMEOUT_MS)
+        except Exception:  # noqa: BLE001 - judged from what the page shows below
+            pass
+        await page.wait_for_timeout(1200)
+        state = await safe_evaluate(page, STATE_JS)
+        if state.get("login"):
+            raise Unauthorized("X asked for a login")
+        rows = await safe_evaluate(page, DM_CONVERSATIONS_JS)
+        threads: list[dict] = []
+        for row in rows[:limit]:
+            href = row.get("href") or ""
+            if not href:
+                continue
+            await page.goto(f"https://x.com{href}", wait_until="domcontentloaded")
+            try:
+                await page.wait_for_function(DM_THREAD_SETTLED_JS, timeout=PAGE_TIMEOUT_MS)
+            except Exception:  # noqa: BLE001
+                pass
+            await page.wait_for_timeout(800)
+            messages = await safe_evaluate(page, DM_MESSAGES_JS)
+            if row.get("handle") and messages:
+                threads.append({"peerHandle": row["handle"], "peerName": row.get("name") or None, "messages": messages})
+        return threads
+
+    async def send_dm(self, peer_handle: str, text: str) -> str:
+        """Opens (or starts) a conversation with `peer_handle` and sends `text`. Returns an id for the sent message."""
+        page = await self._page_ready()
+        await page.goto(f"https://x.com/messages/compose", wait_until="domcontentloaded")
+        try:
+            await page.wait_for_selector('[data-testid="searchPeopleAndGroupsInput"]', timeout=PAGE_TIMEOUT_MS)
+        except Exception as error:  # noqa: BLE001
+            raise Unauthorized("X asked for a login") from error
+        await page.fill('[data-testid="searchPeopleAndGroupsInput"]', peer_handle)
+        await page.wait_for_timeout(1500)
+        result = page.locator('[data-testid="typeaheadResult"]').first
+        try:
+            await result.click(timeout=8000)
+        except Exception as error:  # noqa: BLE001
+            raise RuntimeError(f"X did not offer @{peer_handle} to message") from error
+        next_button = page.get_by_role("button", name="Next")
+        if await next_button.count():
+            await next_button.click()
+        await page.wait_for_selector('[data-testid="dmComposerTextInput"]', timeout=PAGE_TIMEOUT_MS)
+        await page.click('[data-testid="dmComposerTextInput"]')
+        await page.keyboard.type(text, delay=15)
+        before = len(await safe_evaluate(page, DM_MESSAGES_JS))
+        await page.click('[data-testid="dmComposerSendButton"]')
+        for _ in range(10):
+            await page.wait_for_timeout(500)
+            messages = await safe_evaluate(page, DM_MESSAGES_JS)
+            if len(messages) > before:
+                return str(messages[-1].get("externalId") or f"sent-{int(time.time() * 1000)}")
+        raise RuntimeError("X did not show the message as sent")
 
     async def close(self) -> None:
         try:

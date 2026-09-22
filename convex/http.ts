@@ -2,6 +2,7 @@ import { registerStaticRoutes } from '@convex-dev/static-hosting'
 import { httpActionGeneric, httpRouter, type GenericActionCtx, type GenericDataModel } from 'convex/server'
 import { ConvexError } from 'convex/values'
 import { components, internal } from './_generated/api'
+import type { Id } from './_generated/dataModel'
 import { RATE_LIMIT_PER_MINUTE } from './apiKeys'
 import { MAX_POSTS_PER_BATCH } from './feed'
 import { decryptText } from './lib/crypto'
@@ -108,6 +109,92 @@ http.route({
     const state = proxyState({ PROXY_URL: process.env.PROXY_URL, PROXY_REQUIRED: process.env.PROXY_REQUIRED })
     if (!mayRead(state)) return json({ error: 'Reading is paused until the operator sets up the proxy' }, 503)
     return json({ required: state.required, proxy: state.proxy }, 200)
+  }),
+})
+
+const MAX_DM_INGEST_BODY = 65_536
+
+// Real direct messages, read and (on X, today) sent by the helper on the person's own computer, with an ingest key.
+http.route({
+  path: '/dm/ingest',
+  method: 'POST',
+  handler: httpActionGeneric(async (ctx, req) => {
+    const secret = req.headers.get('Authorization')?.match(/^Bearer (lk_ingest_[A-Za-z0-9]{20,100})$/)?.[1]
+    if (!secret) return json({ error: 'Authentication required' }, 401)
+    const text = await req.text()
+    if (text.length > MAX_DM_INGEST_BODY) return json({ error: 'Batch is too large' }, 413)
+    let input: unknown
+    try { input = JSON.parse(text) } catch { return json({ error: 'Expected a JSON object' }, 400) }
+    if (typeof input !== 'object' || input === null) return json({ error: 'Expected a JSON object' }, 400)
+    const { platform: p, threads } = input as { platform?: unknown; threads?: unknown }
+    if (!PLATFORMS.includes(p as Platform)) return json({ error: 'platform must be facebook, x, or reddit' }, 400)
+    if (!Array.isArray(threads) || threads.length < 1) return json({ error: 'threads must be a non-empty array' }, 400)
+    try {
+      const result = await ctx.runMutation(internal.messages.ingestDms, {
+        keyHash: await sha256Hex(secret), platform: p as Platform, threads,
+      })
+      return json(result, 200)
+    } catch (error) {
+      if (error instanceof ConvexError) return json({ error: typeof error.data === 'string' ? error.data : 'Invalid request' }, error.data === 'Invalid ingest key' ? 401 : 400)
+      return json({ error: 'DM ingest failed' }, 500)
+    }
+  }),
+})
+
+http.route({
+  path: '/dm/pending',
+  method: 'GET',
+  handler: httpActionGeneric(async (ctx, req) => {
+    const secret = req.headers.get('Authorization')?.match(/^Bearer (lk_ingest_[A-Za-z0-9]{20,100})$/)?.[1]
+    if (!secret) return json({ error: 'Authentication required' }, 401)
+    const p = new URL(req.url).searchParams.get('platform')
+    if (!PLATFORMS.includes(p as Platform)) return json({ error: 'platform must be facebook, x, or reddit' }, 400)
+    try {
+      const pending = await ctx.runQuery(internal.messages.pendingForKey, { keyHash: await sha256Hex(secret), platform: p as Platform })
+      return json({ pending }, 200)
+    } catch (error) {
+      if (error instanceof ConvexError && error.data === 'Invalid ingest key') return json({ error: 'Invalid ingest key' }, 401)
+      return json({ error: 'Could not load pending messages' }, 500)
+    }
+  }),
+})
+
+http.route({
+  path: '/dm/sent',
+  method: 'POST',
+  handler: httpActionGeneric(async (ctx, req) => {
+    const secret = req.headers.get('Authorization')?.match(/^Bearer (lk_ingest_[A-Za-z0-9]{20,100})$/)?.[1]
+    if (!secret) return json({ error: 'Authentication required' }, 401)
+    const body = await req.json().catch(() => null) as { messageId?: unknown; externalId?: unknown } | null
+    if (!body || typeof body.messageId !== 'string') return json({ error: 'messageId is required' }, 400)
+    try {
+      await ctx.runMutation(internal.messages.markSent, {
+        keyHash: await sha256Hex(secret), messageId: body.messageId as Id<'dmMessages'>,
+        ...(typeof body.externalId === 'string' ? { externalId: body.externalId } : {}),
+      })
+      return json({ ok: true }, 200)
+    } catch (error) {
+      if (error instanceof ConvexError) return json({ error: error.data }, error.data === 'Invalid ingest key' ? 401 : 404)
+      return json({ error: 'Could not update the message' }, 500)
+    }
+  }),
+})
+
+http.route({
+  path: '/dm/failed',
+  method: 'POST',
+  handler: httpActionGeneric(async (ctx, req) => {
+    const secret = req.headers.get('Authorization')?.match(/^Bearer (lk_ingest_[A-Za-z0-9]{20,100})$/)?.[1]
+    if (!secret) return json({ error: 'Authentication required' }, 401)
+    const body = await req.json().catch(() => null) as { messageId?: unknown; error?: unknown } | null
+    if (!body || typeof body.messageId !== 'string' || typeof body.error !== 'string') return json({ error: 'messageId and error are required' }, 400)
+    try {
+      await ctx.runMutation(internal.messages.markFailed, { keyHash: await sha256Hex(secret), messageId: body.messageId as Id<'dmMessages'>, error: body.error })
+      return json({ ok: true }, 200)
+    } catch (error) {
+      if (error instanceof ConvexError) return json({ error: error.data }, error.data === 'Invalid ingest key' ? 401 : 404)
+      return json({ error: 'Could not update the message' }, 500)
+    }
   }),
 })
 

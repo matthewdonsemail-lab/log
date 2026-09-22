@@ -51,7 +51,7 @@ export default defineSchema({
     // When this match went out in an email alert. Unset until then.
     alertedAt: v.optional(v.number()),
   }).index('by_owner', ['owner']).index('by_keyword_and_post', ['keywordId', 'postId'])
-    .index('by_scoredAt', ['scoredAt']),
+    .index('by_post', ['postId']).index('by_scoredAt', ['scoredAt']),
   posts: defineTable({
     owner: v.string(), accountId: v.id('accounts'), platform,
     ...postFields,
@@ -121,4 +121,20 @@ export default defineSchema({
     owner: v.string(), label: v.string(), server: v.string(), deviceKey: v.string(),
     createdAt: v.number(),
   }).index('by_owner', ['owner']),
+  // One direct-message conversation with one other person, on one connected account. Read and (X only, today)
+  // sent by the helper on the person's own computer, the same way posts are read.
+  dmThreads: defineTable({
+    owner: v.string(), accountId: v.id('accounts'), platform,
+    peerHandle: v.string(), peerName: v.optional(v.string()),
+    lastMessageAt: v.number(), lastMessagePreview: v.optional(v.string()),
+  }).index('by_owner', ['owner']).index('by_account_and_peer', ['accountId', 'peerHandle']),
+  dmMessages: defineTable({
+    owner: v.string(), threadId: v.id('dmThreads'),
+    direction: v.union(v.literal('in'), v.literal('out')),
+    text: v.string(), sentAt: v.number(),
+    status: v.union(v.literal('sent'), v.literal('pending'), v.literal('failed')),
+    // Set once the helper has actually sent an outbound message, or read an inbound one, so a re-read never duplicates it.
+    externalId: v.optional(v.string()), error: v.optional(v.string()),
+  }).index('by_owner', ['owner']).index('by_thread', ['threadId'])
+    .index('by_thread_and_external', ['threadId', 'externalId']),
 })

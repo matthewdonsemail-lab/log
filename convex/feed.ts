@@ -95,7 +95,7 @@ export const list = query({
       (!needle || [r.authorName, r.title ?? '', ...r.body].join(' ').toLowerCase().includes(needle))
     )) {
       // The strongest match on this post, if any keyword matched it; null until the AI scores one.
-      const hits = await ctx.db.query('hits').withIndex('by_keyword_and_post', q => q.eq('postId', row._id)).collect()
+      const hits = await ctx.db.query('hits').withIndex('by_post', q => q.eq('postId', row._id)).collect()
       const best = hits.filter(h => h.score !== undefined).sort((a, b) => b.score! - a.score!)[0]
       items.push({
         id: row._id, platform: row.platform, variant: 'post-text' as const,

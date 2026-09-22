@@ -194,3 +194,55 @@ def fetch_phrases(
         if phrase and phrase not in seen:
             seen.append(phrase)
     return seen
+
+
+def _base(endpoint: str) -> str:
+    base = endpoint.rstrip("/")
+    return base[: -len("/ingest")] if base.endswith("/ingest") else base
+
+
+def push_dms(
+    platform: str,
+    threads: list[dict],
+    *,
+    endpoint: str,
+    key: str,
+    send: Callable[[str, str, dict], tuple[int, str]] = _send,
+) -> dict:
+    """Push newly-read direct-message threads/messages to `/dm/ingest`. Idempotent: a message already pushed is skipped server-side."""
+    if not threads:
+        return {"threadsSeen": 0, "messagesAdded": 0}
+    status, text = send(f"{_base(endpoint)}/dm/ingest", key, {"platform": platform, "threads": threads})
+    if status != 200:
+        try:
+            message = json.loads(text).get("error", text)
+        except (ValueError, AttributeError):
+            message = text
+        raise IngestError(status, str(message)[:200])
+    return json.loads(text)
+
+
+def fetch_pending_dms(platform: str, *, endpoint: str, key: str, get: Callable[[str, str], tuple[int, str]] = _get) -> list[dict]:
+    """Outbound messages queued in the dashboard, waiting for this helper to actually send them."""
+    status, text = get(f"{_base(endpoint)}/dm/pending?platform={platform}", key)
+    if status == 401:
+        raise SessionError("The ingest key was rejected. Make a new one on the Send posts in tab.")
+    if status != 200:
+        raise SessionError(f"could not load pending messages ({status})")
+    pending = json.loads(text).get("pending")
+    return pending if isinstance(pending, list) else []
+
+
+def report_dm_sent(message_id: str, external_id: str | None, *, endpoint: str, key: str, send: Callable[[str, str, dict], tuple[int, str]] = _send) -> None:
+    body: dict = {"messageId": message_id}
+    if external_id:
+        body["externalId"] = external_id
+    status, text = send(f"{_base(endpoint)}/dm/sent", key, body)
+    if status != 200:
+        raise IngestError(status, text[:200])
+
+
+def report_dm_failed(message_id: str, error: str, *, endpoint: str, key: str, send: Callable[[str, str, dict], tuple[int, str]] = _send) -> None:
+    status, text = send(f"{_base(endpoint)}/dm/failed", key, {"messageId": message_id, "error": error[:300]})
+    if status != 200:
+        raise IngestError(status, text[:200])

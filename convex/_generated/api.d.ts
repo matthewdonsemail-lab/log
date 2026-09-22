@@ -36,11 +36,14 @@ import type * as lib_server from "../lib/server.js";
 import type * as lib_token from "../lib/token.js";
 import type * as lib_webhookSign from "../lib/webhookSign.js";
 import type * as lib_webhookUrl from "../lib/webhookUrl.js";
+import type * as messages from "../messages.js";
+import type * as notifications from "../notifications.js";
 import type * as plan from "../plan.js";
 import type * as publicApi from "../publicApi.js";
 import type * as reddit from "../reddit.js";
 import type * as scoring from "../scoring.js";
 import type * as sessions from "../sessions.js";
+import type * as treg from "../treg.js";
 import type * as watch from "../watch.js";
 import type * as webhooks from "../webhooks.js";
 
@@ -79,11 +82,14 @@ declare const fullApi: ApiFromModules<{
   "lib/token": typeof lib_token;
   "lib/webhookSign": typeof lib_webhookSign;
   "lib/webhookUrl": typeof lib_webhookUrl;
+  messages: typeof messages;
+  notifications: typeof notifications;
   plan: typeof plan;
   publicApi: typeof publicApi;
   reddit: typeof reddit;
   scoring: typeof scoring;
   sessions: typeof sessions;
+  treg: typeof treg;
   watch: typeof watch;
   webhooks: typeof webhooks;
 }>;
@@ -116,4 +122,5 @@ export declare const internal: FilterApi<
 
 export declare const components: {
   staticHosting: import("@convex-dev/static-hosting/_generated/component.js").ComponentApi<"staticHosting">;
+  treg: import("@listeningkit/treg/_generated/component.js").ComponentApi<"treg">;
 };

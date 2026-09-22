@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "@convex-dev/static-hosting": "^0.2.1",
+    "@listeningkit/treg": "workspace:*",
     "convex": "^1.45.0"
   }
 }

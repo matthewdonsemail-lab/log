@@ -47,6 +47,9 @@ export const planMineRef = makeFunctionReference<'query', Record<string, never>,
 export const ingestListRef = makeFunctionReference<'query', Record<string, never>, unknown>('ingest:listKeys')
 export const ingestCreateRef = makeFunctionReference<'mutation', { label: string }, unknown>('ingest:createKey')
 export const ingestRevokeRef = makeFunctionReference<'mutation', { id: string }, unknown>('ingest:revokeKey')
+export const dmThreadsListRef = makeFunctionReference<'query', Record<string, never>, unknown>('messages:listThreads')
+export const dmMessagesListRef = makeFunctionReference<'query', { threadId: string }, unknown>('messages:listMessages')
+export const dmSendRef = makeFunctionReference<'mutation', { threadId: string; text: string }, unknown>('messages:sendMessage')
 
 /** Public HTTP endpoint host for the deployment: `<name>.convex.cloud` serves `<name>.convex.site`. */
 export function convexSiteUrl(): string | undefined {

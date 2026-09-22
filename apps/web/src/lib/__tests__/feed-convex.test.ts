@@ -34,7 +34,7 @@ beforeEach(() => {
 })
 afterEach(() => { vi.unstubAllEnvs(); setApiTokenProvider(async () => null) })
 
-const item = { id: 'p1', platform: 'reddit', variant: 'post-text', authorName: 'a', timeAgo: '', body: ['hi'], likes: 1, comments: 0 }
+const item = { id: 'p1', platform: 'reddit', variant: 'post-text', authorName: 'a', timeAgo: '', body: ['hi'], likes: 1, comments: 0, score: null, intent: null, reason: null, keywordId: null }
 
 describe('live transport on Convex (no bridge)', () => {
   it('reads the feed straight from Convex with the caller token and forwards filters', async () => {
