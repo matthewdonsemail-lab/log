@@ -114,4 +114,11 @@ export default defineSchema({
     owner: v.string(), label: v.string(), prefix: v.string(), keyHash: v.string(),
     lastUsedAt: v.optional(v.number()),
   }).index('by_owner', ['owner']).index('by_hash', ['keyHash']),
+  // One row per Bark push connection. The device key is stored in plain text because
+  // the browser must be able to POST to the Bark server with it — it is a push token,
+  // not a session cookie, so no sealing.
+  barkConnections: defineTable({
+    owner: v.string(), label: v.string(), server: v.string(), deviceKey: v.string(),
+    createdAt: v.number(),
+  }).index('by_owner', ['owner']),
 })

@@ -1,4 +1,4 @@
-# Agent handoff — ListeningKit (2026-09-21)
+# Agent handoff — ListeningKit (2026-09-22)
 
 Convex All Gas hackathon. **Submission deadline: Tue 22 Sep 2026, 12:00 PM PT.**
 This is the working state for the next person or agent. Read `README.md` (architecture),
@@ -29,9 +29,11 @@ Sign in (Clerk) → onboarding (Firecrawl facts read, live page map, typed compe
 | Public API | Real: keys with scopes (`read`, `write:phrases`, `webhooks`), phrase writes, webhooks (Pro feature, off by default). Checked on prod. |
 | MCP server | Real: `POST /mcp`, same keys and scopes. Claude Code and Claude Desktop setup checked on prod; Cursor and Hermes snippets match their docs but were not run; ChatGPT is not supported. |
 | Dashboard pages | Feed, Keywords, Analytics, Accounts, Docs, API, Settings are real. **Groups, Listings, Brand and Messages are still in-browser mock and are hidden from the live site's menu** (they redirect to the feed); they still show in demo mode. |
+| Notifications (header bell) | **In progress** — bell button is still a no-op (`DashboardHeader.tsx`). Plan: floating `@floating-ui/react` panel (same recipe as `DashboardSidebar.tsx`/`AccountTooltip.tsx`) listing notification types (new match / strong match / email digest / Bark push) with deep links, fed by `notifications:recent`; Bark connections move from `localStorage` (`lib/notifications/bark.ts`) into Convex via the committed `barkConnections` table + `notifications.ts` module. Code exists in the repo; **codegen and deploy are blocked until someone has access to the Convex deployment** (no `convex dev`/`code gen` access right now). |
 
 Checks green at the last commit: backend 216, web 203, `clients` 86, reddit-camofox-client 25;
 `pnpm typecheck`, `pnpm typecheck:backend`, `pnpm run lint`, `pnpm --filter web build`.
+**That pre-dates the reveal rework and the 2026-09-22 auth/onboarding UI overhaul; no suite has run since — treat all green-checks as unverified until the next run.**
 
 ## TODO for Matthew (repo owner: needs an account, a credential or owner rights)
 
@@ -86,6 +88,7 @@ None of the items below need code changes. Never paste a key into chat, a commit
 - [ ] Pagination for `feed.list` and `hits.list` (both `take` a bounded window today).
 - [ ] Retire `apps/api` (the Hono bridge); only used when `VITE_CONVEX_URL` is unset.
 - [ ] MCP: OAuth, so ChatGPT's connectors can use it.
+- [ ] **Notifications (header bell) — see "Where things stand".** In repo: `convex/schema.ts` (`barkConnections` table), `convex/notifications.ts` (`recent` + Bark `create/list/save/removeConnection`), and the plan above. To finish: (1) `pnpm exec convex codegen` + push the new module (`pnpm exec convex dev --once --typecheck=disable`), (2) add the refs to `apps/web/src/lib/convex.ts` (`notifications:recent`, `bark:*` — note the module is `notifications`, not `bark`), (3) build `DashboardNotifications.tsx` + wire the bell, (4) switch `DashboardSettingsNotifications.tsx` to the live store with a one-time localStorage import.
 
 ### Known rough edges
 - Link posts read through Reddit's plain feed have no scores; the code keeps scores from an earlier read.
@@ -126,7 +129,7 @@ None of the items below need code changes. Never paste a key into chat, a commit
 - Vercel needs its own `vercel.json` (build command, output directory, SPA rewrite) or it guesses wrong and every deployment fails; the real site is the Convex one, the Vercel copy has no `VITE_CONVEX_URL` and runs in demo mode.
 
 ## Key files
-- Backend: `convex/{keywords,hits,watch,reddit,sessions,ingest,feed,http,crons,scoring,brand,alerts,plan,apiKeys,publicApi,webhooks}.ts`, `convex/lib/{match,token,crypto,redditFeed,posts,accounts,scopes,keywordOps,proxy,firecrawl,agentmail,webhookUrl,webhookSign,mcp}.ts`, `convex/schema.ts`
+- Backend: `convex/{keywords,hits,watch,reddit,sessions,ingest,feed,http,crons,scoring,brand,alerts,plan,apiKeys,publicApi,webhooks,notifications}.ts`, `convex/lib/{match,token,crypto,redditFeed,posts,accounts,scopes,keywordOps,proxy,firecrawl,agentmail,webhookUrl,webhookSign,mcp}.ts`, `convex/schema.ts` (in-progress: `notifications.ts` + the `barkConnections` table — not yet codegen'd/pushed, see above)
 - Web live path: `apps/web/src/lib/{convex,live-keywords,live-sessions,ingest-keys,api-keys-live,webhooks-live,live-brand,live-alerts,plans}.ts`, `apps/web/src/components/{DashboardKeywordsLive,DashboardSettingsIngest,DashboardFeed,DashboardApiLive,DashboardWebhooks,DashboardSidebar}.tsx`, `apps/web/src/pages/onboarding/OnboardingSteps.tsx`
 - Extension: `apps/extension/*`, packaged by `python scripts/build-extension.py` into `apps/web/public/listeningkit-extension.zip`
 - Adapters: `clients/listeningkit_ingest.py`, `clients/reddit_push.py`, `clients/x_push.py`, `clients/facebook_push.py`
