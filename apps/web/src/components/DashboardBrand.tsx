@@ -1,5 +1,5 @@
 // apps/web/src/components/DashboardBrand.tsx
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, Brain, Globe, MapPin, Pencil, RotateCcw } from 'lucide-react'
 import { Button, Select, useSquircleClip, useToast } from '@listeningkit/ui'
@@ -8,16 +8,13 @@ import {
   clearBrandAsync,
   getBrandAsync,
   saveBrandAsync,
-  simulateOutbound,
   type Autoreply,
   type BrandChannel,
   type BrandEntity,
   type ChannelProfile,
   type ChannelStyle,
 } from '../lib/brand'
-import { ChatBubble, EmptyBanner, FormInput, LoadingLine, Toggle } from './DashboardFormPrimitives'
-import { RedditThread } from './cards/RedditThread'
-import { TwitterThreads, TwitterThreadReply } from './cards/TwitterThreads'
+import { ChatBubble, EmptyBanner, LoadingLine, Toggle } from './DashboardFormPrimitives'
 import { DashboardTab } from './DashboardTab'
 import { useDashboardFormSlot } from './DashboardFormSlot'
 import { DashboardBrandForm, type BrandNamespace } from './DashboardBrandForm'
@@ -47,8 +44,7 @@ function BrandSurface({ children, className = '' }: { children: ReactNode; class
  * direct through `PUT /brand`. All other configuration lives in
  * `DashboardBrandForm`, registered into the layout overlay through
  * `DashboardFormSlot`; the page opens it pre-scoped to the tab being edited
- * and reloads on save. The Live simulator previews the saved record only —
- * drafts are heard inside the form before they commit.
+ * and reloads on save. Drafts are heard inside the form before they commit.
  */
 export function DashboardBrand() {
   const { success, error: notifyError } = useToast()
@@ -58,8 +54,6 @@ export function DashboardBrand() {
   // Form scope: which namespace the overlay form edits; null means closed.
   const [formNamespace, setFormNamespace] = useState<BrandNamespace | null>(null)
 
-  const [leadContext, setLeadContext] = useState('')
-  const [simulated, setSimulated] = useState(false)
   const [channelBusy, setChannelBusy] = useState(false)
 
   async function changeStyle(channel: BrandChannel, style: ChannelStyle) {
@@ -140,13 +134,6 @@ export function DashboardBrand() {
     window.addEventListener('lk:form-dismissed', onExternalDismiss)
     return () => window.removeEventListener('lk:form-dismissed', onExternalDismiss)
   }, [])
-
-  // Simulator follows the active tab and always reads the saved record.
-  const simChannel = TAB_CHANNEL[tab]
-  const preview = useMemo(
-    () => (brand && leadContext.trim() ? simulateOutbound(brand, simChannel, leadContext) : null),
-    [brand, simChannel, leadContext]
-  )
 
   async function handleReset() {
     if (busy) return
@@ -261,129 +248,78 @@ export function DashboardBrand() {
           </div>
 
           {tab === 'facebook' ? (
-            <div className="grid gap-6 lg:grid-cols-5">
-              <div className="flex flex-col lg:col-span-3">
-                <BrandSurface>
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <h2 className="text-base font-bold text-text-primary">Messenger Cadence</h2>
-                      <p className="text-xs text-text-secondary">
-                        How the agent texts leads on Marketplace and Facebook Groups.
-                      </p>
-                    </div>
-                    <EditButton label="Edit Facebook" onClick={() => setFormNamespace('facebook')} />
-                  </div>
-
-                  <StyleRow
-                      style={brand.channels.facebook.style}
-                      disabled={busy || channelBusy}
-                      onChange={(style) => changeStyle('facebook', style)}
-                    />
-
-                  <h3 className="mt-4 text-sm font-semibold text-text-primary">
-                    How we actually text
-                  </h3>
-                  <SnippetsBlurb />
-                  <GoldExamples
-                    profile={brand.channels.facebook}
-                    channelLabel="Facebook"
-                    icon={<SocialGlyph icon={fbIcon} className="size-6" />}
-                  />
-
-                  <h3 className="mt-4 text-sm font-semibold text-text-primary">Triage flow</h3>
-                  <p className="mt-0.5 text-xs text-text-secondary">
-                    Item 1 rides along on every send. The rest is the order the agent works
-                    through before booking.
-                  </p>
-                  {brand.channels.facebook.triage.length > 0 ? (
-                    <ol className="mt-2 flex flex-col gap-1.5">
-                      {brand.channels.facebook.triage.map((step, index) => (
-                        <li
-                          key={step}
-                          className="flex items-center gap-2.5 rounded-lg bg-black/[0.03] px-3 py-2 text-sm text-text-primary"
-                        >
-                          <span
-                            aria-hidden="true"
-                            className="flex size-6 shrink-0 items-center justify-center rounded-full bg-black/5 text-xs font-semibold text-text-secondary"
-                          >
-                            {index + 1}
-                          </span>
-                          <span>{step}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  ) : (
-                    <EmptyBanner
-                      className="mt-2"
-                      icon={<SocialGlyph icon={fbIcon} className="size-6" />}
-                      title="You've not configured this yet"
-                      body="e.g. ask for photos of the job, then lock in a pickup time."
-                      action={
-                        <span>
-                          Configure it inside the Edit Facebook button above
-                        </span>
-                      }
-                    />
-                  )}
-
-                  <AutorepliesSection
-                    channel="facebook"
-                    label="Facebook"
-                    icon={<SocialGlyph icon={fbIcon} className="size-6" />}
-                    profile={brand.channels.facebook}
-                    disabled={busy || channelBusy}
-                    onToggle={saveAutoreplies}
-                  />
-                </BrandSurface>
-              </div>
-
-              <div className="lg:col-span-2">
-                <BrandSurface className="sticky top-6">
-                  <h2 className="text-base font-bold text-text-primary">Live simulator</h2>
+            <BrandSurface>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-base font-bold text-text-primary">Messenger Cadence</h2>
                   <p className="text-xs text-text-secondary">
-                    Paste the lead&apos;s post — it picks the enabled autoreply or snippet whose
-                    words overlap most, appends triage ask #1, and previews it as the blue first
-                    touch.{' '}
-                    <Link to="/dashboard/docs/brand/channels#the-pick-exactly" className="font-semibold text-[#2A8CFF] hover:underline">
-                      How the pick works
-                    </Link>
+                    How the agent texts leads on Marketplace and Facebook Groups.
                   </p>
-                  <div className="mt-3 flex items-center gap-2">
-                    <div className="min-w-0 flex-1">
-                      <FormInput
-                        type="text"
-                        shape="rounded-md"
-                        value={leadContext}
-                        onChange={(event) => {
-                          setLeadContext(event.target.value)
-                          setSimulated(true)
-                        }}
-                        placeholder="e.g. anyone know someone with a van in salthill to clear an old shed?"
-                        aria-label="Detected post / lead context"
-                        autoComplete="off"
-                      />
-                    </div>
-                  </div>
-                  {leadContext.trim() ? (
-                    <div className="mt-3 flex justify-start">
-                      <ChatBubble tone="quote">{leadContext}</ChatBubble>
-                    </div>
-                  ) : null}
-                  {simulated && preview ? (
-                    <div className="mt-1.5 flex flex-col items-end gap-1">
-                      <ChatBubble tone="outgoing">{preview.text}</ChatBubble>
-                      <p className="text-[11px] text-text-secondary">
-                        {preview.matchedSource === 'autoreply'
-                          ? `Matched autoreply${preview.matchedTrigger ? ` · ${preview.matchedTrigger}` : ''}`
-                          : preview.matchedSource === 'example'
-                            ? 'Matched a gold example'
-                            : 'No close match — style fallback'}
-                      </p>
-                    </div>
-                  ) : null}
-                </BrandSurface>
+                </div>
+                <EditButton label="Edit Facebook" onClick={() => setFormNamespace('facebook')} />
               </div>
-            </div>
+
+              <StyleRow
+                  style={brand.channels.facebook.style}
+                  disabled={busy || channelBusy}
+                  onChange={(style) => changeStyle('facebook', style)}
+                />
+
+              <h3 className="mt-4 text-sm font-semibold text-text-primary">
+                How we actually text
+              </h3>
+              <SnippetsBlurb />
+              <GoldExamples
+                profile={brand.channels.facebook}
+                channelLabel="Facebook"
+                icon={<SocialGlyph icon={fbIcon} className="size-6" />}
+              />
+
+              <h3 className="mt-4 text-sm font-semibold text-text-primary">Triage flow</h3>
+              <p className="mt-0.5 text-xs text-text-secondary">
+                Item 1 rides along on every send. The rest is the order the agent works
+                through before booking.
+              </p>
+              {brand.channels.facebook.triage.length > 0 ? (
+                <ol className="mt-2 flex flex-col gap-1.5">
+                  {brand.channels.facebook.triage.map((step, index) => (
+                    <li
+                      key={step}
+                      className="flex items-center gap-2.5 rounded-lg bg-black/[0.03] px-3 py-2 text-sm text-text-primary"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="flex size-6 shrink-0 items-center justify-center rounded-full bg-black/5 text-xs font-semibold text-text-secondary"
+                      >
+                        {index + 1}
+                      </span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <EmptyBanner
+                  className="mt-2"
+                  icon={<SocialGlyph icon={fbIcon} className="size-6" />}
+                  title="You've not configured this yet"
+                  body="e.g. ask for photos of the job, then lock in a pickup time."
+                  action={
+                    <span>
+                      Configure it inside the Edit Facebook button above
+                    </span>
+                  }
+                />
+              )}
+
+              <AutorepliesSection
+                channel="facebook"
+                label="Facebook"
+                icon={<SocialGlyph icon={fbIcon} className="size-6" />}
+                profile={brand.channels.facebook}
+                disabled={busy || channelBusy}
+                onToggle={saveAutoreplies}
+              />
+            </BrandSurface>
           ) : null}
 
           {tab === 'memory' ? (
@@ -430,96 +366,47 @@ export function DashboardBrand() {
           ) : null}
 
           {(tab === 'x' || tab === 'reddit') ? (
-            <div className="grid gap-6 lg:grid-cols-5">
-              <div className="flex flex-col lg:col-span-3">
-                <BrandSurface>
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <h2 className="text-base font-bold text-text-primary">
-                        {tab === 'x' ? 'X replies' : 'Reddit replies'}
-                      </h2>
-                      <p className="text-xs text-text-secondary">
-                        {tab === 'x'
-                          ? 'Quick, sharp one-liners. In and out.'
-                          : 'Helpful community member with technical context — answers the question, skips the pitch.'}
-                      </p>
-                    </div>
-                    <EditButton
-                      label={tab === 'x' ? 'Edit X' : 'Edit Reddit'}
-                      onClick={() => setFormNamespace(tab)}
-                    />
-                  </div>
-
-                  <StyleRow
-                      style={brand.channels[tab].style}
-                      disabled={busy || channelBusy}
-                      onChange={(style) => changeStyle(tab, style)}
-                    />
-
-                  <h3 className="mt-4 text-sm font-semibold text-text-primary">How we actually text</h3>
-                  <SnippetsBlurb />
-                  <GoldExamples
-                    profile={brand.channels[tab]}
-                    channelLabel={tab === 'x' ? 'X' : 'Reddit'}
-                    icon={<SocialGlyph icon={tab === 'x' ? xIcon : rdIcon} className="size-6" />}
-                  />
-
-                  <AutorepliesSection
-                    channel={tab}
-                    label={tab === 'x' ? 'X' : 'Reddit'}
-                    icon={<SocialGlyph icon={tab === 'x' ? xIcon : rdIcon} className="size-6" />}
-                    profile={brand.channels[tab]}
-                    disabled={busy || channelBusy}
-                    onToggle={saveAutoreplies}
-                  />
-                </BrandSurface>
+            <BrandSurface>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-base font-bold text-text-primary">
+                    {tab === 'x' ? 'X replies' : 'Reddit replies'}
+                  </h2>
+                  <p className="text-xs text-text-secondary">
+                    {tab === 'x'
+                      ? 'Quick, sharp one-liners. In and out.'
+                      : 'Helpful community member with technical context — answers the question, skips the pitch.'}
+                  </p>
+                </div>
+                <EditButton
+                  label={tab === 'x' ? 'Edit X' : 'Edit Reddit'}
+                  onClick={() => setFormNamespace(tab)}
+                />
               </div>
 
-              <div className="lg:col-span-2">
-                <BrandSurface className="sticky top-6">
-                  <div className="mt-4 rounded-xl bg-[#2A8CFF] p-4">
-                    <h2 className="text-base font-bold text-white">Live simulator</h2>
-                    <p className="text-xs text-white/70">
-                      {tab === 'reddit'
-                        ? 'Type the agent’s reply — it renders as the blue ListeningKit Agent comment in the thread.'
-                        : 'Type the agent’s reply — it threads below the opening post.'}
-                    </p>
-                    <div className="mt-3 flex items-center gap-2">
-                      <div className="min-w-0 flex-1">
-                        <FormInput
-                          type="text"
-                          shape="rounded-md"
-value={leadContext}
-                           onChange={(event) => {
-                             setLeadContext(event.target.value)
-                             setSimulated(true)
-                           }}
-                          placeholder={
-                            tab === 'reddit'
-                              ? 'e.g. good flag — the ban usually comes from the login fingerprint…'
-                              : 'e.g. Hey! We do same-day quotes — usually someone’s out within 48h…'
-                          }
-                          aria-label="Agent reply preview"
-                          autoComplete="off"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  {tab === 'reddit' ? (
-                    <div className="mt-3">
-                      <RedditThread reply={leadContext} />
-                    </div>
-                  ) : (
-                    <div className="mt-3 flex flex-col">
-                      <TwitterThreads />
-                      <div className="w-full overflow-hidden rounded-xl bg-white">
-                        <TwitterThreadReply reply={leadContext} />
-                      </div>
-                    </div>
-                  )}
-                </BrandSurface>
-              </div>
-            </div>
+              <StyleRow
+                  style={brand.channels[tab].style}
+                  disabled={busy || channelBusy}
+                  onChange={(style) => changeStyle(tab, style)}
+                />
+
+              <h3 className="mt-4 text-sm font-semibold text-text-primary">How we actually text</h3>
+              <SnippetsBlurb />
+              <GoldExamples
+                profile={brand.channels[tab]}
+                channelLabel={tab === 'x' ? 'X' : 'Reddit'}
+                icon={<SocialGlyph icon={tab === 'x' ? xIcon : rdIcon} className="size-6" />}
+              />
+
+              <AutorepliesSection
+                channel={tab}
+                label={tab === 'x' ? 'X' : 'Reddit'}
+                icon={<SocialGlyph icon={tab === 'x' ? xIcon : rdIcon} className="size-6" />}
+                profile={brand.channels[tab]}
+                disabled={busy || channelBusy}
+                onToggle={saveAutoreplies}
+              />
+            </BrandSurface>
           ) : null}
         </>
       )}
@@ -695,29 +582,5 @@ function AutorepliesSection({
         </ul>
       ) : null}
     </>
-  )
-}
-
-/**
- * Thread previews for the Live simulator. The simulator is driven by the
- * actual thread type per channel — Reddit renders the real `RedditThread`
- * and X renders the real `TwitterThreads` above. Facebook keeps a
- * lightweight mock until its full Paper thread lands.
- */
-
-/** Stubbed Facebook thread — Messenger chat stays the live path for now. */
-export function FacebookThreadStub({ leadContext }: { leadContext: string }) {
-  return (
-    <div className="flex flex-col gap-2 rounded-2xl border border-slate-200 bg-white p-4">
-      {leadContext.trim() ? (
-        <div className="flex justify-start">
-          <ChatBubble tone="quote">{leadContext}</ChatBubble>
-        </div>
-      ) : (
-        <p className="rounded-xl bg-black/5 p-3 text-sm text-text-secondary">
-          Stubbed Facebook thread — the Messenger simulator is the live path.
-        </p>
-      )}
-    </div>
   )
 }

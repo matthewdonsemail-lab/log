@@ -7,11 +7,34 @@ import { remoteFeedSchema } from '@/lib/feed/remote'
 import { convexUrl, feedListRef } from '@/lib/convex'
 import { apiMode } from '@/lib/transport'
 import { getKeywords } from '@/lib/keywords'
+import { type FirehoseEvent } from '@/lib/analytics'
+import { DashboardEventInspectForm } from './DashboardEventInspectForm'
+import { DashboardRelatedKeywordsForm } from './DashboardRelatedKeywordsForm'
+import { DashboardRelatedCommunitiesForm } from './DashboardRelatedCommunitiesForm'
+import { useDashboardFormSlot } from './DashboardFormSlot'
 import { DashboardFeedHeader } from './DashboardFeedHeader'
 import { FeedCardFrame, CARD_NATURAL_WIDTHS } from './cards/FeedCardFrame'
 import { FacebookPostImage, FacebookPostText } from './cards/FacebookCard'
 import { RedditPostText, RedditComment } from './cards/RedditCard'
 import { TwitterPostText, TwitterPostImage } from './cards/TwitterCard'
+
+/** A feed card is a captured post; shape it into the firehose event the inspect sheet expects. */
+function toInspectEvent(item: FeedItem): FirehoseEvent {
+  return {
+    id: item.id,
+    keywordId: item.keywordId ?? 'feed',
+    ts: item.timestamp ?? new Date().toISOString(),
+    type: 'mention',
+    sentiment: (item.intent === 'looking_for_help' || item.intent === 'buying') ? 'positive'
+      : item.intent === 'complaint' ? 'negative' : 'neutral',
+    platform: item.platform,
+    author: item.authorName,
+    group: item.community ?? (item.handle ? item.handle : item.platform),
+    accountId: null,
+    text: [item.title, ...item.body].filter(Boolean).join(' '),
+    url: `https://example.com/${item.id}`
+  }
+}
 
 function FeedCard({ item, highlight }: { item: FeedItem; highlight: string[] }) {
   switch (item.platform) {
@@ -90,13 +113,25 @@ function FeedCard({ item, highlight }: { item: FeedItem; highlight: string[] }) 
   }
 }
 
-function FeedColumn({ icon, items, highlight }: { icon: SocialIcon; items: FeedItem[]; highlight: string[] }) {
+function FeedColumn({ icon, items, highlight, onInspect }: {
+  icon: SocialIcon
+  items: FeedItem[]
+  highlight: string[]
+  onInspect: (item: FeedItem) => void
+}) {
   const naturalWidth = CARD_NATURAL_WIDTHS[icon.id as FeedPlatform] ?? 484
   return (
     <div className="lk-no-scrollbar flex min-h-0 flex-col gap-3 overflow-y-auto pb-4">
       <DashboardFeedHeader icon={icon} />
       {items.map((item) => (
-        <FeedCardFrame key={item.id} naturalWidth={naturalWidth}>
+        <FeedCardFrame
+          key={item.id}
+          naturalWidth={naturalWidth}
+          score={item.score}
+          intent={item.intent}
+          reason={item.reason}
+          onInspect={() => onInspect(item)}
+        >
           <FeedCard item={item} highlight={highlight} />
         </FeedCardFrame>
       ))}
@@ -145,7 +180,11 @@ function useListeningPhrases(): string[] {
   return phrases
 }
 
-function FeedGrid({ items, phrases }: { items: FeedItem[] | null; phrases: string[] }) {
+function FeedGrid({ items, phrases, onInspect }: {
+  items: FeedItem[] | null
+  phrases: string[]
+  onInspect: (item: FeedItem) => void
+}) {
   const byPlatform = (platform: FeedPlatform) => (items ?? []).filter((item) => item.platform === platform)
   return (
     <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-3 gap-4 sm:grid-cols-2 sm:grid-rows-2 sm:gap-5 xl:grid-cols-3 xl:grid-rows-1">
@@ -153,7 +192,7 @@ function FeedGrid({ items, phrases }: { items: FeedItem[] | null; phrases: strin
         items === null ? (
           <FeedSkeletonColumn key={icon.id} icon={icon} />
         ) : (
-          <FeedColumn key={icon.id} icon={icon} items={byPlatform(icon.id as FeedPlatform)} highlight={phrases} />
+          <FeedColumn key={icon.id} icon={icon} items={byPlatform(icon.id as FeedPlatform)} highlight={phrases} onInspect={onInspect} />
         )
       )}
     </div>
@@ -194,6 +233,10 @@ function ConvexFeed() {
   const phrases = useListeningPhrases()
   const [subreddit, setSubreddit] = useState('marketing')
   const [syncing, setSyncing] = useState(false)
+  const [inspectedEvent, setInspectedEvent] = useState<FirehoseEvent | null>(null)
+  const [relatedEvent, setRelatedEvent] = useState<FirehoseEvent | null>(null)
+  const [communityEvent, setCommunityEvent] = useState<FirehoseEvent | null>(null)
+  const setFormSlot = useDashboardFormSlot()
   const { error: notifyError, success: notifySuccess } = useToast()
 
   const parsed = useMemo(() => (data === undefined ? null : remoteFeedSchema.safeParse(data)), [data])
@@ -202,6 +245,29 @@ function ConvexFeed() {
   useEffect(() => {
     if (parsed && !parsed.success) notifyError('Feed failed to load', 'Live feed returned an invalid response.')
   }, [parsed, notifyError])
+
+  useEffect(() => {
+    setFormSlot(
+      relatedEvent ? (
+        <DashboardRelatedKeywordsForm event={relatedEvent} phrases={phrases} onClose={() => setRelatedEvent(null)} />
+      ) : communityEvent ? (
+        <DashboardRelatedCommunitiesForm event={communityEvent} phrases={phrases} onClose={() => setCommunityEvent(null)} />
+      ) : inspectedEvent ? (
+        <DashboardEventInspectForm
+          event={inspectedEvent}
+          phrases={phrases}
+          onClose={() => setInspectedEvent(null)}
+          onFindRelated={(found) => setRelatedEvent(found)}
+          onFindCommunities={(found) => setCommunityEvent(found)}
+        />
+      ) : null
+    )
+    return () => setFormSlot(null)
+  }, [relatedEvent, communityEvent, inspectedEvent, phrases, setFormSlot])
+
+  function handleInspect(item: FeedItem) {
+    setInspectedEvent(toInspectEvent(item))
+  }
 
   async function syncNow() {
     if (syncing) return
@@ -219,7 +285,7 @@ function ConvexFeed() {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
       <SyncBar subreddit={subreddit} onSubreddit={setSubreddit} syncing={syncing} onSync={syncNow} />
-      <FeedGrid items={items} phrases={phrases} />
+      <FeedGrid items={items} phrases={phrases} onInspect={handleInspect} />
     </div>
   )
 }
@@ -235,6 +301,10 @@ function ClassicFeed() {
   const [subreddit, setSubreddit] = useState('marketing')
   const [syncing, setSyncing] = useState(false)
   const [reloads, setReloads] = useState(0)
+  const [inspectedEvent, setInspectedEvent] = useState<FirehoseEvent | null>(null)
+  const [relatedEvent, setRelatedEvent] = useState<FirehoseEvent | null>(null)
+  const [communityEvent, setCommunityEvent] = useState<FirehoseEvent | null>(null)
+  const setFormSlot = useDashboardFormSlot()
   const { error: notifyError, success: notifySuccess } = useToast()
   const live = apiMode() === 'live'
 
@@ -255,6 +325,29 @@ function ClassicFeed() {
     }
   }, [notifyError, reloads])
 
+  useEffect(() => {
+    setFormSlot(
+      relatedEvent ? (
+        <DashboardRelatedKeywordsForm event={relatedEvent} phrases={phrases} onClose={() => setRelatedEvent(null)} />
+      ) : communityEvent ? (
+        <DashboardRelatedCommunitiesForm event={communityEvent} phrases={phrases} onClose={() => setCommunityEvent(null)} />
+      ) : inspectedEvent ? (
+        <DashboardEventInspectForm
+          event={inspectedEvent}
+          phrases={phrases}
+          onClose={() => setInspectedEvent(null)}
+          onFindRelated={(found) => setRelatedEvent(found)}
+          onFindCommunities={(found) => setCommunityEvent(found)}
+        />
+      ) : null
+    )
+    return () => setFormSlot(null)
+  }, [relatedEvent, communityEvent, inspectedEvent, phrases, setFormSlot])
+
+  function handleInspect(item: FeedItem) {
+    setInspectedEvent(toInspectEvent(item))
+  }
+
   async function syncNow() {
     if (syncing) return
     setSyncing(true)
@@ -272,7 +365,7 @@ function ClassicFeed() {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
       {live ? <SyncBar subreddit={subreddit} onSubreddit={setSubreddit} syncing={syncing} onSync={syncNow} /> : null}
-      <FeedGrid items={items} phrases={phrases} />
+      <FeedGrid items={items} phrases={phrases} onInspect={handleInspect} />
     </div>
   )
 }

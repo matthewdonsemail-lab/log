@@ -25,6 +25,10 @@ export const remoteFeedSchema = z.object({
     views: z.number().finite().optional(),
     replies: z.number().finite().optional(),
     reposts: z.number().finite().optional(),
+    score: z.number().finite().nullable(),
+    intent: z.string().nullable(),
+    reason: z.string().nullable(),
+    keywordId: z.string().nullable().optional(),
   }))
 })
 

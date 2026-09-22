@@ -4,6 +4,128 @@ Convex All Gas hackathon. **Submission deadline: Tue 22 Sep 2026, 12:00 PM PT.**
 This is the working state for the next person or agent. Read `README.md` (architecture),
 `AGENTS.md` (rules) and `hackathon.md` (build log) first.
 
+## 2026-09-22 session — feed score chips + click-to-inspect (NEW, read this first)
+
+What landed this session (all uncommitted, not yet deployed):
+
+1. **Score + intent joined onto the feed.** `convex/feed.ts` `feed:list` now does a
+   per-post join to `hits` and returns the best match on each post:
+   `score` (number|null), `intent` (string|null), `reason` (string|null) and the NEW
+   `keywordId` (string|null — the best hit's keyword, null when unscored). A post that
+   matched no keyword returns all four as null. The wire adds the same fields in
+   `apps/web/src/lib/feed/remote.ts` (zod: `score`/`intent`/`reason` nullable,
+   `keywordId` optional-nullable) and the mock adds them on every
+   `MOCK_FEED_ITEMS` row in `apps/web/src/lib/feed/mock.ts` (two rows are
+   intentionally `score: null` so the hidden-chip path stays exercised).
+   The Convex change is NOT yet codegen'd/pushed — do `pnpm exec convex codegen`
+   then `pnpm exec convex dev --once --typecheck=disable` when you have deployment
+   access; the mock path works without it.
+
+2. **The verdict strip under each card.** `FeedCardFrame` (
+   `apps/web/src/components/cards/FeedCardFrame.tsx`) renders a `ScoreChip` under the
+   card when `score != null`: a solid brand-blue `Badge` (from `@listeningkit/ui`)
+   showing `score · intentLabel(intent)` (reuse `intentLabel` from
+   `apps/web/src/lib/live-keywords.ts`, same source as the Keywords page), and under it
+   a full-width 50/50 two-button row, `Reply with AI` (lucide `Bot`) and `Auto-Reply`
+   (lucide `Zap`), both `bg-[#2A8CFF]` white text. Those two buttons are visual
+   placeholders only — the reply action underneath is NOT built (see
+   "Draft a response" below).
+   **The whole card is the click target that opens the inspect sheet** (the user was
+   explicit: the chip itself is not the button). `FeedCardFrame` takes
+   `onInspect?: () => void` and puts `onClick` on the outer frame div (plus
+   `cursor-pointer` when set); the two action buttons `event.stopPropagation()` so
+   they don't trigger it. `DashboardFeed` threads `onInspect` through
+   `FeedGrid` → `FeedColumn` → `FeedCardFrame` in both `ConvexFeed` and
+   `ClassicFeed` (mock).
+
+3. **Click a card → the post opens in the inspect sheet.** Both feed variants own
+   `inspectedEvent` / `relatedEvent` / `communityEvent` (`FirehoseEvent`) state,
+   register `DashboardEventInspectForm` / `DashboardRelatedKeywordsForm` /
+   `DashboardRelatedCommunitiesForm` in the dashboard form slot via
+   `useDashboardFormSlot()` (same recipe as `DashboardAnalyticsPage.tsx` lines
+   140–165), and close by nulling the state. `toInspectEvent(item)` at the top of
+   `DashboardFeed.tsx` adapts a `FeedItem` into the `FirehoseEvent` the inspect sheet
+   expects: `keywordId = item.keywordId ?? 'feed'` (the 'feed' fallback keeps the
+   mock path working; the live Convex value is the real keyword UUID),
+   `type: 'mention'`, sentiment mapped from `intent`
+   (looking_for_help|buying → positive, complaint → negative, else neutral),
+   `text = title + body joined`, `url` is a placeholder. **The inspect sheet is a
+   shared component keyed on `event` — nothing inside it needs to change.**
+
+Verified: `pnpm --filter web exec tsc --noEmit` is clean except a pre-existing
+unused `TAB_CHANNEL` in `DashboardBrand.tsx` (not this session's work). Lint passes
+with only pre-existing warnings. Has NOT been visually confirmed in a browser yet.
+
+## 2026-09-22 session — the two visual bugs that still need fixing
+
+Read `AGENTS.md` for the dashboard visual rules (all status pills go through
+`Badge`, squircle system, `DASHBOARD_DESIGN.md`).
+
+### Bug 1 — "Draft a response" renders as a dropdown, should be a form
+
+In `DashboardEventInspectForm.tsx` the "What next?" block lists
+`AI_NEXT_ACTIONS` (`related` / `communities` / `reply`). The first two open their own
+sheets (`onFindRelated` / `onFindCommunities` → `DashboardRelatedKeywordsForm` /
+`DashboardRelatedCommunitiesForm`). `reply` ("Draft a response", `MessageSquareText`
+icon, `DashboardEventInspectForm.tsx:86,424`) instead sets
+`openAction = 'reply'` and inlines `ReplyDraftPanel` (`:137–205`, `:438`) — a
+collapsed/expandable block that shows a "Send reply" button, the drafted text, and a
+"suggested resource" card with an Attach toggle. The user says this reads as a
+dropdown and is inconsistent with how the related-keywords / related-communities
+forms render (each is a full form with a chain-of-thought stream and the sheet's
+own confirm footer). **Fix: make "Draft a response" open a proper
+`DashboardEventInspectForm`-style sheet of its own** — a new
+`DashboardReplyForm` (suggested name) registered in the same form-slot pattern
+(`useDashboardFormSlot`), with its own `DashboardFormSheet` (title, subtitle,
+confirm footer that actually sends/copies the reply) instead of an inline expand.
+The reply content logic already exists and is mock/deterministic:
+`buildAiQuery` + `draftReply` + `suggestResource` in
+`apps/web/src/lib/brand/query.ts` (a matched enabled autoreply sends verbatim, else
+the brand voice answers the event's words; the attached resource is picked from the
+brand's own site/offers). `DashboardEventInspectForm.tsx:256–259` already builds the
+`AiQuery` and snapshots the brand per event — reuse that. The reply currently has
+no real send path (the "Send reply" button only flips local `sent` state
+(`ReplyDraftPanel:141,158`)); the live client is not wired yet, so the new form's
+confirm should stay a local "copied / would-post" state until the messaging
+surface (still a mock page, hidden on the live menu) lands.
+
+### Bug 2 — `ai-elements` chain-of-thought / chain-joints are broken
+
+`apps/web/src/components/ai-elements/chain-of-thought.tsx` imports
+`Badge` from `@/components/ui/badge` (`:3`) but that module does not exist in
+this repo — the dashboard `Badge` lives in `@listeningkit/ui`
+(`packages/ui/src/badge.tsx`). Worse, that Badge has no `secondary` variant
+(`packages/ui/src/badge.tsx:29–57` defines neutral/muted/success/danger/warning/info/
+brand/solid/trigger) so `ChainOfThoughtSearchResult` (`chain-of-thought.tsx:238–248`)
+references a variant the real Badge cannot render. The same file also uses
+`text-muted-foreground`, `bg-muted`, `shadow-hard` classes
+(`:82,:88,:115,:209,:219,:267,:270`) which may not resolve under this app's Tailwind
+setup. The geometry in `chain-joints.ts` is a deliberate full-literal-string system
+(it says so in its header comment): Tailwind only generates CSS for classes it can
+read statically, so the `h-[64px]`, `bottom-auto`, `bottom-0` overrides are
+**never built with template interpolation** (`:4–8,35–41`) — if you add a new
+measurement, add a new named literal there, don't interpolate a number in.
+The step's rail/track math (`chain-of-thought.tsx:113–203`) is tightly coupled to
+the icon-box sizes (`size-7` = 28px nested, `size-10` = 40px trunk, via
+`ICON_40` in chain-joints) and the `elbow`/`compact` flags; changing any one
+number breaks the flush joints. **The fix is to make these two files actually
+compile and render** (point `Badge` at `@listeningkit/ui`, use a variant it has,
+and reconcile the `muted-*`/`shadow-hard` tokens with what this app defines),
+then walk one real chain (e.g. the RelatedMentionsChain in
+`DashboardRelatedKeywordsForm.tsx`) and check the elbows/rails still land flush.
+Nothing downstream should need to change once the two files are sound.
+
+### After fixing both, verify
+
+- `pnpm --filter web exec tsc --noEmit` and `pnpm run lint` (repo root, per AGENTS.md).
+- `pnpm --filter web exec vite --port 3000` and walk: dashboard feed (mock) →
+  click a card → inspect sheet → "Draft a response" opens as a real form; then
+  open the related-keywords chain and confirm the chain-of-thought stream renders
+  with flush rails/elbows.
+- No Convex deploy is needed for either fix (both are web-only). The feed
+  score/join work above is the only Convex-side change, and it can wait on
+  deployment access.
+
 ## Where things stand
 
 The product runs on a real Convex backend, no bridge server, for Reddit end to end, X and Facebook
@@ -19,7 +141,7 @@ Sign in (Clerk) → onboarding (Firecrawl facts read, live page map, typed compe
 | Area | State |
 |---|---|
 | Auth | Clerk **dev** instance, Google/GitHub. Prod not set up (needs an owned domain). |
-| Feed | Live `useQuery` subscription straight from Convex. |
+| Feed | Live `useQuery` subscription straight from Convex; each card now carries the best hit's `score · intent` (verdict strip under the card) and the whole card opens the post in the inspect sheet. |
 | Keywords + matches | Real, with the Free plan limit (1 phrase per platform) enforced server-side. |
 | Reddit reading | Cron every 10 min: official API (needs app creds, not set) → plain feed → public mirror. |
 | X, Facebook | Helpers on the person's own computer (`clients/x_push.py`, `facebook_push.py`), through a mandatory operator proxy. Both run against real throwaway accounts on dev. Not re-run on prod (need a prod-connected login). |
@@ -81,6 +203,8 @@ None of the items below need code changes. Never paste a key into chat, a commit
 - [ ] Reddit app for dependable freshness (item 2).
 
 ### Next product work
+- [ ] **Make "Draft a response" a real form** (inline expand → its own `DashboardFormSheet` registered in the form slot, like the related-keywords/communities forms). Content logic already exists in `lib/brand/query.ts`; only the surface needs reworking. See "Bug 1" above.
+- [ ] **Fix `ai-elements` chain-of-thought + chain-joints** (nonexistent `@/components/ui/badge` import, a `Badge` variant that doesn't exist, and possibly-unresolved `muted-*`/`shadow-hard` tokens). Keep chain-joints' full-literal-string rule intact. See "Bug 2" above.
 - [ ] Facebook: read comment counts, and the address for posts whose timestamp link could not be hovered.
 - [ ] Chrome Web Store listing for the extension (only tested in Chromium 145 unpacked so far).
 - [ ] Replace the remaining mock pages (Groups, Listings, Brand's Agent Memory section, Messages) with Convex-backed ones, or remove them for good instead of hiding them.
@@ -129,8 +253,9 @@ None of the items below need code changes. Never paste a key into chat, a commit
 - Vercel needs its own `vercel.json` (build command, output directory, SPA rewrite) or it guesses wrong and every deployment fails; the real site is the Convex one, the Vercel copy has no `VITE_CONVEX_URL` and runs in demo mode.
 
 ## Key files
-- Backend: `convex/{keywords,hits,watch,reddit,sessions,ingest,feed,http,crons,scoring,brand,alerts,plan,apiKeys,publicApi,webhooks,notifications}.ts`, `convex/lib/{match,token,crypto,redditFeed,posts,accounts,scopes,keywordOps,proxy,firecrawl,agentmail,webhookUrl,webhookSign,mcp}.ts`, `convex/schema.ts` (in-progress: `notifications.ts` + the `barkConnections` table — not yet codegen'd/pushed, see above)
+- Backend: `convex/{keywords,hits,watch,reddit,sessions,ingest,feed,http,crons,scoring,brand,alerts,plan,apiKeys,publicApi,webhooks,notifications}.ts`, `convex/lib/{match,token,crypto,redditFeed,posts,accounts,scopes,keywordOps,proxy,firecrawl,agentmail,webhookUrl,webhookSign,mcp}.ts`, `convex/schema.ts` (in-progress: `notifications.ts` + the `barkConnections` table — not yet codegen'd/pushed, see above; `feed.ts` now joins `hits` for score/intent/keywordId — not yet codegen'd either)
 - Web live path: `apps/web/src/lib/{convex,live-keywords,live-sessions,ingest-keys,api-keys-live,webhooks-live,live-brand,live-alerts,plans}.ts`, `apps/web/src/components/{DashboardKeywordsLive,DashboardSettingsIngest,DashboardFeed,DashboardApiLive,DashboardWebhooks,DashboardSidebar}.tsx`, `apps/web/src/pages/onboarding/OnboardingSteps.tsx`
+- Feed + inspect (this session): `apps/web/src/components/cards/FeedCardFrame.tsx` (`ScoreChip` + card-level `onInspect`), `apps/web/src/components/DashboardFeed.tsx` (`toInspectEvent` adapter + form-slot registration in both feed variants), `apps/web/src/components/DashboardEventInspectForm.tsx` (the shared inspect sheet; "Draft a response" inline panel = Bug 1), `apps/web/src/components/ai-elements/{chain-of-thought.tsx,chain-joints.ts}` (Bug 2)
 - Extension: `apps/extension/*`, packaged by `python scripts/build-extension.py` into `apps/web/public/listeningkit-extension.zip`
 - Adapters: `clients/listeningkit_ingest.py`, `clients/reddit_push.py`, `clients/x_push.py`, `clients/facebook_push.py`
 - Docs: `apps/docs/content/docs/guide/{index,using-listeningkit,helpers,api,mcp,developers}.mdx`

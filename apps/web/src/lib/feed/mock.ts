@@ -26,6 +26,13 @@ export interface FeedItem extends FeedMetrics {
   body: string[]
   imageSrc?: string
   avatarUrl?: string
+  /** Best match on this post: 0-100 until the AI scores it, then a number; null when unscored. */
+  score: number | null
+  /** The AI's read of what the author wants; intentLabel turns it into words. */
+  intent: string | null
+  reason?: string | null
+  /** The keyword this post matched under — the inspect sheet keys off it. */
+  keywordId?: string | null
 }
 
 export interface FeedResponse {
@@ -69,10 +76,14 @@ export const MOCK_FEED_ITEMS: FeedItem[] = [
       'Before/after from today’s water heater swap in Dallas.',
       'If your unit is over 10 years old, get it checked!'
     ],
-    imageSrc: img('photo-1522708323590-d24dbb6b0267'),
-    likes: 650,
-    comments: 48,
-    shares: 135
+      imageSrc: img('photo-1522708323590-d24dbb6b0267'),
+      likes: 650,
+      comments: 48,
+      shares: 135,
+      score: 82,
+      intent: 'looking_for_help',
+      reason: 'Asks for a plumber in the Dallas area',
+      keywordId: 'b3f24a1e-7c5d-4f8a-9e2b-1a3c5d7e9f01',
   },
   {
     id: 'fb-txt-1',
@@ -84,9 +95,12 @@ export const MOCK_FEED_ITEMS: FeedItem[] = [
       'PSA: turn off your main water valve before vacation.',
       'Came home to a flooded kitchen last night. Learn from me.'
     ],
-    likes: 128,
-    comments: 32,
-    shares: 12
+      likes: 128,
+      comments: 32,
+      shares: 12,
+      score: 45,
+      intent: 'discussion',
+      keywordId: 'b3f24a1e-7c5d-4f8a-9e2b-1a3c5d7e9f01',
   },
   {
     id: 'x-img-1',
@@ -100,9 +114,11 @@ export const MOCK_FEED_ITEMS: FeedItem[] = [
     imageSrc: img('photo-1506905925346-21bda4d32df4'),
     likes: 1903,
     comments: 214,
-    views: 8200,
-    replies: 214,
-    reposts: 96
+      views: 8200,
+      replies: 214,
+      reposts: 96,
+      score: null,
+      intent: null,
   },
   {
     id: 'x-txt-1',
@@ -115,9 +131,13 @@ export const MOCK_FEED_ITEMS: FeedItem[] = [
     body: ['Figma, Webflow, or Framer. Which one will take the lead in 2023 and be the go-to for digital design?'],
     likes: 3987,
     comments: 1240,
-    views: 1100000,
-    replies: 1240,
-    reposts: 5579
+      views: 1100000,
+      replies: 1240,
+      reposts: 5579,
+      score: 22,
+      intent: 'discussion',
+      reason: 'General design-tool debate, no buying signal',
+      keywordId: 'c7d81e93-2b4f-4a6d-8c1e-5f9a3b7d2e44',
   },
   {
     id: 'r-post-1',
@@ -128,9 +148,13 @@ export const MOCK_FEED_ITEMS: FeedItem[] = [
     timeAgo: '15h',
     title: 'Need a plumber in Dallas ASAP',
     body: ['Toilet broke and it’s leaking all over the bathroom floor!'],
-    likes: 342,
-    comments: 86,
-    shares: 18
+      likes: 342,
+      comments: 86,
+      shares: 18,
+      score: 91,
+      intent: 'looking_for_help',
+      reason: 'Urgent leak, asking for a local plumber',
+      keywordId: 'e5a92c47-8d3b-4f1e-9a6c-2d8f4b6a1c93',
   },
   {
     id: 'r-cmt-1',
@@ -139,9 +163,13 @@ export const MOCK_FEED_ITEMS: FeedItem[] = [
     authorName: 'u/plumber_finder',
     timeAgo: '12h',
     body: ['I can swing by tomorrow morning — DM me your cross streets.'],
-    likes: 156,
-    comments: 4,
-    shares: 4
+      likes: 156,
+      comments: 4,
+      shares: 4,
+      score: 64,
+      intent: 'buying',
+      reason: 'Offering to help, ready to arrange a visit',
+      keywordId: 'e5a92c47-8d3b-4f1e-9a6c-2d8f4b6a1c93',
   },
   {
     id: 'fb-img-2',
@@ -153,10 +181,13 @@ export const MOCK_FEED_ITEMS: FeedItem[] = [
       'Kitchen reno is finally done — new faucet, no more drips.',
       'Highly recommend getting the ceramic valves.'
     ],
-    imageSrc: img('photo-1517842645767-c639042777db'),
-    likes: 89,
-    comments: 14,
-    shares: 3
+      imageSrc: img('photo-1517842645767-c639042777db'),
+      likes: 89,
+      comments: 14,
+      shares: 3,
+      score: 12,
+      intent: 'promotion',
+      reason: 'Recommending a supplier, not asking for one',
   },
   {
     id: 'fb-txt-2',
@@ -168,9 +199,12 @@ export const MOCK_FEED_ITEMS: FeedItem[] = [
       'Anyone know a 24/7 emergency plumber near Deep Ellum?',
       'Water heater burst an hour ago, need help fast.'
     ],
-    likes: 45,
-    comments: 21,
-    shares: 2
+      likes: 45,
+      comments: 21,
+      shares: 2,
+      score: 88,
+      intent: 'looking_for_help',
+      reason: 'Emergency burst pipe, asking for 24/7 help now',
   },
   {
     id: 'x-txt-2',
@@ -183,9 +217,12 @@ export const MOCK_FEED_ITEMS: FeedItem[] = [
     body: ['PSA: if your water bill doubled and you hear running water, check your slab. Learned the hard way.'],
     likes: 512,
     comments: 87,
-    views: 3400,
-    replies: 87,
-    reposts: 41
+      views: 3400,
+      replies: 87,
+      reposts: 41,
+      score: 58,
+      intent: 'complaint',
+      reason: 'Describes a costly slab-leak experience',
   },
   {
     id: 'r-cmt-2',
@@ -194,8 +231,10 @@ export const MOCK_FEED_ITEMS: FeedItem[] = [
     authorName: 'u/diy_dan',
     timeAgo: '8h',
     body: ['Shut the main off first, then drain the lowest faucet in the house before you touch anything.'],
-    likes: 98,
-    comments: 2,
-    shares: 1
+      likes: 98,
+      comments: 2,
+      shares: 1,
+      score: 35,
+      intent: 'other',
   }
 ]

@@ -23,6 +23,22 @@ import type { FunctionReference } from "convex/server";
  */
 export type ComponentApi<Name extends string | undefined = string | undefined> =
   {
+    dist: {
+      treg: {
+        call: FunctionReference<
+          "action",
+          "internal",
+          {
+            endpoint: string;
+            maxCostUsd?: number;
+            owner: string;
+            params?: Record<string, string | number | boolean>;
+          },
+          any,
+          Name
+        >;
+      };
+    };
     treg: {
       call: FunctionReference<
         "action",
@@ -30,6 +46,7 @@ export type ComponentApi<Name extends string | undefined = string | undefined> =
         {
           endpoint: string;
           maxCostUsd?: number;
+          owner: string;
           params?: Record<string, string | number | boolean>;
         },
         any,

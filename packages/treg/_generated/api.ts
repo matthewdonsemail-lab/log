@@ -8,6 +8,10 @@
  * @module
  */
 
+import type * as dist__generated_dataModel from "../dist/_generated/dataModel.js";
+import type * as dist__generated_server from "../dist/_generated/server.js";
+import type * as dist_lib_treg from "../dist/lib/treg.js";
+import type * as dist_treg from "../dist/treg.js";
 import type * as lib_treg from "../lib/treg.js";
 import type * as treg from "../treg.js";
 
@@ -19,6 +23,10 @@ import type {
 import { anyApi, componentsGeneric } from "convex/server";
 
 const fullApi: ApiFromModules<{
+  "dist/_generated/dataModel": typeof dist__generated_dataModel;
+  "dist/_generated/server": typeof dist__generated_server;
+  "dist/lib/treg": typeof dist_lib_treg;
+  "dist/treg": typeof dist_treg;
   "lib/treg": typeof lib_treg;
   treg: typeof treg;
 }> = anyApi as any;

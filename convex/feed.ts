@@ -89,15 +89,25 @@ export const list = query({
     const owner = await requireOwner(ctx)
     const rows = await ctx.db.query('posts').withIndex('by_owner', q => q.eq('owner', owner)).order('desc').take(200)
     const needle = args.search?.trim().toLowerCase() ?? ''
-    return { items: rows.filter(row =>
-      (!args.platform || row.platform === args.platform) &&
-      (!needle || [row.authorName, row.title ?? '', ...row.body].join(' ').toLowerCase().includes(needle))
-    ).map(row => ({
-      id: row._id, platform: row.platform, variant: 'post-text' as const,
-      authorName: row.authorName, body: row.body,
-      ...(row.title === undefined ? {} : { title: row.title }),
-      ...(row.timestamp === undefined ? {} : { timestamp: row.timestamp }),
-      timeAgo: '', likes: row.likes, comments: row.comments,
-    })) }
+    const items = []
+    for (const row of rows.filter(r =>
+      (!args.platform || r.platform === args.platform) &&
+      (!needle || [r.authorName, r.title ?? '', ...r.body].join(' ').toLowerCase().includes(needle))
+    )) {
+      // The strongest match on this post, if any keyword matched it; null until the AI scores one.
+      const hits = await ctx.db.query('hits').withIndex('by_keyword_and_post', q => q.eq('postId', row._id)).collect()
+      const best = hits.filter(h => h.score !== undefined).sort((a, b) => b.score! - a.score!)[0]
+      items.push({
+        id: row._id, platform: row.platform, variant: 'post-text' as const,
+        authorName: row.authorName, body: row.body,
+        ...(row.title === undefined ? {} : { title: row.title }),
+        ...(row.timestamp === undefined ? {} : { timestamp: row.timestamp }),
+        timeAgo: '', likes: row.likes, comments: row.comments,
+        ...(best === undefined
+          ? { score: null, intent: null, reason: null, keywordId: null }
+          : { score: best.score, intent: best.intent, reason: best.reason, keywordId: best.keywordId }),
+      })
+    }
+    return { items }
   },
 })
