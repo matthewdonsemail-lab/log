@@ -21,13 +21,6 @@ import { DashboardBrandForm, type BrandNamespace } from './DashboardBrandForm'
 
 type BrandTab = 'facebook' | 'memory' | 'x' | 'reddit'
 
-const TAB_CHANNEL: Record<BrandTab, BrandChannel> = {
-  facebook: 'facebook',
-  memory: 'facebook',
-  x: 'x',
-  reddit: 'reddit',
-}
-
 /** Page section card: r20 squircle, white — the Analytics card recipe. */
 function BrandSurface({ children, className = '' }: { children: ReactNode; className?: string }) {
   const clip = useSquircleClip<HTMLElement>(20)
