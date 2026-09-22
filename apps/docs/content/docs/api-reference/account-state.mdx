@@ -49,34 +49,34 @@ The issue catalog remains the single source of truth for labels, severity, remed
 
 ```mermaid
 flowchart TD
-    A[Account state changes] --> B[Detector observes platform signal]
-    B --> C[normalizeSignal(platform, rawSignal)]
-    C --> D[Persist normalized account state]
-    D --> E[Reactive store / Convex subscription]
-    E --> F[React receives new ConnectionRecord]
-    F --> G[accountStateView(record)]
-    G --> H{Requires user action?}
-    H -- No --> I[Render healthy or degraded state]
-    H -- Yes --> J[Render notification + remediation]
-    J --> K[User selects action]
-    K --> L{Action type}
-    L -- Challenge --> M[Open challenge resolver]
-    L -- Reconnect --> N[Open connection flow]
-    L -- Proxy --> O[Open proxy settings]
-    L -- Other --> P[Run action-specific workflow]
-    M --> Q[Challenge emits solved event]
-    Q --> R[POST /accounts/:id/resolve]
-    N --> S[Connect / save account]
-    O --> T[Update account configuration]
-    P --> U[Action-specific API operation]
-    R --> V[Backend returns authoritative account state]
+    A["Account state changes"] --> B["Detector observes platform signal"]
+    B --> C["normalizeSignal(platform, rawSignal)"]
+    C --> D["Persist normalized account state"]
+    D --> E["Reactive store / Convex subscription"]
+    E --> F["React receives new ConnectionRecord"]
+    F --> G["accountStateView(record)"]
+    G --> H{"Requires user action?"}
+    H -- No --> I["Render healthy or degraded state"]
+    H -- Yes --> J["Render notification + remediation"]
+    J --> K["User selects action"]
+    K --> L{"Action type"}
+    L -- Challenge --> M["Open challenge resolver"]
+    L -- Reconnect --> N["Open connection flow"]
+    L -- Proxy --> O["Open proxy settings"]
+    L -- Other --> P["Run action-specific workflow"]
+    M --> Q["Challenge emits solved event"]
+    Q --> R["POST /accounts/:id/resolve"]
+    N --> S["Connect / save account"]
+    O --> T["Update account configuration"]
+    P --> U["Action-specific API operation"]
+    R --> V["Backend returns authoritative account state"]
     S --> V
     T --> V
     U --> V
     V --> E
     E --> F
-    F --> W[accountStateNotification(previous, next)]
-    W --> X[Toast / inbox notification when state changed]
+    F --> W["accountStateNotification(previous, next)"]
+    W --> X["Toast / inbox notification when state changed"]
 ```
 
 ## What happens for CAPTCHA or human verification?
