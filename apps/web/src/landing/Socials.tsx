@@ -111,7 +111,7 @@ export function Socials() {
   const fontSize = Math.max(16, Math.min(32, size.w * 0.025))
 
   return (
-    <section ref={ref} className="relative h-[280vh] w-full">
+    <section ref={ref} id="socials" className="relative h-[280vh] w-full">
       <div ref={viewportRef} className="sticky top-0 h-screen overflow-hidden">
         {[
           '/images/mattlistening.png',

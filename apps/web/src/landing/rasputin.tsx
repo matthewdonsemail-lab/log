@@ -1,6 +1,20 @@
+import React, { useEffect } from 'react'
 import { motion } from 'motion/react'
-import { siGithub } from 'simple-icons'
+import Vara from 'vara'
 import Dither from '@/components/Dither'
+
+const DEFAULT_LINES = [
+  'Made for our mate',
+  'Rasputin',
+  'who was mega unemployed',
+]
+
+const TEAM_PHOTOS = [
+  '/images/mattlistening.png',
+  '/images/johnlistening.png',
+  '/images/kennedylistneing.png',
+  '/images/mandeeplistening.png',
+]
 
 const EAR_IMAGES = [
   'ear1.png',
@@ -44,14 +58,56 @@ const EAR_FILTERS = [
 ]
 const EAR_JITTER = [true, false, false, false, true, false, false, false]
 
-/**
- * Closing statement beneath the social-listening reveal.
- * The message is intentionally direct: ownership and control are the point.
- */
-export function Control() {
+export const VaraText = React.memo(function VaraText({
+  lines = DEFAULT_LINES,
+}: {
+  lines?: string[]
+}) {
+  useEffect(() => {
+    const container = document.getElementById('vara-container')
+    if (container) {
+      container.innerHTML = ''
+    }
+
+    new Vara(
+      '#vara-container',
+      'https://raw.githubusercontent.com/akzhy/Vara/master/fonts/Satisfy/SatisfySL.json',
+      lines.map((line, idx) => ({
+        text: line,
+        fontSize: idx === 1 ? 46 : 40,
+        strokeWidth: idx === 1 ? 0.9 : 0.7,
+        textAlign: 'center' as const,
+      })),
+      {
+        textAlign: 'center',
+      }
+    )
+  }, [lines])
+
   return (
-    <section id="why-free" className="relative bg-white px-6 pb-24 text-center sm:px-10 sm:pb-36">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 left-0 z-0 hidden w-[30%] md:block" style={{ maskImage: 'linear-gradient(to right, black 45%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 45%, transparent 100%)' }}>
+    <div
+      id="vara-container"
+      className="z-[20] w-full min-h-[200px] text-center [&>svg]:w-full [&>svg]:max-w-full [&>svg]:mx-auto"
+      style={{ width: '100%' }}
+    ></div>
+  )
+})
+
+export function Rasputin({
+  className = '',
+}: {
+  className?: string
+}) {
+  return (
+    <section id="rasputin" className={`relative bg-white px-6 pb-24 text-center sm:px-10 sm:pb-36 ${className}`}>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 left-0 z-0 hidden w-[30%] md:block"
+        style={{
+          maskImage: 'linear-gradient(to right, black 45%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to right, black 45%, transparent 100%)',
+        }}
+      >
         <Dither
           waveColor={[0.16, 0.55, 1]}
           backgroundColor={[1, 1, 1]}
@@ -63,7 +119,14 @@ export function Control() {
           enableMouseInteraction={false}
         />
       </div>
-      <div aria-hidden="true" className="pointer-events-none absolute inset-y-0 right-0 z-0 hidden w-[30%] md:block" style={{ maskImage: 'linear-gradient(to left, black 45%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to left, black 45%, transparent 100%)' }}>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-y-0 right-0 z-0 hidden w-[30%] md:block"
+        style={{
+          maskImage: 'linear-gradient(to left, black 45%, transparent 100%)',
+          WebkitMaskImage: 'linear-gradient(to left, black 45%, transparent 100%)',
+        }}
+      >
         <Dither
           waveColor={[0.16, 0.55, 1]}
           backgroundColor={[1, 1, 1]}
@@ -121,50 +184,52 @@ export function Control() {
             </motion.div>
           ))}
         </div>
-        <div className="relative z-20">
-          <div className="mb-10 flex flex-col items-center">
-          <div className="flex items-center gap-3">
-            <img src="/logo.svg" alt="ListeningKit logo" className="size-14 rounded-[22%] sm:size-20" />
-            <span className="text-4xl font-black leading-none text-[#2A8CFF] sm:text-6xl">ListeningKit</span>
+        <div className="relative z-20 flex flex-col items-center">
+          {/* Handwriting in rasputin in the middle */}
+          <div className="w-full max-w-2xl px-4 py-6">
+            <VaraText />
           </div>
+
+          {/* Team photo strip & dashed underline message */}
+          <div className="mt-8 flex flex-col items-center justify-center gap-4 px-2 sm:flex-row sm:gap-5">
+            <div className="flex shrink-0 gap-1.5">
+              {TEAM_PHOTOS.map((src) => (
+                <img
+                  key={src}
+                  src={src}
+                  alt=""
+                  aria-hidden="true"
+                  className="size-10 rounded-lg border-2 border-[#2A8CFF] object-cover sm:size-12"
+                />
+              ))}
+            </div>
+            <p className="max-w-md text-center text-sm font-bold leading-tight text-slate-500 sm:text-left sm:text-base">
+              thanks so much to{' '}
+              <span className="font-black text-[#2A8CFF] underline decoration-dashed underline-offset-4">
+                bootoshi and the vcu boys
+              </span>{' '}
+              for helping us make it through this &lt;3
+            </p>
           </div>
-        <h2 className="text-3xl font-black leading-[0.98] text-[#2A8CFF] sm:text-5xl lg:text-6xl">
-          The most Intelligent Social Listening Tools are the ones you control!
-        </h2>
-        <p className="mx-auto mt-8 max-w-2xl text-xl leading-snug text-[#0D2A4C]/70 sm:text-2xl">
-          You don&apos;t own anything when you use tools like{' '}
+
+          {/* Scribble handwriting note hyperlinked to x.com/matthewsoldit */}
           <a
-            href="https://octolens.com"
+            href="https://x.com/matthewsoldit"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-[#2A8CFF] underline decoration-dashed underline-offset-4"
+            className="mt-6 block max-w-xl text-center text-lg sm:text-xl text-slate-600 transition-all hover:scale-105 hover:text-[#2A8CFF]"
+            style={{ fontFamily: "'Schoolbell', 'Cabin Sketch', cursive" }}
           >
-            Octolens
-          </a>{' '}
-          and{' '}
-          <a
-            href="https://stalkr.ai"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[#2A8CFF] underline decoration-dashed underline-offset-4"
-          >
-            Stalkr
+            (also if you want a website and a crm you should hire us{' '}
+            <span className="font-bold text-[#2A8CFF] underline decoration-wavy underline-offset-4">
+              message matthew on X
+            </span>
+            )
           </a>
-          .
-        </p>
-        <a
-          href="https://github.com/matthewdonsemail-lab/log"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-8 inline-flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-3 text-left shadow-sm transition-colors hover:border-slate-300 hover:bg-slate-50"
-        >
-          <svg viewBox="0 0 24 24" role="img" aria-label="GitHub" className="size-8 shrink-0 text-[#0D2A4C]" fill="currentColor">
-            <path d={siGithub.path} />
-          </svg>
-          <span className="text-base font-bold text-[#0D2A4C]">listeningkit / listeningkit</span>
-        </a>
         </div>
       </div>
     </section>
   )
 }
+
+export default Rasputin

@@ -12,9 +12,12 @@
 - **Auth:** Clerk dev instance (Google/GitHub provider cards + email, onboarding-gated routes)
 - **AI models:** gpt-4o-mini (OpenAI, direct API; or the Convex AI Gateway when enabled). Built and tested, not yet run live: needs `OPENAI_API_KEY` on the deployment
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-22T15:40:00Z
+- **Last updated:** 2026-09-22T18:35:00Z
 
 ## Log
+
+### 2026-09-22 - landing page updates
+Enhanced landing page sections: updated Rasputin section layout mirroring the Control dither shader backdrop with floating vibrantly filtered listening ears, centered handwriting note (`VaraText`), team photo strip, and hyperlinked scribble handwriting hiring note to x.com/matthewsoldit. Removed tracking utilities across landing components to adhere to brand guidelines.
 
 ### 2026-09-22 - 6f5c427
 Feed cards now carry a score + intent verdict and open the post in the inspect

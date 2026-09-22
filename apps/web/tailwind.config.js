@@ -64,7 +64,10 @@ export default {
         sans: ['Satoshi', 'Inter', 'system-ui', 'sans-serif'],
         // Brand rule — no monospace renders anywhere (see check-no-font-mono.mjs):
         // point `font-mono` at the sans stack so it can never paint a mono face.
-        mono: ['Satoshi', 'Inter', 'system-ui', 'sans-serif']
+        mono: ['Satoshi', 'Inter', 'system-ui', 'sans-serif'],
+        scribble: ['"Rubik Scribble"', 'cursive'],
+        toddler: ['"Schoolbell"', '"Finger Paint"', 'cursive'],
+        sketch: ['"Cabin Sketch"', 'cursive']
       },
       keyframes: {
         'lk-cycle': {

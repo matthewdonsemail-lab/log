@@ -43,7 +43,7 @@ function SocialCard({ card }: { card: (typeof SOCIAL_CARDS)[number] }) {
 /** Introductory statement above the use-case walkthrough. */
 export function ListeningIntro() {
   return (
-    <section className="relative isolate overflow-hidden bg-white px-6 py-24 text-center sm:px-10 sm:py-36">
+    <section id="how-it-works" className="relative isolate overflow-hidden bg-white px-6 py-24 text-center sm:px-10 sm:py-36">
       <motion.div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 hidden flex-col gap-[-4rem] md:flex"

@@ -148,6 +148,9 @@ export type HeaderItem = {
   href: string
   label: string
   variant?: "ghost" | "cta" | "pricing"
+  ear?: string
+  earFilter?: string
+  earJitter?: boolean
 }
 
 export type HeaderMenuItem = {
@@ -157,6 +160,9 @@ export type HeaderMenuItem = {
   swatchClassName: string
   description?: string
   icon?: string
+  ear?: string
+  earFilter?: string
+  earJitter?: boolean
 }
 
 export type HeaderProps = {
@@ -174,16 +180,89 @@ export type HeaderProps = {
   githubRepo?: string
 }
 
+export const SECTION_EAR_MAP: Record<string, { src: string; filter?: string; jitter?: boolean }> = {
+  "#features": {
+    src: "/images/ears/ear1.png",
+    filter: "hue-rotate(90deg) saturate(2.4) brightness(1.1)",
+  },
+  "#how-it-works": {
+    src: "/images/ears/ear2.png",
+    filter: "hue-rotate(185deg) saturate(2.2) brightness(1.05)",
+  },
+  "#use-cases": {
+    src: "/images/ears/ear3.png",
+    filter: "hue-rotate(275deg) saturate(2.1) contrast(1.15)",
+  },
+  "#why-free": {
+    src: "/images/ears/ear4.png",
+    filter: "hue-rotate(45deg) saturate(2.4) brightness(1.1)",
+  },
+  "#socials": {
+    src: "/images/ears/ear5.png",
+    filter: "hue-rotate(140deg) saturate(2.2) brightness(1.05)",
+  },
+  "#other-cases": {
+    src: "/images/ears/ear7.png",
+    filter: "hue-rotate(330deg) saturate(2.5) contrast(1.1)",
+  },
+  "#unemployed": {
+    src: "/images/ears/ear6.png",
+    filter: "hue-rotate(215deg) saturate(2.3) brightness(1.15)",
+  },
+  "#rasputin": {
+    src: "/images/ears/ear8.png",
+    filter: "hue-rotate(305deg) saturate(2.4) brightness(1.2)",
+    jitter: true,
+  },
+}
+
+export function resolveItemEar(
+  item: HeaderItem | HeaderMenuItem
+): { src: string; filter?: string; jitter?: boolean } | undefined {
+  if (item.ear) {
+    return { src: item.ear, filter: item.earFilter, jitter: item.earJitter }
+  }
+  const match = SECTION_EAR_MAP[item.href]
+  if (match) return match
+  const stripped = item.href.split("?")[0]
+  if (SECTION_EAR_MAP[stripped]) return SECTION_EAR_MAP[stripped]
+  return undefined
+}
+
 const defaultNavItems: HeaderItem[] = [
-  { href: "/work", label: "Services", variant: "ghost" },
-  { href: "/blog", label: "Resources", variant: "ghost" },
-  { href: "/career", label: "Careers", variant: "ghost" },
+  {
+    href: "#features",
+    label: "Features",
+    variant: "ghost",
+    ear: "/images/ears/ear1.png",
+    earFilter: "hue-rotate(90deg) saturate(2.4) brightness(1.1)",
+  },
+  {
+    href: "#how-it-works",
+    label: "How it works",
+    variant: "ghost",
+    ear: "/images/ears/ear2.png",
+    earFilter: "hue-rotate(185deg) saturate(2.2) brightness(1.05)",
+  },
+  {
+    href: "#use-cases",
+    label: "Use cases",
+    variant: "ghost",
+    ear: "/images/ears/ear3.png",
+    earFilter: "hue-rotate(275deg) saturate(2.1) contrast(1.15)",
+  },
+  {
+    href: "#why-free",
+    label: "Why free",
+    variant: "ghost",
+    ear: "/images/ears/ear4.png",
+    earFilter: "hue-rotate(45deg) saturate(2.4) brightness(1.1)",
+  },
 ]
 
 const loggedOutAccountItems: HeaderItem[] = [
-  { href: "/login", label: "Login", variant: "ghost" },
-  { href: "/pricing", label: "Pricing", variant: "pricing" },
-  { href: "/consultation", label: "Book a call", variant: "cta" },
+  { href: "/sign-in", label: "Sign in", variant: "ghost" },
+  { href: "/onboarding", label: "Get started", variant: "cta" },
 ]
 
 const loggedInAccountItems: HeaderItem[] = [
@@ -192,68 +271,83 @@ const loggedInAccountItems: HeaderItem[] = [
 ]
 
 const defaultNavMenuItems: Record<string, HeaderMenuItem[]> = {
-  "/work": [
+  "#features": [
     {
-      href: "/work/intent",
-      label: "Intent",
-      action: "Explore",
-      swatchClassName: "bg-amber-500",
-    },
-    {
-      href: "/work/ppc",
-      label: "PPC",
-      action: "Explore",
-      swatchClassName: "bg-violet-500",
-    },
-    {
-      href: "/work/website",
-      label: "Websites",
-      action: "Explore",
-      swatchClassName: "bg-sky-500",
-    },
-    {
-      href: "/work/seo",
-      label: "SEO",
-      action: "Explore",
-      swatchClassName: "bg-orange-500",
-    },
-    {
-      href: "/work/aeo",
-      label: "AEO",
-      action: "Explore",
-      swatchClassName: "bg-rose-500",
-    },
-    {
-      href: "/work/crm",
-      label: "CRM",
-      action: "Explore",
-      swatchClassName: "bg-emerald-500",
-    },
-    {
-      href: "/work/capture",
-      label: "Capture",
-      action: "Explore",
-      swatchClassName: "bg-ink",
-    },
-  ],
-  "/blog": [
-    {
-      href: "/vs",
-      label: "Versus",
+      href: "#features",
+      label: "Tech Stack",
       action: "Explore",
       swatchClassName: "bg-blue-500",
+      description: "Built with Convex, Firecrawl, Treg and TypeSafe",
+      ear: "/images/ears/ear1.png",
+      earFilter: "hue-rotate(90deg) saturate(2.4) brightness(1.1)",
     },
     {
-      href: "/resources/tools",
-      label: "Tools",
+      href: "#socials",
+      label: "Platforms",
       action: "Explore",
       swatchClassName: "bg-emerald-500",
+      description: "Listen across Reddit, X (Twitter), Facebook & more",
+      ear: "/images/ears/ear5.png",
+      earFilter: "hue-rotate(140deg) saturate(2.2) brightness(1.05)",
+    },
+  ],
+  "#how-it-works": [
+    {
+      href: "#how-it-works",
+      label: "Social Listening",
+      action: "Explore",
+      swatchClassName: "bg-sky-500",
+      description: "Catch conversations and intent in real-time",
+      ear: "/images/ears/ear2.png",
+      earFilter: "hue-rotate(185deg) saturate(2.2) brightness(1.05)",
     },
     {
-      href: "/blog",
-      label: "Articles",
+      href: "#why-free",
+      label: "Self-Hosted Control",
       action: "Explore",
       swatchClassName: "bg-amber-500",
+      description: "Run locally on your terms with zero retainers",
+      ear: "/images/ears/ear6.png",
+      earFilter: "hue-rotate(45deg) saturate(2.4) brightness(1.1)",
+    },
+  ],
+  "#use-cases": [
+    {
+      href: "#use-cases",
+      label: "Customer Intent",
+      action: "Explore",
+      swatchClassName: "bg-violet-500",
+      description: "Find buyers asking for recommendations",
+      ear: "/images/ears/ear3.png",
+      earFilter: "hue-rotate(275deg) saturate(2.1) contrast(1.15)",
+    },
+    {
+      href: "#other-cases",
+      label: "Other Cases",
+      action: "Explore",
+      swatchClassName: "bg-rose-500",
+      description: "Emergencies, freelance gigs, contractors",
+      ear: "/images/ears/ear7.png",
+      earFilter: "hue-rotate(330deg) saturate(2.5) contrast(1.1)",
+    },
+    {
+      href: "#unemployed",
+      label: "For the Unemployed",
+      action: "Explore",
+      swatchClassName: "bg-ink",
+      description: "Massive news for finding gigs and opportunities",
+      ear: "/images/ears/ear4.png",
+      earFilter: "hue-rotate(215deg) saturate(2.3) brightness(1.15)",
+    },
+    {
+      href: "#rasputin",
+      label: "Rasputin Tribute",
+      action: "Explore",
+      swatchClassName: "bg-emerald-500",
+      description: "Made for our mate Rasputin who was mega unemployed",
+      ear: "/images/ears/ear8.png",
+      earFilter: "hue-rotate(305deg) saturate(2.4) brightness(1.2)",
+      earJitter: true,
     },
   ],
 }
@@ -340,6 +434,26 @@ function HeaderLogo({ href, label }: { href: string; label: string }) {
   )
 }
 
+function handleNavAnchorClick(
+  event: React.MouseEvent<HTMLElement>,
+  href: string,
+  onNavigate?: () => void
+) {
+  onNavigate?.()
+  if (href.startsWith("#")) {
+    const target = document.querySelector(href)
+    if (target) {
+      event.preventDefault()
+      target.scrollIntoView({ behavior: "smooth", block: "start" })
+      if (typeof history !== "undefined" && history.pushState) {
+        history.pushState(null, "", href)
+      } else if (typeof window !== "undefined") {
+        window.location.hash = href
+      }
+    }
+  }
+}
+
 function HeaderActions({
   items,
   className,
@@ -393,13 +507,41 @@ function HeaderActions({
               shadow="hard"
               size="default"
               id={headerNavId(item.href)}
-              onClick={onNavigate}
+              onClick={(e) => handleNavAnchorClick(e, item.href, onNavigate)}
               className={cn(
                 "js-header js-track js-click js-nav site-header__link",
                 "h-10 px-4 text-base font-medium",
               )}
             >
-              <a href={item.href}>{item.label}</a>
+              <a href={item.href} className="inline-flex items-center gap-1.5">
+                {(() => {
+                  const ear = resolveItemEar(item)
+                  return ear ? (
+                    <motion.img
+                      src={ear.src}
+                      alt=""
+                      aria-hidden="true"
+                      style={ear.filter ? { filter: ear.filter } : undefined}
+                      className="size-5 shrink-0 object-contain drop-shadow-sm"
+                      animate={
+                        ear.jitter
+                          ? {
+                              x: [0, -2, 3, -2, 2, -3, 2, 0],
+                              y: [0, 2, -2, 3, -2, 2, -1, 0],
+                              rotate: [0, -5, 6, -4, 5, -3, 4, 0],
+                            }
+                          : undefined
+                      }
+                      transition={
+                        ear.jitter
+                          ? { duration: 0.22, repeat: Infinity, ease: "easeInOut" }
+                          : undefined
+                      }
+                    />
+                  ) : null
+                })()}
+                <span>{item.label}</span>
+              </a>
             </Button>
           ) : item.variant === "pricing" ? (
             <Button
@@ -409,13 +551,41 @@ function HeaderActions({
               shadow="hard"
               size="default"
               id={headerNavId(item.href)}
-              onClick={onNavigate}
+              onClick={(e) => handleNavAnchorClick(e, item.href, onNavigate)}
               className={cn(
                 "js-header js-track js-click js-nav site-header__link",
                 "h-10 px-4 text-base font-medium",
               )}
             >
-              <a href={item.href}>{item.label}</a>
+              <a href={item.href} className="inline-flex items-center gap-1.5">
+                {(() => {
+                  const ear = resolveItemEar(item)
+                  return ear ? (
+                    <motion.img
+                      src={ear.src}
+                      alt=""
+                      aria-hidden="true"
+                      style={ear.filter ? { filter: ear.filter } : undefined}
+                      className="size-5 shrink-0 object-contain drop-shadow-sm"
+                      animate={
+                        ear.jitter
+                          ? {
+                              x: [0, -2, 3, -2, 2, -3, 2, 0],
+                              y: [0, 2, -2, 3, -2, 2, -1, 0],
+                              rotate: [0, -5, 6, -4, 5, -3, 4, 0],
+                            }
+                          : undefined
+                      }
+                      transition={
+                        ear.jitter
+                          ? { duration: 0.22, repeat: Infinity, ease: "easeInOut" }
+                          : undefined
+                      }
+                    />
+                  ) : null
+                })()}
+                <span>{item.label}</span>
+              </a>
             </Button>
           ) : hasMenu ? (
             <NavMenuTrigger
@@ -431,16 +601,42 @@ function HeaderActions({
               href={item.href}
               id={headerNavId(item.href)}
               track="nav"
-              onClick={onNavigate}
-        className={cn(
-          "js-header site-header__link",
-          "text-base font-medium",
-          light
-            ? "text-ink hover:bg-ink/10"
-            : "text-paper hover:bg-paper/10"
+              onClick={(e) => handleNavAnchorClick(e, item.href, onNavigate)}
+              className={cn(
+                "js-header site-header__link group",
+                "inline-flex items-center gap-1.5 text-base font-medium",
+                light
+                  ? "text-ink hover:bg-ink/10"
+                  : "text-paper hover:bg-paper/10"
               )}
             >
-              {item.label}
+              {(() => {
+                const ear = resolveItemEar(item)
+                return ear ? (
+                  <motion.img
+                    src={ear.src}
+                    alt=""
+                    aria-hidden="true"
+                    style={ear.filter ? { filter: ear.filter } : undefined}
+                    className="size-5 shrink-0 object-contain drop-shadow-sm transition-transform duration-200 group-hover:scale-110"
+                    animate={
+                      ear.jitter
+                        ? {
+                            x: [0, -2, 3, -2, 2, -3, 2, 0],
+                            y: [0, 2, -2, 3, -2, 2, -1, 0],
+                            rotate: [0, -5, 6, -4, 5, -3, 4, 0],
+                          }
+                        : undefined
+                    }
+                    transition={
+                      ear.jitter
+                        ? { duration: 0.22, repeat: Infinity, ease: "easeInOut" }
+                        : undefined
+                    }
+                  />
+                ) : null
+              })()}
+              <span>{item.label}</span>
             </SquircleLink>
           )
 
@@ -622,6 +818,7 @@ function NavMenuTrigger({
   const light = useHeaderTone() === "light"
   const nodeRef = React.useRef<HTMLAnchorElement | null>(null)
   const isOpen = group.activeHref === item.href
+  const ear = resolveItemEar(item)
 
   const handleEnter = () => group.openHref(item.href, nodeRef.current)
   const handleLeave = () => group.scheduleClose()
@@ -632,7 +829,7 @@ function NavMenuTrigger({
       href={item.href}
       id={headerNavId(item.href)}
       track="nav"
-      onClick={onNavigate}
+      onClick={(e) => handleNavAnchorClick(e, item.href, onNavigate)}
       onMouseEnter={handleEnter}
       onMouseLeave={handleLeave}
       onFocus={handleEnter}
@@ -644,14 +841,37 @@ function NavMenuTrigger({
       aria-haspopup="menu"
       aria-expanded={isOpen}
       className={cn(
-        "js-header js-track js-click js-nav site-header__link",
-        "inline-flex items-center gap-1 text-base font-medium",
+        "js-header js-track js-click js-nav site-header__link group",
+        "inline-flex items-center gap-1.5 text-base font-medium",
         light
           ? "text-ink hover:bg-ink/10"
           : "text-paper hover:bg-paper/10",
       )}
     >
-      {item.label}
+      {ear ? (
+        <motion.img
+          src={ear.src}
+          alt=""
+          aria-hidden="true"
+          style={ear.filter ? { filter: ear.filter } : undefined}
+          className="size-5 shrink-0 object-contain drop-shadow-sm transition-transform duration-200 group-hover:scale-110"
+          animate={
+            ear.jitter
+              ? {
+                  x: [0, -2, 3, -2, 2, -3, 2, 0],
+                  y: [0, 2, -2, 3, -2, 2, -1, 0],
+                  rotate: [0, -5, 6, -4, 5, -3, 4, 0],
+                }
+              : undefined
+          }
+          transition={
+            ear.jitter
+              ? { duration: 0.22, repeat: Infinity, ease: "easeInOut" }
+              : undefined
+          }
+        />
+      ) : null}
+      <span>{item.label}</span>
       <ChevronDown
         size={16}
         strokeWidth={2.25}
@@ -708,7 +928,8 @@ function NavMenuFloatingPanel({
               group.refs.setFloating(node)
               group.panelRef.current = node
             }}
-            style={group.floatingStyles}
+            style={{ ...group.floatingStyles, zIndex: 9999 }}
+            className="z-[9999]"
             layout
             transition={surfaceTransition}
             onMouseEnter={group.clearPending}
@@ -792,7 +1013,13 @@ const navLinkVariants = {
   show: { opacity: 1, x: 0 },
 }
 
-function MenuSwatch({ className }: { className: string }) {
+function MenuSwatch({
+  className,
+  ear,
+}: {
+  className: string
+  ear?: { src: string; filter?: string; jitter?: boolean }
+}) {
   const swatch = useSquircleClip<HTMLSpanElement>(12)
 
   return (
@@ -800,11 +1027,21 @@ function MenuSwatch({ className }: { className: string }) {
       ref={swatch.ref}
       style={swatch.style}
       aria-hidden="true"
-      className={cn("size-14 shrink-0", className)}
+      className={cn("relative flex size-14 shrink-0 items-center justify-center overflow-hidden", className)}
       initial={swatchInitial}
       animate={swatchAnimate}
       transition={fadeMotion}
-    />
+    >
+      {ear ? (
+        <img
+          src={ear.src}
+          alt=""
+          aria-hidden="true"
+          style={ear.filter ? { filter: ear.filter } : undefined}
+          className="relative z-10 size-10 object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.2)]"
+        />
+      ) : null}
+    </motion.span>
   )
 }
 
@@ -917,11 +1154,12 @@ function HeaderMenuCardIconBox({
   const border = useSquircleBorder<HTMLSpanElement>(10)
   const icon = resolveMenuIcon(item.icon)
   const hasIcon = !!icon
+  const ear = resolveItemEar(item)
 
   return (
     <span
       ref={border.ref}
-      className="relative flex size-14 shrink-0 items-center justify-center"
+      className="relative flex size-14 shrink-0 items-center justify-center overflow-hidden"
     >
       <span
         ref={clip.ref}
@@ -933,9 +1171,33 @@ function HeaderMenuCardIconBox({
         )}
         aria-hidden="true"
       />
-      {hasIcon ? (
+      {ear ? (
+        <motion.img
+          src={ear.src}
+          alt=""
+          aria-hidden="true"
+          style={ear.filter ? { filter: ear.filter } : undefined}
+          className="relative z-10 size-10 object-contain drop-shadow-[0_4px_8px_rgba(0,0,0,0.2)]"
+          animate={
+            ear.jitter
+              ? {
+                  x: [0, -3, 3, -2, 3, -3, 2, 0],
+                  y: [0, 3, -3, 2, -3, 2, -2, 0],
+                  rotate: [0, -6, 6, -5, 5, -4, 4, 0],
+                }
+              : isHovered
+                ? { scale: 1.15, rotate: 8 }
+                : { scale: 1, rotate: 0 }
+          }
+          transition={
+            ear.jitter
+              ? { duration: 0.22, repeat: Infinity, ease: "easeInOut" }
+              : { duration: 0.2 }
+          }
+        />
+      ) : hasIcon ? (
         <span className={cn(
-          "relative flex size-7 items-center justify-center transition-colors duration-150",
+          "relative z-10 flex size-7 items-center justify-center transition-colors duration-150",
           isHovered ? "text-white" : "text-[#288DFF]",
         )}>
           {icon}
@@ -980,7 +1242,7 @@ function HeaderMenuCard({
       id={headerNavId(item.href)}
       role="menuitem"
       aria-label={`${item.label}: ${item.description ?? ""}`}
-      onClick={onNavigate}
+      onClick={(e) => handleNavAnchorClick(e, item.href, onNavigate)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className="group flex max-w-[400px] items-center gap-4 rounded-xl px-3 py-3"
@@ -1076,9 +1338,9 @@ function HeaderMenuList({
                   ? "hover:bg-ink/10 focus-visible:bg-ink/10"
                   : "hover:bg-dither-frame/10 focus-visible:bg-dither-frame/10"
               )}
-              onClick={onNavigate}
+              onClick={(e) => handleNavAnchorClick(e, item.href, onNavigate)}
             >
-              <MenuSwatch className={item.swatchClassName} />
+              <MenuSwatch className={item.swatchClassName} ear={resolveItemEar(item)} />
               <span className="min-w-0 flex-1 font-medium">{item.label}</span>
               <span
                 aria-hidden="true"
@@ -1351,7 +1613,7 @@ function Header({
                 <motion.div
                   key="header-overlay"
                   aria-hidden="true"
-                  className="fixed inset-0 z-40 h-dvh w-screen bg-ink/45"
+                  className="fixed inset-0 z-[9998] h-dvh w-screen bg-ink/45"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
@@ -1371,9 +1633,9 @@ function Header({
                 {...getFloatingProps()}
                 ref={refs.setFloating}
                 id={menuId}
-                style={floatingStyles}
+                style={{ ...floatingStyles, zIndex: 9999 }}
                 aria-label="Site menu"
-                className="z-50 transition-none"
+                className="z-[9999] transition-none"
               >
                 <HeaderMenuSurface id={panelId} label="Site menu panel">
                     <HeaderMenuList
