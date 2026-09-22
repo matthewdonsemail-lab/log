@@ -15,7 +15,7 @@ export function SquircleBadge({ children, icon, className }: SquircleBadgeProps)
     <span
       ref={border.ref}
       className={cn(
-        'relative inline-flex w-fit items-center gap-1.5 py-1.5 pr-3 pl-2 text-sm font-medium tracking-[-0.2px] text-[#2B7FFF] md:gap-2 md:py-2 md:pr-3.5 md:pl-2.5 md:text-base',
+        'relative inline-flex w-fit items-center gap-1.5 py-1.5 pr-3 pl-2 text-sm font-medium text-[#2B7FFF] md:gap-2 md:py-2 md:pr-3.5 md:pl-2.5 md:text-base',
         className
       )}
     >

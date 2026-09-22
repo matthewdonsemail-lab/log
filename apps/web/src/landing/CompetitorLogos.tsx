@@ -46,7 +46,7 @@ export function CompetitorLogo({
         className={`${className} flex items-center justify-center rounded-[10px] bg-[#00C389] font-black text-white shadow-sm`}
         title="Brand24"
       >
-        <span className="text-xs tracking-tighter">B24</span>
+        <span className="text-xs">B24</span>
       </div>
     )
   }
