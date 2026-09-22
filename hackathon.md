@@ -12,7 +12,7 @@
 - **Auth:** Clerk dev instance (Google/GitHub provider cards + email, onboarding-gated routes)
 - **AI models:** gpt-4o-mini (OpenAI, direct API; or the Convex AI Gateway when enabled). Built and tested, not yet run live: needs `OPENAI_API_KEY` on the deployment
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-22T10:18:57Z
+- **Last updated:** 2026-09-22T14:30:00Z
 
 ## Log
 
@@ -761,3 +761,12 @@ Backend tests 216, web tests 203.
 
 ### 2026-09-22 - d3cbbf8
 Finished the landing page build. The hero form validates the website inline (a real TLD is required) and keeps Get started greyed until it passes, then hands the site into onboarding. Added two new bands: OtherCases (sticky aside plus four cards mirroring the Usecase walkthrough, each with a blue-dither tile playing its Facebook clip) and Unemployed (looping hiring-post cards behind a breaking-news headline). Usecase titles render wordmark SVGs, step markers play per-slide clips with a number-badge fallback, and the onboarding brand-reading state dropped its card for a plain spinner. Added per-client MCP setup docs and a no-tracking-* pre-push brand check (`apps/web/src/landing/`, `apps/web/src/lib/website.ts`, `scripts/check-no-tracking.mjs`).
+
+### 2026-09-22 - 436ce4f
+Rebuilt the sign-in/sign-up screens and unified the onboarding chrome. Every onboarding screen now opens with the same clouds hero owned by the shell (one full-page dither vignette, no per-screen header copies), while the auth routes skip the hero for a full-height white split screen: centered form column on the left, auto-looping use-case showcase on the right. Each showcase step plays its own phone clip once, the progress bars fill over that clip's own duration, the 4-to-1 wrap scrolls forward into a duplicate slide and cuts back invisibly instead of rewinding, and hovering pauses everything. Loading states are one component now (OnboardingLoading, light and dark tones) used for route boots, the brand lookup and full-area form waits; inline dashboard states keep their small primitives, per the new AGENTS.md rule. Also added a local Treg data component (packages/treg, registered in convex/convex.config.ts) whose call action relays catalogued endpoints with a spend ceiling and idempotency keys. (apps/web/src/pages/onboarding/, apps/web/src/landing/Usecase*.tsx, packages/treg/)
+
+### 2026-09-22 - f2bf4b4
+Added the dashboard header's "How does {Route} work?" button and its video panel. Each dashboard route resolves to one content entry in `how-it-works.ts` — a one-paragraph overview plus a short looping video — rendered through the shared form sheet so it docks exactly like every other form. The button re-registers on navigation and mirrors scrim-dismissal, and the two "Connect your Socials" entries (header and mobile menu) now deep-link into Settings, whose tabs moved to URL-addressable `?tab=` state so the connections tab is reachable straight from the link.
+
+### 2026-09-22 - working tree
+Reality-checked HANDOFF.md against the tree: its checks-green line (backend 216, web 203) predates the reveal rework and today's auth/onboarding UI overhaul, and no suite has run since, so that claim is unverified rather than green. Its key-files list is missing packages/treg, UsecaseLoop.tsx and OnboardingLoading.tsx, and it still describes the old centered auth card instead of the white split screen with the looping showcase. Verified by grep that no test file references anything renamed or removed in the rebuild. With the deadline at 19:00 UTC, the must-dos left are all owner actions: the OpenAI key, the video, and the submission.
