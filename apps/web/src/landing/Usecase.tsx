@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
-import { Button, cn } from '@listeningkit/ui'
+import { Button, cn, useSquircleClip } from '@listeningkit/ui'
 import Dither from '@/components/Dither'
 import './Usecase.css'
 
@@ -51,6 +51,91 @@ const USECASE_EAR_SETS = [
     { src: '/images/ears/ear2.png', className: 'right-[5%] bottom-[1%] size-80', rotate: 2 },
   ],
 ]
+
+/**
+ * Steps render wordmark SVGs inline: emergency.svg in step 1, jobs.svg in
+ * step 2, paid.svg where the title says "paid", hoondreds.svg where it says
+ * "hundreds".
+ */
+function SlideTitle({ index, title, className }: { index: number; title: string; className: string }) {
+  if (index === 0)
+    return (
+      <h2 className={className}>
+        Spot the{' '}
+        <img src="/logos/emergency.svg" alt="emergency" className="inline h-[0.9em] w-auto" />{' '}
+        the second it’s posted
+      </h2>
+    )
+  if (index === 1)
+    return (
+      <h2 className={className}>
+        The AI bins the junk, keeps the{' '}
+        <img src="/logos/jobs.svg" alt="jobs" className="inline h-[0.9em] w-auto" />
+      </h2>
+    )
+  if (index === 2)
+    return (
+      <h2 className={className}>
+        From first message to{' '}
+        <img src="/logos/paid.svg" alt="paid" className="inline h-[0.9em] w-auto" />{' '}
+        in one chat
+      </h2>
+    )
+  if (index === 3)
+    return (
+      <h2 className={className}>
+        Let AI manage{' '}
+        <img src="/logos/hoondreds.svg" alt="hundreds" className="inline h-[0.9em] w-auto" />{' '}
+        of conversations at once
+      </h2>
+    )
+  return <h2 className={className}>{title}</h2>
+}
+
+/**
+ * Video slide marker shown above the copy on each left-side slide.
+ * Plays `/video/usecase/<n>.mp4` inside the blue squircle with a faint
+ * white vignette; falls back to the number badge until that clip lands.
+ */
+function SlideMarker({ index }: { index: number }) {
+  const clip = useSquircleClip<HTMLDivElement>(18)
+  const [missing, setMissing] = useState(false)
+  if (missing) {
+    return (
+      <div
+        ref={clip.ref}
+        style={clip.style}
+        aria-hidden
+        className="mx-auto mb-6 flex size-14 items-center justify-center bg-[#2A8CFF] text-xl font-black text-white"
+      >
+        {index + 1}
+      </div>
+    )
+  }
+  return (
+    <div
+      ref={clip.ref}
+      style={clip.style}
+      aria-hidden
+      className="relative mx-auto mb-6 size-14 overflow-hidden bg-[#2A8CFF]"
+    >
+      <video
+        src={`/video/usecase/${index + 1}.mp4`}
+        autoPlay
+        muted
+        loop
+        playsInline
+        onError={() => setMissing(true)}
+        className="size-full object-cover"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{ background: 'radial-gradient(ellipse at center, transparent 55%, rgba(255,255,255,0.55) 100%)' }}
+      />
+    </div>
+  )
+}
 
 function renderBody(body: string) {
   return body.split(/(“[^”]*”)/g).map((part, index) =>
@@ -142,7 +227,8 @@ export function Usecase() {
                   )}
                 >
                   <div className={cn('w-full text-center text-balance', i === active && 'lk-flip-in')}>
-                    <h2 className="text-5xl font-black leading-tight text-ink">{slide.title}</h2>
+                    <SlideMarker index={i} />
+                    <SlideTitle index={i} title={slide.title} className="text-5xl font-black leading-tight text-ink" />
                     <p className="mx-auto mt-6 max-w-xl text-xl leading-snug text-ink/70">{renderBody(slide.body)}</p>
                   </div>
                 </div>
@@ -267,9 +353,9 @@ export function Usecase() {
     </section>
     <section className="w-full bg-white md:hidden">
       <div className="mx-auto flex w-full max-w-7xl flex-col px-6 py-16">
-        {SLIDES.map((slide) => (
+        {SLIDES.map((slide, i) => (
           <div key={slide.title} className="border-t border-black/10 py-10 first:border-t-0 first:pt-0">
-            <h2 className="text-3xl font-black leading-tight text-ink">{slide.title}</h2>
+            <SlideTitle index={i} title={slide.title} className="text-3xl font-black leading-tight text-ink" />
             <p className="mt-3 text-base leading-snug text-ink/70">{renderBody(slide.body)}</p>
           </div>
         ))}

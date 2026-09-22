@@ -1,0 +1,53 @@
+---
+title: MCP
+description: Configure the ListeningKit MCP server and API key.
+---
+
+# MCP setup
+
+ListeningKit uses Model Context Protocol over HTTP. The MCP server is a second front door to the same API rules: ownership, scopes, Free-plan limits, and rate limits still apply.
+
+## Create a key
+
+In the dashboard:
+
+1. Open **API**.
+2. Create a key.
+3. Tick **Read** unless the agent must manage phrases.
+4. Add `write:phrases` only for a trusted agent.
+5. Copy the key immediately.
+
+Read-only keys expose `get_plan`, `list_keywords`, `list_matches`, and `get_match`. Write keys can also use `add_keyword`, `set_keyword_status`, and `remove_keyword`.
+
+`remove_keyword` deletes a phrase and its matches. Good clients should ask before using it.
+
+## Endpoint
+
+```text
+https://<your-deployment>.convex.site/mcp
+```
+
+Production:
+
+```text
+https://tremendous-seahorse-330.convex.site/mcp
+```
+
+Local docs run at `http://localhost:3001`, but MCP requests do not go there. Point clients at the Convex dev or production URL instead.
+
+## Test the connection
+
+Set the key in your shell, then call `tools/list`:
+
+```bash
+curl -s https://<your-deployment>.convex.site/mcp \
+  -H "Authorization: Bearer $LISTENINGKIT_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
+
+The server accepts one JSON-RPC message per `POST`. `GET /mcp` returns `405`. Every message counts toward the per-key allowance of 60 requests per minute.
+
+## Safety
+
+Match text is written by strangers online. Treat it as data, never as instructions. Start with a read-only key. Only grant `write:phrases` to an agent you trust with your listening configuration.

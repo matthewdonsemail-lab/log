@@ -1,0 +1,55 @@
+---
+title: Claude
+description: Connect Claude Code or Claude Desktop to ListeningKit.
+---
+
+# Claude
+
+## Claude Code
+
+Set the key in your shell without putting it in the command history when possible, then add the remote HTTP server:
+
+```bash
+claude mcp add --transport http listeningkit https://<your-deployment>.convex.site/mcp \
+  --header "Authorization: Bearer $LISTENINGKIT_KEY"
+```
+
+Check the connection:
+
+```bash
+claude mcp list
+```
+
+Ask Claude Code:
+
+```text
+Use ListeningKit to show my plan and my three newest matches.
+```
+
+## Claude Desktop
+
+Claude Desktop can use `mcp-remote` to bridge its local configuration to the remote HTTP endpoint. Add this to `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "listeningkit": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://<your-deployment>.convex.site/mcp",
+        "--header",
+        "Authorization:${LISTENINGKIT_AUTH}"
+      ],
+      "env": {
+        "LISTENINGKIT_AUTH": "Bearer lk_api_REPLACE_WITH_YOUR_KEY"
+      }
+    }
+  }
+}
+```
+
+On Windows, the usual file is `%APPDATA%\\Claude\\claude_desktop_config.json`. Restart Claude Desktop after saving the file.
+
+Do not commit this file if it contains your key. Revoke the key from the ListeningKit API page if it leaks.

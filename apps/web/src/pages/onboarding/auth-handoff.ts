@@ -26,3 +26,26 @@ export function clearLandingWebsite(): void {
 export function clearAuthSource(): void {
   try { window.sessionStorage.removeItem(KEY) } catch { /* Storage may be unavailable. */ }
 }
+// Furthest onboarding point reached, in localStorage so a returning visitor
+// resumes instead of redoing the brand lookup. Brand data itself already
+// persists through getBrand()/saveBrand(); this only records the position.
+const PROGRESS_KEY = 'listeningkit.onboarding-progress'
+export type OnboardingProgress = 'website' | 'reveal' | 'extension' | 'platforms' | 'tokens' | 'done'
+const PROGRESS_ORDER: OnboardingProgress[] = ['website', 'reveal', 'extension', 'platforms', 'tokens', 'done']
+export function saveOnboardingProgress(step: OnboardingProgress): void {
+  try {
+    const prev = readOnboardingProgress()
+    if (!prev || PROGRESS_ORDER.indexOf(step) > PROGRESS_ORDER.indexOf(prev)) {
+      window.localStorage.setItem(PROGRESS_KEY, step)
+    }
+  } catch { /* Progress can be rebuilt by walking onboarding again. */ }
+}
+export function readOnboardingProgress(): OnboardingProgress | null {
+  try {
+    const value = window.localStorage.getItem(PROGRESS_KEY)
+    return PROGRESS_ORDER.includes(value as OnboardingProgress) ? (value as OnboardingProgress) : null
+  } catch { return null }
+}
+export function clearOnboardingProgress(): void {
+  try { window.localStorage.removeItem(PROGRESS_KEY) } catch { /* Storage may be unavailable. */ }
+}

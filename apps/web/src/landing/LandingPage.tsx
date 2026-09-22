@@ -1,14 +1,18 @@
 import type { CSSProperties, FormEvent } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { websiteError } from '@/lib/website'
 import { saveLandingWebsite } from '@/pages/onboarding/auth-handoff'
 import { Clouds } from './Clouds'
 import { Control } from './Control'
 import { Header } from './Header'
 import { Pricing } from './Pricing'
 import { ListeningIntro } from './ListeningIntro'
+import { OtherCases } from './OtherCases'
 import { PlugTooltip } from './PlugTooltip'
 import { Socials } from './Socials'
 import { Usecase } from './Usecase'
+import { Unemployed } from './Unemployed'
 
 const PLUGS = [
   {
@@ -50,11 +54,21 @@ const PLUGS = [
 export function LandingPage() {
   const navigate = useNavigate()
 
-  // The website form leads into onboarding: keep what was typed, and it is waiting in the brand step after sign-in.
+  const [site, setSite] = useState('')
+  const [submitted, setSubmitted] = useState(false)
+
+  // Precondition: the button stays greyed until the value parses as a URL
+  // with a real TLD. The error only shows once the field is touched.
+  const problem = websiteError(site)
+  const visibleError = submitted || site ? problem : null
+
+  // The website form leads into onboarding: validate the TLD inline, keep
+  // what was typed, and onboarding skips straight to the brand reveal.
   function startOnboarding(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const site = new FormData(event.currentTarget).get('website')
-    if (typeof site === 'string') saveLandingWebsite(site)
+    setSubmitted(true)
+    if (problem) return
+    saveLandingWebsite(site)
     navigate('/onboarding')
   }
 
@@ -95,14 +109,19 @@ export function LandingPage() {
           <p className="mt-4 max-w-xl text-lg leading-snug text-white/80 sm:text-xl">
             The only free social listening tool on your terms.
           </p>
+          <div className="mt-7 w-full sm:mt-8">
           <form
-            className="mt-7 flex w-full items-center gap-2 rounded-[14px] bg-white py-[5px] pl-4 pr-[5px] sm:mt-8 sm:gap-2.5 sm:py-[7px] sm:pl-[26px] sm:pr-[7px]"
+            className="flex w-full items-center gap-2 rounded-[14px] bg-white py-[5px] pl-4 pr-[5px] sm:gap-2.5 sm:py-[7px] sm:pl-[26px] sm:pr-[7px]"
             onSubmit={startOnboarding}
           >
             <input
               name="website"
               aria-label="Your website"
+              aria-invalid={visibleError !== null}
+              aria-describedby={visibleError ? 'website-error' : undefined}
               placeholder="Enter your website"
+              value={site}
+              onChange={(event) => setSite(event.target.value)}
               className="min-w-0 grow bg-transparent text-[16px] leading-[1.3] text-[#0D2A4C] outline-none placeholder:text-[#0D2A4C]/60 sm:text-[17px]"
             />
             <span className="relative flex h-[46px] flex-col sm:h-[54px]">
@@ -113,7 +132,12 @@ export function LandingPage() {
               />
               <button
                 type="submit"
-                className="flex h-[42px] shrink-0 cursor-pointer items-center rounded-[10px] bg-[#2A8CFF] px-4 text-white shadow-[0_4px_0_0_#1F6FE6] transition-transform duration-100 active:translate-y-1 active:shadow-none sm:h-[50px] sm:px-[24px]"
+                disabled={problem !== null}
+                className={
+                  problem !== null
+                    ? 'flex h-[42px] shrink-0 cursor-not-allowed items-center rounded-[10px] bg-slate-300 px-4 text-white sm:h-[50px] sm:px-[24px]'
+                    : 'flex h-[42px] shrink-0 cursor-pointer items-center rounded-[10px] bg-[#2A8CFF] px-4 text-white shadow-[0_4px_0_0_#1F6FE6] transition-transform duration-100 active:translate-y-1 active:shadow-none sm:h-[50px] sm:px-[24px]'
+                }
               >
                 <span className="whitespace-nowrap text-[16px] font-medium leading-[1.3] sm:text-[17px]">
                   Get started
@@ -121,6 +145,12 @@ export function LandingPage() {
               </button>
             </span>
           </form>
+          {visibleError ? (
+            <p id="website-error" role="alert" className="mt-3 text-left text-[15px] font-medium leading-snug text-white">
+              {visibleError}
+            </p>
+          ) : null}
+          </div>
           <div className="plugs is-visible mt-6 flex w-full flex-row items-center justify-start gap-4" data-reveal="load" style={{ '--d': '320ms' } as CSSProperties}>
             <p className="plugs-text text-sm font-medium uppercase tracking-[0.2em] text-white/70">Works with</p>
             <ul className="plugs-row m-0 flex list-none items-center gap-4 p-0">
@@ -137,9 +167,6 @@ export function LandingPage() {
           </div>
         </div>
       </Clouds>
-      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 sm:px-10">
-        <Pricing />
-      </main>
       <section
         id="features"
         className="w-full pb-16"
@@ -173,6 +200,11 @@ export function LandingPage() {
       <Usecase />
       <Socials />
       <Control />
+      <OtherCases />
+      <Unemployed />
+      <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 sm:px-10">
+        <Pricing />
+      </main>
     </div>
   )
 }

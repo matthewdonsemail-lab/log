@@ -1,0 +1,24 @@
+---
+title: OpenAI
+description: Use ListeningKit from an OpenAI MCP-capable agent client.
+---
+
+# OpenAI agents
+
+There are two different OpenAI surfaces people often call “OpenAI MCP”:
+
+- An OpenAI Agents SDK or other MCP-capable application that you control.
+- ChatGPT custom connectors.
+
+The first can connect if your client supports remote Streamable HTTP MCP servers and custom authorization headers. Configure it with:
+
+```text
+Endpoint: https://<your-deployment>.convex.site/mcp
+Header: Authorization: Bearer <your ListeningKit API key>
+```
+
+Use the OpenAI SDK documentation for the exact client constructor and transport option for the SDK version you are using. Keep the ListeningKit key in the server environment, not in a prompt or source file.
+
+## ChatGPT status
+
+ChatGPT custom connectors are not supported by ListeningKit yet. The current connector flow cannot send the required `Authorization: Bearer lk_api_...` header. Use Claude Code, Claude Desktop, Cursor, Hermes, or your own MCP-capable OpenAI agent client instead.

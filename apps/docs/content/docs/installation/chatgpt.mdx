@@ -1,0 +1,18 @@
+---
+title: ChatGPT
+description: Current ChatGPT MCP compatibility status.
+---
+
+# ChatGPT
+
+ChatGPT custom connectors cannot connect to ListeningKit yet.
+
+ListeningKit authenticates MCP requests with an API-key header:
+
+```text
+Authorization: Bearer lk_api_...
+```
+
+The current ChatGPT connector flow does not provide that header in the way this server requires. OAuth support would be needed before this setup can work.
+
+For now, use [Claude Code](/docs/installation/claude), [Claude Desktop](/docs/installation/claude), [Cursor](/docs/installation/cursor), [Hermes](/docs/installation/hermes), or an OpenAI agent application that supports custom MCP HTTP headers.

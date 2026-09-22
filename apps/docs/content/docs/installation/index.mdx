@@ -1,0 +1,44 @@
+---
+title: Installation
+description: Connect ListeningKit to your preferred AI client.
+---
+
+# Install ListeningKit for your AI client
+
+ListeningKit exposes an MCP server over HTTP. Connect it to Claude Code, Claude Desktop, Cursor, Hermes, or another MCP client and ask an agent to read your matches or manage the phrases you watch.
+
+## Choose a client
+
+- [MCP basics](/docs/installation/mcp)
+- [Claude Code and Claude Desktop](/docs/installation/claude)
+- [Cursor](/docs/installation/cursor)
+- [Hermes](/docs/installation/hermes)
+- [OpenAI Agents](/docs/installation/openai)
+- [ChatGPT](/docs/installation/chatgpt)
+
+## The server address
+
+The MCP server is hosted by your Convex deployment:
+
+```text
+https://<your-deployment>.convex.site/mcp
+```
+
+For this project, the current production endpoint is:
+
+```text
+https://tremendous-seahorse-330.convex.site/mcp
+```
+
+The development endpoint follows the same pattern. Use the deployment URL shown by Convex for your dev deployment.
+
+`http://localhost:3001` is the local documentation site. It is not the MCP endpoint. The web app runs on `http://localhost:3000`.
+
+## What you need
+
+1. Sign in to the ListeningKit dashboard.
+2. Open **API** and create an API key.
+3. Select **Read** for a safe read-only agent, or add `write:phrases` if the agent should create, pause, resume, or remove phrases.
+4. Copy the key when it is shown. It is shown once.
+
+Never put the key in a prompt, public repository, screenshot, or published configuration.

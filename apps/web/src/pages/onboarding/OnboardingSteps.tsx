@@ -10,8 +10,14 @@ import { BrandRevealStep } from '@/components/onboarding/BrandRevealStep'
 import { FunnelVideo } from '@/components/FunnelVideo'
 import { ReadyFill } from '@/components/ReadyFill'
 import { BrandHeader } from './OnboardingShell'
-import { readAuthSource, saveAuthSource, clearAuthSource, clearLandingWebsite, readLandingWebsite } from './auth-handoff'
+import { readAuthSource, saveAuthSource, clearAuthSource, clearLandingWebsite, readLandingWebsite, saveOnboardingProgress, readOnboardingProgress } from './auth-handoff'
+import { websiteError } from '@/lib/website'
 
+/**
+ * Step order: 0 website → 1 brand reveal → 2 extension install → 3 platforms
+ * → 4 connect tokens → 5 ready. Sign-in/sign-up is a route redirect between
+ * the extension and platform steps, never a step itself.
+ */
 type Step = 0 | 1 | 2 | 3 | 4 | 5
 
 // Swap in your own footage via VITE_ONBOARDING_VIDEO_URL (e.g. an R2 public URL).
@@ -31,7 +37,21 @@ const EXTENSION_SOURCE = 'https://github.com/matthewdonsemail-lab/log/tree/main/
 export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boolean }) {
   const navigate = useNavigate()
   const [authSource] = useState(readAuthSource)
-  const [step, setStep] = useState<Step>(!requireSignIn && authSource ? 1 : 0)
+  // Landing arrivals carry a saved website and skip straight to the reveal
+  // (the lookup runs on mount). Returning visitors with a saved brand resume
+  // at the extension step; sign-in returns land on platform selection.
+  const [step, setStep] = useState<Step>(() => {
+    if (!requireSignIn && authSource) return 3
+    if (readLandingWebsite().trim()) return 1
+    if (getBrand()) {
+      const progress = readOnboardingProgress()
+      if (progress === 'platforms') return 3
+      if (progress === 'tokens') return 4
+      if (progress === 'done') return 5
+      return 2
+    }
+    return 0
+  })
   const [sources, setSources] = useState<string[]>(authSource ? [authSource] : [])
   useEffect(() => {
     if (!requireSignIn) clearAuthSource()
@@ -46,14 +66,15 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
   // Restore the brand only inside the authenticated flow. Typing never
   // advances the step — only the Continue / Skip buttons move forward.
   const [profile, setProfile] = useState<BrandEntity | null>(null)
-  // A website typed on the landing page is waiting here, so the visitor does not type it twice.
-  const [brandUrl, setBrandUrl] = useState(readLandingWebsite)
+  // The website step only shows for direct arrivals; landing arrivals skip
+  // it and go straight to the reveal (see the mount effect below).
+  const [brandUrl, setBrandUrl] = useState('')
   const [looking, setLooking] = useState(false)
   const [lookupError, setLookupError] = useState<string | null>(null)
   const revealScrollRef = useRef<HTMLDivElement>(null)
-  // Exit transition 4 -> 5: Continue scrolls the reveal back up and slides it
-  // out; only then does the fill step mount (no hard cut). Reduced motion
-  // skips the beat and swaps immediately.
+  // Exit transition 1 -> 2: Continue scrolls the reveal back up and slides it
+  // out; only then does the extension step mount (no hard cut). Reduced
+  // motion skips the beat and swaps immediately.
   const [revealLeaving, setRevealLeaving] = useState(false)
   const leaveTimer = useRef(0)
 
@@ -63,8 +84,9 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
     if (revealLeaving) return
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     setRevealLeaving(true)
+    saveOnboardingProgress('extension')
     revealScrollRef.current?.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })
-    leaveTimer.current = window.setTimeout(() => setStep(5), reduce ? 0 : 750)
+    leaveTimer.current = window.setTimeout(() => setStep(2), reduce ? 0 : 750)
   }
 
   // Local-only debug skip: jump to any onboarding step. Stripped from
@@ -72,11 +94,11 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
   function debugGoTo(next: Step) {
     window.clearTimeout(leaveTimer.current)
     setRevealLeaving(false)
-    if (next === 4 && !profile) {
+    if (next === 1 && !profile) {
       try {
         setProfile(saveBrand(extractBrandFromUrl('acmeplumbing.com')))
       } catch {
-        // leave profile null; step 4 simply renders nothing without one
+        // leave profile null; step 1 simply renders nothing without one
       }
     }
     setStep(next)
@@ -94,7 +116,7 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
   // like the whole sub-chain appearing — can't break the follow. If the
   // reader scrolls up, following pauses until they're back near the bottom.
   useEffect(() => {
-    if (step !== 4) return
+    if (step !== 1) return
     const el = revealScrollRef.current
     if (!el) return
     let stick = true
@@ -124,11 +146,19 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
       navigate('/sign-in')
       return
     }
-    setStep(1)
+    saveOnboardingProgress('tokens')
+    setStep(4)
   }
 
-  function finish() {
-    setStep(2)
+  // Leaving the extension step always records platform selection as next:
+  // signed-out visitors go through sign-in first and resume there.
+  function finishExtension() {
+    saveOnboardingProgress('platforms')
+    if (requireSignIn) {
+      navigate('/sign-in')
+      return
+    }
+    setStep(3)
   }
 
   async function saveTokens() {
@@ -140,7 +170,8 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
         setSaving(false)
         setSaved(true)
         window.setTimeout(() => {
-          setStep(3)
+          saveOnboardingProgress('done')
+          setStep(5)
           setSaved(false)
         }, 900)
       }, 1500)
@@ -177,23 +208,32 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
     if (sources.every((id) => done.has(id))) {
       setSaved(true)
       window.setTimeout(() => {
-        setStep(3)
+        saveOnboardingProgress('done')
+        setStep(5)
         setSaved(false)
       }, 900)
     }
   }
 
-  async function lookupBrand() {
+  // Runs the brand lookup for an explicit site (landing arrivals skip the
+  // website step, so the site comes from the handoff, not the input).
+  async function lookupBrand(site?: string) {
+    const raw = (site ?? brandUrl).trim()
     if (looking) return
+    const problem = websiteError(raw)
+    if (problem) {
+      setLookupError(problem)
+      return
+    }
     setLooking(true)
     setLookupError(null)
     try {
       // Validates the address and seeds the defaults; on the live backend Firecrawl then reads the real site over them.
-      const base = extractBrandFromUrl(brandUrl)
+      const base = extractBrandFromUrl(raw)
       let entity = base
       if (brandOnConvex()) {
         try {
-          entity = applyWebsiteFacts(base, await readWebsite(brandUrl))
+          entity = applyWebsiteFacts(base, await readWebsite(raw))
         } catch (err) {
           // Reading is not switched on: keep the name guessed from the domain rather than blocking sign-up.
           if (!readingIsOff(err)) throw err
@@ -203,20 +243,36 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
       }
       setProfile(saveBrand(entity))
       clearLandingWebsite()
-      setStep(4)
+      saveOnboardingProgress('reveal')
+      setStep(1)
     } catch (err) {
       setLookupError(err instanceof Error ? err.message : 'Could not read that URL.')
+      setStep(0)
     } finally {
       setLooking(false)
     }
   }
+
+  // Landing arrivals skip the website step: run the saved site's lookup on
+  // mount and land directly on the reveal. Failures fall back to step 0.
+  const autoLookupRan = useRef(false)
+  useEffect(() => {
+    if (autoLookupRan.current) return
+    const saved = readLandingWebsite().trim()
+    if (!saved || profile) return
+    autoLookupRan.current = true
+    setBrandUrl(saved)
+    void lookupBrand(saved)
+    // Runs once on mount; lookupBrand is stable for this purpose.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <div className="relative mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 pb-16 pt-24 text-center sm:px-10">
       {import.meta.env.DEV && !requireSignIn ? (
         <div className="fixed left-2 top-2 z-[60] flex items-center gap-0.5 rounded-full bg-black/60 px-2 py-1 text-[11px] text-white backdrop-blur">
           <span className="px-1 font-bold text-amber-300">DEV</span>
-          {(['Sources', 'Video', 'Tokens', 'Brand', 'Reveal', 'Fill'] as const).map((label, index) => (
+          {(['Website', 'Reveal', 'Extension', 'Platforms', 'Tokens', 'Ready'] as const).map((label, index) => (
             <button
               key={label}
               type="button"
@@ -236,7 +292,7 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
       </div>
       <div className="flex w-full flex-1 flex-col items-center justify-center">
 
-      {step === 0 && (
+      {step === 3 && (
         <div className="mt-8 w-full">
           <h1 className="text-4xl font-bold leading-tight sm:text-5xl">Where should we listen?</h1>
           <p className="mt-4 text-lg text-white/85">
@@ -298,7 +354,7 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
         </div>
       )}
 
-      {step === 0 && requireSignIn && (
+      {step === 3 && requireSignIn && (
         <p className="mt-6 text-sm text-white/70">
           Already have a workspace?{' '}
           <a href="/sign-in" className="font-semibold text-white underline decoration-dashed underline-offset-4">Sign in</a>
@@ -307,7 +363,7 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
         </p>
       )}
 
-      {step === 1 && (
+      {step === 2 && (
         <div className="mt-8 w-full">
           <h1 className="text-4xl font-bold leading-tight sm:text-5xl">
              Watch this here quick video
@@ -383,17 +439,26 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
           )}
           <Button
             type="button"
-            onClick={finish}
+            onClick={finishExtension}
             size="xl"
             shadow="hard"
             className="mt-6 h-14 rounded-xl bg-white px-10 font-bold text-slate-900 hover:bg-white/90"
           >
             Continue
           </Button>
+          <div className="mt-4 text-center">
+            <button
+              type="button"
+              onClick={finishExtension}
+              className="bg-transparent p-0 text-sm font-semibold text-white/70 underline decoration-dashed underline-offset-4 transition-colors hover:text-white"
+            >
+              Skip getting the extension, although it&apos;s highly recommended.
+            </button>
+          </div>
         </div>
       )}
 
-      {step === 2 && (
+      {step === 4 && (
         <div className="mt-8 flex w-full flex-col items-center">
           <h1 className="text-4xl font-bold leading-tight sm:text-5xl">
             Connect your accounts
@@ -525,7 +590,10 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
                   <div className="mt-3 text-center">
                     <button
                       type="button"
-                      onClick={() => setStep(3)}
+                      onClick={() => {
+                        saveOnboardingProgress('done')
+                        setStep(5)
+                      }}
                       className="bg-transparent p-0 text-sm font-semibold text-slate-500 underline decoration-dashed underline-offset-4 hover:text-slate-800"
                     >
                       Skip for now. You can connect later in Settings.
@@ -538,12 +606,11 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
          </div>
        )}
 
-      {step === 3 && (
+      {step === 0 && (
         <div className="mt-8 w-full">
           <h1 className="text-4xl font-bold leading-tight sm:text-5xl">Whose brand are we listening for?</h1>
           <p className="mt-4 text-lg text-white/85">
             Paste your website and we&apos;ll pull your brand profile — drafts and replies will sound like you.
-            Optional, skip anytime.
           </p>
           <div className="mx-auto mt-8 w-full max-w-4xl text-left">
             {profile ? (
@@ -591,7 +658,7 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
                 <div className="mt-4 flex justify-center">
                   <Button
                     type="button"
-                    onClick={lookupBrand}
+                    onClick={() => lookupBrand()}
                     disabled={looking || brandUrl.trim().length === 0}
                     size="xl"
                     shadow="hard"
@@ -602,20 +669,36 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
                 </div>
               </>
             )}
-            <div className="mt-4 text-center">
-              <button
-                type="button"
-                onClick={() => setStep(profile ? 4 : 5)}
-                className="bg-transparent p-0 text-sm font-semibold text-white/70 underline decoration-dashed underline-offset-4 transition-colors hover:text-white"
-              >
-                Skip now
-              </button>
-            </div>
           </div>
         </div>
       )}
 
-      {step === 4 && profile && (
+      {step === 1 && !profile && (
+        <div className="mt-8 flex w-full flex-col items-center">
+          {looking ? (
+            <>
+              <svg className="size-8 animate-spin text-white" viewBox="0 0 24 24" fill="none" aria-label="Reading your website">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              <p className="mt-4 text-lg font-bold text-white">Reading your website…</p>
+            </>
+          ) : (
+            <>
+              <p className="text-lg font-bold text-white">We could not read that website.</p>
+              <button
+                type="button"
+                onClick={() => setStep(0)}
+                className="mt-4 bg-transparent p-0 text-sm font-semibold text-white/70 underline decoration-dashed underline-offset-4 transition-colors hover:text-white"
+              >
+                Enter your website
+              </button>
+            </>
+          )}
+        </div>
+      )}
+
+      {step === 1 && profile && (
         <div
           className={`relative mt-8 w-full transition-all duration-700 ease-out ${
             revealLeaving ? '-translate-y-10 opacity-0' : ''

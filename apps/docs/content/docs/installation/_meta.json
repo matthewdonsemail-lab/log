@@ -4,5 +4,6 @@
   "claude": "Claude",
   "cursor": "Cursor",
   "hermes": "Hermes",
+  "openai": "OpenAI",
   "mcp": "MCP"
 }

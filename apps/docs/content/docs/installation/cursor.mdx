@@ -1,0 +1,25 @@
+---
+title: Cursor
+description: Connect Cursor and the Cursor Agent CLI to ListeningKit.
+---
+
+# Cursor
+
+Cursor supports remote HTTP MCP servers through `mcp.json`. Use the project file for one repository or the user file for all projects.
+
+```json
+{
+  "mcpServers": {
+    "listeningkit": {
+      "url": "https://<your-deployment>.convex.site/mcp",
+      "headers": {
+        "Authorization": "Bearer ${env:LISTENINGKIT_KEY}"
+      }
+    }
+  }
+}
+```
+
+Set `LISTENINGKIT_KEY` in your shell or system environment before starting Cursor. Do not paste the key into a committed project configuration.
+
+The Cursor Agent CLI uses the same MCP configuration as the editor. Once the server is connected, ask the agent to list recent matches or show the plan.

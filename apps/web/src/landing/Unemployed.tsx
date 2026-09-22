@@ -5,32 +5,38 @@ import { FacebookPostText } from '@/components/cards/FacebookCard'
 import { RedditPostText } from '@/components/cards/RedditCard'
 import { TwitterPostText } from '@/components/cards/TwitterCard'
 import { FeedCardFrame } from '@/components/cards/FeedCardFrame'
-import { SOCIAL_ICONS, SocialBadge } from '@/lib/social-icons'
 
 const SOCIAL_CARDS = [
-  { platform: 'reddit', title: 'Our bathroom ceiling is leaking again. Who can actually fix this?' },
-  { platform: 'facebook', title: 'The company never showed up and now the leak is worse.' },
-  { platform: 'twitter', title: 'Three calls later and nobody has answered about my broken boiler.' },
-  { platform: 'reddit', title: 'Paid for the repair last week, but the same problem is already back.' },
-  { platform: 'facebook', title: 'Does anyone know a reliable local business that responds quickly?' },
-  { platform: 'twitter', title: 'Really wish someone had warned me about this service before I booked.' },
-  { platform: 'reddit', title: 'Need an honest recommendation before I spend more money on this.' },
-  { platform: 'facebook', title: 'The quote changed twice and the work still is not finished.' },
-  { platform: 'twitter', title: 'I just want a real answer from someone who knows what they are doing.' },
+  { platform: 'reddit', title: "We're looking for a growth marketer who can run our LinkedIn from scratch." },
+  { platform: 'facebook', title: "Hiring a junior web dev to fix our checkout bug, available this week." },
+  { platform: 'twitter', title: 'Need a VA who knows Google Ads. Paying well, remote.' },
+  { platform: 'reddit', title: 'Startup looking for a founding designer. You would own the whole brand.' },
+  { platform: 'facebook', title: 'We want a content creator to shoot 3 reels a week for the kitchen brand.' },
+  { platform: 'twitter', title: 'Hiring a data analyst. Must know Python, dashboards, and dbt.' },
+  { platform: 'reddit', title: 'Small agency will pay for you to take over our ad accounts.' },
+  { platform: 'facebook', title: "Our shop is looking for a socials person to keep the feed alive." },
+  { platform: 'twitter', title: 'We need a founder who can ship the landing page by Friday.' },
 ] as const
 
 function SocialCard({ card }: { card: (typeof SOCIAL_CARDS)[number] }) {
   const content =
     card.platform === 'reddit' ? (
-      <RedditPostText communityName="r/LocalAdvice" title={card.title} likes="42" shares="8" />
+      <RedditPostText communityName="r/jobs" title={card.title} likes="12" shares="3" />
     ) : card.platform === 'facebook' ? (
-      <FacebookPostText lines={[card.title, 'Has anyone found a good answer?']} likes="24" comments="6 comments" shares="3 shares" />
+      <FacebookPostText lines={[card.title, 'DM us to apply.']} likes="8" comments="3 comments" shares="1 shares" />
     ) : (
-      <TwitterPostText body={`${card.title} Would love a recommendation.`} replies="4" reposts="7" likes="31" />
+      <TwitterPostText
+        body={card.title}
+        authorName="Hiring Team"
+        handle="@hiring"
+        replies="2"
+        reposts="5"
+        likes="21"
+      />
     )
 
   return (
-    <div className="pointer-events-none flex w-1/3 shrink-0 justify-center text-left">
+    <div className="pointer-events-none flex h-full w-1/3 shrink-0 items-center justify-center text-left">
       <FeedCardFrame
         naturalWidth={card.platform === 'reddit' ? 864 : card.platform === 'facebook' ? 713.42 : 484}
       >
@@ -40,8 +46,12 @@ function SocialCard({ card }: { card: (typeof SOCIAL_CARDS)[number] }) {
   )
 }
 
-/** Introductory statement above the use-case walkthrough. */
-export function ListeningIntro() {
+/**
+ * Unemployed band: a giant "massive news for the unemployed" headline
+ * with a bracketed promise underneath, while looping hiring-post social
+ * cards scroll behind it.
+ */
+export function Unemployed() {
   return (
     <section className="relative isolate overflow-hidden bg-white px-6 py-24 text-center sm:px-10 sm:py-36">
       <motion.div
@@ -51,7 +61,7 @@ export function ListeningIntro() {
         transition={{ duration: 34, repeat: Infinity, ease: 'linear' }}
       >
         {Array.from({ length: 14 }, (_, row) => (
-          <div key={row} className="flex h-[16rem] w-full items-center justify-between">
+          <div key={row} className="flex h-72 w-full items-center justify-between">
             {[0, 1, 2].map((column) => {
               const card = SOCIAL_CARDS[(row * 3 + column) % SOCIAL_CARDS.length]
               return <SocialCard key={`${row}-${column}`} card={card} />
@@ -69,37 +79,33 @@ export function ListeningIntro() {
             WebkitMaskImage: 'radial-gradient(ellipse at center, black 42%, rgba(0,0,0,0.9) 68%, transparent 100%)',
           }}
         />
-        <img
-          src="/logo.svg"
-          alt="ListeningKit logo"
-          className="size-24 rounded-[22%] object-contain sm:size-32"
-        />
-        <h2 className="mt-8 max-w-4xl text-4xl font-black leading-[0.98] tracking-tight text-[#2A8CFF] sm:text-6xl lg:text-7xl">
-          Your (potential) customers are{' '}
+        <h2 className="mt-8 max-w-4xl text-4xl font-black leading-[0.98] text-[#2A8CFF] sm:text-6xl lg:text-7xl">
           <img
-            src="/logos/moaning.svg"
-            alt="moaning"
+            src="/logos/BREAKINGNEWS.svg"
+            alt="breaking news"
             className="mx-1 inline-block h-[0.85em] w-auto align-[-0.08em]"
           />{' '}
-          about something on{' '}
+          for the{' '}
           <img
-            src="/logos/SocialMedia.svg"
-            alt="social media"
+            src="/logos/unemployed.svg"
+            alt="unemployed"
             className="mx-1 inline-block h-[0.85em] w-auto align-[-0.08em]"
-          />.
+          />
         </h2>
         <p className="mx-auto mt-8 max-w-3xl text-xl leading-snug text-[#0D2A4C]/70 sm:text-2xl">
-          Listen to your competitors across{' '}
-          <span className="mx-1 inline-flex items-center gap-1.5 align-middle">
-            {SOCIAL_ICONS.map((icon) => (
-              <SocialBadge key={icon.id} icon={icon} variant="blue" />
-            ))}
-          </span>{' '}
-          Twitter, Reddit and Facebook, help their customers, and you&apos;ll get new customers. It&apos;s simple.
+          (if you set up{' '}
+          <img src="/logo.svg" alt="" aria-hidden className="mx-1 inline-block size-[1.2em] rounded-[22%] align-[-0.2em]" />{' '}
+          <strong className="font-black text-[#2A8CFF]">ListeningKit</strong>, you&apos;ll 100% find more{' '}
+          <img
+            src="/logos/jobs.svg"
+            alt="jobs"
+            className="mx-1 inline-block h-[0.85em] w-auto align-[-0.08em]"
+          />
+          )
         </p>
         <Button variant="blue" asChild className="mt-8 rounded-xl px-8 py-5 text-xl font-bold uppercase">
           <Link to="/onboarding" className="inline-block text-center">
-            Get started
+            Get started it&apos;s free!
           </Link>
         </Button>
       </div>

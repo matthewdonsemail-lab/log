@@ -27,14 +27,32 @@ describe('platform support', () => {
 })
 
 describe('onboarding first step', () => {
-  it('offers all three platforms in live and demo mode alike', () => {
+  it('starts on the website step, not platform selection', () => {
     for (const [mode, url] of [['live', 'https://example.convex.cloud'], ['mock', '']]) {
       vi.stubEnv('VITE_API_MODE', mode)
       vi.stubEnv('VITE_CONVEX_URL', url)
       const html = render()
-      expect(html).toContain('Where should we listen?')
-      expect(html.match(/Tap to select/g)).toHaveLength(3)
-      expect(html).not.toContain('Coming soon')
+      expect(html).toContain('Whose brand are we listening for?')
+      expect(html).not.toContain('Where should we listen?')
+    }
+  })
+
+  it('skips the website step when a landing website is waiting', () => {
+    const data = new Map<string, string>([['listeningkit.landing-website', 'acmebooks.com']])
+    vi.stubGlobal('window', {
+      sessionStorage: {
+        getItem: (key: string) => data.get(key) ?? null,
+        setItem: (key: string, value: string) => { data.set(key, value) },
+        removeItem: (key: string) => { data.delete(key) },
+      },
+    })
+    try {
+      const html = render()
+      expect(html).not.toContain('Whose brand are we listening for?')
+      // Static render runs no effects, so the client-side lookup fallback shows.
+      expect(html).toContain('Enter your website')
+    } finally {
+      vi.unstubAllGlobals()
     }
   })
 })

@@ -91,7 +91,6 @@ export function Clouds({ children }: { children?: ReactNode }) {
                 maskImage: `url(${CLOUD_SRC})`,
                 WebkitMaskImage: `url(${CLOUD_SRC})`,
                 maskMode: 'alpha',
-                WebkitMaskMode: 'alpha',
                 maskRepeat: 'repeat',
                 WebkitMaskRepeat: 'repeat',
                 maskSize: '180px 120px',

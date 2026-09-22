@@ -1,0 +1,24 @@
+---
+title: Hermes
+description: Connect Hermes to the ListeningKit MCP server.
+---
+
+# Hermes
+
+Hermes supports remote HTTP MCP servers. Keep the key in `~/.hermes/.env`:
+
+```text
+LISTENINGKIT_KEY=lk_api_REPLACE_WITH_YOUR_KEY
+```
+
+Then add this server to `~/.hermes/config.yaml`:
+
+```yaml
+mcp_servers:
+  listeningkit:
+    url: "https://<your-deployment>.convex.site/mcp"
+    headers:
+      Authorization: "Bearer ${LISTENINGKIT_KEY}"
+```
+
+Restart Hermes and ask it to show your plan or recent matches. Use a Read-only key unless Hermes should manage phrases.
