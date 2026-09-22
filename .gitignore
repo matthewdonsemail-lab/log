@@ -58,6 +58,9 @@ yarn-error.log*
 *.mp4
 *.srt
 
+# per-route screen-recording scripts for the "How does {Route} work?" videos
+HowToUseVideoScripts/
+
 # documents (never commit binary office files)
 *.docx
 

@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import type { ComponentType, SVGProps } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { BellIcon, CreditCardIcon, KeyIcon, LinkIcon } from '@heroicons/react/24/outline'
 import { DashboardSettingsBilling } from './DashboardSettingsBilling'
 import { DashboardSettingsConnections } from './DashboardSettingsConnections'
@@ -37,7 +37,18 @@ function SettingsTab({
 }
 
 export function DashboardSettings() {
-  const [tab, setTab] = useState<SettingsTabId>('connections')
+  // The active tab lives in the URL (?tab=…) so links can deep-link straight
+  // to a tab — the header's "Connect your Socials" lands on connections.
+  const [searchParams, setSearchParams] = useSearchParams()
+  const requested = searchParams.get('tab')
+  const tab: SettingsTabId =
+    requested === 'ingest' || requested === 'notifications' || requested === 'billing' || requested === 'connections'
+      ? requested
+      : 'connections'
+
+  const selectTab = (next: SettingsTabId) => {
+    setSearchParams(next === 'connections' ? {} : { tab: next })
+  }
 
   return (
     <div className="flex flex-col gap-6 pb-6">
@@ -46,10 +57,10 @@ export function DashboardSettings() {
         <p className="text-sm text-text-secondary">Manage how ListeningKit connects.</p>
       </div>
       <div className="flex flex-wrap gap-2">
-        <SettingsTab label="Connections" active={tab === 'connections'} Icon={LinkIcon} onClick={() => setTab('connections')} />
-        <SettingsTab label="Send posts in" active={tab === 'ingest'} Icon={KeyIcon} onClick={() => setTab('ingest')} />
-        <SettingsTab label="Notifications" active={tab === 'notifications'} Icon={BellIcon} onClick={() => setTab('notifications')} />
-        <SettingsTab label="Billing" active={tab === 'billing'} Icon={CreditCardIcon} onClick={() => setTab('billing')} />
+        <SettingsTab label="Connections" active={tab === 'connections'} Icon={LinkIcon} onClick={() => selectTab('connections')} />
+        <SettingsTab label="Send posts in" active={tab === 'ingest'} Icon={KeyIcon} onClick={() => selectTab('ingest')} />
+        <SettingsTab label="Notifications" active={tab === 'notifications'} Icon={BellIcon} onClick={() => selectTab('notifications')} />
+        <SettingsTab label="Billing" active={tab === 'billing'} Icon={CreditCardIcon} onClick={() => selectTab('billing')} />
       </div>
       {tab === 'connections' ? <DashboardSettingsConnections /> : null}
       {tab === 'ingest' ? <DashboardSettingsIngest /> : null}

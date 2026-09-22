@@ -338,7 +338,7 @@ export function DashboardMobileNav() {
               })}
               <div className="my-2 h-px bg-black/10" aria-hidden="true" />
               <Link
-                to="/onboarding"
+                to="/dashboard/settings?tab=connections"
                 onClick={() => setMenuOpen(false)}
                 className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[#2A8CFF] transition-colors hover:bg-black/[0.04]"
               >
