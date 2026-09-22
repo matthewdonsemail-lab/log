@@ -3,10 +3,10 @@ import { Check, Clock, LogOut, X } from 'lucide-react'
 import {
   cn,
   Select,
-  Spinner,
   useSquircleClip,
   useToast
 } from '@listeningkit/ui'
+import { OnboardingLoading } from '../pages/onboarding/OnboardingLoading'
 import {
   getAccounts,
   platformLabel,
@@ -694,7 +694,7 @@ function FacebookQuestionsStep({
     if (!resolving) {
       return <EmptyLine label="Couldn't pull the group's questions — go back and check the link." />
     }
-    return <Spinner label="Loading entry questions" />
+    return <OnboardingLoading message="Loading entry questions" />
   }
   return (
     <div className="flex flex-col gap-4">

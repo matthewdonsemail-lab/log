@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { brandExtractRef, convexClient, convexErrorMessage } from './convex'
+import { brandExtractRef, brandMapRef, convexClient, convexErrorMessage } from './convex'
 import type { BrandEntity } from './brand'
 import { keywordsOnConvex } from './live-keywords'
 
@@ -34,6 +34,25 @@ export async function readWebsite(url: string): Promise<WebsiteFacts> {
 /** True when the backend says website reading is not switched on, so the caller can fall back instead of failing. */
 export function readingIsOff(error: unknown): boolean {
   return error instanceof Error && error.message.includes('not switched on')
+}
+
+export const siteMapSchema = z.object({
+  sourceUrl: z.string(),
+  links: z.array(z.object({ url: z.string(), title: z.string().optional() })),
+})
+
+export type SiteMap = z.infer<typeof siteMapSchema>
+
+/** Ask the backend to list the person's own website pages. Throws a plain-words error. */
+export async function readSiteMap(url: string): Promise<SiteMap> {
+  const client = await convexClient()
+  let data: unknown
+  try { data = await client.action(brandMapRef, { url: url.trim() }) } catch (error) {
+    throw convexErrorMessage(error, 'Could not map that website')
+  }
+  const parsed = siteMapSchema.safeParse(data)
+  if (!parsed.success) throw new Error('Reading the website returned an invalid response')
+  return parsed.data
 }
 
 /**

@@ -95,6 +95,9 @@ export default defineSchema({
     fetchedAt: v.number(),
     // Set when a read starts, so repeated presses cannot spend the Firecrawl account's credits.
     lastAttemptAt: v.number(),
+    // Same guard for the page-map read, tracked apart so one onboarding can
+    // read the facts and then the map without tripping either cooldown.
+    lastMapAt: v.optional(v.number()),
   }).index('by_owner', ['owner']),
   // Email alerts for strong matches, sent through AgentMail. One row per person.
   emailAlerts: defineTable({

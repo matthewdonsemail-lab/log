@@ -157,3 +157,9 @@ Convex agent skills for common tasks can be installed by running
 - Real-browser checks: Camoufox for the app (a person signs in once; the session persists in the profile), Playwright's Chromium for the extension (Chrome 137+ ignores `--load-extension`; Camoufox cannot load Chrome extensions). Extension pages forbid string `eval`, so poll text instead of `wait_for_function("...")`.
 - Reddit: never trust a "200" from `old.reddit.com` (it redirects bots to a login page); fetch with `redirect: 'manual'`.
 - Write multi-line files with the editor tool; long shell heredocs with quotes break here.
+
+## Loading States (2026-09-22)
+
+- X → Y transitions render `OnboardingLoading` (`apps/web/src/pages/onboarding/OnboardingLoading.tsx`) — one component, never hand-rolled loading text. Route boots (`OnboardingAuthLoading`), step changes ("Reading your website…") and full-area form waits ("Loading entry questions") all use it.
+- Tones: `light` (default — blue spinner, slate message, for white pages) and `dark` (all white, for brand-blue pages like the onboarding steps). Single `role=status` node so the message announces once.
+- Inline micro-states are a different layer and keep their small primitives: `LoadingLine` for form rows, dashed-border boxes and `FeedSkeletonColumn` for dashboard lists, the ui-kit `Spinner` for sr-only sheet waits, inline SVGs for in-button spinners. Never promote these to the full-block loader, and never ship a bare "Loading…" paragraph for a screen transition.

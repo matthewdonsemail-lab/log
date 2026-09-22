@@ -185,6 +185,8 @@ export interface KeywordStrategyMapping {
   strategies: SearchStrategyEntry[]
   /** The operand phrase the user said relates to what they're doing. */
   selectedPhrase?: string
+  /** Competitor names or domains the person typed themselves — never looked up, never guessed. */
+  competitors?: string[]
   /** The community set the user recognized, if any. */
   groups?: CommunityPick[]
   /** Ids of the groups they want to post in and listen to. */

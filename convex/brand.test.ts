@@ -2,7 +2,7 @@ import { convexTest } from 'convex-test'
 import { anyApi } from 'convex/server'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { internal } from './_generated/api'
-import { BRAND_SCHEMA, businessSummary, FIRECRAWL_URL, normalizeWebsite, parseBrandFacts, scrapeBrand } from './lib/firecrawl'
+import { BRAND_SCHEMA, businessSummary, FIRECRAWL_MAP_URL, FIRECRAWL_URL, mapSite, normalizeWebsite, parseBrandFacts, parseSiteLinks, scrapeBrand } from './lib/firecrawl'
 import schema from './schema'
 
 const modules = {
@@ -141,6 +141,73 @@ describe('the Firecrawl call', () => {
   })
 })
 
+describe('mapping a website', () => {
+  const mapReply = (links: unknown, status = 200) =>
+    new Response(JSON.stringify({ success: true, links }), { status })
+  const GOOD_LINKS = [
+    { url: 'https://acmebooks.com/', title: 'Acme Books' },
+    { url: 'https://acmebooks.com/services', title: 'Services' },
+    { url: 'https://acmebooks.com/about#team', title: '  About  ' },
+    { url: 'https://other.example/', title: 'Someone else' },
+    { url: 'not a url', title: 'Junk' },
+    { url: 'https://acmebooks.com/services', title: 'Services again' },
+    { url: 'https://acmebooks.com/contact' },
+  ]
+
+  it('keeps only same-origin pages, dedupes, and trims titles', () => {
+    expect(parseSiteLinks(GOOD_LINKS, 'https://acmebooks.com')).toEqual([
+      { url: 'https://acmebooks.com/', title: 'Acme Books' },
+      { url: 'https://acmebooks.com/services', title: 'Services' },
+      { url: 'https://acmebooks.com/about', title: 'About' },
+      { url: 'https://acmebooks.com/contact' },
+    ])
+    expect(parseSiteLinks(null, 'https://acmebooks.com')).toEqual([])
+    expect(parseSiteLinks({ links: 'junk' }, 'https://acmebooks.com')).toEqual([])
+  })
+
+  it('sends the address and the key to the map endpoint', async () => {
+    const fetcher = vi.fn(async () => mapReply(GOOD_LINKS))
+    const links = await mapSite(fetcher as unknown as typeof fetch, KEY, 'https://acmebooks.com/')
+    expect(links).toHaveLength(4)
+    const [url, init] = fetcher.mock.calls[0] as unknown as [string, RequestInit]
+    expect(url).toBe(FIRECRAWL_MAP_URL)
+    expect((init.headers as Record<string, string>).Authorization).toBe(`Bearer ${KEY}`)
+    expect(JSON.parse(init.body as string).url).toBe('https://acmebooks.com/')
+  })
+
+  it('says what went wrong in plain words, without the key or the response body', async () => {
+    const cases: [Response, RegExp][] = [
+      [new Response('sk-leak', { status: 401 }), /refused the API key/],
+      [new Response('sk-leak', { status: 402 }), /out of credits/],
+      [new Response('sk-leak', { status: 500 }), /HTTP 500/],
+      [new Response(JSON.stringify({ success: false })), /could not map that website/],
+    ]
+    for (const [response, message] of cases) {
+      const error = await mapSite((async () => response) as unknown as typeof fetch, KEY, 'https://acmebooks.com/').catch((e: Error) => e)
+      expect((error as Error).message).toMatch(message)
+      expect((error as Error).message).not.toContain('sk-leak')
+      expect((error as Error).message).not.toContain(KEY)
+    }
+  })
+
+  it('needs a signed-in person, a key, and a public website, and shares the read cooldown', async () => {
+    const { t, alice } = setup()
+    await expect(t.action(anyApi.brand.mapWebsite, { url: 'acmebooks.com' })).rejects.toThrow('Authentication required')
+    vi.stubEnv('FIRECRAWL_API_KEY', '')
+    await expect(alice.action(anyApi.brand.mapWebsite, { url: 'acmebooks.com' })).rejects.toThrow('not switched on yet')
+    vi.stubEnv('FIRECRAWL_API_KEY', KEY)
+    await expect(alice.action(anyApi.brand.mapWebsite, { url: 'intranet' })).rejects.toThrow('public website')
+    const fetcher = vi.fn(async () => mapReply(GOOD_LINKS))
+    vi.stubGlobal('fetch', fetcher)
+    const mapped = await alice.action(anyApi.brand.mapWebsite, { url: 'acmebooks.com' })
+    expect(mapped.sourceUrl).toBe('https://acmebooks.com/')
+    expect(mapped.links).toHaveLength(4)
+    expect(mapped.links[0]).toEqual({ url: 'https://acmebooks.com/', title: 'Acme Books' })
+    await expect(alice.action(anyApi.brand.mapWebsite, { url: 'acmebooks.com' })).rejects.toThrow('wait a few seconds')
+    expect(fetcher).toHaveBeenCalledTimes(1)
+  })
+})
+
 describe('reading a website', () => {
   it('needs a signed-in person', async () => {
     const { t } = setup()
@@ -195,6 +262,21 @@ describe('reading a website', () => {
     expect(fetcher).toHaveBeenCalledTimes(1)
     vi.setSystemTime(NOW + 31_000)
     await alice.action(anyApi.brand.extractFromWebsite, { url: 'acmebooks.com' })
+    expect(fetcher).toHaveBeenCalledTimes(2)
+  })
+
+  it('tracks the facts and map cooldowns apart, so one onboarding reads both', async () => {
+    const { alice } = setup()
+    const fetcher = vi.fn(async (url: string) =>
+      String(url).includes('/v2/map')
+        ? new Response(JSON.stringify({ success: true, links: [{ url: 'https://acmebooks.com/', title: 'Acme' }] }))
+        : firecrawlReply(GOOD_JSON),
+    )
+    vi.stubGlobal('fetch', fetcher)
+    await alice.action(anyApi.brand.extractFromWebsite, { url: 'acmebooks.com' })
+    const mapped = await alice.action(anyApi.brand.mapWebsite, { url: 'acmebooks.com' })
+    expect(mapped.links).toEqual([{ url: 'https://acmebooks.com/', title: 'Acme' }])
+    await expect(alice.action(anyApi.brand.mapWebsite, { url: 'acmebooks.com' })).rejects.toThrow('wait a few seconds')
     expect(fetcher).toHaveBeenCalledTimes(2)
   })
 })

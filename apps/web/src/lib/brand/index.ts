@@ -2,7 +2,6 @@ import { isRecord, loadPersistedState, savePersistedState } from '../persist'
 import type { BrandEntity, BrandPage, KeywordStrategyMapping } from './types'
 import { brandApp, clearBrandRecord, getBrandRecord, setBrandRecord } from './server'
 import { defaultChannels } from './types'
-import { seedSourcesFor } from './sources'
 import type { BrandIntelligenceInput } from './server'
 
 export type {
@@ -175,6 +174,7 @@ function isKeywordStrategyMapping(value: unknown): value is KeywordStrategyMappi
     }
   }
   if (value.interested !== undefined && !isStringArray(value.interested)) return false
+  if (value.competitors !== undefined && !isStringArray(value.competitors)) return false
   return true
 }
 
@@ -211,10 +211,10 @@ function humanizeHost(host: string): string {
 }
 
 /**
- * Mock brand extraction from a website URL: normalizes the URL, derives a
+ * Honest brand extraction from a website URL: normalizes the URL, derives a
  * display name from the hostname, and seeds a base BrandEntity — voice gets
- * the house default, location the Galway default, sources the deterministic
- * seed pages, intelligence empty for the reveal to fill in. Offerings come
+ * the house default, location the Galway default, sources empty until a real
+ * read fills them, intelligence empty for the reveal to fill in. Offerings come
  * back empty — inventing services would be fake data, so the follow-up
  * drafts fall back to generic phrasing until real ones are added. Throws a
  * human-readable error for unparseable input.
@@ -237,7 +237,9 @@ export function extractBrandFromUrl(input: string): Omit<BrandEntity, 'updatedAt
     identity: {
       name,
       website,
-      tagline: `${name} — heard across social`,
+      // Empty until a real read says otherwise — a tagline is a fact about
+      // the business, so the guess does not invent one.
+      tagline: '',
     },
     location: { label: '', lat: 53.2707, lng: -9.0568, radiusKm: 10 },
     offerings: [],
@@ -248,7 +250,7 @@ export function extractBrandFromUrl(input: string): Omit<BrandEntity, 'updatedAt
       donts: [],
       examples: [],
     },
-    sources: seedSourcesFor(website, name),
+    sources: [],
     channels: defaultChannels(),
     memory: { rules: [] },
     intelligence: { competitors: [], targetCommunities: [] },

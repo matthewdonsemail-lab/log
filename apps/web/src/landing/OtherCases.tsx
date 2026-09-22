@@ -91,7 +91,7 @@ function CaseCard({ item, index }: { item: OtherCase; index: number }) {
               muted
               loop
               playsInline
-              className="aspect-[9/16] h-full w-auto max-w-full object-cover"
+              className="aspect-[9/16] h-[70%] w-auto max-w-[80%] object-cover"
             />
           </div>
         </div>

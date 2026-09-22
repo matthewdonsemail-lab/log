@@ -1,6 +1,6 @@
 import { ConvexError, v } from 'convex/values'
 import { internal } from './_generated/api'
-import { businessSummary, normalizeWebsite, scrapeBrand, type BrandFacts } from './lib/firecrawl'
+import { businessSummary, mapSite, normalizeWebsite, scrapeBrand, type BrandFacts } from './lib/firecrawl'
 import { action, internalMutation, query, requireOwner } from './lib/server'
 
 const COOLDOWN_MS = 30_000
@@ -33,7 +33,7 @@ export const extractFromWebsite = action({
     if (!target.ok) throw new ConvexError(target.reason)
     const apiKey = process.env.FIRECRAWL_API_KEY
     if (!apiKey) throw new ConvexError('Reading your website is not switched on yet.')
-    await ctx.runMutation(internal.brand.claim, { owner })
+    await ctx.runMutation(internal.brand.claim, { owner, kind: 'facts' })
     let facts: BrandFacts
     try { facts = await scrapeBrand(fetch, apiKey, target.url) } catch (error) {
       console.error('brand: Firecrawl failed', error instanceof Error ? error.message : error)
@@ -44,15 +44,45 @@ export const extractFromWebsite = action({
   },
 })
 
-/** Starts a read: refuses a second one inside the cooldown, so pressing the button repeatedly cannot spend credits. */
+/**
+ * List the person's own website pages with Firecrawl's map. The result is
+ * real or it is an error: only same-origin pages Firecrawl actually found
+ * are returned, capped so the reveal shows a short honest list. The map has
+ * its own cooldown apart from the facts extraction, so one onboarding can
+ * read the facts and then the map without tripping either guard.
+ */
+export const mapWebsite = action({
+  args: { url: v.string() },
+  handler: async (ctx, args): Promise<{ sourceUrl: string; links: { url: string; title?: string }[] }> => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) throw new ConvexError('Authentication required')
+    const owner = identity.tokenIdentifier
+    const target = normalizeWebsite(args.url)
+    if (!target.ok) throw new ConvexError(target.reason)
+    const apiKey = process.env.FIRECRAWL_API_KEY
+    if (!apiKey) throw new ConvexError('Reading your website is not switched on yet.')
+    await ctx.runMutation(internal.brand.claim, { owner, kind: 'map' })
+    try {
+      const links = await mapSite(fetch, apiKey, target.url)
+      return { sourceUrl: target.url, links: links.slice(0, 7) }
+    } catch (error) {
+      console.error('brand: Firecrawl map failed', error instanceof Error ? error.message : error)
+      throw new ConvexError(plainReason(error))
+    }
+  },
+})
+
+/** Starts a read of one kind: refuses a second one inside the cooldown, so pressing the button repeatedly cannot spend credits. */
 export const claim = internalMutation({
-  args: { owner: v.string() },
+  args: { owner: v.string(), kind: v.union(v.literal('facts'), v.literal('map')) },
   handler: async (ctx, args) => {
     const now = Date.now()
     const row = await ctx.db.query('brands').withIndex('by_owner', q => q.eq('owner', args.owner)).first()
-    if (row && now - row.lastAttemptAt < COOLDOWN_MS) throw new ConvexError('Please wait a few seconds before reading again.')
-    if (row) await ctx.db.patch(row._id, { lastAttemptAt: now })
-    else await ctx.db.insert('brands', { owner: args.owner, sourceUrl: '', name: '', tagline: '', offerings: [], fetchedAt: 0, lastAttemptAt: now })
+    const last = args.kind === 'map' ? (row?.lastMapAt ?? 0) : (row?.lastAttemptAt ?? 0)
+    if (now - last < COOLDOWN_MS) throw new ConvexError('Please wait a few seconds before reading again.')
+    const stamp = args.kind === 'map' ? { lastMapAt: now } : { lastAttemptAt: now }
+    if (row) await ctx.db.patch(row._id, stamp)
+    else await ctx.db.insert('brands', { owner: args.owner, sourceUrl: '', name: '', tagline: '', offerings: [], fetchedAt: 0, lastAttemptAt: args.kind === 'facts' ? now : 0, ...(args.kind === 'map' ? { lastMapAt: now } : {}) })
     return null
   },
 })
@@ -62,7 +92,7 @@ export const store = internalMutation({
   handler: async (ctx, args) => {
     const row = await ctx.db.query('brands').withIndex('by_owner', q => q.eq('owner', args.owner)).first()
     const fields = {
-      owner: args.owner, sourceUrl: args.sourceUrl, ...args.facts, fetchedAt: Date.now(), lastAttemptAt: row?.lastAttemptAt ?? Date.now(),
+      owner: args.owner, sourceUrl: args.sourceUrl, ...args.facts, fetchedAt: Date.now(), lastAttemptAt: row?.lastAttemptAt ?? Date.now(), ...(row?.lastMapAt !== undefined ? { lastMapAt: row.lastMapAt } : {}),
     }
     if (row) await ctx.db.replace(row._id, fields)
     else await ctx.db.insert('brands', fields)

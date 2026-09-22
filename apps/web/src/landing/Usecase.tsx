@@ -5,12 +5,13 @@ import { Button, cn, useSquircleClip } from '@listeningkit/ui'
 import Dither from '@/components/Dither'
 import './Usecase.css'
 
-type UsecaseSlide = {
+export type UsecaseSlide = {
   title: string
   body: string
 }
 
-const SLIDES: UsecaseSlide[] = [
+/** The four steps, shared with the auto-looping showcase on the auth pages. */
+export const USECASE_SLIDES: UsecaseSlide[] = [
   {
     title: 'Spot the emergency the second it’s posted',
     body: 'Real posts stream in — “leak in my toilet”, “pipe burst”, “any good plumbers in Dallas?” — each one matched by keyword, each one answered with auto-reply to all brand mentions.',
@@ -29,7 +30,7 @@ const SLIDES: UsecaseSlide[] = [
   },
 ]
 
-const USECASE_EAR_SETS = [
+export const USECASE_EAR_SETS = [
   [
     { src: '/images/ears/ear1.png', className: 'left-[-4%] top-[8%] size-64', rotate: -3 },
     { src: '/images/ears/ear4.png', className: 'right-[-3%] top-[34%] size-80', rotate: 2 },
@@ -57,7 +58,7 @@ const USECASE_EAR_SETS = [
  * step 2, paid.svg where the title says "paid", hoondreds.svg where it says
  * "hundreds".
  */
-function SlideTitle({ index, title, className }: { index: number; title: string; className: string }) {
+export function SlideTitle({ index, title, className }: { index: number; title: string; className: string }) {
   if (index === 0)
     return (
       <h2 className={className}>
@@ -97,7 +98,7 @@ function SlideTitle({ index, title, className }: { index: number; title: string;
  * Plays `/video/usecase/<n>.mp4` inside the blue squircle with a faint
  * white vignette; falls back to the number badge until that clip lands.
  */
-function SlideMarker({ index }: { index: number }) {
+export function SlideMarker({ index }: { index: number }) {
   const clip = useSquircleClip<HTMLDivElement>(18)
   const [missing, setMissing] = useState(false)
   if (missing) {
@@ -137,7 +138,7 @@ function SlideMarker({ index }: { index: number }) {
   )
 }
 
-function renderBody(body: string) {
+export function renderUsecaseBody(body: string) {
   return body.split(/(“[^”]*”)/g).map((part, index) =>
     /^“[^”]*”$/.test(part) ? (
       <span key={index} className="font-black text-[#2A8CFF] underline decoration-dashed underline-offset-4">
@@ -146,6 +147,70 @@ function renderBody(body: string) {
     ) : (
       <span key={index}>{part}</span>
     ),
+  )
+}
+
+/** One phone clip per step, in slide order. */
+export const USECASE_PHONE_CLIPS = [
+  '/video/Facebook1.webm',
+  '/video/Facebook2.webm',
+  '/video/Facebook3.webm',
+  '/video/Facebook4.webm',
+]
+
+/**
+ * Vertical phone filmstrip shared by the scroll-driven landing section and
+ * the auto-looping auth showcase. The strip translates so the active step's
+ * clip is framed; frame sizing besides height comes from the caller.
+ * The loop showcase additionally opts out of clip looping, collects each
+ * webm's duration (via clipRef / onClipDuration) so a step lasts exactly as
+ * long as its own clip, and passes seamless so the strip carries a
+ * duplicate first slide at the end — the loop scrolls forward into it and
+ * snap-cuts back to the real first slide on the identical frame instead of
+ * rewinding through the whole strip.
+ */
+export function UsecasePhoneFilm({
+  active,
+  frameClassName,
+  mediaClassName,
+  loopClips = true,
+  seamless = false,
+  snap = false,
+  clipRef,
+  onClipDuration,
+}: {
+  active: number
+  frameClassName: string
+  mediaClassName: string
+  loopClips?: boolean
+  seamless?: boolean
+  snap?: boolean
+  clipRef?: (index: number, el: HTMLVideoElement | null) => void
+  onClipDuration?: (index: number, durationSeconds: number) => void
+}) {
+  const clips = seamless ? [...USECASE_PHONE_CLIPS, USECASE_PHONE_CLIPS[0]] : USECASE_PHONE_CLIPS
+  return (
+    <motion.div
+      animate={{ y: `${-active * (seamless ? 20 : 25)}%` }}
+      transition={{ duration: snap ? 0 : 0.55, ease: [0.22, 1, 0.36, 1] }}
+      className={`flex w-full flex-col ${seamless ? 'h-[500%]' : 'h-[400%]'}`}
+    >
+      {clips.map((src, index) => (
+        <div key={`${src}-${index}`} className={cn(frameClassName, seamless ? 'h-1/5' : 'h-1/4')}>
+          <video
+            ref={(el) => clipRef?.(index, el)}
+            src={src}
+            autoPlay
+            muted
+            loop={loopClips}
+            playsInline
+            preload="auto"
+            onLoadedMetadata={(event) => onClipDuration?.(index, event.currentTarget.duration)}
+            className={mediaClassName}
+          />
+        </div>
+      ))}
+    </motion.div>
   )
 }
 
@@ -175,11 +240,11 @@ export function Usecase() {
        setActive((prev) => {
          // Keep a full quarter of the scroll track for each visual card.
          // Rounding at the midpoint makes each card take over predictably.
-         const next = Math.min(SLIDES.length - 1, Math.floor(progress * SLIDES.length + 0.5))
+          const next = Math.min(USECASE_SLIDES.length - 1, Math.floor(progress * USECASE_SLIDES.length + 0.5))
         return prev === next ? prev : next
       })
       setFill((prev) => {
-        const next = progress * SLIDES.length
+        const next = progress * USECASE_SLIDES.length
         return Math.abs(prev - next) < 0.001 ? prev : next
       })
     }
@@ -204,7 +269,7 @@ export function Usecase() {
           <div className="flex h-screen w-full justify-center">
             <div className="relative mx-6 flex h-full w-full max-w-3xl justify-center text-center">
               <div className="absolute left-1/2 top-[9.8rem] flex -translate-x-1/2 items-center gap-2">
-                {SLIDES.map((slide, i) => {
+                {USECASE_SLIDES.map((slide, i) => {
                   const barFill = Math.min(1, Math.max(0, fill - i))
                   return (
                     <span key={slide.title} className="h-2 w-10 overflow-hidden rounded-full bg-ink/15">
@@ -217,7 +282,7 @@ export function Usecase() {
                   )
                 })}
               </div>
-              {SLIDES.map((slide, i) => (
+              {USECASE_SLIDES.map((slide, i) => (
                 <div
                   key={`${slide.title}-${i === active ? 'on' : 'off'}`}
                   aria-hidden={i !== active}
@@ -229,7 +294,7 @@ export function Usecase() {
                   <div className={cn('w-full text-center text-balance', i === active && 'lk-flip-in')}>
                     <SlideMarker index={i} />
                     <SlideTitle index={i} title={slide.title} className="text-5xl font-black leading-tight text-ink" />
-                    <p className="mx-auto mt-6 max-w-xl text-xl leading-snug text-ink/70">{renderBody(slide.body)}</p>
+                    <p className="mx-auto mt-6 max-w-xl text-xl leading-snug text-ink/70">{renderUsecaseBody(slide.body)}</p>
                   </div>
                 </div>
               ))}
@@ -292,60 +357,11 @@ export function Usecase() {
               ))}
             </div>
             <div className="relative z-[2] h-screen w-full overflow-hidden">
-              <motion.div
-                animate={{ y: `${-active * 25}%` }}
-                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-                className="flex h-[400%] w-full flex-col"
-              >
-                {SLIDES.map((slide, i) => (
-                  <div key={slide.title} className="flex h-1/4 w-full shrink-0 items-center justify-center pt-[9.2rem]">
-                    {i === 0 ? (
-                      <video
-                        src="/video/Facebook1.webm"
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        className="mx-auto aspect-[9/16] h-[80vh] max-h-[80vh] w-auto max-w-[80%] object-cover"
-                      />
-                    ) : i === 1 ? (
-                      <video
-                        src="/video/Facebook2.webm"
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        className="mx-auto aspect-[9/16] h-[80vh] max-h-[80vh] w-auto max-w-[80%] object-cover"
-                      />
-                    ) : i === 2 ? (
-                      <video
-                        src="/video/Facebook3.webm"
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        className="mx-auto aspect-[9/16] h-[80vh] max-h-[80vh] w-auto max-w-[80%] object-cover"
-                      />
-                    ) : i === 3 ? (
-                      <video
-                        src="/video/Facebook4.webm"
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        className="mx-auto aspect-[9/16] h-[80vh] max-h-[80vh] w-auto max-w-[80%] object-cover"
-                      />
-                    ) : (
-                      <div className="mx-auto flex aspect-[9/16] h-[80vh] max-h-[80vh] w-auto max-w-[80%] items-center justify-center overflow-hidden rounded-[2rem] bg-slate-200 text-center">
-                        <div className="max-w-lg p-12">
-                          <p className="text-sm font-bold uppercase text-slate-500">Use case {i + 1}</p>
-                          <p className="mt-4 text-3xl font-black leading-tight text-slate-700">{slide.title}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </motion.div>
+              <UsecasePhoneFilm
+                active={active}
+                frameClassName="flex w-full shrink-0 items-center justify-center pt-[9.2rem]"
+                mediaClassName="mx-auto aspect-[9/16] h-[80vh] max-h-[80vh] w-auto max-w-[80%] object-cover"
+              />
             </div>
           </div>
         </div>
@@ -353,10 +369,10 @@ export function Usecase() {
     </section>
     <section className="w-full bg-white md:hidden">
       <div className="mx-auto flex w-full max-w-7xl flex-col px-6 py-16">
-        {SLIDES.map((slide, i) => (
+        {USECASE_SLIDES.map((slide, i) => (
           <div key={slide.title} className="border-t border-black/10 py-10 first:border-t-0 first:pt-0">
             <SlideTitle index={i} title={slide.title} className="text-3xl font-black leading-tight text-ink" />
-            <p className="mt-3 text-base leading-snug text-ink/70">{renderBody(slide.body)}</p>
+            <p className="mt-3 text-base leading-snug text-ink/70">{renderUsecaseBody(slide.body)}</p>
           </div>
         ))}
         <Button

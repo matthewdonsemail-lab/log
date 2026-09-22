@@ -156,10 +156,19 @@ media-outlet video {
 .lk-clerk input.cl-formFieldInput.cl-formFieldInput {
   height: 3rem;
   max-height: none;
+  box-sizing: border-box;
+  width: 100%;
   border: 1.5px solid #CBD5E1;
   box-shadow: none;
   padding-left: 1rem;
   padding-right: 1rem;
+}
+/* Clerk's inner field wrappers can sit flush against the input and shave
+   its 1.5px border (seen on the email field's left edge). 1px of breathing
+   room keeps the full border visible. */
+.lk-clerk .cl-formField.cl-formField {
+  padding-left: 1px;
+  padding-right: 1px;
 }
 .lk-clerk input.cl-formFieldInput.cl-formFieldInput:focus {
   border-color: #2A8CFF;

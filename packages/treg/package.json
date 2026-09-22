@@ -1,0 +1,33 @@
+{
+  "name": "@listeningkit/treg",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Local Convex component wrapping treg.to (tool catalog) for ListeningKit.",
+  "type": "module",
+  "main": "./dist/treg.js",
+  "types": "./dist/treg.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    "./convex.config": {
+      "types": "./dist/convex.config.d.ts",
+      "default": "./dist/convex.config.js"
+    },
+    "./convex.config.js": {
+      "types": "./dist/convex.config.d.ts",
+      "default": "./dist/convex.config.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --build ./tsconfig.build.json --force",
+    "build:codegen": "convex codegen --component-dir ./",
+    "lint": "oxlint .",
+    "typecheck": "tsc --noEmit --skipLibCheck"
+  },
+  "dependencies": {
+    "convex": "^1.45.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "typescript": "~5.6.2"
+  }
+}

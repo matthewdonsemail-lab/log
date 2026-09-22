@@ -78,9 +78,23 @@ const REPEATS_PER_HALF = 4
  * is seamless — the per-cloud offsets are identical in both halves.
  * Motion halts under prefers-reduced-motion (see Clouds.css).
  */
-export function Clouds({ children }: { children?: ReactNode }) {
+export function Clouds({
+  children,
+  className = 'h-[40rem]',
+  edgeFade = true,
+}: {
+  children?: ReactNode
+  className?: string
+  /**
+   * Paint the solid side/radial fades inside the band (landing default).
+   * Pass false when an outer page vignette already handles the edges, so
+   * the hero and the content below share one continuous treatment instead
+   * of two stacked ones with a seam between them.
+   */
+  edgeFade?: boolean
+}) {
   return (
-    <div aria-hidden className="lk-clouds relative h-[40rem] w-full overflow-hidden">
+    <div aria-hidden={children ? undefined : true} className={`lk-clouds relative w-full overflow-hidden ${className}`}>
       {ROWS.map((row) => (
         <div key={row.depth} className={`lk-cloud-row lk-cloud-row-${row.depth} absolute inset-x-0 z-[1] ${row.rowClass}`}>
           <div className={`lk-cloud-strip lk-cloud-drift-${row.depth} relative flex w-max items-center`}>
@@ -126,20 +140,24 @@ export function Clouds({ children }: { children?: ReactNode }) {
           </div>
         </div>
       ))}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 z-[3]"
-        style={{
-          background: 'linear-gradient(to right, #2a8cff 0%, transparent 18%, transparent 82%, #2a8cff 100%)',
-        }}
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-[3]"
-        style={{
-          background: 'radial-gradient(ellipse at center, transparent 42%, rgba(42,140,255,0.18) 72%, #2a8cff 100%)',
-        }}
-      />
+      {edgeFade ? (
+        <>
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 z-[3]"
+            style={{
+              background: 'linear-gradient(to right, #2a8cff 0%, transparent 18%, transparent 82%, #2a8cff 100%)',
+            }}
+          />
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 z-[3]"
+            style={{
+              background: 'radial-gradient(ellipse at center, transparent 42%, rgba(42,140,255,0.18) 72%, #2a8cff 100%)',
+            }}
+          />
+        </>
+      ) : null}
       {children ? (
         <div className="absolute inset-0 z-10 flex items-center justify-center">
           {children}

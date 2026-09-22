@@ -9,7 +9,7 @@ import { applyWebsiteFacts, brandOnConvex, readingIsOff, readWebsite } from '@/l
 import { BrandRevealStep } from '@/components/onboarding/BrandRevealStep'
 import { FunnelVideo } from '@/components/FunnelVideo'
 import { ReadyFill } from '@/components/ReadyFill'
-import { BrandHeader } from './OnboardingShell'
+import { OnboardingLoading } from './OnboardingLoading'
 import { readAuthSource, saveAuthSource, clearAuthSource, clearLandingWebsite, readLandingWebsite, saveOnboardingProgress, readOnboardingProgress } from './auth-handoff'
 import { websiteError } from '@/lib/website'
 
@@ -267,8 +267,10 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
+  // The clouds hero lives in OnboardingShell above this content, so every
+  // onboarding screen opens identically — steps never render their own copy.
   return (
-    <div className="relative mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 pb-16 pt-24 text-center sm:px-10">
+    <div className="relative mx-auto flex w-full max-w-7xl flex-1 flex-col items-center justify-center px-6 pb-16 text-center sm:px-10">
       {import.meta.env.DEV && !requireSignIn ? (
         <div className="fixed left-2 top-2 z-[60] flex items-center gap-0.5 rounded-full bg-black/60 px-2 py-1 text-[11px] text-white backdrop-blur">
           <span className="px-1 font-bold text-amber-300">DEV</span>
@@ -287,10 +289,6 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
           ))}
         </div>
       ) : null}
-      <div className="absolute inset-x-0 top-6 flex justify-center">
-        <BrandHeader />
-      </div>
-      <div className="flex w-full flex-1 flex-col items-center justify-center">
 
       {step === 3 && (
         <div className="mt-8 w-full">
@@ -676,13 +674,7 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
       {step === 1 && !profile && (
         <div className="mt-8 flex w-full flex-col items-center">
           {looking ? (
-            <>
-              <svg className="size-8 animate-spin text-white" viewBox="0 0 24 24" fill="none" aria-label="Reading your website">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-              <p className="mt-4 text-lg font-bold text-white">Reading your website…</p>
-            </>
+            <OnboardingLoading message="Reading your website…" tone="dark" />
           ) : (
             <>
               <p className="text-lg font-bold text-white">We could not read that website.</p>
@@ -719,7 +711,6 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
       )}
 
       {step === 5 && <ReadyFill />}
-      </div>
     </div>
   )
 }

@@ -1,8 +1,10 @@
 import { SignIn, SignUp, useSignIn, useSignUp } from '@clerk/react'
 import { useState } from 'react'
 import { siGithub, siGoogle } from 'simple-icons'
-import { useSquircleClip, useToast } from '@listeningkit/ui'
-import { BrandHeader, OnboardingShell } from './OnboardingShell'
+import { useToast } from '@listeningkit/ui'
+import { UsecaseLoop } from '@/landing/UsecaseLoop'
+import { OnboardingShell } from './OnboardingShell'
+import { OnboardingLoading } from './OnboardingLoading'
 
 /**
  * Auth is a continuation of onboarding, not a second app shell: one white
@@ -43,12 +45,12 @@ const appearance = {
 
 const COPY = {
   'sign-in': {
-    title: 'Welcome back',
-    subtitle: 'Sign in to pick up your listening.',
+    title: 'Sign In',
+    subtitle: '',
   },
   'sign-up': {
-    title: 'Create your workspace',
-    subtitle: 'One account keeps every signal in one place.',
+    title: 'Sign Up',
+    subtitle: '',
   },
 } as const
 
@@ -135,24 +137,24 @@ async function start(provider: OAuthProvider) {
 
   return (
     <div>
-      <p className="text-sm font-semibold text-slate-700">Choose a provider to continue</p>
-      <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div className="mt-3 grid w-full grid-cols-1 gap-3">
         {OAUTH_PROVIDERS.map((provider) => {
           const isPending = pending === provider.id
           return (
-            <button
-              key={provider.id}
-              type="button"
-              onClick={() => start(provider)}
-              disabled={pending !== null}
-              className="flex min-h-32 flex-col items-center justify-center gap-1.5 rounded-2xl border border-slate-200 bg-white p-4 text-slate-900 hover:border-[#2A8CFF] hover:bg-[#EFF6FF] disabled:opacity-60"
-            >
-              <svg viewBox="0 0 24 24" role="img" aria-label={provider.label} className="size-10 shrink-0" fill="currentColor">
-                <path d={provider.icon.path} />
-              </svg>
-              <span className="text-lg font-bold">{provider.label}</span>
-              <span className="text-sm text-slate-500">{isPending ? 'Redirecting…' : 'Tap to continue'}</span>
-            </button>
+              <button
+                key={provider.id}
+                type="button"
+                onClick={() => start(provider)}
+                disabled={pending !== null}
+                className="flex min-h-12 flex-row items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-slate-900 hover:border-[#2A8CFF] hover:bg-[#EFF6FF] disabled:opacity-60"
+              >
+                <svg viewBox="0 0 24 24" role="img" aria-label={provider.label} className="size-6 shrink-0" fill="currentColor">
+                  <path d={provider.icon.path} />
+                </svg>
+                <span className="whitespace-nowrap text-base font-bold">
+                  {isPending ? 'Redirecting…' : `Continue with ${provider.label}`}
+                </span>
+              </button>
           )
         })}
       </div>
@@ -161,32 +163,48 @@ async function start(provider: OAuthProvider) {
 }
 
 export function OnboardingAuth({ mode, riskNotice = false, redirectTo = '/onboarding' }: { mode: 'sign-in' | 'sign-up'; riskNotice?: boolean; redirectTo?: string }) {
-  const clip = useSquircleClip<HTMLDivElement>(28)
   const copy = COPY[mode]
   return (
-    <OnboardingShell>
-      <main className="relative mx-auto flex w-full max-w-7xl flex-1 flex-col items-center justify-center px-6 pb-16 pt-24 text-center sm:px-10">
-        <div className="absolute inset-x-0 top-6 flex justify-center"><BrandHeader /></div>
-        <h1 className="mt-8 text-4xl font-bold leading-tight sm:text-5xl">{copy.title}</h1>
-        <p className="mt-4 text-lg text-white/85">{copy.subtitle}</p>
-        {riskNotice && (
-          <div className="mt-6 w-full max-w-md rounded-2xl border border-amber-200/30 bg-amber-950/30 p-4 text-left text-sm text-amber-50" role="note">
-            <p className="font-bold">You are connecting your account</p>
-            <p className="mt-1 text-amber-100/85">
-              ListeningKit will use your account to connect the services you choose. Only continue on a computer you trust.
-              If your computer is compromised, saved sessions and connected accounts may be at risk.
-            </p>
+    <OnboardingShell hero={false} tone="white">
+      {/* No clouds hero on the auth screens — the two-grid card is the header. */}
+      <main className="relative flex w-full flex-1 flex-col">
+        <div className="grid w-full flex-1 items-stretch text-left lg:grid-cols-2">
+          <div className="bg-white p-8 lg:p-32">
+            <div className="mx-auto w-full max-w-xs text-center">
+            <a href="/" aria-label="ListeningKit home" className="mb-6 inline-block">
+              <img src="/logo.svg" alt="ListeningKit logo" className="size-14 rounded-[14px] object-contain" />
+            </a>
+            <h1 className="text-xl font-bold leading-tight text-slate-900 sm:text-2xl">{copy.title}</h1>
+            {copy.subtitle ? <p className="mt-4 text-lg text-slate-600">{copy.subtitle}</p> : null}
+            {riskNotice && (
+              <div className="mt-6 w-full rounded-2xl border border-amber-200 bg-amber-50 p-4 text-left text-sm text-amber-900" role="note">
+                <p className="font-bold">You are connecting your account</p>
+                <p className="mt-1 text-amber-800">
+                  ListeningKit will use your account to connect the services you choose. Only continue on a computer you trust.
+                  If your computer is compromised, saved sessions and connected accounts may be at risk.
+                </p>
+              </div>
+            )}
+            <div className="lk-clerk mt-6 text-left">
+              <OAuthCards mode={mode} redirectTo={redirectTo} />
+              {mode === 'sign-in' ? (
+                <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" forceRedirectUrl={redirectTo} appearance={appearance} />
+              ) : (
+                <SignUp routing="path" path="/sign-up" signInUrl="/sign-in" forceRedirectUrl={redirectTo} appearance={appearance} />
+              )}
+            </div>
+            <a href="/onboarding" className="mt-6 inline-block text-sm font-semibold text-slate-500 underline decoration-dashed underline-offset-4 hover:text-slate-800">Back to platform selection</a>
+            </div>
           </div>
-        )}
-        <div ref={clip.ref} style={clip.style} className="lk-clerk mt-8 w-full max-w-md bg-[#FBFCFE] p-6 text-left sm:p-8">
-           <OAuthCards mode={mode} redirectTo={redirectTo} />
-           {mode === 'sign-in' ? (
-             <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" forceRedirectUrl={redirectTo} appearance={appearance} />
-           ) : (
-             <SignUp routing="path" path="/sign-up" signInUrl="/sign-in" forceRedirectUrl={redirectTo} appearance={appearance} />
-          )}
+          {/* Pinned to the viewport on desktop: the showcase is always
+              exactly full height, never stretched by the form's height and
+              never collapsed. The form half scrolls beside it. */}
+          <div className="flex flex-col justify-center bg-white p-8 lg:sticky lg:top-0 lg:h-screen">
+            <div className="flex min-h-0 flex-1 flex-col">
+              <UsecaseLoop />
+            </div>
+          </div>
         </div>
-        <a href="/onboarding" className="mt-6 text-sm font-semibold text-white/70 underline decoration-dashed underline-offset-4 hover:text-white">Back to platform selection</a>
       </main>
     </OnboardingShell>
   )
@@ -194,10 +212,9 @@ export function OnboardingAuth({ mode, riskNotice = false, redirectTo = '/onboar
 
 export function OnboardingAuthLoading({ children }: { children: string }) {
   return (
-    <OnboardingShell>
-      <main className="flex flex-1 flex-col items-center justify-center gap-6 p-6">
-        <BrandHeader />
-        <p role="status" className="text-white/85">{children}</p>
+    <OnboardingShell hero={false} tone="white">
+      <main className="relative mx-auto flex w-full max-w-7xl flex-1 flex-col items-center justify-center px-6 pb-16 text-center sm:px-10">
+        <OnboardingLoading message={children} />
       </main>
     </OnboardingShell>
   )

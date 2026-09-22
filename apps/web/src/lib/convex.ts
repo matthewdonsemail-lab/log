@@ -30,6 +30,7 @@ export const sessionsSaveRef = makeFunctionReference<'mutation', { token: string
 export const sessionsListRef = makeFunctionReference<'query', Record<string, never>, unknown>('sessions:list')
 export const sessionsRemoveRef = makeFunctionReference<'mutation', { platform: Platform }, unknown>('sessions:remove')
 export const brandExtractRef = makeFunctionReference<'action', { url: string }, unknown>('brand:extractFromWebsite')
+export const brandMapRef = makeFunctionReference<'action', { url: string }, unknown>('brand:mapWebsite')
 export const alertsMineRef = makeFunctionReference<'query', Record<string, never>, unknown>('alerts:mine')
 export const alertsSaveRef = makeFunctionReference<'mutation', { email: string; enabled: boolean; minScore: number }, unknown>('alerts:save')
 export const alertsSendTestRef = makeFunctionReference<'action', Record<string, never>, unknown>('alerts:sendTest')

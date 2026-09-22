@@ -2,7 +2,7 @@ import { ConvexError } from 'convex/values'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { extractBrandFromUrl } from '../brand'
 import { alertSettingsSchema, MIN_SCORE_CHOICES, saveAlertSettings, sendTestAlert } from '../live-alerts'
-import { applyWebsiteFacts, brandOnConvex, readingIsOff, readWebsite, websiteFactsSchema } from '../live-brand'
+import { applyWebsiteFacts, brandOnConvex, readingIsOff, readSiteMap, readWebsite, websiteFactsSchema } from '../live-brand'
 import { setApiTokenProvider } from '../transport'
 
 const calls: { ref: string; args: unknown }[] = []
@@ -73,6 +73,27 @@ describe('reading the website', () => {
   it('accepts a page that gave only a name', () => {
     expect(websiteFactsSchema.safeParse({ name: 'A', tagline: '', offerings: [], sourceUrl: 'https://a.com/' }).success).toBe(true)
     expect(websiteFactsSchema.safeParse({ name: 'A', tagline: '', offerings: [], sourceUrl: 'https://a.com/', formality: 'shouting' }).success).toBe(false)
+  })
+})
+
+describe('mapping the website', () => {
+  it('sends the trimmed address and returns validated links', async () => {
+    const map = {
+      sourceUrl: 'https://acmebooks.com/',
+      links: [{ url: 'https://acmebooks.com/', title: 'Acme Books' }, { url: 'https://acmebooks.com/services' }],
+    }
+    reply = () => map
+    expect(await readSiteMap('  acmebooks.com  ')).toEqual(map)
+    expect(calls[0]).toEqual({ ref: 'brand:mapWebsite', args: { url: 'acmebooks.com' } })
+  })
+
+  it('rejects an invalid map response', async () => {
+    reply = () => ({ sourceUrl: 'https://acmebooks.com/' })
+    await expect(readSiteMap('acmebooks.com')).rejects.toThrow('invalid response')
+  })
+
+  it('seeds no sources — pages only enter from a real read', () => {
+    expect(extractBrandFromUrl('acmebooks.com').sources).toEqual([])
   })
 })
 

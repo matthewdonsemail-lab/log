@@ -132,3 +132,57 @@ export function businessSummary(brand: { name: string; tagline: string; offering
   const parts = [brand.name, brand.tagline, offers ? `Offers: ${offers}` : ''].filter(Boolean)
   return parts.join(' — ').slice(0, 500)
 }
+
+export const FIRECRAWL_MAP_URL = 'https://api.firecrawl.dev/v2/map'
+
+/** One page Firecrawl's map found on the site. Title is a courtesy and may be absent. */
+export type SiteLink = {
+  url: string
+  title?: string
+}
+
+/**
+ * Keep only what the map really found on this site: same-origin https pages,
+ * deduped, titles trimmed. Anything off-site or unparseable is dropped, so a
+ * noisy sitemap cannot smuggle another domain's pages into the reveal.
+ */
+export function parseSiteLinks(raw: unknown, origin: string): SiteLink[] {
+  if (typeof raw !== 'object' || raw === null) return []
+  const links = Array.isArray(raw) ? raw : (raw as { links?: unknown }).links
+  if (!Array.isArray(links)) return []
+  const out: SiteLink[] = []
+  const seen = new Set<string>()
+  for (const item of links) {
+    if (typeof item !== 'object' || item === null) continue
+    const record = item as Record<string, unknown>
+    if (typeof record.url !== 'string') continue
+    let parsed: URL
+    try { parsed = new URL(record.url) } catch { continue }
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') continue
+    if (parsed.origin !== origin) continue
+    parsed.hash = ''
+    const url = parsed.toString()
+    if (seen.has(url)) continue
+    seen.add(url)
+    const title = typeof record.title === 'string' && record.title.trim() ? record.title.trim().slice(0, 120) : undefined
+    out.push(title ? { url, title } : { url })
+  }
+  return out
+}
+
+/** List the site's own pages with Firecrawl's map. Errors say what happened in plain words and never include the response body or the key. */
+export async function mapSite(fetcher: typeof fetch, apiKey: string, url: string, limit = 25): Promise<SiteLink[]> {
+  const res = await fetcher(FIRECRAWL_MAP_URL, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url, limit, ignoreQueryParameters: true }),
+    signal: AbortSignal.timeout(55_000),
+  })
+  if (res.status === 401 || res.status === 403) throw new Error('Firecrawl refused the API key')
+  if (res.status === 402) throw new Error('The Firecrawl account is out of credits')
+  if (res.status === 429) throw new Error('Firecrawl is busy, try again in a minute')
+  if (!res.ok) throw new Error(`Firecrawl answered HTTP ${res.status}`)
+  const data = (await res.json()) as { success?: unknown; links?: unknown }
+  if (data.success !== true || !Array.isArray(data.links)) throw new Error('Firecrawl could not map that website')
+  return parseSiteLinks(data.links, new URL(url).origin)
+}

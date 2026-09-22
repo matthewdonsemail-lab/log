@@ -11,8 +11,8 @@ through a helper on the person's own computer, a scoped public API with phrase w
 (Pro), and an MCP server so AI agents can use it as tools. Deployed to prod and checked there.
 
 ```
-Sign in (Clerk) → onboarding (website read by Firecrawl, video, extension, token)
-   → "What should we listen for?" → phrase + platform → Convex cron/helper reads it
+Sign in (Clerk) → onboarding (Firecrawl facts read, live page map, typed competitors, keyword pick, typed groups — every stage real or skippable, video, extension, token)
+   → keywords dashboard (add the phrase there; the reveal's pick is saved locally, dashboard prefill not yet wired) → phrase + platform → Convex cron/helper reads it
    → matches appear live, scored, emailed if strong, or read by an API key or an AI agent
 ```
 
@@ -24,7 +24,7 @@ Sign in (Clerk) → onboarding (website read by Firecrawl, video, extension, tok
 | Reddit reading | Cron every 10 min: official API (needs app creds, not set) → plain feed → public mirror. |
 | X, Facebook | Helpers on the person's own computer (`clients/x_push.py`, `facebook_push.py`), through a mandatory operator proxy. Both run against real throwaway accounts on dev. Not re-run on prod (need a prod-connected login). |
 | AI scoring | Built and tested, **never run live: no `OPENAI_API_KEY` set**. Without it, matches have no score and webhooks have nothing real to send. |
-| Website reading (Firecrawl) | Real, checked on prod. |
+| Website reading (Firecrawl) | Real, checked on prod: facts extract + page map under separate cooldowns. The reveal renders only mapped pages, typed competitors/groups, and keyword suggestions derived from the read offerings — every stage shows the plain-words error and skips on failure. No mock rows anywhere in onboarding. |
 | Email alerts (AgentMail) | Real, checked on dev and prod (a test email arrived on both). |
 | Public API | Real: keys with scopes (`read`, `write:phrases`, `webhooks`), phrase writes, webhooks (Pro feature, off by default). Checked on prod. |
 | MCP server | Real: `POST /mcp`, same keys and scopes. Claude Code and Claude Desktop setup checked on prod; Cursor and Hermes snippets match their docs but were not run; ChatGPT is not supported. |
