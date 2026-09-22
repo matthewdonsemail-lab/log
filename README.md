@@ -137,7 +137,10 @@ flowchart LR
 | `LISTENINGKIT_INGEST_URL`, `LISTENINGKIT_INGEST_KEY` | local adapter shell | Where and how an adapter pushes (`reddit_push.py`, `x_push.py`). |
 
 ### What is real and what is still mock
-Real on Convex: sign-in, feed, keywords, matches, scoring, the Reddit cron, ingest keys, connected accounts, email alerts (AgentMail), website reading (Firecrawl), and the ingest, session and phrases endpoints. X works through the helper above (run against a real throwaway account: 20 real tweets became matches); Facebook has its helper too (run with a real throwaway login: 4 real posts became matches). Still the in-browser mock described above: messaging, listings, groups, analytics, API keys, and the brand reveal step after the website read. Phone alerts (Bark) and Firecrawl community discovery are on the to-do list in [`HANDOFF.md`](HANDOFF.md).
+Real on Convex: sign-in, feed, keywords, matches, scoring, the Reddit cron, ingest keys, connected accounts, email alerts (AgentMail), website reading (Firecrawl), the API and its keys, webhooks, the MCP server, and the ingest, session and phrases endpoints. X works through the helper above (run against a real throwaway account: 20 real tweets became matches); Facebook has its helper too (run with a real throwaway login: 4 real posts became matches). Still the in-browser mock: messaging, listings, groups, analytics, and the brand reveal step after the website read (the website read itself is real). **The live site hides Groups, Listings, Brand and Messages from its menu** (`navItems()` in [`DashboardSidebar.tsx`](apps/web/src/components/DashboardSidebar.tsx)), so only real pages are reachable there; they still show in demo mode. Phone alerts (Bark) and Firecrawl community discovery are on the to-do list in [`HANDOFF.md`](HANDOFF.md).
+
+### Deploying
+`pnpm exec convex deploy --yes` (backend) then `pnpm deploy:site` (the web app plus the exported docs, uploaded to Convex's own static hosting — this is the real site). A separate Vercel project also builds this repo from `vercel.json`; it has no `VITE_CONVEX_URL`, so it only ever shows the in-browser demo, never real data.
 
 ### Run it
 ```bash
