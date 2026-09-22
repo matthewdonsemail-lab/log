@@ -51,7 +51,7 @@ export const NAV: DashboardNavItem[] = [
 
 // Pages that only exist as a demo (mock data kept in the browser, no backend). On the live site they are hidden,
 // so everything a person can click is real.
-const DEMO_ONLY = new Set(['Groups', 'Listings', 'Brand'])
+const DEMO_ONLY = new Set(['Groups', 'Listings', 'Brand', 'Analytics'])
 export const DEMO_ONLY_PATHS = NAV.filter((item) => DEMO_ONLY.has(item.label)).map((item) => item.to as string)
 
 export function navItems(): DashboardNavItem[] {

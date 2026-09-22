@@ -72,8 +72,8 @@ export function App() {
               <Route path="facebook/listings" element={demoOnly(<DashboardListings />)} />
               <Route path="facebook/listings/:id" element={demoOnly(<DashboardListings />)} />
               <Route path="keywords" element={keywordsOnConvex() ? <DashboardKeywordsLive /> : <DashboardKeywords />} />
-              <Route path="analytics" element={<DashboardAnalyticsOverview />} />
-              <Route path="analytics/:keywordId" element={<DashboardAnalyticsPage />} />
+              <Route path="analytics" element={demoOnly(<DashboardAnalyticsOverview />)} />
+              <Route path="analytics/:keywordId" element={demoOnly(<DashboardAnalyticsPage />)} />
               <Route path="accounts" element={<DashboardAccounts />} />
               <Route path="accounts/:accountId" element={<DashboardAccountPage />} />
               <Route path="accounts/:accountId/challenge" element={<DashboardChallengePage />} />
