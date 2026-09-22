@@ -6,7 +6,7 @@ Submit at https://vibeapps.dev/judging/convex-all-gas-hackathon-openai/submit
 - Live app: https://tremendous-seahorse-330.convex.site
 - Repo: https://github.com/matthewdonsemail-lab/log (public, `hackathon.md` at the root)
 
-Everything below was checked on the live site on 2026-09-21 (see "Checked" at the end).
+Everything below was checked on the live site on 2026-09-22 (see "Checked" at the end). **The OpenAI key is now set on prod: matches show real scores.**
 
 ## 0. Before you press record (10 minutes)
 
@@ -19,6 +19,7 @@ Do these first so nothing on screen is empty or broken. Use a normal browser win
 - [ ] Settings, Notifications: your email is saved and **Send a test email** arrives.
 - [ ] Have a real business website ready to paste, for example `mailchimp.com`.
 - [ ] The Free plan allows **one phrase per platform**, so add only one Reddit phrase in the video (and one each for X and Facebook if you show them). Or raise the limits while you record (see `HANDOFF.md`, Plans and pricing) and put them back afterwards.
+- [ ] A real, scored phrase is already live on prod (`ipad` in `r/ipad`, scored matches showing). Use it as-is, or swap it for your own before recording — remove it first (Free plan allows one).
 
 **The API scene (new)**
 - [ ] On the **API** page, make a key named `demo` with **Read** only. Copy it once.
@@ -39,7 +40,8 @@ Do these first so nothing on screen is empty or broken. Use a normal browser win
 
 **Optional, only if you want them**
 - [ ] X and Facebook helpers (the proxy is set on the site): run them on your computer before recording. See the Guide, X and Facebook helpers.
-- [ ] The OpenAI key, so matches show score badges. **If it is not set, skip every scoring mention.**
+- [ ] Scores now show by default (the OpenAI key is set). No extra step needed.
+- [ ] **Do not show or mention direct messages / the Messages tab.** It is built for real (X only) but X moved DMs to an encrypted "X Chat" that blocks the live read; it is not demo-ready. See `HANDOFF.md`.
 - [ ] **Webhooks demo.** Webhooks are a **Pro feature and are off for everyone**, so by default the Webhooks box on the API page says "part of the Pro plan, which is coming soon". That is honest and fine to show. To demo a working one, the operator (you) can switch them on for the recording and then off again:
   - On: `pnpm exec convex env set --prod PLAN_WEBHOOKS_PER_PERSON 1`
   - Off again: `pnpm exec convex env remove --prod PLAN_WEBHOOKS_PER_PERSON`
@@ -49,7 +51,7 @@ Do these first so nothing on screen is empty or broken. Use a normal browser win
 **Screen hygiene**
 - [ ] Close other tabs, hide bookmarks and any window with keys or logins in it. **Never show a token, an ingest key, an API key or a terminal with a key in it.**
 
-What works today, so you only promise that: an MCP server that AI agents (Claude, Cursor, Hermes and other MCP clients) can use with an API key (ChatGPT is not supported yet, do not claim it), Reddit end to end, website reading (Firecrawl), email alerts (AgentMail), Google sign-in, plans and pricing, the docs, the API with scoped keys (read, add and change phrases), an MCP server for AI agents (Claude Code and Claude Desktop checked; Cursor and Hermes not run; not ChatGPT), and X and Facebook through a helper on your own computer. Match scores need the OpenAI key. Webhooks are built but are a Pro feature and off.
+What works today, so you only promise that: Reddit end to end with real, scored matches, website reading (Firecrawl), email alerts (AgentMail), Google sign-in, plans and pricing, the docs, the API with scoped keys (read, add and change phrases), an MCP server for AI agents (Claude Code and Claude Desktop checked; Cursor and Hermes not run; not ChatGPT), and X and Facebook posts through a helper on your own computer. Webhooks are built but are a Pro feature and off. X direct messages are built and tested but not demo-ready (X's new encrypted Chat blocks the live read) — do not show them.
 
 ## 1. Video script (target 2:45, hard limit 3:00)
 
@@ -64,7 +66,7 @@ Screen recording with your voice. Speak plainly. One idea per scene. If you run 
 | 0:35 | Paste the website; brand appears (name, tagline, offerings) | "Firecrawl reads my real website and builds my brand profile. Nothing is typed in by hand." |
 | 0:53 | Extension icon, then paste the token, then Connected | "A small Chrome extension hands over my login. It is stored encrypted and never shown again." |
 | 1:08 | Keywords: add a phrase, press **Check now** | "I tell it what to listen for: a phrase, and the community." |
-| 1:23 | Matches list (scores if OpenAI is on) | "Every new post that says my phrase shows up here, newest first." |
+| 1:23 | Matches list, with real scores | "Every new post that says my phrase shows up here, newest first, scored by OpenAI so I know which ones matter." |
 | 1:38 | Settings, Notifications: **Send a test email**, then the email arriving | "Strong matches are emailed to me through AgentMail, one short digest at a time." |
 | 1:53 | **API** page: the scope tick-boxes, then the terminal running the `curl` command | "There is a real API too. I make a key and choose what it may do: read only, or also add and change phrases. Then my own code gets my matches as JSON." |
 | 2:23 | Landing page, Pricing section | "Start free with one of each. Pro is on the way, with more, and webhooks." |
@@ -72,7 +74,6 @@ Screen recording with your voice. Speak plainly. One idea per scene. If you run 
 | 2:41 | Landing page, then the repo | "It runs on Convex: live queries, crons, scheduled functions and HTTP actions. Thanks for watching." |
 
 Adjustments:
-- No OpenAI key: keep "matches" and skip "scores" everywhere.
 - X and Facebook helpers running: add 10 seconds after 1:23: "X and Facebook work through a helper on my own computer, using a proxy the site provides, so people never handle one."
 - MCP scene done: add 10 seconds after the API scene. Show the terminal, run `claude mcp list` (it says Connected), then ask Claude Code: "Use listeningkit to show my plan and my three newest matches." Say: "The same key also works for AI agents through MCP. Claude reads my matches, and a read-only key cannot change anything." Then cut the docs scene (2:33) to stay under 3:00. Leave this out if you did not do the checklist above.
 - Webhooks demo done: add 15 seconds to the API scene: "And on Pro, a webhook sends a signed message to my server the moment a strong match appears." Show the request arriving. Otherwise leave this sentence out.
@@ -122,6 +123,10 @@ If the form asks what else is in it: plans and pricing (Free limits enforced on 
 - [ ] Delete the `demo` and `agent` API keys, and switch webhooks back off if you turned them on.
 - [ ] Rotate the Firecrawl and AgentMail keys after the deadline (they were pasted in a chat during development).
 
-## Checked on the live site (2026-09-21)
+## Checked on the live site (2026-09-22)
 
-Everything this kit relies on was tested on the live site, signed in, with cleanup: landing and pricing, the website box, sign-in, Firecrawl reading a real site, the AgentMail test email, Free plan billing, the docs and docs tab, API keys with scopes, reads, phrase writes (with the Free limit and safe retries), a read-only key being refused, webhooks refused on Free and working when switched on (signed, verified at an outside receiver), the proxy endpoint, and the ingest door. The MCP server was tested on the live site with the official MCP Python SDK (17 checks: 7 tools, add, pause, resume and remove a phrase, the Free limit refused, a read key refused a write, a bad key refused, keys revoked afterwards). The Claude Code and Claude Desktop setup snippets were run for real against it; Cursor and Hermes were not run, and ChatGPT is not supported. Not re-run on the live site: the X and Facebook helpers (checked on dev through the proxy) and OpenAI scoring (no key yet).
+Everything in this kit was tested on the live site, signed in, with cleanup: landing and pricing, the website box, sign-in, Firecrawl reading a real site, the AgentMail test email, Free plan billing, the docs and docs tab, API keys with scopes, reads, phrase writes (with the Free limit and safe retries), a read-only key being refused, webhooks refused on Free and working when switched on (signed, verified at an outside receiver), the proxy endpoint, and the ingest door. The MCP server was tested with the official MCP Python SDK (17 checks) and the Claude Code and Claude Desktop setup snippets were run for real; Cursor and Hermes were not run, and ChatGPT is not supported. **OpenAI scoring was set today and verified live: a real Reddit post ("ipad" in r/ipad) scored 80, "Wants help".**
+
+**A real bug was found and fixed today:** the prod static site's own build was pointing at the dev Convex backend, so dashboard-driven actions (sign-in, keywords, matches) were silently hitting dev's database while served from the prod URL. Direct API/MCP calls were unaffected. Fixed and redeployed; confirmed by downloading the live JS bundle and checking it references the prod deployment.
+
+Not demo-ready: X direct messages (built, tested, but X moved DMs to an encrypted "X Chat" that blocks the live read) and Facebook/Reddit messages (not built). The X and Facebook post helpers were checked on dev through the proxy, not re-run on prod today.
