@@ -9,12 +9,25 @@ const root = resolve(fileURLToPath(new URL('..', import.meta.url)))
 const dist = join(root, 'apps/web/dist')
 const out = join(root, 'apps/docs/out')
 
+// Which Convex deployment the built site talks to. `apps/web/.env.local` (a developer's own machine, always the
+// dev deployment for `vite dev`) is loaded by every `vite build` too and would otherwise win, silently pointing
+// the PROD static site at the DEV backend. The target passed here as argv[2] overrides it explicitly.
+const DEPLOYMENTS = {
+  prod: 'https://tremendous-seahorse-330.convex.cloud',
+  dev: 'https://determined-cheetah-971.convex.cloud',
+}
+// No target given (Vercel's build, or an old habit) keeps the previous behaviour: the dev deployment, never prod by accident.
+const target = process.argv[2] ?? 'dev'
+if (!(target in DEPLOYMENTS)) {
+  throw new Error(`Usage: node scripts/build-site.mjs <${Object.keys(DEPLOYMENTS).join('|')}>`)
+}
+
 function run(args, env = {}) {
   const result = spawnSync('pnpm', args, { cwd: root, stdio: 'inherit', shell: true, env: { ...process.env, ...env } })
   if (result.status !== 0) throw new Error(`pnpm ${args.join(' ')} failed`)
 }
 
-run(['--filter', 'web', 'build'])
+run(['--filter', 'web', 'build'], { VITE_CONVEX_URL: DEPLOYMENTS[target], VITE_API_MODE: 'live' })
 rmSync(out, { recursive: true, force: true })
 run(['--filter', 'docs', 'exec', 'next', 'build'], { DOCS_EXPORT: '1' })
 

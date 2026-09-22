@@ -271,3 +271,23 @@ None of the items below need code changes. Never paste a key into chat, a commit
 - Record the video, post, and submit: everything is written down in [`SUBMISSION.md`](SUBMISSION.md).
 - Rotate the Firecrawl and AgentMail keys after the deadline (pasted into a chat).
 - Decide whether to build out or delete the mock pages (Groups, Listings, Brand's Agent Memory, Messages) after the deadline.
+
+## Fixed: the prod site was talking to the dev backend (2026-09-22)
+
+`scripts/build-site.mjs` built the web app with no explicit `VITE_CONVEX_URL`, so Vite loaded `apps/web/.env.local`
+(a developer machine file, always the dev deployment) for every build, `deploy:site` included. The prod static site's
+own JS bundle was wired to `determined-cheetah-971` (dev), not `tremendous-seahorse-330` (prod) — confirmed by
+downloading the live bundle and grepping it. Everything driven by the browser (sign-in, keywords, matches, dashboard
+API key creation, webhooks toggles) was silently hitting dev's database while served from the prod URL. Direct HTTP
+calls to the prod domain (`/api/v1/...`, `/mcp`, `/ingest`) were unaffected — Convex routes those by domain at its own
+HTTP layer, independent of which backend the frontend bundle is compiled against — so the API and MCP checks earlier
+today were genuinely against prod. Dashboard-driven checks from earlier in the project may have landed in dev instead.
+
+Fixed: `build-site.mjs` now takes a required target argument (`prod` or `dev`, defaulting to `dev` when none is given,
+so an old habit or Vercel's build never accidentally reaches prod) and explicitly passes the matching `VITE_CONVEX_URL`
+and `VITE_API_MODE=live` into the web build, which wins over `.env.local`. `deploy:site` now runs
+`node scripts/build-site.mjs prod`, `deploy:site:dev` runs `... dev`. Both static sites were rebuilt and redeployed;
+the live prod bundle was re-downloaded and confirmed to contain `tremendous-seahorse-330`, not `determined-cheetah-971`.
+Verified end to end on the corrected prod site: the real phrase (`ipad` in r/ipad, added after this fix) shows as the
+only listened phrase, and pressing Check now produced a real, OpenAI-scored match (score 80, "Wants help").
+
