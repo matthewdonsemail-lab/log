@@ -13,7 +13,7 @@ let currentCookies = []
 
 // The dashboard owns Clerk authentication and Convex ownership. The extension
 // never asks for a password or stores a second copy of the Clerk credential.
-const LISTENINGKIT_AUTH = 'https://listeningkit-hackathon.vercel.app/auth'
+const LISTENINGKIT_AUTH = 'https://tremendous-seahorse-330.convex.site/auth'
 
 function say(text, tone = '') {
   void text
@@ -74,8 +74,6 @@ async function renderProfiles() {
 }
 
 async function init() {
-  // Cookie access is intentionally blocked behind the sign-in screen.
-  return
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
   const platform = tab?.url ? platformForUrl(tab.url) : null
   if (!platform) {

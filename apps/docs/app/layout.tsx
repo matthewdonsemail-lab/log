@@ -21,7 +21,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           minHeight: "100vh",
         }}
       >
-        <RootProvider>{children}</RootProvider>
+        <RootProvider theme={{ enabled: false }}>{children}</RootProvider>
       </body>
     </html>
   );
