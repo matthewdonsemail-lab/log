@@ -103,7 +103,7 @@ export function SlideTitle({ index, title, className }: { index: number; title: 
 
 /**
  * Video slide marker shown above the copy on each left-side slide.
- * Plays `/video/usecase/<n>.mp4` inside the blue squircle with a faint
+ * Plays `/video/usecase/<n>.webm` inside the blue squircle with a faint
  * white vignette; falls back to the number badge until that clip lands.
  */
 export function SlideMarker({ index }: { index: number }) {
@@ -129,7 +129,7 @@ export function SlideMarker({ index }: { index: number }) {
       className="relative mx-auto mb-6 size-14 overflow-hidden bg-[#2A8CFF]"
     >
       <video
-        src={`/video/usecase/${index + 1}.mp4`}
+        src={`/video/usecase/${index + 1}.webm`}
         autoPlay
         muted
         loop

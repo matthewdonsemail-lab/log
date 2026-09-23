@@ -42,43 +42,43 @@ export const HOW_IT_WORKS: Record<string, HowItWorks> = {
     route: 'Analytics',
     overview:
       'Analytics turns the firehose into a picture: how many mentions each of your keywords is earning, what they say, and how they feel — so you can see which of your words of work are actually pulling in demand.',
-    videoSrc: '/video/usecase/2.mp4'
+    videoSrc: '/video/usecase/2.webm'
   },
   Accounts: {
     route: 'Accounts',
     overview:
       'Accounts are your connected Facebook, X, and Reddit logins — the eyes ListeningKit uses to read the platforms you care about. Everything else in the system runs through them.',
-    videoSrc: '/video/usecase/1.mp4'
+    videoSrc: '/video/usecase/1.webm'
   },
   Brand: {
     route: 'Brand',
     overview:
       'The brand record is how ListeningKit writes like you: your voice, your offerings, your website. Every suggested reply and every listing draft is grounded in it.',
-    videoSrc: '/video/usecase/3.mp4'
+    videoSrc: '/video/usecase/3.webm'
   },
   Messages: {
     route: 'Messages',
     overview:
       'Messages is the conversation side of listening: the threads where a match turned into a reply, and the follow-ups that keep it warm until the job is booked.',
-    videoSrc: '/video/usecase/4.mp4'
+    videoSrc: '/video/usecase/4.webm'
   },
   Docs: {
     route: 'Docs',
     overview:
       'Docs is the full reference: what works today, how each piece is wired, and where to go when something looks odd — the map for the whole system, not just one page.',
-    videoSrc: '/video/usecase/1.mp4'
+    videoSrc: '/video/usecase/1.webm'
   },
   API: {
     route: 'API',
     overview:
       'The API hands ListeningKit to your tools: a key, a base address, and the same data the dashboard reads — matches, keywords, events — over HTTP and over MCP for agents.',
-    videoSrc: '/video/usecase/2.mp4'
+    videoSrc: '/video/usecase/2.webm'
   },
   Settings: {
     route: 'Settings',
     overview:
       'Settings is where the system is tuned: the connections that power it, the email alerts that surface it, the ingest keys that feed it, and the plan limits that shape it.',
-    videoSrc: '/video/usecase/3.mp4'
+    videoSrc: '/video/usecase/3.webm'
   }
 }
 
