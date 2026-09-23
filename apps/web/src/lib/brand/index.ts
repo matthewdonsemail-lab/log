@@ -219,6 +219,22 @@ function humanizeHost(host: string): string {
  * drafts fall back to generic phrasing until real ones are added. Throws a
  * human-readable error for unparseable input.
  */
+/** A placeholder brand for someone who skips the website step. Every field an unread website would have anyway. */
+export function skippedBrand(): Omit<BrandEntity, 'updatedAt'> {
+  return {
+    id: 'brand-default',
+    identity: { name: 'Your business', website: '', tagline: '' },
+    location: { label: '', lat: 53.2707, lng: -9.0568, radiusKm: 10 },
+    offerings: [],
+    voice: { tone: 'Friendly, plain-spoken local pro', formality: 'professional', dos: [], donts: [], examples: [] },
+    sources: [],
+    channels: defaultChannels(),
+    memory: { rules: [] },
+    intelligence: { competitors: [], targetCommunities: [] },
+    sourceUrl: '',
+  }
+}
+
 export function extractBrandFromUrl(input: string): Omit<BrandEntity, 'updatedAt'> {
   const trimmed = input.trim()
   if (!trimmed) throw new Error('Paste your website URL first.')

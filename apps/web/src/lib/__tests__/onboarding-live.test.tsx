@@ -37,6 +37,12 @@ describe('onboarding first step', () => {
     }
   })
 
+  it('offers a way to skip pasting a website, not just a disabled Continue', () => {
+    vi.stubEnv('VITE_API_MODE', 'live')
+    vi.stubEnv('VITE_CONVEX_URL', 'https://example.convex.cloud')
+    expect(render()).toContain('Skip for now.')
+  })
+
   it('skips the website step when a landing website is waiting', () => {
     const data = new Map<string, string>([['listeningkit.landing-website', 'acmebooks.com']])
     vi.stubGlobal('window', {

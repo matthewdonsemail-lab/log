@@ -4,7 +4,7 @@ import { siGithub, siGooglechrome } from 'simple-icons'
 import { Button, useToast } from '@listeningkit/ui'
 import { describeExpiry, saveSession, sessionsOnConvex, tokenPlatform } from '@/lib/live-sessions'
 import { SOCIAL_ICONS, SocialGlyph } from '@/lib/social-icons'
-import { extractBrandFromUrl, getBrand, saveBrand, type BrandEntity } from '@/lib/brand'
+import { extractBrandFromUrl, getBrand, saveBrand, skippedBrand, type BrandEntity } from '@/lib/brand'
 import { applyWebsiteFacts, brandOnConvex, notSignedInYet, readingIsOff, readWebsite } from '@/lib/live-brand'
 import { BrandRevealStep } from '@/components/onboarding/BrandRevealStep'
 import { FunnelVideo } from '@/components/FunnelVideo'
@@ -252,6 +252,16 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
     } finally {
       setLooking(false)
     }
+  }
+
+  // No website to give, or doesn't want to: move on with a placeholder brand, same shape a failed read would leave.
+  function skipWebsite() {
+    if (looking) return
+    setLookupError(null)
+    setProfile(saveBrand(skippedBrand()))
+    clearLandingWebsite()
+    saveOnboardingProgress('reveal')
+    setStep(1)
   }
 
   // Landing arrivals skip the website step: run the saved site's lookup on
@@ -665,6 +675,16 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
                   >
                     {looking ? 'Looking up…' : 'Continue'}
                   </Button>
+                </div>
+                <div className="mt-4 text-center">
+                  <button
+                    type="button"
+                    onClick={skipWebsite}
+                    disabled={looking}
+                    className="bg-transparent p-0 text-sm font-semibold text-white/70 underline decoration-dashed underline-offset-4 transition-colors hover:text-white disabled:opacity-60"
+                  >
+                    Skip for now.
+                  </button>
                 </div>
               </>
             )}
