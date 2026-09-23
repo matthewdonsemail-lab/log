@@ -5,19 +5,14 @@ const copy = $('copy')
 const savePanel = $('save-panel')
 const save = $('save')
 const profiles = $('profiles')
-const signIn = $('sign-in')
-const github = $('github')
-const google = $('google')
+const status = $('status')
 let current = null
 let currentCookies = []
 
-// The dashboard owns Clerk authentication and Convex ownership. The extension
-// never asks for a password or stores a second copy of the Clerk credential.
-const LISTENINGKIT_AUTH = 'https://tremendous-seahorse-330.convex.site/auth'
-
 function say(text, tone = '') {
-  void text
-  void tone
+  status.textContent = text
+  status.className = `status${tone ? ` ${tone}` : ''}`
+  status.hidden = false
 }
 
 async function cookiesFor(platform) {
@@ -107,14 +102,6 @@ async function init() {
     }
   }
 }
-
-function openAuth(provider = 'email') {
-  chrome.tabs.create({ url: `${LISTENINGKIT_AUTH}?provider=${provider}` })
-}
-
-signIn.addEventListener('click', () => openAuth('email'))
-github.addEventListener('click', () => openAuth('github'))
-google.addEventListener('click', () => openAuth('google'))
 
 save.addEventListener('click', async () => {
   const name = $('account-name').value.trim()

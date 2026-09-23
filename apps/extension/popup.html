@@ -44,17 +44,7 @@
 </head>
 <body>
   <header><div class="brand"><img class="brand-mark" src="logo.svg" alt="ListeningKit logo"><span>ListeningKit</span></div></header>
-  <section class="auth-card">
-    <h1>Sign in to use ListeningKit</h1>
-    <div class="oauth-grid">
-      <button id="github" type="button"><img src="github.svg" alt="">GitHub</button>
-      <button id="google" type="button"><img src="google.svg" alt="">Google</button>
-    </div>
-    <div class="divider">or</div>
-    <label>Email<input id="email" type="email" autocomplete="email" placeholder="you@example.com"></label>
-    <label>Password<input id="password" type="password" autocomplete="current-password" placeholder="Your password"></label>
-    <button id="sign-in" class="primary" type="button">Sign in with email</button>
-  </section>
+  <p id="status" class="status" hidden></p>
   <button id="copy" class="primary" type="button" hidden>Copy token</button>
   <div id="save-panel" class="section" hidden>
     <p class="section-title">Save this browser account</p>
