@@ -33,21 +33,30 @@
       rel="stylesheet"
     />
     <script>
-      // Google Analytics, only on the two real public domains — never on localhost or a preview build,
-      // so local development and testing never get counted as real visits.
+      // Google Tag Manager, only on the two real public domains — never on localhost or a preview build,
+      // so local development and testing never get counted as real visits. The GA4 config itself (G-VL1WDMNEER)
+      // lives as a tag inside this GTM container, not here, so it is not double-counted alongside GTM.
       if (['log.listeningkit.com', 'tremendous-seahorse-330.convex.site'].includes(location.hostname)) {
-        var gaScript = document.createElement('script')
-        gaScript.async = true
-        gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-VL1WDMNEER'
-        document.head.appendChild(gaScript)
-        window.dataLayer = window.dataLayer || []
-        window.gtag = function () { window.dataLayer.push(arguments) }
-        window.gtag('js', new Date())
-        window.gtag('config', 'G-VL1WDMNEER')
+        (function (w, d, s, l, i) {
+          w[l] = w[l] || []
+          w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' })
+          var f = d.getElementsByTagName(s)[0], j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''
+          j.async = true
+          j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl
+          f.parentNode.insertBefore(j, f)
+        })(window, document, 'script', 'dataLayer', 'GTM-T2FDHRKD')
       }
     </script>
   </head>
   <body>
+    <script>
+      // Matches the head snippet's domain gate, so the noscript fallback (browsers with JS off) is consistent with it.
+      if (['log.listeningkit.com', 'tremendous-seahorse-330.convex.site'].includes(location.hostname)) {
+        document.write(
+          '<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-T2FDHRKD" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>'
+        )
+      }
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
