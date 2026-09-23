@@ -30,6 +30,13 @@ export const USECASE_SLIDES: UsecaseSlide[] = [
   },
 ]
 
+export const USECASE_HIRE_NOTES = [
+  'also if you want a high-converting website that captures emergency leads the second they post, you should hire us',
+  'also if you want a really smooth CRM that bins the tire-kickers and sends only real jobs to your calendar, you should hire us',
+  'also if you want a high-converting checkout flow and automated payment funnels for your business, you should hire us',
+  'also if you want a really smooth CRM and automated pipeline that manages hundreds of deals without breaking a sweat, you should hire us',
+]
+
 export type EarSpec = {
   src: string
   className: string
@@ -155,6 +162,37 @@ export function renderUsecaseBody(body: string) {
     ) : (
       <span key={index}>{part}</span>
     ),
+  )
+}
+
+export function UsecaseHireLink({ index, className }: { index: number; className?: string }) {
+  const note = USECASE_HIRE_NOTES[index]
+  if (!note) return null
+  return (
+    <div className={cn('mt-7 flex items-end justify-center gap-3 sm:gap-4', className)}>
+      <img
+        src="/images/mattlistening.png"
+        alt="Matthew"
+        className="size-12 shrink-0 rounded-xl border-2 border-[#2A8CFF] object-cover shadow-sm sm:size-14 md:size-16"
+      />
+      <a
+        href="https://x.com/matthewsoldit"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group relative max-w-lg rounded-2xl rounded-bl-sm bg-[#f2f1f3] px-4 py-2.5 text-left text-sm text-slate-600 shadow-sm transition-all hover:scale-[1.02] hover:bg-[#eae8eb] hover:text-[#2A8CFF] sm:px-5 sm:py-3.5 sm:text-base"
+        style={{ fontFamily: "'Schoolbell', 'Cabin Sketch', cursive" }}
+      >
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -left-2 bottom-3 h-0 w-0 border-y-[6px] border-r-[8px] border-y-transparent border-r-[#f2f1f3] transition-colors group-hover:border-r-[#eae8eb]"
+        />
+        ({note}{' '}
+        <span className="font-bold text-[#2A8CFF] underline decoration-wavy underline-offset-4">
+          message matthew on X
+        </span>
+        )
+      </a>
+    </div>
   )
 }
 
@@ -303,6 +341,7 @@ export function Usecase() {
                     <SlideMarker index={i} />
                     <SlideTitle index={i} title={slide.title} className="text-5xl font-black leading-tight text-ink" />
                     <p className="mx-auto mt-6 max-w-xl text-xl leading-snug text-ink/70">{renderUsecaseBody(slide.body)}</p>
+                    <UsecaseHireLink index={i} className="mx-auto mt-5 max-w-xl text-center" />
                   </div>
                 </div>
               ))}
@@ -401,6 +440,7 @@ export function Usecase() {
           <div key={slide.title} className="border-t border-black/10 py-10 first:border-t-0 first:pt-0">
             <SlideTitle index={i} title={slide.title} className="text-3xl font-black leading-tight text-ink" />
             <p className="mt-3 text-base leading-snug text-ink/70">{renderUsecaseBody(slide.body)}</p>
+            <UsecaseHireLink index={i} className="mt-4 text-left" />
           </div>
         ))}
         <Button
