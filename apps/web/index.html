@@ -20,9 +20,9 @@
         gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-VL1WDMNEER'
         document.head.appendChild(gaScript)
         window.dataLayer = window.dataLayer || []
-        function gtag() { window.dataLayer.push(arguments) }
-        gtag('js', new Date())
-        gtag('config', 'G-VL1WDMNEER')
+        window.gtag = function () { window.dataLayer.push(arguments) }
+        window.gtag('js', new Date())
+        window.gtag('config', 'G-VL1WDMNEER')
       }
     </script>
   </head>
