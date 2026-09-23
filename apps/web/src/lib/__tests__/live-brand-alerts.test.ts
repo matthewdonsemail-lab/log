@@ -2,7 +2,7 @@ import { ConvexError } from 'convex/values'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { extractBrandFromUrl } from '../brand'
 import { alertSettingsSchema, MIN_SCORE_CHOICES, saveAlertSettings, sendTestAlert } from '../live-alerts'
-import { applyWebsiteFacts, brandOnConvex, readingIsOff, readSiteMap, readWebsite, websiteFactsSchema } from '../live-brand'
+import { applyWebsiteFacts, brandOnConvex, notSignedInYet, readingIsOff, readSiteMap, readWebsite, websiteFactsSchema } from '../live-brand'
 import { setApiTokenProvider } from '../transport'
 
 const calls: { ref: string; args: unknown }[] = []
@@ -61,6 +61,12 @@ describe('reading the website', () => {
     expect(readingIsOff(error)).toBe(true)
     expect(readingIsOff(new Error('That website took too long to read.'))).toBe(false)
     expect(readingIsOff('nope')).toBe(false)
+  })
+
+  it("knows when nobody has signed in yet (a landing arrival, before the person signs in), so onboarding can carry on", () => {
+    expect(notSignedInYet(new Error('Sign in before using the live API'))).toBe(true)
+    expect(notSignedInYet(new Error('That website took too long to read.'))).toBe(false)
+    expect(notSignedInYet('nope')).toBe(false)
   })
 
   it('exists only on the live backend', () => {

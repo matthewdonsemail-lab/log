@@ -36,6 +36,15 @@ export function readingIsOff(error: unknown): boolean {
   return error instanceof Error && error.message.includes('not switched on')
 }
 
+/**
+ * True when the read failed only because nobody is signed in yet — the normal case for a landing-page arrival,
+ * which runs the lookup on mount before sign-in. The caller falls back to the domain-guessed brand, the same as
+ * `readingIsOff`, instead of showing "Sign in before using the live API" as a scary error.
+ */
+export function notSignedInYet(error: unknown): boolean {
+  return error instanceof Error && error.message === 'Sign in before using the live API'
+}
+
 export const siteMapSchema = z.object({
   sourceUrl: z.string(),
   links: z.array(z.object({ url: z.string(), title: z.string().optional() })),

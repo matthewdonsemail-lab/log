@@ -1433,7 +1433,9 @@ function HeaderChrome({
           <HeaderLogo href={homeHref} label={logoLabel} />
           <div className="flex items-center gap-1 md:hidden">
             <HeaderActions
-              items={accounts.filter((item) => item.variant === "cta" || item.variant === "pricing")}
+              items={accounts.filter(
+                (item) => item.variant === "cta" || item.variant === "pricing" || item.variant === "ghost"
+              )}
               label="Account"
               githubRepo={githubRepo}
               className="flex items-center gap-1"

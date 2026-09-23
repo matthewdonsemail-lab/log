@@ -5,7 +5,7 @@ import { Button, useToast } from '@listeningkit/ui'
 import { describeExpiry, saveSession, sessionsOnConvex, tokenPlatform } from '@/lib/live-sessions'
 import { SOCIAL_ICONS, SocialGlyph } from '@/lib/social-icons'
 import { extractBrandFromUrl, getBrand, saveBrand, type BrandEntity } from '@/lib/brand'
-import { applyWebsiteFacts, brandOnConvex, readingIsOff, readWebsite } from '@/lib/live-brand'
+import { applyWebsiteFacts, brandOnConvex, notSignedInYet, readingIsOff, readWebsite } from '@/lib/live-brand'
 import { BrandRevealStep } from '@/components/onboarding/BrandRevealStep'
 import { FunnelVideo } from '@/components/FunnelVideo'
 import { ReadyFill } from '@/components/ReadyFill'
@@ -235,8 +235,9 @@ export function OnboardingSteps({ requireSignIn = false }: { requireSignIn?: boo
         try {
           entity = applyWebsiteFacts(base, await readWebsite(raw))
         } catch (err) {
-          // Reading is not switched on: keep the name guessed from the domain rather than blocking sign-up.
-          if (!readingIsOff(err)) throw err
+          // Reading is not switched on, or nobody has signed in yet (the normal case for a landing arrival,
+          // which runs this lookup before sign-in): keep the name guessed from the domain rather than blocking sign-up.
+          if (!readingIsOff(err) && !notSignedInYet(err)) throw err
         }
       } else {
         await new Promise((resolve) => window.setTimeout(resolve, 700)) // the demo's fetch beat

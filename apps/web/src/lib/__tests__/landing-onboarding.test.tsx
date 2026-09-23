@@ -21,8 +21,9 @@ afterEach(() => { vi.unstubAllGlobals() })
 describe('the landing page leads into onboarding', () => {
   const html = renderToStaticMarkup(<MemoryRouter><LandingPage /></MemoryRouter>)
 
-  it('has a header with only the logo, sign in and get started', () => {
-    for (const gone of ['Features', 'Resources', 'Pricing', 'Changelog']) expect(html, gone).not.toMatch(new RegExp(`>${gone}<`))
+  it('has a header with the landing nav plus sign in and get started', () => {
+    for (const shown of ['Features', 'How it works', 'Use cases', 'Why free']) expect(html, shown).toContain(`>${shown}<`)
+    for (const gone of ['Resources', 'Pricing', 'Changelog']) expect(html, gone).not.toMatch(new RegExp(`>${gone}<`))
     expect(html).toContain('>Sign in<')
     expect(html).toContain('href="/onboarding"')
     expect(html).toContain('>Get started<')
