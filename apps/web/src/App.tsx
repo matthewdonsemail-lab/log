@@ -1,5 +1,6 @@
 import type { ReactElement } from 'react'
 import { useState } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ToastProvider } from '@listeningkit/ui'
@@ -52,11 +53,17 @@ function HealthPage() {
   )
 }
 
+// Vercel Analytics only actually reports when the page is served from Vercel's own infrastructure
+// (it calls Vercel's own /_vercel/insights endpoint); on the Convex-hosted copy it is a harmless no-op,
+// so this only renders it where it can do something, to avoid an inert script everywhere else.
+const VERCEL_ANALYTICS_DOMAIN = 'log.listeningkit.com'
+
 export function App() {
   // AuthSetup remounts on session changes; do not share cached queries across users.
   const [queryClient] = useState(createQueryClient)
   return (
     <QueryClientProvider client={queryClient}>
+      {window.location.hostname === VERCEL_ANALYTICS_DOMAIN ? <Analytics /> : null}
       <ToastProvider>
         <Router>
           <AuthSetup>
