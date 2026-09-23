@@ -60,6 +60,17 @@ describe('the extension and the server agree on the token', () => {
     const manifest = (await import('../../../../extension/manifest.json')).default
     const hosts = (manifest.host_permissions as string[]).join(' ')
     for (const site of Object.values(SITES)) for (const domain of site.domains) expect(hosts).toContain(domain)
-    expect(manifest.permissions).toEqual(['activeTab', 'cookies', 'clipboardWrite', 'storage', 'scripting'])
+    // Least privilege: only what the one job needs. Chrome Web Store rejects unused permissions.
+    expect(manifest.permissions).toEqual(['cookies', 'clipboardWrite'])
+  })
+
+  it('the popup never talks to the network or runs remote code, and uses only the APIs it asks permission for', async () => {
+    const { readFileSync } = await import('node:fs')
+    const { fileURLToPath } = await import('node:url')
+    const dir = fileURLToPath(new URL('../../../../extension/', import.meta.url))
+    const code = readFileSync(dir + 'popup.js', 'utf8') + readFileSync(dir + 'lib.js', 'utf8')
+    expect(code).not.toMatch(/fetch\(|XMLHttpRequest|WebSocket|sendBeacon|eval\(|new Function|importScripts/)
+    expect(code).not.toMatch(/chrome\.(storage|scripting)/)
+    expect(readFileSync(dir + 'popup.html', 'utf8')).not.toMatch(/<script[^>]+src=["']https?:/)
   })
 })

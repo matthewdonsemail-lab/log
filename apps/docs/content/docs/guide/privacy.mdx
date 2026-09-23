@@ -1,0 +1,67 @@
+---
+title: Privacy policy
+description: What ListeningKit and its Chrome extension collect, why, who else sees it, and how to delete it.
+---
+
+# Privacy policy
+
+Last updated: 23 September 2026.
+
+ListeningKit ("we", "us") watches Reddit, X and Facebook for the phrases you choose and shows you the posts that match. This page covers the ListeningKit website and the **ListeningKit Connect** Chrome extension. We wrote it in plain words on purpose.
+
+## The Chrome extension
+
+The extension has one job: give you a connection token for a site you are already logged in to, so you can paste it into ListeningKit.
+
+- When you open the extension while on reddit.com, x.com, twitter.com or facebook.com, and press **Copy token**, it reads that site's login cookies from your browser and puts them, packed into one token, on your clipboard.
+- It only reads cookies for those four sites. It reads them only when you press the button.
+- **The extension sends nothing anywhere.** It makes no network requests, runs no remote code, has no analytics, and stores nothing. The token goes to your clipboard and nowhere else.
+- What happens next is your choice: if you paste the token into ListeningKit, it is handled as described in the next section.
+
+Permissions it asks Chrome for: `cookies` (to read the login cookies of those four sites), `clipboardWrite` (to copy the token), and access to reddit.com, x.com, twitter.com and facebook.com (Chrome requires this before an extension may read a site's cookies).
+
+## What ListeningKit stores
+
+| What | Why | How it is kept |
+|---|---|---|
+| The login token you paste in (your session cookies for Reddit, X or Facebook) | To read posts as you, through a helper on your own computer | Encrypted (AES-256-GCM) before it is saved. Never shown back to any browser. Only cookies belonging to the platform's own domains are kept. |
+| Your sign-in identity (name and email from Google or GitHub, through Clerk) | To sign you in and keep your data separate from everyone else's | Held by Clerk and by our database as an account id |
+| The phrases and communities you listen for, and the posts that matched | To show you your matches | In our database, visible only to you |
+| Your website's public text (if you enter your website) | To learn what your business does | Facts only (name, tagline, offerings); the read is done by Firecrawl |
+| Your email address, if you switch on email alerts | To email you strong matches | In our database; sent through AgentMail |
+| API keys and webhook addresses you create | To let your own code use your data | Keys are stored only as a one-way hash and shown once; webhook signing secrets are encrypted |
+
+We do not sell your data. We do not use it for advertising. We do not use it for anything unrelated to showing you your matches.
+
+## Who else handles data
+
+We use these services to run ListeningKit. Each receives only what it needs:
+
+- **Convex**: hosting and database.
+- **Clerk**: sign-in.
+- **OpenAI**: the text of a matched post, and a short summary of your business, are sent to score how likely the author wants help. Post text is public content written by other people.
+- **Firecrawl**: reads the public page of the website you enter.
+- **AgentMail**: sends your alert emails.
+- **Google (Analytics and Tag Manager) and Vercel (hosting and Analytics)**: count visits to this website (pages viewed, device type, approximate location). They do not receive your token or your matches.
+- **A proxy provider**: reading X and Facebook goes through a residential proxy we operate, so those two sites see the proxy's address rather than yours.
+
+## Keeping and deleting your data
+
+- **Disconnect a login:** Settings, Connections, **Remove**. This deletes the stored token.
+- **Delete phrases and their matches:** remove the phrase on the Keywords page.
+- **Delete API keys and webhooks:** revoke or remove them on the API page.
+- **Delete everything:** contact us (below) and we will delete your account and its data.
+
+You can also make the login token useless yourself at any time by logging out of the site it came from, which ends that session.
+
+## Your responsibility
+
+Reading a logged-in session with a helper can go against the terms of the site it belongs to. Use accounts you can afford to lose, as the documentation says.
+
+## Children
+
+ListeningKit is not for children under 16 and we do not knowingly collect their data.
+
+## Changes and contact
+
+If this policy changes, this page changes and the date at the top is updated. Questions, or a deletion request: open an issue at https://github.com/matthewdonsemail-lab/log/issues.

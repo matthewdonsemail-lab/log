@@ -2,12 +2,7 @@ import { SITES, buildToken, hasLogin, platformForUrl } from './lib.js'
 
 const $ = (id) => document.getElementById(id)
 const copy = $('copy')
-const savePanel = $('save-panel')
-const save = $('save')
-const profiles = $('profiles')
 const status = $('status')
-let current = null
-let currentCookies = []
 
 function say(text, tone = '') {
   status.textContent = text
@@ -18,54 +13,6 @@ function say(text, tone = '') {
 async function cookiesFor(platform) {
   const jars = await Promise.all(SITES[platform].domains.map((domain) => chrome.cookies.getAll({ domain })))
   return jars.flat()
-}
-
-async function readProfiles() {
-  return []
-}
-
-async function writeProfiles(next) {
-  void next
-}
-
-function tokenFor(profile) { return profile.token }
-
-async function fillPage(profile) {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-  if (!tab?.id) throw new Error('No active page found')
-  await chrome.scripting.executeScript({ target: { tabId: tab.id }, args: [tokenFor(profile)], func: (token) => {
-    const fields = [...document.querySelectorAll('input')]
-    const set = (field, value) => {
-      if (!field || !value) return
-      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set
-      setter?.call(field, value)
-      field.dispatchEvent(new Event('input', { bubbles: true }))
-      field.dispatchEvent(new Event('change', { bubbles: true }))
-    }
-    const tokenField = fields.find((field) => field.type === 'password' || /token|cookie|session/i.test(`${field.name} ${field.placeholder}`))
-    set(tokenField, token)
-  }})
-}
-
-async function renderProfiles() {
-  const saved = await readProfiles()
-  $('saved').hidden = saved.length === 0
-  profiles.replaceChildren(...saved.map((profile) => {
-    const card = document.createElement('div')
-    card.className = 'profile'
-    card.innerHTML = `<div class="profile-head"><span class="profile-name"></span><span>${profile.platform}</span></div><div class="profile-meta">${profile.cookieCount} cookies</div>`
-    card.querySelector('.profile-name').textContent = profile.name
-    const actions = document.createElement('div')
-    actions.className = 'profile-actions'
-    for (const [label, action, primary] of [['Fill page', () => fillPage(profile), true], ['Copy cookies', async () => navigator.clipboard.writeText(profile.token), false], ['Delete', async () => writeProfiles((await readProfiles()).filter((item) => item.id !== profile.id)), false]]) {
-      const button = document.createElement('button')
-      button.type = 'button'; button.textContent = label; button.className = primary ? 'primary' : 'secondary'
-      button.addEventListener('click', async () => { try { await action(); await renderProfiles(); say(label === 'Delete' ? 'Account deleted.' : `${label} complete.`, 'ok') } catch { say('Could not complete that action.', 'warn') } })
-      actions.append(button)
-    }
-    card.append(actions)
-    return card
-  }))
 }
 
 async function init() {
@@ -85,9 +32,6 @@ async function init() {
   }
 
   say(`Ready. You are logged in to ${name}.`, 'ok')
-  current = platform
-  currentCookies = cookies
-  savePanel.hidden = false
   copy.textContent = `Copy your ${name} token`
   copy.hidden = false
   copy.onclick = async () => {
@@ -103,14 +47,4 @@ async function init() {
   }
 }
 
-save.addEventListener('click', async () => {
-  const name = $('account-name').value.trim()
-  if (!name || !current) return say('Enter a name before saving.', 'warn')
-  const saved = await readProfiles()
-  await writeProfiles([...saved, { id: crypto.randomUUID(), name, platform: current, cookieCount: currentCookies.length, token: buildToken(current, currentCookies), savedAt: Date.now() }])
-  $('account-name').value = ''
-  await renderProfiles(); say('Account saved in this browser.', 'ok')
-})
-
-renderProfiles().catch(() => undefined)
 init().catch(() => say('Something went wrong. Close this popup and try again.', 'warn'))
