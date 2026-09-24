@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
 
 import { SquircleBorder, useComposedRef, useSquircleBorder, useSquircleClip } from './squircle';
 
@@ -73,8 +73,16 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener('toast', handler);
   }, [addToast]);
 
+  // Stable functions: components put `toast.error` in effect dependencies; a new function each render made a failing
+  // load toast, re-render, and load again without end.
+  const actions = useMemo(
+    () => ({ success: (t: string, m?: string) => addToast('success', t, m), error: (t: string, m?: string) => addToast('error', t, m), info: (t: string, m?: string) => addToast('info', t, m), warning: (t: string, m?: string) => addToast('warning', t, m), dismiss }),
+    [addToast, dismiss],
+  );
+  const value = useMemo(() => ({ toasts, ...actions }), [toasts, actions]);
+
   return (
-    <ToastContext.Provider value={{ toasts, success: (t,m) => addToast('success',t,m), error: (t,m) => addToast('error',t,m), info: (t,m) => addToast('info',t,m), warning: (t,m) => addToast('warning',t,m), dismiss }}>
+    <ToastContext.Provider value={value}>
       {children}
       <div className="fixed bottom-3 right-3 z-50 flex flex-col gap-2">
         {toasts.map(toast => (
