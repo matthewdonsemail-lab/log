@@ -56,13 +56,12 @@ export function DashboardLayout() {
                 <PanelLeftClose size={15} strokeWidth={2.25} aria-hidden="true" />
               )}
             </button>
-            <DashboardHeader>
-              {/* Mobile nav docks under the header; it self-gates to <sm.
-                Hidden while a form is open — the form goes full-screen and
-                the fixed bottom bar (root stacking context) would otherwise
-                paint above the overlay. */}
-              {formSlot ? null : <DashboardMobileNav />}
-            </DashboardHeader>
+            <DashboardHeader />
+            {/* Mobile nav is `fixed`, so it must not live inside the header: the header is clipped to a squircle
+                (clip-path), which also cuts off taps on anything painted outside its box, so the menu and tabs
+                could not be pressed. It self-gates to <sm. Hidden while a form is open — the form goes
+                full-screen and the fixed bottom bar (root stacking context) would otherwise paint above it. */}
+            {formSlot ? null : <DashboardMobileNav />}
 
             <div className="flex min-h-0 flex-1 items-stretch">
               <main className="lk-no-scrollbar flex min-h-0 min-w-0 flex-1 flex-col gap-6 overflow-y-auto bg-[#FBFCFE] px-3 pb-20 pt-3 sm:px-4 sm:pb-0 sm:pt-4">
