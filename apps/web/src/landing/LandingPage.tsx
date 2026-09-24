@@ -175,7 +175,7 @@ export function LandingPage() {
           <p className="text-sm font-medium uppercase text-white/80">Built with</p>
           <ul className="mt-5 flex list-none flex-wrap items-center gap-x-8 gap-y-4 p-0">
             {[
-              { label: 'OpenMagPie', src: '/logos/stack/openmagpie.png', whiten: true, showLabel: true },
+              { label: 'OpenMagPie', src: '/logos/stack/openmagpie.webp', whiten: true, showLabel: true },
               { label: 'Convex', src: '/logos/stack/convex.svg', whiten: false, showLabel: false },
               { label: 'Firecrawl', src: '/logos/stack/firecrawl.svg', whiten: true, showLabel: true },
               { label: 'Treg', src: '/logos/stack/treg.svg', whiten: false, showLabel: true },

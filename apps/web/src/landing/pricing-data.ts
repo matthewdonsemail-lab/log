@@ -272,34 +272,34 @@ export const FAQ_COPY: FaqCopy = {
     ctaLabel: 'Send Us A Message!',
     ctaHref: '/onboarding',
     body: 'We will be happy to answer!',
-    photo: '/images/mattlistening.png'
+    photo: '/images/mattlistening.webp'
   },
   items: [
     {
       id: 'site-plan',
       answeredBy: 'Matthew',
-      answeredByImage: '/images/mattlistening.png',
+      answeredByImage: '/images/mattlistening.webp',
       question: 'What is on the $350 plan?',
       answer: 'Site is website plus CRM. The page can take the booking. The pipeline owns the lead. Missed calls get a text-back. It is the lowest retainer — not a free tier, and not ads or strategy.'
     },
     {
       id: 'grow-plan',
       answeredBy: 'Martinus',
-      answeredByImage: '/images/mandeeplistening.png',
+      answeredByImage: '/images/mandeeplistening.webp',
       question: 'Why does Grow stop at $999 instead of $500?',
       answer: 'Grow is the full monthly package: site, CRM, company AI infrastructure, and market strategy including PPC. $999 is the half-year monthly rate. Yearly billing is 28% less per month. Setup is separate.'
     },
     {
       id: 'setup-fee',
       answeredBy: 'Matthew',
-      answeredByImage: '/images/mattlistening.png',
+      answeredByImage: '/images/mattlistening.webp',
       question: 'What is the $5,000 setup?',
       answer: 'One-time. We create the CRM and stand up AI infrastructure for the company, then wire the site into that pipeline. It sits on top of Site, Stack, or Grow — it is not a substitute for the retainer.'
     },
     {
       id: 'billing',
       answeredBy: 'Martinus',
-      answeredByImage: '/images/mandeeplistening.png',
+      answeredByImage: '/images/mandeeplistening.webp',
       question: 'How do half-year and annual compare?',
       answer: 'Half-year is the listed monthly rate, billed every six months. Annual is the same work at 28% off per month, billed once a year. Setup stays $5,000 either way.'
     }

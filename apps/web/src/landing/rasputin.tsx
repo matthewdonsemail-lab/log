@@ -10,21 +10,21 @@ const DEFAULT_LINES = [
 ]
 
 const TEAM_PHOTOS = [
-  '/images/mattlistening.png',
-  '/images/johnlistening.png',
-  '/images/kennedylistneing.png',
-  '/images/mandeeplistening.png',
+  '/images/mattlistening.webp',
+  '/images/johnlistening.webp',
+  '/images/kennedylistneing.webp',
+  '/images/mandeeplistening.webp',
 ]
 
 const EAR_IMAGES = [
-  'ear1.png',
-  'ear2.png',
-  'ear3.png',
-  'ear4.png',
-  'ear5.png',
-  'ear6.png',
-  'ear7.png',
-  'ear8.png',
+  'ear1.webp',
+  'ear2.webp',
+  'ear3.webp',
+  'ear4.webp',
+  'ear5.webp',
+  'ear6.webp',
+  'ear7.webp',
+  'ear8.webp',
 ]
 const EAR_POSITIONS = [
   'left-[-15rem] top-[2%]',

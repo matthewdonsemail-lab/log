@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef, type ForwardRefExoticComponent, type Ref, type RefAttributes } from 'react';
+import { forwardRef, useEffect, useRef, useState, type ForwardRefExoticComponent, type Ref, type RefAttributes } from 'react';
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { EffectComposer, wrapEffect } from '@react-three/postprocessing';
 import { Effect } from 'postprocessing';
@@ -170,7 +170,12 @@ export interface DitherProps {
   disableAnimation?: boolean;
   enableMouseInteraction?: boolean;
   mouseRadius?: number;
+  /** Most frames per second to draw while on screen. The waves move slowly, so 20 looks the same as 60 for far less GPU. */
+  maxFps?: number;
 }
+
+/** Start drawing this far before the canvas scrolls into view, so it is never seen blank. */
+const VISIBLE_MARGIN = '250px';
 
 const WrappedRetro = wrapEffect(RetroEffectImpl) as unknown as ForwardRefExoticComponent<{
   colorNum?: number;
@@ -187,6 +192,9 @@ const RetroEffect = forwardRef(function RetroEffect(
 interface DitheredWavesProps extends DitherProps {
   waveColor: RGB;
   backgroundColor: RGB;
+  /** True while the canvas is (nearly) on screen. Off screen, nothing is drawn. */
+  active: boolean;
+  maxFps: number;
 }
 
 function DitheredWaves({
@@ -200,10 +208,20 @@ function DitheredWaves({
   disableAnimation,
   enableMouseInteraction,
   mouseRadius,
+  active,
+  maxFps,
 }: DitheredWavesProps) {
   const mesh = useRef<THREE.Mesh>(null);
   const mouseRef = useRef(new THREE.Vector2());
-  const { viewport, size, gl } = useThree();
+  const { viewport, size, gl, invalidate } = useThree();
+
+  // The canvas draws on demand (frameloop="demand"). While it is on screen and animated, ask for a frame at a capped
+  // rate; when it is off screen or animation is disabled, no timer runs and the GPU is idle.
+  useEffect(() => {
+    if (!active || disableAnimation) return;
+    const id = window.setInterval(invalidate, 1000 / Math.max(1, maxFps));
+    return () => window.clearInterval(id);
+  }, [active, disableAnimation, maxFps, invalidate]);
 
   const waveUniformsRef = useRef({
     time: new THREE.Uniform(0),
@@ -305,13 +323,27 @@ export default function Dither({
   disableAnimation = false,
   enableMouseInteraction = true,
   mouseRadius = 1,
+  maxFps = 20,
 }: DitherProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [active, setActive] = useState(true);
+
+  useEffect(() => {
+    const el = canvasRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') return;
+    const observer = new IntersectionObserver(([entry]) => setActive(entry.isIntersecting), { rootMargin: VISIBLE_MARGIN });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <Canvas
+      ref={canvasRef}
       className="dither-container"
       camera={{ position: [0, 0, 6] }}
       dpr={1}
-      gl={{ antialias: true, preserveDrawingBuffer: true }}
+      frameloop="demand"
+      gl={{ antialias: false, preserveDrawingBuffer: true }}
     >
       <DitheredWaves
         waveSpeed={waveSpeed}
@@ -324,6 +356,8 @@ export default function Dither({
         disableAnimation={disableAnimation}
         enableMouseInteraction={enableMouseInteraction}
         mouseRadius={mouseRadius}
+        active={active}
+        maxFps={maxFps}
       />
     </Canvas>
   );

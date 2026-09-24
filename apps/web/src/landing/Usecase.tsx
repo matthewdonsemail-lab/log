@@ -47,24 +47,24 @@ export type EarSpec = {
 
 export const USECASE_EAR_SETS: EarSpec[][] = [
   [
-    { src: '/images/ears/ear1.png', className: 'left-[-4%] top-[8%] size-64', rotate: -3, filter: 'hue-rotate(190deg) saturate(2.2) brightness(1.05)', jitter: true },
-    { src: '/images/ears/ear4.png', className: 'right-[-3%] top-[34%] size-80', rotate: 2, filter: 'hue-rotate(280deg) saturate(1.8) contrast(1.15)' },
-    { src: '/images/ears/ear7.png', className: 'left-[4%] bottom-[4%] size-72', rotate: -2, filter: 'hue-rotate(90deg) saturate(2) brightness(1.1)' },
+    { src: '/images/ears/ear1.webp', className: 'left-[-4%] top-[8%] size-64', rotate: -3, filter: 'hue-rotate(190deg) saturate(2.2) brightness(1.05)', jitter: true },
+    { src: '/images/ears/ear4.webp', className: 'right-[-3%] top-[34%] size-80', rotate: 2, filter: 'hue-rotate(280deg) saturate(1.8) contrast(1.15)' },
+    { src: '/images/ears/ear7.webp', className: 'left-[4%] bottom-[4%] size-72', rotate: -2, filter: 'hue-rotate(90deg) saturate(2) brightness(1.1)' },
   ],
   [
-    { src: '/images/ears/ear2.png', className: 'right-[-4%] top-[6%] size-72', rotate: 2, filter: 'hue-rotate(325deg) saturate(2.4) brightness(1.1)' },
-    { src: '/images/ears/ear5.png', className: 'left-[-4%] top-[40%] size-96', rotate: -3, filter: 'hue-rotate(175deg) saturate(2.1) contrast(1.1)', jitter: true },
-    { src: '/images/ears/ear8.png', className: 'right-[4%] bottom-[3%] size-64', rotate: 3, filter: 'hue-rotate(45deg) saturate(2.2) brightness(1.05)' },
+    { src: '/images/ears/ear2.webp', className: 'right-[-4%] top-[6%] size-72', rotate: 2, filter: 'hue-rotate(325deg) saturate(2.4) brightness(1.1)' },
+    { src: '/images/ears/ear5.webp', className: 'left-[-4%] top-[40%] size-96', rotate: -3, filter: 'hue-rotate(175deg) saturate(2.1) contrast(1.1)', jitter: true },
+    { src: '/images/ears/ear8.webp', className: 'right-[4%] bottom-[3%] size-64', rotate: 3, filter: 'hue-rotate(45deg) saturate(2.2) brightness(1.05)' },
   ],
   [
-    { src: '/images/ears/ear3.png', className: 'left-[-2%] top-[4%] size-80', rotate: -2, filter: 'hue-rotate(140deg) saturate(1.9) brightness(1.1)' },
-    { src: '/images/ears/ear6.png', className: 'right-[-5%] top-[38%] size-64', rotate: 3, filter: 'hue-rotate(215deg) saturate(2.5) contrast(1.2)', jitter: true },
-    { src: '/images/ears/ear1.png', className: 'left-[6%] bottom-[2%] size-96', rotate: -3, filter: 'hue-rotate(300deg) saturate(1.8) brightness(1.05)' },
+    { src: '/images/ears/ear3.webp', className: 'left-[-2%] top-[4%] size-80', rotate: -2, filter: 'hue-rotate(140deg) saturate(1.9) brightness(1.1)' },
+    { src: '/images/ears/ear6.webp', className: 'right-[-5%] top-[38%] size-64', rotate: 3, filter: 'hue-rotate(215deg) saturate(2.5) contrast(1.2)', jitter: true },
+    { src: '/images/ears/ear1.webp', className: 'left-[6%] bottom-[2%] size-96', rotate: -3, filter: 'hue-rotate(300deg) saturate(1.8) brightness(1.05)' },
   ],
   [
-    { src: '/images/ears/ear4.png', className: 'right-[-4%] top-[2%] size-96', rotate: 3, filter: 'hue-rotate(200deg) saturate(2.2) brightness(1.1)', jitter: true },
-    { src: '/images/ears/ear7.png', className: 'left-[-5%] top-[36%] size-72', rotate: -2, filter: 'hue-rotate(75deg) saturate(1.9) contrast(1.1)' },
-    { src: '/images/ears/ear2.png', className: 'right-[5%] bottom-[1%] size-80', rotate: 2, filter: 'hue-rotate(160deg) saturate(2.2) brightness(1.1)' },
+    { src: '/images/ears/ear4.webp', className: 'right-[-4%] top-[2%] size-96', rotate: 3, filter: 'hue-rotate(200deg) saturate(2.2) brightness(1.1)', jitter: true },
+    { src: '/images/ears/ear7.webp', className: 'left-[-5%] top-[36%] size-72', rotate: -2, filter: 'hue-rotate(75deg) saturate(1.9) contrast(1.1)' },
+    { src: '/images/ears/ear2.webp', className: 'right-[5%] bottom-[1%] size-80', rotate: 2, filter: 'hue-rotate(160deg) saturate(2.2) brightness(1.1)' },
   ],
 ]
 
@@ -171,7 +171,7 @@ export function UsecaseHireLink({ index, className }: { index: number; className
   return (
     <div className={cn('mt-7 flex items-end justify-center gap-3 sm:gap-4', className)}>
       <img
-        src="/images/mattlistening.png"
+        src="/images/mattlistening.webp"
         alt="Matthew"
         className="size-12 shrink-0 rounded-xl border-2 border-[#2A8CFF] object-cover shadow-sm sm:size-14 md:size-16"
       />
