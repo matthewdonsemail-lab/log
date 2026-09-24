@@ -13,7 +13,7 @@ let currentCookies = []
 
 // The dashboard owns Clerk authentication and Convex ownership. The extension
 // never asks for a password or stores a second copy of the Clerk credential.
-const LISTENINGKIT_AUTH = 'https://listeningkit-hackathon.vercel.app/auth'
+const LISTENINGKIT_AUTH = 'https://log.listeningkit.com/auth'
 
 function say(text, tone = '') {
   void text

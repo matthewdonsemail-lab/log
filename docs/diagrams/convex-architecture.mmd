@@ -1,0 +1,29 @@
+flowchart LR
+  subgraph browser["Your browser"]
+    UI["ListeningKit dashboard<br/>React + Clerk sign-in"]
+    EXT["ListeningKit Connect<br/>Chrome extension"]
+  end
+  subgraph convex["Convex"]
+    FN["queries, mutations, actions<br/>live subscriptions (useQuery)"]
+    CRON["cron every 10 min<br/>watch.tick"]
+    HTTP["HTTP actions<br/>POST /ingest · GET /session"]
+    DB[("accounts · posts · keywords<br/>hits · sessions · ingestKeys")]
+  end
+  subgraph reddit["Reddit sources, freshest first"]
+    API["Reddit API<br/>app OAuth"]
+    RSS["Reddit plain feed"]
+    MIR["public mirror"]
+  end
+  subgraph local["Your machine (optional)"]
+    CAMO["reddit-camofox-client<br/>+ clients/reddit_push.py"]
+  end
+  UI <-->|"useQuery / mutations"| FN
+  EXT -.->|"token, pasted by you"| UI
+  CRON --> API
+  CRON -.->|"if refused"| RSS
+  CRON -.->|"if refused"| MIR
+  CAMO -->|"POST /ingest (ingest key)"| HTTP
+  CAMO -->|"GET /session (ingest key)"| HTTP
+  FN --- DB
+  CRON --- DB
+  HTTP --- DB

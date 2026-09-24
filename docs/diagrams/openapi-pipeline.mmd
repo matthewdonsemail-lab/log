@@ -1,0 +1,15 @@
+flowchart LR
+  subgraph code["apps/web/src/lib"]
+    S["domain server.ts — routes + describeRoute(operationId, tags, responses)"]
+    Z["openapi.ts — Zod schemas for requests/responses, error envelope, issue vocab"]
+    C["mock-api.ts — one root app mounting every domain app"]
+  end
+  S -->|imports| Z
+  C --> E["pnpm --filter web openapi:export<br/>hono-openapi generateSpecs"]
+  S --> E
+  E --> O[("apps/docs/openapi.json — committed")]
+  O --> G["pnpm --filter docs gen:api<br/>(scripts/generate-api-docs.mjs)"]
+  G --> P["per-tag endpoint pages<br/>mdx + Scalar try-it consoles"]
+  C --> M["pnpm --filter web mock:server<br/>localhost:5174 — /openapi.json + /scalar<br/>fresh seeds, no persistence"]
+  P -->|consoles execute against| M
+  D["browser dashboard"] -->|in-process app.request| C

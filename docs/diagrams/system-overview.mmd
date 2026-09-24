@@ -1,0 +1,26 @@
+flowchart LR
+  subgraph sources["Channels you own / follow"]
+    FB[Facebook groups & pages]
+    XT[X / Twitter]
+    RD[Reddit communities]
+  end
+
+  subgraph action["Camoufox action clients"]
+    FBC["facebook-camofox-client"]
+    TWK["twtkit"]
+    RDC["reddit-camofox-client"]
+  end
+
+  FB --> FBC
+  XT --> TWK
+  RD --> RDC
+
+  FBC & TWK & RDC -->|REST| HONO["Hono API<br/>(deployed on Railcode)"]
+  HONO <--> CX[("Convex<br/>storage + queries")]
+
+  KW["Keyword analysis<br/>local LLM or OpenAI-compatible endpoint"] --> CX
+  FC["Firecrawl research<br/>Google dorks, area-scoped"] --> CX
+
+  CX --> WEB["ListeningKit client<br/>(this repo)"]
+  WEB --> BARK["Bark push"]
+  BARK --> PH((Your phone))

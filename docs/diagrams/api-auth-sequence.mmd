@@ -1,0 +1,18 @@
+sequenceDiagram
+  participant C as Client
+  participant G as authorizeApiKey (scopes.ts)
+  participant V as verifyApiKey (server.ts)
+  participant S as Route store
+
+  C->>G: Bearer lk_live_… + route + ctx { accountId?, groupId? }
+  G->>V: SHA-256 the presented secret
+  V->>V: match hash against stored keys
+  alt unknown / revoked
+    G-->>C: { ok: false, "Unknown or revoked API key." }
+  else scope mismatch
+    G-->>C: { ok: false, first failing reason }
+  else allowed
+    G->>V: key — its `lastUsedAt` stamped
+    G->>S: route runs under the key's scope
+    S-->>C: normal response
+  end

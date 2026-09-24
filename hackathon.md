@@ -3,7 +3,7 @@
 - **Project:** ListeningKit Logbook
 - **Event:** Convex All Gas Hackathon
 - **What it does:** Social-listening dashboard that watches Facebook, X, and Reddit for keywords you care about and pushes a notification on hits.
-- **Live app:** https://tremendous-seahorse-330.convex.site
+- **Live app:** https://log.listeningkit.com
 - **Repo:** https://github.com/matthewdonsemail-lab/log
 - **Frontend:** Convex static hosting
 - **Convex deployment:** https://tremendous-seahorse-330.convex.cloud (prod); dev `determined-cheetah-971`
@@ -12,9 +12,12 @@
 - **Auth:** Clerk dev instance (Google/GitHub provider cards + email, onboarding-gated routes)
 - **AI models:** gpt-4o-mini (OpenAI, direct API; or the Convex AI Gateway when enabled). Built and tested, not yet run live: needs `OPENAI_API_KEY` on the deployment
 - **Started:** 2026-09-12T21:03:28Z
-- **Last updated:** 2026-09-22T18:35:00Z
+- **Last updated:** 2026-09-24T18:45:00Z
 
 ## Log
+
+### 2026-09-24 - documentation refactor, banner, diagrams, and deployment metadata
+Reorganized the documentation architecture and split the monolithic README into modular, domain-separated guides: created a comprehensive self-hosting and local development guide (`docs/self-hosting.md`), deep architecture and data model reference (`docs/architecture.md`), REST API and Model Context Protocol (MCP) server reference (`docs/api-and-mcp.md`), features and subsystems guide (`docs/features.md`), and contributing guidelines (`docs/contributing.md`). Modularized 9 end-to-end architecture diagrams into standalone `.mmd` files in `docs/diagrams/` alongside an interactive gallery in `docs/diagrams/README.md`. Positioned the project banner (`banner.png`) at the top of the README, established clear branding as Log by ListeningKit, added the official MIT License (`LICENSE`), and updated repository metadata, package manifests, and extension auth endpoints to target the production deployment at https://log.listeningkit.com.
 
 ### 2026-09-22 - landing page updates
 Enhanced landing page sections: updated Rasputin section layout mirroring the Control dither shader backdrop with floating vibrantly filtered listening ears, centered handwriting note (`VaraText`), team photo strip, and hyperlinked scribble handwriting hiring note to x.com/matthewsoldit. Removed tracking utilities across landing components to adhere to brand guidelines.

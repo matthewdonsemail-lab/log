@@ -1,0 +1,14 @@
+flowchart TD
+  INSPECT[Inspect post] --> RK[Find related mentions]
+  INSPECT --> RC[Find related groups/communities]
+  INSPECT --> DR[Draft a response + resource]
+  RK --> PICK[Pick promising keywords]
+  PICK --> RETRY[None relevant? dig the replies]
+  PICK --> ONLINE[Look online?]
+  RC --> ONLINE
+  ONLINE --> DORK[Google dorking]
+  DORK --> GROUPS[Sibling communities + joins]
+  GROUPS --> MAP([keyword × community map])
+  PICK --> MAP
+  MAP --> LISTEN[Start listening]
+  DR --> SEND[Reply with attached resource]

@@ -3,7 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "ListeningKit hackathon monorepo \u2014 Vite + React + TS apps with shared UI package (matches open-offer-builder / Open-Cold-Dialer / ui-kit stack).",
+  "description": "Omnichannel social media listening & marketing tool with API and MCP access, outbound campaigns, and keyword tracking. Built for the Convex Hackathon.",
+  "homepage": "https://log.listeningkit.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/matthewdonsemail-lab/log.git"
+  },
+  "license": "MIT",
   "packageManager": "pnpm@10.5.2",
   "scripts": {
     "dev": "concurrently -n web,docs -c blue,green \"pnpm --filter web dev\" \"pnpm --filter docs dev\"",

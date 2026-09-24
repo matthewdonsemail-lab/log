@@ -1,0 +1,90 @@
+erDiagram
+  CONNECTION ||--o{ COMMUNITY : "facebook joins"
+  CONNECTION ||--o{ LISTING : "accountId"
+  CONNECTION ||--o{ THREAD : "accountId"
+  APIKEY }o--o| CONNECTION : "scopes.accountId (null = all)"
+  APIKEY }o--o{ COMMUNITY : "scopes.groupIds ([] = all)"
+  COMMUNITY ||--o{ KEYWORD : "groupId (facebook/reddit only)"
+  THREAD ||--o{ CHAT_MESSAGE : "threadId"
+  KEYWORD ||--o{ ANALYTICS : "keywordId (in-memory fan-out)"
+  BRAND }o--o{ COMMUNITY : "intelligence.targetCommunities"
+
+  CONNECTION {
+    string id PK
+    string platform "facebook | x | reddit"
+    string label
+    string connectedAt "null until the extension verifies"
+  }
+  COMMUNITY {
+    string id PK
+    string platform
+    string name
+    string url "nullable; set for resolved rows"
+    string[] entryQuestions "facebook join gates"
+    string[] answers
+    string joinState "none | pending | accepted"
+    string accountId FK "facebook joins only"
+  }
+  KEYWORD {
+    string id PK
+    string phrase
+    string platform
+    string groupId FK "null on x; must be a joined community elsewhere"
+    string status "listening | paused"
+    int signalsCount
+  }
+  LISTING {
+    string id PK "normalized"
+    string listingId "numeric Marketplace id"
+    string title
+    string price
+    string location
+    string accountId FK
+    locationPoint locationPoint "lat/lng + radiusKm 1-200"
+    string images "1-4 URLs, first is cover"
+    string status "under-review | under-review-duplicate | active | sold | removed"
+  }
+  THREAD {
+    string id PK "normalized"
+    string platform
+    string accountId FK
+    string platformThreadId "dm_conversation_id / thread_key / t4_ first_message_name"
+    string platformParticipantId
+    string subject "reddit only"
+    string preview
+    int unread
+  }
+  CHAT_MESSAGE {
+    string id PK "normalized"
+    string threadId FK
+    string from "me | them"
+    string platformMessageId
+    string body
+    string sentAt
+    string replyTo "platformMessageId of the replied message (is_self_reply on facebook)"
+  }
+  FEED_ITEM {
+    string id PK
+    string platform
+    string variant "post-text | post-image | comment"
+    string body
+    metrics likes "comments shares views replies reposts"
+  }
+  APIKEY {
+    string id PK
+    string name
+    string prefix "lk_live_4f7ak2***** — only secret-derived value stored"
+    string secretHash "SHA-256 of the secret"
+    scope scopes "accountId, groupIds[], canSendMessages, canReceiveMessages"
+  }
+  BRAND {
+    string id PK "'brand-default' — one workspace record"
+    identity identity "name, website, tagline, logoUrl"
+    location location "label, lat/lng, radiusKm"
+    voice voice "tone, formality, dos/donts, gold examples"
+    offerings offerings "name + detail"
+    sources sources "indexed site pages: url, title, text, status"
+    channels channels "per-platform style, examples, triage, autoreplies"
+    memory memory "working-facts rules"
+    intelligence intelligence "selectedKeyword, competitors, targetCommunities"
+  }

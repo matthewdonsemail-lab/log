@@ -1,0 +1,15 @@
+sequenceDiagram
+  participant U as You
+  participant W as ListeningKit client
+  participant H as Hono API (Railcode)
+  participant F as facebook-camofox-client
+  participant B as Bark
+
+  U->>W: pick a listed group, join
+  W->>H: submit join (platform REST API)
+  H->>F: send the content the group requires (join-form answers)
+  F->>F: Camoufox browser submits with humanize=true
+  F->>B: push "accepted into group"
+  B-->>U: notification on your phone
+  F->>H: account starts polling the group automatically
+  H-->>W: new posts stream into the log
