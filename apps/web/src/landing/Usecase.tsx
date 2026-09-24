@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { motion } from 'motion/react'
 import { Button, cn, useSquircleClip } from '@listeningkit/ui'
 import Dither from '@/components/Dither'
+import { LazyVideo } from './LazyVideo'
 import './Usecase.css'
 
 export type UsecaseSlide = {
@@ -135,7 +136,7 @@ export function SlideMarker({ index }: { index: number }) {
       aria-hidden
       className="relative mx-auto mb-6 size-14 overflow-hidden bg-[#2A8CFF]"
     >
-      <video
+      <LazyVideo
         src={`/video/usecase/${index + 1}.webm`}
         autoPlay
         muted
@@ -243,14 +244,16 @@ export function UsecasePhoneFilm({
     >
       {clips.map((src, index) => (
         <div key={`${src}-${index}`} className={cn(frameClassName, seamless ? 'h-1/5' : 'h-1/4')}>
-          <video
-            ref={(el) => clipRef?.(index, el)}
+          <LazyVideo
+            videoRef={(el) => clipRef?.(index, el)}
             src={src}
             autoPlay
             muted
             loop={loopClips}
             playsInline
-            preload="auto"
+            // "metadata" gives the slider each clip's length without downloading all four clips (about 5.7 MB) up front,
+            // for every visitor, including the many who never scroll this far. The clip plays and streams when it is shown.
+            preload="metadata"
             onLoadedMetadata={(event) => onClipDuration?.(index, event.currentTarget.duration)}
             className={mediaClassName}
           />

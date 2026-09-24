@@ -1,6 +1,7 @@
 import { motion } from 'motion/react'
 import { Users, Zap, Timer, BarChart3 } from 'lucide-react'
 import Dither from '@/components/Dither'
+import { LazyVideo } from './LazyVideo'
 
 type DitherVariant = {
   waveSpeed: number
@@ -85,7 +86,7 @@ function CaseCard({ item, index }: { item: OtherCase; index: number }) {
             />
           </div>
           <div className="absolute inset-0 flex items-center justify-center p-6">
-            <video
+            <LazyVideo
               src={item.videoSrc}
               autoPlay
               muted
