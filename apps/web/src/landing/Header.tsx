@@ -182,35 +182,35 @@ export type HeaderProps = {
 
 export const SECTION_EAR_MAP: Record<string, { src: string; filter?: string; jitter?: boolean }> = {
   "#features": {
-    src: "/images/ears/ear1.png",
+    src: "/images/ears/ear1.webp",
     filter: "hue-rotate(90deg) saturate(2.4) brightness(1.1)",
   },
   "#how-it-works": {
-    src: "/images/ears/ear2.png",
+    src: "/images/ears/ear2.webp",
     filter: "hue-rotate(185deg) saturate(2.2) brightness(1.05)",
   },
   "#use-cases": {
-    src: "/images/ears/ear3.png",
+    src: "/images/ears/ear3.webp",
     filter: "hue-rotate(275deg) saturate(2.1) contrast(1.15)",
   },
   "#why-free": {
-    src: "/images/ears/ear4.png",
+    src: "/images/ears/ear4.webp",
     filter: "hue-rotate(45deg) saturate(2.4) brightness(1.1)",
   },
   "#socials": {
-    src: "/images/ears/ear5.png",
+    src: "/images/ears/ear5.webp",
     filter: "hue-rotate(140deg) saturate(2.2) brightness(1.05)",
   },
   "#other-cases": {
-    src: "/images/ears/ear7.png",
+    src: "/images/ears/ear7.webp",
     filter: "hue-rotate(330deg) saturate(2.5) contrast(1.1)",
   },
   "#unemployed": {
-    src: "/images/ears/ear6.png",
+    src: "/images/ears/ear6.webp",
     filter: "hue-rotate(215deg) saturate(2.3) brightness(1.15)",
   },
   "#rasputin": {
-    src: "/images/ears/ear8.png",
+    src: "/images/ears/ear8.webp",
     filter: "hue-rotate(305deg) saturate(2.4) brightness(1.2)",
     jitter: true,
   },
@@ -234,28 +234,28 @@ const defaultNavItems: HeaderItem[] = [
     href: "#features",
     label: "Features",
     variant: "ghost",
-    ear: "/images/ears/ear1.png",
+    ear: "/images/ears/ear1.webp",
     earFilter: "hue-rotate(90deg) saturate(2.4) brightness(1.1)",
   },
   {
     href: "#how-it-works",
     label: "How it works",
     variant: "ghost",
-    ear: "/images/ears/ear2.png",
+    ear: "/images/ears/ear2.webp",
     earFilter: "hue-rotate(185deg) saturate(2.2) brightness(1.05)",
   },
   {
     href: "#use-cases",
     label: "Use cases",
     variant: "ghost",
-    ear: "/images/ears/ear3.png",
+    ear: "/images/ears/ear3.webp",
     earFilter: "hue-rotate(275deg) saturate(2.1) contrast(1.15)",
   },
   {
     href: "#why-free",
     label: "Why free",
     variant: "ghost",
-    ear: "/images/ears/ear4.png",
+    ear: "/images/ears/ear4.webp",
     earFilter: "hue-rotate(45deg) saturate(2.4) brightness(1.1)",
   },
 ]
@@ -278,7 +278,7 @@ const defaultNavMenuItems: Record<string, HeaderMenuItem[]> = {
       action: "Explore",
       swatchClassName: "bg-blue-500",
       description: "Built with Convex, Firecrawl, Treg and TypeSafe",
-      ear: "/images/ears/ear1.png",
+      ear: "/images/ears/ear1.webp",
       earFilter: "hue-rotate(90deg) saturate(2.4) brightness(1.1)",
     },
     {
@@ -287,7 +287,7 @@ const defaultNavMenuItems: Record<string, HeaderMenuItem[]> = {
       action: "Explore",
       swatchClassName: "bg-emerald-500",
       description: "Listen across Reddit, X (Twitter), Facebook & more",
-      ear: "/images/ears/ear5.png",
+      ear: "/images/ears/ear5.webp",
       earFilter: "hue-rotate(140deg) saturate(2.2) brightness(1.05)",
     },
   ],
@@ -298,7 +298,7 @@ const defaultNavMenuItems: Record<string, HeaderMenuItem[]> = {
       action: "Explore",
       swatchClassName: "bg-sky-500",
       description: "Catch conversations and intent in real-time",
-      ear: "/images/ears/ear2.png",
+      ear: "/images/ears/ear2.webp",
       earFilter: "hue-rotate(185deg) saturate(2.2) brightness(1.05)",
     },
     {
@@ -307,7 +307,7 @@ const defaultNavMenuItems: Record<string, HeaderMenuItem[]> = {
       action: "Explore",
       swatchClassName: "bg-amber-500",
       description: "Run locally on your terms with zero retainers",
-      ear: "/images/ears/ear6.png",
+      ear: "/images/ears/ear6.webp",
       earFilter: "hue-rotate(45deg) saturate(2.4) brightness(1.1)",
     },
   ],
@@ -318,7 +318,7 @@ const defaultNavMenuItems: Record<string, HeaderMenuItem[]> = {
       action: "Explore",
       swatchClassName: "bg-violet-500",
       description: "Find buyers asking for recommendations",
-      ear: "/images/ears/ear3.png",
+      ear: "/images/ears/ear3.webp",
       earFilter: "hue-rotate(275deg) saturate(2.1) contrast(1.15)",
     },
     {
@@ -327,7 +327,7 @@ const defaultNavMenuItems: Record<string, HeaderMenuItem[]> = {
       action: "Explore",
       swatchClassName: "bg-rose-500",
       description: "Emergencies, freelance gigs, contractors",
-      ear: "/images/ears/ear7.png",
+      ear: "/images/ears/ear7.webp",
       earFilter: "hue-rotate(330deg) saturate(2.5) contrast(1.1)",
     },
     {
@@ -336,7 +336,7 @@ const defaultNavMenuItems: Record<string, HeaderMenuItem[]> = {
       action: "Explore",
       swatchClassName: "bg-ink",
       description: "Massive news for finding gigs and opportunities",
-      ear: "/images/ears/ear4.png",
+      ear: "/images/ears/ear4.webp",
       earFilter: "hue-rotate(215deg) saturate(2.3) brightness(1.15)",
     },
     {
@@ -345,7 +345,7 @@ const defaultNavMenuItems: Record<string, HeaderMenuItem[]> = {
       action: "Explore",
       swatchClassName: "bg-emerald-500",
       description: "Made for our mate Rasputin who was mega unemployed",
-      ear: "/images/ears/ear8.png",
+      ear: "/images/ears/ear8.webp",
       earFilter: "hue-rotate(305deg) saturate(2.4) brightness(1.2)",
       earJitter: true,
     },

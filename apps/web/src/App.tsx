@@ -1,32 +1,41 @@
-import type { ReactElement } from 'react'
-import { useState } from 'react'
+import type { ComponentType, ReactElement } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { Analytics } from '@vercel/analytics/react'
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ToastProvider } from '@listeningkit/ui'
 import { OnboardingRoute, AuthRoute, AuthSetup, RequireAuth, SignInRoute, SignUpRoute } from './components/AuthGate'
-import { DashboardLayout } from './components/DashboardLayout'
-import { DashboardSettings } from './components/DashboardSettings'
-import { DashboardGroups } from './components/DashboardGroups'
-import { DashboardAccounts } from './components/DashboardAccounts'
-import { DashboardMessages } from './components/DashboardMessages'
-import { DashboardMessagesLive } from './components/DashboardMessagesLive'
-import { DashboardListings } from './components/DashboardListings'
-import { DashboardKeywords } from './components/DashboardKeywords'
-import { DashboardKeywordsLive } from './components/DashboardKeywordsLive'
 import { keywordsOnConvex } from './lib/live-keywords'
-import { DashboardAnalyticsOverview } from './components/DashboardAnalyticsOverview'
-import { DashboardAnalyticsPage } from './components/DashboardAnalyticsPage'
-import { DashboardAccountPage } from './components/DashboardAccountPage'
-import { DashboardChallengePage } from './components/DashboardChallengePage'
-import { DashboardFeed } from './components/DashboardFeed'
-import { DashboardDocs } from './components/DashboardDocs'
-import { StaticDocsRedirect } from './components/StaticDocsRedirect'
-import { DashboardAPI } from './components/DashboardAPI'
-import { DashboardApiKeyPage } from './components/DashboardApiKeyPage'
-import { DashboardApiLive } from './components/DashboardApiLive'
-import { DashboardBrand } from './components/DashboardBrand'
 import { LandingPage } from './landing/LandingPage'
+
+/**
+ * Every dashboard page and the docs redirect loads on demand, so a landing-page visitor does not download the
+ * dashboard's code (it was one 3.7 MB file). The landing page and the sign-in flow stay eager so first paint is not delayed.
+ */
+function lazyNamed(load: () => Promise<Record<string, unknown>>, name: string) {
+  return lazy(() => load().then((m) => ({ default: m[name] as ComponentType })))
+}
+
+const DashboardLayout = lazyNamed(() => import('./components/DashboardLayout'), 'DashboardLayout')
+const DashboardSettings = lazyNamed(() => import('./components/DashboardSettings'), 'DashboardSettings')
+const DashboardGroups = lazyNamed(() => import('./components/DashboardGroups'), 'DashboardGroups')
+const DashboardAccounts = lazyNamed(() => import('./components/DashboardAccounts'), 'DashboardAccounts')
+const DashboardMessages = lazyNamed(() => import('./components/DashboardMessages'), 'DashboardMessages')
+const DashboardMessagesLive = lazyNamed(() => import('./components/DashboardMessagesLive'), 'DashboardMessagesLive')
+const DashboardListings = lazyNamed(() => import('./components/DashboardListings'), 'DashboardListings')
+const DashboardKeywords = lazyNamed(() => import('./components/DashboardKeywords'), 'DashboardKeywords')
+const DashboardKeywordsLive = lazyNamed(() => import('./components/DashboardKeywordsLive'), 'DashboardKeywordsLive')
+const DashboardAnalyticsOverview = lazyNamed(() => import('./components/DashboardAnalyticsOverview'), 'DashboardAnalyticsOverview')
+const DashboardAnalyticsPage = lazyNamed(() => import('./components/DashboardAnalyticsPage'), 'DashboardAnalyticsPage')
+const DashboardAccountPage = lazyNamed(() => import('./components/DashboardAccountPage'), 'DashboardAccountPage')
+const DashboardChallengePage = lazyNamed(() => import('./components/DashboardChallengePage'), 'DashboardChallengePage')
+const DashboardFeed = lazyNamed(() => import('./components/DashboardFeed'), 'DashboardFeed')
+const DashboardDocs = lazyNamed(() => import('./components/DashboardDocs'), 'DashboardDocs')
+const StaticDocsRedirect = lazyNamed(() => import('./components/StaticDocsRedirect'), 'StaticDocsRedirect')
+const DashboardAPI = lazyNamed(() => import('./components/DashboardAPI'), 'DashboardAPI')
+const DashboardApiKeyPage = lazyNamed(() => import('./components/DashboardApiKeyPage'), 'DashboardApiKeyPage')
+const DashboardApiLive = lazyNamed(() => import('./components/DashboardApiLive'), 'DashboardApiLive')
+const DashboardBrand = lazyNamed(() => import('./components/DashboardBrand'), 'DashboardBrand')
 
 const createQueryClient = () => new QueryClient({
   defaultOptions: {
@@ -67,6 +76,7 @@ export function App() {
       <ToastProvider>
         <Router>
           <AuthSetup>
+          <Suspense fallback={null}>
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/onboarding" element={<OnboardingRoute />} />
@@ -103,6 +113,7 @@ export function App() {
             <Route path="/health" element={<HealthPage />} />
             <Route path="*" element={<Navigate to="/onboarding" replace />} />
           </Routes>
+          </Suspense>
           </AuthSetup>
         </Router>
       </ToastProvider>

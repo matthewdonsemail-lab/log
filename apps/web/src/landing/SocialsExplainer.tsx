@@ -39,10 +39,10 @@ const WORDMARK = 'ListeningKit'
 const FONT = "'Satoshi', 'Inter', system-ui, sans-serif"
 const BLUE = '#2A8CFF'
 const LISTENING_PHOTOS = [
-  '/images/mattlistening.png',
-  '/images/johnlistening.png',
-  '/images/kennedylistneing.png',
-  '/images/mandeeplistening.png',
+  '/images/mattlistening.webp',
+  '/images/johnlistening.webp',
+  '/images/kennedylistneing.webp',
+  '/images/mandeeplistening.webp',
 ]
 
 const FOUND = [

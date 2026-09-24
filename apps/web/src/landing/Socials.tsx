@@ -114,10 +114,10 @@ export function Socials() {
     <section ref={ref} id="socials" className="relative h-[280vh] w-full">
       <div ref={viewportRef} className="sticky top-0 h-screen overflow-hidden">
         {[
-          '/images/mattlistening.png',
-          '/images/johnlistening.png',
-          '/images/kennedylistneing.png',
-          '/images/mandeeplistening.png',
+          '/images/mattlistening.webp',
+          '/images/johnlistening.webp',
+          '/images/kennedylistneing.webp',
+          '/images/mandeeplistening.webp',
         ].map((src, index) => (
           <motion.img
             key={src}
