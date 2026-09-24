@@ -3,5 +3,7 @@
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "node scripts/build-site.mjs",
   "outputDirectory": "apps/web/dist",
-  "rewrites": [{ "source": "/((?!docs/|assets/|logos/).*)", "destination": "/index.html" }]
+  "rewrites": [
+    { "source": "/docs/:path+", "destination": "/docs/:path+.html" },
+    { "source": "/((?!docs/|assets/|logos/).*)", "destination": "/index.html" }]
 }
