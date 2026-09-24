@@ -12,6 +12,20 @@
   <a href="https://convex.dev"><img src="https://img.shields.io/badge/Backend-Convex-orange.svg?style=flat-square" alt="Convex Backend" /></a>
 </p>
 
+## A Few Words from Matthew
+
+> 🎥 **[Watch the Announcement Video on X](https://x.com/matthewsoldit/status/2102520314483941446)**
+>
+> *"I think that social listening and the tools around it should be open-sourced and that everyone should have access to it. We made this because we didn't want to pay money for something we think should be free!*
+>
+> *If you're coming across this and you want to be able to make good money from doing this at scale, send me a message on X: [**@matthewsoldit**](https://x.com/matthewsoldit).*
+>
+> *(also we build out really good CRMs and websites that convert — message me if you want to scale)*"  
+> 
+> — **Matthew** ([@matthewsoldit](https://x.com/matthewsoldit))
+
+---
+
 > **A real-time, omnichannel social media listening and marketing (SMM) engine.**  
 > Monitor **Reddit**, **X (Twitter)**, and **Facebook** for the conversations, keywords, and buying signals that matter to your business — with instant push notifications, AI intent classification, outbound campaign automation, and full programmatic control via REST API and Model Context Protocol (MCP). Built as an open-source submission for the **Convex Hackathon**.
 
@@ -54,6 +68,7 @@ flowchart LR
 
 ## Table of Contents
 
+- [A Few Words from Matthew](#a-few-words-from-matthew)
 - [What is Log by ListeningKit?](#what-is-log-by-listeningkit)
 - [Hackathon Submission Highlights](#hackathon-submission-highlights)
 - [Key Capabilities](#key-capabilities)
