@@ -89,6 +89,7 @@ export function LandingPage() {
         tone="light"
         homeHref="/"
         logoLabel="ListeningKit"
+        githubRepo="matthewdonsemail-lab/log"
         className="z-[70]"
         accountItems={[
           { href: '/sign-in', label: 'Sign in', variant: 'ghost' },

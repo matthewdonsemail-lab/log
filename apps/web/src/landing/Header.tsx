@@ -66,6 +66,31 @@ function GithubIcon({ className }: { className?: string }) {
   )
 }
 
+/** Icon-only link to the repo, for headers that have no room for the "Star" button with its count. */
+function GithubIconLink({ repo, className }: { repo: string; className?: string }) {
+  const light = useHeaderTone() === "light"
+  const { ref, style } = useSquircleClip<HTMLAnchorElement>(12)
+  return (
+    <a
+      ref={ref}
+      style={style}
+      href={`https://github.com/${repo}`}
+      target="_blank"
+      rel="noreferrer"
+      aria-label={`${repo} on GitHub`}
+      title="View the code on GitHub"
+      className={cn(
+        "js-track js-click js-header",
+        "inline-flex size-10 shrink-0 items-center justify-center max-[379px]:hidden transition-colors duration-150 focus-visible:shadow-[inset_0_0_0_2px_var(--header-focus)]",
+        light ? "text-ink hover:bg-ink/10" : "text-paper hover:bg-dither-frame/10",
+        className
+      )}
+    >
+      <GithubIcon className="size-5" />
+    </a>
+  )
+}
+
 function StarIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -484,6 +509,9 @@ function HeaderActions({
         className
       )}
     >
+      {githubRepo && !items.some((item) => item.href === "/login") ? (
+        <GithubIconLink repo={githubRepo} className="site-header__link" />
+      ) : null}
       {items.map((item) => {
         const menuItems = menuItemsByHref?.[item.href]
         const hasMenu =
@@ -1438,7 +1466,7 @@ function HeaderChrome({
               )}
               label="Account"
               githubRepo={githubRepo}
-              className="flex items-center gap-1"
+              className="flex items-center gap-1 whitespace-nowrap"
             />
             <SquircleButton
               {...getReferenceProps()}
