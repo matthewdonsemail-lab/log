@@ -350,3 +350,26 @@ Contributions are welcome! Please review the [Contributing Guide](docs/contribut
 ## License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+---
+
+<!-- footer:offer-set:start -->
+## Support
+
+If this is useful, a star helps someone else find it.
+
+[![Stars](https://img.shields.io/github/stars/matthewdonsemail-lab/log?style=flat-square)](https://github.com/matthewdonsemail-lab/log/stargazers)
+[![Forks](https://img.shields.io/github/forks/matthewdonsemail-lab/log?style=flat-square)](https://github.com/matthewdonsemail-lab/log/network/members)
+[![Watchers](https://img.shields.io/github/watchers/matthewdonsemail-lab/log?style=flat-square)](https://github.com/matthewdonsemail-lab/log/watchers)
+[![Last commit](https://img.shields.io/github/last-commit/matthewdonsemail-lab/log?style=flat-square)](https://github.com/matthewdonsemail-lab/log/commits)
+[![License](https://img.shields.io/github/license/matthewdonsemail-lab/log?style=flat-square)](https://github.com/matthewdonsemail-lab/log/blob/main/LICENSE)
+
+[![GitHub](https://img.shields.io/badge/GitHub-matthewdonsemail-lab/log-181717?style=flat-square&logo=github&link=https://github.com/matthewdonsemail-lab/log)](https://github.com/matthewdonsemail-lab/log)
+[![X](https://img.shields.io/badge/X-matthewdonsemail-000000?style=flat-square&logo=x&link=https://x.com/matthewdonsemail)](https://x.com/matthewdonsemail)
+[![Issues](https://img.shields.io/github/issues/matthewdonsemail-lab/log?style=flat-square)](https://github.com/matthewdonsemail-lab/log/issues)
+[![Pull requests](https://img.shields.io/github/issues-pr/matthewdonsemail-lab/log?style=flat-square)](https://github.com/matthewdonsemail-lab/log/pulls)
+
+## Star history
+
+[![Star History Chart](https://api.star-history.com/image?repos=matthewdonsemail-lab/log&type=Date)](https://star-history.com/#matthewdonsemail-lab/log&Date)
+<!-- footer:offer-set:end -->
