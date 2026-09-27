@@ -1,0 +1,124 @@
+{
+  "_readme": "FILL THIS IN, THEN REPLACE EVERY {{TOKEN}} IN THE SITE WITH ITS VALUE. Apply across all .html files + site.js + sitemap.xml + robots.txt. Values below are EXAMPLES for a fictional plumbing shop — overwrite them all.",
+  "_apply_to": [
+    "*.html",
+    "site.js",
+    "sitemap.xml",
+    "robots.txt",
+    "styles.css"
+  ],
+  "identity": {
+    "BRAND_NAME": ",.3% plumbing",
+    "DOMAIN": "qingquanplumbing.com",
+    "CATEGORY": "Professional Plumbing Service  (used as: \"{CITY}'s #1 {CATEGORY}\")",
+    "FOUNDED_YEAR": "1998",
+    "YEARS_IN_BUSINESS": "25+ Yrs",
+    "TURNAROUND": "24-Hour Response",
+    "KEYWORDS": "plumbing, emergency plumber, drain cleaning, water heater repair, pipe repair",
+    "LOGO_URL": ""
+  },
+  "branding": {
+    "BRAND_COLOR": "#1d5bbf",
+    "_note": "Pack default accent. Overridden per prospect by the logo-derived brandColors.primary (RAW_JSON on agencyProspect); null primary keeps this default.",
+    "FAVICON_URL": "media/apple-touch-icon-template.png"
+  },
+  "contact": {
+    "PHONE_DISPLAY": "(555) 123-4567",
+    "PHONE_E164": "+15551234567",
+    "AREA_CODE": "555",
+    "EMAIL": "info@qingquanplumbing.com"
+  },
+  "address": {
+    "STREET": "123 Main Street",
+    "UNIT": "Suite 100",
+    "CITY": "Springfield",
+    "STATE": "Illinois",
+    "STATE_ABBR": "IL",
+    "ZIP": "62701",
+    "LAT": "39.7817",
+    "LNG": "-89.6501",
+    "_note": "LAT/LNG must come from the client's Google Business Profile pin — right-click the pin in Google Maps."
+  },
+  "service_area": {
+    "COUNTY_1": "Sangamon",
+    "COUNTY_2": "McLean",
+    "NEARBY_1": "Chatham",
+    "NEARBY_2": "Rochester",
+    "NEARBY_3": "Sherman",
+    "NEARBY_4": "Riverton",
+    "NEARBY_4": "Jacksonville",
+    "NEARBY_5": "Auburn",
+    "NEARBY_6": "Petersburg",
+    "NEARBY_6": "Lincoln",
+    "NEARBY_7": "Taylorville",
+    "NEARBY_8": "Decatur",
+    "_note": "NEARBY_1 through NEARBY_5 each have a dedicated city landing page. NEARBY_6-10 only appear in the areaServed schema."
+  },
+  "proof": {
+    "RATING": "4.9",
+    "REVIEW_COUNT": "150",
+    "GOOGLE_REVIEWS_URL": "https://maps.app.goo.gl/EXAMPLE",
+    "FB_URL": "https://www.facebook.com/example",
+    "YELP_URL": "https://www.yelp.com/biz/example",
+    "MAPS_URL": "https://www.google.com/maps/search/?api=1&query=123+Main+Street,+Springfield,+IL+62701",
+    "MAPS_QUERY": "123+Main+Street,+Springfield,+IL+62701",
+    "_note": "RATING and REVIEW_COUNT must match the client's real Google numbers."
+  },
+  "hero": {
+    "HERO_H1_A": "Reliable Plumbing,",
+    "HERO_H1_B": "When You Need It Most.",
+    "HERO_H1_C": "Done Right.",
+    "HERO_LEDE": "Serving Springfield and surrounding communities with expert residential and commercial plumbing since 1998. Fast response, honest pricing, guaranteed workmanship."
+  },
+  "services": {
+    "SERVICE_1_NAME": "Residential Plumbing",
+    "SERVICE_1_LABEL": "Home Services",
+    "SERVICE_1_DESC": "Complete plumbing solutions for your home — repairs, installations, and maintenance.",
+    "SERVICE_2_NAME": "Emergency Plumbing",
+    "SERVICE_2_LABEL": "24/7 Service",
+    "SERVICE_2_DESC": "Burst pipes, severe leaks, and flooding — we respond within the hour.",
+    "SERVICE_3_NAME": "Drain Cleaning",
+    "SERVICE_3_LABEL": "Clog Removal",
+    "SERVICE_3_DESC": "Professional drain cleaning using advanced hydro-jetting technology.",
+    "SERVICE_4_NAME": "Water Heater Repair",
+    "SERVICE_4_LABEL": "All Types",
+    "SERVICE_4_DESC": "Tankless and traditional water heater repair, replacement, and installation.",
+    "SERVICE_5_NAME": "Pipe Repair",
+    "SERVICE_5_LABEL": "Leak Detection",
+    "SERVICE_5_DESC": "Advanced leak detection and repair for residential and commercial properties.",
+    "SERVICE_6_NAME": "Commercial Plumbing",
+    "SERVICE_6_LABEL": "Business Solutions",
+    "SERVICE_6_DESC": "Complete plumbing services for offices, restaurants, and retail spaces.",
+    "_note": "These 6 drive the nav dropdown, home grid and footer. The 6 service-*.html PAGES still contain the old vertical's titles, H1s, FAQ schema and body copy — those are NOT tokenized."
+  },
+  "reviews": {
+    "REVIEW_1_NAME": "Sarah M.",
+    "REVIEW_1_INITIAL": "S",
+    "REVIEW_1_VEHICLE": "Homeowner",
+    "REVIEW_1_TEXT": "Called at 11pm for a burst pipe. They arrived within 30 minutes and had everything fixed by midnight. Professional, clean, and fair pricing. Would definitely call again!",
+    "REVIEW_2_NAME": "Mike T.",
+    "REVIEW_2_INITIAL": "M",
+    "REVIEW_2_VEHICLE": "Restaurant Owner",
+    "REVIEW_2_TEXT": "We've been using them for our restaurant for 5 years. Always on time, always professional. The team knows commercial plumbing inside and out.",
+    "REVIEW_3_NAME": "Jennifer L.",
+    "REVIEW_3_INITIAL": "J",
+    "REVIEW_3_VEHICLE": "Homeowner",
+    "REVIEW_3_TEXT": "Replaced our old water heater with a tankless system. The installation was smooth, they explained everything, and the energy savings are already showing on our bills.",
+    "_note": "NEVER invent reviews. These feed Review + AggregateRating JSON-LD. Pull the client's real Google reviews verbatim."
+  },
+  "integrations": {
+    "GHL_WEBHOOK_URL": "https://services.leadconnectorhq.com/hooks/XXXX/webhook-trigger/YYYY",
+    "_note": "DISCONNECTED BY DEFAULT — form runs in demo mode. To go live: GoHighLevel -> Automation -> Workflows -> Create -> Trigger 'Inbound Webhook' -> copy URL."
+  },
+  "_not_tokenized_see_TEMPLATE_md": [
+    "The 6 service-*.html page titles, H1s, meta descriptions, FAQ schema and body copy",
+    "The guide pages (state plumbing codes, cost estimates, maintenance tips)",
+    "The city landing page body copy and drive-time claims",
+    "why-us.html offer stack (warranty, discounts, turnaround, licensing)",
+    "Business hours in site.js",
+    "File names need updating to plumbing-specific keywords",
+    "Logo: site.js BRAND renders a dashed position guide — swap in real <img class=\"brand-logo\"> art",
+    "Placeholder assets: media/og-template.jpg, media/apple-touch-icon-template.png (180px pack default for {{FAVICON_URL}} when a prospect has no logo)",
+    "All photos and videos in media/ — replace with plumbing-specific images"
+  ]
+}

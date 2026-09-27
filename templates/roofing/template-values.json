@@ -1,0 +1,109 @@
+{
+  "_readme": "FILL THIS IN, THEN REPLACE EVERY {{TOKEN}} IN THE SITE WITH ITS VALUE. Apply across all .html files + site.js + sitemap.xml + robots.txt. Values below are EXAMPLES for a fictional roofing company — overwrite them all.",
+  "_apply_to": [
+    "*.html",
+    "site.js",
+    "sitemap.xml",
+    "robots.txt",
+    "styles.css"
+  ],
+  "identity": {
+    "BRAND_NAME": "Premier Roofing",
+    "DOMAIN": "premier-roofing.com",
+    "CATEGORY": "Professional Roofing Service (used as: \"{CITY}'s #1 {CATEGORY}\")",
+    "FOUNDED_YEAR": "2008",
+    "YEARS_IN_BUSINESS": "12+ Yrs",
+    "TURNAROUND": "24-Hour Emergency",
+    "KEYWORDS": "roofing, roof repair, roof replacement, gutters, siding, storm damage",
+    "LOGO_URL": ""
+  },
+  "branding": {
+    "BRAND_COLOR": "#d32f2f",
+    "_note": "Pack default accent. Overridden per prospect by the logo-derived brandColors.primary (RAW_JSON on agencyProspect); null primary keeps this default.",
+    "FAVICON_URL": "media/apple-touch-icon-template.png"
+  },
+  "contact": {
+    "PHONE_DISPLAY": "(555) 123-4567",
+    "PHONE_E164": "+15551234567",
+    "AREA_CODE": "555",
+    "EMAIL": "estimate@premier-roofing.com"
+  },
+  "address": {
+    "STREET": "456 Oak Avenue",
+    "UNIT": "Suite 200",
+    "CITY": "Springfield",
+    "STATE": "Illinois",
+    "STATE_ABBR": "IL",
+    "ZIP": "62701",
+    "LAT": "39.7817",
+    "LNG": "-89.6501",
+    "_note": "LAT/LNG must come from the client's Google Business Profile pin — right-click the pin in Google Maps."
+  },
+  "service_area": {
+    "COUNTY_1": "Sangamon",
+    "COUNTY_2": "Christian",
+    "NEARBY_1": "Jeromesville",
+    "NEARBY_2": "Middlesex",
+    "NEARBY_3": "New Berlin",
+    "NEARBY_4": "Concord",
+    "NEARBY_5": "Leland",
+    "NEARBY_5": "Petersburg",
+    "NEARBY_6": "Santa Fe",
+    "NEARBY_7": "Edgewood",
+    "NEARBY_8": "Harrison",
+    "NEARBY_9": "St. Louis",
+    "NEARBY_10": "Chatham"
+  },
+  "proof": {
+    "RATING": "4.7",
+    "REVIEW_COUNT": "89",
+    "GOOGLE_REVIEWS_URL": "https://maps.app.goo.gl/EXAMPLE",
+    "FB_URL": "https://www.facebook.com/example",
+    "YELP_URL": "https://www.yelp.com/biz/example",
+    "MAPS_URL": "https://www.google.com/maps/search/?api=1&query=456+Oak+Avenue,+Springfield,+IL+62701",
+    "MAPS_QUERY": "456+Oak+Avenue,+Springfield,+IL+62701"
+  },
+  "hero": {
+    "HERO_H1_A": "Roofing Done Right,",
+    "HERO_H1_B": "Over Your Head",
+    "HERO_H1_C": "Since 2008",
+    "HERO_LEDE": "Serving Springfield and surrounding communities with reliable roofing, gutter, and siding solutions. Free inspections, workmanship guarantees, and financing options available."
+  },
+  "services": {
+    "SERVICE_1_NAME": "Roof Repair",
+    "SERVICE_1_LABEL": "Emergency Leaks",
+    "SERVICE_1_DESC": "Fast response for storm damage, missing shingles, and roof leaks — we patch and seal within 24 hours.",
+    "SERVICE_2_NAME": "Roof Replacement",
+    "SERVICE_2_LABEL": "Full Replacement",
+    "SERVICE_2_DESC": "Complete roof tear-off and replacement with premium materials designed for your climate.",
+    "SERVICE_3_NAME": "Gutter Installation",
+    "SERVICE_3_LABEL": "Gutters & Drains",
+    "SERVICE_3_DESC": "Seamless gutter installation, repair, and leaf protection systems to prevent water damage.",
+    "SERVICE_3_NAME": "Siding Installation",
+    "SERVICE_3_LABEL": "Home Siding",
+    "SERVICE_3_DESC": "Vinyl, fiber cement, and wood siding installation and repair for enhanced curb appeal and weatherproofing.",
+    "SERVICE_4_NAME": "Window Replacement",
+    "SERVICE_4_LABEL": "Energy-Efficient Windows",
+    "SERVICE_4_DESC": "High-performance window replacement that reduces energy costs and improves home comfort.",
+    "SERVICE_5_NAME": "Storm Damage Restoration",
+    "SERVICE_5_LABEL": "Insurance Claims",
+    "SERVICE_5_DESC": "Comprehensive storm damage assessment, documentation, and repair — we work directly with insurance adjusters."
+  },
+  "reviews": {
+    "REVIEW_1_NAME": "Tom W.",
+    "REVIEW_1_INITIAL": "T",
+    "REVIEW_1_VEHICLE": "Homeowner",
+    "REVIEW_1_TEXT": "My roof was damaged in the last storm. They responded within 24 hours, filed the insurance claim, and had my roof good as new within a week. Fantastic experience.",
+    "REVIEW_2_NAME": "Lisa K.",
+    "REVIEW_2_INITIAL": "L",
+    "REVIEW_2_VEHICLE": "Homeowner",
+    "REVIEW_2_TEXT": "New roof and gutters installed. The team was professional, clean, and explained every step. My energy bills noticeably dropped after the new installation.",
+    "REVIEW_3_NAME": "Mike R.",
+    "REVIEW_3_INITIAL": "M",
+    "REVIEW_3_VEHICLE": "Homeowner",
+    "REVIEW_3_TEXT": " replaced my 20-year-old roof. The craftsmanship is excellent, and the warranty gives me complete peace of mind."
+  },
+  "integrations": {
+    "GHL_WEBHOOK_URL": "https://services.leadconnectorhq.com/hooks/XXXX/webhook-trigger/YYYY"
+  }
+}
