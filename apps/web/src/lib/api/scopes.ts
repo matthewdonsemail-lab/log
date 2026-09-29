@@ -10,12 +10,14 @@ import type { ApiKey, ApiKeyScope } from './types'
 export interface ApiRouteNeeds {
   /** Route touches one account — the key must cover it. */
   account?: boolean
-  /** Route touches one group — the key must cover it. */
-  group?: boolean
+  /** Route touches one community — the key must cover it. */
+  community?: boolean
   /** Route sends outbound messages — the key needs the send bit. */
   send?: boolean
   /** Route reads messages/signals back — the key needs the receive bit. */
   receive?: boolean
+  /** Route mutates marketplace listings — the key needs the listing bit. */
+  listing?: boolean
 }
 
 export interface ApiRouteDef {
@@ -40,23 +42,32 @@ export const API_ROUTES: ApiRouteDef[] = [
   { method: 'POST', path: '/accounts', needs: { account: true } },
   { method: 'PATCH', path: '/accounts/:accountId', needs: { account: true } },
   { method: 'DELETE', path: '/accounts/:accountId', needs: { account: true } },
-  { method: 'GET', path: '/communities', needs: { group: true } },
-  { method: 'POST', path: '/communities/:id/join', needs: { account: true, group: true } },
-  { method: 'POST', path: '/communities/join-by-url', needs: { account: true, group: true } },
-  { method: 'POST', path: '/communities/resolve', needs: { group: true } },
-  { method: 'POST', path: '/communities/resolve-reddit', needs: { group: true } },
-  { method: 'POST', path: '/communities/:id/accept', needs: { group: true } },
-  { method: 'DELETE', path: '/communities/:id', needs: { group: true } },
-  { method: 'GET', path: '/keywords', needs: { group: true } },
-  { method: 'POST', path: '/keywords', needs: { group: true } },
-  { method: 'PATCH', path: '/keywords/:id', needs: { group: true } },
-  { method: 'DELETE', path: '/keywords/:id', needs: { group: true } },
+  { method: 'GET', path: '/communities', needs: { community: true } },
+  { method: 'POST', path: '/communities/:id/join', needs: { account: true, community: true } },
+  { method: 'POST', path: '/communities/join-by-url', needs: { account: true, community: true } },
+  { method: 'POST', path: '/communities/resolve', needs: { community: true } },
+  { method: 'POST', path: '/communities/resolve-reddit', needs: { community: true } },
+  { method: 'POST', path: '/communities/:id/accept', needs: { community: true } },
+  { method: 'DELETE', path: '/communities/:id', needs: { community: true } },
+  {
+    method: 'POST',
+    path: '/communities/:id/submit-answers',
+    needs: { account: true, community: true },
+    // No server route implements this yet — POST /join already carries
+    // SUBMIT today (open/abandoned modal rows submit from it). Keys minted
+    // now carry the permission for when the dedicated route lands.
+    planned: true,
+  },
+  { method: 'GET', path: '/keywords', needs: { community: true } },
+  { method: 'POST', path: '/keywords', needs: { community: true } },
+  { method: 'PATCH', path: '/keywords/:id', needs: { community: true } },
+  { method: 'DELETE', path: '/keywords/:id', needs: { community: true } },
   { method: 'GET', path: '/listings', needs: { account: true } },
-  { method: 'POST', path: '/listings', needs: { account: true } },
-  { method: 'PATCH', path: '/listings/:id', needs: { account: true } },
-  { method: 'PATCH', path: '/listings/:id/status', needs: { account: true } },
+  { method: 'POST', path: '/listings', needs: { account: true, listing: true } },
+  { method: 'PATCH', path: '/listings/:id', needs: { account: true, listing: true } },
+  { method: 'PATCH', path: '/listings/:id/status', needs: { account: true, listing: true } },
   { method: 'GET', path: '/listings/:id/status', needs: { account: true } },
-  { method: 'DELETE', path: '/listings/:id', needs: { account: true } },
+  { method: 'DELETE', path: '/listings/:id', needs: { account: true, listing: true } },
   { method: 'GET', path: '/feed', needs: { receive: true } },
   { method: 'GET', path: '/feed/:platform', needs: { receive: true } },
   { method: 'GET', path: '/threads', needs: { account: true, receive: true } },
@@ -68,7 +79,7 @@ export const API_ROUTES: ApiRouteDef[] = [
 
 export interface ApiAccessContext {
   accountId?: string
-  groupId?: string
+  communityId?: string
 }
 
 export type ApiAccessResult = { ok: true; key: ApiKey } | { ok: false; reason: string }
@@ -86,16 +97,19 @@ export function checkAccess(
     return 'This key is not scoped to that account.'
   }
   if (
-    needs.group &&
-    (ctx.groupId === undefined || (scopes.groupIds.length > 0 && !scopes.groupIds.includes(ctx.groupId)))
+    needs.community &&
+    (ctx.communityId === undefined || (scopes.communityIds.length > 0 && !scopes.communityIds.includes(ctx.communityId)))
   ) {
-    return 'This key is not scoped to that group.'
+    return 'This key is not scoped to that community.'
   }
   if (needs.send && !scopes.canSendMessages) {
     return 'This key cannot send messages.'
   }
   if (needs.receive && !scopes.canReceiveMessages) {
     return 'This key cannot receive messages.'
+  }
+  if (needs.listing && !scopes.canPublishListings) {
+    return 'This key cannot publish or modify marketplace listings.'
   }
   return null
 }

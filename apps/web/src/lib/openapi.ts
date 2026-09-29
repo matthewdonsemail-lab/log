@@ -60,9 +60,10 @@ export const AccountIssueInfoSchema = z
 
 export const ApiKeyScopeSchema = z.object({
   accountId: z.string().nullable().describe('Act-as account id, or null for all accounts.'),
-  groupIds: z.array(z.string()).describe('Scoped groups; empty means all groups.'),
+  communityIds: z.array(z.string()).describe('Scoped communities (subreddits/groups); empty means all.'),
   canSendMessages: z.boolean(),
-  canReceiveMessages: z.boolean()
+  canReceiveMessages: z.boolean(),
+  canPublishListings: z.boolean().describe('Whether the key may publish or delist marketplace items.')
 })
 
 export const ApiKeySchema = z.object({

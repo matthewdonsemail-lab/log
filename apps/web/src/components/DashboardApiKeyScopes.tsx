@@ -4,7 +4,8 @@ import { useSquircleClip } from '@listeningkit/ui'
 import type { ApiKey } from '../lib/api'
 import {
   AccountScopeVisuals,
-  GroupScopeVisuals,
+  CommunityScopeVisuals,
+  ListingScopeVisuals,
   MessageScopeVisuals,
 } from './DashboardScopeRows'
 
@@ -16,8 +17,8 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 /**
  * In-depth permission view for one API key: the exact scope choices made at
- * setup — which account it acts as, which groups it may touch, and what it
- * may do with messages — rendered in the create form's visual language
+ * setup — which account it acts as, which communities it may touch, what it
+ * may do with messages, and whether it may publish listings — rendered in the create form's visual language
  * (platform logos, "All" glyphs, on/off bits) with ids resolved to their
  * workspace names. The read half of the key page; the firehose console is
  * the observe half.
@@ -54,13 +55,18 @@ export function DashboardApiKeyScopes({ apiKey }: { apiKey: ApiKey }) {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <SectionLabel>Group scope</SectionLabel>
-            <GroupScopeVisuals scope={apiKey.scopes} />
+            <SectionLabel>Community scope</SectionLabel>
+            <CommunityScopeVisuals scope={apiKey.scopes} />
           </div>
 
           <div className="flex flex-col gap-1.5">
             <SectionLabel>Message permissions</SectionLabel>
             <MessageScopeVisuals scope={apiKey.scopes} />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <SectionLabel>Marketplace permissions</SectionLabel>
+            <ListingScopeVisuals scope={apiKey.scopes} />
           </div>
         </div>
       </div>

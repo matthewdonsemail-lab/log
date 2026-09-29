@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Check, Globe, Inbox, Send, Users, X } from 'lucide-react'
+import { Check, Globe, Inbox, Send, Tag, Users, X } from 'lucide-react'
 import type { ApiKeyScope } from '../lib/api'
 import { getAccounts, platformLabel, type ConnectionRecord } from '../lib/connections'
 import { getCommunities, type Community } from '../lib/communities'
@@ -154,26 +154,26 @@ export function AccountScopeVisuals({ scope, tone = 'on' }: { scope: ApiKeyScope
   )
 }
 
-/** Each named group as its own row with logo and join state (create-form logic). */
-export function NamedGroupRows({ groupIds }: { groupIds: string[] }) {
+/** Each named community as its own row with logo and join state (create-form logic). */
+export function NamedCommunityRows({ communityIds }: { communityIds: string[] }) {
   const { communities, loaded } = useScopeDirectory()
   const communityById = new Map(communities.map((community) => [community.id, community]))
 
   return (
     <div className="flex flex-col gap-1.5">
-      {groupIds.map((groupId) => {
-        const community = communityById.get(groupId)
+      {communityIds.map((communityId) => {
+        const community = communityById.get(communityId)
         return (
           <ScopeVisual
-            key={groupId}
+            key={communityId}
             leading={community ? glyphFor(community.platform) : null}
-            title={community ? community.name : loaded ? groupId : 'Resolving…'}
+            title={community ? community.name : loaded ? communityId : 'Resolving…'}
             detail={
               community
                 ? community.joinState === 'accepted'
                   ? community.members
                   : `Not joined · ${community.members}`
-                : 'Group no longer joined'
+                : 'Community no longer joined'
             }
           />
         )
@@ -183,24 +183,24 @@ export function NamedGroupRows({ groupIds }: { groupIds: string[] }) {
 }
 
 /**
- * The group dimension as chosen rows — "All groups" or each named group
- * with its platform logo, name, and join state (create-form logic). Each
- * selected group gets its own row; stale ids render with a fallback. The
- * tone applies to the "All groups" row — named groups are valid scopes, so
- * they render as their checked rows.
+ * The community dimension as chosen rows — "All communities" or each named
+ * community with its platform logo, name, and join state (create-form
+ * logic). Each selected community gets its own row; stale ids render with a
+ * fallback. The tone applies to the "All communities" row — named
+ * communities are valid scopes, so they render as their checked rows.
  */
-export function GroupScopeVisuals({ scope, tone = 'on' }: { scope: ApiKeyScope; tone?: ScopeRowTone }) {
-  if (scope.groupIds.length === 0) {
+export function CommunityScopeVisuals({ scope, tone = 'on' }: { scope: ApiKeyScope; tone?: ScopeRowTone }) {
+  if (scope.communityIds.length === 0) {
     return (
       <ScopeVisual
         tone={tone}
         leading={<Users className="size-6" />}
-        title="All groups"
-        detail="The key may touch every joined group"
+        title="All communities"
+        detail="The key may touch every joined community"
       />
     )
   }
-  return <NamedGroupRows groupIds={scope.groupIds} />
+  return <NamedCommunityRows communityIds={scope.communityIds} />
 }
 
 /**
@@ -219,29 +219,38 @@ export function MessageScopeVisuals({
   return (
     <div className="flex flex-col gap-1.5">
       <ScopeVisual
-        tone={
-          flagged === 'send'
-            ? 'flagged'
-            : scope.canSendMessages
-              ? 'on'
-              : 'off'
-        }
+        tone={flagged === 'send' ? 'flagged' : scope.canSendMessages ? 'on' : 'off'}
         leading={<Send className="size-6" />}
         title="Send messages"
         detail={scope.canSendMessages ? 'Post and reply through the platform clients' : 'Not allowed'}
       />
       <ScopeVisual
-        tone={
-          flagged === 'receive'
-            ? 'flagged'
-            : scope.canReceiveMessages
-              ? 'on'
-              : 'off'
-        }
+        tone={flagged === 'receive' ? 'flagged' : scope.canReceiveMessages ? 'on' : 'off'}
         leading={<Inbox className="size-6" />}
         title="Receive messages"
         detail={scope.canReceiveMessages ? 'Read threads, signals and mentions back' : 'Not allowed'}
       />
     </div>
+  )
+}
+
+/**
+ * The marketplace bit — Publish row in its on or off state, with the same
+ * denial treatment when a listings write was stopped for it.
+ */
+export function ListingScopeVisuals({
+  scope,
+  flagged = false,
+}: {
+  scope: ApiKeyScope
+  flagged?: boolean
+}) {
+  return (
+    <ScopeVisual
+      tone={flagged ? 'flagged' : scope.canPublishListings ? 'on' : 'off'}
+      leading={<Tag className="size-6" />}
+      title="Publish listings"
+      detail={scope.canPublishListings ? 'Create, edit status, and delete marketplace listings' : 'Not allowed'}
+    />
   )
 }

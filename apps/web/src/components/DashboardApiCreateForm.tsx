@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Check, Copy, Inbox, Send } from 'lucide-react'
+import { Check, Copy, Inbox, Send, Tag } from 'lucide-react'
 import { useToast } from '@listeningkit/ui'
 import { createApiKey, type ApiKeyScope, type CreatedApiKeyResponse } from '../lib/api'
 import { getAccounts, platformLabel, type ConnectionRecord } from '../lib/connections'
@@ -10,8 +10,8 @@ import { DashboardFormSheet } from './DashboardFormSheet'
 const STEP_HINTS = [
   'Name the key for where it will live',
   'Which account may it act as?',
-  'Which groups may it touch?',
-  'What may it do with messages?',
+  'Which communities may it touch?',
+  'What may it do?',
   'Copy it now — this is the only time it appears',
 ]
 
@@ -60,7 +60,7 @@ function SelectRow({
 
 /**
  * Scoped API key creation in the dashboard form slot. Four gated steps —
- * name, account scope, group scope, message permissions — then the key is
+ * name, account scope, community scope, message + listing permissions — then the key is
  * minted and its secret shows exactly once: closing or finishing the form
  * drops it, and no route will ever hand it out again. Selection only ever
  * marks; the sheet's Continue button is the only thing that advances.
@@ -78,10 +78,11 @@ export function DashboardApiCreateForm({
   const [name, setName] = useState('')
   const [accountMode, setAccountMode] = useState<'all' | 'one'>('all')
   const [accountId, setAccountId] = useState<string | null>(null)
-  const [groupMode, setGroupMode] = useState<'all' | 'some'>('all')
-  const [groupIds, setGroupIds] = useState<string[]>([])
+  const [communityMode, setCommunityMode] = useState<'all' | 'some'>('all')
+  const [communityIds, setCommunityIds] = useState<string[]>([])
   const [canSend, setCanSend] = useState(true)
   const [canReceive, setCanReceive] = useState(true)
+  const [canPublish, setCanPublish] = useState(true)
   const [accounts, setAccounts] = useState<ConnectionRecord[] | null>(null)
   const [communities, setCommunities] = useState<Community[] | null>(null)
   const [creating, setCreating] = useState(false)
@@ -107,8 +108,8 @@ export function DashboardApiCreateForm({
     }
   }, [])
 
-  function toggleGroup(id: string) {
-    setGroupIds((prev) => (prev.includes(id) ? prev.filter((row) => row !== id) : [...prev, id]))
+  function toggleCommunity(id: string) {
+    setCommunityIds((prev) => (prev.includes(id) ? prev.filter((row) => row !== id) : [...prev, id]))
   }
 
   async function create() {
@@ -118,9 +119,10 @@ export function DashboardApiCreateForm({
     try {
       const scopes: ApiKeyScope = {
         accountId: accountMode === 'one' ? accountId : null,
-        groupIds: groupMode === 'some' ? groupIds : [],
+        communityIds: communityMode === 'some' ? communityIds : [],
         canSendMessages: canSend,
         canReceiveMessages: canReceive,
+        canPublishListings: canPublish,
       }
       const result = await createApiKey({ name: trimmed, scopes })
       setCreated(result)
@@ -228,18 +230,18 @@ export function DashboardApiCreateForm({
       {step === 3 ? (
         <div className="flex flex-col gap-1.5">
           <SelectRow
-            selected={groupMode === 'all'}
-            onSelect={() => setGroupMode('all')}
-            title="All groups"
-            detail="The key may touch every joined group"
+            selected={communityMode === 'all'}
+            onSelect={() => setCommunityMode('all')}
+            title="All communities"
+            detail="The key may touch every joined community"
           />
           {(communities ?? []).map((community) => (
             <SelectRow
               key={community.id}
-              selected={groupMode === 'some' && groupIds.includes(community.id)}
+              selected={communityMode === 'some' && communityIds.includes(community.id)}
               onSelect={() => {
-                setGroupMode('some')
-                toggleGroup(community.id)
+                setCommunityMode('some')
+                toggleCommunity(community.id)
               }}
               leading={communityGlyph(community.platform)}
               title={community.name}
@@ -264,6 +266,13 @@ export function DashboardApiCreateForm({
             leading={<Inbox aria-hidden="true" className="size-6 shrink-0 text-[#2A8CFF]" />}
             title="Receive messages"
             detail="Read threads, signals and mentions back"
+          />
+          <SelectRow
+            selected={canPublish}
+            onSelect={() => setCanPublish((prev) => !prev)}
+            leading={<Tag aria-hidden="true" className="size-6 shrink-0 text-[#2A8CFF]" />}
+            title="Publish listings"
+            detail="Create, edit status, and delete marketplace listings"
           />
         </div>
       ) : null}
