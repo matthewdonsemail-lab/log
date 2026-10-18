@@ -1,38 +1,45 @@
-// Pre-commit gate: every commit adds an entry to log.md.
+// Pre-commit gate: every commit adds an entry to log.md, built around an AST
+// summary of the staged code.
 //
-// - log.md not staged: append a template entry for the staged files, then
-//   stop the commit so the agent writes the AST: lines.
-// - log.md staged: the added entry must have its AST: lines written (no
-//   "<fill in>" left). Then the commit goes through.
+// 1. scripts/astSummary.mjs parses every staged .ts/.mjs/.py file (before and
+//    after) into a syntax tree and lists the declarations and tests that were
+//    added, changed or removed.
+// 2. log.md not staged: append a template entry carrying that AST block, print
+//    the block (so it lands in the agent's context), and stop the commit.
+// 3. log.md staged: the new entry's AST block must match the staged code
+//    exactly (it is regenerated in place if the code moved on), and its
+//    What changed / Why / Checked lines must be written. Then the commit passes.
 //
-// AST lines are the agent's statement of what happened: what changed, why,
-// and how it was checked. See skills/commitLog/SKILL.md.
+// See skills/commitLog/SKILL.md.
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { summarize } from './astSummary.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const LOG = join(root, 'log.md');
-const PLACEHOLDER = '<fill in>';
+export const PLACEHOLDER = '<fill in>';
+export const AST_HEADING = "AST (generated from the staged code by scripts/astSummary.mjs, don't edit):";
+const AGENT_FIELDS = ['What changed:', 'Why:', 'Checked:'];
 const HEADER = `# log
 
-One entry per commit, newest at the bottom. The pre-commit hook adds the
-template; the agent fills in every \`AST:\` line before the commit goes
-through. Never edit old entries. Add a new one.
+One entry per commit, newest at the bottom. On every commit the pre-commit
+hook parses the staged code into a syntax tree and writes the AST block of the
+entry (what was added, changed or removed). The agent then writes What
+changed, Why and Checked from it. Never edit old entries. Add a new one.
 `;
 
 const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
 
-export function renderEntry({ when, branch, files }) {
+export function renderEntry({ when, branch, ast }) {
   return [
     `## ${when} · ${branch}`,
     '',
-    `Files: ${files.map((f) => `\`${f}\``).join(', ')}`,
+    AST_HEADING,
+    ...ast,
     '',
-    `AST: What changed: ${PLACEHOLDER}`,
-    `AST: Why: ${PLACEHOLDER}`,
-    `AST: Checked: ${PLACEHOLDER}`,
+    ...AGENT_FIELDS.map((field) => `${field} ${PLACEHOLDER}`),
     '',
   ].join('\n');
 }
@@ -42,36 +49,83 @@ export function addedLines(diff) {
   return diff
     .split('\n')
     .filter((line) => line.startsWith('+') && !line.startsWith('+++'))
-    .map((line) => line.slice(1));
+    .map((line) => line.slice(1).replace(/\r$/, ''));
 }
 
-/** null when the added entry is complete, else the reason it isn't. */
-export function checkAdded(lines) {
-  if (!lines.some((line) => line.startsWith('## '))) return 'log.md is staged but has no new "## " entry.';
-  const ast = lines.filter((line) => line.startsWith('AST:'));
-  if (ast.length < 3) return 'the new log.md entry needs its AST: What changed / Why / Checked lines.';
-  if (ast.some((line) => line.includes(PLACEHOLDER))) return `the new log.md entry still has "${PLACEHOLDER}" in an AST: line.`;
+/** The AST block's lines in an entry (after the heading, up to the blank line). */
+export function astBlock(lines) {
+  const start = lines.indexOf(AST_HEADING);
+  if (start === -1) return null;
+  const block = [];
+  for (const line of lines.slice(start + 1)) {
+    if (line.trim() === '') break;
+    block.push(line);
+  }
+  return block;
+}
+
+/** null when the added entry is complete and matches the code, else the reason. */
+export function checkAdded(allLines, ast) {
+  // Only the newest added entry counts (a rebuild may add older ones too).
+  const start = allLines.findLastIndex((line) => line.startsWith('## '));
+  if (start === -1) return 'log.md is staged but has no new "## " entry.';
+  const lines = allLines.slice(start);
+  const block = astBlock(lines);
+  if (block === null) return 'the new log.md entry has no AST block.';
+  if (block.join('\n') !== ast.join('\n')) return 'stale';
+  for (const field of AGENT_FIELDS) {
+    const line = lines.find((l) => l.startsWith(field));
+    if (!line) return `the new log.md entry is missing its "${field}" line.`;
+    if (line.includes(PLACEHOLDER) || line.slice(field.length).trim() === '') return `"${field}" still needs writing.`;
+  }
   return null;
+}
+
+/** Replace the AST block of the last entry in the log text. Pure. */
+export function replaceLastAstBlock(text, ast) {
+  const at = text.lastIndexOf(AST_HEADING);
+  if (at === -1) return text;
+  const blockStart = at + AST_HEADING.length + 1;
+  const blockEnd = text.indexOf('\n\n', blockStart);
+  return `${text.slice(0, blockStart)}${ast.join('\n')}${blockEnd === -1 ? '\n' : text.slice(blockEnd)}`;
 }
 
 function main() {
   if (existsSync(join(root, '.git', 'MERGE_HEAD'))) return 0;
   const staged = git('diff', '--cached', '--name-only').split('\n').filter(Boolean);
   if (staged.length === 0) return 0;
+  const ast = summarize();
 
   if (!staged.includes('log.md')) {
     const current = existsSync(LOG) ? readFileSync(LOG, 'utf8') : HEADER;
     const entry = renderEntry({
       when: new Date().toISOString().slice(0, 16).replace('T', ' ') + 'Z',
       branch: git('rev-parse', '--abbrev-ref', 'HEAD'),
-      files: staged,
+      ast,
     });
     writeFileSync(LOG, `${current.trimEnd()}\n\n${entry}`);
-    console.error('log.md: added an entry for this commit. Fill in its AST: lines, `git add log.md`, then commit again.');
+    console.error(
+      [
+        'log.md: commit stopped. This is the AST of what you are committing:',
+        '',
+        ...ast,
+        '',
+        'It is now the newest entry at the bottom of log.md. Under it, write',
+        'What changed, Why and Checked from that list, then `git add log.md`',
+        'and commit again.',
+      ].join('\n'),
+    );
     return 1;
   }
 
-  const problem = checkAdded(addedLines(git('diff', '--cached', '--', 'log.md')));
+  const problem = checkAdded(addedLines(git('diff', '--cached', '--', 'log.md')), ast);
+  if (problem === 'stale') {
+    writeFileSync(LOG, replaceLastAstBlock(readFileSync(LOG, 'utf8'), ast));
+    console.error(
+      ['log.md: the staged code changed since the entry was written. New AST:', '', ...ast, '', 'The block is updated in log.md. Check What changed still matches, `git add log.md`, commit again.'].join('\n'),
+    );
+    return 1;
+  }
   if (problem) {
     console.error(`log.md: ${problem} See skills/commitLog/SKILL.md.`);
     return 1;

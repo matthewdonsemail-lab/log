@@ -14,9 +14,12 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 3. 2026-10-18 · Facebook Marketplace only, until matt widens the scope.
 4. 2026-10-18 · Commit and push as matt (`GIT_CONFIG_COUNT=0`). PRs go to
    GitHub `origin`.
-5. 2026-10-18 · Every commit adds a `log.md` entry, and the agent fills in its
-   `AST:` lines (what changed, why, how it was checked). The pre-commit hook
-   blocks the commit until that's done. Never `--no-verify`.
+5. 2026-10-18 · Every commit adds a `log.md` entry. On commit, the hook
+   parses the staged code into an abstract syntax tree (AST) and writes what was
+   added, changed or removed into the entry. The agent then writes What changed,
+   Why and Checked from that AST. The hook blocks the commit until that's
+   done, and rejects an AST block that doesn't match the code. Never
+   `--no-verify`. "AST" means abstract syntax tree, never a line prefix.
 6. 2026-10-18 · Processes that run over time are XState machines that can be
    started and watched from the CLI (`log watch`, `observability/trace`).
 7. 2026-10-18 · How the work is done is written down as skills in
