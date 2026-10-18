@@ -12,6 +12,12 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
+      // The repo modal posts newsletter signups to the member-site endpoint on listeningkit.com
+      // (vercel.json rewrites the same path in production). Listed before /api so it wins.
+      '/api/kit': {
+        target: 'https://listeningkit.com',
+        changeOrigin: true
+      },
       '/api': {
         target: 'http://localhost:4000',
         changeOrigin: true

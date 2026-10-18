@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { LOG_REPO_URL, RepoLink } from './RepoLink'
 import { motion } from 'motion/react'
 import { Button, cn, useSquircleClip } from '@listeningkit/ui'
 import Dither from '@/components/Dither'
@@ -354,9 +354,9 @@ export function Usecase() {
                   asChild
                   className="w-full whitespace-nowrap rounded-xl px-8 py-5 text-xl font-bold uppercase"
                 >
-                  <Link to="/onboarding" className="inline-block w-full text-center">
+                  <RepoLink href={LOG_REPO_URL} className="inline-block w-full text-center">
                     Get started
-                  </Link>
+                  </RepoLink>
                 </Button>
               </div>
             </div>
@@ -451,9 +451,9 @@ export function Usecase() {
           asChild
           className="mt-4 w-full rounded-full px-8 py-4 text-sm font-bold uppercase"
         >
-          <Link to="/onboarding" className="inline-block w-full text-center">
+          <RepoLink href={LOG_REPO_URL} className="inline-block w-full text-center">
             Get started
-          </Link>
+          </RepoLink>
         </Button>
       </div>
     </section>

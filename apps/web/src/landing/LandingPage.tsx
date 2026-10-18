@@ -1,14 +1,12 @@
-import type { CSSProperties, FormEvent } from 'react'
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { websiteError } from '@/lib/website'
-import { saveLandingWebsite } from '@/pages/onboarding/auth-handoff'
+import type { CSSProperties } from 'react'
+import { BigGithubButton } from './BigGithubButton'
 import { Clouds } from './Clouds'
 import { Control } from './Control'
 import { Header } from './Header'
 import { ListeningIntro } from './ListeningIntro'
 import { OtherCases } from './OtherCases'
 import { PlugTooltip } from './PlugTooltip'
+import { LOG_REPO_URL, parseRepoUrl } from './RepoLink'
 import { Socials } from './Socials'
 import { Usecase } from './Usecase'
 import { Unemployed } from './Unemployed'
@@ -51,27 +49,9 @@ const PLUGS = [
  * Landing page — header plus the drifting cloud band for now.
  * Sections get built out in <main> as the landing page takes shape.
  */
+const LOG_REPO = parseRepoUrl(LOG_REPO_URL)!
+
 export function LandingPage() {
-  const navigate = useNavigate()
-
-  const [site, setSite] = useState('')
-  const [submitted, setSubmitted] = useState(false)
-
-  // Precondition: the button stays greyed until the value parses as a URL
-  // with a real TLD. The error only shows once the field is touched.
-  const problem = websiteError(site)
-  const visibleError = submitted || site ? problem : null
-
-  // The website form leads into onboarding: validate the TLD inline, keep
-  // what was typed, and onboarding skips straight to the brand reveal.
-  function startOnboarding(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setSubmitted(true)
-    if (problem) return
-    saveLandingWebsite(site)
-    navigate('/onboarding')
-  }
-
   return (
     <div
       className="flex min-h-screen flex-col text-white"
@@ -89,12 +69,9 @@ export function LandingPage() {
         tone="light"
         homeHref="/"
         logoLabel="ListeningKit"
-        githubRepo="matthewdonsemail-lab/log"
+        githubRepo={`${LOG_REPO.owner}/${LOG_REPO.repo}`}
         className="z-[70]"
-        accountItems={[
-          { href: '/sign-in', label: 'Sign in', variant: 'ghost' },
-          { href: '/onboarding', label: 'Get started', variant: 'cta' },
-        ]}
+        accountItems={[{ href: LOG_REPO_URL, label: 'Get started', variant: 'cta' }]}
       />
       <div aria-hidden className="h-24 shrink-0" />
       <Clouds>
@@ -109,47 +86,14 @@ export function LandingPage() {
           <p className="mt-4 max-w-xl text-lg leading-snug text-white/80 sm:text-xl">
             The only free social listening tool on your terms.
           </p>
-          <div className="mt-7 w-full sm:mt-8">
-          <form
-            className="flex w-full items-center gap-2 rounded-[14px] bg-white py-[5px] pl-4 pr-[5px] sm:gap-2.5 sm:py-[7px] sm:pl-[26px] sm:pr-[7px]"
-            onSubmit={startOnboarding}
-          >
-            <input
-              name="website"
-              aria-label="Your website"
-              aria-invalid={visibleError !== null}
-              aria-describedby={visibleError ? 'website-error' : undefined}
-              placeholder="Enter your website"
-              value={site}
-              onChange={(event) => setSite(event.target.value)}
-              className="min-w-0 grow bg-transparent text-[16px] leading-[1.3] text-[#0D2A4C] outline-none placeholder:text-[#0D2A4C]/60 sm:text-[17px]"
+          {/* The big GitHub button replaces the old website form; the "Find new customers" note points at it. */}
+          <div className="relative mt-7 w-full sm:mt-8">
+            <img
+              src="/images/FindNewCustomers.png"
+              alt="Find new customers"
+              className="pointer-events-none absolute bottom-full right-[-1.5rem] z-10 mb-1 w-24 max-w-none rotate-3 drop-shadow-lg sm:right-[-3rem] sm:w-32"
             />
-            <span className="relative flex h-[46px] flex-col sm:h-[54px]">
-              <img
-                src="/images/FindNewCustomers.png"
-                alt="Find new customers"
-                className="pointer-events-none absolute bottom-full right-[-3rem] z-10 mb-2 w-24 max-w-none rotate-3 drop-shadow-lg sm:right-[-4rem] sm:w-32"
-              />
-              <button
-                type="submit"
-                disabled={problem !== null}
-                className={
-                  problem !== null
-                    ? 'flex h-[42px] shrink-0 cursor-not-allowed items-center rounded-[10px] bg-slate-300 px-4 text-white sm:h-[50px] sm:px-[24px]'
-                    : 'flex h-[42px] shrink-0 cursor-pointer items-center rounded-[10px] bg-[#2A8CFF] px-4 text-white shadow-[0_4px_0_0_#1F6FE6] transition-transform duration-100 active:translate-y-1 active:shadow-none sm:h-[50px] sm:px-[24px]'
-                }
-              >
-                <span className="whitespace-nowrap text-[16px] font-medium leading-[1.3] sm:text-[17px]">
-                  Get started
-                </span>
-              </button>
-            </span>
-          </form>
-          {visibleError ? (
-            <p id="website-error" role="alert" className="mt-3 text-left text-[15px] font-medium leading-snug text-white">
-              {visibleError}
-            </p>
-          ) : null}
+            <BigGithubButton tone="white" />
           </div>
           <div className="plugs is-visible mt-6 flex w-full flex-row items-center justify-start gap-4" data-reveal="load" style={{ '--d': '320ms' } as CSSProperties}>
             <p className="plugs-text text-sm font-medium uppercase text-white/70">Works with</p>
