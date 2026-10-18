@@ -93,6 +93,21 @@ print(json.dumps(c))`) as Record<string, unknown>;
     });
   });
 
+  test("prefs: the UI locale is this launch's pinned locale, HTTP/3 and DoH are off, nothing per-launch is replayed", () => {
+    const out = py(`import deviceProfile as d
+p = {"firefoxUserPrefs": {"webgl.force-enabled": True, "intl.locale.requested": "en-US", "network.dns.disableIPv6": False}}
+print(json.dumps([d.launch_prefs(p, {"locale": "en-IE"}, "86.41.85.43"), d.launch_prefs(p, {"locale": "en-GB"}, "2001:db8::1")]))`) as Record<string, unknown>[];
+    expect(out[0]).toEqual({
+      "webgl.force-enabled": true,
+      "network.http.http3.enable": false,
+      "network.trr.mode": 5,
+      "intl.locale.requested": "en-IE",
+      "network.dns.disableIPv6": true,
+    });
+    expect(out[1]["intl.locale.requested"]).toBe("en-GB");
+    expect(out[1]["network.dns.disableIPv6"]).toBeUndefined();
+  });
+
   test("the browser gets only system environment variables: no keys, no CAMOU_ overrides, no TZ", () => {
     const out = py(`import deviceProfile as d
 print(json.dumps(d.safe_env({"SYSTEMROOT": "C:/Windows", "TEMP": "t", "TWENTY_API_KEY": "k", "2CAPTCHA_API_KEY": "k", "CAMOU_CONFIG_1": "{}", "TZ": "Asia/Bangkok", "LANG": "vi_VN"})))`);

@@ -51,7 +51,7 @@ export function prepareRun(account: FacebookAccount, purpose: RunPurpose, option
     if (!profile && hasStoredDevice(account.deviceProfile)) {
       return { ok: false, code: 'deviceProfileInvalid', detail: `${account.accountName}: the stored deviceProfile can't be read` }
     }
-    const { locale, facebookLocale, timezone, country, city } = home.home
+    const { locale, facebookLocale, timezone, country, city, coordinates } = home.home
     device = {
       accountName: account.accountName,
       locale,
@@ -60,6 +60,7 @@ export function prepareRun(account: FacebookAccount, purpose: RunPurpose, option
       homeCountry: country,
       homeCity: city,
       homeTimezone: timezone,
+      homeCoordinates: coordinates,
       profile
     }
   }

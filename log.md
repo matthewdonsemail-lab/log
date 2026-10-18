@@ -679,3 +679,36 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: AGENTS.md gets four dated hard rules: 15 one device per account (made on the first launch, stored in `deviceProfile`, replayed exactly, never regenerated or printed), 16 the locale pinned per home country from `HOME_COUNTRIES`, 17 the launch self-check that closes the browser before Facebook on any timezone, locale or exit-IP mismatch, 18 no run outside the account's local 08:00-22:00 (or its own window), daily caps on the local day. The Live mode section now says the run's private folder also holds the device file and the session, that the session is written back only while it holds a Facebook login, and that the proxy username's first part is masked because it is the 2Captcha password. docs/proxies.md "How one launch goes" is rewritten for the new flow (home, hours and device checks in TS; caller-option whitelist, device launch, Playwright launch guards, context forcing and the self-check in Python; exit re-checks during publish; write-back after the run) with sections on the device, the locale (and why no `locale:script`), local hours, 2Captcha and photos, and notes that no two accounts share a sticky session. The logCli skill gets boundary 6 (device, locale, self-check, hours; Ireland's day is 14:00-04:00 ICT; re-run the leak checks after a Camoufox upgrade).
 Why: matt's identity-leak task: "Update AGENTS.md hard rules with one dated line per new rule (pinned device per account; locale per country; launch self-check; local hours) and update docs/proxies.md." The rules land one commit after the code that applies them (3c2a3e0), not in the same commit as skills/captureRule asks; the code commit was split out to keep the log readable.
 Checked: Docs only. `bun run check` passed on the code they describe (366 pass). The live results are in the previous entry and, after the Camoufox upgrade, in the next.
+
+## 2026-10-18 11:10Z · feat/publishMachine
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/proxies.md`: edited
+- `python/deviceProfile.py`: added const PER_LAUNCH_PREFS, def launch_prefs · changed def screen_bounds, def new_profile, def build_launch · removed def city_location
+- `src/camofox/device/device.test.ts`: added test "prefs: the UI locale is this launch's pinned locale, HTTP/3 and DoH are off, nothing per-launch is replayed"
+- `src/camofox/device/types.ts`: changed interface DeviceGeolocation, interface DeviceRunFile
+- `src/camofox/run/client.ts`: changed function prepareRun
+- `src/camofox/run/run.test.ts`: added const ROOT · changed test "writes the pinned home and no device on the first launch", test "outside the local window nothing is written and nothing opens, connect included", test "the account's own window is used", test "a country with no pinned locale is refused", test "a stored device goes to Python as it is; an unreadable one is refused, never replaced", test "a device Python made in the run is handed back once, to save"
+- `src/marketplace/home/helpers/homeOf.ts`: changed function homeOf
+- `src/marketplace/home/home.test.ts`: changed test "pins the locale, Facebook UI locale and timezone per country"
+- `src/marketplace/home/types.ts`: added const CITY_COORDINATES · changed interface Home
+
+What changed: Camoufox upgraded on this PC from 0.5.5 / 152.0.4-beta.30 to 0.5.8 / 156.0.1-beta.39 (`pip install -U camoufox`, then `camoufox set official/prerelease/156.0.1-beta.39` and `camoufox fetch`; 0.5.8's paired build is beta.36, and beta.38+ was asked for). log-cli now works with both:
+- `screen_bounds` uses 0.5.8's own `Screen` (BrowserForge is gone).
+- The device is made with the pinned locale, because 0.5.8 draws Windows voices from the display language. `intl.locale.requested` and `network.dns.disableIPv6` are per launch (`PER_LAUNCH_PREFS`). `launch_prefs` sets the UI locale to the pinned one and pins HTTP/3 and DoH off. The prefs also go into the startup environment (`CAMOU_PREFS_*`) when Camoufox has `get_pref_env_vars`, because Playwright's prefs arrive after startup.
+- 0.5.8's GeoIP database (GeoIP AIO) has no city names, and scanning its 15M records took ~150 s. The GeoLite2 City scan is removed. The home city's centre now comes from `CITY_COORDINATES` in `marketplace/home` (Ireland, UK and the US/CA/AU/NZ cities already in `CITY_TIMEZONES`), sent in `device.json` as `homeCoordinates`. Otherwise it's the exit IP's location (`source: exitIp`).
+- run.test.ts writes its folders under one temp root and removes it (it left two `logCliRun*` folders per run).
+- docs/proxies.md explains the canvas behaviour below and has the live checks. Rule 15 lists the device parts as they are on 0.5.8 (no canvas or font-spacing seeds any more).
+Why: Fix 11 of the identity-leak task: upgrade Camoufox last and re-run the whole live verification. beta.39 also fixes `Intl.DisplayNames` (it gave "Ireland" for FR) and hides Juggler.
+Checked: `bun run check`: naming ok, tsc ok, 367 pass. Live on 0.5.8 / beta.39 through the real gate with the throwaway logCliTestIdentity (exit 86.41.85.43), Facebook never loaded:
+- The device made on 0.5.5 replayed (UA moved to Firefox 156). After clearing it, a `log publish` dry run made a new one: 1920x1080, Intel HD 400, geolocation from the home city, 433.7 m.
+- Three probe launches (2 publishSession, 1 facebook-camofox-client) matched on UA, screen, WebGL, audio 75.80013773585961, font metrics and geolocation.
+- The page, a dedicated worker and a shared worker all showed en-IE, Intl en-IE and Europe/Dublin. Accept-Language was `en-IE,en;q=0.9`. DisplayNames gave France.
+- WebRTC gave mDNS host candidates and a srflx of the exit IP.
+- The forced timezone and locale breaks were refused. The three bypass attempts were refused with unguardedLaunch.
+- `connect`, `scan` and `publish` were refused outside a narrow window.
+- Photos were fetched via the proxy (86.41.85.43, not 116.105.162.81).
+- Canvas still differs per launch. Firefox's baseline fingerprinting protection re-keys canvas randomisation every session: with `privacy.baselineFingerprintingProtection` off, the canvas was identical across launches, but it was this PC's raw rendering, the same for every account. Left on, for matt to decide.
+- Proxy traffic for all live checks: 821.575 → 812.832 MB.
+- Test records deleted, and confirmed gone even as soft-deleted rows.

@@ -20,7 +20,7 @@ export interface DeviceGeolocation {
   longitude: number
   /** Metres, pinned per account (20-1500), never Camoufox's 1e-10. */
   accuracy: number
-  /** `geoLite2City` (the home city, looked up once) or `exitIp` (fallback). */
+  /** `homeCity` (CITY_COORDINATES), `geoLite2City` (devices made on camoufox 0.5.5) or `exitIp` (fallback). */
   source: string
 }
 
@@ -48,6 +48,8 @@ export interface DeviceRunFile {
   homeCountry: string
   homeCity: string | null
   homeTimezone: string
+  /** The home city's centre (`marketplace/home`), or null: the device's geolocation is pinned near it. */
+  homeCoordinates: { latitude: number; longitude: number } | null
   /** The stored device, or null on the account's first launch. */
   profile: DeviceProfile | null
   /** Set by Python when it generated `profile` in this run, so it gets saved to Twenty. */

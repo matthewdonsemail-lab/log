@@ -11,8 +11,9 @@ first launch and replayed exactly on every launch after:
   not match the pixels), no geoip (no network) and env={} so nothing from this
   process's environment is copied. It keeps only Camoufox's config (what it
   sends as CAMOU_CONFIG_*) and the Firefox prefs, minus everything that
-  belongs to a single launch (PER_LAUNCH). It also pins the home city's
-  coordinates and a realistic geolocation accuracy (20-1500 m).
+  belongs to a single launch (PER_LAUNCH, PER_LAUNCH_PREFS). It also pins a
+  point near the home city (CITY_COORDINATES from marketplace/home, else the
+  exit IP's location) with a realistic geolocation accuracy (20-1500 m).
 - build_launch() turns a stored profile back into Playwright launch options:
   the stored config plus this launch's exit-IP timezone and WebRTC IP, the
   pinned locale, humanize and the cursor, and an environment of the few
@@ -48,6 +49,9 @@ SAFE_ENV = (
 
 # Pinned for every account: no HTTP/3 and no DNS-over-HTTPS around the proxy.
 PINNED_PREFS = {"network.http.http3.enable": False, "network.trr.mode": 5}
+
+# Firefox prefs that follow this launch, never stored.
+PER_LAUNCH_PREFS = ("network.dns.disableIPv6", "intl.locale.requested")
 
 ACCURACY_RANGE_M = (20.0, 1500.0)
 
@@ -111,46 +115,14 @@ def pinned_geolocation(lat: float, lon: float, rng: random.Random) -> dict[str, 
     return {"latitude": round(lat + dlat, 6), "longitude": round(lon + dlon, 6), "accuracy": accuracy}
 
 
-def city_location(city: str | None, country: str) -> dict[str, Any] | None:
-    """The home city's coordinates and timezone from Camoufox's own GeoLite2
-    City database (no network). Scans it once per account (~20 s)."""
-    if not city:
-        return None
-    try:
-        import maxminddb
-        from camoufox.geolocation import get_mmdb_path
-    except Exception:
-        return None
-    want_city, want_country = city.strip().lower(), country.strip().upper()
-    seen: dict[tuple[float, float, str], int] = {}
-    with maxminddb.open_database(str(get_mmdb_path("ipv4"))) as reader:
-        for _, rec in reader:
-            if not isinstance(rec, dict):
-                continue
-            name = rec.get("city")
-            if isinstance(name, dict):
-                name = (name.get("names") or {}).get("en")
-            country_field = rec.get("country")
-            code = country_field.get("iso_code") if isinstance(country_field, dict) else rec.get("country_code")
-            if not isinstance(name, str) or name.lower() != want_city or str(code or "").upper() != want_country:
-                continue
-            loc = rec.get("location") if isinstance(rec.get("location"), dict) else rec
-            lat, lon = loc.get("latitude"), loc.get("longitude")
-            tz = loc.get("time_zone") or rec.get("timezone") or ""
-            if isinstance(lat, (int, float)) and isinstance(lon, (int, float)):
-                key = (float(lat), float(lon), str(tz))
-                seen[key] = seen.get(key, 0) + 1
-    if not seen:
-        return None
-    lat, lon, tz = max(seen, key=seen.get)
-    return {"latitude": lat, "longitude": lon, "timezone": tz or None}
-
-
 def screen_bounds():
     """A screen no bigger than this PC's real monitor (the headed window is sized from
     it) and no smaller than a common laptop. Camoufox skips this bound for headed launches,
     which gave 3072x1728 and 5120x1440 screens on a 1920x1080 display."""
-    from browserforge.fingerprints import Screen
+    try:
+        from camoufox.fingerprints import Screen  # camoufox >= 0.5.8 (fpgen)
+    except ImportError:
+        from browserforge.fingerprints import Screen  # camoufox 0.5.5
 
     width, height = 1920, 1080
     try:
@@ -176,14 +148,16 @@ def new_profile(run: dict[str, Any], exit_geo: dict[str, Any], log=lambda _m: No
     from camoufox.utils import launch_options
 
     rng = rng or random.SystemRandom()
-    opts = launch_options(os="windows", headless=False, env={}, screen=screen_bounds(), i_know_what_im_doing=True)
+    # The locale only shapes what follows it (camoufox 0.5.8 draws the voices from the
+    # display language); the locale keys themselves are per launch and stripped.
+    opts = launch_options(os="windows", headless=False, env={}, screen=screen_bounds(), locale=run["locale"], i_know_what_im_doing=True)
     config = strip_per_launch(decode_env_config(opts["env"]))
-    prefs = {k: v for k, v in (opts.get("firefox_user_prefs") or {}).items() if k != "network.dns.disableIPv6"}
-    log(f"Looking up {run.get('homeCity') or '?'}, {run['homeCountry']} in the GeoLite2 City database (once per account)")
-    home = city_location(run.get("homeCity"), run["homeCountry"])
+    prefs = {k: v for k, v in (opts.get("firefox_user_prefs") or {}).items() if k not in PER_LAUNCH_PREFS}
+    home = run.get("homeCoordinates")
     if home:
-        geo = {**pinned_geolocation(home["latitude"], home["longitude"], rng), "source": "geoLite2City"}
+        geo = {**pinned_geolocation(home["latitude"], home["longitude"], rng), "source": "homeCity"}
     else:
+        log(f"No coordinates for {run.get('homeCity') or '?'}, {run['homeCountry']}: the device is pinned near the exit IP's location")
         geo = {**pinned_geolocation(exit_geo["latitude"], exit_geo["longitude"], rng), "source": "exitIp"}
     package, browser = versions()
     return {
@@ -195,7 +169,7 @@ def new_profile(run: dict[str, Any], exit_geo: dict[str, Any], log=lambda _m: No
         "config": config,
         "firefoxUserPrefs": prefs,
         "geolocation": geo,
-        "home": {"city": run.get("homeCity"), "country": run["homeCountry"], "timezone": (home or {}).get("timezone")},
+        "home": {"city": run.get("homeCity"), "country": run["homeCountry"], "timezone": run.get("homeTimezone")},
     }
 
 
@@ -251,6 +225,17 @@ def launch_config(profile: dict[str, Any], run: dict[str, Any], exit_ip: str, ex
     return config
 
 
+def launch_prefs(profile: dict[str, Any], run: dict[str, Any], exit_ip: str) -> dict[str, Any]:
+    """The stored prefs plus this launch's: the UI locale requested is the pinned one
+    (without a script part, like the Intl locale), IPv6 off for an IPv4 exit. Pure."""
+    prefs = {k: v for k, v in profile["firefoxUserPrefs"].items() if k not in PER_LAUNCH_PREFS}
+    prefs.update(PINNED_PREFS)
+    prefs["intl.locale.requested"] = run["locale"]
+    if ":" not in exit_ip:
+        prefs["network.dns.disableIPv6"] = True
+    return prefs
+
+
 def build_launch(profile: dict[str, Any], run: dict[str, Any], exit_ip: str, exit_timezone: str, proxy: dict[str, str], visible: dict[str, Any]) -> dict[str, Any]:
     """Playwright launch options for this account, as Camoufox(from_options=...) takes them."""
     from camoufox.addons import add_default_addons
@@ -263,13 +248,20 @@ def build_launch(profile: dict[str, Any], run: dict[str, Any], exit_ip: str, exi
     if addons:
         config["addons"] = addons
     validate_config(config, path=None)
-    prefs = {**profile["firefoxUserPrefs"], **PINNED_PREFS}
-    if ":" not in exit_ip:
-        prefs["network.dns.disableIPv6"] = True
+    prefs = launch_prefs(profile, run, exit_ip)
+    env = {**safe_env(), **get_env_vars(config, get_target_os(config))}
+    try:
+        # camoufox >= 0.5.8 applies prefs at browser startup from CAMOU_PREFS_* (Playwright's
+        # firefox_user_prefs arrive after startup, too late for intl.locale.requested).
+        from camoufox.utils import get_pref_env_vars
+
+        env.update(get_pref_env_vars(prefs))
+    except ImportError:
+        pass
     return {
         "executable_path": launch_path(),
         "args": [],
-        "env": {**safe_env(), **get_env_vars(config, get_target_os(config))},
+        "env": env,
         "firefox_user_prefs": prefs,
         "headless": bool(visible["headless"]),
         "proxy": proxy,

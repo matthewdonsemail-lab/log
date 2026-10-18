@@ -57,8 +57,8 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     same one blaster and the dialer use (`bun run twenty:client`,
     `src/twenty/graphql/generated`). Regenerate it after any field change.
 15. 2026-10-18 · One device per account: its first launch makes one Windows
-    Camoufox identity (screen, GPU, fonts, voices, canvas/audio/font seeds,
-    geolocation) stored in `socialAccounts.deviceProfile`, and every launch
+    Camoufox identity (screen, GPU, fonts, voices, audio seed, geolocation)
+    stored in `socialAccounts.deviceProfile`, and every launch
     replays it exactly (`python/deviceProfile.py`). Never regenerated or
     printed; an unreadable one is refused (`deviceProfileInvalid`).
 16. 2026-10-18 · The locale is pinned per home country at launch, from one

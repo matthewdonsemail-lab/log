@@ -1,4 +1,4 @@
-import { CITY_TIMEZONES, HOME_COUNTRIES } from '../types'
+import { CITY_COORDINATES, CITY_TIMEZONES, HOME_COUNTRIES } from '../types'
 import type { HomeResult } from '../types'
 
 /** What `homeOf` reads off an account. */
@@ -32,5 +32,7 @@ export function homeOf(account: HomeFields): HomeResult {
       detail: `${account.accountName}: ${country} has more than one timezone and homeCity "${city ?? 'unset'}" isn't in CITY_TIMEZONES`
     }
   }
-  return { ok: true, home: { country, city, locale: entry.locale, facebookLocale: entry.facebookLocale, timezone } }
+  const centre = city ? CITY_COORDINATES[`${country}:${city.toLowerCase()}`] : undefined
+  const coordinates = centre ? { latitude: centre[0], longitude: centre[1] } : null
+  return { ok: true, home: { country, city, locale: entry.locale, facebookLocale: entry.facebookLocale, timezone, coordinates } }
 }

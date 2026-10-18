@@ -14,8 +14,17 @@ describe('homeOf: one table, refused when unknown', () => {
   test('pins the locale, Facebook UI locale and timezone per country', () => {
     expect(homeOf(galway)).toEqual({
       ok: true,
-      home: { country: 'IE', city: 'Galway', locale: 'en-IE', facebookLocale: 'en_GB', timezone: 'Europe/Dublin' }
+      home: {
+        country: 'IE',
+        city: 'Galway',
+        locale: 'en-IE',
+        facebookLocale: 'en_GB',
+        timezone: 'Europe/Dublin',
+        coordinates: { latitude: 53.2707, longitude: -9.0568 }
+      }
     })
+    // A city with no known centre: the device falls back to the exit IP's location.
+    expect(homeOf({ ...galway, homeCity: 'Oughterard' })).toMatchObject({ ok: true, home: { timezone: 'Europe/Dublin', coordinates: null } })
     expect(homeOf({ ...galway, homeCountry: 'GB', homeCity: 'Manchester' })).toMatchObject({ ok: true, home: { locale: 'en-GB', timezone: 'Europe/London' } })
   })
 

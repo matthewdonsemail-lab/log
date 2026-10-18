@@ -80,10 +80,19 @@ kept, and the browser only ever gets the system variables Firefox needs
 - Per-launch values are never stored: timezone, WebRTC IP, locale, humanize,
   cursor, addon paths. After a browser upgrade the user agent's Firefox version
   follows the installed browser, like a real Firefox update.
-- Geolocation: the home city's coordinates from Camoufox's GeoLite2 City
-  database (scanned once, ~20 s), moved 150 m to 1.8 km off the centroid, with
-  an accuracy pinned per account between 20 and 1500 m (was 6.6e-11 m), and the
-  permission granted so `permissions.query` agrees.
+- Geolocation: the home city's centre from `CITY_COORDINATES`
+  (`src/marketplace/home/types.ts`, next to the timezones), or the exit IP's
+  location when the city isn't there, moved 150 m to 1.8 km off the centroid,
+  with an accuracy pinned per account between 20 and 1500 m (was 6.6e-11 m),
+  and the permission granted so `permissions.query` agrees. Camoufox 0.5.8's
+  GeoIP database (GeoIP AIO) has no city names, so it can't be looked up there.
+- Canvas: everything above replays exactly, but a canvas read on a real site
+  changes from launch to launch. That is Firefox's own baseline fingerprinting
+  protection, which re-keys canvas randomisation every browser session, as
+  stock Firefox does. Turning it off
+  (`privacy.baselineFingerprintingProtection`) makes the canvas identical
+  across launches, but then it is this PC's raw rendering, the same for every
+  account on the machine. It is left on until matt decides.
 
 ### Locale per country (rule 16)
 
@@ -170,6 +179,39 @@ from $3.99/GB down to $1.25/GB) and whether the proxy password is set.
     password. Rotate both.
 
 ## Checked
+
+Identity pinning (rules 15-18), live on 2026-10-18 through the real gate, with
+a throwaway `logCliTestIdentity` (Galway, IE, WARMING, 2Captcha session
+`h2SV92jPv`, exit 86.41.85.43), deleted afterwards.
+Facebook was never loaded. About 9 MB of proxy traffic.
+
+- camoufox 0.5.8 with browser 156.0.1-beta.39 (and before that 0.5.5 with
+  152.0.4-beta.30):
+  - `log publish` dry runs against `python/fixtures/createItem.html` made the
+    device on the first launch, saved it to Twenty, and reused it after that.
+    A device made on 0.5.5 also replayed on 156 with its UA moved to Firefox 156.
+  - Three launches (two on the publishSession path, one on the logWorker /
+    facebook-camofox-client path) gave the same UA (Windows, Firefox 156),
+    screen 1920x1080, WebGL, audio hash, font metrics and geolocation
+    (53.272917, -9.055986, 433.7 m, permission granted).
+  - The page, a dedicated worker and a shared worker all showed en-IE,
+    `["en-IE","en"]`, Intl en-IE (`1/7/2026, 13:00:00`) and Europe/Dublin.
+    Accept-Language was `en-IE,en;q=0.9` and `Intl.DisplayNames` gave France.
+  - WebRTC gave only mDNS host candidates plus a srflx of the exit IP.
+  - Canvas differed per launch (Firefox's baseline protection, see above).
+- Fault injection: a forced Asia/Bangkok context was refused with
+  `browserTimezoneMismatch`, and a wrong pinned locale with
+  `browserLocaleMismatch`. Both closed the browser before anything loaded.
+- Bypass attempts were all refused with `unguardedLaunch`: `from camoufox
+  import Camoufox` with geoip=False, a caller `locale`, and `persistent_context`.
+- With a narrow window, `log scan`, `log publish` and `log connect` were
+  refused with `outsideActiveHours`, the local time and when the window opens.
+- Photo URL downloads exited at 86.41.85.43 (this PC is 116.105.162.81), and
+  were refused without a proxy (`photoNeedsProxy`).
+- Not checked live: an exit-IP rotation during a run (unit-tested), a 2Captcha
+  solve (no captcha came up), and `log watch` over many hours.
+
+Earlier checks (proxy gate, 2026-10-18):
 
 - `log proxy check` through a local CONNECT proxy (exit 116.105.162.81, VN):
   - no proxy → `noProxy`
