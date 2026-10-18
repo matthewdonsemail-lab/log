@@ -45,6 +45,11 @@ git, not chat).
 | `homeCity` / `homeCountry` | Where the account is registered and must appear from, e.g. `Galway` / `IE`. Take the country from the vendor listing, not a guess |
 | `proxy` | A proxy **in `homeCountry`**, as `http://user:pass@host:port`. Bought separately: vendors sell the account, not its IP |
 | `accountStatus` | `WARMING` for a fresh account, `NEEDS_LOGIN` until `log connect` has run |
+| `totpSecret` | The 2FA (TOTP) secret the vendor delivered. A credential: never print it |
+| `vendor` | Who sold it, named as in these files (e.g. `NPPR Team Shop`) |
+| `vendorOrderId` | The vendor order or invoice id |
+| `vendorListingUrl` | The product page it was bought from |
+| `purchasedAt` | When it was bought |
 
 Before an account does anything:
 
@@ -54,9 +59,3 @@ Before an account does anything:
 2. `log connect --account <accountName>`: sign in once through the proxy and save
    fresh cookies to Twenty.
 3. Set `accountStatus` to `ACTIVE` when it's ready to post.
-
-Not in socialAccounts yet, so only noted here:
-- **The 2FA (TOTP) secret** many vendors deliver. There is no field for it.
-- **Which vendor and order an account came from.** There is no field for it.
-
-Both are worth a field before buying in volume.
