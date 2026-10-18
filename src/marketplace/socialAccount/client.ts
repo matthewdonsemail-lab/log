@@ -4,9 +4,11 @@
  * sign-in, lastPostedAt). Rows are never deleted: a banned account keeps its
  * record and history (matt, 2026-10-18).
  */
+import { hasStoredDevice } from '../../camofox/device/index'
+import type { DeviceProfile } from '../../camofox/device/index'
 import { TwentyError } from '../../twenty/graphql/index'
 import type { TwentyClient, TwentyObjects } from '../../twenty/graphql/index'
-import { fromTwentyEnum, toTwentyEnum } from './helpers/index'
+import { fromTwentyEnum, hasFacebookSession, toTwentyEnum } from './helpers/index'
 import { ACCOUNT_STATUSES, DEFAULT_DAILY_LISTING_CAP } from './types'
 import type { AccountStatus, FacebookAccount, SocialAccountRow } from './types'
 import type { PlaywrightCookie } from './helpers/index'
@@ -36,7 +38,11 @@ export function toFacebookAccount(row: SocialAccountRow): FacebookAccount {
     proxyExitCountry: row.proxyExitCountry ?? null,
     dailyListingCap: typeof row.dailyListingCap === 'number' && row.dailyListingCap > 0 ? row.dailyListingCap : DEFAULT_DAILY_LISTING_CAP,
     lastPostedAt: row.lastPostedAt ?? null,
-    vendor: row.vendor ?? null
+    vendor: row.vendor ?? null,
+    deviceProfile: row.deviceProfile ?? null,
+    activeHoursStart: typeof row.activeHoursStart === 'number' ? row.activeHoursStart : null,
+    activeHoursEnd: typeof row.activeHoursEnd === 'number' ? row.activeHoursEnd : null,
+    storageOrigins: row.storageOrigins ?? null
   }
 }
 
@@ -93,6 +99,31 @@ export async function recordProxyCheck(
 /** After a sign-in: the fresh Facebook cookies replace the stored ones. */
 export async function saveCookies(twenty: TwentyClient, accountId: string, cookies: PlaywrightCookie[]): Promise<void> {
   await twenty.update(SOCIAL_ACCOUNTS, accountId, { cookies: cookies as unknown as AccountUpdate['cookies'] })
+}
+
+/**
+ * The browser's session after a run (cookies and localStorage), so the next
+ * run continues it instead of replaying the last sign-in's cookies in an
+ * empty browser. Only a jar that still holds a Facebook session is saved: a
+ * logged-out or empty one never replaces good cookies.
+ */
+export async function saveSession(twenty: TwentyClient, accountId: string, state: { cookies: PlaywrightCookie[]; origins: unknown[] }): Promise<boolean> {
+  if (!hasFacebookSession(state.cookies)) return false
+  await twenty.update(SOCIAL_ACCOUNTS, accountId, {
+    cookies: state.cookies as unknown as AccountUpdate['cookies'],
+    storageOrigins: state.origins as unknown as AccountUpdate['storageOrigins']
+  })
+  return true
+}
+
+/**
+ * The device a first launch generated (`camofox/device`). Written once: an
+ * account that already has one keeps it, so it never changes device.
+ */
+export async function saveDeviceProfile(twenty: TwentyClient, account: FacebookAccount, profile: DeviceProfile): Promise<boolean> {
+  if (hasStoredDevice(account.deviceProfile)) return false
+  await twenty.update(SOCIAL_ACCOUNTS, account.id, { deviceProfile: profile as unknown as AccountUpdate['deviceProfile'] })
+  return true
 }
 
 export async function markPosted(twenty: TwentyClient, accountId: string, now: Date = new Date()): Promise<void> {

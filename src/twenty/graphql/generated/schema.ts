@@ -10178,6 +10178,10 @@ export interface SocialAccount {
     vendor?: Scalars['String']
     /** log-cli: the vendor order or invoice id */
     vendorOrderId?: Scalars['String']
+    /** log-cli: the one Camoufox device this account always launches as (made on its first launch). Never edit or print it */
+    deviceProfile?: Scalars['JSON']
+    /** log-cli: local hour runs may start, e.g. 8 or 8.5. Empty: 08:00 */
+    activeHoursStart?: Scalars['Float']
     /** log-cli: where the account lives, e.g. Galway */
     homeCity?: Scalars['String']
     /** log-cli: ISO 3166 alpha-2 (IE). The proxy exit and every listing must be in this country */
@@ -10204,6 +10208,10 @@ export interface SocialAccount {
     vendorListingUrl?: Scalars['String']
     /** log-cli */
     purchasedAt?: Scalars['DateTime']
+    /** log-cli: local hour runs stop, e.g. 22. Empty: 22:00 */
+    activeHoursEnd?: Scalars['Float']
+    /** log-cli: the browser's localStorage per origin after the last run (Playwright storage_state origins). A credential: never print it */
+    storageOrigins?: Scalars['JSON']
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: TimelineActivityConnection
     /** SocialAccounts tied to the Task Target */
@@ -10464,6 +10472,34 @@ export interface SocialAccountConnection {
     percentageEmptyVendorOrderId?: Scalars['Float']
     /** Percentage of non-empty values for vendorOrderId */
     percentageNotEmptyVendorOrderId?: Scalars['Float']
+    /** Number of unique values for deviceProfile */
+    countUniqueValuesDeviceProfile?: Scalars['Int']
+    /** Number of empty values for deviceProfile */
+    countEmptyDeviceProfile?: Scalars['Int']
+    /** Number of non-empty values for deviceProfile */
+    countNotEmptyDeviceProfile?: Scalars['Int']
+    /** Percentage of empty values for deviceProfile */
+    percentageEmptyDeviceProfile?: Scalars['Float']
+    /** Percentage of non-empty values for deviceProfile */
+    percentageNotEmptyDeviceProfile?: Scalars['Float']
+    /** Number of unique values for activeHoursStart */
+    countUniqueValuesActiveHoursStart?: Scalars['Int']
+    /** Number of empty values for activeHoursStart */
+    countEmptyActiveHoursStart?: Scalars['Int']
+    /** Number of non-empty values for activeHoursStart */
+    countNotEmptyActiveHoursStart?: Scalars['Int']
+    /** Percentage of empty values for activeHoursStart */
+    percentageEmptyActiveHoursStart?: Scalars['Float']
+    /** Percentage of non-empty values for activeHoursStart */
+    percentageNotEmptyActiveHoursStart?: Scalars['Float']
+    /** Minimum amount contained in the field activeHoursStart */
+    minActiveHoursStart?: Scalars['Float']
+    /** Maximum amount contained in the field activeHoursStart */
+    maxActiveHoursStart?: Scalars['Float']
+    /** Average amount contained in the field activeHoursStart */
+    avgActiveHoursStart?: Scalars['Float']
+    /** Sum of amounts contained in the field activeHoursStart */
+    sumActiveHoursStart?: Scalars['Float']
     /** Number of unique values for homeCity */
     countUniqueValuesHomeCity?: Scalars['Int']
     /** Number of empty values for homeCity */
@@ -10618,6 +10654,34 @@ export interface SocialAccountConnection {
     minPurchasedAt?: Scalars['DateTime']
     /** Latest date contained in the field purchasedAt */
     maxPurchasedAt?: Scalars['DateTime']
+    /** Number of unique values for activeHoursEnd */
+    countUniqueValuesActiveHoursEnd?: Scalars['Int']
+    /** Number of empty values for activeHoursEnd */
+    countEmptyActiveHoursEnd?: Scalars['Int']
+    /** Number of non-empty values for activeHoursEnd */
+    countNotEmptyActiveHoursEnd?: Scalars['Int']
+    /** Percentage of empty values for activeHoursEnd */
+    percentageEmptyActiveHoursEnd?: Scalars['Float']
+    /** Percentage of non-empty values for activeHoursEnd */
+    percentageNotEmptyActiveHoursEnd?: Scalars['Float']
+    /** Minimum amount contained in the field activeHoursEnd */
+    minActiveHoursEnd?: Scalars['Float']
+    /** Maximum amount contained in the field activeHoursEnd */
+    maxActiveHoursEnd?: Scalars['Float']
+    /** Average amount contained in the field activeHoursEnd */
+    avgActiveHoursEnd?: Scalars['Float']
+    /** Sum of amounts contained in the field activeHoursEnd */
+    sumActiveHoursEnd?: Scalars['Float']
+    /** Number of unique values for storageOrigins */
+    countUniqueValuesStorageOrigins?: Scalars['Int']
+    /** Number of empty values for storageOrigins */
+    countEmptyStorageOrigins?: Scalars['Int']
+    /** Number of non-empty values for storageOrigins */
+    countNotEmptyStorageOrigins?: Scalars['Int']
+    /** Percentage of empty values for storageOrigins */
+    percentageEmptyStorageOrigins?: Scalars['Float']
+    /** Percentage of non-empty values for storageOrigins */
+    percentageNotEmptyStorageOrigins?: Scalars['Float']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     __typename: 'SocialAccountConnection'
@@ -10860,6 +10924,34 @@ export interface SocialAccountGroupByConnection {
     percentageEmptyVendorOrderId?: Scalars['Float']
     /** Percentage of non-empty values for vendorOrderId */
     percentageNotEmptyVendorOrderId?: Scalars['Float']
+    /** Number of unique values for deviceProfile */
+    countUniqueValuesDeviceProfile?: Scalars['Int']
+    /** Number of empty values for deviceProfile */
+    countEmptyDeviceProfile?: Scalars['Int']
+    /** Number of non-empty values for deviceProfile */
+    countNotEmptyDeviceProfile?: Scalars['Int']
+    /** Percentage of empty values for deviceProfile */
+    percentageEmptyDeviceProfile?: Scalars['Float']
+    /** Percentage of non-empty values for deviceProfile */
+    percentageNotEmptyDeviceProfile?: Scalars['Float']
+    /** Number of unique values for activeHoursStart */
+    countUniqueValuesActiveHoursStart?: Scalars['Int']
+    /** Number of empty values for activeHoursStart */
+    countEmptyActiveHoursStart?: Scalars['Int']
+    /** Number of non-empty values for activeHoursStart */
+    countNotEmptyActiveHoursStart?: Scalars['Int']
+    /** Percentage of empty values for activeHoursStart */
+    percentageEmptyActiveHoursStart?: Scalars['Float']
+    /** Percentage of non-empty values for activeHoursStart */
+    percentageNotEmptyActiveHoursStart?: Scalars['Float']
+    /** Minimum amount contained in the field activeHoursStart */
+    minActiveHoursStart?: Scalars['Float']
+    /** Maximum amount contained in the field activeHoursStart */
+    maxActiveHoursStart?: Scalars['Float']
+    /** Average amount contained in the field activeHoursStart */
+    avgActiveHoursStart?: Scalars['Float']
+    /** Sum of amounts contained in the field activeHoursStart */
+    sumActiveHoursStart?: Scalars['Float']
     /** Number of unique values for homeCity */
     countUniqueValuesHomeCity?: Scalars['Int']
     /** Number of empty values for homeCity */
@@ -11014,6 +11106,34 @@ export interface SocialAccountGroupByConnection {
     minPurchasedAt?: Scalars['DateTime']
     /** Latest date contained in the field purchasedAt */
     maxPurchasedAt?: Scalars['DateTime']
+    /** Number of unique values for activeHoursEnd */
+    countUniqueValuesActiveHoursEnd?: Scalars['Int']
+    /** Number of empty values for activeHoursEnd */
+    countEmptyActiveHoursEnd?: Scalars['Int']
+    /** Number of non-empty values for activeHoursEnd */
+    countNotEmptyActiveHoursEnd?: Scalars['Int']
+    /** Percentage of empty values for activeHoursEnd */
+    percentageEmptyActiveHoursEnd?: Scalars['Float']
+    /** Percentage of non-empty values for activeHoursEnd */
+    percentageNotEmptyActiveHoursEnd?: Scalars['Float']
+    /** Minimum amount contained in the field activeHoursEnd */
+    minActiveHoursEnd?: Scalars['Float']
+    /** Maximum amount contained in the field activeHoursEnd */
+    maxActiveHoursEnd?: Scalars['Float']
+    /** Average amount contained in the field activeHoursEnd */
+    avgActiveHoursEnd?: Scalars['Float']
+    /** Sum of amounts contained in the field activeHoursEnd */
+    sumActiveHoursEnd?: Scalars['Float']
+    /** Number of unique values for storageOrigins */
+    countUniqueValuesStorageOrigins?: Scalars['Int']
+    /** Number of empty values for storageOrigins */
+    countEmptyStorageOrigins?: Scalars['Int']
+    /** Number of non-empty values for storageOrigins */
+    countNotEmptyStorageOrigins?: Scalars['Int']
+    /** Percentage of empty values for storageOrigins */
+    percentageEmptyStorageOrigins?: Scalars['Float']
+    /** Percentage of non-empty values for storageOrigins */
+    percentageNotEmptyStorageOrigins?: Scalars['Float']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -61873,6 +61993,10 @@ export interface SocialAccountGenqlSelection{
     vendor?: boolean | number
     /** log-cli: the vendor order or invoice id */
     vendorOrderId?: boolean | number
+    /** log-cli: the one Camoufox device this account always launches as (made on its first launch). Never edit or print it */
+    deviceProfile?: boolean | number
+    /** log-cli: local hour runs may start, e.g. 8 or 8.5. Empty: 08:00 */
+    activeHoursStart?: boolean | number
     /** log-cli: where the account lives, e.g. Galway */
     homeCity?: boolean | number
     /** log-cli: ISO 3166 alpha-2 (IE). The proxy exit and every listing must be in this country */
@@ -61899,6 +62023,10 @@ export interface SocialAccountGenqlSelection{
     vendorListingUrl?: boolean | number
     /** log-cli */
     purchasedAt?: boolean | number
+    /** log-cli: local hour runs stop, e.g. 22. Empty: 22:00 */
+    activeHoursEnd?: boolean | number
+    /** log-cli: the browser's localStorage per origin after the last run (Playwright storage_state origins). A credential: never print it */
+    storageOrigins?: boolean | number
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
     /** SocialAccounts tied to the Task Target */
@@ -62161,6 +62289,34 @@ export interface SocialAccountConnectionGenqlSelection{
     percentageEmptyVendorOrderId?: boolean | number
     /** Percentage of non-empty values for vendorOrderId */
     percentageNotEmptyVendorOrderId?: boolean | number
+    /** Number of unique values for deviceProfile */
+    countUniqueValuesDeviceProfile?: boolean | number
+    /** Number of empty values for deviceProfile */
+    countEmptyDeviceProfile?: boolean | number
+    /** Number of non-empty values for deviceProfile */
+    countNotEmptyDeviceProfile?: boolean | number
+    /** Percentage of empty values for deviceProfile */
+    percentageEmptyDeviceProfile?: boolean | number
+    /** Percentage of non-empty values for deviceProfile */
+    percentageNotEmptyDeviceProfile?: boolean | number
+    /** Number of unique values for activeHoursStart */
+    countUniqueValuesActiveHoursStart?: boolean | number
+    /** Number of empty values for activeHoursStart */
+    countEmptyActiveHoursStart?: boolean | number
+    /** Number of non-empty values for activeHoursStart */
+    countNotEmptyActiveHoursStart?: boolean | number
+    /** Percentage of empty values for activeHoursStart */
+    percentageEmptyActiveHoursStart?: boolean | number
+    /** Percentage of non-empty values for activeHoursStart */
+    percentageNotEmptyActiveHoursStart?: boolean | number
+    /** Minimum amount contained in the field activeHoursStart */
+    minActiveHoursStart?: boolean | number
+    /** Maximum amount contained in the field activeHoursStart */
+    maxActiveHoursStart?: boolean | number
+    /** Average amount contained in the field activeHoursStart */
+    avgActiveHoursStart?: boolean | number
+    /** Sum of amounts contained in the field activeHoursStart */
+    sumActiveHoursStart?: boolean | number
     /** Number of unique values for homeCity */
     countUniqueValuesHomeCity?: boolean | number
     /** Number of empty values for homeCity */
@@ -62315,6 +62471,34 @@ export interface SocialAccountConnectionGenqlSelection{
     minPurchasedAt?: boolean | number
     /** Latest date contained in the field purchasedAt */
     maxPurchasedAt?: boolean | number
+    /** Number of unique values for activeHoursEnd */
+    countUniqueValuesActiveHoursEnd?: boolean | number
+    /** Number of empty values for activeHoursEnd */
+    countEmptyActiveHoursEnd?: boolean | number
+    /** Number of non-empty values for activeHoursEnd */
+    countNotEmptyActiveHoursEnd?: boolean | number
+    /** Percentage of empty values for activeHoursEnd */
+    percentageEmptyActiveHoursEnd?: boolean | number
+    /** Percentage of non-empty values for activeHoursEnd */
+    percentageNotEmptyActiveHoursEnd?: boolean | number
+    /** Minimum amount contained in the field activeHoursEnd */
+    minActiveHoursEnd?: boolean | number
+    /** Maximum amount contained in the field activeHoursEnd */
+    maxActiveHoursEnd?: boolean | number
+    /** Average amount contained in the field activeHoursEnd */
+    avgActiveHoursEnd?: boolean | number
+    /** Sum of amounts contained in the field activeHoursEnd */
+    sumActiveHoursEnd?: boolean | number
+    /** Number of unique values for storageOrigins */
+    countUniqueValuesStorageOrigins?: boolean | number
+    /** Number of empty values for storageOrigins */
+    countEmptyStorageOrigins?: boolean | number
+    /** Number of non-empty values for storageOrigins */
+    countNotEmptyStorageOrigins?: boolean | number
+    /** Percentage of empty values for storageOrigins */
+    percentageEmptyStorageOrigins?: boolean | number
+    /** Percentage of non-empty values for storageOrigins */
+    percentageNotEmptyStorageOrigins?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -62558,6 +62742,34 @@ export interface SocialAccountGroupByConnectionGenqlSelection{
     percentageEmptyVendorOrderId?: boolean | number
     /** Percentage of non-empty values for vendorOrderId */
     percentageNotEmptyVendorOrderId?: boolean | number
+    /** Number of unique values for deviceProfile */
+    countUniqueValuesDeviceProfile?: boolean | number
+    /** Number of empty values for deviceProfile */
+    countEmptyDeviceProfile?: boolean | number
+    /** Number of non-empty values for deviceProfile */
+    countNotEmptyDeviceProfile?: boolean | number
+    /** Percentage of empty values for deviceProfile */
+    percentageEmptyDeviceProfile?: boolean | number
+    /** Percentage of non-empty values for deviceProfile */
+    percentageNotEmptyDeviceProfile?: boolean | number
+    /** Number of unique values for activeHoursStart */
+    countUniqueValuesActiveHoursStart?: boolean | number
+    /** Number of empty values for activeHoursStart */
+    countEmptyActiveHoursStart?: boolean | number
+    /** Number of non-empty values for activeHoursStart */
+    countNotEmptyActiveHoursStart?: boolean | number
+    /** Percentage of empty values for activeHoursStart */
+    percentageEmptyActiveHoursStart?: boolean | number
+    /** Percentage of non-empty values for activeHoursStart */
+    percentageNotEmptyActiveHoursStart?: boolean | number
+    /** Minimum amount contained in the field activeHoursStart */
+    minActiveHoursStart?: boolean | number
+    /** Maximum amount contained in the field activeHoursStart */
+    maxActiveHoursStart?: boolean | number
+    /** Average amount contained in the field activeHoursStart */
+    avgActiveHoursStart?: boolean | number
+    /** Sum of amounts contained in the field activeHoursStart */
+    sumActiveHoursStart?: boolean | number
     /** Number of unique values for homeCity */
     countUniqueValuesHomeCity?: boolean | number
     /** Number of empty values for homeCity */
@@ -62712,6 +62924,34 @@ export interface SocialAccountGroupByConnectionGenqlSelection{
     minPurchasedAt?: boolean | number
     /** Latest date contained in the field purchasedAt */
     maxPurchasedAt?: boolean | number
+    /** Number of unique values for activeHoursEnd */
+    countUniqueValuesActiveHoursEnd?: boolean | number
+    /** Number of empty values for activeHoursEnd */
+    countEmptyActiveHoursEnd?: boolean | number
+    /** Number of non-empty values for activeHoursEnd */
+    countNotEmptyActiveHoursEnd?: boolean | number
+    /** Percentage of empty values for activeHoursEnd */
+    percentageEmptyActiveHoursEnd?: boolean | number
+    /** Percentage of non-empty values for activeHoursEnd */
+    percentageNotEmptyActiveHoursEnd?: boolean | number
+    /** Minimum amount contained in the field activeHoursEnd */
+    minActiveHoursEnd?: boolean | number
+    /** Maximum amount contained in the field activeHoursEnd */
+    maxActiveHoursEnd?: boolean | number
+    /** Average amount contained in the field activeHoursEnd */
+    avgActiveHoursEnd?: boolean | number
+    /** Sum of amounts contained in the field activeHoursEnd */
+    sumActiveHoursEnd?: boolean | number
+    /** Number of unique values for storageOrigins */
+    countUniqueValuesStorageOrigins?: boolean | number
+    /** Number of empty values for storageOrigins */
+    countEmptyStorageOrigins?: boolean | number
+    /** Number of non-empty values for storageOrigins */
+    countNotEmptyStorageOrigins?: boolean | number
+    /** Percentage of empty values for storageOrigins */
+    percentageEmptyStorageOrigins?: boolean | number
+    /** Percentage of non-empty values for storageOrigins */
+    percentageNotEmptyStorageOrigins?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -62766,6 +63006,10 @@ totpSecret?: (Scalars['String'] | null),
 vendor?: (Scalars['String'] | null),
 /** log-cli: the vendor order or invoice id */
 vendorOrderId?: (Scalars['String'] | null),
+/** log-cli: the one Camoufox device this account always launches as (made on its first launch). Never edit or print it */
+deviceProfile?: (Scalars['JSON'] | null),
+/** log-cli: local hour runs may start, e.g. 8 or 8.5. Empty: 08:00 */
+activeHoursStart?: (Scalars['Float'] | null),
 /** log-cli: where the account lives, e.g. Galway */
 homeCity?: (Scalars['String'] | null),
 /** log-cli: ISO 3166 alpha-2 (IE). The proxy exit and every listing must be in this country */
@@ -62791,7 +63035,11 @@ lastPostedAt?: (Scalars['DateTime'] | null),
 /** log-cli: the product page it was bought from */
 vendorListingUrl?: (Scalars['String'] | null),
 /** log-cli */
-purchasedAt?: (Scalars['DateTime'] | null)}
+purchasedAt?: (Scalars['DateTime'] | null),
+/** log-cli: local hour runs stop, e.g. 22. Empty: 22:00 */
+activeHoursEnd?: (Scalars['Float'] | null),
+/** log-cli: the browser's localStorage per origin after the last run (Playwright storage_state origins). A credential: never print it */
+storageOrigins?: (Scalars['JSON'] | null)}
 
 
 /** Social media accounts */
@@ -62824,6 +63072,10 @@ totpSecret?: (Scalars['String'] | null),
 vendor?: (Scalars['String'] | null),
 /** log-cli: the vendor order or invoice id */
 vendorOrderId?: (Scalars['String'] | null),
+/** log-cli: the one Camoufox device this account always launches as (made on its first launch). Never edit or print it */
+deviceProfile?: (Scalars['JSON'] | null),
+/** log-cli: local hour runs may start, e.g. 8 or 8.5. Empty: 08:00 */
+activeHoursStart?: (Scalars['Float'] | null),
 /** log-cli: where the account lives, e.g. Galway */
 homeCity?: (Scalars['String'] | null),
 /** log-cli: ISO 3166 alpha-2 (IE). The proxy exit and every listing must be in this country */
@@ -62849,7 +63101,11 @@ lastPostedAt?: (Scalars['DateTime'] | null),
 /** log-cli: the product page it was bought from */
 vendorListingUrl?: (Scalars['String'] | null),
 /** log-cli */
-purchasedAt?: (Scalars['DateTime'] | null)}
+purchasedAt?: (Scalars['DateTime'] | null),
+/** log-cli: local hour runs stop, e.g. 22. Empty: 22:00 */
+activeHoursEnd?: (Scalars['Float'] | null),
+/** log-cli: the browser's localStorage per origin after the last run (Playwright storage_state origins). A credential: never print it */
+storageOrigins?: (Scalars['JSON'] | null)}
 
 
 /** Social media accounts */
@@ -62882,6 +63138,10 @@ totpSecret?: (StringFilter | null),
 vendor?: (StringFilter | null),
 /** log-cli: the vendor order or invoice id */
 vendorOrderId?: (StringFilter | null),
+/** log-cli: the one Camoufox device this account always launches as (made on its first launch). Never edit or print it */
+deviceProfile?: (RawJsonFilter | null),
+/** log-cli: local hour runs may start, e.g. 8 or 8.5. Empty: 08:00 */
+activeHoursStart?: (FloatFilter | null),
 /** log-cli: where the account lives, e.g. Galway */
 homeCity?: (StringFilter | null),
 /** log-cli: ISO 3166 alpha-2 (IE). The proxy exit and every listing must be in this country */
@@ -62907,7 +63167,11 @@ lastPostedAt?: (DateTimeFilter | null),
 /** log-cli: the product page it was bought from */
 vendorListingUrl?: (StringFilter | null),
 /** log-cli */
-purchasedAt?: (DateTimeFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
+purchasedAt?: (DateTimeFilter | null),
+/** log-cli: local hour runs stop, e.g. 22. Empty: 22:00 */
+activeHoursEnd?: (FloatFilter | null),
+/** log-cli: the browser's localStorage per origin after the last run (Playwright storage_state origins). A credential: never print it */
+storageOrigins?: (RawJsonFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
 
 export interface SocialAccountPlatformEnumFilter {eq?: (SocialAccountPlatformEnum | null),neq?: (SocialAccountPlatformEnum | null),in?: ((SocialAccountPlatformEnum | null)[] | null),containsAny?: ((SocialAccountPlatformEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (SocialAccountPlatformEnum | null),gte?: (SocialAccountPlatformEnum | null),lt?: (SocialAccountPlatformEnum | null),lte?: (SocialAccountPlatformEnum | null)}
 
@@ -62944,6 +63208,10 @@ totpSecret?: (OrderByDirection | null),
 vendor?: (OrderByDirection | null),
 /** log-cli: the vendor order or invoice id */
 vendorOrderId?: (OrderByDirection | null),
+/** log-cli: the one Camoufox device this account always launches as (made on its first launch). Never edit or print it */
+deviceProfile?: (OrderByDirection | null),
+/** log-cli: local hour runs may start, e.g. 8 or 8.5. Empty: 08:00 */
+activeHoursStart?: (OrderByDirection | null),
 /** log-cli: where the account lives, e.g. Galway */
 homeCity?: (OrderByDirection | null),
 /** log-cli: ISO 3166 alpha-2 (IE). The proxy exit and every listing must be in this country */
@@ -62969,7 +63237,11 @@ lastPostedAt?: (OrderByDirection | null),
 /** log-cli: the product page it was bought from */
 vendorListingUrl?: (OrderByDirection | null),
 /** log-cli */
-purchasedAt?: (OrderByDirection | null)}
+purchasedAt?: (OrderByDirection | null),
+/** log-cli: local hour runs stop, e.g. 22. Empty: 22:00 */
+activeHoursEnd?: (OrderByDirection | null),
+/** log-cli: the browser's localStorage per origin after the last run (Playwright storage_state origins). A credential: never print it */
+storageOrigins?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
@@ -63004,6 +63276,10 @@ totpSecret?: (OrderByDirection | null),
 vendor?: (OrderByDirection | null),
 /** log-cli: the vendor order or invoice id */
 vendorOrderId?: (OrderByDirection | null),
+/** log-cli: the one Camoufox device this account always launches as (made on its first launch). Never edit or print it */
+deviceProfile?: (OrderByDirection | null),
+/** log-cli: local hour runs may start, e.g. 8 or 8.5. Empty: 08:00 */
+activeHoursStart?: (OrderByDirection | null),
 /** log-cli: where the account lives, e.g. Galway */
 homeCity?: (OrderByDirection | null),
 /** log-cli: ISO 3166 alpha-2 (IE). The proxy exit and every listing must be in this country */
@@ -63029,7 +63305,11 @@ lastPostedAt?: (OrderByDateGranularityInput | null),
 /** log-cli: the product page it was bought from */
 vendorListingUrl?: (OrderByDirection | null),
 /** log-cli */
-purchasedAt?: (OrderByDateGranularityInput | null)}
+purchasedAt?: (OrderByDateGranularityInput | null),
+/** log-cli: local hour runs stop, e.g. 22. Empty: 22:00 */
+activeHoursEnd?: (OrderByDirection | null),
+/** log-cli: the browser's localStorage per origin after the last run (Playwright storage_state origins). A credential: never print it */
+storageOrigins?: (OrderByDirection | null)}
 
 
 /** Aggregate-based ordering */
@@ -63268,6 +63548,34 @@ countNotEmptyVendorOrderId?: (OrderByDirection | null),
 percentageEmptyVendorOrderId?: (OrderByDirection | null),
 /** Percentage of non-empty values for vendorOrderId */
 percentageNotEmptyVendorOrderId?: (OrderByDirection | null),
+/** Number of unique values for deviceProfile */
+countUniqueValuesDeviceProfile?: (OrderByDirection | null),
+/** Number of empty values for deviceProfile */
+countEmptyDeviceProfile?: (OrderByDirection | null),
+/** Number of non-empty values for deviceProfile */
+countNotEmptyDeviceProfile?: (OrderByDirection | null),
+/** Percentage of empty values for deviceProfile */
+percentageEmptyDeviceProfile?: (OrderByDirection | null),
+/** Percentage of non-empty values for deviceProfile */
+percentageNotEmptyDeviceProfile?: (OrderByDirection | null),
+/** Number of unique values for activeHoursStart */
+countUniqueValuesActiveHoursStart?: (OrderByDirection | null),
+/** Number of empty values for activeHoursStart */
+countEmptyActiveHoursStart?: (OrderByDirection | null),
+/** Number of non-empty values for activeHoursStart */
+countNotEmptyActiveHoursStart?: (OrderByDirection | null),
+/** Percentage of empty values for activeHoursStart */
+percentageEmptyActiveHoursStart?: (OrderByDirection | null),
+/** Percentage of non-empty values for activeHoursStart */
+percentageNotEmptyActiveHoursStart?: (OrderByDirection | null),
+/** Minimum amount contained in the field activeHoursStart */
+minActiveHoursStart?: (OrderByDirection | null),
+/** Maximum amount contained in the field activeHoursStart */
+maxActiveHoursStart?: (OrderByDirection | null),
+/** Average amount contained in the field activeHoursStart */
+avgActiveHoursStart?: (OrderByDirection | null),
+/** Sum of amounts contained in the field activeHoursStart */
+sumActiveHoursStart?: (OrderByDirection | null),
 /** Number of unique values for homeCity */
 countUniqueValuesHomeCity?: (OrderByDirection | null),
 /** Number of empty values for homeCity */
@@ -63421,7 +63729,35 @@ percentageNotEmptyPurchasedAt?: (OrderByDirection | null),
 /** Earliest date contained in the field purchasedAt */
 minPurchasedAt?: (OrderByDirection | null),
 /** Latest date contained in the field purchasedAt */
-maxPurchasedAt?: (OrderByDirection | null)}
+maxPurchasedAt?: (OrderByDirection | null),
+/** Number of unique values for activeHoursEnd */
+countUniqueValuesActiveHoursEnd?: (OrderByDirection | null),
+/** Number of empty values for activeHoursEnd */
+countEmptyActiveHoursEnd?: (OrderByDirection | null),
+/** Number of non-empty values for activeHoursEnd */
+countNotEmptyActiveHoursEnd?: (OrderByDirection | null),
+/** Percentage of empty values for activeHoursEnd */
+percentageEmptyActiveHoursEnd?: (OrderByDirection | null),
+/** Percentage of non-empty values for activeHoursEnd */
+percentageNotEmptyActiveHoursEnd?: (OrderByDirection | null),
+/** Minimum amount contained in the field activeHoursEnd */
+minActiveHoursEnd?: (OrderByDirection | null),
+/** Maximum amount contained in the field activeHoursEnd */
+maxActiveHoursEnd?: (OrderByDirection | null),
+/** Average amount contained in the field activeHoursEnd */
+avgActiveHoursEnd?: (OrderByDirection | null),
+/** Sum of amounts contained in the field activeHoursEnd */
+sumActiveHoursEnd?: (OrderByDirection | null),
+/** Number of unique values for storageOrigins */
+countUniqueValuesStorageOrigins?: (OrderByDirection | null),
+/** Number of empty values for storageOrigins */
+countEmptyStorageOrigins?: (OrderByDirection | null),
+/** Number of non-empty values for storageOrigins */
+countNotEmptyStorageOrigins?: (OrderByDirection | null),
+/** Percentage of empty values for storageOrigins */
+percentageEmptyStorageOrigins?: (OrderByDirection | null),
+/** Percentage of non-empty values for storageOrigins */
+percentageNotEmptyStorageOrigins?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
@@ -63440,6 +63776,8 @@ totpSecret?: (Scalars['Boolean'] | null),
 vendor?: (Scalars['Boolean'] | null),
 /** log-cli: the vendor order or invoice id */
 vendorOrderId?: (Scalars['Boolean'] | null),
+/** log-cli: local hour runs may start, e.g. 8 or 8.5. Empty: 08:00 */
+activeHoursStart?: (Scalars['Boolean'] | null),
 /** log-cli: where the account lives, e.g. Galway */
 homeCity?: (Scalars['Boolean'] | null),
 /** log-cli: ISO 3166 alpha-2 (IE). The proxy exit and every listing must be in this country */
@@ -63465,7 +63803,9 @@ lastPostedAt?: (GroupByDateGranularityInput | null),
 /** log-cli: the product page it was bought from */
 vendorListingUrl?: (Scalars['Boolean'] | null),
 /** log-cli */
-purchasedAt?: (GroupByDateGranularityInput | null)}
+purchasedAt?: (GroupByDateGranularityInput | null),
+/** log-cli: local hour runs stop, e.g. 22. Empty: 22:00 */
+activeHoursEnd?: (Scalars['Boolean'] | null)}
 
 
 /** Calendar events */

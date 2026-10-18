@@ -66,6 +66,13 @@ export interface FacebookAccount {
   dailyListingCap: number
   lastPostedAt: string | null
   vendor: string | null
+  /** The pinned Camoufox device, as stored (`camofox/device`). Never printed. */
+  deviceProfile: unknown
+  /** Local hours a run may happen in (null: 08:00-22:00, `marketplace/home`). */
+  activeHoursStart: number | null
+  activeHoursEnd: number | null
+  /** localStorage per origin from the last run (Playwright storage_state origins). Never printed. */
+  storageOrigins: unknown
 }
 
 /** A proxy URL split for Playwright, plus the country it must exit in. */

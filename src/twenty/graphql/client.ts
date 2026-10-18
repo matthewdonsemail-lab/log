@@ -35,7 +35,11 @@ export const SOCIAL_ACCOUNT_FIELDS = {
   proxyExitCountry: true,
   dailyListingCap: true,
   lastPostedAt: true,
-  vendor: true
+  vendor: true,
+  deviceProfile: true,
+  activeHoursStart: true,
+  activeHoursEnd: true,
+  storageOrigins: true
 } satisfies SocialAccountGenqlSelection
 
 export const AGENCY_LISTING_FIELDS = {

@@ -62,7 +62,21 @@ const SOCIAL_ACCOUNT_FIELDS = [
   { name: 'vendorOrderId', label: 'Vendor order', type: 'TEXT', description: 'log-cli: the vendor order or invoice id' },
   { name: 'vendorListingUrl', label: 'Vendor listing URL', type: 'TEXT', description: 'log-cli: the product page it was bought from' },
   { name: 'purchasedAt', label: 'Purchased', type: 'DATE_TIME', description: 'logCli' },
-  { name: 'lastPostedAt', label: 'Last posted', type: 'DATE_TIME', description: 'log-cli: used to pick the least recently used replacement' }
+  { name: 'lastPostedAt', label: 'Last posted', type: 'DATE_TIME', description: 'log-cli: used to pick the least recently used replacement' },
+  {
+    name: 'deviceProfile',
+    label: 'Device profile',
+    type: 'RAW_JSON',
+    description: 'log-cli: the one Camoufox device this account always launches as (made on its first launch). Never edit or print it'
+  },
+  { name: 'activeHoursStart', label: 'Active from (local hour)', type: 'NUMBER', description: 'log-cli: local hour runs may start, e.g. 8 or 8.5. Empty: 08:00' },
+  { name: 'activeHoursEnd', label: 'Active until (local hour)', type: 'NUMBER', description: 'log-cli: local hour runs stop, e.g. 22. Empty: 22:00' },
+  {
+    name: 'storageOrigins',
+    label: 'Browser storage',
+    type: 'RAW_JSON',
+    description: "log-cli: the browser's localStorage per origin after the last run (Playwright storage_state origins). A credential: never print it"
+  }
 ]
 
 /** Fields added to agencyListing. The sync fields it already has stay as they are. */

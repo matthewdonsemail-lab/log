@@ -33228,6 +33228,12 @@ export default {
             "vendorOrderId": [
                 1
             ],
+            "deviceProfile": [
+                78
+            ],
+            "activeHoursStart": [
+                84
+            ],
             "homeCity": [
                 1
             ],
@@ -33266,6 +33272,12 @@ export default {
             ],
             "purchasedAt": [
                 79
+            ],
+            "activeHoursEnd": [
+                84
+            ],
+            "storageOrigins": [
+                78
             ],
             "timelineActivities": [
                 539,
@@ -33796,6 +33808,48 @@ export default {
             "percentageNotEmptyVendorOrderId": [
                 84
             ],
+            "countUniqueValuesDeviceProfile": [
+                76
+            ],
+            "countEmptyDeviceProfile": [
+                76
+            ],
+            "countNotEmptyDeviceProfile": [
+                76
+            ],
+            "percentageEmptyDeviceProfile": [
+                84
+            ],
+            "percentageNotEmptyDeviceProfile": [
+                84
+            ],
+            "countUniqueValuesActiveHoursStart": [
+                76
+            ],
+            "countEmptyActiveHoursStart": [
+                76
+            ],
+            "countNotEmptyActiveHoursStart": [
+                76
+            ],
+            "percentageEmptyActiveHoursStart": [
+                84
+            ],
+            "percentageNotEmptyActiveHoursStart": [
+                84
+            ],
+            "minActiveHoursStart": [
+                84
+            ],
+            "maxActiveHoursStart": [
+                84
+            ],
+            "avgActiveHoursStart": [
+                84
+            ],
+            "sumActiveHoursStart": [
+                84
+            ],
             "countUniqueValuesHomeCity": [
                 76
             ],
@@ -34026,6 +34080,48 @@ export default {
             ],
             "maxPurchasedAt": [
                 79
+            ],
+            "countUniqueValuesActiveHoursEnd": [
+                76
+            ],
+            "countEmptyActiveHoursEnd": [
+                76
+            ],
+            "countNotEmptyActiveHoursEnd": [
+                76
+            ],
+            "percentageEmptyActiveHoursEnd": [
+                84
+            ],
+            "percentageNotEmptyActiveHoursEnd": [
+                84
+            ],
+            "minActiveHoursEnd": [
+                84
+            ],
+            "maxActiveHoursEnd": [
+                84
+            ],
+            "avgActiveHoursEnd": [
+                84
+            ],
+            "sumActiveHoursEnd": [
+                84
+            ],
+            "countUniqueValuesStorageOrigins": [
+                76
+            ],
+            "countEmptyStorageOrigins": [
+                76
+            ],
+            "countNotEmptyStorageOrigins": [
+                76
+            ],
+            "percentageEmptyStorageOrigins": [
+                84
+            ],
+            "percentageNotEmptyStorageOrigins": [
+                84
             ],
             "edges": [
                 386
@@ -34389,6 +34485,48 @@ export default {
             "percentageNotEmptyVendorOrderId": [
                 84
             ],
+            "countUniqueValuesDeviceProfile": [
+                76
+            ],
+            "countEmptyDeviceProfile": [
+                76
+            ],
+            "countNotEmptyDeviceProfile": [
+                76
+            ],
+            "percentageEmptyDeviceProfile": [
+                84
+            ],
+            "percentageNotEmptyDeviceProfile": [
+                84
+            ],
+            "countUniqueValuesActiveHoursStart": [
+                76
+            ],
+            "countEmptyActiveHoursStart": [
+                76
+            ],
+            "countNotEmptyActiveHoursStart": [
+                76
+            ],
+            "percentageEmptyActiveHoursStart": [
+                84
+            ],
+            "percentageNotEmptyActiveHoursStart": [
+                84
+            ],
+            "minActiveHoursStart": [
+                84
+            ],
+            "maxActiveHoursStart": [
+                84
+            ],
+            "avgActiveHoursStart": [
+                84
+            ],
+            "sumActiveHoursStart": [
+                84
+            ],
             "countUniqueValuesHomeCity": [
                 76
             ],
@@ -34620,6 +34758,48 @@ export default {
             "maxPurchasedAt": [
                 79
             ],
+            "countUniqueValuesActiveHoursEnd": [
+                76
+            ],
+            "countEmptyActiveHoursEnd": [
+                76
+            ],
+            "countNotEmptyActiveHoursEnd": [
+                76
+            ],
+            "percentageEmptyActiveHoursEnd": [
+                84
+            ],
+            "percentageNotEmptyActiveHoursEnd": [
+                84
+            ],
+            "minActiveHoursEnd": [
+                84
+            ],
+            "maxActiveHoursEnd": [
+                84
+            ],
+            "avgActiveHoursEnd": [
+                84
+            ],
+            "sumActiveHoursEnd": [
+                84
+            ],
+            "countUniqueValuesStorageOrigins": [
+                76
+            ],
+            "countEmptyStorageOrigins": [
+                76
+            ],
+            "countNotEmptyStorageOrigins": [
+                76
+            ],
+            "percentageEmptyStorageOrigins": [
+                84
+            ],
+            "percentageNotEmptyStorageOrigins": [
+                84
+            ],
             "edges": [
                 386
             ],
@@ -34730,6 +34910,12 @@ export default {
             "vendorOrderId": [
                 1
             ],
+            "deviceProfile": [
+                78
+            ],
+            "activeHoursStart": [
+                84
+            ],
             "homeCity": [
                 1
             ],
@@ -34768,6 +34954,12 @@ export default {
             ],
             "purchasedAt": [
                 79
+            ],
+            "activeHoursEnd": [
+                84
+            ],
+            "storageOrigins": [
+                78
             ],
             "__typename": [
                 1
@@ -34840,6 +35032,12 @@ export default {
             "vendorOrderId": [
                 1
             ],
+            "deviceProfile": [
+                78
+            ],
+            "activeHoursStart": [
+                84
+            ],
             "homeCity": [
                 1
             ],
@@ -34878,6 +35076,12 @@ export default {
             ],
             "purchasedAt": [
                 79
+            ],
+            "activeHoursEnd": [
+                84
+            ],
+            "storageOrigins": [
+                78
             ],
             "__typename": [
                 1
@@ -34950,6 +35154,12 @@ export default {
             "vendorOrderId": [
                 7
             ],
+            "deviceProfile": [
+                9
+            ],
+            "activeHoursStart": [
+                102
+            ],
             "homeCity": [
                 7
             ],
@@ -34988,6 +35198,12 @@ export default {
             ],
             "purchasedAt": [
                 98
+            ],
+            "activeHoursEnd": [
+                102
+            ],
+            "storageOrigins": [
+                9
             ],
             "and": [
                 394
@@ -35139,6 +35355,12 @@ export default {
             "vendorOrderId": [
                 11
             ],
+            "deviceProfile": [
+                11
+            ],
+            "activeHoursStart": [
+                11
+            ],
             "homeCity": [
                 11
             ],
@@ -35176,6 +35398,12 @@ export default {
                 11
             ],
             "purchasedAt": [
+                11
+            ],
+            "activeHoursEnd": [
+                11
+            ],
+            "storageOrigins": [
                 11
             ],
             "__typename": [
@@ -35252,6 +35480,12 @@ export default {
             "vendorOrderId": [
                 11
             ],
+            "deviceProfile": [
+                11
+            ],
+            "activeHoursStart": [
+                11
+            ],
             "homeCity": [
                 11
             ],
@@ -35290,6 +35524,12 @@ export default {
             ],
             "purchasedAt": [
                 69
+            ],
+            "activeHoursEnd": [
+                11
+            ],
+            "storageOrigins": [
+                11
             ],
             "__typename": [
                 1
@@ -35647,6 +35887,48 @@ export default {
             "percentageNotEmptyVendorOrderId": [
                 11
             ],
+            "countUniqueValuesDeviceProfile": [
+                11
+            ],
+            "countEmptyDeviceProfile": [
+                11
+            ],
+            "countNotEmptyDeviceProfile": [
+                11
+            ],
+            "percentageEmptyDeviceProfile": [
+                11
+            ],
+            "percentageNotEmptyDeviceProfile": [
+                11
+            ],
+            "countUniqueValuesActiveHoursStart": [
+                11
+            ],
+            "countEmptyActiveHoursStart": [
+                11
+            ],
+            "countNotEmptyActiveHoursStart": [
+                11
+            ],
+            "percentageEmptyActiveHoursStart": [
+                11
+            ],
+            "percentageNotEmptyActiveHoursStart": [
+                11
+            ],
+            "minActiveHoursStart": [
+                11
+            ],
+            "maxActiveHoursStart": [
+                11
+            ],
+            "avgActiveHoursStart": [
+                11
+            ],
+            "sumActiveHoursStart": [
+                11
+            ],
             "countUniqueValuesHomeCity": [
                 11
             ],
@@ -35878,6 +36160,48 @@ export default {
             "maxPurchasedAt": [
                 11
             ],
+            "countUniqueValuesActiveHoursEnd": [
+                11
+            ],
+            "countEmptyActiveHoursEnd": [
+                11
+            ],
+            "countNotEmptyActiveHoursEnd": [
+                11
+            ],
+            "percentageEmptyActiveHoursEnd": [
+                11
+            ],
+            "percentageNotEmptyActiveHoursEnd": [
+                11
+            ],
+            "minActiveHoursEnd": [
+                11
+            ],
+            "maxActiveHoursEnd": [
+                11
+            ],
+            "avgActiveHoursEnd": [
+                11
+            ],
+            "sumActiveHoursEnd": [
+                11
+            ],
+            "countUniqueValuesStorageOrigins": [
+                11
+            ],
+            "countEmptyStorageOrigins": [
+                11
+            ],
+            "countNotEmptyStorageOrigins": [
+                11
+            ],
+            "percentageEmptyStorageOrigins": [
+                11
+            ],
+            "percentageNotEmptyStorageOrigins": [
+                11
+            ],
             "__typename": [
                 1
             ]
@@ -35928,6 +36252,9 @@ export default {
             "vendorOrderId": [
                 13
             ],
+            "activeHoursStart": [
+                13
+            ],
             "homeCity": [
                 13
             ],
@@ -35966,6 +36293,9 @@ export default {
             ],
             "purchasedAt": [
                 68
+            ],
+            "activeHoursEnd": [
+                13
             ],
             "__typename": [
                 1
