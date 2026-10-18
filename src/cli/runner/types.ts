@@ -1,5 +1,6 @@
 /** Command surface types. */
 
+import type { SessionFactory } from "../../camofox/session/index.ts";
 import type { WorkerClient } from "../../camofox/worker/index.ts";
 import type { ConnectionRecord } from "../../marketplace/account/index.ts";
 import type { ListingRecord } from "../../marketplace/listing/index.ts";
@@ -21,6 +22,8 @@ export interface CommandContext {
   load: () => MarketplaceData;
   /** Runs the camofox worker (launches a real browser). Injected so tests never do. */
   worker: WorkerClient;
+  /** Starts a publish session (a long-lived Camoufox browser). Injected so tests never do. */
+  session: SessionFactory;
   /** Writes to stdout. Injected so commands stay testable. */
   out: (line: string) => void;
   /** Writes to stderr. */

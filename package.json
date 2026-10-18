@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@clack/prompts": "^1.8.1",
+    "sharp": "^0.34.5",
     "xstate": "5.33.3"
   },
   "devDependencies": {

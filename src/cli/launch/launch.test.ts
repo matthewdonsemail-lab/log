@@ -13,6 +13,9 @@ function capture() {
   const context: CommandContext = {
     load: () => ({ listings: listListings(), accounts: listAccounts() }),
     worker: async () => ({ ok: false, error: "worker not stubbed" }),
+    session: () => {
+      throw new Error("session not stubbed");
+    },
     out: (line) => out.push(line),
     err: (line) => err.push(line),
   };

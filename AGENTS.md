@@ -32,6 +32,11 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
    (matt has credits). The key goes in `.env.local`, with the template in `.env.example`.
    `open-typesafe-camoufox` is stale, so don't port from it. How posting works,
    with sources, is in `docs/listingPublish/`.
+10. 2026-10-18 · matt asked for posting: `log publish` posts one listing
+    through the publish machine. It is a dry run unless `--live`, and once
+    Publish is clicked nothing is retried. Captchas go CaptchaKraken first,
+    then 2Captcha, and Facebook's own challenges go to a person. Rule 8 still
+    holds for editing and deleting.
 
 ## Checks
 
@@ -58,8 +63,9 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 - `doctor`, `login`, `scan`, `status` go through `camofox/worker` and launch
   a real Camoufox browser. Tests always inject `worker` into the context and
   never launch a browser.
-- Read-only on Facebook, except `login`, which only saves a session. Don't add
-  posting, editing or deleting without matt asking.
+- Read-only on Facebook, except `login`, which only saves a session, and
+  `log publish --live` (rule 10). Don't add editing or deleting without matt
+  asking.
 - Session files (`~/.logCli/facebook/*.json`) hold live cookies. Never commit,
   print or paste them.
 

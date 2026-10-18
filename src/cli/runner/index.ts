@@ -4,6 +4,7 @@
  * Commands are declared once here; usage text is generated from the same list,
  * so a new command cannot ship without documentation.
  */
+import { startSession } from "../../camofox/session/index.ts";
 import { runWorker } from "../../camofox/worker/index.ts";
 import { listAccounts } from "../../marketplace/account/index.ts";
 import { listListings } from "../../marketplace/listing/index.ts";
@@ -12,6 +13,7 @@ import { loginCommand, logoutCommand, whoamiCommand } from "../auth/index.ts";
 import { launchCommand } from "../launch/index.ts";
 import { listingCommand, listingsCommand } from "../listing/index.ts";
 import { connectCommand, doctorCommand, scanCommand, statusCommand } from "../live/index.ts";
+import { publishCommand } from "../publish/index.ts";
 import { watchCommand } from "../watch/index.ts";
 import { renderUsage } from "./helpers/index.ts";
 import type { Command, CommandContext } from "./types.ts";
@@ -29,6 +31,7 @@ export const COMMANDS: Command[] = [
   scanCommand,
   statusCommand,
   watchCommand,
+  publishCommand,
   loginCommand,
   logoutCommand,
   whoamiCommand,
@@ -44,6 +47,7 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
   return {
     load: overrides.load ?? (() => ({ listings: listListings(), accounts: listAccounts() })),
     worker: overrides.worker ?? runWorker,
+    session: overrides.session ?? startSession,
     out: overrides.out ?? ((line) => console.log(line)),
     err: overrides.err ?? ((line) => console.error(line)),
   };

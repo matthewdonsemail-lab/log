@@ -10,8 +10,9 @@ none of them prompt unless you run `log launch` in a terminal.
 
 ## Hard boundaries
 
-1. **Read-only on Facebook.** `scan`, `status` and `watch` only read. `login`
-   only saves a session file. Nothing is posted, edited or deleted.
+1. **Read-only on Facebook, except `log publish --live`.** `scan`, `status` and
+   `watch` only read. `login` only saves a session file. `publish` is a dry run
+   unless `--live` (AGENTS.md rule 10). Nothing is edited or deleted.
 2. **Never print session files.** `~/.logCli/facebook/<accountId>.json` (Facebook
    cookies) and `~/.logCli/auth/sessions.json` (Twenty tokens) are live
    credentials. Don't cat, paste or commit them. Commands only show tokens masked.
@@ -49,6 +50,12 @@ bun bin/log.ts status 1583545526797714 --account fbGalwayRubbish
 bun bin/log.ts watch --account fbGalwayRubbish           # one check
 bun bin/log.ts watch --account fbGalwayRubbish --checks 0 --interval 240   # loop until Ctrl+C
 bun bin/log.ts watch --account fbGalwayRubbish --json    # NDJSON, result on the last line
+
+# publish one listing (XState), every step printed live. Dry run unless --live
+bun bin/log.ts publish --account fbGalwayRubbish --title "Sofa" --price 50 --category Furniture --photo a.jpg,b.jpg
+bun bin/log.ts publish --account fbGalwayRubbish --file listing.json --live
+# against the local copy of the create form (no Facebook)
+bun bin/log.ts publish --account fbGalwayRubbish --file listing.json --formUrl file:///$PWD/python/fixtures/createItem.html
 ```
 
 ## Reading the results

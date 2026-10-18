@@ -250,3 +250,49 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: New `docs/listingPublish/` (README, stateMachine, imagePipeline, formFill, captchaKraken, sources) documents how a Marketplace listing is posted. It covers each source flow as states with mermaid diagrams, how photos are loaded, varied and attached through `setInputFiles` and confirmed by the N/10 counter, the create form field by field with the selectors that worked, and the XState publish machine log-cli should build (proposal, not code). New `.env.example` lists LOG_* plus CAPTCHA_KRAKEN_API_KEY and VLLM_BASE_URL. AGENTS.md rule 9: captchas go through the CaptchaKraken hosted API, and open-typesafe-camoufox is stale.
 Why: matt asked for the CaptchaKraken key in the env template, and for an accurate, source-cited map of the posting state machine and image flow before building Facebook posting.
 Checked: Every claim cites file:line in facebook-camofox-client, Listaro_backup, listeningkit-hackathon or CaptchaKraken/CaptchaKraken (GH API, commit a08b8ff). I re-read the key lines (Listaro setInputFiles + 3-5s sleep, count = 1, the AI fallback Promise bug, the FCC spike audience step). bun run check passes (67 tests).
+
+## 2026-10-18 06:44Z · feat/publishMachine
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `bun.lock`: edited
+- `package.json`: edited
+- `python/fixtures/createItem.html`: new file
+- `python/publishSession.py`: added const CREATE_URL, const SELLING_URL, const LIMIT_TEXT, const BLOCKED_TEXT, const CHALLENGE_TEXT, const OOPS_TEXT, const PUBLISHED_TEXT, const PHOTO_COUNT_JS, const EXTRACT_JS, const INJECT_RECAPTCHA_JS, const INJECT_ARKOSE_JS, const DISABLED_JS, def log, def norm, def fail, class Session, def step_open, def kraken_code, def solve_kraken, def twocaptcha_code, def solve_twocaptcha, def step_solve_captcha, def step_set_category, def step_upload_photos, def step_fill_fields, def step_review, def step_publish, def step_confirm, def step_capture_id, const STEPS, def main
+- `skills/logCli/SKILL.md`: edited
+- `src/camofox/session/client.ts`: added const SESSION_PATH, const startSession
+- `src/camofox/session/helpers/index.ts`: added export from "./splitReplies"
+- `src/camofox/session/helpers/splitReplies.ts`: added function splitReplies
+- `src/camofox/session/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/camofox/session/types.ts`: added type SessionStep, interface SessionConfig, interface SessionRequest, interface SessionReply, interface PublishSession, type SessionFactory
+- `src/captcha/router/client.ts`: added function ledgerPath, function appendAttempt, function readAttempts, function solverAvailability
+- `src/captcha/router/helpers/countArkoseToday.ts`: added function countArkoseToday
+- `src/captcha/router/helpers/index.ts`: added export from "./countArkoseToday", export from "./planNextSolver"
+- `src/captcha/router/helpers/planNextSolver.ts`: added function planNextSolver
+- `src/captcha/router/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/captcha/router/router.test.ts`: added const both, const recaptcha, const arkose, const attempt, test "reCAPTCHA: CaptchaKraken twice, then 2Captcha, then out", test "a dead CaptchaKraken key skips straight to 2Captcha", test "reCAPTCHA with only 2Captcha configured goes to 2Captcha", test "Arkose never goes to CaptchaKraken, and is capped per day", test "Facebook's own challenge and unknown captchas go to a person", test "no keys at all says which env vars to set", test "the round cap stops everything", test "appends and reads JSON lines, skipping torn ones", test "solverAvailability reads keys from env, never the network"
+- `src/captcha/router/types.ts`: added type CaptchaKind, type CaptchaSolverName, interface CaptchaDetection, interface SolverAvailability, interface CaptchaAttempt, interface CaptchaPolicy, const DEFAULT_CAPTCHA_POLICY, const SOLVER_DEAD_CODES, type CaptchaPlan
+- `src/cli/launch/launch.test.ts`: changed function capture
+- `src/cli/publish/helpers/index.ts`: added export from "./summarizePublish.ts"
+- `src/cli/publish/helpers/summarizePublish.ts`: added function summarizePublish, const RESULT_TEXT, function renderPublishOutput
+- `src/cli/publish/index.ts`: added export from "./helpers/index.ts", const PUBLISH_USAGE, function publishRunDir, function readListing, const publishCommand
+- `src/cli/publish/publish.test.ts`: added const root, const saved, const ENV, const photo, function fakeSession, function run, const BASE, test "dry run by default: fills, reviews, never clicks Publish, closes the browser", test "--live publishes and reports the listing id", test "a reCAPTCHA goes to CaptchaKraken, and the attempt lands in the ledger", test "Arkose with no 2Captcha key stops for a person, without solving", test "--json streams the trace then the output, and writes the run record", test "refuses before any browser opens: bad listing, unknown account, no session"
+- `src/cli/runner/index.ts`: changed const COMMANDS, function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/marketplace/publish/helpers/index.ts`: added export from "./validateListing"
+- `src/marketplace/publish/helpers/validateListing.ts`: added function validateListing, function toConditionLabel
+- `src/marketplace/publish/index.ts`: added export from "./helpers/index", export from "./machine", export from "./types"
+- `src/marketplace/publish/machine.test.ts`: added const listing, interface Script, function run, test "dry run fills everything and stops at review: Publish is never clicked", test "live run publishes, confirms and reads the id", test "published but no id is unconfirmedId, and nothing is retried", test "no toast still looks for the listing instead of retrying", test "FB's Oops dialog fails the run", test "reCAPTCHA: CaptchaKraken solves it, the re-check marks it accepted", test "reCAPTCHA: CaptchaKraken fails twice, 2Captcha gets it", test "Arkose goes to 2Captcha only", test "FB's own challenge stops at needsPerson without spending a solve", test "solvers that keep failing end in needsPerson, not a loop", test "an account issue stops the run as blocked", test "a step that cannot confirm its write fails at that step", test "the condition is mapped to the form label", test "catches what would stall the form"
+- `src/marketplace/publish/machine.ts`: added function missing, const isFailure, interface FailureParams, const publishMachine, function markLast
+- `src/marketplace/publish/types.ts`: added interface PublishListing, interface PublishInput, type PublishIssue, interface StepFailure, type PreparePhotosOutput, type FormOutcome, interface SolveOutput, type StepOutput, type UploadOutput, type FillOutput, type ReviewOutput, type PublishClickOutput, type ConfirmOutput, type CaptureOutput, type PublishResultKind, interface PublishContext, interface PublishOutput, interface PublishActorInputs
+- `src/media/photo/client.ts`: added interface PrepareOptions, function mediaDir, function loadBytes, function varyPhoto, function preparePhotos
+- `src/media/photo/helpers/index.ts`: added export from "./photoSource", export from "./variationParams"
+- `src/media/photo/helpers/photoSource.ts`: added function photoSourceKind, function decodeDataUrl, function sniffImageType, function describeSource
+- `src/media/photo/helpers/variationParams.ts`: added const between, const round, function variationParams
+- `src/media/photo/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/media/photo/photo.test.ts`: added function seeded, const samplePng, test "photoSourceKind", test "sniffImageType reads magic bytes, not names", test "decodeDataUrl", test "variationParams stays inside Listaro ranges", test "writes a varied JPEG per source, each with a different hash", test "refuses non-images, missing files, none and more than 10", test "downloads URLs through the injected fetch"
+- `src/media/photo/types.ts`: added const MAX_PHOTOS, type PhotoSourceKind, type ImageType, interface VariationParams, interface PreparedPhoto, type PrepareResult
+
+What changed: `log publish` posts one Marketplace listing through a new XState publish machine (preparingPhotos, openingForm, routingCaptcha/solvingCaptcha, choosingCategory, uploadingPhotos, fillingFields, reviewing, publishing, confirming, capturingId). It is a dry run unless `--live`. `media/photo` makes a varied JPEG per photo with sharp (Listaro's ranges) so every post has new hashes. `camofox/session` drives one long-lived Camoufox over JSON lines (`python/publishSession.py`): photos are gated on FB's own N/10 counter, every field is read back, and nothing is retried after Publish. `captcha/router` picks the solver from what is on screen: reCAPTCHA goes to CaptchaKraken twice, then 2Captcha; Arkose goes to 2Captcha only, capped per account per day; FB's own challenges go to a person. Every attempt goes to `~/.logCli/captcha/attempts.jsonl`. AGENTS.md rule 10 and the logCli skill cover posting.
+Why: matt: "make it so that we're able to implement these things here now", after choosing both solvers routed by which captcha is on screen (CaptchaKraken first, 2Captcha fallback). Rule 10 records that he asked for posting.
+Checked: `bun run check`: naming gate ok, tsc ok, 103 pass. A real Camoufox run against `python/fixtures/createItem.html` (no Facebook): category set, 2 photos confirmed by the 2/10 counter, title and price read back, then it stopped at fillingFields with conditionNotSet. Not run against live Facebook, and no live captcha solve yet (no keys in .env.local).
