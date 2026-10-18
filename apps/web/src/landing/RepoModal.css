@@ -69,3 +69,11 @@
 .lk-repo .lk-field:focus { outline: 2px solid var(--lk-brand-deep); }
 
 .lk-repo a:focus-visible, .lk-repo button:focus-visible { outline: 3px solid var(--lk-brand-deep); outline-offset: 3px; }
+
+/* Endless review rows (ui-kit resume.css cv-marquee): the list is doubled, so moving half its width loops without a jump. */
+@keyframes lk-marquee { to { transform: translateX(-50%); } }
+.lk-repo .lk-marquee { animation: lk-marquee 120s linear infinite; }
+.lk-repo .lk-marquee-rev { animation-direction: reverse; }
+.lk-repo .lk-marquee:hover { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .lk-repo .lk-marquee { animation: none; } }
+.lk-repo .lk-lip { box-shadow: 0 var(--lk-lip) 0 var(--lk-line); }

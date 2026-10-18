@@ -29,7 +29,7 @@
     "@tanstack/react-query": "^5.51.1",
     "@types/vara": "^1.1.4",
     "@vercel/analytics": "^2.0.1",
-    "@vidstack/react": "^0.6.15",
+    "@vidstack/react": "^1.15.7",
     "@xstate/react": "^6.1.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

@@ -1,12 +1,7 @@
-import type { CSSProperties } from 'react';
-import {
-  MediaCommunitySkin,
-  MediaOutlet,
-  MediaPlayer,
-} from '@vidstack/react';
-import 'vidstack/styles/defaults.css';
-import 'vidstack/styles/community-skin/video.css';
-import 'vidstack/styles/community-skin/audio.css';
+import '@vidstack/react/player/styles/default/theme.css';
+import '@vidstack/react/player/styles/default/layouts/video.css';
+import { MediaPlayer, MediaProvider } from '@vidstack/react';
+import { DefaultVideoLayout, defaultLayoutIcons } from '@vidstack/react/player/layouts/default';
 
 type FunnelVideoProps = {
   src: string;
@@ -18,8 +13,8 @@ type FunnelVideoProps = {
   className?: string;
 };
 
-// Same player as open-offer-builder/frontend/src/components/FunnelVideo.tsx:
-// VidStack MediaPlayer + outlet + community skin. Blue brand accents.
+// VidStack 1.x MediaPlayer with the default video layout (it replaced the 0.6 community skin when the
+// landing page's repo modal moved to the gg page's player). Blue brand accents.
 export function FunnelVideo({
   src,
   title,
@@ -39,10 +34,10 @@ export function FunnelVideo({
         muted
         loop
         playsInline
-        preload="auto"
-        style={{ '--video-brand': '#2a8cff' } as CSSProperties}
+        load="eager"
+        style={{ '--video-brand': '#2a8cff' }}
       >
-        <MediaOutlet />
+        <MediaProvider />
       </MediaPlayer>
     );
   }
@@ -56,11 +51,11 @@ export function FunnelVideo({
       muted={muted}
       loop={loop}
       playsInline
-      preload="metadata"
-      style={{ '--video-brand': '#2a8cff' } as CSSProperties}
+      load="visible"
+      style={{ '--video-brand': '#2a8cff' }}
     >
-      <MediaOutlet />
-      <MediaCommunitySkin />
+      <MediaProvider />
+      <DefaultVideoLayout icons={defaultLayoutIcons} />
     </MediaPlayer>
   );
 }
