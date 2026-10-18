@@ -38,11 +38,13 @@ import type {
   UploadOutput,
 } from "../../marketplace/publish/index.ts";
 import { countPostedToday, recordAccountIssue } from "../../marketplace/replacement/index.ts";
-import { findAccount, markPosted } from "../../marketplace/socialAccount/index.ts";
+import { homeOf } from "../../marketplace/home/index.ts";
+import { fetchProxyUrl, findAccount, markPosted, recordProxyCheck } from "../../marketplace/socialAccount/index.ts";
 import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
 import { preparePhotos } from "../../media/photo/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import { renderLoss } from "../live/helpers/index.ts";
+import { keepNewDevice, keepSession } from "../live/index.ts";
 import { parseArgs, refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
 import { renderPublishOutput, summarizePublish } from "./helpers/index.ts";
@@ -79,6 +81,7 @@ export async function checkPublishable(
   context: CommandContext,
   listingId: string,
   live: boolean,
+  now: Date = new Date(),
 ): Promise<{ listing: AgencyListing; account: FacebookAccount } | CommandResult> {
   const listing = await getListing(context.twenty, listingId);
   if (!listing) return refuse("publish", "listingNotFound", listingId);
@@ -95,7 +98,10 @@ export async function checkPublishable(
   }
   if (live) {
     const published = await listListingsWhere(context.twenty, { socialAccountId: { eq: account.id } });
-    const today = countPostedToday(published).get(account.id) ?? 0;
+    // The account's own calendar day, not UTC (rule 18).
+    const home = homeOf(account);
+    const zones = new Map(home.ok ? [[account.id, home.home.timezone]] : []);
+    const today = countPostedToday(published, now, zones).get(account.id) ?? 0;
     if (today >= account.dailyListingCap) {
       return refuseListing(context, listing, "dailyCapReached", `${account.accountName}: ${today}/${account.dailyListingCap} today`);
     }
@@ -116,9 +122,10 @@ export const publishCommand: Command = {
     const dryRun = !parsed.flags.live;
     const json = Boolean(parsed.flags.json);
 
+    const now = (context.now ?? (() => new Date()))();
     let checked: Awaited<ReturnType<typeof checkPublishable>>;
     try {
-      checked = await checkPublishable(context, listingId, !dryRun);
+      checked = await checkPublishable(context, listingId, !dryRun, now);
     } catch (error) {
       return refuseError("publish", error);
     }
@@ -128,7 +135,7 @@ export const publishCommand: Command = {
     if (!content.ok) return refuse("publish", "listingInvalid", content.problems.join("; "));
 
     // Rule 12: no proxy, no home country, or an unusable account means no files and no browser.
-    const prepared = prepareRun(account, "run");
+    const prepared = prepareRun(account, "run", { now });
     if (!prepared.ok) return refuseListing(context, listing, prepared.code, prepared.detail);
     const run = prepared.run;
 
@@ -143,15 +150,31 @@ export const publishCommand: Command = {
         accountId: account.id,
         storageStatePath: run.statePath,
         proxyPath: run.proxyPath,
+        devicePath: run.devicePath,
         receiptDir: runDir,
         formUrl: typeof parsed.flags.formUrl === "string" ? parsed.flags.formUrl : undefined,
       }));
     const call = <T>(step: Parameters<PublishSession["call"]>[0], params: Record<string, unknown> = {}) => open().call<T>(step, params);
+    // The exit IP is re-read through the browser at review and right before Publish (rule 12):
+    // another country stops the run (proxyCountryChanged); a new IP in the same country is recorded.
+    const exitNotes: string[] = [];
+    const noteExit = async <T>(result: T): Promise<T> => {
+      const moved = (result as { exitIpChanged?: { from?: string; to?: string; country?: string } }).exitIpChanged;
+      if (moved?.to) {
+        exitNotes.push(`The proxy exit moved from ${moved.from ?? "?"} to ${moved.to} (still ${moved.country ?? account.homeCountry}).`);
+        try {
+          await recordProxyCheck(context.twenty, account.id, { exitIp: moved.to, exitCountry: moved.country ?? account.homeCountry });
+        } catch {
+          // The run goes on; the note says what moved.
+        }
+      }
+      return result;
+    };
 
     const machine = publishMachine.provide({
       actors: {
         preparePhotos: fromPromise<PreparePhotosOutput, PublishActorInputs["preparePhotos"]>(async ({ input }) => {
-          const result = await preparePhotos(input.sources, { dir: join(runDir, "photos") });
+          const result = await preparePhotos(input.sources, { dir: join(runDir, "photos"), proxy: fetchProxyUrl(account.proxy) });
           if (!result.ok) return { ok: false, code: result.code, detail: result.detail };
           return { ok: true, paths: result.photos.map((p) => p.path), hashes: result.photos.map((p) => p.sha256) };
         }),
@@ -167,8 +190,8 @@ export const publishCommand: Command = {
         setCategory: fromPromise<StepOutput, PublishActorInputs["setCategory"]>(async ({ input }) => call<StepOutput>("setCategory", input)),
         uploadPhotos: fromPromise<UploadOutput, PublishActorInputs["uploadPhotos"]>(async ({ input }) => call<UploadOutput>("uploadPhotos", input)),
         fillFields: fromPromise<FillOutput, PublishActorInputs["fillFields"]>(async ({ input }) => call<FillOutput>("fillFields", input)),
-        review: fromPromise<ReviewOutput, PublishActorInputs["review"]>(async ({ input }) => call<ReviewOutput>("review", input)),
-        publish: fromPromise<PublishClickOutput, PublishActorInputs["publish"]>(async () => call<PublishClickOutput>("publish")),
+        review: fromPromise<ReviewOutput, PublishActorInputs["review"]>(async ({ input }) => noteExit(await call<ReviewOutput>("review", input))),
+        publish: fromPromise<PublishClickOutput, PublishActorInputs["publish"]>(async () => noteExit(await call<PublishClickOutput>("publish"))),
         confirm: fromPromise<ConfirmOutput, PublishActorInputs["confirm"]>(async () => call<ConfirmOutput>("confirm")),
         captureId: fromPromise<CaptureOutput, PublishActorInputs["captureId"]>(async ({ input }) => call<CaptureOutput>("captureId", input)),
       },
@@ -199,13 +222,17 @@ export const publishCommand: Command = {
       return refuseError("publish", error);
     } finally {
       if (session) await (session as PublishSession).close();
+      const deviceNote = await keepNewDevice(context, account, run);
+      if (deviceNote) exitNotes.push(deviceNote);
+      const sessionNote = await keepSession(context, account, run);
+      if (sessionNote) exitNotes.push(sessionNote);
       run.cleanup();
     }
     // Every attempt goes to the ledger, with whether the page accepted it.
     for (const attempt of output.captchaAttempts) appendAttempt(attempt);
     writeFileSync(join(runDir, "output.json"), `${JSON.stringify({ dryRun, agencyListingId: listing.id, account: account.accountName, ...output }, null, 2)}\n`);
 
-    const notes: string[] = [];
+    const notes: string[] = [...exitNotes];
     try {
       await recordRun(context.twenty, listing, output, dryRun, output.receipt);
       if (!dryRun && output.result === "published") await markPosted(context.twenty, account.id);

@@ -1,4 +1,5 @@
 import { SLOT_STATUSES } from '../../agencyListing/types'
+import { homeOf, localClock } from '../../home/index'
 import type { AgencyListing } from '../../agencyListing/types'
 import { checkRunnable, toFacebookCookies } from '../../socialAccount/helpers/index'
 import type { FacebookAccount } from '../../socialAccount/types'
@@ -52,12 +53,30 @@ export function pickAccount(ad: AgencyListing, context: PickContext): FacebookAc
   return eligible[0] ?? null
 }
 
-/** Listings published today (UTC) per account. Pure. */
-export function countPostedToday(listings: AgencyListing[], now: Date = new Date()): Map<string, number> {
-  const day = now.toISOString().slice(0, 10)
+/**
+ * Listings published today per account, "today" being the account's own
+ * local date in `zones` (account id → IANA timezone, `marketplace/home`), so
+ * a cap resets at the account's midnight, not UTC's. An account with no zone
+ * falls back to the UTC date. Pure.
+ */
+export function countPostedToday(listings: AgencyListing[], now: Date = new Date(), zones: ReadonlyMap<string, string> = new Map()): Map<string, number> {
   const counts = new Map<string, number>()
   for (const l of listings) {
-    if (l.socialAccountId && l.publishedAt?.slice(0, 10) === day) counts.set(l.socialAccountId, (counts.get(l.socialAccountId) ?? 0) + 1)
+    if (!l.socialAccountId || !l.publishedAt) continue
+    const zone = zones.get(l.socialAccountId)
+    const day = zone ? localClock(now, zone).date : now.toISOString().slice(0, 10)
+    const posted = zone ? localClock(new Date(l.publishedAt), zone).date : l.publishedAt.slice(0, 10)
+    if (posted === day) counts.set(l.socialAccountId, (counts.get(l.socialAccountId) ?? 0) + 1)
   }
   return counts
+}
+
+/** Account id → home timezone, for every account `homeOf` can place. Pure. */
+export function homeZones(accounts: FacebookAccount[]): Map<string, string> {
+  const zones = new Map<string, string>()
+  for (const account of accounts) {
+    const home = homeOf(account)
+    if (home.ok) zones.set(account.id, home.home.timezone)
+  }
+  return zones
 }

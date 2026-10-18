@@ -35,6 +35,9 @@ export function marketplaceFixture(photo = '/photos/van.png') {
     homeCity: 'Galway',
     homeCountry: 'IE',
     cookies: FIXTURE_COOKIES,
+    // Always inside its hours, so tests don't depend on the clock; the hours gate has its own tests.
+    activeHoursStart: 0,
+    activeHoursEnd: 24,
     ...extra
   })
   return createMemoryTwenty({

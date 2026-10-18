@@ -60,6 +60,7 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     session: overrides.session ?? startSession,
     out: overrides.out ?? ((line) => console.log(line)),
     err: overrides.err ?? ((line) => console.error(line)),
+    now: overrides.now ?? (() => new Date()),
   };
 }
 

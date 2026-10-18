@@ -15,7 +15,7 @@ import { ERROR_CATALOG } from "../../errors/catalog/index.ts";
 import { syncDashboard } from "../../marketplace/agencyListing/index.ts";
 import { classifySignal } from "../../marketplace/account/index.ts";
 import { recordAccountIssue } from "../../marketplace/replacement/index.ts";
-import { checkRunnable, findAccount, listFacebookAccounts, saveCookies, setAccountStatus, toFacebookCookies } from "../../marketplace/socialAccount/index.ts";
+import { checkRunnable, findAccount, listFacebookAccounts, saveCookies, saveDeviceProfile, saveSession, setAccountStatus, toFacebookCookies } from "../../marketplace/socialAccount/index.ts";
 import type { FacebookAccount, RunPurpose } from "../../marketplace/socialAccount/index.ts";
 import { parseArgs, refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
@@ -43,9 +43,73 @@ export async function openAccount(
   } catch (error) {
     return refuseError(name, error);
   }
-  const prepared = prepareRun(account, purpose);
+  const prepared = prepareRun(account, purpose, { now: (context.now ?? (() => new Date()))() });
   if (!prepared.ok) return refuse(name, prepared.code, prepared.detail);
   return { account, run: prepared.run };
+}
+
+/**
+ * The device Python made on this account's first launch → Twenty, so every
+ * later launch is the same computer (rule 15). Saved whether the run worked or
+ * not, and only once. Returns a line for the output, never the device itself.
+ */
+export async function keepNewDevice(context: CommandContext, account: FacebookAccount, run: PreparedRun): Promise<string | null> {
+  const profile = run.newDeviceProfile();
+  if (!profile) return null;
+  try {
+    return (await saveDeviceProfile(context.twenty, account, profile)) ? `Pinned a new device for ${account.accountName} in Twenty.` : null;
+  } catch (error) {
+    return `Could not save ${account.accountName}'s new device to Twenty: ${refuseError("device", error).stderr}`;
+  }
+}
+
+/**
+ * The session as the browser left it (cookies and localStorage) → Twenty, so
+ * the next run carries on from it. Only a jar that still holds a Facebook
+ * session; never printed.
+ */
+export async function keepSession(context: CommandContext, account: FacebookAccount, run: PreparedRun): Promise<string | null> {
+  const state = run.readStorageState();
+  try {
+    return (await saveSession(context.twenty, account.id, state))
+      ? `Saved ${account.accountName}'s browser session (${state.cookies.length} cookies, ${state.origins.length} origin(s)) to Twenty.`
+      : null;
+  } catch (error) {
+    return `Could not save ${account.accountName}'s browser session to Twenty: ${refuseError("session", error).stderr}`;
+  }
+}
+
+/** Adds a line to a result's stderr, so --json stdout stays one JSON document. */
+export function withNote(result: CommandResult, note: string | null): CommandResult {
+  if (!note) return result;
+  return { ...result, stderr: result.stderr ? `${result.stderr}
+${note}` : note };
+}
+
+/**
+ * Runs `body` with the account's prepared run, then keeps a newly made device
+ * and always deletes the run's private files.
+ */
+export async function withRun(
+  context: CommandContext,
+  name: string,
+  account: FacebookAccount,
+  run: PreparedRun,
+  body: () => Promise<CommandResult>,
+): Promise<CommandResult> {
+  let result: CommandResult;
+  try {
+    result = await body();
+  } catch (error) {
+    result = refuseError(name, error);
+  }
+  try {
+    const device = await keepNewDevice(context, account, run);
+    // connect saves its own cookies (it signed in); every other run continues the session.
+    return withNote(withNote(result, device), name === "connect" ? null : await keepSession(context, account, run));
+  } finally {
+    run.cleanup();
+  }
 }
 
 /**
@@ -112,9 +176,9 @@ export const connectCommand: Command = {
     const opened = await openAccount(context, "connect", CONNECT_USAGE, parsed.flags["account"], "connect");
     if (!("run" in opened)) return opened;
     const { account, run } = opened;
-    try {
+    return withRun(context, "connect", account, run, async () => {
       const result = await context.worker(
-        { action: "login", account_id: account.id, storage_state_path: run.statePath, proxy_path: run.proxyPath },
+        { action: "login", account_id: account.id, storage_state_path: run.statePath, proxy_path: run.proxyPath, device_path: run.devicePath },
         { interactive: true },
       );
       if (!result.ok) return await workerFailed(context, "connect", account, result);
@@ -129,11 +193,7 @@ export const connectCommand: Command = {
         lines.push("Facebook still showed login markers. If the page looked logged in, try `log scan` anyway.");
       }
       return { code: 0, stdout: lines.join("\n") };
-    } catch (error) {
-      return refuseError("connect", error);
-    } finally {
-      run.cleanup();
-    }
+    });
   },
 };
 
@@ -147,12 +207,13 @@ export const scanCommand: Command = {
     const opened = await openAccount(context, "scan", SCAN_USAGE, parsed.flags["account"], "run");
     if (!("run" in opened)) return opened;
     const { account, run } = opened;
-    try {
+    return withRun(context, "scan", account, run, async () => {
       const raw = await context.worker({
         action: "marketplace.scan",
         account_id: account.id,
         storage_state_path: run.statePath,
         proxy_path: run.proxyPath,
+        device_path: run.devicePath,
       });
       if (!raw.ok) return await workerFailed(context, "scan", account, raw);
       const result = raw as ScanResult;
@@ -161,11 +222,7 @@ export const scanCommand: Command = {
       const updated = await syncDashboard(context.twenty, account.id, result.listings);
       if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ accountName: account.accountName, ...result, issue, updated }, null, 2) };
       return { code: 0, stdout: [renderScan(result), `Updated ${updated} listing(s) in Twenty.`, ...(loss ? [renderLoss(loss)] : [])].join("\n") };
-    } catch (error) {
-      return refuseError("scan", error);
-    } finally {
-      run.cleanup();
-    }
+    });
   },
 };
 
@@ -182,12 +239,13 @@ export const statusCommand: Command = {
     const opened = await openAccount(context, "status", STATUS_USAGE, parsed.flags["account"], "run");
     if (!("run" in opened)) return opened;
     const { account, run } = opened;
-    try {
+    return withRun(context, "status", account, run, async () => {
       const raw = await context.worker({
         action: "marketplace.status",
         account_id: account.id,
         storage_state_path: run.statePath,
         proxy_path: run.proxyPath,
+        device_path: run.devicePath,
         params: { listing_id: listingId },
       });
       if (!raw.ok) return await workerFailed(context, "status", account, raw);
@@ -198,10 +256,6 @@ export const statusCommand: Command = {
         code: 0,
         stdout: [`${result.title ?? "(no title)"}`, `  Listing ID  ${result.listingId}`, `  Live status ${status}`, `  URL         ${result.listingUrl}`].join("\n"),
       };
-    } catch (error) {
-      return refuseError("status", error);
-    } finally {
-      run.cleanup();
-    }
+    });
   },
 };

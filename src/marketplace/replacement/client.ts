@@ -12,7 +12,7 @@ import { statusForIssue } from '../socialAccount/helpers/index'
 import { LOSING_STATUSES, TERMINAL_STATUSES } from '../socialAccount/types'
 import type { AccountStatus, FacebookAccount } from '../socialAccount/types'
 import type { TwentyClient } from '../../twenty/graphql/index'
-import { countPostedToday, pickAccount } from './helpers/index'
+import { countPostedToday, homeZones, pickAccount } from './helpers/index'
 import type { PickContext } from './helpers/index'
 import type { FillReport, LossReport, Replacement } from './types'
 
@@ -22,7 +22,7 @@ async function pickContext(twenty: TwentyClient, campaignId: string | null, excl
     listListingsWhere(twenty, { publishedAt: { is: 'NOT_NULL' } }),
     campaignId ? listListingsWhere(twenty, { campaignId: { eq: campaignId } }) : Promise.resolve([] as AgencyListing[])
   ])
-  return { accounts, campaignListings, postedToday: countPostedToday(published, now), exclude: new Set(exclude) }
+  return { accounts, campaignListings, postedToday: countPostedToday(published, now, homeZones(accounts)), exclude: new Set(exclude) }
 }
 
 /** One accountLost listing → a new READY row on another account, or why not. The old row is kept. */

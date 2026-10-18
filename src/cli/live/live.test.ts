@@ -145,3 +145,124 @@ describe("live commands", () => {
     expect(accounts.some((a) => a.accountName === "twitterOne")).toBe(false);
   });
 });
+
+describe("rules 15 and 18: the device and the local hours", () => {
+  const NIGHT = () => new Date("2026-10-18T02:00:00Z"); // 03:00 in Galway
+  const DAY = () => new Date("2026-10-18T10:00:00Z");
+  const DEVICE = {
+    version: 1,
+    createdAt: "2026-10-18T10:00:00+00:00",
+    os: "windows",
+    camoufoxVersion: "0.5.5",
+    browserVersion: "152.0.4-beta.30",
+    config: { "navigator.userAgent": "ua", "canvas:seed": 7 },
+    firefoxUserPrefs: {},
+    geolocation: { latitude: 53.28, longitude: -9.06, accuracy: 420, source: "geoLite2City" },
+    home: { city: "Galway", country: "IE", timezone: "Europe/Dublin" },
+  };
+
+  async function runAt(argv: string[], now: () => Date, worker: WorkerClient, twenty = marketplaceFixture()) {
+    await twenty.update("socialAccounts", "galwayOne", { activeHoursStart: null, activeHoursEnd: null });
+    const out: string[] = [];
+    const err: string[] = [];
+    const code = await runCli(argv, { worker, twenty, now, out: (l) => out.push(l), err: (l) => err.push(l) });
+    return { code, out: out.join("\n"), err: err.join("\n"), twenty };
+  }
+
+  test("scan at 03:00 Galway time is refused with the local time; no worker starts", async () => {
+    let started = 0;
+    const worker = (async () => {
+      started++;
+      return SCAN;
+    }) as WorkerClient;
+    const result = await runAt(["scan", "--account", "galwayOne"], NIGHT, worker);
+    expect(result.code).toBe(1);
+    expect(result.err).toContain("outsideActiveHours");
+    expect(result.err).toContain("it is 03:00 in Galway (Europe/Dublin)");
+    expect(started).toBe(0);
+  });
+
+  test("the first launch's device is saved to Twenty once and never printed", async () => {
+    const worker = (async (request: WorkerRequest) => {
+      const file = JSON.parse(readFileSync(request.device_path!, "utf8"));
+      expect(file).toMatchObject({ locale: "en-IE", languages: ["en-IE", "en"], homeTimezone: "Europe/Dublin", profile: null });
+      // What python/proxyGate.py does on a first launch.
+      require("node:fs").writeFileSync(request.device_path!, JSON.stringify({ ...file, profile: DEVICE, created: true }));
+      return SCAN;
+    }) as WorkerClient;
+    const result = await runAt(["scan", "--account", "galwayOne", "--json"], DAY, worker);
+    expect(result.code).toBe(0);
+    expect(result.err).toContain("Pinned a new device for galwayOne");
+    expect(result.out + result.err).not.toContain("canvas:seed");
+    expect(result.twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")!.deviceProfile).toEqual(DEVICE);
+    // --json stdout is still one JSON document.
+    expect(() => JSON.parse(result.out)).not.toThrow();
+  });
+
+  test("an account that has a device keeps it: it goes to Python and is never overwritten", async () => {
+    const twenty = marketplaceFixture();
+    await twenty.update("socialAccounts", "galwayOne", { deviceProfile: DEVICE });
+    const worker = (async (request: WorkerRequest) => {
+      const file = JSON.parse(readFileSync(request.device_path!, "utf8"));
+      expect(file.profile).toEqual(DEVICE);
+      require("node:fs").writeFileSync(request.device_path!, JSON.stringify({ ...file, profile: { ...DEVICE, createdAt: "other" }, created: true }));
+      return SCAN;
+    }) as WorkerClient;
+    const result = await runAt(["scan", "--account", "galwayOne"], DAY, worker, twenty);
+    expect(result.code).toBe(0);
+    expect(twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")!.deviceProfile).toEqual(DEVICE);
+  });
+
+  test("accounts --json and account show never include the device", async () => {
+    const twenty = marketplaceFixture();
+    await twenty.update("socialAccounts", "galwayOne", { deviceProfile: DEVICE, storageOrigins: [{ origin: "https://www.facebook.com", localStorage: [{ name: "k", value: "storedSecret" }] }] as never });
+    for (const argv of [["accounts", "--json"], ["account", "show", "galwayOne", "--json"], ["account", "show", "galwayOne"]]) {
+      const out: string[] = [];
+      await runCli(argv, { twenty, out: (l) => out.push(l), err: () => {} });
+      expect(out.join("\n")).not.toContain("canvas:seed");
+      expect(out.join("\n")).not.toContain("secretPass");
+    }
+  });
+});
+
+describe("the session continues from run to run", () => {
+  const origins = [{ origin: "https://www.facebook.com", localStorage: [{ name: "hb_timestamp", value: "1" }] }];
+
+  test("scan saves the cookies and localStorage the browser left, and the next run starts from them", async () => {
+    const twenty = marketplaceFixture();
+    const fresh = [
+      { name: "c_user", value: "1000", domain: ".facebook.com", path: "/" },
+      { name: "xs", value: "rotated", domain: ".facebook.com", path: "/" },
+    ];
+    const worker = (async (request: WorkerRequest) => {
+      require("node:fs").writeFileSync(request.storage_state_path!, JSON.stringify({ cookies: fresh, origins }));
+      return SCAN;
+    }) as WorkerClient;
+    const err: string[] = [];
+    expect(await runCli(["scan", "--account", "galwayOne"], { worker, twenty, out: () => {}, err: (l) => err.push(l) })).toBe(0);
+    const row = twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")!;
+    expect(row.cookies).toEqual(fresh);
+    expect(row.storageOrigins).toEqual(origins);
+    expect(err.join("\n")).toContain("Saved galwayOne's browser session (2 cookies, 1 origin(s))");
+    expect(err.join("\n")).not.toContain("rotated");
+
+    // The next run's state file carries both.
+    let seen: unknown = null;
+    const next = (async (request: WorkerRequest) => {
+      seen = JSON.parse(readFileSync(request.storage_state_path!, "utf8"));
+      return SCAN;
+    }) as WorkerClient;
+    await runCli(["scan", "--account", "galwayOne"], { worker: next, twenty, out: () => {}, err: () => {} });
+    expect(seen).toEqual({ cookies: fresh, origins });
+  });
+
+  test("a logged-out jar never replaces the stored session", async () => {
+    const twenty = marketplaceFixture();
+    const worker = (async (request: WorkerRequest) => {
+      require("node:fs").writeFileSync(request.storage_state_path!, JSON.stringify({ cookies: [{ name: "datr", value: "x", domain: ".facebook.com", path: "/" }], origins: [] }));
+      return SCAN;
+    }) as WorkerClient;
+    await runCli(["scan", "--account", "galwayOne"], { worker, twenty, out: () => {}, err: () => {} });
+    expect(twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")!.cookies).toEqual(FIXTURE_COOKIES);
+  });
+});

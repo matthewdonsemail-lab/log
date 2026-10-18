@@ -50,4 +50,4 @@ export interface PreparedPhoto {
 
 export type PrepareResult =
   | { ok: true; photos: PreparedPhoto[]; dir: string }
-  | { ok: false; code: 'noPhotos' | 'tooManyPhotos' | 'unreadablePhoto' | 'notAnImage' | 'variationFailed'; detail: string }
+  | { ok: false; code: 'noPhotos' | 'tooManyPhotos' | 'unreadablePhoto' | 'notAnImage' | 'variationFailed' | 'photoNeedsProxy'; detail: string }

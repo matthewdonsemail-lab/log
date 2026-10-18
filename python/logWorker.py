@@ -118,10 +118,27 @@ def doctor(_: dict[str, Any]) -> dict[str, Any]:
     return {"ok": ok, "checks": checks}
 
 
+def keep_state_on_release(manager, state_path: str | None) -> None:
+    """Before the browser closes, write its session (cookies and localStorage) to the
+    run's state file, so log-cli saves it to Twenty and the next run continues it."""
+    real_release = manager.release
+
+    async def release(session):
+        if state_path and not getattr(session, "_closed", False):
+            try:
+                await session.context.storage_state(path=state_path)
+            except Exception as exc:
+                log(f"could not save the session state ({type(exc).__name__})")
+        await real_release(session)
+
+    manager.release = release  # type: ignore[method-assign]
+
+
 async def acquire(request: dict[str, Any], storage_state_path: str | None):
     from facebook_camofox_client.domain_camofox.session_manager import CamofoxSessionManager
 
     manager = CamofoxSessionManager()
+    keep_state_on_release(manager, request.get("storage_state_path"))
     session = await manager.acquire(
         request.get("account_id") or "default", storage_state_path=storage_state_path)
     return manager, session
@@ -231,6 +248,7 @@ async def status(request: dict[str, Any]) -> dict[str, Any]:
         return failure("badRequest", "params.listing_id is required")
     state = request["storage_state_path"]
     manager = CamofoxSessionManager()
+    keep_state_on_release(manager, state)
     real_acquire = manager.acquire
 
     async def acquire_with_state(account_id, **kwargs):
@@ -263,7 +281,7 @@ def main() -> int:
         return 1
     action = request.get("action")
     # No browser without the account's proxy, for any action, signing in included (rule 12).
-    proxyGate.arm(request.get("proxy_path"))
+    proxyGate.arm(request.get("proxy_path"), request.get("device_path"))
     try:
         # Every Camoufox facebook-camofox-client launches: proxy gate, then headed,
         # humanized, cursor shown (rules 11 and 12).

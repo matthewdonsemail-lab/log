@@ -14,9 +14,10 @@ import type { ScanResult, WorkerFailure } from "../../camofox/worker/index.ts";
 import { listListingsWhere, syncDashboard } from "../../marketplace/agencyListing/index.ts";
 import { DEFAULT_MONITOR_TIMING, monitorMachine } from "../../marketplace/monitor/index.ts";
 import type { CheckOutcome, MonitorOutput, WatchedListing } from "../../marketplace/monitor/index.ts";
+import { homeOf, outsideActiveHours } from "../../marketplace/home/index.ts";
 import { recordAccountIssue } from "../../marketplace/replacement/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
-import { openAccount } from "../live/index.ts";
+import { keepNewDevice, keepSession, openAccount } from "../live/index.ts";
 import { renderLoss } from "../live/helpers/index.ts";
 import { parseArgs, refuseError } from "../runner/helpers/index.ts";
 import type { Command } from "../runner/types.ts";
@@ -69,15 +70,31 @@ export const watchCommand: Command = {
       return refuseError("watch", error);
     }
 
+    const now = context.now ?? (() => new Date());
+    let deviceSaved = false;
     const machine = monitorMachine.provide({
       actors: {
         check: fromPromise<CheckOutcome, { accountId: string }>(async () => {
+          // Every check, not just the first: a long watch must stop at the end of the account's day (rule 18).
+          const home = homeOf(account);
+          const outside = home.ok ? outsideActiveHours(account, home.home.timezone, now()) : home.detail;
+          if (outside) return toCheckOutcome({ ok: false, code: home.ok ? "outsideActiveHours" : home.code, detail: outside });
           const result = await context.worker({
             action: "marketplace.scan",
             account_id: account.id,
             storage_state_path: run.statePath,
             proxy_path: run.proxyPath,
+            device_path: run.devicePath,
           });
+          if (!deviceSaved) {
+            const note = await keepNewDevice(context, account, run);
+            if (note) {
+              deviceSaved = true;
+              context.err(note);
+            }
+          }
+          const saved = await keepSession(context, account, run);
+          if (saved) context.err(saved);
           if (result.ok) await syncDashboard(context.twenty, account.id, (result as ScanResult).listings);
           return toCheckOutcome(result as ScanResult | WorkerFailure);
         }),

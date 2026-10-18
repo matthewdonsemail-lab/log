@@ -87,3 +87,16 @@ describe('filling a campaign', () => {
     expect(report.created.map((c) => c.account.accountName).sort()).toEqual(['dublinOne', 'galwayThree'])
   })
 })
+
+describe("the daily cap counts the account's own day (rule 18)", () => {
+  test('a listing posted late in the evening locally counts for that local day, not the UTC one', async () => {
+    const { countPostedToday } = await import('./index')
+    const listing = (id: string, publishedAt: string) => ({ socialAccountId: id, publishedAt }) as never
+    // 23:30 on the 18th in Sydney is 12:30 UTC on the 18th; 00:30 on the 19th in Sydney is 13:30 UTC on the 18th.
+    const listings = [listing('sydney', '2026-10-18T12:30:00Z'), listing('sydney', '2026-10-18T13:30:00Z')]
+    const now = new Date('2026-10-18T14:00:00Z') // 01:00 on the 19th in Sydney
+    expect(countPostedToday(listings, now, new Map([['sydney', 'Australia/Sydney']])).get('sydney')).toBe(1)
+    // Without a zone it is the UTC day, as before.
+    expect(countPostedToday(listings, now).get('sydney')).toBe(2)
+  })
+})

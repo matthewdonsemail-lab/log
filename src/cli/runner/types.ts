@@ -31,6 +31,8 @@ export interface CommandContext {
   out: (line: string) => void;
   /** Writes to stderr. */
   err: (line: string) => void;
+  /** The clock for the local-hours gate (rule 18). Tests inject it; default: now. */
+  now?: () => Date;
 }
 
 export interface Command {

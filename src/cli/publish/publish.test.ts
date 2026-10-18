@@ -188,3 +188,68 @@ describe("log publish refuses before any browser opens", () => {
     expect((await run(["publish", "--listing", "readyOne"], fakeSession(), twenty)).code).toBe(0);
   });
 });
+
+describe("log publish: device, exit IP and local hours (rules 12, 15, 18)", () => {
+  test("the session gets the run's device file, and a first-launch device is saved to Twenty", async () => {
+    const session = fakeSession();
+    const factory = session.factory;
+    const made = {
+      version: 1,
+      createdAt: "2026-10-18T10:00:00+00:00",
+      os: "windows",
+      camoufoxVersion: "0.5.5",
+      browserVersion: "152.0.4-beta.30",
+      config: { "navigator.userAgent": "ua" },
+      firefoxUserPrefs: {},
+      geolocation: { latitude: 53.28, longitude: -9.06, accuracy: 420, source: "geoLite2City" },
+      home: { city: "Galway", country: "IE", timezone: "Europe/Dublin" },
+    };
+    session.factory = (config: SessionConfig) => {
+      const file = JSON.parse(readFileSync(config.devicePath!, "utf8"));
+      expect(file).toMatchObject({ locale: "en-IE", facebookLocale: "en_GB", profile: null });
+      writeFileSync(config.devicePath!, JSON.stringify({ ...file, profile: made, created: true }));
+      return factory(config);
+    };
+    const { code, out, twenty } = await run(["publish", "--listing", "readyOne"], session);
+    expect(code).toBe(0);
+    expect(out).toContain("Pinned a new device for galwayOne");
+    expect(row(twenty, "socialAccounts", "galwayOne").deviceProfile).toEqual(made);
+  });
+
+  test("an exit IP that moved inside the country is recorded on the account", async () => {
+    const session = fakeSession({
+      review: [{ ok: true, receipt: null, photoCount: 1, exitIpChanged: { from: "203.0.113.1", to: "203.0.113.2", country: "IE" } }],
+    });
+    const { code, out, twenty } = await run(["publish", "--listing", "readyOne"], session);
+    expect(code).toBe(0);
+    expect(out).toContain("The proxy exit moved from 203.0.113.1 to 203.0.113.2");
+    expect(row(twenty, "socialAccounts", "galwayOne")).toMatchObject({ proxyExitIp: "203.0.113.2", proxyExitCountry: "IE" });
+  });
+
+  test("an exit that left the country before Publish blocks the run; Publish isn't retried", async () => {
+    const session = fakeSession({ publish: [{ ok: false, code: "proxyCountryChanged", detail: "the exit moved to 1.2.3.4 in GB" }] });
+    const { code, twenty } = await run(["publish", "--listing", "readyOne", "--live"], session);
+    expect(code).toBe(1);
+    expect(session.calls.filter((c) => c.step === "publish")).toHaveLength(1);
+    expect(row(twenty, "agencyListings", "readyOne")).toMatchObject({ lastRunResult: "BLOCKED", lastErrorCode: "proxyCountryChanged" });
+    // Not an account problem: the status stays.
+    expect(row(twenty, "socialAccounts", "galwayOne").accountStatus).toBe("ACTIVE");
+  });
+
+  test("at 03:00 in Galway nothing opens, dry run included", async () => {
+    const twenty = marketplaceFixture(photo);
+    await twenty.update("socialAccounts", "galwayOne", { activeHoursStart: null, activeHoursEnd: null });
+    const session = fakeSession();
+    const err: string[] = [];
+    const code = await runCli(["publish", "--listing", "readyOne"], {
+      session: session.factory,
+      twenty,
+      now: () => new Date("2026-10-18T02:00:00Z"),
+      out: () => {},
+      err: (l) => err.push(l),
+    });
+    expect(code).toBe(1);
+    expect(err.join("\n")).toContain("outsideActiveHours");
+    expect(session.configs).toHaveLength(0);
+  });
+});

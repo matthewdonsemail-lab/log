@@ -85,3 +85,23 @@ describe("log watch", () => {
     expect(noProxy.err).toContain("noProxy");
   });
 });
+
+describe("log watch keeps to the account's local hours (rule 18)", () => {
+  test("a check that falls outside the window stops the watch without opening a browser", async () => {
+    const twenty = marketplaceFixture();
+    await twenty.update("socialAccounts", "galwayOne", { activeHoursStart: null, activeHoursEnd: null });
+    let started = 0;
+    const worker = (async () => {
+      started++;
+      return SCAN;
+    }) as unknown as WorkerClient;
+    // 21:59 in Galway when the watch starts, 22:30 by the second check.
+    const clock = [new Date("2026-10-18T20:59:00Z"), new Date("2026-10-18T20:59:30Z"), new Date("2026-10-18T21:30:00Z")];
+    const now = () => clock.shift() ?? new Date("2026-10-18T21:30:00Z");
+    const out: string[] = [];
+    const err: string[] = [];
+    await runCli(["watch", "--account", "galwayOne", "--checks", "2", "--interval", "0.0001"], { worker, twenty, now, out: (l) => out.push(l), err: (l) => err.push(l) });
+    expect(started).toBe(1);
+    expect(err.join("\n") + out.join("\n")).toContain("outsideActiveHours");
+  });
+});

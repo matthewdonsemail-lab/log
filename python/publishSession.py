@@ -11,10 +11,14 @@ and reads one JSON line back on stdout:
     {"id": 1, "result": {...}}
 
 argv[1] is the session config: {"accountId", "storageStatePath", "formUrl",
-"receiptDir", "proxyPath"}. The browser is always headed, humanized, with the
-cursor shown (visibleBrowser.py, rule 11), and only opens through the
-account's proxy, from the account's country (proxyGate.py, rule 12). Progress goes to stderr. Anything a
-library prints is moved to stderr too, so stdout only carries replies.
+"receiptDir", "proxyPath", "devicePath"}. The browser is always headed,
+humanized, with the cursor shown (visibleBrowser.py, rule 11), and only opens
+through the account's proxy, from the account's country (proxyGate.py, rule
+12), as the account's one device in its pinned locale (rules 15-16), after the
+launch self-check (rule 17). The exit IP is read again through the browser at
+review and right before Publish: another country stops the run. Progress
+goes to stderr. Anything a library prints is moved to stderr too, so stdout
+only carries replies.
 
 Why sync Playwright: CaptchaKraken's Python page solver (PyPI
 `captchakraken`) drives sync Playwright pages only, and the captcha has to be
@@ -38,7 +42,14 @@ from errorCodes import checked, failure
 import proxyGate
 from visibleBrowser import launch_kwargs
 
-CREATE_URL = "https://www.facebook.com/marketplace/create/item?locale=en_US"
+CREATE_PATH = "https://www.facebook.com/marketplace/create/item"
+
+
+def create_url() -> str:
+    """The create form in the account's own Facebook UI locale (en_GB for IE, from
+    marketplace/home), never a forced en_US on an en-IE browser."""
+    locale = proxyGate.pinned().get("facebookLocale")
+    return f"{CREATE_PATH}?locale={locale}" if locale else CREATE_PATH
 SELLING_URL = "https://www.facebook.com/marketplace/you/selling"
 
 LIMIT_TEXT = re.compile(
@@ -168,10 +179,16 @@ class Session:
             return {"kind": "issue", "issue": checked("neverConnected"), "detail": f"no saved session at {state}. Run: log connect --account <id>"}
         from camoufox.sync_api import Camoufox
 
-        # Proxy gate (rule 12), then headed, humanize 1.5s, cursor shown (rule 11). Never configurable.
+        # Proxy gate (rule 12), the account's device and locale (15-16), headed,
+        # humanize 1.5s, cursor shown (rule 11). Never configurable.
         self.runtime = Camoufox(**launch_kwargs({}))
-        self.browser = self.runtime.__enter__()
-        self.context = self.browser.new_context(storage_state=str(state))
+        try:
+            self.browser = self.runtime.__enter__()
+            # The gate's self-check runs inside new_context (rule 17): a refusal closes the browser.
+            self.context = self.browser.new_context(storage_state=str(state))
+        except Exception:
+            self.close()
+            raise
         self.page = self.context.new_page()
         self.page.set_default_timeout(30_000)
         return None
@@ -179,11 +196,48 @@ class Session:
     def close(self) -> None:
         try:
             if self.context is not None:
+                # The session as the browser left it, for log-cli to save to Twenty (cookies, localStorage).
+                try:
+                    self.context.storage_state(path=str(self.config.get("storageStatePath")))
+                except Exception as exc:
+                    log(f"could not save the session state ({type(exc).__name__})")
                 self.context.close()
+        except Exception:
+            pass
         finally:
-            if self.runtime is not None:
-                self.runtime.__exit__(None, None, None)
+            runtime = self.runtime
             self.context = self.browser = self.runtime = self.page = None
+            if runtime is not None:
+                try:
+                    runtime.__exit__(None, None, None)
+                except Exception:
+                    pass
+
+    def recheck_exit(self) -> dict[str, Any]:
+        """The exit IP again, through the browser (proxyGate.recheck_exit). Raises
+        GateError proxyCountryChanged when it left the country; returns
+        {"exitIpChanged": ...} when it moved inside it, so the run records it."""
+        result = proxyGate.recheck_exit(self.context)
+        try:
+            self.page.bring_to_front()
+        except Exception:
+            pass
+        return {"exitIpChanged": result["changed"]} if result["changed"] else {}
+
+    def enabled_button(self, pattern: re.Pattern, timeout_ms: int = 3000):
+        """The first visible, enabled button matching `pattern`, without clicking it, or None."""
+        deadline = time.monotonic() + timeout_ms / 1000
+        while time.monotonic() < deadline:
+            buttons = self.page.get_by_role("button", name=pattern)
+            for i in range(buttons.count()):
+                button = buttons.nth(i)
+                try:
+                    if button.is_visible() and not button.evaluate(DISABLED_JS):
+                        return button
+                except Exception:
+                    continue
+            self.page.wait_for_timeout(500)
+        return None
 
     # -- page reading ------------------------------------------------------
     def body(self, limit: int = 6000) -> str:
@@ -383,7 +437,7 @@ def step_open(s: Session, params: dict[str, Any]) -> dict[str, Any]:
         if problem:
             return problem
     if not params.get("recheck"):
-        url = s.config.get("formUrl") or CREATE_URL
+        url = s.config.get("formUrl") or create_url()
         log(f"Opening {url}")
         try:
             s.page.goto(url, wait_until="domcontentloaded", timeout=90_000)
@@ -419,7 +473,7 @@ def step_open(s: Session, params: dict[str, Any]) -> dict[str, Any]:
         pass
     # If we were sent back home after a captcha, go to the form again.
     if params.get("recheck") and "marketplace/create" not in s.page.url and not s.config.get("formUrl"):
-        s.page.goto(CREATE_URL, wait_until="domcontentloaded", timeout=90_000)
+        s.page.goto(create_url(), wait_until="domcontentloaded", timeout=90_000)
         s.page.wait_for_timeout(3000)
     try:
         s.page.locator('label:has-text("Title") input, input[aria-label="Title"]').first.wait_for(state="visible", timeout=15_000)
@@ -458,6 +512,17 @@ def twocaptcha_code(exc: Exception) -> str:
     return "solveError"
 
 
+def recaptcha_cookies(s: Session) -> str:
+    """Google's own cookies in the browser, in 2Captcha's KEY:Value; format (reCAPTCHA v2
+    is the only task that takes cookies). Never Facebook's: those are the account's session."""
+    try:
+        jar = s.context.cookies()
+    except Exception:
+        return ""
+    keep = [c for c in jar if str(c.get("domain", "")).lstrip(".").endswith(("google.com", "recaptcha.net"))]
+    return ";".join(f"{c['name']}:{c['value']}" for c in keep)
+
+
 def solve_twocaptcha(s: Session, detection: dict[str, Any]) -> dict[str, Any]:
     key = (os.environ.get("TWOCAPTCHA_API_KEY") or os.environ.get("2CAPTCHA_API_KEY") or "").strip()
     if not key:
@@ -466,6 +531,15 @@ def solve_twocaptcha(s: Session, detection: dict[str, Any]) -> dict[str, Any]:
         from twocaptcha import TwoCaptcha
     except Exception as exc:
         return {"solved": False, "code": checked("notInstalled"), "detail": f"pip install 2captcha-python ({exc})"}
+    # The same exit as the browser, or not at all: a token minted on 2Captcha's own IP
+    # and browser is a third identity in this account's session.
+    proxy = proxyGate.twocaptcha_proxy()
+    if not proxy:
+        return {"solved": False, "code": checked("captchaNoProxy"), "detail": "the account's proxy can't be passed to 2Captcha"}
+    try:
+        user_agent = str(s.page.evaluate("() => navigator.userAgent"))
+    except Exception as exc:
+        return {"solved": False, "code": checked("captchaNoProxy"), "detail": f"could not read the browser's userAgent ({type(exc).__name__})"}
     solver = TwoCaptcha(key, defaultTimeout=180, recaptchaTimeout=600, pollingInterval=5)
     site_key = detection.get("siteKey")
     try:
@@ -480,7 +554,11 @@ def solve_twocaptcha(s: Session, detection: dict[str, Any]) -> dict[str, Any]:
             if not site_key:
                 return {"solved": False, "code": checked("noSiteKey"), "detail": "no reCAPTCHA site key in any frame URL"}
             log("2Captcha: submitting reCAPTCHA" + (" Enterprise" if detection.get("enterprise") else ""))
-            token = solver.recaptcha(sitekey=site_key, url=s.page.url, enterprise=1 if detection.get("enterprise") else 0)["code"]
+            extra: dict[str, Any] = {"proxy": proxy, "userAgent": user_agent}
+            cookies = recaptcha_cookies(s)
+            if cookies:
+                extra["cookies"] = cookies
+            token = solver.recaptcha(sitekey=site_key, url=s.page.url, enterprise=1 if detection.get("enterprise") else 0, **extra)["code"]
             js = INJECT_RECAPTCHA_JS
         else:
             if not site_key:
@@ -490,7 +568,7 @@ def solve_twocaptcha(s: Session, detection: dict[str, Any]) -> dict[str, Any]:
                 parsed = urlparse(detection["frameUrl"])
                 surl = f"{parsed.scheme}://{parsed.netloc}"
             log("2Captcha: submitting Arkose (unproven on Facebook)")
-            kwargs = {"sitekey": site_key, "url": s.page.url}
+            kwargs = {"sitekey": site_key, "url": s.page.url, "proxy": proxy, "userAgent": user_agent}
             if surl:
                 kwargs["surl"] = surl
             token = solver.funcaptcha(**kwargs)["code"]
@@ -647,13 +725,20 @@ def step_review(s: Session, params: dict[str, Any]) -> dict[str, Any]:
         except Exception as exc:
             log(f"receipt screenshot failed: {exc}")
             receipt = None
-    return {"ok": True, "receipt": receipt, "photoCount": count}
+    # The exit can rotate during a long form (2Captcha sticky sessions last 120 min at most).
+    moved = s.recheck_exit()
+    return {"ok": True, "receipt": receipt, "photoCount": count, **moved}
 
 
 def step_publish(s: Session, _: dict[str, Any]) -> dict[str, Any]:
     publish = re.compile(r"^(Publish|Share|Post)$", re.I)
+    moved: dict[str, Any] = {}
     for page_no in range(4):
-        if s.click_when_enabled(publish, timeout_ms=3000):
+        if s.enabled_button(publish, timeout_ms=3000) is not None:
+            # Immediately before the click: still the account's country, or stop (proxyCountryChanged).
+            moved = s.recheck_exit()
+            if not s.click_when_enabled(publish, timeout_ms=5000):
+                return fail("publishNotFound", "the Publish button went away after the exit check")
             break
         if not s.click_when_enabled(re.compile(r"^Next$", re.I), timeout_ms=15_000 if page_no == 0 else 5000):
             # Boost / promote pages: skip, never pay.
@@ -668,7 +753,7 @@ def step_publish(s: Session, _: dict[str, Any]) -> dict[str, Any]:
     if "create/item" in s.page.url:
         audience = s.click_when_enabled(re.compile(r"^(Publish|Share|Post|Done)$", re.I), timeout_ms=10_000)
         s.page.wait_for_timeout(5000)
-    return {"ok": True, "audienceStep": audience}
+    return {"ok": True, "audienceStep": audience, **moved}
 
 
 def step_confirm(s: Session, _: dict[str, Any]) -> dict[str, Any]:
@@ -734,7 +819,7 @@ def main() -> int:
     # Node writes UTF-8; Windows would read cp1252 and mangle the en dash in "Used – good".
     sys.stdin.reconfigure(encoding="utf8")
     reply_out, sys.stdout = sys.stdout, sys.stderr
-    proxyGate.arm(config.get("proxyPath"))
+    proxyGate.arm(config.get("proxyPath"), config.get("devicePath"))
     session = Session(config)
 
     def reply(request_id: Any, result: dict[str, Any]) -> None:

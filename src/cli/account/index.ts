@@ -12,7 +12,7 @@ import { isErrorCode } from "../../errors/catalog/index.ts";
 import { renderLoss } from "../live/helpers/index.ts";
 import { parseArgs, refuseError } from "../runner/helpers/index.ts";
 import type { Command } from "../runner/types.ts";
-import { renderAccountDetail, renderAccountsTable } from "./helpers/index.ts";
+import { renderAccountDetail, renderAccountsTable, safeAccount } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
 export const ACCOUNTS_USAGE = "Usage: log accounts [--json]";
@@ -32,7 +32,7 @@ export const accountsCommand: Command = {
     try {
       const accounts = await listFacebookAccounts(context.twenty);
       if (parsed.flags["json"]) {
-        const safe = accounts.map(({ cookies: _c, proxy, ...rest }) => ({ ...rest, hasProxy: Boolean(proxy) }));
+        const safe = accounts.map(safeAccount);
         return { code: 0, stdout: JSON.stringify({ accounts: safe }, null, 2) };
       }
       return { code: 0, stdout: renderAccountsTable(accounts) };
@@ -55,8 +55,7 @@ export const accountCommand: Command = {
       const account = await findAccount(context.twenty, ref);
       if (action === "show") {
         if (parsed.flags["json"]) {
-          const { cookies: _c, proxy, ...rest } = account;
-          return { code: 0, stdout: JSON.stringify({ ...rest, hasProxy: Boolean(proxy) }, null, 2) };
+          return { code: 0, stdout: JSON.stringify(safeAccount(account), null, 2) };
         }
         return { code: 0, stdout: renderAccountDetail(account) };
       }

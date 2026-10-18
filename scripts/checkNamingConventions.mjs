@@ -62,7 +62,8 @@ function checkDomains(src) {
 // Names we can't rename (other systems' spellings). Everything else is camelCase.
 const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)+$/;
 // zone-custom: 2Captcha proxy username token (src/proxyVendor/twoCaptcha).
-const ALLOWED_KEBAB = [/^rev-parse$/, /^xdg-open$/, /^zone-custom$/, /^photo-\d+-[0-9a-f]+$/, /^x{8}-x{4}-4x{3}-yx{3}-x{12}$/];
+// 2-digit: Intl.DateTimeFormat option value (src/marketplace/home).
+const ALLOWED_KEBAB = [/^2-digit$/, /^rev-parse$/, /^xdg-open$/, /^zone-custom$/, /^photo-\d+-[0-9a-f]+$/, /^x{8}-x{4}-4x{3}-yx{3}-x{12}$/];
 // A single- or double-quoted string on one line.
 const LITERAL = /(['"])((?:(?!\1)[^\\\n])*)\1/g;
 

@@ -21,13 +21,19 @@ export interface PrepareOptions {
   runId?: string
   rng?: () => number
   fetchFn?: typeof fetch
+  /**
+   * The account's own HTTP proxy (`fetchProxyUrl`). URL photos are only ever
+   * fetched through it, so the photo host sees the account's exit, never this
+   * machine. No proxy and a URL photo means `photoNeedsProxy`.
+   */
+  proxy?: string | null
 }
 
 export function mediaDir(runId: string, env: Record<string, string | undefined> = process.env): string {
   return join(env.LOG_MEDIA_DIR || join(homedir(), '.logCli', 'media'), runId)
 }
 
-async function loadBytes(source: string, fetchFn: typeof fetch): Promise<Uint8Array> {
+async function loadBytes(source: string, fetchFn: typeof fetch, proxy: string): Promise<Uint8Array> {
   const kind = photoSourceKind(source)
   if (kind === 'dataUrl') {
     const bytes = decodeDataUrl(source)
@@ -39,7 +45,8 @@ async function loadBytes(source: string, fetchFn: typeof fetch): Promise<Uint8Ar
     let last: unknown
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
-        const res = await fetchFn(source)
+        // Bun's fetch takes `proxy`; nothing else in the request says where it came from.
+        const res = await fetchFn(source, { proxy } as RequestInit)
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return new Uint8Array(await res.arrayBuffer())
       } catch (error) {
@@ -103,12 +110,22 @@ export async function preparePhotos(sources: string[], options: PrepareOptions =
   const dir = options.dir ?? mediaDir(runId)
   mkdirSync(dir, { recursive: true })
 
+  const proxy = options.proxy ?? null
+  const remote = sources.filter((source) => photoSourceKind(source) === 'url')
+  if (remote.length && !proxy) {
+    return {
+      ok: false,
+      code: 'photoNeedsProxy',
+      detail: `${remote.length} photo URL(s) (${describeSource(remote[0])}) and no HTTP proxy to fetch them through: never fetched from this machine`
+    }
+  }
+
   const photos: PreparedPhoto[] = []
   for (const [index, source] of sources.entries()) {
     const label = describeSource(source)
     let bytes: Uint8Array
     try {
-      bytes = await loadBytes(source, options.fetchFn ?? fetch)
+      bytes = await loadBytes(source, options.fetchFn ?? fetch, proxy ?? '')
     } catch (error) {
       return { ok: false, code: 'unreadablePhoto', detail: `${label}: ${error instanceof Error ? error.message : String(error)}` }
     }

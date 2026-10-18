@@ -80,11 +80,32 @@ describe('preparePhotos', () => {
     expect(await preparePhotos([join(dir, 'gone.jpg')], { dir })).toMatchObject({ ok: false, code: 'unreadablePhoto' })
   })
 
-  test('downloads URLs through the injected fetch', async () => {
+  test("downloads URLs only through the account's proxy, never from this machine", async () => {
     const dir = mkdtempSync(join(tmpdir(), 'logCliPhotos'))
     const png = await samplePng()
-    const fetchFn = (async () => new Response(png)) as unknown as typeof fetch
-    const result = await preparePhotos(['https://example.test/a.png'], { dir, fetchFn, rng: seeded(5) })
+    const calls: { url: string; proxy?: string }[] = []
+    const fetchFn = (async (url: string, init?: { proxy?: string }) => {
+      calls.push({ url, proxy: init?.proxy })
+      return new Response(png)
+    }) as unknown as typeof fetch
+    const proxy = 'http://user:secret%40pass@203.0.113.7:8080'
+    const result = await preparePhotos(['https://example.test/a.png'], { dir, fetchFn, rng: seeded(5), proxy })
     expect(result).toMatchObject({ ok: true })
+    expect(calls).toEqual([{ url: 'https://example.test/a.png', proxy }])
+    // The files are still named photoN.jpg: nothing from the source reaches Facebook.
+    expect(result.ok && result.photos[0].path.endsWith('photo1.jpg')).toBe(true)
+  })
+
+  test('a photo URL with no proxy is refused before anything is fetched', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'logCliPhotos'))
+    let fetched = 0
+    const fetchFn = (async () => {
+      fetched++
+      return new Response('')
+    }) as unknown as typeof fetch
+    for (const proxy of [undefined, null]) {
+      expect(await preparePhotos(['https://example.test/a.png'], { dir, fetchFn, proxy })).toMatchObject({ ok: false, code: 'photoNeedsProxy' })
+    }
+    expect(fetched).toBe(0)
   })
 })

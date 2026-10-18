@@ -346,6 +346,120 @@
     "monitor": "blocked",
     "action": "Use a proxy that exits in the account's homeCountry, or fix homeCountry in Twenty if it is wrong."
   },
+  "proxyCountryChanged": {
+    "layer": "account",
+    "meaning": "The proxy's exit IP moved to another country during the run (2Captcha's sticky session rotated). Stopped before Publish was clicked.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.reviewing",
+      "publish.publishing"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Run `log proxy check --account <id>`; if it keeps leaving the country, `log proxy assign` it a new session."
+  },
+  "outsideActiveHours": {
+    "layer": "account",
+    "meaning": "It is outside the account's local waking hours (08:00-22:00 in its home timezone unless activeHoursStart/End say otherwise). Nothing opened. The detail has the local time and when the window opens.",
+    "retryable": true,
+    "raisedIn": [
+      "camofox/run",
+      "cli/watch"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Run it inside the window in the detail, or change activeHoursStart/activeHoursEnd on the socialAccount in Twenty."
+  },
+  "noHomeLocale": {
+    "layer": "account",
+    "meaning": "log-cli has no browser locale for the account's homeCountry, so it can't pin one. Nothing opened.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/home",
+      "camofox/run"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Add the country to HOME_COUNTRIES in src/marketplace/home/types.ts, or fix homeCountry in Twenty."
+  },
+  "noHomeTimezone": {
+    "layer": "account",
+    "meaning": "The account's homeCountry has several timezones and its homeCity isn't in the city table, so its local time is unknown. Nothing opened.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/home",
+      "camofox/run"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Add the city to CITY_TIMEZONES in src/marketplace/home/types.ts, or fix homeCity in Twenty."
+  },
+  "deviceProfileInvalid": {
+    "layer": "account",
+    "meaning": "The account's stored deviceProfile can't be read, or the run's device file is missing. Nothing opened: a new device would look like a different computer.",
+    "retryable": false,
+    "raisedIn": [
+      "camofox/run",
+      "proxyGate",
+      "publish.openingForm",
+      "worker"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Tell matt. Don't clear deviceProfile unless he decides the account may get a new device."
+  },
+  "browserTimezoneMismatch": {
+    "layer": "account",
+    "meaning": "The launch self-check found a timezone in the page or a worker that isn't the exit IP's. The browser was closed before Facebook loaded.",
+    "retryable": false,
+    "raisedIn": [
+      "proxyGate",
+      "publish.openingForm",
+      "worker"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Tell matt: the timezone forcing is broken (often after a Camoufox upgrade). Re-run the leak tests before any run."
+  },
+  "browserLocaleMismatch": {
+    "layer": "account",
+    "meaning": "The launch self-check found navigator.language(s) or the Intl locale, in the page or a worker, not equal to the account's pinned locale. The browser was closed before Facebook loaded.",
+    "retryable": false,
+    "raisedIn": [
+      "proxyGate",
+      "publish.openingForm",
+      "worker"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Tell matt: the locale pinning is broken (often after a Camoufox upgrade). Re-run the leak tests before any run."
+  },
+  "browserExitIpMismatch": {
+    "layer": "account",
+    "meaning": "The exit IP seen from inside the browser isn't the one the proxy gate checked (rotated, or the browser isn't using the proxy). The browser was closed before Facebook loaded.",
+    "retryable": true,
+    "raisedIn": [
+      "proxyGate",
+      "publish.openingForm",
+      "worker"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Run it again. If it repeats, `log proxy check --account <id>` and tell matt."
+  },
+  "selfCheckFailed": {
+    "layer": "account",
+    "meaning": "The launch self-check couldn't run (no IP echo answered through the browser, or the worker didn't start), so nothing proves the browser looks right. Closed before Facebook loaded.",
+    "retryable": true,
+    "raisedIn": [
+      "proxyGate",
+      "publish.openingForm",
+      "worker"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Run it again. If it repeats, check the proxy (`log proxy check`) and tell matt."
+  },
   "listingCountryMismatch": {
     "layer": "account",
     "meaning": "The listing's location is not in the account's country, or has no country to check. Refused before any browser opens.",
@@ -421,6 +535,16 @@
     ],
     "publish": "failed",
     "action": "Send 10 or fewer."
+  },
+  "photoNeedsProxy": {
+    "layer": "photo",
+    "meaning": "A photo is a URL, and URLs are only fetched through the account's own HTTP proxy, never from this machine. The account has none that fetch can use (none, or SOCKS5).",
+    "retryable": false,
+    "raisedIn": [
+      "publish.preparingPhotos"
+    ],
+    "publish": "failed",
+    "action": "Give the account an HTTP proxy (log proxy assign), or store the photo as a local file or data-URL."
   },
   "unreadablePhoto": {
     "layer": "photo",
@@ -661,6 +785,16 @@
     ],
     "publish": "needsPerson",
     "action": "Clear it by hand. Facebook kept serving captchas: the account may be flagged."
+  },
+  "captchaNoProxy": {
+    "layer": "captcha",
+    "meaning": "2Captcha would have solved from its own IP: the account's proxy couldn't be passed to it. Refused rather than mixing a foreign IP into the session.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "skipSolver",
+    "action": "Check the account's proxy file reached the session (rule 12). The captcha goes to a person instead."
   },
   "missingApiKey": {
     "layer": "captcha",
@@ -985,6 +1119,19 @@
     ],
     "publish": "failed",
     "action": "A bug in the machine order."
+  },
+  "unguardedLaunch": {
+    "layer": "runtime",
+    "meaning": "Something tried to launch Camoufox outside the proxy gate, or with launch options the gate does not allow (locale, config, env, persistent context...). Refused.",
+    "retryable": false,
+    "raisedIn": [
+      "proxyGate",
+      "worker",
+      "publish.openingForm"
+    ],
+    "publish": "failed",
+    "monitor": "failed",
+    "action": "Tell matt. Every launch goes through python/proxyGate.py apply(); find the caller in the detail."
   },
   "crashed": {
     "layer": "runtime",

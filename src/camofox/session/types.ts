@@ -21,6 +21,8 @@ export interface SessionConfig {
   storageStatePath: string
   /** The account's proxy file. publishSession.py opens no browser without it (rule 12). */
   proxyPath: string
+  /** The run's device.json: pinned locale, home timezone, the account's device (rule 15). */
+  devicePath: string | null
   /** Override the create form URL (local fixture runs). */
   formUrl?: string
   /** Where the review screenshot goes. */

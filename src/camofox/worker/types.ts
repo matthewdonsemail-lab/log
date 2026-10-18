@@ -19,6 +19,11 @@ export interface WorkerRequest {
    * browser without it, except for `login` (rule 12). Credentials never go on argv.
    */
   proxy_path?: string;
+  /**
+   * The run's `device.json` (`camofox/device`): pinned locale, home timezone
+   * and the account's device. The proxy gate opens no browser without it.
+   */
+  device_path?: string | null;
   params?: Record<string, unknown>;
 }
 
