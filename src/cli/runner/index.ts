@@ -4,18 +4,29 @@
  * Commands are declared once here; usage text is generated from the same list,
  * so a new command cannot ship without documentation.
  */
+import { runWorker } from "../../camofox/worker/index.ts";
 import { listAccounts } from "../../marketplace/account/index.ts";
 import { listListings } from "../../marketplace/listing/index.ts";
 import { accountsCommand } from "../account/index.ts";
 import { launchCommand } from "../launch/index.ts";
 import { listingCommand, listingsCommand } from "../listing/index.ts";
+import { doctorCommand, loginCommand, scanCommand, statusCommand } from "../live/index.ts";
 import { renderUsage } from "./helpers/index.ts";
 import type { Command, CommandContext } from "./types.ts";
 
 export * from "./helpers/index.ts";
 export type { Command, CommandContext, CommandResult, MarketplaceData } from "./types.ts";
 
-export const COMMANDS: Command[] = [launchCommand, listingsCommand, listingCommand, accountsCommand];
+export const COMMANDS: Command[] = [
+  launchCommand,
+  listingsCommand,
+  listingCommand,
+  accountsCommand,
+  doctorCommand,
+  loginCommand,
+  scanCommand,
+  statusCommand,
+];
 
 const ALIASES: Record<string, string> = {
   "--help": "help",
@@ -26,6 +37,7 @@ const ALIASES: Record<string, string> = {
 export function createContext(overrides: Partial<CommandContext> = {}): CommandContext {
   return {
     load: overrides.load ?? (() => ({ listings: listListings(), accounts: listAccounts() })),
+    worker: overrides.worker ?? runWorker,
     out: overrides.out ?? ((line) => console.log(line)),
     err: overrides.err ?? ((line) => console.error(line)),
   };

@@ -1,5 +1,6 @@
 /** Command surface types. */
 
+import type { WorkerClient } from "../../camofox/worker/index.ts";
 import type { ConnectionRecord } from "../../marketplace/account/index.ts";
 import type { ListingRecord } from "../../marketplace/listing/index.ts";
 
@@ -18,6 +19,8 @@ export interface MarketplaceData {
 export interface CommandContext {
   /** Loads the Marketplace data. Injectable so tests can pin the rows. */
   load: () => MarketplaceData;
+  /** Runs the camofox worker (launches a real browser). Injected so tests never do. */
+  worker: WorkerClient;
   /** Writes to stdout. Injected so commands stay testable. */
   out: (line: string) => void;
   /** Writes to stderr. */

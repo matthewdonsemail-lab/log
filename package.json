@@ -10,6 +10,7 @@
   "scripts": {
     "start": "bun run bin/log.ts",
     "launch": "bun run bin/log.ts launch",
+    "doctor": "bun run bin/log.ts doctor",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "check:naming": "node scripts/checkNamingConventions.mjs",
