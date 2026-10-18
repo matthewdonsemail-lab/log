@@ -712,3 +712,35 @@ Checked: `bun run check`: naming ok, tsc ok, 367 pass. Live on 0.5.8 / beta.39 t
 - Canvas still differs per launch. Firefox's baseline fingerprinting protection re-keys canvas randomisation every session: with `privacy.baselineFingerprintingProtection` off, the canvas was identical across launches, but it was this PC's raw rendering, the same for every account. Left on, for matt to decide.
 - Proxy traffic for all live checks: 821.575 → 812.832 MB.
 - Test records deleted, and confirmed gone even as soft-deleted rows.
+
+## 2026-10-18 11:14Z · feat/publishMachine
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `docs/identityLeaks/README.md`: new file
+- `docs/identityLeaks/accountHistoryAndMetaEnforcement.md`: new file
+- `docs/identityLeaks/activityHours.md`: new file
+- `docs/identityLeaks/camoufoxDetectability.md`: new file
+- `docs/identityLeaks/captchaSolving.md`: new file
+- `docs/identityLeaks/deviceFingerprintChurn.md`: new file
+- `docs/identityLeaks/dns.md`: new file
+- `docs/identityLeaks/fontsAndVoices.md`: new file
+- `docs/identityLeaks/gateBypasses.md`: new file
+- `docs/identityLeaks/geolocationApi.md`: new file
+- `docs/identityLeaks/http3Quic.md`: new file
+- `docs/identityLeaks/listingContentAndCurrency.md`: new file
+- `docs/identityLeaks/localeAndLanguage.md`: new file
+- `docs/identityLeaks/manualSignIn.md`: new file
+- `docs/identityLeaks/outOfBrowserRequests.md`: new file
+- `docs/identityLeaks/photosAndUploads.md`: new file
+- `docs/identityLeaks/proxyCredentials.md`: new file
+- `docs/identityLeaks/proxyRotationAndGeoAccuracy.md`: new file
+- `docs/identityLeaks/sessionStatePersistence.md`: new file
+- `docs/identityLeaks/sources.md`: new file
+- `docs/identityLeaks/standaloneFacebookCamofoxClient.md`: new file
+- `docs/identityLeaks/timezone.md`: new file
+- `docs/identityLeaks/webglGpuLinkage.md`: new file
+- `docs/identityLeaks/webrtc.md`: new file
+
+What changed: Added docs/identityLeaks/: a README with the threat model, method, evidence grades, a ranked table of 22 leak vectors with status, and open decisions for matt; one file per vector (what leaks to whom, evidence with grade, where in our code it can recur, mitigation, how to re-test, status); and sources.md, the merged bibliography.
+Why: matt asked for a complete, sourced study of every way the browser or this PC could show Vietnam or link accounts, stored in the repo next to the code it constrains, so later changes can be checked against it.
+Checked: Built from four reports (Parallel deep research, web and source research, live tests through a Galway 2Captcha proxy, code audit). Statuses re-checked against 2de5ff5 code and that commit's live results. `bun run check:naming` passes. No credential fragment appears in the docs.
