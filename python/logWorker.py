@@ -65,6 +65,14 @@ NEEDS_ATTENTION_JS = """() => {
 }"""
 
 
+async def body_sample(page) -> str:
+    """First 4000 chars of the page text, for account-issue classification in log-cli."""
+    try:
+        return (await page.locator("body").inner_text(timeout=5000))[:4000]
+    except Exception:
+        return ""
+
+
 async def auth_flags(page) -> dict[str, bool]:
     title = (await page.title()).lower()
     url = page.url.lower()
@@ -162,7 +170,8 @@ async def scan(request: dict[str, Any]) -> dict[str, Any]:
         await page.wait_for_timeout(4000)
         flags = await auth_flags(page)
         if any(flags.values()):
-            return {"ok": False, "error": "login-wall", "authFlags": flags}
+            return {"ok": False, "error": "login-wall", "authFlags": flags,
+                    "url": page.url, "bodySample": await body_sample(page)}
         try:
             tab = page.get_by_text(re.compile(r"^Your listings$", re.I)).first
             if await tab.count() > 0:
@@ -200,7 +209,8 @@ async def scan(request: dict[str, Any]) -> dict[str, Any]:
                 "clicks": parse_clicks(card),
                 "href": row["href"],
             })
-        return {"ok": True, "url": page.url, "listings": listings, "needsAttention": needs_attention}
+        return {"ok": True, "url": page.url, "listings": listings,
+                "needsAttention": needs_attention, "bodySample": await body_sample(page)}
     finally:
         await manager.release(session)
 
