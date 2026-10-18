@@ -28,6 +28,10 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
    commit.
 8. 2026-10-18 · Read-only on Facebook. Nothing is posted, edited or deleted
    unless matt asks for it.
+9. 2026-10-18 · Captchas are solved with CaptchaKraken's hosted API
+   (matt has credits). The key goes in `.env.local`, with the template in `.env.example`.
+   `open-typesafe-camoufox` is stale, so don't port from it. How posting works,
+   with sources, is in `docs/listingPublish/`.
 
 ## Checks
 

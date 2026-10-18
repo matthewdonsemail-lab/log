@@ -234,3 +234,19 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: `log login` / `log logout` / `log whoami` sign in with Twenty through blaster's hosted web app, the same OAuth flow as `blaster login`: a state nonce and PKCE challenge, a one-shot 127.0.0.1 loopback that only accepts a POST echoing them, then a check through blaster's `/api/auth/me` and storage in `~/.logCli/auth/`. `whoami` refreshes an expired or rejected token once through `/api/auth/refresh`. `--token` is the paste path. The Facebook Camoufox command moves from `log login` to `log connect --account <id>`, so `login` means what it means in blaster.
 Why: matt: give log-cli the OAuth login the blaster CLI has.
 Checked: `bun run check` (naming OK, typecheck, 67 pass; 8 new auth tests, one of which runs a real loopback exchange end to end against a fake blaster). Against the real hosted blaster: `/login` serves the `blaster-web` marker, `/api/auth/me` answers 401 unauthenticated, and `log login --token <bogus>` was rejected by the real API. Not done: a full browser sign-in, because that needs matt in the browser.
+
+## 2026-10-18 06:19Z · feat/captchaKrakenAndPublishFlow
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `.env.example`: new file
+- `AGENTS.md`: edited
+- `docs/listingPublish/README.md`: new file
+- `docs/listingPublish/captchaKraken.md`: new file
+- `docs/listingPublish/formFill.md`: new file
+- `docs/listingPublish/imagePipeline.md`: new file
+- `docs/listingPublish/sources.md`: new file
+- `docs/listingPublish/stateMachine.md`: new file
+
+What changed: New `docs/listingPublish/` (README, stateMachine, imagePipeline, formFill, captchaKraken, sources) documents how a Marketplace listing is posted. It covers each source flow as states with mermaid diagrams, how photos are loaded, varied and attached through `setInputFiles` and confirmed by the N/10 counter, the create form field by field with the selectors that worked, and the XState publish machine log-cli should build (proposal, not code). New `.env.example` lists LOG_* plus CAPTCHA_KRAKEN_API_KEY and VLLM_BASE_URL. AGENTS.md rule 9: captchas go through the CaptchaKraken hosted API, and open-typesafe-camoufox is stale.
+Why: matt asked for the CaptchaKraken key in the env template, and for an accurate, source-cited map of the posting state machine and image flow before building Facebook posting.
+Checked: Every claim cites file:line in facebook-camofox-client, Listaro_backup, listeningkit-hackathon or CaptchaKraken/CaptchaKraken (GH API, commit a08b8ff). I re-read the key lines (Listaro setInputFiles + 3-5s sleep, count = 1, the AI fallback Promise bug, the FCC spike audience step). bun run check passes (67 tests).
