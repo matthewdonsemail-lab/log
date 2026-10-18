@@ -5,6 +5,8 @@
 // 2. Every domain (src/{library}/{domain}) has an index.ts entrypoint.
 // 3. Every helpers/ directory has an index.ts barrel.
 // 4. No helper imports its parent domain's barrel (../index).
+// 5. No kebab-case string literal in src/, bin/, scripts/, python/, and no
+//    kebab-case file or folder name in skills/, python/, scripts/.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -57,11 +59,59 @@ function checkDomains(src) {
   }
 }
 
+// Names we can't rename (other systems' spellings). Everything else is camelCase.
+const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)+$/;
+const ALLOWED_KEBAB = [/^rev-parse$/, /^photo-\d+-[0-9a-f]+$/, /^x{8}-x{4}-4x{3}-yx{3}-x{12}$/];
+// A single- or double-quoted string on one line.
+const LITERAL = /(['"])((?:(?!\1)[^\\\n])*)\1/g;
+
+function checkLiterals(dir) {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const path = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      if (entry.name !== 'node_modules' && entry.name !== '__pycache__') checkLiterals(path);
+      continue;
+    }
+    if (!/\.(ts|mjs|py)$/.test(entry.name)) continue;
+    readFileSync(path, 'utf8')
+      .split('\n')
+      .forEach((line, index) => {
+        const code = line.trim();
+        if (code.startsWith('//') || code.startsWith('#') || code.startsWith('*')) return;
+        for (const [, , value] of line.matchAll(LITERAL)) {
+          if (KEBAB.test(value) && !ALLOWED_KEBAB.some((allowed) => allowed.test(value))) {
+            violations.push(`${rel(path)}:${index + 1}: kebab-case value "${value}" must be camelCase.`);
+          }
+        }
+      });
+  }
+}
+
+function checkNames(dir) {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    if (entry.name === '__pycache__' || entry.name.startsWith('.')) continue;
+    const base = entry.name.replace(/\.[^.]+$/, '');
+    // SKILL.md is the skill format's fixed file name.
+    if (entry.name !== 'SKILL.md' && KEBAB.test(base)) {
+      violations.push(`${rel(join(dir, entry.name))}: name must be camelCase, never kebab-case.`);
+    }
+    if (entry.isDirectory()) checkNames(join(dir, entry.name));
+  }
+}
+
 for (const dir of ['src', 'bin']) {
   const path = join(root, dir);
   if (existsSync(path) && statSync(path).isDirectory()) walk(path);
 }
 checkDomains(join(root, 'src'));
+for (const dir of ['src', 'bin', 'scripts', 'python']) {
+  const path = join(root, dir);
+  if (existsSync(path)) checkLiterals(path);
+}
+for (const dir of ['skills', 'python', 'scripts']) {
+  const path = join(root, dir);
+  if (existsSync(path)) checkNames(path);
+}
 
 if (violations.length > 0) {
   console.error('check:naming FAIL');
@@ -69,4 +119,4 @@ if (violations.length > 0) {
   console.error('\nSee docs/namingConventions.md.');
   process.exit(1);
 }
-console.log('check:naming OK — src/ follows {library}/{domain}/ with camelCase names.');
+console.log('check:naming OK — {library}/{domain}/ layout, camelCase names and values, no kebab-case.');

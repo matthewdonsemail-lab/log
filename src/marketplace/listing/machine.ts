@@ -9,7 +9,7 @@ import type { ListingStatus, RemovalProvenance } from './types'
  * `PATCH /listings/:id/status` route agree on which moves are legal.
  *
  * Who-set-it matters as much as the state itself:
- *  - `active`, `under-review`, `under-review-duplicate` are set by the
+ *  - `active`, `underReview`, `underReviewDuplicate` are set by the
  *    PLATFORM only (publish → review → approve; the client observes and
  *    reports, the seller can never hand a listing a live status).
  *  - `sold` is set by the SELLER only ("Mark as sold" — buyers get
@@ -19,7 +19,7 @@ import type { ListingStatus, RemovalProvenance } from './types'
  *    which: a seller delist (hidden — relistable) vs a platform takedown
  *    (policy violation / rejection / inactivity expiry — the only way back
  *    is the request-review appeal, not a relist).
- *  - `login-wall`, `unknown` are CLIENT OBSERVATIONS, not listing states —
+ *  - `loginWall`, `unknown` are CLIENT OBSERVATIONS, not listing states —
  *    the poller couldn't see through a session wall or classify the page.
  *    They overwrite any state and can be resolved back to any real state.
  *
@@ -38,7 +38,7 @@ export interface ListingTransitionContext {
   accountIssue?: AccountIssue
 }
 
-const OBSERVATION_STATES: readonly ListingStatus[] = ['login-wall', 'unknown']
+const OBSERVATION_STATES: readonly ListingStatus[] = ['loginWall', 'unknown']
 
 /**
  * SELLER edges — the only status writes the dashboard offers. Everything
@@ -47,37 +47,37 @@ const OBSERVATION_STATES: readonly ListingStatus[] = ['login-wall', 'unknown']
  *  - active → sold | removed ("Mark as sold" / "Remove listing")
  *  - sold   → active | removed ("Mark as available" / archive after sale)
  *  - removed(seller) → active (relist the seller's own delist)
- *  - under-review* → removed (pull a held listing while review runs)
+ *  - underReview* → removed (pull a held listing while review runs)
  */
 const SELLER_EDGES: Record<ListingStatus, ListingStatus[]> = {
-  'under-review': ['removed'],
-  'under-review-duplicate': ['removed'],
+  'underReview': ['removed'],
+  'underReviewDuplicate': ['removed'],
   active: ['sold', 'removed'],
   sold: ['active', 'removed'],
   removed: ['active'],
-  'login-wall': [],
+  'loginWall': [],
   unknown: []
 }
 
 /**
  * PLATFORM edges — what the camofox poller can legitimately report.
- *  - under-review → active (approved) | under-review-duplicate (dup flag)
+ *  - underReview → active (approved) | underReviewDuplicate (dup flag)
  *    | removed (rejected)
- *  - under-review-duplicate → active (cleared) | removed (still dup → pulled)
+ *  - underReviewDuplicate → active (cleared) | removed (still dup → pulled)
  *  - active → removed (policy takedown during a live listing)
  *  - sold → removed (post-sale archive)
  *  - removed → active (request-review restore — the platform undoing its
  *    own removal; the seller's undo is the SELLER `removed → active` edge)
- *  - login-wall/unknown → any resolved state (observation cleared)
+ *  - loginWall/unknown → any resolved state (observation cleared)
  */
 const PLATFORM_EDGES: Record<ListingStatus, ListingStatus[]> = {
-  'under-review': ['active', 'under-review-duplicate', 'removed'],
-  'under-review-duplicate': ['active', 'removed'],
+  'underReview': ['active', 'underReviewDuplicate', 'removed'],
+  'underReviewDuplicate': ['active', 'removed'],
   active: ['removed'],
   sold: ['removed'],
   removed: ['active'],
-  'login-wall': ['under-review', 'under-review-duplicate', 'active', 'sold', 'removed'],
-  unknown: ['under-review', 'under-review-duplicate', 'active', 'sold', 'removed']
+  'loginWall': ['underReview', 'underReviewDuplicate', 'active', 'sold', 'removed'],
+  unknown: ['underReview', 'underReviewDuplicate', 'active', 'sold', 'removed']
 }
 
 /**
@@ -114,7 +114,7 @@ export function allowedTransition(
     if (source !== 'platform') {
       return {
         allowed: false,
-        reason: `The poller last saw ${from === 'login-wall' ? 'a login wall' : 'an unclassified page'} — wait for the next observation before acting.`
+        reason: `The poller last saw ${from === 'loginWall' ? 'a login wall' : 'an unclassified page'} — wait for the next observation before acting.`
       }
     }
     return { allowed: true }

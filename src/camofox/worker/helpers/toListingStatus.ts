@@ -11,9 +11,9 @@ export function toListingStatus(health: DashboardHealth): { status: ListingStatu
     case "ACTIVE":
       return { status: "active" };
     case "UNDER_REVIEW":
-      return { status: "under-review" };
+      return { status: "underReview" };
     case "DUPLICATE_TAKEDOWN":
-      return { status: "under-review-duplicate" };
+      return { status: "underReviewDuplicate" };
     case "SOLD":
       return { status: "sold" };
     case "DELETED_BY_FB":
@@ -21,7 +21,7 @@ export function toListingStatus(health: DashboardHealth): { status: ListingStatu
     case "COMMERCE_BAN":
       return { status: "removed", removedBy: "platform" };
     case "CHECKPOINT_REQUIRED":
-      return { status: "login-wall" };
+      return { status: "loginWall" };
     default:
       return { status: "unknown" };
   }

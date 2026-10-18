@@ -88,14 +88,14 @@ describe("runLaunch", () => {
   });
 
   test("scan delegates to `scan --account <id>`", async () => {
-    stubPrompts(["scan", "fb-pacer"]);
+    stubPrompts(["scan", "fbPacer"]);
     const delegated: string[][] = [];
     launchDeps.run = (command, _context, argv) => {
       delegated.push([command.name, ...argv]);
       return { code: 0, stdout: "scanned" };
     };
     expect((await runLaunch(capture().context, [])).code).toBe(0);
-    expect(delegated).toEqual([["scan", "--account", "fb-pacer"]]);
+    expect(delegated).toEqual([["scan", "--account", "fbPacer"]]);
   });
 
   test("cancel exits 1", async () => {

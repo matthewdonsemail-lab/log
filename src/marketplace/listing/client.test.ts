@@ -22,7 +22,7 @@ describe('helpers', () => {
   test('filters by status and account', () => {
     const listings = listListings()
     expect(filterListings(listings, { status: 'removed' }).map((row) => row.removedBy)).toEqual(['seller', 'platform'])
-    expect(filterListings(listings, { accountId: 'fb-pacer' })).toHaveLength(2)
+    expect(filterListings(listings, { accountId: 'fbPacer' })).toHaveLength(2)
   })
 
   test('finds by listingId and by opaque id', () => {

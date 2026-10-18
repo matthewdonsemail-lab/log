@@ -10,8 +10,8 @@ import { renderListingDetail, renderListingsTable } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
 
-export const LISTINGS_USAGE = "Usage: log listings [--status <status>] [--account <account-id>] [--json]";
-export const LISTING_USAGE = "Usage: log listing <listing-id> [--json]";
+export const LISTINGS_USAGE = "Usage: log listings [--status <status>] [--account <accountId>] [--json]";
+export const LISTING_USAGE = "Usage: log listing <listingId> [--json]";
 export const listingsCommand: Command = {
   name: "listings",
   summary: "List Marketplace listings, optionally filtered by status or account",
@@ -46,7 +46,7 @@ export const listingsCommand: Command = {
 export const listingCommand: Command = {
   name: "listing",
   summary: "Show one listing and the seller actions it allows",
-  args: "<listing-id> [--json]",
+  args: "<listingId> [--json]",
   run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["json"] });
     if (!parsed.ok) return { code: 1, stderr: `log listing: ${parsed.error}\n${LISTING_USAGE}` };
