@@ -1,47 +1,36 @@
-import { afterAll, beforeAll, describe, expect, test } from "bun:test";
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
-import { storageStatePath, toListingStatus } from "../../camofox/worker/index.ts";
+import { describe, expect, test } from "bun:test";
+import { existsSync, readFileSync } from "node:fs";
+import { toListingStatus } from "../../camofox/worker/index.ts";
 import type { WorkerClient, WorkerRequest } from "../../camofox/worker/index.ts";
+import { FIXTURE_COOKIES, marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { runCli } from "../runner/index.ts";
 
-/** Runs the CLI with a fake worker: no python, no browser. */
-async function run(argv: string[], reply: (request: WorkerRequest) => unknown) {
+/** Runs the CLI against an in-memory Twenty and a fake worker: no network, no python, no browser. */
+async function run(argv: string[], reply: (request: WorkerRequest) => unknown, twenty = marketplaceFixture()) {
   const out: string[] = [];
   const err: string[] = [];
   const requests: WorkerRequest[] = [];
+  const files: { proxy?: unknown; state?: unknown } = {};
   const worker = (async (request: WorkerRequest) => {
     requests.push(request);
+    // What the Python would read: the run's private files exist while it runs.
+    if (request.proxy_path) files.proxy = JSON.parse(readFileSync(request.proxy_path, "utf8"));
+    if (request.storage_state_path && existsSync(request.storage_state_path)) files.state = JSON.parse(readFileSync(request.storage_state_path, "utf8"));
     return reply(request);
   }) as WorkerClient;
-  const code = await runCli(argv, { worker, out: (line) => out.push(line), err: (line) => err.push(line) });
-  return { code, out: out.join("\n"), err: err.join("\n"), requests };
+  const code = await runCli(argv, { worker, twenty, out: (line) => out.push(line), err: (line) => err.push(line) });
+  return { code, out: out.join("\n"), err: err.join("\n"), requests, files, twenty };
 }
-
-// Every account but fbPersonal gets a proxy file (rule 12).
-const proxyDir = mkdtempSync(join(tmpdir(), "logCliProxies"));
-const savedProxyDir = process.env.LOG_PROXY_DIR;
-beforeAll(() => {
-  process.env.LOG_PROXY_DIR = proxyDir;
-  mkdirSync(proxyDir, { recursive: true });
-  for (const id of ["fbGalwayRubbish", "fbPacer"]) {
-    writeFileSync(join(proxyDir, `${id}.json`), JSON.stringify({ server: "http://203.0.113.7:8080", country: "IE" }));
-  }
-});
-afterAll(() => {
-  if (savedProxyDir === undefined) delete process.env.LOG_PROXY_DIR;
-  else process.env.LOG_PROXY_DIR = savedProxyDir;
-});
 
 const SCAN = {
   ok: true,
   url: "https://www.facebook.com/marketplace/you/selling",
   listings: [
-    { listingId: "1583545526797714", title: "Junk Clearance — Salthill", health: "DUPLICATE_TAKEDOWN", clicks: 4, href: "/marketplace/item/1583545526797714/" },
-    { listingId: "999", title: "New thing", health: "ACTIVE", clicks: 0, href: "/marketplace/item/999/" },
+    { listingId: "111", title: "Rubbish Removal Galway", health: "DUPLICATE_TAKEDOWN", clicks: 4, href: "/marketplace/item/111/" },
+    { listingId: "999", title: "Not in Twenty", health: "ACTIVE", clicks: 0, href: "/marketplace/item/999/" },
   ],
-  needsAttention: ["Junk Clearance — Salthill"],
+  needsAttention: ["Rubbish Removal Galway"],
+  bodySample: "Your listings",
 };
 
 describe("toListingStatus", () => {
@@ -49,86 +38,110 @@ describe("toListingStatus", () => {
     expect(toListingStatus("ACTIVE")).toEqual({ status: "active" });
     expect(toListingStatus("DUPLICATE_TAKEDOWN")).toEqual({ status: "underReviewDuplicate" });
     expect(toListingStatus("POLICY_VIOLATION")).toEqual({ status: "removed", removedBy: "platform" });
-    expect(toListingStatus("CHECKPOINT_REQUIRED")).toEqual({ status: "loginWall" });
-    expect(toListingStatus("RETRY_EXHAUSTED")).toEqual({ status: "unknown" });
   });
 });
 
-describe("storageStatePath", () => {
-  test("one file per account, overridable", () => {
-    expect(storageStatePath("fbPacer", { LOG_FB_STATE_DIR: "/tmp/fb" }).replaceAll("\\", "/")).toBe("/tmp/fb/fbPacer.json");
+describe("rule 12: no browser for an account that may not run", () => {
+  const refusals: [string, string][] = [
+    ["noProxy", "noProxy"],
+    ["noCountry", "noHomeCountry"],
+    ["noCookies", "neverConnected"],
+    ["banned", "accountNotUsable"],
+    ["unset", "accountNotUsable"],
+    ["twitterOne", "accountNotFacebook"],
+    ["nobody", "accountNotFound"],
+  ];
+  for (const [account, code] of refusals) {
+    test(`scan --account ${account} → ${code}, worker never started`, async () => {
+      const result = await run(["scan", "--account", account], () => SCAN);
+      expect(result.code).toBe(1);
+      expect(result.err).toContain(code);
+      expect(result.requests).toHaveLength(0);
+    });
+  }
+
+  test("connect refuses an account with no proxy too: signing in is no exception", async () => {
+    const twenty = marketplaceFixture();
+    await twenty.update("socialAccounts", "needsLogin", { proxy: null });
+    const result = await run(["connect", "--account", "needsLogin"], () => ({ ok: true }), twenty);
+    expect(result.code).toBe(1);
+    expect(result.err).toContain("noProxy");
+    expect(result.requests).toHaveLength(0);
   });
 });
 
 describe("live commands", () => {
-  test("rule 12: scan and status refuse an account with no proxy, without starting the worker", async () => {
-    const scan = await run(["scan", "--account", "fbPersonal"], () => SCAN);
-    expect(scan.code).toBe(1);
-    expect(scan.err).toContain("noProxy");
-    expect(scan.requests).toHaveLength(0);
-    const status = await run(["status", "1", "--account", "fbPersonal"], () => SCAN);
-    expect(status.requests).toHaveLength(0);
-  });
-
-  test("the worker gets the proxy file path, never the credentials", async () => {
-    const { requests } = await run(["scan", "--account", "fbPacer"], () => SCAN);
-    expect(requests[0].proxy_path).toBe(join(proxyDir, "fbPacer.json"));
-    expect(JSON.stringify(requests[0])).not.toContain("203.0.113.7");
-  });
-
-  test("scan sends the account's session and compares with log", async () => {
-    const { code, out, requests } = await run(["scan", "--account", "fbGalwayRubbish"], () => SCAN);
+  test("scan hands the worker file paths only, and the files carry the proxy and cookies from Twenty", async () => {
+    const { code, requests, files } = await run(["scan", "--account", "galwayOne"], () => SCAN);
     expect(code).toBe(0);
-    expect(requests[0].action).toBe("marketplace.scan");
-    expect(requests[0].storage_state_path).toBe(storageStatePath("fbGalwayRubbish"));
-    expect(out).toContain("Duplicate hold");
-    expect(out).toContain("Active");
-    expect(out).toContain("not in log");
-    expect(out).toContain("Needs attention:");
+    expect(JSON.stringify(requests[0])).not.toContain("secretPass");
+    expect(files.proxy).toEqual({ server: "http://203.0.113.7:8080", username: "user", password: "secretPass", country: "IE" });
+    expect((files.state as { cookies: unknown }).cookies).toEqual(FIXTURE_COOKIES);
+    // The private run folder is gone afterwards.
+    expect(existsSync(requests[0].proxy_path!)).toBe(false);
   });
 
-  test("scan --json passes the worker result through", async () => {
-    const { out } = await run(["scan", "--account", "fbPacer", "--json"], () => SCAN);
-    expect(JSON.parse(out).listings).toHaveLength(2);
+  test("scan writes the dashboard back to the account's listings in Twenty", async () => {
+    const { out, twenty } = await run(["scan", "--account", "galwayOne"], () => SCAN);
+    expect(out).toContain("Updated 1 listing(s) in Twenty.");
+    const row = twenty.rows.agencyListings.find((r) => r.id === "liveOne")!;
+    expect(row.status).toBe("DUPLICATE_TAKEDOWN");
+    expect(row.clicksCount).toBe(4);
   });
 
-  test("scan needs a known account and explains a missing session", async () => {
-    expect((await run(["scan"], () => SCAN)).code).toBe(1);
-    expect((await run(["scan", "--account", "nope"], () => SCAN)).code).toBe(1);
-    const missing = await run(["scan", "--account", "fbPacer"], () => ({ ok: false, code: "neverConnected" }));
-    expect(missing.code).toBe(1);
-    expect(missing.err).toContain("log connect --account fbPacer");
-    const wall = await run(["scan", "--account", "fbPacer"], () => ({ ok: false, code: "loginWall" }));
-    expect(wall.err).toContain("log in again");
+  test("a ban seen on the page makes the account RESTRICTED and replaces its campaign listings", async () => {
+    const banned = { ...SCAN, bodySample: "You can't buy or sell on Facebook" };
+    const { out, twenty } = await run(["scan", "--account", "galwayOne"], () => banned);
+    expect(out).toContain("galwayOne is now RESTRICTED");
+    const account = twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")!;
+    expect(account).toMatchObject({ accountStatus: "RESTRICTED", statusReason: "suspended" });
+    // Kept, never deleted.
+    expect(twenty.rows.socialAccounts.some((r) => r.id === "galwayOne")).toBe(true);
+    expect(twenty.rows.agencyListings.find((r) => r.id === "readyOne")!.status).toBe("REPLACED");
+  });
+
+  test("a worker failure with an account code updates the account", async () => {
+    const { code, err, twenty } = await run(["scan", "--account", "galwayOne"], () => ({ ok: false, code: "checkpointed", detail: "verify" }));
+    expect(code).toBe(1);
+    expect(err).toContain("checkpointed");
+    expect(twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")!.accountStatus).toBe("CHECKPOINT");
   });
 
   test("status opens one listing", async () => {
-    const reply = { ok: true, listingId: "1583545526797714", listingUrl: "https://x", status: "active", title: "Junk" };
-    const { code, out, requests } = await run(["status", "1583545526797714", "--account", "fbGalwayRubbish"], () => reply);
+    const reply = { ok: true, listingId: "111", listingUrl: "https://x", status: "active", title: "Rubbish" };
+    const { code, out, requests } = await run(["status", "111", "--account", "galwayOne"], () => reply);
     expect(code).toBe(0);
-    expect(requests[0].params).toEqual({ listing_id: "1583545526797714" });
+    expect(requests[0].params).toEqual({ listing_id: "111" });
     expect(out).toContain("Live status active");
-    expect((await run(["status", "--account", "fbPacer"], () => reply)).code).toBe(1);
   });
 
-  test("connect hands the terminal to the worker", async () => {
+  test("connect signs in through the proxy and saves the cookies to Twenty", async () => {
+    const twenty = marketplaceFixture();
     let interactive: boolean | undefined;
-    const out: string[] = [];
-    const worker = (async (_request: WorkerRequest, options?: { interactive?: boolean }) => {
+    const fresh = [{ name: "c_user", value: "2", domain: ".facebook.com", path: "/" }];
+    const worker = (async (request: WorkerRequest, options?: { interactive?: boolean }) => {
       interactive = options?.interactive;
-      return { ok: true, storageStatePath: "/tmp/fbPacer.json", loggedIn: true, authFlags: {} };
+      // The browser leaves its storage_state where it was told to.
+      require("node:fs").writeFileSync(request.storage_state_path!, JSON.stringify({ cookies: fresh, origins: [] }));
+      return { ok: true, storageStatePath: request.storage_state_path, loggedIn: true, authFlags: {} };
     }) as WorkerClient;
-    const code = await runCli(["connect", "--account", "fbPacer"], { worker, out: (l) => out.push(l), err: () => {} });
+    const out: string[] = [];
+    const code = await runCli(["connect", "--account", "needsLogin"], { worker, twenty, out: (l) => out.push(l), err: () => {} });
     expect(code).toBe(0);
     expect(interactive).toBe(true);
-    expect(out.join("\n")).toContain("Saved the fbPacer session");
+    const account = twenty.rows.socialAccounts.find((r) => r.id === "needsLogin")!;
+    expect(account.cookies).toEqual(fresh);
+    expect(account.accountStatus).toBe("ACTIVE");
+    expect(out.join("\n")).toContain("needsLogin is ACTIVE again");
   });
 
-  test("doctor reports checks and per-account sessions", async () => {
+  test("doctor reports the setup and which Twenty accounts may run", async () => {
     const reply = { ok: true, checks: { python: "3.12.10", facebookCamofoxClient: "/fcc", camoufoxBrowser: "/camoufox.exe", camoufoxVersion: "152" } };
     const { code, out } = await run(["doctor", "--json"], () => reply);
     expect(code).toBe(0);
-    expect(JSON.parse(out).sessions.map((s: { accountId: string }) => s.accountId)).toEqual(["fbGalwayRubbish", "fbPacer", "fbPersonal"]);
-    expect((await run(["doctor"], () => ({ ok: false, checks: { python: "3", facebookCamofoxClient: null, camoufoxBrowser: null } }))).code).toBe(1);
+    const accounts = JSON.parse(out).accounts as { accountName: string; ready: boolean }[];
+    expect(accounts.find((a) => a.accountName === "galwayOne")!.ready).toBe(true);
+    expect(accounts.find((a) => a.accountName === "noProxy")!.ready).toBe(false);
+    expect(accounts.some((a) => a.accountName === "twitterOne")).toBe(false);
   });
 });

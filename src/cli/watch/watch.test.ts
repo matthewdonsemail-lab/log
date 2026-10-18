@@ -1,20 +1,21 @@
 import { describe, expect, test } from "bun:test";
 import type { WorkerClient } from "../../camofox/worker/index.ts";
+import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { runCli } from "../runner/index.ts";
 import { toCheckOutcome } from "./index.ts";
 
-async function run(argv: string[], reply: () => unknown) {
+async function run(argv: string[], reply: () => unknown, twenty = marketplaceFixture()) {
   const out: string[] = [];
   const err: string[] = [];
   const worker = (async () => reply()) as unknown as WorkerClient;
-  const code = await runCli(argv, { worker, out: (line) => out.push(line), err: (line) => err.push(line) });
-  return { code, out: out.join("\n"), err: err.join("\n"), outLines: out };
+  const code = await runCli(argv, { worker, twenty, out: (line) => out.push(line), err: (line) => err.push(line) });
+  return { code, out: out.join("\n"), err: err.join("\n"), outLines: out, twenty };
 }
 
 const SCAN = {
   ok: true,
   url: "https://www.facebook.com/marketplace/you/selling",
-  listings: [{ listingId: "1583545526797714", title: "Junk Clearance — Salthill", health: "ACTIVE", clicks: 2, href: "/x" }],
+  listings: [{ listingId: "222", title: "Rubbish Removal Galway", health: "ACTIVE", clicks: 2, href: "/x" }],
   needsAttention: [],
   bodySample: "Your listings Junk Clearance — Salthill Active",
 };
@@ -46,35 +47,41 @@ describe("toCheckOutcome", () => {
 });
 
 describe("log watch", () => {
-  test("runs one check, prints the trace and the decisions", async () => {
-    const { code, out, err } = await run(["watch", "--account", "fbGalwayRubbish"], () => SCAN);
+  test("runs one check against the account's Twenty listings, prints the trace and the decisions", async () => {
+    const { code, out, err, twenty } = await run(["watch", "--account", "galwayOne"], () => SCAN);
     expect(code).toBe(0);
     expect(err).toContain("checking");
     expect(err).toContain("done");
-    // 38629807913299080 is live in log but missing from this scan: DELETED_BY_FB, repost approved.
-    expect(out).toContain("38629807913299080");
+    // 111 (liveOne) is live in Twenty but missing from this scan: DELETED_BY_FB, repost approved.
+    expect(out).toContain("111");
     expect(out).toContain("DELETED_BY_FB");
     expect(out).toContain("Nothing was posted.");
+    // Only this account's rows are synced: card 222 belongs to galwayTwo, so its row is untouched.
+    expect(twenty.rows.agencyListings.find((r) => r.id === "liveTwo")!.clicksCount).toBeUndefined();
   });
 
   test("--json streams NDJSON trace lines, then the output", async () => {
-    const { outLines } = await run(["watch", "--account", "fbGalwayRubbish", "--json"], () => SCAN);
+    const { outLines } = await run(["watch", "--account", "galwayOne", "--json"], () => SCAN);
     const parsed = outLines.map((line) => JSON.parse(line));
     expect(parsed.some((line) => line.kind === "state" && line.state === "checking")).toBe(true);
     expect(parsed.at(-1).kind).toBe("output");
     expect(parsed.at(-1).stopReason).toBe("checks done");
   });
 
-  test("a missing session stops with code 1", async () => {
-    const { code, out } = await run(["watch", "--account", "fbPacer"], () => ({ ok: false, code: "neverConnected" }));
+  test("a login wall stops with code 1 and marks the account NEEDS_LOGIN in Twenty", async () => {
+    const { code, out, twenty } = await run(["watch", "--account", "galwayOne"], () => ({ ok: false, code: "sessionExpired" }));
     expect(code).toBe(1);
-    expect(out).toContain("neverConnected");
+    expect(out).toContain("sessionExpired");
+    expect(twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")!.accountStatus).toBe("NEEDS_LOGIN");
   });
 
-  test("validates flags", async () => {
+  test("validates flags, and never starts for an account that may not run", async () => {
     expect((await run(["watch"], () => SCAN)).code).toBe(1);
     expect((await run(["watch", "--account", "nope"], () => SCAN)).code).toBe(1);
-    expect((await run(["watch", "--account", "fbPacer", "--checks", "-1"], () => SCAN)).code).toBe(1);
-    expect((await run(["watch", "--account", "fbPacer", "--interval", "0"], () => SCAN)).code).toBe(1);
+    expect((await run(["watch", "--account", "galwayOne", "--checks", "-1"], () => SCAN)).code).toBe(1);
+    expect((await run(["watch", "--account", "galwayOne", "--interval", "0"], () => SCAN)).code).toBe(1);
+    const noProxy = await run(["watch", "--account", "noProxy"], () => SCAN);
+    expect(noProxy.code).toBe(1);
+    expect(noProxy.err).toContain("noProxy");
   });
 });

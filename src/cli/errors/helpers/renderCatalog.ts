@@ -5,7 +5,7 @@ import { publishMachine } from "../../../marketplace/publish/index.ts";
 import { toMermaid } from "../../../observability/graph/index.ts";
 import { renderTable } from "../../runner/helpers/index.ts";
 
-export const LAYERS: ErrorLayer[] = ["account", "photo", "form", "captcha", "runtime", "auth"];
+export const LAYERS: ErrorLayer[] = ["account", "listing", "photo", "form", "captcha", "runtime", "twenty", "auth"];
 
 /** The machines `log graph` draws. */
 export const MACHINES = { publish: publishMachine, monitor: monitorMachine } as const;

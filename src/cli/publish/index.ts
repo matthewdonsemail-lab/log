@@ -1,23 +1,28 @@
 /**
- * `log publish` — post one Marketplace listing through the publish machine
- * (XState) and print every step.
+ * `log publish --listing <agencyListingId>` — post one Marketplace listing from
+ * Twenty through the publish machine (XState) and print every step.
+ *
+ * The listing row says what to post and which socialAccount posts it. Before
+ * anything opens (dry run or live, rule 12): the account is Facebook and
+ * usable, has a proxy and a home country, and the listing is in that country.
+ * At launch python/proxyGate.py checks the proxy's exit IP is in it too.
  *
  * Dry run by default: it opens the form, uploads the photos, fills and reads
  * back every field, screenshots the review, and stops before Publish. Only
  * `--live` clicks Publish. Captchas are routed CaptchaKraken → 2Captcha → a
- * person (`captcha/router`), and every attempt goes to the captcha ledger.
+ * person (`captcha/router`). Every run is written back to the listing row.
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
 import { appendAttempt, countArkoseToday, readAttempts, solverAvailability } from "../../captcha/router/index.ts";
+import { prepareRun } from "../../camofox/run/index.ts";
 import type { PublishSession } from "../../camofox/session/index.ts";
-import { countryName, countryOfLocation, proxyPath, readProxy } from "../../camofox/proxy/index.ts";
-import { storageStatePath } from "../../camofox/worker/index.ts";
 import type { ErrorCode } from "../../errors/catalog/index.ts";
-import { preparePhotos } from "../../media/photo/index.ts";
-import { publishMachine, validateListing } from "../../marketplace/publish/index.ts";
+import { countryMismatch, getListing, listListingsWhere, PUBLISHABLE_STATUSES, recordRun, setListingStatus, toPublishListing } from "../../marketplace/agencyListing/index.ts";
+import type { AgencyListing } from "../../marketplace/agencyListing/index.ts";
+import { publishMachine } from "../../marketplace/publish/index.ts";
 import type {
   CaptureOutput,
   ConfirmOutput,
@@ -26,101 +31,108 @@ import type {
   PreparePhotosOutput,
   PublishActorInputs,
   PublishClickOutput,
-  PublishListing,
   PublishOutput,
   ReviewOutput,
   SolveOutput,
   StepOutput,
   UploadOutput,
 } from "../../marketplace/publish/index.ts";
+import { countPostedToday, recordAccountIssue } from "../../marketplace/replacement/index.ts";
+import { findAccount, markPosted } from "../../marketplace/socialAccount/index.ts";
+import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
+import { preparePhotos } from "../../media/photo/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
-import { parseArgs } from "../runner/helpers/index.ts";
-import type { Command } from "../runner/types.ts";
+import { renderLoss } from "../live/helpers/index.ts";
+import { parseArgs, refuse, refuseError } from "../runner/helpers/index.ts";
+import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
 import { renderPublishOutput, summarizePublish } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
 
 export const PUBLISH_USAGE = [
-  "Usage: log publish --account <accountId> --title <text> --price <n> --category <name> --photo <path|url>[,<path|url>...]",
-  "                   [--condition <new|likeNew|good|fair>] [--description <text>] [--location <city, region>]",
-  "                   [--file <listing.json>] [--live] [--json] [--formUrl <url>]",
+  "Usage: log publish --listing <agencyListingId> [--live] [--json] [--formUrl <url>]",
   "Dry run unless --live: fills and checks everything, never clicks Publish.",
+  "The listing, its account and the account's proxy all come from Twenty.",
 ].join("\n");
 
 function publishRunDir(runId: string, env: Record<string, string | undefined> = process.env): string {
   return join(env.LOG_PUBLISH_DIR || join(homedir(), ".logCli", "publish"), runId);
 }
 
-/** Flags (and an optional JSON file) → listing. Flags win over the file. */
-function readListing(flags: Record<string, string | true>): { listing?: PublishListing; error?: string } {
-  let base: Partial<PublishListing> = {};
-  if (typeof flags.file === "string") {
-    try {
-      base = JSON.parse(readFileSync(flags.file, "utf8")) as Partial<PublishListing>;
-    } catch (error) {
-      return { error: `--file: ${error instanceof Error ? error.message : String(error)}` };
+/** A refusal before anything opened, also written to the listing row so Twenty shows why. */
+async function refuseListing(context: CommandContext, listing: AgencyListing, code: ErrorCode, detail: string): Promise<CommandResult> {
+  try {
+    await context.twenty.update("agencyListings", listing.id, {
+      lastRunAt: new Date().toISOString(),
+      lastRunResult: "BLOCKED" as never,
+      lastErrorCode: code,
+      lastError: detail.slice(0, 500),
+    });
+  } catch {
+    // The refusal stands even if Twenty can't take the note.
+  }
+  return refuse("publish", code, detail);
+}
+
+/** Everything that must hold before a browser may open for this listing. */
+export async function checkPublishable(
+  context: CommandContext,
+  listingId: string,
+  live: boolean,
+): Promise<{ listing: AgencyListing; account: FacebookAccount } | CommandResult> {
+  const listing = await getListing(context.twenty, listingId);
+  if (!listing) return refuse("publish", "listingNotFound", listingId);
+  if (!listing.socialAccountId) return refuse("publish", "listingNoAccount", listing.id);
+  if (!listing.status || !PUBLISHABLE_STATUSES.includes(listing.status)) {
+    return refuse("publish", "listingNotPublishable", `${listing.id} is ${listing.status ?? "unset"}`);
+  }
+  const account = await findAccount(context.twenty, listing.socialAccountId);
+  const content = toPublishListing(listing);
+  if (!content.ok) return refuseListing(context, listing, "listingInvalid", content.problems.join("; "));
+  if (account.homeCountry) {
+    const mismatch = countryMismatch(listing, account.homeCountry);
+    if (mismatch) return refuseListing(context, listing, "listingCountryMismatch", mismatch);
+  }
+  if (live) {
+    const published = await listListingsWhere(context.twenty, { socialAccountId: { eq: account.id } });
+    const today = countPostedToday(published).get(account.id) ?? 0;
+    if (today >= account.dailyListingCap) {
+      return refuseListing(context, listing, "dailyCapReached", `${account.accountName}: ${today}/${account.dailyListingCap} today`);
     }
   }
-  const str = (name: string) => (typeof flags[name] === "string" ? (flags[name] as string) : undefined);
-  const photos = str("photo")?.split(",").map((p) => p.trim()).filter(Boolean) ?? base.photos ?? [];
-  const priceText = str("price") ?? (base.price === undefined ? undefined : String(base.price));
-  const listing: PublishListing = {
-    title: str("title") ?? base.title ?? "",
-    price: priceText === undefined ? Number.NaN : Number(priceText),
-    category: str("category") ?? base.category ?? "",
-    condition: str("condition") ?? base.condition,
-    description: str("description") ?? base.description,
-    location: str("location") ?? base.location,
-    photos,
-  };
-  return { listing };
+  return { listing, account };
 }
 
 export const publishCommand: Command = {
   name: "publish",
-  summary: "Post one Marketplace listing (dry run unless --live), printing every machine step",
-  args: "--account <id> --title <t> --price <n> --category <c> --photo <p,...> [--live]",
+  summary: "Post one Twenty listing (dry run unless --live), printing every machine step",
+  args: "--listing <id> [--live] [--json]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, {
-      boolean: ["live", "json"],
-      valued: ["account", "title", "price", "category", "condition", "description", "location", "photo", "file", "formUrl"],
-    });
+    const parsed = parseArgs(argv, { boolean: ["live", "json"], valued: ["listing", "formUrl"] });
     if (!parsed.ok) return { code: 1, stderr: `log publish: ${parsed.error}\n${PUBLISH_USAGE}` };
     if (parsed.positionals.length > 0) return { code: 1, stderr: `log publish: unexpected argument "${parsed.positionals[0]}"\n${PUBLISH_USAGE}` };
-
-    const data = context.load();
-    const known = data.accounts.map((a) => a.id).join(", ");
-    const accountId = parsed.flags.account;
-    if (typeof accountId !== "string") return { code: 1, stderr: `log publish: --account is required. Known: ${known}\n${PUBLISH_USAGE}` };
-    if (!data.accounts.some((a) => a.id === accountId)) return { code: 1, stderr: `log publish: unknown account "${accountId}". Known: ${known}` };
-
-    const { listing, error } = readListing(parsed.flags);
-    if (!listing) return { code: 1, stderr: `log publish: ${error}` };
-    const problems = validateListing(listing);
-    if (problems.length) return { code: 1, stderr: `log publish: ${problems.join("; ")}\n${PUBLISH_USAGE}` };
-
-    const statePath = storageStatePath(accountId);
-    if (!existsSync(statePath)) {
-      return { code: 1, stderr: `log publish: no Facebook session for ${accountId} (${statePath}). Run: log connect --account ${accountId}` };
-    }
-
-    // Rule 12: the account's proxy is attached, and the listing is in the account's country.
-    const proxy = readProxy(accountId);
-    if (!proxy.ok) return { code: 1, stderr: `log publish: ${proxy.code}: ${proxy.detail}` };
-    if (listing.location) {
-      const listingCountry = countryOfLocation(listing.location);
-      if (listingCountry !== proxy.proxy.country) {
-        const where = listingCountry ? `is in ${countryName(listingCountry)}` : "has no country to check (write it as \"City, Country\")";
-        return {
-          code: 1,
-          stderr: `log publish: listingCountryMismatch: "${listing.location}" ${where}, but ${accountId} is in ${countryName(proxy.proxy.country)}.`,
-        };
-      }
-    }
-
+    const listingId = parsed.flags.listing;
+    if (typeof listingId !== "string") return { code: 1, stderr: `log publish: --listing is required (an agencyListing id)\n${PUBLISH_USAGE}` };
     const dryRun = !parsed.flags.live;
     const json = Boolean(parsed.flags.json);
-    const runId = `${new Date().toISOString().replace(/[:.]/g, "").slice(0, 15)}${accountId}`;
+
+    let checked: Awaited<ReturnType<typeof checkPublishable>>;
+    try {
+      checked = await checkPublishable(context, listingId, !dryRun);
+    } catch (error) {
+      return refuseError("publish", error);
+    }
+    if (!("account" in checked)) return checked;
+    const { listing, account } = checked;
+    const content = toPublishListing(listing);
+    if (!content.ok) return refuse("publish", "listingInvalid", content.problems.join("; "));
+
+    // Rule 12: no proxy, no home country, or an unusable account means no files and no browser.
+    const prepared = prepareRun(account, "run");
+    if (!prepared.ok) return refuseListing(context, listing, prepared.code, prepared.detail);
+    const run = prepared.run;
+
+    const runId = `${new Date().toISOString().replace(/[:.]/g, "").slice(0, 15)}${account.accountName.replace(/\W/g, "")}`;
     const runDir = publishRunDir(runId);
     mkdirSync(runDir, { recursive: true });
     const ledger = readAttempts();
@@ -128,9 +140,9 @@ export const publishCommand: Command = {
     let session: PublishSession | null = null;
     const open = () =>
       (session ??= context.session({
-        accountId,
-        storageStatePath: statePath,
-        proxyPath: proxyPath(accountId),
+        accountId: account.id,
+        storageStatePath: run.statePath,
+        proxyPath: run.proxyPath,
         receiptDir: runDir,
         formUrl: typeof parsed.flags.formUrl === "string" ? parsed.flags.formUrl : undefined,
       }));
@@ -167,30 +179,47 @@ export const publishCommand: Command = {
       summarizePublish,
     );
     const actor = createActor(machine, {
-      id: `publish:${accountId}`,
+      id: `publish:${account.accountName}`,
       input: {
-        accountId,
-        listing,
+        accountId: account.accountName,
+        listing: content.listing,
         dryRun,
         availability: solverAvailability(),
-        arkoseToday: countArkoseToday(ledger, accountId),
+        arkoseToday: countArkoseToday(ledger, account.accountName),
       },
       inspect,
     });
 
     let output: PublishOutput;
     try {
+      if (!dryRun) await setListingStatus(context.twenty, listing.id, "publishing");
       actor.start();
       output = (await toPromise(actor)) as PublishOutput;
+    } catch (error) {
+      return refuseError("publish", error);
     } finally {
       if (session) await (session as PublishSession).close();
+      run.cleanup();
     }
     // Every attempt goes to the ledger, with whether the page accepted it.
     for (const attempt of output.captchaAttempts) appendAttempt(attempt);
-    writeFileSync(join(runDir, "output.json"), `${JSON.stringify({ dryRun, listing: { ...listing, photos: listing.photos.length }, ...output }, null, 2)}\n`);
+    writeFileSync(join(runDir, "output.json"), `${JSON.stringify({ dryRun, agencyListingId: listing.id, account: account.accountName, ...output }, null, 2)}\n`);
+
+    const notes: string[] = [];
+    try {
+      await recordRun(context.twenty, listing, output, dryRun, output.receipt);
+      if (!dryRun && output.result === "published") await markPosted(context.twenty, account.id);
+      if (output.issue) {
+        const loss = await recordAccountIssue(context.twenty, account, output.issue, output.failure?.detail ?? null);
+        if (loss) notes.push(renderLoss(loss));
+      }
+      notes.push(`Written to Twenty: agencyListing ${listing.id}.`);
+    } catch (error) {
+      notes.push(`Could not write the run to Twenty: ${refuseError("publish", error).stderr}`);
+    }
 
     const code = output.result === "dryRun" || output.result === "published" ? 0 : 1;
-    if (json) return { code, stdout: JSON.stringify({ kind: "output", dryRun, runDir, ...output }) };
-    return { code, stdout: renderPublishOutput(output, runDir) };
+    if (json) return { code, stdout: JSON.stringify({ kind: "output", dryRun, runDir, agencyListingId: listing.id, account: account.accountName, ...output }) };
+    return { code, stdout: [renderPublishOutput(output, runDir), ...notes].join("\n") };
   },
 };

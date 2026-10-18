@@ -114,15 +114,30 @@ stateDiagram-v2
 | `joinGate` | no | `marketplace/account` | publish→blocked, monitor→blocked | A group asks the account to join first. | Join the group by hand. |
 | `removedFromGroup` | no | `marketplace/account` | publish→blocked, monitor→blocked | The account was removed from a group. | Tell matt. Don't retry the account until it's looked at. |
 | `proxyUnreachable` | yes | `proxyGate`, `publish.openingForm`, `worker`, `marketplace/account` | publish→blocked, monitor→blocked | No exit IP through the account's proxy: it is down or refusing connections. No browser was opened. | Check the proxy is up, then `log proxy check --account <id>`. |
-| `proxyAuthFailed` | no | `proxyGate`, `publish.openingForm`, `worker`, `marketplace/account` | publish→blocked, monitor→blocked | The proxy answered 407: it refused the username or password. No browser was opened. | Fix username/password with `log proxy set`. |
-| `proxyMalformed` | no | `proxyGate`, `camofox/proxy`, `publish.openingForm`, `worker`, `marketplace/account` | publish→blocked, monitor→blocked | The account's proxy file can't be read: it needs a server (scheme://host:port) and a 2-letter country. | Fix the file with `log proxy set --account <id> --file <proxy.json>`. |
-| `noProxy` | no | `proxyGate`, `camofox/proxy`, `publish.openingForm`, `worker` | publish→blocked, monitor→blocked | The account has no proxy, and no browser opens for an account without one (rule 12). Only signing in is allowed without. | Give it one: `log proxy set --account <id> --file <proxy.json>`. |
-| `proxyCountryMismatch` | no | `proxyGate`, `publish.openingForm`, `worker` | publish→blocked, monitor→blocked | The proxy's exit IP is not in the account's country, so Facebook would see the account in the wrong place. No browser was opened. | Use a proxy that exits in the account's country, or fix the file's country if it is wrong. |
+| `proxyAuthFailed` | no | `proxyGate`, `publish.openingForm`, `worker`, `marketplace/account` | publish→blocked, monitor→blocked | The proxy answered 407: it refused the username or password. No browser was opened. | Fix the username and password in the socialAccount proxy in Twenty. |
+| `proxyMalformed` | no | `proxyGate`, `marketplace/socialAccount`, `publish.openingForm`, `worker`, `marketplace/account` | publish→blocked, monitor→blocked | The account's proxy can't be read: it needs scheme://user:pass@host:port. | Fix the socialAccount proxy in Twenty. |
+| `accountNotFacebook` | no | `marketplace/socialAccount` | publish→blocked, monitor→blocked | The socialAccount is not platform FACEBOOK. log-cli only runs Facebook accounts. | Pick a FACEBOOK account, or fix its platform in Twenty. |
+| `accountNotUsable` | no | `marketplace/socialAccount` | publish→blocked, monitor→blocked | The account's accountStatus doesn't allow this run (only ACTIVE and WARMING post; connect also takes NEEDS_LOGIN and CHECKPOINT). An empty status counts as not usable. | Set accountStatus in Twenty (log account status), or use another account. |
+| `noHomeCountry` | no | `marketplace/socialAccount` | publish→blocked, monitor→blocked | The account has no homeCountry (ISO, e.g. IE), so its proxy and listings can't be checked. Nothing runs without it. | Set homeCountry (and homeCity) on the socialAccount in Twenty. |
+| `accountDisabled` | no | `worker`, `publish.openingForm`, `marketplace/account` | publish→blocked, monitor→blocked | Facebook says the account is disabled or locked. | The account becomes BANNED and its campaign listings get replacement accounts. Keep the record. |
+| `dailyCapReached` | yes | `cli/publish`, `marketplace/replacement` | publish→blocked, monitor→blocked | The account already published its dailyListingCap listings today (3 when empty). | Wait until tomorrow, or raise dailyListingCap in Twenty. |
+| `noProxy` | no | `proxyGate`, `marketplace/socialAccount`, `publish.openingForm`, `worker` | publish→blocked, monitor→blocked | The account has no proxy in Twenty, and no browser opens for an account without one (rule 12), not for a dry run and not for signing in. | Set the socialAccount proxy in Twenty (scheme://user:pass@host:port), then `log proxy check --account <name>`. |
+| `proxyCountryMismatch` | no | `proxyGate`, `publish.openingForm`, `worker` | publish→blocked, monitor→blocked | The proxy's exit IP is not in the account's country, so Facebook would see the account in the wrong place. No browser was opened. | Use a proxy that exits in the account's homeCountry, or fix homeCountry in Twenty if it is wrong. |
 | `listingCountryMismatch` | no | `cli/publish` | publish→blocked, monitor→blocked | The listing's location is not in the account's country, or has no country to check. Refused before any browser opens. | Write the location as "City, Country" in the account's country, or post it from an account in that country. |
 | `loginWall` | no | `worker`, `marketplace/account` | publish→blocked, monitor→blocked | The page loaded but shows a login wall instead of content. | Run `log connect --account <id>` and log in by hand. |
 | `captchaHtml` | no | `marketplace/account` | publish→blocked, monitor→blocked | The page loaded but shows a captcha instead of content. | Open the account by hand. `log publish` routes captchas itself; `scan` does not. |
 | `unknownPlatform` | no | `marketplace/account` | publish→blocked, monitor→blocked | The account belongs to a platform log-cli does not know. | Facebook only (AGENTS.md rule 3). |
 | `unknown` | no | `marketplace/account` | publish→blocked, monitor→blocked | The client saw an account failure it could not map. | Look at the raw signal and add a code for it here. |
+
+## listing
+
+| Code | Retry | Raised in | Ends in | Meaning | Do |
+| --- | --- | --- | --- | --- | --- |
+| `listingNotFound` | no | `marketplace/agencyListing` | command exits | No agencyListing with that id in Twenty. | Check the id (log listings shows them). |
+| `listingNoAccount` | no | `marketplace/agencyListing` | command exits | The agencyListing has no socialAccount, so nothing knows which account posts it. | Set its Social account in Twenty, or fill the campaign with log campaign fill. |
+| `listingNotPublishable` | no | `cli/publish` | command exits | The listing is not in a state that may be published (only DRAFT, READY, FAILED and BLOCKED). A live, publishing or unconfirmed listing would make a duplicate. | Check it on Facebook. An UNCONFIRMED one needs a person, never a re-publish. |
+| `listingInvalid` | no | `cli/publish` | command exits | The listing's fields would stall the create form (title, price, category, photos, location). | Fix the fields named in the detail in Twenty. |
+| `noReplacementAccount` | yes | `marketplace/replacement` | command exits | No FACEBOOK account in the listing's country is ACTIVE, proxied, under its cap and not already in the campaign. The listing stays ACCOUNT_LOST. | Add or activate an account in that country (with a proxy there), then run log campaign heal. |
 
 ## photo
 
@@ -160,7 +175,7 @@ stateDiagram-v2
 | Code | Retry | Raised in | Ends in | Meaning | Do |
 | --- | --- | --- | --- | --- | --- |
 | `noSolverForKind` | no | `publish.routingCaptcha` | publish→needsPerson | Facebook's own challenge, or a captcha no solver recognises. | Log in by hand and clear it, then run again. |
-| `noSolverConfigured` | no | `publish.routingCaptcha` | publish→needsPerson | No key for a solver that can take this captcha. | Set CAPTCHA_KRAKEN_API_KEY and/or TWOCAPTCHA_API_KEY in .env.local. |
+| `noSolverConfigured` | no | `publish.routingCaptcha` | publish→needsPerson | No key for a solver that can take this captcha. | Set CAPTCHA_KRAKEN_API_KEY and/or 2CAPTCHA_API_KEY in .env.local. |
 | `arkoseCapReached` | yes | `publish.routingCaptcha` | publish→needsPerson | This account used its Arkose solves for today. | Wait until tomorrow, or clear it by hand. |
 | `attemptsUsed` | no | `publish.routingCaptcha` | publish→needsPerson | Every usable solver was tried as many times as the policy allows. | Clear it by hand. The ledger (~/.logCli/captcha/attempts.jsonl) shows each try. |
 | `roundsUsed` | no | `publish.routingCaptcha` | publish→needsPerson | The run hit its cap on captcha rounds. | Clear it by hand. Facebook kept serving captchas: the account may be flagged. |
@@ -205,6 +220,16 @@ stateDiagram-v2
 | `crashedAfterPublish` | no | `publish.publishing`, `publish.capturingId` | publish→unconfirmedId | A step threw after Publish was clicked. The listing may be live. | Check Marketplace > Selling by hand. Never re-publish: it would duplicate. |
 | `checkCrashed` | no | `monitor.checking` | monitor→failed | The monitor's check threw instead of returning an outcome. | A bug in toCheckOutcome or the worker client. |
 | `uncatalogued` | no | `worker`, `session` | publish→failed, monitor→failed | A Python process sent a code that is not in this catalog. The detail starts with the code it sent. | Add the code to src/errors/catalog/types.ts, then `bun run errors:export`. |
+
+## twenty
+
+| Code | Retry | Raised in | Ends in | Meaning | Do |
+| --- | --- | --- | --- | --- | --- |
+| `twentyNotConfigured` | no | `twenty/graphql` | command exits | TWENTY_BASE_URL or TWENTY_API_KEY is not set. | Put both in log-cli/.env.local. |
+| `twentyUnreachable` | yes | `twenty/graphql` | command exits | Twenty didn't answer. | Check the network and twenty.inferencesaver.com, then run again. |
+| `twentyAuthFailed` | no | `twenty/graphql` | command exits | Twenty refused the API key (401/403). | Make a new API key in Twenty and put it in log-cli/.env.local. |
+| `twentyRequestFailed` | yes | `twenty/graphql` | command exits | Twenty answered with an error. The detail has its status and message. | Read the detail. A field error means scripts/twentySetup.mjs needs running. |
+| `accountNotFound` | no | `marketplace/socialAccount` | command exits | No socialAccount with that accountName or id in Twenty. | log accounts lists the Facebook accounts. |
 
 ## auth
 

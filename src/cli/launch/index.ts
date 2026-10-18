@@ -7,9 +7,10 @@
  * piped output, missing TTY) never prompts and stays deterministic.
  */
 import { cancel, intro, isCancel, outro, select } from "@clack/prompts";
-import { LISTING_STATUSES, LISTING_STATUS_LABELS } from "../../marketplace/listing/index.ts";
+import { LISTING_STATUSES, listListingsWhere } from "../../marketplace/agencyListing/index.ts";
+import { checkRunnable, listFacebookAccounts, toTwentyEnum } from "../../marketplace/socialAccount/index.ts";
 import { accountsCommand } from "../account/index.ts";
-import { listingCommand, listingsCommand, renderStatus } from "../listing/index.ts";
+import { listingCommand, listingsCommand } from "../listing/index.ts";
 import { connectCommand, doctorCommand, scanCommand } from "../live/index.ts";
 import { watchCommand } from "../watch/index.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
@@ -94,7 +95,8 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
   const prompts = launchDeps.prompts;
   try {
     prompts.intro("log launch — Facebook Marketplace");
-    const data = context.load();
+    // Everything comes from Twenty (socialAccounts, agencyListings).
+    const [accounts, listings] = await Promise.all([listFacebookAccounts(context.twenty), listListingsWhere(context.twenty)]);
 
     const action = await pick({
       message: "What do you want to look at?",
@@ -115,10 +117,10 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
     if (action === "browse") {
       const listingId = await pick({
         message: "Which listing?",
-        options: data.listings.map((row) => ({
-          value: row.listingId,
-          label: `${row.title} · €${row.price}`,
-          hint: `${renderStatus(row)} · ${row.account}`,
+        options: listings.map((row) => ({
+          value: row.id,
+          label: `${row.title} · ${row.price ?? "?"} ${row.priceCurrency ?? ""}`.trimEnd(),
+          hint: `${row.status ? toTwentyEnum(row.status) : "unset"} · ${accounts.find((a) => a.id === row.socialAccountId)?.accountName ?? "no account"}`,
         })),
       });
       if (listingId === null) return { code: 1 };
@@ -126,10 +128,10 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
     } else if (action === "status") {
       const status = await pick({
         message: "Which status?",
-        options: LISTING_STATUSES.map((value) => ({
-          value,
-          label: LISTING_STATUS_LABELS[value],
-          hint: `${data.listings.filter((row) => row.status === value).length} listings`,
+        options: LISTING_STATUSES.filter((value) => listings.some((row) => row.status === value)).map((value) => ({
+          value: toTwentyEnum(value),
+          label: toTwentyEnum(value),
+          hint: `${listings.filter((row) => row.status === value).length} listings`,
         })),
       });
       if (status === null) return { code: 1 };
@@ -137,18 +139,25 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
     } else if (action === "account") {
       const accountId = await pick({
         message: "Which account?",
-        options: data.accounts.map((account) => ({
-          value: account.id,
-          label: account.label,
-          hint: account.lastIssue ?? "healthy",
+        options: accounts.map((account) => ({
+          value: account.accountName,
+          label: account.accountName,
+          hint: account.status ? toTwentyEnum(account.status) : "unset",
         })),
       });
       if (accountId === null) return { code: 1 };
       result = await delegate(listingsCommand, context, ["--account", accountId]);
     } else if (action === "scan" || action === "watch" || action === "connect") {
+      const purpose = action === "connect" ? "connect" : "run";
+      if (!accounts.some((account) => checkRunnable(account, purpose).ok)) {
+        return { code: 1, stderr: "log launch: no FACEBOOK account may run: each needs a usable status, a proxy and a home country in Twenty. See `log accounts`." };
+      }
       const accountId = await pick({
         message: action === "connect" ? "Which account to connect?" : "Which account's listings?",
-        options: data.accounts.map((account) => ({ value: account.id, label: account.label, hint: account.id })),
+        // Only accounts that pass the account check (FACEBOOK, usable, proxy, home country) are offered.
+        options: accounts
+          .filter((account) => checkRunnable(account, purpose).ok)
+          .map((account) => ({ value: account.accountName, label: account.accountName, hint: `${account.homeCity ?? "?"}, ${account.homeCountry}` })),
       });
       if (accountId === null) return { code: 1 };
       const command = action === "scan" ? scanCommand : action === "watch" ? watchCommand : connectCommand;

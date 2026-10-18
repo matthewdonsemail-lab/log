@@ -8,7 +8,9 @@ import { startSession } from "../../camofox/session/index.ts";
 import { runWorker } from "../../camofox/worker/index.ts";
 import { listAccounts } from "../../marketplace/account/index.ts";
 import { listListings } from "../../marketplace/listing/index.ts";
-import { accountsCommand } from "../account/index.ts";
+import { createTwentyClient } from "../../twenty/graphql/index.ts";
+import { accountCommand, accountsCommand } from "../account/index.ts";
+import { campaignCommand } from "../campaign/index.ts";
 import { loginCommand, logoutCommand, whoamiCommand } from "../auth/index.ts";
 import { errorsCommand, graphCommand } from "../errors/index.ts";
 import { launchCommand } from "../launch/index.ts";
@@ -28,6 +30,7 @@ export const COMMANDS: Command[] = [
   listingsCommand,
   listingCommand,
   accountsCommand,
+  accountCommand,
   doctorCommand,
   connectCommand,
   scanCommand,
@@ -35,6 +38,7 @@ export const COMMANDS: Command[] = [
   watchCommand,
   proxyCommand,
   publishCommand,
+  campaignCommand,
   errorsCommand,
   graphCommand,
   loginCommand,
@@ -51,6 +55,7 @@ const ALIASES: Record<string, string> = {
 export function createContext(overrides: Partial<CommandContext> = {}): CommandContext {
   return {
     load: overrides.load ?? (() => ({ listings: listListings(), accounts: listAccounts() })),
+    twenty: overrides.twenty ?? createTwentyClient(),
     worker: overrides.worker ?? runWorker,
     session: overrides.session ?? startSession,
     out: overrides.out ?? ((line) => console.log(line)),

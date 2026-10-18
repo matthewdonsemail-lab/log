@@ -44,6 +44,7 @@ export function solverAvailability(
   const krakenFile = join(env.CAPTCHA_KRAKEN_STATE_DIR || join(home, '.captchakraken'), 'credentials')
   return {
     captchaKraken: Boolean(env.CAPTCHA_KRAKEN_API_KEY || env.VLLM_API_KEY || existsSync(krakenFile)),
-    twoCaptcha: Boolean(env.TWOCAPTCHA_API_KEY)
+    // matt's .env.local names it 2CAPTCHA_API_KEY; TWOCAPTCHA_API_KEY is the shell-safe spelling.
+    twoCaptcha: Boolean(env.TWOCAPTCHA_API_KEY || env["2CAPTCHA_API_KEY"])
   }
 }

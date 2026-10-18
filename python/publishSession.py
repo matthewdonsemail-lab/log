@@ -44,6 +44,8 @@ SELLING_URL = "https://www.facebook.com/marketplace/you/selling"
 LIMIT_TEXT = re.compile(
     r"daily listing limit|reached (?:your|the) (?:daily )?limit|you can.t (?:create|post) (?:more )?listings"
     r"|limit on how many listings", re.I)
+# The whole account, not just Marketplace: log-cli marks it BANNED and replaces its campaign listings.
+DISABLED_TEXT = re.compile(r"(?:your )?account has been (?:disabled|locked|suspended)|we suspended your account", re.I)
 BLOCKED_TEXT = re.compile(r"you can.t (?:use|buy or sell on) marketplace|marketplace isn.t available to you", re.I)
 CHALLENGE_TEXT = re.compile(
     r"confirm (?:your identity|it.s you)|enter the code|we sent (?:a|you a) code|upload a (?:photo|video) of yourself"
@@ -400,6 +402,8 @@ def step_open(s: Session, params: dict[str, Any]) -> dict[str, Any]:
     if "/checkpoint" in s.page.url.lower():
         return {"kind": "issue", "issue": checked("checkpointed"), "detail": s.page.url}
     text = s.body()
+    if DISABLED_TEXT.search(text):
+        return {"kind": "issue", "issue": checked("accountDisabled"), "detail": DISABLED_TEXT.search(text).group(0)}
     if BLOCKED_TEXT.search(text):
         return {"kind": "issue", "issue": checked("suspended"), "detail": BLOCKED_TEXT.search(text).group(0)}
     if LIMIT_TEXT.search(text):
@@ -455,9 +459,9 @@ def twocaptcha_code(exc: Exception) -> str:
 
 
 def solve_twocaptcha(s: Session, detection: dict[str, Any]) -> dict[str, Any]:
-    key = os.environ.get("TWOCAPTCHA_API_KEY", "").strip()
+    key = (os.environ.get("TWOCAPTCHA_API_KEY") or os.environ.get("2CAPTCHA_API_KEY") or "").strip()
     if not key:
-        return {"solved": False, "code": checked("missingApiKey"), "detail": "TWOCAPTCHA_API_KEY is not set"}
+        return {"solved": False, "code": checked("missingApiKey"), "detail": "2CAPTCHA_API_KEY (or TWOCAPTCHA_API_KEY) is not set"}
     try:
         from twocaptcha import TwoCaptcha
     except Exception as exc:
@@ -587,6 +591,8 @@ def step_fill_fields(s: Session, params: dict[str, Any]) -> dict[str, Any]:
     if listing.get("location"):
         location = str(listing["location"])
         city = norm(location.split(",")[0])
+        # "City, Country": the suggestion must be in that country too, never a same-named city abroad (rule 12).
+        country = norm(location.split(",")[-1]) if "," in location else ""
         loc = s.page.locator('input[role="combobox"][aria-label="Location"]').first
         if loc.count() == 0:
             loc = s.field("Location")
@@ -603,14 +609,15 @@ def step_fill_fields(s: Session, params: dict[str, Any]) -> dict[str, Any]:
             return fail("locationNotSet", f"no suggestions for {location!r}")
         picked = False
         for i in range(options.count()):
-            if city and city in norm(options.nth(i).inner_text()):
+            text = norm(options.nth(i).inner_text())
+            if city and city in text and (not country or country in text):
                 options.nth(i).click(timeout=5000)
                 picked = True
                 break
         if not picked:
-            return fail("locationNotSet", f"no suggestion matched {city!r}")
+            return fail("locationNotSet", f"no suggestion matched {city!r} in {country!r}")
         s.page.wait_for_timeout(800)
-        if city not in norm(loc.input_value()):
+        if city not in norm(loc.input_value()) or (country and country not in norm(loc.input_value())):
             return fail("locationNotSet", f"Location reads {loc.input_value()!r}")
         filled["location"] = loc.input_value()
     return {"ok": True, "filled": filled}
@@ -727,7 +734,7 @@ def main() -> int:
     # Node writes UTF-8; Windows would read cp1252 and mangle the en dash in "Used – good".
     sys.stdin.reconfigure(encoding="utf8")
     reply_out, sys.stdout = sys.stdout, sys.stderr
-    proxyGate.arm(config.get("proxyPath"), allow_no_proxy=False)
+    proxyGate.arm(config.get("proxyPath"))
     session = Session(config)
 
     def reply(request_id: Any, result: dict[str, Any]) -> None:

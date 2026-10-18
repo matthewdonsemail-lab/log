@@ -1,6 +1,6 @@
 ---
 name: logCli
-description: Run log-cli, the Facebook Marketplace command line for log. Read the seed listings and accounts, check the live setup, log an account in through Camoufox, scan an account's selling page live, and run the XState listing monitor with a step-by-step trace. Read-only on Facebook.
+description: Run log-cli, the Facebook Marketplace command line for ListeningKit. Accounts and listings live in Twenty (socialAccounts, agencyListings). Check an account may run, sign it in through its proxy, scan its selling page, run the XState monitor, publish listings (dry run unless --live), and fill or heal campaigns when accounts are lost.
 ---
 
 # logCli
@@ -11,62 +11,67 @@ none of them prompt unless you run `log launch` in a terminal.
 ## Hard boundaries
 
 1. **Read-only on Facebook, except `log publish --live`.** `scan`, `status` and
-   `watch` only read. `login` only saves a session file. `publish` is a dry run
-   unless `--live` (AGENTS.md rule 10). Nothing is edited or deleted.
-2. **Never print session files.** `~/.logCli/facebook/<accountId>.json` (Facebook
-   cookies) and `~/.logCli/auth/sessions.json` (Twenty tokens) are live
-   credentials. Don't cat, paste or commit them. Commands only show tokens masked.
+   `watch` only read. `connect` only saves cookies. `publish` is a dry run
+   unless `--live` (AGENTS.md rule 10). Nothing is edited or deleted on Facebook.
+2. **Twenty is the source (rule 13).** Accounts are `socialAccounts` (FACEBOOK),
+   listings are `agencyListings`. Never delete either: banned or dead accounts
+   keep their record (`log account status`). Never print cookies, proxies,
+   passwords or 2FA secrets; `log` never selects password, email or totpSecret.
 3. **Marketplace only.** No X, Reddit, keywords or communities.
 4. **Camoufox is always visible.** Every launch is headed, with humanize on and
    the cursor shown (AGENTS.md rule 11). There is no `--headless`. Run it where
    a screen can show the window.
-5. **No browser without the account's proxy.** Each account needs
-   `~/.logCli/proxies/<accountId>.json`, with an exit IP in its `country` (rule 12,
-   `docs/proxies.md`). Only `connect` may run without one. Never print the file.
+5. **No browser without the account's proxy (rule 12).** The proxy is the
+   socialAccount's `proxy`, its country `homeCountry`. No exception: not dry
+   runs, not `connect`. `docs/proxies.md`.
 
 ## Environment
 
 - Bun, Python 3.12 with `facebook-camofox-client` installed
   (`pip install -e ../facebook-camofox-client`), and the Camoufox browser
   (`python -m camoufox fetch`).
-- `LOG_PYTHON` picks the interpreter. `LOG_FB_STATE_DIR` moves the session files.
+- `log-cli/.env.local` (git-ignored): `TWENTY_BASE_URL`, `TWENTY_API_KEY`,
+  `CAPTCHA_KRAKEN_API_KEY`, `2CAPTCHA_API_KEY`. `LOG_PYTHON` picks the interpreter.
+- After adding Twenty fields: `node scripts/twentySetup.mjs --apply`, then
+  `bun run twenty:client` (the generated client, rule 14).
 
 ## Commands
 
 ```bash
 bun run launch                                          # Clack menu over everything below
 
-# seed data (what the log dashboard shows)
-bun bin/log.ts listings [--status underReview] [--account fbPacer]
-bun bin/log.ts listing 1583545526797714
-bun bin/log.ts accounts
+# Twenty data
+bun bin/log.ts accounts                                  # FACEBOOK accounts, and whether each may run
+bun bin/log.ts account show galwayOne
+bun bin/log.ts account status galwayOne BANNED --reason accountDisabled   # kept; campaign listings replaced
+bun bin/log.ts listings [--status READY] [--account galwayOne] [--campaign <id>]
+bun bin/log.ts listing <agencyListingId>
 
-# sign in (Twenty OAuth through blaster's web app, same as `blaster login`)
-bun bin/log.ts login                                     # opens the browser; --token <t> to paste instead
-bun bin/log.ts whoami                                    # who is signed in (refreshes if expired)
-bun bin/log.ts logout
+# sign in to log itself (Twenty OAuth through blaster's web app, same as `blaster login`)
+bun bin/log.ts login | whoami | logout
 
-# proxies (rule 12): set one per account, then check it before anything else
-bun bin/log.ts proxy set --account fbGalwayRubbish --file proxy.json
-bun bin/log.ts proxy check --account fbGalwayRubbish      # exit IP + country, no browser
-bun bin/log.ts proxy show --account fbGalwayRubbish       # password masked
+# proxies (rule 12): check before anything else
+bun bin/log.ts proxy check --account galwayOne           # exit IP + country, no browser, saved to Twenty
 
 # live (launches Camoufox through the proxy)
-bun bin/log.ts doctor                                    # setup check, sessions per account
-bun bin/log.ts connect --account fbGalwayRubbish           # log in by hand, press Enter to save
-bun bin/log.ts scan --account fbGalwayRubbish            # Marketplace > Selling, next to log's data
-bun bin/log.ts status 1583545526797714 --account fbGalwayRubbish
+bun bin/log.ts doctor                                    # setup check, which accounts may run
+bun bin/log.ts connect --account galwayOne               # sign in by hand, cookies saved to Twenty
+bun bin/log.ts scan --account galwayOne                  # Marketplace > Selling, written back to the listings
+bun bin/log.ts status <facebookListingId> --account galwayOne
 
 # the monitor (XState), every step printed live
-bun bin/log.ts watch --account fbGalwayRubbish           # one check
-bun bin/log.ts watch --account fbGalwayRubbish --checks 0 --interval 240   # loop until Ctrl+C
-bun bin/log.ts watch --account fbGalwayRubbish --json    # NDJSON, result on the last line
+bun bin/log.ts watch --account galwayOne [--checks 0 --interval 240] [--json]
 
-# publish one listing (XState), every step printed live. Dry run unless --live
-bun bin/log.ts publish --account fbGalwayRubbish --title "Sofa" --price 50 --category Furniture --photo a.jpg,b.jpg
-bun bin/log.ts publish --account fbGalwayRubbish --file listing.json --live
+# publish one Twenty listing (XState), every step printed live. Dry run unless --live
+bun bin/log.ts publish --listing <agencyListingId>
+bun bin/log.ts publish --listing <agencyListingId> --live
 # against the local copy of the create form (no Facebook)
-bun bin/log.ts publish --account fbGalwayRubbish --file listing.json --formUrl file:///$PWD/python/fixtures/createItem.html
+bun bin/log.ts publish --listing <id> --formUrl file:///$PWD/python/fixtures/createItem.html
+
+# campaigns: one ad on N accounts in one place (docs/accountsAndListings.md)
+bun bin/log.ts campaign fill --campaign <id> --from <agencyListingId> --accounts 10
+bun bin/log.ts campaign run --campaign <id> [--live]
+bun bin/log.ts campaign heal --campaign <id>
 ```
 
 ## Reading the results

@@ -2,7 +2,7 @@
 import type { Command } from "../types.ts";
 
 const NOTES = [
-  "Data is the Facebook Marketplace seed from listeningkit-hackathon (listings + their Facebook accounts).",
+  "Accounts and listings come from Twenty (socialAccounts, agencyListings). No browser opens without the account's proxy in its home country.",
   "Every command takes --json for machine-readable output and never prompts.",
 ];
 

@@ -1,13 +1,13 @@
 """No Camoufox opens for an account unless its proxy is attached and its exit
 IP is in the account's country (AGENTS.md rule 12, matt 2026-10-18).
 
-The TypeScript side passes the path of the account's proxy file
-(`~/.logCli/proxies/<accountId>.json`), never the credentials, and calls
-arm() once per process. Every launch then goes through apply(), from
-visibleBrowser.launch_kwargs(), which:
+The TypeScript side writes the account's proxy (Twenty socialAccounts.proxy
+and homeCountry) to a private temp file per run (camofox/run) and passes its
+path, never the credentials, then this process calls arm() once. Every launch
+goes through apply(), from visibleBrowser.launch_kwargs(), which:
 
-1. reads the proxy file: none means `noProxy`, unless this launch is a person
-   signing in (`log connect`), the only launch allowed without one;
+1. reads the proxy file: none means `noProxy`. There is no exception, not
+   for dry runs and not for signing in (matt: "never, ever open" without one);
 2. resolves the exit IP through the proxy (Camoufox's own public_ip) and its
    country (Camoufox's own GeoIP database): unreachable means
    `proxyUnreachable`, a 407 means `proxyAuthFailed`;
@@ -15,19 +15,16 @@ visibleBrowser.launch_kwargs(), which:
    `country`;
 4. launches with the proxy and `geoip=<exit IP>`, so timezone, locale,
    geolocation and WebRTC all match the proxy, never this machine.
-
-A sign-in whose account has a proxy file still goes through 2-4.
 """
 from __future__ import annotations
 
 import json
-import sys
 from pathlib import Path
 from typing import Any
 
 from errorCodes import checked
 
-_armed: dict[str, Any] = {"path": None, "allowNoProxy": False}
+_armed: dict[str, Any] = {"path": None}
 
 
 class GateError(Exception):
@@ -39,9 +36,8 @@ class GateError(Exception):
         self.detail = detail
 
 
-def arm(proxy_path: str | None, allow_no_proxy: bool = False) -> None:
+def arm(proxy_path: str | None) -> None:
     _armed["path"] = proxy_path
-    _armed["allowNoProxy"] = allow_no_proxy
 
 
 def load_proxy(path: str | None) -> dict[str, Any] | None:
@@ -87,16 +83,6 @@ def exit_location(proxy: dict[str, Any]) -> tuple[str, str]:
     return ip, str(region or "").upper()
 
 
-def _machine_country() -> str:
-    try:
-        from camoufox.geolocation import get_geolocation
-        from camoufox.ip import public_ip
-
-        return str(get_geolocation(public_ip()).locale.region or "unknown country")
-    except Exception:
-        return "unknown country"
-
-
 def check(proxy_path: str | None) -> dict[str, Any]:
     """`log proxy check`: the exit IP and country, without opening a browser."""
     proxy = load_proxy(proxy_path)
@@ -113,11 +99,6 @@ def apply(kwargs: dict[str, Any]) -> dict[str, Any]:
     """The launch kwargs with the account's proxy and geoip forced, or a GateError."""
     proxy = load_proxy(_armed["path"])
     if proxy is None:
-        if _armed["allowNoProxy"]:
-            # A person signing in, and the account has no proxy yet. Say where Facebook will see them.
-            print(f"proxyGate: no proxy for this account. Facebook will see this machine ({_machine_country()})."
-                  " Set one with `log proxy set` and sign in again through it.", file=sys.stderr, flush=True)
-            return {**kwargs, "proxy": None, "geoip": True}
         raise GateError("noProxy", f"no proxy file at {_armed['path']}: no browser opens without one")
     ip = check(_armed["path"])["exitIp"]
     return {**kwargs, "proxy": playwright_proxy(proxy), "geoip": ip}

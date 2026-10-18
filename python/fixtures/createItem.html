@@ -86,10 +86,13 @@
 
   // Location: suggestions appear while typing.
   $('location').addEventListener('input', () => {
-    const q = $('location').value.split(',')[0].trim();
+    const typed = $('location').value.split(',');
+    const q = typed[0].trim();
+    // Like Facebook: the country typed, plus a same-named place elsewhere to catch a wrong pick.
+    const country = typed.length > 1 ? typed[typed.length - 1].trim() : 'Ireland';
     const list = $('locationList');
     if (q.length < 3) { list.classList.add('hidden'); return; }
-    list.innerHTML = [`${q}, Ireland`, `${q} Bay, Ireland`].map((n) => `<div role="option">${n}</div>`).join('');
+    list.innerHTML = [`${q}, United Kingdom`, `${q}, ${country}`, `${q} Bay, Ireland`].map((n) => `<div role="option">${n}</div>`).join('');
     list.classList.remove('hidden');
     for (const o of list.querySelectorAll('[role="option"]')) o.addEventListener('click', () => {
       $('location').value = o.textContent; list.classList.add('hidden');

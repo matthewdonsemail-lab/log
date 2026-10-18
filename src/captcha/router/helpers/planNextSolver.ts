@@ -44,7 +44,7 @@ export function planNextSolver(
   } else {
     // arkose
     if (!availability.twoCaptcha) {
-      return { solver: null, reason: 'noSolverConfigured', detail: 'Arkose needs 2Captcha (TWOCAPTCHA_API_KEY); CaptchaKraken does not support it' }
+      return { solver: null, reason: 'noSolverConfigured', detail: 'Arkose needs 2Captcha (2CAPTCHA_API_KEY); CaptchaKraken does not support it' }
     }
     if (arkoseToday >= policy.arkoseDailyCap) {
       return { solver: null, reason: 'arkoseCapReached', detail: `${arkoseToday}/${policy.arkoseDailyCap} Arkose solves today on this account` }
@@ -55,7 +55,7 @@ export function planNextSolver(
   }
 
   if (!availability.captchaKraken && !availability.twoCaptcha) {
-    return { solver: null, reason: 'noSolverConfigured', detail: 'set CAPTCHA_KRAKEN_API_KEY and/or TWOCAPTCHA_API_KEY in .env.local' }
+    return { solver: null, reason: 'noSolverConfigured', detail: 'set CAPTCHA_KRAKEN_API_KEY and/or 2CAPTCHA_API_KEY in .env.local' }
   }
   return { solver: null, reason: 'attemptsUsed', detail: `every solver tried: ${attempts.map((a) => `${a.solver}(${a.code ?? 'failed'})`).join(', ')}` }
 }

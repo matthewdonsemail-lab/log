@@ -1,40 +1,38 @@
 # Proxies: how they load into Camoufox
 
 AGENTS.md rule 12 (matt, 2026-10-18): no browser opens for an account unless
-its proxy is attached and its exit IP is in the account's country. Signing in
-is the only exception. A listing must be in the account's country too.
+its proxy is attached and its exit IP is in the account's country. There is no
+exception, not for dry runs and not for signing in. A listing must be in the
+account's country too, and so must the Location picked on the form.
 
 ## Where a proxy lives
 
-One file per account, `~/.logCli/proxies/<accountId>.json` (`LOG_PROXY_DIR`
-moves them), outside the repo like the session files:
+On the account in Twenty: `socialAccounts.proxy`, as
+`scheme://user:pass@host:port` (`http`, `https` or `socks5`; the vendor style
+`host:port:user:pass` is read too). The country it must exit in is
+`socialAccounts.homeCountry` (ISO 3166-1 alpha-2, e.g. `IE`). Nothing is kept in
+local files.
 
-```json
-{ "server": "http://host:port", "username": "...", "password": "...", "country": "IE" }
-```
-
-- `server` is `http://`, `https://` or `socks5://` plus `host:port`. Credentials go in
-  `username` / `password`, never in the URL.
-- `country` (ISO 3166-1 alpha-2) is where the account must appear to be.
-- `log proxy set --account <id> --file <proxy.json>` validates and saves it.
-  `log proxy show` prints it with the password masked. `log proxy check` resolves
-  the exit IP and its country without opening a browser.
+`log proxy check --account <name>` resolves the exit IP and its country without
+opening a browser, and writes the result to `proxyCheckedAt`, `proxyExitIp` and
+`proxyExitCountry` on the account.
 
 ## How one launch goes
 
 ```text
-log scan / status / watch / publish / connect
-  │  TS: readProxy(accountId)  ── missing ──▶ noProxy, exit 1, no Python started
-  │      (publish) listing "City, Country" ≠ proxy country ──▶ listingCountryMismatch
+log scan / status / watch / publish / connect / proxy check
+  │  TS: findAccount (Twenty) → checkRunnable
+  │      not FACEBOOK / unusable status / no proxy / no homeCountry ──▶ refused, no Python started
+  │      (publish) listing country ≠ homeCountry ──▶ listingCountryMismatch
   ▼
-Python gets the file PATH (proxy_path / proxyPath), never the credentials
-  │  proxyGate.arm(path, allow_no_proxy = action is "login")
+camofox/run writes the proxy (and cookies) from Twenty to a private temp folder;
+Python gets the file PATHS, never credentials on argv; the folder is deleted after
+  │  proxyGate.arm(path)            (same for every action, sign-in included)
   ▼
 every Camoufox launch → visibleBrowser.launch_kwargs() → proxyGate.apply()
-  1. read the file          none ──▶ noProxy (sign-in: allowed, warns which country FB will see)
-                            bad  ──▶ proxyMalformed
+  1. read the file          none ──▶ noProxy, bad ──▶ proxyMalformed
   2. exit IP through proxy  Camoufox public_ip(proxy)   down ──▶ proxyUnreachable, 407 ──▶ proxyAuthFailed
-  3. exit country           Camoufox GeoIP database      ≠ file country ──▶ proxyCountryMismatch
+  3. exit country           Camoufox GeoIP database      ≠ homeCountry ──▶ proxyCountryMismatch
   4. launch                 proxy=…, geoip=<exit IP>, headless=False, humanize=1.5, showcursor
 ```
 
@@ -73,12 +71,13 @@ account`). A publish ends `blocked`, and the monitor stops at `blocked`.
 
 ## Checked
 
-- `log proxy check` through a local CONNECT proxy:
-  - no file gives `noProxy`
-  - file says IE, exit is VN, gives `proxyCountryMismatch`
-  - file says VN, exit is VN, passes
-  - a dead port gives `proxyUnreachable`
-- `log publish` against `python/fixtures/createItem.html`:
-  - IE file with a VN exit stops at `blocked · proxyCountryMismatch` before any window opens
-  - VN file runs the full dry run through the proxy
-  - a listing in "Galway, Ireland" on a VN account is refused with `listingCountryMismatch`
+- `log proxy check` through a local CONNECT proxy (exit 116.105.162.81, VN):
+  - no proxy → `noProxy`
+  - homeCountry IE, exit VN → `proxyCountryMismatch`
+  - homeCountry VN → passes and the result is written to Twenty
+  - dead port → `proxyUnreachable`
+- Against the live Twenty with throwaway test accounts (deleted afterwards):
+  - a listing on an account with no proxy is refused before anything opens
+  - a VN-proxied account's dry run ran end to end against the local copy of the form
+  - the form's Location picked "Hanoi, Vietnam" over "Hanoi, United Kingdom"
+  - a banned account's `scan` is refused with `accountNotUsable`

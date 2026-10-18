@@ -9,6 +9,8 @@ import type { AccountIssue, RawSignal } from '../types'
  * most severe first. Returns null when the page shows no account problem.
  */
 const RULES: { issue: AccountIssue; phrases: string[] }[] = [
+  // The whole account, not just Marketplace: it becomes BANNED and its campaign listings are replaced.
+  { issue: 'accountDisabled', phrases: ['account has been disabled', 'account has been locked', 'we suspended your account', 'your account has been suspended'] },
   {
     issue: 'suspended',
     phrases: [
@@ -17,9 +19,7 @@ const RULES: { issue: AccountIssue; phrases: string[] }[] = [
       'access to marketplace has been restricted',
       "can't use marketplace",
       'removed from marketplace',
-      "didn't follow our community standards",
-      'account has been disabled',
-      'account has been locked'
+      "didn't follow our community standards"
     ]
   },
   {

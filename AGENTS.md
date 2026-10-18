@@ -42,9 +42,20 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     (`python/visibleBrowser.py`). There is no flag to turn it off.
     `camofox/session/visible.test.ts` enforces it.
 12. 2026-10-18 · No browser opens for an account unless its proxy is attached
-    and its exit IP is in the account's country (`python/proxyGate.py`). Signing
-    in (`log connect`) is the only launch allowed without one. Listings must be
-    in the account's country. How it works: `docs/proxies.md`.
+    and its exit IP is in the account's country (`python/proxyGate.py`). There
+    is no exception: not dry runs, not signing in (matt: "never, ever open"
+    without one). Listings must be in the account's country, and the form's
+    location must be picked in that country. How it works: `docs/proxies.md`.
+13. 2026-10-18 · Twenty is the only place accounts and listings live: Facebook
+    accounts are `socialAccounts` (platform FACEBOOK), listings are
+    `agencyListings`. Never delete either: a banned or dead account keeps its
+    record with its status, and its campaign listings get replacement accounts
+    in the same country (`docs/accountsAndListings.md`). Fields are only ever
+    added (`scripts/twentySetup.mjs`), never renamed or retyped, so the
+    twitter-controller keeps working.
+14. 2026-10-18 · Twenty is reached through the generated GraphQL client, the
+    same one blaster and the dialer use (`bun run twenty:client`,
+    `src/twenty/graphql/generated`). Regenerate it after any field change.
 
 ## Checks
 
@@ -58,10 +69,12 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 - Facebook Marketplace only: listings and the Facebook accounts that publish
   them. X, Reddit, keywords and communities from listeningkit-hackathon are out
   of scope until asked for.
-- Data comes through `marketplace/*/client.ts`. Today that is the dashboard's
-  seed (`apps/web/src/lib/listings/mock.ts`, `connections/mock.ts` in
-  listeningkit-hackathon). Change the client when the live
-  facebook-camofox-client lands, never the commands.
+- Data comes from Twenty through `marketplace/socialAccount`,
+  `marketplace/agencyListing` and `marketplace/replacement`, over
+  `twenty/graphql`. Commands get it from `context.twenty`; tests inject
+  `marketplaceFixture()` (an in-memory Twenty) and never call the network.
+- The listeningkit-hackathon seed (`context.load()`) stays only for the
+  listing machine port below.
 - `marketplace/listing/types.ts` and `machine.ts` are ports of
   `apps/web/src/lib/listings/types.ts` and `machine.ts`. Keep them in step
   with the source.
@@ -74,8 +87,10 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 - Read-only on Facebook, except `login`, which only saves a session, and
   `log publish --live` (rule 10). Don't add editing or deleting without matt
   asking.
-- Session files (`~/.logCli/facebook/*.json`) hold live cookies, and proxy files
-  (`~/.logCli/proxies/*.json`) hold passwords. Never commit, print or paste them.
+- Cookies, proxies and 2FA secrets live in Twenty only. A run writes the
+  account's proxy and cookies to a private temp folder for the Python
+  (`camofox/run`) and deletes it afterwards. Never commit, print or paste
+  them; `log` never selects password, email or totpSecret at all.
 
 ## Monitor (XState v5)
 

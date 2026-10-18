@@ -244,36 +244,94 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Fix username/password with `log proxy set`."
+    "action": "Fix the username and password in the socialAccount proxy in Twenty."
   },
   "proxyMalformed": {
     "layer": "account",
-    "meaning": "The account's proxy file can't be read: it needs a server (scheme://host:port) and a 2-letter country.",
+    "meaning": "The account's proxy can't be read: it needs scheme://user:pass@host:port.",
     "retryable": false,
     "raisedIn": [
       "proxyGate",
-      "camofox/proxy",
+      "marketplace/socialAccount",
       "publish.openingForm",
       "worker",
       "marketplace/account"
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Fix the file with `log proxy set --account <id> --file <proxy.json>`."
+    "action": "Fix the socialAccount proxy in Twenty."
+  },
+  "accountNotFacebook": {
+    "layer": "account",
+    "meaning": "The socialAccount is not platform FACEBOOK. log-cli only runs Facebook accounts.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/socialAccount"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Pick a FACEBOOK account, or fix its platform in Twenty."
+  },
+  "accountNotUsable": {
+    "layer": "account",
+    "meaning": "The account's accountStatus doesn't allow this run (only ACTIVE and WARMING post; connect also takes NEEDS_LOGIN and CHECKPOINT). An empty status counts as not usable.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/socialAccount"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Set accountStatus in Twenty (log account status), or use another account."
+  },
+  "noHomeCountry": {
+    "layer": "account",
+    "meaning": "The account has no homeCountry (ISO, e.g. IE), so its proxy and listings can't be checked. Nothing runs without it.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/socialAccount"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Set homeCountry (and homeCity) on the socialAccount in Twenty."
+  },
+  "accountDisabled": {
+    "layer": "account",
+    "meaning": "Facebook says the account is disabled or locked.",
+    "retryable": false,
+    "raisedIn": [
+      "worker",
+      "publish.openingForm",
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "The account becomes BANNED and its campaign listings get replacement accounts. Keep the record."
+  },
+  "dailyCapReached": {
+    "layer": "account",
+    "meaning": "The account already published its dailyListingCap listings today (3 when empty).",
+    "retryable": true,
+    "raisedIn": [
+      "cli/publish",
+      "marketplace/replacement"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Wait until tomorrow, or raise dailyListingCap in Twenty."
   },
   "noProxy": {
     "layer": "account",
-    "meaning": "The account has no proxy, and no browser opens for an account without one (rule 12). Only signing in is allowed without.",
+    "meaning": "The account has no proxy in Twenty, and no browser opens for an account without one (rule 12), not for a dry run and not for signing in.",
     "retryable": false,
     "raisedIn": [
       "proxyGate",
-      "camofox/proxy",
+      "marketplace/socialAccount",
       "publish.openingForm",
       "worker"
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Give it one: `log proxy set --account <id> --file <proxy.json>`."
+    "action": "Set the socialAccount proxy in Twenty (scheme://user:pass@host:port), then `log proxy check --account <name>`."
   },
   "proxyCountryMismatch": {
     "layer": "account",
@@ -286,7 +344,7 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Use a proxy that exits in the account's country, or fix the file's country if it is wrong."
+    "action": "Use a proxy that exits in the account's homeCountry, or fix homeCountry in Twenty if it is wrong."
   },
   "listingCountryMismatch": {
     "layer": "account",
@@ -572,7 +630,7 @@
       "publish.routingCaptcha"
     ],
     "publish": "needsPerson",
-    "action": "Set CAPTCHA_KRAKEN_API_KEY and/or TWOCAPTCHA_API_KEY in .env.local."
+    "action": "Set CAPTCHA_KRAKEN_API_KEY and/or 2CAPTCHA_API_KEY in .env.local."
   },
   "arkoseCapReached": {
     "layer": "captcha",
@@ -979,6 +1037,96 @@
     "publish": "failed",
     "monitor": "failed",
     "action": "Add the code to src/errors/catalog/types.ts, then `bun run errors:export`."
+  },
+  "listingNotFound": {
+    "layer": "listing",
+    "meaning": "No agencyListing with that id in Twenty.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/agencyListing"
+    ],
+    "action": "Check the id (log listings shows them)."
+  },
+  "listingNoAccount": {
+    "layer": "listing",
+    "meaning": "The agencyListing has no socialAccount, so nothing knows which account posts it.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/agencyListing"
+    ],
+    "action": "Set its Social account in Twenty, or fill the campaign with log campaign fill."
+  },
+  "listingNotPublishable": {
+    "layer": "listing",
+    "meaning": "The listing is not in a state that may be published (only DRAFT, READY, FAILED and BLOCKED). A live, publishing or unconfirmed listing would make a duplicate.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/publish"
+    ],
+    "action": "Check it on Facebook. An UNCONFIRMED one needs a person, never a re-publish."
+  },
+  "listingInvalid": {
+    "layer": "listing",
+    "meaning": "The listing's fields would stall the create form (title, price, category, photos, location).",
+    "retryable": false,
+    "raisedIn": [
+      "cli/publish"
+    ],
+    "action": "Fix the fields named in the detail in Twenty."
+  },
+  "noReplacementAccount": {
+    "layer": "listing",
+    "meaning": "No FACEBOOK account in the listing's country is ACTIVE, proxied, under its cap and not already in the campaign. The listing stays ACCOUNT_LOST.",
+    "retryable": true,
+    "raisedIn": [
+      "marketplace/replacement"
+    ],
+    "action": "Add or activate an account in that country (with a proxy there), then run log campaign heal."
+  },
+  "twentyNotConfigured": {
+    "layer": "twenty",
+    "meaning": "TWENTY_BASE_URL or TWENTY_API_KEY is not set.",
+    "retryable": false,
+    "raisedIn": [
+      "twenty/graphql"
+    ],
+    "action": "Put both in log-cli/.env.local."
+  },
+  "twentyUnreachable": {
+    "layer": "twenty",
+    "meaning": "Twenty didn't answer.",
+    "retryable": true,
+    "raisedIn": [
+      "twenty/graphql"
+    ],
+    "action": "Check the network and twenty.inferencesaver.com, then run again."
+  },
+  "twentyAuthFailed": {
+    "layer": "twenty",
+    "meaning": "Twenty refused the API key (401/403).",
+    "retryable": false,
+    "raisedIn": [
+      "twenty/graphql"
+    ],
+    "action": "Make a new API key in Twenty and put it in log-cli/.env.local."
+  },
+  "twentyRequestFailed": {
+    "layer": "twenty",
+    "meaning": "Twenty answered with an error. The detail has its status and message.",
+    "retryable": true,
+    "raisedIn": [
+      "twenty/graphql"
+    ],
+    "action": "Read the detail. A field error means scripts/twentySetup.mjs needs running."
+  },
+  "accountNotFound": {
+    "layer": "twenty",
+    "meaning": "No socialAccount with that accountName or id in Twenty.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/socialAccount"
+    ],
+    "action": "log accounts lists the Facebook accounts."
   },
   "timedOut": {
     "layer": "auth",

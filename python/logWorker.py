@@ -262,8 +262,8 @@ def main() -> int:
         print(json.dumps(failure("badRequest", f"request is not JSON: {exc}")))
         return 1
     action = request.get("action")
-    # Only a person signing in may open a browser without the account's proxy (rule 12).
-    proxyGate.arm(request.get("proxy_path"), allow_no_proxy=action == "login")
+    # No browser without the account's proxy, for any action, signing in included (rule 12).
+    proxyGate.arm(request.get("proxy_path"))
     try:
         # Every Camoufox facebook-camofox-client launches: proxy gate, then headed,
         # humanized, cursor shown (rules 11 and 12).

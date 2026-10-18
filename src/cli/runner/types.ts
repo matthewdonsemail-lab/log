@@ -4,6 +4,7 @@ import type { SessionFactory } from "../../camofox/session/index.ts";
 import type { WorkerClient } from "../../camofox/worker/index.ts";
 import type { ConnectionRecord } from "../../marketplace/account/index.ts";
 import type { ListingRecord } from "../../marketplace/listing/index.ts";
+import type { TwentyClient } from "../../twenty/graphql/index.ts";
 
 export interface CommandResult {
   code: number;
@@ -18,8 +19,10 @@ export interface MarketplaceData {
 }
 
 export interface CommandContext {
-  /** Loads the Marketplace data. Injectable so tests can pin the rows. */
+  /** The listeningkit-hackathon seed, kept for the listing machine port. Live commands use `twenty`. */
   load: () => MarketplaceData;
+  /** Twenty, where the Facebook accounts (socialAccounts) and listings (agencyListings) live. Injected in tests. */
+  twenty: TwentyClient;
   /** Runs the camofox worker (launches a real browser). Injected so tests never do. */
   worker: WorkerClient;
   /** Starts a publish session (a long-lived Camoufox browser). Injected so tests never do. */

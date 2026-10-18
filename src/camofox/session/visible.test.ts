@@ -40,9 +40,10 @@ describe("Camoufox always launches visible", () => {
 });
 
 describe("no browser without the account's proxy (rule 12)", () => {
-  test("only a sign-in may launch without a proxy", () => {
-    expect(read("logWorker.py")).toContain('proxyGate.arm(request.get("proxy_path"), allow_no_proxy=action == "login")');
-    expect(read("publishSession.py")).toContain('proxyGate.arm(config.get("proxyPath"), allow_no_proxy=False)');
+  test("there is no exception: not for signing in, not for a dry run", () => {
+    expect(read("logWorker.py")).toContain('proxyGate.arm(request.get("proxy_path"))');
+    expect(read("publishSession.py")).toContain('proxyGate.arm(config.get("proxyPath"))');
+    for (const name of ["logWorker.py", "publishSession.py", "proxyGate.py"]) expect(read(name)).not.toMatch(/allow_no_proxy|allowNoProxy/);
   });
 
   test("the gate checks the exit country and pins geoip to the exit IP", () => {
