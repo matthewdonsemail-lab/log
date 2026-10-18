@@ -20,7 +20,7 @@ const FACEBOOK_ACCOUNTS: ConnectionRecord[] = [
     platform: 'facebook',
     label: 'Pacer Marketplace',
     connectedAt: '2026-09-11T17:40:00+00:00',
-    lastIssue: 'proxy_unreachable',
+    lastIssue: 'proxyUnreachable',
     rawSignal: { marker: 'ECONNREFUSED 203.0.113.42:8080' },
     lastCheckedAt: '2026-09-14T06:30:00+00:00'
   },

@@ -1,11 +1,13 @@
 /**
  * Spawns `python/publishSession.py` and talks to it one step at a time.
  * Same interpreter as the worker (`LOG_PYTHON`, default `python`); it needs
- * camoufox, captchakraken and 2captcha-python installed.
+ * camoufox, captchakraken and 2captcha-python installed. Every reply's codes
+ * are checked against the error catalog here (`normalizeResult`).
  */
 import { spawn } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
-import { splitReplies } from './helpers/index'
+import type { ErrorCode } from '../../errors/catalog/index'
+import { normalizeResult, splitReplies } from './helpers/index'
 import type { PublishSession, SessionConfig, SessionFactory, SessionReply, SessionStep } from './types'
 
 export const SESSION_PATH = fileURLToPath(new URL('../../../python/publishSession.py', import.meta.url))
@@ -16,12 +18,12 @@ export const startSession: SessionFactory = (config: SessionConfig): PublishSess
   const proc = spawn(python, [SESSION_PATH, JSON.stringify(config)], { stdio: ['pipe', 'pipe', 'inherit'] })
   let buffer = ''
   let nextId = 1
-  let exited: string | null = null
+  let exited: { code: ErrorCode; detail: string } | null = null
   const waiting = new Map<number, (reply: SessionReply) => void>()
 
-  const settleAll = (why: string) => {
-    exited = why
-    for (const [id, resolve] of waiting) resolve({ id, result: { ok: false, code: 'sessionExited', detail: why } })
+  const settleAll = (code: ErrorCode, detail: string) => {
+    exited ??= { code, detail }
+    for (const [id, resolve] of waiting) resolve({ id, result: { ok: false, ...exited } })
     waiting.clear()
   }
   proc.stdout.on('data', (chunk: Buffer) => {
@@ -35,15 +37,15 @@ export const startSession: SessionFactory = (config: SessionConfig): PublishSess
       }
     }
   })
-  proc.on('error', (error) => settleAll(`could not start ${python}: ${error.message}. Set LOG_PYTHON.`))
-  proc.on('close', (code) => settleAll(`session exited with code ${code}`))
+  proc.on('error', (error) => settleAll('workerNotStarted', `could not start ${python}: ${error.message}. Set LOG_PYTHON.`))
+  proc.on('close', (code) => settleAll('sessionExited', `session exited with code ${code}`))
 
   return {
     call<T>(step: SessionStep, params: Record<string, unknown> = {}): Promise<T> {
-      if (exited) return Promise.resolve({ ok: false, code: 'sessionExited', detail: exited } as T)
+      if (exited) return Promise.resolve({ ok: false, ...exited } as T)
       const id = nextId++
       return new Promise<T>((resolve) => {
-        waiting.set(id, (reply) => resolve(reply.result as T))
+        waiting.set(id, (reply) => resolve(normalizeResult(reply.result) as T))
         proc.stdin.write(`${JSON.stringify({ id, step, params })}\n`)
       })
     },

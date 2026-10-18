@@ -57,7 +57,7 @@ function fakeSession(script: Partial<Record<SessionStep, Array<Record<string, un
       async call<T>(step: SessionStep, params: Record<string, unknown> = {}) {
         calls.push({ step, params });
         const queue = script[step];
-        return ((queue && queue.length ? queue.shift() : defaults[step]) ?? { ok: false, code: "unscripted" }) as T;
+        return ((queue && queue.length ? queue.shift() : defaults[step]) ?? { ok: false, code: "badReply", detail: `unscripted ${step}` }) as T;
       },
       async close() {
         closed++;

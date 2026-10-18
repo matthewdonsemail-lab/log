@@ -14,6 +14,7 @@ import { createActor, fromPromise, toPromise } from "xstate";
 import { appendAttempt, countArkoseToday, readAttempts, solverAvailability } from "../../captcha/router/index.ts";
 import type { PublishSession } from "../../camofox/session/index.ts";
 import { storageStatePath } from "../../camofox/worker/index.ts";
+import type { ErrorCode } from "../../errors/catalog/index.ts";
 import { preparePhotos } from "../../media/photo/index.ts";
 import { publishMachine, validateListing } from "../../marketplace/publish/index.ts";
 import type {
@@ -41,7 +42,7 @@ export * from "./helpers/index.ts";
 export const PUBLISH_USAGE = [
   "Usage: log publish --account <accountId> --title <text> --price <n> --category <name> --photo <path|url>[,<path|url>...]",
   "                   [--condition <new|likeNew|good|fair>] [--description <text>] [--location <city, region>]",
-  "                   [--file <listing.json>] [--live] [--json] [--headless] [--formUrl <url>]",
+  "                   [--file <listing.json>] [--live] [--json] [--formUrl <url>]",
   "Dry run unless --live: fills and checks everything, never clicks Publish.",
 ].join("\n");
 
@@ -80,7 +81,7 @@ export const publishCommand: Command = {
   args: "--account <id> --title <t> --price <n> --category <c> --photo <p,...> [--live]",
   async run(context, argv) {
     const parsed = parseArgs(argv, {
-      boolean: ["live", "json", "headless"],
+      boolean: ["live", "json"],
       valued: ["account", "title", "price", "category", "condition", "description", "location", "photo", "file", "formUrl"],
     });
     if (!parsed.ok) return { code: 1, stderr: `log publish: ${parsed.error}\n${PUBLISH_USAGE}` };
@@ -115,7 +116,6 @@ export const publishCommand: Command = {
         accountId,
         storageStatePath: statePath,
         receiptDir: runDir,
-        headless: Boolean(parsed.flags.headless),
         formUrl: typeof parsed.flags.formUrl === "string" ? parsed.flags.formUrl : undefined,
       }));
     const call = <T>(step: Parameters<PublishSession["call"]>[0], params: Record<string, unknown> = {}) => open().call<T>(step, params);
@@ -129,8 +129,9 @@ export const publishCommand: Command = {
         }),
         openForm: fromPromise<FormOutcome, PublishActorInputs["openForm"]>(async ({ input }) => {
           // A crashed step replies { ok: false, code }, not a FormOutcome.
-          const result = await call<Partial<FormOutcome> & { code?: string; detail?: string }>("open", { recheck: input.recheck });
-          return result.kind ? (result as FormOutcome) : { kind: "error", code: result.code ?? "openFailed", detail: result.detail };
+          const result = await call<Partial<FormOutcome> & { code?: ErrorCode; detail?: string }>("open", { recheck: input.recheck });
+          if (result.kind) return result as FormOutcome;
+          return { kind: "error", code: result.code ?? "badReply", detail: result.detail ?? JSON.stringify(result).slice(0, 200) };
         }),
         solveCaptcha: fromPromise<SolveOutput, PublishActorInputs["solveCaptcha"]>(async ({ input }) =>
           call<SolveOutput>("solveCaptcha", { solver: input.solver, detection: input.detection }),

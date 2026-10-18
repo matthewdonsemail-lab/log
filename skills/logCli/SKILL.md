@@ -17,6 +17,9 @@ none of them prompt unless you run `log launch` in a terminal.
    cookies) and `~/.logCli/auth/sessions.json` (Twenty tokens) are live
    credentials. Don't cat, paste or commit them. Commands only show tokens masked.
 3. **Marketplace only.** No X, Reddit, keywords or communities.
+4. **Camoufox is always visible.** Every launch is headed, with humanize on and
+   the cursor shown (AGENTS.md rule 11). There is no `--headless`. Run it where
+   a screen can show the window.
 
 ## Environment
 
@@ -60,10 +63,15 @@ bun bin/log.ts publish --account fbGalwayRubbish --file listing.json --formUrl f
 
 ## Reading the results
 
+Every code is in the error catalog: `log errors` lists them, `log errors --code <code>`
+explains one (meaning, retryable, where each machine ends, what to do), and
+`docs/errorCatalog.md` has them all with the machine diagrams. After changing
+`src/errors/catalog/types.ts`, run `bun run errors:export`.
+
 | You see | Means | Do |
 | --- | --- | --- |
-| `noSession` / `never_connected` | No saved session for that account | `log connect --account <accountId>` |
-| `loginWall` / `session_expired` | Facebook wants a fresh login | `log connect` again |
+| `neverConnected` | No saved session for that account | `log connect --account <accountId>` |
+| `loginWall` / `sessionExpired` | Facebook wants a fresh login | `log connect` again |
 | `checkpointed`, `suspended` | Account problem; the monitor stops at `blocked` | Tell matt, don't retry |
 | `tripped` | Same error 3 times in a row | Read the trace, fix the cause, run again |
 | Repost `yes (#n)` | A takedown that's within the repost budget | Decision only; nothing was posted |

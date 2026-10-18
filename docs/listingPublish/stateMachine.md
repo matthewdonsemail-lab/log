@@ -115,6 +115,10 @@ the gaps. File: `src/marketplace/publish/machine.ts` (XState v5, same style as
 `marketplace/monitor/machine.ts`). Every browser step is an actor the
 caller supplies with `machine.provide`, so tests never open a browser.
 
+> The machine as built, and every error code with where it ends, is generated in
+> [`docs/errorCatalog.md`](../errorCatalog.md) (`log graph publish`, `log errors`).
+> The diagram below is the design it was built from.
+
 ```mermaid
 stateDiagram-v2
   [*] --> preparingImages
@@ -164,9 +168,9 @@ Rules this machine enforces, and the source each one comes from:
 5. **The id comes from the card whose title matches**, never "the first
    `/marketplace/item/` link" (FCC `create.py:203-219` and Listaro
    `agent/src/poster.ts:1270-1321` both get this wrong).
-6. **Account issues stop the machine.** `checkpoint`, `limitReached` and
-   `sessionExpired` map onto the existing
-   `marketplace/account` issues. `WRITE_BLOCKING_ISSUES` accounts never
+6. **Account issues stop the machine.** `checkpointed`, `rateLimited`,
+   `sessionExpired` and every other `account` code in the error catalog end
+   the run in `blocked`. `WRITE_BLOCKING_ISSUES` accounts never
    start a publish.
 7. **One publish per account at a time.** Listaro's per-account browser
    lock force-released after 3 min while a post can take 5 min

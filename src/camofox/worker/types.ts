@@ -3,6 +3,7 @@
  * facebook-camofox-client (github.com/PRACE1/facebook-camofox-client).
  * One JSON request in (argv), one JSON result out (stdout).
  */
+import type { CodedFailure } from "../../errors/catalog/index.ts";
 
 export type WorkerAction = "doctor" | "login" | "marketplace.scan" | "marketplace.status";
 
@@ -49,7 +50,8 @@ export interface ScannedListing {
   href: string;
 }
 
-export type WorkerFailure = { ok: false; error: string; [key: string]: unknown };
+/** A failed call: a catalog code (`src/errors/catalog/types.ts`), plus whatever the worker sent with it (`url`, `bodySample`). */
+export type WorkerFailure = CodedFailure & { [key: string]: unknown };
 
 export type DoctorResult = { ok: boolean; checks: DoctorChecks };
 export type LoginResult = { ok: true; storageStatePath: string; loggedIn: boolean; authFlags: Record<string, boolean> };

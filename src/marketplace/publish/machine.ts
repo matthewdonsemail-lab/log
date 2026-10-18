@@ -7,9 +7,15 @@
  *                 captcha│  │re-check                              │
  *                        ▼  │                                      ▼
  *                 routingCaptcha ─▶ solvingCaptcha     publishing ─▶ confirming
- *                        │                                              │
- *                        └─ no solver ─▶ needsPerson        capturingId ─▶ done
- *                                                                └─ no id ─▶ unconfirmedId
+ *                                                                       │
+ *                                                       capturingId ─▶ done
+ *
+ *   any failure ─▶ stopping ─▶ blocked | needsPerson | unconfirmedId | failed
+ *
+ * Every failure carries an error-catalog code (`src/errors/catalog/types.ts`)
+ * and goes through `stopping`, which reads the code's `publish` end from the
+ * catalog (`helpers/publishEnd.ts`). No state decides its own ending, so the
+ * catalog is the one place that says what each code does.
  *
  * Rules (docs/listingPublish/stateMachine.md §4):
  * - every write is read back by the actor; a step that can't confirm fails
@@ -20,7 +26,8 @@
 import { assign, fromPromise, setup } from 'xstate'
 import { DEFAULT_CAPTCHA_POLICY, planNextSolver } from '../../captcha/router/index'
 import type { CaptchaPlan } from '../../captcha/router/index'
-import { toConditionLabel } from './helpers/index'
+import type { AccountIssue } from '../account/types'
+import { publishEnd, toConditionLabel } from './helpers/index'
 import type {
   CaptureOutput,
   ConfirmOutput,
@@ -30,6 +37,7 @@ import type {
   PublishActorInputs,
   PublishClickOutput,
   PublishContext,
+  PublishFailure,
   PublishInput,
   PublishOutput,
   ReviewOutput,
@@ -48,11 +56,14 @@ function missing<TOutput, TInput>(name: string) {
 
 const isFailure = (output: { ok?: boolean }): output is StepFailure => output.ok === false
 
-interface FailureParams {
-  state: string
-  code: string
-  detail?: string
+/** A step's `{ ok: false }` output as the failure for `state`. */
+const stepFailure = (state: string, output: unknown): PublishFailure => {
+  const out = output as StepFailure
+  return { state, code: out.code, detail: out.detail }
 }
+
+/** A thrown actor. Runtime, so after Publish `stopping` turns it into `crashedAfterPublish`. */
+const crash = (state: string, error: unknown): PublishFailure => ({ state, code: 'crashed', detail: String(error) })
 
 export const publishMachine = setup({
   types: {
@@ -75,10 +86,18 @@ export const publishMachine = setup({
   guards: {
     hasSolver: ({ context }) => context.plan?.solver != null,
     isDryRun: ({ context }) => context.dryRun,
-    stepFailed: (_, output: { ok?: boolean }) => isFailure(output)
+    stepFailed: (_, output: { ok?: boolean }) => isFailure(output),
+    formReady: (_, outcome: FormOutcome) => outcome.kind === 'ready',
+    formCaptcha: (_, outcome: FormOutcome) => outcome.kind === 'captcha',
+    formIssue: (_, outcome: FormOutcome) => outcome.kind === 'issue',
+    rejected: (_, output: { ok?: boolean; code?: string }) => isFailure(output) && output.code === 'rejected',
+    hasListingId: (_, output: CaptureOutput) => Boolean(output.listingId),
+    endsBlocked: ({ context }) => publishEnd(context.failure!, context.publishClicked).end === 'blocked',
+    endsNeedsPerson: ({ context }) => publishEnd(context.failure!, context.publishClicked).end === 'needsPerson',
+    endsUnconfirmed: ({ context }) => publishEnd(context.failure!, context.publishClicked).end === 'unconfirmedId'
   },
   actions: {
-    recordFailure: assign((_, params: FailureParams) => ({ failure: params }))
+    recordFailure: assign((_, failure: PublishFailure) => ({ failure }))
   }
 }).createMachine({
   id: 'publish',
@@ -114,11 +133,8 @@ export const publishMachine = setup({
         onDone: [
           {
             guard: { type: 'stepFailed', params: ({ event }) => event.output },
-            target: 'failed',
-            actions: {
-              type: 'recordFailure',
-              params: ({ event }) => ({ state: 'preparingPhotos', code: (event.output as StepFailure).code, detail: (event.output as StepFailure).detail })
-            }
+            target: 'stopping',
+            actions: { type: 'recordFailure', params: ({ event }) => stepFailure('preparingPhotos', event.output) }
           },
           {
             target: 'openingForm',
@@ -128,10 +144,7 @@ export const publishMachine = setup({
             })
           }
         ],
-        onError: {
-          target: 'failed',
-          actions: { type: 'recordFailure', params: ({ event }) => ({ state: 'preparingPhotos', code: 'crashed', detail: String(event.error) }) }
-        }
+        onError: { target: 'stopping', actions: { type: 'recordFailure', params: ({ event }) => crash('preparingPhotos', event.error) } }
       }
     },
     openingForm: {
@@ -140,7 +153,7 @@ export const publishMachine = setup({
         input: ({ context }) => ({ accountId: context.accountId, recheck: context.formOpened }),
         onDone: [
           {
-            guard: ({ event }) => event.output.kind === 'ready',
+            guard: { type: 'formReady', params: ({ event }) => event.output },
             target: 'choosingCategory',
             actions: assign(({ context }) => ({
               formOpened: true,
@@ -150,7 +163,7 @@ export const publishMachine = setup({
             }))
           },
           {
-            guard: ({ event }) => event.output.kind === 'captcha',
+            guard: { type: 'formCaptcha', params: ({ event }) => event.output },
             target: 'routingCaptcha',
             actions: assign(({ context, event }) => ({
               formOpened: true,
@@ -159,25 +172,28 @@ export const publishMachine = setup({
             }))
           },
           {
-            guard: ({ event }) => event.output.kind === 'issue',
-            target: 'blocked',
-            actions: assign(({ event }) => {
-              const out = event.output as Extract<FormOutcome, { kind: 'issue' }>
-              return { issue: out.issue, failure: { state: 'openingForm', code: out.issue, detail: out.detail } }
-            })
+            guard: { type: 'formIssue', params: ({ event }) => event.output },
+            target: 'stopping',
+            actions: {
+              type: 'recordFailure',
+              params: ({ event }) => {
+                const out = event.output as Extract<FormOutcome, { kind: 'issue' }>
+                return { state: 'openingForm', code: out.issue, detail: out.detail }
+              }
+            }
           },
           {
-            target: 'failed',
-            actions: assign(({ event }) => {
-              const out = event.output as Extract<FormOutcome, { kind: 'error' }>
-              return { failure: { state: 'openingForm', code: out.code, detail: out.detail } }
-            })
+            target: 'stopping',
+            actions: {
+              type: 'recordFailure',
+              params: ({ event }) => {
+                const out = event.output as Extract<FormOutcome, { kind: 'error' }>
+                return { state: 'openingForm', code: out.code, detail: out.detail }
+              }
+            }
           }
         ],
-        onError: {
-          target: 'failed',
-          actions: { type: 'recordFailure', params: ({ event }) => ({ state: 'openingForm', code: 'crashed', detail: String(event.error) }) }
-        }
+        onError: { target: 'stopping', actions: { type: 'recordFailure', params: ({ event }) => crash('openingForm', event.error) } }
       }
     },
     routingCaptcha: {
@@ -187,11 +203,14 @@ export const publishMachine = setup({
       always: [
         { guard: 'hasSolver', target: 'solvingCaptcha' },
         {
-          target: 'needsPerson',
-          actions: assign(({ context }) => {
-            const plan = context.plan as Extract<CaptchaPlan, { solver: null }>
-            return { failure: { state: 'routingCaptcha', code: plan.reason, detail: plan.detail } }
-          })
+          target: 'stopping',
+          actions: {
+            type: 'recordFailure',
+            params: ({ context }) => {
+              const plan = context.plan as Extract<CaptchaPlan, { solver: null }>
+              return { state: 'routingCaptcha', code: plan.reason, detail: plan.detail }
+            }
+          }
         }
       ]
     },
@@ -224,10 +243,7 @@ export const publishMachine = setup({
               context.captcha!.kind === 'arkose' && context.plan!.solver === 'twoCaptcha' ? context.arkoseToday + 1 : context.arkoseToday
           }))
         },
-        onError: {
-          target: 'failed',
-          actions: { type: 'recordFailure', params: ({ event }) => ({ state: 'solvingCaptcha', code: 'crashed', detail: String(event.error) }) }
-        }
+        onError: { target: 'stopping', actions: { type: 'recordFailure', params: ({ event }) => crash('solvingCaptcha', event.error) } }
       }
     },
     choosingCategory: {
@@ -237,11 +253,8 @@ export const publishMachine = setup({
         onDone: [
           {
             guard: { type: 'stepFailed', params: ({ event }) => event.output },
-            target: 'failed',
-            actions: {
-              type: 'recordFailure',
-              params: ({ event }) => ({ state: 'choosingCategory', code: (event.output as StepFailure).code, detail: (event.output as StepFailure).detail })
-            }
+            target: 'stopping',
+            actions: { type: 'recordFailure', params: ({ event }) => stepFailure('choosingCategory', event.output) }
           },
           {
             target: 'uploadingPhotos',
@@ -250,10 +263,7 @@ export const publishMachine = setup({
             }))
           }
         ],
-        onError: {
-          target: 'failed',
-          actions: { type: 'recordFailure', params: ({ event }) => ({ state: 'choosingCategory', code: 'crashed', detail: String(event.error) }) }
-        }
+        onError: { target: 'stopping', actions: { type: 'recordFailure', params: ({ event }) => crash('choosingCategory', event.error) } }
       }
     },
     uploadingPhotos: {
@@ -263,18 +273,12 @@ export const publishMachine = setup({
         onDone: [
           {
             guard: { type: 'stepFailed', params: ({ event }) => event.output },
-            target: 'failed',
-            actions: {
-              type: 'recordFailure',
-              params: ({ event }) => ({ state: 'uploadingPhotos', code: (event.output as StepFailure).code, detail: (event.output as StepFailure).detail })
-            }
+            target: 'stopping',
+            actions: { type: 'recordFailure', params: ({ event }) => stepFailure('uploadingPhotos', event.output) }
           },
           { target: 'fillingFields', actions: assign({ photoCount: ({ event }) => (event.output as { count: number }).count }) }
         ],
-        onError: {
-          target: 'failed',
-          actions: { type: 'recordFailure', params: ({ event }) => ({ state: 'uploadingPhotos', code: 'crashed', detail: String(event.error) }) }
-        }
+        onError: { target: 'stopping', actions: { type: 'recordFailure', params: ({ event }) => crash('uploadingPhotos', event.error) } }
       }
     },
     fillingFields: {
@@ -284,11 +288,8 @@ export const publishMachine = setup({
         onDone: [
           {
             guard: { type: 'stepFailed', params: ({ event }) => event.output },
-            target: 'failed',
-            actions: {
-              type: 'recordFailure',
-              params: ({ event }) => ({ state: 'fillingFields', code: (event.output as StepFailure).code, detail: (event.output as StepFailure).detail })
-            }
+            target: 'stopping',
+            actions: { type: 'recordFailure', params: ({ event }) => stepFailure('fillingFields', event.output) }
           },
           {
             target: 'reviewing',
@@ -297,10 +298,7 @@ export const publishMachine = setup({
             }))
           }
         ],
-        onError: {
-          target: 'failed',
-          actions: { type: 'recordFailure', params: ({ event }) => ({ state: 'fillingFields', code: 'crashed', detail: String(event.error) }) }
-        }
+        onError: { target: 'stopping', actions: { type: 'recordFailure', params: ({ event }) => crash('fillingFields', event.error) } }
       }
     },
     reviewing: {
@@ -310,11 +308,8 @@ export const publishMachine = setup({
         onDone: [
           {
             guard: { type: 'stepFailed', params: ({ event }) => event.output },
-            target: 'failed',
-            actions: {
-              type: 'recordFailure',
-              params: ({ event }) => ({ state: 'reviewing', code: (event.output as StepFailure).code, detail: (event.output as StepFailure).detail })
-            }
+            target: 'stopping',
+            actions: { type: 'recordFailure', params: ({ event }) => stepFailure('reviewing', event.output) }
           },
           {
             guard: 'isDryRun',
@@ -323,10 +318,7 @@ export const publishMachine = setup({
           },
           { target: 'publishing', actions: assign({ receipt: ({ event }) => (event.output as { receipt: string | null }).receipt }) }
         ],
-        onError: {
-          target: 'failed',
-          actions: { type: 'recordFailure', params: ({ event }) => ({ state: 'reviewing', code: 'crashed', detail: String(event.error) }) }
-        }
+        onError: { target: 'stopping', actions: { type: 'recordFailure', params: ({ event }) => crash('reviewing', event.error) } }
       }
     },
     publishing: {
@@ -334,18 +326,15 @@ export const publishMachine = setup({
       invoke: {
         src: 'publish',
         input: () => ({}),
-        onDone: [{
+        onDone: [
+          {
             guard: { type: 'stepFailed', params: ({ event }) => event.output },
-            target: 'failed',
-            actions: {
-              type: 'recordFailure',
-              params: ({ event }) => ({ state: 'publishing', code: (event.output as StepFailure).code, detail: (event.output as StepFailure).detail })
-            }
-          }, { target: 'confirming' }],
-        onError: {
-          target: 'failed',
-          actions: { type: 'recordFailure', params: ({ event }) => ({ state: 'publishing', code: 'crashed', detail: String(event.error) }) }
-        }
+            target: 'stopping',
+            actions: { type: 'recordFailure', params: ({ event }) => stepFailure('publishing', event.output) }
+          },
+          { target: 'confirming' }
+        ],
+        onError: { target: 'stopping', actions: { type: 'recordFailure', params: ({ event }) => crash('publishing', event.error) } }
       }
     },
     confirming: {
@@ -355,13 +344,11 @@ export const publishMachine = setup({
         onDone: [
           // FB's "Oops / Something went wrong" dialog: rejected, nothing listed.
           {
-            guard: ({ event }) => isFailure(event.output) && event.output.code === 'rejected',
-            target: 'failed',
-            actions: assign({
-              failure: ({ event }) => ({ state: 'confirming', code: 'rejected', detail: (event.output as StepFailure).detail })
-            })
+            guard: { type: 'rejected', params: ({ event }) => event.output },
+            target: 'stopping',
+            actions: { type: 'recordFailure', params: ({ event }) => stepFailure('confirming', event.output) }
           },
-          // No toast seen: it may still have gone out, so look for it rather than retry.
+          // No toast seen (`noConfirmation`): it may still have gone out, so look for it rather than retry.
           { target: 'capturingId' }
         ],
         onError: { target: 'capturingId' }
@@ -373,7 +360,7 @@ export const publishMachine = setup({
         input: ({ context }) => ({ title: context.listing.title }),
         onDone: [
           {
-            guard: ({ event }) => Boolean(event.output.listingId),
+            guard: { type: 'hasListingId', params: ({ event }) => event.output },
             target: 'done',
             actions: assign(({ event }) => ({
               listingId: event.output.listingId,
@@ -382,15 +369,22 @@ export const publishMachine = setup({
             }))
           },
           {
-            target: 'unconfirmedId',
-            actions: assign({ failure: ({ event }) => ({ state: 'capturingId', code: 'noListingId', detail: event.output.detail }) })
+            target: 'stopping',
+            actions: { type: 'recordFailure', params: ({ event }) => ({ state: 'capturingId', code: 'noListingId', detail: event.output.detail }) }
           }
         ],
-        onError: {
-          target: 'unconfirmedId',
-          actions: assign({ failure: ({ event }) => ({ state: 'capturingId', code: 'crashed', detail: String(event.error) }) })
-        }
+        onError: { target: 'stopping', actions: { type: 'recordFailure', params: ({ event }) => crash('capturingId', event.error) } }
       }
+    },
+    /** Reads the failure's end from the error catalog. Never waits, never retries. */
+    stopping: {
+      entry: assign(({ context }) => ({ failure: publishEnd(context.failure!, context.publishClicked).failure })),
+      always: [
+        { guard: 'endsBlocked', target: 'blocked', actions: assign({ issue: ({ context }) => context.failure!.code as AccountIssue }) },
+        { guard: 'endsNeedsPerson', target: 'needsPerson' },
+        { guard: 'endsUnconfirmed', target: 'unconfirmedId' },
+        { target: 'failed' }
+      ]
     },
     done: { type: 'final' },
     unconfirmedId: { type: 'final', entry: assign({ result: 'unconfirmedId' as const }) },

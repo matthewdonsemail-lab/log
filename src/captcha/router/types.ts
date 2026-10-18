@@ -2,8 +2,11 @@
  * Captcha routing: which solver gets a captcha, decided from what is on screen.
  * The order and the reasons are in `docs/listingPublish/captchaKraken.md` and
  * matt's call on 2026-10-18: CaptchaKraken first, 2Captcha as the fallback, a
- * person for Facebook's own challenges.
+ * person for Facebook's own challenges. Every code here is in the error
+ * catalog (`src/errors/catalog/types.ts`).
  */
+import { solverDeadCodes } from '../../errors/catalog/index'
+import type { CaptchaStopReason, ErrorCode } from '../../errors/catalog/index'
 
 /** What the page shows. Set by the session's `inspect` step. */
 export type CaptchaKind =
@@ -46,8 +49,8 @@ export interface CaptchaAttempt {
   solved: boolean
   /** The page moved past the captcha afterwards (`null` = not checked yet). */
   accepted: boolean | null
-  /** Machine code on failure (`insufficientCredits`, `noWidget`, `timeout`, ...). */
-  code?: string
+  /** Catalog code on failure (`insufficientCredits`, `noWidget`, `solverTimeout`, ...). */
+  code?: ErrorCode
   detail?: string
 }
 
@@ -71,20 +74,15 @@ export const DEFAULT_CAPTCHA_POLICY: CaptchaPolicy = {
 
 /**
  * Solver codes that mean "this solver can't work right now", so it is skipped
- * for the rest of the run instead of retried.
+ * for the rest of the run instead of retried. Read from the catalog
+ * (`captcha: 'skipSolver'`).
  */
-export const SOLVER_DEAD_CODES = new Set([
-  'missingApiKey',
-  'invalidApiKey',
-  'insufficientCredits',
-  'accountSuspended',
-  'notInstalled'
-])
+export const SOLVER_DEAD_CODES: ReadonlySet<ErrorCode> = solverDeadCodes()
 
 export type CaptchaPlan =
   | { solver: CaptchaSolverName; reason: string }
   | {
       solver: null
-      reason: 'needsPerson' | 'noSolverConfigured' | 'arkoseCapReached' | 'attemptsUsed' | 'roundsUsed'
+      reason: CaptchaStopReason
       detail: string
     }

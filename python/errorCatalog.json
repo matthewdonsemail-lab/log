@@ -1,0 +1,953 @@
+{
+  "neverConnected": {
+    "layer": "account",
+    "meaning": "No saved Facebook session for this account.",
+    "retryable": false,
+    "raisedIn": [
+      "worker",
+      "publish.openingForm"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Run `log connect --account <id>` and log in by hand."
+  },
+  "disconnected": {
+    "layer": "account",
+    "meaning": "The account was disconnected on purpose.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Run `log connect --account <id>` and log in by hand."
+  },
+  "stale": {
+    "layer": "account",
+    "meaning": "The account has not been checked for too long to trust its state.",
+    "retryable": true,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Run `log scan --account <id>`."
+  },
+  "sessionExpired": {
+    "layer": "account",
+    "meaning": "Facebook sent the session to the login page.",
+    "retryable": false,
+    "raisedIn": [
+      "worker",
+      "publish.openingForm",
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Run `log connect --account <id>` and log in by hand."
+  },
+  "sessionInvalidatedChanged": {
+    "layer": "account",
+    "meaning": "The session was invalidated, usually by a password change.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Run `log connect --account <id>` and log in by hand."
+  },
+  "checkpointed": {
+    "layer": "account",
+    "meaning": "Facebook put the account on a checkpoint (verify identity, SMS code, ID).",
+    "retryable": false,
+    "raisedIn": [
+      "worker",
+      "publish.openingForm",
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Log in by hand and clear the checkpoint, then `log connect`. No solver can do it."
+  },
+  "unconfirmedUser": {
+    "layer": "account",
+    "meaning": "The account has not confirmed its email or phone.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Confirm the email or phone on Facebook by hand."
+  },
+  "cookieInvalid": {
+    "layer": "account",
+    "meaning": "The saved cookies are not accepted.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Run `log connect --account <id>` and log in by hand."
+  },
+  "suspended": {
+    "layer": "account",
+    "meaning": "Marketplace is restricted or the account is disabled (\"can't buy or sell\").",
+    "retryable": false,
+    "raisedIn": [
+      "worker",
+      "publish.openingForm",
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Tell matt. Don't retry the account until it's looked at."
+  },
+  "readOnlyLimited": {
+    "layer": "account",
+    "meaning": "The account can read but Facebook refuses its writes (\"something went wrong\").",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Tell matt. Don't retry the account until it's looked at."
+  },
+  "automatedFlagged": {
+    "layer": "account",
+    "meaning": "Facebook flagged the account as automated.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Tell matt. Don't retry the account until it's looked at."
+  },
+  "rateLimited": {
+    "layer": "account",
+    "meaning": "Facebook says the account hit a limit (\"limit reached\", \"daily listing limit\").",
+    "retryable": true,
+    "raisedIn": [
+      "worker",
+      "publish.openingForm",
+      "publish.reviewing",
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "resting",
+    "action": "Wait 24h. The monitor rests by itself; publish again tomorrow."
+  },
+  "proxyRateLimited": {
+    "layer": "account",
+    "meaning": "The proxy, not Facebook, is rate limiting.",
+    "retryable": true,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Wait, or move the account to another proxy."
+  },
+  "challengeInterstitial": {
+    "layer": "account",
+    "meaning": "An interstitial challenge page stands in front of the content.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Open the account by hand and clear the page."
+  },
+  "ipOrAccountBlocked": {
+    "layer": "account",
+    "meaning": "The IP or the account is blocked.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Tell matt. Don't retry the account until it's looked at."
+  },
+  "restrictedPolicy": {
+    "layer": "account",
+    "meaning": "A policy restriction applies to the account.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Tell matt. Don't retry the account until it's looked at."
+  },
+  "permissionDenied": {
+    "layer": "account",
+    "meaning": "The account lacks permission for this action.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Tell matt. Don't retry the account until it's looked at."
+  },
+  "joinGate": {
+    "layer": "account",
+    "meaning": "A group asks the account to join first.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Join the group by hand."
+  },
+  "removedFromGroup": {
+    "layer": "account",
+    "meaning": "The account was removed from a group.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Tell matt. Don't retry the account until it's looked at."
+  },
+  "proxyUnreachable": {
+    "layer": "account",
+    "meaning": "The account's proxy doesn't answer.",
+    "retryable": true,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Check the proxy is up."
+  },
+  "proxyAuthFailed": {
+    "layer": "account",
+    "meaning": "The proxy refused the account's credentials.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Fix the proxy username and password."
+  },
+  "proxyMalformed": {
+    "layer": "account",
+    "meaning": "The account's proxy setting can't be parsed.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Fix the proxy URL."
+  },
+  "loginWall": {
+    "layer": "account",
+    "meaning": "The page loaded but shows a login wall instead of content.",
+    "retryable": false,
+    "raisedIn": [
+      "worker",
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Run `log connect --account <id>` and log in by hand."
+  },
+  "captchaHtml": {
+    "layer": "account",
+    "meaning": "The page loaded but shows a captcha instead of content.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Open the account by hand. `log publish` routes captchas itself; `scan` does not."
+  },
+  "unknownPlatform": {
+    "layer": "account",
+    "meaning": "The account belongs to a platform log-cli does not know.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Facebook only (AGENTS.md rule 3)."
+  },
+  "unknown": {
+    "layer": "account",
+    "meaning": "The client saw an account failure it could not map.",
+    "retryable": false,
+    "raisedIn": [
+      "marketplace/account"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Look at the raw signal and add a code for it here."
+  },
+  "noPhotos": {
+    "layer": "photo",
+    "meaning": "The listing has no photos. Facebook keeps Next disabled with 0.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.preparingPhotos"
+    ],
+    "publish": "failed",
+    "action": "Add at least 1 photo."
+  },
+  "tooManyPhotos": {
+    "layer": "photo",
+    "meaning": "More than 10 photos. Facebook takes 10.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.preparingPhotos"
+    ],
+    "publish": "failed",
+    "action": "Send 10 or fewer."
+  },
+  "unreadablePhoto": {
+    "layer": "photo",
+    "meaning": "A photo path, URL or data-URL could not be read.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.preparingPhotos"
+    ],
+    "publish": "failed",
+    "action": "Fix the path or URL in the detail."
+  },
+  "notAnImage": {
+    "layer": "photo",
+    "meaning": "The bytes are not a JPEG, PNG, WebP, GIF, HEIC or AVIF image.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.preparingPhotos"
+    ],
+    "publish": "failed",
+    "action": "Replace the file."
+  },
+  "variationFailed": {
+    "layer": "photo",
+    "meaning": "sharp could not make the varied JPEG.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.preparingPhotos"
+    ],
+    "publish": "failed",
+    "action": "Open the photo by hand; it is probably corrupt."
+  },
+  "formNotFound": {
+    "layer": "form",
+    "meaning": "The create form never showed its Title field.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.openingForm"
+    ],
+    "publish": "failed",
+    "action": "Run again. If it repeats, Facebook changed the form: update the selectors."
+  },
+  "categoryNotSet": {
+    "layer": "form",
+    "meaning": "Category was picked 3 times and the box still reads something else.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.choosingCategory"
+    ],
+    "publish": "failed",
+    "action": "Check the category name matches the form's list."
+  },
+  "photoMissing": {
+    "layer": "form",
+    "meaning": "A prepared photo file was gone when the upload started.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.uploadingPhotos"
+    ],
+    "publish": "failed",
+    "action": "Run again; the photos are prepared fresh each run."
+  },
+  "noFileInput": {
+    "layer": "form",
+    "meaning": "The form has no image file input.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.uploadingPhotos"
+    ],
+    "publish": "failed",
+    "action": "Run again. If it repeats, Facebook changed the form: update the selectors."
+  },
+  "photosNotConfirmed": {
+    "layer": "form",
+    "meaning": "Facebook's N/10 photo counter doesn't match the photos sent.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.uploadingPhotos",
+      "publish.reviewing"
+    ],
+    "publish": "failed",
+    "action": "Run again. Check the review screenshot for photos Facebook rejected."
+  },
+  "titleNotSet": {
+    "layer": "form",
+    "meaning": "The Title field did not keep the value.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.fillingFields"
+    ],
+    "publish": "failed",
+    "action": "Run again."
+  },
+  "priceNotSet": {
+    "layer": "form",
+    "meaning": "The Price field did not keep the value.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.fillingFields"
+    ],
+    "publish": "failed",
+    "action": "Run again."
+  },
+  "conditionNotSet": {
+    "layer": "form",
+    "meaning": "Condition was picked 3 times and the box still reads something else.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.fillingFields"
+    ],
+    "publish": "failed",
+    "action": "Use new, likeNew, good or fair."
+  },
+  "descriptionNotSet": {
+    "layer": "form",
+    "meaning": "The Description field did not keep the value.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.fillingFields"
+    ],
+    "publish": "failed",
+    "action": "Run again."
+  },
+  "locationNotSet": {
+    "layer": "form",
+    "meaning": "No Location field, no suggestion matched, or it did not keep the value.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.fillingFields"
+    ],
+    "publish": "failed",
+    "action": "Use \"City, Region\" as Facebook suggests it, or leave location out."
+  },
+  "priceMismatch": {
+    "layer": "form",
+    "meaning": "At review the Price reads something other than what was typed.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.reviewing"
+    ],
+    "publish": "failed",
+    "action": "Run again."
+  },
+  "invalidFields": {
+    "layer": "form",
+    "meaning": "Facebook marked one or more fields invalid at review.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.reviewing"
+    ],
+    "publish": "failed",
+    "action": "Open the review screenshot and fix the field."
+  },
+  "publishNotFound": {
+    "layer": "form",
+    "meaning": "No enabled Next or Publish button. Publish was not clicked.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.publishing"
+    ],
+    "publish": "failed",
+    "action": "Run again. Nothing was posted."
+  },
+  "rejected": {
+    "layer": "form",
+    "meaning": "Facebook answered Publish with its \"Oops / Something went wrong\" dialog. Nothing was listed.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.confirming"
+    ],
+    "publish": "failed",
+    "action": "Don't retry straight away: it is often the account. Check it on Facebook."
+  },
+  "noConfirmation": {
+    "layer": "form",
+    "meaning": "No toast or Selling page within 30s of Publish. It may still have gone out, so the run looks for it.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.confirming"
+    ],
+    "action": "None: the run goes on to capturingId and ends published or unconfirmedId."
+  },
+  "noListingId": {
+    "layer": "form",
+    "meaning": "Publish was clicked but no Selling card matched the title.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.capturingId"
+    ],
+    "publish": "unconfirmedId",
+    "action": "Check Marketplace > Selling by hand. Never re-publish: it would duplicate."
+  },
+  "noSolverForKind": {
+    "layer": "captcha",
+    "meaning": "Facebook's own challenge, or a captcha no solver recognises.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.routingCaptcha"
+    ],
+    "publish": "needsPerson",
+    "action": "Log in by hand and clear it, then run again."
+  },
+  "noSolverConfigured": {
+    "layer": "captcha",
+    "meaning": "No key for a solver that can take this captcha.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.routingCaptcha"
+    ],
+    "publish": "needsPerson",
+    "action": "Set CAPTCHA_KRAKEN_API_KEY and/or TWOCAPTCHA_API_KEY in .env.local."
+  },
+  "arkoseCapReached": {
+    "layer": "captcha",
+    "meaning": "This account used its Arkose solves for today.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.routingCaptcha"
+    ],
+    "publish": "needsPerson",
+    "action": "Wait until tomorrow, or clear it by hand."
+  },
+  "attemptsUsed": {
+    "layer": "captcha",
+    "meaning": "Every usable solver was tried as many times as the policy allows.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.routingCaptcha"
+    ],
+    "publish": "needsPerson",
+    "action": "Clear it by hand. The ledger (~/.logCli/captcha/attempts.jsonl) shows each try."
+  },
+  "roundsUsed": {
+    "layer": "captcha",
+    "meaning": "The run hit its cap on captcha rounds.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.routingCaptcha"
+    ],
+    "publish": "needsPerson",
+    "action": "Clear it by hand. Facebook kept serving captchas: the account may be flagged."
+  },
+  "missingApiKey": {
+    "layer": "captcha",
+    "meaning": "The solver's API key is not set.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "skipSolver",
+    "action": "Put the key in .env.local."
+  },
+  "invalidApiKey": {
+    "layer": "captcha",
+    "meaning": "The solver did not accept the API key.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "skipSolver",
+    "action": "Make a new key on the solver's dashboard."
+  },
+  "solverAccountSuspended": {
+    "layer": "captcha",
+    "meaning": "The solver suspended our account with it (CaptchaKraken account_suspended, 2Captcha IP_BANNED).",
+    "retryable": false,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "skipSolver",
+    "action": "Contact the solver's support."
+  },
+  "insufficientCredits": {
+    "layer": "captcha",
+    "meaning": "The solver account is out of credits.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "skipSolver",
+    "action": "Top up on the solver dashboard."
+  },
+  "notInstalled": {
+    "layer": "captcha",
+    "meaning": "The solver's Python package is not installed.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "skipSolver",
+    "action": "pip install captchakraken / 2captcha-python into LOG_PYTHON."
+  },
+  "unknownSolver": {
+    "layer": "captcha",
+    "meaning": "The session was asked for a solver it does not have.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "skipSolver",
+    "action": "A bug: the router and publishSession.py disagree on solver names."
+  },
+  "vendorBlocked": {
+    "layer": "captcha",
+    "meaning": "CaptchaKraken refuses this captcha vendor.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "skipSolver",
+    "action": "None: 2Captcha gets it next, if configured."
+  },
+  "unsupportedChallenge": {
+    "layer": "captcha",
+    "meaning": "CaptchaKraken does not support this challenge type.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "skipSolver",
+    "action": "None: 2Captcha gets it next, if configured."
+  },
+  "solverRateLimited": {
+    "layer": "captcha",
+    "meaning": "The solver is rate limiting us.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "retry",
+    "action": "None, unless it repeats: then slow the runs down."
+  },
+  "solveAbandoned": {
+    "layer": "captcha",
+    "meaning": "CaptchaKraken served the captcha too many times without it settling: usually IP or fingerprint, not wrong answers.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "retry",
+    "action": "If it repeats, the account's IP or fingerprint is being rejected."
+  },
+  "unrecognizedPrompt": {
+    "layer": "captcha",
+    "meaning": "CaptchaKraken didn't recognise the captcha's prompt.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "retry",
+    "action": "None: a new round brings a new prompt."
+  },
+  "solverBadRequest": {
+    "layer": "captcha",
+    "meaning": "The solver called our request invalid.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "retry",
+    "action": "A bug in publishSession.py if it repeats."
+  },
+  "requestTooLarge": {
+    "layer": "captcha",
+    "meaning": "The screenshot sent to CaptchaKraken was over its size limit.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "retry",
+    "action": "A bug if it repeats: send the captcha element, not the page."
+  },
+  "upstreamUnavailable": {
+    "layer": "captcha",
+    "meaning": "CaptchaKraken's solver fleet is unreachable (their side).",
+    "retryable": true,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "retry",
+    "action": "None: retry shortly."
+  },
+  "noWidget": {
+    "layer": "captcha",
+    "meaning": "The solver found no captcha widget on the page.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "retry",
+    "action": "None: the re-check decides whether a captcha is still there."
+  },
+  "pageClosed": {
+    "layer": "captcha",
+    "meaning": "The page closed during the solve.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "retry",
+    "action": "None."
+  },
+  "animatedChallenge": {
+    "layer": "captcha",
+    "meaning": "An animated challenge CaptchaKraken could not read.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "retry",
+    "action": "None."
+  },
+  "noSiteKey": {
+    "layer": "captcha",
+    "meaning": "2Captcha needs the captcha's site key and no frame URL carried one.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "retry",
+    "action": "If it repeats, FB moved the key: update detect_captcha."
+  },
+  "unsolvable": {
+    "layer": "captcha",
+    "meaning": "2Captcha workers could not solve it.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "retry",
+    "action": "None."
+  },
+  "solverTimeout": {
+    "layer": "captcha",
+    "meaning": "The solver did not answer in time.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "retry",
+    "action": "None."
+  },
+  "notInjected": {
+    "layer": "captcha",
+    "meaning": "2Captcha returned a token but no field on the page took it.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "retry",
+    "action": "If it repeats, FB changed the captcha frame: update the inject script."
+  },
+  "solveError": {
+    "layer": "captcha",
+    "meaning": "The solver failed with an error that has no code of its own.",
+    "retryable": true,
+    "raisedIn": [
+      "publish.solvingCaptcha"
+    ],
+    "captcha": "retry",
+    "action": "Read the detail. If it repeats, give it a code here."
+  },
+  "workerNotStarted": {
+    "layer": "runtime",
+    "meaning": "The Python interpreter could not be started.",
+    "retryable": false,
+    "raisedIn": [
+      "worker",
+      "session"
+    ],
+    "publish": "failed",
+    "monitor": "failed",
+    "action": "Set LOG_PYTHON to a Python with facebook-camofox-client installed (`log doctor`)."
+  },
+  "workerNoOutput": {
+    "layer": "runtime",
+    "meaning": "The worker exited without printing a result.",
+    "retryable": true,
+    "raisedIn": [
+      "worker"
+    ],
+    "monitor": "failed",
+    "action": "Read the stderr above it. Usually the browser died."
+  },
+  "workerBadOutput": {
+    "layer": "runtime",
+    "meaning": "The worker's last line was not JSON.",
+    "retryable": true,
+    "raisedIn": [
+      "worker"
+    ],
+    "monitor": "failed",
+    "action": "A library printed to stdout: move it to stderr in logWorker.py."
+  },
+  "badReply": {
+    "layer": "runtime",
+    "meaning": "The publish session replied with something that is not a step result.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.openingForm"
+    ],
+    "publish": "failed",
+    "action": "A bug: publishSession.py and camofox/session disagree."
+  },
+  "sessionExited": {
+    "layer": "runtime",
+    "meaning": "The publish session process exited mid-run.",
+    "retryable": true,
+    "raisedIn": [
+      "session"
+    ],
+    "publish": "failed",
+    "action": "Read the stderr above it. Usually the browser died or was closed."
+  },
+  "badConfig": {
+    "layer": "runtime",
+    "meaning": "publishSession.py could not parse its config.",
+    "retryable": false,
+    "raisedIn": [
+      "session"
+    ],
+    "publish": "failed",
+    "action": "A bug in camofox/session."
+  },
+  "badRequest": {
+    "layer": "runtime",
+    "meaning": "A Python process got a request it could not parse, or one missing a field.",
+    "retryable": false,
+    "raisedIn": [
+      "worker",
+      "session"
+    ],
+    "publish": "failed",
+    "monitor": "failed",
+    "action": "A bug in the caller."
+  },
+  "unknownAction": {
+    "layer": "runtime",
+    "meaning": "logWorker.py got an action it does not have.",
+    "retryable": false,
+    "raisedIn": [
+      "worker"
+    ],
+    "monitor": "failed",
+    "action": "A bug: camofox/worker and logWorker.py disagree."
+  },
+  "unknownStep": {
+    "layer": "runtime",
+    "meaning": "publishSession.py got a step it does not have.",
+    "retryable": false,
+    "raisedIn": [
+      "session"
+    ],
+    "publish": "failed",
+    "action": "A bug: camofox/session and publishSession.py disagree."
+  },
+  "notOpen": {
+    "layer": "runtime",
+    "meaning": "A step was sent before the form was opened.",
+    "retryable": false,
+    "raisedIn": [
+      "session"
+    ],
+    "publish": "failed",
+    "action": "A bug in the machine order."
+  },
+  "crashed": {
+    "layer": "runtime",
+    "meaning": "A step threw before Publish was clicked. Nothing was posted.",
+    "retryable": true,
+    "raisedIn": [
+      "worker",
+      "session",
+      "publish.preparingPhotos",
+      "publish.openingForm",
+      "publish.solvingCaptcha",
+      "publish.choosingCategory",
+      "publish.uploadingPhotos",
+      "publish.fillingFields",
+      "publish.reviewing"
+    ],
+    "publish": "failed",
+    "monitor": "failed",
+    "action": "Read the detail (exception and message). Run again."
+  },
+  "crashedAfterPublish": {
+    "layer": "runtime",
+    "meaning": "A step threw after Publish was clicked. The listing may be live.",
+    "retryable": false,
+    "raisedIn": [
+      "publish.publishing",
+      "publish.capturingId"
+    ],
+    "publish": "unconfirmedId",
+    "action": "Check Marketplace > Selling by hand. Never re-publish: it would duplicate."
+  },
+  "checkCrashed": {
+    "layer": "runtime",
+    "meaning": "The monitor's check threw instead of returning an outcome.",
+    "retryable": false,
+    "raisedIn": [
+      "monitor.checking"
+    ],
+    "monitor": "failed",
+    "action": "A bug in toCheckOutcome or the worker client."
+  },
+  "uncatalogued": {
+    "layer": "runtime",
+    "meaning": "A Python process sent a code that is not in this catalog. The detail starts with the code it sent.",
+    "retryable": false,
+    "raisedIn": [
+      "worker",
+      "session"
+    ],
+    "publish": "failed",
+    "monitor": "failed",
+    "action": "Add the code to src/errors/catalog/types.ts, then `bun run errors:export`."
+  },
+  "timedOut": {
+    "layer": "auth",
+    "meaning": "`log login` waited and the browser never finished signing in.",
+    "retryable": true,
+    "raisedIn": [
+      "auth/exchange"
+    ],
+    "action": "Run `log login` again, or `log login --token <t>`."
+  },
+  "invalidExchange": {
+    "layer": "auth",
+    "meaning": "The browser's sign-in payload did not match this login's state or PKCE challenge.",
+    "retryable": false,
+    "raisedIn": [
+      "auth/exchange"
+    ],
+    "action": "Run `log login` again from the start."
+  }
+}

@@ -44,7 +44,7 @@ Every command takes `--json` and never prompts, so scripts and agents can use it
 ```text
 checking --ok-----------> evaluating --> waiting --after poll--> checking
    |                          '-- checks done --> done
-   |--rate_limited--> resting --after 24h--> checking
+   |--rateLimited--> resting --after 24h--> checking
    |--other account issue--> blocked
    '--error--> failed --first try--> retrying --after 5s--> checking
                  |-- same error 3x in a row --> tripped

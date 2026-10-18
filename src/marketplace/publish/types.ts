@@ -4,6 +4,8 @@
  * the caller provides, so tests never open a browser.
  */
 import type { CaptchaAttempt, CaptchaDetection, CaptchaPlan, CaptchaPolicy, CaptchaSolverName, SolverAvailability } from '../../captcha/router/index'
+import type { CodedFailure, ErrorCode } from '../../errors/catalog/index'
+import type { AccountIssue } from '../account/types'
 
 export interface PublishListing {
   title: string
@@ -29,12 +31,13 @@ export interface PublishInput {
   arkoseToday?: number
 }
 
-/** Account-level problems the form shows. They stop the run and go to the account. */
-export type PublishIssue = 'noSession' | 'sessionExpired' | 'checkpoint' | 'limitReached' | 'marketplaceBlocked'
+/** A step that failed, with its catalog code (`src/errors/catalog/types.ts`). */
+export type StepFailure = CodedFailure
 
-export interface StepFailure {
-  ok: false
-  code: string
+/** Where the run stopped and why. `code` decides the end (`helpers/publishEnd.ts`). */
+export interface PublishFailure {
+  state: string
+  code: ErrorCode
   detail?: string
 }
 
@@ -44,12 +47,12 @@ export type PreparePhotosOutput = { ok: true; paths: string[]; hashes: string[] 
 export type FormOutcome =
   | { kind: 'ready'; url: string }
   | { kind: 'captcha'; detection: CaptchaDetection }
-  | { kind: 'issue'; issue: PublishIssue; detail?: string }
-  | { kind: 'error'; code: string; detail?: string }
+  | { kind: 'issue'; issue: AccountIssue; detail?: string }
+  | { kind: 'error'; code: ErrorCode; detail?: string }
 
 export interface SolveOutput {
   solved: boolean
-  code?: string
+  code?: ErrorCode
   detail?: string
 }
 
@@ -68,7 +71,7 @@ export type PublishResultKind =
   | 'published'
   /** Publish went through but the id wasn't found. Never retried: check by hand. */
   | 'unconfirmedId'
-  /** The account has a problem (session, checkpoint, limit). */
+  /** The account has a problem (session, checkpoint, limit): any `account` code. */
   | 'blocked'
   /** A captcha no solver could take, or solvers ran out. */
   | 'needsPerson'
@@ -95,8 +98,8 @@ export interface PublishContext {
   publishClicked: boolean
   listingId: string | null
   listingUrl: string | null
-  issue: PublishIssue | null
-  failure: { state: string; code: string; detail?: string } | null
+  issue: AccountIssue | null
+  failure: PublishFailure | null
   result: PublishResultKind | null
 }
 
@@ -105,8 +108,8 @@ export interface PublishOutput {
   result: PublishResultKind
   listingId: string | null
   listingUrl: string | null
-  issue: PublishIssue | null
-  failure: PublishContext['failure']
+  issue: AccountIssue | null
+  failure: PublishFailure | null
   captchaAttempts: CaptchaAttempt[]
   plan: CaptchaPlan | null
   filled: Record<string, string>

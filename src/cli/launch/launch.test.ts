@@ -12,7 +12,7 @@ function capture() {
   const err: string[] = [];
   const context: CommandContext = {
     load: () => ({ listings: listListings(), accounts: listAccounts() }),
-    worker: async () => ({ ok: false, error: "worker not stubbed" }),
+    worker: async () => ({ ok: false, code: "crashed", detail: "worker not stubbed" }),
     session: () => {
       throw new Error("session not stubbed");
     },

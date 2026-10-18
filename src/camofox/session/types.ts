@@ -23,7 +23,6 @@ export interface SessionConfig {
   formUrl?: string
   /** Where the review screenshot goes. */
   receiptDir?: string
-  headless?: boolean
   /** Camoufox geoip (needs `camoufox[geoip]`). Default true. */
   geoip?: boolean
 }

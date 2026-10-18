@@ -296,3 +296,66 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: `log publish` posts one Marketplace listing through a new XState publish machine (preparingPhotos, openingForm, routingCaptcha/solvingCaptcha, choosingCategory, uploadingPhotos, fillingFields, reviewing, publishing, confirming, capturingId). It is a dry run unless `--live`. `media/photo` makes a varied JPEG per photo with sharp (Listaro's ranges) so every post has new hashes. `camofox/session` drives one long-lived Camoufox over JSON lines (`python/publishSession.py`): photos are gated on FB's own N/10 counter, every field is read back, and nothing is retried after Publish. `captcha/router` picks the solver from what is on screen: reCAPTCHA goes to CaptchaKraken twice, then 2Captcha; Arkose goes to 2Captcha only, capped per account per day; FB's own challenges go to a person. Every attempt goes to `~/.logCli/captcha/attempts.jsonl`. AGENTS.md rule 10 and the logCli skill cover posting.
 Why: matt: "make it so that we're able to implement these things here now", after choosing both solvers routed by which captcha is on screen (CaptchaKraken first, 2Captcha fallback). Rule 10 records that he asked for posting.
 Checked: `bun run check`: naming gate ok, tsc ok, 103 pass. A real Camoufox run against `python/fixtures/createItem.html` (no Facebook): category set, 2 photos confirmed by the 2/10 counter, title and price read back, then it stopped at fillingFields with conditionNotSet. Not run against live Facebook, and no live captcha solve yet (no keys in .env.local).
+
+## 2026-10-18 07:01Z · feat/publishMachine
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/errorCatalog.md`: new file
+- `docs/listingPublish/stateMachine.md`: edited
+- `package.json`: edited
+- `python/errorCatalog.json`: new file
+- `python/errorCodes.py`: added const CATALOG_PATH, def _load_codes, const CODES, def checked, def failure
+- `python/logWorker.py`: changed def scan, def status, def main
+- `python/publishSession.py`: added const NOT_SET_CODES, const KRAKEN_CODES, const TWOCAPTCHA_CODES · changed def fail, class Session, def step_open, def kraken_code, def solve_kraken, def twocaptcha_code, def solve_twocaptcha, def step_solve_captcha, def step_review, def main
+- `python/visibleBrowser.py`: added const HUMANIZE_MAX_SECONDS, def visible_kwargs, def force_visible
+- `skills/logCli/SKILL.md`: edited
+- `src/auth/exchange/types.ts`: changed type ExchangeResult
+- `src/camofox/session/client.ts`: changed const startSession
+- `src/camofox/session/helpers/index.ts`: added export from "./normalizeResult"
+- `src/camofox/session/helpers/normalizeResult.ts`: added function normalizeResult
+- `src/camofox/session/types.ts`: changed interface SessionConfig
+- `src/camofox/session/visible.test.ts`: added const python, const read, test "visibleBrowser.py forces headed, humanize and the cursor", test "publishSession.py launches only through visible_kwargs", test "logWorker.py forces it before facebook-camofox-client launches anything", test "nothing can ask for headless"
+- `src/camofox/worker/client.ts`: changed const runWorker
+- `src/camofox/worker/helpers/parseWorkerOutput.ts`: changed function parseWorkerOutput
+- `src/camofox/worker/types.ts`: changed type WorkerFailure
+- `src/captcha/router/helpers/planNextSolver.ts`: changed function planNextSolver
+- `src/captcha/router/router.test.ts`: changed test "Facebook's own challenge and unknown captchas go to a person"
+- `src/captcha/router/types.ts`: changed interface CaptchaAttempt, const SOLVER_DEAD_CODES, type CaptchaPlan
+- `src/cli/errors/errors.test.ts`: added const root, function run, test "lists every code, or one layer", test "--code explains one code; unknown codes and layers exit 1", test "--json is the catalog", test "docs/errorCatalog.md is the current export (run `bun run errors:export`)", test "draws the publish machine, stopping and all", test "needs exactly one known machine"
+- `src/cli/errors/helpers/index.ts`: added export from "./renderCatalog.ts"
+- `src/cli/errors/helpers/renderCatalog.ts`: added const LAYERS, const MACHINES, function catalogEntries, function endsText, function renderCatalogTable, function renderCatalogEntry, const cell, function renderCatalogMarkdown
+- `src/cli/errors/index.ts`: added export from "./helpers/index.ts", const ERRORS_USAGE, const GRAPH_USAGE, const errorsCommand, const graphCommand
+- `src/cli/launch/launch.test.ts`: changed function capture
+- `src/cli/live/index.ts`: changed function failure
+- `src/cli/live/live.test.ts`: changed test "scan needs a known account and explains a missing session"
+- `src/cli/publish/index.ts`: changed const PUBLISH_USAGE, const publishCommand
+- `src/cli/publish/publish.test.ts`: changed function fakeSession
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/cli/watch/helpers/toCheckOutcome.ts`: changed function toCheckOutcome
+- `src/cli/watch/watch.test.ts`: changed test "classifies worker results", test "a missing session stops with code 1"
+- `src/errors/catalog/catalog.test.ts`: added const root, const entries, const CAMEL, const STEP_ACTORS, const listing, function publishFailing, test "every code and every layer is camelCase (AGENTS.md rule 1)", test "every entry says where it is raised and what a person does", test "SOLVER_DEAD_CODES is exactly the skipSolver codes", test "python/errorCatalog.json is the current export (run `bun run errors:export`)", test "toKnownCode keeps known codes and marks unknown ones", test "worker output: failures get catalog codes, results and doctor pass through", test "session replies: codes and issues are checked, the rest passes through", test "every literal code in the Python is in the catalog", test "no failure uses the old free-text "error" field", test "codes are never built from strings at runtime", test "stopping ends every code with a publish end where the catalog says", test "every account code stops the run as blocked", test "a runtime failure after Publish is crashedAfterPublish, never failed", test "a crash while solving a captcha fails the run (nothing was published)"
+- `src/errors/catalog/helpers/index.ts`: added export from "./knownCode"
+- `src/errors/catalog/helpers/knownCode.ts`: added function isErrorCode, function errorEntry, function toKnownCode, function solverDeadCodes
+- `src/errors/catalog/index.ts`: added export from "./helpers/index", export from "./types"
+- `src/errors/catalog/types.ts`: added type ErrorLayer, type PublishEnd, type MonitorEnd, type CaptchaEnd, interface ErrorEntry, const reconnect, const tellMatt, const ERROR_CATALOG, type ErrorCode, type CodeOfLayer, type CaptchaStopReason, interface CodedFailure
+- `src/marketplace/account/client.ts`: changed const FACEBOOK_ACCOUNTS
+- `src/marketplace/account/helpers/classifySignal.ts`: changed const RULES, function classifySignal
+- `src/marketplace/account/helpers/writeBlocking.ts`: changed const WRITE_BLOCKING_ISSUES
+- `src/marketplace/account/types.ts`: changed type AccountIssue
+- `src/marketplace/monitor/machine.test.ts`: changed test "maps Listaro signals onto one account issue each", test "a transient error gets one quick retry, which does not count as a new check", test "circuit breaker trips after the same error 3 times in a row", test "account issues stop the account; a rate limit rests, then checks again"
+- `src/marketplace/monitor/machine.ts`: changed const monitorMachine
+- `src/marketplace/monitor/types.ts`: changed type CheckOutcome, interface MonitorContext
+- `src/marketplace/publish/helpers/index.ts`: added export from "./publishEnd"
+- `src/marketplace/publish/helpers/publishEnd.ts`: added function publishEnd
+- `src/marketplace/publish/machine.test.ts`: changed interface Script, function run, test "reCAPTCHA: CaptchaKraken fails twice, 2Captcha gets it", test "FB's own challenge stops at needsPerson without spending a solve", test "an account issue stops the run as blocked", test "a step that cannot confirm its write fails at that step"
+- `src/marketplace/publish/machine.ts`: added const stepFailure, const crash · changed const publishMachine · removed interface FailureParams
+- `src/marketplace/publish/types.ts`: added type StepFailure, interface PublishFailure · changed type FormOutcome, interface SolveOutput, type PublishResultKind, interface PublishContext, interface PublishOutput · removed type PublishIssue, interface StepFailure
+- `src/observability/graph/helpers/index.ts`: added export from "./toMermaid.ts"
+- `src/observability/graph/helpers/toMermaid.ts`: added interface Node, interface Edge, function eventLabel, function guardLabel, function toMermaid
+- `src/observability/graph/index.ts`: added export from "./helpers/index.ts"
+
+What changed: One error catalog (`src/errors/catalog/types.ts`, ~90 codes). For every code it holds the layer, meaning, whether it clears by itself, where it's raised, the publish / monitor / captcha end, and what a person does. `ErrorCode`, `AccountIssue` (now camelCase: `neverConnected`, `rateLimited`...), the router's stop reasons and `SOLVER_DEAD_CODES` are all derived from it. The publish machine sends every failure through a new `stopping` state that reads the code's end from the catalog (`publishEnd`). A runtime failure after Publish is clicked becomes `crashedAfterPublish` and ends `unconfirmedId`; before, a crash while publishing ended `failed`, which hid a possibly live listing. `PublishIssue` is gone: the form's issues are account codes, so a limit at review now ends `blocked`, not `failed`. Worker and session failures are `{ code, detail }`. The `split(":")` parsing is gone, and the monitor's retryable flag comes from the catalog. Both Python boundaries turn an unknown code into `uncatalogued`. The Python reads `python/errorCatalog.json` (`bun run errors:export`) through `errorCodes.py`, and its code mappers are explicit tables. New `log errors [--layer|--code|--json|--markdown]` and `log graph publish|monitor` (Mermaid read from the machine definition), with `docs/errorCatalog.md` generated. Camoufox is now always headed with humanize 1.5 and the cursor shown (`python/visibleBrowser.py`; the worker forces it on facebook-camofox-client's launches), and `--headless` is removed. publishSession.py reads stdin as UTF-8, which fixes `conditionNotSet`: on Windows the en dash in "Used – good" arrived as cp1252 and never matched.
+Why: matt: "how are we defining the states and clearly defined errors? ... how we know exactly what is happening with all the errors", then "proceed with the best plan" (steps 1–5 of the plan: catalog, Python follows it, `{ code, detail }`, camelCase AccountIssue, generated diagrams + a test that every code reaches its end). Rule 11, from matt: "there's no means for this ever to be ... headless ... It always has to be headed ... make sure that we have humanize on ... see the actual cursor".
+Checked: `bun run check`: naming gate ok, tsc ok, 225 pass. `catalog.test.ts` runs every code through the machine it claims to end in (publish per raising state, every account code to blocked, router reasons, solver skip/retry, monitor ends), and checks that the Python's literal codes and both exports match the catalog. `visible.test.ts` enforces rule 11. A real headed Camoufox dry run against `python/fixtures/createItem.html` now reaches `done`: category, 2/10 photos, title, price, condition "Used – good" and description all read back, with a review screenshot. Not checked: live Facebook, a live captcha solve (no keys yet), and `--live` past review.

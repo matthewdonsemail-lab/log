@@ -27,7 +27,7 @@ export const runWorker: WorkerClient = <A extends WorkerAction>(
     let stdout = "";
     proc.stdout.on("data", (chunk) => (stdout += chunk.toString()));
     proc.on("error", (error) =>
-      resolve({ ok: false, error: `could not start ${python}: ${error.message}. Set LOG_PYTHON.` }),
+      resolve({ ok: false, code: "workerNotStarted", detail: `could not start ${python}: ${error.message}. Set LOG_PYTHON.` }),
     );
     proc.on("close", (code) => resolve(parseWorkerOutput(stdout, code ?? -1) as WorkerResult<A>));
   });

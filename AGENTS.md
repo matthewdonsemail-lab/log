@@ -37,6 +37,10 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     Publish is clicked nothing is retried. Captchas go CaptchaKraken first,
     then 2Captcha, and Facebook's own challenges go to a person. Rule 8 still
     holds for editing and deleting.
+11. 2026-10-18 · Camoufox is never headless. Every launch is headed so the
+    window can be watched, with humanize on and the cursor shown
+    (`python/visibleBrowser.py`). There is no flag to turn it off.
+    `camofox/session/visible.test.ts` enforces it.
 
 ## Checks
 

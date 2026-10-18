@@ -23,6 +23,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from errorCodes import failure
+from visibleBrowser import force_visible
+
 SELLING_URL = "https://www.facebook.com/marketplace/you/selling"
 
 # Same extractor as facebook-camofox-client scripts/scan_selling.py.
@@ -170,8 +173,8 @@ async def scan(request: dict[str, Any]) -> dict[str, Any]:
         await page.wait_for_timeout(4000)
         flags = await auth_flags(page)
         if any(flags.values()):
-            return {"ok": False, "error": "loginWall", "authFlags": flags,
-                    "url": page.url, "bodySample": await body_sample(page)}
+            return failure("loginWall", "Facebook showed login markers", authFlags=flags,
+                           url=page.url, bodySample=await body_sample(page))
         try:
             tab = page.get_by_text(re.compile(r"^Your listings$", re.I)).first
             if await tab.count() > 0:
@@ -224,7 +227,7 @@ async def status(request: dict[str, Any]) -> dict[str, Any]:
 
     listing_id = str(request.get("params", {}).get("listing_id", ""))
     if not listing_id:
-        return {"ok": False, "error": "params.listing_id is required"}
+        return failure("badRequest", "params.listing_id is required")
     state = request["storage_state_path"]
     manager = CamofoxSessionManager()
     real_acquire = manager.acquire
@@ -255,9 +258,14 @@ def main() -> int:
     try:
         request = json.loads(sys.argv[1]) if len(sys.argv) > 1 else {}
     except json.JSONDecodeError as exc:
-        print(json.dumps({"ok": False, "error": f"bad request JSON: {exc}"}))
+        print(json.dumps(failure("badRequest", f"request is not JSON: {exc}")))
         return 1
     action = request.get("action")
+    try:
+        # Every Camoufox facebook-camofox-client launches: headed, humanized, cursor shown (rule 11).
+        force_visible()
+    except ImportError:
+        pass  # no camoufox: `doctor` reports it
     # Anything a library prints goes to stderr, so stdout carries only the result.
     real_stdout, sys.stdout = sys.stdout, sys.stderr
     try:
@@ -265,14 +273,14 @@ def main() -> int:
             result = doctor(request)
         elif action in ACTIONS:
             if action != "login" and not Path(request.get("storage_state_path") or "").exists():
-                result = {"ok": False, "error": "noSession",
-                          "storageStatePath": request.get("storage_state_path")}
+                result = failure("neverConnected", "no saved session",
+                                 storageStatePath=request.get("storage_state_path"))
             else:
                 result = asyncio.run(ACTIONS[action](request))
         else:
-            result = {"ok": False, "error": f"unknown action: {action}"}
+            result = failure("unknownAction", str(action))
     except Exception as exc:
-        result = {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+        result = failure("crashed", f"{type(exc).__name__}: {exc}"[:400])
     finally:
         sys.stdout = real_stdout
     print(json.dumps(result))

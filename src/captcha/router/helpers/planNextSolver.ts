@@ -25,7 +25,7 @@ export function planNextSolver(
   if (detection.kind === 'facebookChallenge' || detection.kind === 'unknown') {
     return {
       solver: null,
-      reason: 'needsPerson',
+      reason: 'noSolverForKind',
       detail: detection.kind === 'facebookChallenge' ? "Facebook's own challenge (no solver can do it)" : 'unrecognised captcha'
     }
   }

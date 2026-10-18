@@ -26,15 +26,22 @@ describe("toCheckOutcome", () => {
       kind: "issue",
       issue: "suspended",
     });
-    expect(toCheckOutcome({ ok: false, error: "noSession" })).toMatchObject({ kind: "issue", issue: "never_connected" });
-    expect(toCheckOutcome({ ok: false, error: "loginWall", url: "https://www.facebook.com/checkpoint/1" })).toMatchObject({
+    expect(toCheckOutcome({ ok: false, code: "neverConnected" })).toMatchObject({ kind: "issue", issue: "neverConnected" });
+    expect(toCheckOutcome({ ok: false, code: "loginWall", url: "https://www.facebook.com/checkpoint/1" })).toMatchObject({
       issue: "checkpointed",
     });
-    expect(toCheckOutcome({ ok: false, error: "TimeoutError: nav" })).toMatchObject({
+    expect(toCheckOutcome({ ok: false, code: "crashed", detail: "TimeoutError: nav" })).toMatchObject({
       kind: "error",
-      code: "TimeoutError",
+      code: "crashed",
+      detail: "TimeoutError: nav",
       retryable: true,
     });
+    // Retryable comes from the catalog, not from parsing the message.
+    expect(toCheckOutcome({ ok: false, code: "badRequest", detail: "params.listingId is required" })).toMatchObject({
+      kind: "error",
+      retryable: false,
+    });
+    expect(toCheckOutcome({ ok: false, code: "rateLimited" })).toMatchObject({ kind: "issue", issue: "rateLimited" });
   });
 });
 
@@ -59,9 +66,9 @@ describe("log watch", () => {
   });
 
   test("a missing session stops with code 1", async () => {
-    const { code, out } = await run(["watch", "--account", "fbPacer"], () => ({ ok: false, error: "noSession" }));
+    const { code, out } = await run(["watch", "--account", "fbPacer"], () => ({ ok: false, code: "neverConnected" }));
     expect(code).toBe(1);
-    expect(out).toContain("never_connected");
+    expect(out).toContain("neverConnected");
   });
 
   test("validates flags", async () => {

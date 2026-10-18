@@ -1,6 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { createActor, fromPromise, toPromise } from 'xstate'
 import { publishMachine, toConditionLabel, validateListing } from './index'
+import type { ErrorCode } from '../../errors/catalog/index'
 import type { FormOutcome, PublishInput, PublishListing, PublishOutput, SolveOutput } from './index'
 
 const listing: PublishListing = {
@@ -19,6 +20,7 @@ interface Script {
   confirm?: { ok: true; how: string } | { ok: false; code: string; detail?: string }
   listingId?: string | null
   failAt?: string
+  failCode?: ErrorCode
 }
 
 /** Runs the machine with scripted actors; returns output, visited states and which actors ran. */
@@ -29,7 +31,7 @@ async function run(script: Script, input: Partial<PublishInput> = {}) {
   const step = <T>(name: string, value: T) =>
     fromPromise(async () => {
       calls.push(name)
-      if (script.failAt === name) return { ok: false, code: `${name}Failed` } as never
+      if (script.failAt === name) return { ok: false, code: script.failCode ?? 'crashed' } as never
       return value
     })
   const machine = publishMachine.provide({
@@ -43,7 +45,7 @@ async function run(script: Script, input: Partial<PublishInput> = {}) {
       }) as never,
       solveCaptcha: fromPromise(async ({ input }: { input: { solver: string } }) => {
         calls.push(`solve:${input.solver}`)
-        return solves.shift() ?? { solved: false, code: 'timeout' }
+        return solves.shift() ?? { solved: false, code: 'solverTimeout' }
       }) as never,
       setCategory: step('setCategory', { ok: true, value: 'Miscellaneous' }) as never,
       uploadPhotos: step('uploadPhotos', { ok: true, count: 2 }) as never,
@@ -130,7 +132,7 @@ describe('publishMachine', () => {
     const captcha: FormOutcome = { kind: 'captcha', detection: { kind: 'recaptcha' } }
     const { output, calls } = await run({
       forms: [captcha, captcha, captcha, { kind: 'ready', url: 'create/item' }],
-      solves: [{ solved: false, code: 'noProgress' }, { solved: true }, { solved: true }]
+      solves: [{ solved: false, code: 'solveError' }, { solved: true }, { solved: true }]
     })
     expect(calls.filter((c) => c.startsWith('solve:'))).toEqual(['solve:captchaKraken', 'solve:captchaKraken', 'solve:twoCaptcha'])
     expect(output.captchaAttempts.map((a) => a.accepted)).toEqual([false, false, true])
@@ -148,7 +150,7 @@ describe('publishMachine', () => {
   test("FB's own challenge stops at needsPerson without spending a solve", async () => {
     const { output, calls } = await run({ forms: [{ kind: 'captcha', detection: { kind: 'facebookChallenge' } }] })
     expect(output.result).toBe('needsPerson')
-    expect(output.failure).toMatchObject({ code: 'needsPerson' })
+    expect(output.failure).toMatchObject({ code: 'noSolverForKind' })
     expect(calls.some((c) => c.startsWith('solve:'))).toBe(false)
   })
 
@@ -160,15 +162,15 @@ describe('publishMachine', () => {
   })
 
   test('an account issue stops the run as blocked', async () => {
-    const { output } = await run({ forms: [{ kind: 'issue', issue: 'limitReached', detail: 'daily listing limit' }] })
+    const { output } = await run({ forms: [{ kind: 'issue', issue: 'rateLimited', detail: 'daily listing limit' }] })
     expect(output.result).toBe('blocked')
-    expect(output.issue).toBe('limitReached')
+    expect(output.issue).toBe('rateLimited')
   })
 
   test('a step that cannot confirm its write fails at that step', async () => {
-    const { output, calls } = await run({ failAt: 'uploadPhotos' })
+    const { output, calls } = await run({ failAt: 'uploadPhotos', failCode: 'photosNotConfirmed' })
     expect(output.result).toBe('failed')
-    expect(output.failure).toMatchObject({ state: 'uploadingPhotos', code: 'uploadPhotosFailed' })
+    expect(output.failure).toMatchObject({ state: 'uploadingPhotos', code: 'photosNotConfirmed' })
     expect(calls).not.toContain('fillFields')
   })
 

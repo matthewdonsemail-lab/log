@@ -62,10 +62,10 @@ describe("live commands", () => {
   test("scan needs a known account and explains a missing session", async () => {
     expect((await run(["scan"], () => SCAN)).code).toBe(1);
     expect((await run(["scan", "--account", "nope"], () => SCAN)).code).toBe(1);
-    const missing = await run(["scan", "--account", "fbPacer"], () => ({ ok: false, error: "noSession" }));
+    const missing = await run(["scan", "--account", "fbPacer"], () => ({ ok: false, code: "neverConnected" }));
     expect(missing.code).toBe(1);
     expect(missing.err).toContain("log connect --account fbPacer");
-    const wall = await run(["scan", "--account", "fbPacer"], () => ({ ok: false, error: "loginWall" }));
+    const wall = await run(["scan", "--account", "fbPacer"], () => ({ ok: false, code: "loginWall" }));
     expect(wall.err).toContain("log in again");
   });
 

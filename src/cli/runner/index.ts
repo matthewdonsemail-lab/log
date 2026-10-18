@@ -10,6 +10,7 @@ import { listAccounts } from "../../marketplace/account/index.ts";
 import { listListings } from "../../marketplace/listing/index.ts";
 import { accountsCommand } from "../account/index.ts";
 import { loginCommand, logoutCommand, whoamiCommand } from "../auth/index.ts";
+import { errorsCommand, graphCommand } from "../errors/index.ts";
 import { launchCommand } from "../launch/index.ts";
 import { listingCommand, listingsCommand } from "../listing/index.ts";
 import { connectCommand, doctorCommand, scanCommand, statusCommand } from "../live/index.ts";
@@ -32,6 +33,8 @@ export const COMMANDS: Command[] = [
   statusCommand,
   watchCommand,
   publishCommand,
+  errorsCommand,
+  graphCommand,
   loginCommand,
   logoutCommand,
   whoamiCommand,

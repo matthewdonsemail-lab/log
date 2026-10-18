@@ -9,6 +9,7 @@
 import { existsSync } from "node:fs";
 import { fromCamofoxStatus, storageStatePath } from "../../camofox/worker/index.ts";
 import type { DoctorResult, WorkerFailure } from "../../camofox/worker/index.ts";
+import { ERROR_CATALOG } from "../../errors/catalog/index.ts";
 import { parseArgs } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
 import { renderDoctor, renderScan } from "./helpers/index.ts";
@@ -21,13 +22,16 @@ export const SCAN_USAGE = "Usage: log scan --account <accountId> [--json]";
 export const STATUS_USAGE = "Usage: log status <listingId> --account <accountId> [--json]";
 
 function failure(name: string, result: WorkerFailure, accountId?: string): CommandResult {
-  if (result.error === "noSession") {
+  if (result.code === "neverConnected") {
     return { code: 1, stderr: `log ${name}: no Facebook session for ${accountId}. Run \`log connect --account ${accountId}\` first.` };
   }
-  if (result.error === "loginWall") {
+  if (result.code === "loginWall" || result.code === "sessionExpired") {
     return { code: 1, stderr: `log ${name}: Facebook asked ${accountId} to log in again. Run \`log connect --account ${accountId}\`.` };
   }
-  return { code: 2, stderr: `log ${name}: ${result.error}` };
+  const entry = ERROR_CATALOG[result.code];
+  const detail = result.detail ? ` (${result.detail})` : "";
+  return { code: entry.layer === "account" ? 1 : 2, stderr: `log ${name}: ${result.code}: ${entry.meaning}${detail}
+${entry.action}` };
 }
 
 /** Validates `--account` against the known accounts; returns its id or an error result. */

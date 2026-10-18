@@ -11,14 +11,16 @@ and reads one JSON line back on stdout:
     {"id": 1, "result": {...}}
 
 argv[1] is the session config: {"accountId", "storageStatePath", "formUrl",
-"receiptDir", "headless", "geoip"}. Progress goes to stderr. Anything a
+"receiptDir", "geoip"}. The browser is always headed, humanized, with the
+cursor shown (visibleBrowser.py, AGENTS.md rule 11). Progress goes to stderr. Anything a
 library prints is moved to stderr too, so stdout only carries replies.
 
 Why sync Playwright: CaptchaKraken's Python page solver (PyPI
 `captchakraken`) drives sync Playwright pages only, and the captcha has to be
 solved on the very page the form is on.
 
-Every selector and step is cited in docs/listingPublish/formFill.md.
+Every selector and step is cited in docs/listingPublish/formFill.md. Every
+failure code is in the error catalog (errorCodes.py, errorCatalog.json).
 """
 from __future__ import annotations
 
@@ -30,6 +32,9 @@ import time
 from pathlib import Path
 from typing import Any
 from urllib.parse import parse_qs, urlparse
+
+from errorCodes import checked, failure
+from visibleBrowser import visible_kwargs
 
 CREATE_URL = "https://www.facebook.com/marketplace/create/item?locale=en_US"
 SELLING_URL = "https://www.facebook.com/marketplace/you/selling"
@@ -107,7 +112,41 @@ def norm(text: str | None) -> str:
 
 
 def fail(code: str, detail: str = "") -> dict[str, Any]:
-    return {"ok": False, "code": code, "detail": detail}
+    return failure(code, detail)
+
+
+# Combobox name -> the code for a pick that did not stick.
+NOT_SET_CODES = {"Category": "categoryNotSet", "Condition": "conditionNotSet"}
+
+# CaptchaKraken: hosted API `ck_error.code` (captchakraken.kinds.ErrorCode) and
+# exception class names -> catalog codes.
+KRAKEN_CODES = {
+    "missing_api_key": "missingApiKey",
+    "invalid_api_key": "invalidApiKey",
+    "account_suspended": "solverAccountSuspended",
+    "insufficient_credits": "insufficientCredits",
+    "rate_limited": "solverRateLimited",
+    "solve_abandoned": "solveAbandoned",
+    "unrecognized_prompt": "unrecognizedPrompt",
+    "invalid_request": "solverBadRequest",
+    "request_too_large": "requestTooLarge",
+    "upstream_unavailable": "upstreamUnavailable",
+    "NoCaptchaFoundError": "noWidget",
+    "VendorBlockedError": "vendorBlocked",
+    "UnsupportedChallengeError": "unsupportedChallenge",
+    "PageClosedError": "pageClosed",
+    "AnimatedChallengeError": "animatedChallenge",
+}
+
+# 2Captcha error text -> catalog codes, first match wins.
+TWOCAPTCHA_CODES = (
+    ("ZERO_BALANCE", "insufficientCredits"),
+    ("WRONG_USER_KEY", "invalidApiKey"),
+    ("KEY_DOES_NOT_EXIST", "invalidApiKey"),
+    ("UNSOLVABLE", "unsolvable"),
+    ("TIMEOUT", "solverTimeout"),
+    ("IP_BANNED", "solverAccountSuspended"),
+)
 
 
 class Session:
@@ -122,12 +161,11 @@ class Session:
     def start(self) -> dict[str, Any] | None:
         state = Path(self.config.get("storageStatePath") or "")
         if not state.is_file():
-            return {"kind": "issue", "issue": "noSession", "detail": f"no saved session at {state}. Run: log connect --account <id>"}
+            return {"kind": "issue", "issue": checked("neverConnected"), "detail": f"no saved session at {state}. Run: log connect --account <id>"}
         from camoufox.sync_api import Camoufox
 
-        # humanize must be a float (bool hangs mouse.move on current builds: FCC session_manager.py).
-        self.runtime = Camoufox(humanize=1.5, headless=bool(self.config.get("headless")),
-                                geoip=bool(self.config.get("geoip", True)))
+        # Headed, humanize 1.5s, cursor shown: never configurable (AGENTS.md rule 11).
+        self.runtime = Camoufox(**visible_kwargs({"geoip": bool(self.config.get("geoip", True))}))
         self.browser = self.runtime.__enter__()
         self.context = self.browser.new_context(storage_state=str(state))
         self.page = self.context.new_page()
@@ -294,7 +332,7 @@ class Session:
             if picked and norm(value) in norm(self.combobox_value(name)):
                 return {"ok": True, "value": value}
             log(f"{name}: pick {attempt + 1}/3 did not stick ({self.combobox_value(name)!r})")
-        return fail(f"{name.lower()}NotSet", f"{name} still reads {self.combobox_value(name)!r}")
+        return fail(NOT_SET_CODES[name], f"{name} still reads {self.combobox_value(name)!r}")
 
     def field(self, label: str, tag: str = "input"):
         loc = self.page.locator(f'label:has-text("{label}") {tag}').first
@@ -352,18 +390,18 @@ def step_open(s: Session, params: dict[str, Any]) -> dict[str, Any]:
         s.page.wait_for_timeout(2500)
 
     if s.login_wall():
-        return {"kind": "issue", "issue": "sessionExpired", "detail": s.page.url}
+        return {"kind": "issue", "issue": checked("sessionExpired"), "detail": s.page.url}
     captcha = s.detect_captcha()
     if captcha:
         log(f"Captcha on screen: {captcha['kind']} ({captcha.get('detail')})")
         return {"kind": "captcha", "detection": captcha}
     if "/checkpoint" in s.page.url.lower():
-        return {"kind": "issue", "issue": "checkpoint", "detail": s.page.url}
+        return {"kind": "issue", "issue": checked("checkpointed"), "detail": s.page.url}
     text = s.body()
     if BLOCKED_TEXT.search(text):
-        return {"kind": "issue", "issue": "marketplaceBlocked", "detail": BLOCKED_TEXT.search(text).group(0)}
+        return {"kind": "issue", "issue": checked("suspended"), "detail": BLOCKED_TEXT.search(text).group(0)}
     if LIMIT_TEXT.search(text):
-        return {"kind": "issue", "issue": "limitReached", "detail": LIMIT_TEXT.search(text).group(0)}
+        return {"kind": "issue", "issue": checked("rateLimited"), "detail": LIMIT_TEXT.search(text).group(0)}
 
     # Listing-type picker (Listaro facebook-poster.ts:1118-1154).
     try:
@@ -380,19 +418,14 @@ def step_open(s: Session, params: dict[str, Any]) -> dict[str, Any]:
     try:
         s.page.locator('label:has-text("Title") input, input[aria-label="Title"]').first.wait_for(state="visible", timeout=15_000)
     except Exception:
-        return {"kind": "error", "code": "formNotFound", "detail": f"no Title field on {s.page.url}"}
+        return {"kind": "error", "code": checked("formNotFound"), "detail": f"no Title field on {s.page.url}"}
     return {"kind": "ready", "url": s.page.url}
 
 
 def kraken_code(exc: Exception) -> str:
     code = getattr(exc, "code", None)
-    if isinstance(code, str) and code:
-        head, *rest = code.split("_")
-        return head + "".join(part.title() for part in rest)
-    name = type(exc).__name__
-    return {"NoCaptchaFoundError": "noWidget", "VendorBlockedError": "vendorBlocked",
-            "UnsupportedChallengeError": "unsupported", "PageClosedError": "pageClosed",
-            "AnimatedChallengeError": "animated"}.get(name, "solveError")
+    key = code if isinstance(code, str) and code else type(exc).__name__
+    return KRAKEN_CODES.get(key, "solveError")
 
 
 def solve_kraken(s: Session, detection: dict[str, Any]) -> dict[str, Any]:
@@ -400,22 +433,20 @@ def solve_kraken(s: Session, detection: dict[str, Any]) -> dict[str, Any]:
         from captchakraken.kinds import HumanizationMode
         from captchakraken.page_solver import PageSolver, PageSolverConfig
     except Exception as exc:
-        return {"solved": False, "code": "notInstalled", "detail": f"pip install captchakraken ({exc})"}
+        return {"solved": False, "code": checked("notInstalled"), "detail": f"pip install captchakraken ({exc})"}
     # Camoufox already humanizes; running both took 82 s vs 13 s (CaptchaKraken docs/usage.md).
     solver = PageSolver(PageSolverConfig(humanization=HumanizationMode.NONE))
     try:
         result = solver.solve(s.page)
     except Exception as exc:
-        return {"solved": False, "code": kraken_code(exc), "detail": str(exc)[:300]}
+        return {"solved": False, "code": checked(kraken_code(exc)), "detail": str(exc)[:300]}
     verdicts = [f"{getattr(v, 'vendor', '?')}:{getattr(v, 'verdict', '?')}" for v in (result.verdicts or [])]
     return {"solved": bool(result.is_solved), "detail": f"verdicts={verdicts}"}
 
 
 def twocaptcha_code(exc: Exception) -> str:
     text = str(exc).upper()
-    for needle, code in (("ZERO_BALANCE", "insufficientCredits"), ("WRONG_USER_KEY", "invalidApiKey"),
-                         ("KEY_DOES_NOT_EXIST", "invalidApiKey"), ("UNSOLVABLE", "unsolvable"),
-                         ("TIMEOUT", "timeout"), ("IP_BANNED", "accountSuspended")):
+    for needle, code in TWOCAPTCHA_CODES:
         if needle in text:
             return code
     return "solveError"
@@ -424,11 +455,11 @@ def twocaptcha_code(exc: Exception) -> str:
 def solve_twocaptcha(s: Session, detection: dict[str, Any]) -> dict[str, Any]:
     key = os.environ.get("TWOCAPTCHA_API_KEY", "").strip()
     if not key:
-        return {"solved": False, "code": "missingApiKey", "detail": "TWOCAPTCHA_API_KEY is not set"}
+        return {"solved": False, "code": checked("missingApiKey"), "detail": "TWOCAPTCHA_API_KEY is not set"}
     try:
         from twocaptcha import TwoCaptcha
     except Exception as exc:
-        return {"solved": False, "code": "notInstalled", "detail": f"pip install 2captcha-python ({exc})"}
+        return {"solved": False, "code": checked("notInstalled"), "detail": f"pip install 2captcha-python ({exc})"}
     solver = TwoCaptcha(key, defaultTimeout=180, recaptchaTimeout=600, pollingInterval=5)
     site_key = detection.get("siteKey")
     try:
@@ -441,13 +472,13 @@ def solve_twocaptcha(s: Session, detection: dict[str, Any]) -> dict[str, Any]:
                         site_key = match.group(1)
                         break
             if not site_key:
-                return {"solved": False, "code": "noSiteKey", "detail": "no reCAPTCHA site key in any frame URL"}
+                return {"solved": False, "code": checked("noSiteKey"), "detail": "no reCAPTCHA site key in any frame URL"}
             log("2Captcha: submitting reCAPTCHA" + (" Enterprise" if detection.get("enterprise") else ""))
             token = solver.recaptcha(sitekey=site_key, url=s.page.url, enterprise=1 if detection.get("enterprise") else 0)["code"]
             js = INJECT_RECAPTCHA_JS
         else:
             if not site_key:
-                return {"solved": False, "code": "noSiteKey", "detail": "no Arkose public key in the frame URL"}
+                return {"solved": False, "code": checked("noSiteKey"), "detail": "no Arkose public key in the frame URL"}
             surl = None
             if detection.get("frameUrl"):
                 parsed = urlparse(detection["frameUrl"])
@@ -459,7 +490,7 @@ def solve_twocaptcha(s: Session, detection: dict[str, Any]) -> dict[str, Any]:
             token = solver.funcaptcha(**kwargs)["code"]
             js = INJECT_ARKOSE_JS
     except Exception as exc:
-        return {"solved": False, "code": twocaptcha_code(exc), "detail": str(exc)[:300]}
+        return {"solved": False, "code": checked(twocaptcha_code(exc)), "detail": str(exc)[:300]}
 
     injected = 0
     for frame in s.page.frames:
@@ -469,7 +500,7 @@ def solve_twocaptcha(s: Session, detection: dict[str, Any]) -> dict[str, Any]:
             continue
     # Token values never reach logs or results: only their length.
     if injected == 0:
-        return {"solved": False, "code": "notInjected", "detail": f"token ({len(token)} chars) found no field to go into"}
+        return {"solved": False, "code": checked("notInjected"), "detail": f"token ({len(token)} chars) found no field to go into"}
     s.page.wait_for_timeout(6000)
     return {"solved": True, "detail": f"token {len(token)} chars into {injected} place(s)"}
 
@@ -482,7 +513,7 @@ def step_solve_captcha(s: Session, params: dict[str, Any]) -> dict[str, Any]:
         return solve_kraken(s, detection)
     if solver == "twoCaptcha":
         return solve_twocaptcha(s, detection)
-    return {"solved": False, "code": "unknownSolver", "detail": str(solver)}
+    return {"solved": False, "code": checked("unknownSolver"), "detail": str(solver)}
 
 
 def step_set_category(s: Session, params: dict[str, Any]) -> dict[str, Any]:
@@ -587,7 +618,7 @@ def step_review(s: Session, params: dict[str, Any]) -> dict[str, Any]:
     listing = params.get("listing") or {}
     text = s.body()
     if LIMIT_TEXT.search(text):
-        return fail("limitReached", LIMIT_TEXT.search(text).group(0))
+        return fail("rateLimited", LIMIT_TEXT.search(text).group(0))
     count = s.page.evaluate(PHOTO_COUNT_JS) or 0
     if count < int(params.get("photoCount") or 0):
         return fail("photosNotConfirmed", f"photos dropped to {count}/10 before publish")
@@ -691,6 +722,8 @@ def main() -> int:
     except json.JSONDecodeError as exc:
         print(json.dumps({"id": 0, "result": fail("badConfig", str(exc))}), flush=True)
         return 1
+    # Node writes UTF-8; Windows would read cp1252 and mangle the en dash in "Used – good".
+    sys.stdin.reconfigure(encoding="utf8")
     reply_out, sys.stdout = sys.stdout, sys.stderr
     session = Session(config)
 

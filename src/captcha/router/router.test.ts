@@ -47,8 +47,8 @@ describe('planNextSolver', () => {
   })
 
   test("Facebook's own challenge and unknown captchas go to a person", () => {
-    expect(planNextSolver({ kind: 'facebookChallenge' }, [], both, DEFAULT_CAPTCHA_POLICY)).toMatchObject({ solver: null, reason: 'needsPerson' })
-    expect(planNextSolver({ kind: 'unknown' }, [], both, DEFAULT_CAPTCHA_POLICY)).toMatchObject({ solver: null, reason: 'needsPerson' })
+    expect(planNextSolver({ kind: 'facebookChallenge' }, [], both, DEFAULT_CAPTCHA_POLICY)).toMatchObject({ solver: null, reason: 'noSolverForKind' })
+    expect(planNextSolver({ kind: 'unknown' }, [], both, DEFAULT_CAPTCHA_POLICY)).toMatchObject({ solver: null, reason: 'noSolverForKind' })
   })
 
   test('no keys at all says which env vars to set', () => {
