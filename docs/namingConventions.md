@@ -37,13 +37,31 @@ Read it as **library, then domain, then role**:
 2. Every domain has an `index.ts`.
 3. Every `helpers/` has an `index.ts` barrel.
 4. No helper imports its parent domain's `index.ts`.
+5. No kebab-case string literal (`'under-review'`, `"no-session"`) in `src/`, `bin/`, `scripts/` or `python/`, and no kebab-case file or folder name in `skills/`, `python/` or `scripts/`.
 
 Domains are singular (`listing`, not `listings`). Operations use
 `list<Resources>` / `get<Resource>` (`listListings`, `getSellerActions`).
 
+## Values are camelCase too (matt, 2026-10-18)
+
+Not just file names. Every value this repo defines is camelCase: listing
+statuses (`underReviewDuplicate`, `loginWall`), account ids
+(`fbGalwayRubbish`), worker error codes (`noSession`), and usage placeholders
+(`<listingId>`). Rule 5 of the gate rejects any kebab-case string literal in
+`src/`, `bin/`, `scripts/` or `python/`.
+
+Where another system speaks kebab-case, convert it once at the boundary and
+never let it in further. Example: facebook-camofox-client's `classify_status`
+returns `under-review-duplicate`, and `camofox/worker/helpers/fromCamofoxStatus.ts`
+turns it into `underReviewDuplicate`.
+
 ## What is not ours
 
-Values that come from another system keep that system's spelling. Listing
-statuses (`under-review-duplicate`), account ids (`fb-galway-rubbish`) and
-account issues (`proxy_unreachable`) are data from listeningkit-hackathon, so
-they are copied verbatim. The rule above is about names in this repo's source tree.
+These keep their own spelling because we can't rename them:
+
+- Other repos and packages: `facebook-camofox-client`, `@clack/prompts`, `Listaro_backup`.
+- Git's fixed hook file names: `.githooks/pre-commit`.
+- npm's package `name` (`log-cli`). npm doesn't allow capital letters there.
+- Third-party ids: Unsplash photo ids (`photo-1558...`), the UUID template.
+- Account issues (`session_expired`) are snake_case from log's shared
+  account-issue vocabulary. They are not kebab-case. Rename them if matt asks.

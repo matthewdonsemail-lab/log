@@ -62,7 +62,7 @@ export interface RawSignal {
   type?: string
   /** A short lowercased phrase matched against the response body/URL. */
   marker?: string
-  /** The URL that produced the response (for login-wall detection). */
+  /** The URL that produced the response (for loginWall detection). */
   url?: string
 }
 

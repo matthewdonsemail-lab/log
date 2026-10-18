@@ -24,7 +24,7 @@ async function runMonitor(outcomes: CheckOutcome[], input: Partial<MonitorInput>
   })
   const states: string[] = []
   const actor = createActor(machine, {
-    input: { accountId: 'fb-pacer', listings: [listing('a'), listing('b')], timing: FAST, ...input }
+    input: { accountId: 'fbPacer', listings: [listing('a'), listing('b')], timing: FAST, ...input }
   })
   actor.subscribe((snapshot) => {
     const value = String(snapshot.value)
@@ -141,7 +141,7 @@ describe('monitorMachine', () => {
       actors: { check: fromPromise<CheckOutcome, { accountId: string }>(async () => ok([])) }
     })
     const actor = createActor(machine, {
-      input: { accountId: 'fb-pacer', listings: [], maxChecks: 0, timing: { ...FAST, pollIntervalMs: 60_000 } }
+      input: { accountId: 'fbPacer', listings: [], maxChecks: 0, timing: { ...FAST, pollIntervalMs: 60_000 } }
     })
     actor.start()
     await new Promise((resolve) => setTimeout(resolve, 10))

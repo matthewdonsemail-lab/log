@@ -1,5 +1,34 @@
 # AGENTS.md — log-cli
 
+## Hard rules (from matt)
+
+When matt states a rule, add it here as one dated line in the same session,
+in the commit that applies it (`skills/captureRule/SKILL.md`). Rules are
+facts, not suggestions. Newest at the bottom. Never delete one without matt.
+
+1. 2026-10-18 · camelCase everywhere, never kebab-case: files, folders,
+   values, ids, statuses, error codes, usage text. Other systems' kebab-case is
+   converted once, at the boundary. `bun run check:naming` enforces it.
+2. 2026-10-18 · Code lives in `src/{library}/{domain}/`, using the role files
+   (`index.ts`, `types.ts`, `client.ts`, `machine.ts`, `helpers/`).
+3. 2026-10-18 · Facebook Marketplace only, until matt widens the scope.
+4. 2026-10-18 · Commit and push as matt (`GIT_CONFIG_COUNT=0`). PRs go to
+   GitHub `origin`.
+5. 2026-10-18 · Every commit adds a `log.md` entry. On commit, the hook
+   parses the staged code into an abstract syntax tree (AST) and writes what was
+   added, changed or removed into the entry. The agent then writes What changed,
+   Why and Checked from that AST. The hook blocks the commit until that's
+   done, and rejects an AST block that doesn't match the code. Never
+   `--no-verify`. "AST" means abstract syntax tree, never a line prefix.
+6. 2026-10-18 · Processes that run over time are XState machines that can be
+   started and watched from the CLI (`log watch`, `observability/trace`).
+7. 2026-10-18 · How the work is done is written down as skills in
+   `skills/<camelCaseName>/SKILL.md` (the twitter-controller layout), indexed
+   in `skills.md`. When a routine changes, update its skill in the same
+   commit.
+8. 2026-10-18 · Read-only on Facebook. Nothing is posted, edited or deleted
+   unless matt asks for it.
+
 ## Checks
 
 - Run `bun run check` before pushing: naming gate, `tsc --noEmit`, `bun test`.
@@ -54,3 +83,5 @@
 ## Git
 
 - Commit and push as matt (`GIT_CONFIG_COUNT=0 git ...`), and open PRs on GitHub `origin`.
+- `bun install` sets `core.hooksPath` to `.githooks`, so the `log.md` gate
+  runs on every commit. The flow is in `skills/commitLog/SKILL.md`.

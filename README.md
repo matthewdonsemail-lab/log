@@ -17,7 +17,7 @@ bun install
 bun run launch                 # guided menu (needs a terminal)
 bun bin/log.ts listings        # every listing
 bun bin/log.ts listings --status removed
-bun bin/log.ts listings --account fb-pacer
+bun bin/log.ts listings --account fbPacer
 bun bin/log.ts listing 1583545526797714
 bun bin/log.ts accounts
 ```
@@ -28,12 +28,12 @@ Every command takes `--json` and never prompts, so scripts and agents can use it
 | --- | --- |
 | `log launch` | Clack menu: browse a listing, filter by status or account, list accounts |
 | `log listings [--status <s>] [--account <id>]` | The listings table |
-| `log listing <listing-id>` | One listing in full, plus the seller actions it allows |
+| `log listing <listingId>` | One listing in full, plus the seller actions it allows |
 | `log accounts` | The Facebook accounts, their last issue, and how many listings each owns |
 | `log doctor` | Checks python, facebook-camofox-client, the Camoufox browser, and which accounts have a saved session |
 | `log login --account <id>` | Opens Camoufox so you log into Facebook by hand, then saves that account's session |
 | `log scan --account <id>` | Reads Marketplace > Selling live and puts each card next to what log says |
-| `log status <listing-id> --account <id>` | Opens one item page live and classifies it |
+| `log status <listingId> --account <id>` | Opens one item page live and classifies it |
 | `log watch --account <id> [--checks n] [--interval min]` | Runs the listing monitor (XState) and prints every step as it happens |
 
 ## The listing monitor (`log watch`)
@@ -84,11 +84,11 @@ git clone https://github.com/PRACE1/facebook-camofox-client ../facebook-camofox-
 pip install -e ../facebook-camofox-client
 python -m camoufox fetch          # downloads the Camoufox browser
 bun bin/log.ts doctor
-bun bin/log.ts login --account fb-galway-rubbish
-bun bin/log.ts scan --account fb-galway-rubbish
+bun bin/log.ts login --account fbGalwayRubbish
+bun bin/log.ts scan --account fbGalwayRubbish
 ```
 
-Sessions are Playwright storage_state files in `~/.logCli/facebook/<account-id>.json`
+Sessions are Playwright storage_state files in `~/.logCli/facebook/<accountId>.json`
 (`LOG_FB_STATE_DIR` moves them, `LOG_PYTHON` picks the interpreter). Never
 commit them. Everything except `login` only reads Facebook. Nothing is posted,
 edited or deleted.

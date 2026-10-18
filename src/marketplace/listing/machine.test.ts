@@ -8,8 +8,8 @@ describe('allowedTransition', () => {
   })
 
   test('only the platform moves a listing out of review to active', () => {
-    expect(allowedTransition('under-review', 'active', 'seller').allowed).toBe(false)
-    expect(allowedTransition('under-review', 'active', 'platform').allowed).toBe(true)
+    expect(allowedTransition('underReview', 'active', 'seller').allowed).toBe(false)
+    expect(allowedTransition('underReview', 'active', 'platform').allowed).toBe(true)
   })
 
   test('a platform takedown blocks the seller relist', () => {
@@ -24,8 +24,8 @@ describe('allowedTransition', () => {
   })
 
   test('observation states belong to the platform', () => {
-    expect(allowedTransition('active', 'login-wall', 'seller').allowed).toBe(false)
-    expect(allowedTransition('active', 'login-wall', 'platform').allowed).toBe(true)
+    expect(allowedTransition('active', 'loginWall', 'seller').allowed).toBe(false)
+    expect(allowedTransition('active', 'loginWall', 'platform').allowed).toBe(true)
   })
 })
 

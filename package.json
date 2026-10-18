@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "check:naming": "node scripts/checkNamingConventions.mjs",
-    "check": "bun run check:naming && bun run typecheck && bun run test"
+    "check": "bun run check:naming && bun run typecheck && bun run test",
+    "prepare": "git config core.hooksPath .githooks"
   },
   "dependencies": {
     "@clack/prompts": "^1.8.1",

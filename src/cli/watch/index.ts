@@ -19,10 +19,10 @@ import { renderMonitorOutput, summarizeMonitor, toCheckOutcome } from "./helpers
 
 export * from "./helpers/index.ts";
 
-export const WATCH_USAGE = "Usage: log watch --account <account-id> [--checks <n>] [--interval <minutes>] [--json]";
+export const WATCH_USAGE = "Usage: log watch --account <accountId> [--checks <n>] [--interval <minutes>] [--json]";
 
 /** Statuses that should still be on the selling dashboard. */
-const LIVE_STATUSES = new Set(["active", "under-review", "under-review-duplicate"]);
+const LIVE_STATUSES = new Set(["active", "underReview", "underReviewDuplicate"]);
 
 /** Seam for tests: how Ctrl+C reaches the running actor. */
 export const watchDeps = {

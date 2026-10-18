@@ -4,8 +4,8 @@ Same contract as the old inferencesaver `facebook-worker.py`: one request in,
 one JSON result out. The request is a JSON object in argv[1]:
 
     {"action": "doctor" | "login" | "marketplace.scan" | "marketplace.status",
-     "account_id": "fb-galway-rubbish",
-     "storage_state_path": "C:/Users/.../fb-galway-rubbish.json",
+     "account_id": "fbGalwayRubbish",
+     "storage_state_path": "C:/Users/.../fbGalwayRubbish.json",
      "params": {"listing_id": "1583545526797714"}}
 
 The result is the only thing written to stdout (one JSON line). Progress and
@@ -170,7 +170,7 @@ async def scan(request: dict[str, Any]) -> dict[str, Any]:
         await page.wait_for_timeout(4000)
         flags = await auth_flags(page)
         if any(flags.values()):
-            return {"ok": False, "error": "login-wall", "authFlags": flags,
+            return {"ok": False, "error": "loginWall", "authFlags": flags,
                     "url": page.url, "bodySample": await body_sample(page)}
         try:
             tab = page.get_by_text(re.compile(r"^Your listings$", re.I)).first
@@ -265,7 +265,7 @@ def main() -> int:
             result = doctor(request)
         elif action in ACTIONS:
             if action != "login" and not Path(request.get("storage_state_path") or "").exists():
-                result = {"ok": False, "error": "no-session",
+                result = {"ok": False, "error": "noSession",
                           "storageStatePath": request.get("storage_state_path")}
             else:
                 result = asyncio.run(ACTIONS[action](request))

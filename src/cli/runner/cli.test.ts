@@ -44,7 +44,7 @@ describe("runCli", () => {
 
   test("accounts --json lists the three Facebook accounts", async () => {
     const parsed = JSON.parse((await run(["accounts", "--json"])).out);
-    expect(parsed.accounts.map((a: { id: string }) => a.id)).toEqual(["fb-galway-rubbish", "fb-pacer", "fb-personal"]);
+    expect(parsed.accounts.map((a: { id: string }) => a.id)).toEqual(["fbGalwayRubbish", "fbPacer", "fbPersonal"]);
     expect(parsed.accounts.every((a: { writeBlocked: boolean }) => a.writeBlocked === false)).toBe(true);
   });
 });

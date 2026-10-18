@@ -7,7 +7,7 @@
  * only reads Facebook: nothing is posted, edited or deleted.
  */
 import { existsSync } from "node:fs";
-import { storageStatePath } from "../../camofox/worker/index.ts";
+import { fromCamofoxStatus, storageStatePath } from "../../camofox/worker/index.ts";
 import type { DoctorResult, WorkerFailure } from "../../camofox/worker/index.ts";
 import { parseArgs } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
@@ -16,15 +16,15 @@ import { renderDoctor, renderScan } from "./helpers/index.ts";
 export * from "./helpers/index.ts";
 
 export const DOCTOR_USAGE = "Usage: log doctor [--json]";
-export const LOGIN_USAGE = "Usage: log login --account <account-id>";
-export const SCAN_USAGE = "Usage: log scan --account <account-id> [--json]";
-export const STATUS_USAGE = "Usage: log status <listing-id> --account <account-id> [--json]";
+export const LOGIN_USAGE = "Usage: log login --account <accountId>";
+export const SCAN_USAGE = "Usage: log scan --account <accountId> [--json]";
+export const STATUS_USAGE = "Usage: log status <listingId> --account <accountId> [--json]";
 
 function failure(name: string, result: WorkerFailure, accountId?: string): CommandResult {
-  if (result.error === "no-session") {
+  if (result.error === "noSession") {
     return { code: 1, stderr: `log ${name}: no Facebook session for ${accountId}. Run \`log login --account ${accountId}\` first.` };
   }
-  if (result.error === "login-wall") {
+  if (result.error === "loginWall") {
     return { code: 1, stderr: `log ${name}: Facebook asked ${accountId} to log in again. Run \`log login --account ${accountId}\`.` };
   }
   return { code: 2, stderr: `log ${name}: ${result.error}` };
@@ -110,7 +110,7 @@ export const scanCommand: Command = {
 export const statusCommand: Command = {
   name: "status",
   summary: "Open one Marketplace item page live and classify its status",
-  args: "<listing-id> --account <id> [--json]",
+  args: "<listingId> --account <id> [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["json"], valued: ["account"] });
     if (!parsed.ok) return { code: 1, stderr: `log status: ${parsed.error}\n${STATUS_USAGE}` };
@@ -127,10 +127,11 @@ export const statusCommand: Command = {
       params: { listing_id: listingId },
     });
     if (!result.ok) return failure("status", result, accountId);
-    if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ accountId, ...result }, null, 2) };
+    const status = fromCamofoxStatus(result.status);
+    if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ accountId, ...result, status }, null, 2) };
     return {
       code: 0,
-      stdout: [`${result.title ?? "(no title)"}`, `  Listing ID  ${result.listingId}`, `  Live status ${result.status}`, `  URL         ${result.listingUrl}`].join("\n"),
+      stdout: [`${result.title ?? "(no title)"}`, `  Listing ID  ${result.listingId}`, `  Live status ${status}`, `  URL         ${result.listingUrl}`].join("\n"),
     };
   },
 };

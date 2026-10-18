@@ -10,13 +10,13 @@ import type { ConnectionRecord } from './types'
 /** The Facebook accounts the Marketplace feed is published from. */
 const FACEBOOK_ACCOUNTS: ConnectionRecord[] = [
   {
-    id: 'fb-galway-rubbish',
+    id: 'fbGalwayRubbish',
     platform: 'facebook',
     label: 'Galway Rubbish Co',
     connectedAt: '2026-09-10T09:02:00+00:00'
   },
   {
-    id: 'fb-pacer',
+    id: 'fbPacer',
     platform: 'facebook',
     label: 'Pacer Marketplace',
     connectedAt: '2026-09-11T17:40:00+00:00',
@@ -25,7 +25,7 @@ const FACEBOOK_ACCOUNTS: ConnectionRecord[] = [
     lastCheckedAt: '2026-09-14T06:30:00+00:00'
   },
   {
-    id: 'fb-personal',
+    id: 'fbPersonal',
     platform: 'facebook',
     label: 'Facebook',
     connectedAt: '2026-09-12T08:15:00+00:00',

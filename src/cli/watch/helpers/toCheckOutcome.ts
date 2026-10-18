@@ -21,8 +21,8 @@ export function toCheckOutcome(result: ScanResult | WorkerFailure): CheckOutcome
       issue,
     };
   }
-  if (result.error === "no-session") return { kind: "issue", issue: "never_connected", detail: "no saved session" };
-  if (result.error === "login-wall") {
+  if (result.error === "noSession") return { kind: "issue", issue: "never_connected", detail: "no saved session" };
+  if (result.error === "loginWall") {
     const issue = classifySignal({ url: String(result.url ?? ""), text: String(result.bodySample ?? "") });
     return { kind: "issue", issue: issue ?? "session_expired", detail: "Facebook asked to log in" };
   }

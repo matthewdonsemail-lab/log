@@ -1,10 +1,10 @@
 export type ListingStatus =
   | 'active'
-  | 'under-review'
-  | 'under-review-duplicate'
+  | 'underReview'
+  | 'underReviewDuplicate'
   | 'sold'
   | 'removed'
-  | 'login-wall'
+  | 'loginWall'
   | 'unknown'
 
 /** Which side took a `removed` listing down. */
@@ -12,21 +12,21 @@ export type RemovalProvenance = 'seller' | 'platform'
 
 export const LISTING_STATUSES: ListingStatus[] = [
   'active',
-  'under-review',
-  'under-review-duplicate',
+  'underReview',
+  'underReviewDuplicate',
   'sold',
   'removed',
-  'login-wall',
+  'loginWall',
   'unknown'
 ]
 
 export const LISTING_STATUS_LABELS: Record<ListingStatus, string> = {
   active: 'Active',
-  'under-review': 'Under review',
-  'under-review-duplicate': 'Duplicate hold',
+  'underReview': 'Under review',
+  'underReviewDuplicate': 'Duplicate hold',
   sold: 'Sold',
   removed: 'Removed',
-  'login-wall': 'Login wall',
+  'loginWall': 'Login wall',
   unknown: 'Unknown'
 }
 

@@ -26,8 +26,8 @@ describe("toCheckOutcome", () => {
       kind: "issue",
       issue: "suspended",
     });
-    expect(toCheckOutcome({ ok: false, error: "no-session" })).toMatchObject({ kind: "issue", issue: "never_connected" });
-    expect(toCheckOutcome({ ok: false, error: "login-wall", url: "https://www.facebook.com/checkpoint/1" })).toMatchObject({
+    expect(toCheckOutcome({ ok: false, error: "noSession" })).toMatchObject({ kind: "issue", issue: "never_connected" });
+    expect(toCheckOutcome({ ok: false, error: "loginWall", url: "https://www.facebook.com/checkpoint/1" })).toMatchObject({
       issue: "checkpointed",
     });
     expect(toCheckOutcome({ ok: false, error: "TimeoutError: nav" })).toMatchObject({
@@ -40,7 +40,7 @@ describe("toCheckOutcome", () => {
 
 describe("log watch", () => {
   test("runs one check, prints the trace and the decisions", async () => {
-    const { code, out, err } = await run(["watch", "--account", "fb-galway-rubbish"], () => SCAN);
+    const { code, out, err } = await run(["watch", "--account", "fbGalwayRubbish"], () => SCAN);
     expect(code).toBe(0);
     expect(err).toContain("checking");
     expect(err).toContain("done");
@@ -51,7 +51,7 @@ describe("log watch", () => {
   });
 
   test("--json streams NDJSON trace lines, then the output", async () => {
-    const { outLines } = await run(["watch", "--account", "fb-galway-rubbish", "--json"], () => SCAN);
+    const { outLines } = await run(["watch", "--account", "fbGalwayRubbish", "--json"], () => SCAN);
     const parsed = outLines.map((line) => JSON.parse(line));
     expect(parsed.some((line) => line.kind === "state" && line.state === "checking")).toBe(true);
     expect(parsed.at(-1).kind).toBe("output");
@@ -59,7 +59,7 @@ describe("log watch", () => {
   });
 
   test("a missing session stops with code 1", async () => {
-    const { code, out } = await run(["watch", "--account", "fb-pacer"], () => ({ ok: false, error: "no-session" }));
+    const { code, out } = await run(["watch", "--account", "fbPacer"], () => ({ ok: false, error: "noSession" }));
     expect(code).toBe(1);
     expect(out).toContain("never_connected");
   });
@@ -67,7 +67,7 @@ describe("log watch", () => {
   test("validates flags", async () => {
     expect((await run(["watch"], () => SCAN)).code).toBe(1);
     expect((await run(["watch", "--account", "nope"], () => SCAN)).code).toBe(1);
-    expect((await run(["watch", "--account", "fb-pacer", "--checks", "-1"], () => SCAN)).code).toBe(1);
-    expect((await run(["watch", "--account", "fb-pacer", "--interval", "0"], () => SCAN)).code).toBe(1);
+    expect((await run(["watch", "--account", "fbPacer", "--checks", "-1"], () => SCAN)).code).toBe(1);
+    expect((await run(["watch", "--account", "fbPacer", "--interval", "0"], () => SCAN)).code).toBe(1);
   });
 });
