@@ -13,6 +13,7 @@ import { join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
 import { appendAttempt, countArkoseToday, readAttempts, solverAvailability } from "../../captcha/router/index.ts";
 import type { PublishSession } from "../../camofox/session/index.ts";
+import { countryName, countryOfLocation, proxyPath, readProxy } from "../../camofox/proxy/index.ts";
 import { storageStatePath } from "../../camofox/worker/index.ts";
 import type { ErrorCode } from "../../errors/catalog/index.ts";
 import { preparePhotos } from "../../media/photo/index.ts";
@@ -103,6 +104,20 @@ export const publishCommand: Command = {
       return { code: 1, stderr: `log publish: no Facebook session for ${accountId} (${statePath}). Run: log connect --account ${accountId}` };
     }
 
+    // Rule 12: the account's proxy is attached, and the listing is in the account's country.
+    const proxy = readProxy(accountId);
+    if (!proxy.ok) return { code: 1, stderr: `log publish: ${proxy.code}: ${proxy.detail}` };
+    if (listing.location) {
+      const listingCountry = countryOfLocation(listing.location);
+      if (listingCountry !== proxy.proxy.country) {
+        const where = listingCountry ? `is in ${countryName(listingCountry)}` : "has no country to check (write it as \"City, Country\")";
+        return {
+          code: 1,
+          stderr: `log publish: listingCountryMismatch: "${listing.location}" ${where}, but ${accountId} is in ${countryName(proxy.proxy.country)}.`,
+        };
+      }
+    }
+
     const dryRun = !parsed.flags.live;
     const json = Boolean(parsed.flags.json);
     const runId = `${new Date().toISOString().replace(/[:.]/g, "").slice(0, 15)}${accountId}`;
@@ -115,6 +130,7 @@ export const publishCommand: Command = {
       (session ??= context.session({
         accountId,
         storageStatePath: statePath,
+        proxyPath: proxyPath(accountId),
         receiptDir: runDir,
         formUrl: typeof parsed.flags.formUrl === "string" ? parsed.flags.formUrl : undefined,
       }));

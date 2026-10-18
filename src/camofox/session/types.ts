@@ -19,12 +19,12 @@ export type SessionStep =
 export interface SessionConfig {
   accountId: string
   storageStatePath: string
+  /** The account's proxy file. publishSession.py opens no browser without it (rule 12). */
+  proxyPath: string
   /** Override the create form URL (local fixture runs). */
   formUrl?: string
   /** Where the review screenshot goes. */
   receiptDir?: string
-  /** Camoufox geoip (needs `camoufox[geoip]`). Default true. */
-  geoip?: boolean
 }
 
 export interface SessionRequest {

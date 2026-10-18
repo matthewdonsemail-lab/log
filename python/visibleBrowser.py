@@ -4,13 +4,17 @@ AGENTS.md rule 11 (matt, 2026-10-18): Camoufox is never headless. Whenever it
 launches you can see the window, humanize is on, and the cursor is drawn so
 you can watch it move. There is no flag to turn any of this off.
 
-publishSession.py launches with VISIBLE_LAUNCH directly. logWorker.py launches
+Every launch also goes through the proxy gate (proxyGate.py, AGENTS.md rule
+12): the account's proxy attached and its exit IP in the account's country.
+publishSession.py launches with launch_kwargs() directly. logWorker.py launches
 through facebook-camofox-client, so it calls force_visible() first, which
 wraps Camoufox's launchers so the same settings win whatever the caller passes.
 """
 from __future__ import annotations
 
 from typing import Any
+
+import proxyGate
 
 # humanize must be a float: a bool hangs mouse.move on current builds
 # (facebook-camofox-client session_manager.py).
@@ -26,8 +30,13 @@ def visible_kwargs(kwargs: dict[str, Any]) -> dict[str, Any]:
     return {**kwargs, **VISIBLE_LAUNCH, "config": config}
 
 
+def launch_kwargs(kwargs: dict[str, Any]) -> dict[str, Any]:
+    """Proxy gate, then visible: the only launch kwargs any Camoufox in log-cli gets."""
+    return visible_kwargs(proxyGate.apply(kwargs))
+
+
 def force_visible() -> None:
-    """Make every Camoufox launched after this headed, humanized, with the cursor shown."""
+    """Make every Camoufox launched after this go through launch_kwargs()."""
     import camoufox.async_api as async_api
     import camoufox.sync_api as sync_api
 
@@ -37,7 +46,7 @@ def force_visible() -> None:
             continue
 
         def launcher(*args: Any, _original=original, **kwargs: Any):
-            return _original(*args, **visible_kwargs(kwargs))
+            return _original(*args, **launch_kwargs(kwargs))
 
         launcher._logCliVisible = True  # type: ignore[attr-defined]
         setattr(module, name, launcher)

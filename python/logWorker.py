@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Any
 
 from errorCodes import failure
+import proxyGate
 from visibleBrowser import force_visible
 
 SELLING_URL = "https://www.facebook.com/marketplace/you/selling"
@@ -261,8 +262,11 @@ def main() -> int:
         print(json.dumps(failure("badRequest", f"request is not JSON: {exc}")))
         return 1
     action = request.get("action")
+    # Only a person signing in may open a browser without the account's proxy (rule 12).
+    proxyGate.arm(request.get("proxy_path"), allow_no_proxy=action == "login")
     try:
-        # Every Camoufox facebook-camofox-client launches: headed, humanized, cursor shown (rule 11).
+        # Every Camoufox facebook-camofox-client launches: proxy gate, then headed,
+        # humanized, cursor shown (rules 11 and 12).
         force_visible()
     except ImportError:
         pass  # no camoufox: `doctor` reports it
@@ -271,6 +275,8 @@ def main() -> int:
     try:
         if action == "doctor":
             result = doctor(request)
+        elif action == "proxy.check":
+            result = proxyGate.check(request.get("proxy_path"))
         elif action in ACTIONS:
             if action != "login" and not Path(request.get("storage_state_path") or "").exists():
                 result = failure("neverConnected", "no saved session",
@@ -279,6 +285,8 @@ def main() -> int:
                 result = asyncio.run(ACTIONS[action](request))
         else:
             result = failure("unknownAction", str(action))
+    except proxyGate.GateError as exc:
+        result = failure(exc.code, exc.detail)
     except Exception as exc:
         result = failure("crashed", f"{type(exc).__name__}: {exc}"[:400])
     finally:

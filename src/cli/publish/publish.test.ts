@@ -13,6 +13,7 @@ const ENV = {
   LOG_FB_STATE_DIR: join(root, "facebook"),
   LOG_PUBLISH_DIR: join(root, "publish"),
   LOG_CAPTCHA_LEDGER: join(root, "attempts.jsonl"),
+  LOG_PROXY_DIR: join(root, "proxies"),
   CAPTCHA_KRAKEN_API_KEY: "ck_live_test",
   TWOCAPTCHA_API_KEY: "",
   CAPTCHA_KRAKEN_STATE_DIR: join(root, "noCredentials"),
@@ -26,6 +27,8 @@ beforeAll(async () => {
   }
   require("node:fs").mkdirSync(ENV.LOG_FB_STATE_DIR, { recursive: true });
   writeFileSync(join(ENV.LOG_FB_STATE_DIR, "fbGalwayRubbish.json"), "{}");
+  require("node:fs").mkdirSync(ENV.LOG_PROXY_DIR, { recursive: true });
+  writeFileSync(join(ENV.LOG_PROXY_DIR, "fbGalwayRubbish.json"), JSON.stringify({ server: "http://203.0.113.7:8080", country: "IE" }));
   photo = join(root, "van.png");
   writeFileSync(photo, await sharp({ create: { width: 160, height: 120, channels: 3, background: "#3a7" } }).png().toBuffer());
 });
@@ -144,5 +147,26 @@ describe("log publish", () => {
     const noSession = await run(["publish", "--account", "fbPacer", ...BASE().slice(3)]);
     expect(noSession.code).toBe(1);
     expect(noSession.err).toContain("log connect --account fbPacer");
+  });
+
+  test("rule 12: no proxy, or a listing in another country, refuses before any browser opens", async () => {
+    writeFileSync(join(ENV.LOG_FB_STATE_DIR, "fbPersonal.json"), "{}");
+    const noProxy = await run(["publish", "--account", "fbPersonal", ...BASE().slice(3)]);
+    expect(noProxy.code).toBe(1);
+    expect(noProxy.err).toContain("noProxy");
+    expect(noProxy.session.calls).toHaveLength(0);
+
+    const abroad = await run([...BASE(), "--location", "Manchester, United Kingdom"]);
+    expect(abroad.code).toBe(1);
+    expect(abroad.err).toContain("listingCountryMismatch");
+    expect(abroad.err).toContain("United Kingdom");
+    expect(abroad.session.calls).toHaveLength(0);
+
+    const noCountry = await run([...BASE(), "--location", "Galway"]);
+    expect(noCountry.err).toContain("has no country to check");
+
+    const home = await run([...BASE(), "--location", "Galway, Ireland"]);
+    expect(home.code).toBe(0);
+    expect(home.session.configs.at(-1)?.proxyPath).toBe(join(ENV.LOG_PROXY_DIR, "fbGalwayRubbish.json"));
   });
 });

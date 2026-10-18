@@ -4,8 +4,9 @@
  * One JSON request in (argv), one JSON result out (stdout).
  */
 import type { CodedFailure } from "../../errors/catalog/index.ts";
+import type { ProxyCheck } from "../proxy/index.ts";
 
-export type WorkerAction = "doctor" | "login" | "marketplace.scan" | "marketplace.status";
+export type WorkerAction = "doctor" | "login" | "marketplace.scan" | "marketplace.status" | "proxy.check";
 
 export interface WorkerRequest {
   action: WorkerAction;
@@ -13,6 +14,11 @@ export interface WorkerRequest {
   account_id?: string;
   /** Playwright storage_state file holding that account's Facebook session. */
   storage_state_path?: string;
+  /**
+   * The account's proxy file (`camofox/proxy`). The worker refuses to open a
+   * browser without it, except for `login` (rule 12). Credentials never go on argv.
+   */
+  proxy_path?: string;
   params?: Record<string, unknown>;
 }
 
@@ -71,6 +77,7 @@ export interface WorkerResultMap {
   login: LoginResult;
   "marketplace.scan": ScanResult;
   "marketplace.status": StatusResult;
+  "proxy.check": ProxyCheck;
 }
 
 export type WorkerResult<A extends WorkerAction> = WorkerResultMap[A] | WorkerFailure;

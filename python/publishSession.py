@@ -11,8 +11,9 @@ and reads one JSON line back on stdout:
     {"id": 1, "result": {...}}
 
 argv[1] is the session config: {"accountId", "storageStatePath", "formUrl",
-"receiptDir", "geoip"}. The browser is always headed, humanized, with the
-cursor shown (visibleBrowser.py, AGENTS.md rule 11). Progress goes to stderr. Anything a
+"receiptDir", "proxyPath"}. The browser is always headed, humanized, with the
+cursor shown (visibleBrowser.py, rule 11), and only opens through the
+account's proxy, from the account's country (proxyGate.py, rule 12). Progress goes to stderr. Anything a
 library prints is moved to stderr too, so stdout only carries replies.
 
 Why sync Playwright: CaptchaKraken's Python page solver (PyPI
@@ -34,7 +35,8 @@ from typing import Any
 from urllib.parse import parse_qs, urlparse
 
 from errorCodes import checked, failure
-from visibleBrowser import visible_kwargs
+import proxyGate
+from visibleBrowser import launch_kwargs
 
 CREATE_URL = "https://www.facebook.com/marketplace/create/item?locale=en_US"
 SELLING_URL = "https://www.facebook.com/marketplace/you/selling"
@@ -164,8 +166,8 @@ class Session:
             return {"kind": "issue", "issue": checked("neverConnected"), "detail": f"no saved session at {state}. Run: log connect --account <id>"}
         from camoufox.sync_api import Camoufox
 
-        # Headed, humanize 1.5s, cursor shown: never configurable (AGENTS.md rule 11).
-        self.runtime = Camoufox(**visible_kwargs({"geoip": bool(self.config.get("geoip", True))}))
+        # Proxy gate (rule 12), then headed, humanize 1.5s, cursor shown (rule 11). Never configurable.
+        self.runtime = Camoufox(**launch_kwargs({}))
         self.browser = self.runtime.__enter__()
         self.context = self.browser.new_context(storage_state=str(state))
         self.page = self.context.new_page()
@@ -725,6 +727,7 @@ def main() -> int:
     # Node writes UTF-8; Windows would read cp1252 and mangle the en dash in "Used – good".
     sys.stdin.reconfigure(encoding="utf8")
     reply_out, sys.stdout = sys.stdout, sys.stderr
+    proxyGate.arm(config.get("proxyPath"), allow_no_proxy=False)
     session = Session(config)
 
     def reply(request_id: Any, result: dict[str, Any]) -> None:
@@ -753,6 +756,8 @@ def main() -> int:
                 continue
             try:
                 result = handler(session, request.get("params") or {})
+            except proxyGate.GateError as exc:
+                result = fail(exc.code, exc.detail)
             except Exception as exc:
                 result = fail("crashed", f"{type(exc).__name__}: {exc}"[:400])
             reply(request.get("id"), result)

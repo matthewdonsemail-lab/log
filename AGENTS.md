@@ -41,6 +41,10 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     window can be watched, with humanize on and the cursor shown
     (`python/visibleBrowser.py`). There is no flag to turn it off.
     `camofox/session/visible.test.ts` enforces it.
+12. 2026-10-18 · No browser opens for an account unless its proxy is attached
+    and its exit IP is in the account's country (`python/proxyGate.py`). Signing
+    in (`log connect`) is the only launch allowed without one. Listings must be
+    in the account's country. How it works: `docs/proxies.md`.
 
 ## Checks
 
@@ -70,8 +74,8 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 - Read-only on Facebook, except `login`, which only saves a session, and
   `log publish --live` (rule 10). Don't add editing or deleting without matt
   asking.
-- Session files (`~/.logCli/facebook/*.json`) hold live cookies. Never commit,
-  print or paste them.
+- Session files (`~/.logCli/facebook/*.json`) hold live cookies, and proxy files
+  (`~/.logCli/proxies/*.json`) hold passwords. Never commit, print or paste them.
 
 ## Monitor (XState v5)
 

@@ -8,6 +8,7 @@
  * it does not post. Ctrl+C stops it cleanly.
  */
 import { createActor, fromPromise, toPromise } from "xstate";
+import { proxyPath } from "../../camofox/proxy/index.ts";
 import { storageStatePath } from "../../camofox/worker/index.ts";
 import type { ScanResult, WorkerFailure } from "../../camofox/worker/index.ts";
 import { DEFAULT_MONITOR_TIMING, monitorMachine } from "../../marketplace/monitor/index.ts";
@@ -66,6 +67,7 @@ export const watchCommand: Command = {
             action: "marketplace.scan",
             account_id: input.accountId,
             storage_state_path: storageStatePath(input.accountId),
+            proxy_path: proxyPath(input.accountId),
           });
           return toCheckOutcome(result as ScanResult | WorkerFailure);
         }),

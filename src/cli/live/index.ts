@@ -7,6 +7,7 @@
  * only reads Facebook: nothing is posted, edited or deleted.
  */
 import { existsSync } from "node:fs";
+import { proxyPath, readProxy } from "../../camofox/proxy/index.ts";
 import { fromCamofoxStatus, storageStatePath } from "../../camofox/worker/index.ts";
 import type { DoctorResult, WorkerFailure } from "../../camofox/worker/index.ts";
 import { ERROR_CATALOG } from "../../errors/catalog/index.ts";
@@ -32,6 +33,12 @@ function failure(name: string, result: WorkerFailure, accountId?: string): Comma
   const detail = result.detail ? ` (${result.detail})` : "";
   return { code: entry.layer === "account" ? 1 : 2, stderr: `log ${name}: ${result.code}: ${entry.meaning}${detail}
 ${entry.action}` };
+}
+
+/** Rule 12: no browser for an account without its proxy. Checked here so no Python starts; proxyGate.py checks again. */
+function requireProxy(name: string, accountId: string): CommandResult | null {
+  const proxy = readProxy(accountId);
+  return proxy.ok ? null : failure(name, { ok: false, code: proxy.code, detail: proxy.detail }, accountId);
 }
 
 /** Validates `--account` against the known accounts; returns its id or an error result. */
@@ -80,7 +87,7 @@ export const connectCommand: Command = {
 
     const path = storageStatePath(accountId);
     const result = await context.worker(
-      { action: "login", account_id: accountId, storage_state_path: path },
+      { action: "login", account_id: accountId, storage_state_path: path, proxy_path: proxyPath(accountId) },
       { interactive: true },
     );
     if (!result.ok) return failure("connect", result, accountId);
@@ -99,10 +106,13 @@ export const scanCommand: Command = {
     const accountId = requireAccount(context, "scan", SCAN_USAGE, parsed.flags["account"]);
     if (typeof accountId !== "string") return accountId;
 
+    const proxy = requireProxy("scan", accountId);
+    if (proxy) return proxy;
     const result = await context.worker({
       action: "marketplace.scan",
       account_id: accountId,
       storage_state_path: storageStatePath(accountId),
+      proxy_path: proxyPath(accountId),
     });
     if (!result.ok) return failure("scan", result, accountId);
     if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ accountId, ...result }, null, 2) };
@@ -124,10 +134,13 @@ export const statusCommand: Command = {
     const accountId = requireAccount(context, "status", STATUS_USAGE, parsed.flags["account"]);
     if (typeof accountId !== "string") return accountId;
 
+    const proxy = requireProxy("status", accountId);
+    if (proxy) return proxy;
     const result = await context.worker({
       action: "marketplace.status",
       account_id: accountId,
       storage_state_path: storageStatePath(accountId),
+      proxy_path: proxyPath(accountId),
       params: { listing_id: listingId },
     });
     if (!result.ok) return failure("status", result, accountId);

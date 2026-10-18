@@ -18,9 +18,10 @@ describe("Camoufox always launches visible", () => {
     expect(text).toContain("return {**kwargs, **VISIBLE_LAUNCH, \"config\": config}");
   });
 
-  test("publishSession.py launches only through visible_kwargs", () => {
+  test("publishSession.py launches only through launch_kwargs (proxy gate, then visible)", () => {
+    expect(read("visibleBrowser.py")).toContain("return visible_kwargs(proxyGate.apply(kwargs))");
     const text = read("publishSession.py");
-    expect(text).toContain("Camoufox(**visible_kwargs(");
+    expect(text).toContain("Camoufox(**launch_kwargs(");
     expect(text.match(/Camoufox\(/g)?.length).toBe(1);
   });
 
@@ -35,5 +36,19 @@ describe("Camoufox always launches visible", () => {
       const text = read(name);
       expect(/headless\s*=\s*True|get\("headless"/.test(text), name).toBe(false);
     }
+  });
+});
+
+describe("no browser without the account's proxy (rule 12)", () => {
+  test("only a sign-in may launch without a proxy", () => {
+    expect(read("logWorker.py")).toContain('proxyGate.arm(request.get("proxy_path"), allow_no_proxy=action == "login")');
+    expect(read("publishSession.py")).toContain('proxyGate.arm(config.get("proxyPath"), allow_no_proxy=False)');
+  });
+
+  test("the gate checks the exit country and pins geoip to the exit IP", () => {
+    const gate = read("proxyGate.py");
+    expect(gate).toContain('raise GateError("noProxy"');
+    expect(gate).toContain('raise GateError("proxyCountryMismatch"');
+    expect(gate).toContain('return {**kwargs, "proxy": playwright_proxy(proxy), "geoip": ip}');
   });
 });

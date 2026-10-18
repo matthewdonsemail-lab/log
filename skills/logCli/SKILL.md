@@ -20,6 +20,9 @@ none of them prompt unless you run `log launch` in a terminal.
 4. **Camoufox is always visible.** Every launch is headed, with humanize on and
    the cursor shown (AGENTS.md rule 11). There is no `--headless`. Run it where
    a screen can show the window.
+5. **No browser without the account's proxy.** Each account needs
+   `~/.logCli/proxies/<accountId>.json`, with an exit IP in its `country` (rule 12,
+   `docs/proxies.md`). Only `connect` may run without one. Never print the file.
 
 ## Environment
 
@@ -43,7 +46,12 @@ bun bin/log.ts login                                     # opens the browser; --
 bun bin/log.ts whoami                                    # who is signed in (refreshes if expired)
 bun bin/log.ts logout
 
-# live (launches Camoufox)
+# proxies (rule 12): set one per account, then check it before anything else
+bun bin/log.ts proxy set --account fbGalwayRubbish --file proxy.json
+bun bin/log.ts proxy check --account fbGalwayRubbish      # exit IP + country, no browser
+bun bin/log.ts proxy show --account fbGalwayRubbish       # password masked
+
+# live (launches Camoufox through the proxy)
 bun bin/log.ts doctor                                    # setup check, sessions per account
 bun bin/log.ts connect --account fbGalwayRubbish           # log in by hand, press Enter to save
 bun bin/log.ts scan --account fbGalwayRubbish            # Marketplace > Selling, next to log's data

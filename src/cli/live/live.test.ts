@@ -1,4 +1,7 @@
-import { describe, expect, test } from "bun:test";
+import { afterAll, beforeAll, describe, expect, test } from "bun:test";
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { storageStatePath, toListingStatus } from "../../camofox/worker/index.ts";
 import type { WorkerClient, WorkerRequest } from "../../camofox/worker/index.ts";
 import { runCli } from "../runner/index.ts";
@@ -15,6 +18,21 @@ async function run(argv: string[], reply: (request: WorkerRequest) => unknown) {
   const code = await runCli(argv, { worker, out: (line) => out.push(line), err: (line) => err.push(line) });
   return { code, out: out.join("\n"), err: err.join("\n"), requests };
 }
+
+// Every account but fbPersonal gets a proxy file (rule 12).
+const proxyDir = mkdtempSync(join(tmpdir(), "logCliProxies"));
+const savedProxyDir = process.env.LOG_PROXY_DIR;
+beforeAll(() => {
+  process.env.LOG_PROXY_DIR = proxyDir;
+  mkdirSync(proxyDir, { recursive: true });
+  for (const id of ["fbGalwayRubbish", "fbPacer"]) {
+    writeFileSync(join(proxyDir, `${id}.json`), JSON.stringify({ server: "http://203.0.113.7:8080", country: "IE" }));
+  }
+});
+afterAll(() => {
+  if (savedProxyDir === undefined) delete process.env.LOG_PROXY_DIR;
+  else process.env.LOG_PROXY_DIR = savedProxyDir;
+});
 
 const SCAN = {
   ok: true,
@@ -43,6 +61,21 @@ describe("storageStatePath", () => {
 });
 
 describe("live commands", () => {
+  test("rule 12: scan and status refuse an account with no proxy, without starting the worker", async () => {
+    const scan = await run(["scan", "--account", "fbPersonal"], () => SCAN);
+    expect(scan.code).toBe(1);
+    expect(scan.err).toContain("noProxy");
+    expect(scan.requests).toHaveLength(0);
+    const status = await run(["status", "1", "--account", "fbPersonal"], () => SCAN);
+    expect(status.requests).toHaveLength(0);
+  });
+
+  test("the worker gets the proxy file path, never the credentials", async () => {
+    const { requests } = await run(["scan", "--account", "fbPacer"], () => SCAN);
+    expect(requests[0].proxy_path).toBe(join(proxyDir, "fbPacer.json"));
+    expect(JSON.stringify(requests[0])).not.toContain("203.0.113.7");
+  });
+
   test("scan sends the account's session and compares with log", async () => {
     const { code, out, requests } = await run(["scan", "--account", "fbGalwayRubbish"], () => SCAN);
     expect(code).toBe(0);

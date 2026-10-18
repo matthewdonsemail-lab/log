@@ -240,30 +240,57 @@ export const ERROR_CATALOG = {
   },
   proxyUnreachable: {
     layer: 'account',
-    meaning: "The account's proxy doesn't answer.",
+    meaning: "No exit IP through the account's proxy: it is down or refusing connections. No browser was opened.",
     retryable: true,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['proxyGate', 'publish.openingForm', 'worker', 'marketplace/account'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Check the proxy is up.'
+    action: 'Check the proxy is up, then `log proxy check --account <id>`.'
   },
   proxyAuthFailed: {
     layer: 'account',
-    meaning: "The proxy refused the account's credentials.",
+    meaning: 'The proxy answered 407: it refused the username or password. No browser was opened.',
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['proxyGate', 'publish.openingForm', 'worker', 'marketplace/account'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Fix the proxy username and password.'
+    action: 'Fix username/password with `log proxy set`.'
   },
   proxyMalformed: {
     layer: 'account',
-    meaning: "The account's proxy setting can't be parsed.",
+    meaning: "The account's proxy file can't be read: it needs a server (scheme://host:port) and a 2-letter country.",
     retryable: false,
-    raisedIn: ['marketplace/account'],
+    raisedIn: ['proxyGate', 'camofox/proxy', 'publish.openingForm', 'worker', 'marketplace/account'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Fix the proxy URL.'
+    action: 'Fix the file with `log proxy set --account <id> --file <proxy.json>`.'
+  },
+  noProxy: {
+    layer: 'account',
+    meaning: 'The account has no proxy, and no browser opens for an account without one (rule 12). Only signing in is allowed without.',
+    retryable: false,
+    raisedIn: ['proxyGate', 'camofox/proxy', 'publish.openingForm', 'worker'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Give it one: `log proxy set --account <id> --file <proxy.json>`.'
+  },
+  proxyCountryMismatch: {
+    layer: 'account',
+    meaning: "The proxy's exit IP is not in the account's country, so Facebook would see the account in the wrong place. No browser was opened.",
+    retryable: false,
+    raisedIn: ['proxyGate', 'publish.openingForm', 'worker'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: "Use a proxy that exits in the account's country, or fix the file's country if it is wrong."
+  },
+  listingCountryMismatch: {
+    layer: 'account',
+    meaning: "The listing's location is not in the account's country, or has no country to check. Refused before any browser opens.",
+    retryable: false,
+    raisedIn: ['cli/publish'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: "Write the location as \"City, Country\" in the account's country, or post it from an account in that country."
   },
   loginWall: {
     layer: 'account',

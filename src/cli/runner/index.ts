@@ -14,6 +14,7 @@ import { errorsCommand, graphCommand } from "../errors/index.ts";
 import { launchCommand } from "../launch/index.ts";
 import { listingCommand, listingsCommand } from "../listing/index.ts";
 import { connectCommand, doctorCommand, scanCommand, statusCommand } from "../live/index.ts";
+import { proxyCommand } from "../proxy/index.ts";
 import { publishCommand } from "../publish/index.ts";
 import { watchCommand } from "../watch/index.ts";
 import { renderUsage } from "./helpers/index.ts";
@@ -32,6 +33,7 @@ export const COMMANDS: Command[] = [
   scanCommand,
   statusCommand,
   watchCommand,
+  proxyCommand,
   publishCommand,
   errorsCommand,
   graphCommand,
