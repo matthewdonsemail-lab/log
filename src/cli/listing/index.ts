@@ -1,67 +1,67 @@
 /**
- * `log listings` and `log listing <id>` — the Facebook Marketplace listings,
- * the same rows the dashboard's Listings view loads.
+ * `log listings` and `log listing <id>` — the Marketplace listings in Twenty
+ * (agencyListings): what each posts, from which account, and its last run.
  */
-import { LISTING_STATUSES, filterListings, findListing, getSellerActions } from "../../marketplace/listing/index.ts";
-import type { ListingStatus } from "../../marketplace/listing/index.ts";
-import { parseArgs } from "../runner/helpers/index.ts";
+import { fromTwentyEnum, listFacebookAccounts, findAccount, toTwentyEnum } from "../../marketplace/socialAccount/index.ts";
+import { getListing, LISTING_STATUSES, listListingsWhere } from "../../marketplace/agencyListing/index.ts";
+import type { ListingFilter } from "../../marketplace/agencyListing/index.ts";
+import { parseArgs, refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command } from "../runner/types.ts";
 import { renderListingDetail, renderListingsTable } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
 
-export const LISTINGS_USAGE = "Usage: log listings [--status <status>] [--account <accountId>] [--json]";
-export const LISTING_USAGE = "Usage: log listing <listingId> [--json]";
+export const LISTINGS_USAGE = "Usage: log listings [--status <STATUS>] [--account <accountName>] [--campaign <campaignId>] [--json]";
+export const LISTING_USAGE = "Usage: log listing <agencyListingId> [--json]";
+
 export const listingsCommand: Command = {
   name: "listings",
-  summary: "List Marketplace listings, optionally filtered by status or account",
-  args: "[--status <s>] [--account <id>] [--json]",
-  run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json"], valued: ["status", "account"] });
+  summary: "List the Twenty listings, by status, account or campaign",
+  args: "[--status <s>] [--account <name>] [--campaign <id>] [--json]",
+  async run(context, argv) {
+    const parsed = parseArgs(argv, { boolean: ["json"], valued: ["status", "account", "campaign"] });
     if (!parsed.ok) return { code: 1, stderr: `log listings: ${parsed.error}\n${LISTINGS_USAGE}` };
-    if (parsed.positionals.length > 0) {
-      return { code: 1, stderr: `log listings: unexpected argument "${parsed.positionals[0]}"\n${LISTINGS_USAGE}` };
+    if (parsed.positionals.length > 0) return { code: 1, stderr: `log listings: unexpected argument "${parsed.positionals[0]}"\n${LISTINGS_USAGE}` };
+    const filters: ListingFilter[] = [];
+    const status = parsed.flags["status"];
+    if (typeof status === "string") {
+      if (!(LISTING_STATUSES as readonly string[]).includes(fromTwentyEnum(status))) {
+        return { code: 1, stderr: `log listings: status must be one of ${LISTING_STATUSES.map(toTwentyEnum).join(", ")}` };
+      }
+      filters.push({ status: { eq: toTwentyEnum(fromTwentyEnum(status)) as never } });
     }
-
-    const status = parsed.flags["status"] as string | undefined;
-    if (status !== undefined && !(LISTING_STATUSES as string[]).includes(status)) {
-      return { code: 1, stderr: `log listings: status must be one of: ${LISTING_STATUSES.join(", ")}` };
+    try {
+      const accounts = await listFacebookAccounts(context.twenty);
+      if (typeof parsed.flags["account"] === "string") filters.push({ socialAccountId: { eq: (await findAccount(context.twenty, parsed.flags["account"])).id } });
+      if (typeof parsed.flags["campaign"] === "string") filters.push({ campaignId: { eq: parsed.flags["campaign"] } });
+      const filter: ListingFilter | undefined = filters.length > 1 ? { and: filters } : filters[0];
+      const listings = await listListingsWhere(context.twenty, filter);
+      if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ listings }, null, 2) };
+      return { code: 0, stdout: renderListingsTable(listings, accounts) };
+    } catch (error) {
+      return refuseError("listings", error);
     }
-
-    const data = context.load();
-    const accountId = parsed.flags["account"] as string | undefined;
-    if (accountId !== undefined && !data.accounts.some((account) => account.id === accountId)) {
-      return {
-        code: 1,
-        stderr: `log listings: unknown account "${accountId}". Known: ${data.accounts.map((a) => a.id).join(", ")}`,
-      };
-    }
-
-    const listings = filterListings(data.listings, { status: status as ListingStatus | undefined, accountId });
-    if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ listings }, null, 2) };
-    return { code: 0, stdout: renderListingsTable(listings) };
   },
 };
 
 export const listingCommand: Command = {
   name: "listing",
-  summary: "Show one listing and the seller actions it allows",
-  args: "<listingId> [--json]",
-  run(context, argv) {
+  summary: "Show one Twenty listing: the ad, its account, location and last run",
+  args: "<id> [--json]",
+  async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["json"] });
     if (!parsed.ok) return { code: 1, stderr: `log listing: ${parsed.error}\n${LISTING_USAGE}` };
     const [key, extra] = parsed.positionals;
     if (key === undefined) return { code: 1, stderr: `log listing: a listing id is required\n${LISTING_USAGE}` };
     if (extra !== undefined) return { code: 1, stderr: `log listing: unexpected argument "${extra}"\n${LISTING_USAGE}` };
-
-    const data = context.load();
-    const listing = findListing(data.listings, key);
-    if (!listing) {
-      return { code: 1, stderr: `log listing: no listing "${key}". Run \`log listings\` to see the ids.` };
+    try {
+      const listing = await getListing(context.twenty, key);
+      if (!listing) return refuse("listing", "listingNotFound", key);
+      const account = listing.socialAccountId ? await findAccount(context.twenty, listing.socialAccountId).catch(() => null) : null;
+      if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ listing, account: account ? { accountName: account.accountName, status: account.status, homeCountry: account.homeCountry } : null }, null, 2) };
+      return { code: 0, stdout: renderListingDetail(listing, account) };
+    } catch (error) {
+      return refuseError("listing", error);
     }
-    if (parsed.flags["json"]) {
-      return { code: 0, stdout: JSON.stringify({ listing, actions: getSellerActions(listing, data.accounts) }, null, 2) };
-    }
-    return { code: 0, stdout: renderListingDetail(listing, data.accounts) };
   },
 };

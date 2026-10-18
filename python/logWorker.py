@@ -23,6 +23,10 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from errorCodes import failure
+import proxyGate
+from visibleBrowser import force_visible
+
 SELLING_URL = "https://www.facebook.com/marketplace/you/selling"
 
 # Same extractor as facebook-camofox-client scripts/scan_selling.py.
@@ -114,10 +118,27 @@ def doctor(_: dict[str, Any]) -> dict[str, Any]:
     return {"ok": ok, "checks": checks}
 
 
+def keep_state_on_release(manager, state_path: str | None) -> None:
+    """Before the browser closes, write its session (cookies and localStorage) to the
+    run's state file, so log-cli saves it to Twenty and the next run continues it."""
+    real_release = manager.release
+
+    async def release(session):
+        if state_path and not getattr(session, "_closed", False):
+            try:
+                await session.context.storage_state(path=state_path)
+            except Exception as exc:
+                log(f"could not save the session state ({type(exc).__name__})")
+        await real_release(session)
+
+    manager.release = release  # type: ignore[method-assign]
+
+
 async def acquire(request: dict[str, Any], storage_state_path: str | None):
     from facebook_camofox_client.domain_camofox.session_manager import CamofoxSessionManager
 
     manager = CamofoxSessionManager()
+    keep_state_on_release(manager, request.get("storage_state_path"))
     session = await manager.acquire(
         request.get("account_id") or "default", storage_state_path=storage_state_path)
     return manager, session
@@ -170,8 +191,8 @@ async def scan(request: dict[str, Any]) -> dict[str, Any]:
         await page.wait_for_timeout(4000)
         flags = await auth_flags(page)
         if any(flags.values()):
-            return {"ok": False, "error": "loginWall", "authFlags": flags,
-                    "url": page.url, "bodySample": await body_sample(page)}
+            return failure("loginWall", "Facebook showed login markers", authFlags=flags,
+                           url=page.url, bodySample=await body_sample(page))
         try:
             tab = page.get_by_text(re.compile(r"^Your listings$", re.I)).first
             if await tab.count() > 0:
@@ -224,9 +245,10 @@ async def status(request: dict[str, Any]) -> dict[str, Any]:
 
     listing_id = str(request.get("params", {}).get("listing_id", ""))
     if not listing_id:
-        return {"ok": False, "error": "params.listing_id is required"}
+        return failure("badRequest", "params.listing_id is required")
     state = request["storage_state_path"]
     manager = CamofoxSessionManager()
+    keep_state_on_release(manager, state)
     real_acquire = manager.acquire
 
     async def acquire_with_state(account_id, **kwargs):
@@ -255,24 +277,36 @@ def main() -> int:
     try:
         request = json.loads(sys.argv[1]) if len(sys.argv) > 1 else {}
     except json.JSONDecodeError as exc:
-        print(json.dumps({"ok": False, "error": f"bad request JSON: {exc}"}))
+        print(json.dumps(failure("badRequest", f"request is not JSON: {exc}")))
         return 1
     action = request.get("action")
+    # No browser without the account's proxy, for any action, signing in included (rule 12).
+    proxyGate.arm(request.get("proxy_path"), request.get("device_path"))
+    try:
+        # Every Camoufox facebook-camofox-client launches: proxy gate, then headed,
+        # humanized, cursor shown (rules 11 and 12).
+        force_visible()
+    except ImportError:
+        pass  # no camoufox: `doctor` reports it
     # Anything a library prints goes to stderr, so stdout carries only the result.
     real_stdout, sys.stdout = sys.stdout, sys.stderr
     try:
         if action == "doctor":
             result = doctor(request)
+        elif action == "proxy.check":
+            result = proxyGate.check(request.get("proxy_path"))
         elif action in ACTIONS:
             if action != "login" and not Path(request.get("storage_state_path") or "").exists():
-                result = {"ok": False, "error": "noSession",
-                          "storageStatePath": request.get("storage_state_path")}
+                result = failure("neverConnected", "no saved session",
+                                 storageStatePath=request.get("storage_state_path"))
             else:
                 result = asyncio.run(ACTIONS[action](request))
         else:
-            result = {"ok": False, "error": f"unknown action: {action}"}
+            result = failure("unknownAction", str(action))
+    except proxyGate.GateError as exc:
+        result = failure(exc.code, exc.detail)
     except Exception as exc:
-        result = {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+        result = failure("crashed", f"{type(exc).__name__}: {exc}"[:400])
     finally:
         sys.stdout = real_stdout
     print(json.dumps(result))

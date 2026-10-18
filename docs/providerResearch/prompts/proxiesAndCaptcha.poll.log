@@ -1,0 +1,34 @@
+Polling task: trun_088b9aad31744256ac36c04a1da70604
+Track progress: 
+https://platform.parallel.ai/play/deep-research/trun_088b9aad31744256ac36c04a1d
+a70604
+Will save to: proxiesAndCaptcha.json (+.md for text schema)
+
+Status: polling (0s)
+Status: running (0s)
+Status: running (46s)
+Status: running (1m31s)
+Status: running (2m16s)
+Status: running (3m02s)
+Status: running (3m47s)
+Status: running (4m32s)
+Status: running (5m17s)
+Status: running (6m03s)
+Status: running (6m48s)
+Status: running (7m33s)
+Status: running (8m19s)
+Status: running (9m04s)
+Status: running (9m49s)
+Status: completed (10m35s)
+Content saved to: proxiesAndCaptcha.md
+Metadata saved to: proxiesAndCaptcha.json
+
+Research Complete!
+Task: trun_088b9aad31744256ac36c04a1da70604
+Interaction ID: trun_088b9aad31744256ac36c04a1da70604
+URL: 
+https://platform.parallel.ai/play/deep-research/trun_088b9aad31744256ac36c04a1d
+a70604
+
+Use '--previous-interaction-id trun_088b9aad31744256ac36c04a1da70604' to 
+continue this research

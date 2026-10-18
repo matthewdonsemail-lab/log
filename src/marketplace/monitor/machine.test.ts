@@ -84,10 +84,10 @@ describe('detectHealth', () => {
 describe('classifySignal', () => {
   test('maps Listaro signals onto one account issue each', () => {
     expect(classifySignal({ url: 'https://www.facebook.com/checkpoint/123' })).toBe('checkpointed')
-    expect(classifySignal({ url: 'https://www.facebook.com/login/?next=x' })).toBe('session_expired')
+    expect(classifySignal({ url: 'https://www.facebook.com/login/?next=x' })).toBe('sessionExpired')
     expect(classifySignal({ text: "You can't buy or sell on Facebook" })).toBe('suspended')
     expect(classifySignal({ text: 'Please verify your identity' })).toBe('checkpointed')
-    expect(classifySignal({ text: 'Limit reached, try again later' })).toBe('rate_limited')
+    expect(classifySignal({ text: 'Limit reached, try again later' })).toBe('rateLimited')
     expect(classifySignal({ text: 'Your listings  Junk Clearance  Active' })).toBeNull()
   })
 })
@@ -111,7 +111,7 @@ describe('monitorMachine', () => {
   })
 
   test('a transient error gets one quick retry, which does not count as a new check', async () => {
-    const error: CheckOutcome = { kind: 'error', code: 'TimeoutError', detail: 'nav timeout', retryable: true }
+    const error: CheckOutcome = { kind: 'error', code: 'crashed', detail: 'TimeoutError: nav timeout', retryable: true }
     const { output, states, calls } = await runMonitor([error, ok([['a', 'ACTIVE'], ['b', 'ACTIVE']])])
     expect(calls).toBe(2)
     expect(states).toEqual(['checking', 'retrying', 'checking', 'done'])
@@ -119,7 +119,7 @@ describe('monitorMachine', () => {
   })
 
   test('circuit breaker trips after the same error 3 times in a row', async () => {
-    const error = (): CheckOutcome => ({ kind: 'error', code: 'TimeoutError', detail: 'x', retryable: true })
+    const error = (): CheckOutcome => ({ kind: 'error', code: 'crashed', detail: 'x', retryable: true })
     const { output, calls } = await runMonitor([error(), error(), error()], { maxChecks: 0 })
     expect(calls).toBe(3)
     expect(output.stopReason).toContain('circuit breaker')
@@ -130,7 +130,7 @@ describe('monitorMachine', () => {
     expect(blocked.states.at(-1)).toBe('blocked')
     expect(blocked.output.issue).toBe('checkpointed')
     const limited = await runMonitor(
-      [{ kind: 'issue', issue: 'rate_limited', detail: 'x' }, ok([['a', 'ACTIVE'], ['b', 'ACTIVE']])],
+      [{ kind: 'issue', issue: 'rateLimited', detail: 'x' }, ok([['a', 'ACTIVE'], ['b', 'ACTIVE']])],
       { maxChecks: 2 }
     )
     expect(limited.states).toEqual(['checking', 'resting', 'checking', 'done'])

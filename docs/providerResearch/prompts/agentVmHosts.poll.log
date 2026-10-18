@@ -1,0 +1,36 @@
+Polling task: trun_088b9aad31744256bc4d9c37cdfcd04c
+Track progress: 
+https://platform.parallel.ai/play/deep-research/trun_088b9aad31744256bc4d9c37cd
+fcd04c
+Will save to: agentVmHosts.json (+.md for text schema)
+
+Status: polling (0s)
+Status: running (0s)
+Status: running (46s)
+Status: running (1m31s)
+Status: running (2m16s)
+Status: running (3m02s)
+Status: running (3m47s)
+Status: running (4m32s)
+Status: running (5m17s)
+Status: running (6m03s)
+Status: running (6m48s)
+Status: running (7m33s)
+Status: running (8m19s)
+Status: running (9m04s)
+Status: running (9m49s)
+Status: running (10m35s)
+Status: running (11m20s)
+Status: completed (12m05s)
+Content saved to: agentVmHosts.md
+Metadata saved to: agentVmHosts.json
+
+Research Complete!
+Task: trun_088b9aad31744256bc4d9c37cdfcd04c
+Interaction ID: trun_088b9aad31744256bc4d9c37cdfcd04c
+URL: 
+https://platform.parallel.ai/play/deep-research/trun_088b9aad31744256bc4d9c37cd
+fcd04c
+
+Use '--previous-interaction-id trun_088b9aad31744256bc4d9c37cdfcd04c' to 
+continue this research

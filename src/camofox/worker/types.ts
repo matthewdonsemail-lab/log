@@ -3,8 +3,10 @@
  * facebook-camofox-client (github.com/PRACE1/facebook-camofox-client).
  * One JSON request in (argv), one JSON result out (stdout).
  */
+import type { CodedFailure } from "../../errors/catalog/index.ts";
+import type { ProxyCheck } from "../proxy/index.ts";
 
-export type WorkerAction = "doctor" | "login" | "marketplace.scan" | "marketplace.status";
+export type WorkerAction = "doctor" | "login" | "marketplace.scan" | "marketplace.status" | "proxy.check";
 
 export interface WorkerRequest {
   action: WorkerAction;
@@ -12,6 +14,16 @@ export interface WorkerRequest {
   account_id?: string;
   /** Playwright storage_state file holding that account's Facebook session. */
   storage_state_path?: string;
+  /**
+   * The account's proxy file (`camofox/proxy`). The worker refuses to open a
+   * browser without it, except for `login` (rule 12). Credentials never go on argv.
+   */
+  proxy_path?: string;
+  /**
+   * The run's `device.json` (`camofox/device`): pinned locale, home timezone
+   * and the account's device. The proxy gate opens no browser without it.
+   */
+  device_path?: string | null;
   params?: Record<string, unknown>;
 }
 
@@ -49,7 +61,8 @@ export interface ScannedListing {
   href: string;
 }
 
-export type WorkerFailure = { ok: false; error: string; [key: string]: unknown };
+/** A failed call: a catalog code (`src/errors/catalog/types.ts`), plus whatever the worker sent with it (`url`, `bodySample`). */
+export type WorkerFailure = CodedFailure & { [key: string]: unknown };
 
 export type DoctorResult = { ok: boolean; checks: DoctorChecks };
 export type LoginResult = { ok: true; storageStatePath: string; loggedIn: boolean; authFlags: Record<string, boolean> };
@@ -69,6 +82,7 @@ export interface WorkerResultMap {
   login: LoginResult;
   "marketplace.scan": ScanResult;
   "marketplace.status": StatusResult;
+  "proxy.check": ProxyCheck;
 }
 
 export type WorkerResult<A extends WorkerAction> = WorkerResultMap[A] | WorkerFailure;

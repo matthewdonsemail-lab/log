@@ -1,0 +1,3028 @@
+{
+  "model": "subq-snap-preview",
+  "endpoint": "https://api.subq.ai/v1/systemone",
+  "stateChars": 83051,
+  "passA": [
+    {
+      "camoufoxStays": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.84212327003479,
+          "harOnly": 0.034327298402786255,
+          "scriptsOnly": 0.024295546114444733,
+          "forkReaForJuggler": 0.025629369542002678,
+          "cdpOnCamoufox": 0.009007511660456657,
+          "chromeInstead": 0.004078378435224295,
+          "adsPowerLikeListaro": 0.003021546872332692,
+          "noRea": 0.05751712620258331
+        },
+        "confidence": 0.8195694514683315
+      },
+      "humanizeIntact": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.8358892798423767,
+          "harOnly": 0.02607727237045765,
+          "scriptsOnly": 0.023435447365045547,
+          "forkReaForJuggler": 0.02350606769323349,
+          "cdpOnCamoufox": 0.008975679986178875,
+          "chromeInstead": 0.010468922555446625,
+          "adsPowerLikeListaro": 0.004387976136058569,
+          "noRea": 0.06725926697254181
+        },
+        "confidence": 0.8124448912484306
+      },
+      "gateIntact": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.8307520151138306,
+          "harOnly": 0.040999092161655426,
+          "scriptsOnly": 0.02748393826186657,
+          "forkReaForJuggler": 0.019781745970249176,
+          "cdpOnCamoufox": 0.010848571546375751,
+          "chromeInstead": 0.009730265475809574,
+          "adsPowerLikeListaro": 0.009991390630602837,
+          "noRea": 0.05041301250457764
+        },
+        "confidence": 0.8065737315586635
+      },
+      "seesScripts": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.9368658661842346,
+          "harOnly": 0.007111167535185814,
+          "scriptsOnly": 0.032339584082365036,
+          "forkReaForJuggler": 0.008048278279602528,
+          "cdpOnCamoufox": 0.003936038352549076,
+          "chromeInstead": 0.00416301004588604,
+          "adsPowerLikeListaro": 0.0026561240665614605,
+          "noRea": 0.004879725631326437
+        },
+        "confidence": 0.9278467042105538
+      },
+      "seesRequests": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.8535088300704956,
+          "harOnly": 0.11030629277229309,
+          "scriptsOnly": 0.010887421667575836,
+          "forkReaForJuggler": 0.0063582188449800014,
+          "cdpOnCamoufox": 0.004202950745820999,
+          "chromeInstead": 0.003916303161531687,
+          "adsPowerLikeListaro": 0.0026473067700862885,
+          "noRea": 0.008172612637281418
+        },
+        "confidence": 0.8325815200805664
+      },
+      "publicEvidence": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.7276536226272583,
+          "harOnly": 0.1956636756658554,
+          "scriptsOnly": 0.013892590999603271,
+          "forkReaForJuggler": 0.0059877242892980576,
+          "cdpOnCamoufox": 0.005151310935616493,
+          "chromeInstead": 0.00919609609991312,
+          "adsPowerLikeListaro": 0.013674859888851643,
+          "noRea": 0.028780106455087662
+        },
+        "confidence": 0.6887469972882952
+      },
+      "leakReview": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.9272876977920532,
+          "harOnly": 0.014172578230500221,
+          "scriptsOnly": 0.03221871331334114,
+          "forkReaForJuggler": 0.004726317245513201,
+          "cdpOnCamoufox": 0.0035602597054094076,
+          "chromeInstead": 0.002312652301043272,
+          "adsPowerLikeListaro": 0.0022404221817851067,
+          "noRea": 0.013481305912137032
+        },
+        "confidence": 0.9169002260480609
+      },
+      "secretSafety": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.7515338063240051,
+          "harOnly": 0.06120753660798073,
+          "scriptsOnly": 0.04188517853617668,
+          "forkReaForJuggler": 0.012417087331414223,
+          "cdpOnCamoufox": 0.008557146415114403,
+          "chromeInstead": 0.004909234121441841,
+          "adsPowerLikeListaro": 0.006873814854770899,
+          "noRea": 0.11261622607707977
+        },
+        "confidence": 0.716038635798863
+      },
+      "noLiveAttach": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.8439547419548035,
+          "harOnly": 0.030775750055909157,
+          "scriptsOnly": 0.023851841688156128,
+          "forkReaForJuggler": 0.007913822308182716,
+          "cdpOnCamoufox": 0.005010978318750858,
+          "chromeInstead": 0.0025046207010746002,
+          "adsPowerLikeListaro": 0.002518983790650964,
+          "noRea": 0.08346917480230331
+        },
+        "confidence": 0.8216625622340611
+      },
+      "doesNotPost": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.8048921823501587,
+          "harOnly": 0.035250384360551834,
+          "scriptsOnly": 0.025264250114560127,
+          "forkReaForJuggler": 0.019823668524622917,
+          "cdpOnCamoufox": 0.013766818679869175,
+          "chromeInstead": 0.009591897949576378,
+          "adsPowerLikeListaro": 0.014425561763346195,
+          "noRea": 0.07698517292737961
+        },
+        "confidence": 0.7770196369716099
+      },
+      "effort": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.41945746541023254,
+          "harOnly": 0.37451979517936707,
+          "scriptsOnly": 0.011027953587472439,
+          "forkReaForJuggler": 0.008601407520473003,
+          "cdpOnCamoufox": 0.005924596451222897,
+          "chromeInstead": 0.0031589048448950052,
+          "adsPowerLikeListaro": 0.0018212503055110574,
+          "noRea": 0.1754886955022812
+        },
+        "confidence": 0.33652281761169434
+      },
+      "testable": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.7985007166862488,
+          "harOnly": 0.15864317119121552,
+          "scriptsOnly": 0.007920101284980774,
+          "forkReaForJuggler": 0.004771185573190451,
+          "cdpOnCamoufox": 0.0037309974431991577,
+          "chromeInstead": 0.0017811453435570002,
+          "adsPowerLikeListaro": 0.001473133102990687,
+          "noRea": 0.023179451003670692
+        },
+        "confidence": 0.7697151047842843
+      },
+      "reversible": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.6060001254081726,
+          "harOnly": 0.1406978964805603,
+          "scriptsOnly": 0.014743500389158726,
+          "forkReaForJuggler": 0.011595827527344227,
+          "cdpOnCamoufox": 0.005834563635289669,
+          "chromeInstead": 0.004122905433177948,
+          "adsPowerLikeListaro": 0.0023157240357249975,
+          "noRea": 0.21468953788280487
+        },
+        "confidence": 0.5497144290379116
+      },
+      "reaUnmodified": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.8591891527175903,
+          "harOnly": 0.04187183454632759,
+          "scriptsOnly": 0.019983699545264244,
+          "forkReaForJuggler": 0.00959201529622078,
+          "cdpOnCamoufox": 0.01138201542198658,
+          "chromeInstead": 0.011452571488916874,
+          "adsPowerLikeListaro": 0.012424550019204617,
+          "noRea": 0.03410414606332779
+        },
+        "confidence": 0.8390733173915318
+      },
+      "humanizeEvidence": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.8265753388404846,
+          "harOnly": 0.02335309237241745,
+          "scriptsOnly": 0.08856520801782608,
+          "forkReaForJuggler": 0.019347231835126877,
+          "cdpOnCamoufox": 0.008348867297172546,
+          "chromeInstead": 0.010787042789161205,
+          "adsPowerLikeListaro": 0.005276191048324108,
+          "noRea": 0.01774689182639122
+        },
+        "confidence": 0.8018003872462681
+      },
+      "metaPublicFit": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.9005739688873291,
+          "harOnly": 0.031578268855810165,
+          "scriptsOnly": 0.009812700562179089,
+          "forkReaForJuggler": 0.010793105699121952,
+          "cdpOnCamoufox": 0.00637074513360858,
+          "chromeInstead": 0.004315712954849005,
+          "adsPowerLikeListaro": 0.005534898955374956,
+          "noRea": 0.031020548194646835
+        },
+        "confidence": 0.8863702501569476
+      }
+    },
+    {
+      "camoufoxStays": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.84212327003479,
+          "harOnly": 0.034327298402786255,
+          "scriptsOnly": 0.024295546114444733,
+          "forkReaForJuggler": 0.025629369542002678,
+          "cdpOnCamoufox": 0.009007511660456657,
+          "chromeInstead": 0.004078378435224295,
+          "adsPowerLikeListaro": 0.003021546872332692,
+          "noRea": 0.05751712620258331
+        },
+        "confidence": 0.8195694514683315
+      },
+      "humanizeIntact": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.8358892798423767,
+          "harOnly": 0.02607727237045765,
+          "scriptsOnly": 0.023435447365045547,
+          "forkReaForJuggler": 0.02350606769323349,
+          "cdpOnCamoufox": 0.008975679986178875,
+          "chromeInstead": 0.010468922555446625,
+          "adsPowerLikeListaro": 0.004387976136058569,
+          "noRea": 0.06725926697254181
+        },
+        "confidence": 0.8124448912484306
+      },
+      "gateIntact": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.8307520151138306,
+          "harOnly": 0.040999092161655426,
+          "scriptsOnly": 0.02748393826186657,
+          "forkReaForJuggler": 0.019781745970249176,
+          "cdpOnCamoufox": 0.010848571546375751,
+          "chromeInstead": 0.009730265475809574,
+          "adsPowerLikeListaro": 0.009991390630602837,
+          "noRea": 0.05041301250457764
+        },
+        "confidence": 0.8065737315586635
+      },
+      "seesScripts": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.9368658661842346,
+          "harOnly": 0.007111167535185814,
+          "scriptsOnly": 0.032339584082365036,
+          "forkReaForJuggler": 0.008048278279602528,
+          "cdpOnCamoufox": 0.003936038352549076,
+          "chromeInstead": 0.00416301004588604,
+          "adsPowerLikeListaro": 0.0026561240665614605,
+          "noRea": 0.004879725631326437
+        },
+        "confidence": 0.9278467042105538
+      },
+      "seesRequests": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.8535088300704956,
+          "harOnly": 0.11030629277229309,
+          "scriptsOnly": 0.010887421667575836,
+          "forkReaForJuggler": 0.0063582188449800014,
+          "cdpOnCamoufox": 0.004202950745820999,
+          "chromeInstead": 0.003916303161531687,
+          "adsPowerLikeListaro": 0.0026473067700862885,
+          "noRea": 0.008172612637281418
+        },
+        "confidence": 0.8325815200805664
+      },
+      "publicEvidence": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.7276536226272583,
+          "harOnly": 0.1956636756658554,
+          "scriptsOnly": 0.013892590999603271,
+          "forkReaForJuggler": 0.0059877242892980576,
+          "cdpOnCamoufox": 0.005151310935616493,
+          "chromeInstead": 0.00919609609991312,
+          "adsPowerLikeListaro": 0.013674859888851643,
+          "noRea": 0.028780106455087662
+        },
+        "confidence": 0.6887469972882952
+      },
+      "leakReview": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.9272876977920532,
+          "harOnly": 0.014172578230500221,
+          "scriptsOnly": 0.03221871331334114,
+          "forkReaForJuggler": 0.004726317245513201,
+          "cdpOnCamoufox": 0.0035602597054094076,
+          "chromeInstead": 0.002312652301043272,
+          "adsPowerLikeListaro": 0.0022404221817851067,
+          "noRea": 0.013481305912137032
+        },
+        "confidence": 0.9169002260480609
+      },
+      "secretSafety": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.7515338063240051,
+          "harOnly": 0.06120753660798073,
+          "scriptsOnly": 0.04188517853617668,
+          "forkReaForJuggler": 0.012417087331414223,
+          "cdpOnCamoufox": 0.008557146415114403,
+          "chromeInstead": 0.004909234121441841,
+          "adsPowerLikeListaro": 0.006873814854770899,
+          "noRea": 0.11261622607707977
+        },
+        "confidence": 0.716038635798863
+      },
+      "noLiveAttach": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.8439547419548035,
+          "harOnly": 0.030775750055909157,
+          "scriptsOnly": 0.023851841688156128,
+          "forkReaForJuggler": 0.007913822308182716,
+          "cdpOnCamoufox": 0.005010978318750858,
+          "chromeInstead": 0.0025046207010746002,
+          "adsPowerLikeListaro": 0.002518983790650964,
+          "noRea": 0.08346917480230331
+        },
+        "confidence": 0.8216625622340611
+      },
+      "doesNotPost": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.8048921823501587,
+          "harOnly": 0.035250384360551834,
+          "scriptsOnly": 0.025264250114560127,
+          "forkReaForJuggler": 0.019823668524622917,
+          "cdpOnCamoufox": 0.013766818679869175,
+          "chromeInstead": 0.009591897949576378,
+          "adsPowerLikeListaro": 0.014425561763346195,
+          "noRea": 0.07698517292737961
+        },
+        "confidence": 0.7770196369716099
+      },
+      "effort": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.41945746541023254,
+          "harOnly": 0.37451979517936707,
+          "scriptsOnly": 0.011027953587472439,
+          "forkReaForJuggler": 0.008601407520473003,
+          "cdpOnCamoufox": 0.005924596451222897,
+          "chromeInstead": 0.0031589048448950052,
+          "adsPowerLikeListaro": 0.0018212503055110574,
+          "noRea": 0.1754886955022812
+        },
+        "confidence": 0.33652281761169434
+      },
+      "testable": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.7985007166862488,
+          "harOnly": 0.15864317119121552,
+          "scriptsOnly": 0.007920101284980774,
+          "forkReaForJuggler": 0.004771185573190451,
+          "cdpOnCamoufox": 0.0037309974431991577,
+          "chromeInstead": 0.0017811453435570002,
+          "adsPowerLikeListaro": 0.001473133102990687,
+          "noRea": 0.023179451003670692
+        },
+        "confidence": 0.7697151047842843
+      },
+      "reversible": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.6060001254081726,
+          "harOnly": 0.1406978964805603,
+          "scriptsOnly": 0.014743500389158726,
+          "forkReaForJuggler": 0.011595827527344227,
+          "cdpOnCamoufox": 0.005834563635289669,
+          "chromeInstead": 0.004122905433177948,
+          "adsPowerLikeListaro": 0.0023157240357249975,
+          "noRea": 0.21468953788280487
+        },
+        "confidence": 0.5497144290379116
+      },
+      "reaUnmodified": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.8591891527175903,
+          "harOnly": 0.04187183454632759,
+          "scriptsOnly": 0.019983699545264244,
+          "forkReaForJuggler": 0.00959201529622078,
+          "cdpOnCamoufox": 0.01138201542198658,
+          "chromeInstead": 0.011452571488916874,
+          "adsPowerLikeListaro": 0.012424550019204617,
+          "noRea": 0.03410414606332779
+        },
+        "confidence": 0.8390733173915318
+      },
+      "humanizeEvidence": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.8265753388404846,
+          "harOnly": 0.02335309237241745,
+          "scriptsOnly": 0.08856520801782608,
+          "forkReaForJuggler": 0.019347231835126877,
+          "cdpOnCamoufox": 0.008348867297172546,
+          "chromeInstead": 0.010787042789161205,
+          "adsPowerLikeListaro": 0.005276191048324108,
+          "noRea": 0.01774689182639122
+        },
+        "confidence": 0.8018003872462681
+      },
+      "metaPublicFit": {
+        "type": "choice",
+        "choice": "harAndScripts",
+        "probabilities": {
+          "harAndScripts": 0.9005739688873291,
+          "harOnly": 0.031578268855810165,
+          "scriptsOnly": 0.009812700562179089,
+          "forkReaForJuggler": 0.010793105699121952,
+          "cdpOnCamoufox": 0.00637074513360858,
+          "chromeInstead": 0.004315712954849005,
+          "adsPowerLikeListaro": 0.005534898955374956,
+          "noRea": 0.031020548194646835
+        },
+        "confidence": 0.8863702501569476
+      }
+    }
+  ],
+  "passB": {
+    "harAndScripts": {
+      "camoufoxStays": {
+        "type": "score",
+        "score": 3.9150066138245165,
+        "legend": {
+          "0": "Camoufox is replaced",
+          "1": "Camoufox is optional",
+          "2": "Camoufox plus another browser",
+          "3": "Camoufox, with a second client on it",
+          "4": "Camoufox only, one client"
+        },
+        "probabilities": {
+          "0": 0.003080053022131324,
+          "1": 0.003256571013480425,
+          "2": 0.01092876959592104,
+          "3": 0.04104603826999664,
+          "4": 0.941688597202301
+        },
+        "confidence": 0.9291720811743289
+      },
+      "humanizeIntact": {
+        "type": "score",
+        "score": 3.8871280043385923,
+        "legend": {
+          "0": "Humanize removed or set to a boolean",
+          "1": "Humanize at risk",
+          "2": "Unchanged but easy to bypass",
+          "3": "Unchanged",
+          "4": "Unchanged and still enforced by the gate"
+        },
+        "probabilities": {
+          "0": 0.0026817850302904844,
+          "1": 0.004605188500136137,
+          "2": 0.008328245021402836,
+          "3": 0.07167256623506546,
+          "4": 0.9127121567726135
+        },
+        "confidence": 0.9059401984171321
+      },
+      "gateIntact": {
+        "type": "score",
+        "score": 3.8209851337596774,
+        "legend": {
+          "0": "Gate skipped",
+          "1": "Gate weakened",
+          "2": "Gate unchanged but a second path skips it",
+          "3": "Gate unchanged",
+          "4": "Gate unchanged and the new path cannot skip it"
+        },
+        "probabilities": {
+          "0": 0.0032718030270189047,
+          "1": 0.004096608608961105,
+          "2": 0.006946205627173185,
+          "3": 0.13974545896053314,
+          "4": 0.8459399342536926
+        },
+        "confidence": 0.8508209098751346
+      },
+      "seesScripts": {
+        "type": "score",
+        "score": 3.7691647824831307,
+        "legend": {
+          "0": "No",
+          "1": "DOM html only",
+          "2": "Some script URLs",
+          "3": "Script bodies, incomplete",
+          "4": "Script bodies with digests"
+        },
+        "probabilities": {
+          "0": 0.004162691067904234,
+          "1": 0.004451374057680368,
+          "2": 0.010180690325796604,
+          "3": 0.18046893179416656,
+          "4": 0.8007363080978394
+        },
+        "confidence": 0.8076373342579851
+      },
+      "seesRequests": {
+        "type": "score",
+        "score": 3.947600965388119,
+        "legend": {
+          "0": "No",
+          "1": "Guessed from selectors",
+          "2": "Names only, no HAR",
+          "3": "HAR with bodies stripped",
+          "4": "HAR of the page's own responses"
+        },
+        "probabilities": {
+          "0": 0.004334176890552044,
+          "1": 0.003356344997882843,
+          "2": 0.007980724796652794,
+          "3": 0.009031916968524456,
+          "4": 0.9752968549728394
+        },
+        "confidence": 0.9563340757352611
+      },
+      "publicEvidence": {
+        "type": "score",
+        "score": 3.5900708865374327,
+        "legend": {
+          "0": "Contradicted by the docs",
+          "1": "No public source",
+          "2": "Implied only",
+          "3": "Documented for a neighbouring case",
+          "4": "Documented for this shape of tool"
+        },
+        "probabilities": {
+          "0": 0.007876924239099026,
+          "1": 0.011237768456339836,
+          "2": 0.042145512998104095,
+          "3": 0.2604171335697174,
+          "4": 0.6783226728439331
+        },
+        "confidence": 0.658392365090549
+      },
+      "leakReview": {
+        "type": "score",
+        "score": 3.7281648530624807,
+        "legend": {
+          "0": "Adds a new evasion",
+          "1": "Irrelevant to the 22",
+          "2": "Touches one vector",
+          "3": "Can check several vectors",
+          "4": "Can check the open vectors against saved client code"
+        },
+        "probabilities": {
+          "0": 0.004886205308139324,
+          "1": 0.005315024871379137,
+          "2": 0.0061421082355082035,
+          "3": 0.2240607887506485,
+          "4": 0.7595958113670349
+        },
+        "confidence": 0.773470915776367
+      },
+      "secretSafety": {
+        "type": "score",
+        "score": 2.744281604886055,
+        "legend": {
+          "0": "Secrets would be committed",
+          "1": "Secrets likely in the artifact",
+          "2": "Stripping is manual",
+          "3": "Stripping is specified",
+          "4": "The artifact type already omits headers and bodies"
+        },
+        "probabilities": {
+          "0": 0.00956899393349886,
+          "1": 0.08322693407535553,
+          "2": 0.11055301129817963,
+          "3": 0.7466553449630737,
+          "4": 0.049995653331279755
+        },
+        "confidence": 0.7035754045161108
+      },
+      "noLiveAttach": {
+        "type": "score",
+        "score": 3.952720076777041,
+        "legend": {
+          "0": "Attaches and drives",
+          "1": "Attaches and can clear emulation",
+          "2": "Attaches, read only",
+          "3": "Attaches only if we choose",
+          "4": "Never attaches"
+        },
+        "probabilities": {
+          "0": 0.002678502118214965,
+          "1": 0.0039196135476231575,
+          "2": 0.006607737857848406,
+          "3": 0.011591502465307713,
+          "4": 0.9752026200294495
+        },
+        "confidence": 0.9606001439193884
+      },
+      "doesNotPost": {
+        "type": "score",
+        "score": 3.235374396201223,
+        "legend": {
+          "0": "It posts",
+          "1": "It can post if mis-set",
+          "2": "Posting is a separate step someone could call",
+          "3": "Posting is not in this path",
+          "4": "This path cannot send a request"
+        },
+        "probabilities": {
+          "0": 0.0031204784754663706,
+          "1": 0.00761070242151618,
+          "2": 0.023811599239706993,
+          "3": 0.6816883087158203,
+          "4": 0.283768892288208
+        },
+        "confidence": 0.7231972235022113
+      },
+      "effort": {
+        "type": "score",
+        "score": 2.962641241494566,
+        "legend": {
+          "0": "A fork of REA",
+          "1": "A new browser stack",
+          "2": "A large capture subsystem",
+          "3": "A small capture in the existing session",
+          "4": "No code"
+        },
+        "probabilities": {
+          "0": 0.004929763730615377,
+          "1": 0.00553898373618722,
+          "2": 0.024690086022019386,
+          "3": 0.951642632484436,
+          "4": 0.013198547065258026
+        },
+        "confidence": 0.946870090207085
+      },
+      "testable": {
+        "type": "score",
+        "score": 3.1506301034241915,
+        "legend": {
+          "0": "Needs a live Facebook login",
+          "1": "Needs a live browser",
+          "2": "Needs Camoufox",
+          "3": "Fixture files are enough",
+          "4": "Pure function on a fixture, already the project pattern"
+        },
+        "probabilities": {
+          "0": 0.004780157469213009,
+          "1": 0.009617134928703308,
+          "2": 0.013376385904848576,
+          "3": 0.774645209312439,
+          "4": 0.19758114218711853
+        },
+        "confidence": 0.7962231080358226
+      },
+      "reversible": {
+        "type": "score",
+        "score": 3.679644397459924,
+        "legend": {
+          "0": "Publish is rewritten",
+          "1": "Hard to remove",
+          "2": "Some coupling",
+          "3": "A flag on the session",
+          "4": "Deletes a temp directory and a command"
+        },
+        "probabilities": {
+          "0": 0.003904166864231229,
+          "1": 0.005460343323647976,
+          "2": 0.08069700002670288,
+          "3": 0.12696388363838196,
+          "4": 0.7829746007919312
+        },
+        "confidence": 0.7330370157336195
+      },
+      "reaUnmodified": {
+        "type": "score",
+        "score": 3.8916104305535555,
+        "legend": {
+          "0": "We must fork REA",
+          "1": "We must patch REA",
+          "2": "We depend on an unreleased REA change",
+          "3": "Stock CLI, awkward inputs",
+          "4": "Stock CLI on files it documents"
+        },
+        "probabilities": {
+          "0": 0.004732476081699133,
+          "1": 0.004726594313979149,
+          "2": 0.006930597126483917,
+          "3": 0.06141864135861397,
+          "4": 0.9221916794776917
+        },
+        "confidence": 0.9096753975997368
+      },
+      "humanizeEvidence": {
+        "type": "score",
+        "score": 3.688343584537506,
+        "legend": {
+          "0": "Ignores input behaviour",
+          "1": "Cannot see input",
+          "2": "Might see listeners",
+          "3": "Can see input listeners in scripts",
+          "4": "Can see input listeners and the launch flags stay enforced"
+        },
+        "probabilities": {
+          "0": 0.0129392696544528,
+          "1": 0.011772647500038147,
+          "2": 0.028667740523815155,
+          "3": 0.16724592447280884,
+          "4": 0.7793744206428528
+        },
+        "confidence": 0.740286311134696
+      },
+      "metaPublicFit": {
+        "type": "score",
+        "score": 3.3999032210558653,
+        "legend": {
+          "0": "Invents a Meta case",
+          "1": "Leans on a passing mention",
+          "2": "Ignores the reports",
+          "3": "Uses the nearest documented website workflow",
+          "4": "Uses only cases the reports actually found"
+        },
+        "probabilities": {
+          "0": 0.016920503228902817,
+          "1": 0.02257196046411991,
+          "2": 0.020501242950558662,
+          "3": 0.4236961305141449,
+          "4": 0.5163100957870483
+        },
+        "confidence": 0.4999195743973056
+      }
+    },
+    "harOnly": {
+      "camoufoxStays": {
+        "type": "score",
+        "score": 3.9329284629784524,
+        "legend": {
+          "0": "Camoufox is replaced",
+          "1": "Camoufox is optional",
+          "2": "Camoufox plus another browser",
+          "3": "Camoufox, with a second client on it",
+          "4": "Camoufox only, one client"
+        },
+        "probabilities": {
+          "0": 0.0027060757856816053,
+          "1": 0.0030408664606511593,
+          "2": 0.006671089679002762,
+          "3": 0.033782411366701126,
+          "4": 0.9537995457649231
+        },
+        "confidence": 0.9441070889588445
+      },
+      "humanizeIntact": {
+        "type": "score",
+        "score": 3.8756603449583054,
+        "legend": {
+          "0": "Humanize removed or set to a boolean",
+          "1": "Humanize at risk",
+          "2": "Unchanged but easy to bypass",
+          "3": "Unchanged",
+          "4": "Unchanged and still enforced by the gate"
+        },
+        "probabilities": {
+          "0": 0.0025504508521407843,
+          "1": 0.005007900297641754,
+          "2": 0.009385131299495697,
+          "3": 0.08034402877092361,
+          "4": 0.9027125239372253
+        },
+        "confidence": 0.8963835036071638
+      },
+      "gateIntact": {
+        "type": "score",
+        "score": 3.70755500998348,
+        "legend": {
+          "0": "Gate skipped",
+          "1": "Gate weakened",
+          "2": "Gate unchanged but a second path skips it",
+          "3": "Gate unchanged",
+          "4": "Gate unchanged and the new path cannot skip it"
+        },
+        "probabilities": {
+          "0": 0.002634504111483693,
+          "1": 0.005089756101369858,
+          "2": 0.007443347480148077,
+          "3": 0.2517508268356323,
+          "4": 0.7330815196037292
+        },
+        "confidence": 0.7562959945450226
+      },
+      "seesScripts": {
+        "type": "score",
+        "score": 1.6636704914271832,
+        "legend": {
+          "0": "No",
+          "1": "DOM html only",
+          "2": "Some script URLs",
+          "3": "Script bodies, incomplete",
+          "4": "Script bodies with digests"
+        },
+        "probabilities": {
+          "0": 0.2979196012020111,
+          "1": 0.054731015115976334,
+          "2": 0.3520841598510742,
+          "3": 0.2762897312641144,
+          "4": 0.01897549070417881
+        },
+        "confidence": 0.19599089150627447
+      },
+      "seesRequests": {
+        "type": "score",
+        "score": 3.905342059675604,
+        "legend": {
+          "0": "No",
+          "1": "Guessed from selectors",
+          "2": "Names only, no HAR",
+          "3": "HAR with bodies stripped",
+          "4": "HAR of the page's own responses"
+        },
+        "probabilities": {
+          "0": 0.005492188036441803,
+          "1": 0.004381018225103617,
+          "2": 0.011488052085042,
+          "3": 0.03656997159123421,
+          "4": 0.9420687556266785
+        },
+        "confidence": 0.9211184311813364
+      },
+      "publicEvidence": {
+        "type": "score",
+        "score": 3.773524383082986,
+        "legend": {
+          "0": "Contradicted by the docs",
+          "1": "No public source",
+          "2": "Implied only",
+          "3": "Documented for a neighbouring case",
+          "4": "Documented for this shape of tool"
+        },
+        "probabilities": {
+          "0": 0.0064543806947767735,
+          "1": 0.007476409897208214,
+          "2": 0.028990158811211586,
+          "3": 0.12024855613708496,
+          "4": 0.8368304967880249
+        },
+        "confidence": 0.8112703114748001
+      },
+      "leakReview": {
+        "type": "score",
+        "score": 2.854036308825016,
+        "legend": {
+          "0": "Adds a new evasion",
+          "1": "Irrelevant to the 22",
+          "2": "Touches one vector",
+          "3": "Can check several vectors",
+          "4": "Can check the open vectors against saved client code"
+        },
+        "probabilities": {
+          "0": 0.0184848140925169,
+          "1": 0.04065311700105667,
+          "2": 0.08196249604225159,
+          "3": 0.786139726638794,
+          "4": 0.07275975495576859
+        },
+        "confidence": 0.7570975606019298
+      },
+      "secretSafety": {
+        "type": "score",
+        "score": 2.550682842731476,
+        "legend": {
+          "0": "Secrets would be committed",
+          "1": "Secrets likely in the artifact",
+          "2": "Stripping is manual",
+          "3": "Stripping is specified",
+          "4": "The artifact type already omits headers and bodies"
+        },
+        "probabilities": {
+          "0": 0.010422704741358757,
+          "1": 0.17810702323913574,
+          "2": 0.18312236666679382,
+          "3": 0.5070604085922241,
+          "4": 0.12128746509552002
+        },
+        "confidence": 0.423423339612782
+      },
+      "noLiveAttach": {
+        "type": "score",
+        "score": 3.9568811792414635,
+        "legend": {
+          "0": "Attaches and drives",
+          "1": "Attaches and can clear emulation",
+          "2": "Attaches, read only",
+          "3": "Attaches only if we choose",
+          "4": "Never attaches"
+        },
+        "probabilities": {
+          "0": 0.0025157276540994644,
+          "1": 0.003617414040490985,
+          "2": 0.006001181434839964,
+          "3": 0.01020109374076128,
+          "4": 0.9776645302772522
+        },
+        "confidence": 0.9640678255430734
+      },
+      "doesNotPost": {
+        "type": "score",
+        "score": 3.394145537633449,
+        "legend": {
+          "0": "It posts",
+          "1": "It can post if mis-set",
+          "2": "Posting is a separate step someone could call",
+          "3": "Posting is not in this path",
+          "4": "This path cannot send a request"
+        },
+        "probabilities": {
+          "0": 0.0026181021239608526,
+          "1": 0.006081756670027971,
+          "2": 0.018826331943273544,
+          "3": 0.5394843220710754,
+          "4": 0.43298953771591187
+        },
+        "confidence": 0.6068052588573967
+      },
+      "effort": {
+        "type": "score",
+        "score": 2.9836640236899257,
+        "legend": {
+          "0": "A fork of REA",
+          "1": "A new browser stack",
+          "2": "A large capture subsystem",
+          "3": "A small capture in the existing session",
+          "4": "No code"
+        },
+        "probabilities": {
+          "0": 0.006088403984904289,
+          "1": 0.007094535045325756,
+          "2": 0.020072802901268005,
+          "3": 0.930553138256073,
+          "4": 0.03619111701846123
+        },
+        "confidence": 0.9260681650290886
+      },
+      "testable": {
+        "type": "score",
+        "score": 3.215667629148811,
+        "legend": {
+          "0": "Needs a live Facebook login",
+          "1": "Needs a live browser",
+          "2": "Needs Camoufox",
+          "3": "Fixture files are enough",
+          "4": "Pure function on a fixture, already the project pattern"
+        },
+        "probabilities": {
+          "0": 0.004929163493216038,
+          "1": 0.007159070577472448,
+          "2": 0.010175440460443497,
+          "3": 0.7227878570556641,
+          "4": 0.25494852662086487
+        },
+        "confidence": 0.7548086677367488
+      },
+      "reversible": {
+        "type": "score",
+        "score": 3.6020315550267696,
+        "legend": {
+          "0": "Publish is rewritten",
+          "1": "Hard to remove",
+          "2": "Some coupling",
+          "3": "A flag on the session",
+          "4": "Deletes a temp directory and a command"
+        },
+        "probabilities": {
+          "0": 0.002865513553842902,
+          "1": 0.004784177988767624,
+          "2": 0.07534536719322205,
+          "3": 0.22146330773830414,
+          "4": 0.6955416798591614
+        },
+        "confidence": 0.6683594747446477
+      },
+      "reaUnmodified": {
+        "type": "score",
+        "score": 3.9512481754645705,
+        "legend": {
+          "0": "We must fork REA",
+          "1": "We must patch REA",
+          "2": "We depend on an unreleased REA change",
+          "3": "Stock CLI, awkward inputs",
+          "4": "Stock CLI on files it documents"
+        },
+        "probabilities": {
+          "0": 0.0030450078193098307,
+          "1": 0.002302114386111498,
+          "2": 0.003593059489503503,
+          "3": 0.022479334846138954,
+          "4": 0.9685804843902588
+        },
+        "confidence": 0.9593734764494002
+      },
+      "humanizeEvidence": {
+        "type": "score",
+        "score": 1.1879570223391056,
+        "legend": {
+          "0": "Ignores input behaviour",
+          "1": "Cannot see input",
+          "2": "Might see listeners",
+          "3": "Can see input listeners in scripts",
+          "4": "Can see input listeners and the launch flags stay enforced"
+        },
+        "probabilities": {
+          "0": 0.3254934251308441,
+          "1": 0.2816408574581146,
+          "2": 0.3123813271522522,
+          "3": 0.04038412496447563,
+          "4": 0.04010028392076492
+        },
+        "confidence": 0.010035814717411995
+      },
+      "metaPublicFit": {
+        "type": "score",
+        "score": 3.451366674154997,
+        "legend": {
+          "0": "Invents a Meta case",
+          "1": "Leans on a passing mention",
+          "2": "Ignores the reports",
+          "3": "Uses the nearest documented website workflow",
+          "4": "Uses only cases the reports actually found"
+        },
+        "probabilities": {
+          "0": 0.015497919172048569,
+          "1": 0.021637190133333206,
+          "2": 0.03497209772467613,
+          "3": 0.3517860472202301,
+          "4": 0.5761067867279053
+        },
+        "confidence": 0.542805425201853
+      }
+    },
+    "scriptsOnly": {
+      "camoufoxStays": {
+        "type": "score",
+        "score": 3.9172035548835993,
+        "legend": {
+          "0": "Camoufox is replaced",
+          "1": "Camoufox is optional",
+          "2": "Camoufox plus another browser",
+          "3": "Camoufox, with a second client on it",
+          "4": "Camoufox only, one client"
+        },
+        "probabilities": {
+          "0": 0.0035098770167678595,
+          "1": 0.0032351743429899216,
+          "2": 0.007366407662630081,
+          "3": 0.044318702071905136,
+          "4": 0.9415698647499084
+        },
+        "confidence": 0.9310028762556612
+      },
+      "humanizeIntact": {
+        "type": "score",
+        "score": 3.794830173254013,
+        "legend": {
+          "0": "Humanize removed or set to a boolean",
+          "1": "Humanize at risk",
+          "2": "Unchanged but easy to bypass",
+          "3": "Unchanged",
+          "4": "Unchanged and still enforced by the gate"
+        },
+        "probabilities": {
+          "0": 0.002980671590194106,
+          "1": 0.0057128965854644775,
+          "2": 0.011898458003997803,
+          "3": 0.15231174230575562,
+          "4": 0.8270962834358215
+        },
+        "confidence": 0.8290249713075657
+      },
+      "gateIntact": {
+        "type": "score",
+        "score": 3.6741525400429964,
+        "legend": {
+          "0": "Gate skipped",
+          "1": "Gate weakened",
+          "2": "Gate unchanged but a second path skips it",
+          "3": "Gate unchanged",
+          "4": "Gate unchanged and the new path cannot skip it"
+        },
+        "probabilities": {
+          "0": 0.0030053164809942245,
+          "1": 0.006431685760617256,
+          "2": 0.008963391184806824,
+          "3": 0.2766040861606598,
+          "4": 0.7049954533576965
+        },
+        "confidence": 0.7284606735532482
+      },
+      "seesScripts": {
+        "type": "score",
+        "score": 3.574045253917575,
+        "legend": {
+          "0": "No",
+          "1": "DOM html only",
+          "2": "Some script URLs",
+          "3": "Script bodies, incomplete",
+          "4": "Script bodies with digests"
+        },
+        "probabilities": {
+          "0": 0.007673168089240789,
+          "1": 0.00792311504483223,
+          "2": 0.01489026565104723,
+          "3": 0.3417120575904846,
+          "4": 0.6278013586997986
+        },
+        "confidence": 0.6450378280133009
+      },
+      "seesRequests": {
+        "type": "score",
+        "score": 1.8720976524055004,
+        "legend": {
+          "0": "No",
+          "1": "Guessed from selectors",
+          "2": "Names only, no HAR",
+          "3": "HAR with bodies stripped",
+          "4": "HAR of the page's own responses"
+        },
+        "probabilities": {
+          "0": 0.06169726327061653,
+          "1": 0.02864207699894905,
+          "2": 0.8947023153305054,
+          "3": 0.005782805383205414,
+          "4": 0.009175632148981094
+        },
+        "confidence": 0.8531911056488752
+      },
+      "publicEvidence": {
+        "type": "score",
+        "score": 2.981431134045124,
+        "legend": {
+          "0": "Contradicted by the docs",
+          "1": "No public source",
+          "2": "Implied only",
+          "3": "Documented for a neighbouring case",
+          "4": "Documented for this shape of tool"
+        },
+        "probabilities": {
+          "0": 0.022965945303440094,
+          "1": 0.046557940542697906,
+          "2": 0.1519143283367157,
+          "3": 0.4832027852535248,
+          "4": 0.2953590452671051
+        },
+        "confidence": 0.49226075783371925
+      },
+      "leakReview": {
+        "type": "score",
+        "score": 3.333973010070622,
+        "legend": {
+          "0": "Adds a new evasion",
+          "1": "Irrelevant to the 22",
+          "2": "Touches one vector",
+          "3": "Can check several vectors",
+          "4": "Can check the open vectors against saved client code"
+        },
+        "probabilities": {
+          "0": 0.006633278913795948,
+          "1": 0.008737009949982166,
+          "2": 0.014724630862474442,
+          "3": 0.5838338136672974,
+          "4": 0.3860713243484497
+        },
+        "confidence": 0.634858490123103
+      },
+      "secretSafety": {
+        "type": "score",
+        "score": 3.306416817009449,
+        "legend": {
+          "0": "Secrets would be committed",
+          "1": "Secrets likely in the artifact",
+          "2": "Stripping is manual",
+          "3": "Stripping is specified",
+          "4": "The artifact type already omits headers and bodies"
+        },
+        "probabilities": {
+          "0": 0.009189547039568424,
+          "1": 0.033904656767845154,
+          "2": 0.06021226570010185,
+          "3": 0.43468624353408813,
+          "4": 0.46200722455978394
+        },
+        "confidence": 0.4220142221699158
+      },
+      "noLiveAttach": {
+        "type": "score",
+        "score": 3.952017412055284,
+        "legend": {
+          "0": "Attaches and drives",
+          "1": "Attaches and can clear emulation",
+          "2": "Attaches, read only",
+          "3": "Attaches only if we choose",
+          "4": "Never attaches"
+        },
+        "probabilities": {
+          "0": 0.002368367975577712,
+          "1": 0.004317519720643759,
+          "2": 0.006910189054906368,
+          "3": 0.011736280284821987,
+          "4": 0.9746676683425903
+        },
+        "confidence": 0.960014425450936
+      },
+      "doesNotPost": {
+        "type": "score",
+        "score": 3.3367033186368644,
+        "legend": {
+          "0": "It posts",
+          "1": "It can post if mis-set",
+          "2": "Posting is a separate step someone could call",
+          "3": "Posting is not in this path",
+          "4": "This path cannot send a request"
+        },
+        "probabilities": {
+          "0": 0.003099981462582946,
+          "1": 0.005910612177103758,
+          "2": 0.021006962284445763,
+          "3": 0.5911508798599243,
+          "4": 0.37883153557777405
+        },
+        "confidence": 0.6492002778298531
+      },
+      "effort": {
+        "type": "score",
+        "score": 2.966792060993612,
+        "legend": {
+          "0": "A fork of REA",
+          "1": "A new browser stack",
+          "2": "A large capture subsystem",
+          "3": "A small capture in the existing session",
+          "4": "No code"
+        },
+        "probabilities": {
+          "0": 0.005958214867860079,
+          "1": 0.0070093004032969475,
+          "2": 0.027529390528798103,
+          "3": 0.9332886338233948,
+          "4": 0.026214519515633583
+        },
+        "confidence": 0.9286357037878284
+      },
+      "testable": {
+        "type": "score",
+        "score": 3.0468057384714484,
+        "legend": {
+          "0": "Needs a live Facebook login",
+          "1": "Needs a live browser",
+          "2": "Needs Camoufox",
+          "3": "Fixture files are enough",
+          "4": "Pure function on a fixture, already the project pattern"
+        },
+        "probabilities": {
+          "0": 0.005490009672939777,
+          "1": 0.01478062104433775,
+          "2": 0.024296307936310768,
+          "3": 0.8383001685142517,
+          "4": 0.1171329990029335
+        },
+        "confidence": 0.8437828516277174
+      },
+      "reversible": {
+        "type": "score",
+        "score": 3.7320140744559467,
+        "legend": {
+          "0": "Publish is rewritten",
+          "1": "Hard to remove",
+          "2": "Some coupling",
+          "3": "A flag on the session",
+          "4": "Deletes a temp directory and a command"
+        },
+        "probabilities": {
+          "0": 0.0044080703519284725,
+          "1": 0.005959502886980772,
+          "2": 0.07145550847053528,
+          "3": 0.08956427127122879,
+          "4": 0.8286126852035522
+        },
+        "confidence": 0.7766782680992037
+      },
+      "reaUnmodified": {
+        "type": "score",
+        "score": 3.675878927577287,
+        "legend": {
+          "0": "We must fork REA",
+          "1": "We must patch REA",
+          "2": "We depend on an unreleased REA change",
+          "3": "Stock CLI, awkward inputs",
+          "4": "Stock CLI on files it documents"
+        },
+        "probabilities": {
+          "0": 0.004872744902968407,
+          "1": 0.00591195048764348,
+          "2": 0.008670022711157799,
+          "3": 0.2695539593696594,
+          "4": 0.7109912633895874
+        },
+        "confidence": 0.7298993034443507
+      },
+      "humanizeEvidence": {
+        "type": "score",
+        "score": 3.047775764018297,
+        "legend": {
+          "0": "Ignores input behaviour",
+          "1": "Cannot see input",
+          "2": "Might see listeners",
+          "3": "Can see input listeners in scripts",
+          "4": "Can see input listeners and the launch flags stay enforced"
+        },
+        "probabilities": {
+          "0": 0.024622846394777298,
+          "1": 0.025616604834794998,
+          "2": 0.14470146596431732,
+          "3": 0.4874805510044098,
+          "4": 0.31757864356040955
+        },
+        "confidence": 0.5105151180177927
+      },
+      "metaPublicFit": {
+        "type": "score",
+        "score": 3.2795032616704702,
+        "legend": {
+          "0": "Invents a Meta case",
+          "1": "Leans on a passing mention",
+          "2": "Ignores the reports",
+          "3": "Uses the nearest documented website workflow",
+          "4": "Uses only cases the reports actually found"
+        },
+        "probabilities": {
+          "0": 0.018520936369895935,
+          "1": 0.030842168256640434,
+          "2": 0.057373788207769394,
+          "3": 0.43913912773132324,
+          "4": 0.4541240334510803
+        },
+        "confidence": 0.3995858713363607
+      }
+    },
+    "forkReaForJuggler": {
+      "camoufoxStays": {
+        "type": "score",
+        "score": 3.1876637134701014,
+        "legend": {
+          "0": "Camoufox is replaced",
+          "1": "Camoufox is optional",
+          "2": "Camoufox plus another browser",
+          "3": "Camoufox, with a second client on it",
+          "4": "Camoufox only, one client"
+        },
+        "probabilities": {
+          "0": 0.013979964889585972,
+          "1": 0.02267318405210972,
+          "2": 0.02625163644552231,
+          "3": 0.6358934044837952,
+          "4": 0.3012017607688904
+        },
+        "confidence": 0.6543836166771749
+      },
+      "humanizeIntact": {
+        "type": "score",
+        "score": 3.2148739770054817,
+        "legend": {
+          "0": "Humanize removed or set to a boolean",
+          "1": "Humanize at risk",
+          "2": "Unchanged but easy to bypass",
+          "3": "Unchanged",
+          "4": "Unchanged and still enforced by the gate"
+        },
+        "probabilities": {
+          "0": 0.006560553330928087,
+          "1": 0.08843328058719635,
+          "2": 0.05763184651732445,
+          "3": 0.3783203959465027,
+          "4": 0.4690539538860321
+        },
+        "confidence": 0.3457282132779558
+      },
+      "gateIntact": {
+        "type": "score",
+        "score": 3.1003499664366245,
+        "legend": {
+          "0": "Gate skipped",
+          "1": "Gate weakened",
+          "2": "Gate unchanged but a second path skips it",
+          "3": "Gate unchanged",
+          "4": "Gate unchanged and the new path cannot skip it"
+        },
+        "probabilities": {
+          "0": 0.006779845338314772,
+          "1": 0.043159667402505875,
+          "2": 0.055964887142181396,
+          "3": 0.6311217546463013,
+          "4": 0.262973815202713
+        },
+        "confidence": 0.6453353556959579
+      },
+      "seesScripts": {
+        "type": "score",
+        "score": 2.5752004012465477,
+        "legend": {
+          "0": "No",
+          "1": "DOM html only",
+          "2": "Some script URLs",
+          "3": "Script bodies, incomplete",
+          "4": "Script bodies with digests"
+        },
+        "probabilities": {
+          "0": 0.11712712794542313,
+          "1": 0.057288043200969696,
+          "2": 0.11212657392024994,
+          "3": 0.5601738095283508,
+          "4": 0.1532844454050064
+        },
+        "confidence": 0.3905262586971123
+      },
+      "seesRequests": {
+        "type": "score",
+        "score": 1.5652131102979183,
+        "legend": {
+          "0": "No",
+          "1": "Guessed from selectors",
+          "2": "Names only, no HAR",
+          "3": "HAR with bodies stripped",
+          "4": "HAR of the page's own responses"
+        },
+        "probabilities": {
+          "0": 0.42394477128982544,
+          "1": 0.05516554042696953,
+          "2": 0.22247810661792755,
+          "3": 0.1285550743341446,
+          "4": 0.16985653340816498
+        },
+        "confidence": 0
+      },
+      "publicEvidence": {
+        "type": "score",
+        "score": 1.0561213418841362,
+        "legend": {
+          "0": "Contradicted by the docs",
+          "1": "No public source",
+          "2": "Implied only",
+          "3": "Documented for a neighbouring case",
+          "4": "Documented for this shape of tool"
+        },
+        "probabilities": {
+          "0": 0.11349348723888397,
+          "1": 0.7729378342628479,
+          "2": 0.06734482944011688,
+          "3": 0.036401599645614624,
+          "4": 0.009822262451052666
+        },
+        "confidence": 0.7640764138971765
+      },
+      "leakReview": {
+        "type": "score",
+        "score": 1.5389697402715683,
+        "legend": {
+          "0": "Adds a new evasion",
+          "1": "Irrelevant to the 22",
+          "2": "Touches one vector",
+          "3": "Can check several vectors",
+          "4": "Can check the open vectors against saved client code"
+        },
+        "probabilities": {
+          "0": 0.3991166353225708,
+          "1": 0.1509937196969986,
+          "2": 0.07580070197582245,
+          "3": 0.2599814832210541,
+          "4": 0.11410754173994064
+        },
+        "confidence": 0
+      },
+      "secretSafety": {
+        "type": "score",
+        "score": 1.8855693712830544,
+        "legend": {
+          "0": "Secrets would be committed",
+          "1": "Secrets likely in the artifact",
+          "2": "Stripping is manual",
+          "3": "Stripping is specified",
+          "4": "The artifact type already omits headers and bodies"
+        },
+        "probabilities": {
+          "0": 0.049989003688097,
+          "1": 0.30952754616737366,
+          "2": 0.4380321502685547,
+          "3": 0.1098274514079094,
+          "4": 0.09262379258871078
+        },
+        "confidence": 0.4128495082259178
+      },
+      "noLiveAttach": {
+        "type": "score",
+        "score": 1.779804565012455,
+        "legend": {
+          "0": "Attaches and drives",
+          "1": "Attaches and can clear emulation",
+          "2": "Attaches, read only",
+          "3": "Attaches only if we choose",
+          "4": "Never attaches"
+        },
+        "probabilities": {
+          "0": 0.10306038707494736,
+          "1": 0.14938518404960632,
+          "2": 0.6400193572044373,
+          "3": 0.07975967228412628,
+          "4": 0.027775412425398827
+        },
+        "confidence": 0.5909862872213125
+      },
+      "doesNotPost": {
+        "type": "score",
+        "score": 2.8934020809829235,
+        "legend": {
+          "0": "It posts",
+          "1": "It can post if mis-set",
+          "2": "Posting is a separate step someone could call",
+          "3": "Posting is not in this path",
+          "4": "This path cannot send a request"
+        },
+        "probabilities": {
+          "0": 0.013560574501752853,
+          "1": 0.05322350189089775,
+          "2": 0.07155300676822662,
+          "3": 0.7495791912078857,
+          "4": 0.11208374798297882
+        },
+        "confidence": 0.7243620983014504
+      },
+      "effort": {
+        "type": "score",
+        "score": 0.2717674542218447,
+        "legend": {
+          "0": "A fork of REA",
+          "1": "A new browser stack",
+          "2": "A large capture subsystem",
+          "3": "A small capture in the existing session",
+          "4": "No code"
+        },
+        "probabilities": {
+          "0": 0.8736451864242554,
+          "1": 0.03719418868422508,
+          "2": 0.05264892056584358,
+          "3": 0.016771817579865456,
+          "4": 0.019739992916584015
+        },
+        "confidence": 0.773527121481796
+      },
+      "testable": {
+        "type": "score",
+        "score": 1.6064875274896622,
+        "legend": {
+          "0": "Needs a live Facebook login",
+          "1": "Needs a live browser",
+          "2": "Needs Camoufox",
+          "3": "Fixture files are enough",
+          "4": "Pure function on a fixture, already the project pattern"
+        },
+        "probabilities": {
+          "0": 0.02293122000992298,
+          "1": 0.5163617730140686,
+          "2": 0.3337502181529999,
+          "3": 0.08520200848579407,
+          "4": 0.0417548231780529
+        },
+        "confidence": 0.4563750627761085
+      },
+      "reversible": {
+        "type": "score",
+        "score": 1.2666282709687948,
+        "legend": {
+          "0": "Publish is rewritten",
+          "1": "Hard to remove",
+          "2": "Some coupling",
+          "3": "A flag on the session",
+          "4": "Deletes a temp directory and a command"
+        },
+        "probabilities": {
+          "0": 0.02419555000960827,
+          "1": 0.7755874395370483,
+          "2": 0.13993357121944427,
+          "3": 0.029959918931126595,
+          "4": 0.030323483049869537
+        },
+        "confidence": 0.7374838264659047
+      },
+      "reaUnmodified": {
+        "type": "score",
+        "score": 0.11339078797027469,
+        "legend": {
+          "0": "We must fork REA",
+          "1": "We must patch REA",
+          "2": "We depend on an unreleased REA change",
+          "3": "Stock CLI, awkward inputs",
+          "4": "Stock CLI on files it documents"
+        },
+        "probabilities": {
+          "0": 0.9385387897491455,
+          "1": 0.033003054559230804,
+          "2": 0.012880084104835987,
+          "3": 0.007684927899390459,
+          "4": 0.007893195375800133
+        },
+        "confidence": 0.9055076766914377
+      },
+      "humanizeEvidence": {
+        "type": "score",
+        "score": 1.8597312718629837,
+        "legend": {
+          "0": "Ignores input behaviour",
+          "1": "Cannot see input",
+          "2": "Might see listeners",
+          "3": "Can see input listeners in scripts",
+          "4": "Can see input listeners and the launch flags stay enforced"
+        },
+        "probabilities": {
+          "0": 0.22928832471370697,
+          "1": 0.1576511561870575,
+          "2": 0.3033735156059265,
+          "3": 0.1434149295091629,
+          "4": 0.16627207398414612
+        },
+        "confidence": 0.08984426409006119
+      },
+      "metaPublicFit": {
+        "type": "score",
+        "score": 2.1904108598828316,
+        "legend": {
+          "0": "Invents a Meta case",
+          "1": "Leans on a passing mention",
+          "2": "Ignores the reports",
+          "3": "Uses the nearest documented website workflow",
+          "4": "Uses only cases the reports actually found"
+        },
+        "probabilities": {
+          "0": 0.13501428067684174,
+          "1": 0.08370101451873779,
+          "2": 0.4520529806613922,
+          "3": 0.11432316154241562,
+          "4": 0.21490859985351562
+        },
+        "confidence": 0.2517750523984432
+      }
+    },
+    "cdpOnCamoufox": {
+      "camoufoxStays": {
+        "type": "score",
+        "score": 2.940971791744232,
+        "legend": {
+          "0": "Camoufox is replaced",
+          "1": "Camoufox is optional",
+          "2": "Camoufox plus another browser",
+          "3": "Camoufox, with a second client on it",
+          "4": "Camoufox only, one client"
+        },
+        "probabilities": {
+          "0": 0.023037321865558624,
+          "1": 0.027470361441373825,
+          "2": 0.025981614366173744,
+          "3": 0.8325046300888062,
+          "4": 0.0910060778260231
+        },
+        "confidence": 0.799133016106983
+      },
+      "humanizeIntact": {
+        "type": "score",
+        "score": 2.8005198687314987,
+        "legend": {
+          "0": "Humanize removed or set to a boolean",
+          "1": "Humanize at risk",
+          "2": "Unchanged but easy to bypass",
+          "3": "Unchanged",
+          "4": "Unchanged and still enforced by the gate"
+        },
+        "probabilities": {
+          "0": 0.010314150713384151,
+          "1": 0.21365030109882355,
+          "2": 0.08019538223743439,
+          "3": 0.35688191652297974,
+          "4": 0.3389582633972168
+        },
+        "confidence": 0.26883608335629106
+      },
+      "gateIntact": {
+        "type": "score",
+        "score": 2.6647652238607407,
+        "legend": {
+          "0": "Gate skipped",
+          "1": "Gate weakened",
+          "2": "Gate unchanged but a second path skips it",
+          "3": "Gate unchanged",
+          "4": "Gate unchanged and the new path cannot skip it"
+        },
+        "probabilities": {
+          "0": 0.031671684235334396,
+          "1": 0.15513236820697784,
+          "2": 0.12414886057376862,
+          "3": 0.49485331773757935,
+          "4": 0.1941937953233719
+        },
+        "confidence": 0.3969812958190838
+      },
+      "seesScripts": {
+        "type": "score",
+        "score": 0.9061995893716812,
+        "legend": {
+          "0": "No",
+          "1": "DOM html only",
+          "2": "Some script URLs",
+          "3": "Script bodies, incomplete",
+          "4": "Script bodies with digests"
+        },
+        "probabilities": {
+          "0": 0.6341113448143005,
+          "1": 0.07425247132778168,
+          "2": 0.09634897857904434,
+          "3": 0.14189934730529785,
+          "4": 0.053387779742479324
+        },
+        "confidence": 0.24483367552359891
+      },
+      "seesRequests": {
+        "type": "score",
+        "score": 0.8927807882428169,
+        "legend": {
+          "0": "No",
+          "1": "Guessed from selectors",
+          "2": "Names only, no HAR",
+          "3": "HAR with bodies stripped",
+          "4": "HAR of the page's own responses"
+        },
+        "probabilities": {
+          "0": 0.6442003846168518,
+          "1": 0.05613510310649872,
+          "2": 0.14684993028640747,
+          "3": 0.06831241399049759,
+          "4": 0.08450214564800262
+        },
+        "confidence": 0.2560160097976525
+      },
+      "publicEvidence": {
+        "type": "score",
+        "score": 0.5798417907208204,
+        "legend": {
+          "0": "Contradicted by the docs",
+          "1": "No public source",
+          "2": "Implied only",
+          "3": "Documented for a neighbouring case",
+          "4": "Documented for this shape of tool"
+        },
+        "probabilities": {
+          "0": 0.5026502013206482,
+          "1": 0.44448965787887573,
+          "2": 0.030339831486344337,
+          "3": 0.015408799052238464,
+          "4": 0.007111518178135157
+        },
+        "confidence": 0.5167985077326496
+      },
+      "leakReview": {
+        "type": "score",
+        "score": 0.5944339670240879,
+        "legend": {
+          "0": "Adds a new evasion",
+          "1": "Irrelevant to the 22",
+          "2": "Touches one vector",
+          "3": "Can check several vectors",
+          "4": "Can check the open vectors against saved client code"
+        },
+        "probabilities": {
+          "0": 0.7295259833335876,
+          "1": 0.08811380714178085,
+          "2": 0.08361221104860306,
+          "3": 0.05589589849114418,
+          "4": 0.0428520105779171
+        },
+        "confidence": 0.5046383608132601
+      },
+      "secretSafety": {
+        "type": "score",
+        "score": 1.5078033804893494,
+        "legend": {
+          "0": "Secrets would be committed",
+          "1": "Secrets likely in the artifact",
+          "2": "Stripping is manual",
+          "3": "Stripping is specified",
+          "4": "The artifact type already omits headers and bodies"
+        },
+        "probabilities": {
+          "0": 0.04780418425798416,
+          "1": 0.6127461194992065,
+          "2": 0.19089314341545105,
+          "3": 0.08095553517341614,
+          "4": 0.06760109215974808
+        },
+        "confidence": 0.4971569379170735
+      },
+      "noLiveAttach": {
+        "type": "score",
+        "score": 1.0921909771859646,
+        "legend": {
+          "0": "Attaches and drives",
+          "1": "Attaches and can clear emulation",
+          "2": "Attaches, read only",
+          "3": "Attaches only if we choose",
+          "4": "Never attaches"
+        },
+        "probabilities": {
+          "0": 0.030935654416680336,
+          "1": 0.9041473865509033,
+          "2": 0.023969415575265884,
+          "3": 0.02368573471903801,
+          "4": 0.017261888831853867
+        },
+        "confidence": 0.8716148283953468
+      },
+      "doesNotPost": {
+        "type": "score",
+        "score": 2.9546065144240856,
+        "legend": {
+          "0": "It posts",
+          "1": "It can post if mis-set",
+          "2": "Posting is a separate step someone could call",
+          "3": "Posting is not in this path",
+          "4": "This path cannot send a request"
+        },
+        "probabilities": {
+          "0": 0.01511386875063181,
+          "1": 0.04471805319190025,
+          "2": 0.07036788016557693,
+          "3": 0.7100481390953064,
+          "4": 0.15975207090377808
+        },
+        "confidence": 0.6959186135791242
+      },
+      "effort": {
+        "type": "score",
+        "score": 1.7561607956886292,
+        "legend": {
+          "0": "A fork of REA",
+          "1": "A new browser stack",
+          "2": "A large capture subsystem",
+          "3": "A small capture in the existing session",
+          "4": "No code"
+        },
+        "probabilities": {
+          "0": 0.10296666622161865,
+          "1": 0.2388944774866104,
+          "2": 0.5154130458831787,
+          "3": 0.08446310460567474,
+          "4": 0.05826272815465927
+        },
+        "confidence": 0.4618196909626324
+      },
+      "testable": {
+        "type": "score",
+        "score": 1.7044836059212685,
+        "legend": {
+          "0": "Needs a live Facebook login",
+          "1": "Needs a live browser",
+          "2": "Needs Camoufox",
+          "3": "Fixture files are enough",
+          "4": "Pure function on a fixture, already the project pattern"
+        },
+        "probabilities": {
+          "0": 0.020789967849850655,
+          "1": 0.3359185755252838,
+          "2": 0.5849390625953674,
+          "3": 0.0347227081656456,
+          "4": 0.023629695177078247
+        },
+        "confidence": 0.617099491879344
+      },
+      "reversible": {
+        "type": "score",
+        "score": 1.0834516379982233,
+        "legend": {
+          "0": "Publish is rewritten",
+          "1": "Hard to remove",
+          "2": "Some coupling",
+          "3": "A flag on the session",
+          "4": "Deletes a temp directory and a command"
+        },
+        "probabilities": {
+          "0": 0.13166099786758423,
+          "1": 0.7094153761863708,
+          "2": 0.11603451520204544,
+          "3": 0.029588954523205757,
+          "4": 0.013300091959536076
+        },
+        "confidence": 0.7110219183377922
+      },
+      "reaUnmodified": {
+        "type": "score",
+        "score": 1.6522538214921951,
+        "legend": {
+          "0": "We must fork REA",
+          "1": "We must patch REA",
+          "2": "We depend on an unreleased REA change",
+          "3": "Stock CLI, awkward inputs",
+          "4": "Stock CLI on files it documents"
+        },
+        "probabilities": {
+          "0": 0.2376348078250885,
+          "1": 0.283576637506485,
+          "2": 0.14910683035850525,
+          "3": 0.24826349318027496,
+          "4": 0.08141826093196869
+        },
+        "confidence": 0.06039716054995847
+      },
+      "humanizeEvidence": {
+        "type": "score",
+        "score": 1.6104032769799232,
+        "legend": {
+          "0": "Ignores input behaviour",
+          "1": "Cannot see input",
+          "2": "Might see listeners",
+          "3": "Can see input listeners in scripts",
+          "4": "Can see input listeners and the launch flags stay enforced"
+        },
+        "probabilities": {
+          "0": 0.21763762831687927,
+          "1": 0.2372908741235733,
+          "2": 0.3607490062713623,
+          "3": 0.08567584306001663,
+          "4": 0.09864671528339386
+        },
+        "confidence": 0.2037204963465531
+      },
+      "metaPublicFit": {
+        "type": "score",
+        "score": 1.2745011821389198,
+        "legend": {
+          "0": "Invents a Meta case",
+          "1": "Leans on a passing mention",
+          "2": "Ignores the reports",
+          "3": "Uses the nearest documented website workflow",
+          "4": "Uses only cases the reports actually found"
+        },
+        "probabilities": {
+          "0": 0.39761972427368164,
+          "1": 0.08022068440914154,
+          "2": 0.4154147207736969,
+          "3": 0.06352845579385757,
+          "4": 0.04321642220020294
+        },
+        "confidence": 0.14548213904102636
+      }
+    },
+    "chromeInstead": {
+      "camoufoxStays": {
+        "type": "score",
+        "score": 0.16299706045538187,
+        "legend": {
+          "0": "Camoufox is replaced",
+          "1": "Camoufox is optional",
+          "2": "Camoufox plus another browser",
+          "3": "Camoufox, with a second client on it",
+          "4": "Camoufox only, one client"
+        },
+        "probabilities": {
+          "0": 0.9210483431816101,
+          "1": 0.02675144001841545,
+          "2": 0.03215412050485611,
+          "3": 0.00824758317321539,
+          "4": 0.011798657476902008
+        },
+        "confidence": 0.8641691162871817
+      },
+      "humanizeIntact": {
+        "type": "score",
+        "score": 1.5789343118667603,
+        "legend": {
+          "0": "Humanize removed or set to a boolean",
+          "1": "Humanize at risk",
+          "2": "Unchanged but easy to bypass",
+          "3": "Unchanged",
+          "4": "Unchanged and still enforced by the gate"
+        },
+        "probabilities": {
+          "0": 0.2560557425022125,
+          "1": 0.3483756184577942,
+          "2": 0.09748921543359756,
+          "3": 0.15673793852329254,
+          "4": 0.14134161174297333
+        },
+        "confidence": 0.09079527482390404
+      },
+      "gateIntact": {
+        "type": "score",
+        "score": 1.9433851838111877,
+        "legend": {
+          "0": "Gate skipped",
+          "1": "Gate weakened",
+          "2": "Gate unchanged but a second path skips it",
+          "3": "Gate unchanged",
+          "4": "Gate unchanged and the new path cannot skip it"
+        },
+        "probabilities": {
+          "0": 0.05489791929721832,
+          "1": 0.4620499312877655,
+          "2": 0.1003812849521637,
+          "3": 0.2501106560230255,
+          "4": 0.13256017863750458
+        },
+        "confidence": 0.12234912316004432
+      },
+      "seesScripts": {
+        "type": "score",
+        "score": 3.0587190873920918,
+        "legend": {
+          "0": "No",
+          "1": "DOM html only",
+          "2": "Some script URLs",
+          "3": "Script bodies, incomplete",
+          "4": "Script bodies with digests"
+        },
+        "probabilities": {
+          "0": 0.05263711139559746,
+          "1": 0.040020111948251724,
+          "2": 0.08918983489274979,
+          "3": 0.4322926700115204,
+          "4": 0.3858603239059448
+        },
+        "confidence": 0.40583190259834123
+      },
+      "seesRequests": {
+        "type": "score",
+        "score": 3.007497576996684,
+        "legend": {
+          "0": "No",
+          "1": "Guessed from selectors",
+          "2": "Names only, no HAR",
+          "3": "HAR with bodies stripped",
+          "4": "HAR of the page's own responses"
+        },
+        "probabilities": {
+          "0": 0.11360415071249008,
+          "1": 0.02260815165936947,
+          "2": 0.18969695270061493,
+          "3": 0.0908675417304039,
+          "4": 0.5832232236862183
+        },
+        "confidence": 0.1729145792002479
+      },
+      "publicEvidence": {
+        "type": "score",
+        "score": 2.412343606352806,
+        "legend": {
+          "0": "Contradicted by the docs",
+          "1": "No public source",
+          "2": "Implied only",
+          "3": "Documented for a neighbouring case",
+          "4": "Documented for this shape of tool"
+        },
+        "probabilities": {
+          "0": 0.1525370329618454,
+          "1": 0.07284380495548248,
+          "2": 0.2016858011484146,
+          "3": 0.35560518503189087,
+          "4": 0.21732816100120544
+        },
+        "confidence": 0.14807277421156562
+      },
+      "leakReview": {
+        "type": "score",
+        "score": 0.7265241481363773,
+        "legend": {
+          "0": "Adds a new evasion",
+          "1": "Irrelevant to the 22",
+          "2": "Touches one vector",
+          "3": "Can check several vectors",
+          "4": "Can check the open vectors against saved client code"
+        },
+        "probabilities": {
+          "0": 0.7220185995101929,
+          "1": 0.048943500965833664,
+          "2": 0.07034648954868317,
+          "3": 0.09787752479314804,
+          "4": 0.060813773423433304
+        },
+        "confidence": 0.3945632098863522
+      },
+      "secretSafety": {
+        "type": "score",
+        "score": 1.7099012583494186,
+        "legend": {
+          "0": "Secrets would be committed",
+          "1": "Secrets likely in the artifact",
+          "2": "Stripping is manual",
+          "3": "Stripping is specified",
+          "4": "The artifact type already omits headers and bodies"
+        },
+        "probabilities": {
+          "0": 0.05169711634516716,
+          "1": 0.46971234679222107,
+          "2": 0.27801230549812317,
+          "3": 0.11814846098423004,
+          "4": 0.08242972940206528
+        },
+        "confidence": 0.3222537233183781
+      },
+      "noLiveAttach": {
+        "type": "score",
+        "score": 1.141313061118126,
+        "legend": {
+          "0": "Attaches and drives",
+          "1": "Attaches and can clear emulation",
+          "2": "Attaches, read only",
+          "3": "Attaches only if we choose",
+          "4": "Never attaches"
+        },
+        "probabilities": {
+          "0": 0.03264755383133888,
+          "1": 0.8692073225975037,
+          "2": 0.04257361590862274,
+          "3": 0.03532712906599045,
+          "4": 0.020244279876351357
+        },
+        "confidence": 0.8278264437491695
+      },
+      "doesNotPost": {
+        "type": "score",
+        "score": 2.63246750831604,
+        "legend": {
+          "0": "It posts",
+          "1": "It can post if mis-set",
+          "2": "Posting is a separate step someone could call",
+          "3": "Posting is not in this path",
+          "4": "This path cannot send a request"
+        },
+        "probabilities": {
+          "0": 0.046252816915512085,
+          "1": 0.08964264392852783,
+          "2": 0.14208105206489563,
+          "3": 0.6294310092926025,
+          "4": 0.09259243309497833
+        },
+        "confidence": 0.5394023135304451
+      },
+      "effort": {
+        "type": "score",
+        "score": 1.3420062065124512,
+        "legend": {
+          "0": "A fork of REA",
+          "1": "A new browser stack",
+          "2": "A large capture subsystem",
+          "3": "A small capture in the existing session",
+          "4": "No code"
+        },
+        "probabilities": {
+          "0": 0.031283341348171234,
+          "1": 0.784224808216095,
+          "2": 0.05509484186768532,
+          "3": 0.06999685615301132,
+          "4": 0.0594002865254879
+        },
+        "confidence": 0.6628560374180476
+      },
+      "testable": {
+        "type": "score",
+        "score": 1.653467521071434,
+        "legend": {
+          "0": "Needs a live Facebook login",
+          "1": "Needs a live browser",
+          "2": "Needs Camoufox",
+          "3": "Fixture files are enough",
+          "4": "Pure function on a fixture, already the project pattern"
+        },
+        "probabilities": {
+          "0": 0.07304346561431885,
+          "1": 0.5290691256523132,
+          "2": 0.13111412525177002,
+          "3": 0.20492307841777802,
+          "4": 0.061850227415561676
+        },
+        "confidence": 0.333704641709725
+      },
+      "reversible": {
+        "type": "score",
+        "score": 0.7679858226329088,
+        "legend": {
+          "0": "Publish is rewritten",
+          "1": "Hard to remove",
+          "2": "Some coupling",
+          "3": "A flag on the session",
+          "4": "Deletes a temp directory and a command"
+        },
+        "probabilities": {
+          "0": 0.3997679054737091,
+          "1": 0.48262113332748413,
+          "2": 0.0821683257818222,
+          "3": 0.020742343738675117,
+          "4": 0.014700251631438732
+        },
+        "confidence": 0.5270652719773352
+      },
+      "reaUnmodified": {
+        "type": "score",
+        "score": 3.709271647967398,
+        "legend": {
+          "0": "We must fork REA",
+          "1": "We must patch REA",
+          "2": "We depend on an unreleased REA change",
+          "3": "Stock CLI, awkward inputs",
+          "4": "Stock CLI on files it documents"
+        },
+        "probabilities": {
+          "0": 0.014767808839678764,
+          "1": 0.013106307946145535,
+          "2": 0.012007162906229496,
+          "3": 0.16832388937473297,
+          "4": 0.7917948365211487
+        },
+        "confidence": 0.7577263546797136
+      },
+      "humanizeEvidence": {
+        "type": "score",
+        "score": 1.4818980693817139,
+        "legend": {
+          "0": "Ignores input behaviour",
+          "1": "Cannot see input",
+          "2": "Might see listeners",
+          "3": "Can see input listeners in scripts",
+          "4": "Can see input listeners and the launch flags stay enforced"
+        },
+        "probabilities": {
+          "0": 0.30515363812446594,
+          "1": 0.2716345489025116,
+          "2": 0.16260354220867157,
+          "3": 0.15737667679786682,
+          "4": 0.10323160141706467
+        },
+        "confidence": 0
+      },
+      "metaPublicFit": {
+        "type": "score",
+        "score": 1.8159388154745102,
+        "legend": {
+          "0": "Invents a Meta case",
+          "1": "Leans on a passing mention",
+          "2": "Ignores the reports",
+          "3": "Uses the nearest documented website workflow",
+          "4": "Uses only cases the reports actually found"
+        },
+        "probabilities": {
+          "0": 0.21341043710708618,
+          "1": 0.1226426213979721,
+          "2": 0.3739805519580841,
+          "3": 0.21453070640563965,
+          "4": 0.07543574273586273
+        },
+        "confidence": 0.23761192709207535
+      }
+    },
+    "adsPowerLikeListaro": {
+      "camoufoxStays": {
+        "type": "score",
+        "score": 0.5501351626589894,
+        "legend": {
+          "0": "Camoufox is replaced",
+          "1": "Camoufox is optional",
+          "2": "Camoufox plus another browser",
+          "3": "Camoufox, with a second client on it",
+          "4": "Camoufox only, one client"
+        },
+        "probabilities": {
+          "0": 0.7170193791389465,
+          "1": 0.0472116656601429,
+          "2": 0.21389256417751312,
+          "3": 0.012367486022412777,
+          "4": 0.009508977644145489
+        },
+        "confidence": 0.5415540311175088
+      },
+      "humanizeIntact": {
+        "type": "score",
+        "score": 1.212538830935955,
+        "legend": {
+          "0": "Humanize removed or set to a boolean",
+          "1": "Humanize at risk",
+          "2": "Unchanged but easy to bypass",
+          "3": "Unchanged",
+          "4": "Unchanged and still enforced by the gate"
+        },
+        "probabilities": {
+          "0": 0.3405130207538605,
+          "1": 0.37305423617362976,
+          "2": 0.10442911833524704,
+          "3": 0.09738823026418686,
+          "4": 0.08461541682481766
+        },
+        "confidence": 0.2553626249233881
+      },
+      "gateIntact": {
+        "type": "score",
+        "score": 0.5387628097087145,
+        "legend": {
+          "0": "Gate skipped",
+          "1": "Gate weakened",
+          "2": "Gate unchanged but a second path skips it",
+          "3": "Gate unchanged",
+          "4": "Gate unchanged and the new path cannot skip it"
+        },
+        "probabilities": {
+          "0": 0.6910431981086731,
+          "1": 0.13478730618953705,
+          "2": 0.13558469712734222,
+          "3": 0.021533353254199028,
+          "4": 0.017051512375473976
+        },
+        "confidence": 0.5510309919094045
+      },
+      "seesScripts": {
+        "type": "score",
+        "score": 2.761765904724598,
+        "legend": {
+          "0": "No",
+          "1": "DOM html only",
+          "2": "Some script URLs",
+          "3": "Script bodies, incomplete",
+          "4": "Script bodies with digests"
+        },
+        "probabilities": {
+          "0": 0.07632900029420853,
+          "1": 0.053538836538791656,
+          "2": 0.13054387271404266,
+          "3": 0.511214017868042,
+          "4": 0.22837431728839874
+        },
+        "confidence": 0.4208476133644581
+      },
+      "seesRequests": {
+        "type": "score",
+        "score": 2.367250759154558,
+        "legend": {
+          "0": "No",
+          "1": "Guessed from selectors",
+          "2": "Names only, no HAR",
+          "3": "HAR with bodies stripped",
+          "4": "HAR of the page's own responses"
+        },
+        "probabilities": {
+          "0": 0.23305411636829376,
+          "1": 0.042074162513017654,
+          "2": 0.22001075744628906,
+          "3": 0.13428878784179688,
+          "4": 0.37057217955589294
+        },
+        "confidence": 0
+      },
+      "publicEvidence": {
+        "type": "score",
+        "score": 2.649039875715971,
+        "legend": {
+          "0": "Contradicted by the docs",
+          "1": "No public source",
+          "2": "Implied only",
+          "3": "Documented for a neighbouring case",
+          "4": "Documented for this shape of tool"
+        },
+        "probabilities": {
+          "0": 0.10548825562000275,
+          "1": 0.06163088604807854,
+          "2": 0.1387859284877777,
+          "3": 0.4665425717830658,
+          "4": 0.2275523543357849
+        },
+        "confidence": 0.32827931518356
+      },
+      "leakReview": {
+        "type": "score",
+        "score": 0.7921895682811737,
+        "legend": {
+          "0": "Adds a new evasion",
+          "1": "Irrelevant to the 22",
+          "2": "Touches one vector",
+          "3": "Can check several vectors",
+          "4": "Can check the open vectors against saved client code"
+        },
+        "probabilities": {
+          "0": 0.6470406651496887,
+          "1": 0.12471458315849304,
+          "2": 0.07054086029529572,
+          "3": 0.10442239046096802,
+          "4": 0.053281523287296295
+        },
+        "confidence": 0.33984202643235517
+      },
+      "secretSafety": {
+        "type": "score",
+        "score": 1.4249383956193924,
+        "legend": {
+          "0": "Secrets would be committed",
+          "1": "Secrets likely in the artifact",
+          "2": "Stripping is manual",
+          "3": "Stripping is specified",
+          "4": "The artifact type already omits headers and bodies"
+        },
+        "probabilities": {
+          "0": 0.06817536056041718,
+          "1": 0.6459156274795532,
+          "2": 0.14490842819213867,
+          "3": 0.07479633390903473,
+          "4": 0.06620422750711441
+        },
+        "confidence": 0.5322590507566929
+      },
+      "noLiveAttach": {
+        "type": "score",
+        "score": 1.0753329582512379,
+        "legend": {
+          "0": "Attaches and drives",
+          "1": "Attaches and can clear emulation",
+          "2": "Attaches, read only",
+          "3": "Attaches only if we choose",
+          "4": "Never attaches"
+        },
+        "probabilities": {
+          "0": 0.03126232698559761,
+          "1": 0.9067980051040649,
+          "2": 0.030282890424132347,
+          "3": 0.018657762557268143,
+          "4": 0.012998971156775951
+        },
+        "confidence": 0.8851186200045049
+      },
+      "doesNotPost": {
+        "type": "score",
+        "score": 2.3407761603593826,
+        "legend": {
+          "0": "It posts",
+          "1": "It can post if mis-set",
+          "2": "Posting is a separate step someone could call",
+          "3": "Posting is not in this path",
+          "4": "This path cannot send a request"
+        },
+        "probabilities": {
+          "0": 0.09421598166227341,
+          "1": 0.12138621509075165,
+          "2": 0.20763909816741943,
+          "3": 0.5029231905937195,
+          "4": 0.07383554428815842
+        },
+        "confidence": 0.3275874853134155
+      },
+      "effort": {
+        "type": "score",
+        "score": 1.2726637348532677,
+        "legend": {
+          "0": "A fork of REA",
+          "1": "A new browser stack",
+          "2": "A large capture subsystem",
+          "3": "A small capture in the existing session",
+          "4": "No code"
+        },
+        "probabilities": {
+          "0": 0.032361771911382675,
+          "1": 0.8124735355377197,
+          "2": 0.05816143378615379,
+          "3": 0.0441458523273468,
+          "4": 0.05285744369029999
+        },
+        "confidence": 0.7188439654807249
+      },
+      "testable": {
+        "type": "score",
+        "score": 1.3181407749652863,
+        "legend": {
+          "0": "Needs a live Facebook login",
+          "1": "Needs a live browser",
+          "2": "Needs Camoufox",
+          "3": "Fixture files are enough",
+          "4": "Pure function on a fixture, already the project pattern"
+        },
+        "probabilities": {
+          "0": 0.06529778987169266,
+          "1": 0.7536159157752991,
+          "2": 0.0317436084151268,
+          "3": 0.09633311629295349,
+          "4": 0.05300957337021828
+        },
+        "confidence": 0.6260530408471823
+      },
+      "reversible": {
+        "type": "score",
+        "score": 1.0349027551710606,
+        "legend": {
+          "0": "Publish is rewritten",
+          "1": "Hard to remove",
+          "2": "Some coupling",
+          "3": "A flag on the session",
+          "4": "Deletes a temp directory and a command"
+        },
+        "probabilities": {
+          "0": 0.2550150156021118,
+          "1": 0.5586531758308411,
+          "2": 0.11462037265300751,
+          "3": 0.03983699902892113,
+          "4": 0.031874459236860275
+        },
+        "confidence": 0.5458893633137146
+      },
+      "reaUnmodified": {
+        "type": "score",
+        "score": 3.680431604385376,
+        "legend": {
+          "0": "We must fork REA",
+          "1": "We must patch REA",
+          "2": "We depend on an unreleased REA change",
+          "3": "Stock CLI, awkward inputs",
+          "4": "Stock CLI on files it documents"
+        },
+        "probabilities": {
+          "0": 0.009853292256593704,
+          "1": 0.015213444828987122,
+          "2": 0.00954386591911316,
+          "3": 0.21542711555957794,
+          "4": 0.7499622702598572
+        },
+        "confidence": 0.733693040907383
+      },
+      "humanizeEvidence": {
+        "type": "score",
+        "score": 0.8867837637662888,
+        "legend": {
+          "0": "Ignores input behaviour",
+          "1": "Cannot see input",
+          "2": "Might see listeners",
+          "3": "Can see input listeners in scripts",
+          "4": "Can see input listeners and the launch flags stay enforced"
+        },
+        "probabilities": {
+          "0": 0.5075415968894958,
+          "1": 0.2704909145832062,
+          "2": 0.11035197228193283,
+          "3": 0.0508732944726944,
+          "4": 0.06074225530028343
+        },
+        "confidence": 0.26101353019475937
+      },
+      "metaPublicFit": {
+        "type": "score",
+        "score": 1.3238207250833511,
+        "legend": {
+          "0": "Invents a Meta case",
+          "1": "Leans on a passing mention",
+          "2": "Ignores the reports",
+          "3": "Uses the nearest documented website workflow",
+          "4": "Uses only cases the reports actually found"
+        },
+        "probabilities": {
+          "0": 0.3761466145515442,
+          "1": 0.18666355311870575,
+          "2": 0.23258231580257416,
+          "3": 0.14643791317939758,
+          "4": 0.05816970020532608
+        },
+        "confidence": 0
+      }
+    },
+    "noRea": {
+      "camoufoxStays": {
+        "type": "score",
+        "score": 3.934832632075995,
+        "legend": {
+          "0": "Camoufox is replaced",
+          "1": "Camoufox is optional",
+          "2": "Camoufox plus another browser",
+          "3": "Camoufox, with a second client on it",
+          "4": "Camoufox only, one client"
+        },
+        "probabilities": {
+          "0": 0.003526712069287896,
+          "1": 0.004477308597415686,
+          "2": 0.008926033042371273,
+          "3": 0.01977650821208954,
+          "4": 0.9632934331893921
+        },
+        "confidence": 0.9456938763614744
+      },
+      "humanizeIntact": {
+        "type": "score",
+        "score": 3.903540498111397,
+        "legend": {
+          "0": "Humanize removed or set to a boolean",
+          "1": "Humanize at risk",
+          "2": "Unchanged but easy to bypass",
+          "3": "Unchanged",
+          "4": "Unchanged and still enforced by the gate"
+        },
+        "probabilities": {
+          "0": 0.0027866410091519356,
+          "1": 0.003236949909478426,
+          "2": 0.011497828178107738,
+          "3": 0.05260634422302246,
+          "4": 0.9298722147941589
+        },
+        "confidence": 0.9196171547130992
+      },
+      "gateIntact": {
+        "type": "score",
+        "score": 3.2832152391783893,
+        "legend": {
+          "0": "Gate skipped",
+          "1": "Gate weakened",
+          "2": "Gate unchanged but a second path skips it",
+          "3": "Gate unchanged",
+          "4": "Gate unchanged and the new path cannot skip it"
+        },
+        "probabilities": {
+          "0": 0.002483903896063566,
+          "1": 0.004239147063344717,
+          "2": 0.007620726712048054,
+          "3": 0.6788902878761292,
+          "4": 0.30676594376564026
+        },
+        "confidence": 0.7247361030895263
+      },
+      "seesScripts": {
+        "type": "score",
+        "score": 0.23126289527863264,
+        "legend": {
+          "0": "No",
+          "1": "DOM html only",
+          "2": "Some script URLs",
+          "3": "Script bodies, incomplete",
+          "4": "Script bodies with digests"
+        },
+        "probabilities": {
+          "0": 0.8482509255409241,
+          "1": 0.09493352472782135,
+          "2": 0.038510408252477646,
+          "3": 0.013911969028413296,
+          "4": 0.004393161740154028
+        },
+        "confidence": 0.8072809206011394
+      },
+      "seesRequests": {
+        "type": "score",
+        "score": 0.22795068752020597,
+        "legend": {
+          "0": "No",
+          "1": "Guessed from selectors",
+          "2": "Names only, no HAR",
+          "3": "HAR with bodies stripped",
+          "4": "HAR of the page's own responses"
+        },
+        "probabilities": {
+          "0": 0.8719210028648376,
+          "1": 0.05877672880887985,
+          "2": 0.04962191358208656,
+          "3": 0.008791686035692692,
+          "4": 0.01088876836001873
+        },
+        "confidence": 0.8100410937331617
+      },
+      "publicEvidence": {
+        "type": "score",
+        "score": 1.7048873007297516,
+        "legend": {
+          "0": "Contradicted by the docs",
+          "1": "No public source",
+          "2": "Implied only",
+          "3": "Documented for a neighbouring case",
+          "4": "Documented for this shape of tool"
+        },
+        "probabilities": {
+          "0": 0.071829654276371,
+          "1": 0.4848347008228302,
+          "2": 0.20187164843082428,
+          "3": 0.14954674243927002,
+          "4": 0.09191726893186569
+        },
+        "confidence": 0.29287783801555634
+      },
+      "leakReview": {
+        "type": "score",
+        "score": 1.2543188817799091,
+        "legend": {
+          "0": "Adds a new evasion",
+          "1": "Irrelevant to the 22",
+          "2": "Touches one vector",
+          "3": "Can check several vectors",
+          "4": "Can check the open vectors against saved client code"
+        },
+        "probabilities": {
+          "0": 0.017692040652036667,
+          "1": 0.8352173566818237,
+          "2": 0.053655415773391724,
+          "3": 0.06195036694407463,
+          "4": 0.031484898179769516
+        },
+        "confidence": 0.7585809292892615
+      },
+      "secretSafety": {
+        "type": "score",
+        "score": 3.4981178026646376,
+        "legend": {
+          "0": "Secrets would be committed",
+          "1": "Secrets likely in the artifact",
+          "2": "Stripping is manual",
+          "3": "Stripping is specified",
+          "4": "The artifact type already omits headers and bodies"
+        },
+        "probabilities": {
+          "0": 0.04359106346964836,
+          "1": 0.025165950879454613,
+          "2": 0.03141534700989723,
+          "3": 0.18918941915035248,
+          "4": 0.7106382250785828
+        },
+        "confidence": 0.5817648169274131
+      },
+      "noLiveAttach": {
+        "type": "score",
+        "score": 3.9485873728990555,
+        "legend": {
+          "0": "Attaches and drives",
+          "1": "Attaches and can clear emulation",
+          "2": "Attaches, read only",
+          "3": "Attaches only if we choose",
+          "4": "Never attaches"
+        },
+        "probabilities": {
+          "0": 0.003270228859037161,
+          "1": 0.004263193346560001,
+          "2": 0.006046076770871878,
+          "3": 0.01345018669962883,
+          "4": 0.9729703664779663
+        },
+        "confidence": 0.9571559702356657
+      },
+      "doesNotPost": {
+        "type": "score",
+        "score": 2.829368732869625,
+        "legend": {
+          "0": "It posts",
+          "1": "It can post if mis-set",
+          "2": "Posting is a separate step someone could call",
+          "3": "Posting is not in this path",
+          "4": "This path cannot send a request"
+        },
+        "probabilities": {
+          "0": 0.032192301005125046,
+          "1": 0.0474991574883461,
+          "2": 0.1119721457362175,
+          "3": 0.6754201650619507,
+          "4": 0.13291619718074799
+        },
+        "confidence": 0.6362803659091393
+      },
+      "effort": {
+        "type": "score",
+        "score": 3.9341030763462186,
+        "legend": {
+          "0": "A fork of REA",
+          "1": "A new browser stack",
+          "2": "A large capture subsystem",
+          "3": "A small capture in the existing session",
+          "4": "No code"
+        },
+        "probabilities": {
+          "0": 0.004155431874096394,
+          "1": 0.004716298542916775,
+          "2": 0.006747975014150143,
+          "3": 0.021630331873893738,
+          "4": 0.9627499580383301
+        },
+        "confidence": 0.9450859124772251
+      },
+      "testable": {
+        "type": "score",
+        "score": 2.953149698674679,
+        "legend": {
+          "0": "Needs a live Facebook login",
+          "1": "Needs a live browser",
+          "2": "Needs Camoufox",
+          "3": "Fixture files are enough",
+          "4": "Pure function on a fixture, already the project pattern"
+        },
+        "probabilities": {
+          "0": 0.040610067546367645,
+          "1": 0.07234937697649002,
+          "2": 0.08110655099153519,
+          "3": 0.5051491856575012,
+          "4": 0.3007849156856537
+        },
+        "confidence": 0.45964964727560675
+      },
+      "reversible": {
+        "type": "score",
+        "score": 2.9519988670945168,
+        "legend": {
+          "0": "Publish is rewritten",
+          "1": "Hard to remove",
+          "2": "Some coupling",
+          "3": "A flag on the session",
+          "4": "Deletes a temp directory and a command"
+        },
+        "probabilities": {
+          "0": 0.071329765021801,
+          "1": 0.17552484571933746,
+          "2": 0.0631193220615387,
+          "3": 0.10986883193254471,
+          "4": 0.5801572203636169
+        },
+        "confidence": 0.1266657722493012
+      },
+      "reaUnmodified": {
+        "type": "score",
+        "score": 3.5801185369491577,
+        "legend": {
+          "0": "We must fork REA",
+          "1": "We must patch REA",
+          "2": "We depend on an unreleased REA change",
+          "3": "Stock CLI, awkward inputs",
+          "4": "Stock CLI on files it documents"
+        },
+        "probabilities": {
+          "0": 0.022941596806049347,
+          "1": 0.018741052597761154,
+          "2": 0.01900702901184559,
+          "3": 0.2338777631521225,
+          "4": 0.7054325342178345
+        },
+        "confidence": 0.6500988615055878
+      },
+      "humanizeEvidence": {
+        "type": "score",
+        "score": 0.8774826657027006,
+        "legend": {
+          "0": "Ignores input behaviour",
+          "1": "Cannot see input",
+          "2": "Might see listeners",
+          "3": "Can see input listeners in scripts",
+          "4": "Can see input listeners and the launch flags stay enforced"
+        },
+        "probabilities": {
+          "0": 0.3099479377269745,
+          "1": 0.5796308517456055,
+          "2": 0.05995490029454231,
+          "3": 0.023923585191369057,
+          "4": 0.026542814448475838
+        },
+        "confidence": 0.5855179568752646
+      },
+      "metaPublicFit": {
+        "type": "score",
+        "score": 3.390499072149396,
+        "legend": {
+          "0": "Invents a Meta case",
+          "1": "Leans on a passing mention",
+          "2": "Ignores the reports",
+          "3": "Uses the nearest documented website workflow",
+          "4": "Uses only cases the reports actually found"
+        },
+        "probabilities": {
+          "0": 0.011761491186916828,
+          "1": 0.02698097564280033,
+          "2": 0.20428742468357086,
+          "3": 0.07293727248907089,
+          "4": 0.6840328574180603
+        },
+        "confidence": 0.49208248872309923
+      }
+    }
+  },
+  "passC": [
+    {
+      "noReaOnMeta": {
+        "type": "noul",
+        "noul": 0.9667544960975647
+      },
+      "reaIsChromeCdp": {
+        "type": "noul",
+        "noul": 0.9838790893554688
+      },
+      "harNeverFetches": {
+        "type": "noul",
+        "noul": 0.982523500919342
+      },
+      "humanizeIsFloat": {
+        "type": "noul",
+        "noul": 0.8595158457756042
+      },
+      "cdpClearsPlatform": {
+        "type": "noul",
+        "noul": 0.9428726434707642
+      },
+      "listaroIsNotCamoufox": {
+        "type": "noul",
+        "noul": 0.9815355539321899
+      },
+      "adapterDoesNotCall": {
+        "type": "noul",
+        "noul": 0.9822033643722534
+      },
+      "canvasAndGpuOpen": {
+        "type": "noul",
+        "noul": 0.977743923664093
+      },
+      "harFitsRea": {
+        "type": "noul",
+        "noul": 0.6243025064468384
+      },
+      "forkHasNoPublicCase": {
+        "type": "noul",
+        "noul": 0.9702119827270508
+      }
+    },
+    {
+      "noReaOnMeta": {
+        "type": "noul",
+        "noul": 0.9667544960975647
+      },
+      "reaIsChromeCdp": {
+        "type": "noul",
+        "noul": 0.9838790893554688
+      },
+      "harNeverFetches": {
+        "type": "noul",
+        "noul": 0.982523500919342
+      },
+      "humanizeIsFloat": {
+        "type": "noul",
+        "noul": 0.8595158457756042
+      },
+      "cdpClearsPlatform": {
+        "type": "noul",
+        "noul": 0.9428726434707642
+      },
+      "listaroIsNotCamoufox": {
+        "type": "noul",
+        "noul": 0.9815355539321899
+      },
+      "adapterDoesNotCall": {
+        "type": "noul",
+        "noul": 0.9822033643722534
+      },
+      "canvasAndGpuOpen": {
+        "type": "noul",
+        "noul": 0.977743923664093
+      },
+      "harFitsRea": {
+        "type": "noul",
+        "noul": 0.6243025064468384
+      },
+      "forkHasNoPublicCase": {
+        "type": "noul",
+        "noul": 0.9702119827270508
+      }
+    }
+  ],
+  "inputTokens": 279432
+}

@@ -14,15 +14,21 @@
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "check:naming": "node scripts/checkNamingConventions.mjs",
+    "errors:export": "bun bin/log.ts errors --json > python/errorCatalog.json && bun bin/log.ts errors --markdown > docs/errorCatalog.md",
     "check": "bun run check:naming && bun run typecheck && bun run test",
-    "prepare": "git config core.hooksPath .githooks"
+    "prepare": "git config core.hooksPath .githooks",
+    "twenty:client": "node scripts/emitTwentyClient.mjs",
+    "twenty:client:check": "node scripts/emitTwentyClient.mjs --check"
   },
   "dependencies": {
     "@clack/prompts": "^1.8.1",
+    "sharp": "^0.34.5",
     "xstate": "5.33.3"
   },
   "devDependencies": {
     "@types/bun": "^1.4.0",
+    "graphql": "^16",
+    "twenty-client-sdk": "^2.43.0",
     "typescript": "^5.9.3"
   },
   "author": "matthewdonsemail-lab",

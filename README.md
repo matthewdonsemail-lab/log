@@ -1,41 +1,61 @@
 # log-cli
 
-The command line for [log](https://github.com/matthewdonsemail-lab/log)
-(listeningkit-hackathon). It loads the same Facebook Marketplace data as the
-dashboard's Listings view: the listings, the Facebook accounts that publish
-them, and what the listing state machine lets a seller do with each one.
+The command line for ListeningKit's Facebook Marketplace work. Accounts and
+listings live in Twenty (`socialAccounts`, `agencyListings`), reached through
+the same generated GraphQL client blaster and the dialer use. log-cli checks an
+account may run (proxy in its home country, rule 12), drives Camoufox through
+facebook-camofox-client and its own publish session, and writes every result
+back to Twenty.
 
-The CLI is built the same way as the Rank CLI from the Nebius hackathon: a
-command registry that generates its own usage, commands that return results
-rather than printing, and a [Clack](https://github.com/bombshell-dev/clack)
-guided menu (`log launch`) on top of the scriptable commands.
+Built the same way as the Rank CLI from the Nebius hackathon: a command registry
+that generates its own usage, commands that return results rather than
+printing, and a [Clack](https://github.com/bombshell-dev/clack) guided menu
+(`log launch`) on top of the scriptable commands.
 
 ## Run it
 
 ```bash
 bun install
+cp .env.example .env.local     # TWENTY_BASE_URL, TWENTY_API_KEY, CAPTCHA_KRAKEN_API_KEY, 2CAPTCHA_API_KEY
 bun run launch                 # guided menu (needs a terminal)
-bun bin/log.ts listings        # every listing
-bun bin/log.ts listings --status removed
-bun bin/log.ts listings --account fbPacer
-bun bin/log.ts listing 1583545526797714
-bun bin/log.ts accounts
+bun bin/log.ts accounts        # FACEBOOK accounts in Twenty, and whether each may run
+bun bin/log.ts listings --status READY
+bun bin/log.ts publish --listing <agencyListingId>        # dry run
 ```
 
 Every command takes `--json` and never prompts, so scripts and agents can use it.
 
-| Command | What it shows |
+| Command | What it does |
 | --- | --- |
-| `log launch` | Clack menu: browse a listing, filter by status or account, list accounts |
-| `log listings [--status <s>] [--account <id>]` | The listings table |
-| `log listing <listingId>` | One listing in full, plus the seller actions it allows |
-| `log accounts` | The Facebook accounts, their last issue, and how many listings each owns |
-| `log doctor` | Checks python, facebook-camofox-client, the Camoufox browser, and which accounts have a saved session |
-| `log login` / `log logout` / `log whoami` | Sign in with Twenty through blaster's web app (OAuth), the same flow as `blaster login` |
-| `log connect --account <id>` | Opens Camoufox so you log into Facebook by hand, then saves that account's session |
-| `log scan --account <id>` | Reads Marketplace > Selling live and puts each card next to what log says |
-| `log status <listingId> --account <id>` | Opens one item page live and classifies it |
-| `log watch --account <id> [--checks n] [--interval min]` | Runs the listing monitor (XState) and prints every step as it happens |
+| `log launch` | Clack menu over the commands below |
+| `log accounts` / `log account show <name>` | Facebook accounts: status, home, proxy, last proxy check, whether each may run |
+| `log account status <name> <STATUS>` | Set an account's status. RESTRICTED, BANNED or DEAD keep the account and replace its campaign listings |
+| `log listings` / `log listing <id>` | Twenty listings by status, account or campaign; one in full |
+| `log proxy check --account <name>` | The proxy's exit IP and country, no browser, written to Twenty |
+| `log proxy assign --account <name>` / `--missing` | A 2Captcha residential proxy in the account's home city, checked, then saved to Twenty |
+| `log proxy balance` | 2Captcha proxy traffic left |
+| `log doctor` | Python, facebook-camofox-client, Camoufox, Twenty, and which accounts may run |
+| `log connect --account <name>` | Sign in by hand through the account's proxy; cookies saved to Twenty |
+| `log scan --account <name>` | Marketplace > Selling live; health and clicks written to the listings |
+| `log status <facebookListingId> --account <name>` | One item page live |
+| `log watch --account <name>` | The listing monitor (XState), every step printed |
+| `log publish --listing <id> [--live]` | Post one listing (XState), dry run unless `--live` |
+| `log campaign fill|run|heal|show --campaign <id>` | One ad on N accounts in one place, published and kept full |
+| `log errors` / `log graph publish` | The error catalog; the machines as Mermaid |
+| `log login` / `log logout` / `log whoami` | Sign in to log with Twenty through blaster's web app |
+
+How accounts, statuses, replacement and campaigns work: `docs/accountsAndListings.md`.
+How proxies load and are checked: `docs/proxies.md`. Where accounts are bought:
+`docs/vendors/`. Every error code: `docs/errorCatalog.md`.
+
+## Twenty
+
+- `scripts/twentySetup.mjs` adds the fields log-cli needs (additive only; prints
+  the plan, `--apply` creates them).
+- `bun run twenty:client` regenerates `src/twenty/graphql/generated` from the live
+  workspace (twenty-client-sdk), the same way blaster (`pnpm twenty:client`) and the
+  dialer (`bun run api:client`) do. `bun run twenty:client:check` fails when it is stale.
+- Tests never call Twenty: they inject `marketplaceFixture()`, an in-memory Twenty.
 
 ## The listing monitor (`log watch`)
 
@@ -44,7 +64,7 @@ Every command takes `--json` and never prompts, so scripts and agents can use it
 ```text
 checking --ok-----------> evaluating --> waiting --after poll--> checking
    |                          '-- checks done --> done
-   |--rate_limited--> resting --after 24h--> checking
+   |--rateLimited--> resting --after 24h--> checking
    |--other account issue--> blocked
    '--error--> failed --first try--> retrying --after 5s--> checking
                  |-- same error 3x in a row --> tripped
@@ -85,14 +105,14 @@ OAuth client secret.
 
 ## Live mode (Camoufox)
 
-`doctor`, `login`, `scan` and `status` launch a real Camoufox browser through
-[facebook-camofox-client](https://github.com/PRACE1/facebook-camofox-client).
-`src/camofox/worker/client.ts` spawns `python/logWorker.py`, which takes one
-JSON request and prints one JSON result, the same way inferencesaver's
-`scripts/facebook-client.mjs` drove the old `facebook-worker.py`.
-
-From the Listaro agent (`Listaro_backup/agent`) it keeps one saved session per
-account, the selling-page login check, and the "Needs attention" read.
+`doctor`, `connect`, `scan`, `status` and `watch` launch Camoufox through
+[facebook-camofox-client](https://github.com/PRACE1/facebook-camofox-client)
+(`python/logWorker.py`); `publish` drives its own session
+(`python/publishSession.py`). Before either starts, the account must pass the
+account check, and at launch `python/proxyGate.py` checks the proxy exits in the
+account's home country (rule 12). The proxy and cookies come from Twenty, are
+written to a private temp folder for the run, and are deleted afterwards.
+Every launch is headed, humanized, with the cursor shown (rule 11).
 
 Setup, once:
 
@@ -101,42 +121,27 @@ git clone https://github.com/PRACE1/facebook-camofox-client ../facebook-camofox-
 pip install -e ../facebook-camofox-client
 python -m camoufox fetch          # downloads the Camoufox browser
 bun bin/log.ts doctor
-bun bin/log.ts connect --account fbGalwayRubbish
-bun bin/log.ts scan --account fbGalwayRubbish
 ```
-
-Sessions are Playwright storage_state files in `~/.logCli/facebook/<accountId>.json`
-(`LOG_FB_STATE_DIR` moves them, `LOG_PYTHON` picks the interpreter). Never
-commit them. Everything except `login` only reads Facebook. Nothing is posted,
-edited or deleted.
-
-## Where the data comes from
-
-`src/marketplace/*/client.ts` serves the dashboard's seed rows from
-listeningkit-hackathon. That is 6 listings across 3 Facebook accounts, covering
-every status the dashboard renders. The first two listings are the live ones
-captured by facebook-camofox-client. When that client's API is live, only
-the `client.ts` files change.
 
 ## Layout
 
 ```text
 bin/log.ts                      entrypoint
-src/marketplace/listing/        listing types, state machine, data client
-src/marketplace/account/        Facebook account types and data client
-src/cli/runner/                 registry, dispatcher, args/table/usage helpers
-src/cli/listing/                log listings, log listing
-src/cli/account/                log accounts
-src/cli/launch/                 log launch (Clack)
-src/cli/live/                   log doctor, connect, scan, status
-src/camofox/worker/             spawns python/logWorker.py, maps dashboard badges to statuses
+src/twenty/graphql/             the generated Twenty client (generated/), its seam, an in-memory Twenty for tests
+src/marketplace/socialAccount/  Facebook accounts in Twenty, the account check (checkRunnable)
+src/marketplace/agencyListing/  listings in Twenty, run write-back, dashboard sync
+src/marketplace/replacement/    losing an account, replacements, campaign fill
+src/marketplace/publish/        the XState publish machine
 src/marketplace/monitor/        the XState listing monitor + relist rules
-src/observability/trace/        XState inspect -> trace lines
-src/cli/watch/                  log watch
-src/auth/session/               Twenty session store, PKCE, token checks (ported from blaster)
-src/auth/exchange/              one-shot loopback that receives the tokens from blaster's web app
-src/cli/auth/                   log login, logout, whoami
-python/logWorker.py             bridge into facebook-camofox-client
+src/marketplace/listing/        the listeningkit-hackathon listing machine port (+ its seed)
+src/camofox/run/                one run's private proxy/cookie files
+src/camofox/worker/             spawns python/logWorker.py
+src/camofox/session/            drives python/publishSession.py step by step
+src/captcha/router/             CaptchaKraken → 2Captcha → a person
+src/errors/catalog/             every error code, once
+src/cli/*                       the commands
+python/proxyGate.py             no launch unless the proxy exits in the home country
+python/visibleBrowser.py        headed, humanized, cursor shown
 ```
 
 See `docs/namingConventions.md`. Run `bun run check` for the naming gate, typecheck and tests.

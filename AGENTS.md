@@ -32,6 +32,53 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
    (matt has credits). The key goes in `.env.local`, with the template in `.env.example`.
    `open-typesafe-camoufox` is stale, so don't port from it. How posting works,
    with sources, is in `docs/listingPublish/`.
+10. 2026-10-18 · matt asked for posting: `log publish` posts one listing
+    through the publish machine. It is a dry run unless `--live`, and once
+    Publish is clicked nothing is retried. Captchas go CaptchaKraken first,
+    then 2Captcha, and Facebook's own challenges go to a person. Rule 8 still
+    holds for editing and deleting.
+11. 2026-10-18 · Camoufox is never headless. Every launch is headed so the
+    window can be watched, with humanize on and the cursor shown
+    (`python/visibleBrowser.py`). There is no flag to turn it off.
+    `camofox/session/visible.test.ts` enforces it.
+12. 2026-10-18 · No browser opens for an account unless its proxy is attached
+    and its exit IP is in the account's country (`python/proxyGate.py`). There
+    is no exception: not dry runs, not signing in (matt: "never, ever open"
+    without one). Listings must be in the account's country, and the form's
+    location must be picked in that country. How it works: `docs/proxies.md`.
+13. 2026-10-18 · Twenty is the only place accounts and listings live: Facebook
+    accounts are `socialAccounts` (platform FACEBOOK), listings are
+    `agencyListings`. Never delete either: a banned or dead account keeps its
+    record with its status, and its campaign listings get replacement accounts
+    in the same country (`docs/accountsAndListings.md`). Fields are only ever
+    added (`scripts/twentySetup.mjs`), never renamed or retyped, so the
+    twitter-controller keeps working.
+14. 2026-10-18 · Twenty is reached through the generated GraphQL client, the
+    same one blaster and the dialer use (`bun run twenty:client`,
+    `src/twenty/graphql/generated`). Regenerate it after any field change.
+15. 2026-10-18 · One device per account: its first launch makes one Windows
+    Camoufox identity (screen, GPU, fonts, voices, audio seed, geolocation)
+    stored in `socialAccounts.deviceProfile`, and every launch
+    replays it exactly (`python/deviceProfile.py`). Never regenerated or
+    printed; an unreadable one is refused (`deviceProfileInvalid`).
+16. 2026-10-18 · The locale is pinned per home country at launch, from one
+    table (`HOME_COUNTRIES` in `src/marketplace/home/types.ts`: IE en-IE, GB
+    en-GB...). navigator, Accept-Language and Intl agree in pages and workers.
+    A country not in the table is refused (`noHomeLocale`).
+17. 2026-10-18 · Launch self-check: before any page loads, the gate checks in
+    the page and a worker that the timezone is the exit IP's, the language and
+    Intl locale are the pinned locale, and the browser's exit IP is the
+    checked one. Any mismatch closes the browser before Facebook loads.
+18. 2026-10-18 · No run outside the account's local waking hours (08:00-22:00
+    in its home timezone, or `activeHoursStart`/`activeHoursEnd`): publish,
+    scan, status, watch, campaign run and connect are refused with
+    `outsideActiveHours`. Daily caps count the account's local day.
+19. 2026-10-18 · Captures are kept raw for analysis. The HAR `log publish`
+    records from Camoufox keeps every cookie, header, token and body: nothing
+    is stripped, because rea, SubQ and the matrices need it. It is only for
+    matt's own development machine: it stays in the run folder
+    (`~/.logCli/publish/<run>/firefox`) and is never committed
+    (`skills/reaCapture/SKILL.md`). The REA work is based on live runs.
 
 ## Checks
 
@@ -45,10 +92,12 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 - Facebook Marketplace only: listings and the Facebook accounts that publish
   them. X, Reddit, keywords and communities from listeningkit-hackathon are out
   of scope until asked for.
-- Data comes through `marketplace/*/client.ts`. Today that is the dashboard's
-  seed (`apps/web/src/lib/listings/mock.ts`, `connections/mock.ts` in
-  listeningkit-hackathon). Change the client when the live
-  facebook-camofox-client lands, never the commands.
+- Data comes from Twenty through `marketplace/socialAccount`,
+  `marketplace/agencyListing` and `marketplace/replacement`, over
+  `twenty/graphql`. Commands get it from `context.twenty`; tests inject
+  `marketplaceFixture()` (an in-memory Twenty) and never call the network.
+- The listeningkit-hackathon seed (`context.load()`) stays only for the
+  listing machine port below.
 - `marketplace/listing/types.ts` and `machine.ts` are ports of
   `apps/web/src/lib/listings/types.ts` and `machine.ts`. Keep them in step
   with the source.
@@ -58,10 +107,19 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 - `doctor`, `login`, `scan`, `status` go through `camofox/worker` and launch
   a real Camoufox browser. Tests always inject `worker` into the context and
   never launch a browser.
-- Read-only on Facebook, except `login`, which only saves a session. Don't add
-  posting, editing or deleting without matt asking.
-- Session files (`~/.logCli/facebook/*.json`) hold live cookies. Never commit,
-  print or paste them.
+- Read-only on Facebook, except `login`, which only saves a session, and
+  `log publish --live` (rule 10). Don't add editing or deleting without matt
+  asking.
+- Cookies, browser storage, proxies, devices and 2FA secrets live in Twenty
+  only. A run writes the account's proxy, device file and session
+  (cookies + localStorage) to a private temp folder for the Python
+  (`camofox/run`) and deletes it afterwards. After the run the session the
+  browser left is saved back (only while it still holds a Facebook login),
+  and a newly made device is saved once. Never commit, print or paste them;
+  `log` never selects password, email or totpSecret at all. The proxy
+  username's first part is the 2Captcha password: it is masked too.
+  The exception is the raw capture HAR (rule 19), which keeps the session
+  cookies and tokens in the local run folder for analysis.
 
 ## Monitor (XState v5)
 
