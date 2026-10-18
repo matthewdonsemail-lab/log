@@ -43,6 +43,6 @@ export function renderDoctor(checks: DoctorChecks, sessions: { accountId: string
     `${mark(Boolean(checks.camoufoxBrowser))}  camoufox browser ${checks.camoufoxVersion ?? ""}  ${checks.camoufoxBrowser ?? checks.camoufoxBrowserError ?? ""}`,
     "",
     "Facebook sessions:",
-    ...sessions.map((s) => `  ${mark(s.exists)}  ${s.accountId}  ${s.exists ? s.path : `run: log login --account ${s.accountId}`}`),
+    ...sessions.map((s) => `  ${mark(s.exists)}  ${s.accountId}  ${s.exists ? s.path : `run: log connect --account ${s.accountId}`}`),
   ].join("\n");
 }

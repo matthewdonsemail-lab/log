@@ -60,7 +60,7 @@ turns it into `underReviewDuplicate`.
 These keep their own spelling because we can't rename them:
 
 - Other repos and packages: `facebook-camofox-client`, `@clack/prompts`, `Listaro_backup`.
-- Git's fixed hook file names: `.githooks/pre-commit`.
+- Git's fixed names: the hook file `.githooks/pre-commit`, the `rev-parse` command. The Linux opener `xdg-open`.
 - npm's package `name` (`log-cli`). npm doesn't allow capital letters there.
 - Third-party ids: Unsplash photo ids (`photo-1558...`), the UUID template.
 - Account issues (`session_expired`) are snake_case from log's shared

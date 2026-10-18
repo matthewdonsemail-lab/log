@@ -61,7 +61,7 @@ function checkDomains(src) {
 
 // Names we can't rename (other systems' spellings). Everything else is camelCase.
 const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)+$/;
-const ALLOWED_KEBAB = [/^rev-parse$/, /^photo-\d+-[0-9a-f]+$/, /^x{8}-x{4}-4x{3}-yx{3}-x{12}$/];
+const ALLOWED_KEBAB = [/^rev-parse$/, /^xdg-open$/, /^photo-\d+-[0-9a-f]+$/, /^x{8}-x{4}-4x{3}-yx{3}-x{12}$/];
 // A single- or double-quoted string on one line.
 const LITERAL = /(['"])((?:(?!\1)[^\\\n])*)\1/g;
 

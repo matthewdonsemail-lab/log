@@ -12,8 +12,9 @@ none of them prompt unless you run `log launch` in a terminal.
 
 1. **Read-only on Facebook.** `scan`, `status` and `watch` only read. `login`
    only saves a session file. Nothing is posted, edited or deleted.
-2. **Never print session files.** `~/.logCli/facebook/<accountId>.json` holds
-   live cookies. Don't cat, paste or commit them.
+2. **Never print session files.** `~/.logCli/facebook/<accountId>.json` (Facebook
+   cookies) and `~/.logCli/auth/sessions.json` (Twenty tokens) are live
+   credentials. Don't cat, paste or commit them. Commands only show tokens masked.
 3. **Marketplace only.** No X, Reddit, keywords or communities.
 
 ## Environment
@@ -33,9 +34,14 @@ bun bin/log.ts listings [--status underReview] [--account fbPacer]
 bun bin/log.ts listing 1583545526797714
 bun bin/log.ts accounts
 
+# sign in (Twenty OAuth through blaster's web app, same as `blaster login`)
+bun bin/log.ts login                                     # opens the browser; --token <t> to paste instead
+bun bin/log.ts whoami                                    # who is signed in (refreshes if expired)
+bun bin/log.ts logout
+
 # live (launches Camoufox)
 bun bin/log.ts doctor                                    # setup check, sessions per account
-bun bin/log.ts login --account fbGalwayRubbish           # log in by hand, press Enter to save
+bun bin/log.ts connect --account fbGalwayRubbish           # log in by hand, press Enter to save
 bun bin/log.ts scan --account fbGalwayRubbish            # Marketplace > Selling, next to log's data
 bun bin/log.ts status 1583545526797714 --account fbGalwayRubbish
 
@@ -49,8 +55,8 @@ bun bin/log.ts watch --account fbGalwayRubbish --json    # NDJSON, result on the
 
 | You see | Means | Do |
 | --- | --- | --- |
-| `noSession` / `never_connected` | No saved session for that account | `log login --account <accountId>` |
-| `loginWall` / `session_expired` | Facebook wants a fresh login | `log login` again |
+| `noSession` / `never_connected` | No saved session for that account | `log connect --account <accountId>` |
+| `loginWall` / `session_expired` | Facebook wants a fresh login | `log connect` again |
 | `checkpointed`, `suspended` | Account problem; the monitor stops at `blocked` | Tell matt, don't retry |
 | `tripped` | Same error 3 times in a row | Read the trace, fix the cause, run again |
 | Repost `yes (#n)` | A takedown that's within the repost budget | Decision only; nothing was posted |
