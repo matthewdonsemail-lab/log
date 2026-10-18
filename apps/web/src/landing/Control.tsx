@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { motion } from 'motion/react'
-import { siGithub } from 'simple-icons'
 import Dither from '@/components/Dither'
+import { BigGithubButton } from './BigGithubButton'
 
 const TEAM_PHOTOS = [
   '/images/mattlistening.webp',
@@ -199,41 +199,7 @@ export function Control() {
         >
           Check out our repo and leave a star you&apos;ll definitely not regret it
         </p>
-        <a
-          href="https://github.com/matthewdonsemail-lab/log"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mx-auto mt-4 flex min-h-0 w-full max-w-3xl items-center gap-4 overflow-hidden rounded-3xl px-6 py-6 text-left outline outline-1 outline-neutral-300 shadow-xl transition-all hover:scale-[1.01] hover:brightness-105 sm:gap-6 sm:px-8 sm:py-7 md:gap-8 md:rounded-[40px] md:px-10 md:py-8 lg:max-w-4xl"
-          style={{
-            backgroundImage:
-              'linear-gradient(180deg, #117EFF -12.71%, #1E88FF 44.69%, #5EA7FF 102.1%)',
-            boxShadow: 'inset 0 2px 30px #5EA7FF',
-          }}
-        >
-          <svg
-            viewBox="0 0 24 24"
-            role="img"
-            aria-label="GitHub"
-            className="pointer-events-none size-14 shrink-0 text-white opacity-95 sm:size-16 md:size-24 lg:size-28"
-            fill="currentColor"
-          >
-            <path d={siGithub.path} />
-          </svg>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold leading-snug text-white/90 sm:text-base md:text-xl">
-              Get Log by ListeningKit
-            </p>
-            <p className="mt-1.5 text-xl font-black leading-tight text-white sm:mt-2 sm:text-2xl md:text-3xl lg:text-4xl lg:whitespace-nowrap">
-              getting{' '}
-              <img
-                src="/logos/jobs.svg"
-                alt="jobs"
-                className="mx-1 inline-block h-[0.85em] w-auto align-[-0.08em]"
-              />{' '}
-              never been this easy!
-            </p>
-          </div>
-        </a>
+        <BigGithubButton className="mt-4" />
         <div className="mt-12 flex flex-col items-center justify-center gap-4 px-2 sm:flex-row sm:gap-5">
           <div className="flex shrink-0 gap-1.5">
             {TEAM_PHOTOS.map((src) => (

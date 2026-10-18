@@ -1,5 +1,5 @@
 import { motion } from 'motion/react'
-import { Link } from 'react-router-dom'
+import { LOG_REPO_URL, RepoLink } from './RepoLink'
 import { Button } from '@listeningkit/ui'
 import { FacebookPostText } from '@/components/cards/FacebookCard'
 import { RedditPostText } from '@/components/cards/RedditCard'
@@ -104,9 +104,9 @@ export function Unemployed() {
           )
         </p>
         <Button variant="blue" asChild className="mt-8 rounded-xl px-8 py-5 text-xl font-bold uppercase">
-          <Link to="/onboarding" className="inline-block text-center">
+          <RepoLink href={LOG_REPO_URL} className="inline-block text-center">
             Get started it&apos;s free!
-          </Link>
+          </RepoLink>
         </Button>
       </div>
     </section>

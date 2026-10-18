@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { LOG_REPO_URL, RepoLink } from './RepoLink'
 import { motion } from 'motion/react'
 import { ArrowRight } from 'lucide-react'
 import { SOCIAL_ICONS, SocialGlyph } from '@/lib/social-icons'
@@ -8,19 +8,19 @@ const CARDS = [
     id: 'reddit',
     label: 'Reddit',
     caption: 'Catch buying questions and complaints the minute they post.',
-    href: '/onboarding',
+    href: LOG_REPO_URL,
   },
   {
     id: 'x',
     label: 'X',
     caption: 'Hear what people say about you in real time, as it happens.',
-    href: '/onboarding',
+    href: LOG_REPO_URL,
   },
   {
     id: 'facebook',
     label: 'Facebook',
     caption: 'Follow groups and pages where your customers hang out.',
-    href: '/onboarding',
+    href: LOG_REPO_URL,
   },
 ]
 
@@ -50,9 +50,9 @@ export function Cards() {
         {CARDS.map((card) => {
           const icon = SOCIAL_ICONS.find((entry) => entry.id === card.id)
           return (
-            <Link
+            <RepoLink
               key={card.id}
-              to={card.href}
+              href={card.href}
               className="flex flex-col items-start rounded-2xl bg-white p-6 text-left shadow-xl shadow-[#0D2A4C]/10 transition-transform hover:-translate-y-1"
             >
               <div className="flex items-center gap-3">
@@ -68,7 +68,7 @@ export function Cards() {
                 <span className="underline underline-offset-4">Learn more</span>
                 <ArrowRight size={16} strokeWidth={2.5} />
               </span>
-            </Link>
+            </RepoLink>
           )
         })}
       </motion.div>

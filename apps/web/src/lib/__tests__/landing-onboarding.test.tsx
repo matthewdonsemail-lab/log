@@ -18,21 +18,33 @@ beforeEach(() => {
 })
 afterEach(() => { vi.unstubAllGlobals() })
 
-describe('the landing page leads into onboarding', () => {
+describe('the landing page leads to the repository, not onboarding', () => {
   const html = renderToStaticMarkup(<MemoryRouter><LandingPage /></MemoryRouter>)
 
-  it('has a header with the landing nav plus sign in and get started', () => {
+  it('has a header with the landing nav, the GitHub buttons and get started', () => {
     for (const shown of ['Features', 'How it works', 'Use cases', 'Why free']) expect(html, shown).toContain(`>${shown}<`)
     for (const gone of ['Resources', 'Pricing', 'Changelog']) expect(html, gone).not.toMatch(new RegExp(`>${gone}<`))
-    expect(html).toContain('>Sign in<')
-    expect(html).toContain('href="/onboarding"')
+    expect(html).toMatch(/aria-label="\d+ stars across our open-source projects"/)
+    expect(html).toContain('aria-label="matthewdonsemail-lab/log on GitHub"')
     expect(html).toContain('>Get started<')
   })
 
-  it('turns the website form into the first step, with a label a screen reader can find', () => {
-    expect(html).toContain('name="website"')
-    expect(html).toContain('aria-label="Your website"')
-    expect(html).not.toContain('Find creators')
+  it('has no sign in, onboarding or dashboard links left', () => {
+    expect(html).not.toContain('>Sign in<')
+    for (const gone of ['/onboarding', '/sign-in', '/sign-up', '/dashboard']) expect(html, gone).not.toContain(`href="${gone}`)
+  })
+
+  it('points every get started at the repository', () => {
+    const starts = html.match(/href="[^"]*"[^>]*>(?:<[^>]+>)*\s*Get started/g) ?? []
+    expect(starts.length).toBeGreaterThan(0)
+    for (const start of starts) expect(start).toContain('href="https://github.com/matthewdonsemail-lab/log"')
+  })
+
+  it('swaps the website form for the big GitHub button, in the hero and in Control', () => {
+    expect(html).not.toContain('name="website"')
+    expect(html).not.toContain('Enter your website')
+    expect(html.match(/Get Log by ListeningKit/g)?.length).toBe(2)
+    expect(html).toContain('alt="Find new customers"')
   })
 })
 

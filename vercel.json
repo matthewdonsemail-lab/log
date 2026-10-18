@@ -4,6 +4,7 @@
   "buildCommand": "node scripts/build-site.mjs",
   "outputDirectory": "apps/web/dist",
   "rewrites": [
+    { "source": "/api/kit/subscribe", "destination": "https://listeningkit.com/api/kit/subscribe" },
     { "source": "/docs/:path+", "destination": "/docs/:path+.html" },
     { "source": "/((?!docs/|assets/|logos/).*)", "destination": "/index.html" }]
 }

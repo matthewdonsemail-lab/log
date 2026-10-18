@@ -11,9 +11,12 @@ import {
   useFloating,
   useId,
   useInteractions,
+  useHover,
   useRole,
+  safePolygon,
 } from "@floating-ui/react"
 import { Menu, X, ChevronDown } from "lucide-react"
+import { type LucideIcon, ArrowRight, Ear, Filter, MessageSquare, MessagesSquare, PhoneCall, Plug, Star, Trophy, WandSparkles } from "lucide-react"
 import {
   Bookmark,
   MessageSquareQuote,
@@ -37,6 +40,9 @@ import {
   useSquircleBorder,
 } from "@listeningkit/ui"
 import { cn } from "@listeningkit/ui"
+
+import { OPEN_SOURCE_OWNER, OPEN_SOURCE_PROJECTS, type OpenSourceProject } from "./openSourceProjects"
+import { RepoLink, RepoModal, shouldOpenRepoModal } from "./RepoLink"
 
 const MENU_ICONS: Record<string, React.ReactNode> = {
   bookmark: <Bookmark className="size-7" strokeWidth={2} />,
@@ -66,17 +72,15 @@ function GithubIcon({ className }: { className?: string }) {
   )
 }
 
-/** Icon-only link to the repo, for headers that have no room for the "Star" button with its count. */
+/** Icon-only link to the repo, for headers that have no room for the "Star" button with its count. Opens the repo modal. */
 function GithubIconLink({ repo, className }: { repo: string; className?: string }) {
   const light = useHeaderTone() === "light"
   const { ref, style } = useSquircleClip<HTMLAnchorElement>(12)
   return (
-    <a
+    <RepoLink
       ref={ref}
       style={style}
       href={`https://github.com/${repo}`}
-      target="_blank"
-      rel="noreferrer"
       aria-label={`${repo} on GitHub`}
       title="View the code on GitHub"
       className={cn(
@@ -87,7 +91,7 @@ function GithubIconLink({ repo, className }: { repo: string; className?: string 
       )}
     >
       <GithubIcon className="size-5" />
-    </a>
+    </RepoLink>
   )
 }
 
@@ -103,68 +107,226 @@ function StarIcon({ className }: { className?: string }) {
   )
 }
 
-/**
- * GitHub-style "Star" link for a repo. Fetches the live star count once and
- * falls back to `fallbackStars` (or nothing) if the API is unreachable.
- */
-function GithubStarsLink({
-  repo,
-  className,
-  fallbackStars,
-}: {
-  repo: string
-  className?: string
-  fallbackStars?: number
-}) {
-  const [stars, setStars] = React.useState<number | undefined>()
-  const light = useHeaderTone() === "light"
-  const { ref, style } = useSquircleClip<HTMLAnchorElement>(12)
-
+/** Live star counts for our open-source repos, keyed by repo name: one GitHub API call per page view. */
+function useOpenSourceStars() {
+  const [stars, setStars] = React.useState<Record<string, number> | null>(null)
   React.useEffect(() => {
     let cancelled = false
-    const [owner, name] = repo.split("/")
-    if (!owner || !name) return
-    fetch(`https://api.github.com/repos/${owner}/${name}`)
+    fetch(`https://api.github.com/users/${OPEN_SOURCE_OWNER}/repos?per_page=100&type=owner`)
       .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (!cancelled && typeof data?.stargazers_count === "number") {
-          setStars(data.stargazers_count)
-        }
+      .then((data: { name: string; stargazers_count: number }[] | null) => {
+        if (cancelled || !Array.isArray(data)) return
+        setStars(Object.fromEntries(data.map((r) => [r.name, r.stargazers_count])))
       })
       .catch(() => {
-        /* fall back */
+        /* keep the written-down counts */
       })
     return () => {
       cancelled = true
     }
-  }, [repo])
+  }, [])
+  return OPEN_SOURCE_PROJECTS.map((p) => ({ ...p, stars: stars?.[p.repo] ?? p.stars }))
+}
 
-  const count = stars ?? fallbackStars
+/** Icon per open-source repo, shown in the dropdown's icon boxes (ui-kit uses the Font Awesome equivalents). */
+const OPEN_SOURCE_ICONS: Record<string, LucideIcon> = {
+  log: Ear,
+  dialer: PhoneCall,
+  "convex-treg": Plug,
+  blaster: MessagesSquare,
+  "convex-telnyx": MessageSquare,
+  "ListeningKit-Treg-Skills": WandSparkles,
+  offer: Filter,
+  rank: Trophy,
+}
 
+/** ui-kit's top-lit blue glow (its `button-glow` utility) for the star count chips. */
+const BUTTON_GLOW: React.CSSProperties = {
+  backgroundImage: "radial-gradient(ellipse at 50% 0%, #5CB2FF 0%, #1F6FE6 100%)",
+}
+
+/**
+ * GitHub button in the header, ported from ui-kit's header: the total stars across all our
+ * open-source repos. Hover (or click) opens the same wipe-in panel as the nav dropdowns, with the
+ * projects laid out across it as cards. Picking a project opens the repository modal for it.
+ */
+function GithubStarsLink({ className }: { repo?: string; className?: string }) {
+  const projects = useOpenSourceStars()
+  const total = projects.reduce((sum, p) => sum + p.stars, 0)
+  const [open, setOpen] = React.useState(false)
+  // The modal lives here, not in the card, so it survives the panel closing behind it.
+  const [modalRepo, setModalRepo] = React.useState<string | null>(null)
+  const light = useHeaderTone() === "light"
+
+  const { refs, floatingStyles, context } = useFloating({
+    open,
+    onOpenChange: setOpen,
+    placement: "bottom-end",
+    strategy: "fixed",
+    transform: false,
+    whileElementsMounted: autoUpdate,
+    middleware: [
+      offset(16),
+      shift({ padding: 16 }),
+      size({
+        apply({ elements }) {
+          elements.floating.style.width = `${Math.min(880, window.innerWidth - 32)}px`
+        },
+      }),
+    ],
+  })
+  // Same feel as the nav dropdowns: opens on hover, lingers briefly so the pointer can cross into it.
+  const hover = useHover(context, { delay: { open: 0, close: 250 }, handleClose: safePolygon() })
+  const click = useClick(context)
+  const dismiss = useDismiss(context, { escapeKey: true })
+  const role = useRole(context, { role: "dialog" })
+  const { getReferenceProps, getFloatingProps } = useInteractions([hover, click, dismiss, role])
+
+  // A real button in the right pill: same height and hard lip as Get started, in the light-blue
+  // secondary fill, split like GitHub's own star button (label | count chip). The panel anchors on
+  // the wrapper because this app's Button (React 18, no forwardRef) does not pass a ref through.
+  return (
+    <>
+      <span ref={refs.setReference} className="inline-flex">
+      <Button
+        type="button"
+        variant="gray"
+        shadow="hard"
+        size="default"
+        aria-label={`${total} stars across our open-source projects`}
+        aria-expanded={open}
+        className={cn("js-track js-cta js-click js-header", "h-10 gap-2 pl-3 pr-1.5 text-base font-medium", className)}
+        {...getReferenceProps()}
+      >
+        <GithubIcon className="size-[18px]" />
+        <span>Star</span>
+        <span
+          style={BUTTON_GLOW}
+          className="inline-flex h-7 items-center gap-1 rounded-md px-2 text-sm font-bold tabular-nums text-white"
+        >
+          <StarIcon className="size-3.5 text-white" />
+          {total}
+        </span>
+      </Button>
+      </span>
+      <FloatingPortal root={typeof document !== "undefined" ? document.body : undefined}>
+        <AnimatePresence>
+          {open ? (
+            <motion.div ref={refs.setFloating} style={floatingStyles} className="z-[80]" {...getFloatingProps()}>
+              <HeaderMenuSurface label="Open-source projects">
+                <div className="flex items-center justify-between gap-4 px-3 pb-1 pt-2">
+                  <p className={cn("text-sm font-medium", light ? "text-ink/60" : "text-paper/60")}>
+                    Everything we build is open source. Stars across all of it:
+                  </p>
+                  <span
+                    style={BUTTON_GLOW}
+                    className="inline-flex h-7 items-center gap-1 rounded-md px-2 text-sm font-bold tabular-nums text-white"
+                  >
+                    <StarIcon className="size-3.5 text-white" />
+                    {total}
+                  </span>
+                </div>
+                <motion.ul
+                  aria-label="Open-source projects"
+                  className="grid grid-cols-1 gap-x-1 sm:grid-cols-2 md:grid-cols-4"
+                  initial="hidden"
+                  animate="show"
+                  variants={listVariants}
+                >
+                  {projects.map((p) => (
+                    <motion.li key={p.repo} className="py-1" variants={itemVariants} transition={fadeMotion}>
+                      <OpenSourceCard
+                        project={p}
+                        light={light}
+                        onOpen={(e) => {
+                          if (!shouldOpenRepoModal(e)) return
+                          e.preventDefault()
+                          setOpen(false)
+                          setModalRepo(p.repo)
+                        }}
+                      />
+                    </motion.li>
+                  ))}
+                </motion.ul>
+                <a
+                  href={`https://github.com/${OPEN_SOURCE_OWNER}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={cn(
+                    "js-track js-click js-header mt-1 flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors",
+                    light ? "text-[#288DFF] hover:bg-ink/5" : "text-[#87BDF7] hover:bg-paper/10"
+                  )}
+                >
+                  <GithubIcon className="size-4" /> See everything on GitHub
+                  <ArrowRight className="size-3" strokeWidth={3} />
+                </a>
+              </HeaderMenuSurface>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
+      </FloatingPortal>
+      {modalRepo ? (
+        <RepoModal
+          owner={OPEN_SOURCE_OWNER}
+          repo={modalRepo}
+          href={`https://github.com/${OPEN_SOURCE_OWNER}/${modalRepo}`}
+          onClose={() => setModalRepo(null)}
+        />
+      ) : null}
+    </>
+  )
+}
+
+/** One project in the GitHub dropdown, styled like the nav dropdown cards. */
+function OpenSourceCard({
+  project,
+  light,
+  onOpen,
+}: {
+  project: OpenSourceProject
+  light: boolean
+  onOpen: (e: React.MouseEvent<HTMLAnchorElement>) => void
+}) {
+  const [isHovered, setIsHovered] = React.useState(false)
+  const Icon = OPEN_SOURCE_ICONS[project.repo]
   return (
     <a
-      ref={ref}
-      style={style}
-      href={`https://github.com/${repo}`}
+      href={`https://github.com/${OPEN_SOURCE_OWNER}/${project.repo}`}
       target="_blank"
       rel="noreferrer"
-      aria-label={`Star ${repo} on GitHub`}
-      className={cn(
-        "js-track js-cta js-click js-header",
-        "inline-flex h-10 items-center px-3 py-1 text-base transition-colors duration-150 focus-visible:shadow-[inset_0_0_0_2px_var(--header-focus)]",
-        "gap-1.5",
-        light ? "text-ink hover:bg-ink/10" : "text-paper hover:bg-dither-frame/10",
-        className
-      )}
+      onClick={onOpen}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="js-track js-click js-header group flex items-start gap-3 rounded-xl px-3 py-3"
     >
-      <GithubIcon className="size-4" />
-      <span className="text-sm">Star</span>
-      {typeof count === "number" ? (
-        <span className="inline-flex items-center gap-1 text-sm font-medium">
-          <StarIcon className="size-3.5" />
-          <span>{count}</span>
+      <HeaderMenuCardIconBox
+        item={{ href: "", label: project.name, swatchClassName: "" }}
+        isHovered={isHovered}
+        iconNode={Icon ? <Icon className="size-6" strokeWidth={2} /> : <GithubIcon className="size-6" />}
+      />
+      <span className="flex min-w-0 flex-1 flex-col gap-1">
+        <span className="flex items-center justify-between gap-2">
+          <span
+            className={cn(
+              "truncate text-base font-semibold transition-colors",
+              light ? "text-[#0D2A4C] group-hover:text-[#288DFF]" : "text-paper group-hover:text-[#87BDF7]"
+            )}
+          >
+            {project.name}
+          </span>
+          {/* Same blue count chip as the header button. */}
+          <span
+            style={BUTTON_GLOW}
+            className="inline-flex h-6 shrink-0 items-center gap-1 rounded-md px-1.5 text-[13px] font-bold tabular-nums text-white"
+          >
+            <Star className="size-3 fill-white text-white" strokeWidth={0} />
+            {project.stars}
+          </span>
         </span>
-      ) : null}
+        <span className={cn("text-[13px] font-medium leading-snug", light ? "text-[rgba(13,42,76,0.6)]" : "text-paper/60")}>
+          {project.blurb}
+        </span>
+      </span>
     </a>
   )
 }
@@ -191,7 +353,6 @@ export type HeaderMenuItem = {
 }
 
 export type HeaderProps = {
-  isLoggedIn?: boolean
   homeHref?: string
   logoLabel?: string
   className?: string
@@ -283,16 +444,6 @@ const defaultNavItems: HeaderItem[] = [
     ear: "/images/ears/ear4.webp",
     earFilter: "hue-rotate(45deg) saturate(2.4) brightness(1.1)",
   },
-]
-
-const loggedOutAccountItems: HeaderItem[] = [
-  { href: "/sign-in", label: "Sign in", variant: "ghost" },
-  { href: "/onboarding", label: "Get started", variant: "cta" },
-]
-
-const loggedInAccountItems: HeaderItem[] = [
-  { href: "/dashboard/projects", label: "Projects", variant: "ghost" },
-  { href: "/dashboard", label: "Dashboard", variant: "cta" },
 ]
 
 const defaultNavMenuItems: Record<string, HeaderMenuItem[]> = {
@@ -486,6 +637,7 @@ function HeaderActions({
   label,
   appear = false,
   githubRepo,
+  compactGithub = false,
   menuItemsByHref,
 }: {
   items: HeaderItem[]
@@ -494,6 +646,8 @@ function HeaderActions({
   label: string
   appear?: boolean
   githubRepo?: string
+  /** Icon-only GitHub button (mobile); otherwise the "Star" button with its count. */
+  compactGithub?: boolean
   menuItemsByHref?: Record<string, HeaderMenuItem[]>
 }) {
   const light = useHeaderTone() === "light"
@@ -509,8 +663,12 @@ function HeaderActions({
         className
       )}
     >
-      {githubRepo && !items.some((item) => item.href === "/login") ? (
-        <GithubIconLink repo={githubRepo} className="site-header__link" />
+      {githubRepo ? (
+        compactGithub ? (
+          <GithubIconLink repo={githubRepo} className="site-header__link" />
+        ) : (
+          <GithubStarsLink repo={githubRepo} className="site-header__link" />
+        )
       ) : null}
       {items.map((item) => {
         const menuItems = menuItemsByHref?.[item.href]
@@ -521,13 +679,7 @@ function HeaderActions({
           item.variant !== "pricing"
 
         const link =
-          githubRepo && item.href === "/login" ? (
-            <GithubStarsLink
-              key={item.href}
-              repo={githubRepo}
-              className="site-header__link"
-            />
-          ) : item.variant === "cta" ? (
+          item.variant === "cta" ? (
             <Button
               key={item.href}
               asChild
@@ -541,7 +693,7 @@ function HeaderActions({
                 "h-10 px-4 text-base font-medium",
               )}
             >
-              <a href={item.href} className="inline-flex items-center gap-1.5">
+              <RepoLink href={item.href} className="inline-flex items-center gap-1.5">
                 {(() => {
                   const ear = resolveItemEar(item)
                   return ear ? (
@@ -569,7 +721,7 @@ function HeaderActions({
                   ) : null
                 })()}
                 <span>{item.label}</span>
-              </a>
+              </RepoLink>
             </Button>
           ) : item.variant === "pricing" ? (
             <Button
@@ -585,7 +737,7 @@ function HeaderActions({
                 "h-10 px-4 text-base font-medium",
               )}
             >
-              <a href={item.href} className="inline-flex items-center gap-1.5">
+              <RepoLink href={item.href} className="inline-flex items-center gap-1.5">
                 {(() => {
                   const ear = resolveItemEar(item)
                   return ear ? (
@@ -613,7 +765,7 @@ function HeaderActions({
                   ) : null
                 })()}
                 <span>{item.label}</span>
-              </a>
+              </RepoLink>
             </Button>
           ) : hasMenu ? (
             <NavMenuTrigger
@@ -1174,13 +1326,16 @@ function HeaderMenuSurface({
 function HeaderMenuCardIconBox({
   item,
   isHovered,
+  iconNode,
 }: {
   item: HeaderMenuItem
   isHovered: boolean
+  /** An icon element to show instead of looking `item.icon` up in MENU_ICONS. */
+  iconNode?: React.ReactNode
 }) {
   const clip = useSquircleClip<HTMLSpanElement>(10)
   const border = useSquircleBorder<HTMLSpanElement>(10)
-  const icon = resolveMenuIcon(item.icon)
+  const icon = iconNode ?? resolveMenuIcon(item.icon)
   const hasIcon = !!icon
   const ear = resolveItemEar(item)
 
@@ -1466,6 +1621,7 @@ function HeaderChrome({
               )}
               label="Account"
               githubRepo={githubRepo}
+              compactGithub
               className="flex items-center gap-1 whitespace-nowrap"
             />
             <SquircleButton
@@ -1522,7 +1678,6 @@ function HeaderChrome({
 }
 
 function Header({
-  isLoggedIn = false,
   homeHref = "/",
   logoLabel = "ListeningKit",
   className,
@@ -1536,8 +1691,8 @@ function Header({
   const menuId = useId()
   const panelId = useId()
   const listId = useId()
-  const accounts =
-    accountItems ?? (isLoggedIn ? loggedInAccountItems : loggedOutAccountItems)
+  // Sign-in and the dashboard are gone; the right pill is the GitHub button plus whatever the page passes.
+  const accounts = accountItems ?? []
   const leftPillRef = React.useRef<HTMLDivElement | null>(null)
   const menuWidthRef = React.useRef(0)
 

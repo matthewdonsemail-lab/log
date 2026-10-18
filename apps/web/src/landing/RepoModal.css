@@ -1,0 +1,71 @@
+/*
+ * The repository modal, ported from ui-kit's member sites (memberSites/engine/RepoLink.tsx and
+ * resume.css). Same brand tokens and Schoolbell sticker keywords, scoped to .lk-repo so nothing
+ * leaks into the landing page. This app is on Tailwind v3, so the ui-kit v4 utilities live here.
+ */
+.lk-repo {
+  --lk-brand: #2a8cff;
+  --lk-ink: #0d2a4c;
+  --lk-brand-deep: color-mix(in srgb, #2a8cff 72%, #0d2a4c);
+  --lk-soft: #eff6ff;
+  --lk-wash: #f7faff;
+  --lk-line: color-mix(in srgb, #2a8cff 20%, #fff);
+  --lk-body: color-mix(in srgb, #0d2a4c 82%, #fff);
+  --lk-muted: color-mix(in srgb, #0d2a4c 58%, #fff);
+  --lk-r: 0.375rem;
+  --lk-lip: 4px;
+  font-family: 'Satoshi', 'Inter', system-ui, sans-serif;
+  font-weight: 500;
+}
+
+.lk-repo .lk-repo-card {
+  background-image: linear-gradient(180deg, #117eff -12.71%, #1e88ff 44.69%, #5ea7ff 102.1%);
+  box-shadow: inset 0 2px 30px #5ea7ff, 0 4px 0 var(--lk-brand-deep);
+  scrollbar-width: none;
+}
+.lk-repo .lk-repo-card::-webkit-scrollbar { display: none; }
+
+.lk-repo .lk-hand { font-family: 'Schoolbell', cursive; font-weight: 400; }
+
+/* Sticker keyword: brand-blue Schoolbell fill, white outline, black outline outside it. */
+.lk-repo .lk-bluekey {
+  font-family: 'Schoolbell', cursive; font-weight: 400; color: var(--lk-brand);
+  text-shadow: 2.00px 0.00px 0 #fff,1.90px 0.62px 0 #fff,1.62px 1.18px 0 #fff,1.18px 1.62px 0 #fff,0.62px 1.90px 0 #fff,0.00px 2.00px 0 #fff,-0.62px 1.90px 0 #fff,-1.18px 1.62px 0 #fff,-1.62px 1.18px 0 #fff,-1.90px 0.62px 0 #fff,-2.00px 0.00px 0 #fff,-1.90px -0.62px 0 #fff,-1.62px -1.18px 0 #fff,-1.18px -1.62px 0 #fff,-0.62px -1.90px 0 #fff,0.62px -1.90px 0 #fff,1.18px -1.62px 0 #fff,1.62px -1.18px 0 #fff,1.90px -0.62px 0 #fff,4.00px 0.00px 0 #000,3.80px 1.24px 0 #000,3.24px 2.35px 0 #000,2.35px 3.24px 0 #000,1.24px 3.80px 0 #000,0.00px 4.00px 0 #000,-1.24px 3.80px 0 #000,-2.35px 3.24px 0 #000,-3.24px 2.35px 0 #000,-3.80px 1.24px 0 #000,-4.00px 0.00px 0 #000,-3.80px -1.24px 0 #000,-3.24px -2.35px 0 #000,-2.35px -3.24px 0 #000,-1.24px -3.80px 0 #000,1.24px -3.80px 0 #000,2.35px -3.24px 0 #000,3.24px -2.35px 0 #000,3.80px -1.24px 0 #000;
+}
+
+/* Thinner sticker with a dark-blue fill so it reads on the white box. */
+.lk-repo .lk-bluekey-sm {
+  font-family: 'Schoolbell', cursive; font-weight: 400; color: var(--lk-ink); -webkit-text-stroke: 0.6px var(--lk-ink);
+  text-shadow: 1.00px 0.00px 0 #fff,0.92px 0.38px 0 #fff,0.71px 0.71px 0 #fff,0.38px 0.92px 0 #fff,0.00px 1.00px 0 #fff,-0.38px 0.92px 0 #fff,-0.71px 0.71px 0 #fff,-0.92px 0.38px 0 #fff,-1.00px 0.00px 0 #fff,-0.92px -0.38px 0 #fff,-0.71px -0.71px 0 #fff,-0.38px -0.92px 0 #fff,-0.00px -1.00px 0 #fff,0.38px -0.92px 0 #fff,0.71px -0.71px 0 #fff,0.92px -0.38px 0 #fff,2.00px 0.00px 0 #000,1.85px 0.77px 0 #000,1.41px 1.41px 0 #000,0.77px 1.85px 0 #000,0.00px 2.00px 0 #000,-0.77px 1.85px 0 #000,-1.41px 1.41px 0 #000,-1.85px 0.77px 0 #000,-2.00px 0.00px 0 #000,-1.85px -0.77px 0 #000,-1.41px -1.41px 0 #000,-0.77px -1.85px 0 #000,-0.00px -2.00px 0 #000,0.77px -1.85px 0 #000,1.41px -1.41px 0 #000,1.85px -0.77px 0 #000;
+}
+
+.lk-repo .lk-box { background: #fff; color: var(--lk-ink); border-radius: var(--lk-r); outline: 1px solid #d4d4d4; }
+.lk-repo .lk-body { color: var(--lk-body); }
+
+.lk-repo .lk-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font-weight: 900; font-size: 14px; letter-spacing: 0.8px; text-transform: uppercase;
+  padding: 12px 20px; border-radius: var(--lk-r); background: var(--lk-brand); color: #fff;
+  box-shadow: 0 var(--lk-lip) 0 var(--lk-brand-deep);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+}
+.lk-repo .lk-btn:hover { transform: translateY(-1px); }
+.lk-repo .lk-btn:active { transform: translateY(var(--lk-lip)); box-shadow: 0 0 0 var(--lk-brand-deep); }
+
+.lk-repo .lk-ghost {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border-radius: var(--lk-r); padding: 10px 16px; font-size: 14px; font-weight: 900; color: var(--lk-ink);
+  outline: 2px solid var(--lk-line); transition: background-color 0.15s ease;
+}
+.lk-repo .lk-ghost:hover { background: var(--lk-soft); }
+
+.lk-repo .lk-follow { background: var(--lk-wash); border-radius: var(--lk-r); outline: 1px solid var(--lk-line); }
+
+.lk-repo .lk-field {
+  margin-top: 0.25rem; width: 100%; border-radius: var(--lk-r); background: #fff; padding: 10px 12px;
+  font-size: 16px; font-weight: 700; color: var(--lk-ink); outline: 1px solid #d4d4d4;
+}
+.lk-repo .lk-field::placeholder { font-weight: 500; color: var(--lk-muted); }
+.lk-repo .lk-field:focus { outline: 2px solid var(--lk-brand-deep); }
+
+.lk-repo a:focus-visible, .lk-repo button:focus-visible { outline: 3px solid var(--lk-brand-deep); outline-offset: 3px; }
