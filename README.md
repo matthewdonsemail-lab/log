@@ -31,7 +31,8 @@ Every command takes `--json` and never prompts, so scripts and agents can use it
 | `log listing <listingId>` | One listing in full, plus the seller actions it allows |
 | `log accounts` | The Facebook accounts, their last issue, and how many listings each owns |
 | `log doctor` | Checks python, facebook-camofox-client, the Camoufox browser, and which accounts have a saved session |
-| `log login --account <id>` | Opens Camoufox so you log into Facebook by hand, then saves that account's session |
+| `log login` / `log logout` / `log whoami` | Sign in with Twenty through blaster's web app (OAuth), the same flow as `blaster login` |
+| `log connect --account <id>` | Opens Camoufox so you log into Facebook by hand, then saves that account's session |
 | `log scan --account <id>` | Reads Marketplace > Selling live and puts each card next to what log says |
 | `log status <listingId> --account <id>` | Opens one item page live and classifies it |
 | `log watch --account <id> [--checks n] [--interval min]` | Runs the listing monitor (XState) and prints every step as it happens |
@@ -66,6 +67,22 @@ Where the rules come from:
 
 It only decides. Nothing is posted.
 
+## Signing in (`log login`)
+
+The same OAuth flow as `blaster login` (blaster `packages/blaster-cli/src/cli/login.ts`).
+Twenty is the identity provider, and blaster's hosted web app
+(`https://blaster.listeningkit.com`) runs the sign-in page.
+
+1. `log login` makes a state nonce and a PKCE challenge, then starts a one-shot server on `127.0.0.1`.
+2. It opens `<webUrl>/login?state=…&code_challenge=…&exchange=…`. You sign in to Twenty there.
+3. The web app POSTs the tokens back to the loopback. log-cli only accepts them if state and challenge match this run.
+4. The token is checked through blaster's API (`GET /api/auth/me`) and saved in `~/.logCli/auth/`
+   (`LOG_HOME` moves it). `log whoami` refreshes it through `POST /api/auth/refresh` when it expires.
+
+`--token <accessToken>` is the paste path for headless terminals. `--webUrl` / `--apiUrl`
+(or `LOG_WEB_URL` / `LOG_API_URL`) point at a local blaster. The CLI never holds the
+OAuth client secret.
+
 ## Live mode (Camoufox)
 
 `doctor`, `login`, `scan` and `status` launch a real Camoufox browser through
@@ -84,7 +101,7 @@ git clone https://github.com/PRACE1/facebook-camofox-client ../facebook-camofox-
 pip install -e ../facebook-camofox-client
 python -m camoufox fetch          # downloads the Camoufox browser
 bun bin/log.ts doctor
-bun bin/log.ts login --account fbGalwayRubbish
+bun bin/log.ts connect --account fbGalwayRubbish
 bun bin/log.ts scan --account fbGalwayRubbish
 ```
 
@@ -111,11 +128,14 @@ src/cli/runner/                 registry, dispatcher, args/table/usage helpers
 src/cli/listing/                log listings, log listing
 src/cli/account/                log accounts
 src/cli/launch/                 log launch (Clack)
-src/cli/live/                   log doctor, login, scan, status
+src/cli/live/                   log doctor, connect, scan, status
 src/camofox/worker/             spawns python/logWorker.py, maps dashboard badges to statuses
 src/marketplace/monitor/        the XState listing monitor + relist rules
 src/observability/trace/        XState inspect -> trace lines
 src/cli/watch/                  log watch
+src/auth/session/               Twenty session store, PKCE, token checks (ported from blaster)
+src/auth/exchange/              one-shot loopback that receives the tokens from blaster's web app
+src/cli/auth/                   log login, logout, whoami
 python/logWorker.py             bridge into facebook-camofox-client
 ```
 

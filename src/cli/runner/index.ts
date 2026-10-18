@@ -8,9 +8,10 @@ import { runWorker } from "../../camofox/worker/index.ts";
 import { listAccounts } from "../../marketplace/account/index.ts";
 import { listListings } from "../../marketplace/listing/index.ts";
 import { accountsCommand } from "../account/index.ts";
+import { loginCommand, logoutCommand, whoamiCommand } from "../auth/index.ts";
 import { launchCommand } from "../launch/index.ts";
 import { listingCommand, listingsCommand } from "../listing/index.ts";
-import { doctorCommand, loginCommand, scanCommand, statusCommand } from "../live/index.ts";
+import { connectCommand, doctorCommand, scanCommand, statusCommand } from "../live/index.ts";
 import { watchCommand } from "../watch/index.ts";
 import { renderUsage } from "./helpers/index.ts";
 import type { Command, CommandContext } from "./types.ts";
@@ -24,10 +25,13 @@ export const COMMANDS: Command[] = [
   listingCommand,
   accountsCommand,
   doctorCommand,
-  loginCommand,
+  connectCommand,
   scanCommand,
   statusCommand,
   watchCommand,
+  loginCommand,
+  logoutCommand,
+  whoamiCommand,
 ];
 
 const ALIASES: Record<string, string> = {

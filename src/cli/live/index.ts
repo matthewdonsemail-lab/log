@@ -1,5 +1,5 @@
 /**
- * The live commands: `log doctor`, `log login`, `log scan`, `log status`.
+ * The live commands: `log doctor`, `log connect`, `log scan`, `log status`.
  *
  * These launch a real Camoufox browser through facebook-camofox-client
  * (`camofox/worker`), one saved Facebook session per account, the way the
@@ -16,16 +16,16 @@ import { renderDoctor, renderScan } from "./helpers/index.ts";
 export * from "./helpers/index.ts";
 
 export const DOCTOR_USAGE = "Usage: log doctor [--json]";
-export const LOGIN_USAGE = "Usage: log login --account <accountId>";
+export const CONNECT_USAGE = "Usage: log connect --account <accountId>";
 export const SCAN_USAGE = "Usage: log scan --account <accountId> [--json]";
 export const STATUS_USAGE = "Usage: log status <listingId> --account <accountId> [--json]";
 
 function failure(name: string, result: WorkerFailure, accountId?: string): CommandResult {
   if (result.error === "noSession") {
-    return { code: 1, stderr: `log ${name}: no Facebook session for ${accountId}. Run \`log login --account ${accountId}\` first.` };
+    return { code: 1, stderr: `log ${name}: no Facebook session for ${accountId}. Run \`log connect --account ${accountId}\` first.` };
   }
   if (result.error === "loginWall") {
-    return { code: 1, stderr: `log ${name}: Facebook asked ${accountId} to log in again. Run \`log login --account ${accountId}\`.` };
+    return { code: 1, stderr: `log ${name}: Facebook asked ${accountId} to log in again. Run \`log connect --account ${accountId}\`.` };
   }
   return { code: 2, stderr: `log ${name}: ${result.error}` };
 }
@@ -64,14 +64,14 @@ export const doctorCommand: Command = {
   },
 };
 
-export const loginCommand: Command = {
-  name: "login",
-  summary: "Open Camoufox, log into Facebook by hand, save that account's session",
+export const connectCommand: Command = {
+  name: "connect",
+  summary: "Open Camoufox, log a Facebook account in by hand, save its session",
   args: "--account <id>",
   async run(context, argv) {
     const parsed = parseArgs(argv, { valued: ["account"] });
-    if (!parsed.ok) return { code: 1, stderr: `log login: ${parsed.error}\n${LOGIN_USAGE}` };
-    const accountId = requireAccount(context, "login", LOGIN_USAGE, parsed.flags["account"]);
+    if (!parsed.ok) return { code: 1, stderr: `log connect: ${parsed.error}\n${CONNECT_USAGE}` };
+    const accountId = requireAccount(context, "connect", CONNECT_USAGE, parsed.flags["account"]);
     if (typeof accountId !== "string") return accountId;
 
     const path = storageStatePath(accountId);
@@ -79,7 +79,7 @@ export const loginCommand: Command = {
       { action: "login", account_id: accountId, storage_state_path: path },
       { interactive: true },
     );
-    if (!result.ok) return failure("login", result, accountId);
+    if (!result.ok) return failure("connect", result, accountId);
     const warning = result.loggedIn ? "" : "\nFacebook still showed login markers. If the page looked logged in, try `log scan` anyway.";
     return { code: 0, stdout: `Saved the ${accountId} session to ${result.storageStatePath}${warning}` };
   },

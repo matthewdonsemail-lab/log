@@ -10,7 +10,7 @@ import { cancel, intro, isCancel, outro, select } from "@clack/prompts";
 import { LISTING_STATUSES, LISTING_STATUS_LABELS } from "../../marketplace/listing/index.ts";
 import { accountsCommand } from "../account/index.ts";
 import { listingCommand, listingsCommand, renderStatus } from "../listing/index.ts";
-import { doctorCommand, loginCommand, scanCommand } from "../live/index.ts";
+import { connectCommand, doctorCommand, scanCommand } from "../live/index.ts";
 import { watchCommand } from "../watch/index.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
 import { parseLaunchArgs, shouldPrompt } from "./helpers/index.ts";
@@ -20,7 +20,7 @@ export * from "./helpers/index.ts";
 
 export const LAUNCH_USAGE = "Usage: log launch [--json]";
 
-const ACTIONS = ["browse", "status", "account", "accounts", "scan", "watch", "login", "doctor"] as const;
+const ACTIONS = ["browse", "status", "account", "accounts", "scan", "watch", "connect", "doctor"] as const;
 
 type PromptSelectOptions = Parameters<typeof select>[0];
 
@@ -105,7 +105,7 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
         { value: "accounts", label: "Facebook accounts", hint: "log accounts" },
         { value: "scan", label: "Check listings live (opens Camoufox)", hint: "log scan --account" },
         { value: "watch", label: "Run the listing monitor and watch each step", hint: "log watch --account" },
-        { value: "login", label: "Log a Facebook account in (opens Camoufox)", hint: "log login --account" },
+        { value: "connect", label: "Connect a Facebook account (opens Camoufox)", hint: "log connect --account" },
         { value: "doctor", label: "Check the live setup", hint: "log doctor" },
       ],
     });
@@ -145,13 +145,13 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
       });
       if (accountId === null) return { code: 1 };
       result = await delegate(listingsCommand, context, ["--account", accountId]);
-    } else if (action === "scan" || action === "watch" || action === "login") {
+    } else if (action === "scan" || action === "watch" || action === "connect") {
       const accountId = await pick({
-        message: action === "login" ? "Which account to log in?" : "Which account's listings?",
+        message: action === "connect" ? "Which account to connect?" : "Which account's listings?",
         options: data.accounts.map((account) => ({ value: account.id, label: account.label, hint: account.id })),
       });
       if (accountId === null) return { code: 1 };
-      const command = action === "scan" ? scanCommand : action === "watch" ? watchCommand : loginCommand;
+      const command = action === "scan" ? scanCommand : action === "watch" ? watchCommand : connectCommand;
       result = await delegate(command, context, ["--account", accountId]);
     } else if (action === "doctor") {
       result = await delegate(doctorCommand, context, []);

@@ -204,3 +204,33 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: log.md entries now start from an abstract syntax tree. On commit, `scripts/astSummary.mjs` parses every staged .ts/.mjs file with the TypeScript compiler and every .py file with Python's ast module, and lists the top-level declarations and test titles that were added, changed or removed. The hook writes that block into the entry, prints it back so it reaches the agent, and blocks the commit until What changed / Why / Checked are written. A block that doesn't match the staged code gets rewritten. log.md is rebuilt so every past commit has its real AST block. The old "AST:" line prefix is gone. Also: every file is LF now (.gitattributes eol=lf). Windows writes this session had left CRLF in 14 files, which broke the log.md parser.
 Why: matt: "AST is not a line prefix! AST stands for Abstract Syntax Tree". An AST should run over each commit and feed into the agent's context, so the agent fills in the template from what really changed.
 Checked: `bun run check` (naming OK, typecheck, 59 pass, 8 of them new for the AST summary and gate). This commit went through the hook: the first try printed the AST above and stopped. The AST for commits 1407332 to 1299841 was regenerated with `node scripts/astSummary.mjs <commit>`.
+
+## 2026-10-18 05:45Z · feat/oauthLogin
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/namingConventions.md`: edited
+- `scripts/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `skills/logCli/SKILL.md`: edited
+- `src/auth/exchange/client.ts`: added const MAX_BODY_BYTES, const MAX_TOKEN_LENGTH, const CORS, const isTokenField, function isValidExchange, function runExchangeServer
+- `src/auth/exchange/index.ts`: added export from "./types.ts", export from "./client.ts"
+- `src/auth/exchange/types.ts`: added interface ExchangeRequest, type ExchangeResult, interface ExchangeServer, const EXCHANGE_TIMEOUT_MS
+- `src/auth/session/client.ts`: added function authDir, function readJsonFile, function isSessionRecord, function loadSessionHome, function writeSessionHome, function saveSessionRecord, function removeSessionRecord, function resolveApiUrl, function resolveWebUrl, function unreachableApi, function validateSessionToken, function refreshSessionToken, function liveSession
+- `src/auth/session/helpers/index.ts`: added export from "./pkce.ts", export from "./urls.ts"
+- `src/auth/session/helpers/pkce.ts`: added function base64UrlEncode, function randomBase64Url, function generateCodeVerifier, function generateState, function codeChallengeForVerifier, function isTokenExpired
+- `src/auth/session/helpers/urls.ts`: added function maskSecret, function validateHttpUrl, function buildAuthorizeUrl, const HANDOFF_MARKER, function buildBrowserCommand
+- `src/auth/session/index.ts`: added export from "./helpers/index.ts", export from "./types.ts", export from "./client.ts"
+- `src/auth/session/types.ts`: added interface SessionRecord, interface SessionConfig, interface SessionHome, interface OperatorIdentity, type ValidationResult, const DEFAULT_WEB_URL, const DEFAULT_API_URL
+- `src/cli/auth/auth.test.ts`: added const real, const dir, function fakeBlaster, function run, test "PKCE challenge is base64url SHA-256 (RFC 7636 example)", test "tokens are masked, expiry has 60s of skew, the authorize URL carries the handoff", test "accepts only a POST that echoes this run's state and challenge", test "times out when the browser never posts", test "browser login: the web app posts tokens to the loopback, the session is validated and stored", test "paste login, whoami, logout", test "whoami refreshes a rejected token once and stores the rotated one", test "rejects bad tokens, bad URLs, and a web URL that isn't blaster"
+- `src/cli/auth/index.ts`: added const LOGIN_USAGE, const LOGOUT_USAGE, const WHOAMI_USAGE, const authDeps, function checkHandoff, function browserSignIn, const loginCommand, function pickSession, const logoutCommand, const whoamiCommand
+- `src/cli/launch/index.ts`: changed const ACTIONS, function runLaunch
+- `src/cli/launch/launch.test.ts`: changed test "--json lists actions without prompting"
+- `src/cli/live/helpers/renderScan.ts`: changed function renderDoctor
+- `src/cli/live/index.ts`: added const CONNECT_USAGE, const connectCommand · changed function failure · removed const LOGIN_USAGE, const loginCommand
+- `src/cli/live/live.test.ts`: added test "connect hands the terminal to the worker" · changed test "scan needs a known account and explains a missing session" · removed test "login hands the terminal to the worker"
+- `src/cli/runner/cli.test.ts`: changed test "no command prints usage for every command"
+- `src/cli/runner/index.ts`: changed const COMMANDS
+
+What changed: `log login` / `log logout` / `log whoami` sign in with Twenty through blaster's hosted web app, the same OAuth flow as `blaster login`: a state nonce and PKCE challenge, a one-shot 127.0.0.1 loopback that only accepts a POST echoing them, then a check through blaster's `/api/auth/me` and storage in `~/.logCli/auth/`. `whoami` refreshes an expired or rejected token once through `/api/auth/refresh`. `--token` is the paste path. The Facebook Camoufox command moves from `log login` to `log connect --account <id>`, so `login` means what it means in blaster.
+Why: matt: give log-cli the OAuth login the blaster CLI has.
+Checked: `bun run check` (naming OK, typecheck, 67 pass; 8 new auth tests, one of which runs a real loopback exchange end to end against a fake blaster). Against the real hosted blaster: `/login` serves the `blaster-web` marker, `/api/auth/me` answers 401 unauthenticated, and `log login --token <bogus>` was rejected by the real API. Not done: a full browser sign-in, because that needs matt in the browser.

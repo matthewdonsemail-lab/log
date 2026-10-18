@@ -64,7 +64,7 @@ describe("live commands", () => {
     expect((await run(["scan", "--account", "nope"], () => SCAN)).code).toBe(1);
     const missing = await run(["scan", "--account", "fbPacer"], () => ({ ok: false, error: "noSession" }));
     expect(missing.code).toBe(1);
-    expect(missing.err).toContain("log login --account fbPacer");
+    expect(missing.err).toContain("log connect --account fbPacer");
     const wall = await run(["scan", "--account", "fbPacer"], () => ({ ok: false, error: "loginWall" }));
     expect(wall.err).toContain("log in again");
   });
@@ -78,14 +78,14 @@ describe("live commands", () => {
     expect((await run(["status", "--account", "fbPacer"], () => reply)).code).toBe(1);
   });
 
-  test("login hands the terminal to the worker", async () => {
+  test("connect hands the terminal to the worker", async () => {
     let interactive: boolean | undefined;
     const out: string[] = [];
     const worker = (async (_request: WorkerRequest, options?: { interactive?: boolean }) => {
       interactive = options?.interactive;
       return { ok: true, storageStatePath: "/tmp/fbPacer.json", loggedIn: true, authFlags: {} };
     }) as WorkerClient;
-    const code = await runCli(["login", "--account", "fbPacer"], { worker, out: (l) => out.push(l), err: () => {} });
+    const code = await runCli(["connect", "--account", "fbPacer"], { worker, out: (l) => out.push(l), err: () => {} });
     expect(code).toBe(0);
     expect(interactive).toBe(true);
     expect(out.join("\n")).toContain("Saved the fbPacer session");
