@@ -10,6 +10,7 @@ skill in the same commit.
 | [`logCli`](skills/logCli/SKILL.md) | Run the CLI: seed data, live Camoufox checks, the XState monitor |
 | [`commitLog`](skills/commitLog/SKILL.md) | Write the `log.md` entry every commit needs, from the AST summary the hook generates |
 | [`captureRule`](skills/captureRule/SKILL.md) | Turn a rule from matt into a hard line in `AGENTS.md`, plus its check |
+| [`reaCapture`](skills/reaCapture/SKILL.md) | Record the publish session as a HAR, strip it, and read it with `rea` offline; where the REA work stands |
 
 These three files stay in step:
 
