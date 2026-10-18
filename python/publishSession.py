@@ -185,7 +185,17 @@ class Session:
         try:
             self.browser = self.runtime.__enter__()
             # The gate's self-check runs inside new_context (rule 17): a refusal closes the browser.
-            self.context = self.browser.new_context(storage_state=str(state))
+            # HAR is Playwright's Firefox recorder (record_har_*), flushed when the context
+            # closes. The TypeScript port strips it afterwards. The gate leaves these kwargs.
+            context_kwargs: dict[str, Any] = {"storage_state": str(state)}
+            receipt = self.config.get("receiptDir")
+            if receipt:
+                capture = Path(receipt) / "firefox"
+                capture.mkdir(parents=True, exist_ok=True)
+                context_kwargs["record_har_path"] = str(capture / "session.har")
+                context_kwargs["record_har_content"] = "embed"
+                context_kwargs["record_har_mode"] = "full"
+            self.context = self.browser.new_context(**context_kwargs)
         except Exception:
             self.close()
             raise

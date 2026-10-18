@@ -13,7 +13,7 @@ describe("runCli", () => {
   test("no command prints usage for every command", async () => {
     const { code, out } = await run([]);
     expect(code).toBe(0);
-    for (const name of ["launch", "listings", "listing", "accounts", "account", "doctor", "connect", "scan", "status", "watch", "proxy", "publish", "campaign", "login", "logout", "whoami"]) expect(out).toContain(`log ${name}`);
+    for (const name of ["launch", "listings", "listing", "accounts", "account", "doctor", "connect", "scan", "status", "watch", "proxy", "publish", "campaign", "login", "logout", "whoami", "firefoxCapture"]) expect(out).toContain(`log ${name}`);
   });
 
   test("unknown command exits 2", async () => {

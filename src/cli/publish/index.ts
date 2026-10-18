@@ -18,6 +18,7 @@ import { join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
 import { appendAttempt, countArkoseToday, readAttempts, solverAvailability } from "../../captcha/router/index.ts";
 import { prepareRun } from "../../camofox/run/index.ts";
+import { settleFirefoxCapture } from "../../rea/firefox/index.ts";
 import type { PublishSession } from "../../camofox/session/index.ts";
 import type { ErrorCode } from "../../errors/catalog/index.ts";
 import { countryMismatch, getListing, listListingsWhere, PUBLISHABLE_STATUSES, recordRun, setListingStatus, toPublishListing } from "../../marketplace/agencyListing/index.ts";
@@ -222,6 +223,12 @@ export const publishCommand: Command = {
       return refuseError("publish", error);
     } finally {
       if (session) await (session as PublishSession).close();
+      try {
+        const captureNote = await settleFirefoxCapture(join(runDir, "firefox"));
+        if (captureNote) exitNotes.push(captureNote);
+      } catch (error) {
+        exitNotes.push(`Firefox capture: ${error instanceof Error ? error.message : String(error)}`);
+      }
       const deviceNote = await keepNewDevice(context, account, run);
       if (deviceNote) exitNotes.push(deviceNote);
       const sessionNote = await keepSession(context, account, run);

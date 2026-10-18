@@ -831,3 +831,37 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: Added docs/rea/. spec.md states the ask: REA observes the Facebook create page that Playwright already opens in Camoufox, without attaching to the window. The Parallel reports are stored as returned (publicExamples.md, parallel/meta.md, parallel/playwright.md, parallel/humanize.md). runMatrix.mjs scores eight connection options on the Decisions API. The winner is a HAR plus saved scripts, read offline by stock rea-agents. Forking REA, exposing CDP from Camoufox, and switching the Facebook window to Chrome lost. humanize stays 1.5.
 Why: matt asked for REA to work with this Playwright Camoufox client, for every public REA use against a Meta product, and for a SubQ matrix over those reports so the humanize launch and the 22 identity-leak vectors can be checked against the client. The meta report found no verified REA investigation of a Meta product.
 Checked: rea --version printed 6.7.0 after npm install --global rea-agents@6.7.0 (Frida's install script was skipped). Four Parallel pro-fast runs completed. SubQ subq-snap-preview returned 279,432 input tokens; both choice passes and both claim passes agreed. No Facebook session was opened. bun run check was not re-run. Keys stayed in .buzz/.env.local.
+
+## 2026-10-18 14:30Z · feat/publishMachine
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `docs/namingConventions.md`: edited
+- `docs/providerResearch/agentVmHosts.json`: new file
+- `docs/providerResearch/agentVmHosts.md`: new file
+- `docs/providerResearch/cloudBrowsersAndAntidetect.md`: new file
+- `docs/providerResearch/cloudPhonesAndDevices.md`: new file
+- `docs/providerResearch/prompts/agentVmHosts.poll.log`: new file
+- `docs/providerResearch/prompts/cloudBrowsersAndAntidetect.poll.log`: new file
+- `docs/providerResearch/prompts/cloudPhonesAndDevices.poll.log`: new file
+- `docs/providerResearch/prompts/proxiesAndCaptcha.poll.log`: new file
+- `docs/providerResearch/prompts/selfManagedCompute.poll.log`: new file
+- `docs/providerResearch/proxiesAndCaptcha.json`: new file
+- `docs/providerResearch/proxiesAndCaptcha.md`: new file
+- `docs/providerResearch/selfManagedCompute.json`: new file
+- `docs/providerResearch/selfManagedCompute.md`: new file
+- `python/publishSession.py`: changed class Session
+- `scripts/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `src/cli/firefoxCapture/index.ts`: added const FIREFOX_CAPTURE_USAGE, function runFirefoxCapture, const firefoxCaptureCommand
+- `src/cli/publish/index.ts`: changed const publishCommand
+- `src/cli/runner/cli.test.ts`: changed test "no command prints usage for every command"
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/rea/firefox/client.ts`: added function defaultReaRunner, function writeFirefoxCapture, function inspectFirefoxCapture, function settleFirefoxCapture, function captureFromHar
+- `src/rea/firefox/firefox.test.ts`: added const HAR, const runner, test "drops cookies, auth headers, query values and bodies, and keeps the script", test "decodes a base64 script body", test "rewrites the session HAR and records the rea commands", test "deletes a HAR that is not JSON", test "captureFromHar writes a stripped copy and does not need a browser", test "record_har_path is a new_context argument, and Camoufox is still launched once"
+- `src/rea/firefox/helpers/index.ts`: added export from "./stripHar"
+- `src/rea/firefox/helpers/stripHar.ts`: added const SECRET_HEADERS, function isRecord, function headerName, function scriptText, function isScript, function stripHar, function manifestFor
+- `src/rea/firefox/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/rea/firefox/types.ts`: added interface FirefoxScript, interface FirefoxStripCounts, interface FirefoxCapture, interface ReaRunResult, type ReaRunner
+
+What changed: `log publish` now records a HAR of its Camoufox (Firefox) session. When a receiptDir is set, publishSession.py passes Playwright's record_har_path/content/mode to new_context, so the gate and the single launch are unchanged. After the session closes, settleFirefoxCapture rewrites receipts/<run>/firefox/session.har through stripHar. stripHar drops cookies, the cookie, set-cookie, authorization and proxy-authorization headers, query values and request/response bodies. It first copies each JavaScript body to scripts/scriptN.js and lists them with sha256 in manifest.json. A HAR that isn't JSON is deleted. Then the installed `rea` runs offline with inspect-web-network-capture on the HAR, plus analyze-javascript-application when scripts were saved. Its output is written to reaNetwork.json and reaScripts.json, and the publish exit notes show the counts. The new `log firefoxCapture --har <path> [--out <dir>] [--noRea] [--json]` does the same for any HAR with no browser, and is in COMMANDS and the usage test. The naming gate now allows those HTTP header and rea command names as other systems' spellings (namingConventions.md lists them). The staged code had two compile errors: a stray `});` in stripHar and an unimported `void isAbsolute;` in firefoxCapture. Both are fixed. Also adds the docs/providerResearch results from Parallel: agentVmHosts and proxiesAndCaptcha (.md/.json) are full reports. selfManagedCompute.md is Parallel declining the brief. cloudBrowsersAndAntidetect.md and cloudPhonesAndDevices.md are empty because the poller hit a Windows 'charmap' encode error while saving (see the poll.log files). They need a re-fetch with UTF-8 output.
+Why: matt asked for REA to work with the Playwright Camoufox client (docs/rea/spec.md). The matrix picked a HAR plus saved scripts read offline by stock rea-agents, with no CDP, fork or second browser. Stripping keeps session cookies and tokens off disk (Live mode: never commit, print or paste them). The provider reports are the next step of the provider research from the 13:25Z entry.
+Checked: `bun run check` passed: naming gate, tsc --noEmit, 373 pass / 0 fail. firefox.test.ts covers stripping, base64 script bodies, settling the session HAR with a fake rea runner, deleting a non-JSON HAR, the offline captureFromHar path, and that record_har_path is a new_context argument with Camoufox launched once. Not checked: a real `log publish` run with the HAR on, a real `rea` run on a captured HAR, and the contents of the provider reports.

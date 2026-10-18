@@ -1,0 +1,24 @@
+Polling task: trun_088b9aad317442568b42cdf4c0152aca
+Track progress: 
+https://platform.parallel.ai/play/deep-research/trun_088b9aad317442568b42cdf4c0
+152aca
+Will save to: cloudPhonesAndDevices.json (+.md for text schema)
+
+Status: polling (0s)
+Status: running (0s)
+Status: running (46s)
+Status: running (1m31s)
+Status: running (2m16s)
+Status: running (3m02s)
+Status: running (3m47s)
+Status: running (4m32s)
+Status: running (5m17s)
+Status: running (6m03s)
+Status: running (6m48s)
+Status: running (7m33s)
+Status: running (8m19s)
+Status: running (9m04s)
+Status: running (9m49s)
+Status: completed (10m35s)
+Error: 'charmap' codec can't encode characters in position 9513-9515: character
+maps to <undefined>
