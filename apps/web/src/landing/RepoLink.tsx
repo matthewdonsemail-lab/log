@@ -15,6 +15,7 @@ const VslPlayer = lazy(() => import('./VslPlayer'))
 
 /** Seconds of the video someone who skips plays before "Continue to the repository" unlocks. */
 const WATCH_GATE_SECONDS = 20
+const WATCHED_KEY = 'lk:vsl:watched'
 
 /** The repository every GitHub button and "Get started" on the landing page points at. */
 export const LOG_REPO_URL = 'https://github.com/matthewdonsemail-lab/log'
@@ -177,7 +178,26 @@ export function RepoModal({
 }) {
   const [step, setStep] = useState<Step>('ask')
   const [error, setError] = useState(false)
-  const [watched, setWatched] = useState(0)
+  // Kept for the session, so someone who left for the gg page and came back keeps what they watched.
+  const [watched, setWatchedState] = useState(() => {
+    try {
+      return Number(window.sessionStorage.getItem(WATCHED_KEY)) || 0
+    } catch {
+      return 0
+    }
+  })
+  const setWatched = (seconds: number) =>
+    setWatchedState((prev) => {
+      const next = Math.max(prev, seconds)
+      if (Math.floor(next) !== Math.floor(prev)) {
+        try {
+          window.sessionStorage.setItem(WATCHED_KEY, String(Math.floor(next)))
+        } catch {
+          // Private mode: the gate just counts again next time.
+        }
+      }
+      return next
+    })
   const unlocked = watched >= WATCH_GATE_SECONDS
   const panel = useRef<HTMLDivElement>(null)
   const close = useRef(onClose)
@@ -307,34 +327,44 @@ export function RepoModal({
 
           <div className="lk-box mt-7 w-full max-w-md p-5 text-left">
             {step === 'thanks' ? (
-              <div role="status">
-                <p className="lk-body text-base font-medium">We hope you enjoy the repository.</p>
+              <div role="status" className="text-center">
+                <p className="lk-body text-base font-medium leading-snug">
+                  <Sticker text="We hope you **enjoy** the repository." size="lk-bluekey text-2xl" />
+                </p>
                 <button type="button" onClick={go} className="lk-btn mt-4 w-full">
                   Continue to the repository <ArrowUpRight size={14} strokeWidth={3} />
                 </button>
               </div>
             ) : step === 'skipped' && !unlocked ? (
-              <div role="status">
-                <p className="lk-body text-base font-medium">
-                  No need to subscribe. Watch the start of the video and the repository unlocks right here.
+              <div role="status" className="text-center">
+                <p className="lk-body text-base font-medium leading-snug">
+                  <Sticker
+                    text="No need to subscribe. Watch the **start** of the video and the repository unlocks right here."
+                    size="lk-bluekey text-2xl"
+                  />
                 </p>
                 <button type="button" disabled className="lk-btn mt-4 w-full opacity-60">
                   <Lock size={14} strokeWidth={3} /> Unlocks after a little watching
                 </button>
               </div>
             ) : step === 'skipped' ? (
-              <div role="status">
-                <p className="lk-body text-base font-medium">
-                  No need to subscribe, but it really helps us out. Your support keeps everything free.
+              <div role="status" className="text-center">
+                <p className="lk-body text-base font-medium leading-snug">
+                  <Sticker
+                    text="No need to subscribe, but it **really helps** us out. Your support keeps everything free."
+                    size="lk-bluekey text-2xl"
+                  />
                 </p>
                 <button type="button" onClick={go} className="lk-btn mt-4 w-full">
                   Continue to the repository <ArrowUpRight size={14} strokeWidth={3} />
                 </button>
                 {/* Shown with the button, not on a timer, so nothing shifts under someone who is watching. */}
                 <div className="lk-follow mt-4 p-4">
-                  <p className="text-base font-bold">Before you go, drop a follow or a star? It really helps!</p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <a href={href} target="_blank" rel="noreferrer" onClick={onClose} className="lk-ghost">
+                  <p className="text-base font-bold leading-snug">
+                    <Sticker text="Before you go, drop a **follow** or a **star**? It really helps!" size="lk-bluekey text-2xl" />
+                  </p>
+                  <div className="mt-3 flex flex-col gap-2">
+                    <a href={href} target="_blank" rel="noreferrer" onClick={onClose} className="lk-ghost w-full">
                       <Star size={15} strokeWidth={2.5} /> Leave a star
                     </a>
                     <a
@@ -342,7 +372,7 @@ export function RepoModal({
                       target="_blank"
                       rel="noreferrer"
                       onClick={onClose}
-                      className="lk-ghost"
+                      className="lk-ghost w-full"
                     >
                       <UserPlus size={15} strokeWidth={2.5} /> Follow {owner}
                     </a>
