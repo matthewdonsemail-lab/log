@@ -13,8 +13,13 @@ goes through apply(), from visibleBrowser.launch_kwargs(), which:
    `proxyUnreachable`, a 407 means `proxyAuthFailed`;
 3. refuses with `proxyCountryMismatch` unless that country is the file's
    `country`;
-4. launches with the proxy and `geoip=<exit IP>`, so timezone, locale,
-   geolocation and WebRTC all match the proxy, never this machine.
+4. launches with the proxy and `geoip=<exit IP>`, so locale, geolocation
+   and WebRTC match the proxy, never this machine;
+5. forces every browser context's `timezoneId` to the exit IP's timezone.
+   Camoufox's geoip timezone doesn't take on Windows: a live run through an
+   Irish proxy still showed this PC's Asia/Bangkok until the context set it.
+   No timezone for the exit IP means `proxyCountryMismatch`, so nothing
+   opens on this machine's clock.
 """
 from __future__ import annotations
 
@@ -24,7 +29,7 @@ from typing import Any
 
 from errorCodes import checked
 
-_armed: dict[str, Any] = {"path": None}
+_armed: dict[str, Any] = {"path": None, "timezone": None}
 
 
 class GateError(Exception):
@@ -77,8 +82,8 @@ def proxy_url(proxy: dict[str, Any]) -> str:
     return f"{scheme}://{auth}{hostport}"
 
 
-def exit_location(proxy: dict[str, Any]) -> tuple[str, str]:
-    """(exit IP, ISO country) as seen through the proxy. Raises GateError."""
+def exit_location(proxy: dict[str, Any]) -> tuple[str, str, str]:
+    """(exit IP, ISO country, IANA timezone) as seen through the proxy. Raises GateError."""
     from camoufox.exceptions import InvalidIP
     from camoufox.geolocation import get_geolocation
     from camoufox.ip import public_ip
@@ -94,10 +99,11 @@ def exit_location(proxy: dict[str, Any]) -> tuple[str, str]:
     except Exception as exc:
         raise GateError("proxyMalformed", f"{type(exc).__name__} for {proxy['server']}") from None
     try:
-        region = get_geolocation(ip).locale.region
+        geo = get_geolocation(ip)
+        region, timezone = geo.locale.region, geo.timezone
     except Exception as exc:
         raise GateError("proxyCountryMismatch", f"exit IP {ip} has no known country ({type(exc).__name__})") from None
-    return ip, str(region or "").upper()
+    return ip, str(region or "").upper(), str(timezone or "")
 
 
 def check(proxy_path: str | None) -> dict[str, Any]:
@@ -105,11 +111,13 @@ def check(proxy_path: str | None) -> dict[str, Any]:
     proxy = load_proxy(proxy_path)
     if proxy is None:
         raise GateError("noProxy", f"no proxy file at {proxy_path}")
-    ip, country = exit_location(proxy)
+    ip, country, timezone = exit_location(proxy)
     want = str(proxy["country"]).upper()
     if country != want:
         raise GateError("proxyCountryMismatch", f"exit IP {ip} is in {country or 'an unknown country'}, the account is {want}")
-    return {"ok": True, "exitIp": ip, "exitCountry": country, "country": want}
+    if not timezone:
+        raise GateError("proxyCountryMismatch", f"exit IP {ip} has no known timezone")
+    return {"ok": True, "exitIp": ip, "exitCountry": country, "country": want, "timezone": timezone}
 
 
 def apply(kwargs: dict[str, Any]) -> dict[str, Any]:
@@ -117,5 +125,28 @@ def apply(kwargs: dict[str, Any]) -> dict[str, Any]:
     proxy = load_proxy(_armed["path"])
     if proxy is None:
         raise GateError("noProxy", f"no proxy file at {_armed['path']}: no browser opens without one")
-    ip = check(_armed["path"])["exitIp"]
-    return {**kwargs, "proxy": playwright_proxy(proxy), "geoip": ip}
+    checked_exit = check(_armed["path"])
+    _armed["timezone"] = checked_exit["timezone"]
+    force_timezone()
+    return {**kwargs, "proxy": playwright_proxy(proxy), "geoip": checked_exit["exitIp"]}
+
+
+def force_timezone() -> None:
+    """Every Playwright context (and so every new_page) gets the exit IP's timezone.
+
+    Patched on Playwright's internal Browser, which both the async and sync APIs
+    and Browser.new_page go through, so facebook-camofox-client's own
+    new_context() calls get it without changes there."""
+    from playwright._impl._browser import Browser
+
+    original = Browser.new_context
+    if getattr(original, "_logCliTimezone", False):
+        return
+
+    async def new_context(self: Any, *args: Any, **kwargs: Any) -> Any:
+        if _armed["timezone"]:
+            kwargs["timezoneId"] = _armed["timezone"]
+        return await original(self, *args, **kwargs)
+
+    new_context._logCliTimezone = True  # type: ignore[attr-defined]
+    Browser.new_context = new_context  # type: ignore[method-assign]

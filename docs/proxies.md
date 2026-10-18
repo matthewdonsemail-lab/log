@@ -34,11 +34,16 @@ every Camoufox launch → visibleBrowser.launch_kwargs() → proxyGate.apply()
   2. exit IP through proxy  Camoufox public_ip(proxy)   down ──▶ proxyUnreachable, 407 ──▶ proxyAuthFailed
   3. exit country           Camoufox GeoIP database      ≠ homeCountry ──▶ proxyCountryMismatch
   4. launch                 proxy=…, geoip=<exit IP>, headless=False, humanize=1.5, showcursor
+  5. every context          timezoneId=<exit IP's timezone>   none known ──▶ proxyCountryMismatch
 ```
 
-`geoip=<exit IP>` makes Camoufox set timezone, locale, geolocation and the
-WebRTC IP from the proxy's exit, so nothing in the browser points at this
-machine. `publishSession.py` calls `launch_kwargs()` itself. `logWorker.py`
+`geoip=<exit IP>` makes Camoufox set locale, geolocation and the WebRTC IP
+from the proxy's exit. Its timezone doesn't take on Windows: a live run through
+a 2Captcha Galway proxy (2026-10-18) showed Irish IP and `en-IE` but this PC's
+`Asia/Bangkok` clock. So `force_timezone()` patches Playwright's
+`Browser.new_context` (which `new_page` and both APIs go through) to set
+`timezoneId` from the exit IP. The same run then showed `Europe/Dublin` on the
+page and in a web worker. Nothing in the browser points at this machine. `publishSession.py` calls `launch_kwargs()` itself. `logWorker.py`
 launches through facebook-camofox-client, whose `CamofoxSessionManager.acquire`
 calls `AsyncCamoufox(humanize=1.5, geoip=True, proxy=proxy_config)` with
 `proxy_config=None`. `force_visible()` wraps Camoufox's launchers first, so the

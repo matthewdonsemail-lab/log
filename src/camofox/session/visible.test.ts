@@ -50,6 +50,13 @@ describe("no browser without the account's proxy (rule 12)", () => {
     const gate = read("proxyGate.py");
     expect(gate).toContain('raise GateError("noProxy"');
     expect(gate).toContain('raise GateError("proxyCountryMismatch"');
-    expect(gate).toContain('return {**kwargs, "proxy": playwright_proxy(proxy), "geoip": ip}');
+    expect(gate).toContain('return {**kwargs, "proxy": playwright_proxy(proxy), "geoip": checked_exit["exitIp"]}');
+  });
+
+  test("every context gets the exit IP's timezone, never this machine's", () => {
+    const gate = read("proxyGate.py");
+    expect(gate).toContain("force_timezone()");
+    expect(gate).toContain('kwargs["timezoneId"] = _armed["timezone"]');
+    expect(gate).toContain('raise GateError("proxyCountryMismatch", f"exit IP {ip} has no known timezone")');
   });
 });
