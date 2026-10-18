@@ -788,3 +788,22 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: Added docs/scaleArchitecture/priorClaims.json (16 claims from the earlier deviceIsolation recommendation), a --prior mode in runSubqScaleMatrix.mjs that checks them against the scale-architecture state, and priorCheck.json with the answers.
 Why: matt asked to run the new context (his scale brief, vendors, Listaro docs) against the earlier recommendation, to see which parts still hold.
 Checked: ran --prior end to end. 2 runs gave identical answers, 328,112 input tokens. The key was read from the environment only.
+
+## 2026-10-18 13:25Z · feat/publishMachine
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `docs/providerResearch/prompts/agentVmHosts.run.json`: new file
+- `docs/providerResearch/prompts/agentVmHosts.txt`: new file
+- `docs/providerResearch/prompts/cloudBrowsersAndAntidetect.run.json`: new file
+- `docs/providerResearch/prompts/cloudBrowsersAndAntidetect.txt`: new file
+- `docs/providerResearch/prompts/cloudPhonesAndDevices.run.json`: new file
+- `docs/providerResearch/prompts/cloudPhonesAndDevices.txt`: new file
+- `docs/providerResearch/prompts/proxiesAndCaptcha.run.json`: new file
+- `docs/providerResearch/prompts/proxiesAndCaptcha.txt`: new file
+- `docs/providerResearch/prompts/selfManagedCompute.run.json`: new file
+- `docs/providerResearch/prompts/selfManagedCompute.txt`: new file
+- `docs/providerResearch/writePrompts.mjs`: added const here, const context, const categories
+
+What changed: Added docs/providerResearch/ (in progress). writePrompts.mjs writes 5 Parallel deep-research briefs into prompts/, one per provider category: agentVmHosts (boat, E2B, Daytona, Modal, Fly, Vercel Sandbox, Cloudflare, Northflank, Morph, Runloop, Kernel, Cua, Orgo, Scrapybara), selfManagedCompute (Hetzner, OVH, Contabo, Vultr, AWS/GCP/Azure, Windows VDI, Shadow, GPU clouds), cloudBrowsersAndAntidetect (Browserbase, Steel, Hyperbrowser, Anchor, Bright Data, 2Captcha Browser API, Multilogin, GoLogin, AdsPower, Octo, Kameleo, Dolphin, MoreLogin), cloudPhonesAndDevices (GeeLark, DuoPlus, VMOS, Redfinger, UgPhone, Genymotion, device clouds, remote PC rentals) and proxiesAndCaptcha (2Captcha, Bright Data, Oxylabs, Decodo, IPRoyal, SOAX, NetNut, Webshare, mobile/ISP proxies, CapSolver, Anti-Captcha, CapMonster). The *.run.json files hold the queued Parallel run ids (ultra-fast, text output). Each brief carries matt's requirements and asks, per provider: how it works, docs, full pricing with cost per account at 100/1K/10K/100K accounts, regions and whether a Vietnam customer can sign up, SLA and outages, scale limits, capabilities (OS, GPU, own browser, BYO proxy forcing all traffic, live view, snapshots), integration work for log-cli, independent detection evidence, and a verdict. Every fact is tagged [official-docs], [independent], [estimate] or [unverified/needs-validation].
+Why: matt asked for every provider able to deliver the scale brief (no hardware from Vietnam, cost and reliability first, then scale to hundreds of thousands of accounts across platforms; isolated, viewable, swappable environments with residential egress and detection testing) to be found and documented, not just boat and 2Captcha. Next steps: when the 5 reports land (<category>.md/.json here), consolidate them into one evidence-graded provider comparison, build a decision matrix that accounts for full cost at volume (compute + storage + proxy + captcha + ops), score it with SubQ against all the evidence, and publish a ranked shortlist marking which providers are ready now and which need dev or testing.
+Checked: all 5 runs were accepted by Parallel and returned run ids (queued). The API key was read from .buzz/.env.local into the environment only and doesn't appear in any committed file. No results are in yet. This entry records the work in progress.

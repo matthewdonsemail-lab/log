@@ -1,0 +1,8 @@
+{
+  "run_id": "trun_088b9aad31744256bc4d9c37cdfcd04c",
+  "interaction_id": "trun_088b9aad31744256bc4d9c37cdfcd04c",
+  "result_url": "https://platform.parallel.ai/play/deep-research/trun_088b9aad31744256bc4d9c37cdfcd04c",
+  "processor": "ultra-fast",
+  "status": "queued",
+  "output_schema": "text"
+}
