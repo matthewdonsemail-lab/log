@@ -60,14 +60,31 @@ def playwright_proxy(proxy: dict[str, Any]) -> dict[str, str]:
     return out
 
 
+def proxy_url(proxy: dict[str, Any]) -> str:
+    """scheme://user:pass@host:port with the credentials percent-encoded (Camoufox's
+    Proxy.as_string doesn't encode them, so a password with @ or : would break)."""
+    from urllib.parse import quote
+
+    scheme, _, hostport = str(proxy["server"]).partition("://")
+    if not hostport:
+        scheme, hostport = "http", scheme
+    auth = ""
+    if proxy.get("username"):
+        auth = quote(str(proxy["username"]), safe="")
+        if proxy.get("password"):
+            auth += ":" + quote(str(proxy["password"]), safe="")
+        auth += "@"
+    return f"{scheme}://{auth}{hostport}"
+
+
 def exit_location(proxy: dict[str, Any]) -> tuple[str, str]:
     """(exit IP, ISO country) as seen through the proxy. Raises GateError."""
     from camoufox.exceptions import InvalidIP
     from camoufox.geolocation import get_geolocation
-    from camoufox.ip import Proxy, public_ip
+    from camoufox.ip import public_ip
 
     try:
-        ip = public_ip(Proxy(**playwright_proxy(proxy)).as_string())
+        ip = public_ip(proxy_url(proxy))
     except InvalidIP as exc:
         # Never echo the proxy URL back: it carries the password.
         text = str(exc)

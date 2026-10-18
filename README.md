@@ -32,6 +32,8 @@ Every command takes `--json` and never prompts, so scripts and agents can use it
 | `log account status <name> <STATUS>` | Set an account's status. RESTRICTED, BANNED or DEAD keep the account and replace its campaign listings |
 | `log listings` / `log listing <id>` | Twenty listings by status, account or campaign; one in full |
 | `log proxy check --account <name>` | The proxy's exit IP and country, no browser, written to Twenty |
+| `log proxy assign --account <name>` / `--missing` | A 2Captcha residential proxy in the account's home city, checked, then saved to Twenty |
+| `log proxy balance` | 2Captcha proxy traffic left |
 | `log doctor` | Python, facebook-camofox-client, Camoufox, Twenty, and which accounts may run |
 | `log connect --account <name>` | Sign in by hand through the account's proxy; cookies saved to Twenty |
 | `log scan --account <name>` | Marketplace > Selling live; health and clicks written to the listings |

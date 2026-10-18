@@ -52,6 +52,9 @@ bun bin/log.ts login | whoami | logout
 
 # proxies (rule 12): check before anything else
 bun bin/log.ts proxy check --account galwayOne           # exit IP + country, no browser, saved to Twenty
+bun bin/log.ts proxy assign --account galwayOne          # a 2Captcha proxy in its home city, checked, then saved
+bun bin/log.ts proxy assign --missing                    # every FACEBOOK account without a proxy
+bun bin/log.ts proxy balance                             # 2Captcha traffic left
 
 # live (launches Camoufox through the proxy)
 bun bin/log.ts doctor                                    # setup check, which accounts may run

@@ -231,6 +231,14 @@ stateDiagram-v2
 | `twentyRequestFailed` | yes | `twenty/graphql` | command exits | Twenty answered with an error. The detail has its status and message. | Read the detail. A field error means scripts/twentySetup.mjs needs running. |
 | `accountNotFound` | no | `marketplace/socialAccount` | command exits | No socialAccount with that accountName or id in Twenty. | log accounts lists the Facebook accounts. |
 
+## proxyVendor
+
+| Code | Retry | Raised in | Ends in | Meaning | Do |
+| --- | --- | --- | --- | --- | --- |
+| `twoCaptchaNotConfigured` | no | `proxyVendor/twoCaptcha` | command exits | The 2Captcha proxy API key or proxy password isn't set. | Put 2CAPTCHA_API_KEY and 2CAPTCHA_PROXY_PASSWORD (dashboard → Proxy → sub-account password) in log-cli/.env.local. |
+| `twoCaptchaRefused` | yes | `proxyVendor/twoCaptcha` | command exits | 2Captcha's API refused or didn't answer (bad key, no proxy product, network). | Read the detail. Check the key and that the proxy product is active with traffic left (log proxy balance). |
+| `twoCaptchaNoPlace` | no | `proxyVendor/twoCaptcha` | command exits | 2Captcha has no exit in that city of the account's home country. | Pick a city it has (--city), or --anyCity for anywhere in the country. |
+
 ## auth
 
 | Code | Retry | Raised in | Ends in | Meaning | Do |

@@ -47,6 +47,32 @@ gate's proxy and geoip replace whatever that call passes.
 Every refusal is an `account` code in the error catalog (`log errors --layer
 account`). A publish ends `blocked`, and the monitor stops at `blocked`.
 
+## Getting a proxy from 2Captcha
+
+`log proxy assign --account <name>` (or `--missing` for every FACEBOOK account
+without one) gives an account a 2Captcha residential proxy in its home country:
+
+1. `GET https://api.2captcha.com/proxy?key=…` gives the proxy username. The password
+   is the sub-account password from the 2Captcha dashboard, in
+   `2CAPTCHA_PROXY_PASSWORD`; it is not in the API.
+2. The account's `homeCity` is looked up in 2Captcha's places
+   (`https://2captcha.com/api/v1/proxy/regions/search/<city>`), kept only if it is
+   in `homeCountry` (Galway → connacht, IE). `--city` picks another city,
+   `--anyCity` the whole country. The public API's country list stops at its first
+   page (no Ireland), so the search is what's used.
+3. The URL follows 2Captcha's dashboard format:
+   `http://<username>-zone-custom-region-ie-st-connacht-city-galway-session-<id>-sessTime-120:<password>@eu.proxy.2captcha.com:2334`
+   (SOCKS5 with `--socks5`, port 2333). The gateway is the nearest one: `eu`, `na` or `ap`.
+4. `<id>` is fixed per account (from its Twenty id), so every run of that account
+   asks for the same sticky session. 2Captcha keeps one IP for **120 minutes at
+   most**: the exit stays in the same city or country but changes every couple of
+   hours. There is no static IP.
+5. The proxy goes through `proxy.check` **before** it is saved. It reaches Twenty
+   only if it really exits in `homeCountry`, and the check result is saved with it.
+
+`log proxy balance` shows the traffic left (2Captcha bills traffic, in and out,
+from $3.99/GB down to $1.25/GB) and whether the proxy password is set.
+
 ## Why: what was there before
 
 - **log-cli** had no proxy at all. Every Camoufox launched direct from this machine.

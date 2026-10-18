@@ -31,6 +31,8 @@ export type ErrorLayer =
   | 'listing'
   /** Twenty's REST API, where accounts and listings live. */
   | 'twenty'
+  /** A proxy seller's API (2Captcha), used to give accounts proxies. */
+  | 'proxyVendor'
 
 /** How a publish run ends when this code is raised (`marketplace/publish`). */
 export type PublishEnd = 'failed' | 'blocked' | 'needsPerson' | 'unconfirmedId'
@@ -969,6 +971,29 @@ export const ERROR_CATALOG = {
     retryable: false,
     raisedIn: ['marketplace/socialAccount'],
     action: 'log accounts lists the Facebook accounts.'
+  },
+
+  // ── proxyVendor ────────────────────────────────────────────────────────
+  twoCaptchaNotConfigured: {
+    layer: 'proxyVendor',
+    meaning: "The 2Captcha proxy API key or proxy password isn't set.",
+    retryable: false,
+    raisedIn: ['proxyVendor/twoCaptcha'],
+    action: 'Put 2CAPTCHA_API_KEY and 2CAPTCHA_PROXY_PASSWORD (dashboard → Proxy → sub-account password) in log-cli/.env.local.'
+  },
+  twoCaptchaRefused: {
+    layer: 'proxyVendor',
+    meaning: "2Captcha's API refused or didn't answer (bad key, no proxy product, network).",
+    retryable: true,
+    raisedIn: ['proxyVendor/twoCaptcha'],
+    action: 'Read the detail. Check the key and that the proxy product is active with traffic left (log proxy balance).'
+  },
+  twoCaptchaNoPlace: {
+    layer: 'proxyVendor',
+    meaning: "2Captcha has no exit in that city of the account's home country.",
+    retryable: false,
+    raisedIn: ['proxyVendor/twoCaptcha'],
+    action: 'Pick a city it has (--city), or --anyCity for anywhere in the country.'
   },
 
   // ── auth ───────────────────────────────────────────────────────────────

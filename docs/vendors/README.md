@@ -43,7 +43,7 @@ git, not chat).
 | `profileUrl` | `https://www.facebook.com/<id>` |
 | `cookies` | The delivered cookies as JSON (a list of `{ name, value, domain, path }` or a `name: value` object). `log connect` refreshes them |
 | `homeCity` / `homeCountry` | Where the account is registered and must appear from, e.g. `Galway` / `IE`. Take the country from the vendor listing, not a guess |
-| `proxy` | A proxy **in `homeCountry`**, as `http://user:pass@host:port`. Bought separately: vendors sell the account, not its IP |
+| `proxy` | A proxy **in `homeCountry`**, as `http://user:pass@host:port`. Bought separately: vendors sell the account, not its IP. `log proxy assign --account <name>` makes a 2Captcha one in the account's home city and saves it once it checks out |
 | `accountStatus` | `WARMING` for a fresh account, `NEEDS_LOGIN` until `log connect` has run |
 | `totpSecret` | The 2FA (TOTP) secret the vendor delivered. A credential: never print it |
 | `vendor` | Who sold it, named as in these files (e.g. `NPPR Team Shop`) |

@@ -68,7 +68,98 @@ describe("log proxy check", () => {
 
   test("needs check and an account", async () => {
     expect((await run(["proxy"], () => ({}))).code).toBe(1);
-    expect((await run(["proxy", "set", "--account", "galwayOne"], () => ({}))).code).toBe(1);
+    expect((await run(["proxy", "wat", "--account", "galwayOne"], () => ({}))).code).toBe(1);
     expect((await run(["proxy", "check"], () => ({}))).code).toBe(1);
+  });
+});
+
+describe("log proxy assign (2Captcha, fetch stubbed)", () => {
+  const realFetch = globalThis.fetch;
+  const env = { key: process.env["2CAPTCHA_API_KEY"], password: process.env["2CAPTCHA_PROXY_PASSWORD"] };
+  function stub2Captcha() {
+    process.env["2CAPTCHA_API_KEY"] = "testKey";
+    process.env["2CAPTCHA_PROXY_PASSWORD"] = "testPass";
+    globalThis.fetch = (async (url: string | URL | Request) => {
+      const u = String(url);
+      if (u.startsWith("https://api.2captcha.com/proxy?")) return new Response(JSON.stringify({ status: "OK", data: { username: "u7etest", status: 1 } }));
+      if (u.includes("/regions/search/galway")) return new Response(JSON.stringify([{ city: "galway", region: "connacht", countryCode: "ie" }]));
+      if (u.includes("/regions/search/")) return new Response(JSON.stringify([]));
+      throw new Error(`unexpected fetch ${u}`);
+    }) as typeof fetch;
+  }
+  function restore() {
+    globalThis.fetch = realFetch;
+    for (const [name, value] of [["2CAPTCHA_API_KEY", env.key], ["2CAPTCHA_PROXY_PASSWORD", env.password]] as const) {
+      if (value === undefined) delete process.env[name];
+      else process.env[name] = value;
+    }
+  }
+
+  test("builds a Galway proxy, checks it exits in Ireland, then saves it to Twenty", async () => {
+    stub2Captcha();
+    try {
+      const { code, out, proxyFiles, twenty } = await run(["proxy", "assign", "--account", "noProxy"], () => ({ ok: true, exitIp: "203.0.113.9", exitCountry: "IE", country: "IE" }));
+      expect(code).toBe(0);
+      expect(out).toContain("in Ireland (galway, connacht, Ireland). Saved to Twenty.");
+      expect(out).not.toContain("testPass");
+      expect(proxyFiles[0]).toMatchObject({ server: "http://eu.proxy.2captcha.com:2334", password: "testPass", country: "IE" });
+      const saved = String(twenty.rows.socialAccounts.find((r) => r.id === "noProxy")!.proxy);
+      expect(saved).toContain("u7etest-zone-custom-region-ie-st-connacht-city-galway-session-");
+      expect(saved).toContain("sessTime-120");
+    } finally {
+      restore();
+    }
+  });
+
+  test("a proxy that exits in the wrong country is never saved", async () => {
+    stub2Captcha();
+    try {
+      const { code, out, twenty } = await run(["proxy", "assign", "--account", "noProxy"], () => ({ ok: false, code: "proxyCountryMismatch", detail: "exit IP 1.2.3.4 is in GB, the account is IE" }));
+      expect(code).toBe(1);
+      expect(out).toContain("not saved");
+      expect(twenty.rows.socialAccounts.find((r) => r.id === "noProxy")!.proxy).toBeNull();
+    } finally {
+      restore();
+    }
+  });
+
+  test("a city 2Captcha doesn't have is refused, unless --anyCity", async () => {
+    stub2Captcha();
+    try {
+      const twenty = marketplaceFixture();
+      await twenty.update("socialAccounts", "noProxy", { homeCity: "Nowhereville" });
+      const refused = await run(["proxy", "assign", "--account", "noProxy"], () => ({ ok: true, exitIp: "1", exitCountry: "IE", country: "IE" }), twenty);
+      expect(refused.out).toContain("twoCaptchaNoPlace");
+      const anywhere = await run(["proxy", "assign", "--account", "noProxy", "--anyCity"], () => ({ ok: true, exitIp: "1", exitCountry: "IE", country: "IE" }), twenty);
+      expect(anywhere.code).toBe(0);
+      expect(String(twenty.rows.socialAccounts.find((r) => r.id === "noProxy")!.proxy)).toContain("-region-ie-session-");
+    } finally {
+      restore();
+    }
+  });
+
+  test("--missing gives a proxy to every FACEBOOK account without one", async () => {
+    stub2Captcha();
+    try {
+      const { out } = await run(["proxy", "assign", "--missing"], () => ({ ok: true, exitIp: "1", exitCountry: "IE", country: "IE" }));
+      expect(out).toContain("noProxy:");
+      expect(out.split("\n")).toHaveLength(1);
+    } finally {
+      restore();
+    }
+  });
+
+  test("without the proxy password it stops and says where to put it", async () => {
+    const saved = process.env["2CAPTCHA_PROXY_PASSWORD"];
+    process.env["2CAPTCHA_PROXY_PASSWORD"] = "";
+    try {
+      const { code, err } = await run(["proxy", "assign", "--account", "noProxy"], () => ({}));
+      expect(code).toBe(1);
+      expect(err).toContain("twoCaptchaNotConfigured");
+      expect(err).toContain("2CAPTCHA_PROXY_PASSWORD");
+    } finally {
+      if (saved === undefined) delete process.env["2CAPTCHA_PROXY_PASSWORD"];
+      else process.env["2CAPTCHA_PROXY_PASSWORD"] = saved;
+    }
   });
 });

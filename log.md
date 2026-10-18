@@ -546,3 +546,30 @@ Checked: see below.
   - `log account status ... BANNED` kept the account, set the listing to REPLACED and created a READY generation-1 row on the other test account.
   - `scan` of the banned account was refused with accountNotUsable.
 - Not checked: live Facebook, `--live`, and `campaign run` against Facebook.
+
+## 2026-10-18 08:11Z · feat/publishMachine
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `.env.example`: edited
+- `README.md`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/proxies.md`: edited
+- `docs/vendors/README.md`: edited
+- `python/errorCatalog.json`: edited
+- `python/proxyGate.py`: added def proxy_url · changed def exit_location
+- `scripts/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `skills/logCli/SKILL.md`: edited
+- `src/cli/errors/helpers/renderCatalog.ts`: changed const LAYERS
+- `src/cli/proxy/index.ts`: added function checkProxy, function assignOne · changed const PROXY_USAGE, const proxyCommand
+- `src/cli/proxy/proxy.test.ts`: added test "builds a Galway proxy, checks it exits in Ireland, then saves it to Twenty", test "a proxy that exits in the wrong country is never saved", test "a city 2Captcha doesn't have is refused, unless --anyCity", test "--missing gives a proxy to every FACEBOOK account without one", test "without the proxy password it stops and says where to put it" · changed test "needs check and an account"
+- `src/errors/catalog/types.ts`: changed type ErrorLayer, const ERROR_CATALOG
+- `src/proxyVendor/twoCaptcha/client.ts`: added const API, const PLACES, const TIMEOUT_MS, function twoCaptchaCredentials, function getJson, function getProxyAccount, function getBalance, function searchPlaces
+- `src/proxyVendor/twoCaptcha/helpers/buildProxyUrl.ts`: added const GATEWAY_PORTS, const NORTH_AMERICA, const ASIA, function gatewayHost, function sessionFor, function slug, function buildProxyUrl
+- `src/proxyVendor/twoCaptcha/helpers/index.ts`: added export from "./buildProxyUrl"
+- `src/proxyVendor/twoCaptcha/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/proxyVendor/twoCaptcha/twoCaptcha.test.ts`: added const json, test "follows 2Captcha's username format: country, state, city, sticky session", test "country only, SOCKS5, and the 120 minute cap", test "the nearest gateway, a stable session per account, slugs", test "credentials: the API key and the dashboard proxy password are both needed", test "account, balance, and a refused key", test "place search keeps only real places"
+- `src/proxyVendor/twoCaptcha/types.ts`: added class TwoCaptchaError, interface TwoCaptchaCredentials, interface TwoCaptchaAccount, interface TwoCaptchaPlace, interface ProxyRequest
+
+What changed: `log proxy assign --account <name>` (or `--missing` for every FACEBOOK account without a proxy) gives an account a 2Captcha residential proxy in its home country and city. It gets the proxy username from `GET api.2captcha.com/proxy`, looks the city up in 2Captcha's places (Galway → connacht, IE; `--city` or `--anyCity` to change it), and builds the dashboard-format URL with a sticky session fixed per account (sessTime 1-120, HTTP 2334 or `--socks5` 2333, nearest gateway). It runs proxy.check on it first, and saves it to the socialAccount in Twenty only if the exit IP is in homeCountry. `log proxy balance` shows traffic left, the money balance, and whether the proxy password is set. The new `proxyVendor/twoCaptcha` domain is read-only: nothing buys traffic. proxyGate.py now percent-encodes proxy credentials, because Camoufox's Proxy.as_string doesn't, and a password with @ or : would break the exit check. New catalog layer proxyVendor: twoCaptchaNotConfigured, twoCaptchaRefused, twoCaptchaNoPlace. `.env.example` has 2CAPTCHA_PROXY_PASSWORD. The naming gate allows 2Captcha's `zone-custom` token. docs/proxies.md, the vendors README, the README and the skill cover it.
+Why: matt: "read through this here (https://2captcha.com/proxy/api) ... make it so it will work. I've set inside of the .env.local and the .env.example the 2CAPTCHA_API_KEY".
+Checked: `bun run check`: naming ok, tsc ok, 300 pass (2Captcha calls stubbed in tests). Live and read-only with matt's key: the account is active, 850.53 traffic left, $0.01 balance, username present. Galway is found (connacht, ie). The public country list stops after its first page (78 of 178, no Ireland), so the place search is used. A wrong gateway login gets 407, and the API key is not the gateway password. Not checked: a live `assign`, because 2CAPTCHA_PROXY_PASSWORD isn't set yet (asked matt for it).
