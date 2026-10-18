@@ -1,0 +1,4502 @@
+{
+  "stateChars": 601688,
+  "files": [
+    "brief.md",
+    "log-cli/deviceIsolation/README.md",
+    "log-cli/deviceIsolation/vendorFacts.md",
+    "log-cli/deviceIsolation/deepResearch.md",
+    "log-cli/identityLeaks/accountHistoryAndMetaEnforcement.md",
+    "log-cli/identityLeaks/activityHours.md",
+    "log-cli/identityLeaks/camoufoxDetectability.md",
+    "log-cli/identityLeaks/captchaSolving.md",
+    "log-cli/identityLeaks/deviceFingerprintChurn.md",
+    "log-cli/identityLeaks/dns.md",
+    "log-cli/identityLeaks/fontsAndVoices.md",
+    "log-cli/identityLeaks/gateBypasses.md",
+    "log-cli/identityLeaks/geolocationApi.md",
+    "log-cli/identityLeaks/http3Quic.md",
+    "log-cli/identityLeaks/listingContentAndCurrency.md",
+    "log-cli/identityLeaks/localeAndLanguage.md",
+    "log-cli/identityLeaks/manualSignIn.md",
+    "log-cli/identityLeaks/outOfBrowserRequests.md",
+    "log-cli/identityLeaks/photosAndUploads.md",
+    "log-cli/identityLeaks/proxyCredentials.md",
+    "log-cli/identityLeaks/proxyRotationAndGeoAccuracy.md",
+    "log-cli/identityLeaks/README.md",
+    "log-cli/identityLeaks/sessionStatePersistence.md",
+    "log-cli/identityLeaks/sources.md",
+    "log-cli/identityLeaks/standaloneFacebookCamofoxClient.md",
+    "log-cli/identityLeaks/timezone.md",
+    "log-cli/identityLeaks/webglGpuLinkage.md",
+    "log-cli/identityLeaks/webrtc.md",
+    "log-cli/vendors/canadaBcFacebookAccounts.jsonl",
+    "log-cli/vendors/irelandUkFacebookAccounts.jsonl",
+    "log-cli/vendors/README.md",
+    "log-cli/vendors/usaEastCoastFacebookAccounts.jsonl",
+    "log-cli/vendors/usaFacebookDirectListings.jsonl",
+    "log-cli/accountsAndListings.md",
+    "log-cli/proxies.md",
+    "log-cli/errorCatalog.md",
+    "log-cli/README.md",
+    "Listaro_backup/CLAUDE.md",
+    "Listaro_backup/STATUS-REPORT.md",
+    "Listaro_backup/docs/ARCHITECTURE.md",
+    "Listaro_backup/docs/LISTARO_OPERATIONS.md",
+    "Listaro_backup/docs/plans/2026-03-09-fix-posting-engine.md",
+    "Listaro_backup/docs/plans/2026-03-11-captcha-proof-onboarding.md",
+    "Listaro_backup/docs/superpowers/specs/2026-03-17-desktop-agent-design.md",
+    "Listaro_backup/docs/superpowers/specs/2026-03-18-account-validation-design.md",
+    "Listaro_backup/docs/superpowers/specs/2026-03-25-cloud-posting-design.md",
+    "Listaro_backup/docs/superpowers/specs/2026-04-09-listaro-v2-platform-overhaul.md",
+    "Listaro_backup/docs/superpowers/plans/2026-04-08-adspower-server-architecture.md",
+    "Listaro_backup/docs/superpowers/plans/2026-04-08-auto-login-system.md",
+    "Listaro_backup/content/blog/how-to-post-without-getting-banned.md"
+  ],
+  "passA": [
+    {
+      "noPhysicalPresence": {
+        "type": "choice",
+        "choice": "boatVmPerAccount",
+        "probabilities": {
+          "statusQuoPc": 0.04626094177365303,
+          "boatVmPerAccount": 0.321831077337265,
+          "boatVmPacked": 0.03641970083117485,
+          "selfManagedVps": 0.03987148031592369,
+          "cloudGpuWindowsVm": 0.034501150250434875,
+          "gpuSandbox": 0.011744247749447823,
+          "cloudBrowserVendor": 0.051938824355602264,
+          "antidetectOnServers": 0.03558913990855217,
+          "cloudPhone": 0.041434478014707565,
+          "twoCaptchaBrowserApi": 0.0472618006169796,
+          "twoCaptchaFingerprintApi": 0.05749964341521263,
+          "providerAgnosticHybrid": 0.2756476402282715
+        },
+        "confidence": 0.26017935709519824
+      },
+      "costAtScale": {
+        "type": "choice",
+        "choice": "boatVmPacked",
+        "probabilities": {
+          "statusQuoPc": 0.061669617891311646,
+          "boatVmPerAccount": 0.12297777831554413,
+          "boatVmPacked": 0.43336713314056396,
+          "selfManagedVps": 0.22239790856838226,
+          "cloudGpuWindowsVm": 0.006781081203371286,
+          "gpuSandbox": 0.004218121059238911,
+          "cloudBrowserVendor": 0.004028123337775469,
+          "antidetectOnServers": 0.019305163994431496,
+          "cloudPhone": 0.009745052084326744,
+          "twoCaptchaBrowserApi": 0.003193782176822424,
+          "twoCaptchaFingerprintApi": 0.04032030701637268,
+          "providerAgnosticHybrid": 0.0719958171248436
+        },
+        "confidence": 0.3818550543351607
+      },
+      "reliability": {
+        "type": "choice",
+        "choice": "boatVmPerAccount",
+        "probabilities": {
+          "statusQuoPc": 0.1928044557571411,
+          "boatVmPerAccount": 0.2456284612417221,
+          "boatVmPacked": 0.01928376406431198,
+          "selfManagedVps": 0.06574471294879913,
+          "cloudGpuWindowsVm": 0.038737811148166656,
+          "gpuSandbox": 0.007111759856343269,
+          "cloudBrowserVendor": 0.11998234689235687,
+          "antidetectOnServers": 0.04498007893562317,
+          "cloudPhone": 0.013337397947907448,
+          "twoCaptchaBrowserApi": 0.003951776307076216,
+          "twoCaptchaFingerprintApi": 0.008079618215560913,
+          "providerAgnosticHybrid": 0.24035783112049103
+        },
+        "confidence": 0.17704923044551504
+      },
+      "scalability": {
+        "type": "choice",
+        "choice": "providerAgnosticHybrid",
+        "probabilities": {
+          "statusQuoPc": 0.006278767250478268,
+          "boatVmPerAccount": 0.28710487484931946,
+          "boatVmPacked": 0.06813734024763107,
+          "selfManagedVps": 0.08812440186738968,
+          "cloudGpuWindowsVm": 0.006380679085850716,
+          "gpuSandbox": 0.0036779341753572226,
+          "cloudBrowserVendor": 0.01192337367683649,
+          "antidetectOnServers": 0.008235168643295765,
+          "cloudPhone": 0.0070541249588131905,
+          "twoCaptchaBrowserApi": 0.00268733617849648,
+          "twoCaptchaFingerprintApi": 0.0031459787860512733,
+          "providerAgnosticHybrid": 0.5072500705718994
+        },
+        "confidence": 0.46245462244207214
+      },
+      "providerSwappability": {
+        "type": "choice",
+        "choice": "providerAgnosticHybrid",
+        "probabilities": {
+          "statusQuoPc": 0.01737143099308014,
+          "boatVmPerAccount": 0.005282226949930191,
+          "boatVmPacked": 0.0031727487221360207,
+          "selfManagedVps": 0.029271148145198822,
+          "cloudGpuWindowsVm": 0.003916264045983553,
+          "gpuSandbox": 0.001533106085844338,
+          "cloudBrowserVendor": 0.0017871016170829535,
+          "antidetectOnServers": 0.003236952004954219,
+          "cloudPhone": 0.002358499448746443,
+          "twoCaptchaBrowserApi": 0.0012788793537765741,
+          "twoCaptchaFingerprintApi": 0.01589815504848957,
+          "providerAgnosticHybrid": 0.9148935079574585
+        },
+        "confidence": 0.9071565541354093
+      },
+      "multiPlatform": {
+        "type": "choice",
+        "choice": "providerAgnosticHybrid",
+        "probabilities": {
+          "statusQuoPc": 0.012747223488986492,
+          "boatVmPerAccount": 0.00771143427118659,
+          "boatVmPacked": 0.0061462922021746635,
+          "selfManagedVps": 0.012160365469753742,
+          "cloudGpuWindowsVm": 0.01000182330608368,
+          "gpuSandbox": 0.0035894792526960373,
+          "cloudBrowserVendor": 0.0107961967587471,
+          "antidetectOnServers": 0.020555002614855766,
+          "cloudPhone": 0.26042667031288147,
+          "twoCaptchaBrowserApi": 0.0023746900260448456,
+          "twoCaptchaFingerprintApi": 0.0024964313488453627,
+          "providerAgnosticHybrid": 0.6509943604469299
+        },
+        "confidence": 0.6192665750330144
+      },
+      "residentialProxyEgress": {
+        "type": "choice",
+        "choice": "boatVmPerAccount",
+        "probabilities": {
+          "statusQuoPc": 0.13361364603042603,
+          "boatVmPerAccount": 0.431530237197876,
+          "boatVmPacked": 0.0256293136626482,
+          "selfManagedVps": 0.04276625066995621,
+          "cloudGpuWindowsVm": 0.026216736063361168,
+          "gpuSandbox": 0.011182617396116257,
+          "cloudBrowserVendor": 0.02685050666332245,
+          "antidetectOnServers": 0.021696416661143303,
+          "cloudPhone": 0.013672943226993084,
+          "twoCaptchaBrowserApi": 0.021170124411582947,
+          "twoCaptchaFingerprintApi": 0.02946477383375168,
+          "providerAgnosticHybrid": 0.21620644629001617
+        },
+        "confidence": 0.3798511678522284
+      },
+      "viewability": {
+        "type": "choice",
+        "choice": "boatVmPerAccount",
+        "probabilities": {
+          "statusQuoPc": 0.04262061417102814,
+          "boatVmPerAccount": 0.7021046876907349,
+          "boatVmPacked": 0.014021597802639008,
+          "selfManagedVps": 0.014237885363399982,
+          "cloudGpuWindowsVm": 0.041231270879507065,
+          "gpuSandbox": 0.006733875721693039,
+          "cloudBrowserVendor": 0.04909580573439598,
+          "antidetectOnServers": 0.014364409260451794,
+          "cloudPhone": 0.03392655774950981,
+          "twoCaptchaBrowserApi": 0.008607428520917892,
+          "twoCaptchaFingerprintApi": 0.006999425124377012,
+          "providerAgnosticHybrid": 0.06605637073516846
+        },
+        "confidence": 0.6750232956626199
+      },
+      "renderUniqueness": {
+        "type": "choice",
+        "choice": "cloudGpuWindowsVm",
+        "probabilities": {
+          "statusQuoPc": 0.039528608322143555,
+          "boatVmPerAccount": 0.024443892762064934,
+          "boatVmPacked": 0.005734255537390709,
+          "selfManagedVps": 0.010950234718620777,
+          "cloudGpuWindowsVm": 0.6930553317070007,
+          "gpuSandbox": 0.027360696345567703,
+          "cloudBrowserVendor": 0.002894268836826086,
+          "antidetectOnServers": 0.05062004551291466,
+          "cloudPhone": 0.029333313927054405,
+          "twoCaptchaBrowserApi": 0.0018902372103184462,
+          "twoCaptchaFingerprintApi": 0.002943603554740548,
+          "providerAgnosticHybrid": 0.11124537885189056
+        },
+        "confidence": 0.6651512709530917
+      },
+      "consistencyAndConsumerLikeness": {
+        "type": "choice",
+        "choice": "cloudGpuWindowsVm",
+        "probabilities": {
+          "statusQuoPc": 0.35745903849601746,
+          "boatVmPerAccount": 0.005677962210029364,
+          "boatVmPacked": 0.006632837932556868,
+          "selfManagedVps": 0.006828503217548132,
+          "cloudGpuWindowsVm": 0.365551233291626,
+          "gpuSandbox": 0.0074698710814118385,
+          "cloudBrowserVendor": 0.00279290066100657,
+          "antidetectOnServers": 0.047366220504045486,
+          "cloudPhone": 0.0393681675195694,
+          "twoCaptchaBrowserApi": 0.0020038674119859934,
+          "twoCaptchaFingerprintApi": 0.0038951709866523743,
+          "providerAgnosticHybrid": 0.15495413541793823
+        },
+        "confidence": 0.3078740726817738
+      },
+      "crossAccountIsolation": {
+        "type": "choice",
+        "choice": "boatVmPerAccount",
+        "probabilities": {
+          "statusQuoPc": 0.012963787652552128,
+          "boatVmPerAccount": 0.6524672508239746,
+          "boatVmPacked": 0.010900146327912807,
+          "selfManagedVps": 0.01721210405230522,
+          "cloudGpuWindowsVm": 0.10405293107032776,
+          "gpuSandbox": 0.00635165348649025,
+          "cloudBrowserVendor": 0.0045208921656012535,
+          "antidetectOnServers": 0.016118254512548447,
+          "cloudPhone": 0.019810141995549202,
+          "twoCaptchaBrowserApi": 0.001978164305910468,
+          "twoCaptchaFingerprintApi": 0.0027353549376130104,
+          "providerAgnosticHybrid": 0.1508893221616745
+        },
+        "confidence": 0.620873364535245
+      },
+      "detectionTestability": {
+        "type": "choice",
+        "choice": "providerAgnosticHybrid",
+        "probabilities": {
+          "statusQuoPc": 0.4075475335121155,
+          "boatVmPerAccount": 0.05968904495239258,
+          "boatVmPacked": 0.007207660004496574,
+          "selfManagedVps": 0.04971251264214516,
+          "cloudGpuWindowsVm": 0.026401184499263763,
+          "gpuSandbox": 0.003105091629549861,
+          "cloudBrowserVendor": 0.002873756689950824,
+          "antidetectOnServers": 0.005778431426733732,
+          "cloudPhone": 0.0031481957994401455,
+          "twoCaptchaBrowserApi": 0.0017493180930614471,
+          "twoCaptchaFingerprintApi": 0.0057255784049630165,
+          "providerAgnosticHybrid": 0.4270617365837097
+        },
+        "confidence": 0.3749764399095015
+      },
+      "fitWithLogCli": {
+        "type": "choice",
+        "choice": "statusQuoPc",
+        "probabilities": {
+          "statusQuoPc": 0.7223396897315979,
+          "boatVmPerAccount": 0.0199380274862051,
+          "boatVmPacked": 0.008155299350619316,
+          "selfManagedVps": 0.022147946059703827,
+          "cloudGpuWindowsVm": 0.009872007183730602,
+          "gpuSandbox": 0.0013005430810153484,
+          "cloudBrowserVendor": 0.0013834243873134255,
+          "antidetectOnServers": 0.0031619644723832607,
+          "cloudPhone": 0.0023838505148887634,
+          "twoCaptchaBrowserApi": 0.001213566167280078,
+          "twoCaptchaFingerprintApi": 0.01260418351739645,
+          "providerAgnosticHybrid": 0.19549959897994995
+        },
+        "confidence": 0.6970978433435613
+      },
+      "operationalBurden": {
+        "type": "choice",
+        "choice": "cloudBrowserVendor",
+        "probabilities": {
+          "statusQuoPc": 0.08105193823575974,
+          "boatVmPerAccount": 0.11307886987924576,
+          "boatVmPacked": 0.04812534153461456,
+          "selfManagedVps": 0.015885483473539352,
+          "cloudGpuWindowsVm": 0.011365843005478382,
+          "gpuSandbox": 0.01001387182623148,
+          "cloudBrowserVendor": 0.5266613364219666,
+          "antidetectOnServers": 0.03400139510631561,
+          "cloudPhone": 0.013051598332822323,
+          "twoCaptchaBrowserApi": 0.012626046314835548,
+          "twoCaptchaFingerprintApi": 0.013145373202860355,
+          "providerAgnosticHybrid": 0.12099286168813705
+        },
+        "confidence": 0.48363054882396356
+      },
+      "evidenceQuality": {
+        "type": "choice",
+        "choice": "statusQuoPc",
+        "probabilities": {
+          "statusQuoPc": 0.856580376625061,
+          "boatVmPerAccount": 0.006843192502856255,
+          "boatVmPacked": 0.0043469322845339775,
+          "selfManagedVps": 0.03263001888990402,
+          "cloudGpuWindowsVm": 0.011477526277303696,
+          "gpuSandbox": 0.0029498718213289976,
+          "cloudBrowserVendor": 0.0022221170365810394,
+          "antidetectOnServers": 0.021922307088971138,
+          "cloudPhone": 0.0033784988336265087,
+          "twoCaptchaBrowserApi": 0.0020547674503177404,
+          "twoCaptchaFingerprintApi": 0.005520317237824202,
+          "providerAgnosticHybrid": 0.050074294209480286
+        },
+        "confidence": 0.8435422290455211
+      },
+      "dataCustody": {
+        "type": "choice",
+        "choice": "statusQuoPc",
+        "probabilities": {
+          "statusQuoPc": 0.665201723575592,
+          "boatVmPerAccount": 0.03192109242081642,
+          "boatVmPacked": 0.010423983447253704,
+          "selfManagedVps": 0.20452746748924255,
+          "cloudGpuWindowsVm": 0.0107368603348732,
+          "gpuSandbox": 0.002861872548237443,
+          "cloudBrowserVendor": 0.0021146326325833797,
+          "antidetectOnServers": 0.007488170173019171,
+          "cloudPhone": 0.0038012710865586996,
+          "twoCaptchaBrowserApi": 0.0022361548617482185,
+          "twoCaptchaFingerprintApi": 0.02813888154923916,
+          "providerAgnosticHybrid": 0.030547931790351868
+        },
+        "confidence": 0.6347655166279186
+      }
+    },
+    {
+      "noPhysicalPresence": {
+        "type": "choice",
+        "choice": "boatVmPerAccount",
+        "probabilities": {
+          "statusQuoPc": 0.04626094177365303,
+          "boatVmPerAccount": 0.321831077337265,
+          "boatVmPacked": 0.03641970083117485,
+          "selfManagedVps": 0.03987148031592369,
+          "cloudGpuWindowsVm": 0.034501150250434875,
+          "gpuSandbox": 0.011744247749447823,
+          "cloudBrowserVendor": 0.051938824355602264,
+          "antidetectOnServers": 0.03558913990855217,
+          "cloudPhone": 0.041434478014707565,
+          "twoCaptchaBrowserApi": 0.0472618006169796,
+          "twoCaptchaFingerprintApi": 0.05749964341521263,
+          "providerAgnosticHybrid": 0.2756476402282715
+        },
+        "confidence": 0.26017935709519824
+      },
+      "costAtScale": {
+        "type": "choice",
+        "choice": "boatVmPacked",
+        "probabilities": {
+          "statusQuoPc": 0.061669617891311646,
+          "boatVmPerAccount": 0.12297777831554413,
+          "boatVmPacked": 0.43336713314056396,
+          "selfManagedVps": 0.22239790856838226,
+          "cloudGpuWindowsVm": 0.006781081203371286,
+          "gpuSandbox": 0.004218121059238911,
+          "cloudBrowserVendor": 0.004028123337775469,
+          "antidetectOnServers": 0.019305163994431496,
+          "cloudPhone": 0.009745052084326744,
+          "twoCaptchaBrowserApi": 0.003193782176822424,
+          "twoCaptchaFingerprintApi": 0.04032030701637268,
+          "providerAgnosticHybrid": 0.0719958171248436
+        },
+        "confidence": 0.3818550543351607
+      },
+      "reliability": {
+        "type": "choice",
+        "choice": "boatVmPerAccount",
+        "probabilities": {
+          "statusQuoPc": 0.1928044557571411,
+          "boatVmPerAccount": 0.2456284612417221,
+          "boatVmPacked": 0.01928376406431198,
+          "selfManagedVps": 0.06574471294879913,
+          "cloudGpuWindowsVm": 0.038737811148166656,
+          "gpuSandbox": 0.007111759856343269,
+          "cloudBrowserVendor": 0.11998234689235687,
+          "antidetectOnServers": 0.04498007893562317,
+          "cloudPhone": 0.013337397947907448,
+          "twoCaptchaBrowserApi": 0.003951776307076216,
+          "twoCaptchaFingerprintApi": 0.008079618215560913,
+          "providerAgnosticHybrid": 0.24035783112049103
+        },
+        "confidence": 0.17704923044551504
+      },
+      "scalability": {
+        "type": "choice",
+        "choice": "providerAgnosticHybrid",
+        "probabilities": {
+          "statusQuoPc": 0.006278767250478268,
+          "boatVmPerAccount": 0.28710487484931946,
+          "boatVmPacked": 0.06813734024763107,
+          "selfManagedVps": 0.08812440186738968,
+          "cloudGpuWindowsVm": 0.006380679085850716,
+          "gpuSandbox": 0.0036779341753572226,
+          "cloudBrowserVendor": 0.01192337367683649,
+          "antidetectOnServers": 0.008235168643295765,
+          "cloudPhone": 0.0070541249588131905,
+          "twoCaptchaBrowserApi": 0.00268733617849648,
+          "twoCaptchaFingerprintApi": 0.0031459787860512733,
+          "providerAgnosticHybrid": 0.5072500705718994
+        },
+        "confidence": 0.46245462244207214
+      },
+      "providerSwappability": {
+        "type": "choice",
+        "choice": "providerAgnosticHybrid",
+        "probabilities": {
+          "statusQuoPc": 0.01737143099308014,
+          "boatVmPerAccount": 0.005282226949930191,
+          "boatVmPacked": 0.0031727487221360207,
+          "selfManagedVps": 0.029271148145198822,
+          "cloudGpuWindowsVm": 0.003916264045983553,
+          "gpuSandbox": 0.001533106085844338,
+          "cloudBrowserVendor": 0.0017871016170829535,
+          "antidetectOnServers": 0.003236952004954219,
+          "cloudPhone": 0.002358499448746443,
+          "twoCaptchaBrowserApi": 0.0012788793537765741,
+          "twoCaptchaFingerprintApi": 0.01589815504848957,
+          "providerAgnosticHybrid": 0.9148935079574585
+        },
+        "confidence": 0.9071565541354093
+      },
+      "multiPlatform": {
+        "type": "choice",
+        "choice": "providerAgnosticHybrid",
+        "probabilities": {
+          "statusQuoPc": 0.012747223488986492,
+          "boatVmPerAccount": 0.00771143427118659,
+          "boatVmPacked": 0.0061462922021746635,
+          "selfManagedVps": 0.012160365469753742,
+          "cloudGpuWindowsVm": 0.01000182330608368,
+          "gpuSandbox": 0.0035894792526960373,
+          "cloudBrowserVendor": 0.0107961967587471,
+          "antidetectOnServers": 0.020555002614855766,
+          "cloudPhone": 0.26042667031288147,
+          "twoCaptchaBrowserApi": 0.0023746900260448456,
+          "twoCaptchaFingerprintApi": 0.0024964313488453627,
+          "providerAgnosticHybrid": 0.6509943604469299
+        },
+        "confidence": 0.6192665750330144
+      },
+      "residentialProxyEgress": {
+        "type": "choice",
+        "choice": "boatVmPerAccount",
+        "probabilities": {
+          "statusQuoPc": 0.13361364603042603,
+          "boatVmPerAccount": 0.431530237197876,
+          "boatVmPacked": 0.0256293136626482,
+          "selfManagedVps": 0.04276625066995621,
+          "cloudGpuWindowsVm": 0.026216736063361168,
+          "gpuSandbox": 0.011182617396116257,
+          "cloudBrowserVendor": 0.02685050666332245,
+          "antidetectOnServers": 0.021696416661143303,
+          "cloudPhone": 0.013672943226993084,
+          "twoCaptchaBrowserApi": 0.021170124411582947,
+          "twoCaptchaFingerprintApi": 0.02946477383375168,
+          "providerAgnosticHybrid": 0.21620644629001617
+        },
+        "confidence": 0.3798511678522284
+      },
+      "viewability": {
+        "type": "choice",
+        "choice": "boatVmPerAccount",
+        "probabilities": {
+          "statusQuoPc": 0.04262061417102814,
+          "boatVmPerAccount": 0.7021046876907349,
+          "boatVmPacked": 0.014021597802639008,
+          "selfManagedVps": 0.014237885363399982,
+          "cloudGpuWindowsVm": 0.041231270879507065,
+          "gpuSandbox": 0.006733875721693039,
+          "cloudBrowserVendor": 0.04909580573439598,
+          "antidetectOnServers": 0.014364409260451794,
+          "cloudPhone": 0.03392655774950981,
+          "twoCaptchaBrowserApi": 0.008607428520917892,
+          "twoCaptchaFingerprintApi": 0.006999425124377012,
+          "providerAgnosticHybrid": 0.06605637073516846
+        },
+        "confidence": 0.6750232956626199
+      },
+      "renderUniqueness": {
+        "type": "choice",
+        "choice": "cloudGpuWindowsVm",
+        "probabilities": {
+          "statusQuoPc": 0.039528608322143555,
+          "boatVmPerAccount": 0.024443892762064934,
+          "boatVmPacked": 0.005734255537390709,
+          "selfManagedVps": 0.010950234718620777,
+          "cloudGpuWindowsVm": 0.6930553317070007,
+          "gpuSandbox": 0.027360696345567703,
+          "cloudBrowserVendor": 0.002894268836826086,
+          "antidetectOnServers": 0.05062004551291466,
+          "cloudPhone": 0.029333313927054405,
+          "twoCaptchaBrowserApi": 0.0018902372103184462,
+          "twoCaptchaFingerprintApi": 0.002943603554740548,
+          "providerAgnosticHybrid": 0.11124537885189056
+        },
+        "confidence": 0.6651512709530917
+      },
+      "consistencyAndConsumerLikeness": {
+        "type": "choice",
+        "choice": "cloudGpuWindowsVm",
+        "probabilities": {
+          "statusQuoPc": 0.35745903849601746,
+          "boatVmPerAccount": 0.005677962210029364,
+          "boatVmPacked": 0.006632837932556868,
+          "selfManagedVps": 0.006828503217548132,
+          "cloudGpuWindowsVm": 0.365551233291626,
+          "gpuSandbox": 0.0074698710814118385,
+          "cloudBrowserVendor": 0.00279290066100657,
+          "antidetectOnServers": 0.047366220504045486,
+          "cloudPhone": 0.0393681675195694,
+          "twoCaptchaBrowserApi": 0.0020038674119859934,
+          "twoCaptchaFingerprintApi": 0.0038951709866523743,
+          "providerAgnosticHybrid": 0.15495413541793823
+        },
+        "confidence": 0.3078740726817738
+      },
+      "crossAccountIsolation": {
+        "type": "choice",
+        "choice": "boatVmPerAccount",
+        "probabilities": {
+          "statusQuoPc": 0.012963787652552128,
+          "boatVmPerAccount": 0.6524672508239746,
+          "boatVmPacked": 0.010900146327912807,
+          "selfManagedVps": 0.01721210405230522,
+          "cloudGpuWindowsVm": 0.10405293107032776,
+          "gpuSandbox": 0.00635165348649025,
+          "cloudBrowserVendor": 0.0045208921656012535,
+          "antidetectOnServers": 0.016118254512548447,
+          "cloudPhone": 0.019810141995549202,
+          "twoCaptchaBrowserApi": 0.001978164305910468,
+          "twoCaptchaFingerprintApi": 0.0027353549376130104,
+          "providerAgnosticHybrid": 0.1508893221616745
+        },
+        "confidence": 0.620873364535245
+      },
+      "detectionTestability": {
+        "type": "choice",
+        "choice": "providerAgnosticHybrid",
+        "probabilities": {
+          "statusQuoPc": 0.4075475335121155,
+          "boatVmPerAccount": 0.05968904495239258,
+          "boatVmPacked": 0.007207660004496574,
+          "selfManagedVps": 0.04971251264214516,
+          "cloudGpuWindowsVm": 0.026401184499263763,
+          "gpuSandbox": 0.003105091629549861,
+          "cloudBrowserVendor": 0.002873756689950824,
+          "antidetectOnServers": 0.005778431426733732,
+          "cloudPhone": 0.0031481957994401455,
+          "twoCaptchaBrowserApi": 0.0017493180930614471,
+          "twoCaptchaFingerprintApi": 0.0057255784049630165,
+          "providerAgnosticHybrid": 0.4270617365837097
+        },
+        "confidence": 0.3749764399095015
+      },
+      "fitWithLogCli": {
+        "type": "choice",
+        "choice": "statusQuoPc",
+        "probabilities": {
+          "statusQuoPc": 0.7223396897315979,
+          "boatVmPerAccount": 0.0199380274862051,
+          "boatVmPacked": 0.008155299350619316,
+          "selfManagedVps": 0.022147946059703827,
+          "cloudGpuWindowsVm": 0.009872007183730602,
+          "gpuSandbox": 0.0013005430810153484,
+          "cloudBrowserVendor": 0.0013834243873134255,
+          "antidetectOnServers": 0.0031619644723832607,
+          "cloudPhone": 0.0023838505148887634,
+          "twoCaptchaBrowserApi": 0.001213566167280078,
+          "twoCaptchaFingerprintApi": 0.01260418351739645,
+          "providerAgnosticHybrid": 0.19549959897994995
+        },
+        "confidence": 0.6970978433435613
+      },
+      "operationalBurden": {
+        "type": "choice",
+        "choice": "cloudBrowserVendor",
+        "probabilities": {
+          "statusQuoPc": 0.08105193823575974,
+          "boatVmPerAccount": 0.11307886987924576,
+          "boatVmPacked": 0.04812534153461456,
+          "selfManagedVps": 0.015885483473539352,
+          "cloudGpuWindowsVm": 0.011365843005478382,
+          "gpuSandbox": 0.01001387182623148,
+          "cloudBrowserVendor": 0.5266613364219666,
+          "antidetectOnServers": 0.03400139510631561,
+          "cloudPhone": 0.013051598332822323,
+          "twoCaptchaBrowserApi": 0.012626046314835548,
+          "twoCaptchaFingerprintApi": 0.013145373202860355,
+          "providerAgnosticHybrid": 0.12099286168813705
+        },
+        "confidence": 0.48363054882396356
+      },
+      "evidenceQuality": {
+        "type": "choice",
+        "choice": "statusQuoPc",
+        "probabilities": {
+          "statusQuoPc": 0.856580376625061,
+          "boatVmPerAccount": 0.006843192502856255,
+          "boatVmPacked": 0.0043469322845339775,
+          "selfManagedVps": 0.03263001888990402,
+          "cloudGpuWindowsVm": 0.011477526277303696,
+          "gpuSandbox": 0.0029498718213289976,
+          "cloudBrowserVendor": 0.0022221170365810394,
+          "antidetectOnServers": 0.021922307088971138,
+          "cloudPhone": 0.0033784988336265087,
+          "twoCaptchaBrowserApi": 0.0020547674503177404,
+          "twoCaptchaFingerprintApi": 0.005520317237824202,
+          "providerAgnosticHybrid": 0.050074294209480286
+        },
+        "confidence": 0.8435422290455211
+      },
+      "dataCustody": {
+        "type": "choice",
+        "choice": "statusQuoPc",
+        "probabilities": {
+          "statusQuoPc": 0.665201723575592,
+          "boatVmPerAccount": 0.03192109242081642,
+          "boatVmPacked": 0.010423983447253704,
+          "selfManagedVps": 0.20452746748924255,
+          "cloudGpuWindowsVm": 0.0107368603348732,
+          "gpuSandbox": 0.002861872548237443,
+          "cloudBrowserVendor": 0.0021146326325833797,
+          "antidetectOnServers": 0.007488170173019171,
+          "cloudPhone": 0.0038012710865586996,
+          "twoCaptchaBrowserApi": 0.0022361548617482185,
+          "twoCaptchaFingerprintApi": 0.02813888154923916,
+          "providerAgnosticHybrid": 0.030547931790351868
+        },
+        "confidence": 0.6347655166279186
+      }
+    }
+  ],
+  "passB": {
+    "statusQuoPc": [
+      {
+        "noPhysicalPresence": {
+          "type": "score",
+          "score": 3.4737296272069216,
+          "legend": {
+            "0": "Needs hardware on site",
+            "1": "Mostly needs hardware",
+            "2": "Some physical steps",
+            "3": "Almost none",
+            "4": "Fully remote"
+          },
+          "probabilities": {
+            "0": 0.0303595382720232,
+            "1": 0.02417527325451374,
+            "2": 0.04979170113801956,
+            "3": 0.23272304236888885,
+            "4": 0.6629504561424255
+          },
+          "confidence": 0.561441318752865
+        },
+        "costAtScale": {
+          "type": "score",
+          "score": 3.232735265046358,
+          "legend": {
+            "0": "Over $30",
+            "1": "$10-30",
+            "2": "$3-10",
+            "3": "$1-3",
+            "4": "Under $1"
+          },
+          "probabilities": {
+            "0": 0.06112368777394295,
+            "1": 0.04429434612393379,
+            "2": 0.09130910038948059,
+            "3": 0.20726841688156128,
+            "4": 0.5960043668746948
+          },
+          "confidence": 0.3606129940599203
+        },
+        "reliability": {
+          "type": "score",
+          "score": 2.7150948233902454,
+          "legend": {
+            "0": "Unreliable",
+            "1": "Often breaks",
+            "2": "Workable",
+            "3": "Reliable",
+            "4": "Very reliable"
+          },
+          "probabilities": {
+            "0": 0.018668795004487038,
+            "1": 0.03663768246769905,
+            "2": 0.28392401337623596,
+            "3": 0.5324687361717224,
+            "4": 0.1283007264137268
+          },
+          "confidence": 0.548744591884315
+        },
+        "scalability": {
+          "type": "score",
+          "score": 0.23007623851299286,
+          "legend": {
+            "0": "Breaks early",
+            "1": "Painful",
+            "2": "Workable",
+            "3": "Easy",
+            "4": "Trivial"
+          },
+          "probabilities": {
+            "0": 0.8380879759788513,
+            "1": 0.1196109801530838,
+            "2": 0.024895653128623962,
+            "3": 0.008947208523750305,
+            "4": 0.008458081632852554
+          },
+          "confidence": 0.8082698012391726
+        },
+        "providerSwappability": {
+          "type": "score",
+          "score": 3.016812663525343,
+          "legend": {
+            "0": "Locked in",
+            "1": "Hard to leave",
+            "2": "Some lock-in",
+            "3": "Easy to leave",
+            "4": "No lock-in"
+          },
+          "probabilities": {
+            "0": 0.026678860187530518,
+            "1": 0.04549255594611168,
+            "2": 0.12071680277585983,
+            "3": 0.4985605776309967,
+            "4": 0.30855119228363037
+          },
+          "confidence": 0.49975859373807907
+        },
+        "multiPlatform": {
+          "type": "score",
+          "score": 1.6416285932064056,
+          "legend": {
+            "0": "Facebook web only",
+            "1": "Narrow",
+            "2": "Some platforms",
+            "3": "Most platforms",
+            "4": "Any platform"
+          },
+          "probabilities": {
+            "0": 0.05924200266599655,
+            "1": 0.3511296510696411,
+            "2": 0.5009981393814087,
+            "3": 0.06601810455322266,
+            "4": 0.022612087428569794
+          },
+          "confidence": 0.5159533868233362
+        },
+        "residentialProxyEgress": {
+          "type": "score",
+          "score": 3.407988518476486,
+          "legend": {
+            "0": "Not possible",
+            "1": "Leaky",
+            "2": "Possible with work",
+            "3": "Clean",
+            "4": "Clean and enforced"
+          },
+          "probabilities": {
+            "0": 0.011416510678827763,
+            "1": 0.047055959701538086,
+            "2": 0.09597162902355194,
+            "3": 0.2132343053817749,
+            "4": 0.6323215961456299
+          },
+          "confidence": 0.5066570956259966
+        },
+        "viewability": {
+          "type": "score",
+          "score": 3.5312025155872107,
+          "legend": {
+            "0": "No view",
+            "1": "Logs only",
+            "2": "Screenshots",
+            "3": "Live view",
+            "4": "Live view and takeover"
+          },
+          "probabilities": {
+            "0": 0.03150426968932152,
+            "1": 0.01868605427443981,
+            "2": 0.037484634667634964,
+            "3": 0.2117529660463333,
+            "4": 0.7005720734596252
+          },
+          "confidence": 0.609335435864826
+        },
+        "renderUniqueness": {
+          "type": "score",
+          "score": 0.3736413475126028,
+          "legend": {
+            "0": "Shared by all",
+            "1": "Mostly shared",
+            "2": "Partly distinct",
+            "3": "Distinct but artificial",
+            "4": "Genuinely distinct"
+          },
+          "probabilities": {
+            "0": 0.7125476598739624,
+            "1": 0.2376125156879425,
+            "2": 0.026233205571770668,
+            "3": 0.010863976553082466,
+            "4": 0.012742622755467892
+          },
+          "confidence": 0.6886322104061643
+        },
+        "consistencyAndConsumerLikeness": {
+          "type": "score",
+          "score": 2.1923728585243225,
+          "legend": {
+            "0": "Obvious VM/lies",
+            "1": "Several tells",
+            "2": "Some tells",
+            "3": "Minor tells",
+            "4": "Consumer-like and consistent"
+          },
+          "probabilities": {
+            "0": 0.03300770744681358,
+            "1": 0.1057438999414444,
+            "2": 0.5576142072677612,
+            "3": 0.24313640594482422,
+            "4": 0.06049783155322075
+          },
+          "confidence": 0.5534238467613856
+        },
+        "crossAccountIsolation": {
+          "type": "score",
+          "score": 1.2107606902718544,
+          "legend": {
+            "0": "All linked",
+            "1": "Mostly linked",
+            "2": "Partly isolated",
+            "3": "Well isolated",
+            "4": "Fully isolated"
+          },
+          "probabilities": {
+            "0": 0.11297383904457092,
+            "1": 0.6202667951583862,
+            "2": 0.22255174815654755,
+            "3": 0.03144010901451111,
+            "4": 0.012767517939209938
+          },
+          "confidence": 0.6360763674601912
+        },
+        "detectionTestability": {
+          "type": "score",
+          "score": 3.611497275531292,
+          "legend": {
+            "0": "Cannot test",
+            "1": "Hard",
+            "2": "Partly",
+            "3": "Mostly",
+            "4": "Fully"
+          },
+          "probabilities": {
+            "0": 0.008147381246089935,
+            "1": 0.014655724167823792,
+            "2": 0.03405754640698433,
+            "3": 0.24383080005645752,
+            "4": 0.6993085145950317
+          },
+          "confidence": 0.6762478413681189
+        },
+        "fitWithLogCli": {
+          "type": "score",
+          "score": 3.8729359041899443,
+          "legend": {
+            "0": "Throws it away",
+            "1": "Major rewrite",
+            "2": "Moderate changes",
+            "3": "Small changes",
+            "4": "Drop-in"
+          },
+          "probabilities": {
+            "0": 0.00505074393004179,
+            "1": 0.005160553380846977,
+            "2": 0.0166186410933733,
+            "3": 0.058142054826021194,
+            "4": 0.9150279760360718
+          },
+          "confidence": 0.8941133559371034
+        },
+        "operationalBurden": {
+          "type": "score",
+          "score": 2.220237359404564,
+          "legend": {
+            "0": "Constant",
+            "1": "Frequent",
+            "2": "Some",
+            "3": "Little",
+            "4": "Runs itself"
+          },
+          "probabilities": {
+            "0": 0.099500872194767,
+            "1": 0.12097038328647614,
+            "2": 0.324479341506958,
+            "3": 0.36988914012908936,
+            "4": 0.08516021817922592
+          },
+          "confidence": 0.2082642142971356
+        },
+        "evidenceQuality": {
+          "type": "score",
+          "score": 2.910163564607501,
+          "legend": {
+            "0": "Only marketing",
+            "1": "Mostly marketing",
+            "2": "Mixed",
+            "3": "Some independent tests",
+            "4": "Strong evidence"
+          },
+          "probabilities": {
+            "0": 0.013041980564594269,
+            "1": 0.025041235610842705,
+            "2": 0.1562659591436386,
+            "3": 0.6500125527381897,
+            "4": 0.155638188123703
+          },
+          "confidence": 0.6657395331809918
+        },
+        "dataCustody": {
+          "type": "score",
+          "score": 3.5174271292053163,
+          "legend": {
+            "0": "Third party holds all",
+            "1": "Mostly third party",
+            "2": "Shared",
+            "3": "Mostly ours",
+            "4": "Fully ours"
+          },
+          "probabilities": {
+            "0": 0.0038160255644470453,
+            "1": 0.004667041357606649,
+            "2": 0.028048433363437653,
+            "3": 0.39721086621284485,
+            "4": 0.566257655620575
+          },
+          "confidence": 0.5978558672747264
+        }
+      }
+    ],
+    "boatVmPerAccount": [
+      {
+        "noPhysicalPresence": {
+          "type": "score",
+          "score": 3.900579411536455,
+          "legend": {
+            "0": "Needs hardware on site",
+            "1": "Mostly needs hardware",
+            "2": "Some physical steps",
+            "3": "Almost none",
+            "4": "Fully remote"
+          },
+          "probabilities": {
+            "0": 0.005903368815779686,
+            "1": 0.003993939608335495,
+            "2": 0.007633766159415245,
+            "3": 0.048557866364717484,
+            "4": 0.9339110851287842
+          },
+          "confidence": 0.9171494226902723
+        },
+        "costAtScale": {
+          "type": "score",
+          "score": 2.885546125471592,
+          "legend": {
+            "0": "Over $30",
+            "1": "$10-30",
+            "2": "$3-10",
+            "3": "$1-3",
+            "4": "Under $1"
+          },
+          "probabilities": {
+            "0": 0.009017439559102058,
+            "1": 0.0327887162566185,
+            "2": 0.09316446632146835,
+            "3": 0.7936890721321106,
+            "4": 0.07134031504392624
+          },
+          "confidence": 0.7857212228700519
+        },
+        "reliability": {
+          "type": "score",
+          "score": 2.587400084361434,
+          "legend": {
+            "0": "Unreliable",
+            "1": "Often breaks",
+            "2": "Workable",
+            "3": "Reliable",
+            "4": "Very reliable"
+          },
+          "probabilities": {
+            "0": 0.015276921913027763,
+            "1": 0.02438483200967312,
+            "2": 0.36798638105392456,
+            "3": 0.5423651933670044,
+            "4": 0.04998672753572464
+          },
+          "confidence": 0.5728553847099344
+        },
+        "scalability": {
+          "type": "score",
+          "score": 2.315713234245777,
+          "legend": {
+            "0": "Breaks early",
+            "1": "Painful",
+            "2": "Workable",
+            "3": "Easy",
+            "4": "Trivial"
+          },
+          "probabilities": {
+            "0": 0.032747719436883926,
+            "1": 0.06180175393819809,
+            "2": 0.5143311619758606,
+            "3": 0.3392283320426941,
+            "4": 0.05189104005694389
+          },
+          "confidence": 0.5247436625262101
+        },
+        "providerSwappability": {
+          "type": "score",
+          "score": 2.6443635374307632,
+          "legend": {
+            "0": "Locked in",
+            "1": "Hard to leave",
+            "2": "Some lock-in",
+            "3": "Easy to leave",
+            "4": "No lock-in"
+          },
+          "probabilities": {
+            "0": 0.014068527147173882,
+            "1": 0.02477450668811798,
+            "2": 0.3723297715187073,
+            "3": 0.48037928342819214,
+            "4": 0.10844790935516357
+          },
+          "confidence": 0.5228897702569762
+        },
+        "multiPlatform": {
+          "type": "score",
+          "score": 1.953506551682949,
+          "legend": {
+            "0": "Facebook web only",
+            "1": "Narrow",
+            "2": "Some platforms",
+            "3": "Most platforms",
+            "4": "Any platform"
+          },
+          "probabilities": {
+            "0": 0.04533131793141365,
+            "1": 0.1682552993297577,
+            "2": 0.604641854763031,
+            "3": 0.1511189490556717,
+            "4": 0.030652673915028572
+          },
+          "confidence": 0.6072148066014051
+        },
+        "residentialProxyEgress": {
+          "type": "score",
+          "score": 2.4159366339445114,
+          "legend": {
+            "0": "Not possible",
+            "1": "Leaky",
+            "2": "Possible with work",
+            "3": "Clean",
+            "4": "Clean and enforced"
+          },
+          "probabilities": {
+            "0": 0.011530903168022633,
+            "1": 0.029955759644508362,
+            "2": 0.5978646874427795,
+            "3": 0.25234341621398926,
+            "4": 0.10830531269311905
+          },
+          "confidence": 0.5650236603493491
+        },
+        "viewability": {
+          "type": "score",
+          "score": 3.764845727244392,
+          "legend": {
+            "0": "No view",
+            "1": "Logs only",
+            "2": "Screenshots",
+            "3": "Live view",
+            "4": "Live view and takeover"
+          },
+          "probabilities": {
+            "0": 0.002746514743193984,
+            "1": 0.0035057507921010256,
+            "2": 0.006685271393507719,
+            "3": 0.20028044283390045,
+            "4": 0.7867820262908936
+          },
+          "confidence": 0.8040380858583376
+        },
+        "renderUniqueness": {
+          "type": "score",
+          "score": 1.122550405561924,
+          "legend": {
+            "0": "Shared by all",
+            "1": "Mostly shared",
+            "2": "Partly distinct",
+            "3": "Distinct but artificial",
+            "4": "Genuinely distinct"
+          },
+          "probabilities": {
+            "0": 0.18902453780174255,
+            "1": 0.597510576248169,
+            "2": 0.12720631062984467,
+            "3": 0.07440704107284546,
+            "4": 0.011851521208882332
+          },
+          "confidence": 0.5828337548300624
+        },
+        "consistencyAndConsumerLikeness": {
+          "type": "score",
+          "score": 0.6434210725128651,
+          "legend": {
+            "0": "Obvious VM/lies",
+            "1": "Several tells",
+            "2": "Some tells",
+            "3": "Minor tells",
+            "4": "Consumer-like and consistent"
+          },
+          "probabilities": {
+            "0": 0.5273585319519043,
+            "1": 0.3379046320915222,
+            "2": 0.10502715408802032,
+            "3": 0.02337680011987686,
+            "4": 0.006332932971417904
+          },
+          "confidence": 0.4638157729059458
+        },
+        "crossAccountIsolation": {
+          "type": "score",
+          "score": 2.421612737700343,
+          "legend": {
+            "0": "All linked",
+            "1": "Mostly linked",
+            "2": "Partly isolated",
+            "3": "Well isolated",
+            "4": "Fully isolated"
+          },
+          "probabilities": {
+            "0": 0.01156974770128727,
+            "1": 0.022293297573924065,
+            "2": 0.5359103679656982,
+            "3": 0.39340779185295105,
+            "4": 0.03681883215904236
+          },
+          "confidence": 0.5729347923770547
+        },
+        "detectionTestability": {
+          "type": "score",
+          "score": 2.867327556014061,
+          "legend": {
+            "0": "Cannot test",
+            "1": "Hard",
+            "2": "Partly",
+            "3": "Mostly",
+            "4": "Fully"
+          },
+          "probabilities": {
+            "0": 0.014276997186243534,
+            "1": 0.03654395043849945,
+            "2": 0.2018517553806305,
+            "3": 0.5622290968894958,
+            "4": 0.18509820103645325
+          },
+          "confidence": 0.5809426259559889
+        },
+        "fitWithLogCli": {
+          "type": "score",
+          "score": 2.6756142862141132,
+          "legend": {
+            "0": "Throws it away",
+            "1": "Major rewrite",
+            "2": "Moderate changes",
+            "3": "Small changes",
+            "4": "Drop-in"
+          },
+          "probabilities": {
+            "0": 0.010028840973973274,
+            "1": 0.015339363366365433,
+            "2": 0.3423389494419098,
+            "3": 0.5535743236541748,
+            "4": 0.07871851325035095
+          },
+          "confidence": 0.5984810730442405
+        },
+        "operationalBurden": {
+          "type": "score",
+          "score": 2.6346993055194616,
+          "legend": {
+            "0": "Constant",
+            "1": "Frequent",
+            "2": "Some",
+            "3": "Little",
+            "4": "Runs itself"
+          },
+          "probabilities": {
+            "0": 0.01184858102351427,
+            "1": 0.028106650337576866,
+            "2": 0.32360848784446716,
+            "3": 0.5863694548606873,
+            "4": 0.05006682872772217
+          },
+          "confidence": 0.6121380330684284
+        },
+        "evidenceQuality": {
+          "type": "score",
+          "score": 1.1379885897040367,
+          "legend": {
+            "0": "Only marketing",
+            "1": "Mostly marketing",
+            "2": "Mixed",
+            "3": "Some independent tests",
+            "4": "Strong evidence"
+          },
+          "probabilities": {
+            "0": 0.20430061221122742,
+            "1": 0.5612625479698181,
+            "2": 0.1462118923664093,
+            "3": 0.06859744340181351,
+            "4": 0.019627481698989868
+          },
+          "confidence": 0.5445084696014721
+        },
+        "dataCustody": {
+          "type": "score",
+          "score": 2.8993735276162624,
+          "legend": {
+            "0": "Third party holds all",
+            "1": "Mostly third party",
+            "2": "Shared",
+            "3": "Mostly ours",
+            "4": "Fully ours"
+          },
+          "probabilities": {
+            "0": 0.007752868812531233,
+            "1": 0.02303216978907585,
+            "2": 0.0991825982928276,
+            "3": 0.8021529912948608,
+            "4": 0.06787929683923721
+          },
+          "confidence": 0.8030126323768247
+        }
+      }
+    ],
+    "boatVmPacked": [
+      {
+        "noPhysicalPresence": {
+          "type": "score",
+          "score": 3.914304035482928,
+          "legend": {
+            "0": "Needs hardware on site",
+            "1": "Mostly needs hardware",
+            "2": "Some physical steps",
+            "3": "Almost none",
+            "4": "Fully remote"
+          },
+          "probabilities": {
+            "0": 0.005112797021865845,
+            "1": 0.003223509294912219,
+            "2": 0.006797985173761845,
+            "3": 0.04197828471660614,
+            "4": 0.9428874254226685
+          },
+          "confidence": 0.9285866908030584
+        },
+        "costAtScale": {
+          "type": "score",
+          "score": 3.2155519034713507,
+          "legend": {
+            "0": "Over $30",
+            "1": "$10-30",
+            "2": "$3-10",
+            "3": "$1-3",
+            "4": "Under $1"
+          },
+          "probabilities": {
+            "0": 0.007503563538193703,
+            "1": 0.012866174802184105,
+            "2": 0.06686029583215714,
+            "3": 0.5821148753166199,
+            "4": 0.33065512776374817
+          },
+          "confidence": 0.6285346134876211
+        },
+        "reliability": {
+          "type": "score",
+          "score": 2.2547939978539944,
+          "legend": {
+            "0": "Unreliable",
+            "1": "Often breaks",
+            "2": "Workable",
+            "3": "Reliable",
+            "4": "Very reliable"
+          },
+          "probabilities": {
+            "0": 0.02105172537267208,
+            "1": 0.04779742285609245,
+            "2": 0.6249504685401917,
+            "3": 0.2677059769630432,
+            "4": 0.038494426757097244
+          },
+          "confidence": 0.6378369132677714
+        },
+        "scalability": {
+          "type": "score",
+          "score": 1.9843540787696838,
+          "legend": {
+            "0": "Breaks early",
+            "1": "Painful",
+            "2": "Workable",
+            "3": "Easy",
+            "4": "Trivial"
+          },
+          "probabilities": {
+            "0": 0.08358370512723923,
+            "1": 0.14377957582473755,
+            "2": 0.5363192558288574,
+            "3": 0.17733392119407654,
+            "4": 0.05898355692625046
+          },
+          "confidence": 0.4947933157285054
+        },
+        "providerSwappability": {
+          "type": "score",
+          "score": 2.4657896235585213,
+          "legend": {
+            "0": "Locked in",
+            "1": "Hard to leave",
+            "2": "Some lock-in",
+            "3": "Easy to leave",
+            "4": "No lock-in"
+          },
+          "probabilities": {
+            "0": 0.015889786183834076,
+            "1": 0.03705693036317825,
+            "2": 0.5118542909622192,
+            "3": 0.3357715606689453,
+            "4": 0.09942735731601715
+          },
+          "confidence": 0.49711435164014495
+        },
+        "multiPlatform": {
+          "type": "score",
+          "score": 1.8682338297367096,
+          "legend": {
+            "0": "Facebook web only",
+            "1": "Narrow",
+            "2": "Some platforms",
+            "3": "Most platforms",
+            "4": "Any platform"
+          },
+          "probabilities": {
+            "0": 0.053951628506183624,
+            "1": 0.24007436633110046,
+            "2": 0.528549313545227,
+            "3": 0.1386379599571228,
+            "4": 0.038786739110946655
+          },
+          "confidence": 0.5298424487312634
+        },
+        "residentialProxyEgress": {
+          "type": "score",
+          "score": 2.282704386860132,
+          "legend": {
+            "0": "Not possible",
+            "1": "Leaky",
+            "2": "Possible with work",
+            "3": "Clean",
+            "4": "Clean and enforced"
+          },
+          "probabilities": {
+            "0": 0.015354383736848831,
+            "1": 0.049890074878931046,
+            "2": 0.6602044105529785,
+            "3": 0.18579915165901184,
+            "4": 0.08875200897455215
+          },
+          "confidence": 0.6300816566993792
+        },
+        "viewability": {
+          "type": "score",
+          "score": 3.409290863201022,
+          "legend": {
+            "0": "No view",
+            "1": "Logs only",
+            "2": "Screenshots",
+            "3": "Live view",
+            "4": "Live view and takeover"
+          },
+          "probabilities": {
+            "0": 0.005027198698371649,
+            "1": 0.007635967805981636,
+            "2": 0.020115314051508904,
+            "3": 0.5074616074562073,
+            "4": 0.4597598612308502
+          },
+          "confidence": 0.5748094108421355
+        },
+        "renderUniqueness": {
+          "type": "score",
+          "score": 0.3957751300185919,
+          "legend": {
+            "0": "Shared by all",
+            "1": "Mostly shared",
+            "2": "Partly distinct",
+            "3": "Distinct but artificial",
+            "4": "Genuinely distinct"
+          },
+          "probabilities": {
+            "0": 0.6887435913085938,
+            "1": 0.2572741210460663,
+            "2": 0.030851688235998154,
+            "3": 0.01572475954890251,
+            "4": 0.007405838463455439
+          },
+          "confidence": 0.6701873916511734
+        },
+        "consistencyAndConsumerLikeness": {
+          "type": "score",
+          "score": 0.5525231659412384,
+          "legend": {
+            "0": "Obvious VM/lies",
+            "1": "Several tells",
+            "2": "Some tells",
+            "3": "Minor tells",
+            "4": "Consumer-like and consistent"
+          },
+          "probabilities": {
+            "0": 0.6066655516624451,
+            "1": 0.2753811180591583,
+            "2": 0.0859748125076294,
+            "3": 0.02272171527147293,
+            "4": 0.009256819263100624
+          },
+          "confidence": 0.5395640283823013
+        },
+        "crossAccountIsolation": {
+          "type": "score",
+          "score": 1.9111671186983585,
+          "legend": {
+            "0": "All linked",
+            "1": "Mostly linked",
+            "2": "Partly isolated",
+            "3": "Well isolated",
+            "4": "Fully isolated"
+          },
+          "probabilities": {
+            "0": 0.03286231309175491,
+            "1": 0.1236569732427597,
+            "2": 0.7626939415931702,
+            "3": 0.061025138944387436,
+            "4": 0.019761711359024048
+          },
+          "confidence": 0.758391532426079
+        },
+        "detectionTestability": {
+          "type": "score",
+          "score": 2.4746578112244606,
+          "legend": {
+            "0": "Cannot test",
+            "1": "Hard",
+            "2": "Partly",
+            "3": "Mostly",
+            "4": "Fully"
+          },
+          "probabilities": {
+            "0": 0.01753108948469162,
+            "1": 0.05291099101305008,
+            "2": 0.46928003430366516,
+            "3": 0.35792475938796997,
+            "4": 0.10235311836004257
+          },
+          "confidence": 0.4578298615912596
+        },
+        "fitWithLogCli": {
+          "type": "score",
+          "score": 2.6759087555110455,
+          "legend": {
+            "0": "Throws it away",
+            "1": "Major rewrite",
+            "2": "Moderate changes",
+            "3": "Small changes",
+            "4": "Drop-in"
+          },
+          "probabilities": {
+            "0": 0.012083224020898342,
+            "1": 0.016196440905332565,
+            "2": 0.3391305208206177,
+            "3": 0.5489078164100647,
+            "4": 0.08368195593357086
+          },
+          "confidence": 0.5904541411437094
+        },
+        "operationalBurden": {
+          "type": "score",
+          "score": 2.3454693630337715,
+          "legend": {
+            "0": "Constant",
+            "1": "Frequent",
+            "2": "Some",
+            "3": "Little",
+            "4": "Runs itself"
+          },
+          "probabilities": {
+            "0": 0.025793487206101418,
+            "1": 0.07324659079313278,
+            "2": 0.47675949335098267,
+            "3": 0.37809818983078003,
+            "4": 0.04610230401158333
+          },
+          "confidence": 0.5040530307839314
+        },
+        "evidenceQuality": {
+          "type": "score",
+          "score": 1.1108353734016418,
+          "legend": {
+            "0": "Only marketing",
+            "1": "Mostly marketing",
+            "2": "Mixed",
+            "3": "Some independent tests",
+            "4": "Strong evidence"
+          },
+          "probabilities": {
+            "0": 0.1802046000957489,
+            "1": 0.6208595037460327,
+            "2": 0.12525731325149536,
+            "3": 0.05525291711091995,
+            "4": 0.018425622954964638
+          },
+          "confidence": 0.6072961529716849
+        },
+        "dataCustody": {
+          "type": "score",
+          "score": 2.783080108463764,
+          "legend": {
+            "0": "Third party holds all",
+            "1": "Mostly third party",
+            "2": "Shared",
+            "3": "Mostly ours",
+            "4": "Fully ours"
+          },
+          "probabilities": {
+            "0": 0.010691945441067219,
+            "1": 0.04212067276239395,
+            "2": 0.16340090334415436,
+            "3": 0.7209881544113159,
+            "4": 0.06279829144477844
+          },
+          "confidence": 0.714569686135898
+        }
+      }
+    ],
+    "selfManagedVps": [
+      {
+        "noPhysicalPresence": {
+          "type": "score",
+          "score": 3.863507758360356,
+          "legend": {
+            "0": "Needs hardware on site",
+            "1": "Mostly needs hardware",
+            "2": "Some physical steps",
+            "3": "Almost none",
+            "4": "Fully remote"
+          },
+          "probabilities": {
+            "0": 0.005990228615701199,
+            "1": 0.004952486138790846,
+            "2": 0.015113472938537598,
+            "3": 0.06744717061519623,
+            "4": 0.9064967036247253
+          },
+          "confidence": 0.886256258857126
+        },
+        "costAtScale": {
+          "type": "score",
+          "score": 2.83849098905921,
+          "legend": {
+            "0": "Over $30",
+            "1": "$10-30",
+            "2": "$3-10",
+            "3": "$1-3",
+            "4": "Under $1"
+          },
+          "probabilities": {
+            "0": 0.009485196322202682,
+            "1": 0.02239811047911644,
+            "2": 0.21155335009098053,
+            "3": 0.6332674026489258,
+            "4": 0.12329599261283875
+          },
+          "confidence": 0.6599157061427832
+        },
+        "reliability": {
+          "type": "score",
+          "score": 2.1865913346409798,
+          "legend": {
+            "0": "Unreliable",
+            "1": "Often breaks",
+            "2": "Workable",
+            "3": "Reliable",
+            "4": "Very reliable"
+          },
+          "probabilities": {
+            "0": 0.024187957867980003,
+            "1": 0.07537182420492172,
+            "2": 0.6198241114616394,
+            "3": 0.25089317560195923,
+            "4": 0.029722940176725388
+          },
+          "confidence": 0.6382610034197569
+        },
+        "scalability": {
+          "type": "score",
+          "score": 1.9370722696185112,
+          "legend": {
+            "0": "Breaks early",
+            "1": "Painful",
+            "2": "Workable",
+            "3": "Easy",
+            "4": "Trivial"
+          },
+          "probabilities": {
+            "0": 0.044488124549388885,
+            "1": 0.14681535959243774,
+            "2": 0.6666975021362305,
+            "3": 0.11113405972719193,
+            "4": 0.030864931643009186
+          },
+          "confidence": 0.6594537235796452
+        },
+        "providerSwappability": {
+          "type": "score",
+          "score": 3.166976071894169,
+          "legend": {
+            "0": "Locked in",
+            "1": "Hard to leave",
+            "2": "Some lock-in",
+            "3": "Easy to leave",
+            "4": "No lock-in"
+          },
+          "probabilities": {
+            "0": 0.012945782393217087,
+            "1": 0.0263010635972023,
+            "2": 0.14270439743995667,
+            "3": 0.41692864894866943,
+            "4": 0.40112006664276123
+          },
+          "confidence": 0.4706133846193552
+        },
+        "multiPlatform": {
+          "type": "score",
+          "score": 2.141192205250263,
+          "legend": {
+            "0": "Facebook web only",
+            "1": "Narrow",
+            "2": "Some platforms",
+            "3": "Most platforms",
+            "4": "Any platform"
+          },
+          "probabilities": {
+            "0": 0.02944052591919899,
+            "1": 0.08554957062005997,
+            "2": 0.6427327394485474,
+            "3": 0.1989314705133438,
+            "4": 0.04334568604826927
+          },
+          "confidence": 0.6416221124430497
+        },
+        "residentialProxyEgress": {
+          "type": "score",
+          "score": 2.506434865295887,
+          "legend": {
+            "0": "Not possible",
+            "1": "Leaky",
+            "2": "Possible with work",
+            "3": "Clean",
+            "4": "Clean and enforced"
+          },
+          "probabilities": {
+            "0": 0.008204398676753044,
+            "1": 0.025139816105365753,
+            "2": 0.5748453736305237,
+            "3": 0.23563724756240845,
+            "4": 0.15617313981056213
+          },
+          "confidence": 0.5087232161313295
+        },
+        "viewability": {
+          "type": "score",
+          "score": 3.57119247270748,
+          "legend": {
+            "0": "No view",
+            "1": "Logs only",
+            "2": "Screenshots",
+            "3": "Live view",
+            "4": "Live view and takeover"
+          },
+          "probabilities": {
+            "0": 0.0050236559472978115,
+            "1": 0.006610754411667585,
+            "2": 0.012935800477862358,
+            "3": 0.363008975982666,
+            "4": 0.6124207973480225
+          },
+          "confidence": 0.642660446697846
+        },
+        "renderUniqueness": {
+          "type": "score",
+          "score": 1.2041699290275574,
+          "legend": {
+            "0": "Shared by all",
+            "1": "Mostly shared",
+            "2": "Partly distinct",
+            "3": "Distinct but artificial",
+            "4": "Genuinely distinct"
+          },
+          "probabilities": {
+            "0": 0.20073795318603516,
+            "1": 0.527754008769989,
+            "2": 0.16615229845046997,
+            "3": 0.07731148600578308,
+            "4": 0.028044216334819794
+          },
+          "confidence": 0.49529510612289107
+        },
+        "consistencyAndConsumerLikeness": {
+          "type": "score",
+          "score": 1.311922736465931,
+          "legend": {
+            "0": "Obvious VM/lies",
+            "1": "Several tells",
+            "2": "Some tells",
+            "3": "Minor tells",
+            "4": "Consumer-like and consistent"
+          },
+          "probabilities": {
+            "0": 0.16397345066070557,
+            "1": 0.4435608685016632,
+            "2": 0.32379332184791565,
+            "3": 0.05391436442732811,
+            "4": 0.014758032746613026
+          },
+          "confidence": 0.46677533366406954
+        },
+        "crossAccountIsolation": {
+          "type": "score",
+          "score": 2.1374290511012077,
+          "legend": {
+            "0": "All linked",
+            "1": "Mostly linked",
+            "2": "Partly isolated",
+            "3": "Well isolated",
+            "4": "Fully isolated"
+          },
+          "probabilities": {
+            "0": 0.019141677767038345,
+            "1": 0.04671657830476761,
+            "2": 0.7373085021972656,
+            "3": 0.17123743891716003,
+            "4": 0.025595787912607193
+          },
+          "confidence": 0.743809209515651
+        },
+        "detectionTestability": {
+          "type": "score",
+          "score": 3.1118724830448627,
+          "legend": {
+            "0": "Cannot test",
+            "1": "Hard",
+            "2": "Partly",
+            "3": "Mostly",
+            "4": "Fully"
+          },
+          "probabilities": {
+            "0": 0.00799088180065155,
+            "1": 0.024021539837121964,
+            "2": 0.10501006990671158,
+            "3": 0.5740793347358704,
+            "4": 0.28889819979667664
+          },
+          "confidence": 0.6117300043503443
+        },
+        "fitWithLogCli": {
+          "type": "score",
+          "score": 2.927472469396889,
+          "legend": {
+            "0": "Throws it away",
+            "1": "Major rewrite",
+            "2": "Moderate changes",
+            "3": "Small changes",
+            "4": "Drop-in"
+          },
+          "probabilities": {
+            "0": 0.01004703901708126,
+            "1": 0.013158497400581837,
+            "2": 0.19737982749938965,
+            "3": 0.5981041193008423,
+            "4": 0.1813104897737503
+          },
+          "confidence": 0.6373763090620438
+        },
+        "operationalBurden": {
+          "type": "score",
+          "score": 1.635213017463684,
+          "legend": {
+            "0": "Constant",
+            "1": "Frequent",
+            "2": "Some",
+            "3": "Little",
+            "4": "Runs itself"
+          },
+          "probabilities": {
+            "0": 0.0727194994688034,
+            "1": 0.3001054525375366,
+            "2": 0.5635581016540527,
+            "3": 0.046476565301418304,
+            "4": 0.01714041642844677
+          },
+          "confidence": 0.5614151253054539
+        },
+        "evidenceQuality": {
+          "type": "score",
+          "score": 2.17547969520092,
+          "legend": {
+            "0": "Only marketing",
+            "1": "Mostly marketing",
+            "2": "Mixed",
+            "3": "Some independent tests",
+            "4": "Strong evidence"
+          },
+          "probabilities": {
+            "0": 0.042708054184913635,
+            "1": 0.14686140418052673,
+            "2": 0.45211565494537354,
+            "3": 0.30887261033058167,
+            "4": 0.04944228753447533
+          },
+          "confidence": 0.46663775170842803
+        },
+        "dataCustody": {
+          "type": "score",
+          "score": 3.4439677530899644,
+          "legend": {
+            "0": "Third party holds all",
+            "1": "Mostly third party",
+            "2": "Shared",
+            "3": "Mostly ours",
+            "4": "Fully ours"
+          },
+          "probabilities": {
+            "0": 0.004831335507333279,
+            "1": 0.008511723019182682,
+            "2": 0.030141156166791916,
+            "3": 0.45088955760002136,
+            "4": 0.5056262612342834
+          },
+          "confidence": 0.536639682482928
+        }
+      }
+    ],
+    "cloudGpuWindowsVm": [
+      {
+        "noPhysicalPresence": {
+          "type": "score",
+          "score": 3.878211297560483,
+          "legend": {
+            "0": "Needs hardware on site",
+            "1": "Mostly needs hardware",
+            "2": "Some physical steps",
+            "3": "Almost none",
+            "4": "Fully remote"
+          },
+          "probabilities": {
+            "0": 0.005505410023033619,
+            "1": 0.0039763194508850574,
+            "2": 0.011365363374352455,
+            "3": 0.06510724127292633,
+            "4": 0.9140456318855286
+          },
+          "confidence": 0.8985095279446492
+        },
+        "costAtScale": {
+          "type": "score",
+          "score": 0.5722299348562956,
+          "legend": {
+            "0": "Over $30",
+            "1": "$10-30",
+            "2": "$3-10",
+            "3": "$1-3",
+            "4": "Under $1"
+          },
+          "probabilities": {
+            "0": 0.5650395154953003,
+            "1": 0.33765897154808044,
+            "2": 0.06846592575311661,
+            "3": 0.01770293526351452,
+            "4": 0.011132576502859592
+          },
+          "confidence": 0.523141720953087
+        },
+        "reliability": {
+          "type": "score",
+          "score": 2.5019712522625923,
+          "legend": {
+            "0": "Unreliable",
+            "1": "Often breaks",
+            "2": "Workable",
+            "3": "Reliable",
+            "4": "Very reliable"
+          },
+          "probabilities": {
+            "0": 0.017718689516186714,
+            "1": 0.0362202450633049,
+            "2": 0.4287976622581482,
+            "3": 0.460897833108902,
+            "4": 0.056365545839071274
+          },
+          "confidence": 0.49103352768967545
+        },
+        "scalability": {
+          "type": "score",
+          "score": 1.2061279192566872,
+          "legend": {
+            "0": "Breaks early",
+            "1": "Painful",
+            "2": "Workable",
+            "3": "Easy",
+            "4": "Trivial"
+          },
+          "probabilities": {
+            "0": 0.14200325310230255,
+            "1": 0.5913180708885193,
+            "2": 0.20681104063987732,
+            "3": 0.038282692432403564,
+            "4": 0.021584922447800636
+          },
+          "confidence": 0.5915546283746759
+        },
+        "providerSwappability": {
+          "type": "score",
+          "score": 2.2560157887637615,
+          "legend": {
+            "0": "Locked in",
+            "1": "Hard to leave",
+            "2": "Some lock-in",
+            "3": "Easy to leave",
+            "4": "No lock-in"
+          },
+          "probabilities": {
+            "0": 0.018577227368950844,
+            "1": 0.050801243633031845,
+            "2": 0.662450909614563,
+            "3": 0.1923695057630539,
+            "4": 0.0758010521531105
+          },
+          "confidence": 0.6400605762998263
+        },
+        "multiPlatform": {
+          "type": "score",
+          "score": 2.3675485141575336,
+          "legend": {
+            "0": "Facebook web only",
+            "1": "Narrow",
+            "2": "Some platforms",
+            "3": "Most platforms",
+            "4": "Any platform"
+          },
+          "probabilities": {
+            "0": 0.016972027719020844,
+            "1": 0.057491790503263474,
+            "2": 0.4896533489227295,
+            "3": 0.41278111934661865,
+            "4": 0.023101666942238808
+          },
+          "confidence": 0.5413164173563321
+        },
+        "residentialProxyEgress": {
+          "type": "score",
+          "score": 2.426038598641753,
+          "legend": {
+            "0": "Not possible",
+            "1": "Leaky",
+            "2": "Possible with work",
+            "3": "Clean",
+            "4": "Clean and enforced"
+          },
+          "probabilities": {
+            "0": 0.009482854045927525,
+            "1": 0.022411292418837547,
+            "2": 0.609807550907135,
+            "3": 0.24918091297149658,
+            "4": 0.10911736637353897
+          },
+          "confidence": 0.5760061281422774
+        },
+        "viewability": {
+          "type": "score",
+          "score": 3.7578730201348662,
+          "legend": {
+            "0": "No view",
+            "1": "Logs only",
+            "2": "Screenshots",
+            "3": "Live view",
+            "4": "Live view and takeover"
+          },
+          "probabilities": {
+            "0": 0.0037965141236782074,
+            "1": 0.004503740929067135,
+            "2": 0.008299145847558975,
+            "3": 0.1968315839767456,
+            "4": 0.7865690588951111
+          },
+          "confidence": 0.7982273708718518
+        },
+        "renderUniqueness": {
+          "type": "score",
+          "score": 2.8209355920553207,
+          "legend": {
+            "0": "Shared by all",
+            "1": "Mostly shared",
+            "2": "Partly distinct",
+            "3": "Distinct but artificial",
+            "4": "Genuinely distinct"
+          },
+          "probabilities": {
+            "0": 0.010967090725898743,
+            "1": 0.020964011549949646,
+            "2": 0.3936478793621063,
+            "3": 0.28500789403915405,
+            "4": 0.2894130349159241
+          },
+          "confidence": 0.2443898692727089
+        },
+        "consistencyAndConsumerLikeness": {
+          "type": "score",
+          "score": 2.147192768752575,
+          "legend": {
+            "0": "Obvious VM/lies",
+            "1": "Several tells",
+            "2": "Some tells",
+            "3": "Minor tells",
+            "4": "Consumer-like and consistent"
+          },
+          "probabilities": {
+            "0": 0.020655903965234756,
+            "1": 0.1011858582496643,
+            "2": 0.6116965413093567,
+            "3": 0.24323326349258423,
+            "4": 0.023228509351611137
+          },
+          "confidence": 0.6398433763533831
+        },
+        "crossAccountIsolation": {
+          "type": "score",
+          "score": 2.570073217153549,
+          "legend": {
+            "0": "All linked",
+            "1": "Mostly linked",
+            "2": "Partly isolated",
+            "3": "Well isolated",
+            "4": "Fully isolated"
+          },
+          "probabilities": {
+            "0": 0.00755902286618948,
+            "1": 0.014201432466506958,
+            "2": 0.4193830192089081,
+            "3": 0.5183205008506775,
+            "4": 0.0405360609292984
+          },
+          "confidence": 0.5741674886085093
+        },
+        "detectionTestability": {
+          "type": "score",
+          "score": 3.1213324684649706,
+          "legend": {
+            "0": "Cannot test",
+            "1": "Hard",
+            "2": "Partly",
+            "3": "Mostly",
+            "4": "Fully"
+          },
+          "probabilities": {
+            "0": 0.011881076730787754,
+            "1": 0.023355068638920784,
+            "2": 0.08819854259490967,
+            "3": 0.5846807956695557,
+            "4": 0.29188448190689087
+          },
+          "confidence": 0.6146363400233288
+        },
+        "fitWithLogCli": {
+          "type": "score",
+          "score": 2.741476386785507,
+          "legend": {
+            "0": "Throws it away",
+            "1": "Major rewrite",
+            "2": "Moderate changes",
+            "3": "Small changes",
+            "4": "Drop-in"
+          },
+          "probabilities": {
+            "0": 0.012793874368071556,
+            "1": 0.01500740647315979,
+            "2": 0.27249863743782043,
+            "3": 0.6173287630081177,
+            "4": 0.08237135410308838
+          },
+          "confidence": 0.6472779770071307
+        },
+        "operationalBurden": {
+          "type": "score",
+          "score": 2.005335308611393,
+          "legend": {
+            "0": "Constant",
+            "1": "Frequent",
+            "2": "Some",
+            "3": "Little",
+            "4": "Runs itself"
+          },
+          "probabilities": {
+            "0": 0.02821923792362213,
+            "1": 0.11116638779640198,
+            "2": 0.7126339077949524,
+            "3": 0.12302099913358688,
+            "4": 0.02495952695608139
+          },
+          "confidence": 0.7162125694255034
+        },
+        "evidenceQuality": {
+          "type": "score",
+          "score": 1.5179674997925758,
+          "legend": {
+            "0": "Only marketing",
+            "1": "Mostly marketing",
+            "2": "Mixed",
+            "3": "Some independent tests",
+            "4": "Strong evidence"
+          },
+          "probabilities": {
+            "0": 0.0435258187353611,
+            "1": 0.5280351638793945,
+            "2": 0.313352108001709,
+            "3": 0.09711973369121552,
+            "4": 0.017967229709029198
+          },
+          "confidence": 0.49581743062784267
+        },
+        "dataCustody": {
+          "type": "score",
+          "score": 2.7944319024682045,
+          "legend": {
+            "0": "Third party holds all",
+            "1": "Mostly third party",
+            "2": "Shared",
+            "3": "Mostly ours",
+            "4": "Fully ours"
+          },
+          "probabilities": {
+            "0": 0.01132136583328247,
+            "1": 0.036851666867733,
+            "2": 0.15637101233005524,
+            "3": 0.7369855642318726,
+            "4": 0.05847037956118584
+          },
+          "confidence": 0.7312426473945379
+        }
+      }
+    ],
+    "gpuSandbox": [
+      {
+        "noPhysicalPresence": {
+          "type": "score",
+          "score": 3.8983493903651834,
+          "legend": {
+            "0": "Needs hardware on site",
+            "1": "Mostly needs hardware",
+            "2": "Some physical steps",
+            "3": "Almost none",
+            "4": "Fully remote"
+          },
+          "probabilities": {
+            "0": 0.006007061805576086,
+            "1": 0.00358737725764513,
+            "2": 0.008510807529091835,
+            "3": 0.04983846843242645,
+            "4": 0.9320562481880188
+          },
+          "confidence": 0.9152912812617918
+        },
+        "costAtScale": {
+          "type": "score",
+          "score": 0.8770494274795055,
+          "legend": {
+            "0": "Over $30",
+            "1": "$10-30",
+            "2": "$3-10",
+            "3": "$1-3",
+            "4": "Under $1"
+          },
+          "probabilities": {
+            "0": 0.3336430490016937,
+            "1": 0.5193670988082886,
+            "2": 0.09910839051008224,
+            "3": 0.032060276716947556,
+            "4": 0.015821179375052452
+          },
+          "confidence": 0.5463870574409763
+        },
+        "reliability": {
+          "type": "score",
+          "score": 2.2026137113571167,
+          "legend": {
+            "0": "Unreliable",
+            "1": "Often breaks",
+            "2": "Workable",
+            "3": "Reliable",
+            "4": "Very reliable"
+          },
+          "probabilities": {
+            "0": 0.026369236409664154,
+            "1": 0.05797147750854492,
+            "2": 0.634588360786438,
+            "3": 0.2488183230161667,
+            "4": 0.032252635806798935
+          },
+          "confidence": 0.6466387125353018
+        },
+        "scalability": {
+          "type": "score",
+          "score": 1.4638386480510235,
+          "legend": {
+            "0": "Breaks early",
+            "1": "Painful",
+            "2": "Workable",
+            "3": "Easy",
+            "4": "Trivial"
+          },
+          "probabilities": {
+            "0": 0.10600870102643967,
+            "1": 0.43153509497642517,
+            "2": 0.3813368082046509,
+            "3": 0.05484815314412117,
+            "4": 0.02627136930823326
+          },
+          "confidence": 0.43678673046330607
+        },
+        "providerSwappability": {
+          "type": "score",
+          "score": 2.2344247065484524,
+          "legend": {
+            "0": "Locked in",
+            "1": "Hard to leave",
+            "2": "Some lock-in",
+            "3": "Easy to leave",
+            "4": "No lock-in"
+          },
+          "probabilities": {
+            "0": 0.02354925125837326,
+            "1": 0.04912201687693596,
+            "2": 0.6561111807823181,
+            "3": 0.21178972721099854,
+            "4": 0.059427786618471146
+          },
+          "confidence": 0.6442784834653139
+        },
+        "multiPlatform": {
+          "type": "score",
+          "score": 2.2833664938807487,
+          "legend": {
+            "0": "Facebook web only",
+            "1": "Narrow",
+            "2": "Some platforms",
+            "3": "Most platforms",
+            "4": "Any platform"
+          },
+          "probabilities": {
+            "0": 0.027388323098421097,
+            "1": 0.07398811727762222,
+            "2": 0.5315472483634949,
+            "3": 0.3220214545726776,
+            "4": 0.045054879039525986
+          },
+          "confidence": 0.5492533532281716
+        },
+        "residentialProxyEgress": {
+          "type": "score",
+          "score": 2.247455772012472,
+          "legend": {
+            "0": "Not possible",
+            "1": "Leaky",
+            "2": "Possible with work",
+            "3": "Clean",
+            "4": "Clean and enforced"
+          },
+          "probabilities": {
+            "0": 0.014609814621508121,
+            "1": 0.04079962894320488,
+            "2": 0.6924294829368591,
+            "3": 0.18684731423854828,
+            "4": 0.06531380861997604
+          },
+          "confidence": 0.6770881752793987
+        },
+        "viewability": {
+          "type": "score",
+          "score": 3.097271313890815,
+          "legend": {
+            "0": "No view",
+            "1": "Logs only",
+            "2": "Screenshots",
+            "3": "Live view",
+            "4": "Live view and takeover"
+          },
+          "probabilities": {
+            "0": 0.019153570756316185,
+            "1": 0.013919470831751823,
+            "2": 0.04237794503569603,
+            "3": 0.6995999813079834,
+            "4": 0.22494900226593018
+          },
+          "confidence": 0.7061444989716013
+        },
+        "renderUniqueness": {
+          "type": "score",
+          "score": 2.533662024885416,
+          "legend": {
+            "0": "Shared by all",
+            "1": "Mostly shared",
+            "2": "Partly distinct",
+            "3": "Distinct but artificial",
+            "4": "Genuinely distinct"
+          },
+          "probabilities": {
+            "0": 0.01721997931599617,
+            "1": 0.03837523236870766,
+            "2": 0.47203895449638367,
+            "3": 0.3382543623447418,
+            "4": 0.1341114491224289
+          },
+          "confidence": 0.4339229570080836
+        },
+        "consistencyAndConsumerLikeness": {
+          "type": "score",
+          "score": 1.8814316019415855,
+          "legend": {
+            "0": "Obvious VM/lies",
+            "1": "Several tells",
+            "2": "Some tells",
+            "3": "Minor tells",
+            "4": "Consumer-like and consistent"
+          },
+          "probabilities": {
+            "0": 0.04078120365738869,
+            "1": 0.20004814863204956,
+            "2": 0.6119645833969116,
+            "3": 0.13137005269527435,
+            "4": 0.01583603210747242
+          },
+          "confidence": 0.6294561059524615
+        },
+        "crossAccountIsolation": {
+          "type": "score",
+          "score": 2.272566704079509,
+          "legend": {
+            "0": "All linked",
+            "1": "Mostly linked",
+            "2": "Partly isolated",
+            "3": "Well isolated",
+            "4": "Fully isolated"
+          },
+          "probabilities": {
+            "0": 0.014651469886302948,
+            "1": 0.026925979182124138,
+            "2": 0.6591149568557739,
+            "3": 0.2698195278644562,
+            "4": 0.029488056898117065
+          },
+          "confidence": 0.6791461994871497
+        },
+        "detectionTestability": {
+          "type": "score",
+          "score": 2.7209378108382225,
+          "legend": {
+            "0": "Cannot test",
+            "1": "Hard",
+            "2": "Partly",
+            "3": "Mostly",
+            "4": "Fully"
+          },
+          "probabilities": {
+            "0": 0.01876245252788067,
+            "1": 0.047017715871334076,
+            "2": 0.25445428490638733,
+            "3": 0.554050862789154,
+            "4": 0.1257147341966629
+          },
+          "confidence": 0.557923492975533
+        },
+        "fitWithLogCli": {
+          "type": "score",
+          "score": 2.1401249952614307,
+          "legend": {
+            "0": "Throws it away",
+            "1": "Major rewrite",
+            "2": "Moderate changes",
+            "3": "Small changes",
+            "4": "Drop-in"
+          },
+          "probabilities": {
+            "0": 0.025225086137652397,
+            "1": 0.04717455431818962,
+            "2": 0.7175094485282898,
+            "3": 0.18243201076984406,
+            "4": 0.02765887789428234
+          },
+          "confidence": 0.7205212557067473
+        },
+        "operationalBurden": {
+          "type": "score",
+          "score": 2.2666684091091156,
+          "legend": {
+            "0": "Constant",
+            "1": "Frequent",
+            "2": "Some",
+            "3": "Little",
+            "4": "Runs itself"
+          },
+          "probabilities": {
+            "0": 0.025444863364100456,
+            "1": 0.06693543493747711,
+            "2": 0.5712956786155701,
+            "3": 0.2881547808647156,
+            "4": 0.048169318586587906
+          },
+          "confidence": 0.5814011835803587
+        },
+        "evidenceQuality": {
+          "type": "score",
+          "score": 1.3433929719030857,
+          "legend": {
+            "0": "Only marketing",
+            "1": "Mostly marketing",
+            "2": "Mixed",
+            "3": "Some independent tests",
+            "4": "Strong evidence"
+          },
+          "probabilities": {
+            "0": 0.055633094161748886,
+            "1": 0.6443064212799072,
+            "2": 0.21552212536334991,
+            "3": 0.07011132687330246,
+            "4": 0.014427079819142818
+          },
+          "confidence": 0.6211174060590565
+        },
+        "dataCustody": {
+          "type": "score",
+          "score": 2.194069802761078,
+          "legend": {
+            "0": "Third party holds all",
+            "1": "Mostly third party",
+            "2": "Shared",
+            "3": "Mostly ours",
+            "4": "Fully ours"
+          },
+          "probabilities": {
+            "0": 0.02403111942112446,
+            "1": 0.18166258931159973,
+            "2": 0.3929484188556671,
+            "3": 0.37892112135887146,
+            "4": 0.022436752915382385
+          },
+          "confidence": 0.45540045388042927
+        }
+      }
+    ],
+    "cloudBrowserVendor": [
+      {
+        "noPhysicalPresence": {
+          "type": "score",
+          "score": 3.895981091540307,
+          "legend": {
+            "0": "Needs hardware on site",
+            "1": "Mostly needs hardware",
+            "2": "Some physical steps",
+            "3": "Almost none",
+            "4": "Fully remote"
+          },
+          "probabilities": {
+            "0": 0.006683320738375187,
+            "1": 0.0037628761492669582,
+            "2": 0.008249006234109402,
+            "3": 0.04949885606765747,
+            "4": 0.9318059086799622
+          },
+          "confidence": 0.9133176833856851
+        },
+        "costAtScale": {
+          "type": "score",
+          "score": 1.968690574169159,
+          "legend": {
+            "0": "Over $30",
+            "1": "$10-30",
+            "2": "$3-10",
+            "3": "$1-3",
+            "4": "Under $1"
+          },
+          "probabilities": {
+            "0": 0.03082345426082611,
+            "1": 0.2346814125776291,
+            "2": 0.5155303478240967,
+            "3": 0.17291058599948883,
+            "4": 0.0460541769862175
+          },
+          "confidence": 0.5322106157739956
+        },
+        "reliability": {
+          "type": "score",
+          "score": 2.536323657259345,
+          "legend": {
+            "0": "Unreliable",
+            "1": "Often breaks",
+            "2": "Workable",
+            "3": "Reliable",
+            "4": "Very reliable"
+          },
+          "probabilities": {
+            "0": 0.01810433343052864,
+            "1": 0.024565836414694786,
+            "2": 0.4188714623451233,
+            "3": 0.4798187017440796,
+            "4": 0.05863969773054123
+          },
+          "confidence": 0.5158701390028
+        },
+        "scalability": {
+          "type": "score",
+          "score": 2.018184684216976,
+          "legend": {
+            "0": "Breaks early",
+            "1": "Painful",
+            "2": "Workable",
+            "3": "Easy",
+            "4": "Trivial"
+          },
+          "probabilities": {
+            "0": 0.040334250777959824,
+            "1": 0.10692808777093887,
+            "2": 0.6812860369682312,
+            "3": 0.1371219903230667,
+            "4": 0.03432963788509369
+          },
+          "confidence": 0.6721851204832394
+        },
+        "providerSwappability": {
+          "type": "score",
+          "score": 2.0328714549541473,
+          "legend": {
+            "0": "Locked in",
+            "1": "Hard to leave",
+            "2": "Some lock-in",
+            "3": "Easy to leave",
+            "4": "No lock-in"
+          },
+          "probabilities": {
+            "0": 0.041939955204725266,
+            "1": 0.1292269229888916,
+            "2": 0.6362725496292114,
+            "3": 0.13914252817630768,
+            "4": 0.05341796204447746
+          },
+          "confidence": 0.6174289286136627
+        },
+        "multiPlatform": {
+          "type": "score",
+          "score": 2.3752168864011765,
+          "legend": {
+            "0": "Facebook web only",
+            "1": "Narrow",
+            "2": "Some platforms",
+            "3": "Most platforms",
+            "4": "Any platform"
+          },
+          "probabilities": {
+            "0": 0.02076409012079239,
+            "1": 0.06337647140026093,
+            "2": 0.4806312322616577,
+            "3": 0.3903347849845886,
+            "4": 0.04489339888095856
+          },
+          "confidence": 0.5124781380097071
+        },
+        "residentialProxyEgress": {
+          "type": "score",
+          "score": 2.3652908205986023,
+          "legend": {
+            "0": "Not possible",
+            "1": "Leaky",
+            "2": "Possible with work",
+            "3": "Clean",
+            "4": "Clean and enforced"
+          },
+          "probabilities": {
+            "0": 0.013197280466556549,
+            "1": 0.03824831545352936,
+            "2": 0.6115016937255859,
+            "3": 0.24417172372341156,
+            "4": 0.0928809866309166
+          },
+          "confidence": 0.5878528555234273
+        },
+        "viewability": {
+          "type": "score",
+          "score": 3.252548361197114,
+          "legend": {
+            "0": "No view",
+            "1": "Logs only",
+            "2": "Screenshots",
+            "3": "Live view",
+            "4": "Live view and takeover"
+          },
+          "probabilities": {
+            "0": 0.006971641443669796,
+            "1": 0.007320927456021309,
+            "2": 0.017593909054994583,
+            "3": 0.66241455078125,
+            "4": 0.3056989908218384
+          },
+          "confidence": 0.7009586007334292
+        },
+        "renderUniqueness": {
+          "type": "score",
+          "score": 1.4273677542805672,
+          "legend": {
+            "0": "Shared by all",
+            "1": "Mostly shared",
+            "2": "Partly distinct",
+            "3": "Distinct but artificial",
+            "4": "Genuinely distinct"
+          },
+          "probabilities": {
+            "0": 0.12148954719305038,
+            "1": 0.4907856285572052,
+            "2": 0.2478608638048172,
+            "3": 0.11859582364559174,
+            "4": 0.02126823179423809
+          },
+          "confidence": 0.4413777052735288
+        },
+        "consistencyAndConsumerLikeness": {
+          "type": "score",
+          "score": 1.694890983402729,
+          "legend": {
+            "0": "Obvious VM/lies",
+            "1": "Several tells",
+            "2": "Some tells",
+            "3": "Minor tells",
+            "4": "Consumer-like and consistent"
+          },
+          "probabilities": {
+            "0": 0.06282740831375122,
+            "1": 0.29497528076171875,
+            "2": 0.5396888256072998,
+            "3": 0.08949591964483261,
+            "4": 0.01301257312297821
+          },
+          "confidence": 0.5532073639333248
+        },
+        "crossAccountIsolation": {
+          "type": "score",
+          "score": 2.1945659406483173,
+          "legend": {
+            "0": "All linked",
+            "1": "Mostly linked",
+            "2": "Partly isolated",
+            "3": "Well isolated",
+            "4": "Fully isolated"
+          },
+          "probabilities": {
+            "0": 0.016690101474523544,
+            "1": 0.03873207047581673,
+            "2": 0.7106720209121704,
+            "3": 0.20113347470760345,
+            "4": 0.03277235105633736
+          },
+          "confidence": 0.717674624795715
+        },
+        "detectionTestability": {
+          "type": "score",
+          "score": 2.2601440846920013,
+          "legend": {
+            "0": "Cannot test",
+            "1": "Hard",
+            "2": "Partly",
+            "3": "Mostly",
+            "4": "Fully"
+          },
+          "probabilities": {
+            "0": 0.01953142136335373,
+            "1": 0.06910115480422974,
+            "2": 0.6045569181442261,
+            "3": 0.24531289935112,
+            "4": 0.06149759888648987
+          },
+          "confidence": 0.6029399211208025
+        },
+        "fitWithLogCli": {
+          "type": "score",
+          "score": 1.380554374307394,
+          "legend": {
+            "0": "Throws it away",
+            "1": "Major rewrite",
+            "2": "Moderate changes",
+            "3": "Small changes",
+            "4": "Drop-in"
+          },
+          "probabilities": {
+            "0": 0.08343873918056488,
+            "1": 0.5188847184181213,
+            "2": 0.3452027440071106,
+            "3": 0.03863085061311722,
+            "4": 0.013842904008924961
+          },
+          "confidence": 0.5438067529660959
+        },
+        "operationalBurden": {
+          "type": "score",
+          "score": 2.7634704783558846,
+          "legend": {
+            "0": "Constant",
+            "1": "Frequent",
+            "2": "Some",
+            "3": "Little",
+            "4": "Runs itself"
+          },
+          "probabilities": {
+            "0": 0.015386322513222694,
+            "1": 0.03355986624956131,
+            "2": 0.18836775422096252,
+            "3": 0.6975688338279724,
+            "4": 0.06511715054512024
+          },
+          "confidence": 0.6943636626626054
+        },
+        "evidenceQuality": {
+          "type": "score",
+          "score": 1.1320580840110779,
+          "legend": {
+            "0": "Only marketing",
+            "1": "Mostly marketing",
+            "2": "Mixed",
+            "3": "Some independent tests",
+            "4": "Strong evidence"
+          },
+          "probabilities": {
+            "0": 0.12543044984340668,
+            "1": 0.6898898482322693,
+            "2": 0.12361932545900345,
+            "3": 0.049311935901641846,
+            "4": 0.01174844428896904
+          },
+          "confidence": 0.6809008500228325
+        },
+        "dataCustody": {
+          "type": "score",
+          "score": 1.0413386337459087,
+          "legend": {
+            "0": "Third party holds all",
+            "1": "Mostly third party",
+            "2": "Shared",
+            "3": "Mostly ours",
+            "4": "Fully ours"
+          },
+          "probabilities": {
+            "0": 0.148187056183815,
+            "1": 0.7057780027389526,
+            "2": 0.11247360706329346,
+            "3": 0.023632001131772995,
+            "4": 0.00992935337126255
+          },
+          "confidence": 0.7185727286462982
+        }
+      }
+    ],
+    "antidetectOnServers": [
+      {
+        "noPhysicalPresence": {
+          "type": "score",
+          "score": 3.801116982474923,
+          "legend": {
+            "0": "Needs hardware on site",
+            "1": "Mostly needs hardware",
+            "2": "Some physical steps",
+            "3": "Almost none",
+            "4": "Fully remote"
+          },
+          "probabilities": {
+            "0": 0.007609673775732517,
+            "1": 0.00596529059112072,
+            "2": 0.017899123951792717,
+            "3": 0.11475016176700592,
+            "4": 0.8537757396697998
+          },
+          "confidence": 0.8342641862109303
+        },
+        "costAtScale": {
+          "type": "score",
+          "score": 2.0711214393377304,
+          "legend": {
+            "0": "Over $30",
+            "1": "$10-30",
+            "2": "$3-10",
+            "3": "$1-3",
+            "4": "Under $1"
+          },
+          "probabilities": {
+            "0": 0.027389798313379288,
+            "1": 0.16346271336078644,
+            "2": 0.555468738079071,
+            "3": 0.2179936170578003,
+            "4": 0.03568509966135025
+          },
+          "confidence": 0.5769948946932951
+        },
+        "reliability": {
+          "type": "score",
+          "score": 2.3220095708966255,
+          "legend": {
+            "0": "Unreliable",
+            "1": "Often breaks",
+            "2": "Workable",
+            "3": "Reliable",
+            "4": "Very reliable"
+          },
+          "probabilities": {
+            "0": 0.019965197890996933,
+            "1": 0.040436752140522,
+            "2": 0.5717801451683044,
+            "3": 0.3332591950893402,
+            "4": 0.0345587357878685
+          },
+          "confidence": 0.5977134878436724
+        },
+        "scalability": {
+          "type": "score",
+          "score": 1.742503471672535,
+          "legend": {
+            "0": "Breaks early",
+            "1": "Painful",
+            "2": "Workable",
+            "3": "Easy",
+            "4": "Trivial"
+          },
+          "probabilities": {
+            "0": 0.06716278195381165,
+            "1": 0.24801470339298248,
+            "2": 0.5867936015129089,
+            "3": 0.07121405005455017,
+            "4": 0.02681485377252102
+          },
+          "confidence": 0.5773466459165016
+        },
+        "providerSwappability": {
+          "type": "score",
+          "score": 1.9799399003386497,
+          "legend": {
+            "0": "Locked in",
+            "1": "Hard to leave",
+            "2": "Some lock-in",
+            "3": "Easy to leave",
+            "4": "No lock-in"
+          },
+          "probabilities": {
+            "0": 0.036453135311603546,
+            "1": 0.10905265063047409,
+            "2": 0.7340356707572937,
+            "3": 0.079018235206604,
+            "4": 0.04144030064344406
+          },
+          "confidence": 0.7134518685440222
+        },
+        "multiPlatform": {
+          "type": "score",
+          "score": 2.141865111887455,
+          "legend": {
+            "0": "Facebook web only",
+            "1": "Narrow",
+            "2": "Some platforms",
+            "3": "Most platforms",
+            "4": "Any platform"
+          },
+          "probabilities": {
+            "0": 0.023647356778383255,
+            "1": 0.08143440634012222,
+            "2": 0.6436063051223755,
+            "3": 0.2320297211408615,
+            "4": 0.019282232969999313
+          },
+          "confidence": 0.6672305775185425
+        },
+        "residentialProxyEgress": {
+          "type": "score",
+          "score": 2.3490679152309895,
+          "legend": {
+            "0": "Not possible",
+            "1": "Leaky",
+            "2": "Possible with work",
+            "3": "Clean",
+            "4": "Clean and enforced"
+          },
+          "probabilities": {
+            "0": 0.016992805525660515,
+            "1": 0.05584605410695076,
+            "2": 0.5801244974136353,
+            "3": 0.25517359375953674,
+            "4": 0.09186302125453949
+          },
+          "confidence": 0.5593905821442604
+        },
+        "viewability": {
+          "type": "score",
+          "score": 2.5223035514354706,
+          "legend": {
+            "0": "No view",
+            "1": "Logs only",
+            "2": "Screenshots",
+            "3": "Live view",
+            "4": "Live view and takeover"
+          },
+          "probabilities": {
+            "0": 0.11896023899316788,
+            "1": 0.05737540125846863,
+            "2": 0.17106080055236816,
+            "3": 0.4876076579093933,
+            "4": 0.16499589383602142
+          },
+          "confidence": 0.32692648842930794
+        },
+        "renderUniqueness": {
+          "type": "score",
+          "score": 2.6090573482215405,
+          "legend": {
+            "0": "Shared by all",
+            "1": "Mostly shared",
+            "2": "Partly distinct",
+            "3": "Distinct but artificial",
+            "4": "Genuinely distinct"
+          },
+          "probabilities": {
+            "0": 0.025390151888132095,
+            "1": 0.04721952602267265,
+            "2": 0.241610586643219,
+            "3": 0.6645023226737976,
+            "4": 0.021277420222759247
+          },
+          "confidence": 0.6387520711869001
+        },
+        "consistencyAndConsumerLikeness": {
+          "type": "score",
+          "score": 2.0997600108385086,
+          "legend": {
+            "0": "Obvious VM/lies",
+            "1": "Several tells",
+            "2": "Some tells",
+            "3": "Minor tells",
+            "4": "Consumer-like and consistent"
+          },
+          "probabilities": {
+            "0": 0.02413223497569561,
+            "1": 0.10556019097566605,
+            "2": 0.6438181400299072,
+            "3": 0.19939440488815308,
+            "4": 0.02709508128464222
+          },
+          "confidence": 0.6604923096795876
+        },
+        "crossAccountIsolation": {
+          "type": "score",
+          "score": 2.1199405901134014,
+          "legend": {
+            "0": "All linked",
+            "1": "Mostly linked",
+            "2": "Partly isolated",
+            "3": "Well isolated",
+            "4": "Fully isolated"
+          },
+          "probabilities": {
+            "0": 0.01363883912563324,
+            "1": 0.038968320935964584,
+            "2": 0.7810495495796204,
+            "3": 0.14649994671344757,
+            "4": 0.01984333246946335
+          },
+          "confidence": 0.7896394909669955
+        },
+        "detectionTestability": {
+          "type": "score",
+          "score": 2.2019732743501663,
+          "legend": {
+            "0": "Cannot test",
+            "1": "Hard",
+            "2": "Partly",
+            "3": "Mostly",
+            "4": "Fully"
+          },
+          "probabilities": {
+            "0": 0.022192399948835373,
+            "1": 0.06848829984664917,
+            "2": 0.6398351788520813,
+            "3": 0.22412163019180298,
+            "4": 0.045362431555986404
+          },
+          "confidence": 0.6435670057932535
+        },
+        "fitWithLogCli": {
+          "type": "score",
+          "score": 1.6943797431886196,
+          "legend": {
+            "0": "Throws it away",
+            "1": "Major rewrite",
+            "2": "Moderate changes",
+            "3": "Small changes",
+            "4": "Drop-in"
+          },
+          "probabilities": {
+            "0": 0.06738614290952682,
+            "1": 0.24592357873916626,
+            "2": 0.62403804063797,
+            "3": 0.05022913217544556,
+            "4": 0.012423171661794186
+          },
+          "confidence": 0.6201905499522884
+        },
+        "operationalBurden": {
+          "type": "score",
+          "score": 2.11824794113636,
+          "legend": {
+            "0": "Constant",
+            "1": "Frequent",
+            "2": "Some",
+            "3": "Little",
+            "4": "Runs itself"
+          },
+          "probabilities": {
+            "0": 0.025612734258174896,
+            "1": 0.07867451012134552,
+            "2": 0.68393474817276,
+            "3": 0.1754082590341568,
+            "4": 0.03636978939175606
+          },
+          "confidence": 0.6849601529538631
+        },
+        "evidenceQuality": {
+          "type": "score",
+          "score": 1.6879058964550495,
+          "legend": {
+            "0": "Only marketing",
+            "1": "Mostly marketing",
+            "2": "Mixed",
+            "3": "Some independent tests",
+            "4": "Strong evidence"
+          },
+          "probabilities": {
+            "0": 0.021365607157349586,
+            "1": 0.43368178606033325,
+            "2": 0.3898194134235382,
+            "3": 0.14594756066799164,
+            "4": 0.009185650385916233
+          },
+          "confidence": 0.3911357557711501
+        },
+        "dataCustody": {
+          "type": "score",
+          "score": 2.645543158054352,
+          "legend": {
+            "0": "Third party holds all",
+            "1": "Mostly third party",
+            "2": "Shared",
+            "3": "Mostly ours",
+            "4": "Fully ours"
+          },
+          "probabilities": {
+            "0": 0.014843671582639217,
+            "1": 0.0513191819190979,
+            "2": 0.28313955664634705,
+            "3": 0.5748454332351685,
+            "4": 0.07585214078426361
+          },
+          "confidence": 0.5781991033193965
+        }
+      }
+    ],
+    "cloudPhone": [
+      {
+        "noPhysicalPresence": {
+          "type": "score",
+          "score": 3.8983466867357492,
+          "legend": {
+            "0": "Needs hardware on site",
+            "1": "Mostly needs hardware",
+            "2": "Some physical steps",
+            "3": "Almost none",
+            "4": "Fully remote"
+          },
+          "probabilities": {
+            "0": 0.0057787285186350346,
+            "1": 0.004600986838340759,
+            "2": 0.010520870797336102,
+            "3": 0.04369359835982323,
+            "4": 0.9354057908058167
+          },
+          "confidence": 0.9152889878799518
+        },
+        "costAtScale": {
+          "type": "score",
+          "score": 1.5141845047473907,
+          "legend": {
+            "0": "Over $30",
+            "1": "$10-30",
+            "2": "$3-10",
+            "3": "$1-3",
+            "4": "Under $1"
+          },
+          "probabilities": {
+            "0": 0.028007451444864273,
+            "1": 0.5386911034584045,
+            "2": 0.3474593460559845,
+            "3": 0.06279389560222626,
+            "4": 0.02304825559258461
+          },
+          "confidence": 0.5248338704307873
+        },
+        "reliability": {
+          "type": "score",
+          "score": 2.041804201900959,
+          "legend": {
+            "0": "Unreliable",
+            "1": "Often breaks",
+            "2": "Workable",
+            "3": "Reliable",
+            "4": "Very reliable"
+          },
+          "probabilities": {
+            "0": 0.03737526759505272,
+            "1": 0.09241121262311935,
+            "2": 0.6866308450698853,
+            "3": 0.158199280500412,
+            "4": 0.025383364409208298
+          },
+          "confidence": 0.6865602023899555
+        },
+        "scalability": {
+          "type": "score",
+          "score": 1.6995332427322865,
+          "legend": {
+            "0": "Breaks early",
+            "1": "Painful",
+            "2": "Workable",
+            "3": "Easy",
+            "4": "Trivial"
+          },
+          "probabilities": {
+            "0": 0.05983947217464447,
+            "1": 0.29288673400878906,
+            "2": 0.5621363520622253,
+            "3": 0.05817617103457451,
+            "4": 0.026961322873830795
+          },
+          "confidence": 0.5627795873830715
+        },
+        "providerSwappability": {
+          "type": "score",
+          "score": 1.8754586353898048,
+          "legend": {
+            "0": "Locked in",
+            "1": "Hard to leave",
+            "2": "Some lock-in",
+            "3": "Easy to leave",
+            "4": "No lock-in"
+          },
+          "probabilities": {
+            "0": 0.0613570399582386,
+            "1": 0.16208790242671967,
+            "2": 0.657126247882843,
+            "3": 0.07859721034765244,
+            "4": 0.04083165153861046
+          },
+          "confidence": 0.6291145868599415
+        },
+        "multiPlatform": {
+          "type": "score",
+          "score": 2.4982127621769905,
+          "legend": {
+            "0": "Facebook web only",
+            "1": "Narrow",
+            "2": "Some platforms",
+            "3": "Most platforms",
+            "4": "Any platform"
+          },
+          "probabilities": {
+            "0": 0.031132228672504425,
+            "1": 0.04813367873430252,
+            "2": 0.4001235067844391,
+            "3": 0.43261027336120605,
+            "4": 0.08800031244754791
+          },
+          "confidence": 0.43517678106824553
+        },
+        "residentialProxyEgress": {
+          "type": "score",
+          "score": 2.069405198097229,
+          "legend": {
+            "0": "Not possible",
+            "1": "Leaky",
+            "2": "Possible with work",
+            "3": "Clean",
+            "4": "Clean and enforced"
+          },
+          "probabilities": {
+            "0": 0.029567550867795944,
+            "1": 0.0959087386727333,
+            "2": 0.70707106590271,
+            "3": 0.11045599728822708,
+            "4": 0.05699658393859863
+          },
+          "confidence": 0.683755828688542
+        },
+        "viewability": {
+          "type": "score",
+          "score": 3.5101824924349785,
+          "legend": {
+            "0": "No view",
+            "1": "Logs only",
+            "2": "Screenshots",
+            "3": "Live view",
+            "4": "Live view and takeover"
+          },
+          "probabilities": {
+            "0": 0.0062255049124360085,
+            "1": 0.006397252902388573,
+            "2": 0.014886134304106236,
+            "3": 0.41595137119293213,
+            "4": 0.5565397143363953
+          },
+          "confidence": 0.5918188182016213
+        },
+        "renderUniqueness": {
+          "type": "score",
+          "score": 2.0272614508867264,
+          "legend": {
+            "0": "Shared by all",
+            "1": "Mostly shared",
+            "2": "Partly distinct",
+            "3": "Distinct but artificial",
+            "4": "Genuinely distinct"
+          },
+          "probabilities": {
+            "0": 0.04825359210371971,
+            "1": 0.17396800220012665,
+            "2": 0.5128401517868042,
+            "3": 0.23213979601860046,
+            "4": 0.032798439264297485
+          },
+          "confidence": 0.526490115871032
+        },
+        "consistencyAndConsumerLikeness": {
+          "type": "score",
+          "score": 1.901164673268795,
+          "legend": {
+            "0": "Obvious VM/lies",
+            "1": "Several tells",
+            "2": "Some tells",
+            "3": "Minor tells",
+            "4": "Consumer-like and consistent"
+          },
+          "probabilities": {
+            "0": 0.04480379819869995,
+            "1": 0.20521625876426697,
+            "2": 0.5835489630699158,
+            "3": 0.13687334954738617,
+            "4": 0.0295576099306345
+          },
+          "confidence": 0.5909896461913983
+        },
+        "crossAccountIsolation": {
+          "type": "score",
+          "score": 2.1211496330797672,
+          "legend": {
+            "0": "All linked",
+            "1": "Mostly linked",
+            "2": "Partly isolated",
+            "3": "Well isolated",
+            "4": "Fully isolated"
+          },
+          "probabilities": {
+            "0": 0.014887343160808086,
+            "1": 0.03790118917822838,
+            "2": 0.7839521765708923,
+            "3": 0.13769309222698212,
+            "4": 0.025566203519701958
+          },
+          "confidence": 0.7862488543614745
+        },
+        "detectionTestability": {
+          "type": "score",
+          "score": 1.7906476631760597,
+          "legend": {
+            "0": "Cannot test",
+            "1": "Hard",
+            "2": "Partly",
+            "3": "Mostly",
+            "4": "Fully"
+          },
+          "probabilities": {
+            "0": 0.03793177008628845,
+            "1": 0.25459691882133484,
+            "2": 0.6145099401473999,
+            "3": 0.06481490284204483,
+            "4": 0.028146538883447647
+          },
+          "confidence": 0.6236929669976234
+        },
+        "fitWithLogCli": {
+          "type": "score",
+          "score": 0.8024350367486477,
+          "legend": {
+            "0": "Throws it away",
+            "1": "Major rewrite",
+            "2": "Moderate changes",
+            "3": "Small changes",
+            "4": "Drop-in"
+          },
+          "probabilities": {
+            "0": 0.35199597477912903,
+            "1": 0.5342152714729309,
+            "2": 0.08295028656721115,
+            "3": 0.02103487402200699,
+            "4": 0.009803642518818378
+          },
+          "confidence": 0.5779775525443256
+        },
+        "operationalBurden": {
+          "type": "score",
+          "score": 2.238487958908081,
+          "legend": {
+            "0": "Constant",
+            "1": "Frequent",
+            "2": "Some",
+            "3": "Little",
+            "4": "Runs itself"
+          },
+          "probabilities": {
+            "0": 0.022906459867954254,
+            "1": 0.055720940232276917,
+            "2": 0.6158832311630249,
+            "3": 0.27095669507980347,
+            "4": 0.03453261777758598
+          },
+          "confidence": 0.6320368411640326
+        },
+        "evidenceQuality": {
+          "type": "score",
+          "score": 0.9000176265835762,
+          "legend": {
+            "0": "Only marketing",
+            "1": "Mostly marketing",
+            "2": "Mixed",
+            "3": "Some independent tests",
+            "4": "Strong evidence"
+          },
+          "probabilities": {
+            "0": 0.230885848402977,
+            "1": 0.679958701133728,
+            "2": 0.05620246008038521,
+            "3": 0.024157904088497162,
+            "4": 0.008795073255896568
+          },
+          "confidence": 0.6985088863099614
+        },
+        "dataCustody": {
+          "type": "score",
+          "score": 1.176944810897112,
+          "legend": {
+            "0": "Third party holds all",
+            "1": "Mostly third party",
+            "2": "Shared",
+            "3": "Mostly ours",
+            "4": "Fully ours"
+          },
+          "probabilities": {
+            "0": 0.0906432643532753,
+            "1": 0.709179162979126,
+            "2": 0.14592358469963074,
+            "3": 0.04109750688076019,
+            "4": 0.013156489469110966
+          },
+          "confidence": 0.7014738906485338
+        }
+      }
+    ],
+    "twoCaptchaBrowserApi": [
+      {
+        "noPhysicalPresence": {
+          "type": "score",
+          "score": 3.901180208195001,
+          "legend": {
+            "0": "Needs hardware on site",
+            "1": "Mostly needs hardware",
+            "2": "Some physical steps",
+            "3": "Almost none",
+            "4": "Fully remote"
+          },
+          "probabilities": {
+            "0": 0.005303507670760155,
+            "1": 0.0033866302110254765,
+            "2": 0.009738164953887463,
+            "3": 0.04796946421265602,
+            "4": 0.9336022138595581
+          },
+          "confidence": 0.91765023713621
+        },
+        "costAtScale": {
+          "type": "score",
+          "score": 1.4892203137278557,
+          "legend": {
+            "0": "Over $30",
+            "1": "$10-30",
+            "2": "$3-10",
+            "3": "$1-3",
+            "4": "Under $1"
+          },
+          "probabilities": {
+            "0": 0.15640297532081604,
+            "1": 0.3627728521823883,
+            "2": 0.3556147515773773,
+            "3": 0.08561957627534866,
+            "4": 0.03958980739116669
+          },
+          "confidence": 0.33164474864800764
+        },
+        "reliability": {
+          "type": "score",
+          "score": 1.768730640411377,
+          "legend": {
+            "0": "Unreliable",
+            "1": "Often breaks",
+            "2": "Workable",
+            "3": "Reliable",
+            "4": "Very reliable"
+          },
+          "probabilities": {
+            "0": 0.12091639637947083,
+            "1": 0.1551140993833542,
+            "2": 0.5921232104301453,
+            "3": 0.09801506996154785,
+            "4": 0.03383122757077217
+          },
+          "confidence": 0.5311463189621766
+        },
+        "scalability": {
+          "type": "score",
+          "score": 1.3584559373557568,
+          "legend": {
+            "0": "Breaks early",
+            "1": "Painful",
+            "2": "Workable",
+            "3": "Easy",
+            "4": "Trivial"
+          },
+          "probabilities": {
+            "0": 0.14879189431667328,
+            "1": 0.46044132113456726,
+            "2": 0.30469438433647156,
+            "3": 0.05566376820206642,
+            "4": 0.03040863573551178
+          },
+          "confidence": 0.4533002314468224
+        },
+        "providerSwappability": {
+          "type": "score",
+          "score": 1.5594668090343475,
+          "legend": {
+            "0": "Locked in",
+            "1": "Hard to leave",
+            "2": "Some lock-in",
+            "3": "Easy to leave",
+            "4": "No lock-in"
+          },
+          "probabilities": {
+            "0": 0.09549464285373688,
+            "1": 0.39375826716423035,
+            "2": 0.40600070357322693,
+            "3": 0.06527844071388245,
+            "4": 0.039467953145504
+          },
+          "confidence": 0.3925317501028378
+        },
+        "multiPlatform": {
+          "type": "score",
+          "score": 1.9915127158164978,
+          "legend": {
+            "0": "Facebook web only",
+            "1": "Narrow",
+            "2": "Some platforms",
+            "3": "Most platforms",
+            "4": "Any platform"
+          },
+          "probabilities": {
+            "0": 0.03849751129746437,
+            "1": 0.1754719763994217,
+            "2": 0.5857495069503784,
+            "3": 0.1565820574760437,
+            "4": 0.04369888827204704
+          },
+          "confidence": 0.5862943058212597
+        },
+        "residentialProxyEgress": {
+          "type": "score",
+          "score": 2.022306442260742,
+          "legend": {
+            "0": "Not possible",
+            "1": "Leaky",
+            "2": "Possible with work",
+            "3": "Clean",
+            "4": "Clean and enforced"
+          },
+          "probabilities": {
+            "0": 0.056226931512355804,
+            "1": 0.17112573981285095,
+            "2": 0.5398843288421631,
+            "3": 0.15964004397392273,
+            "4": 0.07312297821044922
+          },
+          "confidence": 0.5087786639730135
+        },
+        "viewability": {
+          "type": "score",
+          "score": 2.854779399931431,
+          "legend": {
+            "0": "No view",
+            "1": "Logs only",
+            "2": "Screenshots",
+            "3": "Live view",
+            "4": "Live view and takeover"
+          },
+          "probabilities": {
+            "0": 0.0435669980943203,
+            "1": 0.036125920712947845,
+            "2": 0.07495022565126419,
+            "3": 0.7126742005348206,
+            "4": 0.13268260657787323
+          },
+          "confidence": 0.6578452767183383
+        },
+        "renderUniqueness": {
+          "type": "score",
+          "score": 0.9923497177660465,
+          "legend": {
+            "0": "Shared by all",
+            "1": "Mostly shared",
+            "2": "Partly distinct",
+            "3": "Distinct but artificial",
+            "4": "Genuinely distinct"
+          },
+          "probabilities": {
+            "0": 0.2244458794593811,
+            "1": 0.6305525302886963,
+            "2": 0.08595996350049973,
+            "3": 0.046289075165987015,
+            "4": 0.012752508744597435
+          },
+          "confidence": 0.6322987337286273
+        },
+        "consistencyAndConsumerLikeness": {
+          "type": "score",
+          "score": 1.1544268652796745,
+          "legend": {
+            "0": "Obvious VM/lies",
+            "1": "Several tells",
+            "2": "Some tells",
+            "3": "Minor tells",
+            "4": "Consumer-like and consistent"
+          },
+          "probabilities": {
+            "0": 0.24055491387844086,
+            "1": 0.4384292960166931,
+            "2": 0.26176387071609497,
+            "3": 0.044537708163261414,
+            "4": 0.014714175835251808
+          },
+          "confidence": 0.47038605964432156
+        },
+        "crossAccountIsolation": {
+          "type": "score",
+          "score": 1.8729593828320503,
+          "legend": {
+            "0": "All linked",
+            "1": "Mostly linked",
+            "2": "Partly isolated",
+            "3": "Well isolated",
+            "4": "Fully isolated"
+          },
+          "probabilities": {
+            "0": 0.03895408660173416,
+            "1": 0.1521821916103363,
+            "2": 0.728107750415802,
+            "3": 0.05846201628446579,
+            "4": 0.02229391038417816
+          },
+          "confidence": 0.7223831651111443
+        },
+        "detectionTestability": {
+          "type": "score",
+          "score": 1.7768501564860344,
+          "legend": {
+            "0": "Cannot test",
+            "1": "Hard",
+            "2": "Partly",
+            "3": "Mostly",
+            "4": "Fully"
+          },
+          "probabilities": {
+            "0": 0.05038531497120857,
+            "1": 0.2679809033870697,
+            "2": 0.57379549741745,
+            "3": 0.07007480412721634,
+            "4": 0.03776346147060394
+          },
+          "confidence": 0.5713722830017407
+        },
+        "fitWithLogCli": {
+          "type": "score",
+          "score": 0.7835509702563286,
+          "legend": {
+            "0": "Throws it away",
+            "1": "Major rewrite",
+            "2": "Moderate changes",
+            "3": "Small changes",
+            "4": "Drop-in"
+          },
+          "probabilities": {
+            "0": 0.34203362464904785,
+            "1": 0.5603285431861877,
+            "2": 0.07613163441419601,
+            "3": 0.015065649524331093,
+            "4": 0.006440552417188883
+          },
+          "confidence": 0.6103181538637727
+        },
+        "operationalBurden": {
+          "type": "score",
+          "score": 2.367364499717951,
+          "legend": {
+            "0": "Constant",
+            "1": "Frequent",
+            "2": "Some",
+            "3": "Little",
+            "4": "Runs itself"
+          },
+          "probabilities": {
+            "0": 0.03278449922800064,
+            "1": 0.06006564572453499,
+            "2": 0.47101056575775146,
+            "3": 0.3792795240879059,
+            "4": 0.05685978755354881
+          },
+          "confidence": 0.4844718805203835
+        },
+        "evidenceQuality": {
+          "type": "score",
+          "score": 0.41845633275806904,
+          "legend": {
+            "0": "Only marketing",
+            "1": "Mostly marketing",
+            "2": "Mixed",
+            "3": "Some independent tests",
+            "4": "Strong evidence"
+          },
+          "probabilities": {
+            "0": 0.641250729560852,
+            "1": 0.3211601674556732,
+            "2": 0.02110905945301056,
+            "3": 0.010841967537999153,
+            "4": 0.005638035945594311
+          },
+          "confidence": 0.6512863893682758
+        },
+        "dataCustody": {
+          "type": "score",
+          "score": 0.43311471957713366,
+          "legend": {
+            "0": "Third party holds all",
+            "1": "Mostly third party",
+            "2": "Shared",
+            "3": "Mostly ours",
+            "4": "Fully ours"
+          },
+          "probabilities": {
+            "0": 0.6392240524291992,
+            "1": 0.3096623718738556,
+            "2": 0.03584010526537895,
+            "3": 0.009321539662778378,
+            "4": 0.005951879546046257
+          },
+          "confidence": 0.6390710670190553
+        }
+      }
+    ],
+    "twoCaptchaFingerprintApi": [
+      {
+        "noPhysicalPresence": {
+          "type": "score",
+          "score": 3.8109565838240087,
+          "legend": {
+            "0": "Needs hardware on site",
+            "1": "Mostly needs hardware",
+            "2": "Some physical steps",
+            "3": "Almost none",
+            "4": "Fully remote"
+          },
+          "probabilities": {
+            "0": 0.009519662708044052,
+            "1": 0.006939162965863943,
+            "2": 0.018364598974585533,
+            "3": 0.09341828525066376,
+            "4": 0.8717583417892456
+          },
+          "confidence": 0.8424636475586642
+        },
+        "costAtScale": {
+          "type": "score",
+          "score": 3.1009403206408024,
+          "legend": {
+            "0": "Over $30",
+            "1": "$10-30",
+            "2": "$3-10",
+            "3": "$1-3",
+            "4": "Under $1"
+          },
+          "probabilities": {
+            "0": 0.022310741245746613,
+            "1": 0.0528511144220829,
+            "2": 0.15356741845607758,
+            "3": 0.3441287577152252,
+            "4": 0.42714202404022217
+          },
+          "confidence": 0.250783414269487
+        },
+        "reliability": {
+          "type": "score",
+          "score": 2.2907283157110214,
+          "legend": {
+            "0": "Unreliable",
+            "1": "Often breaks",
+            "2": "Workable",
+            "3": "Reliable",
+            "4": "Very reliable"
+          },
+          "probabilities": {
+            "0": 0.0475599505007267,
+            "1": 0.06824378669261932,
+            "2": 0.5000138878822327,
+            "3": 0.31427279114723206,
+            "4": 0.06990959495306015
+          },
+          "confidence": 0.48545360937714577
+        },
+        "scalability": {
+          "type": "score",
+          "score": 0.9078663848340511,
+          "legend": {
+            "0": "Breaks early",
+            "1": "Painful",
+            "2": "Workable",
+            "3": "Easy",
+            "4": "Trivial"
+          },
+          "probabilities": {
+            "0": 0.38377267122268677,
+            "1": 0.43487390875816345,
+            "2": 0.10618694871664047,
+            "3": 0.04004693403840065,
+            "4": 0.035119444131851196
+          },
+          "confidence": 0.43715681632359815
+        },
+        "providerSwappability": {
+          "type": "score",
+          "score": 2.9332980550825596,
+          "legend": {
+            "0": "Locked in",
+            "1": "Hard to leave",
+            "2": "Some lock-in",
+            "3": "Easy to leave",
+            "4": "No lock-in"
+          },
+          "probabilities": {
+            "0": 0.025578610599040985,
+            "1": 0.03569284453988075,
+            "2": 0.1633434146642685,
+            "3": 0.5306219458580017,
+            "4": 0.24476313591003418
+          },
+          "confidence": 0.5364766071240107
+        },
+        "multiPlatform": {
+          "type": "score",
+          "score": 1.472947970032692,
+          "legend": {
+            "0": "Facebook web only",
+            "1": "Narrow",
+            "2": "Some platforms",
+            "3": "Most platforms",
+            "4": "Any platform"
+          },
+          "probabilities": {
+            "0": 0.16459202766418457,
+            "1": 0.33573248982429504,
+            "2": 0.3984356224536896,
+            "3": 0.06461554765701294,
+            "4": 0.036624398082494736
+          },
+          "confidence": 0.3310159258544445
+        },
+        "residentialProxyEgress": {
+          "type": "score",
+          "score": 2.9373514018952847,
+          "legend": {
+            "0": "Not possible",
+            "1": "Leaky",
+            "2": "Possible with work",
+            "3": "Clean",
+            "4": "Clean and enforced"
+          },
+          "probabilities": {
+            "0": 0.018490182235836983,
+            "1": 0.04643535241484642,
+            "2": 0.20695357024669647,
+            "3": 0.43547430634498596,
+            "4": 0.29264649748802185
+          },
+          "confidence": 0.46004890060673154
+        },
+        "viewability": {
+          "type": "score",
+          "score": 3.3363136891275644,
+          "legend": {
+            "0": "No view",
+            "1": "Logs only",
+            "2": "Screenshots",
+            "3": "Live view",
+            "4": "Live view and takeover"
+          },
+          "probabilities": {
+            "0": 0.05613633990287781,
+            "1": 0.02729702927172184,
+            "2": 0.04778193682432175,
+            "3": 0.2616859972476959,
+            "4": 0.6070986986160278
+          },
+          "confidence": 0.4469280680641532
+        },
+        "renderUniqueness": {
+          "type": "score",
+          "score": 0.5772808939218521,
+          "legend": {
+            "0": "Shared by all",
+            "1": "Mostly shared",
+            "2": "Partly distinct",
+            "3": "Distinct but artificial",
+            "4": "Genuinely distinct"
+          },
+          "probabilities": {
+            "0": 0.5914697647094727,
+            "1": 0.3081055283546448,
+            "2": 0.04878973960876465,
+            "3": 0.03494405746459961,
+            "4": 0.016690928488969803
+          },
+          "confidence": 0.5189325883984566
+        },
+        "consistencyAndConsumerLikeness": {
+          "type": "score",
+          "score": 0.9907940179109573,
+          "legend": {
+            "0": "Obvious VM/lies",
+            "1": "Several tells",
+            "2": "Some tells",
+            "3": "Minor tells",
+            "4": "Consumer-like and consistent"
+          },
+          "probabilities": {
+            "0": 0.3732849955558777,
+            "1": 0.36137643456459045,
+            "2": 0.1870822161436081,
+            "3": 0.057772211730480194,
+            "4": 0.02048412896692753
+          },
+          "confidence": 0.17433831840753555
+        },
+        "crossAccountIsolation": {
+          "type": "score",
+          "score": 1.3963663652539253,
+          "legend": {
+            "0": "All linked",
+            "1": "Mostly linked",
+            "2": "Partly isolated",
+            "3": "Well isolated",
+            "4": "Fully isolated"
+          },
+          "probabilities": {
+            "0": 0.11158444732427597,
+            "1": 0.4594396948814392,
+            "2": 0.3673092722892761,
+            "3": 0.044358231127262115,
+            "4": 0.01730835810303688
+          },
+          "confidence": 0.48372061985234416
+        },
+        "detectionTestability": {
+          "type": "score",
+          "score": 3.0507013015449047,
+          "legend": {
+            "0": "Cannot test",
+            "1": "Hard",
+            "2": "Partly",
+            "3": "Mostly",
+            "4": "Fully"
+          },
+          "probabilities": {
+            "0": 0.015771187841892242,
+            "1": 0.03838212415575981,
+            "2": 0.15026049315929413,
+            "3": 0.4705464839935303,
+            "4": 0.32503968477249146
+          },
+          "confidence": 0.5005183418591816
+        },
+        "fitWithLogCli": {
+          "type": "score",
+          "score": 2.7709167450666428,
+          "legend": {
+            "0": "Throws it away",
+            "1": "Major rewrite",
+            "2": "Moderate changes",
+            "3": "Small changes",
+            "4": "Drop-in"
+          },
+          "probabilities": {
+            "0": 0.01594335027039051,
+            "1": 0.018143102526664734,
+            "2": 0.2261504828929901,
+            "3": 0.6585796475410461,
+            "4": 0.08118343353271484
+          },
+          "confidence": 0.673791523091495
+        },
+        "operationalBurden": {
+          "type": "score",
+          "score": 2.4436469078063965,
+          "legend": {
+            "0": "Constant",
+            "1": "Frequent",
+            "2": "Some",
+            "3": "Little",
+            "4": "Runs itself"
+          },
+          "probabilities": {
+            "0": 0.02357141487300396,
+            "1": 0.04291173815727234,
+            "2": 0.46079063415527344,
+            "3": 0.41175100207328796,
+            "4": 0.060975223779678345
+          },
+          "confidence": 0.4802033187200625
+        },
+        "evidenceQuality": {
+          "type": "score",
+          "score": 0.6243208162486553,
+          "legend": {
+            "0": "Only marketing",
+            "1": "Mostly marketing",
+            "2": "Mixed",
+            "3": "Some independent tests",
+            "4": "Strong evidence"
+          },
+          "probabilities": {
+            "0": 0.5196258425712585,
+            "1": 0.3870527446269989,
+            "2": 0.053745072335004807,
+            "3": 0.028527546674013138,
+            "4": 0.011048821732401848
+          },
+          "confidence": 0.47973265312612057
+        },
+        "dataCustody": {
+          "type": "score",
+          "score": 3.042376823723316,
+          "legend": {
+            "0": "Third party holds all",
+            "1": "Mostly third party",
+            "2": "Shared",
+            "3": "Mostly ours",
+            "4": "Fully ours"
+          },
+          "probabilities": {
+            "0": 0.008428199216723442,
+            "1": 0.01691257208585739,
+            "2": 0.0719127431511879,
+            "3": 0.7293470501899719,
+            "4": 0.1733994036912918
+          },
+          "confidence": 0.746315092779696
+        }
+      }
+    ],
+    "providerAgnosticHybrid": [
+      {
+        "noPhysicalPresence": {
+          "type": "score",
+          "score": 3.6754713151603937,
+          "legend": {
+            "0": "Needs hardware on site",
+            "1": "Mostly needs hardware",
+            "2": "Some physical steps",
+            "3": "Almost none",
+            "4": "Fully remote"
+          },
+          "probabilities": {
+            "0": 0.012657959945499897,
+            "1": 0.008753592148423195,
+            "2": 0.03598078340291977,
+            "3": 0.17567428946495056,
+            "4": 0.7669333219528198
+          },
+          "confidence": 0.7295596062516172
+        },
+        "costAtScale": {
+          "type": "score",
+          "score": 2.617606144398451,
+          "legend": {
+            "0": "Over $30",
+            "1": "$10-30",
+            "2": "$3-10",
+            "3": "$1-3",
+            "4": "Under $1"
+          },
+          "probabilities": {
+            "0": 0.017786623910069466,
+            "1": 0.04684006795287132,
+            "2": 0.27799808979034424,
+            "3": 0.614730954170227,
+            "4": 0.042644258588552475
+          },
+          "confidence": 0.6102647033209602
+        },
+        "reliability": {
+          "type": "score",
+          "score": 2.3764569722115993,
+          "legend": {
+            "0": "Unreliable",
+            "1": "Often breaks",
+            "2": "Workable",
+            "3": "Reliable",
+            "4": "Very reliable"
+          },
+          "probabilities": {
+            "0": 0.02110183611512184,
+            "1": 0.045173969119787216,
+            "2": 0.5102103352546692,
+            "3": 0.38319292664527893,
+            "4": 0.04032088816165924
+          },
+          "confidence": 0.5406563797344763
+        },
+        "scalability": {
+          "type": "score",
+          "score": 2.44039573520422,
+          "legend": {
+            "0": "Breaks early",
+            "1": "Painful",
+            "2": "Workable",
+            "3": "Easy",
+            "4": "Trivial"
+          },
+          "probabilities": {
+            "0": 0.02635243907570839,
+            "1": 0.043964169919490814,
+            "2": 0.4380001425743103,
+            "3": 0.4463016986846924,
+            "4": 0.04538154602050781
+          },
+          "confidence": 0.45802721194922924
+        },
+        "providerSwappability": {
+          "type": "score",
+          "score": 3.6431557685136795,
+          "legend": {
+            "0": "Locked in",
+            "1": "Hard to leave",
+            "2": "Some lock-in",
+            "3": "Easy to leave",
+            "4": "No lock-in"
+          },
+          "probabilities": {
+            "0": 0.00748048722743988,
+            "1": 0.010707162320613861,
+            "2": 0.02609306201338768,
+            "3": 0.24261468648910522,
+            "4": 0.7131046056747437
+          },
+          "confidence": 0.7026297946770985
+        },
+        "multiPlatform": {
+          "type": "score",
+          "score": 2.83646122738719,
+          "legend": {
+            "0": "Facebook web only",
+            "1": "Narrow",
+            "2": "Some platforms",
+            "3": "Most platforms",
+            "4": "Any platform"
+          },
+          "probabilities": {
+            "0": 0.01576082967221737,
+            "1": 0.030735116451978683,
+            "2": 0.17694634199142456,
+            "3": 0.654397189617157,
+            "4": 0.12216046452522278
+          },
+          "confidence": 0.6601170596356193
+        },
+        "residentialProxyEgress": {
+          "type": "score",
+          "score": 2.908483376726508,
+          "legend": {
+            "0": "Not possible",
+            "1": "Leaky",
+            "2": "Possible with work",
+            "3": "Clean",
+            "4": "Clean and enforced"
+          },
+          "probabilities": {
+            "0": 0.007811555173248053,
+            "1": 0.018739035353064537,
+            "2": 0.3201077878475189,
+            "3": 0.3638375997543335,
+            "4": 0.2895039916038513
+          },
+          "confidence": 0.4412295702689637
+        },
+        "viewability": {
+          "type": "score",
+          "score": 3.549643265083432,
+          "legend": {
+            "0": "No view",
+            "1": "Logs only",
+            "2": "Screenshots",
+            "3": "Live view",
+            "4": "Live view and takeover"
+          },
+          "probabilities": {
+            "0": 0.005510364659130573,
+            "1": 0.005646830424666405,
+            "2": 0.01201879046857357,
+            "3": 0.3873370885848999,
+            "4": 0.5894868969917297
+          },
+          "confidence": 0.6247028171395261
+        },
+        "renderUniqueness": {
+          "type": "score",
+          "score": 1.997847780585289,
+          "legend": {
+            "0": "Shared by all",
+            "1": "Mostly shared",
+            "2": "Partly distinct",
+            "3": "Distinct but artificial",
+            "4": "Genuinely distinct"
+          },
+          "probabilities": {
+            "0": 0.041950006037950516,
+            "1": 0.14515498280525208,
+            "2": 0.6293110251426697,
+            "3": 0.14026528596878052,
+            "4": 0.043318722397089005
+          },
+          "confidence": 0.6200352286299069
+        },
+        "consistencyAndConsumerLikeness": {
+          "type": "score",
+          "score": 2.085921421647072,
+          "legend": {
+            "0": "Obvious VM/lies",
+            "1": "Several tells",
+            "2": "Some tells",
+            "3": "Minor tells",
+            "4": "Consumer-like and consistent"
+          },
+          "probabilities": {
+            "0": 0.05387996509671211,
+            "1": 0.1476627141237259,
+            "2": 0.5085880756378174,
+            "3": 0.23839454352855682,
+            "4": 0.05147473141551018
+          },
+          "confidence": 0.5026944577693939
+        },
+        "crossAccountIsolation": {
+          "type": "score",
+          "score": 2.5483410637825727,
+          "legend": {
+            "0": "All linked",
+            "1": "Mostly linked",
+            "2": "Partly isolated",
+            "3": "Well isolated",
+            "4": "Fully isolated"
+          },
+          "probabilities": {
+            "0": 0.014444908127188683,
+            "1": 0.02609647624194622,
+            "2": 0.3973315954208374,
+            "3": 0.5209265351295471,
+            "4": 0.04120044782757759
+          },
+          "confidence": 0.5549502332384387
+        },
+        "detectionTestability": {
+          "type": "score",
+          "score": 3.355742421001196,
+          "legend": {
+            "0": "Cannot test",
+            "1": "Hard",
+            "2": "Partly",
+            "3": "Mostly",
+            "4": "Fully"
+          },
+          "probabilities": {
+            "0": 0.014287981204688549,
+            "1": 0.022122886031866074,
+            "2": 0.05791999399662018,
+            "3": 0.40489718317985535,
+            "4": 0.5007719993591309
+          },
+          "confidence": 0.4631185382604599
+        },
+        "fitWithLogCli": {
+          "type": "score",
+          "score": 2.677903803065419,
+          "legend": {
+            "0": "Throws it away",
+            "1": "Major rewrite",
+            "2": "Moderate changes",
+            "3": "Small changes",
+            "4": "Drop-in"
+          },
+          "probabilities": {
+            "0": 0.014497734606266022,
+            "1": 0.025581153109669685,
+            "2": 0.3691224157810211,
+            "3": 0.44911718368530273,
+            "4": 0.14168156683444977
+          },
+          "confidence": 0.4954504227886597
+        },
+        "operationalBurden": {
+          "type": "score",
+          "score": 2.205456241965294,
+          "legend": {
+            "0": "Constant",
+            "1": "Frequent",
+            "2": "Some",
+            "3": "Little",
+            "4": "Runs itself"
+          },
+          "probabilities": {
+            "0": 0.03876298666000366,
+            "1": 0.09163503348827362,
+            "2": 0.5368050336837769,
+            "3": 0.29097652435302734,
+            "4": 0.04182039201259613
+          },
+          "confidence": 0.5468514040112495
+        },
+        "evidenceQuality": {
+          "type": "score",
+          "score": 2.044038623571396,
+          "legend": {
+            "0": "Only marketing",
+            "1": "Mostly marketing",
+            "2": "Mixed",
+            "3": "Some independent tests",
+            "4": "Strong evidence"
+          },
+          "probabilities": {
+            "0": 0.03732092306017876,
+            "1": 0.13287878036499023,
+            "2": 0.6110092401504517,
+            "3": 0.1860230565071106,
+            "4": 0.03276804834604263
+          },
+          "confidence": 0.617433516929547
+        },
+        "dataCustody": {
+          "type": "score",
+          "score": 2.795979741960764,
+          "legend": {
+            "0": "Third party holds all",
+            "1": "Mostly third party",
+            "2": "Shared",
+            "3": "Mostly ours",
+            "4": "Fully ours"
+          },
+          "probabilities": {
+            "0": 0.013395550660789013,
+            "1": 0.027370218187570572,
+            "2": 0.18531037867069244,
+            "3": 0.6977066397666931,
+            "4": 0.07621721178293228
+          },
+          "confidence": 0.7029544343240559
+        }
+      }
+    ]
+  },
+  "passC": [
+    {
+      "boatResidentialEgressViable": {
+        "type": "noul",
+        "noul": 0.9267899990081787
+      },
+      "boatSoftwareRenderSharedAcrossVms": {
+        "type": "noul",
+        "noul": 0.19639749825000763
+      },
+      "llvmpipeIsDetectionRisk": {
+        "type": "noul",
+        "noul": 0.8655490279197693
+      },
+      "canvasLinkageProven": {
+        "type": "noul",
+        "noul": 0.015099778771400452
+      },
+      "biggerRiskIsAccountAndBehaviour": {
+        "type": "noul",
+        "noul": 0.9263599514961243
+      },
+      "boatCheapestAtScale": {
+        "type": "noul",
+        "noul": 0.8933151364326477
+      },
+      "packingAccountsPerVmAcceptable": {
+        "type": "noul",
+        "noul": 0.042584728449583054
+      },
+      "abstractionLayerNeeded": {
+        "type": "noul",
+        "noul": 0.9293817281723022
+      },
+      "listaroLessonsApply": {
+        "type": "noul",
+        "noul": 0.9608684182167053
+      },
+      "mobileFirstNeededForOtherPlatforms": {
+        "type": "noul",
+        "noul": 0.48963338136672974
+      },
+      "physicalDevicesRequired": {
+        "type": "noul",
+        "noul": 0.1286705881357193
+      },
+      "testBeforeLive": {
+        "type": "noul",
+        "noul": 0.9611917734146118
+      },
+      "twoCaptchaFingerprintApiWorthBuying": {
+        "type": "noul",
+        "noul": 0.013048350811004639
+      },
+      "gpuNeededForScale": {
+        "type": "noul",
+        "noul": 0.2072380632162094
+      },
+      "boatTrialFirst": {
+        "type": "noul",
+        "noul": 0.9845751523971558
+      },
+      "datacenterProxyIsUnacceptable": {
+        "type": "noul",
+        "noul": 0.932320237159729
+      }
+    },
+    {
+      "boatResidentialEgressViable": {
+        "type": "noul",
+        "noul": 0.9267899990081787
+      },
+      "boatSoftwareRenderSharedAcrossVms": {
+        "type": "noul",
+        "noul": 0.19639749825000763
+      },
+      "llvmpipeIsDetectionRisk": {
+        "type": "noul",
+        "noul": 0.8655490279197693
+      },
+      "canvasLinkageProven": {
+        "type": "noul",
+        "noul": 0.015099778771400452
+      },
+      "biggerRiskIsAccountAndBehaviour": {
+        "type": "noul",
+        "noul": 0.9263599514961243
+      },
+      "boatCheapestAtScale": {
+        "type": "noul",
+        "noul": 0.8933151364326477
+      },
+      "packingAccountsPerVmAcceptable": {
+        "type": "noul",
+        "noul": 0.042584728449583054
+      },
+      "abstractionLayerNeeded": {
+        "type": "noul",
+        "noul": 0.9293817281723022
+      },
+      "listaroLessonsApply": {
+        "type": "noul",
+        "noul": 0.9608684182167053
+      },
+      "mobileFirstNeededForOtherPlatforms": {
+        "type": "noul",
+        "noul": 0.48963338136672974
+      },
+      "physicalDevicesRequired": {
+        "type": "noul",
+        "noul": 0.1286705881357193
+      },
+      "testBeforeLive": {
+        "type": "noul",
+        "noul": 0.9611917734146118
+      },
+      "twoCaptchaFingerprintApiWorthBuying": {
+        "type": "noul",
+        "noul": 0.013048350811004639
+      },
+      "gpuNeededForScale": {
+        "type": "noul",
+        "noul": 0.2072380632162094
+      },
+      "boatTrialFirst": {
+        "type": "noul",
+        "noul": 0.9845751523971558
+      },
+      "datacenterProxyIsUnacceptable": {
+        "type": "noul",
+        "noul": 0.932320237159729
+      }
+    }
+  ],
+  "inputTokens": 2636546
+}

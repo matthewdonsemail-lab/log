@@ -761,3 +761,19 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: Added docs/deviceIsolation/. The README explains the shared-GPU catch and why neither 2Captcha's Fingerprint API nor boat.dev fixes the pixels. It also has the 16 criteria, an 11-option score matrix and a recommendation, with a boat trial test. Also: vendorFacts.md (2Captcha Fingerprint and Browser API, boat, read first-hand); the Parallel ultra deep research (md and json, 81 sources); options.json and criteria.json; runSubqMatrix.mjs, which scores the options with SubQ's Decisions API; subqResults.json, the raw answers; and subqDocs.md, docs.subq.ai as pulled.
 Why: matt asked whether injecting 2Captcha fingerprint data or running each account in its own boat.dev VM fixes the WebGL/canvas linkage. He wanted a neutral matrix over every option, built from 16 SubQ questions with all our evidence loaded, and a clear recommendation.
 Checked: runSubqMatrix.mjs ran end to end. Pass A ran 3x (choice) and pass B 2x per option (score). The repeats gave identical answers. 1,672,525 input tokens. boat's no-GPU claim was confirmed on docs.boat.dev/machines. `bun run check:naming` passes. No keys are in the files: the script reads SUBQ_API_KEY from the environment.
+
+## 2026-10-18 13:15Z · feat/publishMachine
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `docs/scaleArchitecture/README.md`: new file
+- `docs/scaleArchitecture/brief.md`: new file
+- `docs/scaleArchitecture/claims.json`: new file
+- `docs/scaleArchitecture/criteria.json`: new file
+- `docs/scaleArchitecture/options.json`: new file
+- `docs/scaleArchitecture/runSubqScaleMatrix.mjs`: added const here, const docs, const repos, const listaro, const url, const dryRun, const key, const options, const criteria, const claims, const read, const dirMd, const evidence, const situation, const state, const secretPatterns, function decide, const choiceQuestions, const scoreQuestions, const claimQuestions, const results, const track
+- `docs/scaleArchitecture/subqResults.json`: new file
+- `docs/scaleArchitecture/subqSummary.txt`: new file
+
+What changed: Added docs/scaleArchitecture/: matt's brief, 12 remote options (boat per account and packed, self-managed VPS, GPU VMs and sandboxes, cloud browsers, anti-detect on servers, cloud phones, 2Captcha APIs, a provider-agnostic environment layer), 16 scale-focused criteria, 16 claims, the SubQ runner, raw results, a computed summary and a README with the ranking.
+Why: matt cannot buy physical hardware from Vietnam. Cost, reliability and scale to hundreds of thousands of accounts across platforms decide the architecture, with boat + 2Captcha residential as the leading host. He asked for all the context (deviceIsolation, identityLeaks, vendors, Listaro_backup docs) to go through SubQ.
+Checked: runSubqScaleMatrix.mjs ran end to end: 50 files, about 168K tokens per call, 16 calls, 2,636,546 input tokens. Repeat passes gave identical answers. The secret-pattern scan passed before sending. The key was read from the environment only.
