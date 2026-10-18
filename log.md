@@ -398,3 +398,16 @@ Checked: `bun run check`: naming gate ok, tsc ok, 244 pass. Real runs through a 
 - `log publish` against the fixture stopped at `blocked · proxyCountryMismatch` (IE file) before any window opened, and ran the full dry run to `done` with the VN file.
 - A "Galway, Ireland" listing on the VN account was refused with `listingCountryMismatch`.
 Not checked: a real residential proxy, the 407 path against a real authenticated proxy, and that the browser's own traffic went through the proxy (the fixture is a local file; only the gate's exit check went through it).
+
+## 2026-10-18 07:29Z · feat/publishMachine
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `docs/vendors/README.md`: new file
+- `docs/vendors/canadaBcFacebookAccounts.jsonl`: new file
+- `docs/vendors/irelandUkFacebookAccounts.jsonl`: new file
+- `docs/vendors/usaEastCoastFacebookAccounts.jsonl`: new file
+- `docs/vendors/usaFacebookDirectListings.jsonl`: new file
+
+What changed: New `docs/vendors/` holds matt's research on the vendors we buy Facebook accounts from: 4 JSONL files, stored byte for byte as sent and renamed to camelCase (irelandUk, canadaBc, usaEastCoast, usaFacebookDirectListings). The README lists each file's region and vendors, what the research says to watch (region claims are mostly country level), and how a bought account goes into Twenty's socialAccounts, field by field, then through `log proxy check` and `log connect` before it posts. Nothing reads these files.
+Why: matt: "make a new camelCase directory called vendors ... just store the information inside of there ... have a README.md ... outline how they work ... and where the vendors' accounts that we purchased are meant to be added into the socialAccounts".
+Checked: the sha256 of each stored file matches the sha256 of the relay upload it came from (a416dbf9, dbe65e41, c9e4996c, b0998e6a). The files hold vendor names, URLs, prices and availability only, with no account logins. No code changed.
