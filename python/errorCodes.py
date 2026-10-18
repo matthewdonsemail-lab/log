@@ -35,6 +35,24 @@ def checked(code: str) -> str:
     return code
 
 
+# Values never to send or log: the proxy password and the username's account
+# part (for 2Captcha they are the same string). proxyGate registers them.
+_SECRETS: set[str] = set()
+
+
+def register_secret(value: str | None) -> None:
+    from urllib.parse import quote
+
+    if value and len(value) >= 4:
+        _SECRETS.update({value, quote(value, safe="")})
+
+
+def redact(text: str) -> str:
+    for secret in sorted(_SECRETS, key=len, reverse=True):
+        text = text.replace(secret, "***")
+    return text
+
+
 def failure(code: str, detail: str = "", **extra: Any) -> dict[str, Any]:
     """The one failure shape both processes send: {"ok": false, "code", "detail", ...}."""
-    return {"ok": False, "code": checked(code), "detail": detail, **extra}
+    return {"ok": False, "code": checked(code), "detail": redact(str(detail)), **extra}

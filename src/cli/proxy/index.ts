@@ -110,7 +110,8 @@ export const proxyCommand: Command = {
       try {
         const [account, balance] = await Promise.all([getProxyAccount(apiKey), getBalance(apiKey)]);
         const out = {
-          username: `${account.username.slice(0, 3)}…`,
+          // The username is the 2Captcha proxy password's prefix: never shown.
+          username: "***",
           active: account.status === 1,
           trafficLeft: account.leftFlow,
           trafficUsed: account.usedFlow,

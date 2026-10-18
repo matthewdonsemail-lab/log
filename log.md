@@ -584,3 +584,16 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: The proxy gate now also gets the exit IP's timezone (exit_location returns it, check() refuses with proxyCountryMismatch if there is none), and force_timezone() patches Playwright's Browser.new_context so every context, and so every new_page, gets timezoneId = that timezone. facebook-camofox-client's own new_context() calls are covered without changing it. docs/proxies.md and the rule 12 test describe it.
 Why: A live run through a real 2Captcha Galway proxy showed the Irish exit IP and en-IE, but the browser clock was this PC's Asia/Bangkok. Camoufox's geoip timezone doesn't take on Windows (config timezone and TZ env didn't fix the page either), so Facebook would have seen an Irish IP on a UTC+7 clock.
 Checked: `bun run check`: naming ok, tsc ok, 301 pass. Live, headed, through the gate with 2Captcha's Galway session on a throwaway logCliTestProxy account: ip-api in the page shows 109.79.100.84 IE, Intl timezone Europe/Dublin (was Asia/Bangkok), a web worker on facebook.com/marketplace shows Europe/Dublin, language en-IE. `log proxy assign` and `log proxy check` passed live on the same account (exit in Ireland, saved to Twenty).
+
+## 2026-10-18 10:39Z · feat/publishMachine
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `python/errorCodes.py`: added def register_secret, def redact · changed def failure
+- `src/cli/proxy/index.ts`: changed const proxyCommand
+- `src/cli/proxy/proxy.test.ts`: changed test "builds a Galway proxy, checks it exits in Ireland, then saves it to Twenty"
+- `src/marketplace/socialAccount/helpers/checkRunnable.ts`: added function fetchProxyUrl, function maskProxyUsername · changed function maskProxyUrl
+- `src/marketplace/socialAccount/socialAccount.test.ts`: added test "maskProxyUrl hides the username's account part too: 2Captcha's password is that prefix" · changed test "maskProxyUrl never shows the password"
+
+What changed: `maskProxyUrl` now also hides the first part of the proxy username (`***-zone-custom-region-ie-...-session-<id>-sessTime-120`), so `log accounts`, `log account show`, `log proxy check` and `log proxy assign` (text and --json) never show it; `log proxy balance` shows the username as `***`. The Python side registers the proxy password and the username's account part when it reads the proxy file, and every failure detail (and every gate refusal) is scrubbed of them before it leaves the process. `fetchProxyUrl` gives Bun's fetch the account's HTTP proxy with the credentials percent-encoded (used by the photo downloads in the next commit).
+Why: The live leak tests found that a 2Captcha proxy password is the account prefix of the proxy username, so printing the username printed the password. The lead asked for the username to be masked too, with a test, and for no log line or error to print it.
+Checked: `bun test src/marketplace/socialAccount src/cli/proxy`: 21 pass, with a 2Captcha-shaped URL whose masked form must not contain the prefix and an assign run whose output must not contain it. Live: `log proxy assign --account logCliTestIdentity` printed `as ***-zone-custom-region-ie-st-connacht-city-galway-session-h2SV92jPv-sessTime-120`. The redaction is tested with the Python tests in the next commit (`src/camofox/device/device.test.ts`).

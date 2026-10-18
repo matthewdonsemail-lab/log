@@ -28,12 +28,38 @@ export function parseProxyUrl(raw: string): Omit<RunProxy, 'country'> | null {
   return out
 }
 
-/** The proxy for display: never the password. Pure. */
+/**
+ * The account's proxy as a URL Bun's fetch can use (`fetch(url, { proxy })`),
+ * credentials percent-encoded, or null when there is none or it is SOCKS5,
+ * which fetch can't use. For downloads that must leave through the account's
+ * own exit, never this machine. Pure.
+ */
+export function fetchProxyUrl(raw: string | null): string | null {
+  const proxy = raw ? parseProxyUrl(raw) : null
+  if (!proxy || !/^https?:/.test(proxy.server)) return null
+  const [scheme, hostPort] = proxy.server.split('//')
+  if (!proxy.username) return proxy.server
+  const auth = encodeURIComponent(proxy.username) + (proxy.password ? `:${encodeURIComponent(proxy.password)}` : '')
+  return `${scheme}//${auth}@${hostPort}`
+}
+
+/**
+ * A proxy username for display. Its first part is the vendor account (for
+ * 2Captcha it is also the gateway password), so it is always redacted; the
+ * geo and session parts after it stay readable
+ * (`***-zone-custom-region-ie-...-session-ab12-sessTime-120`). Pure.
+ */
+export function maskProxyUsername(username: string): string {
+  const dash = username.indexOf('-')
+  return dash > 0 ? `***${username.slice(dash)}` : '***'
+}
+
+/** The proxy for display: never the password, never the account part of the username. Pure. */
 export function maskProxyUrl(raw: string | null): string {
   if (!raw) return ''
   const proxy = parseProxyUrl(raw)
   if (!proxy) return '(unreadable)'
-  return `${proxy.server}${proxy.username ? ` as ${proxy.username}` : ''}`
+  return `${proxy.server}${proxy.username ? ` as ${maskProxyUsername(proxy.username)}` : ''}`
 }
 
 /**

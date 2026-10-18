@@ -102,6 +102,9 @@ describe("log proxy assign (2Captcha, fetch stubbed)", () => {
       expect(code).toBe(0);
       expect(out).toContain("in Ireland (galway, connacht, Ireland). Saved to Twenty.");
       expect(out).not.toContain("testPass");
+      // The username's account part is the 2Captcha password: never printed either.
+      expect(out).not.toContain("u7etest");
+      expect(out).toContain("***-zone-custom-region-ie");
       expect(proxyFiles[0]).toMatchObject({ server: "http://eu.proxy.2captcha.com:2334", password: "testPass", country: "IE" });
       const saved = String(twenty.rows.socialAccounts.find((r) => r.id === "noProxy")!.proxy);
       expect(saved).toContain("u7etest-zone-custom-region-ie-st-connacht-city-galway-session-");

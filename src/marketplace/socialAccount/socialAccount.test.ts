@@ -8,6 +8,7 @@ import {
   fromTwentyEnum,
   listFacebookAccounts,
   maskProxyUrl,
+  maskProxyUsername,
   parseProxyUrl,
   statusForIssue,
   toFacebookCookies,
@@ -24,8 +25,16 @@ describe('parseProxyUrl', () => {
   })
 
   test('maskProxyUrl never shows the password', () => {
-    expect(maskProxyUrl('http://user:secretPass@1.2.3.4:8080')).toBe('http://1.2.3.4:8080 as user')
+    expect(maskProxyUrl('http://user:secretPass@1.2.3.4:8080')).toBe('http://1.2.3.4:8080 as ***')
     expect(maskProxyUrl(null)).toBe('')
+  })
+
+  test("maskProxyUrl hides the username's account part too: 2Captcha's password is that prefix", () => {
+    const url = 'http://u7e9secret-zone-custom-region-ie-st-connacht-city-galway-session-Ab3d-sessTime-120:u7e9secret@eu.proxy.2captcha.com:2334'
+    const shown = maskProxyUrl(url)
+    expect(shown).toBe('http://eu.proxy.2captcha.com:2334 as ***-zone-custom-region-ie-st-connacht-city-galway-session-Ab3d-sessTime-120')
+    expect(shown).not.toContain('u7e9')
+    expect(maskProxyUsername('nodashes')).toBe('***')
   })
 })
 
