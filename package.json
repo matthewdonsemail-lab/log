@@ -1,0 +1,27 @@
+{
+  "name": "log-cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Bun CLI for the ListeningKit log Facebook Marketplace data: listings, their accounts, and the listing state machine.",
+  "bin": {
+    "log": "./bin/log.ts"
+  },
+  "scripts": {
+    "start": "bun run bin/log.ts",
+    "launch": "bun run bin/log.ts launch",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "check:naming": "node scripts/checkNamingConventions.mjs",
+    "check": "bun run check:naming && bun run typecheck && bun run test"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.8.1"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.4.0",
+    "typescript": "^5.9.3"
+  },
+  "author": "matthewdonsemail-lab",
+  "license": "MIT"
+}
