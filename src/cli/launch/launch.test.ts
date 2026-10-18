@@ -12,6 +12,7 @@ function capture() {
   const err: string[] = [];
   const context: CommandContext = {
     load: () => ({ listings: listListings(), accounts: listAccounts() }),
+    worker: async () => ({ ok: false, error: "worker not stubbed" }),
     out: (line) => out.push(line),
     err: (line) => err.push(line),
   };
@@ -54,7 +55,7 @@ describe("runLaunch", () => {
     const calls = stubPrompts([]);
     const result = await runLaunch(capture().context, ["--json"]);
     expect(result.code).toBe(0);
-    expect(JSON.parse(result.stdout!).actions).toEqual(["browse", "status", "account", "accounts"]);
+    expect(JSON.parse(result.stdout!).actions).toEqual(["browse", "status", "account", "accounts", "scan", "login", "doctor"]);
     expect(calls).toEqual([]);
   });
 
@@ -84,6 +85,17 @@ describe("runLaunch", () => {
     const { context, out } = capture();
     expect((await runLaunch(context, [])).code).toBe(0);
     expect(out.join("\n")).toContain("Garden Waste Hauling");
+  });
+
+  test("scan delegates to `scan --account <id>`", async () => {
+    stubPrompts(["scan", "fb-pacer"]);
+    const delegated: string[][] = [];
+    launchDeps.run = (command, _context, argv) => {
+      delegated.push([command.name, ...argv]);
+      return { code: 0, stdout: "scanned" };
+    };
+    expect((await runLaunch(capture().context, [])).code).toBe(0);
+    expect(delegated).toEqual([["scan", "--account", "fb-pacer"]]);
   });
 
   test("cancel exits 1", async () => {

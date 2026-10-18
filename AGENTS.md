@@ -20,6 +20,16 @@
   `apps/web/src/lib/listings/types.ts` and `machine.ts`. Keep them in step
   with the source.
 
+## Live mode
+
+- `doctor`, `login`, `scan`, `status` go through `camofox/worker` and launch
+  a real Camoufox browser. Tests always inject `worker` into the context and
+  never launch a browser.
+- Read-only on Facebook, except `login`, which only saves a session. Don't add
+  posting, editing or deleting without matt asking.
+- Session files (`~/.logCli/facebook/*.json`) hold live cookies. Never commit,
+  print or paste them.
+
 ## CLI shape (from rank-cli)
 
 - Commands return `{ code, stdout, stderr }` and never write to the console
