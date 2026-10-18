@@ -422,7 +422,7 @@ export function RepoModal({
             >
               save my spot <ArrowRight size={20} strokeWidth={3} />
             </a>
-            <p className="mt-1.5 text-center text-xs font-black uppercase tracking-wide text-white/90">
+            <p className="mt-1.5 text-center text-xs font-black uppercase text-white/90">
               free · 5 quick questions · 2 minutes
             </p>
           </div>

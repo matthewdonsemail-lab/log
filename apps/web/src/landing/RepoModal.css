@@ -44,7 +44,7 @@
 
 .lk-repo .lk-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  font-weight: 900; font-size: 14px; letter-spacing: 0.8px; text-transform: uppercase;
+  font-weight: 900; font-size: 14px; text-transform: uppercase;
   padding: 12px 20px; border-radius: var(--lk-r); background: var(--lk-brand); color: #fff;
   box-shadow: 0 var(--lk-lip) 0 var(--lk-brand-deep);
   transition: transform 0.08s ease, box-shadow 0.08s ease;
