@@ -1,5 +1,4 @@
 import { useState, type ReactNode } from 'react'
-import { Check, Copy } from 'lucide-react'
 import {
   FloatingPortal,
   autoUpdate,
@@ -13,12 +12,11 @@ import {
   useInteractions,
 } from '@floating-ui/react'
 import { Button } from '@listeningkit/ui'
-import { mcpUrl } from '../lib/api-keys-live'
 
 /**
- * Hover tooltip for a plugs icon. Shows a docs button left of the title,
- * per-tool setup words, plus the MCP server address to copy,
- * in a white floating panel.
+ * Hover tooltip for a "Works with" icon: the tool's name, one line on how it connects, and a button to
+ * that tool's section of the MCP docs. Log is self-hosted now, so there is no shared server address to
+ * show; the docs explain where each person's own deployment serves `/mcp`.
  */
 export function PlugTooltip({
   label,
@@ -33,10 +31,7 @@ export function PlugTooltip({
   src: string
   children: ReactNode
 }) {
-  // The address an MCP client connects to: this site's own /mcp (on the live site, the Convex site address).
-  const serverAddress = mcpUrl() ?? '/mcp'
   const [open, setOpen] = useState(false)
-  const [copied, setCopied] = useState(false)
   const { refs, floatingStyles, context } = useFloating({
     open,
     onOpenChange: setOpen,
@@ -52,16 +47,6 @@ export function PlugTooltip({
   const focus = useFocus(context)
   const dismiss = useDismiss(context)
   const { getReferenceProps, getFloatingProps } = useInteractions([hover, focus, dismiss])
-
-  async function copyCommand() {
-    try {
-      await navigator.clipboard.writeText(serverAddress)
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 1500)
-    } catch {
-      /* clipboard unavailable — the command stays visible to copy by hand */
-    }
-  }
 
   return (
     <>
@@ -83,32 +68,11 @@ export function PlugTooltip({
               <p className="text-sm font-bold text-ink">{label}</p>
             </div>
             <p className="mt-2 text-[13px] leading-snug text-ink/70">{setup}</p>
-            <div className="mt-2 flex items-center gap-1 rounded-md bg-ink/5 py-1 pl-2 pr-1">
-              <code className="min-w-0 grow break-all text-[13px] text-ink">
-                {serverAddress}
-              </code>
-              <Button
-                variant={copied ? 'blue' : 'ghost'}
-                size="icon-sm"
-                onClick={copyCommand}
-                aria-label="Copy the MCP server address"
-                className="shrink-0 text-ink/60"
-              >
-                {copied ? <Check size={14} /> : <Copy size={14} />}
-              </Button>
-            </div>
             <Button variant="blue" asChild className="mt-2 w-full">
               <a href={docsHref} target="_blank" rel="noopener noreferrer">
-                Read the docs
+                Read the MCP docs
               </a>
             </Button>
-          </div>
-        </FloatingPortal>
-      ) : null}
-      {copied ? (
-        <FloatingPortal>
-          <div className="fixed bottom-4 right-4 z-[9999] rounded-xl bg-ink px-4 py-2.5 text-sm font-medium text-white shadow-xl">
-            Copied to clipboard
           </div>
         </FloatingPortal>
       ) : null}

@@ -17,31 +17,31 @@ const PLUGS = [
     href: '/docs/guide/mcp.html#chatgpt',
     label: 'ChatGPT',
     src: '/logos/tools/chatgpt.svg',
-    setup: 'ChatGPT connectors cannot send an API key yet, so it is not supported. Sign-in for ChatGPT is planned.',
+    setup: 'ChatGPT connectors cannot send an API key yet, so it cannot reach your Log server. The docs say what works instead.',
   },
   {
     href: '/docs/guide/mcp.html#claude-code',
     label: 'Claude',
     src: '/logos/tools/claude-desktop.svg',
-    setup: 'Add the listeningkit MCP server to Claude Code or Claude Desktop with an API key, then ask about your matches.',
+    setup: 'Point Claude Code or Claude Desktop at the MCP server on your own Log deployment, then ask about your matches.',
   },
   {
     href: '/docs/guide/mcp.html#cursor',
     label: 'Cursor',
     src: '/logos/tools/cursor.svg',
-    setup: 'Add the listeningkit MCP server to Cursor and its agent can read your matches and manage your phrases.',
+    setup: 'Add your Log deployment\'s MCP server to Cursor and its agent can read your matches and manage your phrases.',
   },
   {
     href: '/docs/guide/mcp.html#hermes',
     label: 'Hermes',
     src: '/logos/tools/hermes.svg',
-    setup: 'Register the listeningkit MCP server in Hermes to query your matches from your workflows.',
+    setup: 'Register your Log deployment\'s MCP server in Hermes to query your matches from your workflows.',
   },
   {
     href: '/docs/guide/mcp.html#any-other-mcp-client',
     label: 'MCP',
     src: '/logos/tools/mcp.svg',
-    setup: 'Point any MCP client at the listeningkit server. Read-only keys can only read.',
+    setup: 'Point any MCP client at the /mcp address of your own Log deployment. Read-only keys can only read.',
   },
 ]
 
