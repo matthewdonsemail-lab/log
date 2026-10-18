@@ -34,6 +34,37 @@ Every command takes `--json` and never prompts, so scripts and agents can use it
 | `log login --account <id>` | Opens Camoufox so you log into Facebook by hand, then saves that account's session |
 | `log scan --account <id>` | Reads Marketplace > Selling live and puts each card next to what log says |
 | `log status <listing-id> --account <id>` | Opens one item page live and classifies it |
+| `log watch --account <id> [--checks n] [--interval min]` | Runs the listing monitor (XState) and prints every step as it happens |
+
+## The listing monitor (`log watch`)
+
+`src/marketplace/monitor/machine.ts` is an XState v5 machine:
+
+```text
+checking --ok-----------> evaluating --> waiting --after poll--> checking
+   |                          '-- checks done --> done
+   |--rate_limited--> resting --after 24h--> checking
+   |--other account issue--> blocked
+   '--error--> failed --first try--> retrying --after 5s--> checking
+                 |-- same error 3x in a row --> tripped
+                 '-- otherwise --> waiting
+```
+
+`log watch` prints each event and state through XState's inspect API
+(`src/observability/trace`). `--json` streams them as NDJSON, one line per step,
+with the result on the last line. `--checks 0` runs until Ctrl+C.
+
+Where the rules come from:
+
+| Rule | Source |
+| --- | --- |
+| Removal reasons, never repost on policy/ban/checkpoint, 2 reposts, 1h then 3h cooldown, RETRY_EXHAUSTED | facebook-camofox-client `domain_marketplace/relist.py` |
+| One quick retry for transient errors, circuit breaker at 3 same errors, 24h rest when limited | Listaro `agent/src/poll-loop.ts`, `api/agent/result/route.ts`, `process-posts` |
+| Don't call listings removed when the page showed none (or under 3 of 3+) | Listaro `src/lib/listing-checker.ts:790-797` |
+| No second repost while one is queued | Listaro `listing-checker.ts:868-886` |
+| Page text to account issue (ban, checkpoint, limit, login) | Listaro `poster.ts`, `process-posts`, `facebook-auto-login.ts`, one issue per signal |
+
+It only decides. Nothing is posted.
 
 ## Live mode (Camoufox)
 
@@ -82,6 +113,9 @@ src/cli/account/                log accounts
 src/cli/launch/                 log launch (Clack)
 src/cli/live/                   log doctor, login, scan, status
 src/camofox/worker/             spawns python/logWorker.py, maps dashboard badges to statuses
+src/marketplace/monitor/        the XState listing monitor + relist rules
+src/observability/trace/        XState inspect -> trace lines
+src/cli/watch/                  log watch
 python/logWorker.py             bridge into facebook-camofox-client
 ```
 

@@ -17,7 +17,8 @@
     "check": "bun run check:naming && bun run typecheck && bun run test"
   },
   "dependencies": {
-    "@clack/prompts": "^1.8.1"
+    "@clack/prompts": "^1.8.1",
+    "xstate": "5.33.3"
   },
   "devDependencies": {
     "@types/bun": "^1.4.0",

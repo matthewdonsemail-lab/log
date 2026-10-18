@@ -59,6 +59,8 @@ export type ScanResult = {
   listings: ScannedListing[];
   /** Titles under the "Needs attention" heading (the zone Listaro flagged). */
   needsAttention: string[];
+  /** Start of the page text, so log-cli can spot account problems (bans, limits, checkpoints). */
+  bodySample?: string;
 };
 export type StatusResult = { ok: true; listingId: string; listingUrl: string; status: string; title: string | null };
 

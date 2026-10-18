@@ -11,6 +11,7 @@ import { accountsCommand } from "../account/index.ts";
 import { launchCommand } from "../launch/index.ts";
 import { listingCommand, listingsCommand } from "../listing/index.ts";
 import { doctorCommand, loginCommand, scanCommand, statusCommand } from "../live/index.ts";
+import { watchCommand } from "../watch/index.ts";
 import { renderUsage } from "./helpers/index.ts";
 import type { Command, CommandContext } from "./types.ts";
 
@@ -26,6 +27,7 @@ export const COMMANDS: Command[] = [
   loginCommand,
   scanCommand,
   statusCommand,
+  watchCommand,
 ];
 
 const ALIASES: Record<string, string> = {

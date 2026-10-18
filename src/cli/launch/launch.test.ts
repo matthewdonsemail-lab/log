@@ -55,7 +55,7 @@ describe("runLaunch", () => {
     const calls = stubPrompts([]);
     const result = await runLaunch(capture().context, ["--json"]);
     expect(result.code).toBe(0);
-    expect(JSON.parse(result.stdout!).actions).toEqual(["browse", "status", "account", "accounts", "scan", "login", "doctor"]);
+    expect(JSON.parse(result.stdout!).actions).toEqual(["browse", "status", "account", "accounts", "scan", "watch", "login", "doctor"]);
     expect(calls).toEqual([]);
   });
 

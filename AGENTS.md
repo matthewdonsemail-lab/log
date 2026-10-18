@@ -30,6 +30,17 @@
 - Session files (`~/.logCli/facebook/*.json`) hold live cookies. Never commit,
   print or paste them.
 
+## Monitor (XState v5)
+
+- `marketplace/monitor/machine.ts` is XState v5 (`setup()`, named guards,
+  actions and delays). Its only side effect is the `check` actor, which the
+  caller provides with `machine.provide`. Tests script `check` outcomes and use
+  1ms timings.
+- Every new process that runs over time should be a machine run through
+  `observability/trace`, so `log` can show each step.
+- The monitor decides and never posts. A repost executor is a separate,
+  explicit step for matt to ask for.
+
 ## CLI shape (from rank-cli)
 
 - Commands return `{ code, stdout, stderr }` and never write to the console
