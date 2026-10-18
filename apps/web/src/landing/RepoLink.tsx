@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom'
 import { ArrowRight, ArrowUpRight, Lock, Star, UserPlus, X } from 'lucide-react'
 import { GG_REVIEWS, type Review } from './ggReviews'
 import './RepoModal.css'
+import { ggJoinUrl, track } from './track'
 
 // The gg page's video player loads only when the modal reaches the video, not with the landing page.
 const VslPlayer = lazy(() => import('./VslPlayer'))
@@ -38,7 +39,9 @@ const COMMUNITY = {
   title: 'We used Log to find people just like us',
   blurb:
     'We indexed **3 months** of X posts with Log and mapped out __300+ people__ in our industry doing the same work. Now we\'re a **comm of operators**: 2 calls a week on X, daily accountability, and open source tools we build together.',
-  href: 'https://gg.listeningkit.com/#apply',
+  // utm tags so gg and the Whop entry know the visitor came from Log's repo modal (campaign = which button)
+  href: ggJoinUrl('repo_modal', 'comm_card'),
+  joinBarHref: ggJoinUrl('repo_modal', 'join_bar'),
   cta: 'Save your spot',
   sticker: { src: '/images/FindNewCustomers.png', alt: 'Find new customers' },
 }
@@ -91,7 +94,10 @@ export const RepoLink = forwardRef<HTMLAnchorElement, AnchorHTMLAttributes<HTMLA
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
-    if (repo && !alreadySubscribed() && matchesDeepLink(repo.owner, repo.repo)) setOpen(true)
+    if (repo && !alreadySubscribed() && matchesDeepLink(repo.owner, repo.repo)) {
+      track('repo_modal_open', { repo: repo.repo, open_trigger: 'shared_link' })
+      setOpen(true)
+    }
   }, [repo?.owner, repo?.repo])
 
   if (!repo || !href) {
@@ -104,8 +110,13 @@ export const RepoLink = forwardRef<HTMLAnchorElement, AnchorHTMLAttributes<HTMLA
 
   function handle(e: MouseEvent<HTMLAnchorElement>) {
     onClick?.(e)
-    if (!shouldOpenRepoModal(e)) return
+    if (!shouldOpenRepoModal(e)) {
+      // a subscriber from an earlier visit goes straight to GitHub, still worth counting
+      if (repo && !e.defaultPrevented && alreadySubscribed()) track('repo_continue', { repo: repo.repo, via: 'returning subscriber' })
+      return
+    }
     e.preventDefault()
+    track('repo_modal_open', { repo: repo!.repo, open_trigger: 'click' })
     setOpen(true)
   }
 
@@ -180,13 +191,24 @@ export function RepoModal({
   const [watched, setWatched] = useState(0)
   const unlocked = watched >= WATCH_GATE_SECONDS
   const panel = useRef<HTMLDivElement>(null)
-  const close = useRef(onClose)
-  close.current = onClose
+  // where the visitor was when they left, for repo_modal_close
+  const modalStep = step === 'skipped' ? (unlocked ? 'skipped, unlocked' : 'skipped, watching') : step
+  const dismiss = () => {
+    track('repo_modal_close', { repo, modal_step: modalStep })
+    onClose()
+  }
+  const close = useRef(dismiss)
+  close.current = dismiss
 
   const go = () => {
+    track('repo_continue', { repo, via: step === 'thanks' ? 'subscribed' : 'watched' })
     window.open(href, '_blank', 'noopener,noreferrer')
     onClose()
   }
+
+  useEffect(() => {
+    if (unlocked) track('watch_gate_unlocked', { repo })
+  }, [unlocked, repo])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && close.current()
@@ -218,8 +240,10 @@ export function RepoModal({
       } catch {
         // Private mode: the modal just shows again next time.
       }
+      track('newsletter_signup', { repo })
       setStep('thanks')
     } catch {
+      track('newsletter_signup_error', { repo })
       setError(true)
       setStep('ask')
     }
@@ -229,7 +253,7 @@ export function RepoModal({
 
   return createPortal(
     <div className="lk-repo fixed inset-0 z-[100] grid place-items-center p-4">
-      <div className="absolute inset-0 bg-[#0d2a4c]/60" onClick={onClose} aria-hidden />
+      <div className="absolute inset-0 bg-[#0d2a4c]/60" onClick={dismiss} aria-hidden />
       {/* The same blue card as the member-site funnel: label, big title, sticker blurb, then the white box. */}
       <div
         ref={panel}
@@ -241,7 +265,7 @@ export function RepoModal({
       >
         <button
           type="button"
-          onClick={onClose}
+          onClick={dismiss}
           aria-label="Close"
           className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-sm text-white/90 hover:bg-white/20"
         >
@@ -286,7 +310,7 @@ export function RepoModal({
               </p>
               <div className="mt-7 w-full max-w-[550px]">
                 <Suspense fallback={<div className="aspect-video w-full bg-black" />}>
-                  <VslPlayer onWatched={setWatched} />
+                  <VslPlayer onWatched={setWatched} videoTitle="gg vsl (log repo modal)" />
                 </Suspense>
                 {unlocked ? null : (
                   <div className="mt-3" aria-live="polite">
@@ -334,14 +358,26 @@ export function RepoModal({
                 <div className="lk-follow mt-4 p-4">
                   <p className="text-base font-bold">Before you go, drop a follow or a star? It really helps!</p>
                   <div className="mt-3 flex flex-wrap gap-2">
-                    <a href={href} target="_blank" rel="noreferrer" onClick={onClose} className="lk-ghost">
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={() => {
+                        track('github_click', { repo, link_type: 'star' })
+                        onClose()
+                      }}
+                      className="lk-ghost"
+                    >
                       <Star size={15} strokeWidth={2.5} /> Leave a star
                     </a>
                     <a
                       href={`https://github.com/${owner}`}
                       target="_blank"
                       rel="noreferrer"
-                      onClick={onClose}
+                      onClick={() => {
+                        track('github_click', { repo, link_type: 'follow' })
+                        onClose()
+                      }}
                       className="lk-ghost"
                     >
                       <UserPlus size={15} strokeWidth={2.5} /> Follow {owner}
@@ -379,7 +415,14 @@ export function RepoModal({
                     That did not go through. Try again, or skip and continue.
                   </p>
                 ) : null}
-                <button type="button" onClick={() => setStep('skipped')} className="lk-ghost w-full">
+                <button
+                  type="button"
+                  onClick={() => {
+                    track('repo_modal_skip', { repo })
+                    setStep('skipped')
+                  }}
+                  className="lk-ghost w-full"
+                >
                   Skip and continue to the repository
                 </button>
               </form>
@@ -398,8 +441,8 @@ export function RepoModal({
           ) : null}
 
           {/* Subscribers get the video with the pitch; for a skip the video is already up top. */}
-          {step === 'thanks' ? <CommunityCta showVideo /> : null}
-          {step === 'skipped' && unlocked ? <CommunityCta showVideo={false} /> : null}
+          {step === 'thanks' ? <CommunityCta repo={repo} showVideo /> : null}
+          {step === 'skipped' && unlocked ? <CommunityCta repo={repo} showVideo={false} /> : null}
         </div>
 
         {/* The gg page's phone join bar, stuck to the bottom of the modal from the skip on, with a note
@@ -414,9 +457,10 @@ export function RepoModal({
               <HandArrow />
             </p>
             <a
-              href={COMMUNITY.href}
+              href={COMMUNITY.joinBarHref}
               target="_blank"
               rel="noreferrer"
+              onClick={() => track('comm_cta_click', { repo, cta_position: 'log modal join bar' })}
               className="lk-btn w-full py-4 text-lg"
               style={{ background: '#fff', color: 'var(--lk-brand)' }}
             >
@@ -480,7 +524,7 @@ function ReviewMarquee({ reviews }: { reviews: Review[] }) {
 }
 
 /** The comm block shown under the white box once the visitor has subscribed or watched past the gate. */
-function CommunityCta({ showVideo }: { showVideo: boolean }) {
+function CommunityCta({ repo, showVideo }: { repo: string; showVideo: boolean }) {
   return (
     <div className="mt-12 flex w-full flex-col items-center border-t border-white/25 pt-10">
       <div className="lk-hand flex items-center gap-2 text-left text-2xl text-white">
@@ -492,7 +536,7 @@ function CommunityCta({ showVideo }: { showVideo: boolean }) {
         // the gg page's own player, 550px like the gg page, so it plays straight away instead of waiting on X
         <div className="mt-8 w-full max-w-[550px]">
           <Suspense fallback={<div className="aspect-video w-full bg-black" />}>
-            <VslPlayer />
+            <VslPlayer videoTitle="gg vsl (log repo modal)" />
           </Suspense>
         </div>
       ) : null}
@@ -506,6 +550,7 @@ function CommunityCta({ showVideo }: { showVideo: boolean }) {
             href={COMMUNITY.href}
             target="_blank"
             rel="noreferrer"
+            onClick={() => track('comm_cta_click', { repo, cta_position: 'log modal comm card' })}
             className="lk-btn px-6 py-4 text-base"
             style={{ background: '#fff', color: 'var(--lk-brand)' }}
           >
