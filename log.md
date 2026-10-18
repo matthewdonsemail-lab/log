@@ -777,3 +777,14 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: Added docs/scaleArchitecture/: matt's brief, 12 remote options (boat per account and packed, self-managed VPS, GPU VMs and sandboxes, cloud browsers, anti-detect on servers, cloud phones, 2Captcha APIs, a provider-agnostic environment layer), 16 scale-focused criteria, 16 claims, the SubQ runner, raw results, a computed summary and a README with the ranking.
 Why: matt cannot buy physical hardware from Vietnam. Cost, reliability and scale to hundreds of thousands of accounts across platforms decide the architecture, with boat + 2Captcha residential as the leading host. He asked for all the context (deviceIsolation, identityLeaks, vendors, Listaro_backup docs) to go through SubQ.
 Checked: runSubqScaleMatrix.mjs ran end to end: 50 files, about 168K tokens per call, 16 calls, 2,636,546 input tokens. Repeat passes gave identical answers. The secret-pattern scan passed before sending. The key was read from the environment only.
+
+## 2026-10-18 13:17Z · feat/publishMachine
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `docs/scaleArchitecture/priorCheck.json`: new file
+- `docs/scaleArchitecture/priorClaims.json`: new file
+- `docs/scaleArchitecture/runSubqScaleMatrix.mjs`: no declaration changed (comments, formatting or line endings)
+
+What changed: Added docs/scaleArchitecture/priorClaims.json (16 claims from the earlier deviceIsolation recommendation), a --prior mode in runSubqScaleMatrix.mjs that checks them against the scale-architecture state, and priorCheck.json with the answers.
+Why: matt asked to run the new context (his scale brief, vendors, Listaro docs) against the earlier recommendation, to see which parts still hold.
+Checked: ran --prior end to end. 2 runs gave identical answers, 328,112 input tokens. The key was read from the environment only.

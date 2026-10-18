@@ -1,0 +1,138 @@
+{
+  "stateChars": 601688,
+  "runs": [
+    {
+      "fingerprintApiCannotChangePixels": {
+        "type": "noul",
+        "noul": 0.9813980460166931
+      },
+      "boatRendersInSoftware": {
+        "type": "noul",
+        "noul": 0.9732145071029663
+      },
+      "boatFleetSameImage": {
+        "type": "noul",
+        "noul": 0.9297055602073669
+      },
+      "boatHostNotDevice": {
+        "type": "noul",
+        "noul": 0.9880799651145935
+      },
+      "boatOneToTwoDollars": {
+        "type": "noul",
+        "noul": 0.9306533932685852
+      },
+      "physicalDeviceBest": {
+        "type": "noul",
+        "noul": 0.039053160697221756
+      },
+      "thisPcSecondBest": {
+        "type": "noul",
+        "noul": 0.1660173088312149
+      },
+      "boatWinsOnlyScalability": {
+        "type": "noul",
+        "noul": 0.9355340003967285
+      },
+      "noCanvasLinkageEvidence": {
+        "type": "noul",
+        "noul": 0.9422719478607178
+      },
+      "lieIsBiggerTell": {
+        "type": "noul",
+        "noul": 0.9013936519622803
+      },
+      "sameHardwareNotSamePerson": {
+        "type": "noul",
+        "noul": 0.9654273390769958
+      },
+      "pinRealGpuFamilySunday": {
+        "type": "noul",
+        "noul": 0.9660652279853821
+      },
+      "fewAccountsPerPc": {
+        "type": "noul",
+        "noul": 0.9612899422645569
+      },
+      "devicesAsItGrows": {
+        "type": "noul",
+        "noul": 0.04948543384671211
+      },
+      "keepFacebookOffBoatIfSame": {
+        "type": "noul",
+        "noul": 0.9713249206542969
+      },
+      "dontBuyTwoCaptchaOrNoise": {
+        "type": "noul",
+        "noul": 0.9792927503585815
+      }
+    },
+    {
+      "fingerprintApiCannotChangePixels": {
+        "type": "noul",
+        "noul": 0.9813980460166931
+      },
+      "boatRendersInSoftware": {
+        "type": "noul",
+        "noul": 0.9732145071029663
+      },
+      "boatFleetSameImage": {
+        "type": "noul",
+        "noul": 0.9297055602073669
+      },
+      "boatHostNotDevice": {
+        "type": "noul",
+        "noul": 0.9880799651145935
+      },
+      "boatOneToTwoDollars": {
+        "type": "noul",
+        "noul": 0.9306533932685852
+      },
+      "physicalDeviceBest": {
+        "type": "noul",
+        "noul": 0.039053160697221756
+      },
+      "thisPcSecondBest": {
+        "type": "noul",
+        "noul": 0.1660173088312149
+      },
+      "boatWinsOnlyScalability": {
+        "type": "noul",
+        "noul": 0.9355340003967285
+      },
+      "noCanvasLinkageEvidence": {
+        "type": "noul",
+        "noul": 0.9422719478607178
+      },
+      "lieIsBiggerTell": {
+        "type": "noul",
+        "noul": 0.9013936519622803
+      },
+      "sameHardwareNotSamePerson": {
+        "type": "noul",
+        "noul": 0.9654273390769958
+      },
+      "pinRealGpuFamilySunday": {
+        "type": "noul",
+        "noul": 0.9660652279853821
+      },
+      "fewAccountsPerPc": {
+        "type": "noul",
+        "noul": 0.9612899422645569
+      },
+      "devicesAsItGrows": {
+        "type": "noul",
+        "noul": 0.04948543384671211
+      },
+      "keepFacebookOffBoatIfSame": {
+        "type": "noul",
+        "noul": 0.9713249206542969
+      },
+      "dontBuyTwoCaptchaOrNoise": {
+        "type": "noul",
+        "noul": 0.9792927503585815
+      }
+    }
+  ],
+  "inputTokens": 328112
+}

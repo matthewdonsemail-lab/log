@@ -1,0 +1,18 @@
+[
+  { "id": "fingerprintApiCannotChangePixels", "claim": "2Captcha's Fingerprint API only supplies values to report (GPU name, user agent, canvas hash); it cannot make our hardware draw different pixels." },
+  { "id": "boatRendersInSoftware", "claim": "boat.dev VMs render canvas/WebGL in software (llvmpipe) because they have no GPU, and that is a known server tell." },
+  { "id": "boatFleetSameImage", "claim": "boat.dev VMs probably draw the same canvas/WebGL image across the fleet." },
+  { "id": "boatHostNotDevice", "claim": "boat.dev is a good host (separate machine, cookies, disk, snapshots per account) but not a convincing consumer device." },
+  { "id": "boatOneToTwoDollars", "claim": "boat.dev costs about $1-2 per account per month at about 1 hour of use per account per day." },
+  { "id": "physicalDeviceBest", "claim": "Given matt's constraints (in Vietnam, no physical hardware, cost and reliability first, scale to hundreds of thousands of accounts), a real cheap physical device per account is still the best option." },
+  { "id": "thisPcSecondBest", "claim": "Given matt's constraints, running the accounts on this one PC as is is still the second best option." },
+  { "id": "boatWinsOnlyScalability", "claim": "Given matt's constraints, boat.dev VM per account wins only on scalability and is otherwise a weak option." },
+  { "id": "noCanvasLinkageEvidence", "claim": "There is no public evidence that Meta links Marketplace accounts by canvas hash." },
+  { "id": "lieIsBiggerTell", "claim": "The bigger detection risk is the contradiction (spoofed GPU name versus real pixels), not a shared canvas hash." },
+  { "id": "sameHardwareNotSamePerson", "claim": "A canvas hash shared with thousands of owners of the same chip can read as same hardware rather than same person." },
+  { "id": "pinRealGpuFamilySunday", "claim": "Pinning each account's reported GPU to this PC's real chip family (Radeon 780M / RTX 4060 under ANGLE) is the right first step for Sunday." },
+  { "id": "fewAccountsPerPc", "claim": "Only a few accounts should run on this one PC." },
+  { "id": "devicesAsItGrows", "claim": "As the operation grows, a cheap used phone or mini PC per account (or per 2-3 accounts) at about $3-6 per month is the right scaling path for matt." },
+  { "id": "keepFacebookOffBoatIfSame", "claim": "If a boat trial shows matching pixel hashes or an llvmpipe renderer, Facebook sessions should stay off boat and boat should only run log-cli and non-Facebook work." },
+  { "id": "dontBuyTwoCaptchaOrNoise", "claim": "matt should not buy the 2Captcha Fingerprint API or the 2Captcha Browser API, nor add random canvas noise." }
+]

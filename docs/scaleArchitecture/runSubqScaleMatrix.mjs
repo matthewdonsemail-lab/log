@@ -141,6 +141,33 @@ const claimQuestions = Object.fromEntries(
   ]),
 );
 
+// --prior: re-check the claims of the earlier deviceIsolation recommendation against this state.
+// Writes priorCheck.json and skips passes A-C.
+if (process.argv.includes("--prior")) {
+  const prior = JSON.parse(readFileSync(join(here, "priorClaims.json"), "utf8"));
+  const questions = Object.fromEntries(
+    prior.map((c) => [
+      c.id,
+      {
+        type: "noul",
+        instructions: `Based on the evidence and matt's constraints, is this claim true? ${c.claim}`,
+        criteria: { true: "The evidence supports the claim", false: "The evidence contradicts it or does not support it" },
+      },
+    ]),
+  );
+  const out = { stateChars: state.length, runs: [], inputTokens: 0 };
+  for (let i = 0; i < 2; i++) {
+    const r = await decide(questions);
+    out.inputTokens += r.usage?.input_tokens ?? 0;
+    out.runs.push(r.answers);
+    console.log(`prior check ${i + 1}/2 done`);
+  }
+  writeFileSync(join(here, "priorCheck.json"), JSON.stringify(out, null, 2));
+  for (const c of prior) console.log(`${out.runs[0][c.id].noul.toFixed(2)}\t${out.runs[1][c.id].noul.toFixed(2)}\t${c.id}`);
+  console.log(`total input tokens: ${out.inputTokens}`);
+  process.exit(0);
+}
+
 const results = { stateChars: state.length, files: evidence.map(([n]) => n), passA: [], passB: {}, passC: [], inputTokens: 0 };
 const track = (r) => (results.inputTokens += r.usage?.input_tokens ?? 0);
 
