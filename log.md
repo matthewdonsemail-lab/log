@@ -744,3 +744,20 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: Added docs/identityLeaks/: a README with the threat model, method, evidence grades, a ranked table of 22 leak vectors with status, and open decisions for matt; one file per vector (what leaks to whom, evidence with grade, where in our code it can recur, mitigation, how to re-test, status); and sources.md, the merged bibliography.
 Why: matt asked for a complete, sourced study of every way the browser or this PC could show Vietnam or link accounts, stored in the repo next to the code it constrains, so later changes can be checked against it.
 Checked: Built from four reports (Parallel deep research, web and source research, live tests through a Galway 2Captcha proxy, code audit). Statuses re-checked against 2de5ff5 code and that commit's live results. `bun run check:naming` passes. No credential fragment appears in the docs.
+
+## 2026-10-18 12:55Z · feat/publishMachine
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `docs/deviceIsolation/README.md`: new file
+- `docs/deviceIsolation/criteria.json`: new file
+- `docs/deviceIsolation/deepResearch.json`: new file
+- `docs/deviceIsolation/deepResearch.md`: new file
+- `docs/deviceIsolation/options.json`: new file
+- `docs/deviceIsolation/runSubqMatrix.mjs`: added const here, const leaksDir, const url, const key, const options, const criteria, const evidence, const situation, const state, function decide, const choiceQuestions, const scoreQuestions, const results
+- `docs/deviceIsolation/subqDocs.md`: new file
+- `docs/deviceIsolation/subqResults.json`: new file
+- `docs/deviceIsolation/vendorFacts.md`: new file
+
+What changed: Added docs/deviceIsolation/. The README explains the shared-GPU catch and why neither 2Captcha's Fingerprint API nor boat.dev fixes the pixels. It also has the 16 criteria, an 11-option score matrix and a recommendation, with a boat trial test. Also: vendorFacts.md (2Captcha Fingerprint and Browser API, boat, read first-hand); the Parallel ultra deep research (md and json, 81 sources); options.json and criteria.json; runSubqMatrix.mjs, which scores the options with SubQ's Decisions API; subqResults.json, the raw answers; and subqDocs.md, docs.subq.ai as pulled.
+Why: matt asked whether injecting 2Captcha fingerprint data or running each account in its own boat.dev VM fixes the WebGL/canvas linkage. He wanted a neutral matrix over every option, built from 16 SubQ questions with all our evidence loaded, and a clear recommendation.
+Checked: runSubqMatrix.mjs ran end to end. Pass A ran 3x (choice) and pass B 2x per option (score). The repeats gave identical answers. 1,672,525 input tokens. boat's no-GPU claim was confirmed on docs.boat.dev/machines. `bun run check:naming` passes. No keys are in the files: the script reads SUBQ_API_KEY from the environment.
