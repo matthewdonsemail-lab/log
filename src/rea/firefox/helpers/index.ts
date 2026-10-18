@@ -1,1 +1,1 @@
-export * from "./stripHar";
+export * from "./exportScripts";

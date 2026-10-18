@@ -1,9 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { captureFromHar, settleFirefoxCapture, writeFirefoxCapture } from "./index";
-import { stripHar } from "./helpers/index";
+import { captureFromHar, settleFirefoxCapture } from "./index";
+import { exportScripts } from "./helpers/index";
 import type { ReaRunner } from "./types";
 
 const HAR = {
@@ -48,27 +48,21 @@ const HAR = {
 
 const runner: ReaRunner = async (args) => ({ code: 0, stdout: args[0], stderr: "" });
 
-describe("stripHar", () => {
-  test("drops cookies, auth headers, query values and bodies, and keeps the script", () => {
-    const capture = stripHar(HAR);
-    expect(capture.counts).toEqual({ cookies: 2, headers: 3, bodies: 3, queryValues: 1 });
+describe("exportScripts", () => {
+  test("keeps the HAR raw and copies the script out", () => {
+    const capture = exportScripts(HAR);
+    expect(capture.entries).toBe(2);
     expect(capture.scripts).toHaveLength(1);
     expect(capture.scripts[0].text).toBe("var loaded = true;\n");
     expect(capture.scripts[0].file).toBe("script0.js");
-    const entry = (capture.har.log as { entries: Array<Record<string, unknown>> }).entries[0];
-    const request = entry.request as { headers: Array<{ name: string }>; cookies: unknown[]; queryString: Array<{ value: string }> };
-    expect(request.cookies).toEqual([]);
-    expect(request.headers.map((header) => header.name)).toEqual(["Accept"]);
-    expect(request.queryString[0].value).toBe("");
-    const content = (entry.response as { content: Record<string, unknown> }).content;
-    expect(content.text).toBeUndefined();
-    const post = (capture.har.log as { entries: Array<{ request: { postData?: { text?: string } } }> }).entries[1].request.postData;
-    expect(post?.text).toBeUndefined();
+    expect(capture.har).toEqual(HAR);
+    expect(JSON.stringify(capture.har)).toContain("c_user=1");
+    expect(JSON.stringify(capture.har)).toContain("fb_dtsg=secret");
   });
 
   test("decodes a base64 script body", () => {
     const encoded = Buffer.from("var fromBase64 = 1;\n", "utf8").toString("base64");
-    const capture = stripHar({
+    const capture = exportScripts({
       log: {
         entries: [
           {
@@ -83,36 +77,42 @@ describe("stripHar", () => {
 });
 
 describe("settleFirefoxCapture", () => {
-  test("rewrites the session HAR and records the rea commands", async () => {
+  test("leaves the session HAR as written and records the rea commands", async () => {
     const dir = join(tmpdir(), `logCliFirefox${Date.now()}`);
     mkdirSync(dir, { recursive: true });
-    writeFileSync(join(dir, "session.har"), JSON.stringify(HAR));
+    const written = JSON.stringify(HAR);
+    writeFileSync(join(dir, "session.har"), written);
     const calls: string[][] = [];
     const note = await settleFirefoxCapture(dir, async (args) => {
       calls.push(args);
       return { code: 0, stdout: "ok", stderr: "" };
     });
-    expect(note).toContain("1 scripts");
+    expect(note).toContain("2 requests, 1 scripts, raw HAR kept");
     expect(note).toContain("REA network exit 0");
-    const saved = JSON.parse(readFileSync(join(dir, "session.har"), "utf8")) as { log: { entries: Array<{ request: { cookies: unknown[] } }> } };
-    expect(saved.log.entries[0].request.cookies).toEqual([]);
+    expect(readFileSync(join(dir, "session.har"), "utf8")).toBe(written);
     expect(readFileSync(join(dir, "scripts", "script0.js"), "utf8")).toContain("var loaded");
-    expect(calls[0][0]).toBe("inspect-web-network-capture");
+    expect(calls[0].slice(0, 1).concat(calls[0].slice(2))).toEqual(["inspect-web-network-capture", "har", "--format", "json"]);
     expect(calls[1][0]).toBe("analyze-javascript-application");
-    const manifest = JSON.parse(readFileSync(join(dir, "scripts", "manifest.json"), "utf8")) as { scripts: Array<{ text?: string }> };
+    expect(existsSync(join(dir, "scripts", "manifest.json"))).toBe(false);
+    const manifest = JSON.parse(readFileSync(join(dir, "scriptsManifest.json"), "utf8")) as { scripts: Array<{ text?: string }> };
     expect(manifest.scripts[0].text).toBeUndefined();
   });
 
-  test("deletes a HAR that is not JSON", async () => {
+  test("keeps a HAR that is not JSON and does not run rea", async () => {
     const dir = join(tmpdir(), `logCliFirefoxBad${Date.now()}`);
     mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, "session.har"), "not json");
-    const note = await settleFirefoxCapture(dir, runner);
-    expect(note).toContain("deleted");
-    expect(() => readFileSync(join(dir, "session.har"), "utf8")).toThrow();
+    const calls: string[][] = [];
+    const note = await settleFirefoxCapture(dir, async (args) => {
+      calls.push(args);
+      return { code: 0, stdout: "", stderr: "" };
+    });
+    expect(note).toContain("not JSON");
+    expect(readFileSync(join(dir, "session.har"), "utf8")).toBe("not json");
+    expect(calls).toHaveLength(0);
   });
 
-  test("captureFromHar writes a stripped copy and does not need a browser", async () => {
+  test("captureFromHar copies the HAR unchanged and does not need a browser", async () => {
     const dir = join(tmpdir(), `logCliFirefoxSrc${Date.now()}`);
     const out = join(tmpdir(), `logCliFirefoxOut${Date.now()}`);
     mkdirSync(dir, { recursive: true });
@@ -120,10 +120,7 @@ describe("settleFirefoxCapture", () => {
     writeFileSync(source, JSON.stringify(HAR));
     const note = await captureFromHar(source, out, runner);
     expect(note).toContain("1 scripts");
-    expect(readFileSync(source, "utf8")).toContain("c_user=1");
-    const written = stripHar(JSON.parse(readFileSync(join(out, "session.har"), "utf8")));
-    expect(written.counts.cookies).toBe(0);
-    writeFirefoxCapture(out, written);
+    expect(readFileSync(join(out, "session.har"), "utf8")).toBe(readFileSync(source, "utf8"));
   });
 });
 

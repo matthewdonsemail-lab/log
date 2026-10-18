@@ -73,6 +73,12 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     in its home timezone, or `activeHoursStart`/`activeHoursEnd`): publish,
     scan, status, watch, campaign run and connect are refused with
     `outsideActiveHours`. Daily caps count the account's local day.
+19. 2026-10-18 · Captures are kept raw for analysis. The HAR `log publish`
+    records from Camoufox keeps every cookie, header, token and body: nothing
+    is stripped, because rea, SubQ and the matrices need it. It is only for
+    matt's own development machine: it stays in the run folder
+    (`~/.logCli/publish/<run>/firefox`) and is never committed
+    (`skills/reaCapture/SKILL.md`). The REA work is based on live runs.
 
 ## Checks
 
@@ -112,6 +118,8 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
   and a newly made device is saved once. Never commit, print or paste them;
   `log` never selects password, email or totpSecret at all. The proxy
   username's first part is the 2Captcha password: it is masked too.
+  The exception is the raw capture HAR (rule 19), which keeps the session
+  cookies and tokens in the local run folder for analysis.
 
 ## Monitor (XState v5)
 

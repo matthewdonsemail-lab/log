@@ -1,4 +1,4 @@
-/** One script body taken out of a Firefox HAR before the body is deleted. */
+/** One script body copied out of a Firefox HAR. */
 export interface FirefoxScript {
   file: string
   url: string
@@ -6,17 +6,10 @@ export interface FirefoxScript {
   text: string
 }
 
-export interface FirefoxStripCounts {
-  cookies: number
-  headers: number
-  bodies: number
-  queryValues: number
-}
-
-/** A HAR after cookies, auth headers, query values and bodies are gone. */
+/** A HAR as Playwright wrote it (rule 19: kept raw), and the scripts copied out of it. */
 export interface FirefoxCapture {
   har: Record<string, unknown>
-  counts: FirefoxStripCounts
+  entries: number
   scripts: FirefoxScript[]
 }
 

@@ -1,8 +1,8 @@
 /**
  * `log firefoxCapture --har <path> [--out <dir>]` — the offline Firefox port.
  *
- * Reads a HAR that Playwright recorded from Camoufox (Firefox), strips
- * cookies and bodies, writes the scripts beside it, and runs `rea` on the
+ * Reads a HAR that Playwright recorded from Camoufox (Firefox), copies it
+ * unchanged (rule 19), writes its scripts beside it, and runs `rea` on the
  * files. No browser starts. `--noRea` stops after the files are written.
  */
 import { join, resolve } from "node:path";
@@ -13,7 +13,7 @@ import type { Command, CommandResult } from "../runner/types.ts";
 
 export const FIREFOX_CAPTURE_USAGE = [
   "Usage: log firefoxCapture --har <path> [--out <dir>] [--noRea] [--json]",
-  "The HAR is the one Playwright writes from Camoufox. rea reads the stripped copy. No browser opens.",
+  "The HAR is the one Playwright writes from Camoufox. It is copied raw, and rea reads it. No browser opens.",
 ].join("\n");
 
 export async function runFirefoxCapture(argv: string[], runner?: ReaRunner): Promise<CommandResult> {
@@ -36,7 +36,7 @@ export async function runFirefoxCapture(argv: string[], runner?: ReaRunner): Pro
 
 export const firefoxCaptureCommand: Command = {
   name: "firefoxCapture",
-  summary: "Strip a Camoufox HAR and read it with offline rea. No browser.",
+  summary: "Read a raw Camoufox HAR and its scripts with offline rea. No browser.",
   args: "--har <path> [--out <dir>] [--noRea] [--json]",
   run(_context, argv) {
     return runFirefoxCapture(argv);

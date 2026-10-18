@@ -186,7 +186,7 @@ class Session:
             self.browser = self.runtime.__enter__()
             # The gate's self-check runs inside new_context (rule 17): a refusal closes the browser.
             # HAR is Playwright's Firefox recorder (record_har_*), flushed when the context
-            # closes. The TypeScript port strips it afterwards. The gate leaves these kwargs.
+            # closes. It is kept raw for analysis (rule 19). The gate leaves these kwargs.
             context_kwargs: dict[str, Any] = {"storage_state": str(state)}
             receipt = self.config.get("receiptDir")
             if receipt:

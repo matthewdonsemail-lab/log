@@ -1,82 +1,107 @@
 ---
 name: reaCapture
-description: Read what the Facebook create page does by recording a HAR of the Camoufox publish session, stripping it, and running the installed rea-agents CLI on it offline. Use to resume the REA work, run `log firefoxCapture`, read rea's Evidence output, or decide what the capture should keep.
+description: Analyze the Facebook create page from live Camoufox runs. `log publish` records a raw HAR of the session, the installed rea-agents CLI reads it and its scripts offline, and the findings go through SubQ matrices to make design decisions for log-cli's Facebook client. Use to resume the REA work, run a capture, read rea's Evidence, or turn findings into a matrix.
 ---
 
 # reaCapture
 
-REA (`rea-agents`, the `rea` CLI) never touches the live window. Playwright
-records a HAR while `log publish` runs in Camoufox, `stripHar` takes the
-secrets out, and `rea` reads the files offline. Why this shape won:
-`docs/rea/matrix/` and `docs/rea/spec.md`. Order of work:
-`docs/rea/roadmap.md`.
+The point of this work: use REA on real captures of our own Facebook client
+to find out what the create page actually does, then score design changes
+with SubQ so the client gets as efficient as it can. The work is based on
+live runs. log-cli already knows much of the flow
+(`docs/listingPublish/`, `src/marketplace/publish/machine.ts`). The
+captures test that knowledge and find what it misses.
+
+Why a HAR plus scripts, read offline: `docs/rea/matrix/` and
+`docs/rea/spec.md`.
 
 ## Hard boundaries
 
-1. **No CDP, no attach.** `rea inspect-web-page`, `analyze-web-bundle`,
-   `observe-web-*` and `export-web-scripts` need a live CDP target. Don't
-   use them on Camoufox or any window logged into Facebook.
-2. **A capture only comes from a gated run.** The HAR is written by
-   `log publish` (rule 10: dry run unless `--live`), so rules 11, 12, 17
-   and 18 apply: headed, proxy in country, self-check, waking hours. Only
-   run it when matt asks for a capture run.
-3. **Nothing raw is kept.** Cookies, `cookie`/`set-cookie`/`authorization`/
-   `proxy-authorization` headers, query values and bodies are stripped
-   before `rea` reads the file. A HAR that isn't JSON is deleted. Captures
-   stay in the run's receipt folder and are never committed or pasted.
-4. **Read-only.** The capture listens. It never replays a request.
+1. **Captures are raw (rule 19).** The HAR keeps every cookie, header,
+   token and body. Nothing is stripped, because the analysis needs it. It
+   stays on matt's development machine in the run folder
+   (`~/.logCli/publish/<run>/firefox`) and is never committed.
+2. **Captures come from live runs** of `log publish` (dry run unless
+   `--live`, rule 10). Those runs follow the launch rules as they are:
+   headed (11), proxy in country (12), self-check (17), waking hours (18).
+3. **REA reads files, never the window.** No CDP, no attach. The rea
+   commands that need a live target (`inspect-web-page`,
+   `analyze-web-bundle`, `observe-web-*`, `export-web-scripts`) aren't
+   used on Camoufox.
+4. **Listen, don't replay.** A capture never sends a request of its own.
 
 ## Environment
 
 - `rea --version` prints `6.7.0` (`npm install --global rea-agents@6.7.0`).
   Frida's postinstall is skipped. The HAR and script commands don't need it.
-- Code: `src/rea/firefox/` (`stripHar`, `settleFirefoxCapture`,
+- SubQ: `SUBQ_API_KEY` in the environment, `POST https://api.subq.ai/v1/systemone`,
+  model `subq-snap-preview`, 1-16 questions per call. Pattern:
+  `docs/rea/matrix/runMatrix.mjs`.
+- Code: `src/rea/firefox/` (`exportScripts`, `settleFirefoxCapture`,
   `captureFromHar`), `src/cli/firefoxCapture/`, and the `record_har_*`
   arguments in `python/publishSession.py`.
 
-## Commands
+## The loop
+
+### 1. Capture (live)
 
 ```bash
-# offline, any HAR, no browser: writes session.har, scripts/, reaNetwork.json, reaScripts.json
-bun bin/log.ts firefoxCapture --har <path> --out <dir>
-bun bin/log.ts firefoxCapture --har <path> --out <dir> --noRea   # strip only
-
-# what log runs underneath (capturePath must be absolute)
-rea inspect-web-network-capture <dir>/session.har har --format json
-rea analyze-javascript-application <dir>/scripts --format json
+bun bin/log.ts publish <listingId>          # dry run; the HAR records the whole session
 ```
 
-A gated `log publish` writes the same files to `receipts/<run>/firefox/`
-and adds a `Firefox capture: …` exit note.
+The run folder gets `firefox/session.har` (raw), `firefox/scripts/scriptN.js`,
+`firefox/scriptsManifest.json`, `firefox/reaNetwork.json` and
+`firefox/reaScripts.json`, and the exit notes print
+`Firefox capture: N requests, M scripts, raw HAR kept. REA ...`.
 
-## Reading the output
+### 2. Read with rea (offline)
 
-- `reaNetwork.json`: `normalized_result.records[]`, one per HAR entry
-  (method, URL, status, mime, timings), plus `limitations`. Keep the
-  `evidence_id`.
-- `reaScripts.json`: a `JavaScriptApplicationGraph` over `scripts/`. Its
-  nodes are the files, with parse status, vendor markers and calls.
+`log publish` runs these itself. To re-run on any HAR:
+
+```bash
+bun bin/log.ts firefoxCapture --har <path> --out <dir>      # --noRea to only write the files
+rea inspect-web-network-capture <absolute>/session.har har --format json
+rea analyze-javascript-application <absolute>/scripts --format json
+```
+
+- `reaNetwork.json` → `normalized_result.records[]`, one per request:
+  method, URL, status, mime, timings, and the request body. On Facebook
+  the operation is in the body of `POST /api/graphql/`
+  (`fb_api_req_friendly_name`, `doc_id`, `variables`). rea blanks the
+  values of the auth headers and cookies it knows in its own output. The
+  HAR still has them. Keep the `evidence_id`.
+- `reaScripts.json` → a `JavaScriptApplicationGraph` over the scripts:
+  files, parse status, vendor markers, calls and the browser surfaces they
+  read.
+
+### 3. Findings
+
+Per capture, write `docs/rea/findings/<runId>.md`: the operations the
+create page fired, in order, with timing; the fields each one submits;
+what the page's scripts read from the browser; and every gap against
+`src/marketplace/publish/machine.ts` and `docs/listingPublish/formFill.md`.
+Each line names its rea `evidence_id`. Session values aren't copied into
+this file. It holds names, orders and counts.
+
+### 4. SubQ matrix
+
+Copy `docs/rea/matrix/runMatrix.mjs` into `docs/rea/<question>/` and
+give it the findings as state, design options as `options.json`, criteria
+(efficiency: requests, time, failure points, fit with the gate) as
+`criteria.json`, and the claims the findings support or refute as
+`claims.json`. Run two repeats per pass, as before, and keep
+`subqResults.json`.
+
+### 5. Decide
+
+The winning option becomes a change to the client, plus a failing
+fixture test first (`python/fixtures/createItem.html` or a new fixture).
+Record the decision and its evidence ids in the `log.md` entry.
 
 ## Status (2026-10-18)
 
-Checked: a sample HAR (`firefoxCapture` on a two-entry HAR) gave both rea
-calls exit 0 and an Evidence id each. No Facebook capture exists yet.
-
-Open, in order:
-
-1. **Keep the operation name.** Facebook's create page sends almost
-   everything as `POST /api/graphql/`. Which operation it is lives in
-   the form body (`fb_api_req_friendly_name`, `doc_id`). `stripHar` drops
-   the whole body, so rea sees identical POSTs. Keep an allowlist of
-   body params (`fb_api_req_friendly_name`, `doc_id`, the variable key
-   names, without their values) and keep dropping `fb_dtsg`, `lsd`,
-   `jazoest`, `__user`, `av` and every value. Add tests for both sides.
-2. **Move `manifest.json` out of `scripts/`.** rea analyzes it as part of
-   the app today.
-3. **One gated capture run**, only when matt asks: `log publish` dry run
-   on one account that passes `checkRunnable`.
-4. **Write the report** (roadmap step 5–6): the create-form operations and
-   the scripts' browser surfaces, each with its rea evidence id, diffed
-   against `src/marketplace/publish/machine.ts` and
-   `docs/listingPublish/formFill.md`. A gap becomes a failing fixture test,
-   never a live retry.
+- Done: the raw HAR capture in `log publish`, `log firefoxCapture`, and
+  rea 6.7.0 read on a sample HAR (both calls exit 0, with the POST body
+  visible to rea).
+- Next: the first live capture run, then `docs/rea/findings/`, then the
+  first SubQ matrix over it.
