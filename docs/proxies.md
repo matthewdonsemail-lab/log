@@ -20,37 +20,106 @@ opening a browser, and writes the result to `proxyCheckedAt`, `proxyExitIp` and
 ## How one launch goes
 
 ```text
-log scan / status / watch / publish / connect / proxy check
-  │  TS: findAccount (Twenty) → checkRunnable
+log scan / status / watch / publish / campaign run / connect / proxy check
+  │  TS: findAccount (Twenty) → prepareRun (camofox/run)
   │      not FACEBOOK / unusable status / no proxy / no homeCountry ──▶ refused, no Python started
   │      (publish) listing country ≠ homeCountry ──▶ listingCountryMismatch
+  │      no locale / timezone for the home (marketplace/home) ──▶ noHomeLocale / noHomeTimezone
+  │      outside 08:00-22:00 in the home timezone (or activeHoursStart/End) ──▶ outsideActiveHours
+  │      deviceProfile stored but unreadable ──▶ deviceProfileInvalid
+  │      (proxy check skips home, hours and device: it opens no browser)
   ▼
-camofox/run writes the proxy (and cookies) from Twenty to a private temp folder;
-Python gets the file PATHS, never credentials on argv; the folder is deleted after
-  │  proxyGate.arm(path)            (same for every action, sign-in included)
+camofox/run writes proxy.json, device.json (pinned locale, home timezone, stored
+device) and state.json (cookies + localStorage) from Twenty to a private temp
+folder; Python gets the file PATHS, never credentials on argv; deleted after
+  │  proxyGate.arm(proxyPath, devicePath)     (same for every action, sign-in included)
   ▼
 every Camoufox launch → visibleBrowser.launch_kwargs() → proxyGate.apply()
-  1. read the file          none ──▶ noProxy, bad ──▶ proxyMalformed
+  0. caller options         anything but headless/humanize/geoip/proxy ──▶ unguardedLaunch
+  1. read the proxy file    none ──▶ noProxy, bad ──▶ proxyMalformed
   2. exit IP through proxy  Camoufox public_ip(proxy)   down ──▶ proxyUnreachable, 407 ──▶ proxyAuthFailed
-  3. exit country           Camoufox GeoIP database      ≠ homeCountry ──▶ proxyCountryMismatch
-  4. launch                 proxy=…, geoip=<exit IP>, headless=False, humanize=1.5, showcursor
-  5. every context          timezoneId=<exit IP's timezone>   none known ──▶ proxyCountryMismatch
+  3. exit country, timezone Camoufox GeoIP database      ≠ homeCountry / none ──▶ proxyCountryMismatch
+  4. the device             device.json; first launch: make it (saved to Twenty after the run)
+  5. launch                 Camoufox(from_options=<stored device + this launch>):
+                            exit timezone, webrtc:ipv4 = exit IP, pinned locale, pinned geolocation,
+                            headless=False, humanize=1.5, showcursor, env = system vars only
+guards on Playwright (installed by arm(), cover sync + async and every Camoufox route)
+  BrowserType.launch / launch_persistent_context   not what apply() built ──▶ unguardedLaunch
+  every context (new_context, new_page, persistent) timezoneId, geolocation + permission;
+                                                    caller locale / proxy / userAgent dropped
+  6. self-check, before the caller gets the context (so before Facebook):
+     an IP echo through the browser + page and dedicated worker:
+     timezone ≠ exit IP's ──▶ browserTimezoneMismatch
+     navigator.language(s) / Intl locale ≠ pinned ──▶ browserLocaleMismatch
+     browser exit IP ≠ gate's ──▶ browserExitIpMismatch    can't run ──▶ selfCheckFailed
+     any refusal closes the browser first
+during publish: review and right before the Publish click, the exit IP is read
+through the browser again: another country ──▶ proxyCountryChanged (nothing clicked);
+a new IP in the country is recorded on the account (proxyExitIp)
+after the run: the session the browser left (only while it holds a Facebook login)
+and a newly made device are saved to Twenty
 ```
 
-`geoip=<exit IP>` makes Camoufox set locale, geolocation and the WebRTC IP
-from the proxy's exit. Its timezone doesn't take on Windows: a live run through
-a 2Captcha Galway proxy (2026-10-18) showed Irish IP and `en-IE` but this PC's
-`Asia/Bangkok` clock. So `force_timezone()` patches Playwright's
-`Browser.new_context` (which `new_page` and both APIs go through) to set
-`timezoneId` from the exit IP. The same run then showed `Europe/Dublin` on the
-page and in a web worker. Nothing in the browser points at this machine. `publishSession.py` calls `launch_kwargs()` itself. `logWorker.py`
-launches through facebook-camofox-client, whose `CamofoxSessionManager.acquire`
-calls `AsyncCamoufox(humanize=1.5, geoip=True, proxy=proxy_config)` with
-`proxy_config=None`. `force_visible()` wraps Camoufox's launchers first, so the
-gate's proxy and geoip replace whatever that call passes.
+### One device per account (rule 15)
 
-Every refusal is an `account` code in the error catalog (`log errors --layer
-account`). A publish ends `blocked`, and the monitor stops at `blocked`.
+Camoufox draws a new random device on every launch: OS, screen, GPU, fonts,
+voices, canvas/audio/font-spacing seeds (measured live: Mac, Windows, 2 to 12
+cores, 960x540 to 5120x1440 screens across five launches of one account). With
+the same Facebook cookies that looks like stolen cookies. Now the account's
+first launch runs Camoufox's own `launch_options(os="windows", env={})` once,
+keeps only Camoufox's config (the `CAMOU_CONFIG_*` payload) and the Firefox
+prefs, and stores them in `socialAccounts.deviceProfile`. The environment that
+`launch_options()` normally copies (every secret in the process) is never
+kept, and the browser only ever gets the system variables Firefox needs
+(`SAFE_ENV` in `python/deviceProfile.py`) plus `CAMOU_CONFIG_*`.
+
+- Windows always: this PC's real GPU and font stack draw it, so a Mac or Linux
+  claim couldn't match the pixels.
+- The screen is no bigger than this PC's monitor (Camoufox skips that bound for
+  headed launches).
+- Per-launch values are never stored: timezone, WebRTC IP, locale, humanize,
+  cursor, addon paths. After a browser upgrade the user agent's Firefox version
+  follows the installed browser, like a real Firefox update.
+- Geolocation: the home city's coordinates from Camoufox's GeoLite2 City
+  database (scanned once, ~20 s), moved 150 m to 1.8 km off the centroid, with
+  an accuracy pinned per account between 20 and 1500 m (was 6.6e-11 m), and the
+  permission granted so `permissions.query` agrees.
+
+### Locale per country (rule 16)
+
+`HOME_COUNTRIES` in `src/marketplace/home/types.ts` is the one table: IE
+`en-IE`, GB `en-GB`, US `en-US`, CA `en-CA`, AU `en-AU`, NZ `en-NZ`, with
+the Facebook UI locale for the create form (`?locale=en_GB` for IE, no longer
+`en_US`). Before this, geoip picked the language at random from the country's
+mix (IE: 28% `ga-IE` or `fr-IE`). The locale is set at launch as
+`locale:language`, `locale:region` and `locale:all`, with no `locale:script`:
+with it, Intl resolved plain `en` and formatted dates US-style; without it the
+page, a dedicated worker and a shared worker all resolve `en-IE`
+(`1/7/2026, 13:00:00`), and Accept-Language is `en-IE,en;q=0.9`. The context
+locale is never set: Playwright's would change `navigator.languages` in the
+page only.
+
+### Local hours (rule 18)
+
+`outsideActiveHours` (`src/marketplace/home/helpers/activeHours.ts`) reads the
+wall clock in the home timezone through Intl, so it is DST-correct. Countries
+with several zones need the city in `CITY_TIMEZONES`. `log watch` checks
+before every scan, not only at the start. The daily listing cap counts the
+account's local date.
+
+### 2Captcha and photos
+
+- A 2Captcha fallback (CaptchaKraken stays first) gets the account's own proxy
+  (same sticky session, so the same exit), the browser's real user agent and,
+  for reCAPTCHA v2, Google's own cookies. Never Facebook's: they are the
+  account's session. Without a proxy it refuses (`captchaNoProxy`) instead of
+  solving from 2Captcha's IP.
+- Photo URLs are downloaded only through the account's HTTP proxy (Bun fetch
+  `proxy`), or refused (`photoNeedsProxy`). Uploaded files are `photoN.jpg`
+  with no metadata.
+
+Every refusal is a code in the error catalog (`log errors --layer account`). A
+publish ends `blocked`, and the monitor stops at `blocked`.
 
 ## Getting a proxy from 2Captcha
 
@@ -69,7 +138,7 @@ without one) gives an account a 2Captcha residential proxy in its home country:
    `http://<username>-zone-custom-region-ie-st-connacht-city-galway-session-<id>-sessTime-120:<password>@eu.proxy.2captcha.com:2334`
    (SOCKS5 with `--socks5`, port 2333). The gateway is the nearest one: `eu`, `na` or `ap`.
 4. `<id>` is fixed per account (from its Twenty id), so every run of that account
-   asks for the same sticky session. 2Captcha keeps one IP for **120 minutes at
+   asks for the same sticky session, and no two accounts share one. 2Captcha keeps one IP for **120 minutes at
    most**: the exit stays in the same city or country but changes every couple of
    hours. There is no static IP.
 5. The proxy goes through `proxy.check` **before** it is saved. It reaches Twenty

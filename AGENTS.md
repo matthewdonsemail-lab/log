@@ -56,6 +56,23 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 14. 2026-10-18 · Twenty is reached through the generated GraphQL client, the
     same one blaster and the dialer use (`bun run twenty:client`,
     `src/twenty/graphql/generated`). Regenerate it after any field change.
+15. 2026-10-18 · One device per account: its first launch makes one Windows
+    Camoufox identity (screen, GPU, fonts, voices, canvas/audio/font seeds,
+    geolocation) stored in `socialAccounts.deviceProfile`, and every launch
+    replays it exactly (`python/deviceProfile.py`). Never regenerated or
+    printed; an unreadable one is refused (`deviceProfileInvalid`).
+16. 2026-10-18 · The locale is pinned per home country at launch, from one
+    table (`HOME_COUNTRIES` in `src/marketplace/home/types.ts`: IE en-IE, GB
+    en-GB...). navigator, Accept-Language and Intl agree in pages and workers.
+    A country not in the table is refused (`noHomeLocale`).
+17. 2026-10-18 · Launch self-check: before any page loads, the gate checks in
+    the page and a worker that the timezone is the exit IP's, the language and
+    Intl locale are the pinned locale, and the browser's exit IP is the
+    checked one. Any mismatch closes the browser before Facebook loads.
+18. 2026-10-18 · No run outside the account's local waking hours (08:00-22:00
+    in its home timezone, or `activeHoursStart`/`activeHoursEnd`): publish,
+    scan, status, watch, campaign run and connect are refused with
+    `outsideActiveHours`. Daily caps count the account's local day.
 
 ## Checks
 
@@ -87,10 +104,14 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 - Read-only on Facebook, except `login`, which only saves a session, and
   `log publish --live` (rule 10). Don't add editing or deleting without matt
   asking.
-- Cookies, proxies and 2FA secrets live in Twenty only. A run writes the
-  account's proxy and cookies to a private temp folder for the Python
-  (`camofox/run`) and deletes it afterwards. Never commit, print or paste
-  them; `log` never selects password, email or totpSecret at all.
+- Cookies, browser storage, proxies, devices and 2FA secrets live in Twenty
+  only. A run writes the account's proxy, device file and session
+  (cookies + localStorage) to a private temp folder for the Python
+  (`camofox/run`) and deletes it afterwards. After the run the session the
+  browser left is saved back (only while it still holds a Facebook login),
+  and a newly made device is saved once. Never commit, print or paste them;
+  `log` never selects password, email or totpSecret at all. The proxy
+  username's first part is the 2Captcha password: it is masked too.
 
 ## Monitor (XState v5)
 

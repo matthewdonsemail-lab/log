@@ -24,6 +24,14 @@ none of them prompt unless you run `log launch` in a terminal.
 5. **No browser without the account's proxy (rule 12).** The proxy is the
    socialAccount's `proxy`, its country `homeCountry`. No exception: not dry
    runs, not `connect`. `docs/proxies.md`.
+6. **One device, one locale, checked, in local hours (rules 15-18).** An
+   account's first launch makes its device (`deviceProfile` in Twenty), and
+   every launch replays it. The locale comes from `HOME_COUNTRIES`. The gate's
+   self-check closes the browser before Facebook if the timezone, locale or exit
+   IP is off. Nothing runs outside 08:00-22:00 in the account's home timezone
+   (`activeHoursStart`/`activeHoursEnd` to change it). From Vietnam, Ireland's
+   day is 14:00-04:00 ICT. Never clear `deviceProfile` without matt; after a
+   Camoufox upgrade, re-run the live leak checks (`docs/proxies.md`).
 
 ## Environment
 
