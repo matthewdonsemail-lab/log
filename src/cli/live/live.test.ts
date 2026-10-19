@@ -198,6 +198,17 @@ describe("rules 15 and 18: the device and the local hours", () => {
     expect(started).toBe(0);
   });
 
+  test("scan --bypass at 03:00 runs anyway (rule 18 skipped, the proxy gate still in the worker)", async () => {
+    let started = 0;
+    const worker = (async () => {
+      started++;
+      return SCAN;
+    }) as WorkerClient;
+    const result = await runAt(["scan", "--account", "galwayOne", "--bypass"], NIGHT, worker);
+    expect(result.err).not.toContain("outsideActiveHours");
+    expect(started).toBe(1);
+  });
+
   test("the first launch's device is saved to Twenty once and never printed", async () => {
     const worker = (async (request: WorkerRequest) => {
       const file = JSON.parse(readFileSync(request.device_path!, "utf8"));

@@ -25,7 +25,7 @@ import { renderMonitorOutput, summarizeMonitor, toCheckOutcome } from "./helpers
 
 export * from "./helpers/index.ts";
 
-export const WATCH_USAGE = "Usage: log watch --account <accountName> [--checks <n>] [--interval <minutes>] [--json]";
+export const WATCH_USAGE = "Usage: log watch --account <accountName> [--checks <n>] [--interval <minutes>] [--json] [--bypass]";
 
 /** Seam for tests: how Ctrl+C reaches the running actor. */
 export const watchDeps = {
@@ -38,10 +38,11 @@ export const watchDeps = {
 export const watchCommand: Command = {
   name: "watch",
   summary: "Run the listing monitor (XState) for one account and print every step",
-  args: "--account <name> [--checks <n>] [--interval <min>] [--json]",
+  args: "--account <name> [--checks <n>] [--interval <min>] [--json] [--bypass]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json"], valued: ["account", "checks", "interval"] });
+    const parsed = parseArgs(argv, { boolean: ["json", "bypass"], valued: ["account", "checks", "interval"] });
     if (!parsed.ok) return { code: 1, stderr: `log watch: ${parsed.error}\n${WATCH_USAGE}` };
+    const bypassHours = Boolean(parsed.flags["bypass"]);
     if (parsed.positionals.length > 0) return { code: 1, stderr: `log watch: unexpected argument "${parsed.positionals[0]}"\n${WATCH_USAGE}` };
     const checks = parsed.flags["checks"] === undefined ? 1 : Number(parsed.flags["checks"]);
     const interval = parsed.flags["interval"] === undefined ? undefined : Number(parsed.flags["interval"]);
@@ -49,7 +50,7 @@ export const watchCommand: Command = {
     if (interval !== undefined && !(interval > 0)) return { code: 1, stderr: `log watch: --interval must be minutes above 0` };
 
     // The account check runs before anything opens (rule 12); the proxy gate runs at launch.
-    const opened = await openAccount(context, "watch", WATCH_USAGE, parsed.flags["account"], "run");
+    const opened = await openAccount(context, "watch", WATCH_USAGE, parsed.flags["account"], "run", bypassHours);
     if (!("run" in opened)) return opened;
     const { account, run } = opened;
 
@@ -77,7 +78,7 @@ export const watchCommand: Command = {
         check: fromPromise<CheckOutcome, { accountId: string }>(async () => {
           // Every check, not just the first: a long watch must stop at the end of the account's day (rule 18).
           const home = homeOf(account);
-          const outside = home.ok ? outsideActiveHours(account, home.home.timezone, now()) : home.detail;
+          const outside = !home.ok ? home.detail : bypassHours ? null : outsideActiveHours(account, home.home.timezone, now());
           if (outside) return toCheckOutcome({ ok: false, code: home.ok ? "outsideActiveHours" : home.code, detail: outside });
           const result = await context.worker({
             action: "marketplace.scan",

@@ -53,9 +53,10 @@ import { renderPublishOutput, summarizePublish } from "./helpers/index.ts";
 export * from "./helpers/index.ts";
 
 export const PUBLISH_USAGE = [
-  "Usage: log publish --listing <agencyListingId> [--live] [--json] [--formUrl <url>]",
+  "Usage: log publish --listing <agencyListingId> [--live] [--json] [--formUrl <url>] [--bypass]",
   "Dry run unless --live: fills and checks everything, never clicks Publish.",
   "The listing, its account and the account's proxy all come from Twenty.",
+  "--bypass skips only the account's waking hours (rule 18); every other gate still runs.",
 ].join("\n");
 
 function publishRunDir(runId: string, env: Record<string, string | undefined> = process.env): string {
@@ -113,9 +114,9 @@ export async function checkPublishable(
 export const publishCommand: Command = {
   name: "publish",
   summary: "Post one Twenty listing (dry run unless --live), printing every machine step",
-  args: "--listing <id> [--live] [--json]",
+  args: "--listing <id> [--live] [--json] [--bypass]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["live", "json"], valued: ["listing", "formUrl"] });
+    const parsed = parseArgs(argv, { boolean: ["live", "json", "bypass"], valued: ["listing", "formUrl"] });
     if (!parsed.ok) return { code: 1, stderr: `log publish: ${parsed.error}\n${PUBLISH_USAGE}` };
     if (parsed.positionals.length > 0) return { code: 1, stderr: `log publish: unexpected argument "${parsed.positionals[0]}"\n${PUBLISH_USAGE}` };
     const listingId = parsed.flags.listing;
@@ -136,7 +137,7 @@ export const publishCommand: Command = {
     if (!content.ok) return refuse("publish", "listingInvalid", content.problems.join("; "));
 
     // Rule 12: no proxy, no home country, or an unusable account means no files and no browser.
-    const prepared = prepareRun(account, "run", { now });
+    const prepared = prepareRun(account, "run", { now, bypassHours: Boolean(parsed.flags["bypass"]) });
     if (!prepared.ok) return refuseListing(context, listing, prepared.code, prepared.detail);
     const run = prepared.run;
 

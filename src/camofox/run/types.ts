@@ -35,6 +35,8 @@ export interface PrepareRunOptions {
   root?: string
   /** The clock for the active-hours gate (tests inject it). Default: now. */
   now?: Date
+  /** `--bypass`: skip the waking-hours gate (rule 18) only. The proxy, home, device and self-check gates still run. */
+  bypassHours?: boolean
 }
 
 export type PrepareRunResult = { ok: true; run: PreparedRun } | { ok: false; code: ErrorCode; detail: string }

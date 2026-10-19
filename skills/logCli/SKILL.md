@@ -29,7 +29,8 @@ none of them prompt unless you run `log launch` in a terminal.
    every launch replays it. The locale comes from `HOME_COUNTRIES`. The gate's
    self-check closes the browser before Facebook if the timezone, locale or exit
    IP is off. Nothing runs outside 08:00-22:00 in the account's home timezone
-   (`activeHoursStart`/`activeHoursEnd` to change it). From Vietnam, Ireland's
+   (`activeHoursStart`/`activeHoursEnd` to change it). `--bypass` skips the hours for one run when matt
+   asks (rule 20), and nothing else. From Vietnam, Ireland's
    day is 14:00-04:00 ICT. Never clear `deviceProfile` without matt; after a
    Camoufox upgrade, re-run the live leak checks (`docs/proxies.md`).
 

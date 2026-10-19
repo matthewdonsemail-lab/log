@@ -52,6 +52,11 @@ describe('prepareRun: home, hours and device', () => {
     expect(prepareRun(await account('galwayOne'), 'check', { now: NIGHT, root: ROOT })).toMatchObject({ ok: true })
   })
 
+  test('bypassHours skips only the waking hours: the proxy rule still refuses', async () => {
+    expect(prepareRun(await account('galwayOne'), 'run', { now: NIGHT, root: ROOT, bypassHours: true })).toMatchObject({ ok: true })
+    expect(prepareRun(await account('noProxy'), 'run', { now: NIGHT, root: ROOT, bypassHours: true })).toMatchObject({ ok: false })
+  })
+
   test("the account's own window is used", async () => {
     const late = await account('galwayOne', { activeHoursStart: 2, activeHoursEnd: 4 })
     expect(prepareRun(late, 'run', { now: NIGHT, root: ROOT })).toMatchObject({ ok: true })

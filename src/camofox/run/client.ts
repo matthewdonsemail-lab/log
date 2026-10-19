@@ -28,7 +28,7 @@ export function toOrigins(raw: unknown): unknown[] {
  * country, a non-Facebook or unusable account means no files and no browser.
  * Then its home (rule 16: a pinned locale and timezone for the country, or
  * refused), its local waking hours (rule 18: `outsideActiveHours`, with the
- * local time and when the window opens) and its stored device (rule 15: one
+ * local time and when the window opens; `bypassHours` skips only this) and its stored device (rule 15: one
  * that can't be read is refused, never replaced). `check` only tests the
  * proxy, so it skips home, hours and device. A normal run also needs a saved
  * session; signing in doesn't.
@@ -45,7 +45,7 @@ export function prepareRun(account: FacebookAccount, purpose: RunPurpose, option
   if (purpose !== 'check') {
     const home = homeOf(account)
     if (!home.ok) return home
-    const outside = outsideActiveHours(account, home.home.timezone, options.now ?? new Date())
+    const outside = options.bypassHours ? null : outsideActiveHours(account, home.home.timezone, options.now ?? new Date())
     if (outside) return { ok: false, code: 'outsideActiveHours', detail: outside }
     const profile = toDeviceProfile(account.deviceProfile)
     if (!profile && hasStoredDevice(account.deviceProfile)) {

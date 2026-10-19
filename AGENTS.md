@@ -79,6 +79,12 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     matt's own development machine: it stays in the run folder
     (`~/.logCli/publish/<run>/firefox`) and is never committed
     (`skills/reaCapture/SKILL.md`). The REA work is based on live runs.
+20. 2026-10-19 · matt asked for `--bypass`: on publish, scan, status, watch,
+    campaign run and connect it skips rule 18's waking hours for that run, and
+    nothing else. The proxy gate, home locale, device and launch self-check
+    (rules 11, 12, 15-17) still run, and `--live` still needs matt (rule 10).
+    It is never on by default; pass it only when matt asks for a run outside
+    the account's hours.
 
 ## Checks
 

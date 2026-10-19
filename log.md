@@ -973,3 +973,22 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: `log connect --noPrompt [--wait <s>]` sends `params.waitSeconds` to the worker and spawns it without stdin. In Python, `login` then calls the new `wait_for_login`, which checks the page's login markers every 5 s instead of waiting for Enter. It ends at once if the saved cookies are logged in, or when a person finishes signing in, or at the deadline (default `CONNECT_WAIT_SECONDS` 600). The MCP server makes `connect` a tool that always gets `--noPrompt` (`NO_PROMPT`); only `launch` and `login` stay terminal-only. New `log listing create --account <a> --file <ad.json>`: `listingFromJson` reads the ad and checks it with `toPublishListing`, and `createSlot` writes one READY agencyListing for the account. A file that can't post is refused with its problems. New skill `accountToDryRun`, the MCP runbook from NEEDSLOGIN to ACTIVE to a full publish dry run, indexed in skills.md and linked from logCli.
 Why: matt wants one account taken from its status to working, through a dry run that goes all the way to the listing form, entirely through the MCP. `connect` was the only way to ACTIVE, but it waited for Enter on stdin, which is the MCP channel. The listing row could only be made by a hand-written script.
 Checked: new tests: connect --noPrompt spawns non-interactive with `params.waitSeconds` 120, sets the account ACTIVE, and refuses `--wait 5`; the MCP guard appends `--noPrompt` once; listing create makes a READY row with the fixture Twenty and refuses a file without a price or with no --account. `python -m py_compile python/logWorker.py` OK. `bun run check` passed: 389 pass / 0 fail. Live connect hasn't run yet: Pennsylvania was outside waking hours (03:00 EDT).
+
+## 2026-10-19 07:07Z · feat/publishMachine
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `skills/accountToDryRun/SKILL.md`: edited
+- `skills/logCli/SKILL.md`: edited
+- `src/camofox/run/client.ts`: changed function prepareRun
+- `src/camofox/run/run.test.ts`: added test "bypassHours skips only the waking hours: the proxy rule still refuses"
+- `src/camofox/run/types.ts`: changed interface PrepareRunOptions
+- `src/cli/campaign/index.ts`: changed const CAMPAIGN_USAGE, const campaignCommand
+- `src/cli/live/index.ts`: changed const CONNECT_USAGE, const SCAN_USAGE, const STATUS_USAGE, function openAccount, const connectCommand, const scanCommand, const statusCommand
+- `src/cli/live/live.test.ts`: added test "scan --bypass at 03:00 runs anyway (rule 18 skipped, the proxy gate still in the worker)"
+- `src/cli/publish/index.ts`: changed const PUBLISH_USAGE, const publishCommand
+- `src/cli/watch/index.ts`: changed const WATCH_USAGE, const watchCommand
+
+What changed: `PrepareRunOptions.bypassHours` makes `prepareRun` skip only the `outsideActiveHours` check. A `--bypass` flag sets it on connect, scan, status and watch (through `openAccount`), and on publish. Watch's per-check hours test honours it too, and campaign run passes `--bypass` on to each publish. Usage text says what it skips. New hard rule 20 in AGENTS.md, with the accountToDryRun and logCli skills updated.
+Why: matt asked for a flag to get past the waking-hours gate. Pennsylvania was at 03:00, so the account-to-dry-run flow couldn't start. It only lifts rule 18 for the run it's passed to. The proxy gate, home locale, device and self-check (rules 11, 12, 15-17) still apply, and `--live` still needs matt.
+Checked: new tests: `prepareRun` with bypassHours at 03:00 Galway is ok for galwayOne and still refused for noProxy; `scan --bypass` at 03:00 starts the worker with no outsideActiveHours, and the existing test without it is still refused. `bun run check` passed: 391 pass / 0 fail.

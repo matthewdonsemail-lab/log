@@ -25,7 +25,7 @@ import type { Command } from "../runner/types.ts";
 export const CAMPAIGN_USAGE = [
   "Usage: log campaign fill --campaign <agencyCampaignId> --from <agencyListingId> --accounts <n>",
   "       log campaign heal --campaign <agencyCampaignId>",
-  "       log campaign run  --campaign <agencyCampaignId> [--live]",
+  "       log campaign run  --campaign <agencyCampaignId> [--live] [--bypass]",
   "       log campaign show --campaign <agencyCampaignId> [--json]",
 ].join("\n");
 
@@ -34,7 +34,7 @@ export const campaignCommand: Command = {
   summary: "Put one ad on N accounts in one place, replace lost accounts, publish the campaign",
   args: "<fill|heal|run|show> --campaign <id> [...]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["live", "json"], valued: ["campaign", "from", "accounts"] });
+    const parsed = parseArgs(argv, { boolean: ["live", "json", "bypass"], valued: ["campaign", "from", "accounts"] });
     if (!parsed.ok) return { code: 1, stderr: `log campaign: ${parsed.error}\n${CAMPAIGN_USAGE}` };
     const [action, extra] = parsed.positionals;
     const campaignId = parsed.flags["campaign"];
@@ -81,7 +81,7 @@ export const campaignCommand: Command = {
       const summary: string[] = [];
       let failed = 0;
       for (const listing of ready) {
-        const args = ["--listing", listing.id, ...(parsed.flags["live"] ? ["--live"] : [])];
+        const args = ["--listing", listing.id, ...(parsed.flags["live"] ? ["--live"] : []), ...(parsed.flags["bypass"] ? ["--bypass"] : [])];
         const result = await publishCommand.run(context, args);
         if (result.code !== 0) failed++;
         summary.push(`  ${listing.id} "${listing.title}": ${result.code === 0 ? "ok" : (result.stderr ?? result.stdout ?? "").split("\n")[0]}`);

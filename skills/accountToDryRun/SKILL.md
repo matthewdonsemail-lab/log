@@ -15,7 +15,9 @@ matt says so.
 1. **Waking hours (rule 18).** Steps 3 to 6 open the browser, so they only run
    between 08:00 and 22:00 in the account's home timezone. For Pennsylvania
    that's 12:00-02:00 GMT (EDT, until 1 Nov) or 19:00-09:00 in Vietnam. Outside
-   that, every step returns `outsideActiveHours`.
+   that, every step returns `outsideActiveHours`. When matt asks for a run
+   outside those hours, add `"--bypass"` to the args (rule 20). It skips only
+   the hours; the proxy gate and self-check still run.
 2. **No browser without the proxy (rule 12).** Step 1 must pass first.
 3. **Someone watches the window (rule 11).** Camoufox is always visible. If
    the cookies don't hold, matt signs in in that window during step 3.

@@ -24,12 +24,12 @@ import { renderDoctor, renderLoss, renderScan } from "./helpers/index.ts";
 export * from "./helpers/index.ts";
 
 export const DOCTOR_USAGE = "Usage: log doctor [--json]";
-export const CONNECT_USAGE = "Usage: log connect --account <accountName> [--noPrompt [--wait <seconds>]]";
+export const CONNECT_USAGE = "Usage: log connect --account <accountName> [--noPrompt [--wait <seconds>]] [--bypass]";
 
 /** How long `connect --noPrompt` watches the window for a login. */
 export const CONNECT_WAIT_SECONDS = 600;
-export const SCAN_USAGE = "Usage: log scan --account <accountName> [--json]";
-export const STATUS_USAGE = "Usage: log status <listingId> --account <accountName> [--json]";
+export const SCAN_USAGE = "Usage: log scan --account <accountName> [--json] [--bypass]";
+export const STATUS_USAGE = "Usage: log status <listingId> --account <accountName> [--json] [--bypass]";
 
 /** `--account` → the Twenty account and its prepared run, or the refusal. Nothing opens on a refusal. */
 export async function openAccount(
@@ -38,6 +38,7 @@ export async function openAccount(
   usage: string,
   value: string | true | undefined,
   purpose: RunPurpose,
+  bypassHours = false,
 ): Promise<{ account: FacebookAccount; run: PreparedRun } | CommandResult> {
   if (typeof value !== "string") return { code: 1, stderr: `log ${name}: --account is required (log accounts lists them)\n${usage}` };
   let account: FacebookAccount;
@@ -46,7 +47,7 @@ export async function openAccount(
   } catch (error) {
     return refuseError(name, error);
   }
-  const prepared = prepareRun(account, purpose, { now: (context.now ?? (() => new Date()))() });
+  const prepared = prepareRun(account, purpose, { now: (context.now ?? (() => new Date()))(), bypassHours });
   if (!prepared.ok) return refuse(name, prepared.code, prepared.detail);
   return { account, run: prepared.run };
 }
@@ -172,16 +173,16 @@ export const doctorCommand: Command = {
 export const connectCommand: Command = {
   name: "connect",
   summary: "Sign a Facebook account in by hand through its proxy, save its cookies to Twenty",
-  args: "--account <name> [--noPrompt [--wait <seconds>]]",
+  args: "--account <name> [--noPrompt [--wait <seconds>]] [--bypass]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["noPrompt"], valued: ["account", "wait"] });
+    const parsed = parseArgs(argv, { boolean: ["noPrompt", "bypass"], valued: ["account", "wait"] });
     if (!parsed.ok) return { code: 1, stderr: `log connect: ${parsed.error}\n${CONNECT_USAGE}` };
     // --noPrompt: no Enter on stdin (the MCP tool owns it). The worker watches the page instead,
     // ending at once if the saved cookies are logged in, or when a person finishes signing in.
     const noPrompt = Boolean(parsed.flags["noPrompt"]);
     const waitSeconds = parsed.flags["wait"] === undefined ? CONNECT_WAIT_SECONDS : Number(parsed.flags["wait"]);
     if (!Number.isInteger(waitSeconds) || waitSeconds < 10 || waitSeconds > 1800) return { code: 1, stderr: `log connect: --wait must be 10 to 1800 seconds\n${CONNECT_USAGE}` };
-    const opened = await openAccount(context, "connect", CONNECT_USAGE, parsed.flags["account"], "connect");
+    const opened = await openAccount(context, "connect", CONNECT_USAGE, parsed.flags["account"], "connect", Boolean(parsed.flags["bypass"]));
     if (!("run" in opened)) return opened;
     const { account, run } = opened;
     return withRun(context, "connect", account, run, async () => {
@@ -215,11 +216,11 @@ export const connectCommand: Command = {
 export const scanCommand: Command = {
   name: "scan",
   summary: "Read Marketplace > Selling live for one account and update its listings in Twenty",
-  args: "--account <name> [--json]",
+  args: "--account <name> [--json] [--bypass]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json"], valued: ["account"] });
+    const parsed = parseArgs(argv, { boolean: ["json", "bypass"], valued: ["account"] });
     if (!parsed.ok) return { code: 1, stderr: `log scan: ${parsed.error}\n${SCAN_USAGE}` };
-    const opened = await openAccount(context, "scan", SCAN_USAGE, parsed.flags["account"], "run");
+    const opened = await openAccount(context, "scan", SCAN_USAGE, parsed.flags["account"], "run", Boolean(parsed.flags["bypass"]));
     if (!("run" in opened)) return opened;
     const { account, run } = opened;
     return withRun(context, "scan", account, run, async () => {
@@ -244,14 +245,14 @@ export const scanCommand: Command = {
 export const statusCommand: Command = {
   name: "status",
   summary: "Open one Marketplace item page live and classify its status",
-  args: "<listingId> --account <name> [--json]",
+  args: "<listingId> --account <name> [--json] [--bypass]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json"], valued: ["account"] });
+    const parsed = parseArgs(argv, { boolean: ["json", "bypass"], valued: ["account"] });
     if (!parsed.ok) return { code: 1, stderr: `log status: ${parsed.error}\n${STATUS_USAGE}` };
     const [listingId, extra] = parsed.positionals;
     if (listingId === undefined) return { code: 1, stderr: `log status: a listing id is required\n${STATUS_USAGE}` };
     if (extra !== undefined) return { code: 1, stderr: `log status: unexpected argument "${extra}"\n${STATUS_USAGE}` };
-    const opened = await openAccount(context, "status", STATUS_USAGE, parsed.flags["account"], "run");
+    const opened = await openAccount(context, "status", STATUS_USAGE, parsed.flags["account"], "run", Boolean(parsed.flags["bypass"]));
     if (!("run" in opened)) return opened;
     const { account, run } = opened;
     return withRun(context, "status", account, run, async () => {
