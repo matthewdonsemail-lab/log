@@ -32,6 +32,7 @@ logged or written to a step. Thirty idle minutes stop the session.
 from __future__ import annotations
 
 import asyncio
+import random
 import base64
 import json
 import os
@@ -253,6 +254,24 @@ def read_login(path: str | None) -> dict[str, Any]:
     return secrets if isinstance(secrets, dict) else {}
 
 
+
+def draw(spec: str) -> int:
+    """ "4-7" -> a whole number from 4 to 7; "3" -> 3."""
+    low, _, high = str(spec).partition("-")
+    return random.randint(int(low), int(high or low))
+
+
+# The page's visible links whose href matches, deduplicated (isolated world).
+VISIBLE_LINKS_JS = """(pattern) => {
+  const re = new RegExp(pattern), seen = new Set(), out = [];
+  for (const a of document.querySelectorAll('a[href]')) {
+    const href = a.getAttribute('href'), r = a.getBoundingClientRect();
+    if (!href || seen.has(href) || !re.test(href) || r.width < 20 || r.height < 20 || r.bottom < 0 || r.top > innerHeight) continue;
+    seen.add(href); out.push(href);
+  }
+  return out;
+}"""
+
 class Inspector:
     def __init__(self, config: dict[str, Any]) -> None:
         self.config = config
@@ -473,6 +492,69 @@ class Inspector:
             async def wait_role() -> None:
                 await self.by_role(args[0], args[1], timeout_ms=expect_ms)
             return await self.step("waitRole", f'{args[0]} "{args[1]}"', wait_role)
+        # Warm-up actions (rule 35, Listaro's account-warmup.ts stages 1-5): ranges like "4-7" are drawn
+        # each run, so a recorded flow never repeats itself exactly.
+        if action == "scroll":
+            times, px = (args + ["3-5", "300-600"][len(args):])[:2]
+
+            async def scroll() -> None:
+                # Real wheel ticks with pauses, as a hand scrolls (Listaro jumped with window.scrollBy).
+                for _ in range(draw(times)):
+                    distance = draw(px)
+                    moved = 0
+                    while moved < distance:
+                        tick = min(distance - moved, random.randint(80, 125))
+                        await page.mouse.wheel(0, tick)
+                        moved += tick
+                        await asyncio.sleep(random.uniform(0.03, 0.09))
+                    await asyncio.sleep(random.uniform(1.5, 3.5))
+            return await self.step("scroll", f"{times} x {px}px", scroll)
+        if action == "dwell":
+            span = args[0] if args else "2-4"
+            return await self.step("dwell", f"{span}s", lambda: asyncio.sleep(random.uniform(*[float(x) for x in (span.split("-") + [span])[:2]])))
+        if action == "openAny" and args:
+            pattern, count = (args + ["2-4"])[:2]
+
+            async def open_any() -> None:
+                hrefs = await page.evaluate(VISIBLE_LINKS_JS, pattern)
+                random.shuffle(hrefs)
+                chosen = hrefs[: draw(count)]
+                if not chosen:
+                    raise RuntimeError(f"no visible link matches {pattern}")
+                for href in chosen:
+                    await self.mouse.click(page.locator(f'a[href="{href}"]').first)
+                    await page.wait_for_load_state("domcontentloaded")
+                    await asyncio.sleep(random.uniform(2.0, 4.0))
+                    await page.mouse.wheel(0, random.randint(200, 500))
+                    await asyncio.sleep(random.uniform(1.5, 3.0))
+                    log(f"  openAny: read {href.split('?')[0]}")
+                    await page.go_back(wait_until="domcontentloaded")
+                    await asyncio.sleep(random.uniform(2.0, 3.0))
+            return await self.step("openAny", f"{count} x {pattern}", open_any)
+        if action == "clickAny" and len(args) >= 2:
+            role, pattern, count = (args + ["1-2"])[:3]
+
+            async def click_any() -> None:
+                found = page.get_by_role(role, name=re.compile(pattern, re.I))
+                options = []
+                for i in range(min(await found.count(), 30)):
+                    item = found.nth(i)
+                    try:
+                        if await item.is_visible() and (await item.get_attribute("aria-pressed")) != "true":
+                            options.append(item)
+                    except Exception:
+                        continue
+                random.shuffle(options)
+                chosen = options[: draw(count)]
+                if not chosen:
+                    raise RuntimeError(f'no visible {role} named /{pattern}/')
+                for item in chosen:
+                    await item.scroll_into_view_if_needed(timeout=10_000)
+                    await asyncio.sleep(random.uniform(0.8, 1.5))
+                    await self.mouse.click(item)
+                    await asyncio.sleep(random.uniform(1.0, 2.0))
+                log(f"  clickAny: {len(chosen)} {role} /{pattern}/")
+            return await self.step("clickAny", f'{count} x {role} /{pattern}/', click_any)
         if action == "snapshot":
             return await self.step("snapshot", "", lambda: asyncio.sleep(0))
         if action == "back":

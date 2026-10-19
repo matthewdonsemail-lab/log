@@ -1605,3 +1605,64 @@ Checked: `check:naming` OK, `tsc --noEmit` clean, `twenty:client:check` up to da
 Live Twenty: the 5 fields were created; `log lifecycle` places all 11 accounts (Pittsburgh and Wilkes-Barre restricted; the checkpoint accounts need a person). Bethlehem, Scranton and Lancaster's `profileNamedAt` were backfilled from each run's `useFXIMUpdateNameMutation` answer (`"error": null`, 2026-10-19 11:21-11:49 UTC), and Reading's `marketplaceLocationAt` from its recorded location change.
 
 Not done: the host that runs this machine with real actors in one open browser (plan P2/P3); until then the commands still open per action.
+
+## 2026-10-19 14:30Z · feat/warmup
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/lifecycle.md`: edited
+- `python/inspectSession.py`: added def draw, const VISIBLE_LINKS_JS · changed class Inspector
+- `scripts/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `skills.md`: edited
+- `skills/warmup/SKILL.md`: new file
+- `src/camofox/flow/flow.test.ts`: added test "scroll, openAny, clickAny and dwell keep their ranges and pin no element; a settling wait is dropped"
+- `src/camofox/flow/helpers/flowFromRecording.ts`: changed const ACTED, function flowFromRecording
+- `src/camofox/flow/types.ts`: changed type FlowAction, interface FlowStep
+- `src/camofox/inspect/helpers/parseInspectAction.ts`: changed const ARITY, const LIVE_ACTIONS
+- `src/camofox/inspect/inspect.test.ts`: changed test "knows each action and its arguments", test "click, type, press, solve, signIn and code are the actions that act on Facebook (rule 8)"
+- `src/camofox/inspect/types.ts`: changed type InspectAction
+- `src/cli/flow/helpers/flowSession.ts`: added function commandFor, interface OpenSession, function openInspectSession, function runFlowInSession
+- `src/cli/flow/helpers/index.ts`: added export from "./flowSession.ts"
+- `src/cli/flow/index.ts`: added export from "./helpers/index.ts" · changed function describe, function runFlow · removed function commandFor
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/cli/warmup/index.ts`: added const WARMUP_USAGE, const runName, function feed, const warmupCommand, function record, function runWarmup, function showFeed
+- `src/cli/warmup/warmup.test.ts`: added function run, test "plan lists each activity's recording script and whether its flow exists", test "run refuses an activity whose flow hasn't been recorded, before any browser opens", test "unknown activities and subcommands are named", test "feed shows the activity feed, empty to start"
+- `src/marketplace/warmup/helpers/feed.ts`: added function feedPath, function appendFeed, function readFeed, function renderFeedLine
+- `src/marketplace/warmup/helpers/index.ts`: added export from "./feed", export from "./scripts"
+- `src/marketplace/warmup/helpers/scripts.ts`: added const FB, const ACTIVITY_SCRIPTS, const SCRIPTS_IN_ORDER, function pickActivities
+- `src/marketplace/warmup/index.ts`: added export from "./helpers/index", export from "./machine", export from "./types"
+- `src/marketplace/warmup/machine.ts`: added const warmupMachine
+- `src/marketplace/warmup/types.ts`: added interface ScriptStep, interface ActivityScript, interface FeedLine, type ActivityOutcome, interface WarmupInput, interface WarmupContext
+- `src/marketplace/warmup/warmup.test.ts`: added function run, test "runs Listaro's five activities in its stage order, one after another", test "a failed step stops the warm-up there, and says which activity and step", test "--only runs just those, and STOP ends it", test "follow Listaro's stages, and only the likes act on Facebook (rule 8)", test "pickActivities keeps the stage order and names anything unknown", test "lines are appended as they happen and read back per account"
+
+What changed: `log warmup` (rule 36).
+
+- **Inspect gains four warm-up actions** (`python/inspectSession.py`, `parseInspectAction`, `InspectAction`). Each draws its ranges every run.
+  - `scroll <times> <px>`: real wheel ticks with 1.5-3.5 s pauses (Listaro jumped with `window.scrollBy`).
+  - `openAny <hrefPattern> <count>`: random visible links matching the pattern; each is clicked, read, scrolled and gone back from.
+  - `clickAny <role> <namePattern> <count>`: random visible, not-yet-pressed buttons. It is a live action.
+  - `dwell <range>`: stays on the page.
+- **Flows carry them** (`FlowAction`; `FlowStep.args` keeps the recorded ranges and pins no element). `flowFromRecording` turns them into steps; a settling `wait` is still dropped.
+- **`log flow run`'s session code moved to `src/cli/flow/helpers/flowSession.ts`** (`commandFor`, `openInspectSession`, `runFlowInSession` with `skip` and `onStep`), so the warm-up runs flows with the same code.
+- **New `src/marketplace/warmup`:**
+  - `ACTIVITY_SCRIPTS`: each of Listaro's stages 1-5 (`account-warmup.ts:92-246`) as the inspect commands that record it, with Listaro's ranges. Only the likes are live.
+  - `warmupMachine` (XState): picking, running (`runActivity`), resting (gap), then picking again; a failed step leads to stopped; STOP works anywhere.
+  - The activity feed (`~/.logCli/runs/warmup/feed.jsonl`, `LOG_WARMUP_FEED`): `appendFeed`, `readFeed`, `renderFeedLine`; and `pickActivities`.
+- **The command:**
+  - `log warmup plan` shows the five scripts and whether each flow is recorded.
+  - `record --account` opens one headed session, sends each script, then builds each activity's flow from its slice of the recording (`warmupFeedBrowse`…).
+  - `run --account [--likes] [--gapMinutes] [--only]` runs the warm-up machine over the recorded flows in one session and refuses `flowNotRecorded` before anything opens.
+  - `feed [--account] [--follow]` shows the feed.
+- **The naming gate allows** pure number ranges (`3-5`, a quantity, not a name) and every `aria-*` DOM attribute (it already allowed `aria-label`).
+- **Docs:** rule 36, `skills/warmup`, and the warm-up section of `docs/lifecycle.md`.
+Why: matt asked to map each warm-up action as a state machine, do each one through inspect in a headed session he can watch, record them, turn them into state machines, wrap them as "warm-up", and see an activity feed from the monitor. A recorded flow replays fixed buttons, and a warm-up has to vary (some listings, a couple of likes, a few scrolls), so the variety is in the recorded actions' ranges.
+Checked: `check:naming` OK, `tsc --noEmit` clean, `twenty:client:check` up to date, `bun test` 541 pass / 0 fail. New tests:
+- the warm-up machine runs the five in stage order, stops at a failed step naming it, `--only`, and STOP;
+- the scripts follow Listaro's stages, only the likes are live, and every goto is facebook.com;
+- `pickActivities`;
+- the feed appends and reads back per account;
+- a warm-up recording becomes ranged steps with no pinned element;
+- the parse of the four actions, and `clickAny` among the live actions;
+- `log warmup plan`, and `run` refusing an unrecorded flow before any browser opens.
+
+Not done: the headed recording itself. 2Captcha's proxy traffic is at 0 (992.32 of 992.321 used) and every account's proxy answers 407, so no browser may open (rule 12). `log warmup record` is ready for when it is topped up.

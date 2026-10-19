@@ -9,7 +9,13 @@ describe('parseInspectAction', () => {
     expect(parseInspectAction(['snapshot'])).toEqual({ ok: true, action: 'snapshot', args: [] })
     expect(parseInspectAction(['type', 'e12', 'Allentown', 'Trash'])).toEqual({ ok: true, action: 'type', args: ['e12', 'Allentown', 'Trash'] })
     expect(parseInspectAction(['click'])).toMatchObject({ ok: false })
-    expect(parseInspectAction(['scroll'])).toMatchObject({ ok: false })
+    expect(parseInspectAction(['hover'])).toMatchObject({ ok: false })
+    // Warm-up actions (rule 35): ranges are optional for scroll and dwell.
+    expect(parseInspectAction(['scroll'])).toEqual({ ok: true, action: 'scroll', args: [] })
+    expect(parseInspectAction(['scroll', '4-7', '300-600'])).toEqual({ ok: true, action: 'scroll', args: ['4-7', '300-600'] })
+    expect(parseInspectAction(['openAny', '/marketplace/item/', '2-4'])).toMatchObject({ ok: true, action: 'openAny' })
+    expect(parseInspectAction(['clickAny', 'button'])).toMatchObject({ ok: false })
+    expect(parseInspectAction(['dwell', '2-4'])).toEqual({ ok: true, action: 'dwell', args: ['2-4'] })
   })
 
   test('goto only takes Facebook', () => {
@@ -19,7 +25,7 @@ describe('parseInspectAction', () => {
   })
 
   test('click, type, press, solve, signIn and code are the actions that act on Facebook (rule 8)', () => {
-    expect([...LIVE_ACTIONS].sort()).toEqual(['click', 'clickRole', 'code', 'fillRole', 'press', 'signIn', 'solve', 'type', 'upload', 'uploadRole'])
+    expect([...LIVE_ACTIONS].sort()).toEqual(['click', 'clickAny', 'clickRole', 'code', 'fillRole', 'press', 'signIn', 'solve', 'type', 'upload', 'uploadRole'])
   })
 })
 

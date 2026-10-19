@@ -25,6 +25,7 @@ import { flowCommand } from "../flow/index.ts";
 import { inspectCommand } from "../inspect/index.ts";
 import { proxyCommand } from "../proxy/index.ts";
 import { publishCommand } from "../publish/index.ts";
+import { warmupCommand } from "../warmup/index.ts";
 import { watchCommand } from "../watch/index.ts";
 import { renderUsage } from "./helpers/index.ts";
 import type { Command, CommandContext } from "./types.ts";
@@ -44,6 +45,7 @@ export const COMMANDS: Command[] = [
   profileCommand,
   inspectCommand,
   flowCommand,
+  warmupCommand,
   scanCommand,
   statusCommand,
   watchCommand,

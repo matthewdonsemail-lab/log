@@ -25,6 +25,9 @@ import { createInspector, formatTraceLine } from "../../observability/trace/inde
 import { mapInspectRun } from "../../rea/inspectMap/index.ts";
 import { openAccount, withRun } from "../live/index.ts";
 import { parseArgs } from "../runner/helpers/index.ts";
+import { openInspectSession, runFlowInSession } from "./helpers/index.ts";
+
+export * from "./helpers/index.ts";
 import type { Command, CommandResult } from "../runner/types.ts";
 
 export const FLOW_USAGE = [
@@ -50,24 +53,9 @@ export function takePairs(argv: string[], flag: string): { pairs: Record<string,
   return { pairs, rest };
 }
 
-/** A filled flow step → the inspect session's command. */
-export function commandFor(step: FlowStep): { action: InspectAction; args: string[] } {
-  switch (step.action) {
-    case "goto":
-      return { action: "goto", args: [step.url!] };
-    case "click":
-      return { action: "clickRole", args: [step.role!, step.name!] };
-    case "fill":
-      return { action: "fillRole", args: [step.role!, step.name!, step.value!] };
-    case "upload":
-      return { action: "uploadRole", args: [step.role!, step.name!, step.value!] };
-    default:
-      return { action: step.action, args: [] };
-  }
-}
-
 function describe(step: FlowStep): string {
   if (step.action === "goto") return `goto ${step.url}`;
+  if (step.args?.length) return `${step.action} ${step.args.join(" ")}`;
   if (step.role) return `${step.action} ${step.role} "${step.name}"${step.value ? ` = ${step.action === "upload" ? basename(step.value) : step.value}` : ""}`;
   return step.action;
 }
@@ -102,30 +90,11 @@ async function runFlow(context: Parameters<Command["run"]>[0], flow: FlowDefinit
       fileParams.forEach((p, i) => (filled[p.name] = prepared.photos[i].path));
     }
     filled.uid = account.accountName;
-    const current = { account: account.accountName, runDir, commandsPath: join(runDir, "commands.jsonl"), repliesPath: join(runDir, "replies.jsonl"), startedAt: new Date().toISOString() };
-    const session = context.inspectSession({ accountId: account.id, storageStatePath: run.statePath, proxyPath: run.proxyPath, devicePath: run.devicePath, captureDir: run.captureDir!, commandsPath: current.commandsPath, repliesPath: current.repliesPath, loginPath: run.loginPath, startUrl: null });
-    let ended = false;
-    void session.then(() => (ended = true));
-    const deadline = Date.now() + 180_000;
-    while (!(existsSync(current.repliesPath) && readFileSync(current.repliesPath, "utf8").includes('"id": "ready"'))) {
-      if (ended || Date.now() > deadline) return { code: 1, stderr: `log flow: the browser never became ready (${runDir})` };
-      await new Promise((r) => setTimeout(r, 300));
-    }
+    const opened = await openInspectSession(context, account, run);
+    if ("error" in opened) return { code: 1, stderr: `log flow: ${opened.error}` };
+    const { current, session } = opened;
     context.err(`Flow ${flow.name} on ${account.accountName}: ${flow.steps.length} steps, recorded in ${runDir}`);
-    const machine = createFlowMachine(flow).provide({
-      actors: {
-        act: fromPromise<FlowStepResult, FlowActInput>(async ({ input }) => {
-          const step = fillStep(input.step, filled);
-          const { action, args } = commandFor(step);
-          const reply = await context.sendInspect(current, action, args, 240_000, step.expect ? { name: step.expect, ms: 45_000 } : undefined);
-          if (!reply) return { id: step.id, ok: false, error: "no reply from the session" };
-          return { id: step.id, ok: reply.ok !== false, error: reply.error, expectSeen: reply.expect?.seen, ms: (reply as { ms?: number }).ms, folder: reply.folder };
-        }),
-      },
-    });
-    const actor = createActor(machine, { inspect: createInspector((line) => context.err(formatTraceLine(line))) });
-    actor.start();
-    const output = (await toPromise(actor)) as FlowRunOutput;
+    const output = await runFlowInSession(context, current, flow, filled);
     await context.sendInspect(current, "stop", [], 30_000);
     await session;
     try {

@@ -11,6 +11,10 @@ export type InspectAction = 'goto' | 'snapshot' | 'click' | 'type' | 'press' | '
   | 'clickRole' | 'fillRole' | 'uploadRole' | 'waitRole'
   /** The cursor circles an element (the Robotic VSL engine's highlight, rule 32): movement only, no click. */
   | 'highlight'
+  /** Warm-up (rule 35): `scroll 4-7 300-600` (wheel), `openAny <hrefPattern> 2-4` (read some listings), `clickAny <role> <namePattern> 2-3` (live). */
+  | 'scroll' | 'openAny' | 'clickAny'
+  /** `dwell 2-4`: stays on the page that long, the cursor moving (a recorded pause; `wait` is only for a page to settle). */
+  | 'dwell'
 
 /** What `inspectSession.py` is started with (argv[1]). */
 export interface InspectSessionConfig {

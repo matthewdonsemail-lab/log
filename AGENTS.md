@@ -318,6 +318,14 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     lifecycle machine (`src/marketplace/lifecycle`, XState) across an
     onboarding lane (with a day's warm-up after profile and name) and a host
     lane. Top of this file.
+36. 2026-10-19 · matt: the warm-up is recorded and watched, then wrapped.
+    Each of Listaro's five warm-up activities (`account-warmup.ts` stages
+    1-5) is done through `log inspect` in a headed session, recorded step by
+    step, turned into a flow and its XState machine (`warmupFeedBrowse`…),
+    and wrapped as `log warmup`: `record` (once), `run` (the warm-up machine
+    runs each flow in turn in one open browser) and `feed` (the activity
+    feed, live). Warm-up steps are `scroll`, `openAny`, `clickAny`, `dwell`,
+    their ranges drawn each run; the likes need `--likes` (rule 8).
 
 ## Checks
 
