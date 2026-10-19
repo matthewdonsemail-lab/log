@@ -400,7 +400,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `src/browser/driver` is one XState machine for every browser (prepare,
     gate, start, selfCheck, open, close), so a new browser is one more
     driver and can't skip rules 12 and 17. Listaro's AdsPower client is
-    ported to `src/adsPower/localApi`. `log adsPower sync --apply` gives each
+    ported to `src/browser/adsPower`. `log adsPower sync --apply` gives each
     account one profile, linked in `socialAccounts.adsPowerProfileId`, with
     `browserDriver` picking the driver (empty: camoufox). A profile holds no
     proxy, password, cookies or 2FA key. The proxy goes on only to open and
@@ -412,6 +412,21 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     Production runs AdsPower and log-cli on one browser server (AdsPower's Local
     API and CDP are loopback only), with Twenty on its own server over HTTPS
     (`docs/deployment.md`).
+44. 2026-10-20 · matt: every browser has parity, through one Playwright layer.
+    AdsPower (Chromium, attached over CDP) and Camoufox (Firefox, launched)
+    are both driven with Playwright's async API, never Puppeteer. AdsPower's
+    `ws.puppeteer` is only the name of the CDP websocket it returns.
+    `python/browserDriver.py` opens either and hands every session the same
+    context. So the proxy gate (`gate_attached`), the self-check
+    (`check_attached`), the session HAR (`harRecorder.SessionHar`), HumanMouse,
+    scrollMotion, the flows and the warm-up are the same code on both. This
+    replaces rule 42's "not wired yet". Each browser is a domain of its own,
+    `src/browser/<name>`, holding its capability row, driver and tests. The
+    `browserParity` check in lefthook pre-commit (`bun run check:browsers`)
+    refuses a browser missing its domain, row, driver, tests, Python opener or
+    `docs/browsers.md` column. `notBuilt` is listed, never refused. Listaro's
+    AdsPower rules carry over (`docs/browsers.md`): never close the profile's
+    context, inject no scripts, and let the profile keep its own cookies.
 
 ## Checks
 

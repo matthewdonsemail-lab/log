@@ -21,6 +21,7 @@ import { inspectRuns, mapAllInspectRuns, mapInspectRun } from "../../rea/inspect
 import { openAccount, withRun } from "../live/index.ts";
 import { parseArgs } from "../runner/helpers/index.ts";
 import type { Command } from "../runner/types.ts";
+import { browserFor } from "../../browser/driver/index.ts";
 
 export const INSPECT_USAGE = [
   "Usage: log inspect start --account <accountName> [--url <https://www.facebook.com/...>] [--bypass] [--now] [--noIdleMouse]   (one session per account: two accounts can be open at once)",
@@ -70,6 +71,7 @@ export const inspectCommand: Command = {
             loginPath: run.loginPath,
             idleMouse: !parsed.flags["noIdleMouse"],
             startUrl: url,
+            browser: browserFor(account),
           });
         } finally {
           clearCurrentInspect(undefined, account.accountName);

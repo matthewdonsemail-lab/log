@@ -9,12 +9,21 @@ pre-commit:
     commitLog:
       run: node scripts/commitLog.mjs
 
+    # Rule 44: every browser has the same pieces (its src/browser/<name> domain, capability row,
+    # driver, tests, Python opener and docs/browsers.md column). A capability may be notBuilt;
+    # those are listed, never refused (docs/browsers.md).
+    browserParity:
+      run: bun run check:browsers
+
 pre-push:
   parallel: false
   commands:
     # Rule 1: camelCase everywhere.
     naming:
       run: bun run check:naming
+
+    browserParity:
+      run: bun run check:browsers
 
     typecheck:
       run: bun run typecheck

@@ -1,12 +1,12 @@
 import { describe, expect, test } from 'bun:test'
 import { createActor, waitFor } from 'xstate'
-import { createBrowserSession } from '../browser/driver/index'
-import { listFacebookAccounts } from '../marketplace/socialAccount/index'
-import { marketplaceFixture } from '../twenty/graphql/index'
-import { adsPowerDriver, NO_PROXY, proxyConfig } from './driver/index'
-import { AdsPowerError, createAdsPowerClient } from './localApi/index'
-import type { AdsPowerClient, AdsPowerProfile } from './localApi/index'
-import { planSync, profileRequest, remarkAccountId, syncProfiles, twentyRemark } from './profile/index'
+import { createBrowserSession } from '../driver/index'
+import { listFacebookAccounts } from '../../marketplace/socialAccount/index'
+import { marketplaceFixture } from '../../twenty/graphql/index'
+import { adsPowerDriver } from './index'
+import { AdsPowerError, createAdsPowerClient } from './index'
+import type { AdsPowerClient, AdsPowerProfile } from './index'
+import { planSync, profileRequest, remarkAccountId, syncProfiles, twentyRemark } from './index'
 
 /** A Local API that answers from a script, recording every call. */
 function fakeFetch(answers: Record<string, unknown[]>) {
@@ -113,42 +113,44 @@ describe('adsPower profiles from Twenty (rule 42)', () => {
   })
 })
 
-describe('the AdsPower driver in the browser session machine', () => {
-  test("the proxy URL becomes AdsPower's user_proxy_config", () => {
-    expect(proxyConfig('http://u%3Asess:p@gw.example.com:8000')).toEqual({ proxy_soft: 'other', proxy_type: 'http', proxy_host: 'gw.example.com', proxy_port: '8000', proxy_user: 'u:sess', proxy_password: 'p' })
-    expect(proxyConfig('not a proxy')).toBeNull()
+describe('the AdsPower driver in the browser session machine (rule 44)', () => {
+  const gateOk = async () => ({ ok: true, exitIp: '1.2.3.4', exitCountry: 'IE', failure: null })
+
+  async function linkedAccount() {
+    const twenty = marketplaceFixture()
+    await syncProfiles(twenty, memoryAdsPower().client, { apply: true })
+    return (await listFacebookAccounts(twenty)).find((a) => a.accountName === 'galwayOne')!
+  }
+
+  test('a session with no gate step is refused before anything opens (rule 12)', async () => {
+    const account = await linkedAccount()
+    const opened: string[] = []
+    const driver = adsPowerDriver({ account: async () => account, open: async (a) => (opened.push(a.accountName), { cdpUrl: 'ws://x', handle: a.adsPowerProfileId! }) })
+    const actor = createBrowserSession(driver, { driver: 'adsPower', accountId: account.id, accountName: account.accountName }).start()
+    expect((await waitFor(actor, (s) => s.status === 'done')).output).toMatchObject({ state: 'refused', failure: { code: 'browserDriverFailed' } })
+    expect(opened).toEqual([])
   })
 
-  test('until its gate is built, an AdsPower session is refused before anything starts (rule 12)', async () => {
-    const twenty = marketplaceFixture()
-    const ads = memoryAdsPower()
-    await syncProfiles(twenty, ads.client, { apply: true })
-    const account = (await listFacebookAccounts(twenty)).find((a) => a.accountName === 'galwayOne')!
-    const driver = adsPowerDriver({ adsPower: ads.client, account: async () => account })
+  test('a refused gate never opens; a passed one opens the profile, and CLOSE closes it with its reason (rule 35)', async () => {
+    const account = await linkedAccount()
+    const refusedOpen: string[] = []
+    const refused = adsPowerDriver({ account: async () => account, gate: async () => ({ ok: false, exitIp: null, exitCountry: null, failure: { code: 'proxyCountryMismatch', detail: 'exit in US' } }), open: async () => (refusedOpen.push('x'), { cdpUrl: null, handle: 'x' }) })
+    const r = createBrowserSession(refused, { driver: 'adsPower', accountId: account.id, accountName: account.accountName }).start()
+    expect((await waitFor(r, (s) => s.status === 'done')).output).toMatchObject({ state: 'refused', failure: { code: 'proxyCountryMismatch' } })
+    expect(refusedOpen).toEqual([])
+    const closed: string[] = []
+    const driver = adsPowerDriver({ account: async () => account, gate: gateOk, open: async (a) => ({ cdpUrl: 'ws://127.0.0.1:9/devtools/browser/x', handle: a.adsPowerProfileId! }), close: async (e) => void closed.push(e.handle) })
     const actor = createBrowserSession(driver, { driver: 'adsPower', accountId: account.id, accountName: account.accountName }).start()
-    const done = await waitFor(actor, (s) => s.status === 'done')
-    expect(done.output).toMatchObject({ state: 'refused', failure: { code: 'adsPowerGateNotBuilt' } })
-    expect(ads.log.some((l) => l.startsWith('start'))).toBe(false)
-  })
-
-  test('with a passed gate it starts on the proxy; the unbuilt self-check closes it and takes the proxy back off', async () => {
-    const twenty = marketplaceFixture()
-    const ads = memoryAdsPower()
-    await syncProfiles(twenty, ads.client, { apply: true })
-    const account = (await listFacebookAccounts(twenty)).find((a) => a.accountName === 'galwayOne')!
-    const driver = adsPowerDriver({ adsPower: ads.client, account: async () => account, gate: async () => ({ ok: true, exitIp: '1.2.3.4', exitCountry: 'IE', failure: null }) })
-    const actor = createBrowserSession(driver, { driver: 'adsPower', accountId: account.id, accountName: account.accountName }).start()
-    const done = await waitFor(actor, (s) => s.status === 'done')
-    expect(done.output).toMatchObject({ state: 'closed', closeReason: 'selfCheckFailed', failure: { code: 'adsPowerSelfCheckNotBuilt' } })
-    const id = account.adsPowerProfileId!
-    expect(ads.log.filter((l) => l.includes(id)).map((l) => l.split(' ')[0])).toEqual(['update', 'start', 'stop', 'update'])
-    expect(ads.log.at(-1)).toBe(`update ${id} ${JSON.stringify({ user_proxy_config: NO_PROXY })}`)
+    await waitFor(actor, (s) => s.matches('open'))
+    actor.send({ type: 'CLOSE', reason: 'endOfHours' })
+    expect((await waitFor(actor, (s) => s.status === 'done')).output).toMatchObject({ state: 'closed', closeReason: 'endOfHours', failure: null })
+    expect(closed).toEqual([account.adsPowerProfileId!])
   })
 
   test('an account with no linked profile fails in preparing', async () => {
     const [account] = (await listFacebookAccounts(marketplaceFixture())).filter((a) => a.accountName === 'galwayOne')
-    const driver = adsPowerDriver({ adsPower: memoryAdsPower().client, account: async () => account })
-    const actor = createActor((await import('../browser/driver/index')).sessionMachineFor(driver), { input: { driver: 'adsPower', accountId: account.id, accountName: account.accountName } }).start()
+    const driver = adsPowerDriver({ account: async () => account, gate: gateOk })
+    const actor = createActor((await import('../driver/index')).sessionMachineFor(driver), { input: { driver: 'adsPower', accountId: account.id, accountName: account.accountName } }).start()
     expect((await waitFor(actor, (s) => s.status === 'done')).output).toMatchObject({ state: 'failed', failure: { code: 'adsPowerProfileMissing' } })
   })
 })

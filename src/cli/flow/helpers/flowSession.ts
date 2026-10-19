@@ -7,6 +7,7 @@ import type { FlowActInput, FlowDefinition, FlowRunOutput, FlowStep, FlowStepRes
 import type { CurrentInspect, InspectAction } from "../../../camofox/inspect/index.ts";
 import { createInspector, formatTraceLine } from "../../../observability/trace/index.ts";
 import type { CommandContext } from "../../runner/types.ts";
+import { browserFor } from "../../../browser/driver/index.ts";
 
 /** A filled flow step → the inspect session's command. */
 export function commandFor(step: FlowStep): { action: InspectAction; args: string[] } {
@@ -42,7 +43,7 @@ export interface OpenSession {
  */
 export async function openInspectSession(
   context: CommandContext,
-  account: { id: string; accountName: string },
+  account: { id: string; accountName: string; browserDriver?: string | null; adsPowerProfileId?: string | null },
   run: { statePath: string; proxyPath: string; devicePath: string | null; captureDir: string | null; loginPath: string | null },
 ): Promise<OpenSession | { error: string }> {
   const runDir = dirname(run.captureDir!);
@@ -57,6 +58,7 @@ export async function openInspectSession(
     repliesPath: current.repliesPath,
     loginPath: run.loginPath,
     startUrl: null,
+    browser: browserFor(account),
   });
   // Listed with the other open sessions, so `log inspect do --account` and `inspect sessions` see it.
   writeCurrentInspect(current);

@@ -1881,3 +1881,69 @@ Checked: read AdsPower's own pages:
 - the troubleshooting guide: `local.adspower.net`, localhost or 127.0.0.1; headless with an API key on several devices; GUI on one device; the port can change;
 - CrocoFactory's SDK note on loopback endpoints in remote setups.
 Also read Listaro's `setup-adspower.sh` and its server plan (AdsPower and the agent on one server, `127.0.0.1:50325`), and log-cli's 2Captcha URL builder (`session-<id>-sessTime-120`, `na.proxy.2captcha.com:2334`). Docs only: no code changed.
+
+## 2026-10-19 21:01Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/adsPower.md`: edited
+- `docs/browsers.md`: new file
+- `lefthook.yml`: edited
+- `package.json`: edited
+- `python/adsPowerBrowser.py`: added const DEFAULT_HOST, const RATE_LIMIT_WAIT_S, def base_url, def _call, def user_proxy_config, const NO_PROXY, def set_proxy, def start, def stop
+- `python/browserDriver.py`: added const BROWSERS, class Opened, def driver_of, def open_camoufox, def open_ads_power, def carry_session_once, const OPENERS, def open_browser
+- `python/errorCatalog.json`: edited
+- `python/harRecorder.py`: added const STATIC, const TEXT_TYPES, const MAX_BODY, class Recorder, class SessionHar
+- `python/inspectSession.py`: changed class Inspector · removed const STATIC, const TEXT_TYPES, const MAX_BODY, class Recorder
+- `python/proxyGate.py`: added def gate_attached, def check_attached
+- `scripts/checkBrowserParity.ts`: added const root, const problems, const rows, const capabilities, const python, const pyBrowsers, const pyOpeners, const START, const END, const mark, const cell, const table, const docsPath, const docs, const current, const notBuilt
+- `skills/adsPower/SKILL.md`: edited
+- `src/adsPower/adsPower.test.ts`: file deleted · removed function fakeFetch, function memoryAdsPower, test "sends the key as a Bearer token and reads a started profile's CDP websocket", test ""Too many request" is retried, then refused as adsPowerRateLimited", test "the app not running is adsPowerUnavailable, and lists page through 100 at a time", test "the profile is Windows Chrome with the home locale, IP timezone and noise, and holds no proxy or secret", test "the plan makes a profile per account, skips banned and unlocalisable ones, and relinks one found by its remark", test "sync is a dry run unless applied; applied, it makes the profiles and links each in Twenty, and a rerun only finds them linked", test "the proxy URL becomes AdsPower's user_proxy_config", test "until its gate is built, an AdsPower session is refused before anything starts (rule 12)", test "with a passed gate it starts on the proxy; the unbuilt self-check closes it and takes the proxy back off", test "an account with no linked profile fails in preparing"
+- `src/adsPower/driver/client.ts`: file deleted · removed interface AdsPowerDriverDeps, const fail, function adsPowerDriver
+- `src/adsPower/driver/helpers/index.ts`: file deleted · removed export from "./proxyConfig"
+- `src/adsPower/driver/helpers/proxyConfig.ts`: file deleted · removed const NO_PROXY, function proxyConfig
+- `src/adsPower/driver/index.ts`: file deleted · removed export from "./client", export from "./helpers/index"
+- `src/adsPower/localApi/client.ts`: file deleted · removed const RATE_LIMIT_WAIT_MS, const PAGE_SIZE, function localApiConfig, type Fetch, function createAdsPowerClient
+- `src/adsPower/localApi/index.ts`: file deleted · removed export from "./client", export from "./types"
+- `src/adsPower/localApi/types.ts`: file deleted · removed interface LocalApiConfig, const DEFAULT_LOCAL_API_URL, interface AdsPowerProfile, interface StartedBrowser, interface CreateProfileBody, interface LocalApiReply, interface AdsPowerClient, class AdsPowerError
+- `src/adsPower/profile/client.ts`: file deleted · removed function syncProfiles
+- `src/adsPower/profile/helpers/index.ts`: file deleted · removed export from "./planSync", export from "./profileRequest"
+- `src/adsPower/profile/helpers/planSync.ts`: file deleted · removed function planSync
+- `src/adsPower/profile/helpers/profileRequest.ts`: file deleted · removed const twentyRemark, const remarkAccountId, function profileRequest
+- `src/adsPower/profile/index.ts`: file deleted · removed export from "./client", export from "./helpers/index", export from "./types"
+- `src/adsPower/profile/types.ts`: file deleted · removed const ADS_POWER_GROUP, const NO_PROFILE_STATUSES, type ProfileSyncAction, interface ProfileSyncEntry, interface ProfileSyncResult
+- `src/browser/adsPower/adsPower.test.ts`: added function fakeFetch, function memoryAdsPower, test "sends the key as a Bearer token and reads a started profile's CDP websocket", test ""Too many request" is retried, then refused as adsPowerRateLimited", test "the app not running is adsPowerUnavailable, and lists page through 100 at a time", test "the profile is Windows Chrome with the home locale, IP timezone and noise, and holds no proxy or secret", test "the plan makes a profile per account, skips banned and unlocalisable ones, and relinks one found by its remark", test "sync is a dry run unless applied; applied, it makes the profiles and links each in Twenty, and a rerun only finds them linked", test "a session with no gate step is refused before anything opens (rule 12)", test "a refused gate never opens; a passed one opens the profile, and CLOSE closes it with its reason (rule 35)", test "an account with no linked profile fails in preparing"
+- `src/browser/adsPower/client.ts`: added const RATE_LIMIT_WAIT_MS, const PAGE_SIZE, function localApiConfig, type Fetch, function createAdsPowerClient, function syncProfiles, interface AdsPowerDriverDeps, const fail, const missing, function adsPowerDriver
+- `src/browser/adsPower/helpers/index.ts`: added export from "./planSync", export from "./profileRequest"
+- `src/browser/adsPower/helpers/planSync.ts`: added function planSync
+- `src/browser/adsPower/helpers/profileRequest.ts`: added const twentyRemark, const remarkAccountId, function profileRequest
+- `src/browser/adsPower/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/browser/adsPower/types.ts`: added interface LocalApiConfig, const DEFAULT_LOCAL_API_URL, interface AdsPowerProfile, interface StartedBrowser, interface CreateProfileBody, interface LocalApiReply, interface AdsPowerClient, class AdsPowerError, const ADS_POWER_GROUP, const NO_PROFILE_STATUSES, type ProfileSyncAction, interface ProfileSyncEntry, interface ProfileSyncResult, const adsPowerCapabilities
+- `src/browser/camoufox/camoufox.test.ts`: added const input, test "refused at a failed gate, opened after a passed one, closed with its reason", test "every browser fills every capability", test "an account's browser comes from Twenty, Camoufox when empty or unknown", test "python/browserDriver.py opens exactly the TS browsers, and maps the gate's proxy to AdsPower's"
+- `src/browser/camoufox/client.ts`: added interface CamoufoxDriverDeps, const missing, function camoufoxDriver
+- `src/browser/camoufox/index.ts`: added export from "./client", export from "./types"
+- `src/browser/camoufox/types.ts`: added const camoufoxCapabilities
+- `src/browser/driver/client.ts`: added function browserFor
+- `src/browser/driver/types.ts`: added const BROWSER_CAPABILITIES, type BrowserCapability, type CapabilityStatus, type BrowserCapabilities
+- `src/camofox/inspect/types.ts`: changed interface InspectSessionConfig
+- `src/cli/adsPower/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/flow/helpers/flowSession.ts`: changed function openInspectSession
+- `src/cli/inspect/index.ts`: changed const inspectCommand
+- `src/cli/runner/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+
+What changed: every browser runs through one Playwright layer (rule 44).
+- `python/browserDriver.py` `open_browser` hands every session the same async Playwright context:
+  - Camoufox: launched, with the gate's guards as before;
+  - AdsPower: `proxyGate.gate_attached()`, the proxy put on the profile, a headed start through the Local API (`python/adsPowerBrowser.py`), `connect_over_cdp`, the profile's own context, `harRecorder.SessionHar`, then `proxyGate.check_attached()`. At the end the profile is stopped and its proxy cleared.
+- `inspectSession.py` opens through it, so the host, flows, warm-up, HumanMouse and scrollMotion are the same code on both.
+- The Recorder moved to `python/harRecorder.py`.
+- Twenty's session goes into a new AdsPower profile once (`carry_session_once`).
+- The TS browsers are domains under `src/browser`: `adsPower` (the old `src/adsPower` localApi, profile and driver merged) and `camoufox`. Each has a capability row (`BROWSER_CAPABILITIES`, 14 capabilities) and a driver with the same shape.
+- `browserFor(account)` puts the account's `browserDriver` and `adsPowerProfileId` into every inspect session's config.
+- New parity gate `scripts/checkBrowserParity.ts` (`bun run check:browsers`), in lefthook pre-commit and pre-push and in `bun run check`. It checks each browser's domain, row, driver, tests, Python opener and `docs/browsers.md` column, and generates the table (`bun run browsers:docs`).
+- The TS-side AdsPower proxy helper and the retired codes adsPowerGateNotBuilt and adsPowerSelfCheckNotBuilt are gone.
+- Docs: `docs/browsers.md` (the layer, Listaro's primitives, the parity table), `docs/adsPower.md`, README, the adsPower skill, AGENTS.md rule 44.
+Why: matt: "for consistency the playwright based approach should stay ... the mouse movements ... agnostic", "they should be directory domain named by this specific capability ... as browser", "parity as with the camoufox work", "version controlling logic ... in the precommit lefthook.yml ... not too strict but ... uniform". Also bring Listaro's primitives in, and drop Puppeteer (`ws.puppeteer` is only AdsPower's name for the CDP URL).
+Checked: `bun run check`: naming OK, check:browsers OK (two not built: adsPower.syncSessions, adsPower.oneMachineAtATime), tsc clean, 570 pass, 0 fail. New tests: both drivers through the session machine (refused at a gate, opened, closed with a reason), every browser fills every capability, `browserFor`, and Python's BROWSERS and OPENERS equal BROWSER_DRIVERS with the 2Captcha proxy mapped to AdsPower's `user_proxy_config`. All Python modules parse and import. Not run live: no AdsPower browser was opened on Facebook in this change.

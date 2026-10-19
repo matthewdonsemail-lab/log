@@ -1,3 +1,4 @@
+import type { BrowserDriverName } from '../../browser/driver/types'
 /**
  * `log inspect` (rule 29): one Camoufox kept open for an account and driven a
  * step at a time, each step recorded and read by rea as it happens
@@ -35,6 +36,8 @@ export interface InspectSessionConfig {
   idleMouse?: boolean
   /** Opened as step 1, or null. */
   startUrl: string | null
+  /** The account's browser (rule 44): python/browserDriver.py opens it. Absent: Camoufox. */
+  browser?: { driver: BrowserDriverName; profileId: string | null }
 }
 
 /** `~/.logCli/runs/inspect/current.json`: the open session `log inspect do` talks to. */

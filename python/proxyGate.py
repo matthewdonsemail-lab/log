@@ -346,6 +346,54 @@ def apply(kwargs: dict[str, Any], visible: dict[str, Any]) -> dict[str, Any]:
     return {"from_options": options}
 
 
+def gate_attached() -> dict[str, Any]:
+    """Rule 12 for a browser log-cli attaches to instead of launching (AdsPower over CDP, rule 44).
+
+    The same checks apply() runs before a Camoufox launch: the armed proxy file, its exit IP
+    in the account's country, its speed to Facebook, the capture folder (rule 22). It pins
+    the exit timezone, IP and the account's locale for the self-check. The browser is
+    started only after this returns. Returns the proxy and the exit it was checked at.
+    """
+    proxy = load_proxy(_armed["path"])
+    if proxy is None:
+        raise GateError("noProxy", f"no proxy file at {_armed['path']}: no browser opens without one")
+    if not _armed.get("captureDir"):
+        raise GateError("captureMissing", "a browser without a HAR capture folder: every action records one")
+    exit_ = check(_armed["path"])
+    if exit_.get("facebookMs") is not None and exit_["facebookMs"] > slow_ms():
+        raise GateError("proxyTooSlow", f"exit IP {exit_['exitIp']} took {exit_['facebookMs']} ms for one Facebook file (limit {slow_ms()} ms). Run: log proxy assign --account <name>, or raise the limit for this run with --proxyMs <ms>")
+    try:
+        run = deviceProfile.read_run_file(_armed["devicePath"])
+    except deviceProfile.ProfileError as exc:
+        raise GateError("deviceProfileInvalid", str(exc)) from None
+    _armed.update({
+        "proxy": proxy,
+        "timezone": exit_["timezone"],
+        "exitIp": exit_["exitIp"],
+        "country": exit_["country"],
+        "locale": run["locale"],
+        "languages": list(run["languages"]),
+        "facebookLocale": run.get("facebookLocale"),
+    })
+    log(f"Gate passed: exit {exit_['exitIp']} in {exit_['country']} ({exit_['timezone']}), proxy to Facebook {exit_.get('facebookMs')} ms")
+    return {"proxy": proxy, **exit_}
+
+
+async def check_attached(context: Any) -> None:
+    """Rule 17 on an attached browser's context, before Facebook loads: the same self-check and verdict
+    as a Camoufox context. On a refusal the caller stops the browser through its own API (the profile's
+    context isn't ours to close); a pass logs "Self-check passed", which counts the launch (rule 24)."""
+    observed = await _self_check(context)
+    problem = compare(observed, expected())
+    if problem is None:
+        page = observed["page"]
+        log(f"Self-check passed: exit {observed['ip']}, {page.get('timeZone')}, {page.get('language')} (page and worker)")
+        return
+    code, detail = problem
+    log(f"Self-check refused ({code}): {detail}. Stopping the browser before anything else loads.")
+    raise GateError(code, detail)
+
+
 def pinned() -> dict[str, Any]:
     """What this launch pinned (no secrets): for publishSession's form URL and logs."""
     return {k: _armed[k] for k in ("timezone", "exitIp", "country", "locale", "languages", "facebookLocale")}

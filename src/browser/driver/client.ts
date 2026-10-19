@@ -31,3 +31,8 @@ export function createBrowserSession(driver: BrowserDriver, input: BrowserSessio
   if (driver.name !== input.driver) throw new Error(`driver ${driver.name} given for a ${input.driver} session`)
   return createActor(sessionMachineFor(driver), { input })
 }
+
+/** The `browser` a Python session is started with, from the account's Twenty fields (rule 44). Pure. */
+export function browserFor(account: { browserDriver?: string | null; adsPowerProfileId?: string | null }): { driver: BrowserDriverName; profileId: string | null } {
+  return { driver: driverNameOf({ browserDriver: account.browserDriver ?? null }), profileId: account.adsPowerProfileId ?? null }
+}

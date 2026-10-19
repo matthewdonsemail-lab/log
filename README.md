@@ -123,10 +123,12 @@ bun bin/log.ts adsPower sync            # dry run: one profile per Facebook acco
 bun bin/log.ts adsPower sync --apply    # make them, link each in socialAccounts.adsPowerProfileId
 ```
 
-A profile holds no proxy, password, cookies or 2FA key: those stay in Twenty. The
-gate, the self-check and HAR recording aren't wired to AdsPower yet, so no AdsPower
-browser opens on Facebook until they are. Details, setup (`.env.local`, the AdsPower
-MCP server, AdsPower's skill) and what's next: `docs/adsPower.md`.
+A profile holds no proxy, password or 2FA key: those stay in Twenty. Both browsers are
+opened by one Python layer (`python/browserDriver.py`), which hands every session the same
+Playwright context. So the proxy gate, the self-check, the session HAR, the human mouse and
+scroll, the flows and the warm-up are the same on either. `docs/browsers.md` is the parity
+table, and `bun run check:browsers` (pre-commit) keeps it. Setup and what's next:
+`docs/adsPower.md`. Across servers: `docs/deployment.md`.
 
 ## Live mode (Camoufox)
 
@@ -168,10 +170,9 @@ src/marketplace/replacement/    losing an account, replacements, campaign fill
 src/marketplace/publish/        the XState publish machine
 src/marketplace/monitor/        the XState listing monitor + relist rules
 src/marketplace/listing/        the listeningkit-hackathon listing machine port (+ its seed)
-src/browser/driver/             the browser-agnostic session machine (rule 42)
-src/adsPower/localApi/          AdsPower's Local API client (ported from Listaro)
-src/adsPower/profile/           one AdsPower profile per Twenty account (sync)
-src/adsPower/driver/            AdsPower as a browser driver
+src/browser/driver/             the browser-agnostic session machine and capability list (rules 42, 44)
+src/browser/camoufox/           Camoufox's driver and capability row
+src/browser/adsPower/           AdsPower: Local API client (from Listaro), profile sync, its driver and capability row
 src/camofox/run/                one run's private proxy/cookie files
 src/camofox/worker/             spawns python/logWorker.py
 src/camofox/session/            drives python/publishSession.py step by step

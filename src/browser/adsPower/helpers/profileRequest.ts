@@ -1,6 +1,6 @@
 import { HOME_COUNTRIES } from '../../../marketplace/home/index'
 import type { FacebookAccount } from '../../../marketplace/socialAccount/index'
-import type { CreateProfileBody } from '../../localApi/index'
+import type { CreateProfileBody } from '../types'
 
 /** The remark that ties a profile back to its Twenty record, so a lost link can be found again. */
 export const twentyRemark = (accountId: string) => `log-cli twenty:${accountId}`

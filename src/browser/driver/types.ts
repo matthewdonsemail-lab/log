@@ -10,6 +10,34 @@ export type BrowserDriverName = (typeof BROWSER_DRIVERS)[number]
 /** An account with no `browserDriver` in Twenty keeps today's browser. */
 export const DEFAULT_BROWSER_DRIVER: BrowserDriverName = 'camoufox'
 
+/**
+ * What every browser must do, the same way (rule 44). Each browser domain (`src/browser/<name>`)
+ * declares its row; `bun run check:browsers` refuses a browser missing from the parity table
+ * (docs/browsers.md, generated from these rows) or from python/browserDriver.py's OPENERS.
+ * `notBuilt` is allowed, and listed on every commit so it stays visible.
+ */
+export const BROWSER_CAPABILITIES = {
+  headedWindow: 'A visible window you can watch, never headless (rule 11)',
+  proxyGate: "The account's proxy, exit IP in its country and speed checked before the browser starts (rule 12)",
+  selfCheck: 'Timezone, language, Intl and exit IP agree in a page and a worker before Facebook loads (rule 17)',
+  sessionHar: 'The raw session HAR of every request (rules 19, 22)',
+  stepHar: "Each inspect or flow step's own HAR, from the context's events (rule 29)",
+  humanMouse: "Every cursor move is HumanMouse's measured trajectory, nothing injected (rule 32)",
+  scrollMotion: 'Every scroll is scrollMotion\'s wheel trajectory',
+  devicePinned: 'One fixed device per account, the same every open (rule 15)',
+  localePinned: "navigator, Accept-Language and Intl in the home country's locale (rule 16)",
+  sessionCarried: "The account's signed-in session carries over from one open to the next",
+  sessionSaved: 'The session is saved back to Twenty (saveState)',
+  inspectSession: 'log inspect, the flows, the warm-up and log host run in it (python/inspectSession.py)',
+  syncSessions: 'publishSession, connectSession and profileSession (the sync sessions) run in it',
+  oneMachineAtATime: 'It refuses to open where another machine already has the account open'
+} as const
+
+export type BrowserCapability = keyof typeof BROWSER_CAPABILITIES
+export type CapabilityStatus = 'built' | 'notBuilt' | 'notApplicable'
+/** One browser's row of the parity table: every capability, its status and how it is met. */
+export type BrowserCapabilities = Record<BrowserCapability, { status: CapabilityStatus; how: string }>
+
 export interface BrowserSessionInput {
   driver: BrowserDriverName
   accountId: string

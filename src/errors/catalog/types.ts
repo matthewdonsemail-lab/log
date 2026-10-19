@@ -1248,43 +1248,29 @@ export const ERROR_CATALOG = {
     layer: 'adsPower',
     meaning: "AdsPower's Local API didn't answer (the app isn't running, or ADSPOWER_HOST is wrong).",
     retryable: true,
-    raisedIn: ['adsPower/localApi'],
+    raisedIn: ['browser/adsPower'],
     action: 'Start the AdsPower app (or `ads start`), check ADSPOWER_HOST in .env.local, then `log adsPower status`.'
   },
   adsPowerRequestFailed: {
     layer: 'adsPower',
     meaning: 'The Local API refused the call (its msg is in the detail): a bad field, a missing profile, the plan limit, or a wrong API key.',
     retryable: false,
-    raisedIn: ['adsPower/localApi'],
+    raisedIn: ['browser/adsPower'],
     action: "Read the detail. A profile limit means the AdsPower plan holds fewer profiles than accounts; a key error means ADSPOWER_API_KEY doesn't match the app."
   },
   adsPowerRateLimited: {
     layer: 'adsPower',
     meaning: 'The Local API said "Too many request" three times in a row.',
     retryable: true,
-    raisedIn: ['adsPower/localApi'],
+    raisedIn: ['browser/adsPower'],
     action: 'Nothing: run it again in a minute. The plan sets the requests per minute (300, 900 or 1500).'
   },
   adsPowerProfileMissing: {
     layer: 'adsPower',
     meaning: 'The account has no AdsPower profile linked in Twenty (socialAccounts.adsPowerProfileId).',
     retryable: false,
-    raisedIn: ['adsPower/driver'],
+    raisedIn: ['browser/adsPower', 'python/browserDriver'],
     action: 'Run `log adsPower sync --apply` (it makes the profile and links it).'
-  },
-  adsPowerGateNotBuilt: {
-    layer: 'adsPower',
-    meaning: 'The proxy gate (rule 12) is not wired to AdsPower profiles yet, so the AdsPower driver refuses before anything opens.',
-    retryable: false,
-    raisedIn: ['adsPower/driver'],
-    action: 'Build the gate for AdsPower (python/proxyGate.py checks over CDP) before an AdsPower browser opens for an account.'
-  },
-  adsPowerSelfCheckNotBuilt: {
-    layer: 'adsPower',
-    meaning: 'The launch self-check (rule 17) is not wired to AdsPower profiles yet, so the session closes before Facebook loads.',
-    retryable: false,
-    raisedIn: ['adsPower/driver'],
-    action: 'Build the self-check over CDP (timezone, language, Intl, exit IP in a page and a worker).'
   },
 } as const satisfies Record<string, ErrorEntry>
 

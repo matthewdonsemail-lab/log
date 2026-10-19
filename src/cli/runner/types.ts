@@ -7,7 +7,7 @@ import type { WorkerClient } from "../../camofox/worker/index.ts";
 import type { ConnectionRecord } from "../../marketplace/account/index.ts";
 import type { ListingRecord } from "../../marketplace/listing/index.ts";
 import type { TwentyClient } from "../../twenty/graphql/index.ts";
-import type { AdsPowerClient } from "../../adsPower/localApi/index.ts";
+import type { AdsPowerClient } from "../../browser/adsPower/index.ts";
 
 export interface CommandResult {
   code: number;

@@ -5,8 +5,8 @@
  * Twenty, linked by socialAccounts.adsPowerProfileId (rule 42). A dry run unless --apply.
  * Nothing opens a browser: profiles hold no proxy, password or cookies (those stay in Twenty).
  */
-import { createAdsPowerClient } from "../../adsPower/localApi/index.ts";
-import { remarkAccountId, syncProfiles } from "../../adsPower/profile/index.ts";
+import { createAdsPowerClient } from "../../browser/adsPower/index.ts";
+import { remarkAccountId, syncProfiles } from "../../browser/adsPower/index.ts";
 import { parseArgs, refuseError } from "../runner/helpers/index.ts";
 import type { Command } from "../runner/types.ts";
 

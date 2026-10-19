@@ -1,8 +1,9 @@
-# AdsPower in log-cli (rule 42)
+# AdsPower in log-cli (rules 42, 44)
 
 matt, 2026-10-19: the browser moves to AdsPower, and Camoufox stays. Twenty's
-`socialAccounts` logic stays exactly as it is. The browser is a **driver**, so
-another browser can be added later the same way.
+`socialAccounts` logic stays exactly as it is. The browser is a **driver**, so another
+browser can be added later the same way. How every browser is held to the same
+capabilities: `docs/browsers.md`. How it runs across servers: `docs/deployment.md`.
 
 ## Why AdsPower
 
@@ -11,17 +12,18 @@ docs plus our run captures and identity-leak tests. AdsPower won the final again
 BitBrowser 0.74 to 0.26, and Camoufox placed 21st of 23
 (`RESEARCH/MARKETPLACE_PROVIDERS/subq/RESULTS.md`). Listaro ran on AdsPower, one
 window per account held open for hours (`RESEARCH/LISTARO_BROWSER_LIFECYCLE.md`).
-Its client, `Listaro_backup/src/lib/adspower-client.ts`, is ported to
-`src/adsPower/localApi`.
+Its client, `Listaro_backup/src/lib/adspower-client.ts`, is ported here.
 
 ## The pieces
 
 | Path | What |
 | --- | --- |
-| `src/browser/driver/` | The browser-agnostic session: `BrowserDriver` (prepare, gate, start, selfCheck, stop) and `browserSessionMachine` (XState v5). `starting` is only reachable from a passed gate (rule 12), and `open` only after the self-check (rule 17). |
-| `src/adsPower/localApi/` | AdsPower's Local API, v2 endpoints, `Authorization: Bearer <ADSPOWER_API_KEY>`, "Too many request" retried twice, errors as catalog codes. |
-| `src/adsPower/profile/` | One profile per Facebook account in Twenty: `planSync` and `syncProfiles`. The profile id goes into `socialAccounts.adsPowerProfileId`. |
-| `src/adsPower/driver/` | AdsPower as a `BrowserDriver`. It puts the account's proxy on the profile only to open it, and takes it off at close. |
+| `src/browser/driver/` | The browser-agnostic session machine (XState v5) and the capability list every browser fills |
+| `src/browser/adsPower/client.ts` | The Local API client (v2 endpoints, `Authorization: Bearer <ADSPOWER_API_KEY>`, "Too many request" retried twice, catalog errors), `syncProfiles`, and `adsPowerDriver` |
+| `src/browser/adsPower/helpers/` | `profileRequest` (the create body) and `planSync` (create, relink, linked or skip, per account) |
+| `src/browser/adsPower/types.ts` | Its types, and `adsPowerCapabilities`, its row of the parity table |
+| `python/adsPowerBrowser.py` | The same Local API from Python: set the profile's proxy, start, stop |
+| `python/browserDriver.py` | `open_ads_power`: gate, proxy on, start headed, `connect_over_cdp`, the profile's context, session HAR, self-check; at the end, stop and proxy off |
 | `src/cli/adsPower/` | `log adsPower status`, `log adsPower profiles`, `log adsPower sync [--apply]` |
 
 Twenty gains two fields, both additive (rule 13):
@@ -38,17 +40,19 @@ Each profile is set up with:
 - **Timezone and geolocation:** from the exit IP.
 - **Fingerprint noise:** AdsPower's own per-profile noise on canvas, WebGL image, audio, client rects and media devices; WebRTC set to `forward`.
 
-It holds **no proxy, password, cookies or 2FA key**: those stay in Twenty only.
-The proxy is written to the profile at open, after the gate, and cleared at close.
+It holds **no proxy, password or 2FA key**. The proxy is put on the profile only to
+open it, after the gate, and taken off at close. The profile keeps its own cookies;
+Twenty's saved session is carried in once, only into a profile with no Facebook login.
 
-## Not built yet (nothing opens an AdsPower browser on Facebook until they are)
+## Opening an account on AdsPower
 
-1. **The gate for AdsPower.** `python/proxyGate.py` checks over CDP: exit IP in the home country, speed. Until then the driver refuses with `adsPowerGateNotBuilt`.
-2. **The launch self-check over CDP** (rule 17): timezone, language, Intl and exit IP in a page and a worker. Until then `adsPowerSelfCheckNotBuilt`.
-3. **HAR and steps recording** on the attached context (rule 22).
-4. **The Python sessions** (`inspectSession.py`, the flows, warm-up, publish) attaching to an AdsPower profile with `connect_over_cdp`, so the human mouse and scroll run there too.
-5. **The host** (`log host`) picking the driver from `browserDriver`.
-6. **Session migration:** each account's Twenty cookies and storage loaded into its profile, so no account signs in fresh.
+1. Set `socialAccounts.browserDriver` to `adsPower` for the account. Its profile must be linked (`log adsPower sync --apply`).
+2. `log inspect start --account <a>`, `log flow run`, `log warmup run` and `log host start` then open its AdsPower profile through `python/browserDriver.py`. The gate, self-check, session HAR, human mouse and scroll are the same as on Camoufox.
+
+## Not built yet
+
+1. **The sync sessions on AdsPower.** `publishSession`, `connectSession` and `profileSession` still launch Camoufox.
+2. **One machine at a time.** A `cloud-active` check before opening, so dev and prod never open the same profile (`docs/deployment.md`).
 
 ## Setup
 

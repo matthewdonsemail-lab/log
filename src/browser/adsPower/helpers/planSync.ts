@@ -1,6 +1,6 @@
 import { HOME_COUNTRIES } from '../../../marketplace/home/index'
 import type { FacebookAccount } from '../../../marketplace/socialAccount/index'
-import type { AdsPowerProfile } from '../../localApi/index'
+import type { AdsPowerProfile } from '../types'
 import { NO_PROFILE_STATUSES } from '../types'
 import type { ProfileSyncEntry } from '../types'
 import { remarkAccountId } from './profileRequest'
