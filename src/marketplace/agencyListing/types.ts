@@ -62,6 +62,8 @@ export interface AgencyListing {
   locationQuery: string | null
   locationCity: string | null
   locationCountry: string | null
+  /** The zip Facebook's location search finds the city by (rule 12, publish sets the Marketplace location to it). */
+  locationPostalCode: string | null
   status: AgencyListingStatus | null
   socialAccountId: string | null
   campaignId: string | null

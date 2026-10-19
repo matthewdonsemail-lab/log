@@ -17,6 +17,8 @@ export interface PublishListing {
   condition?: string
   description?: string
   location?: string
+  /** The listing's zip: a --live run sets the account's Marketplace location to it when the form would list elsewhere. */
+  postalCode?: string
   /** Path, URL or data-URL per photo, cover first. */
   photos: string[]
 }
@@ -74,7 +76,8 @@ export type FillOutput = { ok: true; filled: Record<string, string> } | StepFail
 export type ReviewOutput = { ok: true; receipt: string | null; photoCount: number } | StepFailure
 export type PublishClickOutput = { ok: true; audienceStep: boolean } | StepFailure
 export type ConfirmOutput = { ok: true; how: string } | StepFailure
-export type CaptureOutput = { listingId: string | null; listingUrl: string | null; detail?: string }
+/** `review`: what Facebook's Selling page says about the new listing ("This listing is being reviewed."), or null. */
+export type CaptureOutput = { listingId: string | null; listingUrl: string | null; review?: string | null; detail?: string }
 
 export type PublishResultKind =
   /** Filled and reviewed, nothing published (`--live` not set). */
@@ -110,6 +113,8 @@ export interface PublishContext {
   publishClicked: boolean
   listingId: string | null
   listingUrl: string | null
+  /** Published but held for Facebook's review (a new account's listing): not shown to buyers yet. */
+  review: string | null
   issue: AccountIssue | null
   failure: PublishFailure | null
   result: PublishResultKind | null
@@ -125,6 +130,7 @@ export interface PublishOutput {
   result: PublishResultKind
   listingId: string | null
   listingUrl: string | null
+  review: string | null
   issue: AccountIssue | null
   failure: PublishFailure | null
   captchaAttempts: CaptchaAttempt[]
@@ -139,7 +145,7 @@ export interface PublishOutput {
 /** Inputs of each actor the caller provides. */
 export interface PublishActorInputs {
   preparePhotos: { sources: string[] }
-  openForm: { accountId: string; recheck: boolean; location?: string }
+  openForm: { accountId: string; recheck: boolean; location?: string; postalCode?: string; setLocation?: boolean }
   solveCaptcha: { accountId: string; solver: CaptchaSolverName; detection: CaptchaDetection }
   setCategory: { category: string }
   uploadPhotos: { paths: string[] }

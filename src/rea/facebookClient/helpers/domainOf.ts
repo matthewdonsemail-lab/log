@@ -10,7 +10,7 @@ import type { ClientDomain } from '../types'
  */
 export const DOMAIN_PATTERNS: [ClientDomain, RegExp][] = [
   // FBScrapingWarningMutation clears the "We suspect automated behaviour" flag when it is dismissed (rule 23).
-  ['checkpoint', /checkpoint|ufac|integrity|captcha|challenge|selfie|appeal|pseudoBlocked|scrapingWarning|aiSupport/i],
+  ['checkpoint', /checkpoint|ufac|integrity|captcha|challenge|selfie|appeal|pseudoBlocked|scrapingWarning|aiSupport|IXTNext/i],
   ['login', /^login|login$|logout|twoFactor|twoStep|^auth|deviceBased|loginDevice|recover|cookieConsent|webstorageProcessKeys|timezoneUpdate/i],
   // The account's own profile and Accounts Center (`log flow run profileSetup`, rule 28): picture, cover, name.
   ['profile', /^ProfileComet|ProfilePicture|CoverPhoto|^useFXIM|^FXIM|^FXAccountsCenter|ProfilePrompt|accountsCenter/i],

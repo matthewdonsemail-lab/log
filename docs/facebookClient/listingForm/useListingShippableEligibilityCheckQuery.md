@@ -13,12 +13,12 @@
 | Called from | `useListingShippableEligibilityCheck` |
 | rea | `ev_2268109b78d0872eb0a55170e823376ab0a90f53109df20c59492cda9ce542b7` |
 
-Seen 24 time(s) in 8 run(s).
+Seen 33 time(s) in 11 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| publish | Category: Miscellaneous | 8 | 200 | 306–348 ms | 4402–6091 ms | — |
-| publish | Uploading 5 photo(s) | 12 | 200 | 326–385 ms | 5483–6610 ms | — |
+| publish | Category: Miscellaneous | 11 | 200 | 306–379 ms | 4402–6091 ms | — |
+| publish | Uploading 5 photo(s) | 18 | 200 | 326–397 ms | 5483–10056 ms | — |
 | publish | Uploading 2 photo(s) | 4 | 200 | 319–333 ms | 4295–4779 ms | — |
 
 <!-- facts:end -->

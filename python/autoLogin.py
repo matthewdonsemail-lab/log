@@ -273,8 +273,20 @@ def submit_credentials(page, secrets: dict[str, Any], log) -> bool:
     # Enter in the password field submits the form it belongs to, whichever it
     # is; a "Log in" button may be one that is covered.
     log("Auto-login: submitting (Enter).")
+    before = page.url
     pass_field.press("Enter", timeout=CLICK_MS)
-    page.wait_for_timeout(random.randint(2500, 4000))
+    # Wait for the page to answer, not a fixed time: read too early, the login form is still
+    # there and the machine signs in a second time (Erie 2026-10-19: Enter 13:46:06, re-read
+    # 13:46:07 still loginForm, second sign-in; the first had already reached the checkpoint).
+    deadline = time.time() + 15
+    while time.time() < deadline:
+        page.wait_for_timeout(500)
+        try:
+            if page.url != before or not _visible(page.locator(PASSWORD_FIELD)):
+                break
+        except Exception:
+            break
+    page.wait_for_timeout(random.randint(1200, 2200))
     return True
 
 

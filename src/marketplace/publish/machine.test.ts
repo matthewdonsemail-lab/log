@@ -15,6 +15,7 @@ const listing: PublishListing = {
 }
 
 interface Script {
+  review?: string | null
   forms?: FormOutcome[]
   solves?: SolveOutput[]
   confirm?: { ok: true; how: string } | { ok: false; code: string; detail?: string }
@@ -59,7 +60,7 @@ async function run(script: Script, input: Partial<PublishInput> = {}) {
       captureId: fromPromise(async () => {
         calls.push('captureId')
         const id = script.listingId === undefined ? '1583545526797714' : script.listingId
-        return { listingId: id, listingUrl: id ? `https://www.facebook.com/marketplace/item/${id}/` : null }
+        return { listingId: id, listingUrl: id ? `https://www.facebook.com/marketplace/item/${id}/` : null, review: script.review ?? null }
       }) as never
     }
   })
@@ -97,6 +98,12 @@ describe('publishMachine', () => {
     expect(output.result).toBe('published')
     expect(output.listingId).toBe('1583545526797714')
     expect(calls.slice(-3)).toEqual(['publish', 'confirm', 'captureId'])
+  })
+
+  test("a new account's listing held for review is published with its review, never retried", async () => {
+    const { output, calls } = await run({ review: 'This listing is being reviewed.' }, { dryRun: false })
+    expect(output).toMatchObject({ result: 'published', listingId: '1583545526797714', review: 'This listing is being reviewed.' })
+    expect(calls.filter((c) => c === 'publish')).toHaveLength(1)
   })
 
   test('published but no id is unconfirmedId, and nothing is retried', async () => {

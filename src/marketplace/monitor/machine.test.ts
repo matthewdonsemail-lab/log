@@ -89,6 +89,9 @@ describe('classifySignal', () => {
     expect(classifySignal({ text: 'Please verify your identity' })).toBe('checkpointed')
     expect(classifySignal({ text: 'Limit reached, try again later' })).toBe('rateLimited')
     expect(classifySignal({ text: 'Your listings  Junk Clearance  Active' })).toBeNull()
+    // Pittsburgh, 2026-10-19: signed in, restricted account-wide since 9 Sep under its vendor.
+    expect(classifySignal({ text: "What happened 9 Sep 2026 You can no longer request a review You couldn't create multiple sessions" })).toBe('restrictedPolicy')
+    expect(classifySignal({ text: 'We added a restriction to your account. See why.' })).toBe('restrictedPolicy')
   })
 })
 

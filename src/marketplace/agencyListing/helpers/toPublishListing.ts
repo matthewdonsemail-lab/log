@@ -19,6 +19,7 @@ export function toPublishListing(listing: AgencyListing): { ok: true; listing: P
     condition: listing.condition ? CONDITION_LABEL[listing.condition] : undefined,
     description: listing.description ?? undefined,
     location: listing.locationQuery ?? undefined,
+    postalCode: listing.locationPostalCode ?? undefined,
     photos: listing.photos
   }
   const problems = validateListing(publish)

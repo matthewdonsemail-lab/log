@@ -107,6 +107,12 @@ const AGENCY_LISTING_FIELDS = [
   { name: 'photoHashes', label: 'Photo hashes', type: 'RAW_JSON', description: 'log-cli: sha256 of the varied photos uploaded' },
   { name: 'locationCity', label: 'Location city', type: 'TEXT', description: 'log-cli: e.g. Galway' },
   { name: 'locationCountry', label: 'Location country', type: 'TEXT', description: "log-cli: ISO alpha-2. Must equal the account's homeCountry" },
+  {
+    name: 'locationPostalCode',
+    label: 'Location postal code',
+    type: 'TEXT',
+    description: "log-cli: e.g. 19601. A --live publish sets the account's Marketplace location to it when the form would list elsewhere (Facebook finds Reading, PA by its zip, not its name)"
+  },
   { name: 'listingUrl', label: 'Listing URL', type: 'TEXT', description: 'log-cli: facebook.com/marketplace/item/<listingId>' },
   { name: 'publishedAt', label: 'Published', type: 'DATE_TIME', description: 'logCli' },
   { name: 'lastRunAt', label: 'Last run', type: 'DATE_TIME', description: 'log-cli: every run, dry or live' },

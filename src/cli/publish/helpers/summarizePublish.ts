@@ -29,6 +29,7 @@ const RESULT_TEXT: Record<PublishOutput["result"], string> = {
 export function renderPublishOutput(output: PublishOutput, runDir: string): string {
   const lines = [RESULT_TEXT[output.result]];
   if (output.listingId) lines.push(`Listing: ${output.listingId}  ${output.listingUrl ?? ""}`.trimEnd());
+  if (output.review) lines.push(`Held for review: Facebook says "${output.review}" It is listed but buyers can't see it until the review clears (UNDER_REVIEW in Twenty; log scan --account <a> sees it clear).`);
   if (output.issue) lines.push(`Account issue: ${output.issue}`);
   if (output.signIn) lines.push(`Signed in in this browser (rule 24): ${output.signIn.result}. Pages: ${output.signIn.pages.join(" → ") || "none"}`);
   if (output.failure) {

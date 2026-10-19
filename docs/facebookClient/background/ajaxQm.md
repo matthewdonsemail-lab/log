@@ -11,29 +11,36 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_5a868e88094489f9152e54cf6c06833679ecdfeb9dffddf5d9f9fabd280635b9` |
+| rea | `ev_ffc2455a215f86b6a0d99bedb95b86a91d08bc880676fa013332126ced318044` |
 
-Seen 64 time(s) in 38 run(s).
+Seen 95 time(s) in 47 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /marketplace/ | 11 | -1 | -1 ms | 1503–4086 ms | — |
-| connect | Opening Marketplace > Selling. | 7 | -1 | -1 ms | 1634–3673 ms | — |
-| connect | Page: loginForm /marketplace/selling/ "…" | 1 | -1 | -1 ms | 337 ms | — |
-| connect | Auto-login: answered automatedBehaviour. | 8 | -1 | -1 ms | 1106–3991 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ | 4 | -1 | -1 ms | 611–4358 ms | — |
+| connect | Opening Marketplace > Selling. | 10 | -1 | -1 ms | 1634–3993 ms | — |
+| connect | Auto-login: typing the email. | 4 | -1 | -1 ms | 546–3262 ms | — |
+| connect | Auto-login: answered automatedBehaviour. | 16 | -1 | -1 ms | 1106–5600 ms | — |
+| connect | Page: loggedIn /marketplace/selling/ "…" | 5 | -1 | -1 ms | 1423–4424 ms | — |
+| connect | Auto-login: submitting (Enter). | 3 | -1 | -1 ms | 2976–5737 ms | — |
+| inspect | step 1: goto /marketplace/ | 13 | -1 | -1 ms | 1503–4086 ms | — |
+| inspect | step 2: goto /marketplace/item/<id>/ | 1 | -1 | -1 ms | 5575 ms | — |
+| inspect | step 3: goto /marketplace/item/<id>/ | 1 | -1 | -1 ms | 4247 ms | — |
+| inspect | step 7: goto /marketplace/you/ | 1 | -1 | -1 ms | 2090 ms | — |
+| inspect | step 8: goto /marketplace/status/ | 1 | -1 | -1 ms | 1455 ms | — |
+| inspect | step 10: goto /marketplace/item/<id>/ | 1 | -1 | -1 ms | 1749 ms | — |
+| publish | Opening /marketplace/create/item | 16 | -1, 200 | -1–290 ms | 1643–8396 ms | — |
+| publish | Marketplace location: Reading 19601 US | 1 | -1 | -1 ms | 34907 ms | — |
+| inspect | step 16: goto /marketplace/create/item | 1 | -1 | -1 ms | 962 ms | — |
+| connect | Page: loginForm /marketplace/selling/ "…" | 2 | -1 | -1 ms | 337–773 ms | — |
+| connect | Page: loggedIn /marketplace/selling/ | 5 | -1 | -1 ms | 611–5840 ms | — |
 | flow | step 1: goto /me | 2 | -1 | -1 ms | 2798–3067 ms | — |
 | flow | step 9: goto /profiles/<id>/name | 2 | -1 | -1 ms | 1525–4967 ms | — |
-| connect | Auto-login: typing the email. | 3 | -1 | -1 ms | 546–3262 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ "…" | 2 | -1 | -1 ms | 1423–2139 ms | — |
 | inspect | step 1: goto /me | 3 | -1 | -1 ms | 2837–6273 ms | — |
 | inspect | step 14: goto /profiles/<id>/name | 1 | -1 | -1 ms | 1638 ms | — |
 | inspect | step 1: goto /marketplace/you/selling | 2 | -1 | -1 ms | 2844–2846 ms | — |
 | inspect | step 2: click e53 | 2 | -1 | -1 ms | 2511–3151 ms | — |
 | inspect | GET 200 /nw/ (285 ms) | 1 | -1 | -1 ms | 1771 ms | — |
 | profile | Opening the profile (facebook.com/me). | 1 | 200 | 315 ms | 2142 ms | — |
-| publish | Opening /marketplace/create/item | 12 | -1, 200 | -1–290 ms | 1643–8396 ms | — |
-| connect | Auto-login: submitting (Enter). | 2 | -1 | -1 ms | 2976–3138 ms | — |
 
 <!-- facts:end -->
 

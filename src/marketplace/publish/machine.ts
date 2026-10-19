@@ -131,6 +131,7 @@ export const publishMachine = setup({
     publishClicked: false,
     listingId: null,
     listingUrl: null,
+    review: null,
     issue: null,
     failure: null,
     result: null,
@@ -164,7 +165,14 @@ export const publishMachine = setup({
     openingForm: {
       invoke: {
         src: 'openForm',
-        input: ({ context }) => ({ accountId: context.accountId, recheck: context.formOpened, location: context.listing.location }),
+        input: ({ context }) => ({
+          accountId: context.accountId,
+          recheck: context.formOpened,
+          location: context.listing.location,
+          postalCode: context.listing.postalCode,
+          // Only a live run may change the account's Marketplace location (rule 8).
+          setLocation: !context.dryRun
+        }),
         onDone: [
           {
             guard: { type: 'formReady', params: ({ event }) => event.output },
@@ -421,6 +429,7 @@ export const publishMachine = setup({
             actions: assign(({ event }) => ({
               listingId: event.output.listingId,
               listingUrl: event.output.listingUrl,
+              review: event.output.review ?? null,
               result: 'published' as const
             }))
           },
@@ -453,6 +462,7 @@ export const publishMachine = setup({
     result: context.result ?? 'failed',
     listingId: context.listingId,
     listingUrl: context.listingUrl,
+    review: context.review,
     issue: context.issue,
     failure: context.failure,
     captchaAttempts: context.captchaAttempts,

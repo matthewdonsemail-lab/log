@@ -34021,6 +34021,8 @@ export interface AgencyListing {
     status?: AgencyListingStatusEnum
     /** log-cli */
     condition?: AgencyListingConditionEnum
+    /** log-cli: e.g. 19601. A --live publish sets the account's Marketplace location to it when the form would list elsewhere (Facebook finds Reading, PA by its zip, not its name) */
+    locationPostalCode?: Scalars['String']
     /** AgencyListings tied to the Timeline Activity */
     timelineActivities?: TimelineActivityConnection
     /** AgencyListings tied to the Attachment */
@@ -34507,6 +34509,16 @@ export interface AgencyListingConnection {
     percentageEmptyCondition?: Scalars['Float']
     /** Percentage of non-empty values for condition */
     percentageNotEmptyCondition?: Scalars['Float']
+    /** Number of unique values for locationPostalCode */
+    countUniqueValuesLocationPostalCode?: Scalars['Int']
+    /** Number of empty values for locationPostalCode */
+    countEmptyLocationPostalCode?: Scalars['Int']
+    /** Number of non-empty values for locationPostalCode */
+    countNotEmptyLocationPostalCode?: Scalars['Int']
+    /** Percentage of empty values for locationPostalCode */
+    percentageEmptyLocationPostalCode?: Scalars['Float']
+    /** Percentage of non-empty values for locationPostalCode */
+    percentageNotEmptyLocationPostalCode?: Scalars['Float']
     edges: AgencyListingEdge[]
     pageInfo: PageInfo
     __typename: 'AgencyListingConnection'
@@ -34969,6 +34981,16 @@ export interface AgencyListingGroupByConnection {
     percentageEmptyCondition?: Scalars['Float']
     /** Percentage of non-empty values for condition */
     percentageNotEmptyCondition?: Scalars['Float']
+    /** Number of unique values for locationPostalCode */
+    countUniqueValuesLocationPostalCode?: Scalars['Int']
+    /** Number of empty values for locationPostalCode */
+    countEmptyLocationPostalCode?: Scalars['Int']
+    /** Number of non-empty values for locationPostalCode */
+    countNotEmptyLocationPostalCode?: Scalars['Int']
+    /** Percentage of empty values for locationPostalCode */
+    percentageEmptyLocationPostalCode?: Scalars['Float']
+    /** Percentage of non-empty values for locationPostalCode */
+    percentageNotEmptyLocationPostalCode?: Scalars['Float']
     edges: AgencyListingEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -109032,6 +109054,8 @@ export interface AgencyListingGenqlSelection{
     status?: boolean | number
     /** log-cli */
     condition?: boolean | number
+    /** log-cli: e.g. 19601. A --live publish sets the account's Marketplace location to it when the form would list elsewhere (Facebook finds Reading, PA by its zip, not its name) */
+    locationPostalCode?: boolean | number
     /** AgencyListings tied to the Timeline Activity */
     timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
     /** AgencyListings tied to the Attachment */
@@ -109520,6 +109544,16 @@ export interface AgencyListingConnectionGenqlSelection{
     percentageEmptyCondition?: boolean | number
     /** Percentage of non-empty values for condition */
     percentageNotEmptyCondition?: boolean | number
+    /** Number of unique values for locationPostalCode */
+    countUniqueValuesLocationPostalCode?: boolean | number
+    /** Number of empty values for locationPostalCode */
+    countEmptyLocationPostalCode?: boolean | number
+    /** Number of non-empty values for locationPostalCode */
+    countNotEmptyLocationPostalCode?: boolean | number
+    /** Percentage of empty values for locationPostalCode */
+    percentageEmptyLocationPostalCode?: boolean | number
+    /** Percentage of non-empty values for locationPostalCode */
+    percentageNotEmptyLocationPostalCode?: boolean | number
     edges?: AgencyListingEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -109983,6 +110017,16 @@ export interface AgencyListingGroupByConnectionGenqlSelection{
     percentageEmptyCondition?: boolean | number
     /** Percentage of non-empty values for condition */
     percentageNotEmptyCondition?: boolean | number
+    /** Number of unique values for locationPostalCode */
+    countUniqueValuesLocationPostalCode?: boolean | number
+    /** Number of empty values for locationPostalCode */
+    countEmptyLocationPostalCode?: boolean | number
+    /** Number of non-empty values for locationPostalCode */
+    countNotEmptyLocationPostalCode?: boolean | number
+    /** Percentage of empty values for locationPostalCode */
+    percentageEmptyLocationPostalCode?: boolean | number
+    /** Percentage of non-empty values for locationPostalCode */
+    percentageNotEmptyLocationPostalCode?: boolean | number
     edges?: AgencyListingEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -110100,7 +110144,9 @@ lastRunAt?: (Scalars['DateTime'] | null),
 /** facebook-camofox-client sync */
 status?: (AgencyListingStatusEnum | null),
 /** log-cli */
-condition?: (AgencyListingConditionEnum | null)}
+condition?: (AgencyListingConditionEnum | null),
+/** log-cli: e.g. 19601. A --live publish sets the account's Marketplace location to it when the form would list elsewhere (Facebook finds Reading, PA by its zip, not its name) */
+locationPostalCode?: (Scalars['String'] | null)}
 
 
 /** Facebook Marketplace listings synced from facebook-camofox-client */
@@ -110196,7 +110242,9 @@ lastRunAt?: (Scalars['DateTime'] | null),
 /** facebook-camofox-client sync */
 status?: (AgencyListingStatusEnum | null),
 /** log-cli */
-condition?: (AgencyListingConditionEnum | null)}
+condition?: (AgencyListingConditionEnum | null),
+/** log-cli: e.g. 19601. A --live publish sets the account's Marketplace location to it when the form would list elsewhere (Facebook finds Reading, PA by its zip, not its name) */
+locationPostalCode?: (Scalars['String'] | null)}
 
 
 /** Facebook Marketplace listings synced from facebook-camofox-client */
@@ -110292,7 +110340,9 @@ lastRunAt?: (DateTimeFilter | null),
 /** facebook-camofox-client sync */
 status?: (AgencyListingStatusEnumFilter | null),
 /** log-cli */
-condition?: (AgencyListingConditionEnumFilter | null),and?: ((AgencyListingFilterInput | null)[] | null),or?: ((AgencyListingFilterInput | null)[] | null),not?: (AgencyListingFilterInput | null)}
+condition?: (AgencyListingConditionEnumFilter | null),
+/** log-cli: e.g. 19601. A --live publish sets the account's Marketplace location to it when the form would list elsewhere (Facebook finds Reading, PA by its zip, not its name) */
+locationPostalCode?: (StringFilter | null),and?: ((AgencyListingFilterInput | null)[] | null),or?: ((AgencyListingFilterInput | null)[] | null),not?: (AgencyListingFilterInput | null)}
 
 export interface AgencyListingLastRunResultEnumFilter {eq?: (AgencyListingLastRunResultEnum | null),neq?: (AgencyListingLastRunResultEnum | null),in?: ((AgencyListingLastRunResultEnum | null)[] | null),containsAny?: ((AgencyListingLastRunResultEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AgencyListingLastRunResultEnum | null),gte?: (AgencyListingLastRunResultEnum | null),lt?: (AgencyListingLastRunResultEnum | null),lte?: (AgencyListingLastRunResultEnum | null)}
 
@@ -110394,7 +110444,9 @@ lastRunAt?: (OrderByDirection | null),
 /** facebook-camofox-client sync */
 status?: (OrderByDirection | null),
 /** log-cli */
-condition?: (OrderByDirection | null)}
+condition?: (OrderByDirection | null),
+/** log-cli: e.g. 19601. A --live publish sets the account's Marketplace location to it when the form would list elsewhere (Facebook finds Reading, PA by its zip, not its name) */
+locationPostalCode?: (OrderByDirection | null)}
 
 
 /** Facebook Marketplace listings synced from facebook-camofox-client */
@@ -110492,7 +110544,9 @@ lastRunAt?: (OrderByDateGranularityInput | null),
 /** facebook-camofox-client sync */
 status?: (OrderByDirection | null),
 /** log-cli */
-condition?: (OrderByDirection | null)}
+condition?: (OrderByDirection | null),
+/** log-cli: e.g. 19601. A --live publish sets the account's Marketplace location to it when the form would list elsewhere (Facebook finds Reading, PA by its zip, not its name) */
+locationPostalCode?: (OrderByDirection | null)}
 
 
 /** Aggregate-based ordering */
@@ -110962,7 +111016,17 @@ countNotEmptyCondition?: (OrderByDirection | null),
 /** Percentage of empty values for condition */
 percentageEmptyCondition?: (OrderByDirection | null),
 /** Percentage of non-empty values for condition */
-percentageNotEmptyCondition?: (OrderByDirection | null)}
+percentageNotEmptyCondition?: (OrderByDirection | null),
+/** Number of unique values for locationPostalCode */
+countUniqueValuesLocationPostalCode?: (OrderByDirection | null),
+/** Number of empty values for locationPostalCode */
+countEmptyLocationPostalCode?: (OrderByDirection | null),
+/** Number of non-empty values for locationPostalCode */
+countNotEmptyLocationPostalCode?: (OrderByDirection | null),
+/** Percentage of empty values for locationPostalCode */
+percentageEmptyLocationPostalCode?: (OrderByDirection | null),
+/** Percentage of non-empty values for locationPostalCode */
+percentageNotEmptyLocationPostalCode?: (OrderByDirection | null)}
 
 
 /** Facebook Marketplace listings synced from facebook-camofox-client */
@@ -111036,7 +111100,9 @@ lastRunAt?: (GroupByDateGranularityInput | null),
 /** facebook-camofox-client sync */
 status?: (Scalars['Boolean'] | null),
 /** log-cli */
-condition?: (Scalars['Boolean'] | null)}
+condition?: (Scalars['Boolean'] | null),
+/** log-cli: e.g. 19601. A --live publish sets the account's Marketplace location to it when the form would list elsewhere (Facebook finds Reading, PA by its zip, not its name) */
+locationPostalCode?: (Scalars['Boolean'] | null)}
 
 
 /** Outbound/inbound dialer calls: recording, transcript, relations to phone/prospect/lead, future meeting link. */

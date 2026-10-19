@@ -67,6 +67,7 @@ export const AGENCY_LISTING_FIELDS = {
   locationQuery: true,
   locationCity: true,
   locationCountry: true,
+  locationPostalCode: true,
   status: true,
   socialAccountId: true,
   campaignId: true,

@@ -13,21 +13,26 @@
 | Called from | `RTWebCallBlockSettingHooks` |
 | rea | `ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6` |
 
-Seen 29 time(s) in 27 run(s).
+Seen 43 time(s) in 35 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| connect | Page: loggedIn /marketplace/selling/ "…" | 6 | 200, -1 | -1–418 ms | 1547–6582 ms | — |
+| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1321 | 1 | 200 | 3992 ms | 16462 ms | — |
+| inspect | step 3: goto /marketplace/item/<id>/ | 1 | 200 | 6559 ms | 12073 ms | — |
+| inspect | step 10: goto /marketplace/item/<id>/ | 1 | 200 | 5546 ms | 11440 ms | — |
+| publish | Marketplace location: Reading 19601 US | 2 | 200 | 541–554 ms | 1158–41172 ms | — |
+| publish | Opening /marketplace/create/item | 10 | 200 | 311–408 ms | 8421–15148 ms | — |
+| inspect | step 1: goto /marketplace/ | 7 | 200 | 330–663 ms | 7297–20031 ms | — |
+| inspect | step 16: goto /marketplace/create/item | 1 | 200 | 384 ms | 5585 ms | — |
 | connect | Page: loggedIn /marketplace/selling/ | 5 | 200 | 311–520 ms | 2834–6543 ms | — |
-| inspect | step 1: goto /marketplace/ | 6 | 200 | 330–663 ms | 7297–20031 ms | — |
 | inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1223 | 1 | 200 | 490 ms | 9920 ms | — |
 | inspect | step 2: waitRole link "…" | 1 | 200 | 900 ms | 13769 ms | — |
 | inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T121 | 1 | 200 | 836 ms | 605 ms | — |
 | flow | step 1: goto /me | 2 | 200 | 320–437 ms | 8532–15038 ms | — |
 | connect | Auto-login: typing the email. | 1 | 200 | 323 ms | 3884 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ "…" | 2 | 200 | 313–418 ms | 4012–4293 ms | — |
 | inspect | step 1: goto /me | 1 | 200 | 336 ms | 13543 ms | — |
 | inspect | step 2: click e53 | 1 | 200 | 322 ms | 8524 ms | — |
-| publish | Opening /marketplace/create/item | 7 | 200 | 311–377 ms | 8421–15148 ms | — |
 | publish | Category: Miscellaneous | 1 | 200 | 327 ms | 1942 ms | — |
 
 <!-- facts:end -->

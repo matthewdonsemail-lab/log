@@ -13,10 +13,14 @@
 | Called from | `StoriesTrayRectangularRoot.react` |
 | rea | `ev_c974048d5563e87d75f5e8ddd458fdc3829a195d00e0a636a969922c24e6ae81` |
 
-Seen 3 time(s) in 3 run(s).
+Seen 7 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1321 | 1 | 200 | 4942 ms | 20577 ms | — |
+| publish | Marketplace location: Reading 19601 US | 1 | 200 | 524 ms | 5686 ms | — |
+| publish | Uploading 5 photo(s) | 1 | 200 | 554 ms | 896 ms | — |
+| inspect | step 16: goto /marketplace/create/item | 1 | 200 | 1657 ms | 13474 ms | — |
 | inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T122 | 1 | 200 | 532 ms | 1245 ms | — |
 | inspect | step 2: wait 20s | 1 | 200 | 565 ms | 21006 ms | — |
 | publish | Opening /marketplace/create/item | 1 | 200 | 1354 ms | 11861 ms | — |

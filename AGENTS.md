@@ -229,7 +229,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 30. 2026-10-19 · matt: "If I tell you to do something, do it completely."
     When matt gives a plan, it is carried out to the end in the same turn,
     not stopped to ask again or to say what won't be done. `log inspect
-    start --now` (and `log connect --now`) skips rule 24's 10-minute gap (the 8 a day still holds) so
+    start --now` (and `log connect --now`, and since 2026-10-19 `log publish --now`, matt: "run it now") skips rule 24's 10-minute gap (the 8 a day still holds) so
     a recording continues at once. Recording a sign-in or a checkpoint with
     `log inspect` (signIn, code, solve, click) is the intended work: it is
     how each state gets documented from rea. The run on 2026-10-19 was

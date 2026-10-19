@@ -5,7 +5,7 @@
  */
 import { spawn } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
-import { appendFileSync, existsSync, readFileSync, rmSync, writeFileSync, mkdirSync } from 'node:fs'
+import { appendFileSync, existsSync, readdirSync, readFileSync, rmSync, writeFileSync, mkdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -19,20 +19,59 @@ export function currentInspectPath(env: Record<string, string | undefined> = pro
   return env.LOG_INSPECT_CURRENT || join(homedir(), '.logCli', 'runs', 'inspect', 'current.json')
 }
 
-export function readCurrentInspect(path = currentInspectPath()): CurrentInspect | null {
+/**
+ * One session file per account, next to current.json (`sessions/<account>.json`),
+ * so two accounts' browsers can be open at once (a seller and a buyer) and
+ * `log inspect do --account <a>` drives one of them. current.json stays the
+ * most recently started session, for anything that reads it directly.
+ */
+export function inspectSessionsDir(path = currentInspectPath()): string {
+  return join(dirname(path), 'sessions')
+}
+
+function sessionFile(account: string, path = currentInspectPath()): string {
+  return join(inspectSessionsDir(path), `${account.replace(/[^A-Za-z0-9_.-]/g, '_')}.json`)
+}
+
+function readJson(file: string): CurrentInspect | null {
   try {
-    return JSON.parse(readFileSync(path, 'utf8')) as CurrentInspect
+    return JSON.parse(readFileSync(file, 'utf8')) as CurrentInspect
   } catch {
     return null
   }
 }
 
-export function writeCurrentInspect(current: CurrentInspect, path = currentInspectPath()): void {
-  mkdirSync(dirname(path), { recursive: true })
-  writeFileSync(path, `${JSON.stringify(current, null, 2)}\n`)
+/** Every open session, by account. */
+export function openInspects(path = currentInspectPath()): CurrentInspect[] {
+  const dir = inspectSessionsDir(path)
+  const found = existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.json')).map((f) => readJson(join(dir, f))) : []
+  const sessions = found.filter((s): s is CurrentInspect => s !== null)
+  // A session started before per-account files existed.
+  const legacy = readJson(path)
+  if (legacy && !sessions.some((s) => s.account === legacy.account)) sessions.push(legacy)
+  return sessions
 }
 
-export function clearCurrentInspect(path = currentInspectPath()): void {
+/** The session for `account`; without one, the only open session; null when none (or several and no account). */
+export function readCurrentInspect(path = currentInspectPath(), account?: string): CurrentInspect | null {
+  const open = openInspects(path)
+  if (account) return open.find((s) => s.account === account) ?? null
+  return open.length === 1 ? open[0] : null
+}
+
+export function writeCurrentInspect(current: CurrentInspect, path = currentInspectPath()): void {
+  mkdirSync(inspectSessionsDir(path), { recursive: true })
+  const text = `${JSON.stringify(current, null, 2)}\n`
+  writeFileSync(sessionFile(current.account, path), text)
+  writeFileSync(path, text)
+}
+
+/** Ends `account`'s session file; current.json only when it is that session (or with no account given, as before). */
+export function clearCurrentInspect(path = currentInspectPath(), account?: string): void {
+  if (account) {
+    rmSync(sessionFile(account, path), { force: true })
+    if (readJson(path)?.account !== account) return
+  }
   rmSync(path, { force: true })
 }
 

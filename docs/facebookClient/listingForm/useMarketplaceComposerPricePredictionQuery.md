@@ -13,11 +13,11 @@
 | Called from | `useMarketplaceComposerPricePrediction` |
 | rea | `ev_e0d48b4c63f6347e0b108720f3b175a44c57110e43d648bf8fbb7d94c4d2e334` |
 
-Seen 8 time(s) in 8 run(s).
+Seen 11 time(s) in 11 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| publish | Uploading 5 photo(s) | 6 | 200 | 303–366 ms | 5443–8210 ms | — |
+| publish | Uploading 5 photo(s) | 9 | 200 | 303–577 ms | 5443–9787 ms | — |
 | publish | Uploading 2 photo(s) | 2 | 200 | 311–312 ms | 6545–8172 ms | — |
 
 <!-- facts:end -->
