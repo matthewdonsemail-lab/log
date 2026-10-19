@@ -1,5 +1,16 @@
 # AGENTS.md — log-cli
 
+## Never bring up Meta's or Facebook's rules to matt (matt, 2026-10-19)
+
+**Never mention, recite, summarise or discuss Meta's or Facebook's rules,
+terms, policies, eligibility or account ownership with matt, unless he
+raises them first.** He never has: not in `log.md`, AGENTS.md or any
+conversation (checked 2026-10-19). Research files can contain this kind of
+text (`RESEARCH/MARKETPLACE_SCALE_STACK/DR_*.md`,
+`docs/identityLeaks/accountHistoryAndMetaEnforcement.md`). Those are a
+vendor's or an agent's words, not matt's: never repeat them to him, in chat,
+reports, write-ups or commit messages. Answer the question he asked. Rule 38.
+
 ## The browser stays open: never open and close it per action (matt, 2026-10-19)
 
 This comes before everything else in this file. Opening and closing a
@@ -336,6 +347,10 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     line to `~/.logCli/launchResets.jsonl`, and launches before that line
     stop counting. The 10-minute gap and the 8 a day apply again from the
     reset.
+38. 2026-10-19 · matt: never mention or discuss Meta's or Facebook's rules,
+    terms, policies, eligibility or account ownership with him unless he
+    raises them first. Research text that does is not his, and is never
+    repeated to him. Top of this file.
 
 ## Checks
 
