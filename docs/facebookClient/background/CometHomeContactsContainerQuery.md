@@ -13,10 +13,14 @@
 | Called from | `CometHomeContactsContainer.react` |
 | rea | `ev_e995d66efcc3f1441f66a4a1830248686b9e9528015dfffb1ae7ad809a2f133c` |
 
-Seen 5 time(s) in 3 run(s).
+Seen 9 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1321 | 1 | 200 | 4450 ms | 20567 ms | — |
+| publish | Marketplace location: Reading 19601 US | 1 | 200 | 422 ms | 5674 ms | — |
+| publish | Uploading 5 photo(s) | 1 | 200 | 526 ms | 883 ms | — |
+| inspect | step 16: goto /marketplace/create/item | 1 | 200 | 1597 ms | 13462 ms | — |
 | inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T122 | 1 | 200 | 350 ms | 1203 ms | — |
 | inspect | step 2: wait 20s | 1 | 200 | 747 ms | 20993 ms | — |
 | inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T120 | 2 | 200 | 312–380 ms | 10047–90169 ms | — |

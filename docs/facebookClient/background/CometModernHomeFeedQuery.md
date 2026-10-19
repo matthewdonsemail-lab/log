@@ -13,10 +13,14 @@
 | Called from | `CometModernHomeFeed.react` |
 | rea | `ev_858efae0ae02f052b2910a86ae672fe6c9a55db3aba7b2a54477a0908d5ae22a` |
 
-Seen 3 time(s) in 3 run(s).
+Seen 7 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1321 | 1 | 200 | 9833 ms | 20554 ms | — |
+| publish | Marketplace location: Reading 19601 US | 1 | 200 | 2942 ms | 5658 ms | — |
+| publish | Uploading 5 photo(s) | 1 | 200 | 4329 ms | 870 ms | — |
+| inspect | step 16: goto /marketplace/create/item | 1 | 200 | 5808 ms | 13448 ms | — |
 | inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T122 | 1 | 200 | 2893 ms | 1178 ms | — |
 | inspect | step 2: wait 20s | 1 | 200 | 3681 ms | 20981 ms | — |
 | publish | Opening /marketplace/create/item | 1 | 200 | 5082 ms | 11843 ms | — |

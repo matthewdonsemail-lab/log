@@ -11,12 +11,14 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_a0d02f441654e70d3234a018201f8239fe663d723a65526a4eea0787d92b0a6b` |
+| rea | `ev_1daee983dec9df0b8bba1a9122070a89dc7fbb0b15d6d0f3a67f020dc86e2d8f` |
 
-Seen 6 time(s) in 6 run(s).
+Seen 8 time(s) in 8 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1321 | 1 | 200 | 5181 ms | 25566 ms | — |
+| inspect | step 1: goto /marketplace/ | 1 | 200 | 707 ms | 18862 ms | — |
 | flow | POST 200 CometNotificationsDropdownQuery (2480 ms) | 1 | 200 | 708 ms | 3872 ms | — |
 | flow | step 1: goto /me | 1 | 200 | 411 ms | 18167 ms | — |
 | inspect | POST 200 useMWEncryptedBackupsFetchBackupIdsV2Query (332 ms) | 1 | 200 | 495 ms | 2349 ms | — |

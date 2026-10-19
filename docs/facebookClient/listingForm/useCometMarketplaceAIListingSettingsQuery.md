@@ -13,11 +13,12 @@
 | Called from | `useCometMarketplaceAIListingSettings` |
 | rea | `ev_4d1402ec5fa8c0fc525fb6c662599b221431fe29666e589d678ee5b4cc02c85d` |
 
-Seen 8 time(s) in 8 run(s).
+Seen 13 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| publish | Opening /marketplace/create/item | 8 | 200 | 299–365 ms | 5901–13680 ms | — |
+| publish | Opening /marketplace/create/item | 12 | 200 | 299–514 ms | 5871–13680 ms | — |
+| inspect | step 16: goto /marketplace/create/item | 1 | 200 | 440 ms | 4146 ms | — |
 
 <!-- facts:end -->
 

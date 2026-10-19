@@ -13,12 +13,13 @@
 | Called from | `MarketplacePDPC2CAttributesComponent.react`, `useMarketplaceComposerAttributes` |
 | rea | `ev_5c1bdd8a11d958246ca79d90b2b7102a39854b47f835d0a6d56d709e43f5ec8c` |
 
-Seen 16 time(s) in 8 run(s).
+Seen 24 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| publish | Opening /marketplace/create/item | 8 | 200 | 304–364 ms | 5915–13687 ms | — |
-| publish | Category: Miscellaneous | 8 | 200 | 324–375 ms | 4366–6080 ms | — |
+| publish | Opening /marketplace/create/item | 12 | 200 | 304–397 ms | 5880–13687 ms | — |
+| publish | Category: Miscellaneous | 11 | 200 | 324–410 ms | 4366–6080 ms | — |
+| inspect | step 16: goto /marketplace/create/item | 1 | 200 | 406 ms | 4147 ms | — |
 
 <!-- facts:end -->
 

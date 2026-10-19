@@ -11,13 +11,13 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_7e8a79c503f842bd1815f8a059d981e20d5e9eb6715726b5fbbcf129897dee08` |
+| rea | `ev_2a8e068cdc4abbfdc4f43aca9b98f7d86ea25041e6a91941dd68a78c653672d5` |
 
-Seen 7 time(s) in 7 run(s).
+Seen 10 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| connect | Auto-login: submitting (Enter). | 6 | 302 | 2006–4420 ms | 93–129 ms | — |
+| connect | Auto-login: submitting (Enter). | 9 | 302 | 2006–6135 ms | 93–152 ms | — |
 | inspect | signIn: password typed; submitting with Enter | 1 | 302 | 2529 ms | 96 ms | — |
 
 <!-- facts:end -->

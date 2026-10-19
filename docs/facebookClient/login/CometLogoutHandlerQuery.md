@@ -13,10 +13,12 @@
 | Called from | `CometLogoutHandler.react` |
 | rea | `ev_a71121d0640a1fd7bea827bdea508da067de6cbd9731907468d4d4d5a46427fa` |
 
-Seen 12 time(s) in 12 run(s).
+Seen 14 time(s) in 14 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| connect | Auto-login: typing the email. | 2 | 200 | 353–529 ms | 3562–4436 ms | — |
+| connect | says: (no text) / buttons: none | 1 | 200 | 497 ms | 5032 ms | — |
 | inspect | step 2: wait 60s | 1 | 200 | 896 ms | 52087 ms | — |
 | connect | Page: loginForm /marketplace/selling/ "…" | 1 | 200 | 446 ms | 2319 ms | — |
 | inspect | step 1: goto /marketplace/ | 1 | 200 | 382 ms | 11375 ms | — |
@@ -26,7 +28,6 @@ Seen 12 time(s) in 12 run(s).
 | inspect | step 1: goto /me | 1 | 200 | 353 ms | 12251 ms | — |
 | inspect | POST 0 /ajax/qm/ (0 ms) | 1 | 200 | 556 ms | 3400 ms | — |
 | profile | Opening the profile (facebook.com/me). | 1 | 200 | 565 ms | 10415 ms | — |
-| connect | Auto-login: typing the email. | 1 | 200 | 529 ms | 3562 ms | — |
 | connect | Page: checkpoint /checkpoint/<id>/ | 1 | 200 | 361 ms | 566 ms | — |
 
 <!-- facts:end -->

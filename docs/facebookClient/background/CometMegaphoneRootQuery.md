@@ -13,10 +13,14 @@
 | Called from | `CometMegaphoneRoot.react` |
 | rea | `ev_a2e1e82b09a10f9f97361e424dc787adb4a3a8c0a7bb15f7feb91de015e7d2fa` |
 
-Seen 3 time(s) in 3 run(s).
+Seen 7 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1321 | 1 | 200 | 3820 ms | 20576 ms | — |
+| publish | Marketplace location: Reading 19601 US | 1 | 200 | 444 ms | 5684 ms | — |
+| publish | Uploading 5 photo(s) | 1 | 200 | 524 ms | 890 ms | — |
+| inspect | step 16: goto /marketplace/create/item | 1 | 200 | 1699 ms | 13472 ms | — |
 | inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T122 | 1 | 200 | 459 ms | 1230 ms | — |
 | inspect | step 2: wait 20s | 1 | 200 | 664 ms | 21003 ms | — |
 | publish | Opening /marketplace/create/item | 1 | 200 | 1044 ms | 11856 ms | — |

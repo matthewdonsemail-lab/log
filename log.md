@@ -1498,3 +1498,64 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: From the first two-account test (Reading sells, a second account messages). Publish: the session keeps the listing id from Facebook's own answer to Publish (`useCometMarketplaceListingCreateMutation`) instead of hunting for the new card on Selling, then reads the listing's `integrity_status_indicator` there; a held listing ("This listing is being reviewed.") ends published with `review` set and is written UNDER_REVIEW, not ACTIVE, and the summary says so. The fill step accepts the form's own `sell_location` when "City, ST" has a state after the comma (it read "pa" as a country), keeps a Location field that already names the city, and falls back to the listing's zip when the city name suggests the wrong towns. New optional `agencyListing.locationPostalCode` (setup, client, listing file): a `--live` run whose Marketplace location is elsewhere sets it by zip with the procedure recorded on Reading (Location button, Change location, clear, zip, first suggestion, Apply, `CometMarketplaceSetBuyLocationMutation`), reopens the form and checks again; a dry run only says what it would set. `log publish --now` skips the 10-minute launch gap only (rule 30). Accounts: `classifySignal` and publish's open step know an account-wide restriction ("We added a restriction to your account", "Everything you manage, including...", "You can no longer request a review") as `restrictedPolicy`, so a signed-in but restricted account becomes RESTRICTED, never ACTIVE. Connect waits for the page to change after Enter (up to 15 s) before reading, instead of reading at a fixed 2.5-4 s and signing in twice. `log inspect`: one session file per account, `inspect do --account`, `inspect sessions`, and a refusal to guess when two are open.
 Why: matt asked for two clients at once: one posts, a second opens the link and messages the seller, the seller side records it. Reading's dry run stopped on a Pensacola Marketplace location; the live run then failed twice on our own location checks; once published, the id step reported noListingId and matt saw on screen that the new account's listing was held for review ("we need to resolve that"). The buyer Pittsburgh then showed "You can no longer request a review / You couldn't create multiple sessions" and matt asked "are we not isolating these?" and "it's just banned it, fix it": it was restricted account-wide on 9 Sep under its vendor, and connect had marked it ACTIVE.
 Checked: `bun run check:naming` OK, `tsc --noEmit` clean, `twenty:client:check` up to date, `bun test` 516 pass / 0 fail (new: a held listing published with its review and never retried; the restriction phrases; connect marking a restricted sign-in RESTRICTED; two inspect sessions at once and the refusal to guess). Live, headed: Reading's Marketplace location set to 19601 by hand in an inspect session, then `log publish --live` posted listing 4095105027293522 (Twenty: UNDER_REVIEW, listingId, locationPostalCode 19601); the review hold read from the run's HAR (Selling page 13:26:15, 17 s after Publish). Pittsburgh's restriction read from its own "See why" answer (`CometFacebookIXTNextMutation`: everything it manages restricted, cybersecurity standards, appeal_state 6); set RESTRICTED. Wilkes-Barre's first sign-in through the new check came back RESTRICTED by itself (the same 9 Sep notice); Erie's came back ACTIVE with 0 restriction phrases in 350 responses. Isolation: each run passed its own gate on its own exit IP (Reading 98.235.61.60, Pittsburgh 74.109.241.211, Wilkes-Barre 174.175.149.159, Erie 66.211.206.92), separate device and session files. Not done: the buyer's message and the seller's inbox scan, because the listing is still under review and then every 2Captcha proxy answered 407 (traffic 22 of 992 left); the zip location procedure and the post-Enter wait are not yet run live.
+
+## 2026-10-19 13:54Z · feat/twoAccountTest
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `docs/facebookClient/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/facebookClient/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/facebookClient/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/facebookClient/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/facebookClient/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/facebookClient/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/facebookClient/background/CometHomeContentQuery.md`: edited
+- `docs/facebookClient/background/CometMarketplaceLeftRailNavigationContainerQuery.md`: new file
+- `docs/facebookClient/background/CometMarketplaceNUXUpdateStateMutation.md`: edited
+- `docs/facebookClient/background/CometMarketplaceSetBrowseRadiusMutation.md`: new file
+- `docs/facebookClient/background/CometMegaphoneRootQuery.md`: edited
+- `docs/facebookClient/background/CometModernHomeFeedQuery.md`: edited
+- `docs/facebookClient/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/facebookClient/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/facebookClient/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/facebookClient/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/facebookClient/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/facebookClient/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/facebookClient/background/MarketplaceCometBrowseFeedLightContainerQuery.md`: new file
+- `docs/facebookClient/background/MarketplaceSearchAddressDataSourceQuery.md`: new file
+- `docs/facebookClient/background/MarketplaceYouSellingUpsellCardQuery.md`: new file
+- `docs/facebookClient/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/facebookClient/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/facebookClient/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/facebookClient/background/ajaxBnzai.md`: edited
+- `docs/facebookClient/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/facebookClient/background/ajaxBz.md`: edited
+- `docs/facebookClient/background/ajaxNavigation.md`: edited
+- `docs/facebookClient/background/ajaxQm.md`: edited
+- `docs/facebookClient/background/ajaxRelayEf.md`: edited
+- `docs/facebookClient/background/ajaxRouteDefinition.md`: edited
+- `docs/facebookClient/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/facebookClient/background/sharedUserPreferences.md`: edited
+- `docs/facebookClient/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/facebookClient/checkpoint/CometFacebookIXTNextMutation.md`: new file
+- `docs/facebookClient/checkpoint/FBScrapingWarningMutation.md`: edited
+- `docs/facebookClient/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/facebookClient/listingForm/useCometMarketplaceAIListingSettingsQuery.md`: edited
+- `docs/facebookClient/listingForm/useListingShippableEligibilityCheckQuery.md`: edited
+- `docs/facebookClient/listingForm/useMarketplaceComposerAttributesQuery.md`: edited
+- `docs/facebookClient/listingForm/useMarketplaceComposerBISNumberEligibilityRefetchQuery.md`: edited
+- `docs/facebookClient/listingForm/useMarketplaceComposerPricePredictionQuery.md`: edited
+- `docs/facebookClient/location/CometMarketplaceSetBuyLocationMutation.md`: new file
+- `docs/facebookClient/location/MarketplaceBuyLocationDialogLocationUrlQuery.md`: new file
+- `docs/facebookClient/location/MarketplaceBuyLocationDialogQuery.md`: new file
+- `docs/facebookClient/login/CometLogoutHandlerQuery.md`: edited
+- `docs/facebookClient/login/ajaxTimezoneUpdatePhp.md`: edited
+- `docs/facebookClient/login/loginDeviceBasedRegularLogin.md`: edited
+- `docs/facebookClient/operations.json`: edited
+- `docs/facebookClient/photos/ajaxReactComposerAttachmentsPhotoUpload.md`: edited
+- `docs/facebookClient/photos/useSherlockPhotoPredictionMutation.md`: edited
+- `docs/facebookClient/publishing/useCometMarketplaceListingCreateMutation.md`: new file
+- `src/rea/facebookClient/helpers/domainOf.ts`: changed const DOMAIN_PATTERNS
+
+What changed: `docs/facebookClient` rebuilt from today's 47 runs: 10 new requests documented with rea's reading and their reasoning. They are `publishing/useCometMarketplaceListingCreateMutation` (the Publish click, whose answer carries the new id); `location/CometMarketplaceSetBuyLocationMutation` and the two dialog queries (the Marketplace location change); `checkpoint/CometFacebookIXTNextMutation` (the "See why" of an account restriction, filed under checkpoint by `domainOf`'s `IXTNext`); and five background ones (lookahead, radius, left rail, browse feed, Selling upsell).
+Why: rule 27, every request our runs make is documented before a push. The pre-push gate refused while today's runs were newer than the docs. The restriction request matters to our machines, so it isn't left in background.
+Checked: `check:facebookClientDocs`: 90 requests documented, rea read every GraphQL slice; `bun test src/rea` 26 pass.

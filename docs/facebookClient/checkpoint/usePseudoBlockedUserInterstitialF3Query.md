@@ -13,21 +13,26 @@
 | Called from | `usePseudoBlockedUserInterstitial` |
 | rea | `ev_4f0f59bc7d5ff4c02ef9f2aba85fc9de893084a7a8fbdf3f1627ce6c1c3456fe` |
 
-Seen 29 time(s) in 27 run(s).
+Seen 43 time(s) in 35 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| connect | Page: loggedIn /marketplace/selling/ "…" | 6 | 200 | 316–430 ms | 1546–6581 ms | — |
+| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1321 | 1 | 200 | 3383 ms | 16447 ms | — |
+| inspect | step 3: goto /marketplace/item/<id>/ | 1 | 200 | 6398 ms | 12072 ms | — |
+| inspect | step 10: goto /marketplace/item/<id>/ | 1 | 200 | 6429 ms | 11563 ms | — |
+| publish | Marketplace location: Reading 19601 US | 2 | 200 | 525–551 ms | 1157–41168 ms | — |
+| publish | Opening /marketplace/create/item | 10 | 200 | 300–369 ms | 8443–14936 ms | — |
+| inspect | step 1: goto /marketplace/ | 7 | 200 | 337–551 ms | 7296–19812 ms | — |
+| inspect | step 16: goto /marketplace/create/item | 1 | 200 | 385 ms | 5583 ms | — |
 | connect | Page: loggedIn /marketplace/selling/ | 5 | 200 | 316–512 ms | 2827–6543 ms | — |
-| inspect | step 1: goto /marketplace/ | 6 | 200 | 337–551 ms | 7296–19812 ms | — |
 | inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1223 | 1 | 200 | 504 ms | 9913 ms | — |
 | inspect | step 2: waitRole link "…" | 1 | 200 | 876 ms | 13767 ms | — |
 | inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T121 | 1 | 200 | 831 ms | 601 ms | — |
 | flow | step 1: goto /me | 2 | 200 | 338–378 ms | 8529–15038 ms | — |
 | connect | Auto-login: typing the email. | 1 | 200 | 325 ms | 3882 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ "…" | 2 | 200 | 316–430 ms | 4011–4196 ms | — |
 | inspect | step 1: goto /me | 1 | 200 | 338 ms | 13542 ms | — |
 | inspect | step 2: click e53 | 1 | 200 | 323 ms | 8520 ms | — |
-| publish | Opening /marketplace/create/item | 7 | 200 | 300–358 ms | 8443–14936 ms | — |
 | publish | Category: Miscellaneous | 1 | 200 | 305 ms | 1696 ms | — |
 
 <!-- facts:end -->

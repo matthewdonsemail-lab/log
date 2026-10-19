@@ -13,10 +13,14 @@
 | Called from | `CometClassicHomeLeftRailContainer.react` |
 | rea | `ev_344ab74ba79925e4c65e7d7e1baed54ed21b8b5516428816c330a8a229cfc2b5` |
 
-Seen 5 time(s) in 3 run(s).
+Seen 9 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1321 | 1 | 200 | 3589 ms | 20574 ms | — |
+| publish | Marketplace location: Reading 19601 US | 1 | 200 | 442 ms | 5682 ms | — |
+| publish | Uploading 5 photo(s) | 1 | 200 | 497 ms | 889 ms | — |
+| inspect | step 16: goto /marketplace/create/item | 1 | 200 | 1566 ms | 13467 ms | — |
 | inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T122 | 1 | 200 | 637 ms | 1214 ms | — |
 | inspect | step 2: wait 20s | 1 | 200 | 551 ms | 21000 ms | — |
 | inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T120 | 2 | 200 | 374–471 ms | 10055–90179 ms | — |

@@ -13,10 +13,14 @@
 | Called from | `CometRightSideHeaderCards.react` |
 | rea | `ev_0ca298c8c568c93036a5e8e8d989f3baf2a29fa5ca4d1fd7a8070819f4515962` |
 
-Seen 5 time(s) in 3 run(s).
+Seen 9 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1321 | 1 | 200 | 4031 ms | 20576 ms | — |
+| publish | Marketplace location: Reading 19601 US | 1 | 200 | 467 ms | 5685 ms | — |
+| publish | Uploading 5 photo(s) | 1 | 200 | 508 ms | 891 ms | — |
+| inspect | step 16: goto /marketplace/create/item | 1 | 200 | 1528 ms | 13473 ms | — |
 | inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T122 | 1 | 200 | 403 ms | 1240 ms | — |
 | inspect | step 2: wait 20s | 1 | 200 | 374 ms | 21004 ms | — |
 | inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T120 | 2 | 200 | 407–456 ms | 10094–90182 ms | — |

@@ -11,19 +11,37 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_e40f806d7dccba5f6702e967acc43014107c533ec26ba6c72ec586642351ccd5` |
+| rea | `ev_65e32c6a16cc5d1bce93020ec835de2a091de069d3104d893ac602867c5219d1` |
 
-Seen 189 time(s) in 34 run(s).
+Seen 257 time(s) in 43 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| connect | Auto-login: typing the email. | 1 | 200 | 314 ms | 9831 ms | — |
+| connect | submitCredentials failed: crashed TimeoutError | 1 | 200 | 302 ms | 646 ms | — |
+| connect | says: <name> We suspect automated behaviour on your account To prevent your account from b | 7 | 200 | 295–372 ms | 92–4236 ms | — |
+| connect | Auto-login: answered automatedBehaviour. | 12 | 200, -1 | -1–387 ms | 126–1839 ms | — |
+| connect | Page: loggedIn /marketplace/selling/ "…" | 11 | 200, -1 | -1–564 ms | 55–7648 ms | — |
+| connect | says: (no text) / buttons: none | 3 | 200 | 340–353 ms | 5042–6383 ms | — |
+| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1321 | 11 | 200 | 351–5073 ms | 15603–325619 ms | — |
+| inspect | step 3: goto /marketplace/item/<id>/ | 3 | 200 | 5208–5947 ms | 13335–14349 ms | — |
+| inspect | page has 73 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T132 | 3 | 200 | 339–628 ms | 2140–15470 ms | — |
+| inspect | step 10: goto /marketplace/item/<id>/ | 5 | 200 | 3376–5688 ms | 12298–24074 ms | — |
+| publish | Marketplace location: Reading 19601 US | 8 | 200 | 346–564 ms | 747–50677 ms | — |
+| publish | Category: Miscellaneous | 12 | 200 | 295–353 ms | 236–5514 ms | — |
+| publish | Uploading 5 photo(s) | 9 | 200 | 287–453 ms | 13871–21981 ms | — |
+| publish | Opening /marketplace/create/item | 30 | 200 | 287–1432 ms | 9438–42348 ms | — |
+| inspect | step 1: goto /marketplace/ | 21 | 200 | 293–1335 ms | 8534–25013 ms | — |
+| inspect | POST 200 /ajax/relay-ef/ (360 ms) | 1 | 200 | 392 ms | 0 ms | — |
+| inspect | step 3: click e236 | 1 | 200 | 356 ms | 3994 ms | — |
+| inspect | POST 200 MarketplaceSearchAddressDataSourceQuery (1419 ms) | 1 | 200 | 362 ms | 893 ms | — |
+| inspect | step 16: goto /marketplace/create/item | 1 | 200 | 788 ms | 6904 ms | — |
+| inspect | page has 39 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T131 | 1 | 200 | 358 ms | 13341 ms | — |
+| connect | Page: checkpoint /checkpoint/<id>/ | 7 | 200 | 306–838 ms | 637–4988 ms | — |
 | inspect | POST 0 /ajax/qm/ (0 ms) | 2 | 200 | 470–3952 ms | 1988–3895 ms | — |
 | inspect | step 2: wait 60s | 4 | 200 | 440–1844 ms | 4866–60394 ms | — |
 | inspect | POST 200 CometLogoutHandlerQuery (900 ms) | 1 | 200 | 393 ms | 2007 ms | — |
-| connect | says: <name> We suspect automated behaviour on your account To prevent your account from b | 4 | 200 | 360–367 ms | 1611–4236 ms | — |
-| connect | Auto-login: answered automatedBehaviour. | 9 | 200, -1 | -1–387 ms | 126–1139 ms | — |
 | connect | Page: loggedIn /marketplace/selling/ | 5 | 200 | 382–453 ms | 2819–10328 ms | — |
-| inspect | step 1: goto /marketplace/ | 19 | 200 | 293–1335 ms | 8534–25013 ms | — |
 | inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T123 | 1 | 200 | 319 ms | 12610 ms | — |
 | inspect | step 2: wait 20s | 3 | 200 | 313–336 ms | 3625–8089 ms | — |
 | inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T122 | 4 | 200 | 306–327 ms | 37011–367021 ms | — |
@@ -45,7 +63,6 @@ Seen 189 time(s) in 34 run(s).
 | flow | step 9: goto /profiles/<id>/name | 5 | 200 | 310–926 ms | 19–8982 ms | — |
 | flow | step 13: clickRole button "…" | 3 | 200 | 312–384 ms | 115–5389 ms | — |
 | connect | Signed in; session written for Twenty. | 2 | 200, -1 | -1–480 ms | 175–802 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ "…" | 4 | 200, -1 | -1–564 ms | 55–5586 ms | — |
 | inspect | step 1: goto /me | 2 | 200 | 322–617 ms | 13199–13254 ms | — |
 | inspect | step 2: click e141 | 1 | 200 | 285 ms | 4162 ms | — |
 | inspect | step 3: click e1096 | 1 | 200 | 289 ms | 3339 ms | — |
@@ -66,13 +83,9 @@ Seen 189 time(s) in 34 run(s).
 | inspect | page has 7 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1052 | 1 | 200 | 321 ms | 37600 ms | — |
 | profile | Opening the profile (facebook.com/me). | 1 | 200 | 314 ms | 10417 ms | — |
 | profile | Profile controls: picture not found; cover not found; 4 controls listed in profileFound.tx | 1 | -1 | -1 ms | 692 ms | — |
-| publish | Opening /marketplace/create/item | 26 | 200 | 287–1068 ms | 9686–42348 ms | — |
-| publish | Uploading 5 photo(s) | 6 | 200 | 287–325 ms | 17943–21981 ms | — |
 | connect | Solving textImage with captchaKraken | 3 | 200 | 307–331 ms | 660–9612 ms | — |
 | connect | Page: captcha /checkpoint/<id>/ | 4 | 200 | 299–313 ms | 1846–4404 ms | — |
-| connect | Page: checkpoint /checkpoint/<id>/ | 6 | 200 | 306–321 ms | 637–4988 ms | — |
 | publish | open failed: formNotFound no Title field on /marketplace/create/item | 1 | -1 | -1 ms | 1054 ms | — |
-| publish | Category: Miscellaneous | 7 | 200 | 295–340 ms | 236–5292 ms | — |
 
 <!-- facts:end -->
 

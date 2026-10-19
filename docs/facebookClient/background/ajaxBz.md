@@ -11,15 +11,16 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_5a868e88094489f9152e54cf6c06833679ecdfeb9dffddf5d9f9fabd280635b9` |
+| rea | `ev_ffc2455a215f86b6a0d99bedb95b86a91d08bc880676fa013332126ced318044` |
 
-Seen 79 time(s) in 7 run(s).
+Seen 108 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| connect | Opening Marketplace > Selling. | 35 | -1 | -1 ms | 5887–11459 ms | — |
-| connect | Auto-login: typing the email. | 6 | -1 | -1 ms | 179–2808 ms | — |
-| connect | Auto-login: submitting (Enter). | 12 | -1 | -1 ms | 26–127 ms | — |
+| connect | Opening Marketplace > Selling. | 49 | -1 | -1 ms | 4719–11459 ms | — |
+| connect | Auto-login: typing the email. | 10 | -1 | -1 ms | 179–4002 ms | — |
+| connect | Auto-login: submitting (Enter). | 18 | -1 | -1 ms | 26–160 ms | — |
+| connect | Page: unknown /marketplace/selling/ | 5 | -1 | -1 ms | 3747–4460 ms | — |
 | connect | Auto-login: typing the password. | 5 | -1 | -1 ms | 988–3293 ms | — |
 | connect | says: (no text) / buttons: none | 7 | -1 | -1 ms | 2226–4353 ms | — |
 | inspect | step 1: goto /marketplace/you/selling | 7 | -1 | -1 ms | 5911–8926 ms | — |
