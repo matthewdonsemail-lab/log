@@ -85,6 +85,15 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     (rules 11, 12, 15-17) still run, and `--live` still needs matt (rule 10).
     It is never on by default; pass it only when matt asks for a run outside
     the account's hours.
+21. 2026-10-19 · matt asked for auto-login: `log connect --noPrompt` (always,
+    over MCP) signs in by itself with the account's Twenty email, password
+    and totpSecret, typing the current authenticator code on the two-step
+    page (`python/autoLogin.py`). They are read only by
+    `twenty.loginSecrets`, for that run, into the run folder's `login.json`
+    (0600, deleted with it), and are never printed or logged. Every vendor
+    order in `docs/vendors/*.txt` (git-ignored) is imported with all its fields
+    by `scripts/importVendorAccounts.mjs`, which shows each field only as
+    `<set>` or `<empty>`.
 
 ## Checks
 
@@ -122,7 +131,8 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
   (`camofox/run`) and deletes it afterwards. After the run the session the
   browser left is saved back (only while it still holds a Facebook login),
   and a newly made device is saved once. Never commit, print or paste them;
-  `log` never selects password, email or totpSecret at all. The proxy
+  `log` never selects password, email or totpSecret, except
+  `twenty.loginSecrets` for `connect`'s auto-login (rule 21). The proxy
   username's first part is the 2Captcha password: it is masked too.
   The exception is the raw capture HAR (rule 19), which keeps the session
   cookies and tokens in the local run folder for analysis.

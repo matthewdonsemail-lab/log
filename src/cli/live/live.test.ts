@@ -151,6 +151,40 @@ describe("live commands", () => {
     expect(await runCli(["connect", "--account", "needsLogin", "--noPrompt", "--wait", "5"], { worker, twenty, out: () => {}, err: () => {} })).toBe(1);
   });
 
+  test("connect --noPrompt hands the worker Twenty's login details in a private file, deleted after the run", async () => {
+    const twenty = marketplaceFixture();
+    await twenty.update("socialAccounts", "needsLogin", { email: "fixture@example.com", password: "fixturePass", totpSecret: "GEZDGNBVGY3TQOJQ" } as never);
+    let handed: unknown = null;
+    let loginPath: string | null | undefined;
+    const worker = (async (request: WorkerRequest) => {
+      loginPath = request.login_path;
+      handed = JSON.parse(require("node:fs").readFileSync(request.login_path!, "utf8"));
+      require("node:fs").writeFileSync(request.storage_state_path!, JSON.stringify({ cookies: [{ name: "c_user", value: "4", domain: ".facebook.com", path: "/" }], origins: [] }));
+      return { ok: true, storageStatePath: request.storage_state_path, loggedIn: true, authFlags: {} };
+    }) as WorkerClient;
+    const out: string[] = [];
+    const code = await runCli(["connect", "--account", "needsLogin", "--noPrompt"], { worker, twenty, out: (l) => out.push(l), err: (l) => out.push(l) });
+    expect(code).toBe(0);
+    expect(handed).toEqual({ email: "fixture@example.com", password: "fixturePass", totpSecret: "GEZDGNBVGY3TQOJQ" });
+    expect(require("node:fs").existsSync(loginPath!)).toBe(false);
+    expect(out.join("\n")).not.toContain("fixturePass");
+
+    // A hand sign-in (no --noPrompt) never reads them.
+    let plain: WorkerRequest | null = null;
+    const watcher = (async (request: WorkerRequest) => {
+      plain = request;
+      return { ok: true, storageStatePath: request.storage_state_path, loggedIn: false, authFlags: {} };
+    }) as WorkerClient;
+    await runCli(["connect", "--account", "needsLogin"], { worker: watcher, twenty, out: () => {}, err: () => {} });
+    expect(plain!.login_path).toBeUndefined();
+  });
+
+  test("auto-login's TOTP matches RFC 6238", () => {
+    const script = "import sys; sys.path.insert(0, 'python'); import autoLogin as a; s = 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ'; print(a.totp(s, 59, 8), a.totp(s, 1111111109, 8), a.totp(s, 59), a.totp('gezd gnbv gy3t qojq gezd gnbv gy3t qojq', 59))";
+    const run = require("node:child_process").spawnSync(process.env.LOG_PYTHON || "python", ["-c", script], { encoding: "utf8" });
+    expect(run.stdout.trim()).toBe("94287082 07081804 287082 287082");
+  });
+
   test("doctor reports the setup and which Twenty accounts may run", async () => {
     const reply = { ok: true, checks: { python: "3.12.10", facebookCamofoxClient: "/fcc", camoufoxBrowser: "/camoufox.exe", camoufoxVersion: "152" } };
     const { code, out } = await run(["doctor", "--json"], () => reply);

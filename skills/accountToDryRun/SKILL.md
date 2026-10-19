@@ -54,10 +54,20 @@ mcp__log__connect   args ["--account", "<a>"]
 
 The tool always runs `--noPrompt`. Camoufox opens through the proxy on the
 account's device. If the vendor cookies are still logged in, it saves them
-and ends within seconds. If not, Facebook shows a login page and matt signs
-in in the window (2FA, any checkpoint). The tool watches for up to 600 s
+and ends within seconds. If not, it **signs in by itself** (rule 21): it types
+the Twenty email and password, then on the two-step page the current code
+from `totpSecret` (switching to "Authentication app" if Facebook offers
+another method first), and trusts the device. Each action is printed;
+nothing secret is. Anything it can't handle (a photo checkpoint, a captcha
+Facebook shows) waits for matt in the window. It watches for up to 600 s
 (`--wait <s>` to change it). The fresh session is saved to Twenty, and a
-logged-in result sets the account **ACTIVE**. Check it:
+logged-in result sets the account **ACTIVE**.
+
+Before the first connect, the account needs `email`, `password` and
+`totpSecret` in Twenty: `node scripts/importVendorAccounts.mjs` (dry run, each
+field `<set>`/`<empty>`), then `--apply`. It reads every `docs/vendors/*.txt`.
+
+Check it:
 
 ```text
 mcp__log__account   args ["show", "<a>"]    Status ACTIVE, May run yes

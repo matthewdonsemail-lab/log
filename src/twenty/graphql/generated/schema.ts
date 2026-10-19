@@ -10212,6 +10212,10 @@ export interface SocialAccount {
     activeHoursEnd?: Scalars['Float']
     /** log-cli: the browser's localStorage per origin after the last run (Playwright storage_state origins). A credential: never print it */
     storageOrigins?: Scalars['JSON']
+    /** log-cli: the Facebook access token the vendor delivered. A credential: never print it */
+    accessToken?: Scalars['String']
+    /** log-cli: the browser the vendor used. Reference only: launches use deviceProfile (rule 15) */
+    vendorUserAgent?: Scalars['String']
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: TimelineActivityConnection
     /** SocialAccounts tied to the Task Target */
@@ -10682,6 +10686,26 @@ export interface SocialAccountConnection {
     percentageEmptyStorageOrigins?: Scalars['Float']
     /** Percentage of non-empty values for storageOrigins */
     percentageNotEmptyStorageOrigins?: Scalars['Float']
+    /** Number of unique values for accessToken */
+    countUniqueValuesAccessToken?: Scalars['Int']
+    /** Number of empty values for accessToken */
+    countEmptyAccessToken?: Scalars['Int']
+    /** Number of non-empty values for accessToken */
+    countNotEmptyAccessToken?: Scalars['Int']
+    /** Percentage of empty values for accessToken */
+    percentageEmptyAccessToken?: Scalars['Float']
+    /** Percentage of non-empty values for accessToken */
+    percentageNotEmptyAccessToken?: Scalars['Float']
+    /** Number of unique values for vendorUserAgent */
+    countUniqueValuesVendorUserAgent?: Scalars['Int']
+    /** Number of empty values for vendorUserAgent */
+    countEmptyVendorUserAgent?: Scalars['Int']
+    /** Number of non-empty values for vendorUserAgent */
+    countNotEmptyVendorUserAgent?: Scalars['Int']
+    /** Percentage of empty values for vendorUserAgent */
+    percentageEmptyVendorUserAgent?: Scalars['Float']
+    /** Percentage of non-empty values for vendorUserAgent */
+    percentageNotEmptyVendorUserAgent?: Scalars['Float']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     __typename: 'SocialAccountConnection'
@@ -11134,6 +11158,26 @@ export interface SocialAccountGroupByConnection {
     percentageEmptyStorageOrigins?: Scalars['Float']
     /** Percentage of non-empty values for storageOrigins */
     percentageNotEmptyStorageOrigins?: Scalars['Float']
+    /** Number of unique values for accessToken */
+    countUniqueValuesAccessToken?: Scalars['Int']
+    /** Number of empty values for accessToken */
+    countEmptyAccessToken?: Scalars['Int']
+    /** Number of non-empty values for accessToken */
+    countNotEmptyAccessToken?: Scalars['Int']
+    /** Percentage of empty values for accessToken */
+    percentageEmptyAccessToken?: Scalars['Float']
+    /** Percentage of non-empty values for accessToken */
+    percentageNotEmptyAccessToken?: Scalars['Float']
+    /** Number of unique values for vendorUserAgent */
+    countUniqueValuesVendorUserAgent?: Scalars['Int']
+    /** Number of empty values for vendorUserAgent */
+    countEmptyVendorUserAgent?: Scalars['Int']
+    /** Number of non-empty values for vendorUserAgent */
+    countNotEmptyVendorUserAgent?: Scalars['Int']
+    /** Percentage of empty values for vendorUserAgent */
+    percentageEmptyVendorUserAgent?: Scalars['Float']
+    /** Percentage of non-empty values for vendorUserAgent */
+    percentageNotEmptyVendorUserAgent?: Scalars['Float']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -62027,6 +62071,10 @@ export interface SocialAccountGenqlSelection{
     activeHoursEnd?: boolean | number
     /** log-cli: the browser's localStorage per origin after the last run (Playwright storage_state origins). A credential: never print it */
     storageOrigins?: boolean | number
+    /** log-cli: the Facebook access token the vendor delivered. A credential: never print it */
+    accessToken?: boolean | number
+    /** log-cli: the browser the vendor used. Reference only: launches use deviceProfile (rule 15) */
+    vendorUserAgent?: boolean | number
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
     /** SocialAccounts tied to the Task Target */
@@ -62499,6 +62547,26 @@ export interface SocialAccountConnectionGenqlSelection{
     percentageEmptyStorageOrigins?: boolean | number
     /** Percentage of non-empty values for storageOrigins */
     percentageNotEmptyStorageOrigins?: boolean | number
+    /** Number of unique values for accessToken */
+    countUniqueValuesAccessToken?: boolean | number
+    /** Number of empty values for accessToken */
+    countEmptyAccessToken?: boolean | number
+    /** Number of non-empty values for accessToken */
+    countNotEmptyAccessToken?: boolean | number
+    /** Percentage of empty values for accessToken */
+    percentageEmptyAccessToken?: boolean | number
+    /** Percentage of non-empty values for accessToken */
+    percentageNotEmptyAccessToken?: boolean | number
+    /** Number of unique values for vendorUserAgent */
+    countUniqueValuesVendorUserAgent?: boolean | number
+    /** Number of empty values for vendorUserAgent */
+    countEmptyVendorUserAgent?: boolean | number
+    /** Number of non-empty values for vendorUserAgent */
+    countNotEmptyVendorUserAgent?: boolean | number
+    /** Percentage of empty values for vendorUserAgent */
+    percentageEmptyVendorUserAgent?: boolean | number
+    /** Percentage of non-empty values for vendorUserAgent */
+    percentageNotEmptyVendorUserAgent?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -62952,6 +63020,26 @@ export interface SocialAccountGroupByConnectionGenqlSelection{
     percentageEmptyStorageOrigins?: boolean | number
     /** Percentage of non-empty values for storageOrigins */
     percentageNotEmptyStorageOrigins?: boolean | number
+    /** Number of unique values for accessToken */
+    countUniqueValuesAccessToken?: boolean | number
+    /** Number of empty values for accessToken */
+    countEmptyAccessToken?: boolean | number
+    /** Number of non-empty values for accessToken */
+    countNotEmptyAccessToken?: boolean | number
+    /** Percentage of empty values for accessToken */
+    percentageEmptyAccessToken?: boolean | number
+    /** Percentage of non-empty values for accessToken */
+    percentageNotEmptyAccessToken?: boolean | number
+    /** Number of unique values for vendorUserAgent */
+    countUniqueValuesVendorUserAgent?: boolean | number
+    /** Number of empty values for vendorUserAgent */
+    countEmptyVendorUserAgent?: boolean | number
+    /** Number of non-empty values for vendorUserAgent */
+    countNotEmptyVendorUserAgent?: boolean | number
+    /** Percentage of empty values for vendorUserAgent */
+    percentageEmptyVendorUserAgent?: boolean | number
+    /** Percentage of non-empty values for vendorUserAgent */
+    percentageNotEmptyVendorUserAgent?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -63039,7 +63127,11 @@ purchasedAt?: (Scalars['DateTime'] | null),
 /** log-cli: local hour runs stop, e.g. 22. Empty: 22:00 */
 activeHoursEnd?: (Scalars['Float'] | null),
 /** log-cli: the browser's localStorage per origin after the last run (Playwright storage_state origins). A credential: never print it */
-storageOrigins?: (Scalars['JSON'] | null)}
+storageOrigins?: (Scalars['JSON'] | null),
+/** log-cli: the Facebook access token the vendor delivered. A credential: never print it */
+accessToken?: (Scalars['String'] | null),
+/** log-cli: the browser the vendor used. Reference only: launches use deviceProfile (rule 15) */
+vendorUserAgent?: (Scalars['String'] | null)}
 
 
 /** Social media accounts */
@@ -63105,7 +63197,11 @@ purchasedAt?: (Scalars['DateTime'] | null),
 /** log-cli: local hour runs stop, e.g. 22. Empty: 22:00 */
 activeHoursEnd?: (Scalars['Float'] | null),
 /** log-cli: the browser's localStorage per origin after the last run (Playwright storage_state origins). A credential: never print it */
-storageOrigins?: (Scalars['JSON'] | null)}
+storageOrigins?: (Scalars['JSON'] | null),
+/** log-cli: the Facebook access token the vendor delivered. A credential: never print it */
+accessToken?: (Scalars['String'] | null),
+/** log-cli: the browser the vendor used. Reference only: launches use deviceProfile (rule 15) */
+vendorUserAgent?: (Scalars['String'] | null)}
 
 
 /** Social media accounts */
@@ -63171,7 +63267,11 @@ purchasedAt?: (DateTimeFilter | null),
 /** log-cli: local hour runs stop, e.g. 22. Empty: 22:00 */
 activeHoursEnd?: (FloatFilter | null),
 /** log-cli: the browser's localStorage per origin after the last run (Playwright storage_state origins). A credential: never print it */
-storageOrigins?: (RawJsonFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
+storageOrigins?: (RawJsonFilter | null),
+/** log-cli: the Facebook access token the vendor delivered. A credential: never print it */
+accessToken?: (StringFilter | null),
+/** log-cli: the browser the vendor used. Reference only: launches use deviceProfile (rule 15) */
+vendorUserAgent?: (StringFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
 
 export interface SocialAccountPlatformEnumFilter {eq?: (SocialAccountPlatformEnum | null),neq?: (SocialAccountPlatformEnum | null),in?: ((SocialAccountPlatformEnum | null)[] | null),containsAny?: ((SocialAccountPlatformEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (SocialAccountPlatformEnum | null),gte?: (SocialAccountPlatformEnum | null),lt?: (SocialAccountPlatformEnum | null),lte?: (SocialAccountPlatformEnum | null)}
 
@@ -63241,7 +63341,11 @@ purchasedAt?: (OrderByDirection | null),
 /** log-cli: local hour runs stop, e.g. 22. Empty: 22:00 */
 activeHoursEnd?: (OrderByDirection | null),
 /** log-cli: the browser's localStorage per origin after the last run (Playwright storage_state origins). A credential: never print it */
-storageOrigins?: (OrderByDirection | null)}
+storageOrigins?: (OrderByDirection | null),
+/** log-cli: the Facebook access token the vendor delivered. A credential: never print it */
+accessToken?: (OrderByDirection | null),
+/** log-cli: the browser the vendor used. Reference only: launches use deviceProfile (rule 15) */
+vendorUserAgent?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
@@ -63309,7 +63413,11 @@ purchasedAt?: (OrderByDateGranularityInput | null),
 /** log-cli: local hour runs stop, e.g. 22. Empty: 22:00 */
 activeHoursEnd?: (OrderByDirection | null),
 /** log-cli: the browser's localStorage per origin after the last run (Playwright storage_state origins). A credential: never print it */
-storageOrigins?: (OrderByDirection | null)}
+storageOrigins?: (OrderByDirection | null),
+/** log-cli: the Facebook access token the vendor delivered. A credential: never print it */
+accessToken?: (OrderByDirection | null),
+/** log-cli: the browser the vendor used. Reference only: launches use deviceProfile (rule 15) */
+vendorUserAgent?: (OrderByDirection | null)}
 
 
 /** Aggregate-based ordering */
@@ -63757,7 +63865,27 @@ countNotEmptyStorageOrigins?: (OrderByDirection | null),
 /** Percentage of empty values for storageOrigins */
 percentageEmptyStorageOrigins?: (OrderByDirection | null),
 /** Percentage of non-empty values for storageOrigins */
-percentageNotEmptyStorageOrigins?: (OrderByDirection | null)}
+percentageNotEmptyStorageOrigins?: (OrderByDirection | null),
+/** Number of unique values for accessToken */
+countUniqueValuesAccessToken?: (OrderByDirection | null),
+/** Number of empty values for accessToken */
+countEmptyAccessToken?: (OrderByDirection | null),
+/** Number of non-empty values for accessToken */
+countNotEmptyAccessToken?: (OrderByDirection | null),
+/** Percentage of empty values for accessToken */
+percentageEmptyAccessToken?: (OrderByDirection | null),
+/** Percentage of non-empty values for accessToken */
+percentageNotEmptyAccessToken?: (OrderByDirection | null),
+/** Number of unique values for vendorUserAgent */
+countUniqueValuesVendorUserAgent?: (OrderByDirection | null),
+/** Number of empty values for vendorUserAgent */
+countEmptyVendorUserAgent?: (OrderByDirection | null),
+/** Number of non-empty values for vendorUserAgent */
+countNotEmptyVendorUserAgent?: (OrderByDirection | null),
+/** Percentage of empty values for vendorUserAgent */
+percentageEmptyVendorUserAgent?: (OrderByDirection | null),
+/** Percentage of non-empty values for vendorUserAgent */
+percentageNotEmptyVendorUserAgent?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
@@ -63805,7 +63933,11 @@ vendorListingUrl?: (Scalars['Boolean'] | null),
 /** log-cli */
 purchasedAt?: (GroupByDateGranularityInput | null),
 /** log-cli: local hour runs stop, e.g. 22. Empty: 22:00 */
-activeHoursEnd?: (Scalars['Boolean'] | null)}
+activeHoursEnd?: (Scalars['Boolean'] | null),
+/** log-cli: the Facebook access token the vendor delivered. A credential: never print it */
+accessToken?: (Scalars['Boolean'] | null),
+/** log-cli: the browser the vendor used. Reference only: launches use deviceProfile (rule 15) */
+vendorUserAgent?: (Scalars['Boolean'] | null)}
 
 
 /** Calendar events */

@@ -69,9 +69,11 @@ export function prepareRun(account: FacebookAccount, purpose: RunPurpose, option
   const proxyPath = join(dir, 'proxy.json')
   const statePath = join(dir, 'state.json')
   const devicePath = join(dir, 'device.json')
+  const loginPath = options.login ? join(dir, 'login.json') : null
   writeFileSync(proxyPath, JSON.stringify(check.proxy), { mode: 0o600 })
   if (cookies.length) writeFileSync(statePath, JSON.stringify({ cookies, origins: toOrigins(account.storageOrigins) }), { mode: 0o600 })
   if (device) writeFileSync(devicePath, JSON.stringify(device), { mode: 0o600 })
+  if (loginPath) writeFileSync(loginPath, JSON.stringify(options.login), { mode: 0o600 })
   return {
     ok: true,
     run: {
@@ -79,6 +81,7 @@ export function prepareRun(account: FacebookAccount, purpose: RunPurpose, option
       proxyPath,
       statePath,
       devicePath: device ? devicePath : null,
+      loginPath,
       hasSession: cookies.length > 0,
       readCookies(): PlaywrightCookie[] {
         if (!existsSync(statePath)) return []

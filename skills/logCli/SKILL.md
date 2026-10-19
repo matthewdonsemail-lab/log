@@ -16,7 +16,8 @@ none of them prompt unless you run `log launch` in a terminal.
 2. **Twenty is the source (rule 13).** Accounts are `socialAccounts` (FACEBOOK),
    listings are `agencyListings`. Never delete either: banned or dead accounts
    keep their record (`log account status`). Never print cookies, proxies,
-   passwords or 2FA secrets; `log` never selects password, email or totpSecret.
+   passwords or 2FA secrets; `log` never selects password, email or totpSecret,
+   except `connect --noPrompt`'s auto-login (rule 21).
 3. **Marketplace only.** No X, Reddit, keywords or communities.
 4. **Camoufox is always visible.** Every launch is headed, with humanize on and
    the cursor shown (AGENTS.md rule 11). There is no `--headless`. Run it where

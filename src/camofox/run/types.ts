@@ -4,6 +4,7 @@
  * the Python processes (which only ever get the paths, never credentials on
  * argv), and deleted afterwards.
  */
+import type { LoginSecrets } from '../../twenty/graphql/index'
 import type { DeviceProfile } from '../device/index'
 import type { ErrorCode } from '../../errors/catalog/index'
 import type { PlaywrightCookie } from '../../marketplace/socialAccount/index'
@@ -19,6 +20,8 @@ export interface PreparedRun {
    * timezone and stored device. null for `check`, which opens no browser.
    */
   devicePath: string | null
+  /** The sign-in details for auto-login, or null when none were given. */
+  loginPath: string | null
   hasSession: boolean
   /** The storage_state as the browser left it (after a sign-in). */
   readCookies(): PlaywrightCookie[]
@@ -37,6 +40,8 @@ export interface PrepareRunOptions {
   now?: Date
   /** `--bypass`: skip the waking-hours gate (rule 18) only. The proxy, home, device and self-check gates still run. */
   bypassHours?: boolean
+  /** `connect`'s auto-login: written to `login.json` in the run folder (0600) and deleted with it. */
+  login?: LoginSecrets | null
 }
 
 export type PrepareRunResult = { ok: true; run: PreparedRun } | { ok: false; code: ErrorCode; detail: string }

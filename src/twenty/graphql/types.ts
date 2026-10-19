@@ -34,6 +34,19 @@ export interface TwentyClient {
   get<K extends TwentyObject>(object: K, id: string): Promise<TwentyObjects[K]['row'] | null>
   create<K extends TwentyObject>(object: K, data: TwentyObjects[K]['create']): Promise<TwentyObjects[K]['row']>
   update<K extends TwentyObject>(object: K, id: string, data: TwentyObjects[K]['update']): Promise<TwentyObjects[K]['row']>
+  /**
+   * The account's sign-in details, for `log connect`'s auto-login only. The
+   * one read of these fields: they go to the run's private temp folder for
+   * the worker, never into a row, an output or a log.
+   */
+  loginSecrets(accountId: string): Promise<LoginSecrets | null>
+}
+
+/** What auto-login types into Facebook. Credentials: never print them. */
+export interface LoginSecrets {
+  email: string | null
+  password: string | null
+  totpSecret: string | null
 }
 
 /** A Twenty call that failed, with its catalog code. */

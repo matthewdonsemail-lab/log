@@ -18,6 +18,7 @@ import { recordAccountIssue } from "../../marketplace/replacement/index.ts";
 import { checkRunnable, findAccount, listFacebookAccounts, saveCookies, saveDeviceProfile, saveSession, setAccountStatus, toFacebookCookies } from "../../marketplace/socialAccount/index.ts";
 import type { FacebookAccount, RunPurpose } from "../../marketplace/socialAccount/index.ts";
 import { parseArgs, refuse, refuseError } from "../runner/helpers/index.ts";
+import type { LoginSecrets } from "../../twenty/graphql/index.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
 import { renderDoctor, renderLoss, renderScan } from "./helpers/index.ts";
 
@@ -39,6 +40,7 @@ export async function openAccount(
   value: string | true | undefined,
   purpose: RunPurpose,
   bypassHours = false,
+  withLogin = false,
 ): Promise<{ account: FacebookAccount; run: PreparedRun } | CommandResult> {
   if (typeof value !== "string") return { code: 1, stderr: `log ${name}: --account is required (log accounts lists them)\n${usage}` };
   let account: FacebookAccount;
@@ -47,7 +49,15 @@ export async function openAccount(
   } catch (error) {
     return refuseError(name, error);
   }
-  const prepared = prepareRun(account, purpose, { now: (context.now ?? (() => new Date()))(), bypassHours });
+  let login: LoginSecrets | null = null;
+  if (withLogin) {
+    try {
+      login = await context.twenty.loginSecrets(account.id);
+    } catch (error) {
+      return refuseError(name, error);
+    }
+  }
+  const prepared = prepareRun(account, purpose, { now: (context.now ?? (() => new Date()))(), bypassHours, login });
   if (!prepared.ok) return refuse(name, prepared.code, prepared.detail);
   return { account, run: prepared.run };
 }
@@ -182,7 +192,7 @@ export const connectCommand: Command = {
     const noPrompt = Boolean(parsed.flags["noPrompt"]);
     const waitSeconds = parsed.flags["wait"] === undefined ? CONNECT_WAIT_SECONDS : Number(parsed.flags["wait"]);
     if (!Number.isInteger(waitSeconds) || waitSeconds < 10 || waitSeconds > 1800) return { code: 1, stderr: `log connect: --wait must be 10 to 1800 seconds\n${CONNECT_USAGE}` };
-    const opened = await openAccount(context, "connect", CONNECT_USAGE, parsed.flags["account"], "connect", Boolean(parsed.flags["bypass"]));
+    const opened = await openAccount(context, "connect", CONNECT_USAGE, parsed.flags["account"], "connect", Boolean(parsed.flags["bypass"]), noPrompt);
     if (!("run" in opened)) return opened;
     const { account, run } = opened;
     return withRun(context, "connect", account, run, async () => {
@@ -193,7 +203,7 @@ export const connectCommand: Command = {
           storage_state_path: run.statePath,
           proxy_path: run.proxyPath,
           device_path: run.devicePath,
-          ...(noPrompt ? { params: { waitSeconds } } : {}),
+          ...(noPrompt ? { params: { waitSeconds }, login_path: run.loginPath } : {}),
         },
         { interactive: !noPrompt },
       );

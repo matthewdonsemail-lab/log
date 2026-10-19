@@ -24,6 +24,8 @@ export interface WorkerRequest {
    * and the account's device. The proxy gate opens no browser without it.
    */
   device_path?: string | null;
+  /** `login`'s auto-login details (email, password, totpSecret) in the run folder. Never on argv. */
+  login_path?: string | null;
   params?: Record<string, unknown>;
 }
 

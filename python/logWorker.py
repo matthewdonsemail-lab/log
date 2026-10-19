@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Any
 
 from errorCodes import failure
+import autoLogin
 import proxyGate
 from visibleBrowser import force_visible
 
@@ -144,9 +145,23 @@ async def acquire(request: dict[str, Any], storage_state_path: str | None):
     return manager, session
 
 
-async def wait_for_login(page, wait_seconds: int) -> None:
-    """Polls the page's login markers every 5 s until none show, or the time is up."""
-    log(f"Waiting up to {wait_seconds}s for a logged-in Facebook page. Sign in in the Camoufox window if it asks.")
+def read_login(path: str | None) -> dict[str, Any] | None:
+    """The run's login.json (email, password, totpSecret), or None. Never logged."""
+    if not path or not Path(path).exists():
+        return None
+    try:
+        secrets = json.loads(Path(path).read_text(encoding="utf8"))
+    except Exception:
+        return None
+    return secrets if isinstance(secrets, dict) and secrets.get("password") else None
+
+
+async def wait_for_login(page, wait_seconds: int, secrets: dict[str, Any] | None = None) -> None:
+    """Polls the page's login markers every 5 s until none show, or the time is up.
+    With `secrets` (auto-login), each pass also fills in what the page asks for."""
+    how = "Signing in from Twenty's details" if secrets else "Sign in in the Camoufox window if it asks"
+    log(f"Waiting up to {wait_seconds}s for a logged-in Facebook page. {how}.")
+    tries: dict[str, Any] = {}
     await page.wait_for_timeout(4000)
     deadline = asyncio.get_running_loop().time() + wait_seconds
     while True:
@@ -157,6 +172,11 @@ async def wait_for_login(page, wait_seconds: int) -> None:
                 return
         except Exception:
             pass  # mid-navigation while the person signs in
+        if secrets:
+            try:
+                await autoLogin.step(page, secrets, tries, log)
+            except Exception as exc:
+                log(f"Auto-login step skipped: {type(exc).__name__}")  # never the message: it can echo typed text
         if asyncio.get_running_loop().time() >= deadline:
             log("Still not logged in when the wait ran out.")
             return
@@ -178,7 +198,7 @@ async def login(request: dict[str, Any]) -> dict[str, Any]:
             # `log connect --noPrompt` (the MCP tool): stdin isn't ours, so watch the
             # page instead. Saved cookies that still work end it at once; otherwise
             # a person signs in in the visible window before the deadline.
-            await wait_for_login(page, int(wait_seconds))
+            await wait_for_login(page, int(wait_seconds), read_login(request.get("login_path")))
         else:
             log("")
             log("In the Camoufox window:")

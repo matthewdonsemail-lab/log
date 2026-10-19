@@ -33279,6 +33279,12 @@ export default {
             "storageOrigins": [
                 78
             ],
+            "accessToken": [
+                1
+            ],
+            "vendorUserAgent": [
+                1
+            ],
             "timelineActivities": [
                 539,
                 {
@@ -34123,6 +34129,36 @@ export default {
             "percentageNotEmptyStorageOrigins": [
                 84
             ],
+            "countUniqueValuesAccessToken": [
+                76
+            ],
+            "countEmptyAccessToken": [
+                76
+            ],
+            "countNotEmptyAccessToken": [
+                76
+            ],
+            "percentageEmptyAccessToken": [
+                84
+            ],
+            "percentageNotEmptyAccessToken": [
+                84
+            ],
+            "countUniqueValuesVendorUserAgent": [
+                76
+            ],
+            "countEmptyVendorUserAgent": [
+                76
+            ],
+            "countNotEmptyVendorUserAgent": [
+                76
+            ],
+            "percentageEmptyVendorUserAgent": [
+                84
+            ],
+            "percentageNotEmptyVendorUserAgent": [
+                84
+            ],
             "edges": [
                 386
             ],
@@ -34800,6 +34836,36 @@ export default {
             "percentageNotEmptyStorageOrigins": [
                 84
             ],
+            "countUniqueValuesAccessToken": [
+                76
+            ],
+            "countEmptyAccessToken": [
+                76
+            ],
+            "countNotEmptyAccessToken": [
+                76
+            ],
+            "percentageEmptyAccessToken": [
+                84
+            ],
+            "percentageNotEmptyAccessToken": [
+                84
+            ],
+            "countUniqueValuesVendorUserAgent": [
+                76
+            ],
+            "countEmptyVendorUserAgent": [
+                76
+            ],
+            "countNotEmptyVendorUserAgent": [
+                76
+            ],
+            "percentageEmptyVendorUserAgent": [
+                84
+            ],
+            "percentageNotEmptyVendorUserAgent": [
+                84
+            ],
             "edges": [
                 386
             ],
@@ -34961,6 +35027,12 @@ export default {
             "storageOrigins": [
                 78
             ],
+            "accessToken": [
+                1
+            ],
+            "vendorUserAgent": [
+                1
+            ],
             "__typename": [
                 1
             ]
@@ -35083,6 +35155,12 @@ export default {
             "storageOrigins": [
                 78
             ],
+            "accessToken": [
+                1
+            ],
+            "vendorUserAgent": [
+                1
+            ],
             "__typename": [
                 1
             ]
@@ -35204,6 +35282,12 @@ export default {
             ],
             "storageOrigins": [
                 9
+            ],
+            "accessToken": [
+                7
+            ],
+            "vendorUserAgent": [
+                7
             ],
             "and": [
                 394
@@ -35406,6 +35490,12 @@ export default {
             "storageOrigins": [
                 11
             ],
+            "accessToken": [
+                11
+            ],
+            "vendorUserAgent": [
+                11
+            ],
             "__typename": [
                 1
             ]
@@ -35529,6 +35619,12 @@ export default {
                 11
             ],
             "storageOrigins": [
+                11
+            ],
+            "accessToken": [
+                11
+            ],
+            "vendorUserAgent": [
                 11
             ],
             "__typename": [
@@ -36202,6 +36298,36 @@ export default {
             "percentageNotEmptyStorageOrigins": [
                 11
             ],
+            "countUniqueValuesAccessToken": [
+                11
+            ],
+            "countEmptyAccessToken": [
+                11
+            ],
+            "countNotEmptyAccessToken": [
+                11
+            ],
+            "percentageEmptyAccessToken": [
+                11
+            ],
+            "percentageNotEmptyAccessToken": [
+                11
+            ],
+            "countUniqueValuesVendorUserAgent": [
+                11
+            ],
+            "countEmptyVendorUserAgent": [
+                11
+            ],
+            "countNotEmptyVendorUserAgent": [
+                11
+            ],
+            "percentageEmptyVendorUserAgent": [
+                11
+            ],
+            "percentageNotEmptyVendorUserAgent": [
+                11
+            ],
             "__typename": [
                 1
             ]
@@ -36295,6 +36421,12 @@ export default {
                 68
             ],
             "activeHoursEnd": [
+                13
+            ],
+            "accessToken": [
+                13
+            ],
+            "vendorUserAgent": [
                 13
             ],
             "__typename": [

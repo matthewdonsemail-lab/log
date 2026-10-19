@@ -1,4 +1,4 @@
-import type { TwentyClient, TwentyObject, TwentyObjects } from '../types'
+import type { LoginSecrets, TwentyClient, TwentyObject, TwentyObjects } from '../types'
 
 type Row = Record<string, unknown> & { id: string }
 
@@ -59,6 +59,12 @@ export function createMemoryTwenty(seed: Partial<Record<TwentyObject, Row[]>> = 
       if (!row) throw new Error(`memoryTwenty: no ${object} ${id}`)
       Object.assign(row, data)
       return { ...row } as unknown as TwentyObjects[K]['row']
+    },
+    async loginSecrets(accountId: string): Promise<LoginSecrets | null> {
+      const row = table('socialAccounts').find((r) => r.id === accountId)
+      if (!row) return null
+      const text = (value: unknown) => (typeof value === 'string' && value ? value : null)
+      return { email: text(row.email), password: text(row.password), totpSecret: text(row.totpSecret) }
     }
   }
 }

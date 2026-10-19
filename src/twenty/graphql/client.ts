@@ -180,6 +180,18 @@ export function createTwentyClient(env: Record<string, string | undefined> = pro
         return out.createAgencyListing as TwentyObjects[K]['row']
       })
     },
+    loginSecrets(accountId: string) {
+      if (!UUID.test(accountId)) return Promise.resolve(null)
+      return guarded(`loginSecrets ${accountId}`, async () => {
+        // Selected here and nowhere else (SOCIAL_ACCOUNT_FIELDS never has them).
+        const page = (await client().query({
+          socialAccounts: { __args: { filter: { id: { eq: accountId } }, first: 1 }, edges: { node: { email: true, password: true, totpSecret: true } } }
+        })) as { socialAccounts: { edges: { node: { email?: string | null; password?: string | null; totpSecret?: string | null } }[] } }
+        const node = page.socialAccounts.edges[0]?.node
+        if (!node) return null
+        return { email: node.email || null, password: node.password || null, totpSecret: node.totpSecret || null }
+      })
+    },
     update<K extends TwentyObject>(object: K, id: string, data: TwentyObjects[K]['update']) {
       return guarded(`update ${object} ${id}`, async () => {
         if (object === 'socialAccounts') {
