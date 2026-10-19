@@ -5,6 +5,7 @@ import { basename, join, relative, resolve, sep } from "node:path";
 import { defaultReaRunner, evidenceIdOf } from "../firefox/client";
 import { parseSteps, splitHarBySteps } from "../firefox/helpers/index";
 import type { ReaRunner } from "../firefox/types";
+import { CAPTURE_FOLDERS } from "../../browser/driver/types";
 import { domainOf, importersOf, indexModules, readGraphqlDefinition, renderOperationDoc, requestsInStep, sliceFor } from "./helpers/index";
 import type { RequestSeen } from "./helpers/index";
 import type { ClientDomain, ClientOperation, FacebookModule } from "./types";
@@ -40,7 +41,7 @@ export function capturesRoot(env: Record<string, string | undefined> = process.e
   return env.LOG_CAPTURES_ROOT || join(homedir(), ".logCli");
 }
 
-/** Every `firefox/` folder holding a `session.har` under `runs/` and `publish/`, newest first. */
+/** Every capture folder (`adsPower/`, `camoufox/`, or `firefox/` for older runs) holding a `session.har` under `runs/` and `publish/`, newest first. */
 export function findRunCaptures(root: string): RunCapture[] {
   const found: RunCapture[] = [];
   const walk = (dir: string, depth: number): void => {
@@ -50,7 +51,7 @@ export function findRunCaptures(root: string): RunCapture[] {
     } catch {
       return;
     }
-    if (basename(dir) === "firefox" && names.includes("session.har")) {
+    if (CAPTURE_FOLDERS.includes(basename(dir)) && names.includes("session.har")) {
       const run = relative(root, resolve(dir, "..")).split(sep).join("/");
       const [top, action] = run.split("/");
       found.push({ dir, run, action: top === "runs" ? action : top });

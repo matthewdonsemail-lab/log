@@ -26,7 +26,7 @@ describe("log inspect", () => {
     });
     expect(result.code).toBe(0);
     expect(configs[0].startUrl).toBe("https://www.facebook.com/me");
-    expect(configs[0].captureDir.replaceAll("\\", "/")).toMatch(/\/inspect\/\d{8}T\d{6}_galwayOne\/firefox$/);
+    expect(configs[0].captureDir.replaceAll("\\", "/")).toMatch(/\/inspect\/\d{8}T\d{6}_galwayOne\/camoufox$/);
     expect(configs[0].commandsPath.endsWith("commands.jsonl")).toBe(true);
     expect(result.out).toContain("ended (exit 0)");
   });

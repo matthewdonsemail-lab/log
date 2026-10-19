@@ -8,6 +8,8 @@ import { checkRunnable, toFacebookCookies } from '../../marketplace/socialAccoun
 import type { FacebookAccount, PlaywrightCookie, RunPurpose } from '../../marketplace/socialAccount/index'
 import { LAUNCH_LIMITS, listLaunches, overLaunchBudget } from './helpers/index'
 import type { PrepareRunOptions, PrepareRunResult } from './types'
+import { driverNameOf } from '../../browser/driver/client'
+import type { BrowserDriverName } from '../../browser/driver/types'
 
 /** Stored localStorage origins (Playwright's `[{ origin, localStorage: [...] }]`), or none. Pure. */
 export function toOrigins(raw: unknown): unknown[] {
@@ -34,10 +36,22 @@ export function toOrigins(raw: unknown): unknown[] {
  * proxy, so it skips home, hours and device. A normal run also needs a saved
  * session; signing in doesn't.
  */
-/** `~/.logCli/runs/connect/20261019T072812_61594387282311/firefox`. Pure. */
-export function captureDirFor(accountName: string, action: string, now: Date, root?: string): string {
+/**
+ * `~/.logCli/runs/inspect/20261019T212953_61594063207669/adsPower`: the capture folder is named
+ * after the browser that ran (matt, 2026-10-20). Runs from before kept theirs as `firefox`, and
+ * every reader takes all three (`CAPTURE_FOLDERS`). Pure.
+ */
+export function captureDirFor(accountName: string, action: string, now: Date, root?: string, browser: BrowserDriverName = 'camoufox'): string {
   const stamp = now.toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, '')
-  return join(root ?? (process.env.LOG_RUNS_DIR || join(homedir(), '.logCli', 'runs')), action, `${stamp}_${accountName.replace(/\W/g, '')}`, 'firefox')
+  return join(root ?? (process.env.LOG_RUNS_DIR || join(homedir(), '.logCli', 'runs')), action, `${stamp}_${accountName.replace(/\W/g, '')}`, browser)
+}
+
+/** The actions that open through python/browserDriver.py, so they run on the account's browser (rule 44). The rest still launch Camoufox. */
+export const OPENER_ACTIONS: ReadonlySet<string> = new Set(['inspect', 'flow', 'warmup', 'host'])
+
+/** Which browser a run of this action uses, so its capture folder can say so. Pure. */
+export function runBrowserOf(account: { browserDriver: string | null; adsPowerProfileId: string | null }, action: string): BrowserDriverName {
+  return OPENER_ACTIONS.has(action) ? driverNameOf(account) : 'camoufox'
 }
 
 export function prepareRun(account: FacebookAccount, purpose: RunPurpose, options: PrepareRunOptions = {}): PrepareRunResult {
@@ -84,7 +98,8 @@ export function prepareRun(account: FacebookAccount, purpose: RunPurpose, option
   const statePath = join(dir, 'state.json')
   const devicePath = join(dir, 'device.json')
   const loginPath = options.login ? join(dir, 'login.json') : null
-  const captureDir = purpose === 'check' ? null : captureDirFor(account.accountName, options.action ?? purpose, options.now ?? new Date(), options.captureRoot)
+  const action = options.action ?? purpose
+  const captureDir = purpose === 'check' ? null : captureDirFor(account.accountName, action, options.now ?? new Date(), options.captureRoot, runBrowserOf(account, action))
   writeFileSync(proxyPath, JSON.stringify(check.proxy), { mode: 0o600 })
   if (cookies.length) writeFileSync(statePath, JSON.stringify({ cookies, origins: toOrigins(account.storageOrigins) }), { mode: 0o600 })
   if (device) writeFileSync(devicePath, JSON.stringify(device), { mode: 0o600 })

@@ -258,7 +258,7 @@ export const publishCommand: Command = {
     } finally {
       if (session) await (session as PublishSession).close();
       try {
-        const captureNote = settleInBackground(join(runDir, "firefox"));
+        const captureNote = settleInBackground(join(runDir, "camoufox"));
         if (captureNote) exitNotes.push(captureNote);
       } catch (error) {
         exitNotes.push(`Firefox capture: ${error instanceof Error ? error.message : String(error)}`);

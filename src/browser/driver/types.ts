@@ -105,3 +105,6 @@ export interface BrowserSessionOutput {
   closeReason: CloseReason | null
   failure: DriverFailure | null
 }
+
+/** A run's capture folder is named after its browser; runs from before 2026-10-20 used `firefox`. Every reader takes all three. */
+export const CAPTURE_FOLDERS: readonly string[] = [...BROWSER_DRIVERS, 'firefox']

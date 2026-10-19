@@ -20,7 +20,7 @@ Why a HAR plus scripts, read offline: `docs/rea/matrix/` and
 1. **Captures are raw (rule 19).** The HAR keeps every cookie, header,
    token and body. Nothing is stripped, because the analysis needs it. It
    stays on matt's development machine in the run folder
-   (`~/.logCli/publish/<run>/firefox`) and is never committed.
+   (`~/.logCli/publish/<run>/<browser>`) and is never committed.
 2. **Captures come from every live run (rule 22)**: `connect`, `scan`,
    `status`, each `watch` check and `log publish` (dry run unless `--live`,
    rule 10). There is no flag to skip it. Those runs follow the launch rules as they are:
@@ -55,9 +55,9 @@ bun bin/log.ts scan --account <a>
 bun bin/log.ts publish <listingId>                # dry run; the HAR records the whole session
 ```
 
-Where: `~/.logCli/runs/<action>/<time>_<account>/firefox/` (`LOG_RUNS_DIR`
+Where: `~/.logCli/runs/<action>/<time>_<account>/<browser>/` (`adsPower`, `camoufox`, or `firefox` for runs before 2026-10-20) (`LOG_RUNS_DIR`
 moves it; a watch has `check<N>/` per check), and publish's
-`~/.logCli/publish/<run>/firefox/`. The command's last lines name the folder.
+`~/.logCli/publish/<run>/<browser>/`. The command's last lines name the folder.
 
 Per action: the Python writes each log line, timed, to `steps.jsonl` (what
 the run did: page reached, email typed, submitted, code typed...). After the
@@ -69,8 +69,8 @@ steps are left out), runs `rea inspect-web-network-capture` on each one
 did for that one action, e.g. which GraphQL operations the login submit
 fired.
 
-The run folder gets `firefox/session.har` (raw), `firefox/scripts/scriptN.js`,
-`firefox/scriptsManifest.json` and `firefox/reaNetwork.json`, and the exit
+The run folder gets `<browser>/session.har` (raw), `<browser>/scripts/scriptN.js`,
+`<browser>/scriptsManifest.json` and `<browser>/reaNetwork.json`, and the exit
 notes print
 `Firefox capture: N requests, M scripts, raw HAR kept. REA ...`.
 
@@ -117,7 +117,7 @@ bun bin/log.ts firefoxCapture --docs          # run it live (Monitor), every sta
 
 ### 3. Findings
 
-Every run writes a first pass itself: `firefox/findings.md` in the run
+Every run writes a first pass itself: `<browser>/findings.md` in the run
 folder, one section per step with Facebook's GraphQL operations by name
 (`x-fb-friendly-name`), pages loaded, uploads, failed requests and the
 step's rea `evidence_id` (`summarizeStep`). Names and counts only. Read it

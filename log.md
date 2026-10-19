@@ -1973,3 +1973,29 @@ Checked: `bun run check`: naming OK, check:browsers OK, 570 pass, 0 fail. Live o
 - The first group opened was in Bethlehem, New Hampshire, per its About box, so the run went back and opened "Recommendations of Bethlehem, PA and Greater Lehigh Valley Region" (17.3K members). Nothing was joined.
 - Closed clean: session HAR 735 requests, profile stopped, proxy cleared, session saved (10 cookies).
 Also freed 5.2 GB by removing four unused Camoufox builds (beta.39, the one in use, was kept), and cleared run HARs, screenshots and snapshots after the docs had every request. Drive C: went from 0.43 to 7.1 GB free.
+
+## 2026-10-19 21:43Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `python/connectSession.py`: no declaration changed (comments, formatting or line endings)
+- `python/profileSession.py`: no declaration changed (comments, formatting or line endings)
+- `python/publishSession.py`: changed class Session, def main
+- `skills/reaCapture/SKILL.md`: edited
+- `src/browser/driver/types.ts`: added const CAPTURE_FOLDERS
+- `src/camofox/run/client.ts`: added const OPENER_ACTIONS, function runBrowserOf · changed function captureDirFor, function prepareRun
+- `src/camofox/run/helpers/launchBudget.ts`: changed function listLaunches
+- `src/camofox/run/run.test.ts`: added test "the capture folder is named after the browser that runs: inspect, flow, warmup and host follow the account, the rest are Camoufox" · changed test "a run carries its capture folder (rule 22); a proxy check opens nothing and has none"
+- `src/camofox/session/visible.test.ts`: changed test "there is no exception: not for signing in, not for a dry run"
+- `src/cli/inspect/inspect.test.ts`: changed test "start opens one gated session for the account and ends when it does"
+- `src/cli/live/live.test.ts`: changed test "connect runs the connect machine through the proxy and saves the cookies to Twenty"
+- `src/cli/profile/profile.test.ts`: changed test "a dry run reads the profile through the gates and changes nothing"
+- `src/cli/publish/index.ts`: changed const publishCommand
+- `src/rea/facebookClient/client.ts`: changed function findRunCaptures
+
+What changed: a run's capture folder is named after the browser that ran it: `runs/<action>/<time>_<account>/adsPower` or `.../camoufox`, instead of `firefox` for every run.
+- `captureDirFor` takes the browser, and `runBrowserOf(account, action)` picks it. `inspect`, `flow`, `warmup` and `host` (`OPENER_ACTIONS`, the actions that open through `python/browserDriver.py`) follow the account's driver; the rest still launch Camoufox.
+- Every reader takes `CAPTURE_FOLDERS` (adsPower, camoufox, and firefox for older runs), so earlier runs still count and still feed the docs: the launch budget (`listLaunches`) and the Facebook client docs (`findRunCaptures`). The docs gate already found `session.har` anywhere.
+- The publish session (`publishSession.py`, `cli/publish`) writes `camoufox`; connect and profile share its `Session`.
+- The reaCapture skill's paths now read `<browser>`.
+Why: matt: "if this was running through adspower why is it prefixed with firefox ... wouldnt that make more sense of what we used to run it?"
+Checked: `bun run check`: naming OK, check:browsers OK, 571 pass, 0 fail. The four path tests now expect `camoufox` (the fixture accounts have no AdsPower profile). A new test covers `runBrowserOf` (inspect and host on a linked account give adsPower, connect gives camoufox, an unlinked account gives camoufox) and `captureDirFor(..., 'adsPower')`. The launch-budget tests still read old `firefox` folders.

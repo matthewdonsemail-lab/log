@@ -1,6 +1,7 @@
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
+import { CAPTURE_FOLDERS } from '../../../browser/driver/types'
 
 /**
  * Rule 24: how often one account's browser may open on Facebook. On
@@ -58,15 +59,17 @@ export function listLaunches(accountName: string, roots: { runs?: string; publis
   const runsRoot = roots.runs ?? (process.env.LOG_RUNS_DIR || join(homedir(), '.logCli', 'runs'))
   const publishRoot = roots.publish ?? (process.env.LOG_PUBLISH_DIR || join(homedir(), '.logCli', 'publish'))
   const files: string[] = []
-  // runs/<action>/<time>_<account>/firefox[/check<N>]/steps.jsonl
+  // runs/<action>/<time>_<account>/<browser>[/check<N>]/steps.jsonl: adsPower, camoufox, or firefox for older runs
   for (const action of dirNames(runsRoot)) {
     for (const run of dirNames(join(runsRoot, action)).filter((name) => name.endsWith(`_${key}`))) {
-      const firefox = join(runsRoot, action, run, 'firefox')
-      files.push(join(firefox, 'steps.jsonl'), ...dirNames(firefox).map((check) => join(firefox, check, 'steps.jsonl')))
+      for (const folder of CAPTURE_FOLDERS) {
+        const capture = join(runsRoot, action, run, folder)
+        files.push(join(capture, 'steps.jsonl'), ...dirNames(capture).map((check) => join(capture, check, 'steps.jsonl')))
+      }
     }
   }
-  // publish/<iso><account>/firefox/steps.jsonl
-  for (const run of dirNames(publishRoot).filter((name) => name.endsWith(key))) files.push(join(publishRoot, run, 'firefox', 'steps.jsonl'))
+  // publish/<iso><account>/<browser>/steps.jsonl
+  for (const run of dirNames(publishRoot).filter((name) => name.endsWith(key))) files.push(...CAPTURE_FOLDERS.map((folder) => join(publishRoot, run, folder, 'steps.jsonl')))
   const launches: Date[] = []
   for (const file of files) {
     if (!existsSync(file)) continue
