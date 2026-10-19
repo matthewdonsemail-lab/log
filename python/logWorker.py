@@ -145,6 +145,11 @@ async def acquire(request: dict[str, Any], storage_state_path: str | None):
     return manager, session
 
 
+def page_path(url: str) -> str:
+    """The URL without its query: enough to see where Facebook is, without tokens."""
+    return url.split("?", 1)[0].split("#", 1)[0]
+
+
 def read_login(path: str | None) -> dict[str, Any] | None:
     """The run's login.json (email, password, totpSecret), or None. Never logged."""
     if not path or not Path(path).exists():
@@ -163,22 +168,32 @@ async def wait_for_login(page, wait_seconds: int, secrets: dict[str, Any] | None
     log(f"Waiting up to {wait_seconds}s for a logged-in Facebook page. {how}.")
     tries: dict[str, Any] = {}
     await page.wait_for_timeout(4000)
-    deadline = asyncio.get_running_loop().time() + wait_seconds
+    loop = asyncio.get_running_loop()
+    started = loop.time()
+    deadline = started + wait_seconds
+    seen = ""
     while True:
         try:
-            if not any((await auth_flags(page)).values()):
+            flags = await auth_flags(page)
+            # Report the page whenever it changes: where it is and what it shows.
+            dialog = await page.locator('[role="dialog"]').count() > 0
+            now = f"{page_path(page.url)} | {', '.join(k for k, v in flags.items() if v) or 'no login markers'}{' | dialog open' if dialog else ''}"
+            if now != seen:
+                log(f"[{int(loop.time() - started)}s] Page: {now}")
+                seen = now
+            if not any(flags.values()):
                 log("Logged in.")
                 await page.wait_for_timeout(3000)
                 return
-        except Exception:
-            pass  # mid-navigation while the person signs in
+        except Exception as exc:
+            log(f"[{int(loop.time() - started)}s] Page check skipped: {type(exc).__name__} (mid-navigation)")
         if secrets:
             try:
                 await autoLogin.step(page, secrets, tries, log)
             except Exception as exc:
                 log(f"Auto-login step skipped: {type(exc).__name__}")  # never the message: it can echo typed text
-        if asyncio.get_running_loop().time() >= deadline:
-            log("Still not logged in when the wait ran out.")
+        if loop.time() >= deadline:
+            log(f"Still not logged in after {wait_seconds}s. Last page: {seen}")
             return
         await asyncio.sleep(5)
 

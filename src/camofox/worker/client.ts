@@ -9,6 +9,7 @@
  */
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { pipeProcessLog } from "../../observability/processLog/index.ts";
 import { parseWorkerOutput } from "./helpers/index.ts";
 import type { WorkerAction, WorkerClient, WorkerRequest, WorkerResult, WorkerRunOptions } from "./types.ts";
 
@@ -20,10 +21,12 @@ export const runWorker: WorkerClient = <A extends WorkerAction>(
 ): Promise<WorkerResult<A>> => {
   const python = process.env.LOG_PYTHON || "python";
   return new Promise((resolve) => {
-    // stderr is inherited so browser progress and login prompts show live.
+    // stderr goes through processLog: live on the terminal, and into the MCP
+    // tool result and log file when run as a tool.
     const proc = spawn(python, [WORKER_PATH, JSON.stringify(request)], {
-      stdio: [options.interactive ? "inherit" : "ignore", "pipe", "inherit"],
+      stdio: [options.interactive ? "inherit" : "ignore", "pipe", "pipe"],
     });
+    pipeProcessLog(proc.stderr, "worker");
     let stdout = "";
     proc.stdout.on("data", (chunk) => (stdout += chunk.toString()));
     proc.on("error", (error) =>

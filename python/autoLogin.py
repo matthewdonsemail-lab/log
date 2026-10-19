@@ -25,6 +25,8 @@ from typing import Any
 
 LOGIN_TRIES = 2
 CODE_TRIES = 3
+# A click that something covers would otherwise wait out the page's 120 s timeout.
+CLICK_MS = 5000
 
 
 def totp(secret: str, at: float | None = None, digits: int = 6, period: int = 30) -> str:
@@ -44,34 +46,55 @@ async def _visible(locator) -> bool:
         return False
 
 
-async def _type(page, locator, text: str) -> None:
+async def _scopes(page) -> list:
+    """Where to look, the open dialog first. Marketplace puts a "Log in to
+    Facebook" dialog over the page while the header keeps its own login form
+    underneath, and a click on that covered form never lands."""
+    dialog = page.locator('[role="dialog"]')
+    return [dialog.last, page] if await _visible(dialog) else [page]
+
+
+async def _pick(page, find):
+    """The first visible match of `find(scope)`, dialog first, or None."""
+    for scope in await _scopes(page):
+        matches = find(scope)
+        try:
+            for i in range(await matches.count()):
+                if await matches.nth(i).is_visible():
+                    return matches.nth(i)
+        except Exception:
+            continue
+    return None
+
+
+async def _type(page, field, text: str) -> None:
     """Click the field and type like a person (Camoufox moves the cursor)."""
-    field = locator.first
-    await field.click()
-    await field.fill("")
+    await field.click(timeout=CLICK_MS)
+    await field.fill("", timeout=CLICK_MS)
     await page.keyboard.type(text, delay=random.randint(60, 140))
     await page.wait_for_timeout(random.randint(300, 700))
 
 
 async def _click_button(page, pattern: str) -> bool:
-    button = page.get_by_role("button", name=re.compile(pattern, re.I))
-    if await _visible(button):
-        await button.first.click()
-        return True
-    return False
+    button = await _pick(page, lambda scope: scope.get_by_role("button", name=re.compile(pattern, re.I)))
+    if button is None:
+        return False
+    await button.click(timeout=CLICK_MS)
+    return True
 
 
 async def step(page, secrets: dict[str, Any], tries: dict[str, Any], log) -> None:
     """One auto-login action, if the page is asking for one."""
     email, password, secret = secrets.get("email"), secrets.get("password"), secrets.get("totpSecret")
 
-    # 1. The login form.
-    email_field, pass_field = page.locator('input[name="email"]'), page.locator('input[name="pass"]')
-    if email and password and await _visible(pass_field):
+    # 1. The login form (the dialog's when one is open).
+    pass_field = await _pick(page, lambda scope: scope.locator('input[name="pass"], input[type="password"]'))
+    if email and password and pass_field is not None:
         if tries.get("login", 0) >= LOGIN_TRIES:
             return
         tries["login"] = tries.get("login", 0) + 1
-        if await _visible(email_field):
+        email_field = await _pick(page, lambda scope: scope.locator('input[name="email"], input[type="email"], input[autocomplete="username"]'))
+        if email_field is not None:
             await _type(page, email_field, email)
         await _type(page, pass_field, password)
         if not await _click_button(page, r"^(log in|login)$"):
@@ -80,19 +103,19 @@ async def step(page, secrets: dict[str, Any], tries: dict[str, Any], log) -> Non
         return
 
     # 2. Two-step: the code field, or the way to reach it.
-    code_field = page.locator(
+    code_field = await _pick(page, lambda scope: scope.locator(
         'input[name="approvals_code"], input[autocomplete="one-time-code"], '
         'input[type="text"][maxlength="6"], input[type="tel"][maxlength="6"]'
-    )
+    ))
     two_step = "two_step_verification" in page.url or "checkpoint" in page.url
-    if secret and (await _visible(code_field) or two_step):
-        if not await _visible(code_field):
+    if secret and (code_field is not None or two_step):
+        if code_field is None:
             # Facebook often opens on "check your notifications": switch to the app.
             if await _click_button(page, r"try another way"):
                 await page.wait_for_timeout(1500)
-                choice = page.get_by_text(re.compile(r"authentication app", re.I))
-                if await _visible(choice):
-                    await choice.first.click()
+                choice = await _pick(page, lambda scope: scope.get_by_text(re.compile(r"authentication app", re.I)))
+                if choice is not None:
+                    await choice.click(timeout=CLICK_MS)
                     await page.wait_for_timeout(800)
                     await _click_button(page, r"^continue$")
                 log("Auto-login: picked the authentication app for two-step.")

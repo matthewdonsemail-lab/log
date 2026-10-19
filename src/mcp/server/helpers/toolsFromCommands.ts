@@ -11,7 +11,7 @@ export function toolsFromCommands(commands: Command[]): LogTool[] {
       description: [
         `log ${command.name}${command.args ? ` ${command.args}` : ""}`,
         command.summary,
-        ...(command.name === "connect" ? ["Runs --noPrompt: saved cookies that work end it at once; otherwise matt signs in in the visible Camoufox window (up to --wait seconds, default 600)."] : []),
+        ...(command.name === "connect" ? ["Runs --noPrompt: saved cookies that work end it at once; otherwise it signs in by itself from Twenty's email, password and 2FA secret (rule 21), and anything it can't handle waits for matt in the visible window (up to --wait seconds, default 600). Progress streams to ~/.logCli/mcp/<day>.log."] : []),
         "Pass the arguments after the command name in `args`, e.g. [\"--json\"]. `--live` also needs confirmLive: true.",
       ].join("\n"),
       inputSchema: {

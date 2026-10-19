@@ -7,6 +7,7 @@
 import { spawn } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import type { ErrorCode } from '../../errors/catalog/index'
+import { pipeProcessLog } from '../../observability/processLog/index'
 import { normalizeResult, splitReplies } from './helpers/index'
 import type { PublishSession, SessionConfig, SessionFactory, SessionReply, SessionStep } from './types'
 
@@ -14,8 +15,10 @@ export const SESSION_PATH = fileURLToPath(new URL('../../../python/publishSessio
 
 export const startSession: SessionFactory = (config: SessionConfig): PublishSession => {
   const python = process.env.LOG_PYTHON || 'python'
-  // stderr is inherited so browser progress shows live next to the trace.
-  const proc = spawn(python, [SESSION_PATH, JSON.stringify(config)], { stdio: ['pipe', 'pipe', 'inherit'] })
+  // stderr goes through processLog: live on the terminal, and into the MCP
+  // tool result and log file when run as a tool.
+  const proc = spawn(python, [SESSION_PATH, JSON.stringify(config)], { stdio: ['pipe', 'pipe', 'pipe'] })
+  pipeProcessLog(proc.stderr, 'session')
   let buffer = ''
   let nextId = 1
   let exited: { code: ErrorCode; detail: string } | null = null

@@ -106,6 +106,13 @@ runs through `runCli`, so every gate above still applies.
   MCP channel.
 - Taking an account from NEEDSLOGIN to a dry run: `skills/accountToDryRun`.
 - It loads `log-cli/.env.local` itself, whatever folder it is started from.
+- **Every log line is visible.** The worker's and publish session's stderr
+  go through `observability/processLog`. As a tool, each line (with the
+  command's own output) is in the result under `log:`, is sent as an MCP log
+  notification, and is appended live to `~/.logCli/mcp/<day>.log`
+  (`LOG_MCP_DIR` to move it). Watch a long call (`connect`, `publish`) with
+  `tail -f ~/.logCli/mcp/<day>.log`. Lines name actions and page paths only,
+  never credentials or query strings.
 
 ## Reading the results
 
