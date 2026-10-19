@@ -71,10 +71,7 @@ export function LandingPage() {
         logoLabel="ListeningKit"
         githubRepo={`${LOG_REPO.owner}/${LOG_REPO.repo}`}
         className="z-[70]"
-        accountItems={[
-          { href: '/sign-in', label: 'Sign in', variant: 'ghost' },
-          { href: LOG_REPO_URL, label: 'Get started', variant: 'cta' },
-        ]}
+        accountItems={[{ href: LOG_REPO_URL, label: 'Get started', variant: 'cta' }]}
       />
       <div aria-hidden className="h-24 shrink-0" />
       <Clouds>

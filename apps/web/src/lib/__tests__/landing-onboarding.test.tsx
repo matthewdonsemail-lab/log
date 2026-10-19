@@ -18,7 +18,7 @@ beforeEach(() => {
 })
 afterEach(() => { vi.unstubAllGlobals() })
 
-describe('the landing page leads to the repository and sign-in', () => {
+describe('the landing page leads to the repository, not onboarding', () => {
   const html = renderToStaticMarkup(<MemoryRouter><LandingPage /></MemoryRouter>)
 
   it('has a header with the landing nav, the GitHub buttons and get started', () => {
@@ -29,10 +29,9 @@ describe('the landing page leads to the repository and sign-in', () => {
     expect(html).toContain('>Get started<')
   })
 
-  it('offers sign-in without exposing onboarding or dashboard links', () => {
-    expect(html).toContain('href="/sign-in"')
-    expect(html).toContain('>Sign in<')
-    for (const gone of ['/onboarding', '/sign-up', '/dashboard']) expect(html, gone).not.toContain(`href="${gone}`)
+  it('keeps sign-in, onboarding and dashboard links hidden', () => {
+    expect(html).not.toContain('>Sign in<')
+    for (const gone of ['/onboarding', '/sign-in', '/sign-up', '/dashboard']) expect(html, gone).not.toContain(`href="${gone}`)
   })
 
   it('points every get started at the repository', () => {
