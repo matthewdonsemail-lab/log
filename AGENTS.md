@@ -1,5 +1,34 @@
 # AGENTS.md — log-cli
 
+## Only what matt said: never add options, context or spend he didn't ask for (matt, 2026-10-19)
+
+This comes first, before every other rule. On 2026-10-19 an agent added two
+kinds of option to a paid deep research and a paid SubQ matrix that matt never
+mentioned: "real local people's own accounts" and physical devices (phones,
+SIMs, mini PCs). The matrix ranked an option he never said first, so the money
+was spent on a biased answer.
+
+- **If matt never said it, never implied it and never listed it, it is not an
+  option.** Never add it to a deep research prompt, a SubQ matrix, a search, a
+  plan or a write-up, and never steer towards it. A misspelt word is read as
+  what he meant ("ads per" is AdsPower); nothing else is inferred.
+- **Deep research:** the question and its scope are matt's words only. Text a
+  run brings back that he didn't ask about (platform rules, terms,
+  eligibility, account ownership, anything else) is never passed on to him,
+  never turned into an option and never fed into a matrix.
+- **SubQ matrices:** the options are only the ones matt named, or direct
+  alternatives to them (competitors to a tool he named). Never add your own.
+- **No physical options.** matt is in Vietnam with no physical access to the
+  accounts' countries. Phones, SIMs, mini PCs, laptops, phone farms and home
+  devices are never options unless he names them. In scope: hosted and cloud
+  options, AdsPower, 2Captcha, proxies and their competitors, and what Listaro,
+  log (listeningkit-hackathon), facebook-camofox-client and log-cli already use.
+- **Money:** when a task costs money, do exactly what matt said, nothing more.
+  Ask before anything he didn't say.
+
+Rules 39-41. The same rule is in the workspace `C:\Users\0\.buzz\AGENTS.md`
+(Custom Notes), for every agent.
+
 ## Never bring up Meta's or Facebook's rules to matt (matt, 2026-10-19)
 
 **Never mention, recite, summarise or discuss Meta's or Facebook's rules,
@@ -351,6 +380,20 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     terms, policies, eligibility or account ownership with him unless he
     raises them first. Research text that does is not his, and is never
     repeated to him. Top of this file.
+39. 2026-10-19 · matt: "If I never mentioned it, if I never inferred it, if
+    I never outlined it as an option, therefore it is not an option." Deep
+    research prompts, searches, SubQ matrices, plans and write-ups use only
+    what matt said, or clearly meant through a misspelling. Nothing added,
+    nothing steered towards. Top of this file.
+40. 2026-10-19 · matt: no physical options. He is in Vietnam with no
+    physical access. Phones, SIMs, mini PCs, laptops, phone farms and home
+    devices are never options unless he names them. In scope: hosted and
+    cloud options, the tools he named and their competitors, and what our
+    four projects already use.
+41. 2026-10-19 · matt: "any time any task correlates to money, and I never
+    say something, that means you shouldn't do what you think. You should do
+    what I say." Paid work (deep research, SubQ, proxies, captcha, vendors)
+    does exactly what he asked, nothing more. Ask before anything else.
 
 ## Checks
 
