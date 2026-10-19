@@ -17,6 +17,7 @@ import { loginCommand, logoutCommand, whoamiCommand } from "../auth/index.ts";
 import { errorsCommand, graphCommand } from "../errors/index.ts";
 import { firefoxCaptureCommand } from "../firefoxCapture/index.ts";
 import { launchCommand } from "../launch/index.ts";
+import { lifecycleCommand } from "../lifecycle/index.ts";
 import { listingCommand, listingsCommand } from "../listing/index.ts";
 import { connectCommand, doctorCommand, scanCommand, statusCommand } from "../live/index.ts";
 import { profileCommand } from "../profile/index.ts";
@@ -37,6 +38,7 @@ export const COMMANDS: Command[] = [
   listingCommand,
   accountsCommand,
   accountCommand,
+  lifecycleCommand,
   doctorCommand,
   connectCommand,
   profileCommand,

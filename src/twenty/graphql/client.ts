@@ -51,7 +51,12 @@ export const SOCIAL_ACCOUNT_FIELDS = {
   profileName: true,
   profilePhoto: true,
   coverPhoto: true,
-  profileSetAt: true
+  profileSetAt: true,
+  lifecycleState: true,
+  profileNamedAt: true,
+  marketplaceLocationAt: true,
+  warmupStartedAt: true,
+  warmedAt: true
 } satisfies SocialAccountGenqlSelection
 
 export const AGENCY_LISTING_FIELDS = {
