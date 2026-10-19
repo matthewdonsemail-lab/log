@@ -58,7 +58,9 @@ export const SOCIAL_ACCOUNT_FIELDS = {
   profileNamedAt: true,
   marketplaceLocationAt: true,
   warmupStartedAt: true,
-  warmedAt: true
+  warmedAt: true,
+  adsPowerProfileId: true,
+  browserDriver: true
 } satisfies SocialAccountGenqlSelection
 
 export const AGENCY_LISTING_FIELDS = {

@@ -33317,6 +33317,12 @@ export default {
             "warmedAt": [
                 79
             ],
+            "adsPowerProfileId": [
+                1
+            ],
+            "browserDriver": [
+                1
+            ],
             "timelineActivities": [
                 539,
                 {
@@ -34383,6 +34389,36 @@ export default {
             "maxWarmedAt": [
                 79
             ],
+            "countUniqueValuesAdsPowerProfileId": [
+                76
+            ],
+            "countEmptyAdsPowerProfileId": [
+                76
+            ],
+            "countNotEmptyAdsPowerProfileId": [
+                76
+            ],
+            "percentageEmptyAdsPowerProfileId": [
+                84
+            ],
+            "percentageNotEmptyAdsPowerProfileId": [
+                84
+            ],
+            "countUniqueValuesBrowserDriver": [
+                76
+            ],
+            "countEmptyBrowserDriver": [
+                76
+            ],
+            "countNotEmptyBrowserDriver": [
+                76
+            ],
+            "percentageEmptyBrowserDriver": [
+                84
+            ],
+            "percentageNotEmptyBrowserDriver": [
+                84
+            ],
             "edges": [
                 386
             ],
@@ -35255,6 +35291,36 @@ export default {
             "maxWarmedAt": [
                 79
             ],
+            "countUniqueValuesAdsPowerProfileId": [
+                76
+            ],
+            "countEmptyAdsPowerProfileId": [
+                76
+            ],
+            "countNotEmptyAdsPowerProfileId": [
+                76
+            ],
+            "percentageEmptyAdsPowerProfileId": [
+                84
+            ],
+            "percentageNotEmptyAdsPowerProfileId": [
+                84
+            ],
+            "countUniqueValuesBrowserDriver": [
+                76
+            ],
+            "countEmptyBrowserDriver": [
+                76
+            ],
+            "countNotEmptyBrowserDriver": [
+                76
+            ],
+            "percentageEmptyBrowserDriver": [
+                84
+            ],
+            "percentageNotEmptyBrowserDriver": [
+                84
+            ],
             "edges": [
                 386
             ],
@@ -35449,6 +35515,12 @@ export default {
             "warmedAt": [
                 79
             ],
+            "adsPowerProfileId": [
+                1
+            ],
+            "browserDriver": [
+                1
+            ],
             "__typename": [
                 1
             ]
@@ -35604,6 +35676,12 @@ export default {
             "warmedAt": [
                 79
             ],
+            "adsPowerProfileId": [
+                1
+            ],
+            "browserDriver": [
+                1
+            ],
             "__typename": [
                 1
             ]
@@ -35758,6 +35836,12 @@ export default {
             ],
             "warmedAt": [
                 98
+            ],
+            "adsPowerProfileId": [
+                7
+            ],
+            "browserDriver": [
+                7
             ],
             "and": [
                 394
@@ -35993,6 +36077,12 @@ export default {
             "warmedAt": [
                 11
             ],
+            "adsPowerProfileId": [
+                11
+            ],
+            "browserDriver": [
+                11
+            ],
             "__typename": [
                 1
             ]
@@ -36150,6 +36240,12 @@ export default {
             ],
             "warmedAt": [
                 69
+            ],
+            "adsPowerProfileId": [
+                11
+            ],
+            "browserDriver": [
+                11
             ],
             "__typename": [
                 1
@@ -37017,6 +37113,36 @@ export default {
             "maxWarmedAt": [
                 11
             ],
+            "countUniqueValuesAdsPowerProfileId": [
+                11
+            ],
+            "countEmptyAdsPowerProfileId": [
+                11
+            ],
+            "countNotEmptyAdsPowerProfileId": [
+                11
+            ],
+            "percentageEmptyAdsPowerProfileId": [
+                11
+            ],
+            "percentageNotEmptyAdsPowerProfileId": [
+                11
+            ],
+            "countUniqueValuesBrowserDriver": [
+                11
+            ],
+            "countEmptyBrowserDriver": [
+                11
+            ],
+            "countNotEmptyBrowserDriver": [
+                11
+            ],
+            "percentageEmptyBrowserDriver": [
+                11
+            ],
+            "percentageNotEmptyBrowserDriver": [
+                11
+            ],
             "__typename": [
                 1
             ]
@@ -37144,6 +37270,12 @@ export default {
             ],
             "warmedAt": [
                 68
+            ],
+            "adsPowerProfileId": [
+                13
+            ],
+            "browserDriver": [
+                13
             ],
             "__typename": [
                 1

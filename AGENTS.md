@@ -394,6 +394,18 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     say something, that means you shouldn't do what you think. You should do
     what I say." Paid work (deep research, SubQ, proxies, captcha, vendors)
     does exactly what he asked, nothing more. Ask before anything else.
+42. 2026-10-19 · matt: the browser moves to AdsPower (SubQ's pick on our
+    recorded issues, and Listaro's browser), and Camoufox stays for later.
+    Twenty's socialAccounts logic is unchanged. The browser is a driver:
+    `src/browser/driver` is one XState machine for every browser (prepare,
+    gate, start, selfCheck, open, close), so a new browser is one more
+    driver and can't skip rules 12 and 17. Listaro's AdsPower client is
+    ported to `src/adsPower/localApi`. `log adsPower sync --apply` gives each
+    account one profile, linked in `socialAccounts.adsPowerProfileId`, with
+    `browserDriver` picking the driver (empty: camoufox). A profile holds no
+    proxy, password, cookies or 2FA key. The proxy goes on only to open and
+    comes off at close. No AdsPower browser opens on Facebook until its gate,
+    self-check and HAR recording (rule 22) are wired (`docs/adsPower.md`).
 
 ## Checks
 

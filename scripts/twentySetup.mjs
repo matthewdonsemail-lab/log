@@ -89,7 +89,10 @@ const SOCIAL_ACCOUNT_FIELDS = [
   { name: 'profileNamedAt', label: 'Profile named', type: 'DATE_TIME', description: 'log-cli: when the profile was renamed to profileName' },
   { name: 'marketplaceLocationAt', label: 'Marketplace location set', type: 'DATE_TIME', description: "log-cli: when the account's Marketplace location was confirmed in its home city" },
   { name: 'warmupStartedAt', label: 'Warm-up started', type: 'DATE_TIME', description: "log-cli: when the account's day of warm-up began (rule 35)" },
-  { name: 'warmedAt', label: 'Warmed', type: 'DATE_TIME', description: 'log-cli: when the warm-up ended and the account was attached to its host (rule 35)' }
+  { name: 'warmedAt', label: 'Warmed', type: 'DATE_TIME', description: 'log-cli: when the warm-up ended and the account was attached to its host (rule 35)' },
+  // rule 42: the browser is a driver (src/browser/driver); AdsPower profiles are linked here (src/adsPower/profile).
+  { name: 'adsPowerProfileId', label: 'AdsPower profile', type: 'TEXT', description: "log-cli: the account's AdsPower profile id (`log adsPower sync`). The profile holds no proxy, password or cookies: those stay in Twenty" },
+  { name: 'browserDriver', label: 'Browser driver', type: 'TEXT', description: 'log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42)' }
 ]
 
 /** Fields added to agencyListing. The sync fields it already has stay as they are. */

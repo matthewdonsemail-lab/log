@@ -7,6 +7,7 @@ import type { WorkerClient } from "../../camofox/worker/index.ts";
 import type { ConnectionRecord } from "../../marketplace/account/index.ts";
 import type { ListingRecord } from "../../marketplace/listing/index.ts";
 import type { TwentyClient } from "../../twenty/graphql/index.ts";
+import type { AdsPowerClient } from "../../adsPower/localApi/index.ts";
 
 export interface CommandResult {
   code: number;
@@ -37,6 +38,8 @@ export interface CommandContext {
   inspectSession: InspectSessionRunner;
   /** Sends one step to the open inspect session and waits for its reply. Injected in tests. */
   sendInspect: (current: CurrentInspect, action: InspectAction, args: string[], timeoutMs: number, expect?: { name: string; ms?: number }) => Promise<InspectStepResult | null>;
+  /** AdsPower's Local API (rule 42). Injected in tests; default: the app on this machine (ADSPOWER_HOST). */
+  adsPower?: AdsPowerClient;
   /** The connect machine's timings, for tests (default: 5 s reads, 30 s code windows, `--wait`). */
   connectTiming?: Partial<ConnectTiming>;
   /** Writes to stdout. Injected so commands stay testable. */

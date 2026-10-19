@@ -10234,6 +10234,10 @@ export interface SocialAccount {
     warmupStartedAt?: Scalars['DateTime']
     /** log-cli: when the warm-up ended and the account was attached to its host (rule 35) */
     warmedAt?: Scalars['DateTime']
+    /** log-cli: the account's AdsPower profile id (`log adsPower sync`). The profile holds no proxy, password or cookies: those stay in Twenty */
+    adsPowerProfileId?: Scalars['String']
+    /** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
+    browserDriver?: Scalars['String']
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: TimelineActivityConnection
     /** SocialAccounts tied to the Task Target */
@@ -10836,6 +10840,26 @@ export interface SocialAccountConnection {
     minWarmedAt?: Scalars['DateTime']
     /** Latest date contained in the field warmedAt */
     maxWarmedAt?: Scalars['DateTime']
+    /** Number of unique values for adsPowerProfileId */
+    countUniqueValuesAdsPowerProfileId?: Scalars['Int']
+    /** Number of empty values for adsPowerProfileId */
+    countEmptyAdsPowerProfileId?: Scalars['Int']
+    /** Number of non-empty values for adsPowerProfileId */
+    countNotEmptyAdsPowerProfileId?: Scalars['Int']
+    /** Percentage of empty values for adsPowerProfileId */
+    percentageEmptyAdsPowerProfileId?: Scalars['Float']
+    /** Percentage of non-empty values for adsPowerProfileId */
+    percentageNotEmptyAdsPowerProfileId?: Scalars['Float']
+    /** Number of unique values for browserDriver */
+    countUniqueValuesBrowserDriver?: Scalars['Int']
+    /** Number of empty values for browserDriver */
+    countEmptyBrowserDriver?: Scalars['Int']
+    /** Number of non-empty values for browserDriver */
+    countNotEmptyBrowserDriver?: Scalars['Int']
+    /** Percentage of empty values for browserDriver */
+    percentageEmptyBrowserDriver?: Scalars['Float']
+    /** Percentage of non-empty values for browserDriver */
+    percentageNotEmptyBrowserDriver?: Scalars['Float']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     __typename: 'SocialAccountConnection'
@@ -11418,6 +11442,26 @@ export interface SocialAccountGroupByConnection {
     minWarmedAt?: Scalars['DateTime']
     /** Latest date contained in the field warmedAt */
     maxWarmedAt?: Scalars['DateTime']
+    /** Number of unique values for adsPowerProfileId */
+    countUniqueValuesAdsPowerProfileId?: Scalars['Int']
+    /** Number of empty values for adsPowerProfileId */
+    countEmptyAdsPowerProfileId?: Scalars['Int']
+    /** Number of non-empty values for adsPowerProfileId */
+    countNotEmptyAdsPowerProfileId?: Scalars['Int']
+    /** Percentage of empty values for adsPowerProfileId */
+    percentageEmptyAdsPowerProfileId?: Scalars['Float']
+    /** Percentage of non-empty values for adsPowerProfileId */
+    percentageNotEmptyAdsPowerProfileId?: Scalars['Float']
+    /** Number of unique values for browserDriver */
+    countUniqueValuesBrowserDriver?: Scalars['Int']
+    /** Number of empty values for browserDriver */
+    countEmptyBrowserDriver?: Scalars['Int']
+    /** Number of non-empty values for browserDriver */
+    countNotEmptyBrowserDriver?: Scalars['Int']
+    /** Percentage of empty values for browserDriver */
+    percentageEmptyBrowserDriver?: Scalars['Float']
+    /** Percentage of non-empty values for browserDriver */
+    percentageNotEmptyBrowserDriver?: Scalars['Float']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -63035,6 +63079,10 @@ export interface SocialAccountGenqlSelection{
     warmupStartedAt?: boolean | number
     /** log-cli: when the warm-up ended and the account was attached to its host (rule 35) */
     warmedAt?: boolean | number
+    /** log-cli: the account's AdsPower profile id (`log adsPower sync`). The profile holds no proxy, password or cookies: those stay in Twenty */
+    adsPowerProfileId?: boolean | number
+    /** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
+    browserDriver?: boolean | number
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
     /** SocialAccounts tied to the Task Target */
@@ -63639,6 +63687,26 @@ export interface SocialAccountConnectionGenqlSelection{
     minWarmedAt?: boolean | number
     /** Latest date contained in the field warmedAt */
     maxWarmedAt?: boolean | number
+    /** Number of unique values for adsPowerProfileId */
+    countUniqueValuesAdsPowerProfileId?: boolean | number
+    /** Number of empty values for adsPowerProfileId */
+    countEmptyAdsPowerProfileId?: boolean | number
+    /** Number of non-empty values for adsPowerProfileId */
+    countNotEmptyAdsPowerProfileId?: boolean | number
+    /** Percentage of empty values for adsPowerProfileId */
+    percentageEmptyAdsPowerProfileId?: boolean | number
+    /** Percentage of non-empty values for adsPowerProfileId */
+    percentageNotEmptyAdsPowerProfileId?: boolean | number
+    /** Number of unique values for browserDriver */
+    countUniqueValuesBrowserDriver?: boolean | number
+    /** Number of empty values for browserDriver */
+    countEmptyBrowserDriver?: boolean | number
+    /** Number of non-empty values for browserDriver */
+    countNotEmptyBrowserDriver?: boolean | number
+    /** Percentage of empty values for browserDriver */
+    percentageEmptyBrowserDriver?: boolean | number
+    /** Percentage of non-empty values for browserDriver */
+    percentageNotEmptyBrowserDriver?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -64222,6 +64290,26 @@ export interface SocialAccountGroupByConnectionGenqlSelection{
     minWarmedAt?: boolean | number
     /** Latest date contained in the field warmedAt */
     maxWarmedAt?: boolean | number
+    /** Number of unique values for adsPowerProfileId */
+    countUniqueValuesAdsPowerProfileId?: boolean | number
+    /** Number of empty values for adsPowerProfileId */
+    countEmptyAdsPowerProfileId?: boolean | number
+    /** Number of non-empty values for adsPowerProfileId */
+    countNotEmptyAdsPowerProfileId?: boolean | number
+    /** Percentage of empty values for adsPowerProfileId */
+    percentageEmptyAdsPowerProfileId?: boolean | number
+    /** Percentage of non-empty values for adsPowerProfileId */
+    percentageNotEmptyAdsPowerProfileId?: boolean | number
+    /** Number of unique values for browserDriver */
+    countUniqueValuesBrowserDriver?: boolean | number
+    /** Number of empty values for browserDriver */
+    countEmptyBrowserDriver?: boolean | number
+    /** Number of non-empty values for browserDriver */
+    countNotEmptyBrowserDriver?: boolean | number
+    /** Percentage of empty values for browserDriver */
+    percentageEmptyBrowserDriver?: boolean | number
+    /** Percentage of non-empty values for browserDriver */
+    percentageNotEmptyBrowserDriver?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -64331,7 +64419,11 @@ marketplaceLocationAt?: (Scalars['DateTime'] | null),
 /** log-cli: when the account's day of warm-up began (rule 35) */
 warmupStartedAt?: (Scalars['DateTime'] | null),
 /** log-cli: when the warm-up ended and the account was attached to its host (rule 35) */
-warmedAt?: (Scalars['DateTime'] | null)}
+warmedAt?: (Scalars['DateTime'] | null),
+/** log-cli: the account's AdsPower profile id (`log adsPower sync`). The profile holds no proxy, password or cookies: those stay in Twenty */
+adsPowerProfileId?: (Scalars['String'] | null),
+/** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
+browserDriver?: (Scalars['String'] | null)}
 
 
 /** Social media accounts */
@@ -64419,7 +64511,11 @@ marketplaceLocationAt?: (Scalars['DateTime'] | null),
 /** log-cli: when the account's day of warm-up began (rule 35) */
 warmupStartedAt?: (Scalars['DateTime'] | null),
 /** log-cli: when the warm-up ended and the account was attached to its host (rule 35) */
-warmedAt?: (Scalars['DateTime'] | null)}
+warmedAt?: (Scalars['DateTime'] | null),
+/** log-cli: the account's AdsPower profile id (`log adsPower sync`). The profile holds no proxy, password or cookies: those stay in Twenty */
+adsPowerProfileId?: (Scalars['String'] | null),
+/** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
+browserDriver?: (Scalars['String'] | null)}
 
 
 /** Social media accounts */
@@ -64507,7 +64603,11 @@ marketplaceLocationAt?: (DateTimeFilter | null),
 /** log-cli: when the account's day of warm-up began (rule 35) */
 warmupStartedAt?: (DateTimeFilter | null),
 /** log-cli: when the warm-up ended and the account was attached to its host (rule 35) */
-warmedAt?: (DateTimeFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
+warmedAt?: (DateTimeFilter | null),
+/** log-cli: the account's AdsPower profile id (`log adsPower sync`). The profile holds no proxy, password or cookies: those stay in Twenty */
+adsPowerProfileId?: (StringFilter | null),
+/** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
+browserDriver?: (StringFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
 
 export interface SocialAccountPlatformEnumFilter {eq?: (SocialAccountPlatformEnum | null),neq?: (SocialAccountPlatformEnum | null),in?: ((SocialAccountPlatformEnum | null)[] | null),containsAny?: ((SocialAccountPlatformEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (SocialAccountPlatformEnum | null),gte?: (SocialAccountPlatformEnum | null),lt?: (SocialAccountPlatformEnum | null),lte?: (SocialAccountPlatformEnum | null)}
 
@@ -64599,7 +64699,11 @@ marketplaceLocationAt?: (OrderByDirection | null),
 /** log-cli: when the account's day of warm-up began (rule 35) */
 warmupStartedAt?: (OrderByDirection | null),
 /** log-cli: when the warm-up ended and the account was attached to its host (rule 35) */
-warmedAt?: (OrderByDirection | null)}
+warmedAt?: (OrderByDirection | null),
+/** log-cli: the account's AdsPower profile id (`log adsPower sync`). The profile holds no proxy, password or cookies: those stay in Twenty */
+adsPowerProfileId?: (OrderByDirection | null),
+/** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
+browserDriver?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
@@ -64689,7 +64793,11 @@ marketplaceLocationAt?: (OrderByDateGranularityInput | null),
 /** log-cli: when the account's day of warm-up began (rule 35) */
 warmupStartedAt?: (OrderByDateGranularityInput | null),
 /** log-cli: when the warm-up ended and the account was attached to its host (rule 35) */
-warmedAt?: (OrderByDateGranularityInput | null)}
+warmedAt?: (OrderByDateGranularityInput | null),
+/** log-cli: the account's AdsPower profile id (`log adsPower sync`). The profile holds no proxy, password or cookies: those stay in Twenty */
+adsPowerProfileId?: (OrderByDirection | null),
+/** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
+browserDriver?: (OrderByDirection | null)}
 
 
 /** Aggregate-based ordering */
@@ -65267,7 +65375,27 @@ percentageNotEmptyWarmedAt?: (OrderByDirection | null),
 /** Earliest date contained in the field warmedAt */
 minWarmedAt?: (OrderByDirection | null),
 /** Latest date contained in the field warmedAt */
-maxWarmedAt?: (OrderByDirection | null)}
+maxWarmedAt?: (OrderByDirection | null),
+/** Number of unique values for adsPowerProfileId */
+countUniqueValuesAdsPowerProfileId?: (OrderByDirection | null),
+/** Number of empty values for adsPowerProfileId */
+countEmptyAdsPowerProfileId?: (OrderByDirection | null),
+/** Number of non-empty values for adsPowerProfileId */
+countNotEmptyAdsPowerProfileId?: (OrderByDirection | null),
+/** Percentage of empty values for adsPowerProfileId */
+percentageEmptyAdsPowerProfileId?: (OrderByDirection | null),
+/** Percentage of non-empty values for adsPowerProfileId */
+percentageNotEmptyAdsPowerProfileId?: (OrderByDirection | null),
+/** Number of unique values for browserDriver */
+countUniqueValuesBrowserDriver?: (OrderByDirection | null),
+/** Number of empty values for browserDriver */
+countEmptyBrowserDriver?: (OrderByDirection | null),
+/** Number of non-empty values for browserDriver */
+countNotEmptyBrowserDriver?: (OrderByDirection | null),
+/** Percentage of empty values for browserDriver */
+percentageEmptyBrowserDriver?: (OrderByDirection | null),
+/** Percentage of non-empty values for browserDriver */
+percentageNotEmptyBrowserDriver?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
@@ -65337,7 +65465,11 @@ marketplaceLocationAt?: (GroupByDateGranularityInput | null),
 /** log-cli: when the account's day of warm-up began (rule 35) */
 warmupStartedAt?: (GroupByDateGranularityInput | null),
 /** log-cli: when the warm-up ended and the account was attached to its host (rule 35) */
-warmedAt?: (GroupByDateGranularityInput | null)}
+warmedAt?: (GroupByDateGranularityInput | null),
+/** log-cli: the account's AdsPower profile id (`log adsPower sync`). The profile holds no proxy, password or cookies: those stay in Twenty */
+adsPowerProfileId?: (Scalars['Boolean'] | null),
+/** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
+browserDriver?: (Scalars['Boolean'] | null)}
 
 
 /** Calendar events */

@@ -35,6 +35,10 @@ export type ErrorLayer =
   | 'proxyVendor'
   /** A change on the account's own profile page (`log profile setup`, rule 28). */
   | 'profile'
+  /** A browser session for any driver (`browser/driver`, rule 42). */
+  | 'browser'
+  /** AdsPower's Local API and its profiles (`adsPower/*`). */
+  | 'adsPower'
 
 /** How a publish run ends when this code is raised (`marketplace/publish`). */
 export type PublishEnd = 'failed' | 'blocked' | 'needsPerson' | 'unconfirmedId'
@@ -1224,6 +1228,63 @@ export const ERROR_CATALOG = {
     retryable: true,
     raisedIn: ['profile.uploadingProfilePhoto', 'profile.uploadingCoverPhoto'],
     action: "Read the run's capture and its saved page text; run once more after the launch gap (rule 24)."
+  },
+  // rule 42: the browser as a driver (browser/driver) and AdsPower's Local API (adsPower/*).
+  browserDriverFailed: {
+    layer: 'browser',
+    meaning: 'A browser driver step threw something without a catalog code, or a session was started without its driver steps.',
+    retryable: false,
+    raisedIn: ['browser/driver'],
+    action: 'Read the detail; give the step a catalog code in its driver.'
+  },
+  browserGone: {
+    layer: 'browser',
+    meaning: 'The open browser went away (crashed, or the window was closed).',
+    retryable: true,
+    raisedIn: ['browser/driver', 'cli/host'],
+    action: 'Nothing: the host reopens it once a day; a second crash goes to a person (rule 35).'
+  },
+  adsPowerUnavailable: {
+    layer: 'adsPower',
+    meaning: "AdsPower's Local API didn't answer (the app isn't running, or ADSPOWER_HOST is wrong).",
+    retryable: true,
+    raisedIn: ['adsPower/localApi'],
+    action: 'Start the AdsPower app (or `ads start`), check ADSPOWER_HOST in .env.local, then `log adsPower status`.'
+  },
+  adsPowerRequestFailed: {
+    layer: 'adsPower',
+    meaning: 'The Local API refused the call (its msg is in the detail): a bad field, a missing profile, the plan limit, or a wrong API key.',
+    retryable: false,
+    raisedIn: ['adsPower/localApi'],
+    action: "Read the detail. A profile limit means the AdsPower plan holds fewer profiles than accounts; a key error means ADSPOWER_API_KEY doesn't match the app."
+  },
+  adsPowerRateLimited: {
+    layer: 'adsPower',
+    meaning: 'The Local API said "Too many request" three times in a row.',
+    retryable: true,
+    raisedIn: ['adsPower/localApi'],
+    action: 'Nothing: run it again in a minute. The plan sets the requests per minute (300, 900 or 1500).'
+  },
+  adsPowerProfileMissing: {
+    layer: 'adsPower',
+    meaning: 'The account has no AdsPower profile linked in Twenty (socialAccounts.adsPowerProfileId).',
+    retryable: false,
+    raisedIn: ['adsPower/driver'],
+    action: 'Run `log adsPower sync --apply` (it makes the profile and links it).'
+  },
+  adsPowerGateNotBuilt: {
+    layer: 'adsPower',
+    meaning: 'The proxy gate (rule 12) is not wired to AdsPower profiles yet, so the AdsPower driver refuses before anything opens.',
+    retryable: false,
+    raisedIn: ['adsPower/driver'],
+    action: 'Build the gate for AdsPower (python/proxyGate.py checks over CDP) before an AdsPower browser opens for an account.'
+  },
+  adsPowerSelfCheckNotBuilt: {
+    layer: 'adsPower',
+    meaning: 'The launch self-check (rule 17) is not wired to AdsPower profiles yet, so the session closes before Facebook loads.',
+    retryable: false,
+    raisedIn: ['adsPower/driver'],
+    action: 'Build the self-check over CDP (timezone, language, Intl, exit IP in a page and a worker).'
   },
 } as const satisfies Record<string, ErrorEntry>
 

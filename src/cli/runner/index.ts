@@ -11,6 +11,7 @@ import { listAccounts } from "../../marketplace/account/index.ts";
 import { listListings } from "../../marketplace/listing/index.ts";
 import { createTwentyClient } from "../../twenty/graphql/index.ts";
 import { accountCommand, accountsCommand } from "../account/index.ts";
+import { adsPowerCommand } from "../adsPower/index.ts";
 import { campaignCommand } from "../campaign/index.ts";
 import { conversationCommand, conversationsCommand } from "../conversation/index.ts";
 import { loginCommand, logoutCommand, whoamiCommand } from "../auth/index.ts";
@@ -40,6 +41,7 @@ export const COMMANDS: Command[] = [
   listingCommand,
   accountsCommand,
   accountCommand,
+  adsPowerCommand,
   lifecycleCommand,
   doctorCommand,
   connectCommand,
@@ -80,6 +82,7 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     profileSession: overrides.profileSession ?? startProfileSession,
     inspectSession: overrides.inspectSession ?? runInspectSession,
     sendInspect: overrides.sendInspect ?? ((current, action, args, timeoutMs, expect) => sendInspectCommand(current, action, args, timeoutMs, 300, expect)),
+    adsPower: overrides.adsPower,
     connectTiming: overrides.connectTiming,
     out: overrides.out ?? ((line) => console.log(line)),
     err: overrides.err ?? ((line) => console.error(line)),

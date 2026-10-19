@@ -1801,3 +1801,69 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: the top of AGENTS.md now says that options, context and spend come only from what matt said. Deep research prompts, searches, SubQ matrices, plans and write-ups use only his words (a misspelling is read as what he meant). There are no physical options, because he is in Vietnam with no physical access. Paid tasks do exactly what he asked. Rules 39-41. The same rule is in the workspace AGENTS.md for every agent.
 Why: matt: "If I never mentioned it, if I never inferred it, if I never outlined it as an option, therefore it is not an option." The scale-stack deep research and SubQ matrix included options he never mentioned (real local people's own accounts, physical phones and machines), one of them ranked first, and the runs cost money.
 Checked: the rule text was read against matt's message. The scale-stack decision (`RESEARCH/MARKETPLACE_SCALE_STACK/DECISION_SCALE_STACK.md`) is marked superseded. Nothing was re-run.
+
+## 2026-10-19 20:26Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `.gitignore`: edited
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/adsPower.md`: new file
+- `python/errorCatalog.json`: edited
+- `scripts/twentySetup.mjs`: changed const SOCIAL_ACCOUNT_FIELDS
+- `skills.md`: edited
+- `skills/adsPower/SKILL.md`: new file
+- `src/adsPower/adsPower.test.ts`: added function fakeFetch, function memoryAdsPower, test "sends the key as a Bearer token and reads a started profile's CDP websocket", test ""Too many request" is retried, then refused as adsPowerRateLimited", test "the app not running is adsPowerUnavailable, and lists page through 100 at a time", test "the profile is Windows Chrome with the home locale, IP timezone and noise, and holds no proxy or secret", test "the plan makes a profile per account, skips banned and unlocalisable ones, and relinks one found by its remark", test "sync is a dry run unless applied; applied, it makes the profiles and links each in Twenty, and a rerun only finds them linked", test "the proxy URL becomes AdsPower's user_proxy_config", test "until its gate is built, an AdsPower session is refused before anything starts (rule 12)", test "with a passed gate it starts on the proxy; the unbuilt self-check closes it and takes the proxy back off", test "an account with no linked profile fails in preparing"
+- `src/adsPower/driver/client.ts`: added interface AdsPowerDriverDeps, const fail, function adsPowerDriver
+- `src/adsPower/driver/helpers/index.ts`: added export from "./proxyConfig"
+- `src/adsPower/driver/helpers/proxyConfig.ts`: added const NO_PROXY, function proxyConfig
+- `src/adsPower/driver/index.ts`: added export from "./client", export from "./helpers/index"
+- `src/adsPower/localApi/client.ts`: added const RATE_LIMIT_WAIT_MS, const PAGE_SIZE, function localApiConfig, type Fetch, function createAdsPowerClient
+- `src/adsPower/localApi/index.ts`: added export from "./client", export from "./types"
+- `src/adsPower/localApi/types.ts`: added interface LocalApiConfig, const DEFAULT_LOCAL_API_URL, interface AdsPowerProfile, interface StartedBrowser, interface CreateProfileBody, interface LocalApiReply, interface AdsPowerClient, class AdsPowerError
+- `src/adsPower/profile/client.ts`: added function syncProfiles
+- `src/adsPower/profile/helpers/index.ts`: added export from "./planSync", export from "./profileRequest"
+- `src/adsPower/profile/helpers/planSync.ts`: added function planSync
+- `src/adsPower/profile/helpers/profileRequest.ts`: added const twentyRemark, const remarkAccountId, function profileRequest
+- `src/adsPower/profile/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/adsPower/profile/types.ts`: added const ADS_POWER_GROUP, const NO_PROFILE_STATUSES, type ProfileSyncAction, interface ProfileSyncEntry, interface ProfileSyncResult
+- `src/browser/driver/client.ts`: added function driverNameOf, function sessionMachineFor, function createBrowserSession
+- `src/browser/driver/index.ts`: added export from "./client", export from "./machine", export from "./types"
+- `src/browser/driver/machine.ts`: added const failureOf, const missing, const browserSessionMachine
+- `src/browser/driver/types.ts`: added const BROWSER_DRIVERS, type BrowserDriverName, const DEFAULT_BROWSER_DRIVER, interface BrowserSessionInput, interface DriverFailure, interface BrowserEndpoint, interface GateResult, type CloseReason, interface BrowserDriver, type BrowserSessionEvent, interface BrowserSessionContext, interface BrowserSessionOutput
+- `src/cli/adsPower/index.ts`: added const ADS_POWER_USAGE, const adsPowerCommand
+- `src/cli/runner/index.ts`: changed const COMMANDS, function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/errors/catalog/types.ts`: changed type ErrorLayer, const ERROR_CATALOG
+- `src/marketplace/socialAccount/client.ts`: added function saveAdsPowerProfileId · changed function toFacebookAccount
+- `src/marketplace/socialAccount/types.ts`: changed interface FacebookAccount
+- `src/twenty/graphql/client.ts`: changed const SOCIAL_ACCOUNT_FIELDS
+- `src/twenty/graphql/generated/schema.ts`: changed interface SocialAccount, interface SocialAccountConnection, interface SocialAccountGroupByConnection, interface SocialAccountGenqlSelection, interface SocialAccountConnectionGenqlSelection, interface SocialAccountGroupByConnectionGenqlSelection, interface SocialAccountCreateInput, interface SocialAccountUpdateInput, interface SocialAccountFilterInput, interface SocialAccountOrderByInput, interface SocialAccountOrderByWithGroupByInput, interface SocialAccountOrderByWithGroupByAggregateInput, interface SocialAccountGroupByInput
+- `src/twenty/graphql/generated/types.ts`: no declaration changed (comments, formatting or line endings)
+
+What changed: the browser becomes a driver (rule 42).
+- `src/browser/driver` is one XState v5 session machine for any browser: preparing, gating, starting, selfChecking, open, closing, with final states closed, refused and failed. `starting` is only reachable from a passed gate (rule 12), and `open` only after the self-check (rule 17).
+- Listaro's AdsPower client is ported to `src/adsPower/localApi`: v2 endpoints, the Bearer key, "Too many request" retried twice, and catalog errors (adsPowerUnavailable, adsPowerRequestFailed, adsPowerRateLimited).
+- `src/adsPower/profile` gives every Twenty Facebook account one AdsPower profile:
+  - Windows Chrome, the language from HOME_COUNTRIES, timezone and geolocation from the IP;
+  - AdsPower's canvas, WebGL, audio and media noise;
+  - no proxy, password, cookies or 2FA key;
+  - a `twenty:<id>` remark, so a lost link can be found again.
+- `src/adsPower/driver` makes AdsPower a BrowserDriver. It puts the proxy on only to open and clears it at close. Its gate and self-check refuse until they're wired (adsPowerGateNotBuilt, adsPowerSelfCheckNotBuilt).
+- New command: `log adsPower status|profiles|sync [--apply]`.
+- Twenty gains `socialAccounts.adsPowerProfileId` and `browserDriver`, both additive (rule 13), and the client is regenerated (rule 14).
+- New error layers `browser` and `adsPower`. Docs: `docs/adsPower.md`, `skills/adsPower`, the README section, AGENTS.md rule 42.
+- AdsPower's own skill (`npx skills add ... --skill adspower-browser`) is git-ignored, because its names are vendor kebab-case (rule 1). The AdsPower MCP server was added at local scope, so its key stays out of git.
+Why: matt: swap the browser to AdsPower, keep Camoufox, keep the socialAccounts logic, take the implementation from Listaro, and make the architecture browser-agnostic with XState, so a new browser can be added.
+Checked: the full check, and a live sync.
+- `bun run check`: naming OK, tsc clean, 567 pass, 0 fail, including 10 new AdsPower tests:
+  - fake Local API: Bearer key, rate-limit retry, paging, app down;
+  - profile body holds no secret;
+  - sync plan and apply against the in-memory Twenty, re-run idempotent;
+  - the session refused at the unbuilt gate, so nothing starts;
+  - with a passed gate: update, start, stop, then the proxy cleared.
+- Live:
+  - `twentySetup --apply` created both fields;
+  - `log adsPower status` up;
+  - `sync --apply` made 10 profiles (k1i5dlf8 ... k1i5dlhs) and linked each in Twenty; one record with no home country was skipped;
+  - the re-run reports 10 linked, 0 to create.

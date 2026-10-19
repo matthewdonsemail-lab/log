@@ -87,6 +87,9 @@ export interface FacebookAccount {
   marketplaceLocationAt: string | null
   warmupStartedAt: string | null
   warmedAt: string | null
+  /** Rule 42: the account's AdsPower profile (`log adsPower sync`), and which browser driver runs it. */
+  adsPowerProfileId: string | null
+  browserDriver: string | null
 }
 
 /** A proxy URL split for Playwright, plus the country it must exit in. */
