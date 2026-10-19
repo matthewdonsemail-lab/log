@@ -269,6 +269,18 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `--proxyMs <ms>` on any log command (and `proxyMs` on the flow MCP
     tools) sets `LOG_PROXY_MAX_MS` for that run, which the Python gate and
     `log proxy` both read. Default 2500 ms; 500-60000 allowed.
+34. 2026-10-19 · matt: a buyer's conversation is tied to its listing, in
+    the shape blaster and Listaro already use. Twenty's `agencyConversation`
+    (blaster's SMS thread object) gains the Marketplace fields and relations
+    to `agencyListing` and `socialAccount`; `agencyMessage` gains its
+    relation to `agencyConversation` and Listaro's per-message fields
+    (`isRead`, `sentBy`, `aiStatus`), all additive (rule 13,
+    `scripts/twentySetup.mjs`). A conversation is keyed on the account and
+    Facebook's thread id, never a hash of the buyer's name; a message on
+    Facebook's message id or a stable hash, so a rescan adds nothing. The
+    listing is matched by its Facebook id or a unique title, never guessed.
+    `log conversations`, `log conversation show|read|lead|link|record`
+    (`marketplace/conversation`, `docs/conversations.md`).
 
 ## Checks
 

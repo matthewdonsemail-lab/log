@@ -10236,6 +10236,8 @@ export interface SocialAccount {
     socialContents?: SocialContentConnection
     /** log-cli */
     agencyListings?: AgencyListingConnection
+    /** logCli */
+    agencyConversations?: AgencyConversationConnection
     __typename: 'SocialAccount'
 }
 
@@ -34035,6 +34037,8 @@ export interface AgencyListing {
     replaces?: AgencyListing
     /** log-cli */
     replacedBy?: AgencyListingConnection
+    /** logCli */
+    agencyConversations?: AgencyConversationConnection
     __typename: 'AgencyListing'
 }
 
@@ -38601,6 +38605,18 @@ export interface CalendarEventTargetGroupByConnection {
 }
 
 
+/** log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS */
+export type AgencyMessageChannelEnum = 'SMS' | 'FACEBOOK_MARKETPLACE'
+
+
+/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+export type AgencyMessageSentByEnum = 'PERSON' | 'VA' | 'AI' | 'SYSTEM'
+
+
+/** log-cli: an AI-drafted reply: DRAFT until a person approves, then SENT; or DISMISSED, FAILED */
+export type AgencyMessageAiStatusEnum = 'DRAFT' | 'APPROVED' | 'SENT' | 'DISMISSED' | 'FAILED'
+
+
 /** SMS thread ledger (inbound + outbound) */
 export interface AgencyMessage {
     /** Name */
@@ -38631,6 +38647,28 @@ export interface AgencyMessage {
     errorCode?: Scalars['String']
     /** Why the text failed, in Telnyx's words */
     errorMessage?: Scalars['String']
+    /** log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS */
+    channel?: AgencyMessageChannelEnum
+    /** log-cli: when the message was sent, as the thread shows it */
+    sentAt?: Scalars['DateTime']
+    /** log-cli: the Facebook message id, when the page gives it */
+    facebookMessageId?: Scalars['String']
+    /** log-cli: unique per conversation: facebookMessageId, or a hash of sender, time and text. A message is stored once */
+    messageKey?: Scalars['String']
+    /** logCli */
+    senderName?: Scalars['String']
+    /** log-cli: ours are read; a buyer message is unread until marked */
+    isRead?: Scalars['Boolean']
+    /** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+    sentBy?: AgencyMessageSentByEnum
+    /** log-cli: an AI-drafted reply: DRAFT until a person approves, then SENT; or DISMISSED, FAILED */
+    aiStatus?: AgencyMessageAiStatusEnum
+    /** log-cli: what AI drafted, before a person edited it */
+    aiOriginalText?: Scalars['String']
+    /** logCli */
+    agencyConversationId?: Scalars['ID']
+    /** log-cli: photos or files in the message: [{ url, kind }] */
+    media?: Scalars['JSON']
     /** AgencyMessages tied to the Timeline Activity */
     timelineActivities?: TimelineActivityConnection
     /** AgencyMessages tied to the Attachment */
@@ -38643,6 +38681,8 @@ export interface AgencyMessage {
     agencyProspect?: AgencyProspectConnection
     /** Link to lead thread owner */
     agencyLead?: AgencyLeadConnection
+    /** logCli */
+    agencyConversation?: AgencyConversation
     __typename: 'AgencyMessage'
 }
 
@@ -38841,6 +38881,114 @@ export interface AgencyMessageConnection {
     percentageEmptyErrorMessage?: Scalars['Float']
     /** Percentage of non-empty values for errorMessage */
     percentageNotEmptyErrorMessage?: Scalars['Float']
+    /** Number of unique values for channel */
+    countUniqueValuesChannel?: Scalars['Int']
+    /** Number of empty values for channel */
+    countEmptyChannel?: Scalars['Int']
+    /** Number of non-empty values for channel */
+    countNotEmptyChannel?: Scalars['Int']
+    /** Percentage of empty values for channel */
+    percentageEmptyChannel?: Scalars['Float']
+    /** Percentage of non-empty values for channel */
+    percentageNotEmptyChannel?: Scalars['Float']
+    /** Number of unique values for sentAt */
+    countUniqueValuesSentAt?: Scalars['Int']
+    /** Number of empty values for sentAt */
+    countEmptySentAt?: Scalars['Int']
+    /** Number of non-empty values for sentAt */
+    countNotEmptySentAt?: Scalars['Int']
+    /** Percentage of empty values for sentAt */
+    percentageEmptySentAt?: Scalars['Float']
+    /** Percentage of non-empty values for sentAt */
+    percentageNotEmptySentAt?: Scalars['Float']
+    /** Earliest date contained in the field sentAt */
+    minSentAt?: Scalars['DateTime']
+    /** Latest date contained in the field sentAt */
+    maxSentAt?: Scalars['DateTime']
+    /** Number of unique values for facebookMessageId */
+    countUniqueValuesFacebookMessageId?: Scalars['Int']
+    /** Number of empty values for facebookMessageId */
+    countEmptyFacebookMessageId?: Scalars['Int']
+    /** Number of non-empty values for facebookMessageId */
+    countNotEmptyFacebookMessageId?: Scalars['Int']
+    /** Percentage of empty values for facebookMessageId */
+    percentageEmptyFacebookMessageId?: Scalars['Float']
+    /** Percentage of non-empty values for facebookMessageId */
+    percentageNotEmptyFacebookMessageId?: Scalars['Float']
+    /** Number of unique values for messageKey */
+    countUniqueValuesMessageKey?: Scalars['Int']
+    /** Number of empty values for messageKey */
+    countEmptyMessageKey?: Scalars['Int']
+    /** Number of non-empty values for messageKey */
+    countNotEmptyMessageKey?: Scalars['Int']
+    /** Percentage of empty values for messageKey */
+    percentageEmptyMessageKey?: Scalars['Float']
+    /** Percentage of non-empty values for messageKey */
+    percentageNotEmptyMessageKey?: Scalars['Float']
+    /** Number of unique values for senderName */
+    countUniqueValuesSenderName?: Scalars['Int']
+    /** Number of empty values for senderName */
+    countEmptySenderName?: Scalars['Int']
+    /** Number of non-empty values for senderName */
+    countNotEmptySenderName?: Scalars['Int']
+    /** Percentage of empty values for senderName */
+    percentageEmptySenderName?: Scalars['Float']
+    /** Percentage of non-empty values for senderName */
+    percentageNotEmptySenderName?: Scalars['Float']
+    /** Number of unique values for isRead */
+    countUniqueValuesIsRead?: Scalars['Int']
+    /** Number of empty values for isRead */
+    countEmptyIsRead?: Scalars['Int']
+    /** Number of non-empty values for isRead */
+    countNotEmptyIsRead?: Scalars['Int']
+    /** Percentage of empty values for isRead */
+    percentageEmptyIsRead?: Scalars['Float']
+    /** Percentage of non-empty values for isRead */
+    percentageNotEmptyIsRead?: Scalars['Float']
+    /** Count of true values in the field isRead */
+    countTrueIsRead?: Scalars['Int']
+    /** Count of false values in the field isRead */
+    countFalseIsRead?: Scalars['Int']
+    /** Number of unique values for sentBy */
+    countUniqueValuesSentBy?: Scalars['Int']
+    /** Number of empty values for sentBy */
+    countEmptySentBy?: Scalars['Int']
+    /** Number of non-empty values for sentBy */
+    countNotEmptySentBy?: Scalars['Int']
+    /** Percentage of empty values for sentBy */
+    percentageEmptySentBy?: Scalars['Float']
+    /** Percentage of non-empty values for sentBy */
+    percentageNotEmptySentBy?: Scalars['Float']
+    /** Number of unique values for aiStatus */
+    countUniqueValuesAiStatus?: Scalars['Int']
+    /** Number of empty values for aiStatus */
+    countEmptyAiStatus?: Scalars['Int']
+    /** Number of non-empty values for aiStatus */
+    countNotEmptyAiStatus?: Scalars['Int']
+    /** Percentage of empty values for aiStatus */
+    percentageEmptyAiStatus?: Scalars['Float']
+    /** Percentage of non-empty values for aiStatus */
+    percentageNotEmptyAiStatus?: Scalars['Float']
+    /** Number of unique values for aiOriginalText */
+    countUniqueValuesAiOriginalText?: Scalars['Int']
+    /** Number of empty values for aiOriginalText */
+    countEmptyAiOriginalText?: Scalars['Int']
+    /** Number of non-empty values for aiOriginalText */
+    countNotEmptyAiOriginalText?: Scalars['Int']
+    /** Percentage of empty values for aiOriginalText */
+    percentageEmptyAiOriginalText?: Scalars['Float']
+    /** Percentage of non-empty values for aiOriginalText */
+    percentageNotEmptyAiOriginalText?: Scalars['Float']
+    /** Number of unique values for media */
+    countUniqueValuesMedia?: Scalars['Int']
+    /** Number of empty values for media */
+    countEmptyMedia?: Scalars['Int']
+    /** Number of non-empty values for media */
+    countNotEmptyMedia?: Scalars['Int']
+    /** Percentage of empty values for media */
+    percentageEmptyMedia?: Scalars['Float']
+    /** Percentage of non-empty values for media */
+    percentageNotEmptyMedia?: Scalars['Float']
     edges: AgencyMessageEdge[]
     pageInfo: PageInfo
     __typename: 'AgencyMessageConnection'
@@ -39033,11 +39181,127 @@ export interface AgencyMessageGroupByConnection {
     percentageEmptyErrorMessage?: Scalars['Float']
     /** Percentage of non-empty values for errorMessage */
     percentageNotEmptyErrorMessage?: Scalars['Float']
+    /** Number of unique values for channel */
+    countUniqueValuesChannel?: Scalars['Int']
+    /** Number of empty values for channel */
+    countEmptyChannel?: Scalars['Int']
+    /** Number of non-empty values for channel */
+    countNotEmptyChannel?: Scalars['Int']
+    /** Percentage of empty values for channel */
+    percentageEmptyChannel?: Scalars['Float']
+    /** Percentage of non-empty values for channel */
+    percentageNotEmptyChannel?: Scalars['Float']
+    /** Number of unique values for sentAt */
+    countUniqueValuesSentAt?: Scalars['Int']
+    /** Number of empty values for sentAt */
+    countEmptySentAt?: Scalars['Int']
+    /** Number of non-empty values for sentAt */
+    countNotEmptySentAt?: Scalars['Int']
+    /** Percentage of empty values for sentAt */
+    percentageEmptySentAt?: Scalars['Float']
+    /** Percentage of non-empty values for sentAt */
+    percentageNotEmptySentAt?: Scalars['Float']
+    /** Earliest date contained in the field sentAt */
+    minSentAt?: Scalars['DateTime']
+    /** Latest date contained in the field sentAt */
+    maxSentAt?: Scalars['DateTime']
+    /** Number of unique values for facebookMessageId */
+    countUniqueValuesFacebookMessageId?: Scalars['Int']
+    /** Number of empty values for facebookMessageId */
+    countEmptyFacebookMessageId?: Scalars['Int']
+    /** Number of non-empty values for facebookMessageId */
+    countNotEmptyFacebookMessageId?: Scalars['Int']
+    /** Percentage of empty values for facebookMessageId */
+    percentageEmptyFacebookMessageId?: Scalars['Float']
+    /** Percentage of non-empty values for facebookMessageId */
+    percentageNotEmptyFacebookMessageId?: Scalars['Float']
+    /** Number of unique values for messageKey */
+    countUniqueValuesMessageKey?: Scalars['Int']
+    /** Number of empty values for messageKey */
+    countEmptyMessageKey?: Scalars['Int']
+    /** Number of non-empty values for messageKey */
+    countNotEmptyMessageKey?: Scalars['Int']
+    /** Percentage of empty values for messageKey */
+    percentageEmptyMessageKey?: Scalars['Float']
+    /** Percentage of non-empty values for messageKey */
+    percentageNotEmptyMessageKey?: Scalars['Float']
+    /** Number of unique values for senderName */
+    countUniqueValuesSenderName?: Scalars['Int']
+    /** Number of empty values for senderName */
+    countEmptySenderName?: Scalars['Int']
+    /** Number of non-empty values for senderName */
+    countNotEmptySenderName?: Scalars['Int']
+    /** Percentage of empty values for senderName */
+    percentageEmptySenderName?: Scalars['Float']
+    /** Percentage of non-empty values for senderName */
+    percentageNotEmptySenderName?: Scalars['Float']
+    /** Number of unique values for isRead */
+    countUniqueValuesIsRead?: Scalars['Int']
+    /** Number of empty values for isRead */
+    countEmptyIsRead?: Scalars['Int']
+    /** Number of non-empty values for isRead */
+    countNotEmptyIsRead?: Scalars['Int']
+    /** Percentage of empty values for isRead */
+    percentageEmptyIsRead?: Scalars['Float']
+    /** Percentage of non-empty values for isRead */
+    percentageNotEmptyIsRead?: Scalars['Float']
+    /** Count of true values in the field isRead */
+    countTrueIsRead?: Scalars['Int']
+    /** Count of false values in the field isRead */
+    countFalseIsRead?: Scalars['Int']
+    /** Number of unique values for sentBy */
+    countUniqueValuesSentBy?: Scalars['Int']
+    /** Number of empty values for sentBy */
+    countEmptySentBy?: Scalars['Int']
+    /** Number of non-empty values for sentBy */
+    countNotEmptySentBy?: Scalars['Int']
+    /** Percentage of empty values for sentBy */
+    percentageEmptySentBy?: Scalars['Float']
+    /** Percentage of non-empty values for sentBy */
+    percentageNotEmptySentBy?: Scalars['Float']
+    /** Number of unique values for aiStatus */
+    countUniqueValuesAiStatus?: Scalars['Int']
+    /** Number of empty values for aiStatus */
+    countEmptyAiStatus?: Scalars['Int']
+    /** Number of non-empty values for aiStatus */
+    countNotEmptyAiStatus?: Scalars['Int']
+    /** Percentage of empty values for aiStatus */
+    percentageEmptyAiStatus?: Scalars['Float']
+    /** Percentage of non-empty values for aiStatus */
+    percentageNotEmptyAiStatus?: Scalars['Float']
+    /** Number of unique values for aiOriginalText */
+    countUniqueValuesAiOriginalText?: Scalars['Int']
+    /** Number of empty values for aiOriginalText */
+    countEmptyAiOriginalText?: Scalars['Int']
+    /** Number of non-empty values for aiOriginalText */
+    countNotEmptyAiOriginalText?: Scalars['Int']
+    /** Percentage of empty values for aiOriginalText */
+    percentageEmptyAiOriginalText?: Scalars['Float']
+    /** Percentage of non-empty values for aiOriginalText */
+    percentageNotEmptyAiOriginalText?: Scalars['Float']
+    /** Number of unique values for media */
+    countUniqueValuesMedia?: Scalars['Int']
+    /** Number of empty values for media */
+    countEmptyMedia?: Scalars['Int']
+    /** Number of non-empty values for media */
+    countNotEmptyMedia?: Scalars['Int']
+    /** Percentage of empty values for media */
+    percentageEmptyMedia?: Scalars['Float']
+    /** Percentage of non-empty values for media */
+    percentageNotEmptyMedia?: Scalars['Float']
     edges: AgencyMessageEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
     __typename: 'AgencyMessageGroupByConnection'
 }
+
+
+/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+export type AgencyConversationLeadStatusEnum = 'NEW' | 'CONTACTED' | 'QUALIFIED' | 'BOOKED' | 'LOST' | 'SPAM'
+
+
+/** log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS */
+export type AgencyConversationChannelEnum = 'SMS' | 'FACEBOOK_MARKETPLACE'
 
 
 /** CRM link/metadata for one SMS thread (history lives in Blaster) */
@@ -39074,6 +39338,42 @@ export interface AgencyConversation {
     agencyProspectId?: Scalars['ID']
     agencyPhoneId?: Scalars['ID']
     agencyLeadId?: Scalars['ID']
+    /** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+    leadStatus?: AgencyConversationLeadStatusEnum
+    /** log-cli: buyer messages not yet read */
+    unreadCount?: Scalars['Float']
+    /** log-cli: our first reply in the thread */
+    respondedAt?: Scalars['DateTime']
+    /** log-cli: the last time the inbox was read for this thread */
+    lastScannedAt?: Scalars['DateTime']
+    /** log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS */
+    channel?: AgencyConversationChannelEnum
+    /** log-cli: the thread id in facebook.com/messages/t/<id> (Marketplace inbox). With the account, the conversation key */
+    facebookThreadId?: Scalars['String']
+    /** log-cli: the buyer name as the thread shows it */
+    buyerName?: Scalars['String']
+    /** log-cli: the buyer Facebook user id, when the thread links their profile */
+    buyerFacebookId?: Scalars['String']
+    /** logCli */
+    buyerProfileUrl?: Scalars['String']
+    /** log-cli: a phone number the buyer gave in the conversation */
+    buyerPhone?: Scalars['String']
+    /** log-cli: an email the buyer gave in the conversation */
+    buyerEmail?: Scalars['String']
+    /** log-cli: the listing title the thread header shows (Buyer · Title) */
+    listingTitle?: Scalars['String']
+    /** log-cli: the Marketplace item id the thread is about (marketplace/item/<id>), when shown */
+    facebookListingId?: Scalars['String']
+    /** logCli */
+    lastReadAt?: Scalars['DateTime']
+    /** log-cli: a reply went out without a person */
+    autoReplied?: Scalars['Boolean']
+    /** log-cli: replies in this thread are drafted by AI */
+    aiTookOver?: Scalars['Boolean']
+    /** logCli */
+    agencyListingId?: Scalars['ID']
+    /** logCli */
+    socialAccountId?: Scalars['ID']
     /** AgencyConversations tied to the Timeline Activity */
     timelineActivities?: TimelineActivityConnection
     /** AgencyConversations tied to the Attachment */
@@ -39085,6 +39385,12 @@ export interface AgencyConversation {
     agencyProspect?: AgencyProspect
     agencyPhone?: AgencyPhone
     agencyLead?: AgencyLead
+    /** logCli */
+    agencyListing?: AgencyListing
+    /** logCli */
+    socialAccount?: SocialAccount
+    /** logCli */
+    agencyMessages?: AgencyMessageConnection
     __typename: 'AgencyConversation'
 }
 
@@ -39325,6 +39631,194 @@ export interface AgencyConversationConnection {
     avgMessageCount?: Scalars['Float']
     /** Sum of amounts contained in the field messageCount */
     sumMessageCount?: Scalars['Float']
+    /** Number of unique values for leadStatus */
+    countUniqueValuesLeadStatus?: Scalars['Int']
+    /** Number of empty values for leadStatus */
+    countEmptyLeadStatus?: Scalars['Int']
+    /** Number of non-empty values for leadStatus */
+    countNotEmptyLeadStatus?: Scalars['Int']
+    /** Percentage of empty values for leadStatus */
+    percentageEmptyLeadStatus?: Scalars['Float']
+    /** Percentage of non-empty values for leadStatus */
+    percentageNotEmptyLeadStatus?: Scalars['Float']
+    /** Number of unique values for unreadCount */
+    countUniqueValuesUnreadCount?: Scalars['Int']
+    /** Number of empty values for unreadCount */
+    countEmptyUnreadCount?: Scalars['Int']
+    /** Number of non-empty values for unreadCount */
+    countNotEmptyUnreadCount?: Scalars['Int']
+    /** Percentage of empty values for unreadCount */
+    percentageEmptyUnreadCount?: Scalars['Float']
+    /** Percentage of non-empty values for unreadCount */
+    percentageNotEmptyUnreadCount?: Scalars['Float']
+    /** Minimum amount contained in the field unreadCount */
+    minUnreadCount?: Scalars['Float']
+    /** Maximum amount contained in the field unreadCount */
+    maxUnreadCount?: Scalars['Float']
+    /** Average amount contained in the field unreadCount */
+    avgUnreadCount?: Scalars['Float']
+    /** Sum of amounts contained in the field unreadCount */
+    sumUnreadCount?: Scalars['Float']
+    /** Number of unique values for respondedAt */
+    countUniqueValuesRespondedAt?: Scalars['Int']
+    /** Number of empty values for respondedAt */
+    countEmptyRespondedAt?: Scalars['Int']
+    /** Number of non-empty values for respondedAt */
+    countNotEmptyRespondedAt?: Scalars['Int']
+    /** Percentage of empty values for respondedAt */
+    percentageEmptyRespondedAt?: Scalars['Float']
+    /** Percentage of non-empty values for respondedAt */
+    percentageNotEmptyRespondedAt?: Scalars['Float']
+    /** Earliest date contained in the field respondedAt */
+    minRespondedAt?: Scalars['DateTime']
+    /** Latest date contained in the field respondedAt */
+    maxRespondedAt?: Scalars['DateTime']
+    /** Number of unique values for lastScannedAt */
+    countUniqueValuesLastScannedAt?: Scalars['Int']
+    /** Number of empty values for lastScannedAt */
+    countEmptyLastScannedAt?: Scalars['Int']
+    /** Number of non-empty values for lastScannedAt */
+    countNotEmptyLastScannedAt?: Scalars['Int']
+    /** Percentage of empty values for lastScannedAt */
+    percentageEmptyLastScannedAt?: Scalars['Float']
+    /** Percentage of non-empty values for lastScannedAt */
+    percentageNotEmptyLastScannedAt?: Scalars['Float']
+    /** Earliest date contained in the field lastScannedAt */
+    minLastScannedAt?: Scalars['DateTime']
+    /** Latest date contained in the field lastScannedAt */
+    maxLastScannedAt?: Scalars['DateTime']
+    /** Number of unique values for channel */
+    countUniqueValuesChannel?: Scalars['Int']
+    /** Number of empty values for channel */
+    countEmptyChannel?: Scalars['Int']
+    /** Number of non-empty values for channel */
+    countNotEmptyChannel?: Scalars['Int']
+    /** Percentage of empty values for channel */
+    percentageEmptyChannel?: Scalars['Float']
+    /** Percentage of non-empty values for channel */
+    percentageNotEmptyChannel?: Scalars['Float']
+    /** Number of unique values for facebookThreadId */
+    countUniqueValuesFacebookThreadId?: Scalars['Int']
+    /** Number of empty values for facebookThreadId */
+    countEmptyFacebookThreadId?: Scalars['Int']
+    /** Number of non-empty values for facebookThreadId */
+    countNotEmptyFacebookThreadId?: Scalars['Int']
+    /** Percentage of empty values for facebookThreadId */
+    percentageEmptyFacebookThreadId?: Scalars['Float']
+    /** Percentage of non-empty values for facebookThreadId */
+    percentageNotEmptyFacebookThreadId?: Scalars['Float']
+    /** Number of unique values for buyerName */
+    countUniqueValuesBuyerName?: Scalars['Int']
+    /** Number of empty values for buyerName */
+    countEmptyBuyerName?: Scalars['Int']
+    /** Number of non-empty values for buyerName */
+    countNotEmptyBuyerName?: Scalars['Int']
+    /** Percentage of empty values for buyerName */
+    percentageEmptyBuyerName?: Scalars['Float']
+    /** Percentage of non-empty values for buyerName */
+    percentageNotEmptyBuyerName?: Scalars['Float']
+    /** Number of unique values for buyerFacebookId */
+    countUniqueValuesBuyerFacebookId?: Scalars['Int']
+    /** Number of empty values for buyerFacebookId */
+    countEmptyBuyerFacebookId?: Scalars['Int']
+    /** Number of non-empty values for buyerFacebookId */
+    countNotEmptyBuyerFacebookId?: Scalars['Int']
+    /** Percentage of empty values for buyerFacebookId */
+    percentageEmptyBuyerFacebookId?: Scalars['Float']
+    /** Percentage of non-empty values for buyerFacebookId */
+    percentageNotEmptyBuyerFacebookId?: Scalars['Float']
+    /** Number of unique values for buyerProfileUrl */
+    countUniqueValuesBuyerProfileUrl?: Scalars['Int']
+    /** Number of empty values for buyerProfileUrl */
+    countEmptyBuyerProfileUrl?: Scalars['Int']
+    /** Number of non-empty values for buyerProfileUrl */
+    countNotEmptyBuyerProfileUrl?: Scalars['Int']
+    /** Percentage of empty values for buyerProfileUrl */
+    percentageEmptyBuyerProfileUrl?: Scalars['Float']
+    /** Percentage of non-empty values for buyerProfileUrl */
+    percentageNotEmptyBuyerProfileUrl?: Scalars['Float']
+    /** Number of unique values for buyerPhone */
+    countUniqueValuesBuyerPhone?: Scalars['Int']
+    /** Number of empty values for buyerPhone */
+    countEmptyBuyerPhone?: Scalars['Int']
+    /** Number of non-empty values for buyerPhone */
+    countNotEmptyBuyerPhone?: Scalars['Int']
+    /** Percentage of empty values for buyerPhone */
+    percentageEmptyBuyerPhone?: Scalars['Float']
+    /** Percentage of non-empty values for buyerPhone */
+    percentageNotEmptyBuyerPhone?: Scalars['Float']
+    /** Number of unique values for buyerEmail */
+    countUniqueValuesBuyerEmail?: Scalars['Int']
+    /** Number of empty values for buyerEmail */
+    countEmptyBuyerEmail?: Scalars['Int']
+    /** Number of non-empty values for buyerEmail */
+    countNotEmptyBuyerEmail?: Scalars['Int']
+    /** Percentage of empty values for buyerEmail */
+    percentageEmptyBuyerEmail?: Scalars['Float']
+    /** Percentage of non-empty values for buyerEmail */
+    percentageNotEmptyBuyerEmail?: Scalars['Float']
+    /** Number of unique values for listingTitle */
+    countUniqueValuesListingTitle?: Scalars['Int']
+    /** Number of empty values for listingTitle */
+    countEmptyListingTitle?: Scalars['Int']
+    /** Number of non-empty values for listingTitle */
+    countNotEmptyListingTitle?: Scalars['Int']
+    /** Percentage of empty values for listingTitle */
+    percentageEmptyListingTitle?: Scalars['Float']
+    /** Percentage of non-empty values for listingTitle */
+    percentageNotEmptyListingTitle?: Scalars['Float']
+    /** Number of unique values for facebookListingId */
+    countUniqueValuesFacebookListingId?: Scalars['Int']
+    /** Number of empty values for facebookListingId */
+    countEmptyFacebookListingId?: Scalars['Int']
+    /** Number of non-empty values for facebookListingId */
+    countNotEmptyFacebookListingId?: Scalars['Int']
+    /** Percentage of empty values for facebookListingId */
+    percentageEmptyFacebookListingId?: Scalars['Float']
+    /** Percentage of non-empty values for facebookListingId */
+    percentageNotEmptyFacebookListingId?: Scalars['Float']
+    /** Number of unique values for lastReadAt */
+    countUniqueValuesLastReadAt?: Scalars['Int']
+    /** Number of empty values for lastReadAt */
+    countEmptyLastReadAt?: Scalars['Int']
+    /** Number of non-empty values for lastReadAt */
+    countNotEmptyLastReadAt?: Scalars['Int']
+    /** Percentage of empty values for lastReadAt */
+    percentageEmptyLastReadAt?: Scalars['Float']
+    /** Percentage of non-empty values for lastReadAt */
+    percentageNotEmptyLastReadAt?: Scalars['Float']
+    /** Earliest date contained in the field lastReadAt */
+    minLastReadAt?: Scalars['DateTime']
+    /** Latest date contained in the field lastReadAt */
+    maxLastReadAt?: Scalars['DateTime']
+    /** Number of unique values for autoReplied */
+    countUniqueValuesAutoReplied?: Scalars['Int']
+    /** Number of empty values for autoReplied */
+    countEmptyAutoReplied?: Scalars['Int']
+    /** Number of non-empty values for autoReplied */
+    countNotEmptyAutoReplied?: Scalars['Int']
+    /** Percentage of empty values for autoReplied */
+    percentageEmptyAutoReplied?: Scalars['Float']
+    /** Percentage of non-empty values for autoReplied */
+    percentageNotEmptyAutoReplied?: Scalars['Float']
+    /** Count of true values in the field autoReplied */
+    countTrueAutoReplied?: Scalars['Int']
+    /** Count of false values in the field autoReplied */
+    countFalseAutoReplied?: Scalars['Int']
+    /** Number of unique values for aiTookOver */
+    countUniqueValuesAiTookOver?: Scalars['Int']
+    /** Number of empty values for aiTookOver */
+    countEmptyAiTookOver?: Scalars['Int']
+    /** Number of non-empty values for aiTookOver */
+    countNotEmptyAiTookOver?: Scalars['Int']
+    /** Percentage of empty values for aiTookOver */
+    percentageEmptyAiTookOver?: Scalars['Float']
+    /** Percentage of non-empty values for aiTookOver */
+    percentageNotEmptyAiTookOver?: Scalars['Float']
+    /** Count of true values in the field aiTookOver */
+    countTrueAiTookOver?: Scalars['Int']
+    /** Count of false values in the field aiTookOver */
+    countFalseAiTookOver?: Scalars['Int']
     edges: AgencyConversationEdge[]
     pageInfo: PageInfo
     __typename: 'AgencyConversationConnection'
@@ -39559,6 +40053,194 @@ export interface AgencyConversationGroupByConnection {
     avgMessageCount?: Scalars['Float']
     /** Sum of amounts contained in the field messageCount */
     sumMessageCount?: Scalars['Float']
+    /** Number of unique values for leadStatus */
+    countUniqueValuesLeadStatus?: Scalars['Int']
+    /** Number of empty values for leadStatus */
+    countEmptyLeadStatus?: Scalars['Int']
+    /** Number of non-empty values for leadStatus */
+    countNotEmptyLeadStatus?: Scalars['Int']
+    /** Percentage of empty values for leadStatus */
+    percentageEmptyLeadStatus?: Scalars['Float']
+    /** Percentage of non-empty values for leadStatus */
+    percentageNotEmptyLeadStatus?: Scalars['Float']
+    /** Number of unique values for unreadCount */
+    countUniqueValuesUnreadCount?: Scalars['Int']
+    /** Number of empty values for unreadCount */
+    countEmptyUnreadCount?: Scalars['Int']
+    /** Number of non-empty values for unreadCount */
+    countNotEmptyUnreadCount?: Scalars['Int']
+    /** Percentage of empty values for unreadCount */
+    percentageEmptyUnreadCount?: Scalars['Float']
+    /** Percentage of non-empty values for unreadCount */
+    percentageNotEmptyUnreadCount?: Scalars['Float']
+    /** Minimum amount contained in the field unreadCount */
+    minUnreadCount?: Scalars['Float']
+    /** Maximum amount contained in the field unreadCount */
+    maxUnreadCount?: Scalars['Float']
+    /** Average amount contained in the field unreadCount */
+    avgUnreadCount?: Scalars['Float']
+    /** Sum of amounts contained in the field unreadCount */
+    sumUnreadCount?: Scalars['Float']
+    /** Number of unique values for respondedAt */
+    countUniqueValuesRespondedAt?: Scalars['Int']
+    /** Number of empty values for respondedAt */
+    countEmptyRespondedAt?: Scalars['Int']
+    /** Number of non-empty values for respondedAt */
+    countNotEmptyRespondedAt?: Scalars['Int']
+    /** Percentage of empty values for respondedAt */
+    percentageEmptyRespondedAt?: Scalars['Float']
+    /** Percentage of non-empty values for respondedAt */
+    percentageNotEmptyRespondedAt?: Scalars['Float']
+    /** Earliest date contained in the field respondedAt */
+    minRespondedAt?: Scalars['DateTime']
+    /** Latest date contained in the field respondedAt */
+    maxRespondedAt?: Scalars['DateTime']
+    /** Number of unique values for lastScannedAt */
+    countUniqueValuesLastScannedAt?: Scalars['Int']
+    /** Number of empty values for lastScannedAt */
+    countEmptyLastScannedAt?: Scalars['Int']
+    /** Number of non-empty values for lastScannedAt */
+    countNotEmptyLastScannedAt?: Scalars['Int']
+    /** Percentage of empty values for lastScannedAt */
+    percentageEmptyLastScannedAt?: Scalars['Float']
+    /** Percentage of non-empty values for lastScannedAt */
+    percentageNotEmptyLastScannedAt?: Scalars['Float']
+    /** Earliest date contained in the field lastScannedAt */
+    minLastScannedAt?: Scalars['DateTime']
+    /** Latest date contained in the field lastScannedAt */
+    maxLastScannedAt?: Scalars['DateTime']
+    /** Number of unique values for channel */
+    countUniqueValuesChannel?: Scalars['Int']
+    /** Number of empty values for channel */
+    countEmptyChannel?: Scalars['Int']
+    /** Number of non-empty values for channel */
+    countNotEmptyChannel?: Scalars['Int']
+    /** Percentage of empty values for channel */
+    percentageEmptyChannel?: Scalars['Float']
+    /** Percentage of non-empty values for channel */
+    percentageNotEmptyChannel?: Scalars['Float']
+    /** Number of unique values for facebookThreadId */
+    countUniqueValuesFacebookThreadId?: Scalars['Int']
+    /** Number of empty values for facebookThreadId */
+    countEmptyFacebookThreadId?: Scalars['Int']
+    /** Number of non-empty values for facebookThreadId */
+    countNotEmptyFacebookThreadId?: Scalars['Int']
+    /** Percentage of empty values for facebookThreadId */
+    percentageEmptyFacebookThreadId?: Scalars['Float']
+    /** Percentage of non-empty values for facebookThreadId */
+    percentageNotEmptyFacebookThreadId?: Scalars['Float']
+    /** Number of unique values for buyerName */
+    countUniqueValuesBuyerName?: Scalars['Int']
+    /** Number of empty values for buyerName */
+    countEmptyBuyerName?: Scalars['Int']
+    /** Number of non-empty values for buyerName */
+    countNotEmptyBuyerName?: Scalars['Int']
+    /** Percentage of empty values for buyerName */
+    percentageEmptyBuyerName?: Scalars['Float']
+    /** Percentage of non-empty values for buyerName */
+    percentageNotEmptyBuyerName?: Scalars['Float']
+    /** Number of unique values for buyerFacebookId */
+    countUniqueValuesBuyerFacebookId?: Scalars['Int']
+    /** Number of empty values for buyerFacebookId */
+    countEmptyBuyerFacebookId?: Scalars['Int']
+    /** Number of non-empty values for buyerFacebookId */
+    countNotEmptyBuyerFacebookId?: Scalars['Int']
+    /** Percentage of empty values for buyerFacebookId */
+    percentageEmptyBuyerFacebookId?: Scalars['Float']
+    /** Percentage of non-empty values for buyerFacebookId */
+    percentageNotEmptyBuyerFacebookId?: Scalars['Float']
+    /** Number of unique values for buyerProfileUrl */
+    countUniqueValuesBuyerProfileUrl?: Scalars['Int']
+    /** Number of empty values for buyerProfileUrl */
+    countEmptyBuyerProfileUrl?: Scalars['Int']
+    /** Number of non-empty values for buyerProfileUrl */
+    countNotEmptyBuyerProfileUrl?: Scalars['Int']
+    /** Percentage of empty values for buyerProfileUrl */
+    percentageEmptyBuyerProfileUrl?: Scalars['Float']
+    /** Percentage of non-empty values for buyerProfileUrl */
+    percentageNotEmptyBuyerProfileUrl?: Scalars['Float']
+    /** Number of unique values for buyerPhone */
+    countUniqueValuesBuyerPhone?: Scalars['Int']
+    /** Number of empty values for buyerPhone */
+    countEmptyBuyerPhone?: Scalars['Int']
+    /** Number of non-empty values for buyerPhone */
+    countNotEmptyBuyerPhone?: Scalars['Int']
+    /** Percentage of empty values for buyerPhone */
+    percentageEmptyBuyerPhone?: Scalars['Float']
+    /** Percentage of non-empty values for buyerPhone */
+    percentageNotEmptyBuyerPhone?: Scalars['Float']
+    /** Number of unique values for buyerEmail */
+    countUniqueValuesBuyerEmail?: Scalars['Int']
+    /** Number of empty values for buyerEmail */
+    countEmptyBuyerEmail?: Scalars['Int']
+    /** Number of non-empty values for buyerEmail */
+    countNotEmptyBuyerEmail?: Scalars['Int']
+    /** Percentage of empty values for buyerEmail */
+    percentageEmptyBuyerEmail?: Scalars['Float']
+    /** Percentage of non-empty values for buyerEmail */
+    percentageNotEmptyBuyerEmail?: Scalars['Float']
+    /** Number of unique values for listingTitle */
+    countUniqueValuesListingTitle?: Scalars['Int']
+    /** Number of empty values for listingTitle */
+    countEmptyListingTitle?: Scalars['Int']
+    /** Number of non-empty values for listingTitle */
+    countNotEmptyListingTitle?: Scalars['Int']
+    /** Percentage of empty values for listingTitle */
+    percentageEmptyListingTitle?: Scalars['Float']
+    /** Percentage of non-empty values for listingTitle */
+    percentageNotEmptyListingTitle?: Scalars['Float']
+    /** Number of unique values for facebookListingId */
+    countUniqueValuesFacebookListingId?: Scalars['Int']
+    /** Number of empty values for facebookListingId */
+    countEmptyFacebookListingId?: Scalars['Int']
+    /** Number of non-empty values for facebookListingId */
+    countNotEmptyFacebookListingId?: Scalars['Int']
+    /** Percentage of empty values for facebookListingId */
+    percentageEmptyFacebookListingId?: Scalars['Float']
+    /** Percentage of non-empty values for facebookListingId */
+    percentageNotEmptyFacebookListingId?: Scalars['Float']
+    /** Number of unique values for lastReadAt */
+    countUniqueValuesLastReadAt?: Scalars['Int']
+    /** Number of empty values for lastReadAt */
+    countEmptyLastReadAt?: Scalars['Int']
+    /** Number of non-empty values for lastReadAt */
+    countNotEmptyLastReadAt?: Scalars['Int']
+    /** Percentage of empty values for lastReadAt */
+    percentageEmptyLastReadAt?: Scalars['Float']
+    /** Percentage of non-empty values for lastReadAt */
+    percentageNotEmptyLastReadAt?: Scalars['Float']
+    /** Earliest date contained in the field lastReadAt */
+    minLastReadAt?: Scalars['DateTime']
+    /** Latest date contained in the field lastReadAt */
+    maxLastReadAt?: Scalars['DateTime']
+    /** Number of unique values for autoReplied */
+    countUniqueValuesAutoReplied?: Scalars['Int']
+    /** Number of empty values for autoReplied */
+    countEmptyAutoReplied?: Scalars['Int']
+    /** Number of non-empty values for autoReplied */
+    countNotEmptyAutoReplied?: Scalars['Int']
+    /** Percentage of empty values for autoReplied */
+    percentageEmptyAutoReplied?: Scalars['Float']
+    /** Percentage of non-empty values for autoReplied */
+    percentageNotEmptyAutoReplied?: Scalars['Float']
+    /** Count of true values in the field autoReplied */
+    countTrueAutoReplied?: Scalars['Int']
+    /** Count of false values in the field autoReplied */
+    countFalseAutoReplied?: Scalars['Int']
+    /** Number of unique values for aiTookOver */
+    countUniqueValuesAiTookOver?: Scalars['Int']
+    /** Number of empty values for aiTookOver */
+    countEmptyAiTookOver?: Scalars['Int']
+    /** Number of non-empty values for aiTookOver */
+    countNotEmptyAiTookOver?: Scalars['Int']
+    /** Percentage of empty values for aiTookOver */
+    percentageEmptyAiTookOver?: Scalars['Float']
+    /** Percentage of non-empty values for aiTookOver */
+    percentageNotEmptyAiTookOver?: Scalars['Float']
+    /** Count of true values in the field aiTookOver */
+    countTrueAiTookOver?: Scalars['Int']
+    /** Count of false values in the field aiTookOver */
+    countFalseAiTookOver?: Scalars['Int']
     edges: AgencyConversationEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -62191,6 +62873,8 @@ export interface SocialAccountGenqlSelection{
     socialContents?: (SocialContentConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (SocialContentFilterInput | null), orderBy?: ((SocialContentOrderByInput | null)[] | null)} })
     /** log-cli */
     agencyListings?: (AgencyListingConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgencyListingFilterInput | null), orderBy?: ((AgencyListingOrderByInput | null)[] | null)} })
+    /** logCli */
+    agencyConversations?: (AgencyConversationConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgencyConversationFilterInput | null), orderBy?: ((AgencyConversationOrderByInput | null)[] | null)} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -108364,6 +109048,8 @@ export interface AgencyListingGenqlSelection{
     replaces?: AgencyListingGenqlSelection
     /** log-cli */
     replacedBy?: (AgencyListingConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgencyListingFilterInput | null), orderBy?: ((AgencyListingOrderByInput | null)[] | null)} })
+    /** logCli */
+    agencyConversations?: (AgencyConversationConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgencyConversationFilterInput | null), orderBy?: ((AgencyConversationOrderByInput | null)[] | null)} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -117304,6 +117990,28 @@ export interface AgencyMessageGenqlSelection{
     errorCode?: boolean | number
     /** Why the text failed, in Telnyx's words */
     errorMessage?: boolean | number
+    /** log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS */
+    channel?: boolean | number
+    /** log-cli: when the message was sent, as the thread shows it */
+    sentAt?: boolean | number
+    /** log-cli: the Facebook message id, when the page gives it */
+    facebookMessageId?: boolean | number
+    /** log-cli: unique per conversation: facebookMessageId, or a hash of sender, time and text. A message is stored once */
+    messageKey?: boolean | number
+    /** logCli */
+    senderName?: boolean | number
+    /** log-cli: ours are read; a buyer message is unread until marked */
+    isRead?: boolean | number
+    /** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+    sentBy?: boolean | number
+    /** log-cli: an AI-drafted reply: DRAFT until a person approves, then SENT; or DISMISSED, FAILED */
+    aiStatus?: boolean | number
+    /** log-cli: what AI drafted, before a person edited it */
+    aiOriginalText?: boolean | number
+    /** logCli */
+    agencyConversationId?: boolean | number
+    /** log-cli: photos or files in the message: [{ url, kind }] */
+    media?: boolean | number
     /** AgencyMessages tied to the Timeline Activity */
     timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
     /** AgencyMessages tied to the Attachment */
@@ -117316,6 +118024,8 @@ export interface AgencyMessageGenqlSelection{
     agencyProspect?: (AgencyProspectConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgencyProspectFilterInput | null), orderBy?: ((AgencyProspectOrderByInput | null)[] | null)} })
     /** Link to lead thread owner */
     agencyLead?: (AgencyLeadConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgencyLeadFilterInput | null), orderBy?: ((AgencyLeadOrderByInput | null)[] | null)} })
+    /** logCli */
+    agencyConversation?: AgencyConversationGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -117516,6 +118226,114 @@ export interface AgencyMessageConnectionGenqlSelection{
     percentageEmptyErrorMessage?: boolean | number
     /** Percentage of non-empty values for errorMessage */
     percentageNotEmptyErrorMessage?: boolean | number
+    /** Number of unique values for channel */
+    countUniqueValuesChannel?: boolean | number
+    /** Number of empty values for channel */
+    countEmptyChannel?: boolean | number
+    /** Number of non-empty values for channel */
+    countNotEmptyChannel?: boolean | number
+    /** Percentage of empty values for channel */
+    percentageEmptyChannel?: boolean | number
+    /** Percentage of non-empty values for channel */
+    percentageNotEmptyChannel?: boolean | number
+    /** Number of unique values for sentAt */
+    countUniqueValuesSentAt?: boolean | number
+    /** Number of empty values for sentAt */
+    countEmptySentAt?: boolean | number
+    /** Number of non-empty values for sentAt */
+    countNotEmptySentAt?: boolean | number
+    /** Percentage of empty values for sentAt */
+    percentageEmptySentAt?: boolean | number
+    /** Percentage of non-empty values for sentAt */
+    percentageNotEmptySentAt?: boolean | number
+    /** Earliest date contained in the field sentAt */
+    minSentAt?: boolean | number
+    /** Latest date contained in the field sentAt */
+    maxSentAt?: boolean | number
+    /** Number of unique values for facebookMessageId */
+    countUniqueValuesFacebookMessageId?: boolean | number
+    /** Number of empty values for facebookMessageId */
+    countEmptyFacebookMessageId?: boolean | number
+    /** Number of non-empty values for facebookMessageId */
+    countNotEmptyFacebookMessageId?: boolean | number
+    /** Percentage of empty values for facebookMessageId */
+    percentageEmptyFacebookMessageId?: boolean | number
+    /** Percentage of non-empty values for facebookMessageId */
+    percentageNotEmptyFacebookMessageId?: boolean | number
+    /** Number of unique values for messageKey */
+    countUniqueValuesMessageKey?: boolean | number
+    /** Number of empty values for messageKey */
+    countEmptyMessageKey?: boolean | number
+    /** Number of non-empty values for messageKey */
+    countNotEmptyMessageKey?: boolean | number
+    /** Percentage of empty values for messageKey */
+    percentageEmptyMessageKey?: boolean | number
+    /** Percentage of non-empty values for messageKey */
+    percentageNotEmptyMessageKey?: boolean | number
+    /** Number of unique values for senderName */
+    countUniqueValuesSenderName?: boolean | number
+    /** Number of empty values for senderName */
+    countEmptySenderName?: boolean | number
+    /** Number of non-empty values for senderName */
+    countNotEmptySenderName?: boolean | number
+    /** Percentage of empty values for senderName */
+    percentageEmptySenderName?: boolean | number
+    /** Percentage of non-empty values for senderName */
+    percentageNotEmptySenderName?: boolean | number
+    /** Number of unique values for isRead */
+    countUniqueValuesIsRead?: boolean | number
+    /** Number of empty values for isRead */
+    countEmptyIsRead?: boolean | number
+    /** Number of non-empty values for isRead */
+    countNotEmptyIsRead?: boolean | number
+    /** Percentage of empty values for isRead */
+    percentageEmptyIsRead?: boolean | number
+    /** Percentage of non-empty values for isRead */
+    percentageNotEmptyIsRead?: boolean | number
+    /** Count of true values in the field isRead */
+    countTrueIsRead?: boolean | number
+    /** Count of false values in the field isRead */
+    countFalseIsRead?: boolean | number
+    /** Number of unique values for sentBy */
+    countUniqueValuesSentBy?: boolean | number
+    /** Number of empty values for sentBy */
+    countEmptySentBy?: boolean | number
+    /** Number of non-empty values for sentBy */
+    countNotEmptySentBy?: boolean | number
+    /** Percentage of empty values for sentBy */
+    percentageEmptySentBy?: boolean | number
+    /** Percentage of non-empty values for sentBy */
+    percentageNotEmptySentBy?: boolean | number
+    /** Number of unique values for aiStatus */
+    countUniqueValuesAiStatus?: boolean | number
+    /** Number of empty values for aiStatus */
+    countEmptyAiStatus?: boolean | number
+    /** Number of non-empty values for aiStatus */
+    countNotEmptyAiStatus?: boolean | number
+    /** Percentage of empty values for aiStatus */
+    percentageEmptyAiStatus?: boolean | number
+    /** Percentage of non-empty values for aiStatus */
+    percentageNotEmptyAiStatus?: boolean | number
+    /** Number of unique values for aiOriginalText */
+    countUniqueValuesAiOriginalText?: boolean | number
+    /** Number of empty values for aiOriginalText */
+    countEmptyAiOriginalText?: boolean | number
+    /** Number of non-empty values for aiOriginalText */
+    countNotEmptyAiOriginalText?: boolean | number
+    /** Percentage of empty values for aiOriginalText */
+    percentageEmptyAiOriginalText?: boolean | number
+    /** Percentage of non-empty values for aiOriginalText */
+    percentageNotEmptyAiOriginalText?: boolean | number
+    /** Number of unique values for media */
+    countUniqueValuesMedia?: boolean | number
+    /** Number of empty values for media */
+    countEmptyMedia?: boolean | number
+    /** Number of non-empty values for media */
+    countNotEmptyMedia?: boolean | number
+    /** Percentage of empty values for media */
+    percentageEmptyMedia?: boolean | number
+    /** Percentage of non-empty values for media */
+    percentageNotEmptyMedia?: boolean | number
     edges?: AgencyMessageEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -117709,6 +118527,114 @@ export interface AgencyMessageGroupByConnectionGenqlSelection{
     percentageEmptyErrorMessage?: boolean | number
     /** Percentage of non-empty values for errorMessage */
     percentageNotEmptyErrorMessage?: boolean | number
+    /** Number of unique values for channel */
+    countUniqueValuesChannel?: boolean | number
+    /** Number of empty values for channel */
+    countEmptyChannel?: boolean | number
+    /** Number of non-empty values for channel */
+    countNotEmptyChannel?: boolean | number
+    /** Percentage of empty values for channel */
+    percentageEmptyChannel?: boolean | number
+    /** Percentage of non-empty values for channel */
+    percentageNotEmptyChannel?: boolean | number
+    /** Number of unique values for sentAt */
+    countUniqueValuesSentAt?: boolean | number
+    /** Number of empty values for sentAt */
+    countEmptySentAt?: boolean | number
+    /** Number of non-empty values for sentAt */
+    countNotEmptySentAt?: boolean | number
+    /** Percentage of empty values for sentAt */
+    percentageEmptySentAt?: boolean | number
+    /** Percentage of non-empty values for sentAt */
+    percentageNotEmptySentAt?: boolean | number
+    /** Earliest date contained in the field sentAt */
+    minSentAt?: boolean | number
+    /** Latest date contained in the field sentAt */
+    maxSentAt?: boolean | number
+    /** Number of unique values for facebookMessageId */
+    countUniqueValuesFacebookMessageId?: boolean | number
+    /** Number of empty values for facebookMessageId */
+    countEmptyFacebookMessageId?: boolean | number
+    /** Number of non-empty values for facebookMessageId */
+    countNotEmptyFacebookMessageId?: boolean | number
+    /** Percentage of empty values for facebookMessageId */
+    percentageEmptyFacebookMessageId?: boolean | number
+    /** Percentage of non-empty values for facebookMessageId */
+    percentageNotEmptyFacebookMessageId?: boolean | number
+    /** Number of unique values for messageKey */
+    countUniqueValuesMessageKey?: boolean | number
+    /** Number of empty values for messageKey */
+    countEmptyMessageKey?: boolean | number
+    /** Number of non-empty values for messageKey */
+    countNotEmptyMessageKey?: boolean | number
+    /** Percentage of empty values for messageKey */
+    percentageEmptyMessageKey?: boolean | number
+    /** Percentage of non-empty values for messageKey */
+    percentageNotEmptyMessageKey?: boolean | number
+    /** Number of unique values for senderName */
+    countUniqueValuesSenderName?: boolean | number
+    /** Number of empty values for senderName */
+    countEmptySenderName?: boolean | number
+    /** Number of non-empty values for senderName */
+    countNotEmptySenderName?: boolean | number
+    /** Percentage of empty values for senderName */
+    percentageEmptySenderName?: boolean | number
+    /** Percentage of non-empty values for senderName */
+    percentageNotEmptySenderName?: boolean | number
+    /** Number of unique values for isRead */
+    countUniqueValuesIsRead?: boolean | number
+    /** Number of empty values for isRead */
+    countEmptyIsRead?: boolean | number
+    /** Number of non-empty values for isRead */
+    countNotEmptyIsRead?: boolean | number
+    /** Percentage of empty values for isRead */
+    percentageEmptyIsRead?: boolean | number
+    /** Percentage of non-empty values for isRead */
+    percentageNotEmptyIsRead?: boolean | number
+    /** Count of true values in the field isRead */
+    countTrueIsRead?: boolean | number
+    /** Count of false values in the field isRead */
+    countFalseIsRead?: boolean | number
+    /** Number of unique values for sentBy */
+    countUniqueValuesSentBy?: boolean | number
+    /** Number of empty values for sentBy */
+    countEmptySentBy?: boolean | number
+    /** Number of non-empty values for sentBy */
+    countNotEmptySentBy?: boolean | number
+    /** Percentage of empty values for sentBy */
+    percentageEmptySentBy?: boolean | number
+    /** Percentage of non-empty values for sentBy */
+    percentageNotEmptySentBy?: boolean | number
+    /** Number of unique values for aiStatus */
+    countUniqueValuesAiStatus?: boolean | number
+    /** Number of empty values for aiStatus */
+    countEmptyAiStatus?: boolean | number
+    /** Number of non-empty values for aiStatus */
+    countNotEmptyAiStatus?: boolean | number
+    /** Percentage of empty values for aiStatus */
+    percentageEmptyAiStatus?: boolean | number
+    /** Percentage of non-empty values for aiStatus */
+    percentageNotEmptyAiStatus?: boolean | number
+    /** Number of unique values for aiOriginalText */
+    countUniqueValuesAiOriginalText?: boolean | number
+    /** Number of empty values for aiOriginalText */
+    countEmptyAiOriginalText?: boolean | number
+    /** Number of non-empty values for aiOriginalText */
+    countNotEmptyAiOriginalText?: boolean | number
+    /** Percentage of empty values for aiOriginalText */
+    percentageEmptyAiOriginalText?: boolean | number
+    /** Percentage of non-empty values for aiOriginalText */
+    percentageNotEmptyAiOriginalText?: boolean | number
+    /** Number of unique values for media */
+    countUniqueValuesMedia?: boolean | number
+    /** Number of empty values for media */
+    countEmptyMedia?: boolean | number
+    /** Number of non-empty values for media */
+    countNotEmptyMedia?: boolean | number
+    /** Percentage of empty values for media */
+    percentageEmptyMedia?: boolean | number
+    /** Percentage of non-empty values for media */
+    percentageNotEmptyMedia?: boolean | number
     edges?: AgencyMessageEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -117756,7 +118682,31 @@ searchVector?: (Scalars['TSVector'] | null),direction?: (Scalars['String'] | nul
 /** Telnyx error code when the text failed, e.g. 40010 */
 errorCode?: (Scalars['String'] | null),
 /** Why the text failed, in Telnyx's words */
-errorMessage?: (Scalars['String'] | null)}
+errorMessage?: (Scalars['String'] | null),
+/** log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS */
+channel?: (AgencyMessageChannelEnum | null),
+/** log-cli: when the message was sent, as the thread shows it */
+sentAt?: (Scalars['DateTime'] | null),
+/** log-cli: the Facebook message id, when the page gives it */
+facebookMessageId?: (Scalars['String'] | null),
+/** log-cli: unique per conversation: facebookMessageId, or a hash of sender, time and text. A message is stored once */
+messageKey?: (Scalars['String'] | null),
+/** logCli */
+senderName?: (Scalars['String'] | null),
+/** log-cli: ours are read; a buyer message is unread until marked */
+isRead?: (Scalars['Boolean'] | null),
+/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+sentBy?: (AgencyMessageSentByEnum | null),
+/** log-cli: an AI-drafted reply: DRAFT until a person approves, then SENT; or DISMISSED, FAILED */
+aiStatus?: (AgencyMessageAiStatusEnum | null),
+/** log-cli: what AI drafted, before a person edited it */
+aiOriginalText?: (Scalars['String'] | null),
+/** logCli */
+agencyConversationId?: (Scalars['ID'] | null),
+/** logCli */
+agencyConversation?: (AgencyConversationRelationInput | null),
+/** log-cli: photos or files in the message: [{ url, kind }] */
+media?: (Scalars['JSON'] | null)}
 
 
 /** SMS thread ledger (inbound + outbound) */
@@ -117782,7 +118732,31 @@ searchVector?: (Scalars['TSVector'] | null),direction?: (Scalars['String'] | nul
 /** Telnyx error code when the text failed, e.g. 40010 */
 errorCode?: (Scalars['String'] | null),
 /** Why the text failed, in Telnyx's words */
-errorMessage?: (Scalars['String'] | null)}
+errorMessage?: (Scalars['String'] | null),
+/** log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS */
+channel?: (AgencyMessageChannelEnum | null),
+/** log-cli: when the message was sent, as the thread shows it */
+sentAt?: (Scalars['DateTime'] | null),
+/** log-cli: the Facebook message id, when the page gives it */
+facebookMessageId?: (Scalars['String'] | null),
+/** log-cli: unique per conversation: facebookMessageId, or a hash of sender, time and text. A message is stored once */
+messageKey?: (Scalars['String'] | null),
+/** logCli */
+senderName?: (Scalars['String'] | null),
+/** log-cli: ours are read; a buyer message is unread until marked */
+isRead?: (Scalars['Boolean'] | null),
+/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+sentBy?: (AgencyMessageSentByEnum | null),
+/** log-cli: an AI-drafted reply: DRAFT until a person approves, then SENT; or DISMISSED, FAILED */
+aiStatus?: (AgencyMessageAiStatusEnum | null),
+/** log-cli: what AI drafted, before a person edited it */
+aiOriginalText?: (Scalars['String'] | null),
+/** logCli */
+agencyConversationId?: (Scalars['ID'] | null),
+/** logCli */
+agencyConversation?: (AgencyConversationRelationInput | null),
+/** log-cli: photos or files in the message: [{ url, kind }] */
+media?: (Scalars['JSON'] | null)}
 
 
 /** SMS thread ledger (inbound + outbound) */
@@ -117808,7 +118782,37 @@ searchVector?: (TSVectorFilter | null),direction?: (StringFilter | null),status?
 /** Telnyx error code when the text failed, e.g. 40010 */
 errorCode?: (StringFilter | null),
 /** Why the text failed, in Telnyx's words */
-errorMessage?: (StringFilter | null),and?: ((AgencyMessageFilterInput | null)[] | null),or?: ((AgencyMessageFilterInput | null)[] | null),not?: (AgencyMessageFilterInput | null)}
+errorMessage?: (StringFilter | null),
+/** log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS */
+channel?: (AgencyMessageChannelEnumFilter | null),
+/** log-cli: when the message was sent, as the thread shows it */
+sentAt?: (DateTimeFilter | null),
+/** log-cli: the Facebook message id, when the page gives it */
+facebookMessageId?: (StringFilter | null),
+/** log-cli: unique per conversation: facebookMessageId, or a hash of sender, time and text. A message is stored once */
+messageKey?: (StringFilter | null),
+/** logCli */
+senderName?: (StringFilter | null),
+/** log-cli: ours are read; a buyer message is unread until marked */
+isRead?: (BooleanFilter | null),
+/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+sentBy?: (AgencyMessageSentByEnumFilter | null),
+/** log-cli: an AI-drafted reply: DRAFT until a person approves, then SENT; or DISMISSED, FAILED */
+aiStatus?: (AgencyMessageAiStatusEnumFilter | null),
+/** log-cli: what AI drafted, before a person edited it */
+aiOriginalText?: (StringFilter | null),
+/** logCli */
+agencyConversationId?: (UUIDFilter | null),
+/** Filter on fields of the related agencyConversation */
+agencyConversation?: (AgencyConversationFilterInput | null),
+/** log-cli: photos or files in the message: [{ url, kind }] */
+media?: (RawJsonFilter | null),and?: ((AgencyMessageFilterInput | null)[] | null),or?: ((AgencyMessageFilterInput | null)[] | null),not?: (AgencyMessageFilterInput | null)}
+
+export interface AgencyMessageChannelEnumFilter {eq?: (AgencyMessageChannelEnum | null),neq?: (AgencyMessageChannelEnum | null),in?: ((AgencyMessageChannelEnum | null)[] | null),containsAny?: ((AgencyMessageChannelEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AgencyMessageChannelEnum | null),gte?: (AgencyMessageChannelEnum | null),lt?: (AgencyMessageChannelEnum | null),lte?: (AgencyMessageChannelEnum | null)}
+
+export interface AgencyMessageSentByEnumFilter {eq?: (AgencyMessageSentByEnum | null),neq?: (AgencyMessageSentByEnum | null),in?: ((AgencyMessageSentByEnum | null)[] | null),containsAny?: ((AgencyMessageSentByEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AgencyMessageSentByEnum | null),gte?: (AgencyMessageSentByEnum | null),lt?: (AgencyMessageSentByEnum | null),lte?: (AgencyMessageSentByEnum | null)}
+
+export interface AgencyMessageAiStatusEnumFilter {eq?: (AgencyMessageAiStatusEnum | null),neq?: (AgencyMessageAiStatusEnum | null),in?: ((AgencyMessageAiStatusEnum | null)[] | null),containsAny?: ((AgencyMessageAiStatusEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AgencyMessageAiStatusEnum | null),gte?: (AgencyMessageAiStatusEnum | null),lt?: (AgencyMessageAiStatusEnum | null),lte?: (AgencyMessageAiStatusEnum | null)}
 
 
 /** SMS thread ledger (inbound + outbound) */
@@ -117834,7 +118838,31 @@ searchVector?: (OrderByDirection | null),direction?: (OrderByDirection | null),s
 /** Telnyx error code when the text failed, e.g. 40010 */
 errorCode?: (OrderByDirection | null),
 /** Why the text failed, in Telnyx's words */
-errorMessage?: (OrderByDirection | null)}
+errorMessage?: (OrderByDirection | null),
+/** log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS */
+channel?: (OrderByDirection | null),
+/** log-cli: when the message was sent, as the thread shows it */
+sentAt?: (OrderByDirection | null),
+/** log-cli: the Facebook message id, when the page gives it */
+facebookMessageId?: (OrderByDirection | null),
+/** log-cli: unique per conversation: facebookMessageId, or a hash of sender, time and text. A message is stored once */
+messageKey?: (OrderByDirection | null),
+/** logCli */
+senderName?: (OrderByDirection | null),
+/** log-cli: ours are read; a buyer message is unread until marked */
+isRead?: (OrderByDirection | null),
+/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+sentBy?: (OrderByDirection | null),
+/** log-cli: an AI-drafted reply: DRAFT until a person approves, then SENT; or DISMISSED, FAILED */
+aiStatus?: (OrderByDirection | null),
+/** log-cli: what AI drafted, before a person edited it */
+aiOriginalText?: (OrderByDirection | null),
+/** logCli */
+agencyConversationId?: (OrderByDirection | null),
+/** Order by fields of the related agencyConversation */
+agencyConversation?: (AgencyConversationOrderByInput | null),
+/** log-cli: photos or files in the message: [{ url, kind }] */
+media?: (OrderByDirection | null)}
 
 
 /** SMS thread ledger (inbound + outbound) */
@@ -117862,7 +118890,31 @@ searchVector?: (OrderByDirection | null),direction?: (OrderByDirection | null),s
 /** Telnyx error code when the text failed, e.g. 40010 */
 errorCode?: (OrderByDirection | null),
 /** Why the text failed, in Telnyx's words */
-errorMessage?: (OrderByDirection | null)}
+errorMessage?: (OrderByDirection | null),
+/** log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS */
+channel?: (OrderByDirection | null),
+/** log-cli: when the message was sent, as the thread shows it */
+sentAt?: (OrderByDateGranularityInput | null),
+/** log-cli: the Facebook message id, when the page gives it */
+facebookMessageId?: (OrderByDirection | null),
+/** log-cli: unique per conversation: facebookMessageId, or a hash of sender, time and text. A message is stored once */
+messageKey?: (OrderByDirection | null),
+/** logCli */
+senderName?: (OrderByDirection | null),
+/** log-cli: ours are read; a buyer message is unread until marked */
+isRead?: (OrderByDirection | null),
+/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+sentBy?: (OrderByDirection | null),
+/** log-cli: an AI-drafted reply: DRAFT until a person approves, then SENT; or DISMISSED, FAILED */
+aiStatus?: (OrderByDirection | null),
+/** log-cli: what AI drafted, before a person edited it */
+aiOriginalText?: (OrderByDirection | null),
+/** logCli */
+agencyConversationId?: (OrderByDirection | null),
+/** Order by fields of the related agencyConversation */
+agencyConversation?: (AgencyConversationOrderByWithGroupByInput | null),
+/** log-cli: photos or files in the message: [{ url, kind }] */
+media?: (OrderByDirection | null)}
 
 
 /** Aggregate-based ordering */
@@ -118050,7 +119102,119 @@ countNotEmptyErrorMessage?: (OrderByDirection | null),
 /** Percentage of empty values for errorMessage */
 percentageEmptyErrorMessage?: (OrderByDirection | null),
 /** Percentage of non-empty values for errorMessage */
-percentageNotEmptyErrorMessage?: (OrderByDirection | null)}
+percentageNotEmptyErrorMessage?: (OrderByDirection | null),
+/** Number of unique values for channel */
+countUniqueValuesChannel?: (OrderByDirection | null),
+/** Number of empty values for channel */
+countEmptyChannel?: (OrderByDirection | null),
+/** Number of non-empty values for channel */
+countNotEmptyChannel?: (OrderByDirection | null),
+/** Percentage of empty values for channel */
+percentageEmptyChannel?: (OrderByDirection | null),
+/** Percentage of non-empty values for channel */
+percentageNotEmptyChannel?: (OrderByDirection | null),
+/** Number of unique values for sentAt */
+countUniqueValuesSentAt?: (OrderByDirection | null),
+/** Number of empty values for sentAt */
+countEmptySentAt?: (OrderByDirection | null),
+/** Number of non-empty values for sentAt */
+countNotEmptySentAt?: (OrderByDirection | null),
+/** Percentage of empty values for sentAt */
+percentageEmptySentAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for sentAt */
+percentageNotEmptySentAt?: (OrderByDirection | null),
+/** Earliest date contained in the field sentAt */
+minSentAt?: (OrderByDirection | null),
+/** Latest date contained in the field sentAt */
+maxSentAt?: (OrderByDirection | null),
+/** Number of unique values for facebookMessageId */
+countUniqueValuesFacebookMessageId?: (OrderByDirection | null),
+/** Number of empty values for facebookMessageId */
+countEmptyFacebookMessageId?: (OrderByDirection | null),
+/** Number of non-empty values for facebookMessageId */
+countNotEmptyFacebookMessageId?: (OrderByDirection | null),
+/** Percentage of empty values for facebookMessageId */
+percentageEmptyFacebookMessageId?: (OrderByDirection | null),
+/** Percentage of non-empty values for facebookMessageId */
+percentageNotEmptyFacebookMessageId?: (OrderByDirection | null),
+/** Number of unique values for messageKey */
+countUniqueValuesMessageKey?: (OrderByDirection | null),
+/** Number of empty values for messageKey */
+countEmptyMessageKey?: (OrderByDirection | null),
+/** Number of non-empty values for messageKey */
+countNotEmptyMessageKey?: (OrderByDirection | null),
+/** Percentage of empty values for messageKey */
+percentageEmptyMessageKey?: (OrderByDirection | null),
+/** Percentage of non-empty values for messageKey */
+percentageNotEmptyMessageKey?: (OrderByDirection | null),
+/** Number of unique values for senderName */
+countUniqueValuesSenderName?: (OrderByDirection | null),
+/** Number of empty values for senderName */
+countEmptySenderName?: (OrderByDirection | null),
+/** Number of non-empty values for senderName */
+countNotEmptySenderName?: (OrderByDirection | null),
+/** Percentage of empty values for senderName */
+percentageEmptySenderName?: (OrderByDirection | null),
+/** Percentage of non-empty values for senderName */
+percentageNotEmptySenderName?: (OrderByDirection | null),
+/** Number of unique values for isRead */
+countUniqueValuesIsRead?: (OrderByDirection | null),
+/** Number of empty values for isRead */
+countEmptyIsRead?: (OrderByDirection | null),
+/** Number of non-empty values for isRead */
+countNotEmptyIsRead?: (OrderByDirection | null),
+/** Percentage of empty values for isRead */
+percentageEmptyIsRead?: (OrderByDirection | null),
+/** Percentage of non-empty values for isRead */
+percentageNotEmptyIsRead?: (OrderByDirection | null),
+/** Count of true values in the field isRead */
+countTrueIsRead?: (OrderByDirection | null),
+/** Count of false values in the field isRead */
+countFalseIsRead?: (OrderByDirection | null),
+/** Number of unique values for sentBy */
+countUniqueValuesSentBy?: (OrderByDirection | null),
+/** Number of empty values for sentBy */
+countEmptySentBy?: (OrderByDirection | null),
+/** Number of non-empty values for sentBy */
+countNotEmptySentBy?: (OrderByDirection | null),
+/** Percentage of empty values for sentBy */
+percentageEmptySentBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for sentBy */
+percentageNotEmptySentBy?: (OrderByDirection | null),
+/** Number of unique values for aiStatus */
+countUniqueValuesAiStatus?: (OrderByDirection | null),
+/** Number of empty values for aiStatus */
+countEmptyAiStatus?: (OrderByDirection | null),
+/** Number of non-empty values for aiStatus */
+countNotEmptyAiStatus?: (OrderByDirection | null),
+/** Percentage of empty values for aiStatus */
+percentageEmptyAiStatus?: (OrderByDirection | null),
+/** Percentage of non-empty values for aiStatus */
+percentageNotEmptyAiStatus?: (OrderByDirection | null),
+/** Number of unique values for aiOriginalText */
+countUniqueValuesAiOriginalText?: (OrderByDirection | null),
+/** Number of empty values for aiOriginalText */
+countEmptyAiOriginalText?: (OrderByDirection | null),
+/** Number of non-empty values for aiOriginalText */
+countNotEmptyAiOriginalText?: (OrderByDirection | null),
+/** Percentage of empty values for aiOriginalText */
+percentageEmptyAiOriginalText?: (OrderByDirection | null),
+/** Percentage of non-empty values for aiOriginalText */
+percentageNotEmptyAiOriginalText?: (OrderByDirection | null),
+/** logCli */
+agencyConversationId?: (OrderByDirection | null),
+/** Order by fields of the related agencyConversation */
+agencyConversation?: (AgencyConversationOrderByInput | null),
+/** Number of unique values for media */
+countUniqueValuesMedia?: (OrderByDirection | null),
+/** Number of empty values for media */
+countEmptyMedia?: (OrderByDirection | null),
+/** Number of non-empty values for media */
+countNotEmptyMedia?: (OrderByDirection | null),
+/** Percentage of empty values for media */
+percentageEmptyMedia?: (OrderByDirection | null),
+/** Percentage of non-empty values for media */
+percentageNotEmptyMedia?: (OrderByDirection | null)}
 
 
 /** SMS thread ledger (inbound + outbound) */
@@ -118064,7 +119228,27 @@ updatedAt?: (GroupByDateGranularityInput | null),direction?: (Scalars['Boolean']
 /** Telnyx error code when the text failed, e.g. 40010 */
 errorCode?: (Scalars['Boolean'] | null),
 /** Why the text failed, in Telnyx's words */
-errorMessage?: (Scalars['Boolean'] | null)}
+errorMessage?: (Scalars['Boolean'] | null),
+/** log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS */
+channel?: (Scalars['Boolean'] | null),
+/** log-cli: when the message was sent, as the thread shows it */
+sentAt?: (GroupByDateGranularityInput | null),
+/** log-cli: the Facebook message id, when the page gives it */
+facebookMessageId?: (Scalars['Boolean'] | null),
+/** log-cli: unique per conversation: facebookMessageId, or a hash of sender, time and text. A message is stored once */
+messageKey?: (Scalars['Boolean'] | null),
+/** logCli */
+senderName?: (Scalars['Boolean'] | null),
+/** log-cli: ours are read; a buyer message is unread until marked */
+isRead?: (Scalars['Boolean'] | null),
+/** log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system */
+sentBy?: (Scalars['Boolean'] | null),
+/** log-cli: an AI-drafted reply: DRAFT until a person approves, then SENT; or DISMISSED, FAILED */
+aiStatus?: (Scalars['Boolean'] | null),
+/** log-cli: what AI drafted, before a person edited it */
+aiOriginalText?: (Scalars['Boolean'] | null),
+/** Group by fields of the related agencyConversation */
+agencyConversation?: (AgencyConversationGroupByInput | null)}
 
 
 /** CRM link/metadata for one SMS thread (history lives in Blaster) */
@@ -118101,6 +119285,42 @@ export interface AgencyConversationGenqlSelection{
     agencyProspectId?: boolean | number
     agencyPhoneId?: boolean | number
     agencyLeadId?: boolean | number
+    /** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+    leadStatus?: boolean | number
+    /** log-cli: buyer messages not yet read */
+    unreadCount?: boolean | number
+    /** log-cli: our first reply in the thread */
+    respondedAt?: boolean | number
+    /** log-cli: the last time the inbox was read for this thread */
+    lastScannedAt?: boolean | number
+    /** log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS */
+    channel?: boolean | number
+    /** log-cli: the thread id in facebook.com/messages/t/<id> (Marketplace inbox). With the account, the conversation key */
+    facebookThreadId?: boolean | number
+    /** log-cli: the buyer name as the thread shows it */
+    buyerName?: boolean | number
+    /** log-cli: the buyer Facebook user id, when the thread links their profile */
+    buyerFacebookId?: boolean | number
+    /** logCli */
+    buyerProfileUrl?: boolean | number
+    /** log-cli: a phone number the buyer gave in the conversation */
+    buyerPhone?: boolean | number
+    /** log-cli: an email the buyer gave in the conversation */
+    buyerEmail?: boolean | number
+    /** log-cli: the listing title the thread header shows (Buyer · Title) */
+    listingTitle?: boolean | number
+    /** log-cli: the Marketplace item id the thread is about (marketplace/item/<id>), when shown */
+    facebookListingId?: boolean | number
+    /** logCli */
+    lastReadAt?: boolean | number
+    /** log-cli: a reply went out without a person */
+    autoReplied?: boolean | number
+    /** log-cli: replies in this thread are drafted by AI */
+    aiTookOver?: boolean | number
+    /** logCli */
+    agencyListingId?: boolean | number
+    /** logCli */
+    socialAccountId?: boolean | number
     /** AgencyConversations tied to the Timeline Activity */
     timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
     /** AgencyConversations tied to the Attachment */
@@ -118112,6 +119332,12 @@ export interface AgencyConversationGenqlSelection{
     agencyProspect?: AgencyProspectGenqlSelection
     agencyPhone?: AgencyPhoneGenqlSelection
     agencyLead?: AgencyLeadGenqlSelection
+    /** logCli */
+    agencyListing?: AgencyListingGenqlSelection
+    /** logCli */
+    socialAccount?: SocialAccountGenqlSelection
+    /** logCli */
+    agencyMessages?: (AgencyMessageConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgencyMessageFilterInput | null), orderBy?: ((AgencyMessageOrderByInput | null)[] | null)} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -118354,6 +119580,194 @@ export interface AgencyConversationConnectionGenqlSelection{
     avgMessageCount?: boolean | number
     /** Sum of amounts contained in the field messageCount */
     sumMessageCount?: boolean | number
+    /** Number of unique values for leadStatus */
+    countUniqueValuesLeadStatus?: boolean | number
+    /** Number of empty values for leadStatus */
+    countEmptyLeadStatus?: boolean | number
+    /** Number of non-empty values for leadStatus */
+    countNotEmptyLeadStatus?: boolean | number
+    /** Percentage of empty values for leadStatus */
+    percentageEmptyLeadStatus?: boolean | number
+    /** Percentage of non-empty values for leadStatus */
+    percentageNotEmptyLeadStatus?: boolean | number
+    /** Number of unique values for unreadCount */
+    countUniqueValuesUnreadCount?: boolean | number
+    /** Number of empty values for unreadCount */
+    countEmptyUnreadCount?: boolean | number
+    /** Number of non-empty values for unreadCount */
+    countNotEmptyUnreadCount?: boolean | number
+    /** Percentage of empty values for unreadCount */
+    percentageEmptyUnreadCount?: boolean | number
+    /** Percentage of non-empty values for unreadCount */
+    percentageNotEmptyUnreadCount?: boolean | number
+    /** Minimum amount contained in the field unreadCount */
+    minUnreadCount?: boolean | number
+    /** Maximum amount contained in the field unreadCount */
+    maxUnreadCount?: boolean | number
+    /** Average amount contained in the field unreadCount */
+    avgUnreadCount?: boolean | number
+    /** Sum of amounts contained in the field unreadCount */
+    sumUnreadCount?: boolean | number
+    /** Number of unique values for respondedAt */
+    countUniqueValuesRespondedAt?: boolean | number
+    /** Number of empty values for respondedAt */
+    countEmptyRespondedAt?: boolean | number
+    /** Number of non-empty values for respondedAt */
+    countNotEmptyRespondedAt?: boolean | number
+    /** Percentage of empty values for respondedAt */
+    percentageEmptyRespondedAt?: boolean | number
+    /** Percentage of non-empty values for respondedAt */
+    percentageNotEmptyRespondedAt?: boolean | number
+    /** Earliest date contained in the field respondedAt */
+    minRespondedAt?: boolean | number
+    /** Latest date contained in the field respondedAt */
+    maxRespondedAt?: boolean | number
+    /** Number of unique values for lastScannedAt */
+    countUniqueValuesLastScannedAt?: boolean | number
+    /** Number of empty values for lastScannedAt */
+    countEmptyLastScannedAt?: boolean | number
+    /** Number of non-empty values for lastScannedAt */
+    countNotEmptyLastScannedAt?: boolean | number
+    /** Percentage of empty values for lastScannedAt */
+    percentageEmptyLastScannedAt?: boolean | number
+    /** Percentage of non-empty values for lastScannedAt */
+    percentageNotEmptyLastScannedAt?: boolean | number
+    /** Earliest date contained in the field lastScannedAt */
+    minLastScannedAt?: boolean | number
+    /** Latest date contained in the field lastScannedAt */
+    maxLastScannedAt?: boolean | number
+    /** Number of unique values for channel */
+    countUniqueValuesChannel?: boolean | number
+    /** Number of empty values for channel */
+    countEmptyChannel?: boolean | number
+    /** Number of non-empty values for channel */
+    countNotEmptyChannel?: boolean | number
+    /** Percentage of empty values for channel */
+    percentageEmptyChannel?: boolean | number
+    /** Percentage of non-empty values for channel */
+    percentageNotEmptyChannel?: boolean | number
+    /** Number of unique values for facebookThreadId */
+    countUniqueValuesFacebookThreadId?: boolean | number
+    /** Number of empty values for facebookThreadId */
+    countEmptyFacebookThreadId?: boolean | number
+    /** Number of non-empty values for facebookThreadId */
+    countNotEmptyFacebookThreadId?: boolean | number
+    /** Percentage of empty values for facebookThreadId */
+    percentageEmptyFacebookThreadId?: boolean | number
+    /** Percentage of non-empty values for facebookThreadId */
+    percentageNotEmptyFacebookThreadId?: boolean | number
+    /** Number of unique values for buyerName */
+    countUniqueValuesBuyerName?: boolean | number
+    /** Number of empty values for buyerName */
+    countEmptyBuyerName?: boolean | number
+    /** Number of non-empty values for buyerName */
+    countNotEmptyBuyerName?: boolean | number
+    /** Percentage of empty values for buyerName */
+    percentageEmptyBuyerName?: boolean | number
+    /** Percentage of non-empty values for buyerName */
+    percentageNotEmptyBuyerName?: boolean | number
+    /** Number of unique values for buyerFacebookId */
+    countUniqueValuesBuyerFacebookId?: boolean | number
+    /** Number of empty values for buyerFacebookId */
+    countEmptyBuyerFacebookId?: boolean | number
+    /** Number of non-empty values for buyerFacebookId */
+    countNotEmptyBuyerFacebookId?: boolean | number
+    /** Percentage of empty values for buyerFacebookId */
+    percentageEmptyBuyerFacebookId?: boolean | number
+    /** Percentage of non-empty values for buyerFacebookId */
+    percentageNotEmptyBuyerFacebookId?: boolean | number
+    /** Number of unique values for buyerProfileUrl */
+    countUniqueValuesBuyerProfileUrl?: boolean | number
+    /** Number of empty values for buyerProfileUrl */
+    countEmptyBuyerProfileUrl?: boolean | number
+    /** Number of non-empty values for buyerProfileUrl */
+    countNotEmptyBuyerProfileUrl?: boolean | number
+    /** Percentage of empty values for buyerProfileUrl */
+    percentageEmptyBuyerProfileUrl?: boolean | number
+    /** Percentage of non-empty values for buyerProfileUrl */
+    percentageNotEmptyBuyerProfileUrl?: boolean | number
+    /** Number of unique values for buyerPhone */
+    countUniqueValuesBuyerPhone?: boolean | number
+    /** Number of empty values for buyerPhone */
+    countEmptyBuyerPhone?: boolean | number
+    /** Number of non-empty values for buyerPhone */
+    countNotEmptyBuyerPhone?: boolean | number
+    /** Percentage of empty values for buyerPhone */
+    percentageEmptyBuyerPhone?: boolean | number
+    /** Percentage of non-empty values for buyerPhone */
+    percentageNotEmptyBuyerPhone?: boolean | number
+    /** Number of unique values for buyerEmail */
+    countUniqueValuesBuyerEmail?: boolean | number
+    /** Number of empty values for buyerEmail */
+    countEmptyBuyerEmail?: boolean | number
+    /** Number of non-empty values for buyerEmail */
+    countNotEmptyBuyerEmail?: boolean | number
+    /** Percentage of empty values for buyerEmail */
+    percentageEmptyBuyerEmail?: boolean | number
+    /** Percentage of non-empty values for buyerEmail */
+    percentageNotEmptyBuyerEmail?: boolean | number
+    /** Number of unique values for listingTitle */
+    countUniqueValuesListingTitle?: boolean | number
+    /** Number of empty values for listingTitle */
+    countEmptyListingTitle?: boolean | number
+    /** Number of non-empty values for listingTitle */
+    countNotEmptyListingTitle?: boolean | number
+    /** Percentage of empty values for listingTitle */
+    percentageEmptyListingTitle?: boolean | number
+    /** Percentage of non-empty values for listingTitle */
+    percentageNotEmptyListingTitle?: boolean | number
+    /** Number of unique values for facebookListingId */
+    countUniqueValuesFacebookListingId?: boolean | number
+    /** Number of empty values for facebookListingId */
+    countEmptyFacebookListingId?: boolean | number
+    /** Number of non-empty values for facebookListingId */
+    countNotEmptyFacebookListingId?: boolean | number
+    /** Percentage of empty values for facebookListingId */
+    percentageEmptyFacebookListingId?: boolean | number
+    /** Percentage of non-empty values for facebookListingId */
+    percentageNotEmptyFacebookListingId?: boolean | number
+    /** Number of unique values for lastReadAt */
+    countUniqueValuesLastReadAt?: boolean | number
+    /** Number of empty values for lastReadAt */
+    countEmptyLastReadAt?: boolean | number
+    /** Number of non-empty values for lastReadAt */
+    countNotEmptyLastReadAt?: boolean | number
+    /** Percentage of empty values for lastReadAt */
+    percentageEmptyLastReadAt?: boolean | number
+    /** Percentage of non-empty values for lastReadAt */
+    percentageNotEmptyLastReadAt?: boolean | number
+    /** Earliest date contained in the field lastReadAt */
+    minLastReadAt?: boolean | number
+    /** Latest date contained in the field lastReadAt */
+    maxLastReadAt?: boolean | number
+    /** Number of unique values for autoReplied */
+    countUniqueValuesAutoReplied?: boolean | number
+    /** Number of empty values for autoReplied */
+    countEmptyAutoReplied?: boolean | number
+    /** Number of non-empty values for autoReplied */
+    countNotEmptyAutoReplied?: boolean | number
+    /** Percentage of empty values for autoReplied */
+    percentageEmptyAutoReplied?: boolean | number
+    /** Percentage of non-empty values for autoReplied */
+    percentageNotEmptyAutoReplied?: boolean | number
+    /** Count of true values in the field autoReplied */
+    countTrueAutoReplied?: boolean | number
+    /** Count of false values in the field autoReplied */
+    countFalseAutoReplied?: boolean | number
+    /** Number of unique values for aiTookOver */
+    countUniqueValuesAiTookOver?: boolean | number
+    /** Number of empty values for aiTookOver */
+    countEmptyAiTookOver?: boolean | number
+    /** Number of non-empty values for aiTookOver */
+    countNotEmptyAiTookOver?: boolean | number
+    /** Percentage of empty values for aiTookOver */
+    percentageEmptyAiTookOver?: boolean | number
+    /** Percentage of non-empty values for aiTookOver */
+    percentageNotEmptyAiTookOver?: boolean | number
+    /** Count of true values in the field aiTookOver */
+    countTrueAiTookOver?: boolean | number
+    /** Count of false values in the field aiTookOver */
+    countFalseAiTookOver?: boolean | number
     edges?: AgencyConversationEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -118589,6 +120003,194 @@ export interface AgencyConversationGroupByConnectionGenqlSelection{
     avgMessageCount?: boolean | number
     /** Sum of amounts contained in the field messageCount */
     sumMessageCount?: boolean | number
+    /** Number of unique values for leadStatus */
+    countUniqueValuesLeadStatus?: boolean | number
+    /** Number of empty values for leadStatus */
+    countEmptyLeadStatus?: boolean | number
+    /** Number of non-empty values for leadStatus */
+    countNotEmptyLeadStatus?: boolean | number
+    /** Percentage of empty values for leadStatus */
+    percentageEmptyLeadStatus?: boolean | number
+    /** Percentage of non-empty values for leadStatus */
+    percentageNotEmptyLeadStatus?: boolean | number
+    /** Number of unique values for unreadCount */
+    countUniqueValuesUnreadCount?: boolean | number
+    /** Number of empty values for unreadCount */
+    countEmptyUnreadCount?: boolean | number
+    /** Number of non-empty values for unreadCount */
+    countNotEmptyUnreadCount?: boolean | number
+    /** Percentage of empty values for unreadCount */
+    percentageEmptyUnreadCount?: boolean | number
+    /** Percentage of non-empty values for unreadCount */
+    percentageNotEmptyUnreadCount?: boolean | number
+    /** Minimum amount contained in the field unreadCount */
+    minUnreadCount?: boolean | number
+    /** Maximum amount contained in the field unreadCount */
+    maxUnreadCount?: boolean | number
+    /** Average amount contained in the field unreadCount */
+    avgUnreadCount?: boolean | number
+    /** Sum of amounts contained in the field unreadCount */
+    sumUnreadCount?: boolean | number
+    /** Number of unique values for respondedAt */
+    countUniqueValuesRespondedAt?: boolean | number
+    /** Number of empty values for respondedAt */
+    countEmptyRespondedAt?: boolean | number
+    /** Number of non-empty values for respondedAt */
+    countNotEmptyRespondedAt?: boolean | number
+    /** Percentage of empty values for respondedAt */
+    percentageEmptyRespondedAt?: boolean | number
+    /** Percentage of non-empty values for respondedAt */
+    percentageNotEmptyRespondedAt?: boolean | number
+    /** Earliest date contained in the field respondedAt */
+    minRespondedAt?: boolean | number
+    /** Latest date contained in the field respondedAt */
+    maxRespondedAt?: boolean | number
+    /** Number of unique values for lastScannedAt */
+    countUniqueValuesLastScannedAt?: boolean | number
+    /** Number of empty values for lastScannedAt */
+    countEmptyLastScannedAt?: boolean | number
+    /** Number of non-empty values for lastScannedAt */
+    countNotEmptyLastScannedAt?: boolean | number
+    /** Percentage of empty values for lastScannedAt */
+    percentageEmptyLastScannedAt?: boolean | number
+    /** Percentage of non-empty values for lastScannedAt */
+    percentageNotEmptyLastScannedAt?: boolean | number
+    /** Earliest date contained in the field lastScannedAt */
+    minLastScannedAt?: boolean | number
+    /** Latest date contained in the field lastScannedAt */
+    maxLastScannedAt?: boolean | number
+    /** Number of unique values for channel */
+    countUniqueValuesChannel?: boolean | number
+    /** Number of empty values for channel */
+    countEmptyChannel?: boolean | number
+    /** Number of non-empty values for channel */
+    countNotEmptyChannel?: boolean | number
+    /** Percentage of empty values for channel */
+    percentageEmptyChannel?: boolean | number
+    /** Percentage of non-empty values for channel */
+    percentageNotEmptyChannel?: boolean | number
+    /** Number of unique values for facebookThreadId */
+    countUniqueValuesFacebookThreadId?: boolean | number
+    /** Number of empty values for facebookThreadId */
+    countEmptyFacebookThreadId?: boolean | number
+    /** Number of non-empty values for facebookThreadId */
+    countNotEmptyFacebookThreadId?: boolean | number
+    /** Percentage of empty values for facebookThreadId */
+    percentageEmptyFacebookThreadId?: boolean | number
+    /** Percentage of non-empty values for facebookThreadId */
+    percentageNotEmptyFacebookThreadId?: boolean | number
+    /** Number of unique values for buyerName */
+    countUniqueValuesBuyerName?: boolean | number
+    /** Number of empty values for buyerName */
+    countEmptyBuyerName?: boolean | number
+    /** Number of non-empty values for buyerName */
+    countNotEmptyBuyerName?: boolean | number
+    /** Percentage of empty values for buyerName */
+    percentageEmptyBuyerName?: boolean | number
+    /** Percentage of non-empty values for buyerName */
+    percentageNotEmptyBuyerName?: boolean | number
+    /** Number of unique values for buyerFacebookId */
+    countUniqueValuesBuyerFacebookId?: boolean | number
+    /** Number of empty values for buyerFacebookId */
+    countEmptyBuyerFacebookId?: boolean | number
+    /** Number of non-empty values for buyerFacebookId */
+    countNotEmptyBuyerFacebookId?: boolean | number
+    /** Percentage of empty values for buyerFacebookId */
+    percentageEmptyBuyerFacebookId?: boolean | number
+    /** Percentage of non-empty values for buyerFacebookId */
+    percentageNotEmptyBuyerFacebookId?: boolean | number
+    /** Number of unique values for buyerProfileUrl */
+    countUniqueValuesBuyerProfileUrl?: boolean | number
+    /** Number of empty values for buyerProfileUrl */
+    countEmptyBuyerProfileUrl?: boolean | number
+    /** Number of non-empty values for buyerProfileUrl */
+    countNotEmptyBuyerProfileUrl?: boolean | number
+    /** Percentage of empty values for buyerProfileUrl */
+    percentageEmptyBuyerProfileUrl?: boolean | number
+    /** Percentage of non-empty values for buyerProfileUrl */
+    percentageNotEmptyBuyerProfileUrl?: boolean | number
+    /** Number of unique values for buyerPhone */
+    countUniqueValuesBuyerPhone?: boolean | number
+    /** Number of empty values for buyerPhone */
+    countEmptyBuyerPhone?: boolean | number
+    /** Number of non-empty values for buyerPhone */
+    countNotEmptyBuyerPhone?: boolean | number
+    /** Percentage of empty values for buyerPhone */
+    percentageEmptyBuyerPhone?: boolean | number
+    /** Percentage of non-empty values for buyerPhone */
+    percentageNotEmptyBuyerPhone?: boolean | number
+    /** Number of unique values for buyerEmail */
+    countUniqueValuesBuyerEmail?: boolean | number
+    /** Number of empty values for buyerEmail */
+    countEmptyBuyerEmail?: boolean | number
+    /** Number of non-empty values for buyerEmail */
+    countNotEmptyBuyerEmail?: boolean | number
+    /** Percentage of empty values for buyerEmail */
+    percentageEmptyBuyerEmail?: boolean | number
+    /** Percentage of non-empty values for buyerEmail */
+    percentageNotEmptyBuyerEmail?: boolean | number
+    /** Number of unique values for listingTitle */
+    countUniqueValuesListingTitle?: boolean | number
+    /** Number of empty values for listingTitle */
+    countEmptyListingTitle?: boolean | number
+    /** Number of non-empty values for listingTitle */
+    countNotEmptyListingTitle?: boolean | number
+    /** Percentage of empty values for listingTitle */
+    percentageEmptyListingTitle?: boolean | number
+    /** Percentage of non-empty values for listingTitle */
+    percentageNotEmptyListingTitle?: boolean | number
+    /** Number of unique values for facebookListingId */
+    countUniqueValuesFacebookListingId?: boolean | number
+    /** Number of empty values for facebookListingId */
+    countEmptyFacebookListingId?: boolean | number
+    /** Number of non-empty values for facebookListingId */
+    countNotEmptyFacebookListingId?: boolean | number
+    /** Percentage of empty values for facebookListingId */
+    percentageEmptyFacebookListingId?: boolean | number
+    /** Percentage of non-empty values for facebookListingId */
+    percentageNotEmptyFacebookListingId?: boolean | number
+    /** Number of unique values for lastReadAt */
+    countUniqueValuesLastReadAt?: boolean | number
+    /** Number of empty values for lastReadAt */
+    countEmptyLastReadAt?: boolean | number
+    /** Number of non-empty values for lastReadAt */
+    countNotEmptyLastReadAt?: boolean | number
+    /** Percentage of empty values for lastReadAt */
+    percentageEmptyLastReadAt?: boolean | number
+    /** Percentage of non-empty values for lastReadAt */
+    percentageNotEmptyLastReadAt?: boolean | number
+    /** Earliest date contained in the field lastReadAt */
+    minLastReadAt?: boolean | number
+    /** Latest date contained in the field lastReadAt */
+    maxLastReadAt?: boolean | number
+    /** Number of unique values for autoReplied */
+    countUniqueValuesAutoReplied?: boolean | number
+    /** Number of empty values for autoReplied */
+    countEmptyAutoReplied?: boolean | number
+    /** Number of non-empty values for autoReplied */
+    countNotEmptyAutoReplied?: boolean | number
+    /** Percentage of empty values for autoReplied */
+    percentageEmptyAutoReplied?: boolean | number
+    /** Percentage of non-empty values for autoReplied */
+    percentageNotEmptyAutoReplied?: boolean | number
+    /** Count of true values in the field autoReplied */
+    countTrueAutoReplied?: boolean | number
+    /** Count of false values in the field autoReplied */
+    countFalseAutoReplied?: boolean | number
+    /** Number of unique values for aiTookOver */
+    countUniqueValuesAiTookOver?: boolean | number
+    /** Number of empty values for aiTookOver */
+    countEmptyAiTookOver?: boolean | number
+    /** Number of non-empty values for aiTookOver */
+    countNotEmptyAiTookOver?: boolean | number
+    /** Percentage of empty values for aiTookOver */
+    percentageEmptyAiTookOver?: boolean | number
+    /** Percentage of non-empty values for aiTookOver */
+    percentageNotEmptyAiTookOver?: boolean | number
+    /** Count of true values in the field aiTookOver */
+    countTrueAiTookOver?: boolean | number
+    /** Count of false values in the field aiTookOver */
+    countFalseAiTookOver?: boolean | number
     edges?: AgencyConversationEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -118632,7 +120234,47 @@ position?: (Scalars['Position'] | null),
 /** Last time the record was changed */
 updatedAt?: (Scalars['DateTime'] | null),
 /** The workspace member who last updated the record */
-updatedBy?: (ActorCreateInput | null),peerPhone?: (Scalars['String'] | null),blasterNumber?: (Scalars['String'] | null),pairKey?: (Scalars['String'] | null),blasterConversationId?: (Scalars['String'] | null),latestDirection?: (Scalars['String'] | null),latestPreview?: (Scalars['String'] | null),latestMessageId?: (Scalars['String'] | null),status?: (Scalars['String'] | null),createdByMemberId?: (Scalars['String'] | null),latestMessageAt?: (Scalars['DateTime'] | null),messageCount?: (Scalars['Float'] | null),agencyProspectId?: (Scalars['ID'] | null),agencyProspect?: (AgencyProspectRelationInput | null),agencyPhoneId?: (Scalars['ID'] | null),agencyPhone?: (AgencyPhoneRelationInput | null),agencyLeadId?: (Scalars['ID'] | null),agencyLead?: (AgencyLeadRelationInput | null)}
+updatedBy?: (ActorCreateInput | null),peerPhone?: (Scalars['String'] | null),blasterNumber?: (Scalars['String'] | null),pairKey?: (Scalars['String'] | null),blasterConversationId?: (Scalars['String'] | null),latestDirection?: (Scalars['String'] | null),latestPreview?: (Scalars['String'] | null),latestMessageId?: (Scalars['String'] | null),status?: (Scalars['String'] | null),createdByMemberId?: (Scalars['String'] | null),latestMessageAt?: (Scalars['DateTime'] | null),messageCount?: (Scalars['Float'] | null),agencyProspectId?: (Scalars['ID'] | null),agencyProspect?: (AgencyProspectRelationInput | null),agencyPhoneId?: (Scalars['ID'] | null),agencyPhone?: (AgencyPhoneRelationInput | null),agencyLeadId?: (Scalars['ID'] | null),agencyLead?: (AgencyLeadRelationInput | null),
+/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+leadStatus?: (AgencyConversationLeadStatusEnum | null),
+/** log-cli: buyer messages not yet read */
+unreadCount?: (Scalars['Float'] | null),
+/** log-cli: our first reply in the thread */
+respondedAt?: (Scalars['DateTime'] | null),
+/** log-cli: the last time the inbox was read for this thread */
+lastScannedAt?: (Scalars['DateTime'] | null),
+/** log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS */
+channel?: (AgencyConversationChannelEnum | null),
+/** log-cli: the thread id in facebook.com/messages/t/<id> (Marketplace inbox). With the account, the conversation key */
+facebookThreadId?: (Scalars['String'] | null),
+/** log-cli: the buyer name as the thread shows it */
+buyerName?: (Scalars['String'] | null),
+/** log-cli: the buyer Facebook user id, when the thread links their profile */
+buyerFacebookId?: (Scalars['String'] | null),
+/** logCli */
+buyerProfileUrl?: (Scalars['String'] | null),
+/** log-cli: a phone number the buyer gave in the conversation */
+buyerPhone?: (Scalars['String'] | null),
+/** log-cli: an email the buyer gave in the conversation */
+buyerEmail?: (Scalars['String'] | null),
+/** log-cli: the listing title the thread header shows (Buyer · Title) */
+listingTitle?: (Scalars['String'] | null),
+/** log-cli: the Marketplace item id the thread is about (marketplace/item/<id>), when shown */
+facebookListingId?: (Scalars['String'] | null),
+/** logCli */
+lastReadAt?: (Scalars['DateTime'] | null),
+/** log-cli: a reply went out without a person */
+autoReplied?: (Scalars['Boolean'] | null),
+/** log-cli: replies in this thread are drafted by AI */
+aiTookOver?: (Scalars['Boolean'] | null),
+/** logCli */
+agencyListingId?: (Scalars['ID'] | null),
+/** logCli */
+agencyListing?: (AgencyListingRelationInput | null),
+/** logCli */
+socialAccountId?: (Scalars['ID'] | null),
+/** logCli */
+socialAccount?: (SocialAccountRelationInput | null)}
 
 
 /** CRM link/metadata for one SMS thread (history lives in Blaster) */
@@ -118654,7 +120296,47 @@ position?: (Scalars['Position'] | null),
 /** Last time the record was changed */
 updatedAt?: (Scalars['DateTime'] | null),
 /** The workspace member who last updated the record */
-updatedBy?: (ActorUpdateInput | null),peerPhone?: (Scalars['String'] | null),blasterNumber?: (Scalars['String'] | null),pairKey?: (Scalars['String'] | null),blasterConversationId?: (Scalars['String'] | null),latestDirection?: (Scalars['String'] | null),latestPreview?: (Scalars['String'] | null),latestMessageId?: (Scalars['String'] | null),status?: (Scalars['String'] | null),createdByMemberId?: (Scalars['String'] | null),latestMessageAt?: (Scalars['DateTime'] | null),messageCount?: (Scalars['Float'] | null),agencyProspectId?: (Scalars['ID'] | null),agencyProspect?: (AgencyProspectRelationInput | null),agencyPhoneId?: (Scalars['ID'] | null),agencyPhone?: (AgencyPhoneRelationInput | null),agencyLeadId?: (Scalars['ID'] | null),agencyLead?: (AgencyLeadRelationInput | null)}
+updatedBy?: (ActorUpdateInput | null),peerPhone?: (Scalars['String'] | null),blasterNumber?: (Scalars['String'] | null),pairKey?: (Scalars['String'] | null),blasterConversationId?: (Scalars['String'] | null),latestDirection?: (Scalars['String'] | null),latestPreview?: (Scalars['String'] | null),latestMessageId?: (Scalars['String'] | null),status?: (Scalars['String'] | null),createdByMemberId?: (Scalars['String'] | null),latestMessageAt?: (Scalars['DateTime'] | null),messageCount?: (Scalars['Float'] | null),agencyProspectId?: (Scalars['ID'] | null),agencyProspect?: (AgencyProspectRelationInput | null),agencyPhoneId?: (Scalars['ID'] | null),agencyPhone?: (AgencyPhoneRelationInput | null),agencyLeadId?: (Scalars['ID'] | null),agencyLead?: (AgencyLeadRelationInput | null),
+/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+leadStatus?: (AgencyConversationLeadStatusEnum | null),
+/** log-cli: buyer messages not yet read */
+unreadCount?: (Scalars['Float'] | null),
+/** log-cli: our first reply in the thread */
+respondedAt?: (Scalars['DateTime'] | null),
+/** log-cli: the last time the inbox was read for this thread */
+lastScannedAt?: (Scalars['DateTime'] | null),
+/** log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS */
+channel?: (AgencyConversationChannelEnum | null),
+/** log-cli: the thread id in facebook.com/messages/t/<id> (Marketplace inbox). With the account, the conversation key */
+facebookThreadId?: (Scalars['String'] | null),
+/** log-cli: the buyer name as the thread shows it */
+buyerName?: (Scalars['String'] | null),
+/** log-cli: the buyer Facebook user id, when the thread links their profile */
+buyerFacebookId?: (Scalars['String'] | null),
+/** logCli */
+buyerProfileUrl?: (Scalars['String'] | null),
+/** log-cli: a phone number the buyer gave in the conversation */
+buyerPhone?: (Scalars['String'] | null),
+/** log-cli: an email the buyer gave in the conversation */
+buyerEmail?: (Scalars['String'] | null),
+/** log-cli: the listing title the thread header shows (Buyer · Title) */
+listingTitle?: (Scalars['String'] | null),
+/** log-cli: the Marketplace item id the thread is about (marketplace/item/<id>), when shown */
+facebookListingId?: (Scalars['String'] | null),
+/** logCli */
+lastReadAt?: (Scalars['DateTime'] | null),
+/** log-cli: a reply went out without a person */
+autoReplied?: (Scalars['Boolean'] | null),
+/** log-cli: replies in this thread are drafted by AI */
+aiTookOver?: (Scalars['Boolean'] | null),
+/** logCli */
+agencyListingId?: (Scalars['ID'] | null),
+/** logCli */
+agencyListing?: (AgencyListingRelationInput | null),
+/** logCli */
+socialAccountId?: (Scalars['ID'] | null),
+/** logCli */
+socialAccount?: (SocialAccountRelationInput | null)}
 
 
 /** CRM link/metadata for one SMS thread (history lives in Blaster) */
@@ -118682,7 +120364,51 @@ agencyProspect?: (AgencyProspectFilterInput | null),agencyPhoneId?: (UUIDFilter 
 /** Filter on fields of the related agencyPhone */
 agencyPhone?: (AgencyPhoneFilterInput | null),agencyLeadId?: (UUIDFilter | null),
 /** Filter on fields of the related agencyLead */
-agencyLead?: (AgencyLeadFilterInput | null),and?: ((AgencyConversationFilterInput | null)[] | null),or?: ((AgencyConversationFilterInput | null)[] | null),not?: (AgencyConversationFilterInput | null)}
+agencyLead?: (AgencyLeadFilterInput | null),
+/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+leadStatus?: (AgencyConversationLeadStatusEnumFilter | null),
+/** log-cli: buyer messages not yet read */
+unreadCount?: (FloatFilter | null),
+/** log-cli: our first reply in the thread */
+respondedAt?: (DateTimeFilter | null),
+/** log-cli: the last time the inbox was read for this thread */
+lastScannedAt?: (DateTimeFilter | null),
+/** log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS */
+channel?: (AgencyConversationChannelEnumFilter | null),
+/** log-cli: the thread id in facebook.com/messages/t/<id> (Marketplace inbox). With the account, the conversation key */
+facebookThreadId?: (StringFilter | null),
+/** log-cli: the buyer name as the thread shows it */
+buyerName?: (StringFilter | null),
+/** log-cli: the buyer Facebook user id, when the thread links their profile */
+buyerFacebookId?: (StringFilter | null),
+/** logCli */
+buyerProfileUrl?: (StringFilter | null),
+/** log-cli: a phone number the buyer gave in the conversation */
+buyerPhone?: (StringFilter | null),
+/** log-cli: an email the buyer gave in the conversation */
+buyerEmail?: (StringFilter | null),
+/** log-cli: the listing title the thread header shows (Buyer · Title) */
+listingTitle?: (StringFilter | null),
+/** log-cli: the Marketplace item id the thread is about (marketplace/item/<id>), when shown */
+facebookListingId?: (StringFilter | null),
+/** logCli */
+lastReadAt?: (DateTimeFilter | null),
+/** log-cli: a reply went out without a person */
+autoReplied?: (BooleanFilter | null),
+/** log-cli: replies in this thread are drafted by AI */
+aiTookOver?: (BooleanFilter | null),
+/** logCli */
+agencyListingId?: (UUIDFilter | null),
+/** Filter on fields of the related agencyListing */
+agencyListing?: (AgencyListingFilterInput | null),
+/** logCli */
+socialAccountId?: (UUIDFilter | null),
+/** Filter on fields of the related socialAccount */
+socialAccount?: (SocialAccountFilterInput | null),and?: ((AgencyConversationFilterInput | null)[] | null),or?: ((AgencyConversationFilterInput | null)[] | null),not?: (AgencyConversationFilterInput | null)}
+
+export interface AgencyConversationLeadStatusEnumFilter {eq?: (AgencyConversationLeadStatusEnum | null),neq?: (AgencyConversationLeadStatusEnum | null),in?: ((AgencyConversationLeadStatusEnum | null)[] | null),containsAny?: ((AgencyConversationLeadStatusEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AgencyConversationLeadStatusEnum | null),gte?: (AgencyConversationLeadStatusEnum | null),lt?: (AgencyConversationLeadStatusEnum | null),lte?: (AgencyConversationLeadStatusEnum | null)}
+
+export interface AgencyConversationChannelEnumFilter {eq?: (AgencyConversationChannelEnum | null),neq?: (AgencyConversationChannelEnum | null),in?: ((AgencyConversationChannelEnum | null)[] | null),containsAny?: ((AgencyConversationChannelEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AgencyConversationChannelEnum | null),gte?: (AgencyConversationChannelEnum | null),lt?: (AgencyConversationChannelEnum | null),lte?: (AgencyConversationChannelEnum | null)}
 
 
 /** CRM link/metadata for one SMS thread (history lives in Blaster) */
@@ -118710,7 +120436,47 @@ agencyProspect?: (AgencyProspectOrderByInput | null),agencyPhoneId?: (OrderByDir
 /** Order by fields of the related agencyPhone */
 agencyPhone?: (AgencyPhoneOrderByInput | null),agencyLeadId?: (OrderByDirection | null),
 /** Order by fields of the related agencyLead */
-agencyLead?: (AgencyLeadOrderByInput | null)}
+agencyLead?: (AgencyLeadOrderByInput | null),
+/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+leadStatus?: (OrderByDirection | null),
+/** log-cli: buyer messages not yet read */
+unreadCount?: (OrderByDirection | null),
+/** log-cli: our first reply in the thread */
+respondedAt?: (OrderByDirection | null),
+/** log-cli: the last time the inbox was read for this thread */
+lastScannedAt?: (OrderByDirection | null),
+/** log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS */
+channel?: (OrderByDirection | null),
+/** log-cli: the thread id in facebook.com/messages/t/<id> (Marketplace inbox). With the account, the conversation key */
+facebookThreadId?: (OrderByDirection | null),
+/** log-cli: the buyer name as the thread shows it */
+buyerName?: (OrderByDirection | null),
+/** log-cli: the buyer Facebook user id, when the thread links their profile */
+buyerFacebookId?: (OrderByDirection | null),
+/** logCli */
+buyerProfileUrl?: (OrderByDirection | null),
+/** log-cli: a phone number the buyer gave in the conversation */
+buyerPhone?: (OrderByDirection | null),
+/** log-cli: an email the buyer gave in the conversation */
+buyerEmail?: (OrderByDirection | null),
+/** log-cli: the listing title the thread header shows (Buyer · Title) */
+listingTitle?: (OrderByDirection | null),
+/** log-cli: the Marketplace item id the thread is about (marketplace/item/<id>), when shown */
+facebookListingId?: (OrderByDirection | null),
+/** logCli */
+lastReadAt?: (OrderByDirection | null),
+/** log-cli: a reply went out without a person */
+autoReplied?: (OrderByDirection | null),
+/** log-cli: replies in this thread are drafted by AI */
+aiTookOver?: (OrderByDirection | null),
+/** logCli */
+agencyListingId?: (OrderByDirection | null),
+/** Order by fields of the related agencyListing */
+agencyListing?: (AgencyListingOrderByInput | null),
+/** logCli */
+socialAccountId?: (OrderByDirection | null),
+/** Order by fields of the related socialAccount */
+socialAccount?: (SocialAccountOrderByInput | null)}
 
 
 /** CRM link/metadata for one SMS thread (history lives in Blaster) */
@@ -118740,7 +120506,47 @@ agencyProspect?: (AgencyProspectOrderByWithGroupByInput | null),agencyPhoneId?: 
 /** Order by fields of the related agencyPhone */
 agencyPhone?: (AgencyPhoneOrderByWithGroupByInput | null),agencyLeadId?: (OrderByDirection | null),
 /** Order by fields of the related agencyLead */
-agencyLead?: (AgencyLeadOrderByWithGroupByInput | null)}
+agencyLead?: (AgencyLeadOrderByWithGroupByInput | null),
+/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+leadStatus?: (OrderByDirection | null),
+/** log-cli: buyer messages not yet read */
+unreadCount?: (OrderByDirection | null),
+/** log-cli: our first reply in the thread */
+respondedAt?: (OrderByDateGranularityInput | null),
+/** log-cli: the last time the inbox was read for this thread */
+lastScannedAt?: (OrderByDateGranularityInput | null),
+/** log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS */
+channel?: (OrderByDirection | null),
+/** log-cli: the thread id in facebook.com/messages/t/<id> (Marketplace inbox). With the account, the conversation key */
+facebookThreadId?: (OrderByDirection | null),
+/** log-cli: the buyer name as the thread shows it */
+buyerName?: (OrderByDirection | null),
+/** log-cli: the buyer Facebook user id, when the thread links their profile */
+buyerFacebookId?: (OrderByDirection | null),
+/** logCli */
+buyerProfileUrl?: (OrderByDirection | null),
+/** log-cli: a phone number the buyer gave in the conversation */
+buyerPhone?: (OrderByDirection | null),
+/** log-cli: an email the buyer gave in the conversation */
+buyerEmail?: (OrderByDirection | null),
+/** log-cli: the listing title the thread header shows (Buyer · Title) */
+listingTitle?: (OrderByDirection | null),
+/** log-cli: the Marketplace item id the thread is about (marketplace/item/<id>), when shown */
+facebookListingId?: (OrderByDirection | null),
+/** logCli */
+lastReadAt?: (OrderByDateGranularityInput | null),
+/** log-cli: a reply went out without a person */
+autoReplied?: (OrderByDirection | null),
+/** log-cli: replies in this thread are drafted by AI */
+aiTookOver?: (OrderByDirection | null),
+/** logCli */
+agencyListingId?: (OrderByDirection | null),
+/** Order by fields of the related agencyListing */
+agencyListing?: (AgencyListingOrderByWithGroupByInput | null),
+/** logCli */
+socialAccountId?: (OrderByDirection | null),
+/** Order by fields of the related socialAccount */
+socialAccount?: (SocialAccountOrderByWithGroupByInput | null)}
 
 
 /** Aggregate-based ordering */
@@ -118976,7 +120782,203 @@ agencyProspect?: (AgencyProspectOrderByInput | null),agencyPhoneId?: (OrderByDir
 /** Order by fields of the related agencyPhone */
 agencyPhone?: (AgencyPhoneOrderByInput | null),agencyLeadId?: (OrderByDirection | null),
 /** Order by fields of the related agencyLead */
-agencyLead?: (AgencyLeadOrderByInput | null)}
+agencyLead?: (AgencyLeadOrderByInput | null),
+/** Number of unique values for leadStatus */
+countUniqueValuesLeadStatus?: (OrderByDirection | null),
+/** Number of empty values for leadStatus */
+countEmptyLeadStatus?: (OrderByDirection | null),
+/** Number of non-empty values for leadStatus */
+countNotEmptyLeadStatus?: (OrderByDirection | null),
+/** Percentage of empty values for leadStatus */
+percentageEmptyLeadStatus?: (OrderByDirection | null),
+/** Percentage of non-empty values for leadStatus */
+percentageNotEmptyLeadStatus?: (OrderByDirection | null),
+/** Number of unique values for unreadCount */
+countUniqueValuesUnreadCount?: (OrderByDirection | null),
+/** Number of empty values for unreadCount */
+countEmptyUnreadCount?: (OrderByDirection | null),
+/** Number of non-empty values for unreadCount */
+countNotEmptyUnreadCount?: (OrderByDirection | null),
+/** Percentage of empty values for unreadCount */
+percentageEmptyUnreadCount?: (OrderByDirection | null),
+/** Percentage of non-empty values for unreadCount */
+percentageNotEmptyUnreadCount?: (OrderByDirection | null),
+/** Minimum amount contained in the field unreadCount */
+minUnreadCount?: (OrderByDirection | null),
+/** Maximum amount contained in the field unreadCount */
+maxUnreadCount?: (OrderByDirection | null),
+/** Average amount contained in the field unreadCount */
+avgUnreadCount?: (OrderByDirection | null),
+/** Sum of amounts contained in the field unreadCount */
+sumUnreadCount?: (OrderByDirection | null),
+/** Number of unique values for respondedAt */
+countUniqueValuesRespondedAt?: (OrderByDirection | null),
+/** Number of empty values for respondedAt */
+countEmptyRespondedAt?: (OrderByDirection | null),
+/** Number of non-empty values for respondedAt */
+countNotEmptyRespondedAt?: (OrderByDirection | null),
+/** Percentage of empty values for respondedAt */
+percentageEmptyRespondedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for respondedAt */
+percentageNotEmptyRespondedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field respondedAt */
+minRespondedAt?: (OrderByDirection | null),
+/** Latest date contained in the field respondedAt */
+maxRespondedAt?: (OrderByDirection | null),
+/** Number of unique values for lastScannedAt */
+countUniqueValuesLastScannedAt?: (OrderByDirection | null),
+/** Number of empty values for lastScannedAt */
+countEmptyLastScannedAt?: (OrderByDirection | null),
+/** Number of non-empty values for lastScannedAt */
+countNotEmptyLastScannedAt?: (OrderByDirection | null),
+/** Percentage of empty values for lastScannedAt */
+percentageEmptyLastScannedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for lastScannedAt */
+percentageNotEmptyLastScannedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field lastScannedAt */
+minLastScannedAt?: (OrderByDirection | null),
+/** Latest date contained in the field lastScannedAt */
+maxLastScannedAt?: (OrderByDirection | null),
+/** Number of unique values for channel */
+countUniqueValuesChannel?: (OrderByDirection | null),
+/** Number of empty values for channel */
+countEmptyChannel?: (OrderByDirection | null),
+/** Number of non-empty values for channel */
+countNotEmptyChannel?: (OrderByDirection | null),
+/** Percentage of empty values for channel */
+percentageEmptyChannel?: (OrderByDirection | null),
+/** Percentage of non-empty values for channel */
+percentageNotEmptyChannel?: (OrderByDirection | null),
+/** Number of unique values for facebookThreadId */
+countUniqueValuesFacebookThreadId?: (OrderByDirection | null),
+/** Number of empty values for facebookThreadId */
+countEmptyFacebookThreadId?: (OrderByDirection | null),
+/** Number of non-empty values for facebookThreadId */
+countNotEmptyFacebookThreadId?: (OrderByDirection | null),
+/** Percentage of empty values for facebookThreadId */
+percentageEmptyFacebookThreadId?: (OrderByDirection | null),
+/** Percentage of non-empty values for facebookThreadId */
+percentageNotEmptyFacebookThreadId?: (OrderByDirection | null),
+/** Number of unique values for buyerName */
+countUniqueValuesBuyerName?: (OrderByDirection | null),
+/** Number of empty values for buyerName */
+countEmptyBuyerName?: (OrderByDirection | null),
+/** Number of non-empty values for buyerName */
+countNotEmptyBuyerName?: (OrderByDirection | null),
+/** Percentage of empty values for buyerName */
+percentageEmptyBuyerName?: (OrderByDirection | null),
+/** Percentage of non-empty values for buyerName */
+percentageNotEmptyBuyerName?: (OrderByDirection | null),
+/** Number of unique values for buyerFacebookId */
+countUniqueValuesBuyerFacebookId?: (OrderByDirection | null),
+/** Number of empty values for buyerFacebookId */
+countEmptyBuyerFacebookId?: (OrderByDirection | null),
+/** Number of non-empty values for buyerFacebookId */
+countNotEmptyBuyerFacebookId?: (OrderByDirection | null),
+/** Percentage of empty values for buyerFacebookId */
+percentageEmptyBuyerFacebookId?: (OrderByDirection | null),
+/** Percentage of non-empty values for buyerFacebookId */
+percentageNotEmptyBuyerFacebookId?: (OrderByDirection | null),
+/** Number of unique values for buyerProfileUrl */
+countUniqueValuesBuyerProfileUrl?: (OrderByDirection | null),
+/** Number of empty values for buyerProfileUrl */
+countEmptyBuyerProfileUrl?: (OrderByDirection | null),
+/** Number of non-empty values for buyerProfileUrl */
+countNotEmptyBuyerProfileUrl?: (OrderByDirection | null),
+/** Percentage of empty values for buyerProfileUrl */
+percentageEmptyBuyerProfileUrl?: (OrderByDirection | null),
+/** Percentage of non-empty values for buyerProfileUrl */
+percentageNotEmptyBuyerProfileUrl?: (OrderByDirection | null),
+/** Number of unique values for buyerPhone */
+countUniqueValuesBuyerPhone?: (OrderByDirection | null),
+/** Number of empty values for buyerPhone */
+countEmptyBuyerPhone?: (OrderByDirection | null),
+/** Number of non-empty values for buyerPhone */
+countNotEmptyBuyerPhone?: (OrderByDirection | null),
+/** Percentage of empty values for buyerPhone */
+percentageEmptyBuyerPhone?: (OrderByDirection | null),
+/** Percentage of non-empty values for buyerPhone */
+percentageNotEmptyBuyerPhone?: (OrderByDirection | null),
+/** Number of unique values for buyerEmail */
+countUniqueValuesBuyerEmail?: (OrderByDirection | null),
+/** Number of empty values for buyerEmail */
+countEmptyBuyerEmail?: (OrderByDirection | null),
+/** Number of non-empty values for buyerEmail */
+countNotEmptyBuyerEmail?: (OrderByDirection | null),
+/** Percentage of empty values for buyerEmail */
+percentageEmptyBuyerEmail?: (OrderByDirection | null),
+/** Percentage of non-empty values for buyerEmail */
+percentageNotEmptyBuyerEmail?: (OrderByDirection | null),
+/** Number of unique values for listingTitle */
+countUniqueValuesListingTitle?: (OrderByDirection | null),
+/** Number of empty values for listingTitle */
+countEmptyListingTitle?: (OrderByDirection | null),
+/** Number of non-empty values for listingTitle */
+countNotEmptyListingTitle?: (OrderByDirection | null),
+/** Percentage of empty values for listingTitle */
+percentageEmptyListingTitle?: (OrderByDirection | null),
+/** Percentage of non-empty values for listingTitle */
+percentageNotEmptyListingTitle?: (OrderByDirection | null),
+/** Number of unique values for facebookListingId */
+countUniqueValuesFacebookListingId?: (OrderByDirection | null),
+/** Number of empty values for facebookListingId */
+countEmptyFacebookListingId?: (OrderByDirection | null),
+/** Number of non-empty values for facebookListingId */
+countNotEmptyFacebookListingId?: (OrderByDirection | null),
+/** Percentage of empty values for facebookListingId */
+percentageEmptyFacebookListingId?: (OrderByDirection | null),
+/** Percentage of non-empty values for facebookListingId */
+percentageNotEmptyFacebookListingId?: (OrderByDirection | null),
+/** Number of unique values for lastReadAt */
+countUniqueValuesLastReadAt?: (OrderByDirection | null),
+/** Number of empty values for lastReadAt */
+countEmptyLastReadAt?: (OrderByDirection | null),
+/** Number of non-empty values for lastReadAt */
+countNotEmptyLastReadAt?: (OrderByDirection | null),
+/** Percentage of empty values for lastReadAt */
+percentageEmptyLastReadAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for lastReadAt */
+percentageNotEmptyLastReadAt?: (OrderByDirection | null),
+/** Earliest date contained in the field lastReadAt */
+minLastReadAt?: (OrderByDirection | null),
+/** Latest date contained in the field lastReadAt */
+maxLastReadAt?: (OrderByDirection | null),
+/** Number of unique values for autoReplied */
+countUniqueValuesAutoReplied?: (OrderByDirection | null),
+/** Number of empty values for autoReplied */
+countEmptyAutoReplied?: (OrderByDirection | null),
+/** Number of non-empty values for autoReplied */
+countNotEmptyAutoReplied?: (OrderByDirection | null),
+/** Percentage of empty values for autoReplied */
+percentageEmptyAutoReplied?: (OrderByDirection | null),
+/** Percentage of non-empty values for autoReplied */
+percentageNotEmptyAutoReplied?: (OrderByDirection | null),
+/** Count of true values in the field autoReplied */
+countTrueAutoReplied?: (OrderByDirection | null),
+/** Count of false values in the field autoReplied */
+countFalseAutoReplied?: (OrderByDirection | null),
+/** Number of unique values for aiTookOver */
+countUniqueValuesAiTookOver?: (OrderByDirection | null),
+/** Number of empty values for aiTookOver */
+countEmptyAiTookOver?: (OrderByDirection | null),
+/** Number of non-empty values for aiTookOver */
+countNotEmptyAiTookOver?: (OrderByDirection | null),
+/** Percentage of empty values for aiTookOver */
+percentageEmptyAiTookOver?: (OrderByDirection | null),
+/** Percentage of non-empty values for aiTookOver */
+percentageNotEmptyAiTookOver?: (OrderByDirection | null),
+/** Count of true values in the field aiTookOver */
+countTrueAiTookOver?: (OrderByDirection | null),
+/** Count of false values in the field aiTookOver */
+countFalseAiTookOver?: (OrderByDirection | null),
+/** logCli */
+agencyListingId?: (OrderByDirection | null),
+/** Order by fields of the related agencyListing */
+agencyListing?: (AgencyListingOrderByInput | null),
+/** logCli */
+socialAccountId?: (OrderByDirection | null),
+/** Order by fields of the related socialAccount */
+socialAccount?: (SocialAccountOrderByInput | null)}
 
 
 /** CRM link/metadata for one SMS thread (history lives in Blaster) */
@@ -118992,7 +120994,43 @@ agencyProspect?: (AgencyProspectGroupByInput | null),
 /** Group by fields of the related agencyPhone */
 agencyPhone?: (AgencyPhoneGroupByInput | null),
 /** Group by fields of the related agencyLead */
-agencyLead?: (AgencyLeadGroupByInput | null)}
+agencyLead?: (AgencyLeadGroupByInput | null),
+/** log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand */
+leadStatus?: (Scalars['Boolean'] | null),
+/** log-cli: buyer messages not yet read */
+unreadCount?: (Scalars['Boolean'] | null),
+/** log-cli: our first reply in the thread */
+respondedAt?: (GroupByDateGranularityInput | null),
+/** log-cli: the last time the inbox was read for this thread */
+lastScannedAt?: (GroupByDateGranularityInput | null),
+/** log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS */
+channel?: (Scalars['Boolean'] | null),
+/** log-cli: the thread id in facebook.com/messages/t/<id> (Marketplace inbox). With the account, the conversation key */
+facebookThreadId?: (Scalars['Boolean'] | null),
+/** log-cli: the buyer name as the thread shows it */
+buyerName?: (Scalars['Boolean'] | null),
+/** log-cli: the buyer Facebook user id, when the thread links their profile */
+buyerFacebookId?: (Scalars['Boolean'] | null),
+/** logCli */
+buyerProfileUrl?: (Scalars['Boolean'] | null),
+/** log-cli: a phone number the buyer gave in the conversation */
+buyerPhone?: (Scalars['Boolean'] | null),
+/** log-cli: an email the buyer gave in the conversation */
+buyerEmail?: (Scalars['Boolean'] | null),
+/** log-cli: the listing title the thread header shows (Buyer · Title) */
+listingTitle?: (Scalars['Boolean'] | null),
+/** log-cli: the Marketplace item id the thread is about (marketplace/item/<id>), when shown */
+facebookListingId?: (Scalars['Boolean'] | null),
+/** logCli */
+lastReadAt?: (GroupByDateGranularityInput | null),
+/** log-cli: a reply went out without a person */
+autoReplied?: (Scalars['Boolean'] | null),
+/** log-cli: replies in this thread are drafted by AI */
+aiTookOver?: (Scalars['Boolean'] | null),
+/** Group by fields of the related agencyListing */
+agencyListing?: (AgencyListingGroupByInput | null),
+/** Group by fields of the related socialAccount */
+socialAccount?: (SocialAccountGroupByInput | null)}
 
 
 /** A human contact at an agency prospect or lead - the person we talk to, not the company. */
@@ -127117,6 +129155,40 @@ export const enumRecordShareRowCauseEnum = {
    MANUAL: 'MANUAL' as const,
    RULE: 'RULE' as const,
    APPLICATION: 'APPLICATION' as const
+}
+
+export const enumAgencyMessageChannelEnum = {
+   SMS: 'SMS' as const,
+   FACEBOOK_MARKETPLACE: 'FACEBOOK_MARKETPLACE' as const
+}
+
+export const enumAgencyMessageSentByEnum = {
+   PERSON: 'PERSON' as const,
+   VA: 'VA' as const,
+   AI: 'AI' as const,
+   SYSTEM: 'SYSTEM' as const
+}
+
+export const enumAgencyMessageAiStatusEnum = {
+   DRAFT: 'DRAFT' as const,
+   APPROVED: 'APPROVED' as const,
+   SENT: 'SENT' as const,
+   DISMISSED: 'DISMISSED' as const,
+   FAILED: 'FAILED' as const
+}
+
+export const enumAgencyConversationLeadStatusEnum = {
+   NEW: 'NEW' as const,
+   CONTACTED: 'CONTACTED' as const,
+   QUALIFIED: 'QUALIFIED' as const,
+   BOOKED: 'BOOKED' as const,
+   LOST: 'LOST' as const,
+   SPAM: 'SPAM' as const
+}
+
+export const enumAgencyConversationChannelEnum = {
+   SMS: 'SMS' as const,
+   FACEBOOK_MARKETPLACE: 'FACEBOOK_MARKETPLACE' as const
 }
 
 export const enumRecordShareAccessLevel = {

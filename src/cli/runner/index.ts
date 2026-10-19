@@ -12,6 +12,7 @@ import { listListings } from "../../marketplace/listing/index.ts";
 import { createTwentyClient } from "../../twenty/graphql/index.ts";
 import { accountCommand, accountsCommand } from "../account/index.ts";
 import { campaignCommand } from "../campaign/index.ts";
+import { conversationCommand, conversationsCommand } from "../conversation/index.ts";
 import { loginCommand, logoutCommand, whoamiCommand } from "../auth/index.ts";
 import { errorsCommand, graphCommand } from "../errors/index.ts";
 import { firefoxCaptureCommand } from "../firefoxCapture/index.ts";
@@ -47,6 +48,8 @@ export const COMMANDS: Command[] = [
   proxyCommand,
   publishCommand,
   campaignCommand,
+  conversationsCommand,
+  conversationCommand,
   errorsCommand,
   graphCommand,
   firefoxCaptureCommand,

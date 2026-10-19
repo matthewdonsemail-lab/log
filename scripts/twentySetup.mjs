@@ -1,6 +1,7 @@
 // Adds what log-cli needs to Twenty: new fields on socialAccount and
-// agencyListing, the relations between them, and the lifecycle values on
-// agencyListing.status. Additive only. It never renames, retypes or deletes a
+// agencyListing, the relations between them, the lifecycle values on
+// agencyListing.status, and the Marketplace side of agencyConversation and
+// agencyMessage (rule 34: a buyer's conversation about a listing). Additive only. It never renames, retypes or deletes a
 // field, and existing SELECT options keep their ids, so the twitter-controller
 // and the facebook-camofox-client sync keep working.
 //
@@ -127,11 +128,94 @@ const AGENCY_LISTING_FIELDS = [
   { name: 'replacementReason', label: 'Replacement reason', type: 'TEXT', description: 'log-cli: why this row replaced another' }
 ]
 
+const CHANNEL = [option('SMS', 'SMS', 'blue', 0), option('FACEBOOK_MARKETPLACE', 'Facebook Marketplace', 'purple', 1)]
+
+/**
+ * Fields added to agencyConversation (rule 34). The object is blaster's SMS
+ * thread record (peerPhone, blasterNumber, pairKey, latest*, messageCount,
+ * status); those fields stay as they are and Marketplace rows reuse the
+ * generic ones: pairKey = facebookMarketplace:<socialAccountId>:<facebookThreadId>,
+ * latestDirection inbound|outbound, latestPreview, latestMessageAt,
+ * latestMessageId, messageCount. Listaro's thread shape (its leads table),
+ * keyed on Facebook's own ids instead of a hash of the buyer's name.
+ */
+const AGENCY_CONVERSATION_FIELDS = [
+  { name: 'channel', label: 'Channel', type: 'SELECT', description: 'log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS', options: CHANNEL },
+  { name: 'facebookThreadId', label: 'Facebook thread id', type: 'TEXT', description: 'log-cli: the thread id in facebook.com/messages/t/<id> (Marketplace inbox). With the account, the conversation key' },
+  { name: 'buyerName', label: 'Buyer name', type: 'TEXT', description: 'log-cli: the buyer name as the thread shows it' },
+  { name: 'buyerFacebookId', label: 'Buyer Facebook id', type: 'TEXT', description: 'log-cli: the buyer Facebook user id, when the thread links their profile' },
+  { name: 'buyerProfileUrl', label: 'Buyer profile URL', type: 'TEXT', description: 'logCli' },
+  { name: 'buyerPhone', label: 'Buyer phone', type: 'TEXT', description: 'log-cli: a phone number the buyer gave in the conversation' },
+  { name: 'buyerEmail', label: 'Buyer email', type: 'TEXT', description: 'log-cli: an email the buyer gave in the conversation' },
+  { name: 'listingTitle', label: 'Listing title', type: 'TEXT', description: 'log-cli: the listing title the thread header shows (Buyer · Title)' },
+  { name: 'facebookListingId', label: 'Facebook listing id', type: 'TEXT', description: 'log-cli: the Marketplace item id the thread is about (marketplace/item/<id>), when shown' },
+  {
+    name: 'leadStatus',
+    label: 'Lead status',
+    type: 'SELECT',
+    description: 'log-cli: where the buyer is (Listaro): NEW until we reply, CONTACTED, QUALIFIED once they give a phone, then BOOKED, LOST or SPAM by hand',
+    options: [
+      option('NEW', 'New', 'blue', 0),
+      option('CONTACTED', 'Contacted', 'turquoise', 1),
+      option('QUALIFIED', 'Qualified', 'green', 2),
+      option('BOOKED', 'Booked', 'purple', 3),
+      option('LOST', 'Lost', 'gray', 4),
+      option('SPAM', 'Spam', 'red', 5)
+    ]
+  },
+  { name: 'unreadCount', label: 'Unread', type: 'NUMBER', description: 'log-cli: buyer messages not yet read' },
+  { name: 'lastReadAt', label: 'Last read', type: 'DATE_TIME', description: 'logCli' },
+  { name: 'respondedAt', label: 'First replied', type: 'DATE_TIME', description: 'log-cli: our first reply in the thread' },
+  { name: 'lastScannedAt', label: 'Last scanned', type: 'DATE_TIME', description: 'log-cli: the last time the inbox was read for this thread' },
+  { name: 'autoReplied', label: 'Auto replied', type: 'BOOLEAN', description: 'log-cli: a reply went out without a person' },
+  { name: 'aiTookOver', label: 'AI took over', type: 'BOOLEAN', description: 'log-cli: replies in this thread are drafted by AI' }
+]
+
+/**
+ * Fields added to agencyMessage (rule 34). blaster's direction, status, body,
+ * errorCode and errorMessage are reused: direction inbound|outbound, status
+ * received|queued|sent|delivered|failed (blaster's order: it only moves up).
+ */
+const AGENCY_MESSAGE_FIELDS = [
+  { name: 'channel', label: 'Channel', type: 'SELECT', description: 'log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS', options: CHANNEL },
+  { name: 'sentAt', label: 'Sent', type: 'DATE_TIME', description: 'log-cli: when the message was sent, as the thread shows it' },
+  { name: 'facebookMessageId', label: 'Facebook message id', type: 'TEXT', description: 'log-cli: the Facebook message id, when the page gives it' },
+  { name: 'messageKey', label: 'Message key', type: 'TEXT', description: 'log-cli: unique per conversation: facebookMessageId, or a hash of sender, time and text. A message is stored once' },
+  { name: 'senderName', label: 'Sender', type: 'TEXT', description: 'logCli' },
+  { name: 'isRead', label: 'Read', type: 'BOOLEAN', description: 'log-cli: ours are read; a buyer message is unread until marked' },
+  {
+    name: 'sentBy',
+    label: 'Sent by',
+    type: 'SELECT',
+    description: 'log-cli: who wrote an outbound message (Listaro): a person, a VA, AI, or the system',
+    options: [option('PERSON', 'Person', 'blue', 0), option('VA', 'VA', 'turquoise', 1), option('AI', 'AI', 'purple', 2), option('SYSTEM', 'System', 'gray', 3)]
+  },
+  {
+    name: 'aiStatus',
+    label: 'AI status',
+    type: 'SELECT',
+    description: 'log-cli: an AI-drafted reply: DRAFT until a person approves, then SENT; or DISMISSED, FAILED',
+    options: [
+      option('DRAFT', 'Draft', 'gray', 0),
+      option('APPROVED', 'Approved', 'blue', 1),
+      option('SENT', 'Sent', 'green', 2),
+      option('DISMISSED', 'Dismissed', 'gray', 3),
+      option('FAILED', 'Failed', 'red', 4)
+    ]
+  },
+  { name: 'aiOriginalText', label: 'AI original text', type: 'TEXT', description: 'log-cli: what AI drafted, before a person edited it' },
+  { name: 'media', label: 'Media', type: 'RAW_JSON', description: 'log-cli: photos or files in the message: [{ url, kind }]' }
+]
+
 /** Relations: [object, field, label, target object, inverse label, join column]. */
 const RELATIONS = [
   { object: 'agencyListing', name: 'socialAccount', label: 'Social account', target: 'socialAccount', targetFieldLabel: 'Agency Listings', icon: 'IconBrandFacebook' },
   { object: 'agencyListing', name: 'campaign', label: 'Campaign', target: 'agencyCampaign', targetFieldLabel: 'Agency Listings', icon: 'IconSpeakerphone' },
-  { object: 'agencyListing', name: 'replaces', label: 'Replaces', target: 'agencyListing', targetFieldLabel: 'Replaced by', icon: 'IconReplace' }
+  { object: 'agencyListing', name: 'replaces', label: 'Replaces', target: 'agencyListing', targetFieldLabel: 'Replaced by', icon: 'IconReplace' },
+  // rule 34: a buyer's conversation is about one listing, on one account; its messages belong to it.
+  { object: 'agencyConversation', name: 'agencyListing', label: 'Agency listing', target: 'agencyListing', targetFieldLabel: 'Agency Conversations', icon: 'IconMessages' },
+  { object: 'agencyConversation', name: 'socialAccount', label: 'Social account', target: 'socialAccount', targetFieldLabel: 'Agency Conversations', icon: 'IconBrandFacebook' },
+  { object: 'agencyMessage', name: 'agencyConversation', label: 'Conversation', target: 'agencyConversation', targetFieldLabel: 'Agency Messages', icon: 'IconMessage' }
 ]
 
 /** Lifecycle values added to agencyListing.status, next to the sync's health values. */
@@ -176,12 +260,17 @@ const UPDATE_FIELD = `mutation ($input: UpdateOneFieldMetadataInput!) { updateOn
 
 const apply = process.argv.includes('--apply')
 const objects = await loadObjects()
-for (const name of ['socialAccount', 'agencyListing', 'agencyCampaign']) {
+for (const name of ['socialAccount', 'agencyListing', 'agencyCampaign', 'agencyConversation', 'agencyMessage']) {
   if (!objects.has(name)) throw new Error(`object ${name} not found in Twenty`)
 }
 
 const plan = []
-for (const [objectName, specs] of [['socialAccount', SOCIAL_ACCOUNT_FIELDS], ['agencyListing', AGENCY_LISTING_FIELDS]]) {
+for (const [objectName, specs] of [
+  ['socialAccount', SOCIAL_ACCOUNT_FIELDS],
+  ['agencyListing', AGENCY_LISTING_FIELDS],
+  ['agencyConversation', AGENCY_CONVERSATION_FIELDS],
+  ['agencyMessage', AGENCY_MESSAGE_FIELDS]
+]) {
   const object = objects.get(objectName)
   for (const spec of specs) {
     if (object.fields.has(spec.name)) continue
