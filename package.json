@@ -11,6 +11,7 @@
     "start": "bun run bin/log.ts",
     "launch": "bun run bin/log.ts launch",
     "doctor": "bun run bin/log.ts doctor",
+    "mcp": "bun run bin/logMcp.ts",
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "check:naming": "node scripts/checkNamingConventions.mjs",
@@ -22,6 +23,7 @@
   },
   "dependencies": {
     "@clack/prompts": "^1.8.1",
+    "@modelcontextprotocol/sdk": "^1.32.1",
     "sharp": "^0.34.5",
     "xstate": "5.33.3"
   },

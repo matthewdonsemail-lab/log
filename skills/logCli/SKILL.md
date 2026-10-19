@@ -85,6 +85,20 @@ bun bin/log.ts campaign run --campaign <id> [--live]
 bun bin/log.ts campaign heal --campaign <id>
 ```
 
+## As an MCP server
+
+`bin/logMcp.ts` (`bun run mcp`) serves every command as an MCP tool over
+stdio, registered as `log` in the repo's `.mcp.json`, so in Claude Code they
+show up as `mcp__log__<command>`. A tool takes `args` (what goes after
+`log <command>`) and returns the command's stdout, stderr and exit code. It
+runs through `runCli`, so every gate above still applies.
+
+- `--live` is refused unless the call also has `confirmLive: true`. Set it
+  only when matt asked for that live run (rule 10).
+- `connect`, `launch` and `login` aren't tools: they wait on a person at the
+  terminal, and stdin is the MCP channel. Run them in a terminal.
+- It loads `log-cli/.env.local` itself, whatever folder it is started from.
+
 ## Reading the results
 
 Every code is in the error catalog: `log errors` lists them, `log errors --code <code>`
