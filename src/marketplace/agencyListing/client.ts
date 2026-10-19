@@ -42,6 +42,7 @@ export function toAgencyListing(row: AgencyListingRow): AgencyListing {
     locationQuery: row.locationQuery?.trim() || null,
     locationCity: row.locationCity?.trim() || null,
     locationCountry: row.locationCountry?.trim().toUpperCase() || null,
+    locationPostalCode: row.locationPostalCode?.trim() || null,
     status: status && (LISTING_STATUSES as readonly string[]).includes(status) ? (status as AgencyListingStatus) : null,
     socialAccountId: row.socialAccountId ?? null,
     campaignId: row.campaignId ?? null,
@@ -99,6 +100,7 @@ export async function createSlot(
     locationQuery: ad.locationQuery,
     locationCity: ad.locationCity,
     locationCountry: ad.locationCountry,
+    locationPostalCode: ad.locationPostalCode,
     status: toTwentyEnum('ready') as ListingCreate['status'],
     socialAccountId: accountId,
     campaignId: options.campaignId,
@@ -139,7 +141,10 @@ export async function recordRun(
   }
   if (output.photoHashes.length) update.photoHashes = output.photoHashes as unknown as ListingUpdate['photoHashes']
   if (receipt) update.screenshotUrl = receipt
-  const status = dryRun ? (result === 'blocked' || result === 'needsPerson' ? 'blocked' : null) : RESULT_STATUS[result]
+  // Published but held for review (a new account's listing): UNDER_REVIEW, not ACTIVE, until a scan sees it clear.
+  const status = dryRun
+    ? result === 'blocked' || result === 'needsPerson' ? 'blocked' : null
+    : result === 'published' && output.review ? 'underReview' : RESULT_STATUS[result]
   if (status) update.status = toTwentyEnum(status) as ListingUpdate['status']
   if (!dryRun && result === 'published') {
     update.listingId = output.listingId

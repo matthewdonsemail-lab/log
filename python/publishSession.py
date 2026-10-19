@@ -59,6 +59,8 @@ LIMIT_TEXT = re.compile(
     r"|limit on how many listings", re.I)
 # The whole account, not just Marketplace: log-cli marks it BANNED and replaces its campaign listings.
 DISABLED_TEXT = re.compile(r"(?:your )?account has been (?:disabled|locked|suspended)|we suspended your account", re.I)
+# Restricted account-wide (classifySignal's restrictedPolicy phrases): Pittsburgh's Marketplace pages, 2026-10-19.
+RESTRICTED_TEXT = re.compile(r"we added a restriction to your account|everything you manage, including|you can no longer request a review|your account is restricted", re.I)
 BLOCKED_TEXT = re.compile(r"you can.t (?:use|buy or sell on) marketplace|marketplace isn.t available to you", re.I)
 TEXT_CAPTCHA = re.compile(r"confirm (?:that )?you.re human|enter the text (?:from|in) the image|can.t read this text", re.I)
 CHALLENGE_TEXT = re.compile(
@@ -251,6 +253,18 @@ class Session:
         self.mouse = None
 
     # -- lifecycle ---------------------------------------------------------
+    def _watch_create(self, response: Any) -> None:
+        try:
+            request = response.request
+            if "/api/graphql" not in request.url or "useCometMarketplaceListingCreateMutation" not in (request.post_data or ""):
+                return
+            match = re.search(r'"marketplace_listing_create":\{"listing":\{[^{}]*?"id":"(\d+)"', response.text())
+            if match:
+                self.created_listing_id = match.group(1)
+                log(f"Facebook created listing {match.group(1)}")
+        except Exception:
+            pass
+
     def start(self) -> dict[str, Any] | None:
         state = Path(self.config.get("storageStatePath") or "")
         # Only connect (connectSession.py) may start without a session: it is the one that makes it.
@@ -282,6 +296,11 @@ class Session:
             raise
         self.page = self.context.new_page()
         self.page.set_default_timeout(30_000)
+        # Facebook's own answer to Publish carries the new listing's id (recorded on Reading
+        # 2026-10-19: useCometMarketplaceListingCreateMutation -> marketplace_listing_create.listing.id),
+        # so the id never depends on the Selling page having drawn the card yet.
+        self.created_listing_id = None
+        self.page.on("response", self._watch_create)
         self.mouse = SyncHumanMouse(self.page, log)
         return None
 
@@ -600,6 +619,8 @@ def step_open(s: Session, params: dict[str, Any]) -> dict[str, Any]:
     text = s.body()
     if DISABLED_TEXT.search(text):
         return {"kind": "issue", "issue": checked("accountDisabled"), "detail": DISABLED_TEXT.search(text).group(0)}
+    if RESTRICTED_TEXT.search(text):
+        return {"kind": "issue", "issue": checked("restrictedPolicy"), "detail": RESTRICTED_TEXT.search(text).group(0)}
     if BLOCKED_TEXT.search(text):
         return {"kind": "issue", "issue": checked("suspended"), "detail": BLOCKED_TEXT.search(text).group(0)}
     if LIMIT_TEXT.search(text):
@@ -633,8 +654,63 @@ def step_open(s: Session, params: dict[str, Any]) -> dict[str, Any]:
     # Location field and lists at the account's Marketplace location (`sell_location`).
     wrong = sell_location_mismatch(s, params.get("location"))
     if wrong:
-        return {"kind": "error", "code": checked("locationNotSet"), "detail": wrong}
+        postal = str(params.get("postalCode") or "").strip()
+        if not postal:
+            return {"kind": "error", "code": checked("locationNotSet"), "detail": wrong + " Give the listing a locationPostalCode and a --live run sets it."}
+        if not params.get("setLocation"):
+            return {"kind": "error", "code": checked("locationNotSet"), "detail": wrong + f" A --live run sets it to {postal} first (a dry run changes nothing on Facebook)."}
+        moved = set_marketplace_location(s, postal)
+        if moved:
+            return {"kind": "error", "code": checked("locationNotSet"), "detail": f"{wrong} Setting it to {postal} failed: {moved}"}
+        s.page.goto(create_url(), wait_until="domcontentloaded", timeout=90_000)
+        s.page.wait_for_timeout(3000)
+        try:
+            title.wait_for(state="visible", timeout=30_000)
+        except Exception:
+            return {"kind": "error", "code": checked("formNotFound"), "detail": f"no Title field after setting the location, on {s.page.url}"}
+        still = sell_location_mismatch(s, params.get("location"))
+        if still:
+            return {"kind": "error", "code": checked("locationNotSet"), "detail": f"set the Marketplace location to {postal}, and still: {still}"}
     return {"kind": "ready", "url": s.page.url}
+
+
+def set_marketplace_location(s: Session, postal: str) -> str | None:
+    """The account's Marketplace location to `postal`, the way it was recorded on Reading
+    (inspect run 20261019T131409, steps 3-15): Marketplace > the "Location: ..." button >
+    "Change location" > clear the Location box > type the zip > the first suggestion
+    ("Reading, PA, US 19601", not in the accessibility tree: ArrowDown, Enter) > Apply, which
+    sends CometMarketplaceSetBuyLocationMutation. The city's name found Reading, Jamaica and
+    Reading, Berkshire; the zip found Reading, PA. Returns why not, or None when it moved."""
+    page = s.page
+    log(f"Setting the Marketplace location to {postal} (the form would list elsewhere)")
+    try:
+        page.goto("https://www.facebook.com/marketplace/", wait_until="domcontentloaded", timeout=90_000)
+        button = page.get_by_role("button", name=re.compile(r"^Location: "))
+        button.first.wait_for(state="visible", timeout=30_000)
+        human_click(button.first)
+        dialog = page.get_by_role("dialog", name="Change location")
+        dialog.wait_for(state="visible", timeout=15_000)
+        box = dialog.get_by_role("combobox", name="Location")
+        human_click(box, circle=False)
+        page.keyboard.press("ControlOrMeta+A")
+        page.keyboard.press("Backspace")
+        page.keyboard.type(postal, delay=90)
+        page.wait_for_timeout(2500)
+        page.keyboard.press("ArrowDown")
+        page.keyboard.press("Enter")
+        apply = dialog.get_by_role("button", name="Apply")
+        page.wait_for_timeout(1200)
+        if apply.is_disabled():
+            return f"no suggestion was picked for {postal}"
+        with page.expect_response(lambda r: "CometMarketplaceSetBuyLocationMutation" in (r.request.post_data or ""), timeout=20_000) as saved:
+            human_click(apply)
+        if saved.value.status != 200:
+            return f"CometMarketplaceSetBuyLocationMutation answered {saved.value.status}"
+        page.wait_for_timeout(2500)
+        log(f"Marketplace location set to {postal}")
+        return None
+    except Exception as exc:
+        return f"{type(exc).__name__}: {str(exc)[:160]}"
 
 
 SELL_LOCATION = re.compile(r'"sell_location":\{"latitude":(-?[\d.]+),"longitude":(-?[\d.]+),"reverse_geocode_detailed":\{"city":"([^"]*)","postal_code":"([^"]*)","country_alpha_two":"([A-Z]{2})"')
@@ -891,7 +967,9 @@ def step_fill_fields(s: Session, params: dict[str, Any]) -> dict[str, Any]:
             # Marketplace location, as Listaro posted (facebook-poster.ts:1170-1198,1921-1923).
             # Rule 12 still holds: the "Listed in ..." the form shows must be the listing's place.
             listed = listed_in(s)
-            if listed and city in norm(listed) and in_place(norm(listed), country):
+            # "Reading, PA": the part after the comma is a state, not a country, so the form's own
+            # sell_location (its city, and the account's home country, rule 12) decides, as at open.
+            if listed and city in norm(listed) and (in_place(norm(listed), country) or sell_location_mismatch(s, location) is None):
                 filled["location"] = f"{listed} (the account's Marketplace location)"
                 return {"ok": True, "filled": filled}
             receipt = s.config.get("receiptDir")
@@ -900,27 +978,48 @@ def step_fill_fields(s: Session, params: dict[str, Any]) -> dict[str, Any]:
                 Path(receipt, "formText.txt").write_text(s.body(20000), encoding="utf8")
             return fail("locationNotSet", f"no Location field, and the form lists it in {listed or 'nowhere it says'}, not {location!r}; "
                                           f"inputs on the form: {visible_inputs(s)}")
-        human_click(loc)
-        s.page.keyboard.press("ControlOrMeta+A")
-        s.page.keyboard.press("Backspace")
-        s.page.keyboard.type(location, delay=30)
-        options = s.page.locator('[role="listbox"] [role="option"]')
+        # Already the right place (the account's Marketplace location, set before the run): leave it.
         try:
-            options.first.wait_for(state="visible", timeout=6000)
+            current = norm(loc.input_value())
         except Exception:
-            return fail("locationNotSet", f"no suggestions for {location!r}")
+            current = ""
+        if city and city in current and sell_location_mismatch(s, location) is None:
+            filled["location"] = f"{loc.input_value()} (already set)"
+            return {"ok": True, "filled": filled}
+        # "Reading, PA" suggests Reading, Jamaica and Reading, Berkshire: when the city name finds
+        # nothing in the right place, the account's Marketplace postal code does (recorded on
+        # Reading 2026-10-19: "19601" -> "Reading, PA, US 19601").
+        where = read_sell_location(s)
+        queries = [location]
+        if where and where.get("postalCode") and norm(where["city"]) == city:
+            queries.append(str(where["postalCode"]))
         picked = False
-        for i in range(options.count()):
-            text = norm(options.nth(i).inner_text())
-            if city and city in text and in_place(text, country):
-                human_click(options.nth(i))
-                picked = True
+        seen: list[str] = []
+        options = s.page.locator('[role="listbox"] [role="option"]')
+        for query in queries:
+            human_click(loc)
+            s.page.keyboard.press("ControlOrMeta+A")
+            s.page.keyboard.press("Backspace")
+            s.page.keyboard.type(query, delay=30)
+            try:
+                options.first.wait_for(state="visible", timeout=6000)
+            except Exception:
+                seen.append(f"{query}: no suggestions")
+                continue
+            for i in range(options.count()):
+                text = norm(options.nth(i).inner_text())
+                if city and city in text and (in_place(text, country) or query in text):
+                    human_click(options.nth(i))
+                    picked = True
+                    break
+            if picked:
                 break
+            seen += [f"{query}: {norm(options.nth(i).inner_text())[:60]}" for i in range(min(options.count(), 4))]
         if not picked:
-            seen = [norm(options.nth(i).inner_text())[:60] for i in range(min(options.count(), 5))]
             return fail("locationNotSet", f"no suggestion matched {city!r} in {country!r}: {seen}")
         s.page.wait_for_timeout(800)
-        if city not in norm(loc.input_value()) or not in_place(norm(loc.input_value()), country):
+        value = norm(loc.input_value())
+        if city not in value or not (in_place(value, country) or sell_location_mismatch(s, location) is None):
             return fail("locationNotSet", f"Location reads {loc.input_value()!r}")
         filled["location"] = loc.input_value()
     return {"ok": True, "filled": filled}
@@ -999,10 +1098,37 @@ def step_confirm(s: Session, _: dict[str, Any]) -> dict[str, Any]:
     return fail("noConfirmation", f"no toast or selling page within 30s ({s.page.url})")
 
 
+REVIEW_NEAR = re.compile(r'"integrity_status_indicator":\{"content":"([^"]+)"')
+
+
+def listing_review(s: Session, listing_id: str) -> str | None:
+    """What Facebook's Selling page says about this listing's review, or None when it says nothing.
+    A new account's listing is held: "This listing is being reviewed." (`integrity_status_indicator`,
+    with is_live true): listed, but not shown to buyers until it clears."""
+    try:
+        if "/marketplace/you/selling" not in s.page.url:
+            s.page.goto(SELLING_URL, wait_until="domcontentloaded", timeout=90_000)
+            s.page.wait_for_timeout(4000)
+        html = s.page.content()
+    except Exception:
+        return None
+    for at in [m.start() for m in re.finditer(re.escape(f'"{listing_id}"'), html)]:
+        match = REVIEW_NEAR.search(html, max(0, at - 6000), at + 6000)
+        if match:
+            return match.group(1)
+    return None
+
+
 def step_capture_id(s: Session, params: dict[str, Any]) -> dict[str, Any]:
-    match = re.search(r"/marketplace/item/(\d+)", s.page.url)
-    if match:
-        return {"listingId": match.group(1), "listingUrl": f"https://www.facebook.com/marketplace/item/{match.group(1)}/"}
+    found = s.created_listing_id
+    if not found:
+        match = re.search(r"/marketplace/item/(\d+)", s.page.url)
+        found = match.group(1) if match else None
+    if found:
+        review = listing_review(s, found)
+        if review:
+            log(f"Listing {found}: {review}")
+        return {"listingId": found, "listingUrl": f"https://www.facebook.com/marketplace/item/{found}/", "review": review}
     title = norm(params.get("title"))
     s.page.goto(SELLING_URL, wait_until="domcontentloaded", timeout=90_000)
     s.page.wait_for_timeout(4000)
@@ -1018,7 +1144,7 @@ def step_capture_id(s: Session, params: dict[str, Any]) -> dict[str, Any]:
         for row in rows:
             lines = [ln.strip() for ln in (row.get("card") or "").splitlines() if ln.strip()]
             if lines and norm(lines[0]) == title:
-                return {"listingId": row["id"], "listingUrl": f"https://www.facebook.com/marketplace/item/{row['id']}/"}
+                return {"listingId": row["id"], "listingUrl": f"https://www.facebook.com/marketplace/item/{row['id']}/", "review": listing_review(s, row["id"])}
     return {"listingId": None, "listingUrl": None, "detail": f"no selling card titled {params.get('title')!r} ({len(rows)} cards seen)"}
 
 

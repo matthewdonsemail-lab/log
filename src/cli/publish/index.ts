@@ -56,10 +56,11 @@ import { renderPublishOutput, summarizePublish } from "./helpers/index.ts";
 export * from "./helpers/index.ts";
 
 export const PUBLISH_USAGE = [
-  "Usage: log publish --listing <agencyListingId> [--live] [--json] [--formUrl <url>] [--bypass]",
+  "Usage: log publish --listing <agencyListingId> [--live] [--json] [--formUrl <url>] [--bypass] [--now]",
   "Dry run unless --live: fills and checks everything, never clicks Publish.",
   "The listing, its account and the account's proxy all come from Twenty.",
   "--bypass skips only the account's waking hours (rule 18); every other gate still runs.",
+  "--now skips only the 10-minute launch gap (rule 24); the 8 launches a day still hold.",
 ].join("\n");
 
 function publishRunDir(runId: string, env: Record<string, string | undefined> = process.env): string {
@@ -117,9 +118,9 @@ export async function checkPublishable(
 export const publishCommand: Command = {
   name: "publish",
   summary: "Post one Twenty listing (dry run unless --live), printing every machine step",
-  args: "--listing <id> [--live] [--json] [--bypass]",
+  args: "--listing <id> [--live] [--json] [--bypass] [--now]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["live", "json", "bypass"], valued: ["listing", "formUrl"] });
+    const parsed = parseArgs(argv, { boolean: ["live", "json", "bypass", "now"], valued: ["listing", "formUrl"] });
     if (!parsed.ok) return { code: 1, stderr: `log publish: ${parsed.error}\n${PUBLISH_USAGE}` };
     if (parsed.positionals.length > 0) return { code: 1, stderr: `log publish: unexpected argument "${parsed.positionals[0]}"\n${PUBLISH_USAGE}` };
     const listingId = parsed.flags.listing;
@@ -150,7 +151,7 @@ export const publishCommand: Command = {
     } catch {
       login = null; // no details: a login wall ends the run as before
     }
-    const prepared = prepareRun(account, "run", { now, bypassHours: Boolean(parsed.flags["bypass"]), skipLaunchBudget: fixture, login });
+    const prepared = prepareRun(account, "run", { now, bypassHours: Boolean(parsed.flags["bypass"]), skipLaunchBudget: fixture, login, skipLaunchGap: Boolean(parsed.flags["now"]) });
     if (!prepared.ok) return refuseListing(context, listing, prepared.code, prepared.detail);
     const run = prepared.run;
 
@@ -196,7 +197,7 @@ export const publishCommand: Command = {
         }),
         openForm: fromPromise<FormOutcome, PublishActorInputs["openForm"]>(async ({ input }) => {
           // A crashed step replies { ok: false, code }, not a FormOutcome.
-          const result = await call<Partial<FormOutcome> & { code?: ErrorCode; detail?: string }>("open", { recheck: input.recheck, location: input.location });
+          const result = await call<Partial<FormOutcome> & { code?: ErrorCode; detail?: string }>("open", { recheck: input.recheck, location: input.location, postalCode: input.postalCode, setLocation: input.setLocation });
           if (result.kind) return result as FormOutcome;
           return { kind: "error", code: result.code ?? "badReply", detail: result.detail ?? JSON.stringify(result).slice(0, 200) };
         }),

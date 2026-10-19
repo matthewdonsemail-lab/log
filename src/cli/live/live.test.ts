@@ -203,6 +203,14 @@ describe("live commands", () => {
     expect(account.cookies).toEqual(before);
   });
 
+  test("signed in but restricted account-wide (Pittsburgh's notice) is RESTRICTED, never ACTIVE", async () => {
+    const twenty = marketplaceFixture();
+    const session = scriptedConnect(["loggedIn"], undefined, "Marketplace What happened 9 Sep 2026 You can no longer request a review");
+    const code = await runCli(["connect", "--account", "needsLogin"], { connectSession: session.factory, connectTiming: FAST_CONNECT, twenty, out: () => {}, err: () => {} });
+    expect(code).toBe(1);
+    expect(twenty.rows.socialAccounts.find((r) => r.id === "needsLogin")).toMatchObject({ accountStatus: "RESTRICTED", statusReason: "restrictedPolicy" });
+  });
+
   test("Listaro's post-login check: signed in but unable to buy or sell is recorded, cookies kept", async () => {
     const twenty = marketplaceFixture();
     const session = scriptedConnect(["loggedIn"], undefined, "You can't buy or sell on Facebook");

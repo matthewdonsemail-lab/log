@@ -123,8 +123,15 @@ ending is a code: `mcp__log__errors args ["--code", "<code>"]`.
 Before photos go up, the open step reads the account's Marketplace location
 from the page (`sell_location`). The US form has no Location field: if that
 isn't the listing's city, it stops there with `locationNotSet` and names the
-place ("Kearney (68847, US)"), and nothing is uploaded. A login wall or
-checkpoint on the form is signed through in the same browser (rule 24).
+place ("Kearney (68847, US)"), and nothing is uploaded. Give the listing a
+`locationPostalCode` (the zip: Facebook finds "Reading, PA" by 19601, while
+the name finds Reading, Jamaica): a `--live` run then sets the account's
+Marketplace location to it first (Marketplace > Location > Change location >
+the zip > Apply, `CometMarketplaceSetBuyLocationMutation`) and checks the
+form again. A dry run never changes it. When the form has a Location field
+and the city name finds nothing in the right place, the zip is typed there
+too. A login wall or checkpoint on the form is signed through in the same
+browser (rule 24).
 
 **Rule 24: launches cost.** Each account opens on Facebook at most 8 times
 per local day, 10 minutes apart, dry runs counted (`launchTooSoon`,
@@ -134,6 +141,17 @@ account opened 14 times in 90 minutes and went to a video-selfie checkpoint
 (`RESEARCH/LOG_CLI_RUN_CAPTURES_2026_10_19.md`).
 
 ### 7. Live (only on matt's go)
+
+A new account's listing is published but **held for review**: Facebook's
+Selling page carries `integrity_status_indicator: "This listing is being
+reviewed."` (with `is_live: true`). It is listed, but buyers who open its
+link are sent to the city's Marketplace page until the review clears, and
+Facebook offers no way to hurry it (`appeal_status: appeal_not_exist`; an
+appeal exists only after a rejection). The run reads the id from Facebook's
+own answer to Publish (`useCometMarketplaceListingCreateMutation`), says
+"Held for review", and writes the row UNDER_REVIEW, not ACTIVE. A later
+`log scan` moves it to ACTIVE once the badge is gone. Reading's first listing,
+2026-10-19, was held this way.
 
 ```text
 mcp__log__publish   args ["--listing", "<listingId>", "--live"]   confirmLive: true

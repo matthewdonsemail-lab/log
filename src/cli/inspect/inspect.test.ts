@@ -51,4 +51,28 @@ describe("log inspect", () => {
     expect(result.code).toBe(1);
     expect(result.err).toContain("no session is open");
   });
+
+  test("two accounts' sessions are open at once; do picks one by --account and refuses to guess", async () => {
+    const { writeCurrentInspect, clearCurrentInspect, openInspects } = await import("../../camofox/inspect/index.ts");
+    const base = { commandsPath: "c", repliesPath: "r", startedAt: "2026-10-19T00:00:00.000Z" };
+    writeCurrentInspect({ ...base, account: "galwayOne", runDir: "/runs/one" });
+    writeCurrentInspect({ ...base, account: "galwayTwo", runDir: "/runs/two" });
+    try {
+      expect(openInspects().map((s) => s.account).sort()).toEqual(["galwayOne", "galwayTwo"]);
+      const sent: string[] = [];
+      const sendInspect = async (current: { runDir: string }) => (sent.push(current.runDir), { ok: true, step: "01_snapshot" });
+      const guess = await run(["inspect", "do", "snapshot"], { sendInspect });
+      expect(guess.code).toBe(1);
+      expect(guess.err).toContain("2 sessions are open (galwayOne, galwayTwo): add --account <name>");
+      expect((await run(["inspect", "do", "snapshot", "--account", "galwayTwo"], { sendInspect })).code).toBe(0);
+      expect(sent).toEqual(["/runs/two"]);
+      const again = await run(["inspect", "start", "--account", "galwayOne"], { inspectSession: async () => 0 });
+      expect(again.err).toContain("a session is already open for galwayOne");
+      expect((await run(["inspect", "sessions"])).out).toContain("galwayTwo");
+    } finally {
+      clearCurrentInspect(undefined, "galwayOne");
+      clearCurrentInspect(undefined, "galwayTwo");
+    }
+    expect(openInspects()).toEqual([]);
+  });
 });

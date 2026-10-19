@@ -26,6 +26,7 @@ export function listingFromJson(raw: unknown): { ok: true; ad: AgencyListing } |
     locationQuery: text("locationQuery"),
     locationCity: text("locationCity"),
     locationCountry: text("locationCountry")?.toUpperCase() ?? null,
+    locationPostalCode: text("locationPostalCode"),
     status: null,
     socialAccountId: null,
     campaignId: null,

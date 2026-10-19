@@ -19,7 +19,7 @@ export const LISTINGS_USAGE = "Usage: log listings [--status <STATUS>] [--accoun
 export const LISTING_USAGE = [
   "Usage: log listing <agencyListingId> [--json]",
   "       log listing create --account <accountName> --file <listing.json> [--json]",
-  "The file: title, description, price, priceCurrency, category, condition (new|usedLikeNew|usedGood|usedFair), photos (paths or URLs), locationQuery, locationCity, locationCountry.",
+  "The file: title, description, price, priceCurrency, category, condition (new|usedLikeNew|usedGood|usedFair), photos (paths or URLs), locationQuery, locationCity, locationCountry, locationPostalCode (the zip: Facebook finds a US city by it).",
 ].join("\n");
 
 export const listingsCommand: Command = {
