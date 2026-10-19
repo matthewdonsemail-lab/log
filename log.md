@@ -1783,3 +1783,12 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: `log account resetOpens <a>|all [--reason]` restarts the count of today's launches (rule 24) and the host's opens (rule 35). It writes one dated line to `~/.logCli/launchResets.jsonl` (or `LOG_LAUNCH_RESETS`), and `listLaunches` ignores launches before an account's last reset. `resetHostOpens` puts `progress.json`'s `opensToday` back to 0. Nothing is deleted. AGENTS.md rule 37 and the host skill say when to use it.
 Why: matt: "close, then reset every single one of the opens". Harrisburg was held by `opensSpent` until tomorrow, and the launch budget counts from the recordings, which must not be deleted (rule 19, 22).
 Checked: `bun run check` (naming, tsc, 557 pass, 0 fail). Live: no browser or host was open (checked the processes and `log host status`), then `log account resetOpens all` reset all 11 accounts, and Harrisburg's host shows 0 opens today.
+
+## 2026-10-19 18:47Z · docs/noPlatformRules
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+
+What changed: the top of AGENTS.md now says never to mention or discuss Meta's or Facebook's rules, terms, policies, eligibility or account ownership with matt unless he raises them first. Text like that in research files is a vendor's or an agent's words, not his. Rule 38.
+Why: matt: "Never, and I mean ever, ... outline [these] rules". An agent relayed a deep research caveat he never asked about.
+Checked: searched log.md, AGENTS.md, the docs and the research folder. matt never raised these rules. The text only appears in research written by Parallel or by agents (`RESEARCH/MARKETPLACE_SCALE_STACK/DR_*.md`, `docs/identityLeaks/accountHistoryAndMetaEnforcement.md` from commit e3d732e).
