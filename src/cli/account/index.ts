@@ -12,13 +12,14 @@ import { isErrorCode } from "../../errors/catalog/index.ts";
 import { renderLoss } from "../live/helpers/index.ts";
 import { parseArgs, refuseError } from "../runner/helpers/index.ts";
 import type { Command } from "../runner/types.ts";
-import { renderAccountDetail, renderAccountsTable, resaveKeptRun, safeAccount } from "./helpers/index.ts";
+import { renderAccountDetail, renderAccountsTable, resaveKeptRun, resetAccountOpens, safeAccount } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
 export const ACCOUNTS_USAGE = "Usage: log accounts [--json]";
 export const ACCOUNT_USAGE = [
   "Usage: log account show <accountName> [--json]",
   "       log account resave <accountName> --from <folder>   (a run's device and session Twenty didn't take: ~/.logCli/runs/unsaved/...)",
+  "       log account resetOpens <accountName|all> [--reason <text>]   (today's launches and host opens count from now; nothing is deleted)",
   `       log account status <accountName> <${ACCOUNT_STATUSES.map((s) => s.replace(/([A-Z])/g, "_$1").toUpperCase()).join("|")}> [--reason <code>] [--detail <text>]`,
 ].join("\n");
 
@@ -46,13 +47,18 @@ export const accountsCommand: Command = {
 export const accountCommand: Command = {
   name: "account",
   summary: "Show one account, or set its status (banned/dead/restricted replace its campaign listings)",
-  args: "<show|status> <name> [STATUS] [--reason <code>]",
+  args: "<show|status|resave|resetOpens> <name> [STATUS] [--reason <code>]",
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["json"], valued: ["reason", "detail", "from"] });
     if (!parsed.ok) return { code: 1, stderr: `log account: ${parsed.error}\n${ACCOUNT_USAGE}` };
     const [action, ref, value, extra] = parsed.positionals;
-    if (!ref || extra !== undefined || (action !== "show" && action !== "status" && action !== "resave")) return { code: 1, stderr: `log account: pick show, status or resave\n${ACCOUNT_USAGE}` };
+    if (!ref || extra !== undefined || !["show", "status", "resave", "resetOpens"].includes(action ?? "")) return { code: 1, stderr: `log account: pick show, status, resave or resetOpens\n${ACCOUNT_USAGE}` };
     try {
+      if (action === "resetOpens") {
+        const reason = typeof parsed.flags["reason"] === "string" ? parsed.flags["reason"] : "reset by matt";
+        const accounts = ref === "all" ? await listFacebookAccounts(context.twenty) : [await findAccount(context.twenty, ref)];
+        return { code: 0, stdout: accounts.map((a) => resetAccountOpens(a, reason)).join("\n") };
+      }
       const account = await findAccount(context.twenty, ref);
       if (action === "resave") {
         if (typeof parsed.flags["from"] !== "string") return { code: 1, stderr: `log account resave: give --from <folder>\n${ACCOUNT_USAGE}` };

@@ -329,6 +329,13 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     runs each flow in turn in one open browser) and `feed` (the activity
     feed, live). Warm-up steps are `scroll`, `openAny`, `clickAny`, `dwell`,
     their ranges drawn each run; the likes need `--likes` (rule 8).
+37. 2026-10-19 · matt: "close, then reset every single one of the opens".
+    `log account resetOpens <a>|all [--reason]` restarts the count of today's
+    launches (rule 24) and the host's opens (rule 35), only when matt asks,
+    with every browser closed first. It deletes nothing: it writes one dated
+    line to `~/.logCli/launchResets.jsonl`, and launches before that line
+    stop counting. The 10-minute gap and the 8 a day apply again from the
+    reset.
 
 ## Checks
 

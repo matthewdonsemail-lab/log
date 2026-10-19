@@ -1766,3 +1766,20 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: `log host start|send|status` runs one account's lifecycle machine in one open browser (`src/marketplace/host`, actors in `src/cli/host/helpers/hostActors.ts`). It saves the snapshot and a resume record on every change, writes milestones and the lane-level `lifecycleState` to Twenty, takes PERSON_DONE/PAUSE/RESUME/SHUTDOWN/LOST from a control file, decides signed in by the c_user and xs cookies, and saves the session as soon as it is signed in. The lifecycle gains a persistable clock, resume input, a day check after watching (end of day goes overnight), and a sign-in loop guard (`signInSpent` after two). Every flow and warm-up step's landing page is checked (`pageProblem`: checkpointed, loginWall, pageNotReached), and the warm-up machine ends `blocked` on one. Twenty's "Limit reached (100 tokens...)" is now `twentyRateLimited` and is waited out twice, where before it was misread as a bad API key. A run whose device or session save failed is kept in `~/.logCli/runs/unsaved/` with its login removed, and `log account resave` puts it back. `python/scrollMotion.py` ports the Robotic VSL repo's trajectory scroll, and it replaces every scrollBy and scroll_into_view_if_needed. There are new inspect actions (saveState, pageText, sellLocation, setLocation). Auto-login waits for Facebook's answer after Enter. The docs index is cumulative, `WebLogin` belongs to login, and 11 new request docs have their reasoning. The naming gate allows number ranges and aria-* attributes.
 Why: matt asked for the runner that keeps the browser open and resumes (rule 35). The live runs today showed what was missing. Erie's warm-up scrolled a checkpoint page for a minute. Harrisburg's first connect lost its cookies and device to a rate limit read as auth. Harrisburg's host looped while signed out because the page wording looked signed in. Its profile step failed on a false `/me` miss.
 Checked: `bun run check` (naming, tsc, 555 tests pass, 0 fail); `check:facebookClientDocs` (101 requests). Live: Harrisburg's host signed in (7 cookies, then 9 saved), its account check passed, and its device was pinned. Erie's feed scrolled +320 px in 8 wheel steps. Auto-login made no double sign-in.
+
+## 2026-10-19 18:40Z · feat/resetOpens
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `skills/host/SKILL.md`: edited
+- `src/camofox/run/helpers/launchBudget.ts`: added const launchResetsPath, function lastLaunchReset, function recordLaunchReset · changed function listLaunches
+- `src/camofox/run/run.test.ts`: added test "a reset (log account resetOpens) makes earlier launches stop counting, for that account only, keeping the recordings"
+- `src/cli/account/helpers/index.ts`: added export from "./resetOpens.ts"
+- `src/cli/account/helpers/resetOpens.ts`: added function resetAccountOpens
+- `src/cli/account/index.ts`: changed const ACCOUNT_USAGE, const accountCommand
+- `src/cli/account/resave.test.ts`: added test "writes one dated reset per account and puts the host's opens back to 0, deleting nothing"
+- `src/marketplace/host/helpers/progress.ts`: added function resetHostOpens
+
+What changed: `log account resetOpens <a>|all [--reason]` restarts the count of today's launches (rule 24) and the host's opens (rule 35). It writes one dated line to `~/.logCli/launchResets.jsonl` (or `LOG_LAUNCH_RESETS`), and `listLaunches` ignores launches before an account's last reset. `resetHostOpens` puts `progress.json`'s `opensToday` back to 0. Nothing is deleted. AGENTS.md rule 37 and the host skill say when to use it.
+Why: matt: "close, then reset every single one of the opens". Harrisburg was held by `opensSpent` until tomorrow, and the launch budget counts from the recordings, which must not be deleted (rule 19, 22).
+Checked: `bun run check` (naming, tsc, 557 pass, 0 fail). Live: no browser or host was open (checked the processes and `log host status`), then `log account resetOpens all` reset all 11 accounts, and Harrisburg's host shows 0 opens today.

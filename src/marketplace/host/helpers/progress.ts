@@ -59,6 +59,14 @@ export function milestones(before: LifecycleContext | null, after: LifecycleCont
   return { ...out, lifecycleState: state }
 }
 
+/** Today's host opens back to 0 (`log account resetOpens`). False when the account has no host progress yet. */
+export function resetHostOpens(account: string): boolean {
+  const progress = readProgress(account)
+  if (!progress) return false
+  writeProgress({ ...progress, resume: { ...progress.resume, opensToday: 0 } })
+  return true
+}
+
 /** Events sent to a running host (`log host send`), read from the control file as they arrive. */
 export function readControl(account: string, offset: number): { events: HostControl[]; offset: number } {
   const path = controlPath(account)
