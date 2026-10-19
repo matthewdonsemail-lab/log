@@ -173,6 +173,7 @@ stateDiagram-v2
 
 | Code | Retry | Raised in | Ends in | Meaning | Do |
 | --- | --- | --- | --- | --- | --- |
+| `pageNotReached` | no | `flow.step`, `warmup.step` | publish→failed | A flow or warm-up step went to a page and Facebook put the browser somewhere else. | Read the step's screenshot and HAR (rule 25): where it landed says why (a checkpoint and a login are their own codes). |
 | `formNotFound` | yes | `publish.openingForm` | publish→failed | The create form never showed its Title field. | Run again. If it repeats, Facebook changed the form: update the selectors. |
 | `categoryNotSet` | yes | `publish.choosingCategory` | publish→failed | Category was picked 3 times and the box still reads something else. | Check the category name matches the form's list. |
 | `photoMissing` | no | `publish.uploadingPhotos` | publish→failed | A prepared photo file was gone when the upload started. | Run again; the photos are prepared fresh each run. |
@@ -250,6 +251,7 @@ stateDiagram-v2
 | --- | --- | --- | --- | --- | --- |
 | `twentyNotConfigured` | no | `twenty/graphql` | command exits | TWENTY_BASE_URL or TWENTY_API_KEY is not set. | Put both in log-cli/.env.local. |
 | `twentyUnreachable` | yes | `twenty/graphql` | command exits | Twenty didn't answer. | Check the network and twenty.inferencesaver.com, then run again. |
+| `twentyRateLimited` | yes | `twenty/graphql` | command exits | Twenty refused the call for its rate limit ("Limit reached (100 tokens per 60000 ms)"). Nothing was written. | Nothing to do: the client waits out the minute and tries again (twice). If it still fails, fewer calls per minute. |
 | `twentyAuthFailed` | no | `twenty/graphql` | command exits | Twenty refused the API key (401/403). | Make a new API key in Twenty and put it in log-cli/.env.local. |
 | `twentyRequestFailed` | yes | `twenty/graphql` | command exits | Twenty answered with an error. The detail has its status and message. | Read the detail. A field error means scripts/twentySetup.mjs needs running. |
 | `accountNotFound` | no | `marketplace/socialAccount` | command exits | No socialAccount with that accountName or id in Twenty. | log accounts lists the Facebook accounts. |

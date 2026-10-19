@@ -1,4 +1,5 @@
 import type { LifecycleContext, WarmupActivity } from '../types'
+import { clock } from './clock'
 import { WARMUP_ACTIVITIES } from '../types'
 
 export type OnboardingStep = 'signingIn' | 'checkingAccount' | 'settingProfile' | 'settingName' | 'settingLocation' | 'warming' | 'attached'
@@ -25,13 +26,13 @@ export function warmupComplete(context: Progress, now: number): boolean {
  * sign in, check the account, profile, name, Marketplace location, a day's
  * warm-up, then attached to its host. Pure.
  */
-export function nextOnboardingStep(context: Progress & { now: () => number }): OnboardingStep {
+export function nextOnboardingStep(context: Progress, now: number = clock.now()): OnboardingStep {
   const s = context.standing
   if (!s.hasSession || s.status === 'needsLogin') return 'signingIn'
   if (!context.checked) return 'checkingAccount'
   if (!s.profileSet) return 'settingProfile'
   if (s.wantsName && !s.named) return 'settingName'
   if (!s.locationSet) return 'settingLocation'
-  if (!warmupComplete(context, context.now())) return 'warming'
+  if (!warmupComplete(context, now)) return 'warming'
   return 'attached'
 }

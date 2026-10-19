@@ -239,19 +239,29 @@ export function writeOperationDocs(operations: ClientOperation[], docsDir: strin
     if (old && resolve(old) !== resolve(path)) rmSync(old);
     if (doc.includes("<!-- toWrite -->")) toWrite++;
   }
-  const index = {
-    builtAt: new Date().toISOString(),
-    runs,
-    operations: operations.map((o) => ({
-      name: o.name,
-      domain: o.domain,
-      kind: o.kind,
-      docId: o.docId,
-      doc: `${o.domain}/${o.name}.md`,
-      reaEvidenceId: o.reaEvidenceId,
-      seen: o.sightings.length,
-    })),
-  };
+  // Cumulative: a request documented by an earlier build but missing from today's recordings keeps its
+  // entry and its doc as they were (2026-10-19: every HAR older than 15:56 New York was removed outside
+  // log-cli, and a rebuild from the four left would have dropped 54 of the 90 documented requests).
+  type Entry = { name: string; domain: string; kind: string; docId: string | null; doc: string; reaEvidenceId: string | null; seen: number };
+  let previous: Entry[] = [];
+  try {
+    previous = (JSON.parse(readFileSync(join(docsDir, DOCS_INDEX), "utf8")) as { operations?: Entry[] }).operations ?? [];
+  } catch {
+    // first build
+  }
+  const before = new Map(previous.map((e) => [e.name, e]));
+  const current: Entry[] = operations.map((o) => ({
+    name: o.name,
+    domain: o.domain,
+    kind: o.kind,
+    docId: o.docId,
+    doc: `${o.domain}/${o.name}.md`,
+    reaEvidenceId: o.reaEvidenceId ?? before.get(o.name)?.reaEvidenceId ?? null,
+    seen: Math.max(o.sightings.length, before.get(o.name)?.seen ?? 0),
+  }));
+  const seenNow = new Set(current.map((e) => e.name));
+  const kept = previous.filter((e) => !seenNow.has(e.name) && existsSync(join(docsDir, e.doc)));
+  const index = { builtAt: new Date().toISOString(), runs, operations: [...current, ...kept].sort((x, y) => x.name.localeCompare(y.name)) };
   writeFileSync(join(docsDir, DOCS_INDEX), `${JSON.stringify(index, null, 2)}\n`);
   return { written: operations.length, toWrite };
 }

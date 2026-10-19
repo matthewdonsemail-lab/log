@@ -50,6 +50,8 @@ export interface FlowStepResult {
   id: string
   ok: boolean
   error?: string
+  /** The page went somewhere it shouldn't (`pageProblem`): checkpointed, loginWall, pageNotReached. */
+  issue?: import('../../errors/catalog/index').ErrorCode
   expectSeen?: boolean
   ms?: number
   folder?: string

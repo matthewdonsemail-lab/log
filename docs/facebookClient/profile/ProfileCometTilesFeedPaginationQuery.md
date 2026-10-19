@@ -13,12 +13,11 @@
 | Called from | `ProfileCometTilesFeed_user.graphql` |
 | rea | `ev_efd2b7f64a4d26eb9a0e0d532522efdc457bd9e31e37f7f1916ec248c64520d6` |
 
-Seen 3 time(s) in 3 run(s).
+Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 5: clickRole button "…" | 2 | 200 | 388–483 ms | 6359–10591 ms | — |
-| inspect | now on /profile.php "…" after 2734 ms; 0 request(s) | 1 | 200 | 408 ms | 1383 ms | — |
+| host | step 12: goto /me | 1 | 200 | 655 ms | 4553 ms | — |
 
 <!-- facts:end -->
 

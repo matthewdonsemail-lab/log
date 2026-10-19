@@ -27,7 +27,7 @@ describe('the warm-up machine (rule 35)', () => {
     const { actor, ran } = run()
     const output = await toPromise(actor)
     expect(ran).toEqual(['feedBrowse', 'marketplaceBrowse', 'createAccessCheck', 'sellingVisit', 'messagesVisit'])
-    expect(output).toEqual({ done: ran, failure: null, stopped: false })
+    expect(output).toEqual({ done: ran, failure: null, stopped: false, blocked: false })
   })
 
   test('a failed step stops the warm-up there, and says which activity and step', async () => {
@@ -36,6 +36,14 @@ describe('the warm-up machine (rule 35)', () => {
     expect(ran).toEqual(['feedBrowse', 'marketplaceBrowse', 'createAccessCheck'])
     expect(output.failure).toEqual({ activity: 'createAccessCheck', failedAt: 's03_gotoMarketplaceCreateItem', error: 'redirected' })
     expect(output.stopped).toBe(true)
+  })
+
+  test("Erie's case: the first page was a checkpoint, so the warm-up is blocked there and goes no further", async () => {
+    const { actor, ran } = run({ feedBrowse: { ok: false, failedAt: 's01_goto', error: 'checkpointed: Facebook sent the page to /checkpoint/1501092823525282/', issue: 'checkpointed' } })
+    const output = await toPromise(actor)
+    expect(ran).toEqual(['feedBrowse'])
+    expect(output).toMatchObject({ blocked: true, failure: { activity: 'feedBrowse', issue: 'checkpointed' } })
+    expect(actor.getSnapshot().value).toBe('blocked')
   })
 
   test('--only runs just those, and STOP ends it', async () => {

@@ -11,20 +11,14 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_1daee983dec9df0b8bba1a9122070a89dc7fbb0b15d6d0f3a67f020dc86e2d8f` |
+| rea | `ev_79cfe08b7f624e0480f51d927de6cdbfc1e21a239f917c79684e7c179b50aa64` |
 
-Seen 8 time(s) in 8 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1321 | 1 | 200 | 5181 ms | 25566 ms | — |
-| inspect | step 1: goto /marketplace/ | 1 | 200 | 707 ms | 18862 ms | — |
-| flow | POST 200 CometNotificationsDropdownQuery (2480 ms) | 1 | 200 | 708 ms | 3872 ms | — |
-| flow | step 1: goto /me | 1 | 200 | 411 ms | 18167 ms | — |
-| inspect | POST 200 useMWEncryptedBackupsFetchBackupIdsV2Query (332 ms) | 1 | 200 | 495 ms | 2349 ms | — |
-| inspect | page has 61 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T110 | 1 | 200 | 393 ms | 2237 ms | — |
-| publish | Uploading 5 photo(s) | 1 | 200 | 395 ms | 517 ms | — |
-| publish | Category: Miscellaneous | 1 | 200 | 445 ms | 3493 ms | — |
+| host | signIn: password typed; submitting with Enter | 1 | 200 | 733 ms | 22708 ms | — |
+| connect | Auto-login: typing the email. | 1 | 200 | 429 ms | 512 ms | — |
 
 <!-- facts:end -->
 

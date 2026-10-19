@@ -17,6 +17,7 @@ the connect machine through python/connectSession.py.
 from __future__ import annotations
 
 import asyncio
+import scrollMotion
 import json
 import re
 import sys
@@ -174,7 +175,7 @@ async def scan(request: dict[str, Any]) -> dict[str, Any]:
         for attempt in range(8):
             log(f"Waiting for listing cards ({attempt + 1}/8)")
             try:
-                await page.evaluate("window.scrollBy(0, 800)")
+                await scrollMotion.scroll_by(page, 800)
             except Exception:
                 pass
             await page.wait_for_timeout(2500)

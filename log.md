@@ -1666,3 +1666,103 @@ Checked: `check:naming` OK, `tsc --noEmit` clean, `twenty:client:check` up to da
 - `log warmup plan`, and `run` refusing an unrecorded flow before any browser opens.
 
 Not done: the headed recording itself. 2Captcha's proxy traffic is at 0 (992.32 of 992.321 used) and every account's proxy answers 407, so no browser may open (rule 12). `log warmup record` is ready for when it is topped up.
+
+## 2026-10-19 16:42Z · feat/host
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/facebookClient/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/facebookClient/background/CometMarketplaceNUXUpdateStateMutation.md`: edited
+- `docs/facebookClient/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/facebookClient/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/facebookClient/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/facebookClient/background/FeedComposerCometRootQuery.md`: new file
+- `docs/facebookClient/background/FriendingCometMutualFriendsSocialContextTooltipContentQuery.md`: new file
+- `docs/facebookClient/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/facebookClient/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/facebookClient/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/facebookClient/background/ajaxBnzai.md`: edited
+- `docs/facebookClient/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/facebookClient/background/ajaxBz.md`: edited
+- `docs/facebookClient/background/ajaxQm.md`: edited
+- `docs/facebookClient/background/ajaxRelayEf.md`: edited
+- `docs/facebookClient/background/ajaxRouteDefinition.md`: edited
+- `docs/facebookClient/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/facebookClient/background/sharedUserPreferences.md`: edited
+- `docs/facebookClient/background/useInstreamAdsHaloFetcherQuery.md`: new file
+- `docs/facebookClient/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/facebookClient/background/videoUnifiedCvc.md`: new file
+- `docs/facebookClient/checkpoint/FBScrapingWarningMutation.md`: edited
+- `docs/facebookClient/checkpoint/UFACAISupportChatExperienceQuery.md`: edited
+- `docs/facebookClient/checkpoint/useCometAISupportConversationLoggerMutation.md`: edited
+- `docs/facebookClient/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/facebookClient/login/CometLogoutHandlerQuery.md`: edited
+- `docs/facebookClient/login/ajaxTimezoneUpdatePhp.md`: edited
+- `docs/facebookClient/login/loginDeviceBasedRegularLogin.md`: edited
+- `docs/facebookClient/login/useCDSWebLoginMutation.md`: new file
+- `docs/facebookClient/operations.json`: edited
+- `docs/facebookClient/profile/ProfileCometAboutAppSectionQuery.md`: new file
+- `docs/facebookClient/profile/ProfileCometHeaderQuery.md`: new file
+- `docs/facebookClient/profile/ProfileCometTilesFeedPaginationQuery.md`: edited
+- `docs/facebookClient/profile/ProfileCometTimelineAccountStatusNoticeQuery.md`: new file
+- `docs/facebookClient/profile/ProfileCometTimelineFeedQuery.md`: new file
+- `docs/facebookClient/profile/ProfileCometTimelineListViewRootQuery.md`: new file
+- `docs/facebookClient/profile/ProfileCometTopAppSectionQuery.md`: new file
+- `docs/lifecycle.md`: edited
+- `python/errorCatalog.json`: edited
+- `python/humanMouse.py`: added def human_scroll_into_view, def human_scroll_by · changed class HumanMouse, class SyncHumanMouse
+- `python/inspectSession.py`: added const SELL_LOCATION · changed class Inspector
+- `python/logWorker.py`: changed def scan
+- `python/publishSession.py`: changed class Session, def step_capture_id
+- `python/scrollMotion.py`: added class ScrollStep, def _bell_phase, def human_scroll_trajectory, const OWNER_JS, const DISTANCE_JS, const CONTAINER_STEP_JS, def _wheel_point, def scroll_by, def scroll_into_view, def scroll_by_sync, def scroll_into_view_sync
+- `scripts/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `skills.md`: edited
+- `skills/host/SKILL.md`: new file
+- `skills/warmup/SKILL.md`: edited
+- `src/camofox/flow/flow.test.ts`: added test "Erie's lock, a sign-out and a wrong page stop the step; Marketplace settling on its city page doesn't"
+- `src/camofox/flow/helpers/index.ts`: added export from "./pageCheck"
+- `src/camofox/flow/helpers/pageCheck.ts`: added function pageProblem
+- `src/camofox/flow/types.ts`: changed interface FlowStepResult
+- `src/camofox/inspect/helpers/parseInspectAction.ts`: changed const ARITY, const LIVE_ACTIONS
+- `src/camofox/inspect/inspect.test.ts`: changed test "click, type, press, solve, signIn and code are the actions that act on Facebook (rule 8)"
+- `src/camofox/inspect/types.ts`: changed type InspectAction
+- `src/camofox/run/client.ts`: changed function prepareRun
+- `src/camofox/run/run.test.ts`: added test "login.json goes at once; the rest moves out of the temp folder, and cleanup leaves it"
+- `src/camofox/run/types.ts`: changed interface PreparedRun
+- `src/cli/account/helpers/index.ts`: added export from "./resave.ts"
+- `src/cli/account/helpers/resave.ts`: added function resaveKeptRun
+- `src/cli/account/index.ts`: changed const ACCOUNT_USAGE, const accountCommand
+- `src/cli/account/resave.test.ts`: added function run, function keptRun, test "saves a kept run's session to Twenty, then removes the folder", test "refuses a folder that belongs to another account"
+- `src/cli/flow/helpers/flowSession.ts`: changed function openInspectSession, function runFlowInSession
+- `src/cli/host/helpers/hostActors.ts`: added const FB, interface HostBrowser, const ok, const issue, const error, function dayOf, function hostActors, const CITY_ZIPS, function zipFor
+- `src/cli/host/helpers/index.ts`: added export from "./hostActors.ts"
+- `src/cli/host/index.ts`: added export from "./helpers/index.ts", const HOST_USAGE, const EVENTS, const hostCommand, function safeList
+- `src/cli/live/index.ts`: changed function withRun
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/cli/warmup/index.ts`: added function accountIssue · changed const warmupCommand, function record, function runWarmup
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/marketplace/host/client.ts`: added interface RunHostOptions, interface HostResult, const laneState, function runHost
+- `src/marketplace/host/helpers/index.ts`: added export from "./progress"
+- `src/marketplace/host/helpers/progress.ts`: added function hostDir, const progressPath, const controlPath, function readProgress, function writeProgress, function resumeFrom, function milestones, function readControl, function sendControl
+- `src/marketplace/host/host.test.ts`: added const FAST, const fresh, function steps, function host, test "runs the lifecycle in one browser, saving progress and each milestone to Twenty", test "a host stopped in the warm-up resumes at the next activity, in a fresh browser, with the day’s opens counted", test "resumeFrom: the warm-up carries over; the opens only within the same local day", test "a checkpoint waits for a person; PERSON_DONE through the control file carries on in the same browser"
+- `src/marketplace/host/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/marketplace/host/types.ts`: added interface HostProgress, type HostControl, type MilestoneField
+- `src/marketplace/lifecycle/helpers/clock.ts`: added const clock
+- `src/marketplace/lifecycle/helpers/index.ts`: added export from "./clock"
+- `src/marketplace/lifecycle/helpers/onboardingStep.ts`: changed function nextOnboardingStep
+- `src/marketplace/lifecycle/lifecycle.test.ts`: added test "waiting out the warm-up day, the end of the account's day sends it overnight (rule 18), and the morning resumes it", test "a sign-in that keeps ending signed out goes to a person after two, never round again (Harrisburg)" · changed const FAST, test "the lane order: sign in, check, profile, name, location, warm-up, attached"
+- `src/marketplace/lifecycle/machine.ts`: changed const lifecycleMachine
+- `src/marketplace/lifecycle/types.ts`: changed interface LifecycleInput, interface LifecycleContext
+- `src/marketplace/warmup/machine.ts`: changed const warmupMachine
+- `src/marketplace/warmup/types.ts`: changed type ActivityOutcome, interface WarmupContext
+- `src/marketplace/warmup/warmup.test.ts`: added test "Erie's case: the first page was a checkpoint, so the warm-up is blocked there and goes no further" · changed test "runs Listaro's five activities in its stage order, one after another"
+- `src/rea/facebookClient/client.ts`: changed function writeOperationDocs
+- `src/rea/facebookClient/facebookClient.test.ts`: added test "a request missing from today's recordings keeps its entry and doc; one seen again keeps its larger count"
+- `src/rea/facebookClient/helpers/domainOf.ts`: changed const DOMAIN_PATTERNS
+- `src/twenty/graphql/client.test.ts`: added test "Twenty's rate limit is waited out and the save goes through, never read as a bad API key", test "a rate-limited create is retried too (it was refused whole), and it gives up after two waits"
+- `src/twenty/graphql/client.ts`: added const RATE_LIMIT_RETRIES · changed function toTwentyError, function createTwentyClient
+
+What changed: `log host start|send|status` runs one account's lifecycle machine in one open browser (`src/marketplace/host`, actors in `src/cli/host/helpers/hostActors.ts`). It saves the snapshot and a resume record on every change, writes milestones and the lane-level `lifecycleState` to Twenty, takes PERSON_DONE/PAUSE/RESUME/SHUTDOWN/LOST from a control file, decides signed in by the c_user and xs cookies, and saves the session as soon as it is signed in. The lifecycle gains a persistable clock, resume input, a day check after watching (end of day goes overnight), and a sign-in loop guard (`signInSpent` after two). Every flow and warm-up step's landing page is checked (`pageProblem`: checkpointed, loginWall, pageNotReached), and the warm-up machine ends `blocked` on one. Twenty's "Limit reached (100 tokens...)" is now `twentyRateLimited` and is waited out twice, where before it was misread as a bad API key. A run whose device or session save failed is kept in `~/.logCli/runs/unsaved/` with its login removed, and `log account resave` puts it back. `python/scrollMotion.py` ports the Robotic VSL repo's trajectory scroll, and it replaces every scrollBy and scroll_into_view_if_needed. There are new inspect actions (saveState, pageText, sellLocation, setLocation). Auto-login waits for Facebook's answer after Enter. The docs index is cumulative, `WebLogin` belongs to login, and 11 new request docs have their reasoning. The naming gate allows number ranges and aria-* attributes.
+Why: matt asked for the runner that keeps the browser open and resumes (rule 35). The live runs today showed what was missing. Erie's warm-up scrolled a checkpoint page for a minute. Harrisburg's first connect lost its cookies and device to a rate limit read as auth. Harrisburg's host looped while signed out because the page wording looked signed in. Its profile step failed on a false `/me` miss.
+Checked: `bun run check` (naming, tsc, 555 tests pass, 0 fail); `check:facebookClientDocs` (101 requests). Live: Harrisburg's host signed in (7 cookies, then 9 saved), its account check passed, and its device was pinned. Erie's feed scrolled +320 px in 8 wheel steps. Auto-login made no double sign-in.

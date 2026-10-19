@@ -45,6 +45,7 @@ from pathlib import Path
 from typing import Any
 
 import autoLogin
+import scrollMotion
 import proxyGate
 from humanMouse import HumanMouse
 from errorCodes import failure
@@ -255,6 +256,9 @@ def read_login(path: str | None) -> dict[str, Any]:
 
 
 
+# The create page's own data: where Facebook will list (publishSession.SELL_LOCATION).
+SELL_LOCATION = re.compile(r'"sell_location":\{"latitude":(-?[\d.]+),"longitude":(-?[\d.]+),"reverse_geocode_detailed":\{"city":"([^"]*)","postal_code":"([^"]*)","country_alpha_two":"([A-Z]{2})"')
+
 def draw(spec: str) -> int:
     """ "4-7" -> a whole number from 4 to 7; "3" -> 3."""
     low, _, high = str(spec).partition("-")
@@ -290,6 +294,8 @@ class Inspector:
         With `expect` (a flow step's confirming request, e.g. ProfileCometProfilePictureSetMutation)
         the step also waits until Facebook was sent that request, up to `expect_ms`."""
         self.index += 1
+        # What an action hands back beyond the page (`pageText`, `sellLocation`): merged into the reply.
+        self.extra: dict[str, Any] = {}
         name = f"{self.index:02d}_{slug(action + ' ' + label)}"
         folder = self.steps_dir / name
         folder.mkdir(parents=True, exist_ok=True)
@@ -372,6 +378,7 @@ class Inspector:
             error = f"expected request {expect} was not sent"
         return {"ok": ok, **({"error": error} if error else {}), **({"expect": {"name": expect, "seen": expect_seen}} if expect else {}),
                 "step": name, "action": action, "args": [label] if label else [],
+                **getattr(self, "extra", {}),
                 "ms": round((time.monotonic() - started) * 1000), "url": url, "title": title,
                 "requests": len(entries), "notable": seen, "mouse": {"legs": len(mouse["legs"]), "idleMoves": mouse["idleMoves"]}, "rea": rea, "interactive": interactive, "folder": str(folder)}
 
@@ -423,14 +430,23 @@ class Inspector:
             raise RuntimeError("no password field on the page, or no password in Twenty")
         email_field = await self.first_visible(autoLogin.EMAIL_FIELD)
         if email_field is not None and self.secrets.get("email"):
-            await email_field.click()
+            await self.mouse.click(email_field, circle=False)
             await email_field.fill("")
             await email_field.press_sequentially(str(self.secrets["email"]), delay=90)
             log("  signIn: email typed")
-        await pass_field.click()
+        await self.mouse.click(pass_field, circle=False)
         await pass_field.press_sequentially(str(password), delay=90)
         log("  signIn: password typed; submitting with Enter")
+        before = self.page.url
         await pass_field.press("Enter")
+        # Wait for Facebook to answer, not a fixed time (the connect fix of 2026-10-19).
+        for _ in range(30):
+            await asyncio.sleep(0.5)
+            try:
+                if self.page.url != before or await self.first_visible(autoLogin.PASSWORD_FIELD) is None:
+                    break
+            except Exception:
+                break
 
     async def enter_code(self) -> None:
         """The current authenticator code from totpSecret into the code field, then Enter."""
@@ -498,15 +514,10 @@ class Inspector:
             times, px = (args + ["3-5", "300-600"][len(args):])[:2]
 
             async def scroll() -> None:
-                # Real wheel ticks with pauses, as a hand scrolls (Listaro jumped with window.scrollBy).
+                # Each scroll is one trajectory (the Robotic VSL's scroll_math: bell-curve speed, overshoot
+                # and recoil, the page's own wheel scrolling), then a pause, as a hand scrolls and reads.
                 for _ in range(draw(times)):
-                    distance = draw(px)
-                    moved = 0
-                    while moved < distance:
-                        tick = min(distance - moved, random.randint(80, 125))
-                        await page.mouse.wheel(0, tick)
-                        moved += tick
-                        await asyncio.sleep(random.uniform(0.03, 0.09))
+                    await scrollMotion.scroll_by(page, draw(px), self.mouse, log)
                     await asyncio.sleep(random.uniform(1.5, 3.5))
             return await self.step("scroll", f"{times} x {px}px", scroll)
         if action == "dwell":
@@ -525,7 +536,7 @@ class Inspector:
                     await self.mouse.click(page.locator(f'a[href="{href}"]').first)
                     await page.wait_for_load_state("domcontentloaded")
                     await asyncio.sleep(random.uniform(2.0, 4.0))
-                    await page.mouse.wheel(0, random.randint(200, 500))
+                    await scrollMotion.scroll_by(page, random.randint(200, 500), self.mouse, log)
                     await asyncio.sleep(random.uniform(1.5, 3.0))
                     log(f"  openAny: read {href.split('?')[0]}")
                     await page.go_back(wait_until="domcontentloaded")
@@ -549,12 +560,63 @@ class Inspector:
                 if not chosen:
                     raise RuntimeError(f'no visible {role} named /{pattern}/')
                 for item in chosen:
-                    await item.scroll_into_view_if_needed(timeout=10_000)
+                    await scrollMotion.scroll_into_view(item, self.mouse, log)
                     await asyncio.sleep(random.uniform(0.8, 1.5))
                     await self.mouse.click(item)
                     await asyncio.sleep(random.uniform(1.0, 2.0))
                 log(f"  clickAny: {len(chosen)} {role} /{pattern}/")
             return await self.step("clickAny", f'{count} x {role} /{pattern}/', click_any)
+        # Host steps (rule 35): what the lifecycle needs from the one open browser.
+        if action == "saveState":
+            # The session as it is now, so a sign-in is kept at once, not only when the browser closes.
+            async def save_state() -> None:
+                await self.context.storage_state(path=str(self.config["storageStatePath"]))
+            return await self.step("saveState", "", save_state)
+        if action == "pageText":
+            async def page_text() -> None:
+                text = await page.evaluate("() => document.body ? document.body.innerText : ''")
+                self.extra = {"text": " ".join(str(text).split())[:4000]}
+            return await self.step("pageText", "", page_text)
+        if action == "sellLocation":
+            async def sell_location() -> None:
+                match = SELL_LOCATION.search(await page.content())
+                if match:
+                    lat, lng, city, postal, country = match.groups()
+                    self.extra = {"sellLocation": {"city": city, "postalCode": postal, "country": country}}
+                else:
+                    self.extra = {"sellLocation": None}
+            return await self.step("sellLocation", "", sell_location)
+        if action == "setLocation" and args:
+            postal = args[0]
+
+            async def set_location() -> None:
+                # Recorded on Reading 2026-10-19 (inspect run 20261019T131409, steps 3-15): Location button,
+                # Change location, clear the box, the zip, the first suggestion (not in the accessibility tree:
+                # ArrowDown, Enter), Apply, which sends CometMarketplaceSetBuyLocationMutation.
+                await page.goto("https://www.facebook.com/marketplace/", wait_until="domcontentloaded")
+                button = page.get_by_role("button", name=re.compile(r"^Location: "))
+                await button.first.wait_for(state="visible", timeout=30_000)
+                await self.mouse.click(button.first)
+                dialog = page.get_by_role("dialog", name="Change location")
+                await dialog.wait_for(state="visible", timeout=15_000)
+                box = dialog.get_by_role("combobox", name="Location")
+                await self.mouse.click(box, circle=False)
+                await page.keyboard.press("Control+a")
+                await page.keyboard.press("Backspace")
+                await page.keyboard.type(postal, delay=90)
+                await asyncio.sleep(2.5)
+                await page.keyboard.press("ArrowDown")
+                await page.keyboard.press("Enter")
+                await asyncio.sleep(1.2)
+                apply = dialog.get_by_role("button", name="Apply")
+                if await apply.is_disabled():
+                    raise RuntimeError(f"no suggestion was picked for {postal}")
+                async with page.expect_response(lambda r: "CometMarketplaceSetBuyLocationMutation" in (r.request.post_data or ""), timeout=20_000) as saved:
+                    await self.mouse.click(apply)
+                if (await saved.value).status != 200:
+                    raise RuntimeError("CometMarketplaceSetBuyLocationMutation was not accepted")
+                await asyncio.sleep(2.5)
+            return await self.step("setLocation", postal, set_location)
         if action == "snapshot":
             return await self.step("snapshot", "", lambda: asyncio.sleep(0))
         if action == "back":

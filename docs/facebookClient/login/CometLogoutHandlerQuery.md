@@ -13,22 +13,13 @@
 | Called from | `CometLogoutHandler.react` |
 | rea | `ev_a71121d0640a1fd7bea827bdea508da067de6cbd9731907468d4d4d5a46427fa` |
 
-Seen 14 time(s) in 14 run(s).
+Seen 3 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| connect | Auto-login: typing the email. | 2 | 200 | 353–529 ms | 3562–4436 ms | — |
-| connect | says: (no text) / buttons: none | 1 | 200 | 497 ms | 5032 ms | — |
-| inspect | step 2: wait 60s | 1 | 200 | 896 ms | 52087 ms | — |
-| connect | Page: loginForm /marketplace/selling/ "…" | 1 | 200 | 446 ms | 2319 ms | — |
-| inspect | step 1: goto /marketplace/ | 1 | 200 | 382 ms | 11375 ms | — |
-| connect | says: <name> / buttons: Back to Previous Page, Account settings | 2 | 200 | 542–680 ms | 720–2677 ms | — |
-| inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 455 ms | 6678 ms | — |
-| inspect | page has 56 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T110 | 1 | 200 | 316 ms | 2618 ms | — |
-| inspect | step 1: goto /me | 1 | 200 | 353 ms | 12251 ms | — |
-| inspect | POST 0 /ajax/qm/ (0 ms) | 1 | 200 | 556 ms | 3400 ms | — |
-| profile | Opening the profile (facebook.com/me). | 1 | 200 | 565 ms | 10415 ms | — |
-| connect | Page: checkpoint /checkpoint/<id>/ | 1 | 200 | 361 ms | 566 ms | — |
+| connect | Auto-login: submitting (Enter). | 1 | 200 | 467 ms | 11889 ms | — |
+| warmup | step 1: goto / | 1 | 200 | 616 ms | 11094 ms | — |
+| warmup | mouse: move failed (TimeoutError) | 1 | 200 | 355 ms | 427 ms | — |
 
 <!-- facts:end -->
 

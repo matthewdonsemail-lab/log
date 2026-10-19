@@ -11,23 +11,29 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_ffc2455a215f86b6a0d99bedb95b86a91d08bc880676fa013332126ced318044` |
+| rea | `ev_3ac696d9ca5b73b85be25c3eb0a04d8e07223fff4eb281ffe30fb79f8510e011` |
 
-Seen 108 time(s) in 10 run(s).
+Seen 53 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| connect | Opening Marketplace > Selling. | 49 | -1 | -1 ms | 4719–11459 ms | — |
-| connect | Auto-login: typing the email. | 10 | -1 | -1 ms | 179–4002 ms | — |
-| connect | Auto-login: submitting (Enter). | 18 | -1 | -1 ms | 26–160 ms | — |
-| connect | Page: unknown /marketplace/selling/ | 5 | -1 | -1 ms | 3747–4460 ms | — |
-| connect | Auto-login: typing the password. | 5 | -1 | -1 ms | 988–3293 ms | — |
-| connect | says: (no text) / buttons: none | 7 | -1 | -1 ms | 2226–4353 ms | — |
-| inspect | step 1: goto /marketplace/you/selling | 7 | -1 | -1 ms | 5911–8926 ms | — |
-| inspect | page has 61 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T110 | 1 | -1 | -1 ms | 86 ms | — |
-| inspect | step 2: click e675 | 3 | -1 | -1 ms | 920–3340 ms | — |
-| inspect | POST 0 /ajax/bz (0 ms) | 2 | -1 | -1 ms | 1710–1965 ms | — |
-| inspect | signIn: password typed; submitting with Enter | 1 | -1 | -1 ms | 97 ms | — |
+| host | step 1: goto /marketplace/selling/ | 15 | -1 | -1 ms | 5723–9570 ms | — |
+| host | GET 200 /nw/ (319 ms) | 1 | -1 | -1 ms | 2587 ms | — |
+| host | step 4: goto /login/ | 3 | -1 | -1 ms | 59–5778 ms | — |
+| host | GET 200 /nw/ (344 ms) | 1 | -1 | -1 ms | 3711 ms | — |
+| host | step 7: signIn | 1 | -1 | -1 ms | 2322 ms | — |
+| host | signIn: email typed | 1 | -1 | -1 ms | 1997 ms | — |
+| host | signIn: password typed; submitting with Enter | 2 | -1 | -1 ms | 1037–4859 ms | — |
+| host | GET 200 /nw/ (355 ms) | 3 | -1 | -1 ms | 392–2265 ms | — |
+| host | step 2: pageText | 1 | -1 | -1 ms | 835 ms | — |
+| host | step 4: goto /marketplace/selling/ | 6 | -1 | -1 ms | 58–2707 ms | — |
+| host | step 5: pageText | 1 | -1 | -1 ms | 1528 ms | — |
+| host | step 7: goto /marketplace/selling/ | 6 | -1 | -1 ms | 57–3042 ms | — |
+| host | step 8: pageText | 1 | -1 | -1 ms | 1241 ms | — |
+| connect | Opening Marketplace > Selling. | 7 | -1 | -1 ms | 7239–9789 ms | — |
+| connect | Page: loginForm /marketplace/selling/ "…" | 1 | -1 | -1 ms | 573 ms | — |
+| connect | submitCredentials failed: crashed Error | 1 | -1 | -1 ms | 1666 ms | — |
+| connect | Auto-login: submitting (Enter). | 2 | -1 | -1 ms | 26–102 ms | — |
 
 <!-- facts:end -->
 

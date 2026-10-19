@@ -11,36 +11,25 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_ffc2455a215f86b6a0d99bedb95b86a91d08bc880676fa013332126ced318044` |
+| rea | `ev_3ac696d9ca5b73b85be25c3eb0a04d8e07223fff4eb281ffe30fb79f8510e011` |
 
-Seen 95 time(s) in 47 run(s).
+Seen 15 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| connect | Opening Marketplace > Selling. | 10 | -1 | -1 ms | 1634–3993 ms | — |
-| connect | Auto-login: typing the email. | 4 | -1 | -1 ms | 546–3262 ms | — |
-| connect | Auto-login: answered automatedBehaviour. | 16 | -1 | -1 ms | 1106–5600 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ "…" | 5 | -1 | -1 ms | 1423–4424 ms | — |
-| connect | Auto-login: submitting (Enter). | 3 | -1 | -1 ms | 2976–5737 ms | — |
-| inspect | step 1: goto /marketplace/ | 13 | -1 | -1 ms | 1503–4086 ms | — |
-| inspect | step 2: goto /marketplace/item/<id>/ | 1 | -1 | -1 ms | 5575 ms | — |
-| inspect | step 3: goto /marketplace/item/<id>/ | 1 | -1 | -1 ms | 4247 ms | — |
-| inspect | step 7: goto /marketplace/you/ | 1 | -1 | -1 ms | 2090 ms | — |
-| inspect | step 8: goto /marketplace/status/ | 1 | -1 | -1 ms | 1455 ms | — |
-| inspect | step 10: goto /marketplace/item/<id>/ | 1 | -1 | -1 ms | 1749 ms | — |
-| publish | Opening /marketplace/create/item | 16 | -1, 200 | -1–290 ms | 1643–8396 ms | — |
-| publish | Marketplace location: Reading 19601 US | 1 | -1 | -1 ms | 34907 ms | — |
-| inspect | step 16: goto /marketplace/create/item | 1 | -1 | -1 ms | 962 ms | — |
-| connect | Page: loginForm /marketplace/selling/ "…" | 2 | -1 | -1 ms | 337–773 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ | 5 | -1 | -1 ms | 611–5840 ms | — |
-| flow | step 1: goto /me | 2 | -1 | -1 ms | 2798–3067 ms | — |
-| flow | step 9: goto /profiles/<id>/name | 2 | -1 | -1 ms | 1525–4967 ms | — |
-| inspect | step 1: goto /me | 3 | -1 | -1 ms | 2837–6273 ms | — |
-| inspect | step 14: goto /profiles/<id>/name | 1 | -1 | -1 ms | 1638 ms | — |
-| inspect | step 1: goto /marketplace/you/selling | 2 | -1 | -1 ms | 2844–2846 ms | — |
-| inspect | step 2: click e53 | 2 | -1 | -1 ms | 2511–3151 ms | — |
-| inspect | GET 200 /nw/ (285 ms) | 1 | -1 | -1 ms | 1771 ms | — |
-| profile | Opening the profile (facebook.com/me). | 1 | 200 | 315 ms | 2142 ms | — |
+| host | step 1: goto /marketplace/selling/ | 2 | -1 | -1 ms | 2359–2485 ms | — |
+| host | step 4: goto /login/ | 1 | -1 | -1 ms | 523 ms | — |
+| host | signIn: password typed; submitting with Enter | 1 | -1 | -1 ms | 5635 ms | — |
+| host | step 10: goto /marketplace/selling/ | 1 | -1 | -1 ms | 1375 ms | — |
+| host | step 12: goto /me | 1 | -1 | -1 ms | 1680 ms | — |
+| host | step 4: goto /marketplace/selling/ | 1 | -1 | -1 ms | 1407 ms | — |
+| host | step 7: goto /marketplace/selling/ | 1 | -1 | -1 ms | 1782 ms | — |
+| connect | Opening Marketplace > Selling. | 1 | -1 | -1 ms | 1930 ms | — |
+| connect | Auto-login: submitting (Enter). | 1 | -1 | -1 ms | 9522 ms | — |
+| connect | Auto-login: answered automatedBehaviour. | 2 | -1 | -1 ms | 1657–2321 ms | — |
+| connect | Page: loggedIn /marketplace/selling/ "…" | 1 | -1 | -1 ms | 2244 ms | — |
+| warmup | step 1: goto / | 1 | 200 | 572 ms | 2395 ms | — |
+| warmup | step 4: goto /marketplace/ | 1 | -1 | -1 ms | 925 ms | — |
 
 <!-- facts:end -->
 

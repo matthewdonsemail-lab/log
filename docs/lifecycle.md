@@ -103,9 +103,17 @@ The actors are the steps log-cli already has:
 - **acting:** publish and replies
 - **watching:** the Selling page review check and the inbox scan (rule 34)
 
-The host that keeps them in one open browser is the next build (plan phases
-P2 and P3). Until then each command still opens its own browser, which is
-why the rule says to use them as few times as possible.
+The host keeps them in one open browser: `log host start --account <a>`
+(`src/marketplace/host`, actors in `src/cli/host/helpers/hostActors.ts`,
+`skills/host/SKILL.md`). It saves the machine's snapshot and a resume record
+(`~/.logCli/host/<account>/progress.json`) on every change, so a restart picks
+up where it was (warm-up done, opens today), and takes `PERSON_DONE`, `PAUSE`,
+`RESUME`, `SHUTDOWN` and `LOST` from `log host send`. Signed in is decided by
+the `c_user` and `xs` cookies, and the session is saved to Twenty as soon as
+it is. Every step's landing page is checked (`pageProblem`: checkpointed,
+loginWall, pageNotReached). Not built yet: `acting` (publish and replies as a
+tab) answers `actNotBuilt`, so the standalone commands still open their own
+browser for those: use them as few times as possible.
 
 ## The machine's state tree
 

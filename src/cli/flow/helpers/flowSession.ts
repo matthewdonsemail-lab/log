@@ -1,7 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
-import { createFlowMachine, fillStep } from "../../../camofox/flow/index.ts";
+import { createFlowMachine, fillStep, pageProblem } from "../../../camofox/flow/index.ts";
+import { clearCurrentInspect, writeCurrentInspect } from "../../../camofox/inspect/index.ts";
 import type { FlowActInput, FlowDefinition, FlowRunOutput, FlowStep, FlowStepResult } from "../../../camofox/flow/index.ts";
 import type { CurrentInspect, InspectAction } from "../../../camofox/inspect/index.ts";
 import { createInspector, formatTraceLine } from "../../../observability/trace/index.ts";
@@ -57,8 +58,13 @@ export async function openInspectSession(
     loginPath: run.loginPath,
     startUrl: null,
   });
+  // Listed with the other open sessions, so `log inspect do --account` and `inspect sessions` see it.
+  writeCurrentInspect(current);
   let ended = false;
-  void session.then(() => (ended = true));
+  void session.then(() => {
+    ended = true;
+    clearCurrentInspect(undefined, account.accountName);
+  });
   const deadline = Date.now() + 180_000;
   while (!(existsSync(current.repliesPath) && readFileSync(current.repliesPath, "utf8").includes('"id": "ready"'))) {
     if (ended || Date.now() > deadline) return { error: `the browser never became ready (${runDir})` };
@@ -86,9 +92,12 @@ export async function runFlowInSession(
         const step = fillStep(input.step, filled);
         const { action, args } = commandFor(step);
         const reply = await context.sendInspect(current, action, args, 240_000, step.expect ? { name: step.expect, ms: 45_000 } : undefined);
-        const result: FlowStepResult = reply
+        let result: FlowStepResult = reply
           ? { id: step.id, ok: reply.ok !== false, error: reply.error, expectSeen: reply.expect?.seen, ms: (reply as { ms?: number }).ms, folder: reply.folder }
           : { id: step.id, ok: false, error: "no reply from the session" };
+        // Where the page really is: a checkpoint, a login or the wrong page stops the flow here (pageProblem).
+        const problem = reply ? pageProblem(step, reply) : null;
+        if (problem) result = { ...result, ok: false, issue: problem.code, error: `${problem.code}: ${problem.detail}` };
         options.onStep?.(step, result);
         return result;
       }),

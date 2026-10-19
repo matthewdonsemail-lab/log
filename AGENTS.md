@@ -23,11 +23,14 @@ AdsPower window per account for hours, `RESEARCH/LISTARO_BROWSER_LIFECYCLE.md`).
   resting). Every state is recorded with `log inspect` and read with rea
   (rules 25, 29).
 
-Status 2026-10-19: the lifecycle machine is the spec and is built and tested
-(`log lifecycle`). The host that keeps the browser open is not built yet, so
-today's commands (`connect`, `publish`, `profile`, `inspect`) still launch per
-action: use them as few times as possible, and never add a new command that
-launches its own browser. Rule 35. Plan: `PLANS/LOG_CLI_ACCOUNT_LIFECYCLE_PLAN.md`.
+Status 2026-10-19: the lifecycle machine is built and tested (`log
+lifecycle`), and so is the host that runs it in one open browser (`log host
+start|send|status`, `skills/host/SKILL.md`): open, sign-in by cookie, account
+check, profile, location, warm-up, watching, logged closes, resume after a
+restart. Acting (publish and replies as a tab) is not built yet, so `publish`
+and `connect` still launch per action: use them as few times as possible, and
+never add a new command that launches its own browser. Rule 35. Plan:
+`PLANS/LOG_CLI_ACCOUNT_LIFECYCLE_PLAN.md`.
 
 ## Always run it live, so matt can watch (matt, 2026-10-19)
 

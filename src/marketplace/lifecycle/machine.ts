@@ -24,6 +24,7 @@
  */
 import { assign, fromPromise, setup } from 'xstate'
 import { statusForIssue } from '../socialAccount/helpers/index'
+import { clock } from './helpers/clock'
 import { nextOnboardingStep, nextWarmupActivity, warmupComplete } from './helpers/onboardingStep'
 import type { CloseReason, HostAction, LifecycleActorInputs, LifecycleContext, LifecycleEvent, LifecycleInput, StepOutcome, WarmupActivity } from './types'
 import { DEFAULT_LIFECYCLE_TIMING, OPENS_PER_DAY } from './types'
@@ -130,8 +131,9 @@ export const lifecycleMachine = setup({
     browserClosed: ({ context }) => !context.browser.open,
     toStep: ({ context }, step: string) => nextOnboardingStep(context) === step,
     issueStatus: ({ context }, status: string) => context.issue != null && statusForIssue(context.issue.code) === status,
+    signInSpent: ({ context }) => context.signInTries >= 2,
     activityLeft: ({ context }) => nextWarmupActivity(context) !== null,
-    warmupOver: ({ context }) => warmupComplete(context, context.now())
+    warmupOver: ({ context }) => warmupComplete(context, clock.now())
   },
   actions: {
     // Both read the step's outcome from its done event, so transitions name them plainly.
@@ -144,9 +146,10 @@ export const lifecycleMachine = setup({
       return o?.kind === 'error' ? { lastError: { code: o.code, detail: o.detail } } : {}
     }),
     logClose: assign(({ context }, reason: CloseReason) => ({
-      browser: { ...context.browser, open: false, closes: [...context.browser.closes, { reason, at: new Date(context.now()).toISOString() }] },
+      browser: { ...context.browser, open: false, closes: [...context.browser.closes, { reason, at: new Date(clock.now()).toISOString() }] },
       trail: [...context.trail, `close:${reason}`]
     })),
+    countSignIn: assign(({ context }) => ({ signInTries: context.signInTries + 1 })),
     newDay: assign(({ context }) => ({ browser: { ...context.browser, opensToday: 0 }, trail: [...context.trail, 'newDay'] })),
     markActivity: assign(({ context }) => {
       const activity = nextWarmupActivity(context)
@@ -160,20 +163,26 @@ export const lifecycleMachine = setup({
     activityGap: ({ context }) => context.timing.activityGapMs,
     watchInterval: ({ context }) => context.timing.watchIntervalMs,
     limitedRest: ({ context }) => context.timing.limitedRestMs,
-    warmupLeft: ({ context }) => Math.max(0, (context.warmup.startedAt ?? context.now()) + context.timing.warmupMs - context.now())
+    warmupLeft: ({ context }) => Math.max(0, (context.warmup.startedAt ?? clock.now()) + context.timing.warmupMs - clock.now()),
+    // Waiting out the warm-up day: the next look is the watch interval, or the day's end if sooner.
+    untilNextLook: ({ context }) =>
+      Math.min(context.timing.watchIntervalMs, Math.max(0, (context.warmup.startedAt ?? clock.now()) + context.timing.warmupMs - clock.now()))
   }
 }).createMachine({
   id: 'lifecycle',
   context: ({ input }) => {
-    const now = input.now ?? (() => Date.now())
     const s = input.standing
     return {
       accountId: s.accountId,
       liveActions: input.liveActions,
       timing: { ...DEFAULT_LIFECYCLE_TIMING, ...input.timing },
       standing: s,
-      browser: { open: false, opensToday: 0, closes: [] },
-      warmup: { startedAt: s.warmupStartedAt ? Date.parse(s.warmupStartedAt) : null, done: [] },
+      // A resumed host (`input.resume`): what it had done, never its browser (that one is gone; a fresh one opens).
+      browser: { open: false, opensToday: input.resume?.opensToday ?? 0, closes: [] },
+      warmup: {
+        startedAt: input.resume?.warmupStartedAt ?? (s.warmupStartedAt ? Date.parse(s.warmupStartedAt) : null),
+        done: input.resume?.warmupDone ?? []
+      },
       issue: null,
       lastError: null,
       retried: false,
@@ -182,7 +191,7 @@ export const lifecycleMachine = setup({
       trail: [],
       checked: false,
       pending: null,
-      now
+      signInTries: 0
     }
   },
   initial: 'routing',
@@ -240,10 +249,15 @@ export const lifecycleMachine = setup({
             { target: 'attached' }
           ]
         },
-        signingIn: step('signIn', ({ context }) => ({ accountId: context.accountId }), 'next', ({ context }) => ({
-          standing: { ...context.standing, hasSession: true, status: 'active' },
-          issue: null
-        })),
+        // Counted, so a sign-in that keeps failing goes to a person instead of round again (Harrisburg, 2026-10-19).
+        signingIn: Object.assign(
+          { entry: 'countSignIn' },
+          step('signIn', ({ context }) => ({ accountId: context.accountId }), 'next', ({ context }) => ({
+            standing: { ...context.standing, hasSession: true, status: 'active' },
+            issue: null,
+            signInTries: 0
+          }))
+        ),
         checkingAccount: step('checkAccount', ({ context }) => ({ accountId: context.accountId }), 'next', ({ context }) => ({
           standing: { ...context.standing, status: context.standing.status === 'checkpoint' ? 'active' : context.standing.status },
           issue: null,
@@ -260,7 +274,7 @@ export const lifecycleMachine = setup({
         })),
         /** A day of Listaro's five warm-up activities in the open browser, spaced through the day. */
         warming: {
-          entry: assign(({ context }) => (context.warmup.startedAt ? {} : { warmup: { ...context.warmup, startedAt: context.now() } })),
+          entry: assign(({ context }) => (context.warmup.startedAt ? {} : { warmup: { ...context.warmup, startedAt: clock.now() } })),
           initial: 'pick',
           states: {
             pick: {
@@ -297,7 +311,25 @@ export const lifecycleMachine = setup({
             },
             gap: { after: { activityGap: 'pick' } },
             /** Every activity ran: the browser stays open until the warm-up day is over. */
-            waitingOutDay: { after: { warmupLeft: 'pick' } }
+            waitingOutDay: {
+              // The browser stays open for the rest of the warm-up day, but never past the account's day (rule 18):
+              // it is looked at every watch interval, and the end of the day sends it overnight.
+              after: { untilNextLook: 'dayCheck' }
+            },
+            dayCheck: {
+              entry: assign(({ context }) => ({ trail: [...context.trail, 'dayCheck'] })),
+              invoke: {
+                src: 'watchCheck',
+                input: ({ context }) => ({ accountId: context.accountId }),
+                onDone: [
+                  { guard: { type: 'endOfDay', params: ({ event }) => event.output }, target: '#lifecycle.onboarding.overnight' },
+                  { guard: { type: 'ok', params: ({ event }) => event.output }, target: 'pick' },
+                  { guard: { type: 'isIssue', params: ({ event }) => event.output }, target: '#lifecycle.issue', actions: 'recordIssue' },
+                  { target: '#lifecycle.stuck', actions: 'recordError' }
+                ],
+                onError: { target: '#lifecycle.stuck' }
+              }
+            }
           }
         },
         /** The night during onboarding: close for the reason, wait for the morning, open again, carry on. */
@@ -317,7 +349,7 @@ export const lifecycleMachine = setup({
         },
         attached: {
           entry: assign(({ context }) => ({
-            standing: { ...context.standing, warmedAt: context.standing.warmedAt ?? new Date(context.now()).toISOString() },
+            standing: { ...context.standing, warmedAt: context.standing.warmedAt ?? new Date(clock.now()).toISOString() },
             trail: [...context.trail, 'attached']
           })),
           always: { target: '#lifecycle.host' }
@@ -396,7 +428,7 @@ export const lifecycleMachine = setup({
         },
         crashed: {
           entry: assign(({ context }) => ({
-            browser: { ...context.browser, open: false, closes: [...context.browser.closes, { reason: 'crash' as const, at: new Date(context.now()).toISOString() }] },
+            browser: { ...context.browser, open: false, closes: [...context.browser.closes, { reason: 'crash' as const, at: new Date(clock.now()).toISOString() }] },
             trail: [...context.trail, 'close:crash']
           })),
           always: { target: 'opening' }
@@ -422,6 +454,12 @@ export const lifecycleMachine = setup({
     issue: {
       entry: assign(({ context }) => ({ trail: [...context.trail, `issue:${context.issue?.code}`] })),
       always: [
+        // Signed out again after two sign-ins in a row: a person looks, it doesn't go round again.
+        {
+          guard: ({ context }) => context.signInTries >= 2 && context.issue != null && statusForIssue(context.issue.code) === 'needsLogin',
+          target: 'stuck',
+          actions: assign({ lastError: { code: 'signInSpent', detail: 'two sign-ins in a row ended signed out' } })
+        },
         { guard: { type: 'issueStatus', params: 'needsLogin' }, target: 'onboarding.signingIn' },
         { guard: { type: 'issueStatus', params: 'checkpoint' }, target: 'needsPerson' },
         { guard: { type: 'issueStatus', params: 'limited' }, target: 'cooling' },

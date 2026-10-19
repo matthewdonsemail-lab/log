@@ -41,7 +41,7 @@ from urllib.parse import parse_qs, urlparse
 
 from errorCodes import checked, failure
 import proxyGate
-from humanMouse import SyncHumanMouse, human_click
+from humanMouse import SyncHumanMouse, human_click, human_scroll_by, human_scroll_into_view
 from visibleBrowser import launch_kwargs
 
 CREATE_PATH = "https://www.facebook.com/marketplace/create/item"
@@ -467,7 +467,7 @@ class Session:
         opener = self.page.locator('label[role="combobox"]', has_text=re.compile(name, re.I)).first
         if opener.count() == 0:
             return None
-        opener.scroll_into_view_if_needed()
+        human_scroll_into_view(opener)
         if self.portal_visible(opener):
             return opener
         attempts = [opener.locator("i, svg").first]
@@ -562,7 +562,7 @@ class Session:
 
     def type_and_check(self, loc, value: str, check, delay: int = 20) -> bool:
         """Type like a person, read the value back, fall back to fill + input event (spike :54-60)."""
-        loc.scroll_into_view_if_needed()
+        human_scroll_into_view(loc)
         human_click(loc)
         self.page.keyboard.press("ControlOrMeta+A")
         self.page.keyboard.press("Backspace")
@@ -582,7 +582,7 @@ class Session:
                 button = buttons.nth(i)
                 try:
                     if button.is_visible() and not button.evaluate(DISABLED_JS):
-                        button.scroll_into_view_if_needed()
+                        human_scroll_into_view(button)
                         human_click(button)
                         return True
                 except Exception:
@@ -1135,7 +1135,7 @@ def step_capture_id(s: Session, params: dict[str, Any]) -> dict[str, Any]:
     rows: list[dict[str, Any]] = []
     for _ in range(8):
         try:
-            s.page.evaluate("window.scrollBy(0, 800)")
+            human_scroll_by(s.page, 800)
             s.page.wait_for_timeout(2000)
             rows = s.page.evaluate(EXTRACT_JS)
         except Exception:
