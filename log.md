@@ -927,3 +927,26 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: new `src/mcp/server` and `bin/logMcp.ts` (`bun run mcp`), registered as `log` in the repo's `.mcp.json`. `toolsFromCommands` turns every command in `COMMANDS` into an MCP tool taking `args` and `confirmLive`. `runToolCall` runs it through `runCli` and returns stdout, stderr and the exit code, with a non-zero code as an error result. `guardCall` refuses `--live` without `confirmLive: true`, and refuses `connect`, `launch` and `login` (`TERMINAL_ONLY`), which wait on a person and would read the MCP channel on stdin. `startLogMcpServer` moves to the repo root, loads `.env.local` (`parseEnvText`) and sends `console.log` to stderr so nothing corrupts the stdio protocol. Adds `@modelcontextprotocol/sdk` 1.32.1. The logCli skill gets an MCP section.
 Why: matt asked for a log MCP tool, so agents call `log` commands directly (`mcp__log__accounts`, `mcp__log__proxy`...) under the same gates as the terminal. The live guard keeps rule 10: nothing is posted unless matt asked.
 Checked: 8 new tests in `server.test.ts` (over an in-memory MCP transport with the fixture Twenty): tools listed, `listings --json` returns 8 listings, a bad status is an error result, a live publish without confirmLive never reaches the command. A real stdio run from another folder listed 16 tools and `accounts --json` returned 11 accounts from live Twenty. In Claude Code, `mcp__log__proxy` then assigned the Pennsylvania proxies. `bun run check` passed.
+
+## 2026-10-19 06:55Z · feat/publishMachine
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `docs/errorCatalog.md`: edited
+- `docs/proxies.md`: edited
+- `python/errorCatalog.json`: edited
+- `skills/logCli/SKILL.md`: edited
+- `src/camofox/proxy/types.ts`: changed interface ProxyCheck
+- `src/cli/proxy/index.ts`: added const MAX_PROXY_KM, const PROXY_ATTEMPTS · changed const PROXY_USAGE, function assignOne, const proxyCommand
+- `src/cli/proxy/proxy.test.ts`: added test "an exit far from the home city is retried on a new session, and a near one saved", test "when every session exits too far away nothing is saved (proxyTooFar)"
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/marketplace/home/distanceKm.test.ts`: added test "measures great-circle km"
+- `src/marketplace/home/helpers/distanceKm.ts`: added interface LatLong, function distanceKm
+- `src/marketplace/home/helpers/index.ts`: added export from "./distanceKm"
+- `src/proxyVendor/twoCaptcha/helpers/buildProxyUrl.ts`: changed function sessionFor
+- `src/proxyVendor/twoCaptcha/helpers/index.ts`: added export from "./pickPlace"
+- `src/proxyVendor/twoCaptcha/helpers/pickPlace.ts`: added function pickPlace
+- `src/proxyVendor/twoCaptcha/twoCaptcha.test.ts`: added test "only an exact city slug counts, never a substring hit", test "a region narrows to that state, or finds nothing" · changed test "the nearest gateway, a stable session per account, slugs"
+
+What changed: `log proxy assign` picks 2Captcha places with `pickPlace`, which only accepts an exact city slug in the home country, and narrows to `--region <state>` when given. A city with punctuation is searched again as its slug (`wilkes-barre` → `wilkesbarre`). `sessionFor` now keys the sticky session on the account, the place and an `attempt`. After the country check, `assignOne` measures the exit IP's GeoIP coordinates against the home city's `CITY_COORDINATES` (`distanceKm`). Anything over `MAX_PROXY_KM` (100) is retried on a new session, up to `PROXY_ATTEMPTS` (3), then `proxyTooFar` and nothing is saved. `ProxyCheck` carries the latitude and longitude that `proxyGate.check` already returned. New catalog code `proxyTooFar`, catalog re-exported, and docs/proxies.md and the logCli skill updated.
+Why: assigning the ten Pennsylvania accounts through the MCP tool put five in the wrong state. The search returns substring hits across states first (philadelphia → newphiladelphia/ohio, reading → northreading/massachusetts, lancaster → kentucky) and the code took the first one. Re-pinning didn't help because 2Captcha kept each session's old IP, and one Lancaster, PA proxy still exited in Dallas. The country check alone let all of them through.
+Checked: unit tests for pickPlace (substring and wrong-state hits refused, wilkesbarre found), sessionFor (a new place or attempt gives a new session, the same one stays stable), distanceKm (Lancaster → Kutztown 97 km, → Dallas over 1,900), and assign (a far exit is retried and the near one saved; three far exits give proxyTooFar and nothing saved). `bun run check` passed: 386 pass / 0 fail. Live through `mcp__log__proxy`: all ten PA accounts now exit in Pennsylvania (ip-api: Allentown, Nazareth, Scranton, Reading, Pittsburgh, Wilkes-Barre, Upper Darby, Erie, Harrisburg, Kutztown). The distance retry itself hasn't run live yet.

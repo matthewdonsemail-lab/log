@@ -114,6 +114,44 @@ describe("log proxy assign (2Captcha, fetch stubbed)", () => {
     }
   });
 
+  test("an exit far from the home city is retried on a new session, and a near one saved", async () => {
+    stub2Captcha();
+    try {
+      const exits = [{ exitIp: "198.51.100.1", latitude: 51.5, longitude: -0.12 }, { exitIp: "198.51.100.2", latitude: 53.28, longitude: -9.03 }];
+      const sessions: string[] = [];
+      const { code, out, twenty } = await run(["proxy", "assign", "--account", "noProxy"], () => {
+        const exit = exits[sessions.length];
+        sessions.push(exit.exitIp);
+        return { ok: true, exitCountry: "IE", country: "IE", ...exit };
+      });
+      expect(code).toBe(0);
+      expect(sessions).toHaveLength(2);
+      expect(out).toContain("exits at 198.51.100.2");
+      expect(out).toMatch(/\d+ km from Galway\)\. Saved to Twenty\./);
+      const saved = String(twenty.rows.socialAccounts.find((r) => r.id === "noProxy")!.proxy);
+      expect(saved).toContain("-session-");
+    } finally {
+      restore();
+    }
+  });
+
+  test("when every session exits too far away nothing is saved (proxyTooFar)", async () => {
+    stub2Captcha();
+    try {
+      let calls = 0;
+      const { code, out, twenty } = await run(["proxy", "assign", "--account", "noProxy"], () => {
+        calls++;
+        return { ok: true, exitIp: `198.51.100.${calls}`, exitCountry: "IE", country: "IE", latitude: 51.9, longitude: -8.47 };
+      });
+      expect(code).toBe(1);
+      expect(calls).toBe(3);
+      expect(out).toContain("proxyTooFar");
+      expect(twenty.rows.socialAccounts.find((r) => r.id === "noProxy")!.proxy).toBeNull();
+    } finally {
+      restore();
+    }
+  });
+
   test("a proxy that exits in the wrong country is never saved", async () => {
     stub2Captcha();
     try {

@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { buildProxyUrl, gatewayHost, getBalance, getProxyAccount, searchPlaces, sessionFor, slug, twoCaptchaCredentials } from './index'
+import { buildProxyUrl, gatewayHost, getBalance, getProxyAccount, pickPlace, searchPlaces, sessionFor, slug, twoCaptchaCredentials } from './index'
 
 const json = (body: unknown, status = 200) => (async () => new Response(JSON.stringify(body), { status })) as unknown as typeof fetch
 
@@ -30,6 +30,12 @@ describe('buildProxyUrl', () => {
     expect(sessionFor('acc1')).toBe(sessionFor('acc1'))
     expect(sessionFor('acc1')).not.toBe(sessionFor('acc2'))
     expect(sessionFor('acc1')).toMatch(/^[A-Za-z0-9]{9}$/)
+    const lancasterPa = { city: 'lancaster', region: 'pennsylvania', countryCode: 'us' }
+    expect(sessionFor('acc1', lancasterPa)).toBe(sessionFor('acc1', lancasterPa))
+    expect(sessionFor('acc1', lancasterPa)).not.toBe(sessionFor('acc1', { ...lancasterPa, region: 'kentucky' }))
+    expect(sessionFor('acc1', lancasterPa)).not.toBe(sessionFor('acc1'))
+    expect(sessionFor('acc1', lancasterPa, 0)).toBe(sessionFor('acc1', lancasterPa))
+    expect(sessionFor('acc1', lancasterPa, 1)).not.toBe(sessionFor('acc1', lancasterPa))
     expect(slug('Co. Cork')).toBe('cocork')
   })
 })
@@ -51,5 +57,23 @@ describe('the 2Captcha API (fetch injected)', () => {
   test('place search keeps only real places', async () => {
     const places = await searchPlaces('Galway', json([{ id: 1, city: 'galway', regionId: 2, region: 'connacht', countryCode: 'ie' }, { bogus: true }]))
     expect(places).toEqual([{ city: 'galway', region: 'connacht', countryCode: 'ie' }])
+  })
+})
+
+describe('pickPlace', () => {
+  const place = (city: string, region: string, countryCode = 'us') => ({ city, region, countryCode })
+  const philadelphia = [place('newphiladelphia', 'ohio'), place('philadelphia', 'pennsylvania'), place('philadelphia', 'mississippi')]
+
+  test('only an exact city slug counts, never a substring hit', () => {
+    expect(pickPlace(philadelphia, 'Philadelphia', 'US')).toEqual(place('philadelphia', 'pennsylvania'))
+    expect(pickPlace([place('northreading', 'massachusetts')], 'reading', 'US')).toBeNull()
+    expect(pickPlace([place('wilkesbarre', 'pennsylvania')], 'wilkes-barre', 'US')).toEqual(place('wilkesbarre', 'pennsylvania'))
+  })
+
+  test('a region narrows to that state, or finds nothing', () => {
+    const lancaster = [place('lancaster', 'kentucky'), place('lancaster', 'pennsylvania')]
+    expect(pickPlace(lancaster, 'lancaster', 'US', 'Pennsylvania')).toEqual(place('lancaster', 'pennsylvania'))
+    expect(pickPlace(lancaster, 'lancaster', 'US', 'ohio')).toBeNull()
+    expect(pickPlace(lancaster, 'lancaster', 'IE')).toBeNull()
   })
 })

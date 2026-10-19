@@ -11,4 +11,7 @@ export interface ProxyCheck {
   exitIp: string;
   exitCountry: string;
   country: string;
+  /** Where Camoufox's GeoIP puts the exit IP. */
+  latitude?: number;
+  longitude?: number;
 }

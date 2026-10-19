@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import type { ProxyRequest } from '../types'
+import type { ProxyRequest, TwoCaptchaPlace } from '../types'
 
 /** Gateway ports, from 2Captcha's dashboard code: HTTP 2334, SOCKS5 2333. */
 export const GATEWAY_PORTS = { http: 2334, socks5: 2333 } as const
@@ -20,11 +20,17 @@ export function gatewayHost(country: string): string {
 
 /**
  * A stable sticky-session id for one account: 9 letters and digits from its
- * record id, so every run of that account asks 2Captcha for the same session.
+ * record id and its place, so every run of that account asks 2Captcha for the same session
+ * (until `log proxy assign` retries with the next `attempt`).
  * Pure.
  */
-export function sessionFor(accountId: string): string {
-  return createHash('sha256').update(`logCli:${accountId}`).digest('base64').replace(/[^A-Za-z0-9]/g, '').slice(0, 9)
+export function sessionFor(accountId: string, place: TwoCaptchaPlace | null = null, attempt = 0): string {
+  // The place is part of the key: 2Captcha keeps a session's IP even when the
+  // username's state and city change, so a re-pinned account needs a new session.
+  // `attempt` gives a fresh IP when one exits too far from home.
+  const base = place ? `logCli:${accountId}:${slug(place.region)}:${slug(place.city)}` : `logCli:${accountId}`
+  const key = attempt > 0 ? `${base}:${attempt}` : base
+  return createHash('sha256').update(key).digest('base64').replace(/[^A-Za-z0-9]/g, '').slice(0, 9)
 }
 
 /** `Galway` → `galway`, `Co. Cork` → `cocork`: 2Captcha's slugs are lower case letters only. Pure. */

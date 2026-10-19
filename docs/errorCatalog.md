@@ -250,6 +250,7 @@ stateDiagram-v2
 | `twoCaptchaNotConfigured` | no | `proxyVendor/twoCaptcha` | command exits | The 2Captcha proxy API key or proxy password isn't set. | Put 2CAPTCHA_API_KEY and 2CAPTCHA_PROXY_PASSWORD (dashboard → Proxy → sub-account password) in log-cli/.env.local. |
 | `twoCaptchaRefused` | yes | `proxyVendor/twoCaptcha` | command exits | 2Captcha's API refused or didn't answer (bad key, no proxy product, network). | Read the detail. Check the key and that the proxy product is active with traffic left (log proxy balance). |
 | `twoCaptchaNoPlace` | no | `proxyVendor/twoCaptcha` | command exits | 2Captcha has no exit in that city of the account's home country. | Pick a city it has (--city), or --anyCity for anywhere in the country. |
+| `proxyTooFar` | yes | `proxyVendor/twoCaptcha` | command exits | Every proxy 2Captcha gave exited too far from the account's home city (it doesn't always honour the state and city it was asked for). Nothing was saved. | Run `log proxy assign` again, or pick a nearby city it has (--city, --region). |
 
 ## auth
 

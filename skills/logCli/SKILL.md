@@ -62,6 +62,7 @@ bun bin/log.ts login | whoami | logout
 bun bin/log.ts proxy check --account galwayOne           # exit IP + country, no browser, saved to Twenty
 bun bin/log.ts proxy assign --account galwayOne          # a 2Captcha proxy in its home city, checked, then saved
 bun bin/log.ts proxy assign --missing                    # every FACEBOOK account without a proxy
+bun bin/log.ts proxy assign --account lancasterOne --region pennsylvania   # pin the state; exits over 100 km from home are retried, then proxyTooFar
 bun bin/log.ts proxy balance                             # 2Captcha traffic left
 
 # live (launches Camoufox through the proxy)

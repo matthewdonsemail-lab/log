@@ -140,18 +140,27 @@ without one) gives an account a 2Captcha residential proxy in its home country:
    `2CAPTCHA_PROXY_PASSWORD`; it is not in the API.
 2. The account's `homeCity` is looked up in 2Captcha's places
    (`https://2captcha.com/api/v1/proxy/regions/search/<city>`), kept only if it is
-   in `homeCountry` (Galway → connacht, IE). `--city` picks another city,
-   `--anyCity` the whole country. The public API's country list stops at its first
+   in `homeCountry` (Galway → connacht, IE). The search matches substrings and
+   spans states (`philadelphia` → `newphiladelphia/ohio` first), so only an exact
+   city name counts (`pickPlace`), and `--region <state>` pins the state
+   (Lancaster is in seven). `wilkes-barre` is retried as 2Captcha's `wilkesbarre`.
+   `--city` picks another city, `--anyCity` the whole country. The public API's country list stops at its first
    page (no Ireland), so the search is what's used.
 3. The URL follows 2Captcha's dashboard format:
    `http://<username>-zone-custom-region-ie-st-connacht-city-galway-session-<id>-sessTime-120:<password>@eu.proxy.2captcha.com:2334`
    (SOCKS5 with `--socks5`, port 2333). The gateway is the nearest one: `eu`, `na` or `ap`.
-4. `<id>` is fixed per account (from its Twenty id), so every run of that account
+4. `<id>` is fixed per account and place (from its Twenty id, state and city), so every run of that account
    asks for the same sticky session, and no two accounts share one. 2Captcha keeps one IP for **120 minutes at
    most**: the exit stays in the same city or country but changes every couple of
-   hours. There is no static IP.
+   hours. There is no static IP. 2Captcha keeps a session's IP even when the
+   username's state changes, which is why the place is part of the id.
 5. The proxy goes through `proxy.check` **before** it is saved. It reaches Twenty
    only if it really exits in `homeCountry`, and the check result is saved with it.
+6. It must also exit within `MAX_PROXY_KM` (100 km) of the home city in
+   `CITY_COORDINATES`, measured from Camoufox's GeoIP. 2Captcha doesn't always honour
+   the state: Lancaster, PA once exited in Dallas. A miss is retried on a new
+   session (`sessionFor(..., attempt)`), three times, then `proxyTooFar` and nothing
+   is saved.
 
 `log proxy balance` shows the traffic left (2Captcha bills traffic, in and out,
 from $3.99/GB down to $1.25/GB) and whether the proxy password is set.

@@ -1101,6 +1101,13 @@ export const ERROR_CATALOG = {
     raisedIn: ['proxyVendor/twoCaptcha'],
     action: 'Pick a city it has (--city), or --anyCity for anywhere in the country.'
   },
+  proxyTooFar: {
+    layer: 'proxyVendor',
+    meaning: "Every proxy 2Captcha gave exited too far from the account's home city (it doesn't always honour the state and city it was asked for). Nothing was saved.",
+    retryable: true,
+    raisedIn: ['proxyVendor/twoCaptcha'],
+    action: 'Run `log proxy assign` again, or pick a nearby city it has (--city, --region).'
+  },
 
   // ── auth ───────────────────────────────────────────────────────────────
   timedOut: {
