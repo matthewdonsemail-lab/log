@@ -13,14 +13,11 @@
 | Called from | `FBScrapingWarningMutation` |
 | rea | `ev_7af21ac9cd534e18a388ccd12dcf757cf78ca62bc92d96de74837a68b388ba73` |
 
-Seen 9 time(s) in 8 run(s).
+Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| connect | Auto-login: answered automatedBehaviour. | 5 | 200 | 985–3437 ms | 1–5 ms | — |
-| connect | Page: automatedBehaviour /checkpoint/<id>/ | 2 | -1, 200 | -1–921 ms | 133–528 ms | — |
-| inspect | step 2: click e53 | 1 | 200 | 1272 ms | 648 ms | — |
-| connect | says: <name> We suspect automated behaviour on your account To prevent your account from b | 1 | 200 | 619 ms | 543 ms | — |
+| connect | Auto-login: answered automatedBehaviour. | 1 | 200 | 1077 ms | 2 ms | — |
 
 <!-- facts:end -->
 

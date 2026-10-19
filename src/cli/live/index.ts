@@ -130,7 +130,11 @@ export async function withRun(
     // Rule 22: every action's raw HAR, split per step and read by rea.
     const capture = run.captureDir ? settleInBackground(run.captureDir) : null;
     // connect saves its own cookies (it signed in); every other run continues the session.
-    return withNote(withNote(withNote(result, device), name === "connect" ? null : await keepSession(context, account, run)), capture);
+    const session = name === "connect" ? null : await keepSession(context, account, run);
+    // A save that failed must not lose the device or the session with the run's folder.
+    const unsaved = [device, session].some((n) => n?.startsWith("Could not save")) || /twenty(RateLimited|AuthFailed|Unreachable|RequestFailed)/.test(result.stderr ?? "");
+    const kept = unsaved ? `Twenty didn't take everything: kept this run's device and session (login removed) at ${run.keep()}. Save them later: log account resave --account ${account.accountName} --from <that folder>` : null;
+    return withNote(withNote(withNote(withNote(result, device), session), capture), kept);
   } finally {
     run.cleanup();
   }

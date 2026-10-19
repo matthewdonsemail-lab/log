@@ -1,5 +1,8 @@
 import { describe, expect, test } from "bun:test";
-import { mergeOperations, operationNamesByDocId } from "./client";
+import { mkdtempSync, readFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { DOCS_INDEX, mergeOperations, operationNamesByDocId, writeOperationDocs } from "./client";
 import { domainOf, formFields, importersOf, indexModules, readGraphqlDefinition, renderOperationDoc, requestsInStep, responseErrors, sliceFor, stepLabel, TO_WRITE } from "./helpers/index";
 import type { ClientOperation, FacebookModule } from "./types";
 
@@ -111,6 +114,23 @@ describe("domainOf", () => {
     expect(domainOf("useMarketplaceComposerAttributesQuery")).toBe("listingForm");
     expect(domainOf("ajaxReactComposerAttachmentsPhotoUpload")).toBe("photos");
     expect(domainOf("CometNotificationsDropdownQuery")).toBe("background");
+  });
+});
+
+describe("the docs index is cumulative", () => {
+  const op = (name: string, seen: number): ClientOperation => ({
+    name, domain: "checkpoint", kind: "mutation", docId: name, path: "/api/graphql/", sends: [], reads: [], calledFrom: [],
+    sightings: Array.from({ length: seen }, () => ({ run: "runs/connect/x", action: "connect", step: "s", status: 200, ms: 1, afterStepMs: 1, errors: [] })),
+    reaEvidenceId: `ev_${name}`,
+  });
+
+  test("a request missing from today's recordings keeps its entry and doc; one seen again keeps its larger count", () => {
+    const dir = mkdtempSync(join(tmpdir(), "logDocs"));
+    writeOperationDocs([op("oldMutation", 5), op("bothMutation", 4)], dir, 47);
+    // A later build that only saw two runs (the older HARs were gone).
+    writeOperationDocs([op("bothMutation", 1), op("newMutation", 1)], dir, 4);
+    const index = JSON.parse(readFileSync(join(dir, DOCS_INDEX), "utf8")) as { operations: { name: string; seen: number }[] };
+    expect(index.operations.map((o) => [o.name, o.seen])).toEqual([["bothMutation", 4], ["newMutation", 1], ["oldMutation", 5]]);
   });
 });
 

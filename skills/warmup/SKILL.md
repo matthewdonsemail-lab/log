@@ -17,6 +17,13 @@ description: Record and run the account warm-up (rule 36) - Listaro's five activ
    `--likes`, when matt asks. Everything else reads.
 4. **Live and watched** (rule 26): run through Monitor; every step goes to the
    activity feed as it happens.
+5. **Stops on the wrong page.** Every step's landing page is checked
+   (`pageProblem`): a checkpoint, a login wall or another section ends the
+   activity (`blocked`), and the account's issue is written to Twenty. Erie,
+   2026-10-19, scrolled a checkpoint page for a minute before this.
+6. **Scrolls like a hand** (`python/scrollMotion.py`, ported from the Robotic
+   VSL repo): bell-curve wheel steps, overshoot and recoil, mid-pauses. No
+   `scrollBy` or `scroll_into_view_if_needed` anywhere.
 
 ## The routine
 

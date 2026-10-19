@@ -15,6 +15,8 @@ export type InspectAction = 'goto' | 'snapshot' | 'click' | 'type' | 'press' | '
   | 'scroll' | 'openAny' | 'clickAny'
   /** `dwell 2-4`: stays on the page that long, the cursor moving (a recorded pause; `wait` is only for a page to settle). */
   | 'dwell'
+  /** The host (rule 35): keep the session now, read the page's text, read and set the Marketplace location. */
+  | 'saveState' | 'pageText' | 'sellLocation' | 'setLocation'
 
 /** What `inspectSession.py` is started with (argv[1]). */
 export interface InspectSessionConfig {

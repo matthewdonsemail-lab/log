@@ -41,7 +41,7 @@ export interface FeedLine {
   detail?: string
 }
 
-export type ActivityOutcome = { ok: true; steps: number } | { ok: false; failedAt: string | null; error?: string }
+export type ActivityOutcome = { ok: true; steps: number } | { ok: false; failedAt: string | null; error?: string; issue?: string }
 
 export interface WarmupInput {
   accountId: string
@@ -54,5 +54,5 @@ export interface WarmupInput {
 export interface WarmupContext extends WarmupInput {
   done: WarmupActivity[]
   current: WarmupActivity | null
-  failure: { activity: WarmupActivity; failedAt: string | null; error?: string } | null
+  failure: { activity: WarmupActivity; failedAt: string | null; error?: string; issue?: string } | null
 }

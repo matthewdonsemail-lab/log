@@ -22,6 +22,7 @@ import { listingCommand, listingsCommand } from "../listing/index.ts";
 import { connectCommand, doctorCommand, scanCommand, statusCommand } from "../live/index.ts";
 import { profileCommand } from "../profile/index.ts";
 import { flowCommand } from "../flow/index.ts";
+import { hostCommand } from "../host/index.ts";
 import { inspectCommand } from "../inspect/index.ts";
 import { proxyCommand } from "../proxy/index.ts";
 import { publishCommand } from "../publish/index.ts";
@@ -43,6 +44,7 @@ export const COMMANDS: Command[] = [
   doctorCommand,
   connectCommand,
   profileCommand,
+  hostCommand,
   inspectCommand,
   flowCommand,
   warmupCommand,

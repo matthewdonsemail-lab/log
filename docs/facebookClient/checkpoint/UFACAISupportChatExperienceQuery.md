@@ -9,21 +9,17 @@
 | doc_id | `26465902889674584` |
 | Path | `/api/graphql/` |
 | Sends | `request` |
-| Reads | `init_conversational_support_attempt_for_ufac.is_cometai_chat_available`, `init_conversational_support_attempt_for_ufac.attempt_token` |
-| Called from | `UFACAISupportChatExperience.react` |
-| rea | `ev_8ee95faa5bbd82f99ae9dcfe8cbd78add4e5241ff8073ebf16e7331f832cc1d5` |
+| Reads | — |
+| Called from | — |
+| rea | not read yet |
 
-Seen 11 time(s) in 6 run(s).
+Seen 3 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 2: wait 60s | 2 | 200 | 1461–1690 ms | 33512–35020 ms | — |
-| inspect | step 1: goto /marketplace/ | 2 | 200 | 500–503 ms | 10785–11418 ms | — |
-| inspect | step 1: goto /me | 1 | 200 | 471 ms | 12262 ms | — |
-| inspect | page has 3 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1052 | 2 | 200 | 650–776 ms | 1526–2930 ms | — |
-| profile | Opening the profile (facebook.com/me). | 1 | 200 | 596 ms | 10415 ms | — |
-| profile | Profile controls: picture not found; cover not found; 4 controls listed in profileFound.tx | 1 | -1 | -1 ms | 728 ms | — |
-| connect | says: <name> / buttons: Back to Previous Page, Account settings | 2 | 200 | 466–759 ms | 3590–4386 ms | — |
+| warmup | mouse: 2 wander; 0 idle drift move(s) | 1 | 200 | 516 ms | 12 ms | — |
+| warmup | POST 200 /ajax/qm/ (591 ms) | 1 | 200 | 377 ms | 423 ms | — |
+| warmup | mouse: move failed (TimeoutError) | 1 | 200 | 364 ms | 605 ms | — |
 
 <!-- facts:end -->
 

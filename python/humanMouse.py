@@ -43,6 +43,8 @@ import random
 import time
 from typing import Any, Callable
 
+import scrollMotion
+
 MOVE_TIMEOUT = 5.0
 EMIT_HZ = 60
 
@@ -362,7 +364,8 @@ class HumanMouse(MouseBase):
                 await asyncio.sleep(0.3)
 
     async def approach(self, locator: Any, circle: bool | None = None) -> tuple[float, float]:
-        await locator.scroll_into_view_if_needed(timeout=10_000)
+        # One trajectory scroll (the Robotic VSL's scroll_to_ref), never scroll_into_view_if_needed's jump.
+        await scrollMotion.scroll_into_view(locator, self, self.log)
         box = await locator.bounding_box()
         if not box:
             raise RuntimeError("the element has no box on screen")
@@ -468,7 +471,7 @@ class SyncHumanMouse(MouseBase):
                 self.log(f"  mouse: look failed ({kind})")
 
     def approach(self, locator: Any, circle: bool | None = None) -> tuple[float, float]:
-        locator.scroll_into_view_if_needed(timeout=10_000)
+        scrollMotion.scroll_into_view_sync(locator, self, self.log)
         box = locator.bounding_box()
         if not box:
             raise RuntimeError("the element has no box on screen")
@@ -489,6 +492,18 @@ class SyncHumanMouse(MouseBase):
         self.button = 0
         self._sampled(self.x or 0, self.y or 0)
         self.fresh_page = True
+
+
+def human_scroll_into_view(locator: Any) -> None:
+    """Bring an element into view in a sync session by one trajectory scroll (scrollMotion), never a jump."""
+    mouse = SYNC_MICE.get(id(locator.page))
+    scrollMotion.scroll_into_view_sync(locator, mouse if mouse is not None and not mouse._stop else None, mouse.log if mouse else (lambda _l: None))
+
+
+def human_scroll_by(page: Any, distance: float) -> None:
+    """One trajectory scroll of the page in a sync session (scrollMotion), the cursor gliding onto it first."""
+    mouse = SYNC_MICE.get(id(page))
+    scrollMotion.scroll_by_sync(page, distance, mouse if mouse is not None and not mouse._stop else None, mouse.log if mouse else (lambda _l: None))
 
 
 def human_click(locator: Any, circle: bool | None = None, timeout: int = 8000) -> None:

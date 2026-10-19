@@ -107,7 +107,12 @@ export interface LifecycleInput {
   /** Likes in the warm-up, publishing and replies act on Facebook: only with matt's go (rule 8). */
   liveActions: boolean
   timing?: Partial<LifecycleTiming>
-  now?: () => number
+  /**
+   * What a host that stopped had done (its saved progress), so a restart walks
+   * the router to the exact next step in a fresh browser: the warm-up activities
+   * that ran, when it began, and the opens already used today.
+   */
+  resume?: { warmupDone?: WarmupActivity[]; warmupStartedAt?: number | null; opensToday?: number }
 }
 
 export interface LifecycleContext {
@@ -129,8 +134,8 @@ export interface LifecycleContext {
   checked: boolean
   /** The action `acting` is doing. */
   pending: HostAction | null
-  /** The clock (tests pass their own). */
-  now: () => number
+  /** Sign-ins since the last one that worked: two without one goes to a person, never round again. */
+  signInTries: number
 }
 
 export type LifecycleEvent =

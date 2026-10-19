@@ -1,3 +1,4 @@
+import { pageProblem } from './helpers/pageCheck'
 import { describe, expect, test } from 'bun:test'
 import { createActor, fromPromise, toPromise } from 'xstate'
 import { confirmingRequest, createFlowMachine, fillStep, flowFromRecording, renderFlowDoc, toolName } from './index'
@@ -29,6 +30,22 @@ const RECORDING: RecordedCommand[] = [
   cmd('type', ['e156', 'Lancaster'], '11_type', NAME),
   cmd('click', ['e317'], '12_click', NAME, ['POST 200 useFXIMUpdateNameMutation (2394 ms)'])
 ]
+
+describe('pageProblem: where a step really landed', () => {
+  test("Erie's lock, a sign-out and a wrong page stop the step; Marketplace settling on its city page doesn't", () => {
+    const goto = (url: string) => ({ action: 'goto', url })
+    expect(pageProblem(goto('https://www.facebook.com/'), { url: 'https://www.facebook.com/checkpoint/1501092823525282/?next=x' })).toMatchObject({ code: 'checkpointed' })
+    expect(pageProblem({ action: 'scroll' }, { url: 'https://www.facebook.com/checkpoint/1501092823525282/' })).toMatchObject({ code: 'checkpointed' })
+    expect(pageProblem(goto('https://www.facebook.com/marketplace/'), { url: 'https://www.facebook.com/login/?next=x' })).toMatchObject({ code: 'loginWall' })
+    expect(pageProblem(goto('https://www.facebook.com/messages/'), { url: 'https://www.facebook.com/marketplace/' })).toMatchObject({ code: 'pageNotReached' })
+    expect(pageProblem(goto('https://www.facebook.com/marketplace/'), { url: 'https://www.facebook.com/marketplace/113668691977096/' })).toBeNull()
+    expect(pageProblem(goto('https://www.facebook.com/'), { url: 'https://www.facebook.com/' })).toBeNull()
+    // /me is the account's own profile, under whatever path Facebook gives it; a checkpoint is still a checkpoint.
+    expect(pageProblem(goto('https://www.facebook.com/me'), { url: 'https://www.facebook.com/profile.php?id=61594417970255' })).toBeNull()
+    expect(pageProblem(goto('https://www.facebook.com/me'), { url: 'https://www.facebook.com/harrisburg.trash' })).toBeNull()
+    expect(pageProblem(goto('https://www.facebook.com/me'), { url: 'https://www.facebook.com/checkpoint/1501092823525282/' })).toMatchObject({ code: 'checkpointed' })
+  })
+})
 
 describe('flowFromRecording: a warm-up recording (rule 35)', () => {
   const warm = flowFromRecording('warmupMarketplaceBrowse', 'test', [

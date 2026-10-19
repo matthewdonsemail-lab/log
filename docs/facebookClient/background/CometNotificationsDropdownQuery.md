@@ -13,27 +13,14 @@
 | Called from | `CometNotificationsDropdown.react` |
 | rea | `ev_ab1965911932cb7fcf25b222bf92e0487c624ad5aa06bc6a0e5e7860bc09d85a` |
 
-Seen 45 time(s) in 35 run(s).
+Seen 5 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| connect | Auto-login: answered automatedBehaviour. | 1 | 200 | 1568 ms | 5144 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ "…" | 6 | 200, -1 | -1–1816 ms | 585–5286 ms | — |
-| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1321 | 1 | 200 | 5789 ms | 15947 ms | — |
-| inspect | step 3: goto /marketplace/item/<id>/ | 1 | 200 | 5193 ms | 9752 ms | — |
-| inspect | step 10: goto /marketplace/item/<id>/ | 1 | 200 | 6201 ms | 8720 ms | — |
-| publish | Opening /marketplace/create/item | 12 | 200 | 534–1513 ms | 6242–14222 ms | — |
-| publish | Marketplace location: Reading 19601 US | 1 | 200 | 2690 ms | 37733 ms | — |
-| inspect | step 1: goto /marketplace/ | 7 | 200 | 880–1321 ms | 5922–17062 ms | — |
-| inspect | step 16: goto /marketplace/create/item | 1 | 200 | 1073 ms | 4171 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ | 6 | -1, 200 | -1–3633 ms | 1950–6339 ms | — |
-| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1223 | 1 | 200 | 2239 ms | 2689 ms | — |
-| inspect | step 2: waitRole link "…" | 1 | 200 | 2412 ms | 3762 ms | — |
-| inspect | POST 0 /ajax/qm/ (0 ms) | 1 | 200 | 1303 ms | 3351 ms | — |
-| flow | step 1: goto /me | 2 | 200 | 1054–1759 ms | 8226–14376 ms | — |
-| connect | Auto-login: typing the email. | 1 | 200 | 1082 ms | 3415 ms | — |
-| inspect | step 1: goto /me | 1 | 200 | 648 ms | 13200 ms | — |
-| inspect | step 2: click e53 | 1 | 200 | 1076 ms | 6006 ms | — |
+| host | signIn: password typed; submitting with Enter | 1 | 200 | 761 ms | 11370 ms | — |
+| host | step 10: goto /marketplace/selling/ | 1 | 200 | 577 ms | 3943 ms | — |
+| host | step 12: goto /me | 1 | 200 | 395 ms | 4805 ms | — |
+| connect | Page: loggedIn /marketplace/selling/ "…" | 2 | -1, 200 | -1–396 ms | 1953–4403 ms | — |
 
 <!-- facts:end -->
 

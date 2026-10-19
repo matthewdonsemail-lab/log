@@ -1,4 +1,4 @@
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import { homedir, tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { hasStoredDevice, toDeviceProfile } from '../device/index'
@@ -79,6 +79,7 @@ export function prepareRun(account: FacebookAccount, purpose: RunPurpose, option
   }
 
   const dir = mkdtempSync(join(options.root ?? tmpdir(), 'logCliRun'))
+  let kept = false
   const proxyPath = join(dir, 'proxy.json')
   const statePath = join(dir, 'state.json')
   const devicePath = join(dir, 'device.json')
@@ -125,7 +126,22 @@ export function prepareRun(account: FacebookAccount, purpose: RunPurpose, option
         }
       },
       cleanup() {
-        rmSync(dir, { recursive: true, force: true })
+        if (!kept) rmSync(dir, { recursive: true, force: true })
+      },
+      keep(): string {
+        if (loginPath) rmSync(loginPath, { force: true })
+        const stamp = (options.now ?? new Date()).toISOString().replace(/[-:]/g, '').slice(0, 15)
+        const target = join(process.env.LOG_UNSAVED_DIR || join(homedir(), '.logCli', 'runs', 'unsaved'), `${stamp}_${account.accountName}`)
+        mkdirSync(join(target, '..'), { recursive: true })
+        try {
+          renameSync(dir, target)
+        } catch {
+          // Another drive: copy, then remove the original.
+          cpSync(dir, target, { recursive: true })
+          rmSync(dir, { recursive: true, force: true })
+        }
+        kept = true
+        return target
       }
     }
   }

@@ -25,7 +25,7 @@ describe('parseInspectAction', () => {
   })
 
   test('click, type, press, solve, signIn and code are the actions that act on Facebook (rule 8)', () => {
-    expect([...LIVE_ACTIONS].sort()).toEqual(['click', 'clickAny', 'clickRole', 'code', 'fillRole', 'press', 'signIn', 'solve', 'type', 'upload', 'uploadRole'])
+    expect([...LIVE_ACTIONS].sort()).toEqual(['click', 'clickAny', 'clickRole', 'code', 'fillRole', 'press', 'setLocation', 'signIn', 'solve', 'type', 'upload', 'uploadRole'])
   })
 })
 

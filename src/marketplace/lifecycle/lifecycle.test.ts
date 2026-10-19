@@ -3,7 +3,7 @@ import { createActor, fromPromise, waitFor } from 'xstate'
 import { lifecycleMachine, nextOnboardingStep } from './index'
 import type { AccountStanding, LifecycleActorInputs, StepOutcome } from './types'
 
-const FAST = { warmupMs: 5, activityGapMs: 1, watchIntervalMs: 1, retryMs: 1, limitedRestMs: 1 }
+const FAST = { warmupMs: 0, activityGapMs: 1, watchIntervalMs: 1, retryMs: 1, limitedRestMs: 1 }
 
 const fresh: AccountStanding = {
   accountId: 'erie',
@@ -145,6 +145,33 @@ describe('the account lifecycle (rule 35)', () => {
     live.actor.stop()
   })
 
+  test("waiting out the warm-up day, the end of the account's day sends it overnight (rule 18), and the morning resumes it", async () => {
+    // A warm-up day longer than the run: after the five activities, the first look finds the account's day over.
+    const day = createActor(
+      lifecycleMachine.provide({
+        actors: Object.fromEntries(
+          ['checkProxy', 'openBrowser', 'closeBrowser', 'signIn', 'checkAccount', 'setProfile', 'setName', 'setLocation', 'warmupActivity', 'waitForActiveHours'].map((n) => [n, fromPromise(async () => ({ kind: 'ok' }) as StepOutcome)])
+            .concat([['watchCheck', fromPromise(async () => ({ kind: 'ok', endOfDay: true }) as StepOutcome)]])
+        ) as never
+      }),
+      { input: { standing: fresh, liveActions: false, timing: { ...FAST, warmupMs: 60_000 } } }
+    )
+    day.start()
+    await waitFor(day, (s) => s.context.browser.closes.length >= 1, { timeout: 3000 })
+    const ctx = day.getSnapshot().context
+    expect(ctx.trail).toContain('dayCheck')
+    expect(ctx.browser.closes[0].reason).toBe('endOfActiveHours')
+    expect(ctx.warmup.done).toHaveLength(5)
+    day.stop()
+  })
+
+  test('a sign-in that keeps ending signed out goes to a person after two, never round again (Harrisburg)', async () => {
+    const r = run(fresh, { signIn: () => ({ kind: 'issue', issue: 'loginWall', detail: 'no session cookie' }) })
+    await inState(r.actor, 'stuck')
+    expect(r.count.signIn).toBe(2)
+    expect(r.actor.getSnapshot().context.lastError?.code).toBe('signInSpent')
+  })
+
   test('a retryable error is tried once more, then the step is stuck', async () => {
     const r = run(fresh, { setName: () => ({ kind: 'error', code: 'formNotFound', retryable: true }) })
     await inState(r.actor, 'stuck')
@@ -173,25 +200,25 @@ describe('the account lifecycle (rule 35)', () => {
 })
 
 describe('nextOnboardingStep', () => {
+  const nextOnboardingStep10 = (c: Parameters<typeof nextOnboardingStep>[0]) => nextOnboardingStep(c, 10_000)
   const ctx = (standing: Partial<AccountStanding>, extra: { checked?: boolean; done?: string[]; startedAt?: number | null } = {}) => ({
     standing: { ...fresh, hasProxy: true, ...standing },
     checked: extra.checked ?? true,
     warmup: { startedAt: extra.startedAt ?? null, done: (extra.done ?? []) as never },
     timing: { ...FAST, warmupMs: 1000 },
-    now: () => 10_000
   })
   test('the lane order: sign in, check, profile, name, location, warm-up, attached', () => {
-    expect(nextOnboardingStep(ctx({}))).toBe('signingIn')
-    expect(nextOnboardingStep(ctx({ hasSession: true, status: 'active' }, { checked: false }))).toBe('checkingAccount')
-    expect(nextOnboardingStep(ctx({ hasSession: true, status: 'active' }))).toBe('settingProfile')
-    expect(nextOnboardingStep(ctx({ hasSession: true, status: 'active', profileSet: true }))).toBe('settingName')
-    expect(nextOnboardingStep(ctx({ hasSession: true, status: 'active', profileSet: true, wantsName: false }))).toBe('settingLocation')
+    expect(nextOnboardingStep10(ctx({}))).toBe('signingIn')
+    expect(nextOnboardingStep10(ctx({ hasSession: true, status: 'active' }, { checked: false }))).toBe('checkingAccount')
+    expect(nextOnboardingStep10(ctx({ hasSession: true, status: 'active' }))).toBe('settingProfile')
+    expect(nextOnboardingStep10(ctx({ hasSession: true, status: 'active', profileSet: true }))).toBe('settingName')
+    expect(nextOnboardingStep10(ctx({ hasSession: true, status: 'active', profileSet: true, wantsName: false }))).toBe('settingLocation')
     const ready = { hasSession: true, status: 'active', profileSet: true, named: true, locationSet: true }
-    expect(nextOnboardingStep(ctx(ready))).toBe('warming')
+    expect(nextOnboardingStep10(ctx(ready))).toBe('warming')
     // Every activity ran but the day isn't over yet: still warming.
     const all = ['feedBrowse', 'marketplaceBrowse', 'createAccessCheck', 'sellingVisit', 'messagesVisit']
-    expect(nextOnboardingStep({ ...ctx(ready, { done: all, startedAt: 9_500 }) })).toBe('warming')
-    expect(nextOnboardingStep({ ...ctx(ready, { done: all, startedAt: 8_000 }) })).toBe('attached')
-    expect(nextOnboardingStep(ctx({ ...ready, warmedAt: '2026-10-18T10:00:00Z' }))).toBe('attached')
+    expect(nextOnboardingStep10({ ...ctx(ready, { done: all, startedAt: 9_500 }) })).toBe('warming')
+    expect(nextOnboardingStep10({ ...ctx(ready, { done: all, startedAt: 8_000 }) })).toBe('attached')
+    expect(nextOnboardingStep10(ctx({ ...ready, warmedAt: '2026-10-18T10:00:00Z' }))).toBe('attached')
   })
 })

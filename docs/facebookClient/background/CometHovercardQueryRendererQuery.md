@@ -13,11 +13,12 @@
 | Called from | `CometHovercardQueryRenderer.react` |
 | rea | `ev_95529720f6ba751fe065571b8fd81d09f67f7e4539594c0761343470652ec320` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 4 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 6: clickRole button "…" | 1 | 200 | 865 ms | 120 ms | — |
+| host | signIn: password typed; submitting with Enter | 1 | 200 | 1247 ms | 20341 ms | — |
+| host | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\host\20261019T163027 | 3 | 200 | 617–892 ms | 9762–11582 ms | — |
 
 <!-- facts:end -->
 

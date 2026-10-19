@@ -15,7 +15,10 @@
  * --likes (rule 8). Everything else only reads.
  */
 import { createActor, fromPromise, toPromise } from "xstate";
-import { flowFromRecording, loadFlow, readRecordedCommands, saveFlow, writeFlowDoc } from "../../camofox/flow/index.ts";
+import { flowFromRecording, loadFlow, pageProblem, readRecordedCommands, saveFlow, writeFlowDoc } from "../../camofox/flow/index.ts";
+import type { ErrorCode } from "../../errors/catalog/index.ts";
+import { recordAccountIssue } from "../../marketplace/replacement/index.ts";
+import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
 import { ACTIVITY_SCRIPTS, appendFeed, feedPath, pickActivities, readFeed, renderFeedLine, SCRIPTS_IN_ORDER, warmupMachine } from "../../marketplace/warmup/index.ts";
 import type { ActivityOutcome, FeedLine, WarmupActivity } from "../../marketplace/warmup/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
@@ -86,8 +89,8 @@ export const warmupCommand: Command = {
       let result: CommandResult;
       try {
         result = sub === "record"
-          ? await record(context, session.current, picked.activities, Boolean(flags["likes"]), base)
-          : await runWarmup(context, session.current, picked.activities, Boolean(flags["likes"]), gapMinutes * 60_000, base, account.id);
+          ? await record(context, session.current, picked.activities, Boolean(flags["likes"]), base, account)
+          : await runWarmup(context, session.current, picked.activities, Boolean(flags["likes"]), gapMinutes * 60_000, base, account);
       } finally {
         await context.sendInspect(session.current, "stop", [], 30_000);
         await session.session;
@@ -104,6 +107,7 @@ async function record(
   activities: WarmupActivity[],
   likes: boolean,
   base: { account: string; run: string },
+  account: FacebookAccount,
 ): Promise<CommandResult> {
   const spans: { activity: WarmupActivity; from: number; to: number }[] = [];
   let sent = 0;
@@ -118,8 +122,14 @@ async function record(
       }
       const reply = await context.sendInspect(current, step.action, step.args, 300_000);
       sent++;
-      const ok = Boolean(reply && reply.ok !== false);
-      feed(context, { ...base, event: "step", activity, step: `${step.action} ${step.args.join(" ")}`, ok, detail: ok ? step.why : (reply?.error ?? "no reply") });
+      // Where the page really is, after every step: never record a lock page as the feed (Erie, 2026-10-19).
+      const problem = reply ? pageProblem({ action: step.action, url: step.action === "goto" ? step.args[0] : undefined }, reply) : null;
+      const ok = Boolean(reply && reply.ok !== false && !problem);
+      feed(context, { ...base, event: "step", activity, step: `${step.action} ${step.args.join(" ")}`, ok, detail: ok ? step.why : problem ? `${problem.code}: ${problem.detail}` : (reply?.error ?? "no reply") });
+      if (problem) {
+        await accountIssue(context, account, problem.code, problem.detail, base, activity);
+        return { code: 1, stderr: `log warmup record: ${problem.code}: ${problem.detail} (${current.runDir}). Nothing was turned into a flow.` };
+      }
       if (!ok) {
         feed(context, { ...base, event: "stopped", activity, ok: false, detail: "a step failed: nothing is turned into a flow from a broken recording" });
         return { code: 1, stderr: `log warmup record: ${activity} failed at ${step.action} ${step.args.join(" ")}: ${reply?.error ?? "no reply"} (${current.runDir})` };
@@ -151,8 +161,9 @@ async function runWarmup(
   likes: boolean,
   gapMs: number,
   base: { account: string; run: string },
-  accountId: string,
+  account: FacebookAccount,
 ): Promise<CommandResult> {
+  const accountId = account.id;
   const machine = warmupMachine.provide({
     actors: {
       runActivity: fromPromise<ActivityOutcome, { accountId: string; activity: WarmupActivity }>(async ({ input }) => {
@@ -167,7 +178,8 @@ async function runWarmup(
           feed(context, { ...base, event: "gap", activity: input.activity, ok: true, detail: `done; next in ${Math.round(gapMs / 60_000)} min` });
           return { ok: true, steps: output.steps.length };
         }
-        return { ok: false, failedAt: output.failedAt, error: output.steps.at(-1)?.error };
+        const last = output.steps.at(-1);
+        return { ok: false, failedAt: output.failedAt, error: last?.error, issue: last?.issue };
       }),
     },
   });
@@ -175,9 +187,21 @@ async function runWarmup(
   actor.start();
   const output = await toPromise(actor);
   const failure = output.failure;
+  if (output.blocked && failure?.issue) await accountIssue(context, account, failure.issue as ErrorCode, failure.error ?? "", base, failure.activity);
   feed(context, { ...base, event: failure ? "stopped" : "done", ok: !failure, detail: failure ? `${failure.activity} at ${failure.failedAt ?? "?"}: ${failure.error ?? ""}` : `${output.done.length} activities` });
   const lines = [`Warm-up on ${base.account}: ${output.done.length}/${activities.length} activities done in one browser${failure ? `; stopped in ${failure.activity} at ${failure.failedAt}` : ""}.`, `Feed: log warmup feed --account ${base.account}   (${feedPath()})`];
   return { code: failure ? 1 : 0, stdout: lines.join("\n") };
+}
+
+/** The page showed an account problem: it goes to Twenty (the status `statusForIssue` gives) and to the feed. */
+async function accountIssue(context: CommandContext, account: FacebookAccount, code: ErrorCode, detail: string, base: { account: string; run: string }, activity: WarmupActivity): Promise<void> {
+  feed(context, { ...base, event: "stopped", activity, ok: false, detail: `${code}: ${detail}` });
+  if (code === "pageNotReached") return;
+  try {
+    await recordAccountIssue(context.twenty, account, code, `seen in the warm-up (${activity}): ${detail}`);
+  } catch (error) {
+    context.err(`(could not update Twenty: ${error instanceof Error ? error.message : String(error)})`);
+  }
 }
 
 async function showFeed(context: CommandContext, flags: Record<string, string | true>): Promise<CommandResult> {

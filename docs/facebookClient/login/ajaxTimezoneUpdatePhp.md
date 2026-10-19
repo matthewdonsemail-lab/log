@@ -11,16 +11,13 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_1daee983dec9df0b8bba1a9122070a89dc7fbb0b15d6d0f3a67f020dc86e2d8f` |
+| rea | `ev_22820a70d07184e3dad79cde4fbbaad7a75a8f7b85ef130a99a5d8f7eb75f99e` |
 
-Seen 9 time(s) in 8 run(s).
+Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| connect | Page: loggedIn /marketplace/selling/ "…" | 4 | 200, -1 | -1–527 ms | 1541–6167 ms | — |
-| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1321 | 1 | 200 | 3752 ms | 15605 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ | 3 | -1, 200 | -1–756 ms | 2753–6523 ms | — |
-| inspect | step 2: click e53 | 1 | 200 | 753 ms | 8420 ms | — |
+| connect | Page: loggedIn /marketplace/selling/ "…" | 1 | 200 | 651 ms | 6073 ms | — |
 
 <!-- facts:end -->
 

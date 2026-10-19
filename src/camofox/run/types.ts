@@ -35,8 +35,15 @@ export interface PreparedRun {
   readStorageState(): { cookies: PlaywrightCookie[]; origins: unknown[] }
   /** The device Python generated on this account's first launch, to save to Twenty; null otherwise. */
   newDeviceProfile(): DeviceProfile | null
-  /** Deletes the folder. Always call it, success or not. */
+  /** Deletes the folder. Always call it, success or not, unless `keep` kept it. */
   cleanup(): void
+  /**
+   * A save to Twenty failed: the device and session must not be lost with the
+   * folder (Harrisburg, 2026-10-19). Deletes login.json at once (rule 21), moves
+   * the rest to `~/.logCli/runs/unsaved/<time>_<account>/` (or `LOG_UNSAVED_DIR`)
+   * for `log account resave`, and returns that path. `cleanup` then does nothing.
+   */
+  keep(): string
 }
 
 export interface PrepareRunOptions {

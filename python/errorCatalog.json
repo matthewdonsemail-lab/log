@@ -642,6 +642,17 @@
     "publish": "failed",
     "action": "Open the photo by hand; it is probably corrupt."
   },
+  "pageNotReached": {
+    "layer": "form",
+    "meaning": "A flow or warm-up step went to a page and Facebook put the browser somewhere else.",
+    "retryable": false,
+    "raisedIn": [
+      "flow.step",
+      "warmup.step"
+    ],
+    "publish": "failed",
+    "action": "Read the step's screenshot and HAR (rule 25): where it landed says why (a checkpoint and a login are their own codes)."
+  },
   "formNotFound": {
     "layer": "form",
     "meaning": "The create form never showed its Title field.",
@@ -1326,6 +1337,15 @@
       "twenty/graphql"
     ],
     "action": "Check the network and twenty.inferencesaver.com, then run again."
+  },
+  "twentyRateLimited": {
+    "layer": "twenty",
+    "meaning": "Twenty refused the call for its rate limit (\"Limit reached (100 tokens per 60000 ms)\"). Nothing was written.",
+    "retryable": true,
+    "raisedIn": [
+      "twenty/graphql"
+    ],
+    "action": "Nothing to do: the client waits out the minute and tries again (twice). If it still fails, fewer calls per minute."
   },
   "twentyAuthFailed": {
     "layer": "twenty",

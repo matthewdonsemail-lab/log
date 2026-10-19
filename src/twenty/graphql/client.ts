@@ -23,6 +23,8 @@ const TIMEOUT_MS = 30_000
 const PAGE = 60
 /** Waits before retrying a dropped connection to Twenty (`guarded`): reads and updates only. */
 export const RETRY_MS = [1000, 3000]
+/** Twenty's limit is 100 calls a minute: a refused call waits the window out, twice at most. */
+export const RATE_LIMIT_RETRIES = 2
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 export const SOCIAL_ACCOUNT_FIELDS = {
@@ -163,16 +165,20 @@ function toTwentyError(error: unknown, what: string): TwentyError {
   if (error instanceof TwentyError) return error
   if (error instanceof GenqlError) {
     const message = error.errors.map((e) => e.message).join('; ')
-    const auth = error.errors.some((e) => /unauthenticated|forbidden|token/i.test(e.message))
+    // Before the auth test: "Limit reached (100 tokens per 60000 ms)" says "tokens" and is not a bad key
+    // (Harrisburg's first sign-in, 2026-10-19, lost its cookies and device to that misreading).
+    if (/limit reached|rate limit|too many requests/i.test(message)) return new TwentyError('twentyRateLimited', `${what}: ${message}`.slice(0, 600))
+    const auth = error.errors.some((e) => /unauthenticated|forbidden|invalid token|token (?:is )?(?:invalid|expired)/i.test(e.message))
     return new TwentyError(auth ? 'twentyAuthFailed' : 'twentyRequestFailed', `${what}: ${message}`.slice(0, 600))
   }
   const message = error instanceof Error ? error.message : String(error)
+  if (/\b429\b|limit reached/i.test(message)) return new TwentyError('twentyRateLimited', `${what}: ${message}`)
   if (/\b(401|403)\b/.test(message)) return new TwentyError('twentyAuthFailed', `${what}: ${message}`)
   if (/\b[45]\d\d\b/.test(message)) return new TwentyError('twentyRequestFailed', `${what}: ${message}`)
   return new TwentyError('twentyUnreachable', `${what}: ${message}`)
 }
 
-export function createTwentyClient(env: Record<string, string | undefined> = process.env, fetchImpl: typeof fetch = fetch): TwentyClient {
+export function createTwentyClient(env: Record<string, string | undefined> = process.env, fetchImpl: typeof fetch = fetch, rateLimitWaitMs = 61_000): TwentyClient {
   const url = twentyGraphqlUrl(env)
   const key = env.TWENTY_API_KEY?.trim()
   let genql: Client | null = null
@@ -192,11 +198,19 @@ export function createTwentyClient(env: Record<string, string | undefined> = pro
     // losing it cost a fresh sign-in's session on 2026-10-19. Reads and updates only:
     // a create retried after a drop could write the row twice, and rows are never deleted (rule 13).
     const retries = what.startsWith('create') ? [] : RETRY_MS
+    let limited = 0
     for (let attempt = 0; ; attempt++) {
       try {
         return await run()
       } catch (error) {
         const failed = toTwentyError(error, what)
+        // A rate-limited call was refused whole, so waiting out the window and trying again is safe, creates too.
+        if (failed.code === 'twentyRateLimited' && limited < RATE_LIMIT_RETRIES) {
+          limited++
+          await new Promise((resolve) => setTimeout(resolve, rateLimitWaitMs))
+          attempt--
+          continue
+        }
         if (failed.code !== 'twentyUnreachable' || attempt >= retries.length) throw failed
         await new Promise((resolve) => setTimeout(resolve, retries[attempt]))
       }
