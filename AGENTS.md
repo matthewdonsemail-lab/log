@@ -406,6 +406,12 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     proxy, password, cookies or 2FA key. The proxy goes on only to open and
     comes off at close. No AdsPower browser opens on Facebook until its gate,
     self-check and HAR recording (rule 22) are wired (`docs/adsPower.md`).
+43. 2026-10-20 · matt: the proxies stay 2Captcha residential. The money is
+    already spent, so no other proxy provider is bought or planned, whatever a
+    ranking said. AdsPower uses the same 2Captcha proxy URL from Twenty.
+    Production runs AdsPower and log-cli on one browser server (AdsPower's Local
+    API and CDP are loopback only), with Twenty on its own server over HTTPS
+    (`docs/deployment.md`).
 
 ## Checks
 

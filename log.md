@@ -1867,3 +1867,17 @@ Checked: the full check, and a live sync.
   - `log adsPower status` up;
   - `sync --apply` made 10 profiles (k1i5dlf8 ... k1i5dlhs) and linked each in Twenty; one record with no home country was skipped;
   - the re-run reports 10 linked, 0 to create.
+
+## 2026-10-19 20:33Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/deployment.md`: new file
+
+What changed: new `docs/deployment.md`, how log-cli runs with the services on different servers. AdsPower's Local API and CDP websockets are loopback only, so production puts AdsPower (headless mode with the API key, Xvfb, as Listaro did) and log-cli on one browser server. Twenty stays on its own server over HTTPS. 2Captcha's gateway is an outbound connection, and matt reaches the server over a private network. The doc also covers: rules to stop dev and prod opening one profile at once (cloud-active), reading the port from AdsPower's `local_api` file, per-machine `.env.local`, what 2Captcha's 120-minute sticky limit means for an always-open browser (two ways, for matt to choose), and the build order. AGENTS.md rule 43: the proxies stay 2Captcha residential.
+Why: matt asked how dev and prod work when AdsPower is on a separate server, on Twenty's server or elsewhere. He also said to keep the 2Captcha proxies already paid for, whatever a ranking said.
+Checked: read AdsPower's own pages:
+- the API overview, code samples, help API page and system requirements;
+- the troubleshooting guide: `local.adspower.net`, localhost or 127.0.0.1; headless with an API key on several devices; GUI on one device; the port can change;
+- CrocoFactory's SDK note on loopback endpoints in remote setups.
+Also read Listaro's `setup-adspower.sh` and its server plan (AdsPower and the agent on one server, `127.0.0.1:50325`), and log-cli's 2Captcha URL builder (`session-<id>-sessTime-120`, `na.proxy.2captcha.com:2334`). Docs only: no code changed.
