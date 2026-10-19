@@ -13,13 +13,17 @@
 | Called from | `OhaiWebPublicKeyConfig` |
 | rea | `ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013` |
 
-Seen 11 time(s) in 11 run(s).
+Seen 16 time(s) in 15 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| flow | step 1: goto /me | 1 | 200 | 479 ms | 8233 ms | — |
+| connect | Auto-login: typing the email. | 1 | 200 | 342 ms | 3864 ms | — |
+| connect | Page: loggedIn /marketplace/selling/ "…" | 2 | 200 | 317–413 ms | 4008–4294 ms | — |
+| inspect | step 1: goto /me | 1 | 200 | 582 ms | 13240 ms | — |
+| inspect | step 2: click e53 | 1 | 200 | 404 ms | 8398 ms | — |
 | publish | Opening /marketplace/create/item | 7 | 200 | 297–369 ms | 7862–14651 ms | — |
 | connect | Page: loggedIn /marketplace/selling/ | 2 | 200 | 319–328 ms | 3744–6185 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ "…" | 1 | 200 | 413 ms | 4294 ms | — |
 | publish | Category: Miscellaneous | 1 | 200 | 326 ms | 912 ms | — |
 
 <!-- facts:end -->

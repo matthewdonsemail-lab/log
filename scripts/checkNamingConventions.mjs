@@ -66,7 +66,7 @@ const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)+$/;
 // set-cookie, proxy-authorization: HTTP header names (src/rea/firefox).
 // inspect-web-network-capture, analyze-javascript-application: rea-agents commands (src/rea/firefox).
 // wilkes-barre: the real city name in Pennsylvania (src/marketplace/home).
-const ALLOWED_KEBAB = [/^2-digit$/, /^rev-parse$/, /^xdg-open$/, /^zone-custom$/, /^set-cookie$/, /^proxy-authorization$/, /^x-fb-friendly-name$/, /^inspect-web-network-capture$/, /^analyze-javascript-application$/, /^photo-\d+-[0-9a-f]+$/, /^x{8}-x{4}-4x{3}-yx{3}-x{12}$/, /^wilkes-barre$/];
+const ALLOWED_KEBAB = [/^2-digit$/, /^rev-parse$/, /^xdg-open$/, /^zone-custom$/, /^set-cookie$/, /^content-type$/, /^proxy-authorization$/, /^x-fb-friendly-name$/, /^inspect-web-network-capture$/, /^analyze-javascript-application$/, /^photo-\d+-[0-9a-f]+$/, /^x{8}-x{4}-4x{3}-yx{3}-x{12}$/, /^wilkes-barre$/, /^aria-label$/];
 // A single- or double-quoted string on one line.
 const LITERAL = /(['"])((?:(?!\1)[^\\\n])*)\1/g;
 

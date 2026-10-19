@@ -13,10 +13,11 @@
 | Called from | `useUFACSubmitAction` |
 | rea | `ev_e4f13bdff7b9aeebfd4f4bc936b4cade3eba5b723439cf5aa62ef31b4e9a43ef` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 3: click e66 | 2 | 200 | 2988–4996 ms | 317–974 ms | — |
 | connect | Page: captcha /checkpoint/<id>/ | 1 | 200 | 2257 ms | 3693 ms | — |
 
 <!-- facts:end -->

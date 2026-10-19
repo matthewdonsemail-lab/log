@@ -13,13 +13,17 @@
 | Called from | `CometSearchBootstrapKeywordsDataSource.query` |
 | rea | `ev_5cb62e3a7cd21788732d77960d11bcea0adc8730aaaa23e6a78c097c1c44c7a6` |
 
-Seen 11 time(s) in 11 run(s).
+Seen 16 time(s) in 15 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| flow | step 1: goto /me | 1 | 200 | 369 ms | 8222 ms | — |
+| connect | Auto-login: typing the email. | 1 | 200 | 348 ms | 3842 ms | — |
+| connect | Page: loggedIn /marketplace/selling/ "…" | 2 | 200 | 326–432 ms | 3911–4193 ms | — |
+| inspect | step 1: goto /me | 1 | 200 | 452 ms | 13198 ms | — |
+| inspect | step 2: click e53 | 1 | 200 | 427 ms | 8120 ms | — |
 | publish | Opening /marketplace/create/item | 7 | 200 | 328–426 ms | 8284–15127 ms | — |
 | connect | Page: loggedIn /marketplace/selling/ | 2 | 200 | 336–345 ms | 3719–4785 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ "…" | 1 | 200 | 432 ms | 4193 ms | — |
 | publish | Category: Miscellaneous | 1 | 200 | 375 ms | 1941 ms | — |
 
 <!-- facts:end -->

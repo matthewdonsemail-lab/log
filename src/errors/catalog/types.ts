@@ -33,6 +33,8 @@ export type ErrorLayer =
   | 'twenty'
   /** A proxy seller's API (2Captcha), used to give accounts proxies. */
   | 'proxyVendor'
+  /** A change on the account's own profile page (`log profile setup`, rule 28). */
+  | 'profile'
 
 /** How a publish run ends when this code is raised (`marketplace/publish`). */
 export type PublishEnd = 'failed' | 'blocked' | 'needsPerson' | 'unconfirmedId'
@@ -1186,7 +1188,28 @@ export const ERROR_CATALOG = {
     retryable: false,
     raisedIn: ['auth/exchange'],
     action: 'Run `log login` again from the start.'
-  }
+  },
+  profilePhotoMissing: {
+    layer: 'profile',
+    meaning: "The account has no profilePhoto or coverPhoto in Twenty, or the file can't be read.",
+    retryable: false,
+    raisedIn: ['profile.preparing'],
+    action: 'Set socialAccounts.profilePhoto and coverPhoto (a URL or a local path) in Twenty, then run again.'
+  },
+  profileControlNotFound: {
+    layer: 'profile',
+    meaning: "The profile page had no control for the change (the button, its menu item or the file chooser).",
+    retryable: false,
+    raisedIn: ['profile.uploadingProfilePhoto', 'profile.uploadingCoverPhoto', 'profileSession'],
+    action: "Read the run's capture (rule 25): profileFound.txt lists every button the page had. Update python/profileSession.py from it."
+  },
+  profileUploadNotSaved: {
+    layer: 'profile',
+    meaning: 'The photo was chosen, but Facebook did not show it saved (no Save button, or the dialog stayed open).',
+    retryable: true,
+    raisedIn: ['profile.uploadingProfilePhoto', 'profile.uploadingCoverPhoto'],
+    action: "Read the run's capture and its saved page text; run once more after the launch gap (rule 24)."
+  },
 } as const satisfies Record<string, ErrorEntry>
 
 export type ErrorCode = keyof typeof ERROR_CATALOG

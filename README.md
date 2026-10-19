@@ -123,6 +123,15 @@ python -m camoufox fetch          # downloads the Camoufox browser
 bun bin/log.ts doctor
 ```
 
+## Record a procedure, then run it anywhere (`log inspect`, `log flow`)
+
+`log inspect` drives one gated, headed Camoufox a step at a time and records
+every step (snapshot, screenshot, HAR, rea). `log flow fromInspect` turns that
+recording into a flow: its docs, an XState machine, `log flow run <name>` for
+any account, and an MCP tool of its own (`flowProfileSetup`). The whole
+pipeline, the actions, the saved flows and what the recordings showed:
+`docs/recordToFlow.md`. Every request Facebook's pages made: `docs/facebookClient/`.
+
 ## Layout
 
 ```text

@@ -32,7 +32,7 @@ import { renderConnect, renderDoctor, renderLoss, renderScan, summarizeConnect }
 export * from "./helpers/index.ts";
 
 export const DOCTOR_USAGE = "Usage: log doctor [--json]";
-export const CONNECT_USAGE = "Usage: log connect --account <accountName> [--noPrompt] [--wait <seconds>] [--bypass]";
+export const CONNECT_USAGE = "Usage: log connect --account <accountName> [--noPrompt] [--wait <seconds>] [--bypass] [--now]";
 
 /** How long `connect` reads the window for a login, a person's part included. */
 export const CONNECT_WAIT_SECONDS = 600;
@@ -48,6 +48,7 @@ export async function openAccount(
   purpose: RunPurpose,
   bypassHours = false,
   withLogin = false,
+  skipLaunchGap = false,
 ): Promise<{ account: FacebookAccount; run: PreparedRun; login: LoginSecrets | null } | CommandResult> {
   if (typeof value !== "string") return { code: 1, stderr: `log ${name}: --account is required (log accounts lists them)\n${usage}` };
   let account: FacebookAccount;
@@ -64,7 +65,7 @@ export async function openAccount(
       return refuseError(name, error);
     }
   }
-  const prepared = prepareRun(account, purpose, { now: (context.now ?? (() => new Date()))(), bypassHours, login, action: name });
+  const prepared = prepareRun(account, purpose, { now: (context.now ?? (() => new Date()))(), bypassHours, login, action: name, skipLaunchGap });
   if (!prepared.ok) return refuse(name, prepared.code, prepared.detail);
   return { account, run: prepared.run, login };
 }
@@ -192,16 +193,16 @@ export const doctorCommand: Command = {
 export const connectCommand: Command = {
   name: "connect",
   summary: "Sign a Facebook account in through its proxy (the connect machine), save its cookies to Twenty",
-  args: "--account <name> [--noPrompt] [--wait <seconds>] [--bypass]",
+  args: "--account <name> [--noPrompt] [--wait <seconds>] [--bypass] [--now]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["noPrompt", "bypass"], valued: ["account", "wait"] });
+    const parsed = parseArgs(argv, { boolean: ["noPrompt", "bypass", "now"], valued: ["account", "wait"] });
     if (!parsed.ok) return { code: 1, stderr: `log connect: ${parsed.error}\n${CONNECT_USAGE}` };
     // --noPrompt (always over MCP): auto-login types Twenty's details (rule 21). Without it a
     // person signs in in the window. Either way the connect machine reads every page until signed in.
     const noPrompt = Boolean(parsed.flags["noPrompt"]);
     const waitSeconds = parsed.flags["wait"] === undefined ? CONNECT_WAIT_SECONDS : Number(parsed.flags["wait"]);
     if (!Number.isInteger(waitSeconds) || waitSeconds < 10 || waitSeconds > 1800) return { code: 1, stderr: `log connect: --wait must be 10 to 1800 seconds\n${CONNECT_USAGE}` };
-    const opened = await openAccount(context, "connect", CONNECT_USAGE, parsed.flags["account"], "connect", Boolean(parsed.flags["bypass"]), noPrompt);
+    const opened = await openAccount(context, "connect", CONNECT_USAGE, parsed.flags["account"], "connect", Boolean(parsed.flags["bypass"]), noPrompt, Boolean(parsed.flags["now"]));
     if (!("run" in opened)) return opened;
     const { account, run, login } = opened;
     return withRun(context, "connect", account, run, async () => {

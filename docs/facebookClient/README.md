@@ -38,6 +38,7 @@ fix problems"; rules 25 and 27).
 | `location/` | Where a listing is placed (none seen yet: the US form has no Location field) |
 | `photos/` | Photo upload and what Facebook reads from the photos |
 | `publishing/` | The Publish click (none yet: no `--live` run) |
+| `profile/` | The account's own profile and Accounts Center: profile picture, cover photo, name (the `profileSetup` flow) |
 | `background/` | Chat, notifications, feed, search and telemetry the page loads around our flow. Our machines ignore them; they are documented so a change in them is noticed |
 
 The domain comes from `DOMAIN_PATTERNS` in

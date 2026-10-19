@@ -73,6 +73,14 @@ export interface FacebookAccount {
   activeHoursEnd: number | null
   /** localStorage per origin from the last run (Playwright storage_state origins). Never printed. */
   storageOrigins: unknown
+  /** The name `log profile setup` gives the profile (rule 28). */
+  profileName: string | null
+  /** The profile picture `log profile setup` uploads: a URL or a local path (rule 28). */
+  profilePhoto: string | null
+  /** The cover (background) photo it uploads. */
+  coverPhoto: string | null
+  /** When `log profile setup --live` last saved both. */
+  profileSetAt: string | null
 }
 
 /** A proxy URL split for Playwright, plus the country it must exit in. */

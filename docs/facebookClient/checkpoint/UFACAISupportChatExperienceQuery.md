@@ -13,10 +13,14 @@
 | Called from | `UFACAISupportChatExperience.react` |
 | rea | `ev_8ee95faa5bbd82f99ae9dcfe8cbd78add4e5241ff8073ebf16e7331f832cc1d5` |
 
-Seen 2 time(s) in 1 run(s).
+Seen 7 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /me | 1 | 200 | 471 ms | 12262 ms | — |
+| inspect | page has 3 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1052 | 2 | 200 | 650–776 ms | 1526–2930 ms | — |
+| profile | Opening the profile (facebook.com/me). | 1 | 200 | 596 ms | 10415 ms | — |
+| profile | Profile controls: picture not found; cover not found; 4 controls listed in profileFound.tx | 1 | -1 | -1 ms | 728 ms | — |
 | connect | says: <name> / buttons: Back to Previous Page, Account settings | 2 | 200 | 466–759 ms | 3590–4386 ms | — |
 
 <!-- facts:end -->

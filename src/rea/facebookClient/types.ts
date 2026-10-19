@@ -15,7 +15,7 @@ export interface FacebookModule {
 }
 
 /** Where a request belongs. The docs folder is named after it (`docs/facebookClient/<domain>/`). */
-export type ClientDomain = 'login' | 'checkpoint' | 'listingForm' | 'location' | 'photos' | 'publishing' | 'background'
+export type ClientDomain = 'login' | 'checkpoint' | 'listingForm' | 'location' | 'photos' | 'publishing' | 'profile' | 'background'
 
 /** GraphQL operations carry their kind in their `.graphql` module; other POSTs are `endpoint`. */
 export type OperationKind = 'query' | 'mutation' | 'subscription' | 'endpoint'

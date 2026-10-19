@@ -13,13 +13,17 @@
 | Called from | `FBYRPTimeLimitsEnforcement.react` |
 | rea | `ev_ed1a3cfe4b9656a9ad3ddf8f3e05b4767495c0d780a6a027450c86c6d19c34c6` |
 
-Seen 13 time(s) in 13 run(s).
+Seen 18 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| flow | step 1: goto /me | 1 | 200 | 317 ms | 6911 ms | — |
+| connect | Auto-login: typing the email. | 1 | 200 | 316 ms | 2764 ms | — |
+| connect | Page: loggedIn /marketplace/selling/ "…" | 2 | 200 | 310–346 ms | 2494–4161 ms | — |
+| inspect | step 1: goto /me | 1 | 200 | 462 ms | 11788 ms | — |
+| inspect | step 2: click e53 | 1 | 200 | 351 ms | 5967 ms | — |
 | publish | Opening /marketplace/create/item | 10 | 200 | 297–1407 ms | 6097–29472 ms | — |
 | connect | Page: loggedIn /marketplace/selling/ | 2 | 200 | 343–373 ms | 2601–3955 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ "…" | 1 | 200 | 346 ms | 4161 ms | — |
 
 <!-- facts:end -->
 

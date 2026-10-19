@@ -1195,3 +1195,140 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: Two sessions of work. (1) Connect is now an XState machine (`marketplace/connect`, `python/connectSession.py`) that reads each page and acts per kind: loginForm, findAccount, twoStepCode, trustDevice, cookieBanner, automatedBehaviour (dismissed, Listaro's path, rule 23), captcha (CaptchaKraken then 2Captcha; the new `textImage` kind presses Enter then Continue), videoSelfie (ends at once), checkpoint, disabled. Publish signs in inside its own browser through the connect machine when it meets a login wall, reads `sell_location` and stops with `locationNotSet` before any upload, reloads a form that hasn't drawn after 15 s, and saves page text on a failed step. The proxy gate times Facebook through the exit (`proxyTooSlow`). Rule 24's launch budget (`launchBudget.ts`: 8 a day, 10 min apart). Twenty retries a dropped socket on reads and updates, never on creates. (2) New `rea/facebookClient`: `log firefoxCapture --docs` splits every run's HAR by its steps, names each request to Facebook (multipart bodies and doc_id lookup included), parses Facebook's bundles into a syntax tree (`indexModules`, `readGraphqlDefinition`), and has rea read each GraphQL request's slice (about 4 s each, cached by sha256) instead of the whole bundle. It writes `docs/facebookClient/<domain>/<request>.md` (41 docs, facts block plus written reasoning, no names, account ids or IPs) and `operations.json`. Settle no longer reads the whole bundle. Hooks moved from `.githooks` to lefthook: pre-commit runs this log gate, pre-push runs naming, typecheck, tests and the new `check:facebookClientDocs`. AGENTS.md opens with "Always run it live" and the fix-from-the-recording loop; rules 25-27; reaCapture and commitLog skills updated.
 Why: matt: "whatever Listaro did we go with that path" (connect) and "fix them issues now" (launch budget). The settle ran 10 minutes silently and rea timed out on 50 MB of bundles, so nothing was learned; matt asked to use the syntax tree to cut Facebook's client into domain-scoped requests, document each with rea as the basis, enforce it in lefthook, and "I always want to see what is going on" (rule 26). Rule 25: a failing run is fixed from its own recording, never by guessing.
 Checked: `bun run check:naming` OK, `tsc --noEmit` clean, `bun test` 460 pass / 0 fail (new: facebookClient parse, slice, definition, multipart, errors, doc_id naming, domains, step-line cleaning, reasoning kept across rebuilds; settle never reads the whole bundle). `bun bin/log.ts firefoxCapture --docs` on today's 16 runs: 41 requests, rea read 40 (31 new slices, 3-6 s each), rebuild kept every written section and read 0 slices again. `check:facebookClientDocs` passes. Docs grep: no display names, account ids or exit IPs. Live: Allentown connect signed in clean; Allentown publish dry run stopped at `locationNotSet` (Hopkins). Not run live: in-publish sign-in, text-captcha submit, video-selfie end, `proxyTooSlow` in assign. The per-run timeline, automatic cause line and run comparison are not built.
+
+## 2026-10-19 11:40Z · feat/publishMachine
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/facebookClient/README.md`: edited
+- `docs/facebookClient/background/CometHovercardQueryRendererQuery.md`: new file
+- `docs/facebookClient/background/CometMarketplaceNUXUpdateStateMutation.md`: new file
+- `docs/facebookClient/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/facebookClient/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/facebookClient/background/FBScreenTimeLogger_syncMutation.md`: new file
+- `docs/facebookClient/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/facebookClient/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/facebookClient/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/facebookClient/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/facebookClient/background/ajaxBnzai.md`: edited
+- `docs/facebookClient/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/facebookClient/background/ajaxBz.md`: edited
+- `docs/facebookClient/background/ajaxNavigation.md`: new file
+- `docs/facebookClient/background/ajaxQm.md`: edited
+- `docs/facebookClient/background/ajaxRelayEf.md`: edited
+- `docs/facebookClient/background/ajaxRouteDefinition.md`: new file
+- `docs/facebookClient/background/cspReporting.md`: new file
+- `docs/facebookClient/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/facebookClient/background/sharedUserPreferences.md`: edited
+- `docs/facebookClient/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/facebookClient/checkpoint/FBScrapingWarningMutation.md`: edited
+- `docs/facebookClient/checkpoint/UFACAISupportChatExperienceQuery.md`: edited
+- `docs/facebookClient/checkpoint/useCometAISupportConversationLoggerMutation.md`: edited
+- `docs/facebookClient/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/facebookClient/checkpoint/useUFACSubmitActionMutation.md`: edited
+- `docs/facebookClient/flows/profileSetup.md`: new file
+- `docs/facebookClient/login/CometLogoutHandlerQuery.md`: edited
+- `docs/facebookClient/login/ajaxTimezoneUpdatePhp.md`: edited
+- `docs/facebookClient/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/facebookClient/login/loginDeviceBasedRegularLogin.md`: edited
+- `docs/facebookClient/operations.json`: edited
+- `docs/facebookClient/photos/profileCoverCometUpload.md`: new file
+- `docs/facebookClient/profile/FXAccountsCenterAdProfileCenterRouteResolverQuery.md`: new file
+- `docs/facebookClient/profile/FXAccountsCenterBirthdayRouteResolverQuery.md`: new file
+- `docs/facebookClient/profile/FXAccountsCenterConnectedExperienceRouteResolverQuery.md`: new file
+- `docs/facebookClient/profile/FXAccountsCenterContactPointsInProfilesRouteResolverQuery.md`: new file
+- `docs/facebookClient/profile/FXAccountsCenterIdentityUsernameEditDialogRouteResolverQuery.md`: new file
+- `docs/facebookClient/profile/FXAccountsCenterIdentityUsernameSettingsDialogRouteResolverQuery.md`: new file
+- `docs/facebookClient/profile/FXAccountsCenterInformationAndActivityRouteResolverQuery.md`: new file
+- `docs/facebookClient/profile/FXAccountsCenterManageAccountsPageRouteResolverQuery.md`: new file
+- `docs/facebookClient/profile/FXAccountsCenterMetaPayWalletRouteResolverQuery.md`: new file
+- `docs/facebookClient/profile/FXAccountsCenterNMEOnboardingRouteResolverQuery.md`: new file
+- `docs/facebookClient/profile/FXAccountsCenterPersonalCentralIdentityDialogV2Query.md`: new file
+- `docs/facebookClient/profile/FXAccountsCenterPersonalCentralIdentityDialogV2RouteResolverQuery.md`: new file
+- `docs/facebookClient/profile/FXAccountsCenterProfilesPageV2RouteResolverQuery.md`: new file
+- `docs/facebookClient/profile/FXAccountsCenterSecurityAndLoginPageRouteResolverQuery.md`: new file
+- `docs/facebookClient/profile/FXAccountsCenterSubscriptionsRouteResolverQuery.md`: new file
+- `docs/facebookClient/profile/FXAccountsCenterYourAccountPageRouteResolverQuery.md`: new file
+- `docs/facebookClient/profile/FXIMIdentityNameEditorAuthenticPreviewDialogQuery.md`: new file
+- `docs/facebookClient/profile/ProfileCometCoverPhotoUpdateMutation.md`: new file
+- `docs/facebookClient/profile/ProfileCometFeedComposerRootQuery.md`: new file
+- `docs/facebookClient/profile/ProfileCometProfilePictureEditDialogQuery.md`: new file
+- `docs/facebookClient/profile/ProfileCometProfilePictureSetMutation.md`: new file
+- `docs/facebookClient/profile/ProfileCometTilesFeedPaginationQuery.md`: new file
+- `docs/facebookClient/profile/ProfilePromptQuickPromotionMutation.md`: new file
+- `docs/facebookClient/profile/profilePictureUpload.md`: new file
+- `docs/facebookClient/profile/useFXIMNameValidatorQuery.md`: new file
+- `docs/facebookClient/profile/useFXIMUpdateNameMutation.md`: new file
+- `docs/namingConventions.md`: edited
+- `docs/recordToFlow.md`: new file
+- `python/errorCatalog.json`: edited
+- `python/inspectSession.py`: added const IDLE_SECONDS, const QUIET_MS, const SETTLE_MAX_MS, const REA_MAX_BYTES, const STATIC, const TEXT_TYPES, const MAX_BODY, def log, def now_iso, def slug, class Recorder, const FRIENDLY_NAME, def request_names, def notable, def rea_copy, def run_rea, const FIELD_VALUE, def redact_fields, const INTERACTIVE, def read_login, class Inspector, def main
+- `python/profileSession.py`: added const PROFILE_URL, const NAME_URL, const PROFILE_PICTURE, const COVER, const UPLOAD, const SAVE, const CONTROLS_JS, const NAME_FIELDS_JS, def session_cookies, def run_dir, def save_text, def opener, def label_of, def step_open, def step_read, def step_read_name, def choose_file, def upload, def step_upload_profile_photo, def step_upload_cover_photo, const STEPS, def main
+- `scripts/checkFacebookClientDocs.mjs`: added const flowsDir
+- `scripts/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `scripts/twentySetup.mjs`: changed const SOCIAL_ACCOUNT_FIELDS
+- `skills.md`: edited
+- `skills/flow/SKILL.md`: new file
+- `skills/inspect/SKILL.md`: new file
+- `skills/profileSetup/SKILL.md`: new file
+- `src/camofox/flow/client.ts`: added const FLOWS_DIR, const FLOW_DOCS_DIR, const REQUEST_DOCS, const jsonLines, function readRecordedCommands, function listFlows, function loadFlow, function saveFlow, function requestDocFor, function writeFlowDoc
+- `src/camofox/flow/definitions/profileSetup.json`: new file
+- `src/camofox/flow/flow.test.ts`: added const PROFILE, const MENU, const DIALOG, const CROP, const NAME, const cmd, const RECORDING, test "turns refs into the role and name the step acted on, and drops looks, failures and field clicks", test "the confirming request is the step’s own mutation, from the looks after it too; a page open waits for none", test "typed text and files become named params; the account id becomes {uid}", test "its doc lists every step with its confirming request, rea Evidence and the machine", test "runs every step in order and ends done", test "a failed step ends the run there: nothing after it runs"
+- `src/camofox/flow/helpers/flowFromRecording.ts`: added interface RecordedCommand, const NOT_CONFIRMING, function confirmingRequest, const ACTED, const camel, function flowFromRecording, function fillStep
+- `src/camofox/flow/helpers/index.ts`: added export from "./flowFromRecording", export from "./renderFlowDoc"
+- `src/camofox/flow/helpers/renderFlowDoc.ts`: added function renderFlowDoc, function toolName
+- `src/camofox/flow/index.ts`: added export from "./client", export from "./helpers/index", export from "./machine", export from "./types"
+- `src/camofox/flow/machine.ts`: added interface FlowContext, function createFlowMachine
+- `src/camofox/flow/types.ts`: added type FlowAction, interface FlowStep, interface FlowParam, interface FlowDefinition, interface FlowStepResult, interface FlowRunOutput, interface FlowActInput
+- `src/camofox/inspect/client.ts`: added const INSPECT_SESSION_PATH, function currentInspectPath, function readCurrentInspect, function writeCurrentInspect, function clearCurrentInspect, const runInspectSession, function findReply, function sendInspectCommand
+- `src/camofox/inspect/helpers/index.ts`: added export from "./parseInspectAction", export from "./renderInspectStep"
+- `src/camofox/inspect/helpers/parseInspectAction.ts`: added const ARITY, const LIVE_ACTIONS, function parseInspectAction
+- `src/camofox/inspect/helpers/renderInspectStep.ts`: added function redactFieldValue, function renderInspectStep
+- `src/camofox/inspect/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/camofox/inspect/inspect.test.ts`: added test "knows each action and its arguments", test "goto only takes Facebook", test "click, type, press, solve, signIn and code are the actions that act on Facebook (rule 8)", test "appends the command and returns the reply with its id", test "no reply in time is null", test "shows the page, the requests, rea and the refs to act on", test "never shows what is typed in a field (rule 21)"
+- `src/camofox/inspect/types.ts`: added type InspectAction, interface InspectSessionConfig, interface CurrentInspect, interface InspectCommand, interface InspectStepResult, type InspectSessionRunner
+- `src/camofox/run/client.ts`: changed function prepareRun
+- `src/camofox/run/types.ts`: changed interface PrepareRunOptions
+- `src/camofox/session/client.ts`: added const PROFILE_SESSION_PATH, const startProfileSession
+- `src/camofox/session/types.ts`: added type ProfileStep, interface ProfileSessionConfig, interface ProfileSession, type ProfileSessionFactory
+- `src/cli/errors/helpers/renderCatalog.ts`: changed const LAYERS
+- `src/cli/flow/index.ts`: added const FLOW_USAGE, function takePairs, function commandFor, function describe, function renderRun, function runFlow, const flowCommand
+- `src/cli/inspect/index.ts`: added const INSPECT_USAGE, const inspectCommand
+- `src/cli/inspect/inspect.test.ts`: added function run, test "start opens one gated session for the account and ends when it does", test "start goes through the same gates: an account with no proxy opens nothing", test "click without --live is refused before anything is sent (rule 8)", test "do with no open session says to start one"
+- `src/cli/launch/launch.test.ts`: changed function capture
+- `src/cli/live/index.ts`: changed const CONNECT_USAGE, function openAccount, const connectCommand
+- `src/cli/profile/helpers/index.ts`: added export from "./renderProfile.ts"
+- `src/cli/profile/helpers/renderProfile.ts`: added function summarizeProfile, const ACTION_TEXT, const ITEM_TEXT, function renderProfile
+- `src/cli/profile/index.ts`: added export from "./helpers/index.ts", const PROFILE_USAGE, const profileCommand
+- `src/cli/profile/profile.test.ts`: added function scriptedProfile, function run, test "a dry run reads the profile through the gates and changes nothing", test "--live with no photos in Twenty is refused before a browser opens", test "--live uploads both photos in one run and records profileSetAt", test "not signed in: stops and says to connect first", test "needs the setup subcommand"
+- `src/cli/runner/index.ts`: changed const COMMANDS, function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/errors/catalog/types.ts`: changed type ErrorLayer, const ERROR_CATALOG
+- `src/marketplace/profile/index.ts`: added export from "./machine", export from "./types"
+- `src/marketplace/profile/machine.test.ts`: added const SIGNED_IN, function run, test "a dry run reads the profile and plans both uploads, and never uploads", test "a dry run with no photos in Twenty still reads the page, and says so", test "--live uploads the profile photo, then the cover, in one run", test "--live without both photos stops before any browser opens", test "not signed in stops at reading: connect first", test "a failed profile upload stops the run: the cover is never tried", test "a failed cover upload keeps the profile photo as uploaded", test "with a profileName, the dry run also reads the name page (read only) and plans the rename", test "a name page that fails to read never stops the run", test "--live never renames yet: the rename is built from the dry run first"
+- `src/marketplace/profile/machine.ts`: added function missing, const isFailure, const crash, function planOf, const stepFailed, const stepError, const profileMachine
+- `src/marketplace/profile/types.ts`: added interface ProfilePage, type ProfileReadOutput, type ProfileActOutput, interface ProfileNamePage, type ProfileNameOutput, type ProfilePhotosOutput, interface ProfileActorInputs, interface ProfileInput, type ProfileItem, interface ProfilePlanStep, interface ProfileFailure, type ProfileResultKind, interface ProfileContext, interface ProfileOutput
+- `src/marketplace/socialAccount/client.ts`: added function markProfileSet · changed function toFacebookAccount
+- `src/marketplace/socialAccount/types.ts`: changed interface FacebookAccount
+- `src/mcp/server/flowTools.test.ts`: added const flow, test "profileSetup is the tool flowProfileSetup, with its params by name", test "a call becomes log flow run with --set per param", test "live without confirmLive never runs; without live it lists the steps and opens nothing"
+- `src/mcp/server/helpers/index.ts`: added export from "./toolsFromFlows.ts"
+- `src/mcp/server/helpers/toolsFromCommands.ts`: changed function toolsFromCommands
+- `src/mcp/server/helpers/toolsFromFlows.ts`: added function toolsFromFlows, function flowArgv
+- `src/mcp/server/index.ts`: added function savedFlows · changed function runToolCall, function createLogMcpServer
+- `src/rea/facebookClient/helpers/domainOf.ts`: changed const DOMAIN_PATTERNS
+- `src/rea/facebookClient/types.ts`: changed type ClientDomain
+- `src/rea/inspectMap/client.ts`: added const readJsonLines, interface Reply, function readRecordedSteps, function inspectRuns, function mapInspectRun, function mapAllInspectRuns
+- `src/rea/inspectMap/helpers/buildFlow.ts`: added const LOOKS, const normPath, function eventOf, function buildFlow, function mergeFlows, function eventName, function toMachineConfig, function renderFlow
+- `src/rea/inspectMap/helpers/index.ts`: added export from "./buildFlow", export from "./readScreen"
+- `src/rea/inspectMap/helpers/readScreen.ts`: added const INTERACTIVE, interface Line, const lines, function parseNode, function labelOf, function withoutName, function readScreen, function stateId
+- `src/rea/inspectMap/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/rea/inspectMap/types.ts`: added interface ScreenElement, interface FlowState, interface FlowTransition, interface Flow, interface RecordedStep
+- `src/twenty/graphql/client.ts`: changed const SOCIAL_ACCOUNT_FIELDS
+- `src/twenty/graphql/generated/schema.ts`: changed interface SocialAccount, interface SocialAccountConnection, interface SocialAccountGroupByConnection, interface SocialAccountGenqlSelection, interface SocialAccountConnectionGenqlSelection, interface SocialAccountGroupByConnectionGenqlSelection, interface SocialAccountCreateInput, interface SocialAccountUpdateInput, interface SocialAccountFilterInput, interface SocialAccountOrderByInput, interface SocialAccountOrderByWithGroupByInput, interface SocialAccountOrderByWithGroupByAggregateInput, interface SocialAccountGroupByInput
+- `src/twenty/graphql/generated/types.ts`: no declaration changed (comments, formatting or line endings)
+
+What changed: The record-to-machine pipeline (rules 25-31, docs/recordToFlow.md). `log inspect start|do|map` (python/inspectSession.py on Camoufox's async API, src/camofox/inspect, src/rea/inspectMap): one gated, headed browser kept open and driven a step at a time (goto, snapshot, click, type, press, upload, solve via 2Captcha, signIn/code from the private login.json, and role-based clickRole/fillRole/uploadRole/waitRole); every step records its accessibility snapshot with refs (aria_snapshot mode ai, typed values redacted), screenshot, its own HAR and rea's reading of it at once; steps settle on network quiet and can wait for a confirming request (`expect`); `map` turns a recording into states and transitions, `--all` collates every run. `log flow fromInspect|docs|list|show|run` (src/camofox/flow, src/cli/flow): a recording becomes a flow definition (each step's element by role and name from the snapshot it acted on, its confirming mutation, params), its doc in docs/facebookClient/flows, an XState machine (createFlowMachine), and a run on any account (dry run unless --live, recorded again); every saved flow is its own MCP tool (toolsFromFlows, flowProfileSetup). First flow: profileSetup (13 steps), recorded on Lancaster and run by itself on Bethlehem. Also: `log profile setup` with Twenty fields profilePhoto, coverPhoto, profileName, profileSetAt and the profile machine; error layer `profile`; `--now` on inspect, connect and flow skips only rule 24's gap; the request docs gain a `profile` domain and 33 new documented requests (74 in all); the docs gate requires each flow's doc; skills inspect, flow, profileSetup; README section.
+Why: matt: look at a page before writing code for it, "run rea as we go", record each step in order, "turn that into the full-on state machine… run as a command line… register it as an MCP", and "take what's being done inside of the REA, convert that into documentation, then convert the actions into a state machine, and then translate the state machine into an MCP". matt asked for the profile picture, cover photo and name, and to try it again on a new account. Rule 30: "If I tell you to do something, do it completely." The first profile code was written before anyone had seen the page; the recordings replaced it.
+Checked: `bun run check:naming` OK, `tsc --noEmit` clean, `bun test` 495 pass / 0 fail (new: inspect actions and replies, redaction of typed values, flow from a recording, the flow machine running and stopping at a failed step, flows as MCP tools with confirmLive, profile machine and command). `check:facebookClientDocs`: 74 requests documented, every GraphQL slice read by rea. Live, headed, through every gate: Allentown inspect (lock page, Continue, text captcha solved by 2Captcha in 1.5 s, video selfie: account set to CHECKPOINT); Lancaster inspect (first sign-in hit "automated behaviour", Dismiss, signed in; profile picture, cover and name "Lancaster Trash" saved, each confirmed by its mutation); Bethlehem connect then `log flow run profileSetup --live`: 13/13 states, name "Bethlehem Trash". Not done: connect re-reads 1 s after Enter and retries; the connect machine does not yet click through "Confirm that you're human"; the map names some states by the page's first sentence; Lancaster's password was shown once in a session and must be changed.

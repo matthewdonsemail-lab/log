@@ -11,16 +11,22 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_c06aafd6651edd80b023c22473d2b0584c33cd5d37efd1de388b4627fda6e5b7` |
+| rea | `ev_5b301ff6fb1327c656a6f26cd382c9322ec943abc556084a2fd7b0f76f6bea4d` |
 
-Seen 34 time(s) in 3 run(s).
+Seen 58 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| connect | says: (no text) / buttons: none | 7 | -1 | -1 ms | 2226–4353 ms | — |
+| connect | Auto-login: typing the password. | 4 | -1 | -1 ms | 988–2864 ms | — |
+| connect | Auto-login: submitting (Enter). | 8 | -1 | -1 ms | 26–127 ms | — |
+| inspect | step 1: goto /marketplace/you/selling | 7 | -1 | -1 ms | 5911–8926 ms | — |
+| inspect | page has 61 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T110 | 1 | -1 | -1 ms | 86 ms | — |
+| inspect | step 2: click e675 | 3 | -1 | -1 ms | 920–3340 ms | — |
+| inspect | POST 0 /ajax/bz (0 ms) | 2 | -1 | -1 ms | 1710–1965 ms | — |
+| inspect | signIn: password typed; submitting with Enter | 1 | -1 | -1 ms | 97 ms | — |
 | connect | Opening Marketplace > Selling. | 22 | -1 | -1 ms | 5887–11459 ms | — |
 | connect | Auto-login: typing the email. | 3 | -1 | -1 ms | 773–1568 ms | — |
-| connect | Auto-login: typing the password. | 3 | -1 | -1 ms | 988–2864 ms | — |
-| connect | Auto-login: submitting (Enter). | 6 | -1 | -1 ms | 26–121 ms | — |
 
 <!-- facts:end -->
 

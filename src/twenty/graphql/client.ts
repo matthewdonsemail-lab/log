@@ -41,7 +41,11 @@ export const SOCIAL_ACCOUNT_FIELDS = {
   deviceProfile: true,
   activeHoursStart: true,
   activeHoursEnd: true,
-  storageOrigins: true
+  storageOrigins: true,
+  profileName: true,
+  profilePhoto: true,
+  coverPhoto: true,
+  profileSetAt: true
 } satisfies SocialAccountGenqlSelection
 
 export const AGENCY_LISTING_FIELDS = {

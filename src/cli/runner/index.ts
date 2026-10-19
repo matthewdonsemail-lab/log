@@ -4,7 +4,8 @@
  * Commands are declared once here; usage text is generated from the same list,
  * so a new command cannot ship without documentation.
  */
-import { startConnectSession, startSession } from "../../camofox/session/index.ts";
+import { runInspectSession, sendInspectCommand } from "../../camofox/inspect/index.ts";
+import { startConnectSession, startProfileSession, startSession } from "../../camofox/session/index.ts";
 import { runWorker } from "../../camofox/worker/index.ts";
 import { listAccounts } from "../../marketplace/account/index.ts";
 import { listListings } from "../../marketplace/listing/index.ts";
@@ -17,6 +18,9 @@ import { firefoxCaptureCommand } from "../firefoxCapture/index.ts";
 import { launchCommand } from "../launch/index.ts";
 import { listingCommand, listingsCommand } from "../listing/index.ts";
 import { connectCommand, doctorCommand, scanCommand, statusCommand } from "../live/index.ts";
+import { profileCommand } from "../profile/index.ts";
+import { flowCommand } from "../flow/index.ts";
+import { inspectCommand } from "../inspect/index.ts";
 import { proxyCommand } from "../proxy/index.ts";
 import { publishCommand } from "../publish/index.ts";
 import { watchCommand } from "../watch/index.ts";
@@ -34,6 +38,9 @@ export const COMMANDS: Command[] = [
   accountCommand,
   doctorCommand,
   connectCommand,
+  profileCommand,
+  inspectCommand,
+  flowCommand,
   scanCommand,
   statusCommand,
   watchCommand,
@@ -61,6 +68,9 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     worker: overrides.worker ?? runWorker,
     session: overrides.session ?? startSession,
     connectSession: overrides.connectSession ?? startConnectSession,
+    profileSession: overrides.profileSession ?? startProfileSession,
+    inspectSession: overrides.inspectSession ?? runInspectSession,
+    sendInspect: overrides.sendInspect ?? ((current, action, args, timeoutMs, expect) => sendInspectCommand(current, action, args, timeoutMs, 300, expect)),
     connectTiming: overrides.connectTiming,
     out: overrides.out ?? ((line) => console.log(line)),
     err: overrides.err ?? ((line) => console.error(line)),

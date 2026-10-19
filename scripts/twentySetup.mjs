@@ -78,7 +78,11 @@ const SOCIAL_ACCOUNT_FIELDS = [
     label: 'Browser storage',
     type: 'RAW_JSON',
     description: "log-cli: the browser's localStorage per origin after the last run (Playwright storage_state origins). A credential: never print it"
-  }
+  },
+  { name: 'profilePhoto', label: 'Profile photo', type: 'TEXT', description: 'log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28)' },
+  { name: 'coverPhoto', label: 'Cover photo', type: 'TEXT', description: 'log-cli: the cover (background) photo `log profile setup` uploads (a URL or a local path)' },
+  { name: 'profileName', label: 'Profile name', type: 'TEXT', description: 'log-cli: the name `log profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days' },
+  { name: 'profileSetAt', label: 'Profile set', type: 'DATE_TIME', description: 'log-cli: when `log profile setup --live` last saved the profile and cover photo' }
 ]
 
 /** Fields added to agencyListing. The sync fields it already has stay as they are. */

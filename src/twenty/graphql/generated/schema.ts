@@ -10216,6 +10216,14 @@ export interface SocialAccount {
     accessToken?: Scalars['String']
     /** log-cli: the browser the vendor used. Reference only: launches use deviceProfile (rule 15) */
     vendorUserAgent?: Scalars['String']
+    /** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
+    profilePhoto?: Scalars['String']
+    /** log-cli: the cover (background) photo `log profile setup` uploads (a URL or a local path) */
+    coverPhoto?: Scalars['String']
+    /** log-cli: when `log profile setup --live` last saved the profile and cover photo */
+    profileSetAt?: Scalars['DateTime']
+    /** log-cli: the name `log profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days */
+    profileName?: Scalars['String']
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: TimelineActivityConnection
     /** SocialAccounts tied to the Task Target */
@@ -10706,6 +10714,50 @@ export interface SocialAccountConnection {
     percentageEmptyVendorUserAgent?: Scalars['Float']
     /** Percentage of non-empty values for vendorUserAgent */
     percentageNotEmptyVendorUserAgent?: Scalars['Float']
+    /** Number of unique values for profilePhoto */
+    countUniqueValuesProfilePhoto?: Scalars['Int']
+    /** Number of empty values for profilePhoto */
+    countEmptyProfilePhoto?: Scalars['Int']
+    /** Number of non-empty values for profilePhoto */
+    countNotEmptyProfilePhoto?: Scalars['Int']
+    /** Percentage of empty values for profilePhoto */
+    percentageEmptyProfilePhoto?: Scalars['Float']
+    /** Percentage of non-empty values for profilePhoto */
+    percentageNotEmptyProfilePhoto?: Scalars['Float']
+    /** Number of unique values for coverPhoto */
+    countUniqueValuesCoverPhoto?: Scalars['Int']
+    /** Number of empty values for coverPhoto */
+    countEmptyCoverPhoto?: Scalars['Int']
+    /** Number of non-empty values for coverPhoto */
+    countNotEmptyCoverPhoto?: Scalars['Int']
+    /** Percentage of empty values for coverPhoto */
+    percentageEmptyCoverPhoto?: Scalars['Float']
+    /** Percentage of non-empty values for coverPhoto */
+    percentageNotEmptyCoverPhoto?: Scalars['Float']
+    /** Number of unique values for profileSetAt */
+    countUniqueValuesProfileSetAt?: Scalars['Int']
+    /** Number of empty values for profileSetAt */
+    countEmptyProfileSetAt?: Scalars['Int']
+    /** Number of non-empty values for profileSetAt */
+    countNotEmptyProfileSetAt?: Scalars['Int']
+    /** Percentage of empty values for profileSetAt */
+    percentageEmptyProfileSetAt?: Scalars['Float']
+    /** Percentage of non-empty values for profileSetAt */
+    percentageNotEmptyProfileSetAt?: Scalars['Float']
+    /** Earliest date contained in the field profileSetAt */
+    minProfileSetAt?: Scalars['DateTime']
+    /** Latest date contained in the field profileSetAt */
+    maxProfileSetAt?: Scalars['DateTime']
+    /** Number of unique values for profileName */
+    countUniqueValuesProfileName?: Scalars['Int']
+    /** Number of empty values for profileName */
+    countEmptyProfileName?: Scalars['Int']
+    /** Number of non-empty values for profileName */
+    countNotEmptyProfileName?: Scalars['Int']
+    /** Percentage of empty values for profileName */
+    percentageEmptyProfileName?: Scalars['Float']
+    /** Percentage of non-empty values for profileName */
+    percentageNotEmptyProfileName?: Scalars['Float']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     __typename: 'SocialAccountConnection'
@@ -11178,6 +11230,50 @@ export interface SocialAccountGroupByConnection {
     percentageEmptyVendorUserAgent?: Scalars['Float']
     /** Percentage of non-empty values for vendorUserAgent */
     percentageNotEmptyVendorUserAgent?: Scalars['Float']
+    /** Number of unique values for profilePhoto */
+    countUniqueValuesProfilePhoto?: Scalars['Int']
+    /** Number of empty values for profilePhoto */
+    countEmptyProfilePhoto?: Scalars['Int']
+    /** Number of non-empty values for profilePhoto */
+    countNotEmptyProfilePhoto?: Scalars['Int']
+    /** Percentage of empty values for profilePhoto */
+    percentageEmptyProfilePhoto?: Scalars['Float']
+    /** Percentage of non-empty values for profilePhoto */
+    percentageNotEmptyProfilePhoto?: Scalars['Float']
+    /** Number of unique values for coverPhoto */
+    countUniqueValuesCoverPhoto?: Scalars['Int']
+    /** Number of empty values for coverPhoto */
+    countEmptyCoverPhoto?: Scalars['Int']
+    /** Number of non-empty values for coverPhoto */
+    countNotEmptyCoverPhoto?: Scalars['Int']
+    /** Percentage of empty values for coverPhoto */
+    percentageEmptyCoverPhoto?: Scalars['Float']
+    /** Percentage of non-empty values for coverPhoto */
+    percentageNotEmptyCoverPhoto?: Scalars['Float']
+    /** Number of unique values for profileSetAt */
+    countUniqueValuesProfileSetAt?: Scalars['Int']
+    /** Number of empty values for profileSetAt */
+    countEmptyProfileSetAt?: Scalars['Int']
+    /** Number of non-empty values for profileSetAt */
+    countNotEmptyProfileSetAt?: Scalars['Int']
+    /** Percentage of empty values for profileSetAt */
+    percentageEmptyProfileSetAt?: Scalars['Float']
+    /** Percentage of non-empty values for profileSetAt */
+    percentageNotEmptyProfileSetAt?: Scalars['Float']
+    /** Earliest date contained in the field profileSetAt */
+    minProfileSetAt?: Scalars['DateTime']
+    /** Latest date contained in the field profileSetAt */
+    maxProfileSetAt?: Scalars['DateTime']
+    /** Number of unique values for profileName */
+    countUniqueValuesProfileName?: Scalars['Int']
+    /** Number of empty values for profileName */
+    countEmptyProfileName?: Scalars['Int']
+    /** Number of non-empty values for profileName */
+    countNotEmptyProfileName?: Scalars['Int']
+    /** Percentage of empty values for profileName */
+    percentageEmptyProfileName?: Scalars['Float']
+    /** Percentage of non-empty values for profileName */
+    percentageNotEmptyProfileName?: Scalars['Float']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -62075,6 +62171,14 @@ export interface SocialAccountGenqlSelection{
     accessToken?: boolean | number
     /** log-cli: the browser the vendor used. Reference only: launches use deviceProfile (rule 15) */
     vendorUserAgent?: boolean | number
+    /** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
+    profilePhoto?: boolean | number
+    /** log-cli: the cover (background) photo `log profile setup` uploads (a URL or a local path) */
+    coverPhoto?: boolean | number
+    /** log-cli: when `log profile setup --live` last saved the profile and cover photo */
+    profileSetAt?: boolean | number
+    /** log-cli: the name `log profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days */
+    profileName?: boolean | number
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
     /** SocialAccounts tied to the Task Target */
@@ -62567,6 +62671,50 @@ export interface SocialAccountConnectionGenqlSelection{
     percentageEmptyVendorUserAgent?: boolean | number
     /** Percentage of non-empty values for vendorUserAgent */
     percentageNotEmptyVendorUserAgent?: boolean | number
+    /** Number of unique values for profilePhoto */
+    countUniqueValuesProfilePhoto?: boolean | number
+    /** Number of empty values for profilePhoto */
+    countEmptyProfilePhoto?: boolean | number
+    /** Number of non-empty values for profilePhoto */
+    countNotEmptyProfilePhoto?: boolean | number
+    /** Percentage of empty values for profilePhoto */
+    percentageEmptyProfilePhoto?: boolean | number
+    /** Percentage of non-empty values for profilePhoto */
+    percentageNotEmptyProfilePhoto?: boolean | number
+    /** Number of unique values for coverPhoto */
+    countUniqueValuesCoverPhoto?: boolean | number
+    /** Number of empty values for coverPhoto */
+    countEmptyCoverPhoto?: boolean | number
+    /** Number of non-empty values for coverPhoto */
+    countNotEmptyCoverPhoto?: boolean | number
+    /** Percentage of empty values for coverPhoto */
+    percentageEmptyCoverPhoto?: boolean | number
+    /** Percentage of non-empty values for coverPhoto */
+    percentageNotEmptyCoverPhoto?: boolean | number
+    /** Number of unique values for profileSetAt */
+    countUniqueValuesProfileSetAt?: boolean | number
+    /** Number of empty values for profileSetAt */
+    countEmptyProfileSetAt?: boolean | number
+    /** Number of non-empty values for profileSetAt */
+    countNotEmptyProfileSetAt?: boolean | number
+    /** Percentage of empty values for profileSetAt */
+    percentageEmptyProfileSetAt?: boolean | number
+    /** Percentage of non-empty values for profileSetAt */
+    percentageNotEmptyProfileSetAt?: boolean | number
+    /** Earliest date contained in the field profileSetAt */
+    minProfileSetAt?: boolean | number
+    /** Latest date contained in the field profileSetAt */
+    maxProfileSetAt?: boolean | number
+    /** Number of unique values for profileName */
+    countUniqueValuesProfileName?: boolean | number
+    /** Number of empty values for profileName */
+    countEmptyProfileName?: boolean | number
+    /** Number of non-empty values for profileName */
+    countNotEmptyProfileName?: boolean | number
+    /** Percentage of empty values for profileName */
+    percentageEmptyProfileName?: boolean | number
+    /** Percentage of non-empty values for profileName */
+    percentageNotEmptyProfileName?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -63040,6 +63188,50 @@ export interface SocialAccountGroupByConnectionGenqlSelection{
     percentageEmptyVendorUserAgent?: boolean | number
     /** Percentage of non-empty values for vendorUserAgent */
     percentageNotEmptyVendorUserAgent?: boolean | number
+    /** Number of unique values for profilePhoto */
+    countUniqueValuesProfilePhoto?: boolean | number
+    /** Number of empty values for profilePhoto */
+    countEmptyProfilePhoto?: boolean | number
+    /** Number of non-empty values for profilePhoto */
+    countNotEmptyProfilePhoto?: boolean | number
+    /** Percentage of empty values for profilePhoto */
+    percentageEmptyProfilePhoto?: boolean | number
+    /** Percentage of non-empty values for profilePhoto */
+    percentageNotEmptyProfilePhoto?: boolean | number
+    /** Number of unique values for coverPhoto */
+    countUniqueValuesCoverPhoto?: boolean | number
+    /** Number of empty values for coverPhoto */
+    countEmptyCoverPhoto?: boolean | number
+    /** Number of non-empty values for coverPhoto */
+    countNotEmptyCoverPhoto?: boolean | number
+    /** Percentage of empty values for coverPhoto */
+    percentageEmptyCoverPhoto?: boolean | number
+    /** Percentage of non-empty values for coverPhoto */
+    percentageNotEmptyCoverPhoto?: boolean | number
+    /** Number of unique values for profileSetAt */
+    countUniqueValuesProfileSetAt?: boolean | number
+    /** Number of empty values for profileSetAt */
+    countEmptyProfileSetAt?: boolean | number
+    /** Number of non-empty values for profileSetAt */
+    countNotEmptyProfileSetAt?: boolean | number
+    /** Percentage of empty values for profileSetAt */
+    percentageEmptyProfileSetAt?: boolean | number
+    /** Percentage of non-empty values for profileSetAt */
+    percentageNotEmptyProfileSetAt?: boolean | number
+    /** Earliest date contained in the field profileSetAt */
+    minProfileSetAt?: boolean | number
+    /** Latest date contained in the field profileSetAt */
+    maxProfileSetAt?: boolean | number
+    /** Number of unique values for profileName */
+    countUniqueValuesProfileName?: boolean | number
+    /** Number of empty values for profileName */
+    countEmptyProfileName?: boolean | number
+    /** Number of non-empty values for profileName */
+    countNotEmptyProfileName?: boolean | number
+    /** Percentage of empty values for profileName */
+    percentageEmptyProfileName?: boolean | number
+    /** Percentage of non-empty values for profileName */
+    percentageNotEmptyProfileName?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -63131,7 +63323,15 @@ storageOrigins?: (Scalars['JSON'] | null),
 /** log-cli: the Facebook access token the vendor delivered. A credential: never print it */
 accessToken?: (Scalars['String'] | null),
 /** log-cli: the browser the vendor used. Reference only: launches use deviceProfile (rule 15) */
-vendorUserAgent?: (Scalars['String'] | null)}
+vendorUserAgent?: (Scalars['String'] | null),
+/** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
+profilePhoto?: (Scalars['String'] | null),
+/** log-cli: the cover (background) photo `log profile setup` uploads (a URL or a local path) */
+coverPhoto?: (Scalars['String'] | null),
+/** log-cli: when `log profile setup --live` last saved the profile and cover photo */
+profileSetAt?: (Scalars['DateTime'] | null),
+/** log-cli: the name `log profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days */
+profileName?: (Scalars['String'] | null)}
 
 
 /** Social media accounts */
@@ -63201,7 +63401,15 @@ storageOrigins?: (Scalars['JSON'] | null),
 /** log-cli: the Facebook access token the vendor delivered. A credential: never print it */
 accessToken?: (Scalars['String'] | null),
 /** log-cli: the browser the vendor used. Reference only: launches use deviceProfile (rule 15) */
-vendorUserAgent?: (Scalars['String'] | null)}
+vendorUserAgent?: (Scalars['String'] | null),
+/** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
+profilePhoto?: (Scalars['String'] | null),
+/** log-cli: the cover (background) photo `log profile setup` uploads (a URL or a local path) */
+coverPhoto?: (Scalars['String'] | null),
+/** log-cli: when `log profile setup --live` last saved the profile and cover photo */
+profileSetAt?: (Scalars['DateTime'] | null),
+/** log-cli: the name `log profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days */
+profileName?: (Scalars['String'] | null)}
 
 
 /** Social media accounts */
@@ -63271,7 +63479,15 @@ storageOrigins?: (RawJsonFilter | null),
 /** log-cli: the Facebook access token the vendor delivered. A credential: never print it */
 accessToken?: (StringFilter | null),
 /** log-cli: the browser the vendor used. Reference only: launches use deviceProfile (rule 15) */
-vendorUserAgent?: (StringFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
+vendorUserAgent?: (StringFilter | null),
+/** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
+profilePhoto?: (StringFilter | null),
+/** log-cli: the cover (background) photo `log profile setup` uploads (a URL or a local path) */
+coverPhoto?: (StringFilter | null),
+/** log-cli: when `log profile setup --live` last saved the profile and cover photo */
+profileSetAt?: (DateTimeFilter | null),
+/** log-cli: the name `log profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days */
+profileName?: (StringFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
 
 export interface SocialAccountPlatformEnumFilter {eq?: (SocialAccountPlatformEnum | null),neq?: (SocialAccountPlatformEnum | null),in?: ((SocialAccountPlatformEnum | null)[] | null),containsAny?: ((SocialAccountPlatformEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (SocialAccountPlatformEnum | null),gte?: (SocialAccountPlatformEnum | null),lt?: (SocialAccountPlatformEnum | null),lte?: (SocialAccountPlatformEnum | null)}
 
@@ -63345,7 +63561,15 @@ storageOrigins?: (OrderByDirection | null),
 /** log-cli: the Facebook access token the vendor delivered. A credential: never print it */
 accessToken?: (OrderByDirection | null),
 /** log-cli: the browser the vendor used. Reference only: launches use deviceProfile (rule 15) */
-vendorUserAgent?: (OrderByDirection | null)}
+vendorUserAgent?: (OrderByDirection | null),
+/** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
+profilePhoto?: (OrderByDirection | null),
+/** log-cli: the cover (background) photo `log profile setup` uploads (a URL or a local path) */
+coverPhoto?: (OrderByDirection | null),
+/** log-cli: when `log profile setup --live` last saved the profile and cover photo */
+profileSetAt?: (OrderByDirection | null),
+/** log-cli: the name `log profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days */
+profileName?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
@@ -63417,7 +63641,15 @@ storageOrigins?: (OrderByDirection | null),
 /** log-cli: the Facebook access token the vendor delivered. A credential: never print it */
 accessToken?: (OrderByDirection | null),
 /** log-cli: the browser the vendor used. Reference only: launches use deviceProfile (rule 15) */
-vendorUserAgent?: (OrderByDirection | null)}
+vendorUserAgent?: (OrderByDirection | null),
+/** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
+profilePhoto?: (OrderByDirection | null),
+/** log-cli: the cover (background) photo `log profile setup` uploads (a URL or a local path) */
+coverPhoto?: (OrderByDirection | null),
+/** log-cli: when `log profile setup --live` last saved the profile and cover photo */
+profileSetAt?: (OrderByDateGranularityInput | null),
+/** log-cli: the name `log profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days */
+profileName?: (OrderByDirection | null)}
 
 
 /** Aggregate-based ordering */
@@ -63885,7 +64117,51 @@ countNotEmptyVendorUserAgent?: (OrderByDirection | null),
 /** Percentage of empty values for vendorUserAgent */
 percentageEmptyVendorUserAgent?: (OrderByDirection | null),
 /** Percentage of non-empty values for vendorUserAgent */
-percentageNotEmptyVendorUserAgent?: (OrderByDirection | null)}
+percentageNotEmptyVendorUserAgent?: (OrderByDirection | null),
+/** Number of unique values for profilePhoto */
+countUniqueValuesProfilePhoto?: (OrderByDirection | null),
+/** Number of empty values for profilePhoto */
+countEmptyProfilePhoto?: (OrderByDirection | null),
+/** Number of non-empty values for profilePhoto */
+countNotEmptyProfilePhoto?: (OrderByDirection | null),
+/** Percentage of empty values for profilePhoto */
+percentageEmptyProfilePhoto?: (OrderByDirection | null),
+/** Percentage of non-empty values for profilePhoto */
+percentageNotEmptyProfilePhoto?: (OrderByDirection | null),
+/** Number of unique values for coverPhoto */
+countUniqueValuesCoverPhoto?: (OrderByDirection | null),
+/** Number of empty values for coverPhoto */
+countEmptyCoverPhoto?: (OrderByDirection | null),
+/** Number of non-empty values for coverPhoto */
+countNotEmptyCoverPhoto?: (OrderByDirection | null),
+/** Percentage of empty values for coverPhoto */
+percentageEmptyCoverPhoto?: (OrderByDirection | null),
+/** Percentage of non-empty values for coverPhoto */
+percentageNotEmptyCoverPhoto?: (OrderByDirection | null),
+/** Number of unique values for profileSetAt */
+countUniqueValuesProfileSetAt?: (OrderByDirection | null),
+/** Number of empty values for profileSetAt */
+countEmptyProfileSetAt?: (OrderByDirection | null),
+/** Number of non-empty values for profileSetAt */
+countNotEmptyProfileSetAt?: (OrderByDirection | null),
+/** Percentage of empty values for profileSetAt */
+percentageEmptyProfileSetAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for profileSetAt */
+percentageNotEmptyProfileSetAt?: (OrderByDirection | null),
+/** Earliest date contained in the field profileSetAt */
+minProfileSetAt?: (OrderByDirection | null),
+/** Latest date contained in the field profileSetAt */
+maxProfileSetAt?: (OrderByDirection | null),
+/** Number of unique values for profileName */
+countUniqueValuesProfileName?: (OrderByDirection | null),
+/** Number of empty values for profileName */
+countEmptyProfileName?: (OrderByDirection | null),
+/** Number of non-empty values for profileName */
+countNotEmptyProfileName?: (OrderByDirection | null),
+/** Percentage of empty values for profileName */
+percentageEmptyProfileName?: (OrderByDirection | null),
+/** Percentage of non-empty values for profileName */
+percentageNotEmptyProfileName?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
@@ -63937,7 +64213,15 @@ activeHoursEnd?: (Scalars['Boolean'] | null),
 /** log-cli: the Facebook access token the vendor delivered. A credential: never print it */
 accessToken?: (Scalars['Boolean'] | null),
 /** log-cli: the browser the vendor used. Reference only: launches use deviceProfile (rule 15) */
-vendorUserAgent?: (Scalars['Boolean'] | null)}
+vendorUserAgent?: (Scalars['Boolean'] | null),
+/** log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28) */
+profilePhoto?: (Scalars['Boolean'] | null),
+/** log-cli: the cover (background) photo `log profile setup` uploads (a URL or a local path) */
+coverPhoto?: (Scalars['Boolean'] | null),
+/** log-cli: when `log profile setup --live` last saved the profile and cover photo */
+profileSetAt?: (GroupByDateGranularityInput | null),
+/** log-cli: the name `log profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days */
+profileName?: (Scalars['Boolean'] | null)}
 
 
 /** Calendar events */

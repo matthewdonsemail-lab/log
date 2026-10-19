@@ -21,6 +21,13 @@ function capture() {
     connectSession: () => {
       throw new Error("connectSession not stubbed");
     },
+    profileSession: () => {
+      throw new Error("profileSession not stubbed");
+    },
+    inspectSession: async () => {
+      throw new Error("inspectSession not stubbed");
+    },
+    sendInspect: async () => null,
     out: (line) => out.push(line),
     err: (line) => err.push(line),
   };

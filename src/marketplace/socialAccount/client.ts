@@ -42,7 +42,11 @@ export function toFacebookAccount(row: SocialAccountRow): FacebookAccount {
     deviceProfile: row.deviceProfile ?? null,
     activeHoursStart: typeof row.activeHoursStart === 'number' ? row.activeHoursStart : null,
     activeHoursEnd: typeof row.activeHoursEnd === 'number' ? row.activeHoursEnd : null,
-    storageOrigins: row.storageOrigins ?? null
+    storageOrigins: row.storageOrigins ?? null,
+    profileName: row.profileName?.trim() || null,
+    profilePhoto: row.profilePhoto?.trim() || null,
+    coverPhoto: row.coverPhoto?.trim() || null,
+    profileSetAt: row.profileSetAt ?? null
   }
 }
 
@@ -114,6 +118,11 @@ export async function saveSession(twenty: TwentyClient, accountId: string, state
     storageOrigins: state.origins as unknown as AccountUpdate['storageOrigins']
   })
   return true
+}
+
+/** `log profile setup --live` saved both photos (rule 28): when, so it isn't redone. */
+export async function markProfileSet(twenty: TwentyClient, accountId: string, at: Date): Promise<void> {
+  await twenty.update(SOCIAL_ACCOUNTS, accountId, { profileSetAt: at.toISOString() })
 }
 
 /**

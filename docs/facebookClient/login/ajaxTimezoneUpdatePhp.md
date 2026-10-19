@@ -11,12 +11,13 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_6877030934e576a7eb71082d63be73eb2d382fb49544ca6f4f94cc555abe167f` |
+| rea | `ev_333fff88d87e55175ca99a33d0306530b64d3e003dba74ad68ace349dad7d71d` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 2: click e53 | 1 | 200 | 753 ms | 8420 ms | — |
 | connect | Page: loggedIn /marketplace/selling/ "…" | 1 | 200 | 527 ms | 4174 ms | — |
 | connect | Page: loggedIn /marketplace/selling/ | 1 | 200 | 661 ms | 3746 ms | — |
 

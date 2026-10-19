@@ -11,19 +11,27 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_5bee8bac109273dd2b1630de0e43a0c730549523f08b21408d80e39b9bc8e0f3` |
+| rea | `ev_262d88fab3be7aa47300d07ddd7f69a8108be9bd772dc983116781db97cc2690` |
 
-Seen 26 time(s) in 16 run(s).
+Seen 41 time(s) in 24 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| flow | step 1: goto /me | 1 | -1 | -1 ms | 2798 ms | — |
+| flow | step 9: goto /profiles/<id>/name | 1 | -1 | -1 ms | 1525 ms | — |
+| connect | Opening Marketplace > Selling. | 5 | -1 | -1 ms | 1634–3673 ms | — |
+| connect | Auto-login: typing the email. | 2 | -1 | -1 ms | 546–695 ms | — |
+| connect | Page: loggedIn /marketplace/selling/ "…" | 2 | -1 | -1 ms | 1423–2139 ms | — |
+| inspect | step 1: goto /me | 3 | -1 | -1 ms | 2837–6273 ms | — |
+| inspect | step 14: goto /profiles/<id>/name | 1 | -1 | -1 ms | 1638 ms | — |
+| inspect | step 1: goto /marketplace/you/selling | 2 | -1 | -1 ms | 2844–2846 ms | — |
+| inspect | step 2: click e53 | 2 | -1 | -1 ms | 2511–3151 ms | — |
+| inspect | GET 200 /nw/ (285 ms) | 1 | -1 | -1 ms | 1771 ms | — |
+| profile | Opening the profile (facebook.com/me). | 1 | 200 | 315 ms | 2142 ms | — |
 | publish | Opening /marketplace/create/item | 12 | -1, 200 | -1–290 ms | 1643–8396 ms | — |
-| connect | Opening Marketplace > Selling. | 4 | -1 | -1 ms | 1634–3673 ms | — |
 | connect | Auto-login: submitting (Enter). | 2 | -1 | -1 ms | 2976–3138 ms | — |
 | connect | Page: loggedIn /marketplace/selling/ | 2 | -1 | -1 ms | 611–788 ms | — |
-| connect | Auto-login: typing the email. | 1 | -1 | -1 ms | 695 ms | — |
 | connect | Auto-login: answered automatedBehaviour. | 4 | -1 | -1 ms | 1106–2053 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ "…" | 1 | -1 | -1 ms | 1423 ms | — |
 
 <!-- facts:end -->
 

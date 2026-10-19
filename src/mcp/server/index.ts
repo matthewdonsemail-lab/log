@@ -21,7 +21,9 @@ import { COMMANDS, runCli } from "../../cli/runner/index.ts";
 import type { CommandContext } from "../../cli/runner/types.ts";
 import { setLogSink } from "../../observability/processLog/index.ts";
 import type { LogLine } from "../../observability/processLog/index.ts";
-import { formatLogLine, guardCall, logFileName, parseEnvText, toolsFromCommands } from "./helpers/index.ts";
+import { listFlows, loadFlow, toolName } from "../../camofox/flow/index.ts";
+import type { FlowDefinition } from "../../camofox/flow/index.ts";
+import { flowArgv, formatLogLine, guardCall, logFileName, parseEnvText, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
 import type { LogToolInput } from "./types.ts";
 
@@ -36,12 +38,27 @@ export type OnLogLine = (tool: string, stream: LogStream, line: string) => void;
 const inFlight = new Set<(entry: LogLine) => void>();
 
 /** Runs one tool call as `log <name> <args>`. Tests inject the context (fixture Twenty, no browser). */
+/** The saved flows (`src/camofox/flow/definitions`), each an MCP tool (rule 31). */
+export function savedFlows(): FlowDefinition[] {
+  return listFlows().flatMap((name) => {
+    const flow = loadFlow(name);
+    return flow ? [flow] : [];
+  });
+}
+
 export async function runToolCall(
   name: string,
   input: LogToolInput | undefined,
   context: Partial<CommandContext> = {},
   onLine: OnLogLine = () => {},
 ): Promise<CallToolResult> {
+  // A flow tool (`flowProfileSetup`) is `log flow run <flow>` with its params by name; the same guard then applies.
+  const flow = savedFlows().find((f) => toolName(f.name) === name);
+  if (flow) {
+    const built = flowArgv(flow, input as Record<string, unknown> | undefined);
+    if (!built.ok) return { isError: true, content: [{ type: "text", text: built.message }] };
+    return runToolCall("flow", { args: built.argv.slice(1), confirmLive: input?.confirmLive }, context, onLine);
+  }
   const guard = guardCall(name, input, COMMANDS);
   if (!guard.ok) return { isError: true, content: [{ type: "text", text: guard.message }] };
   const out: string[] = [];
@@ -106,7 +123,7 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
     }
     server.sendLoggingMessage({ level: stream === "err" ? "warning" : "info", logger: `log.${tool}.${stream}`, data: line }).catch(() => {});
   };
-  server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: toolsFromCommands(COMMANDS) }));
+  server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: [...toolsFromCommands(COMMANDS), ...toolsFromFlows(savedFlows())] }));
   server.setRequestHandler(CallToolRequestSchema, async (request) =>
     runToolCall(request.params.name, request.params.arguments as LogToolInput | undefined, context, onLine),
   );

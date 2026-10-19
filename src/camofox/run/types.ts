@@ -46,6 +46,8 @@ export interface PrepareRunOptions {
   now?: Date
   /** `--bypass`: skip the waking-hours gate (rule 18) only. The proxy, home, device and self-check gates still run. */
   bypassHours?: boolean
+  /** `log inspect start --now` (matt, rule 30): skip rule 24's 10-minute gap only. The 8 a day still holds. */
+  skipLaunchGap?: boolean
   /** `connect`'s auto-login: written to `login.json` in the run folder (0600) and deleted with it. */
   login?: LoginSecrets | null
   /** The command, for the capture folder name (`connect`, `scan`...). Default: the purpose. */

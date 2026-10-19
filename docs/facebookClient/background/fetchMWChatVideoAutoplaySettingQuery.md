@@ -13,13 +13,17 @@
 | Called from | `fetchMWChatVideoAutoplaySetting` |
 | rea | `ev_cec3d0049369021eb11311f83bae206c05ab77298da76206b6788d2cdc5c8ee1` |
 
-Seen 11 time(s) in 11 run(s).
+Seen 16 time(s) in 15 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| flow | step 1: goto /me | 1 | 200 | 359 ms | 7009 ms | — |
+| connect | Auto-login: typing the email. | 1 | 200 | 316 ms | 3146 ms | — |
+| connect | Page: loggedIn /marketplace/selling/ "…" | 2 | 200 | 317–429 ms | 2697–4197 ms | — |
+| inspect | step 1: goto /me | 1 | 200 | 461 ms | 11843 ms | — |
+| inspect | step 2: click e53 | 1 | 200 | 367 ms | 5951 ms | — |
 | publish | Opening /marketplace/create/item | 8 | 200 | 298–380 ms | 6083–13913 ms | — |
 | connect | Page: loggedIn /marketplace/selling/ | 2 | 200 | 331–370 ms | 2884–4158 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ "…" | 1 | 200 | 429 ms | 4197 ms | — |
 
 <!-- facts:end -->
 

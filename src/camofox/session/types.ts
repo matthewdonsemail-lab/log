@@ -83,3 +83,26 @@ export interface ConnectSession {
 
 /** Starts a connect session. Injectable so tests never launch a browser. */
 export type ConnectSessionFactory = (config: ConnectSessionConfig) => ConnectSession
+
+/** `python/profileSession.py`'s steps (`log profile setup`, rule 28). */
+export type ProfileStep = 'open' | 'read' | 'readName' | 'uploadProfilePhoto' | 'uploadCoverPhoto' | 'close'
+
+export interface ProfileSessionConfig {
+  accountId: string
+  /** The saved session. Required: the profile is only reachable signed in (`log connect` first). */
+  storageStatePath: string
+  /** The account's proxy file. No browser opens without it (rule 12). */
+  proxyPath: string
+  devicePath: string | null
+  /** The run's capture folder (`.../firefox`): raw HAR and steps.jsonl (rules 19, 22). */
+  captureDir: string
+}
+
+/** A running profile session. */
+export interface ProfileSession {
+  call<T = Record<string, unknown>>(step: ProfileStep, params?: Record<string, unknown>): Promise<T>
+  close(): Promise<void>
+}
+
+/** Starts a profile session. Injectable so tests never launch one. */
+export type ProfileSessionFactory = (config: ProfileSessionConfig) => ProfileSession

@@ -13,13 +13,15 @@
 | Called from | `MAWVerifyThreadCutover` |
 | rea | `ev_2ef4fcf81840e4c44dfd19b7c86b9e3e65429109c06595cfc96262bcea9f2bc2` |
 
-Seen 11 time(s) in 11 run(s).
+Seen 14 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| connect | Auto-login: typing the email. | 1 | 200 | 357 ms | 3896 ms | — |
+| connect | Page: loggedIn /marketplace/selling/ "…" | 2 | 200 | 326–410 ms | 4012–4299 ms | — |
+| inspect | step 2: click e53 | 1 | 200 | 400 ms | 8574 ms | — |
 | publish | Opening /marketplace/create/item | 7 | 200 | 306–345 ms | 8478–15307 ms | — |
 | connect | Page: loggedIn /marketplace/selling/ | 2 | 200 | 359–371 ms | 3899–6189 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ "…" | 1 | 200 | 410 ms | 4299 ms | — |
 | publish | Category: Miscellaneous | 1 | 200 | 312 ms | 1727 ms | — |
 
 <!-- facts:end -->

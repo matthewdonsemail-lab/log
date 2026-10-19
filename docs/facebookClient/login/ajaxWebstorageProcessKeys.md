@@ -11,12 +11,28 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | not read yet |
+| rea | `ev_262d88fab3be7aa47300d07ddd7f69a8108be9bd772dc983116781db97cc2690` |
 
-Seen 3 time(s) in 1 run(s).
+Seen 19 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| flow | step 1: goto /me | 1 | 200 | 315 ms | 18735 ms | — |
+| inspect | step 1: goto /me | 1 | 200 | 349 ms | 23358 ms | — |
+| inspect | step 5: wait 8s | 1 | 200 | 384 ms | 183 ms | — |
+| inspect | step 8: click e | 1 | 200 | 292 ms | 3487 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T111 | 1 | 200 | 297 ms | 2679 ms | — |
+| inspect | page has 20 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T111 | 1 | 200 | 288 ms | 2587 ms | — |
+| inspect | page has 21 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T111 | 1 | 200 | 1019 ms | 7923 ms | — |
+| inspect | page has 15 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T111 | 1 | 200 | 356 ms | 6091 ms | — |
+| inspect | page has 5 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1112 | 1 | 200 | 307 ms | 3133 ms | — |
+| inspect | POST 200 useMWEncryptedBackupsFetchBackupIdsV2Query (332 ms) | 1 | 200 | 288 ms | 2546 ms | — |
+| inspect | page has 61 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T110 | 1 | 200 | 366 ms | 2304 ms | — |
+| inspect | page has 56 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T110 | 1 | 200 | 292 ms | 12556 ms | — |
+| inspect | page has 7 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1103 | 1 | 200 | 318 ms | 1041 ms | — |
+| inspect | step 4: wait 10s | 1 | 200 | 317 ms | 9836 ms | — |
+| inspect | step 2: wait 5s | 1 | 200 | 313 ms | 2970 ms | — |
+| inspect | page has 5 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1052 | 1 | 200 | 310 ms | 43103 ms | — |
 | connect | Page: captcha /checkpoint/<id>/ | 1 | 200 | 310 ms | 4956 ms | — |
 | connect | Page: checkpoint /checkpoint/<id>/ | 2 | 200 | 310–332 ms | 2447–3691 ms | — |
 

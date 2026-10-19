@@ -203,6 +203,52 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     whole bundle). lefthook's pre-push (`check:facebookClientDocs`) refuses a
     push while a request is undocumented, unread by rea, has its reasoning
     unwritten, or a run is newer than the docs.
+28. 2026-10-19 · matt asked for profile setup: `log profile setup --account
+    <a>` sets the account's profile picture and cover photo from Twenty
+    (`socialAccounts.profilePhoto`, `coverPhoto`; a URL or path, fetched
+    through the account's proxy and varied, `media/photo`), both in one run
+    (matt's choice), through the profile machine (`marketplace/profile`,
+    `python/profileSession.py`). A dry run unless `--live`; the dry run
+    lists every control the profile page has in `profileFound.txt`, and the
+    clicks are checked against it before the first `--live` (rule 25). It is
+    a launch like any other (rules 11-12, 15-18, 22, 24). 2026-10-19, matt
+    also chose to rename the profile (`socialAccounts.profileName`, first
+    "Allentown Trash"), knowing Facebook reviews names and allows about one
+    change per 60 days: the dry run reads the name page (`nameFound.txt`),
+    and the rename is built from that recording before any `--live` renames.
+    Bio and every other profile field stay read-only (rule 8).
+29. 2026-10-19 · matt: look before writing code for a page. `log inspect
+    start --account <a>` opens one gated, headed Camoufox (async API, same
+    launch and gates as every run) and keeps it open; `log inspect do
+    <action>` runs one step (goto, snapshot, back, wait; click, type, press
+    only with `--live`, rule 8). Each step records, in order, as it happens:
+    the accessibility snapshot with element refs (camofox-mcp's model,
+    `aria_snapshot(mode="ai")`), a screenshot, its own HAR, and rea's
+    reading of that HAR at once. Code that clicks on a page is written from
+    an inspect recording of that page, never before one.
+30. 2026-10-19 · matt: "If I tell you to do something, do it completely."
+    When matt gives a plan, it is carried out to the end in the same turn,
+    not stopped to ask again or to say what won't be done. `log inspect
+    start --now` (and `log connect --now`) skips rule 24's 10-minute gap (the 8 a day still holds) so
+    a recording continues at once. Recording a sign-in or a checkpoint with
+    `log inspect` (signIn, code, solve, click) is the intended work: it is
+    how each state gets documented from rea. The run on 2026-10-19 was
+    interrupted once because a snapshot printed the account's email and
+    password; snapshots now redact every typed field value
+    (`redact_fields`), and signIn/code read only the private login.json
+    (rule 21), so no credential reaches any output.
+31. 2026-10-19 · matt: a recorded procedure becomes the whole pipeline, not
+    a one-off. `log inspect` records it (rule 29); `log flow fromInspect`
+    turns the recording into a flow definition (each step's element by role
+    and name from the snapshot it acted on, each step's confirming request
+    from what it sent, rea's Evidence per step,
+    `src/camofox/flow/definitions/<name>.json`); `log flow docs` writes its
+    documentation (`docs/facebookClient/flows/<name>.md`, linked to each
+    request's doc); `createFlowMachine` makes it an XState machine; `log flow
+    run <name> --account <a> --set …` runs it on any account (dry run
+    unless `--live`), recording every step again; and every saved flow is an
+    MCP tool of its own (`flowProfileSetup`). The docs gate requires each
+    flow's doc.
 
 ## Checks
 

@@ -6,7 +6,7 @@ import type { DeviceProfile, DeviceRunFile } from '../device/index'
 import { homeOf, outsideActiveHours } from '../../marketplace/home/index'
 import { checkRunnable, toFacebookCookies } from '../../marketplace/socialAccount/index'
 import type { FacebookAccount, PlaywrightCookie, RunPurpose } from '../../marketplace/socialAccount/index'
-import { listLaunches, overLaunchBudget } from './helpers/index'
+import { LAUNCH_LIMITS, listLaunches, overLaunchBudget } from './helpers/index'
 import type { PrepareRunOptions, PrepareRunResult } from './types'
 
 /** Stored localStorage origins (Playwright's `[{ origin, localStorage: [...] }]`), or none. Pure. */
@@ -56,7 +56,8 @@ export function prepareRun(account: FacebookAccount, purpose: RunPurpose, option
     if (outside) return { ok: false, code: 'outsideActiveHours', detail: outside }
     // Rule 24: how often this account's browser opens on Facebook. --bypass doesn't skip it.
     if (!options.skipLaunchBudget) {
-      const over = overLaunchBudget(listLaunches(account.accountName, { runs: options.captureRoot }), options.now ?? new Date(), home.home.timezone)
+      const limits = options.skipLaunchGap ? { ...LAUNCH_LIMITS, minGapMinutes: 0 } : LAUNCH_LIMITS
+      const over = overLaunchBudget(listLaunches(account.accountName, { runs: options.captureRoot }), options.now ?? new Date(), home.home.timezone, limits)
       if (over) return { ok: false, code: over.code, detail: `${account.accountName}: ${over.detail}` }
     }
     const profile = toDeviceProfile(account.deviceProfile)

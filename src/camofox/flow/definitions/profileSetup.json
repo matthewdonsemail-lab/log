@@ -1,0 +1,237 @@
+{
+  "name": "profileSetup",
+  "summary": "Give an account its profile picture, cover photo and name, as recorded on Lancaster 2026-10-19 (rule 28): profile picture menu, Choose profile picture, Upload Photo, Save; Add Cover Photo, Upload photo, Save changes; Accounts Center name, Review change, Done.",
+  "params": [
+    {
+      "name": "profilePhoto",
+      "kind": "file",
+      "description": "uploaded through button \"Upload Photo\""
+    },
+    {
+      "name": "coverPhoto",
+      "kind": "file",
+      "description": "uploaded through menuitem \"Upload photo\""
+    },
+    {
+      "name": "firstName",
+      "kind": "text",
+      "description": "typed into textbox \"First name\""
+    },
+    {
+      "name": "lastName",
+      "kind": "text",
+      "description": "typed into textbox \"Surname\""
+    }
+  ],
+  "steps": [
+    {
+      "id": "s01_gotome",
+      "action": "goto",
+      "url": "https://www.facebook.com/me",
+      "recorded": {
+        "step": "01_gotoHttpsWwwFacebook",
+        "ms": 28985,
+        "reaEvidenceId": "ev_8d5b627c0e4f842a58785cdaf9d9ffce58b4c4ace3f766bd858f0ebbea50010d",
+        "requests": [
+          "FBYRPTimeLimitsEnforcementQuery",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "ProfilePromptQuickPromotionMutation",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "CometNotificationsDropdownQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "RTWebCallBlockSettingHooksQuery"
+        ]
+      }
+    },
+    {
+      "id": "s02_clickProfilePictureActions",
+      "action": "click",
+      "role": "button",
+      "name": "Profile picture actions",
+      "recorded": {
+        "step": "02_clickE141",
+        "ms": 7078,
+        "reaEvidenceId": "ev_31fe39b50844e2fd8b48166e3a4c5dd3634369977ba2a867417c9417e3ffb3a0",
+        "requests": []
+      }
+    },
+    {
+      "id": "s03_clickChooseProfilePicture",
+      "action": "click",
+      "role": "menuitem",
+      "name": "Choose profile picture",
+      "recorded": {
+        "step": "03_clickE1096",
+        "ms": 6343,
+        "reaEvidenceId": "ev_22ab5500725e970a0cb541c1dc8da093c50cfe5d0bf3a739a02cc1c27cb780e3",
+        "requests": [
+          "ProfileCometProfilePictureEditDialogQuery"
+        ]
+      }
+    },
+    {
+      "id": "s04_uploadUploadPhoto",
+      "action": "upload",
+      "role": "button",
+      "name": "Upload Photo",
+      "value": "{profilePhoto}",
+      "recorded": {
+        "step": "04_uploadE1180",
+        "ms": 5563,
+        "reaEvidenceId": "ev_e9f7a16b4c9b566b57a536e5049d8466a9c4e77e04ab61e3bd056a9d15a2ee16",
+        "requests": []
+      }
+    },
+    {
+      "id": "s05_clickSave",
+      "action": "click",
+      "role": "button",
+      "name": "Save",
+      "expect": "ProfileCometProfilePictureSetMutation",
+      "recorded": {
+        "step": "06_clickE1262",
+        "ms": 5609,
+        "reaEvidenceId": "ev_0857cd848e933126fcf077d94d0c040c4682e19b8f2cd686ee61c283ca1c8947",
+        "requests": [
+          "ProfileCometProfilePictureSetMutation",
+          "ProfileCometTilesFeedPaginationQuery",
+          "ProfileCometFeedComposerRootQuery"
+        ]
+      }
+    },
+    {
+      "id": "s06_clickAddCoverPhoto",
+      "action": "click",
+      "role": "button",
+      "name": "Add Cover Photo",
+      "recorded": {
+        "step": "09_clickE1272",
+        "ms": 7422,
+        "reaEvidenceId": "ev_0cc4233ac9114e0ca6bd514680a8a78979e0870891e5ce2072835e0a8d7b094f",
+        "requests": []
+      }
+    },
+    {
+      "id": "s07_uploadUploadPhoto",
+      "action": "upload",
+      "role": "menuitem",
+      "name": "Upload photo",
+      "value": "{coverPhoto}",
+      "recorded": {
+        "step": "10_uploadE1395",
+        "ms": 5875,
+        "reaEvidenceId": "ev_7a0dd7626fcc03f9ce5694a1a9a7bfcf17a98323103c05f6513ec07d670bf90a",
+        "requests": [
+          "FBScreenTimeLogger_syncMutation"
+        ]
+      }
+    },
+    {
+      "id": "s08_clickSaveChanges",
+      "action": "click",
+      "role": "button",
+      "name": "Save changes",
+      "expect": "ProfileCometCoverPhotoUpdateMutation",
+      "recorded": {
+        "step": "12_clickE1426",
+        "ms": 5422,
+        "reaEvidenceId": "ev_53c096304d660489f7a065eb2f02d7616c4e4fe407fec2e1839ba9bb029bae68",
+        "requests": [
+          "ProfileCometCoverPhotoUpdateMutation"
+        ]
+      }
+    },
+    {
+      "id": "s09_gotoprofilesName",
+      "action": "goto",
+      "url": "https://accountscenter.facebook.com/profiles/{uid}/name",
+      "recorded": {
+        "step": "14_gotoHttpsAccountscenterFacebook",
+        "ms": 12062,
+        "reaEvidenceId": "ev_6d86e332410bffc269bbb4780a976d220529ecac4ba7d4663a1606c1c572d9a8",
+        "requests": [
+          "FXAccountsCenterProfilesPageV2RouteResolverQuery",
+          "FXAccountsCenterSecurityAndLoginPageRouteResolverQuery",
+          "FXAccountsCenterInformationAndActivityRouteResolverQuery",
+          "FXAccountsCenterMetaPayWalletRouteResolverQuery",
+          "FXAccountsCenterAdProfileCenterRouteResolverQuery",
+          "FXAccountsCenterConnectedExperienceRouteResolverQuery",
+          "FXAccountsCenterPersonalCentralIdentityDialogV2RouteResolverQuery",
+          "FXAccountsCenterManageAccountsPageRouteResolverQuery",
+          "FXAccountsCenterContactPointsInProfilesRouteResolverQuery",
+          "FXAccountsCenterSubscriptionsRouteResolverQuery",
+          "FXAccountsCenterBirthdayRouteResolverQuery",
+          "FXAccountsCenterYourAccountPageRouteResolverQuery",
+          "FXAccountsCenterProfilesPageV2RouteResolverQuery"
+        ]
+      }
+    },
+    {
+      "id": "s10_fillFirstName",
+      "action": "fill",
+      "role": "textbox",
+      "name": "First name",
+      "value": "{firstName}",
+      "recorded": {
+        "step": "17_typeE156",
+        "ms": 6359,
+        "reaEvidenceId": "ev_3267c5c28674f8b7a0dce62ea1fa13ac12b18c69830333d2ae8fe105975e6c87",
+        "requests": []
+      }
+    },
+    {
+      "id": "s11_fillSurname",
+      "action": "fill",
+      "role": "textbox",
+      "name": "Surname",
+      "value": "{lastName}",
+      "recorded": {
+        "step": "20_typeE166",
+        "ms": 5516,
+        "reaEvidenceId": "ev_6ebd0132c459a8e6d9bfd2e1f68f255455aae9f8b1ef26f7fdb20afb5b545e7f",
+        "requests": []
+      }
+    },
+    {
+      "id": "s12_clickReviewChange",
+      "action": "click",
+      "role": "button",
+      "name": "Review change",
+      "recorded": {
+        "step": "21_clickE208",
+        "ms": 7422,
+        "reaEvidenceId": "ev_906aed5bd5d1bef6986b97364bb012a88db147ff703f3687b1c45872b06559df",
+        "requests": [
+          "useFXIMNameValidatorQuery",
+          "FXIMIdentityNameEditorAuthenticPreviewDialogQuery"
+        ]
+      }
+    },
+    {
+      "id": "s13_clickDone",
+      "action": "click",
+      "role": "button",
+      "name": "Done",
+      "expect": "useFXIMUpdateNameMutation",
+      "recorded": {
+        "step": "23_clickE317",
+        "ms": 5281,
+        "reaEvidenceId": "ev_066833ad38d033efa8d6f6929b2d3b983516997eab5adcaac78ca42688a8e036",
+        "requests": [
+          "useFXIMUpdateNameMutation",
+          "FXAccountsCenterPersonalCentralIdentityDialogV2RouteResolverQuery",
+          "FXAccountsCenterPersonalCentralIdentityDialogV2Query",
+          "FXAccountsCenterIdentityUsernameSettingsDialogRouteResolverQuery",
+          "FXAccountsCenterIdentityUsernameEditDialogRouteResolverQuery"
+        ]
+      }
+    }
+  ],
+  "source": {
+    "runDir": "C:/Users/0/.logCli/runs/inspect/20261019T111507_61593967241658",
+    "account": "61593967241658",
+    "builtAt": "2026-10-19T11:29:47.316Z"
+  }
+}

@@ -270,3 +270,11 @@ stateDiagram-v2
 | `timedOut` | yes | `auth/exchange` | command exits | `log login` waited and the browser never finished signing in. | Run `log login` again, or `log login --token <t>`. |
 | `invalidExchange` | no | `auth/exchange` | command exits | The browser's sign-in payload did not match this login's state or PKCE challenge. | Run `log login` again from the start. |
 
+## profile
+
+| Code | Retry | Raised in | Ends in | Meaning | Do |
+| --- | --- | --- | --- | --- | --- |
+| `profilePhotoMissing` | no | `profile.preparing` | command exits | The account has no profilePhoto or coverPhoto in Twenty, or the file can't be read. | Set socialAccounts.profilePhoto and coverPhoto (a URL or a local path) in Twenty, then run again. |
+| `profileControlNotFound` | no | `profile.uploadingProfilePhoto`, `profile.uploadingCoverPhoto`, `profileSession` | command exits | The profile page had no control for the change (the button, its menu item or the file chooser). | Read the run's capture (rule 25): profileFound.txt lists every button the page had. Update python/profileSession.py from it. |
+| `profileUploadNotSaved` | yes | `profile.uploadingProfilePhoto`, `profile.uploadingCoverPhoto` | command exits | The photo was chosen, but Facebook did not show it saved (no Save button, or the dialog stayed open). | Read the run's capture and its saved page text; run once more after the launch gap (rule 24). |
+

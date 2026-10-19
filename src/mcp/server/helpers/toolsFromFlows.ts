@@ -1,0 +1,45 @@
+import type { FlowDefinition } from "../../../camofox/flow/index.ts";
+import { toolName } from "../../../camofox/flow/index.ts";
+import type { LogTool } from "../types.ts";
+
+/**
+ * Every saved flow as an MCP tool of its own (rule 31): `flowProfileSetup`
+ * takes the account and the flow's params by name and runs
+ * `log flow run profileSetup` with them. `live` acts on Facebook and, like
+ * every tool's --live, needs confirmLive. Pure.
+ */
+export function toolsFromFlows(flows: FlowDefinition[]): LogTool[] {
+  return flows.map((flow) => {
+    const properties: Record<string, unknown> = {
+      account: { type: "string", description: "The account (`log accounts` lists them)" },
+    };
+    for (const p of flow.params) properties[p.name] = { type: "string", description: `${p.description}${p.kind === "file" ? " (a URL or a local path)" : ""}` };
+    properties.live = { type: "boolean", description: "Run it on Facebook. Without it the steps are listed and nothing opens." };
+    properties.bypass = { type: "boolean", description: "Skip the waking-hours gate only (rule 20), when matt asked" };
+    properties.now = { type: "boolean", description: "Skip the 10-minute launch gap only (rule 30)" };
+    properties.confirmLive = { type: "boolean", description: "Set true only when matt asked for this live run" };
+    return {
+      name: toolName(flow.name),
+      description: [
+        `log flow run ${flow.name} --account <a> ${flow.params.map((p) => `--set ${p.name}=…`).join(" ")} [--live]`,
+        flow.summary,
+        `Steps: ${flow.steps.map((s) => s.id.replace(/^s\d+_/, "")).join(" → ")}. Every step is recorded (snapshot, screenshot, HAR, rea).`,
+      ].join("\n"),
+      inputSchema: { type: "object", properties, additionalProperties: false },
+    };
+  });
+}
+
+/** A flow tool's input → `log flow run` argv, or why not. Pure. */
+export function flowArgv(flow: FlowDefinition, input: Record<string, unknown> | undefined): { ok: true; argv: string[]; live: boolean } | { ok: false; message: string } {
+  const account = input?.account;
+  if (typeof account !== "string" || !account) return { ok: false, message: `${toolName(flow.name)} needs account` };
+  const argv = ["flow", "run", flow.name, "--account", account];
+  for (const p of flow.params) {
+    const value = input?.[p.name];
+    if (typeof value !== "string" || !value) return { ok: false, message: `${toolName(flow.name)} needs ${p.name}` };
+    argv.push("--set", `${p.name}=${value}`);
+  }
+  for (const flag of ["live", "bypass", "now"]) if (input?.[flag] === true) argv.push(`--${flag}`);
+  return { ok: true, argv, live: input?.live === true };
+}

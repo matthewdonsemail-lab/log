@@ -13,10 +13,15 @@
 | Called from | `CometLogoutHandler.react` |
 | rea | `ev_a71121d0640a1fd7bea827bdea508da067de6cbd9731907468d4d4d5a46427fa` |
 
-Seen 3 time(s) in 3 run(s).
+Seen 8 time(s) in 8 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 455 ms | 6678 ms | — |
+| inspect | page has 56 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T110 | 1 | 200 | 316 ms | 2618 ms | — |
+| inspect | step 1: goto /me | 1 | 200 | 353 ms | 12251 ms | — |
+| inspect | POST 0 /ajax/qm/ (0 ms) | 1 | 200 | 556 ms | 3400 ms | — |
+| profile | Opening the profile (facebook.com/me). | 1 | 200 | 565 ms | 10415 ms | — |
 | connect | Auto-login: typing the email. | 1 | 200 | 529 ms | 3562 ms | — |
 | connect | says: <name> / buttons: Back to Previous Page, Account settings | 1 | 200 | 680 ms | 2677 ms | — |
 | connect | Page: checkpoint /checkpoint/<id>/ | 1 | 200 | 361 ms | 566 ms | — |

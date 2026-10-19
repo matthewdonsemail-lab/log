@@ -7,7 +7,8 @@
 //   2. a doc still has a reasoning section to write (`<!-- toWrite -->`),
 //   3. a GraphQL request has no rea Evidence (rea has not read its slice),
 //   4. a run on this machine recorded after the last build (rebuild the docs),
-//   5. our code names a Facebook operation the docs don't have.
+//   5. our code names a Facebook operation the docs don't have,
+//   6. a saved flow has no doc in docs/facebookClient/flows/.
 // Check 4 only runs where the captures are (matt's machine, ~/.logCli); the
 // captures are never committed (rule 19), so CI skips it.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
@@ -39,9 +40,19 @@ for (const operation of index.operations) {
   if (operation.kind !== 'endpoint' && !operation.reaEvidenceId) problems.push(`${operation.doc}: rea has not read this request's slice`);
 }
 for (const domain of readdirSync(docsDir)) {
-  if (!statSync(join(docsDir, domain)).isDirectory()) continue;
+  // flows/ holds the flow docs (rule 31), checked below.
+  if (domain === 'flows' || !statSync(join(docsDir, domain)).isDirectory()) continue;
   for (const file of readdirSync(join(docsDir, domain))) {
     if (file.endsWith('.md') && !listed.has(`${domain}/${file}`)) problems.push(`${domain}/${file}: not in operations.json (rebuild the docs)`);
+  }
+}
+
+// 6: every saved flow (src/camofox/flow/definitions) has its doc (`log flow docs <name>`).
+const flowsDir = join(root, 'src', 'camofox', 'flow', 'definitions');
+if (existsSync(flowsDir)) {
+  for (const file of readdirSync(flowsDir).filter((f) => f.endsWith('.json'))) {
+    const name = file.slice(0, -5);
+    if (!existsSync(join(docsDir, 'flows', `${name}.md`))) problems.push(`flow ${name}: no docs/facebookClient/flows/${name}.md (run \`bun bin/log.ts flow docs ${name}\`)`);
   }
 }
 

@@ -13,13 +13,17 @@
 | Called from | `RTWebCallBlockSettingHooks` |
 | rea | `ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6` |
 
-Seen 11 time(s) in 11 run(s).
+Seen 16 time(s) in 15 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| flow | step 1: goto /me | 1 | 200 | 320 ms | 8532 ms | — |
+| connect | Auto-login: typing the email. | 1 | 200 | 323 ms | 3884 ms | — |
+| connect | Page: loggedIn /marketplace/selling/ "…" | 2 | 200 | 313–418 ms | 4012–4293 ms | — |
+| inspect | step 1: goto /me | 1 | 200 | 336 ms | 13543 ms | — |
+| inspect | step 2: click e53 | 1 | 200 | 322 ms | 8524 ms | — |
 | publish | Opening /marketplace/create/item | 7 | 200 | 311–377 ms | 8421–15148 ms | — |
 | connect | Page: loggedIn /marketplace/selling/ | 2 | 200 | 311–336 ms | 3766–6189 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ "…" | 1 | 200 | 418 ms | 4293 ms | — |
 | publish | Category: Miscellaneous | 1 | 200 | 327 ms | 1942 ms | — |
 
 <!-- facts:end -->
