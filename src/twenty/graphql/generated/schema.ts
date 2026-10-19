@@ -10224,6 +10224,16 @@ export interface SocialAccount {
     profileSetAt?: Scalars['DateTime']
     /** log-cli: the name `log profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days */
     profileName?: Scalars['String']
+    /** log-cli: where the lifecycle machine has the account, e.g. onboarding.warming or host.watching (rule 35) */
+    lifecycleState?: Scalars['String']
+    /** log-cli: when the profile was renamed to profileName */
+    profileNamedAt?: Scalars['DateTime']
+    /** log-cli: when the account's Marketplace location was confirmed in its home city */
+    marketplaceLocationAt?: Scalars['DateTime']
+    /** log-cli: when the account's day of warm-up began (rule 35) */
+    warmupStartedAt?: Scalars['DateTime']
+    /** log-cli: when the warm-up ended and the account was attached to its host (rule 35) */
+    warmedAt?: Scalars['DateTime']
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: TimelineActivityConnection
     /** SocialAccounts tied to the Task Target */
@@ -10760,6 +10770,72 @@ export interface SocialAccountConnection {
     percentageEmptyProfileName?: Scalars['Float']
     /** Percentage of non-empty values for profileName */
     percentageNotEmptyProfileName?: Scalars['Float']
+    /** Number of unique values for lifecycleState */
+    countUniqueValuesLifecycleState?: Scalars['Int']
+    /** Number of empty values for lifecycleState */
+    countEmptyLifecycleState?: Scalars['Int']
+    /** Number of non-empty values for lifecycleState */
+    countNotEmptyLifecycleState?: Scalars['Int']
+    /** Percentage of empty values for lifecycleState */
+    percentageEmptyLifecycleState?: Scalars['Float']
+    /** Percentage of non-empty values for lifecycleState */
+    percentageNotEmptyLifecycleState?: Scalars['Float']
+    /** Number of unique values for profileNamedAt */
+    countUniqueValuesProfileNamedAt?: Scalars['Int']
+    /** Number of empty values for profileNamedAt */
+    countEmptyProfileNamedAt?: Scalars['Int']
+    /** Number of non-empty values for profileNamedAt */
+    countNotEmptyProfileNamedAt?: Scalars['Int']
+    /** Percentage of empty values for profileNamedAt */
+    percentageEmptyProfileNamedAt?: Scalars['Float']
+    /** Percentage of non-empty values for profileNamedAt */
+    percentageNotEmptyProfileNamedAt?: Scalars['Float']
+    /** Earliest date contained in the field profileNamedAt */
+    minProfileNamedAt?: Scalars['DateTime']
+    /** Latest date contained in the field profileNamedAt */
+    maxProfileNamedAt?: Scalars['DateTime']
+    /** Number of unique values for marketplaceLocationAt */
+    countUniqueValuesMarketplaceLocationAt?: Scalars['Int']
+    /** Number of empty values for marketplaceLocationAt */
+    countEmptyMarketplaceLocationAt?: Scalars['Int']
+    /** Number of non-empty values for marketplaceLocationAt */
+    countNotEmptyMarketplaceLocationAt?: Scalars['Int']
+    /** Percentage of empty values for marketplaceLocationAt */
+    percentageEmptyMarketplaceLocationAt?: Scalars['Float']
+    /** Percentage of non-empty values for marketplaceLocationAt */
+    percentageNotEmptyMarketplaceLocationAt?: Scalars['Float']
+    /** Earliest date contained in the field marketplaceLocationAt */
+    minMarketplaceLocationAt?: Scalars['DateTime']
+    /** Latest date contained in the field marketplaceLocationAt */
+    maxMarketplaceLocationAt?: Scalars['DateTime']
+    /** Number of unique values for warmupStartedAt */
+    countUniqueValuesWarmupStartedAt?: Scalars['Int']
+    /** Number of empty values for warmupStartedAt */
+    countEmptyWarmupStartedAt?: Scalars['Int']
+    /** Number of non-empty values for warmupStartedAt */
+    countNotEmptyWarmupStartedAt?: Scalars['Int']
+    /** Percentage of empty values for warmupStartedAt */
+    percentageEmptyWarmupStartedAt?: Scalars['Float']
+    /** Percentage of non-empty values for warmupStartedAt */
+    percentageNotEmptyWarmupStartedAt?: Scalars['Float']
+    /** Earliest date contained in the field warmupStartedAt */
+    minWarmupStartedAt?: Scalars['DateTime']
+    /** Latest date contained in the field warmupStartedAt */
+    maxWarmupStartedAt?: Scalars['DateTime']
+    /** Number of unique values for warmedAt */
+    countUniqueValuesWarmedAt?: Scalars['Int']
+    /** Number of empty values for warmedAt */
+    countEmptyWarmedAt?: Scalars['Int']
+    /** Number of non-empty values for warmedAt */
+    countNotEmptyWarmedAt?: Scalars['Int']
+    /** Percentage of empty values for warmedAt */
+    percentageEmptyWarmedAt?: Scalars['Float']
+    /** Percentage of non-empty values for warmedAt */
+    percentageNotEmptyWarmedAt?: Scalars['Float']
+    /** Earliest date contained in the field warmedAt */
+    minWarmedAt?: Scalars['DateTime']
+    /** Latest date contained in the field warmedAt */
+    maxWarmedAt?: Scalars['DateTime']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     __typename: 'SocialAccountConnection'
@@ -11276,6 +11352,72 @@ export interface SocialAccountGroupByConnection {
     percentageEmptyProfileName?: Scalars['Float']
     /** Percentage of non-empty values for profileName */
     percentageNotEmptyProfileName?: Scalars['Float']
+    /** Number of unique values for lifecycleState */
+    countUniqueValuesLifecycleState?: Scalars['Int']
+    /** Number of empty values for lifecycleState */
+    countEmptyLifecycleState?: Scalars['Int']
+    /** Number of non-empty values for lifecycleState */
+    countNotEmptyLifecycleState?: Scalars['Int']
+    /** Percentage of empty values for lifecycleState */
+    percentageEmptyLifecycleState?: Scalars['Float']
+    /** Percentage of non-empty values for lifecycleState */
+    percentageNotEmptyLifecycleState?: Scalars['Float']
+    /** Number of unique values for profileNamedAt */
+    countUniqueValuesProfileNamedAt?: Scalars['Int']
+    /** Number of empty values for profileNamedAt */
+    countEmptyProfileNamedAt?: Scalars['Int']
+    /** Number of non-empty values for profileNamedAt */
+    countNotEmptyProfileNamedAt?: Scalars['Int']
+    /** Percentage of empty values for profileNamedAt */
+    percentageEmptyProfileNamedAt?: Scalars['Float']
+    /** Percentage of non-empty values for profileNamedAt */
+    percentageNotEmptyProfileNamedAt?: Scalars['Float']
+    /** Earliest date contained in the field profileNamedAt */
+    minProfileNamedAt?: Scalars['DateTime']
+    /** Latest date contained in the field profileNamedAt */
+    maxProfileNamedAt?: Scalars['DateTime']
+    /** Number of unique values for marketplaceLocationAt */
+    countUniqueValuesMarketplaceLocationAt?: Scalars['Int']
+    /** Number of empty values for marketplaceLocationAt */
+    countEmptyMarketplaceLocationAt?: Scalars['Int']
+    /** Number of non-empty values for marketplaceLocationAt */
+    countNotEmptyMarketplaceLocationAt?: Scalars['Int']
+    /** Percentage of empty values for marketplaceLocationAt */
+    percentageEmptyMarketplaceLocationAt?: Scalars['Float']
+    /** Percentage of non-empty values for marketplaceLocationAt */
+    percentageNotEmptyMarketplaceLocationAt?: Scalars['Float']
+    /** Earliest date contained in the field marketplaceLocationAt */
+    minMarketplaceLocationAt?: Scalars['DateTime']
+    /** Latest date contained in the field marketplaceLocationAt */
+    maxMarketplaceLocationAt?: Scalars['DateTime']
+    /** Number of unique values for warmupStartedAt */
+    countUniqueValuesWarmupStartedAt?: Scalars['Int']
+    /** Number of empty values for warmupStartedAt */
+    countEmptyWarmupStartedAt?: Scalars['Int']
+    /** Number of non-empty values for warmupStartedAt */
+    countNotEmptyWarmupStartedAt?: Scalars['Int']
+    /** Percentage of empty values for warmupStartedAt */
+    percentageEmptyWarmupStartedAt?: Scalars['Float']
+    /** Percentage of non-empty values for warmupStartedAt */
+    percentageNotEmptyWarmupStartedAt?: Scalars['Float']
+    /** Earliest date contained in the field warmupStartedAt */
+    minWarmupStartedAt?: Scalars['DateTime']
+    /** Latest date contained in the field warmupStartedAt */
+    maxWarmupStartedAt?: Scalars['DateTime']
+    /** Number of unique values for warmedAt */
+    countUniqueValuesWarmedAt?: Scalars['Int']
+    /** Number of empty values for warmedAt */
+    countEmptyWarmedAt?: Scalars['Int']
+    /** Number of non-empty values for warmedAt */
+    countNotEmptyWarmedAt?: Scalars['Int']
+    /** Percentage of empty values for warmedAt */
+    percentageEmptyWarmedAt?: Scalars['Float']
+    /** Percentage of non-empty values for warmedAt */
+    percentageNotEmptyWarmedAt?: Scalars['Float']
+    /** Earliest date contained in the field warmedAt */
+    minWarmedAt?: Scalars['DateTime']
+    /** Latest date contained in the field warmedAt */
+    maxWarmedAt?: Scalars['DateTime']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -62883,6 +63025,16 @@ export interface SocialAccountGenqlSelection{
     profileSetAt?: boolean | number
     /** log-cli: the name `log profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days */
     profileName?: boolean | number
+    /** log-cli: where the lifecycle machine has the account, e.g. onboarding.warming or host.watching (rule 35) */
+    lifecycleState?: boolean | number
+    /** log-cli: when the profile was renamed to profileName */
+    profileNamedAt?: boolean | number
+    /** log-cli: when the account's Marketplace location was confirmed in its home city */
+    marketplaceLocationAt?: boolean | number
+    /** log-cli: when the account's day of warm-up began (rule 35) */
+    warmupStartedAt?: boolean | number
+    /** log-cli: when the warm-up ended and the account was attached to its host (rule 35) */
+    warmedAt?: boolean | number
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
     /** SocialAccounts tied to the Task Target */
@@ -63421,6 +63573,72 @@ export interface SocialAccountConnectionGenqlSelection{
     percentageEmptyProfileName?: boolean | number
     /** Percentage of non-empty values for profileName */
     percentageNotEmptyProfileName?: boolean | number
+    /** Number of unique values for lifecycleState */
+    countUniqueValuesLifecycleState?: boolean | number
+    /** Number of empty values for lifecycleState */
+    countEmptyLifecycleState?: boolean | number
+    /** Number of non-empty values for lifecycleState */
+    countNotEmptyLifecycleState?: boolean | number
+    /** Percentage of empty values for lifecycleState */
+    percentageEmptyLifecycleState?: boolean | number
+    /** Percentage of non-empty values for lifecycleState */
+    percentageNotEmptyLifecycleState?: boolean | number
+    /** Number of unique values for profileNamedAt */
+    countUniqueValuesProfileNamedAt?: boolean | number
+    /** Number of empty values for profileNamedAt */
+    countEmptyProfileNamedAt?: boolean | number
+    /** Number of non-empty values for profileNamedAt */
+    countNotEmptyProfileNamedAt?: boolean | number
+    /** Percentage of empty values for profileNamedAt */
+    percentageEmptyProfileNamedAt?: boolean | number
+    /** Percentage of non-empty values for profileNamedAt */
+    percentageNotEmptyProfileNamedAt?: boolean | number
+    /** Earliest date contained in the field profileNamedAt */
+    minProfileNamedAt?: boolean | number
+    /** Latest date contained in the field profileNamedAt */
+    maxProfileNamedAt?: boolean | number
+    /** Number of unique values for marketplaceLocationAt */
+    countUniqueValuesMarketplaceLocationAt?: boolean | number
+    /** Number of empty values for marketplaceLocationAt */
+    countEmptyMarketplaceLocationAt?: boolean | number
+    /** Number of non-empty values for marketplaceLocationAt */
+    countNotEmptyMarketplaceLocationAt?: boolean | number
+    /** Percentage of empty values for marketplaceLocationAt */
+    percentageEmptyMarketplaceLocationAt?: boolean | number
+    /** Percentage of non-empty values for marketplaceLocationAt */
+    percentageNotEmptyMarketplaceLocationAt?: boolean | number
+    /** Earliest date contained in the field marketplaceLocationAt */
+    minMarketplaceLocationAt?: boolean | number
+    /** Latest date contained in the field marketplaceLocationAt */
+    maxMarketplaceLocationAt?: boolean | number
+    /** Number of unique values for warmupStartedAt */
+    countUniqueValuesWarmupStartedAt?: boolean | number
+    /** Number of empty values for warmupStartedAt */
+    countEmptyWarmupStartedAt?: boolean | number
+    /** Number of non-empty values for warmupStartedAt */
+    countNotEmptyWarmupStartedAt?: boolean | number
+    /** Percentage of empty values for warmupStartedAt */
+    percentageEmptyWarmupStartedAt?: boolean | number
+    /** Percentage of non-empty values for warmupStartedAt */
+    percentageNotEmptyWarmupStartedAt?: boolean | number
+    /** Earliest date contained in the field warmupStartedAt */
+    minWarmupStartedAt?: boolean | number
+    /** Latest date contained in the field warmupStartedAt */
+    maxWarmupStartedAt?: boolean | number
+    /** Number of unique values for warmedAt */
+    countUniqueValuesWarmedAt?: boolean | number
+    /** Number of empty values for warmedAt */
+    countEmptyWarmedAt?: boolean | number
+    /** Number of non-empty values for warmedAt */
+    countNotEmptyWarmedAt?: boolean | number
+    /** Percentage of empty values for warmedAt */
+    percentageEmptyWarmedAt?: boolean | number
+    /** Percentage of non-empty values for warmedAt */
+    percentageNotEmptyWarmedAt?: boolean | number
+    /** Earliest date contained in the field warmedAt */
+    minWarmedAt?: boolean | number
+    /** Latest date contained in the field warmedAt */
+    maxWarmedAt?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -63938,6 +64156,72 @@ export interface SocialAccountGroupByConnectionGenqlSelection{
     percentageEmptyProfileName?: boolean | number
     /** Percentage of non-empty values for profileName */
     percentageNotEmptyProfileName?: boolean | number
+    /** Number of unique values for lifecycleState */
+    countUniqueValuesLifecycleState?: boolean | number
+    /** Number of empty values for lifecycleState */
+    countEmptyLifecycleState?: boolean | number
+    /** Number of non-empty values for lifecycleState */
+    countNotEmptyLifecycleState?: boolean | number
+    /** Percentage of empty values for lifecycleState */
+    percentageEmptyLifecycleState?: boolean | number
+    /** Percentage of non-empty values for lifecycleState */
+    percentageNotEmptyLifecycleState?: boolean | number
+    /** Number of unique values for profileNamedAt */
+    countUniqueValuesProfileNamedAt?: boolean | number
+    /** Number of empty values for profileNamedAt */
+    countEmptyProfileNamedAt?: boolean | number
+    /** Number of non-empty values for profileNamedAt */
+    countNotEmptyProfileNamedAt?: boolean | number
+    /** Percentage of empty values for profileNamedAt */
+    percentageEmptyProfileNamedAt?: boolean | number
+    /** Percentage of non-empty values for profileNamedAt */
+    percentageNotEmptyProfileNamedAt?: boolean | number
+    /** Earliest date contained in the field profileNamedAt */
+    minProfileNamedAt?: boolean | number
+    /** Latest date contained in the field profileNamedAt */
+    maxProfileNamedAt?: boolean | number
+    /** Number of unique values for marketplaceLocationAt */
+    countUniqueValuesMarketplaceLocationAt?: boolean | number
+    /** Number of empty values for marketplaceLocationAt */
+    countEmptyMarketplaceLocationAt?: boolean | number
+    /** Number of non-empty values for marketplaceLocationAt */
+    countNotEmptyMarketplaceLocationAt?: boolean | number
+    /** Percentage of empty values for marketplaceLocationAt */
+    percentageEmptyMarketplaceLocationAt?: boolean | number
+    /** Percentage of non-empty values for marketplaceLocationAt */
+    percentageNotEmptyMarketplaceLocationAt?: boolean | number
+    /** Earliest date contained in the field marketplaceLocationAt */
+    minMarketplaceLocationAt?: boolean | number
+    /** Latest date contained in the field marketplaceLocationAt */
+    maxMarketplaceLocationAt?: boolean | number
+    /** Number of unique values for warmupStartedAt */
+    countUniqueValuesWarmupStartedAt?: boolean | number
+    /** Number of empty values for warmupStartedAt */
+    countEmptyWarmupStartedAt?: boolean | number
+    /** Number of non-empty values for warmupStartedAt */
+    countNotEmptyWarmupStartedAt?: boolean | number
+    /** Percentage of empty values for warmupStartedAt */
+    percentageEmptyWarmupStartedAt?: boolean | number
+    /** Percentage of non-empty values for warmupStartedAt */
+    percentageNotEmptyWarmupStartedAt?: boolean | number
+    /** Earliest date contained in the field warmupStartedAt */
+    minWarmupStartedAt?: boolean | number
+    /** Latest date contained in the field warmupStartedAt */
+    maxWarmupStartedAt?: boolean | number
+    /** Number of unique values for warmedAt */
+    countUniqueValuesWarmedAt?: boolean | number
+    /** Number of empty values for warmedAt */
+    countEmptyWarmedAt?: boolean | number
+    /** Number of non-empty values for warmedAt */
+    countNotEmptyWarmedAt?: boolean | number
+    /** Percentage of empty values for warmedAt */
+    percentageEmptyWarmedAt?: boolean | number
+    /** Percentage of non-empty values for warmedAt */
+    percentageNotEmptyWarmedAt?: boolean | number
+    /** Earliest date contained in the field warmedAt */
+    minWarmedAt?: boolean | number
+    /** Latest date contained in the field warmedAt */
+    maxWarmedAt?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -64037,7 +64321,17 @@ coverPhoto?: (Scalars['String'] | null),
 /** log-cli: when `log profile setup --live` last saved the profile and cover photo */
 profileSetAt?: (Scalars['DateTime'] | null),
 /** log-cli: the name `log profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days */
-profileName?: (Scalars['String'] | null)}
+profileName?: (Scalars['String'] | null),
+/** log-cli: where the lifecycle machine has the account, e.g. onboarding.warming or host.watching (rule 35) */
+lifecycleState?: (Scalars['String'] | null),
+/** log-cli: when the profile was renamed to profileName */
+profileNamedAt?: (Scalars['DateTime'] | null),
+/** log-cli: when the account's Marketplace location was confirmed in its home city */
+marketplaceLocationAt?: (Scalars['DateTime'] | null),
+/** log-cli: when the account's day of warm-up began (rule 35) */
+warmupStartedAt?: (Scalars['DateTime'] | null),
+/** log-cli: when the warm-up ended and the account was attached to its host (rule 35) */
+warmedAt?: (Scalars['DateTime'] | null)}
 
 
 /** Social media accounts */
@@ -64115,7 +64409,17 @@ coverPhoto?: (Scalars['String'] | null),
 /** log-cli: when `log profile setup --live` last saved the profile and cover photo */
 profileSetAt?: (Scalars['DateTime'] | null),
 /** log-cli: the name `log profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days */
-profileName?: (Scalars['String'] | null)}
+profileName?: (Scalars['String'] | null),
+/** log-cli: where the lifecycle machine has the account, e.g. onboarding.warming or host.watching (rule 35) */
+lifecycleState?: (Scalars['String'] | null),
+/** log-cli: when the profile was renamed to profileName */
+profileNamedAt?: (Scalars['DateTime'] | null),
+/** log-cli: when the account's Marketplace location was confirmed in its home city */
+marketplaceLocationAt?: (Scalars['DateTime'] | null),
+/** log-cli: when the account's day of warm-up began (rule 35) */
+warmupStartedAt?: (Scalars['DateTime'] | null),
+/** log-cli: when the warm-up ended and the account was attached to its host (rule 35) */
+warmedAt?: (Scalars['DateTime'] | null)}
 
 
 /** Social media accounts */
@@ -64193,7 +64497,17 @@ coverPhoto?: (StringFilter | null),
 /** log-cli: when `log profile setup --live` last saved the profile and cover photo */
 profileSetAt?: (DateTimeFilter | null),
 /** log-cli: the name `log profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days */
-profileName?: (StringFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
+profileName?: (StringFilter | null),
+/** log-cli: where the lifecycle machine has the account, e.g. onboarding.warming or host.watching (rule 35) */
+lifecycleState?: (StringFilter | null),
+/** log-cli: when the profile was renamed to profileName */
+profileNamedAt?: (DateTimeFilter | null),
+/** log-cli: when the account's Marketplace location was confirmed in its home city */
+marketplaceLocationAt?: (DateTimeFilter | null),
+/** log-cli: when the account's day of warm-up began (rule 35) */
+warmupStartedAt?: (DateTimeFilter | null),
+/** log-cli: when the warm-up ended and the account was attached to its host (rule 35) */
+warmedAt?: (DateTimeFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
 
 export interface SocialAccountPlatformEnumFilter {eq?: (SocialAccountPlatformEnum | null),neq?: (SocialAccountPlatformEnum | null),in?: ((SocialAccountPlatformEnum | null)[] | null),containsAny?: ((SocialAccountPlatformEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (SocialAccountPlatformEnum | null),gte?: (SocialAccountPlatformEnum | null),lt?: (SocialAccountPlatformEnum | null),lte?: (SocialAccountPlatformEnum | null)}
 
@@ -64275,7 +64589,17 @@ coverPhoto?: (OrderByDirection | null),
 /** log-cli: when `log profile setup --live` last saved the profile and cover photo */
 profileSetAt?: (OrderByDirection | null),
 /** log-cli: the name `log profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days */
-profileName?: (OrderByDirection | null)}
+profileName?: (OrderByDirection | null),
+/** log-cli: where the lifecycle machine has the account, e.g. onboarding.warming or host.watching (rule 35) */
+lifecycleState?: (OrderByDirection | null),
+/** log-cli: when the profile was renamed to profileName */
+profileNamedAt?: (OrderByDirection | null),
+/** log-cli: when the account's Marketplace location was confirmed in its home city */
+marketplaceLocationAt?: (OrderByDirection | null),
+/** log-cli: when the account's day of warm-up began (rule 35) */
+warmupStartedAt?: (OrderByDirection | null),
+/** log-cli: when the warm-up ended and the account was attached to its host (rule 35) */
+warmedAt?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
@@ -64355,7 +64679,17 @@ coverPhoto?: (OrderByDirection | null),
 /** log-cli: when `log profile setup --live` last saved the profile and cover photo */
 profileSetAt?: (OrderByDateGranularityInput | null),
 /** log-cli: the name `log profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days */
-profileName?: (OrderByDirection | null)}
+profileName?: (OrderByDirection | null),
+/** log-cli: where the lifecycle machine has the account, e.g. onboarding.warming or host.watching (rule 35) */
+lifecycleState?: (OrderByDirection | null),
+/** log-cli: when the profile was renamed to profileName */
+profileNamedAt?: (OrderByDateGranularityInput | null),
+/** log-cli: when the account's Marketplace location was confirmed in its home city */
+marketplaceLocationAt?: (OrderByDateGranularityInput | null),
+/** log-cli: when the account's day of warm-up began (rule 35) */
+warmupStartedAt?: (OrderByDateGranularityInput | null),
+/** log-cli: when the warm-up ended and the account was attached to its host (rule 35) */
+warmedAt?: (OrderByDateGranularityInput | null)}
 
 
 /** Aggregate-based ordering */
@@ -64867,7 +65201,73 @@ countNotEmptyProfileName?: (OrderByDirection | null),
 /** Percentage of empty values for profileName */
 percentageEmptyProfileName?: (OrderByDirection | null),
 /** Percentage of non-empty values for profileName */
-percentageNotEmptyProfileName?: (OrderByDirection | null)}
+percentageNotEmptyProfileName?: (OrderByDirection | null),
+/** Number of unique values for lifecycleState */
+countUniqueValuesLifecycleState?: (OrderByDirection | null),
+/** Number of empty values for lifecycleState */
+countEmptyLifecycleState?: (OrderByDirection | null),
+/** Number of non-empty values for lifecycleState */
+countNotEmptyLifecycleState?: (OrderByDirection | null),
+/** Percentage of empty values for lifecycleState */
+percentageEmptyLifecycleState?: (OrderByDirection | null),
+/** Percentage of non-empty values for lifecycleState */
+percentageNotEmptyLifecycleState?: (OrderByDirection | null),
+/** Number of unique values for profileNamedAt */
+countUniqueValuesProfileNamedAt?: (OrderByDirection | null),
+/** Number of empty values for profileNamedAt */
+countEmptyProfileNamedAt?: (OrderByDirection | null),
+/** Number of non-empty values for profileNamedAt */
+countNotEmptyProfileNamedAt?: (OrderByDirection | null),
+/** Percentage of empty values for profileNamedAt */
+percentageEmptyProfileNamedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for profileNamedAt */
+percentageNotEmptyProfileNamedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field profileNamedAt */
+minProfileNamedAt?: (OrderByDirection | null),
+/** Latest date contained in the field profileNamedAt */
+maxProfileNamedAt?: (OrderByDirection | null),
+/** Number of unique values for marketplaceLocationAt */
+countUniqueValuesMarketplaceLocationAt?: (OrderByDirection | null),
+/** Number of empty values for marketplaceLocationAt */
+countEmptyMarketplaceLocationAt?: (OrderByDirection | null),
+/** Number of non-empty values for marketplaceLocationAt */
+countNotEmptyMarketplaceLocationAt?: (OrderByDirection | null),
+/** Percentage of empty values for marketplaceLocationAt */
+percentageEmptyMarketplaceLocationAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for marketplaceLocationAt */
+percentageNotEmptyMarketplaceLocationAt?: (OrderByDirection | null),
+/** Earliest date contained in the field marketplaceLocationAt */
+minMarketplaceLocationAt?: (OrderByDirection | null),
+/** Latest date contained in the field marketplaceLocationAt */
+maxMarketplaceLocationAt?: (OrderByDirection | null),
+/** Number of unique values for warmupStartedAt */
+countUniqueValuesWarmupStartedAt?: (OrderByDirection | null),
+/** Number of empty values for warmupStartedAt */
+countEmptyWarmupStartedAt?: (OrderByDirection | null),
+/** Number of non-empty values for warmupStartedAt */
+countNotEmptyWarmupStartedAt?: (OrderByDirection | null),
+/** Percentage of empty values for warmupStartedAt */
+percentageEmptyWarmupStartedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for warmupStartedAt */
+percentageNotEmptyWarmupStartedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field warmupStartedAt */
+minWarmupStartedAt?: (OrderByDirection | null),
+/** Latest date contained in the field warmupStartedAt */
+maxWarmupStartedAt?: (OrderByDirection | null),
+/** Number of unique values for warmedAt */
+countUniqueValuesWarmedAt?: (OrderByDirection | null),
+/** Number of empty values for warmedAt */
+countEmptyWarmedAt?: (OrderByDirection | null),
+/** Number of non-empty values for warmedAt */
+countNotEmptyWarmedAt?: (OrderByDirection | null),
+/** Percentage of empty values for warmedAt */
+percentageEmptyWarmedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for warmedAt */
+percentageNotEmptyWarmedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field warmedAt */
+minWarmedAt?: (OrderByDirection | null),
+/** Latest date contained in the field warmedAt */
+maxWarmedAt?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
@@ -64927,7 +65327,17 @@ coverPhoto?: (Scalars['Boolean'] | null),
 /** log-cli: when `log profile setup --live` last saved the profile and cover photo */
 profileSetAt?: (GroupByDateGranularityInput | null),
 /** log-cli: the name `log profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days */
-profileName?: (Scalars['Boolean'] | null)}
+profileName?: (Scalars['Boolean'] | null),
+/** log-cli: where the lifecycle machine has the account, e.g. onboarding.warming or host.watching (rule 35) */
+lifecycleState?: (Scalars['Boolean'] | null),
+/** log-cli: when the profile was renamed to profileName */
+profileNamedAt?: (GroupByDateGranularityInput | null),
+/** log-cli: when the account's Marketplace location was confirmed in its home city */
+marketplaceLocationAt?: (GroupByDateGranularityInput | null),
+/** log-cli: when the account's day of warm-up began (rule 35) */
+warmupStartedAt?: (GroupByDateGranularityInput | null),
+/** log-cli: when the warm-up ended and the account was attached to its host (rule 35) */
+warmedAt?: (GroupByDateGranularityInput | null)}
 
 
 /** Calendar events */

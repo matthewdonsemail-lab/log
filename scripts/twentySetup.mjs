@@ -83,7 +83,13 @@ const SOCIAL_ACCOUNT_FIELDS = [
   { name: 'profilePhoto', label: 'Profile photo', type: 'TEXT', description: 'log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28)' },
   { name: 'coverPhoto', label: 'Cover photo', type: 'TEXT', description: 'log-cli: the cover (background) photo `log profile setup` uploads (a URL or a local path)' },
   { name: 'profileName', label: 'Profile name', type: 'TEXT', description: 'log-cli: the name `log profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days' },
-  { name: 'profileSetAt', label: 'Profile set', type: 'DATE_TIME', description: 'log-cli: when `log profile setup --live` last saved the profile and cover photo' }
+  { name: 'profileSetAt', label: 'Profile set', type: 'DATE_TIME', description: 'log-cli: when `log profile setup --live` last saved the profile and cover photo' },
+  // rule 35: the account lifecycle (src/marketplace/lifecycle).
+  { name: 'lifecycleState', label: 'Lifecycle state', type: 'TEXT', description: 'log-cli: where the lifecycle machine has the account, e.g. onboarding.warming or host.watching (rule 35)' },
+  { name: 'profileNamedAt', label: 'Profile named', type: 'DATE_TIME', description: 'log-cli: when the profile was renamed to profileName' },
+  { name: 'marketplaceLocationAt', label: 'Marketplace location set', type: 'DATE_TIME', description: "log-cli: when the account's Marketplace location was confirmed in its home city" },
+  { name: 'warmupStartedAt', label: 'Warm-up started', type: 'DATE_TIME', description: "log-cli: when the account's day of warm-up began (rule 35)" },
+  { name: 'warmedAt', label: 'Warmed', type: 'DATE_TIME', description: 'log-cli: when the warm-up ended and the account was attached to its host (rule 35)' }
 ]
 
 /** Fields added to agencyListing. The sync fields it already has stay as they are. */

@@ -1559,3 +1559,49 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: `docs/facebookClient` rebuilt from today's 47 runs: 10 new requests documented with rea's reading and their reasoning. They are `publishing/useCometMarketplaceListingCreateMutation` (the Publish click, whose answer carries the new id); `location/CometMarketplaceSetBuyLocationMutation` and the two dialog queries (the Marketplace location change); `checkpoint/CometFacebookIXTNextMutation` (the "See why" of an account restriction, filed under checkpoint by `domainOf`'s `IXTNext`); and five background ones (lookahead, radius, left rail, browse feed, Selling upsell).
 Why: rule 27, every request our runs make is documented before a push. The pre-push gate refused while today's runs were newer than the docs. The restriction request matters to our machines, so it isn't left in background.
 Checked: `check:facebookClientDocs`: 90 requests documented, rea read every GraphQL slice; `bun test src/rea` 26 pass.
+
+## 2026-10-19 14:16Z · feat/accountLifecycle
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/lifecycle.md`: new file
+- `scripts/twentySetup.mjs`: changed const SOCIAL_ACCOUNT_FIELDS
+- `skills.md`: edited
+- `skills/lifecycle/SKILL.md`: new file
+- `src/cli/lifecycle/helpers/index.ts`: added export from "./renderLifecycle.ts"
+- `src/cli/lifecycle/helpers/renderLifecycle.ts`: added interface LifecycleRow, function renderLifecycleTable, interface Node, const short, const targets, function renderStateTree, function standingLine
+- `src/cli/lifecycle/index.ts`: added export from "./helpers/index.ts", const LIFECYCLE_USAGE, const DOC_PATH, const GENERATED, const lifecycleCommand
+- `src/cli/lifecycle/lifecycle.test.ts`: added function run, test "every account: its status, the machine's state, and what onboarding has left", test "the state tree comes from the machine itself"
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/marketplace/lifecycle/helpers/index.ts`: added export from "./onboardingStep", export from "./standing"
+- `src/marketplace/lifecycle/helpers/onboardingStep.ts`: added type OnboardingStep, type Progress, function nextWarmupActivity, function warmupComplete, function nextOnboardingStep
+- `src/marketplace/lifecycle/helpers/standing.ts`: added function standingOf, function statePath, function whereNow, function stepsLeft
+- `src/marketplace/lifecycle/index.ts`: added export from "./helpers/index", export from "./machine", export from "./types"
+- `src/marketplace/lifecycle/lifecycle.test.ts`: added const FAST, const fresh, type Script, function run, const inState, test "a fresh account goes through onboarding and a day of warm-up in ONE open browser, then to its host", test "the night closes for a reason, the morning reopens, and the host carries on", test "a checkpoint in the warm-up waits for a person, then resumes at the same activity, in the same browser", test "a restriction ends the lifecycle: the browser closes for that reason and the record stays (rule 13)", test "a lost sign-in inside the host is fixed in the same browser and goes back to watching", test "a crash reopens once; a second crash the same day needs a person (one open plus one reopen)", test "an action is a tab in the open browser, never a launch", test "the likes in the warm-up only act when liveActions (rule 8)", test "a retryable error is tried once more, then the step is stuck", test "accounts loaded from Twenty start where they are", test "SHUTDOWN closes the browser for that reason", test "the lane order: sign in, check, profile, name, location, warm-up, attached"
+- `src/marketplace/lifecycle/machine.ts`: added const need, type Ctx, type Done, const ok, const isIssue, const canRetry, function step, function closing, const lifecycleMachine
+- `src/marketplace/lifecycle/types.ts`: added type StepOutcome, const WARMUP_ACTIVITIES, type WarmupActivity, type CloseReason, interface BrowserLog, type HostAction, interface LifecycleTiming, const DEFAULT_LIFECYCLE_TIMING, const OPENS_PER_DAY, interface AccountStanding, interface LifecycleInput, interface LifecycleContext, type LifecycleEvent, interface LifecycleActorInputs
+- `src/marketplace/socialAccount/client.ts`: changed function toFacebookAccount
+- `src/marketplace/socialAccount/types.ts`: changed interface FacebookAccount
+- `src/twenty/graphql/client.ts`: changed const SOCIAL_ACCOUNT_FIELDS
+- `src/twenty/graphql/generated/schema.ts`: changed interface SocialAccount, interface SocialAccountConnection, interface SocialAccountGroupByConnection, interface SocialAccountGenqlSelection, interface SocialAccountConnectionGenqlSelection, interface SocialAccountGroupByConnectionGenqlSelection, interface SocialAccountCreateInput, interface SocialAccountUpdateInput, interface SocialAccountFilterInput, interface SocialAccountOrderByInput, interface SocialAccountOrderByWithGroupByInput, interface SocialAccountOrderByWithGroupByAggregateInput, interface SocialAccountGroupByInput
+- `src/twenty/graphql/generated/types.ts`: no declaration changed (comments, formatting or line endings)
+
+What changed: The account lifecycle (rule 35). Top of AGENTS.md, before everything else: the browser stays open, one open per account per local day, every action a tab in it, every close for a logged reason; rule 35 added. New `src/marketplace/lifecycle`: `lifecycleMachine` (XState v5, `setup()`, every side effect an actor the caller provides, as the monitor machine). The onboarding lane runs `proxying`, `opening` (gate; one open plus one crash reopen a day), then a `next` router choosing signingIn, checkingAccount, settingProfile, settingName, settingLocation or warming, then `attached`. The warm-up is Listaro's five activities (feedBrowse, marketplaceBrowse, createAccessCheck, sellingVisit, messagesVisit, from `account-warmup.ts` stages 1-5) across a day in the open browser, the likes only with `liveActions`. The host lane is `opening`, `watching` ⇄ `checking`, `ACT` → `acting` (a tab, never a launch), `crashed` (one reopen) and `overnight` (close for endOfActiveHours, wait for the morning, reopen). Issues are routed by `statusForIssue`: needsLogin goes to signingIn in the same browser; checkpoint goes to needsPerson, and PERSON_DONE goes to checkingAccount; limited goes to cooling; restricted and banned close for the reason and are final. A retryable error is tried once, then stuck. PAUSE, RESUME, SHUTDOWN and LOST work from anywhere. Every close carries a `CloseReason`. Helpers: `nextOnboardingStep`, `nextWarmupActivity`, `warmupComplete`, `standingOf` (an account from Twenty), `whereNow` (the state the machine itself settles in, nothing called), `stepsLeft`, `statePath`. New fields on socialAccounts (additive, applied, client regenerated): lifecycleState, profileNamedAt, marketplaceLocationAt, warmupStartedAt, warmedAt, all selected and mapped onto FacebookAccount. `log lifecycle [--account] [--json]` and `log lifecycle states [--write]` (the state tree from the machine's own definition). `docs/lifecycle.md`, with the tree generated into it, `skills/lifecycle`.
+Why: matt: "The opening and closing of the browsers numerous times throughout the day cannot happen… keep it so that we have it open"; enforce it at the top of AGENTS.md; "outline the state machine… a new part of the architecture… start from the state machine, mapping out every potential thing based on what we've got"; the warm-up is "making the profile customized, changing the name, and then… some actions which Listaro has… run this for a day… where the persistent browser will then play its place… not just in an MD file, but full state machine using xstate". Listaro's warm-up turned out to be half-wired (nothing called it, no profile, no checkpoint handling), so its five actions are kept and the rest rebuilt.
+Checked: `check:naming` OK, `tsc --noEmit` clean, `twenty:client:check` up to date, `bun test` 530 pass / 0 fail, with 14 new tests:
+- a fresh account through onboarding and a day of warm-up in one open browser (openBrowser called once, the only close at night);
+- a checkpoint in the warm-up resumes at the same activity after PERSON_DONE, with no second open;
+- a restriction closes for `restricted` and is final;
+- a lost sign-in in the host is fixed in the same browser;
+- a crash reopens once and a second goes to stuck (opensSpent);
+- ACT runs as a tab;
+- likes only live;
+- a retryable error is tried once;
+- loaded banned and paused accounts start where they are;
+- SHUTDOWN closes for its reason;
+- the router's order;
+- the command's table and tree.
+
+Live Twenty: the 5 fields were created; `log lifecycle` places all 11 accounts (Pittsburgh and Wilkes-Barre restricted; the checkpoint accounts need a person). Bethlehem, Scranton and Lancaster's `profileNamedAt` were backfilled from each run's `useFXIMUpdateNameMutation` answer (`"error": null`, 2026-10-19 11:21-11:49 UTC), and Reading's `marketplaceLocationAt` from its recorded location change.
+
+Not done: the host that runs this machine with real actors in one open browser (plan P2/P3); until then the commands still open per action.

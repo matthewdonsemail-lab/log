@@ -81,6 +81,12 @@ export interface FacebookAccount {
   coverPhoto: string | null
   /** When `log profile setup --live` last saved both. */
   profileSetAt: string | null
+  /** Rule 35, the lifecycle: where its machine has it, and the onboarding steps it has done. */
+  lifecycleState: string | null
+  profileNamedAt: string | null
+  marketplaceLocationAt: string | null
+  warmupStartedAt: string | null
+  warmedAt: string | null
 }
 
 /** A proxy URL split for Playwright, plus the country it must exit in. */

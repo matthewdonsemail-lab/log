@@ -46,7 +46,12 @@ export function toFacebookAccount(row: SocialAccountRow): FacebookAccount {
     profileName: row.profileName?.trim() || null,
     profilePhoto: row.profilePhoto?.trim() || null,
     coverPhoto: row.coverPhoto?.trim() || null,
-    profileSetAt: row.profileSetAt ?? null
+    profileSetAt: row.profileSetAt ?? null,
+    lifecycleState: row.lifecycleState ?? null,
+    profileNamedAt: row.profileNamedAt ?? null,
+    marketplaceLocationAt: row.marketplaceLocationAt ?? null,
+    warmupStartedAt: row.warmupStartedAt ?? null,
+    warmedAt: row.warmedAt ?? null
   }
 }
 

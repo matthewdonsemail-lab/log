@@ -1,5 +1,34 @@
 # AGENTS.md — log-cli
 
+## The browser stays open: never open and close it per action (matt, 2026-10-19)
+
+This comes before everything else in this file. Opening and closing a
+Facebook account's browser many times a day gives Facebook a cold start, a new
+canvas and empty storage each time: that is what bot activity looks like, and
+it is the one thing Listaro's working server setup never did (it held one
+AdsPower window per account for hours, `RESEARCH/LISTARO_BROWSER_LIFECYCLE.md`).
+
+- **One browser per account, opened once per local day** by that account's
+  host, at the start of its active hours, through every gate (rules 11-12,
+  15-18, 22).
+- **Every action is a tab in that browser** (publish, reply, profile, a check),
+  and closes only its own tab. No action launches a browser of its own.
+- **It closes only for a reason, and the reason is logged:** the end of the
+  account's active hours, shutdown, a checkpoint or restriction (back to the
+  onboarding lane, in the same browser), the account being lost, or a crash
+  (reopened once).
+- **Every account runs one lifecycle machine** (`src/marketplace/lifecycle`,
+  XState): onboarding lane (import, proxy, device, sign-in, checks, profile,
+  name, location, a day's warm-up) and host lane (open, watching, acting,
+  resting). Every state is recorded with `log inspect` and read with rea
+  (rules 25, 29).
+
+Status 2026-10-19: the lifecycle machine is the spec and is built and tested
+(`log lifecycle`). The host that keeps the browser open is not built yet, so
+today's commands (`connect`, `publish`, `profile`, `inspect`) still launch per
+action: use them as few times as possible, and never add a new command that
+launches its own browser. Rule 35. Plan: `PLANS/LOG_CLI_ACCOUNT_LIFECYCLE_PLAN.md`.
+
 ## Always run it live, so matt can watch (matt, 2026-10-19)
 
 Every command that takes more than a few seconds (a run, a settle, a docs
@@ -281,6 +310,14 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     listing is matched by its Facebook id or a unique title, never guessed.
     `log conversations`, `log conversation show|read|lead|link|record`
     (`marketplace/conversation`, `docs/conversations.md`).
+35. 2026-10-19 · matt: the browser stays open. One browser per account,
+    opened once per local day by its host and kept open through the
+    account's active hours; every action is a tab in it; it closes only for
+    a logged reason (end of active hours, shutdown, checkpoint or
+    restriction, account lost, a crash reopened once). Every account runs one
+    lifecycle machine (`src/marketplace/lifecycle`, XState) across an
+    onboarding lane (with a day's warm-up after profile and name) and a host
+    lane. Top of this file.
 
 ## Checks
 
