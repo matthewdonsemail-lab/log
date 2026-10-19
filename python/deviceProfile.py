@@ -36,6 +36,8 @@ from typing import Any
 PROFILE_VERSION = 1
 
 # Config keys that belong to one launch, set fresh by build_launch() and never stored.
+# Camoufox humanize:minTime (properties.json): the shortest a humanized move may take.
+HUMANIZE_MIN_SECONDS = 0.02
 PER_LAUNCH = ("timezone", "webrtc:", "geolocation:", "locale:", "humanize", "showcursor", "allowMainWorld", "addons", "debug")
 
 # The only parts of this machine's environment the browser gets. Firefox on
@@ -221,6 +223,9 @@ def launch_config(profile: dict[str, Any], run: dict[str, Any], exit_ip: str, ex
     config["geolocation:accuracy"] = geo["accuracy"]
     config["humanize"] = True
     config["humanize:maxTime"] = visible["humanize"]
+    # A short floor so tiny moves stay tiny: the 28-point circle (humanMouse, rule 32) is one quick loop,
+    # not 28 slow moves; long moves still take up to maxTime, scaled by distance.
+    config["humanize:minTime"] = min(HUMANIZE_MIN_SECONDS, float(visible["humanize"]))
     config["showcursor"] = bool(visible["showcursor"])
     return config
 

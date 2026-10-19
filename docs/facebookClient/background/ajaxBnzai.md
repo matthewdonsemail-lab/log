@@ -11,16 +11,40 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_262d88fab3be7aa47300d07ddd7f69a8108be9bd772dc983116781db97cc2690` |
+| rea | `ev_e40f806d7dccba5f6702e967acc43014107c533ec26ba6c72ec586642351ccd5` |
 
-Seen 101 time(s) in 20 run(s).
+Seen 189 time(s) in 34 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 1: goto /me | 1 | 200 | 352 ms | 8222 ms | — |
-| flow | step 3: clickRole menuitem "…" | 1 | 200 | 311 ms | 3117 ms | — |
-| flow | step 9: goto /profiles/<id>/name | 3 | 200 | 310–332 ms | 19–4656 ms | — |
-| flow | step 13: clickRole button "…" | 2 | 200 | 312–348 ms | 3376–5389 ms | — |
+| inspect | POST 0 /ajax/qm/ (0 ms) | 2 | 200 | 470–3952 ms | 1988–3895 ms | — |
+| inspect | step 2: wait 60s | 4 | 200 | 440–1844 ms | 4866–60394 ms | — |
+| inspect | POST 200 CometLogoutHandlerQuery (900 ms) | 1 | 200 | 393 ms | 2007 ms | — |
+| connect | says: <name> We suspect automated behaviour on your account To prevent your account from b | 4 | 200 | 360–367 ms | 1611–4236 ms | — |
+| connect | Auto-login: answered automatedBehaviour. | 9 | 200, -1 | -1–387 ms | 126–1139 ms | — |
+| connect | Page: loggedIn /marketplace/selling/ | 5 | 200 | 382–453 ms | 2819–10328 ms | — |
+| inspect | step 1: goto /marketplace/ | 19 | 200 | 293–1335 ms | 8534–25013 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T123 | 1 | 200 | 319 ms | 12610 ms | — |
+| inspect | step 2: wait 20s | 3 | 200 | 313–336 ms | 3625–8089 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T122 | 4 | 200 | 306–327 ms | 37011–367021 ms | — |
+| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1223 | 7 | 200 | 390–2095 ms | 4008–26848 ms | — |
+| inspect | step 2: waitRole link "…" | 7 | 200 | 435–816 ms | 4956–15702 ms | — |
+| inspect | POST 200 useMWEncryptedBackupsFetchBackupIdsV2Query (929 ms) | 2 | 200 | 613–1652 ms | 1765–3808 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T121 | 3 | 200 | 395–489 ms | 1322–4630 ms | — |
+| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1216 | 3 | 200 | 571–1736 ms | 4979–6973 ms | — |
+| inspect | step 2: wait 10s | 2 | 200 | 564–5859 ms | 2258–8854 ms | — |
+| inspect | mouse: 2 read, 1 circle, 1 approach; 2 idle drift move(s) | 1 | 200 | 492 ms | 7 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T120 | 1 | 200 | 301 ms | 25500 ms | — |
+| inspect | step 2: wait 12s | 2 | 200 | 298–500 ms | 440–3071 ms | — |
+| inspect | page has 65 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T115 | 1 | 200 | 297 ms | 13127 ms | — |
+| inspect | POST 200 useCometAISupportConversationLoggerMutation (406 ms) | 1 | 200 | 378 ms | 377 ms | — |
+| inspect | page has 5 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1153 | 4 | 200 | 289–1082 ms | 18132–83695 ms | — |
+| flow | step 1: goto /me | 4 | 200 | 352–424 ms | 8222–18261 ms | — |
+| flow | step 3: clickRole menuitem "…" | 2 | 200 | 311–427 ms | 3117–3470 ms | — |
+| flow | step 6: clickRole button "…" | 1 | 200 | 367 ms | 3019 ms | — |
+| flow | step 9: goto /profiles/<id>/name | 5 | 200 | 310–926 ms | 19–8982 ms | — |
+| flow | step 13: clickRole button "…" | 3 | 200 | 312–384 ms | 115–5389 ms | — |
+| connect | Signed in; session written for Twenty. | 2 | 200, -1 | -1–480 ms | 175–802 ms | — |
 | connect | Page: loggedIn /marketplace/selling/ "…" | 4 | 200, -1 | -1–564 ms | 55–5586 ms | — |
 | inspect | step 1: goto /me | 2 | 200 | 322–617 ms | 13199–13254 ms | — |
 | inspect | step 2: click e141 | 1 | 200 | 285 ms | 4162 ms | — |
@@ -36,7 +60,6 @@ Seen 101 time(s) in 20 run(s).
 | inspect | POST 200 useCometAISupportConversationLoggerMutation (376 ms) | 1 | 200 | 336 ms | 4681 ms | — |
 | inspect | POST 200 /ajax/webstorage/process_keys/ (322 ms) | 1 | 200 | 316 ms | 1368 ms | — |
 | inspect | page has 6 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1103 | 2 | 200 | 315 ms | 14979–15977 ms | — |
-| inspect | POST 0 /ajax/qm/ (0 ms) | 1 | 200 | 470 ms | 3895 ms | — |
 | inspect | page has 3 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1052 | 1 | 200 | 643 ms | 2931 ms | — |
 | inspect | page has 5 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1052 | 2 | 200 | 315–1083 ms | 41010–42732 ms | — |
 | inspect | step 3: click e66 | 1 | 200 | 358 ms | 2973 ms | — |
@@ -45,14 +68,11 @@ Seen 101 time(s) in 20 run(s).
 | profile | Profile controls: picture not found; cover not found; 4 controls listed in profileFound.tx | 1 | -1 | -1 ms | 692 ms | — |
 | publish | Opening /marketplace/create/item | 26 | 200 | 287–1068 ms | 9686–42348 ms | — |
 | publish | Uploading 5 photo(s) | 6 | 200 | 287–325 ms | 17943–21981 ms | — |
-| connect | Auto-login: answered automatedBehaviour. | 5 | -1, 200 | -1–300 ms | 206–1037 ms | — |
-| connect | Signed in; session written for Twenty. | 1 | -1 | -1 ms | 802 ms | — |
 | connect | Solving textImage with captchaKraken | 3 | 200 | 307–331 ms | 660–9612 ms | — |
 | connect | Page: captcha /checkpoint/<id>/ | 4 | 200 | 299–313 ms | 1846–4404 ms | — |
 | connect | Page: checkpoint /checkpoint/<id>/ | 6 | 200 | 306–321 ms | 637–4988 ms | — |
 | publish | open failed: formNotFound no Title field on /marketplace/create/item | 1 | -1 | -1 ms | 1054 ms | — |
 | publish | Category: Miscellaneous | 7 | 200 | 295–340 ms | 236–5292 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ | 1 | 200 | 390 ms | 6090 ms | — |
 
 <!-- facts:end -->
 

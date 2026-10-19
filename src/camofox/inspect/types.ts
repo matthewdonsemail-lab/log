@@ -9,6 +9,8 @@
 export type InspectAction = 'goto' | 'snapshot' | 'click' | 'type' | 'press' | 'solve' | 'upload' | 'signIn' | 'code' | 'back' | 'wait' | 'stop'
   /** Flow steps (`log flow run`): an element by role and accessible name, not a one-session ref. */
   | 'clickRole' | 'fillRole' | 'uploadRole' | 'waitRole'
+  /** The cursor circles an element (the Robotic VSL engine's highlight, rule 32): movement only, no click. */
+  | 'highlight'
 
 /** What `inspectSession.py` is started with (argv[1]). */
 export interface InspectSessionConfig {
@@ -23,6 +25,8 @@ export interface InspectSessionConfig {
   repliesPath: string
   /** The run's private login.json (rule 21) for signIn and code, or null. */
   loginPath: string | null
+  /** false (`--noIdleMouse`): our cursor never drifts, for a person driving the window. */
+  idleMouse?: boolean
   /** Opened as step 1, or null. */
   startUrl: string | null
 }
@@ -60,6 +64,8 @@ export interface InspectStepResult {
   interactive?: string[]
   folder?: string
   expect?: { name: string; seen: boolean }
+  /** The step's cursor: humanized legs it drove (approach, circle, wander) and idle drift moves (rule 32). */
+  mouse?: { legs: number; idleMoves: number }
   stopped?: boolean
   steps?: number
 }

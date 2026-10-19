@@ -11,13 +11,14 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_61ecba0c033864c88e31dd9e0e98d37dc8cdfb7916b4459828537ee19d3de4af` |
+| rea | `ev_b92c0e378dff838d451c37968f02b4072d7bc88da3fe4e155c545bf5d255d7af` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 6 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 5: clickRole button "…" | 1 | 200 | 328 ms | 6832 ms | — |
+| inspect | step 4: clickRole link "…" | 3 | 200 | 343–597 ms | 2749–8084 ms | — |
+| flow | step 5: clickRole button "…" | 2 | 200 | 328–410 ms | 6832–11241 ms | — |
 | inspect | now on /profile.php "…" after 2734 ms; 0 request(s) | 1 | 200 | 304 ms | 1944 ms | — |
 
 <!-- facts:end -->

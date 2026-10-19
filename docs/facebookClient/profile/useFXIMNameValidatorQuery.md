@@ -13,11 +13,11 @@
 | Called from | `useFXIMNameValidator` |
 | rea | `ev_e5bc448d13ac98520a0568e7d3a10b56643c4662f5f19b7227431f8ce1f3a789` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 12: clickRole button "…" | 1 | 200 | 608 ms | 662 ms | — |
+| flow | step 12: clickRole button "…" | 2 | 200 | 608–924 ms | 636–662 ms | — |
 | inspect | step 21: click e208 | 1 | 200 | 484 ms | 1274 ms | — |
 
 <!-- facts:end -->

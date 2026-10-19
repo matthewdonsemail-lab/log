@@ -84,8 +84,47 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
  * Never throws for an unknown command: it reports and returns a non-zero code
  * so the binary can stay a thin wrapper.
  */
+/**
+ * `--proxyMs <ms>` on any command (rule 33): this run's limit for the proxy's speed to Facebook
+ * (default 2500 ms), set as LOG_PROXY_MAX_MS for the run and its Python, then restored.
+ */
+export function takeProxyMs(argv: string[]): { argv: string[]; proxyMs: number | null; error: string | null } {
+  const rest: string[] = [];
+  let proxyMs: number | null = null;
+  for (let i = 0; i < argv.length; i++) {
+    const token = argv[i];
+    const value = token === "--proxyMs" ? argv[++i] : token.startsWith("--proxyMs=") ? token.slice(10) : null;
+    if (value === null) {
+      rest.push(token);
+      continue;
+    }
+    const ms = Number(value);
+    if (!Number.isInteger(ms) || ms < 500 || ms > 60_000) return { argv, proxyMs: null, error: "--proxyMs must be 500 to 60000 ms" };
+    proxyMs = ms;
+  }
+  return { argv: rest, proxyMs, error: null };
+}
+
 export async function runCli(argv: string[], context?: Partial<CommandContext>): Promise<number> {
   const ctx = createContext(context);
+  const proxy = takeProxyMs(argv);
+  if (proxy.error) {
+    ctx.err(proxy.error);
+    return 1;
+  }
+  if (proxy.proxyMs === null) return dispatch(ctx, proxy.argv);
+  const before = process.env.LOG_PROXY_MAX_MS;
+  process.env.LOG_PROXY_MAX_MS = String(proxy.proxyMs);
+  ctx.err(`Proxy speed limit for this run: ${proxy.proxyMs} ms (--proxyMs).`);
+  try {
+    return await dispatch(ctx, proxy.argv);
+  } finally {
+    if (before === undefined) delete process.env.LOG_PROXY_MAX_MS;
+    else process.env.LOG_PROXY_MAX_MS = before;
+  }
+}
+
+async function dispatch(ctx: CommandContext, argv: string[]): Promise<number> {
   const [first, ...rest] = argv;
   const requested = first === undefined ? "help" : (ALIASES[first] ?? first);
   if (requested === "help") {

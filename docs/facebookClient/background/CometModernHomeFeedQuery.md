@@ -13,10 +13,12 @@
 | Called from | `CometModernHomeFeed.react` |
 | rea | `ev_858efae0ae02f052b2910a86ae672fe6c9a55db3aba7b2a54477a0908d5ae22a` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T122 | 1 | 200 | 2893 ms | 1178 ms | — |
+| inspect | step 2: wait 20s | 1 | 200 | 3681 ms | 20981 ms | — |
 | publish | Opening /marketplace/create/item | 1 | 200 | 5082 ms | 11843 ms | — |
 
 <!-- facts:end -->

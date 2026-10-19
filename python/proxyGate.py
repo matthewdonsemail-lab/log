@@ -49,6 +49,7 @@ NewBrowser, launch_options + firefox.launch) all go through:
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 from datetime import datetime, timezone
@@ -261,6 +262,14 @@ SLOW_MS = 2500
 PROBE_ROUNDS = 3
 
 
+def slow_ms() -> int:
+    """The limit for this run: `--proxyMs <ms>` on any log command sets LOG_PROXY_MAX_MS (rule 33); default SLOW_MS."""
+    try:
+        return int(os.environ.get("LOG_PROXY_MAX_MS") or SLOW_MS)
+    except ValueError:
+        return SLOW_MS
+
+
 def facebook_ms(proxy: dict[str, Any]) -> int | None:
     """The slowest of FACEBOOK_PROBES through the proxy, in ms (any HTTP answer counts,
     a timeout counts as 15 s). None for a SOCKS proxy, which urllib can't time."""
@@ -292,7 +301,7 @@ def facebook_ms(proxy: dict[str, Any]) -> int | None:
     best = 15_000
     for _ in range(PROBE_ROUNDS):
         best = min(best, one_round())
-        if best <= SLOW_MS:
+        if best <= slow_ms():
             break
     return best
 
@@ -308,9 +317,9 @@ def apply(kwargs: dict[str, Any], visible: dict[str, Any]) -> dict[str, Any]:
     if proxy is None:
         raise GateError("noProxy", f"no proxy file at {_armed['path']}: no browser opens without one")
     exit_ = check(_armed["path"])
-    if exit_.get("facebookMs") is not None and exit_["facebookMs"] > SLOW_MS:
+    if exit_.get("facebookMs") is not None and exit_["facebookMs"] > slow_ms():
         # Loud, before any page: otherwise Facebook sits on its loading skeleton for minutes.
-        raise GateError("proxyTooSlow", f"exit IP {exit_['exitIp']} took {exit_['facebookMs']} ms for one Facebook file (limit {SLOW_MS} ms). Run: log proxy assign --account <name>")
+        raise GateError("proxyTooSlow", f"exit IP {exit_['exitIp']} took {exit_['facebookMs']} ms for one Facebook file (limit {slow_ms()} ms). Run: log proxy assign --account <name>, or raise the limit for this run with --proxyMs <ms>")
     try:
         run = deviceProfile.read_run_file(_armed["devicePath"])
         profile = run.get("profile")

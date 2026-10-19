@@ -11,12 +11,17 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_262d88fab3be7aa47300d07ddd7f69a8108be9bd772dc983116781db97cc2690` |
+| rea | `ev_03e2755e2f43ac7344c4b7e3da888b337679758f267d8e1d0089133d65da19d4` |
 
-Seen 19 time(s) in 7 run(s).
+Seen 27 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 2: wait 60s | 1 | 200 | 315 ms | 18754 ms | — |
+| inspect | step 2: wait 20s | 4 | 200, -1 | -1–1132 ms | 13951–15134 ms | — |
+| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1223 | 1 | 200 | 396 ms | 100010 ms | — |
+| flow | POST 200 CometNotificationsDropdownQuery (2480 ms) | 1 | 200 | 540 ms | 4263 ms | — |
+| flow | step 13: clickRole button "…" | 1 | 200 | 375 ms | 11477 ms | — |
 | flow | step 1: goto /me | 1 | 200 | 315 ms | 18735 ms | — |
 | inspect | step 1: goto /me | 1 | 200 | 349 ms | 23358 ms | — |
 | inspect | step 5: wait 8s | 1 | 200 | 384 ms | 183 ms | — |

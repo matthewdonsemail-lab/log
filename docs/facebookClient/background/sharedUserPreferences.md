@@ -11,12 +11,13 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_262d88fab3be7aa47300d07ddd7f69a8108be9bd772dc983116781db97cc2690` |
+| rea | `ev_a0d02f441654e70d3234a018201f8239fe663d723a65526a4eea0787d92b0a6b` |
 
-Seen 5 time(s) in 5 run(s).
+Seen 6 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| flow | POST 200 CometNotificationsDropdownQuery (2480 ms) | 1 | 200 | 708 ms | 3872 ms | — |
 | flow | step 1: goto /me | 1 | 200 | 411 ms | 18167 ms | — |
 | inspect | POST 200 useMWEncryptedBackupsFetchBackupIdsV2Query (332 ms) | 1 | 200 | 495 ms | 2349 ms | — |
 | inspect | page has 61 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T110 | 1 | 200 | 393 ms | 2237 ms | — |

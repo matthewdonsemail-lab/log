@@ -13,10 +13,13 @@
 | Called from | `CometHomeContactCommunityChatsContainer.react` |
 | rea | `ev_ff39c007f8bb69c80d97054de98908b54ee980822a6e89a6dbd0fbf56d559bf9` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 5 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T122 | 1 | 200 | 348 ms | 1189 ms | — |
+| inspect | step 2: wait 20s | 1 | 200 | 408 ms | 20989 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T120 | 2 | 200 | 309–382 ms | 10044–90160 ms | — |
 | publish | Opening /marketplace/create/item | 1 | 200 | 386 ms | 11849 ms | — |
 
 <!-- facts:end -->

@@ -23,14 +23,22 @@ import proxyGate
 
 # humanize must be a float: a bool hangs mouse.move on current builds
 # (facebook-camofox-client session_manager.py).
-HUMANIZE_MAX_SECONDS = 1.5
+# 0.6 s: a hand crosses a screen in about 0.3-0.6 s; 1.5 s made every long move a slow wobble (rule 32).
+HUMANIZE_MAX_SECONDS = 0.6
 
 VISIBLE_LAUNCH: dict[str, Any] = {"headless": False, "humanize": HUMANIZE_MAX_SECONDS, "showcursor": True}
 
 
-def launch_kwargs(kwargs: dict[str, Any]) -> dict[str, Any]:
+# Sessions where python/humanMouse.py draws every trajectory itself (inspect, flow; rule 32): humanize stays
+# on, but its per-hop curve is capped at 20 ms so our velocity profile owns the clock. Measured 2026-10-19
+# with the 0.6 s cap: a 100 px hop cost 530 ms and a 5 px hop 100 ms, so 60 Hz emission ran at 2 Hz.
+HUMANIZE_HOP_SECONDS = 0.02
+
+
+def launch_kwargs(kwargs: dict[str, Any], own_trajectory: bool = False) -> dict[str, Any]:
     """Proxy gate, device, locale, visible: the only launch kwargs any Camoufox in log-cli gets."""
-    return proxyGate.apply(kwargs, VISIBLE_LAUNCH)
+    visible = {**VISIBLE_LAUNCH, "humanize": HUMANIZE_HOP_SECONDS} if own_trajectory else VISIBLE_LAUNCH
+    return proxyGate.apply(kwargs, visible)
 
 
 def force_visible() -> None:

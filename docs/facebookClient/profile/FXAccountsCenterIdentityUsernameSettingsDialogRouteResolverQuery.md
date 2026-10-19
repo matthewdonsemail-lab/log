@@ -13,11 +13,11 @@
 | Called from | `FXAccountsCenterIdentityUsernameSettingsDialogRouteResolver` |
 | rea | `ev_70b268939cafae61f884213477040aeb0c32af8941e2429ec84aeeb8e35f7abf` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 13: clickRole button "…" | 1 | 200 | 346 ms | 3372 ms | — |
+| flow | step 13: clickRole button "…" | 2 | 200 | 346–700 ms | 3372–7281 ms | — |
 | inspect | now on /profiles/<id>/name "…" after 2328 ms; 0 request(s) | 1 | 200 | 399 ms | 2120 ms | — |
 
 <!-- facts:end -->

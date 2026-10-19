@@ -13,17 +13,21 @@
 | Called from | `useMWEncryptedBackupsFetchBackupIdsV2` |
 | rea | `ev_16df7daca80a72c8f44b7a489690336b7def96e564429f0639a122f48023372a` |
 
-Seen 16 time(s) in 15 run(s).
+Seen 29 time(s) in 27 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 1: goto /me | 1 | 200 | 323 ms | 8495 ms | — |
+| connect | Page: loggedIn /marketplace/selling/ | 5 | 200 | 315–533 ms | 2821–6530 ms | — |
+| inspect | step 1: goto /marketplace/ | 6 | 200 | 336–665 ms | 7293–20008 ms | — |
+| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1223 | 1 | 200 | 537 ms | 9874 ms | — |
+| inspect | step 2: waitRole link "…" | 1 | 200 | 925 ms | 13652 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T121 | 1 | 200 | 872 ms | 550 ms | — |
+| flow | step 1: goto /me | 2 | 200 | 323–403 ms | 8495–14974 ms | — |
 | connect | Auto-login: typing the email. | 1 | 200 | 324 ms | 3866 ms | — |
 | connect | Page: loggedIn /marketplace/selling/ "…" | 2 | 200 | 319–326 ms | 4011–4182 ms | — |
 | inspect | step 1: goto /me | 1 | 200 | 340 ms | 13538 ms | — |
 | inspect | step 2: click e53 | 1 | 200 | 329 ms | 8491 ms | — |
 | publish | Opening /marketplace/create/item | 7 | 200 | 294–366 ms | 8435–15068 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ | 2 | 200 | 315–319 ms | 3755–6187 ms | — |
 | publish | Category: Miscellaneous | 1 | 200 | 313 ms | 1940 ms | — |
 
 <!-- facts:end -->

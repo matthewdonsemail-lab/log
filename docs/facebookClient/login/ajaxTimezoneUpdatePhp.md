@@ -11,15 +11,15 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_333fff88d87e55175ca99a33d0306530b64d3e003dba74ad68ace349dad7d71d` |
+| rea | `ev_de8d529bc37a428eda6a6165f121d0a73fe4e8860a5e64e56a0aa8a08f13a3ed` |
 
-Seen 3 time(s) in 3 run(s).
+Seen 5 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| connect | Page: loggedIn /marketplace/selling/ | 3 | -1, 200 | -1–756 ms | 2753–6523 ms | — |
 | inspect | step 2: click e53 | 1 | 200 | 753 ms | 8420 ms | — |
 | connect | Page: loggedIn /marketplace/selling/ "…" | 1 | 200 | 527 ms | 4174 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ | 1 | 200 | 661 ms | 3746 ms | — |
 
 <!-- facts:end -->
 

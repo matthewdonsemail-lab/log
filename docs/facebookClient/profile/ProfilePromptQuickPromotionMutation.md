@@ -13,11 +13,11 @@
 | Called from | `ProfilePromptQuickPromotionMutation` |
 | rea | `ev_14b0cd727e25dbe1ccb26c1e7fd99092c8962aad531cf5b54bb5ac47aef1ff39` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 1: goto /me | 1 | 200 | 377 ms | 8431 ms | — |
+| flow | step 1: goto /me | 2 | 200 | 377–689 ms | 8431–13347 ms | — |
 | inspect | step 1: goto /me | 1 | 200 | 469 ms | 13195 ms | — |
 
 <!-- facts:end -->

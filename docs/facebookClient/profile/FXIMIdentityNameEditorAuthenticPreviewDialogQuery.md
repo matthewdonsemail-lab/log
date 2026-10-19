@@ -13,11 +13,11 @@
 | Called from | `FXIMIdentityNameEditorAuthenticPreviewDialog.react` |
 | rea | `ev_6def84c3bc051cc4e8f37c4691933c7ab7c352a7f8491d7c091892961d66994c` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 12: clickRole button "…" | 1 | 200 | 503 ms | 1297 ms | — |
+| flow | step 12: clickRole button "…" | 2 | 200 | 503–908 ms | 1297–1581 ms | — |
 | inspect | step 21: click e208 | 1 | 200 | 465 ms | 1781 ms | — |
 
 <!-- facts:end -->

@@ -13,10 +13,12 @@
 | Called from | `StoriesTrayRectangularRoot.react` |
 | rea | `ev_c974048d5563e87d75f5e8ddd458fdc3829a195d00e0a636a969922c24e6ae81` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T122 | 1 | 200 | 532 ms | 1245 ms | — |
+| inspect | step 2: wait 20s | 1 | 200 | 565 ms | 21006 ms | — |
 | publish | Opening /marketplace/create/item | 1 | 200 | 1354 ms | 11861 ms | — |
 
 <!-- facts:end -->

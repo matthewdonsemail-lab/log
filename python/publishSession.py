@@ -41,6 +41,7 @@ from urllib.parse import parse_qs, urlparse
 
 from errorCodes import checked, failure
 import proxyGate
+from humanMouse import SyncHumanMouse, human_click
 from visibleBrowser import launch_kwargs
 
 CREATE_PATH = "https://www.facebook.com/marketplace/create/item"
@@ -247,6 +248,7 @@ class Session:
         self.browser = None
         self.context = None
         self.page = None
+        self.mouse = None
 
     # -- lifecycle ---------------------------------------------------------
     def start(self) -> dict[str, Any] | None:
@@ -259,7 +261,8 @@ class Session:
 
         # Proxy gate (rule 12), the account's device and locale (15-16), headed,
         # humanize 1.5s, cursor shown (rule 11). Never configurable.
-        self.runtime = Camoufox(**launch_kwargs({}))
+        # The cursor is drawn by humanMouse (rule 32): humanize stays on, its per-hop curve capped.
+        self.runtime = Camoufox(**launch_kwargs({}, own_trajectory=True))
         try:
             self.browser = self.runtime.__enter__()
             # The gate's self-check runs inside new_context (rule 17): a refusal closes the browser.
@@ -279,6 +282,7 @@ class Session:
             raise
         self.page = self.context.new_page()
         self.page.set_default_timeout(30_000)
+        self.mouse = SyncHumanMouse(self.page, log)
         return None
 
     def close(self) -> None:
@@ -383,7 +387,7 @@ class Session:
         if button is None:
             log("Text captcha: answer typed, but Continue never enabled.")
             return False
-        button.click(timeout=8000)
+        human_click(button)
         self.page.wait_for_timeout(4000)
         log("Text captcha: clicked Continue.")
         return True
@@ -455,7 +459,7 @@ class Session:
             try:
                 if target.count() == 0:
                     continue
-                target.click(timeout=4000)
+                human_click(target)
                 if self.portal_visible(opener):
                     return opener
             except Exception:
@@ -481,7 +485,7 @@ class Session:
                     try:
                         text = norm(options.nth(i).inner_text())
                         if (text == want_n) if exact else (want_n in text or text in want_n):
-                            options.nth(i).click(timeout=5000)
+                            human_click(options.nth(i))
                             return True
                     except Exception:
                         continue
@@ -492,7 +496,7 @@ class Session:
             if dialog.count() > 0 and dialog.is_visible():
                 search = dialog.locator('input[placeholder*="Search"], input[type="search"], input[type="text"]').first
                 if search.count() > 0:
-                    search.click(timeout=4000)
+                    human_click(search)
                     search.fill("", timeout=4000)
                     search.type(want, delay=30)
                     self.page.wait_for_timeout(1500)
@@ -500,7 +504,7 @@ class Session:
                 if button.count() == 0:
                     button = self.page.get_by_role("button", name=re.compile(re.escape(want), re.I)).first
                 button.wait_for(state="visible", timeout=8000)
-                button.click(timeout=5000)
+                human_click(button)
                 return True
         except Exception:
             pass
@@ -540,7 +544,7 @@ class Session:
     def type_and_check(self, loc, value: str, check, delay: int = 20) -> bool:
         """Type like a person, read the value back, fall back to fill + input event (spike :54-60)."""
         loc.scroll_into_view_if_needed()
-        loc.click(timeout=8000)
+        human_click(loc)
         self.page.keyboard.press("ControlOrMeta+A")
         self.page.keyboard.press("Backspace")
         self.page.keyboard.type(value, delay=delay)
@@ -560,7 +564,7 @@ class Session:
                 try:
                     if button.is_visible() and not button.evaluate(DISABLED_JS):
                         button.scroll_into_view_if_needed()
-                        button.click(timeout=8000)
+                        human_click(button)
                         return True
                 except Exception:
                     continue
@@ -605,7 +609,7 @@ def step_open(s: Session, params: dict[str, Any]) -> dict[str, Any]:
     try:
         item = s.page.get_by_text(re.compile(r"^Item for sale$", re.I)).first
         if item.count() > 0 and item.is_visible():
-            item.click(timeout=5000)
+            human_click(item)
             s.page.wait_for_timeout(2500)
     except Exception:
         pass
@@ -793,7 +797,7 @@ def solve_text_image(s: Session, solver) -> dict[str, Any]:
         return {"solved": False, "code": checked(twocaptcha_code(exc)), "detail": str(exc)[:300]}
     if not answer:
         return {"solved": False, "code": checked("unsolvable"), "detail": "2Captcha returned an empty answer"}
-    field.click(timeout=8000)
+    human_click(field)
     s.page.keyboard.type(answer, delay=90)
     submitted = s.submit_text_captcha()
     return {"solved": True, "detail": f"{len(answer)} characters typed" + ("" if submitted else ", Continue not found")}
@@ -896,7 +900,7 @@ def step_fill_fields(s: Session, params: dict[str, Any]) -> dict[str, Any]:
                 Path(receipt, "formText.txt").write_text(s.body(20000), encoding="utf8")
             return fail("locationNotSet", f"no Location field, and the form lists it in {listed or 'nowhere it says'}, not {location!r}; "
                                           f"inputs on the form: {visible_inputs(s)}")
-        loc.click(timeout=8000)
+        human_click(loc)
         s.page.keyboard.press("ControlOrMeta+A")
         s.page.keyboard.press("Backspace")
         s.page.keyboard.type(location, delay=30)
@@ -909,7 +913,7 @@ def step_fill_fields(s: Session, params: dict[str, Any]) -> dict[str, Any]:
         for i in range(options.count()):
             text = norm(options.nth(i).inner_text())
             if city and city in text and in_place(text, country):
-                options.nth(i).click(timeout=5000)
+                human_click(options.nth(i))
                 picked = True
                 break
         if not picked:
@@ -1084,6 +1088,9 @@ def main() -> int:
                 reply(request.get("id"), fail("notOpen", "send open first"))
                 continue
             try:
+                # The wait in between (rule 32): a hand looks at the page before it acts.
+                if session.mouse is not None and step not in ("open",):
+                    session.mouse.look()
                 result = handler(session, request.get("params") or {})
             except proxyGate.GateError as exc:
                 result = fail(exc.code, exc.detail)

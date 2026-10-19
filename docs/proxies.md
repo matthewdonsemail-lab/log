@@ -232,3 +232,13 @@ Earlier checks (proxy gate, 2026-10-18):
   - a VN-proxied account's dry run ran end to end against the local copy of the form
   - the form's Location picked "Hanoi, Vietnam" over "Hanoi, United Kingdom"
   - a banned account's `scan` is refused with `accountNotUsable`
+
+## Speed limit per run
+
+A launch is refused with `proxyTooSlow` when the fastest of three timings of a
+Facebook file through the proxy is over the limit (default 2500 ms). Set the
+limit for one run with `--proxyMs <ms>` on any command (500-60000), e.g.
+`log inspect start --account <a> --proxyMs 6000`; over MCP, `proxyMs` on a flow
+tool or `--proxyMs` in a tool's `args`. It sets `LOG_PROXY_MAX_MS` for that run
+only (AGENTS.md rule 33).
+

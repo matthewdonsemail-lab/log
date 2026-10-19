@@ -103,3 +103,24 @@ describe("runCli", () => {
     expect((await runCli(["account", "status", "galwayTwo", "NOPE"], { twenty, out: () => {}, err: () => {} }))).toBe(1);
   });
 });
+
+describe("--proxyMs (rule 33)", () => {
+  test("is taken off any command and checked", async () => {
+    const { takeProxyMs } = await import("./index.ts");
+    expect(takeProxyMs(["inspect", "start", "--proxyMs", "6000", "--account", "a"])).toEqual({ argv: ["inspect", "start", "--account", "a"], proxyMs: 6000, error: null });
+    expect(takeProxyMs(["scan", "--proxyMs=4000"]).proxyMs).toBe(4000);
+    expect(takeProxyMs(["scan", "--proxyMs", "50"]).error).toContain("500 to 60000");
+    expect(takeProxyMs(["scan"]).proxyMs).toBeNull();
+  });
+
+  test("sets the run's limit and restores it afterwards", async () => {
+    const { slowFacebookMs } = await import("../../camofox/proxy/index.ts");
+    expect(slowFacebookMs({})).toBe(2500);
+    expect(slowFacebookMs({ LOG_PROXY_MAX_MS: "6000" })).toBe(6000);
+    delete process.env.LOG_PROXY_MAX_MS;
+    const err: string[] = [];
+    await runCli(["errors", "--proxyMs", "7000"], { out: () => {}, err: (l) => err.push(l) });
+    expect(err.join("\n")).toContain("7000 ms");
+    expect(process.env.LOG_PROXY_MAX_MS).toBeUndefined();
+  });
+});

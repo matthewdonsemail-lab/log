@@ -10,7 +10,7 @@
  *            to Twenty only if it really exits in the home country
  *   balance  the 2Captcha proxy account: traffic left, money balance
  */
-import { countryName, SLOW_FACEBOOK_MS } from "../../camofox/proxy/index.ts";
+import { countryName, slowFacebookMs } from "../../camofox/proxy/index.ts";
 import type { ProxyCheck } from "../../camofox/proxy/index.ts";
 import { prepareRun } from "../../camofox/run/index.ts";
 import { distanceKm, homeOf } from "../../marketplace/home/index.ts";
@@ -110,7 +110,7 @@ async function assignOne(
     }
     // Nor one too slow for Facebook: its pages would never get past the loading skeleton.
     const ms = checked.check.facebookMs;
-    if (ms != null && ms > SLOW_FACEBOOK_MS) {
+    if (ms != null && ms > slowFacebookMs()) {
       misses.push(`${checked.check.exitIp} ${ms} ms per Facebook file`);
       continue;
     }
@@ -218,7 +218,7 @@ export const proxyCommand: Command = {
       return {
         code: 0,
         stdout: `${account.accountName}: ${maskProxyUrl(account.proxy)} exits at ${check.exitIp}, in ${countryName(check.exitCountry)}, matching the account. Saved to Twenty.` +
-          (check.facebookMs != null ? `\nFacebook through it: ${check.facebookMs} ms per file${check.facebookMs > SLOW_FACEBOOK_MS ? ` (too slow, over ${SLOW_FACEBOOK_MS} ms: launches are refused with proxyTooSlow; run log proxy assign --account ${account.accountName})` : ""}.` : ""),
+          (check.facebookMs != null ? `\nFacebook through it: ${check.facebookMs} ms per file${check.facebookMs > slowFacebookMs() ? ` (too slow, over ${slowFacebookMs()} ms: launches are refused with proxyTooSlow; run log proxy assign --account ${account.accountName})` : ""}.` : ""),
       };
     } catch (error) {
       return refuseError("proxy check", error);

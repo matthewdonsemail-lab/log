@@ -13,11 +13,11 @@
 | Called from | `ProfileCometCoverPhotoUpdateMutation` |
 | rea | `ev_98c5c58e7c28424266c5d67d0b0de87b80a4b503f78dba9725359198d149b5ef` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 8: clickRole button "…" | 1 | 200 | 2436 ms | 718 ms | — |
+| flow | step 8: clickRole button "…" | 2 | 200 | 2436–4382 ms | 718–1878 ms | — |
 | inspect | step 12: click e1426 | 1 | 200 | 2658 ms | 411 ms | — |
 
 <!-- facts:end -->

@@ -13,11 +13,11 @@
 | Called from | `FXAccountsCenterProfilesPageV2RouteResolver` |
 | rea | `ev_99f8f69f21b60969abf0da9379840c47ac5f52d810b8d1b3ec025cabdae10037` |
 
-Seen 4 time(s) in 2 run(s).
+Seen 6 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 9: goto /profiles/<id>/name | 2 | 200 | 322–340 ms | 2939–3880 ms | — |
+| flow | step 9: goto /profiles/<id>/name | 4 | 200 | 322–945 ms | 2939–10548 ms | — |
 | inspect | step 14: goto /profiles/<id>/name | 2 | 200 | 375–578 ms | 3967–5117 ms | — |
 
 <!-- facts:end -->

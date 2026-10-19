@@ -13,10 +13,12 @@
 | Called from | `UFACAISupportChatExperience.react` |
 | rea | `ev_8ee95faa5bbd82f99ae9dcfe8cbd78add4e5241ff8073ebf16e7331f832cc1d5` |
 
-Seen 7 time(s) in 4 run(s).
+Seen 11 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 2: wait 60s | 2 | 200 | 1461–1690 ms | 33512–35020 ms | — |
+| inspect | step 1: goto /marketplace/ | 2 | 200 | 500–503 ms | 10785–11418 ms | — |
 | inspect | step 1: goto /me | 1 | 200 | 471 ms | 12262 ms | — |
 | inspect | page has 3 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1052 | 2 | 200 | 650–776 ms | 1526–2930 ms | — |
 | profile | Opening the profile (facebook.com/me). | 1 | 200 | 596 ms | 10415 ms | — |

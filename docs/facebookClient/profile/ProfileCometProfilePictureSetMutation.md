@@ -13,11 +13,11 @@
 | Called from | `ProfileCometProfilePictureSetMutation` |
 | rea | `ev_409b69ae26722c3e8c9f70e8efae9b924fb93ae509d12e86b5289bc3f4d7a34c` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 5: clickRole button "…" | 1 | 200 | 5542 ms | 742 ms | — |
+| flow | step 5: clickRole button "…" | 2 | 200 | 5542–9236 ms | 742–1292 ms | — |
 | inspect | step 6: click e1262 | 1 | 200 | 3395 ms | 646 ms | — |
 
 <!-- facts:end -->

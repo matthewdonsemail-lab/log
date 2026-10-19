@@ -31,6 +31,7 @@ from typing import Any
 import autoLogin
 import proxyGate
 from errorCodes import failure
+from humanMouse import human_click
 from publishSession import Session, log
 
 PROFILE_URL = "https://www.facebook.com/me"
@@ -200,7 +201,7 @@ def choose_file(s: Session, path: str) -> bool:
                 if not item.is_visible():
                     continue
                 with s.page.expect_file_chooser(timeout=10_000) as chooser:
-                    item.click(timeout=8000)
+                    human_click(item)
                 chooser.value.set_files(path)
                 log(f"Photo chosen through \"{label_of(item)}\".")
                 return True
@@ -225,7 +226,7 @@ def upload(s: Session, what: str, pattern: re.Pattern, path: str) -> dict[str, A
         save_text(s, f"{what}Failed.txt", s.page.evaluate(CONTROLS_JS))
         return failure("profileControlNotFound", f"{what}: no control matching {pattern.pattern}")
     log(f"{what}: opening \"{label_of(control)}\".")
-    control.click(timeout=8000)
+    human_click(control)
     s.page.wait_for_timeout(1500)
     if not choose_file(s, path):
         save_text(s, f"{what}Failed.txt", s.page.evaluate(CONTROLS_JS))
@@ -298,6 +299,8 @@ def main() -> int:
                 reply(request.get("id"), failure("notOpen", "send open first"))
                 continue
             try:
+                if session.mouse is not None and step not in ("open",):
+                    session.mouse.look()
                 result = handler(session, request.get("params") or {})
             except proxyGate.GateError as exc:
                 result = failure(exc.code, exc.detail)
