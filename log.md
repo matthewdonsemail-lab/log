@@ -1947,3 +1947,29 @@ What changed: every browser runs through one Playwright layer (rule 44).
 - Docs: `docs/browsers.md` (the layer, Listaro's primitives, the parity table), `docs/adsPower.md`, README, the adsPower skill, AGENTS.md rule 44.
 Why: matt: "for consistency the playwright based approach should stay ... the mouse movements ... agnostic", "they should be directory domain named by this specific capability ... as browser", "parity as with the camoufox work", "version controlling logic ... in the precommit lefthook.yml ... not too strict but ... uniform". Also bring Listaro's primitives in, and drop Puppeteer (`ws.puppeteer` is only AdsPower's name for the CDP URL).
 Checked: `bun run check`: naming OK, check:browsers OK (two not built: adsPower.syncSessions, adsPower.oneMachineAtATime), tsc clean, 570 pass, 0 fail. New tests: both drivers through the session machine (refused at a gate, opened, closed with a reason), every browser fills every capability, `browserFor`, and Python's BROWSERS and OPENERS equal BROWSER_DRIVERS with the 2Captcha proxy mapped to AdsPower's `user_proxy_config`. All Python modules parse and import. Not run live: no AdsPower browser was opened on Facebook in this change.
+
+## 2026-10-19 21:34Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `docs/facebookClient/operations.json`: edited
+- `python/browserDriver.py`: changed def open_ads_power
+- `python/inspectSession.py`: changed class Inspector
+- `python/proxyGate.py`: changed def check_attached, def _self_check
+- `src/browser/camoufox/camoufox.test.ts`: changed test "an account's browser comes from Twenty, Camoufox when empty or unknown"
+- `src/browser/driver/client.ts`: changed function driverNameOf, function browserFor
+
+What changed: AdsPower now works live through the shared opener.
+- `driverNameOf` prefers AdsPower: an account with a linked AdsPower profile runs on it unless `browserDriver` in Twenty says otherwise.
+- `open_ads_power` only stops a profile it started, and a stop or proxy-clear error is logged instead of replacing the first error. That hiding had masked "running out of disk space" and "SunBrowser 154 is updating" on the first live tries.
+- `_self_check` takes `public=True` for public-API contexts. AdsPower's CDP context needs `wait_until`; the internal `waitUntil` failed every IP-echo load instantly. Refusals now carry the load error.
+- The session HAR is written even when the self-check refuses (rule 25).
+- `inspectSession` saves the storage state from the config path (a NameError after the opener move).
+- `operations.json` was refreshed by the docs build that ran before the run data was cleared (36 requests, 0 to write).
+Why: matt: prefer AdsPower throughout, then load one account and find a local community group by searching in the browser, as a dry run he can watch.
+Checked: `bun run check`: naming OK, check:browsers OK, 570 pass, 0 fail. Live on AdsPower:
+- Harrisburg passed the gate and self-check, but Facebook answered the first request (`GET /`) with checkpoint 1501092823525282 ("confirm you're human"). It is recorded CHECKPOINT in Twenty, and nothing was clicked.
+- Bethlehem passed the gate (65.78.106.206), the self-check (America/New_York, en-US, page and worker) and carried Twenty's 7 cookies in once.
+- Steps, each with snapshot, screenshot, HAR and rea: home feed, typed "Bethlehem PA community", Enter (search results), Groups results filter.
+- The first group opened was in Bethlehem, New Hampshire, per its About box, so the run went back and opened "Recommendations of Bethlehem, PA and Greater Lehigh Valley Region" (17.3K members). Nothing was joined.
+- Closed clean: session HAR 735 requests, profile stopped, proxy cleared, session saved (10 cookies).
+Also freed 5.2 GB by removing four unused Camoufox builds (beta.39, the one in use, was kept), and cleared run HARs, screenshots and snapshots after the docs had every request. Drive C: went from 0.43 to 7.1 GB free.

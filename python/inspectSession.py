@@ -643,7 +643,7 @@ class Inspector:
             finally:
                 await self.mouse.stop_idle()
                 try:
-                    await self.context.storage_state(path=str(state))
+                    await self.context.storage_state(path=str(self.config["storageStatePath"]))
                 except Exception as exc:
                     log(f"could not save the session state ({type(exc).__name__})")
                 await self.context.close()

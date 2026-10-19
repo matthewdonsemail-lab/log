@@ -66,28 +66,39 @@ async def open_ads_power(config: dict[str, Any], own_trajectory: bool) -> AsyncI
     if not profile_id:
         raise proxyGate.GateError("adsPowerProfileMissing", "the account has no AdsPower profile: run log adsPower sync --apply")
     gate = proxyGate.gate_attached()
-    adsPowerBrowser.set_proxy(profile_id, adsPowerBrowser.user_proxy_config(gate["proxy"]))
+    started = False
     try:
+        adsPowerBrowser.set_proxy(profile_id, adsPowerBrowser.user_proxy_config(gate["proxy"]))
+        proxyGate.log(f"AdsPower profile {profile_id}: proxy set; starting it headed")
         cdp = adsPowerBrowser.start(profile_id)
+        started = True
         proxyGate.log(f"AdsPower profile {profile_id} started; attaching over CDP")
         async with async_playwright() as playwright:
             browser = await playwright.chromium.connect_over_cdp(cdp)
             context = browser.contexts[0] if browser.contexts else await browser.new_context()
             har = SessionHar(proxyGate.har_path(str(proxyGate._armed["captureDir"])))
             har.attach(context)
-            await proxyGate.check_attached(context)
-            await carry_session_once(context, Path(config["storageStatePath"]))
             try:
+                # Inside the try, so a refused self-check still leaves its HAR to read (rule 25).
+                await proxyGate.check_attached(context)
+                await carry_session_once(context, Path(config["storageStatePath"]))
                 yield Opened(browser, context, "adsPower")
             finally:
                 written = await har.write()
                 proxyGate.log(f"Session HAR: {written} request(s) to {har.path.name}")
     finally:
+        # Cleanup never hides what went wrong: a stop or proxy-clear failure is logged, the first error stands.
+        if started:
+            try:
+                adsPowerBrowser.stop(profile_id)
+                proxyGate.log(f"AdsPower profile {profile_id} stopped")
+            except proxyGate.GateError as exc:
+                proxyGate.log(f"AdsPower profile {profile_id}: stop answered {exc.code} ({exc.detail})")
         try:
-            adsPowerBrowser.stop(profile_id)
-        finally:
             adsPowerBrowser.set_proxy(profile_id, adsPowerBrowser.NO_PROXY)
-            proxyGate.log(f"AdsPower profile {profile_id} stopped; its proxy cleared")
+            proxyGate.log(f"AdsPower profile {profile_id}: proxy cleared")
+        except proxyGate.GateError as exc:
+            proxyGate.log(f"AdsPower profile {profile_id}: clearing the proxy answered {exc.code} ({exc.detail})")
 
 
 async def carry_session_once(context: Any, state: Path) -> None:

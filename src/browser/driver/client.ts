@@ -8,10 +8,15 @@ import { browserSessionMachine } from './machine'
 import { BROWSER_DRIVERS, DEFAULT_BROWSER_DRIVER } from './types'
 import type { BrowserDriver, BrowserDriverName, BrowserSessionInput } from './types'
 
-/** The account's driver from Twenty; anything unknown or empty keeps the default. Pure. */
-export function driverNameOf(account: { browserDriver: string | null }): BrowserDriverName {
+/**
+ * The account's driver (matt, 2026-10-20: prefer AdsPower throughout). `browserDriver` in Twenty
+ * decides when it is set; otherwise an account with a linked AdsPower profile runs on AdsPower,
+ * and one without runs on Camoufox (the kept fallback). Pure.
+ */
+export function driverNameOf(account: { browserDriver: string | null; adsPowerProfileId?: string | null }): BrowserDriverName {
   const name = account.browserDriver?.trim() ?? ''
-  return (BROWSER_DRIVERS as readonly string[]).includes(name) ? (name as BrowserDriverName) : DEFAULT_BROWSER_DRIVER
+  if ((BROWSER_DRIVERS as readonly string[]).includes(name)) return name as BrowserDriverName
+  return account.adsPowerProfileId ? 'adsPower' : DEFAULT_BROWSER_DRIVER
 }
 
 /** The machine with this driver's steps in it. */
@@ -34,5 +39,5 @@ export function createBrowserSession(driver: BrowserDriver, input: BrowserSessio
 
 /** The `browser` a Python session is started with, from the account's Twenty fields (rule 44). Pure. */
 export function browserFor(account: { browserDriver?: string | null; adsPowerProfileId?: string | null }): { driver: BrowserDriverName; profileId: string | null } {
-  return { driver: driverNameOf({ browserDriver: account.browserDriver ?? null }), profileId: account.adsPowerProfileId ?? null }
+  return { driver: driverNameOf({ browserDriver: account.browserDriver ?? null, adsPowerProfileId: account.adsPowerProfileId ?? null }), profileId: account.adsPowerProfileId ?? null }
 }

@@ -383,7 +383,7 @@ async def check_attached(context: Any) -> None:
     """Rule 17 on an attached browser's context, before Facebook loads: the same self-check and verdict
     as a Camoufox context. On a refusal the caller stops the browser through its own API (the profile's
     context isn't ours to close); a pass logs "Self-check passed", which counts the launch (rule 24)."""
-    observed = await _self_check(context)
+    observed = await _self_check(context, public=True)
     problem = compare(observed, expected())
     if problem is None:
         page = observed["page"]
@@ -485,21 +485,28 @@ def _ip_from_text(text: str) -> str | None:
     return match.group(1) if match else None
 
 
-async def _self_check(context: Any) -> dict[str, Any]:
-    """Playwright-internal (async) objects: one throwaway page on an IP echo."""
+async def _self_check(context: Any, public: bool = False) -> dict[str, Any]:
+    """One throwaway page on an IP echo. `context` is Playwright-internal (the launch guards, which take
+    camelCase options) unless `public` (a context from playwright.async_api, e.g. AdsPower over CDP,
+    which takes snake_case: wait_until). The last load error is kept, so a refusal says why."""
     page = await context.new_page()
     try:
-        ip = None
+        ip, last_error = None, None
         for url in IP_ECHO_URLS:
             try:
-                await page.goto(url, timeout=30_000, waitUntil="domcontentloaded")
+                if public:
+                    await page.goto(url, timeout=30_000, wait_until="domcontentloaded")
+                else:
+                    await page.goto(url, timeout=30_000, waitUntil="domcontentloaded")
                 ip = _ip_from_text(await page.evaluate("() => document.body ? document.body.innerText : ''"))
-            except Exception:
-                ip = None
+                if not ip:
+                    last_error = f"{url} answered no IP"
+            except Exception as exc:
+                ip, last_error = None, f"{url}: {type(exc).__name__}: {str(exc).splitlines()[0][:200] if str(exc) else ''}"
             if ip:
                 break
         if not ip:
-            return {"ip": None, "page": {"error": "no IP echo loaded"}, "worker": {}}
+            return {"ip": None, "page": {"error": f"no IP echo loaded ({redact(last_error or 'unknown')})"}, "worker": {}}
         return {"ip": ip, **(await page.evaluate(SELF_CHECK_JS))}
     finally:
         try:
