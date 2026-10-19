@@ -1,6 +1,6 @@
-import { copyFileSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { exportScripts, manifestFor } from "./helpers/index";
+import { exportScripts, manifestFor, parseSteps, splitHarBySteps } from "./helpers/index";
 import type { FirefoxCapture, ReaRunResult, ReaRunner } from "./types";
 
 export async function defaultReaRunner(args: string[], cwd: string): Promise<ReaRunResult> {
@@ -79,4 +79,33 @@ export async function captureFromHar(harPath: string, outDir: string, runner?: R
   if (runner === null) return `Firefox capture: ${capture.entries} requests, ${capture.scripts.length} scripts. REA not run.`;
   const rea = await inspectFirefoxCapture(outDir, capture.scripts.length, runner);
   return `Firefox capture: ${capture.entries} requests, ${capture.scripts.length} scripts. ${rea}.`;
+}
+
+/**
+ * Every action's capture (rule 22): the whole session as `settleFirefoxCapture`
+ * reads it, then one HAR per step from `steps.jsonl` in `steps/`, each read by
+ * rea (`NN_<step>.har` and `NN_<step>.rea.json`), with `steps/index.json`
+ * listing them in run order. Nothing when the browser never opened.
+ */
+export async function settleRunCapture(dir: string, runner: ReaRunner = defaultReaRunner): Promise<string | null> {
+  const whole = await settleFirefoxCapture(dir, runner);
+  if (whole === null || !existsSync(join(dir, "steps.jsonl"))) return whole;
+  let parts;
+  try {
+    parts = splitHarBySteps(JSON.parse(readFileSync(join(dir, "session.har"), "utf8")), parseSteps(readFileSync(join(dir, "steps.jsonl"), "utf8")));
+  } catch {
+    return `${whole} Steps not split (session.har or steps.jsonl unreadable).`;
+  }
+  const stepsDir = join(dir, "steps");
+  mkdirSync(stepsDir, { recursive: true });
+  const index: { index: number; step: string; har: string; entries: number; reaExit: number }[] = [];
+  for (const part of parts) {
+    const har = `${part.name}.har`;
+    writeFileSync(join(stepsDir, har), JSON.stringify(part.har), { mode: 0o600 });
+    const read = await runner(["inspect-web-network-capture", resolve(stepsDir, har), "har", "--format", "json"], stepsDir);
+    writeFileSync(join(stepsDir, `${part.name}.rea.json`), JSON.stringify({ code: read.code, stdout: read.stdout, stderr: read.stderr }), { mode: 0o600 });
+    index.push({ index: part.index, step: part.step, har, entries: part.entries, reaExit: read.code });
+  }
+  writeFileSync(join(stepsDir, "index.json"), `${JSON.stringify({ steps: index }, null, 2)}\n`, { mode: 0o600 });
+  return `${whole} ${parts.length} step HARs read by rea in ${stepsDir}.`;
 }

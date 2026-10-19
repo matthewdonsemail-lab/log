@@ -106,6 +106,10 @@ runs through `runCli`, so every gate above still applies.
   MCP channel.
 - Taking an account from NEEDSLOGIN to a dry run: `skills/accountToDryRun`.
 - It loads `log-cli/.env.local` itself, whatever folder it is started from.
+- **Every action records a HAR (rule 22).** Each connect, scan, status,
+  watch check and publish writes `session.har`, its timed `steps.jsonl`, and
+  one rea-read HAR per step under `~/.logCli/runs/...`
+  (`skills/reaCapture`).
 - **Every log line is visible.** The worker's and publish session's stderr
   go through `observability/processLog`. As a tool, each line (with the
   command's own output) is in the result under `log:`, is sent as an MCP log

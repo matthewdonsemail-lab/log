@@ -9,6 +9,7 @@
  * decides per listing: healthy, repost after a cooldown, or never repost.
  * Decisions only: it does not post. Ctrl+C stops it cleanly.
  */
+import { join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
 import type { ScanResult, WorkerFailure } from "../../camofox/worker/index.ts";
 import { listListingsWhere, syncDashboard } from "../../marketplace/agencyListing/index.ts";
@@ -16,6 +17,7 @@ import { DEFAULT_MONITOR_TIMING, monitorMachine } from "../../marketplace/monito
 import type { CheckOutcome, MonitorOutput, WatchedListing } from "../../marketplace/monitor/index.ts";
 import { homeOf, outsideActiveHours } from "../../marketplace/home/index.ts";
 import { recordAccountIssue } from "../../marketplace/replacement/index.ts";
+import { settleRunCapture } from "../../rea/firefox/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import { keepNewDevice, keepSession, openAccount } from "../live/index.ts";
 import { renderLoss } from "../live/helpers/index.ts";
@@ -73,6 +75,7 @@ export const watchCommand: Command = {
 
     const now = context.now ?? (() => new Date());
     let deviceSaved = false;
+    let checkNumber = 0;
     const machine = monitorMachine.provide({
       actors: {
         check: fromPromise<CheckOutcome, { accountId: string }>(async () => {
@@ -80,13 +83,19 @@ export const watchCommand: Command = {
           const home = homeOf(account);
           const outside = !home.ok ? home.detail : bypassHours ? null : outsideActiveHours(account, home.home.timezone, now());
           if (outside) return toCheckOutcome({ ok: false, code: home.ok ? "outsideActiveHours" : home.code, detail: outside });
+          // Each check is its own action with its own capture (rule 22).
+          checkNumber += 1;
+          const captureDir = run.captureDir ? join(run.captureDir, `check${checkNumber}`) : null;
           const result = await context.worker({
             action: "marketplace.scan",
             account_id: account.id,
             storage_state_path: run.statePath,
             proxy_path: run.proxyPath,
             device_path: run.devicePath,
+            capture_dir: captureDir,
           });
+          const capture = captureDir ? await settleRunCapture(captureDir) : null;
+          if (capture) context.err(capture);
           if (!deviceSaved) {
             const note = await keepNewDevice(context, account, run);
             if (note) {

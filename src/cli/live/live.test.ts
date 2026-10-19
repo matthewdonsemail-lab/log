@@ -147,6 +147,8 @@ describe("live commands", () => {
     expect(code).toBe(0);
     expect(seen.interactive).toBe(false);
     expect(seen.request?.params).toEqual({ waitSeconds: 120 });
+    // Rule 22: every action brings its HAR folder, kept after the run.
+    expect(String(seen.request?.capture_dir).replaceAll("\\", "/")).toMatch(/\/connect\/\d{8}T\d{6}_needsLogin\/firefox$/);
     expect(twenty.rows.socialAccounts.find((r) => r.id === "needsLogin")!.accountStatus).toBe("ACTIVE");
     expect(await runCli(["connect", "--account", "needsLogin", "--noPrompt", "--wait", "5"], { worker, twenty, out: () => {}, err: () => {} })).toBe(1);
   });

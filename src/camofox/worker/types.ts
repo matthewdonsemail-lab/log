@@ -26,6 +26,8 @@ export interface WorkerRequest {
   device_path?: string | null;
   /** `login`'s auto-login details (email, password, totpSecret) in the run folder. Never on argv. */
   login_path?: string | null;
+  /** Rule 22: the folder for this action's raw HAR and step timeline. The gate opens no context without it. */
+  capture_dir?: string | null;
   params?: Record<string, unknown>;
 }
 

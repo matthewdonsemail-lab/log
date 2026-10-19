@@ -51,6 +51,7 @@ EXTRACT_JS = """() => {
 
 def log(message: str) -> None:
     print(message, file=sys.stderr, flush=True)
+    proxyGate.note_step(message)
 
 
 # Titles under the selling page's "Needs attention" heading, the zone Listaro's
@@ -191,7 +192,7 @@ async def wait_for_login(page, wait_seconds: int, secrets: dict[str, Any] | None
             try:
                 await autoLogin.step(page, secrets, tries, log)
             except Exception as exc:
-                log(f"Auto-login step skipped: {type(exc).__name__}")  # never the message: it can echo typed text
+                log(f"Auto-login step failed: {type(exc).__name__}; it tries again on the next pass")  # never the message: it can echo typed text
         if loop.time() >= deadline:
             log(f"Still not logged in after {wait_seconds}s. Last page: {seen}")
             return
@@ -342,7 +343,7 @@ def main() -> int:
         return 1
     action = request.get("action")
     # No browser without the account's proxy, for any action, signing in included (rule 12).
-    proxyGate.arm(request.get("proxy_path"), request.get("device_path"))
+    proxyGate.arm(request.get("proxy_path"), request.get("device_path"), request.get("capture_dir"))
     try:
         # Every Camoufox facebook-camofox-client launches: proxy gate, then headed,
         # humanized, cursor shown (rules 11 and 12).

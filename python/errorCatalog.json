@@ -1120,6 +1120,19 @@
     "publish": "failed",
     "action": "A bug in the machine order."
   },
+  "captureMissing": {
+    "layer": "runtime",
+    "meaning": "A browser context was about to open with no HAR capture folder. Every action records a raw HAR (rule 22), so nothing opened.",
+    "retryable": false,
+    "raisedIn": [
+      "proxyGate",
+      "worker",
+      "publish.openingForm"
+    ],
+    "publish": "failed",
+    "monitor": "failed",
+    "action": "Pass capture_dir with the worker request (prepareRun sets run.captureDir), or receiptDir for the publish session."
+  },
   "unguardedLaunch": {
     "layer": "runtime",
     "meaning": "Something tried to launch Camoufox outside the proxy gate, or with launch options the gate does not allow (locale, config, env, persistent context...). Refused.",

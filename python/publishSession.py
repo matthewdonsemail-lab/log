@@ -119,6 +119,7 @@ DISABLED_JS = "e => e.getAttribute('aria-disabled') === 'true'"
 
 def log(message: str) -> None:
     print(message, file=sys.stderr, flush=True)
+    proxyGate.note_step(message)
 
 
 def norm(text: str | None) -> str:
@@ -829,7 +830,8 @@ def main() -> int:
     # Node writes UTF-8; Windows would read cp1252 and mangle the en dash in "Used – good".
     sys.stdin.reconfigure(encoding="utf8")
     reply_out, sys.stdout = sys.stdout, sys.stderr
-    proxyGate.arm(config.get("proxyPath"), config.get("devicePath"))
+    receipt = config.get("receiptDir")
+    proxyGate.arm(config.get("proxyPath"), config.get("devicePath"), str(Path(receipt) / "firefox") if receipt else None)
     session = Session(config)
 
     def reply(request_id: Any, result: dict[str, Any]) -> None:

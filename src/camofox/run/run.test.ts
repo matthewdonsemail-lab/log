@@ -52,6 +52,15 @@ describe('prepareRun: home, hours and device', () => {
     expect(prepareRun(await account('galwayOne'), 'check', { now: NIGHT, root: ROOT })).toMatchObject({ ok: true })
   })
 
+  test('a run carries its capture folder (rule 22); a proxy check opens nothing and has none', async () => {
+    const prepared = prepareRun(await account('galwayOne'), 'run', { now: DAY, root: ROOT, action: 'scan', captureRoot: '/captures' })
+    expect(prepared.ok && prepared.run.captureDir?.replaceAll('\\', '/')).toMatch(/^\/captures\/scan\/\d{8}T\d{6}_galwayOne\/firefox$/)
+    const check = prepareRun(await account('galwayOne'), 'check', { now: DAY, root: ROOT })
+    expect(check.ok && check.run.captureDir).toBeNull()
+    if (prepared.ok) prepared.run.cleanup()
+    if (check.ok) check.run.cleanup()
+  })
+
   test('bypassHours skips only the waking hours: the proxy rule still refuses', async () => {
     expect(prepareRun(await account('galwayOne'), 'run', { now: NIGHT, root: ROOT, bypassHours: true })).toMatchObject({ ok: true })
     expect(prepareRun(await account('noProxy'), 'run', { now: NIGHT, root: ROOT, bypassHours: true })).toMatchObject({ ok: false })

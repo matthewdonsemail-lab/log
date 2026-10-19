@@ -18,6 +18,7 @@ import { recordAccountIssue } from "../../marketplace/replacement/index.ts";
 import { checkRunnable, findAccount, listFacebookAccounts, saveCookies, saveDeviceProfile, saveSession, setAccountStatus, toFacebookCookies } from "../../marketplace/socialAccount/index.ts";
 import type { FacebookAccount, RunPurpose } from "../../marketplace/socialAccount/index.ts";
 import { parseArgs, refuse, refuseError } from "../runner/helpers/index.ts";
+import { settleRunCapture } from "../../rea/firefox/index.ts";
 import type { LoginSecrets } from "../../twenty/graphql/index.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
 import { renderDoctor, renderLoss, renderScan } from "./helpers/index.ts";
@@ -57,7 +58,7 @@ export async function openAccount(
       return refuseError(name, error);
     }
   }
-  const prepared = prepareRun(account, purpose, { now: (context.now ?? (() => new Date()))(), bypassHours, login });
+  const prepared = prepareRun(account, purpose, { now: (context.now ?? (() => new Date()))(), bypassHours, login, action: name });
   if (!prepared.ok) return refuse(name, prepared.code, prepared.detail);
   return { account, run: prepared.run };
 }
@@ -119,8 +120,10 @@ export async function withRun(
   }
   try {
     const device = await keepNewDevice(context, account, run);
+    // Rule 22: every action's raw HAR, split per step and read by rea.
+    const capture = run.captureDir ? await settleRunCapture(run.captureDir) : null;
     // connect saves its own cookies (it signed in); every other run continues the session.
-    return withNote(withNote(result, device), name === "connect" ? null : await keepSession(context, account, run));
+    return withNote(withNote(withNote(result, device), name === "connect" ? null : await keepSession(context, account, run)), capture);
   } finally {
     run.cleanup();
   }
@@ -203,6 +206,7 @@ export const connectCommand: Command = {
           storage_state_path: run.statePath,
           proxy_path: run.proxyPath,
           device_path: run.devicePath,
+          capture_dir: run.captureDir,
           ...(noPrompt ? { params: { waitSeconds }, login_path: run.loginPath } : {}),
         },
         { interactive: !noPrompt },
@@ -240,6 +244,7 @@ export const scanCommand: Command = {
         storage_state_path: run.statePath,
         proxy_path: run.proxyPath,
         device_path: run.devicePath,
+        capture_dir: run.captureDir,
       });
       if (!raw.ok) return await workerFailed(context, "scan", account, raw);
       const result = raw as ScanResult;
@@ -272,6 +277,7 @@ export const statusCommand: Command = {
         storage_state_path: run.statePath,
         proxy_path: run.proxyPath,
         device_path: run.devicePath,
+        capture_dir: run.captureDir,
         params: { listing_id: listingId },
       });
       if (!raw.ok) return await workerFailed(context, "status", account, raw);

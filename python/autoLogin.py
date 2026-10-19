@@ -51,7 +51,8 @@ async def _scopes(page) -> list:
     Facebook" dialog over the page while the header keeps its own login form
     underneath, and a click on that covered form never lands."""
     dialog = page.locator('[role="dialog"]')
-    return [dialog.last, page] if await _visible(dialog) else [page]
+    # With a dialog open, only the dialog: anything behind it is covered.
+    return [dialog.last] if await _visible(dialog) else [page]
 
 
 async def _pick(page, find):
@@ -95,11 +96,16 @@ async def step(page, secrets: dict[str, Any], tries: dict[str, Any], log) -> Non
         tries["login"] = tries.get("login", 0) + 1
         email_field = await _pick(page, lambda scope: scope.locator('input[name="email"], input[type="email"], input[autocomplete="username"]'))
         if email_field is not None:
+            log(f"Auto-login: typing the email (try {tries['login']}).")
             await _type(page, email_field, email)
+        log("Auto-login: typing the password.")
         await _type(page, pass_field, password)
-        if not await _click_button(page, r"^(log in|login)$"):
-            await page.keyboard.press("Enter")
-        log(f"Auto-login: typed the email and password (try {tries['login']}).")
+        # Enter in the password field submits the form it belongs to, whichever
+        # it is; a "Log in" button may be one that is covered.
+        log("Auto-login: submitting (Enter).")
+        await pass_field.press("Enter", timeout=CLICK_MS)
+        await page.wait_for_timeout(random.randint(2500, 4000))
+        log(f"Auto-login: submitted; now on {page.url.split('?', 1)[0]}.")
         return
 
     # 2. Two-step: the code field, or the way to reach it.
@@ -111,6 +117,7 @@ async def step(page, secrets: dict[str, Any], tries: dict[str, Any], log) -> Non
     if secret and (code_field is not None or two_step):
         if code_field is None:
             # Facebook often opens on "check your notifications": switch to the app.
+            log("Auto-login: two-step page without a code field; looking for 'Try another way'.")
             if await _click_button(page, r"try another way"):
                 await page.wait_for_timeout(1500)
                 choice = await _pick(page, lambda scope: scope.get_by_text(re.compile(r"authentication app", re.I)))
@@ -125,10 +132,12 @@ async def step(page, secrets: dict[str, Any], tries: dict[str, Any], log) -> Non
             return  # one try per 30 s code, three in all
         tries["code"] = tries.get("code", 0) + 1
         tries["codeWindow"] = window
+        log(f"Auto-login: typing the authenticator code (try {tries['code']}).")
         await _type(page, code_field, totp(secret))
-        if not await _click_button(page, r"^(continue|submit code|submit|next)$"):
-            await page.keyboard.press("Enter")
-        log(f"Auto-login: typed the authenticator code (try {tries['code']}).")
+        log("Auto-login: submitting the code (Enter).")
+        await code_field.press("Enter", timeout=CLICK_MS)
+        await page.wait_for_timeout(random.randint(2500, 4000))
+        log(f"Auto-login: code submitted; now on {page.url.split('?', 1)[0]}.")
         return
 
     # 3. After the code: keep this browser as a known device.

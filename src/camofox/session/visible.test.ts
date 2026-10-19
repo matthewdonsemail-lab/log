@@ -53,14 +53,17 @@ describe("Camoufox always launches visible", () => {
 
 describe("no browser without the account's proxy (rule 12)", () => {
   test("there is no exception: not for signing in, not for a dry run", () => {
-    expect(read("logWorker.py")).toContain('proxyGate.arm(request.get("proxy_path"), request.get("device_path"))');
-    expect(read("publishSession.py")).toContain('proxyGate.arm(config.get("proxyPath"), config.get("devicePath"))');
+    // ...and every context they open records its HAR (rule 22).
+    expect(read("logWorker.py")).toContain('proxyGate.arm(request.get("proxy_path"), request.get("device_path"), request.get("capture_dir"))');
+    expect(read("publishSession.py")).toContain('proxyGate.arm(config.get("proxyPath"), config.get("devicePath"), str(Path(receipt) / "firefox") if receipt else None)');
     for (const name of ["logWorker.py", "publishSession.py", "proxyGate.py"]) expect(read(name)).not.toMatch(/allow_no_proxy|allowNoProxy/);
   });
 
   test("the gate checks the exit country and launches only what it built", () => {
     const gate = read("proxyGate.py");
     expect(gate).toContain('raise GateError("noProxy"');
+    expect(gate).toContain('raise GateError("captureMissing"');
+    expect(gate).toContain("_force_capture(kwargs)");
     expect(gate).toContain('raise GateError("proxyCountryMismatch"');
     expect(gate).toContain('return {"from_options": options}');
     expect(gate).toContain('ALLOWED_CALLER_KEYS = frozenset({"headless", "humanize", "geoip", "proxy"})');

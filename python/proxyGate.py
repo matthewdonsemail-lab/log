@@ -51,6 +51,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -69,6 +70,7 @@ _armed: dict[str, Any] = {
     "languages": None,
     "facebookLocale": None,
     "geolocation": None,
+    "captureDir": None,
 }
 
 # What a caller may pass to a Camoufox launcher. Their values are replaced.
@@ -101,6 +103,23 @@ SELF_CHECK_JS = """async () => {
 
 def log(message: str) -> None:
     print(message, file=sys.stderr, flush=True)
+    note_step(message)
+
+
+def note_step(message: str) -> None:
+    """Every action of a run, timed, next to its HAR (`steps.jsonl`), so log-cli
+    can cut the HAR into one file per action for rea. Lines name actions and
+    page paths only, never credentials."""
+    capture = _armed.get("captureDir")
+    if not capture:
+        return
+    try:
+        Path(capture).mkdir(parents=True, exist_ok=True)
+        at = datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+        with open(Path(capture) / "steps.jsonl", "a", encoding="utf8") as steps:
+            steps.write(json.dumps({"at": at, "step": message}) + "\n")
+    except OSError:
+        pass  # the timeline is for analysis; it never stops a run
 
 
 class GateError(Exception):
@@ -113,10 +132,12 @@ class GateError(Exception):
         self.detail = detail
 
 
-def arm(proxy_path: str | None, device_path: str | None = None) -> None:
+def arm(proxy_path: str | None, device_path: str | None = None, capture_dir: str | None = None) -> None:
     _armed.update({key: None for key in _armed})
     _armed["path"] = proxy_path
     _armed["devicePath"] = device_path
+    # Every browser context records a raw HAR here (rule 22); none opens without it.
+    _armed["captureDir"] = capture_dir
     try:
         install_guards()
     except ImportError:
@@ -300,6 +321,30 @@ def _force_context(kwargs: dict[str, Any]) -> None:
     kwargs["timezoneId"] = _armed["timezone"]
     kwargs["geolocation"] = dict(_armed["geolocation"])
     kwargs["permissions"] = sorted(set(kwargs.get("permissions") or []) | {"geolocation"})
+    _force_capture(kwargs)
+
+
+def har_path(capture_dir: str) -> Path:
+    """`session.har`, or `session2.har`... when a run opens more than one context."""
+    folder = Path(capture_dir)
+    folder.mkdir(parents=True, exist_ok=True)
+    path, n = folder / "session.har", 1
+    while path.exists():
+        n += 1
+        path = folder / f"session{n}.har"
+    return path
+
+
+def _force_capture(kwargs: dict[str, Any]) -> None:
+    """Rule 22: every context records a raw HAR (rule 19), mandatory for every
+    action. A caller's own HAR path is kept (publish names its own); otherwise
+    the armed capture folder is used, and with neither nothing opens."""
+    if not kwargs.get("recordHarPath"):
+        if not _armed.get("captureDir"):
+            raise GateError("captureMissing", "a browser context without a HAR capture folder: every action records one")
+        kwargs["recordHarPath"] = str(har_path(_armed["captureDir"]))
+    kwargs["recordHarContent"] = "embed"
+    kwargs["recordHarMode"] = "full"
 
 
 def expected() -> dict[str, Any]:

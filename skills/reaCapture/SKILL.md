@@ -21,8 +21,9 @@ Why a HAR plus scripts, read offline: `docs/rea/matrix/` and
    token and body. Nothing is stripped, because the analysis needs it. It
    stays on matt's development machine in the run folder
    (`~/.logCli/publish/<run>/firefox`) and is never committed.
-2. **Captures come from live runs** of `log publish` (dry run unless
-   `--live`, rule 10). Those runs follow the launch rules as they are:
+2. **Captures come from every live run (rule 22)**: `connect`, `scan`,
+   `status`, each `watch` check and `log publish` (dry run unless `--live`,
+   rule 10). There is no flag to skip it. Those runs follow the launch rules as they are:
    headed (11), proxy in country (12), self-check (17), waking hours (18).
 3. **REA reads files, never the window.** No CDP, no attach. The rea
    commands that need a live target (`inspect-web-page`,
@@ -45,9 +46,28 @@ Why a HAR plus scripts, read offline: `docs/rea/matrix/` and
 
 ### 1. Capture (live)
 
+Any action records one. Through the MCP, `mcp__log__connect` / `scan` /
+`publish` do the same.
+
 ```bash
-bun bin/log.ts publish <listingId>          # dry run; the HAR records the whole session
+bun bin/log.ts connect --account <a> --noPrompt   # the login, step by step
+bun bin/log.ts scan --account <a>
+bun bin/log.ts publish <listingId>                # dry run; the HAR records the whole session
 ```
+
+Where: `~/.logCli/runs/<action>/<time>_<account>/firefox/` (`LOG_RUNS_DIR`
+moves it; a watch has `check<N>/` per check), and publish's
+`~/.logCli/publish/<run>/firefox/`. The command's last lines name the folder.
+
+Per action: the Python writes each log line, timed, to `steps.jsonl` (what
+the run did: page reached, email typed, submitted, code typed...). After the
+run, `settleRunCapture` cuts `session.har` by those times into
+`steps/NN_<action>.har` (each request goes to the step it started in; quiet
+steps are left out), runs `rea inspect-web-network-capture` on each one
+(`steps/NN_<action>.rea.json`), and lists them in run order in
+`steps/index.json`. Read a step's rea output to see exactly what Facebook
+did for that one action, e.g. which GraphQL operations the login submit
+fired.
 
 The run folder gets `firefox/session.har` (raw), `firefox/scripts/scriptN.js`,
 `firefox/scriptsManifest.json`, `firefox/reaNetwork.json` and

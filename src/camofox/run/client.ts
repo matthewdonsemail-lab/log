@@ -1,5 +1,5 @@
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
-import { tmpdir } from 'node:os'
+import { homedir, tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { hasStoredDevice, toDeviceProfile } from '../device/index'
 import type { DeviceProfile, DeviceRunFile } from '../device/index'
@@ -33,6 +33,12 @@ export function toOrigins(raw: unknown): unknown[] {
  * proxy, so it skips home, hours and device. A normal run also needs a saved
  * session; signing in doesn't.
  */
+/** `~/.logCli/runs/connect/20261019T072812_61594387282311/firefox`. Pure. */
+export function captureDirFor(accountName: string, action: string, now: Date, root?: string): string {
+  const stamp = now.toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, '')
+  return join(root ?? (process.env.LOG_RUNS_DIR || join(homedir(), '.logCli', 'runs')), action, `${stamp}_${accountName.replace(/\W/g, '')}`, 'firefox')
+}
+
 export function prepareRun(account: FacebookAccount, purpose: RunPurpose, options: PrepareRunOptions = {}): PrepareRunResult {
   const check = checkRunnable(account, purpose)
   if (!check.ok) return check
@@ -70,6 +76,7 @@ export function prepareRun(account: FacebookAccount, purpose: RunPurpose, option
   const statePath = join(dir, 'state.json')
   const devicePath = join(dir, 'device.json')
   const loginPath = options.login ? join(dir, 'login.json') : null
+  const captureDir = purpose === 'check' ? null : captureDirFor(account.accountName, options.action ?? purpose, options.now ?? new Date(), options.captureRoot)
   writeFileSync(proxyPath, JSON.stringify(check.proxy), { mode: 0o600 })
   if (cookies.length) writeFileSync(statePath, JSON.stringify({ cookies, origins: toOrigins(account.storageOrigins) }), { mode: 0o600 })
   if (device) writeFileSync(devicePath, JSON.stringify(device), { mode: 0o600 })
@@ -82,6 +89,7 @@ export function prepareRun(account: FacebookAccount, purpose: RunPurpose, option
       statePath,
       devicePath: device ? devicePath : null,
       loginPath,
+      captureDir,
       hasSession: cookies.length > 0,
       readCookies(): PlaywrightCookie[] {
         if (!existsSync(statePath)) return []

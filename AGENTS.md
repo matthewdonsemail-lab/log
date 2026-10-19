@@ -94,6 +94,14 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     order in `docs/vendors/*.txt` (git-ignored) is imported with all its fields
     by `scripts/importVendorAccounts.mjs`, which shows each field only as
     `<set>` or `<empty>`.
+22. 2026-10-19 · Every action records a HAR, with no way to turn it off.
+    The proxy gate puts a raw HAR recorder (rule 19) on every browser context,
+    and refuses a context without a capture folder (`captureMissing`). That
+    covers connect, scan, status, each watch check and publish. Each run keeps
+    `~/.logCli/runs/<action>/<time>_<account>/firefox` (publish: its run
+    folder): `session.har`, `steps.jsonl` (every action the run logged, timed),
+    and `steps/NN_<action>.har`, one per step, each read by the local rea
+    (`settleRunCapture`). Never committed.
 
 ## Checks
 
