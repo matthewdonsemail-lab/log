@@ -8,7 +8,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { findAccount } from '../../marketplace/socialAccount/index'
 import { marketplaceFixture } from '../../twenty/graphql/index'
-import { listLaunches, overLaunchBudget, prepareRun } from './index'
+import { lastLaunchReset, listLaunches, overLaunchBudget, prepareRun, recordLaunchReset } from './index'
 
 const DAY = new Date('2026-10-18T10:00:00Z') // 11:00 in Galway
 const NIGHT = new Date('2026-10-18T02:00:00Z') // 03:00 in Galway, 09:00 in Vietnam
@@ -151,6 +151,19 @@ describe('launch budget (rule 24)', () => {
     mkdirSync(refused, { recursive: true })
     writeFileSync(join(refused, 'steps.jsonl'), `${JSON.stringify({ at: '2026-10-19T09:30:00.000Z', step: 'open failed: proxyTooSlow' })}\n`)
     expect(listLaunches('phillyOne', { runs: root, publish: join(root, 'none') }).map((d) => d.toISOString())).toEqual(['2026-10-19T09:00:00.000Z'])
+  })
+
+  test('a reset (log account resetOpens) makes earlier launches stop counting, for that account only, keeping the recordings', () => {
+    const root = mkdtempSync(join(tmpdir(), 'logBudget'))
+    const resets = join(root, 'launchResets.jsonl')
+    launchAt(root, 'connect', '2026-10-19T09:00:00.000Z')
+    launchAt(root, 'scan', '2026-10-19T09:20:00.000Z', 'otherOne')
+    recordLaunchReset('phillyOne', 'reset by matt', new Date('2026-10-19T09:10:00.000Z'), resets)
+    launchAt(root, 'inspect', '2026-10-19T09:30:00.000Z')
+    const roots = { runs: root, publish: join(root, 'none'), resets }
+    expect(listLaunches('phillyOne', roots).map((d) => d.toISOString())).toEqual(['2026-10-19T09:30:00.000Z'])
+    expect(listLaunches('otherOne', roots)).toHaveLength(1)
+    expect(lastLaunchReset('phillyOne', resets)?.toISOString()).toBe('2026-10-19T09:10:00.000Z')
   })
 
   test('too soon after the last launch, then too many in the local day', () => {

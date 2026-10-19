@@ -38,5 +38,9 @@ step. Too soon after the last launch (rule 24), the host waits the gap out.
 A save Twenty refused keeps the run's device and session in
 `~/.logCli/runs/unsaved/` (login removed): `log account resave <a> --from <dir>`.
 
+`opensSpent` or `launchBudgetSpent` ends the day. Only when matt asks, close
+every browser (`log host send --account <a> SHUTDOWN`), then run `log account
+resetOpens <a>|all --reason "<why>"` (rule 37). It deletes nothing.
+
 Code: `src/marketplace/host` (the runner), `src/cli/host` (the steps),
 `src/marketplace/lifecycle` (the machine). Doc: `docs/lifecycle.md`.

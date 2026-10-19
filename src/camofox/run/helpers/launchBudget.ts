@@ -1,6 +1,6 @@
-import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 
 /**
  * Rule 24: how often one account's browser may open on Facebook. On
@@ -19,12 +19,41 @@ export const LAUNCH_LIMITS: LaunchLimits = { minGapMinutes: 10, perDay: 8 }
 
 const SELF_CHECK = 'Self-check passed'
 
+/** `~/.logCli/launchResets.jsonl` (or `LOG_LAUNCH_RESETS`): one line per reset matt asked for. */
+export const launchResetsPath = (env: Record<string, string | undefined> = process.env) => env.LOG_LAUNCH_RESETS || join(homedir(), '.logCli', 'launchResets.jsonl')
+
+/**
+ * When this account's opens were last reset (`log account resetOpens`, matt
+ * 2026-10-19): launches before it no longer count against rule 24. Nothing
+ * is deleted; the recordings stay. Null when never reset.
+ */
+export function lastLaunchReset(accountName: string, path: string = launchResetsPath()): Date | null {
+  if (!existsSync(path)) return null
+  let last: Date | null = null
+  for (const line of readFileSync(path, 'utf8').split(/\r?\n/)) {
+    if (!line.trim()) continue
+    try {
+      const entry = JSON.parse(line) as { account: string; at: string }
+      const at = new Date(entry.at)
+      if (entry.account === accountName && !Number.isNaN(at.getTime()) && (!last || at > last)) last = at
+    } catch {
+      // a half-written line
+    }
+  }
+  return last
+}
+
+export function recordLaunchReset(accountName: string, reason: string, at: Date = new Date(), path: string = launchResetsPath()): void {
+  mkdirSync(dirname(path), { recursive: true })
+  appendFileSync(path, `${JSON.stringify({ account: accountName, at: at.toISOString(), reason })}\n`)
+}
+
 /**
  * When this account's browser reached Facebook, from every run folder's
  * `steps.jsonl` ("Self-check passed": the launch passed the gate and opened).
  * Runs refused before a launch (no proxy, too slow) don't count.
  */
-export function listLaunches(accountName: string, roots: { runs?: string; publish?: string } = {}): Date[] {
+export function listLaunches(accountName: string, roots: { runs?: string; publish?: string; resets?: string } = {}): Date[] {
   const key = accountName.replace(/\W/g, '')
   const runsRoot = roots.runs ?? (process.env.LOG_RUNS_DIR || join(homedir(), '.logCli', 'runs'))
   const publishRoot = roots.publish ?? (process.env.LOG_PUBLISH_DIR || join(homedir(), '.logCli', 'publish'))
@@ -51,7 +80,8 @@ export function listLaunches(accountName: string, roots: { runs?: string; publis
       }
     }
   }
-  return launches.sort((a, b) => a.getTime() - b.getTime())
+  const reset = lastLaunchReset(accountName, roots.resets ?? launchResetsPath())
+  return launches.filter((at) => !reset || at > reset).sort((a, b) => a.getTime() - b.getTime())
 }
 
 function dirNames(path: string): string[] {
