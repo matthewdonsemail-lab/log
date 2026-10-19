@@ -10,6 +10,7 @@ the CLI does it.
 |---|---|---|
 | A Facebook account | `socialAccounts`, `platform = FACEBOOK` | `accountName` (the `--account` handle), `proxy`, `homeCity`, `homeCountry`, `accountStatus`, `statusReason`, `cookies`, `dailyListingCap`, `lastPostedAt`, proxy check results, `vendor…`, `totpSecret` |
 | A listing on one account | `agencyListings` | ad (`title`, `description`, `price`, `category`, `condition`, `photos`), location (`locationQuery` "Galway, Ireland", `locationCity`, `locationCountry`), `status`, `socialAccount`, `campaign`, `replaces`, `generation`, Facebook `listingId` / `listingUrl`, last run |
+| A buyer's conversation about a listing | `agencyConversations` (`channel = FACEBOOK_MARKETPLACE`), its messages in `agencyMessages` | `socialAccount`, `agencyListing`, `facebookThreadId`, buyer, `leadStatus`, `unreadCount`, `latest*`. Each message's `agencyConversation`, `direction`, `messageKey`, `isRead`, `sentBy`, `aiStatus` (rule 34, `docs/conversations.md`) |
 | A campaign | `agencyCampaigns` | groups listings: 10 accounts in Galway = 10 agencyListing rows with the same `campaign` |
 
 The twitter-controller reads the same `socialAccounts` (only `accountName`,

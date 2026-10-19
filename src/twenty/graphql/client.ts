@@ -9,7 +9,13 @@
  * email, totpSecret) are never selected, so they never leave Twenty.
  */
 import { createClient, GenqlError } from './generated/index'
-import type { AgencyListingGenqlSelection, Client, SocialAccountGenqlSelection } from './generated/index'
+import type {
+  AgencyConversationGenqlSelection,
+  AgencyListingGenqlSelection,
+  AgencyMessageGenqlSelection,
+  Client,
+  SocialAccountGenqlSelection
+} from './generated/index'
 import { TwentyError } from './types'
 import type { TwentyClient, TwentyObject, TwentyObjects } from './types'
 
@@ -78,6 +84,62 @@ export const AGENCY_LISTING_FIELDS = {
   createdAt: true
 } satisfies AgencyListingGenqlSelection
 
+/** rule 34: blaster's SMS fields are selected too, so an SMS row reads back whole. */
+export const AGENCY_CONVERSATION_FIELDS = {
+  id: true,
+  name: true,
+  channel: true,
+  pairKey: true,
+  status: true,
+  peerPhone: true,
+  blasterNumber: true,
+  facebookThreadId: true,
+  socialAccountId: true,
+  agencyListingId: true,
+  facebookListingId: true,
+  listingTitle: true,
+  buyerName: true,
+  buyerFacebookId: true,
+  buyerProfileUrl: true,
+  buyerPhone: true,
+  buyerEmail: true,
+  leadStatus: true,
+  latestDirection: true,
+  latestPreview: true,
+  latestMessageAt: true,
+  latestMessageId: true,
+  messageCount: true,
+  unreadCount: true,
+  lastReadAt: true,
+  respondedAt: true,
+  lastScannedAt: true,
+  autoReplied: true,
+  aiTookOver: true,
+  createdAt: true
+} satisfies AgencyConversationGenqlSelection
+
+export const AGENCY_MESSAGE_FIELDS = {
+  id: true,
+  name: true,
+  agencyConversationId: true,
+  channel: true,
+  direction: true,
+  status: true,
+  body: true,
+  sentAt: true,
+  senderName: true,
+  facebookMessageId: true,
+  messageKey: true,
+  isRead: true,
+  sentBy: true,
+  aiStatus: true,
+  aiOriginalText: true,
+  media: true,
+  errorCode: true,
+  errorMessage: true,
+  createdAt: true
+} satisfies AgencyMessageGenqlSelection
+
 const PAGE_INFO = { hasNextPage: true, endCursor: true } as const
 
 interface Page<T> {
@@ -135,63 +197,49 @@ export function createTwentyClient(env: Record<string, string | undefined> = pro
     }
   }
 
-  async function listSocialAccounts(filter: TwentyObjects['socialAccounts']['filter'] | undefined) {
-    const rows: TwentyObjects['socialAccounts']['row'][] = []
-    let after: string | null = null
-    do {
-      const page = (await client().query({
-        socialAccounts: { __args: { filter: filter ?? {}, first: PAGE, after }, edges: { node: SOCIAL_ACCOUNT_FIELDS }, pageInfo: PAGE_INFO }
-      })) as { socialAccounts: Page<unknown> }
-      rows.push(...(page.socialAccounts.edges.map((e) => e.node) as TwentyObjects['socialAccounts']['row'][]))
-      after = page.socialAccounts.pageInfo.hasNextPage ? (page.socialAccounts.pageInfo.endCursor ?? null) : null
-    } while (after)
-    return rows
-  }
+  /**
+   * Each object's GraphQL names and fixed selection. genql's typed query
+   * builder can't take the object as a variable, so the calls are built from
+   * this table and typed by `TwentyObjects` at the seam.
+   */
+  const OBJECTS = {
+    socialAccounts: { one: 'SocialAccount', fields: SOCIAL_ACCOUNT_FIELDS },
+    agencyListings: { one: 'AgencyListing', fields: AGENCY_LISTING_FIELDS },
+    agencyConversations: { one: 'AgencyConversation', fields: AGENCY_CONVERSATION_FIELDS },
+    agencyMessages: { one: 'AgencyMessage', fields: AGENCY_MESSAGE_FIELDS }
+  } as const satisfies Record<TwentyObject, { one: string; fields: Record<string, true> }>
+  const untyped = () => client() as unknown as { query(q: unknown): Promise<any>; mutation(q: unknown): Promise<any> }
 
-  async function listAgencyListings(filter: TwentyObjects['agencyListings']['filter'] | undefined) {
-    const rows: TwentyObjects['agencyListings']['row'][] = []
+  async function listAll<K extends TwentyObject>(object: K, filter: TwentyObjects[K]['filter'] | undefined): Promise<TwentyObjects[K]['row'][]> {
+    const rows: TwentyObjects[K]['row'][] = []
     let after: string | null = null
     do {
-      const page = (await client().query({
-        agencyListings: { __args: { filter: filter ?? {}, first: PAGE, after }, edges: { node: AGENCY_LISTING_FIELDS }, pageInfo: PAGE_INFO }
-      })) as { agencyListings: Page<unknown> }
-      rows.push(...(page.agencyListings.edges.map((e) => e.node) as TwentyObjects['agencyListings']['row'][]))
-      after = page.agencyListings.pageInfo.hasNextPage ? (page.agencyListings.pageInfo.endCursor ?? null) : null
+      const page = (await untyped().query({
+        [object]: { __args: { filter: filter ?? {}, first: PAGE, after }, edges: { node: OBJECTS[object].fields }, pageInfo: PAGE_INFO }
+      })) as Record<string, Page<unknown>>
+      rows.push(...(page[object].edges.map((e) => e.node) as TwentyObjects[K]['row'][]))
+      after = page[object].pageInfo.hasNextPage ? (page[object].pageInfo.endCursor ?? null) : null
     } while (after)
     return rows
   }
 
   return {
     list<K extends TwentyObject>(object: K, filter?: TwentyObjects[K]['filter']) {
-      return guarded(`list ${object}`, async () =>
-        (object === 'socialAccounts'
-          ? await listSocialAccounts(filter as TwentyObjects['socialAccounts']['filter'])
-          : await listAgencyListings(filter as TwentyObjects['agencyListings']['filter'])) as TwentyObjects[K]['row'][]
-      )
+      return guarded(`list ${object}`, () => listAll(object, filter))
     },
     get<K extends TwentyObject>(object: K, id: string) {
       // Not a record id: nothing can match, and Twenty would reject the filter.
       if (!UUID.test(id)) return Promise.resolve(null)
       return guarded(`get ${object} ${id}`, async () => {
-        const rows =
-          object === 'socialAccounts'
-            ? await listSocialAccounts({ id: { eq: id } })
-            : await listAgencyListings({ id: { eq: id } })
+        const rows = await listAll(object, { id: { eq: id } } as TwentyObjects[K]['filter'])
         return (rows[0] ?? null) as TwentyObjects[K]['row'] | null
       })
     },
     create<K extends TwentyObject>(object: K, data: TwentyObjects[K]['create']) {
       return guarded(`create ${object}`, async () => {
-        if (object === 'socialAccounts') {
-          const out = await client().mutation({
-            createSocialAccount: { __args: { data: data as TwentyObjects['socialAccounts']['create'] }, ...SOCIAL_ACCOUNT_FIELDS }
-          })
-          return out.createSocialAccount as TwentyObjects[K]['row']
-        }
-        const out = await client().mutation({
-          createAgencyListing: { __args: { data: data as TwentyObjects['agencyListings']['create'] }, ...AGENCY_LISTING_FIELDS }
-        })
-        return out.createAgencyListing as TwentyObjects[K]['row']
+        const name = `create${OBJECTS[object].one}`
+        const out = await untyped().mutation({ [name]: { __args: { data }, ...OBJECTS[object].fields } })
+        return out[name] as TwentyObjects[K]['row']
       })
     },
     loginSecrets(accountId: string) {
@@ -208,16 +256,9 @@ export function createTwentyClient(env: Record<string, string | undefined> = pro
     },
     update<K extends TwentyObject>(object: K, id: string, data: TwentyObjects[K]['update']) {
       return guarded(`update ${object} ${id}`, async () => {
-        if (object === 'socialAccounts') {
-          const out = await client().mutation({
-            updateSocialAccount: { __args: { id, data: data as TwentyObjects['socialAccounts']['update'] }, ...SOCIAL_ACCOUNT_FIELDS }
-          })
-          return out.updateSocialAccount as TwentyObjects[K]['row']
-        }
-        const out = await client().mutation({
-          updateAgencyListing: { __args: { id, data: data as TwentyObjects['agencyListings']['update'] }, ...AGENCY_LISTING_FIELDS }
-        })
-        return out.updateAgencyListing as TwentyObjects[K]['row']
+        const name = `update${OBJECTS[object].one}`
+        const out = await untyped().mutation({ [name]: { __args: { id, data }, ...OBJECTS[object].fields } })
+        return out[name] as TwentyObjects[K]['row']
       })
     }
   }

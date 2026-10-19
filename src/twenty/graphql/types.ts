@@ -10,10 +10,18 @@
  */
 import type { ErrorCode } from '../../errors/catalog/index'
 import type {
+  AgencyConversation,
+  AgencyConversationCreateInput,
+  AgencyConversationFilterInput,
+  AgencyConversationUpdateInput,
   AgencyListing,
   AgencyListingCreateInput,
   AgencyListingFilterInput,
   AgencyListingUpdateInput,
+  AgencyMessage,
+  AgencyMessageCreateInput,
+  AgencyMessageFilterInput,
+  AgencyMessageUpdateInput,
   SocialAccount,
   SocialAccountCreateInput,
   SocialAccountFilterInput,
@@ -24,6 +32,9 @@ import type {
 export interface TwentyObjects {
   socialAccounts: { row: SocialAccount; filter: SocialAccountFilterInput; create: SocialAccountCreateInput; update: SocialAccountUpdateInput }
   agencyListings: { row: AgencyListing; filter: AgencyListingFilterInput; create: AgencyListingCreateInput; update: AgencyListingUpdateInput }
+  /** A buyer's conversation about a listing (rule 34), and its messages. Shared with blaster's SMS threads. */
+  agencyConversations: { row: AgencyConversation; filter: AgencyConversationFilterInput; create: AgencyConversationCreateInput; update: AgencyConversationUpdateInput }
+  agencyMessages: { row: AgencyMessage; filter: AgencyMessageFilterInput; create: AgencyMessageCreateInput; update: AgencyMessageUpdateInput }
 }
 
 export type TwentyObject = keyof TwentyObjects
