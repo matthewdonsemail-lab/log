@@ -17,7 +17,7 @@ import type { LogToolInput } from "./types.ts";
 
 export * from "./helpers/index.ts";
 export type { GuardResult, LogTool, LogToolInput } from "./types.ts";
-export { TERMINAL_ONLY } from "./types.ts";
+export { NO_PROMPT, TERMINAL_ONLY } from "./types.ts";
 
 /** Runs one tool call as `log <name> <args>`. Tests inject the context (fixture Twenty, no browser). */
 export async function runToolCall(name: string, input: LogToolInput | undefined, context: Partial<CommandContext> = {}): Promise<CallToolResult> {

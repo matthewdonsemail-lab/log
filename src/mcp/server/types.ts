@@ -19,13 +19,17 @@ export interface LogTool {
 
 /**
  * Commands that need a person at the terminal, so they are not tools. Over
- * stdio, stdin carries the MCP messages: `connect` waits for Enter on it and
- * `launch` prompts with Clack.
+ * stdio, stdin carries the MCP messages, and `launch` prompts with Clack.
+ * `connect` is a tool because it always runs `--noPrompt` here (`NO_PROMPT`).
  */
 export const TERMINAL_ONLY: Readonly<Record<string, string>> = {
   launch: "prompts in a terminal (Clack). Call the commands it wraps directly.",
-  connect: "waits for Enter on stdin while matt signs in. Run `bun bin/log.ts connect --account <name>` in a terminal.",
   login: "opens a browser for Twenty OAuth and waits for it. Run `bun bin/log.ts login` in a terminal.",
+};
+
+/** Flags added to a command's args so it never reads stdin. */
+export const NO_PROMPT: Readonly<Record<string, string>> = {
+  connect: "--noPrompt",
 };
 
 export type GuardResult = { ok: true; argv: string[] } | { ok: false; message: string };

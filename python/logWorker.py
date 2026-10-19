@@ -144,6 +144,25 @@ async def acquire(request: dict[str, Any], storage_state_path: str | None):
     return manager, session
 
 
+async def wait_for_login(page, wait_seconds: int) -> None:
+    """Polls the page's login markers every 5 s until none show, or the time is up."""
+    log(f"Waiting up to {wait_seconds}s for a logged-in Facebook page. Sign in in the Camoufox window if it asks.")
+    await page.wait_for_timeout(4000)
+    deadline = asyncio.get_running_loop().time() + wait_seconds
+    while True:
+        try:
+            if not any((await auth_flags(page)).values()):
+                log("Logged in.")
+                await page.wait_for_timeout(3000)
+                return
+        except Exception:
+            pass  # mid-navigation while the person signs in
+        if asyncio.get_running_loop().time() >= deadline:
+            log("Still not logged in when the wait ran out.")
+            return
+        await asyncio.sleep(5)
+
+
 async def login(request: dict[str, Any]) -> dict[str, Any]:
     state = Path(request["storage_state_path"])
     manager, session = await acquire(request, str(state) if state.exists() else None)
@@ -154,13 +173,20 @@ async def login(request: dict[str, Any]) -> dict[str, Any]:
             await page.goto(SELLING_URL, wait_until="domcontentloaded")
         except Exception as exc:
             log(f"Navigation warning: {exc}. The browser stays open, carry on in it.")
-        log("")
-        log("In the Camoufox window:")
-        log("  1. Log into Facebook (finish any checkpoint or 2FA)")
-        log("  2. Check you can see Marketplace > Selling > Your listings")
-        log("  3. Come back here and press Enter to save the session")
-        log("Do not close the browser yourself.")
-        await asyncio.to_thread(sys.stdin.readline)
+        wait_seconds = (request.get("params") or {}).get("waitSeconds")
+        if wait_seconds:
+            # `log connect --noPrompt` (the MCP tool): stdin isn't ours, so watch the
+            # page instead. Saved cookies that still work end it at once; otherwise
+            # a person signs in in the visible window before the deadline.
+            await wait_for_login(page, int(wait_seconds))
+        else:
+            log("")
+            log("In the Camoufox window:")
+            log("  1. Log into Facebook (finish any checkpoint or 2FA)")
+            log("  2. Check you can see Marketplace > Selling > Your listings")
+            log("  3. Come back here and press Enter to save the session")
+            log("Do not close the browser yourself.")
+            await asyncio.to_thread(sys.stdin.readline)
         try:
             await page.reload(wait_until="domcontentloaded")
             await page.wait_for_timeout(2500)

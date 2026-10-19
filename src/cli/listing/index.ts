@@ -1,18 +1,25 @@
 /**
  * `log listings` and `log listing <id>` — the Marketplace listings in Twenty
  * (agencyListings): what each posts, from which account, and its last run.
+ * `log listing create` adds one READY row for an account (Twenty only, nothing
+ * on Facebook until `log publish`).
  */
+import { readFileSync } from "node:fs";
 import { fromTwentyEnum, listFacebookAccounts, findAccount, toTwentyEnum } from "../../marketplace/socialAccount/index.ts";
-import { getListing, LISTING_STATUSES, listListingsWhere } from "../../marketplace/agencyListing/index.ts";
+import { createSlot, getListing, LISTING_STATUSES, listListingsWhere } from "../../marketplace/agencyListing/index.ts";
 import type { ListingFilter } from "../../marketplace/agencyListing/index.ts";
 import { parseArgs, refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command } from "../runner/types.ts";
-import { renderListingDetail, renderListingsTable } from "./helpers/index.ts";
+import { listingFromJson, renderListingDetail, renderListingsTable } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
 
 export const LISTINGS_USAGE = "Usage: log listings [--status <STATUS>] [--account <accountName>] [--campaign <campaignId>] [--json]";
-export const LISTING_USAGE = "Usage: log listing <agencyListingId> [--json]";
+export const LISTING_USAGE = [
+  "Usage: log listing <agencyListingId> [--json]",
+  "       log listing create --account <accountName> --file <listing.json> [--json]",
+  "The file: title, description, price, priceCurrency, category, condition (new|usedLikeNew|usedGood|usedFair), photos (paths or URLs), locationQuery, locationCity, locationCountry.",
+].join("\n");
 
 export const listingsCommand: Command = {
   name: "listings",
@@ -46,12 +53,34 @@ export const listingsCommand: Command = {
 
 export const listingCommand: Command = {
   name: "listing",
-  summary: "Show one Twenty listing: the ad, its account, location and last run",
-  args: "<id> [--json]",
+  summary: "Show one Twenty listing, or create one for an account from a JSON file",
+  args: "<id> | create --account <name> --file <listing.json> [--json]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json"] });
+    const parsed = parseArgs(argv, { boolean: ["json"], valued: ["account", "file"] });
     if (!parsed.ok) return { code: 1, stderr: `log listing: ${parsed.error}\n${LISTING_USAGE}` };
     const [key, extra] = parsed.positionals;
+    if (key === "create") {
+      const account = parsed.flags["account"];
+      const file = parsed.flags["file"];
+      if (typeof account !== "string" || typeof file !== "string") return { code: 1, stderr: `log listing create: --account and --file are required\n${LISTING_USAGE}` };
+      let raw: unknown;
+      try {
+        raw = JSON.parse(readFileSync(file, "utf8"));
+      } catch (error) {
+        return { code: 1, stderr: `log listing create: can't read ${file}: ${error instanceof Error ? error.message : String(error)}` };
+      }
+      const checked = listingFromJson(raw);
+      if (!checked.ok) return { code: 1, stderr: `log listing create: ${file} can't be published:\n${checked.problems.map((p) => `  - ${p}`).join("\n")}` };
+      try {
+        const owner = await findAccount(context.twenty, account);
+        const created = await createSlot(context.twenty, checked.ad, owner.id, { campaignId: null });
+        if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ listing: created }, null, 2) };
+        return { code: 0, stdout: `Created ${created.id} (READY) for ${owner.accountName}: ${created.title}\nNext: log publish --listing ${created.id}` };
+      } catch (error) {
+        return refuseError("listing", error);
+      }
+    }
+    if (parsed.flags["account"] !== undefined || parsed.flags["file"] !== undefined) return { code: 1, stderr: `log listing: --account and --file are for \`log listing create\`\n${LISTING_USAGE}` };
     if (key === undefined) return { code: 1, stderr: `log listing: a listing id is required\n${LISTING_USAGE}` };
     if (extra !== undefined) return { code: 1, stderr: `log listing: unexpected argument "${extra}"\n${LISTING_USAGE}` };
     try {

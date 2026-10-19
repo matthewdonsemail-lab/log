@@ -24,7 +24,10 @@ import { renderDoctor, renderLoss, renderScan } from "./helpers/index.ts";
 export * from "./helpers/index.ts";
 
 export const DOCTOR_USAGE = "Usage: log doctor [--json]";
-export const CONNECT_USAGE = "Usage: log connect --account <accountName>";
+export const CONNECT_USAGE = "Usage: log connect --account <accountName> [--noPrompt [--wait <seconds>]]";
+
+/** How long `connect --noPrompt` watches the window for a login. */
+export const CONNECT_WAIT_SECONDS = 600;
 export const SCAN_USAGE = "Usage: log scan --account <accountName> [--json]";
 export const STATUS_USAGE = "Usage: log status <listingId> --account <accountName> [--json]";
 
@@ -169,17 +172,29 @@ export const doctorCommand: Command = {
 export const connectCommand: Command = {
   name: "connect",
   summary: "Sign a Facebook account in by hand through its proxy, save its cookies to Twenty",
-  args: "--account <name>",
+  args: "--account <name> [--noPrompt [--wait <seconds>]]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { valued: ["account"] });
+    const parsed = parseArgs(argv, { boolean: ["noPrompt"], valued: ["account", "wait"] });
     if (!parsed.ok) return { code: 1, stderr: `log connect: ${parsed.error}\n${CONNECT_USAGE}` };
+    // --noPrompt: no Enter on stdin (the MCP tool owns it). The worker watches the page instead,
+    // ending at once if the saved cookies are logged in, or when a person finishes signing in.
+    const noPrompt = Boolean(parsed.flags["noPrompt"]);
+    const waitSeconds = parsed.flags["wait"] === undefined ? CONNECT_WAIT_SECONDS : Number(parsed.flags["wait"]);
+    if (!Number.isInteger(waitSeconds) || waitSeconds < 10 || waitSeconds > 1800) return { code: 1, stderr: `log connect: --wait must be 10 to 1800 seconds\n${CONNECT_USAGE}` };
     const opened = await openAccount(context, "connect", CONNECT_USAGE, parsed.flags["account"], "connect");
     if (!("run" in opened)) return opened;
     const { account, run } = opened;
     return withRun(context, "connect", account, run, async () => {
       const result = await context.worker(
-        { action: "login", account_id: account.id, storage_state_path: run.statePath, proxy_path: run.proxyPath, device_path: run.devicePath },
-        { interactive: true },
+        {
+          action: "login",
+          account_id: account.id,
+          storage_state_path: run.statePath,
+          proxy_path: run.proxyPath,
+          device_path: run.devicePath,
+          ...(noPrompt ? { params: { waitSeconds } } : {}),
+        },
+        { interactive: !noPrompt },
       );
       if (!result.ok) return await workerFailed(context, "connect", account, result);
       const cookies = run.readCookies();

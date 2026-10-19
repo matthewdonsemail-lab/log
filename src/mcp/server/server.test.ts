@@ -22,7 +22,8 @@ describe("toolsFromCommands", () => {
     const names = toolsFromCommands(COMMANDS).map((tool) => tool.name);
     for (const command of COMMANDS) expect(names.includes(command.name)).toBe(!(command.name in TERMINAL_ONLY));
     expect(names).toContain("publish");
-    expect(names).not.toContain("connect");
+    expect(names).toContain("connect");
+    expect(names).not.toContain("launch");
   });
 });
 
@@ -33,8 +34,13 @@ describe("guardCall", () => {
     expect(guardCall("publish", { args: ["--listing", "a", "--live"], confirmLive: true }, COMMANDS)).toEqual({ ok: true, argv: ["publish", "--listing", "a", "--live"] });
   });
 
+  test("connect always runs --noPrompt, so it never reads the MCP channel", () => {
+    expect(guardCall("connect", { args: ["--account", "x"] }, COMMANDS)).toEqual({ ok: true, argv: ["connect", "--account", "x", "--noPrompt"] });
+    expect(guardCall("connect", { args: ["--account", "x", "--noPrompt"] }, COMMANDS)).toEqual({ ok: true, argv: ["connect", "--account", "x", "--noPrompt"] });
+  });
+
   test("terminal-only, unknown and malformed calls are refused", () => {
-    expect(guardCall("connect", { args: ["--account", "x"] }, COMMANDS).ok).toBe(false);
+    expect(guardCall("launch", {}, COMMANDS).ok).toBe(false);
     expect(guardCall("bogus", {}, COMMANDS).ok).toBe(false);
     expect(guardCall("listings", { args: [1 as unknown as string] }, COMMANDS).ok).toBe(false);
     expect(guardCall("listings", undefined, COMMANDS)).toEqual({ ok: true, argv: ["listings"] });

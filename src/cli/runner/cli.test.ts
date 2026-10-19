@@ -1,4 +1,7 @@
 import { describe, expect, test } from "bun:test";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { runCli } from "./index.ts";
 
@@ -45,6 +48,31 @@ describe("runCli", () => {
     expect(parsed.account).toMatchObject({ accountName: "galwayOne", homeCountry: "IE" });
     expect((await run(["listing"])).code).toBe(1);
     expect((await run(["listing", "000"])).code).toBe(1);
+  });
+
+  test("listing create adds a READY row for the account from a JSON file, and refuses one that can't post", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "logListing"));
+    try {
+      const good = join(dir, "good.json");
+      writeFileSync(good, JSON.stringify({ title: "Junk removal", description: "We haul it", price: 99, priceCurrency: "EUR", category: "Miscellaneous", condition: "new", photos: ["a.jpg"], locationQuery: "Galway, Ireland", locationCity: "galway", locationCountry: "ie" }));
+      const twenty = marketplaceFixture();
+      const out: string[] = [];
+      const code = await runCli(["listing", "create", "--account", "galwayOne", "--file", good, "--json"], { twenty, out: (l) => out.push(l), err: () => {} });
+      expect(code).toBe(0);
+      const created = JSON.parse(out.join("\n")).listing;
+      expect(created).toMatchObject({ title: "Junk removal", status: "ready", price: 99, locationCountry: "IE", photos: ["a.jpg"], generation: 0 });
+      expect(twenty.rows.agencyListings.some((r) => r.id === created.id)).toBe(true);
+
+      const bad = join(dir, "bad.json");
+      writeFileSync(bad, JSON.stringify({ title: "No price", category: "Miscellaneous", photos: [] }));
+      const refused = await run(["listing", "create", "--account", "galwayOne", "--file", bad]);
+      expect(refused.code).toBe(1);
+      expect(refused.err).toContain("price must be 1 or more");
+      expect((await run(["listing", "create", "--file", good])).code).toBe(1);
+      expect((await run(["listing", "liveOne", "--account", "galwayOne"])).code).toBe(1);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 
   test("accounts --json lists the FACEBOOK accounts, never their proxy or cookies", async () => {

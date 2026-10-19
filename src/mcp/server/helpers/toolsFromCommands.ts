@@ -11,6 +11,7 @@ export function toolsFromCommands(commands: Command[]): LogTool[] {
       description: [
         `log ${command.name}${command.args ? ` ${command.args}` : ""}`,
         command.summary,
+        ...(command.name === "connect" ? ["Runs --noPrompt: saved cookies that work end it at once; otherwise matt signs in in the visible Camoufox window (up to --wait seconds, default 600)."] : []),
         "Pass the arguments after the command name in `args`, e.g. [\"--json\"]. `--live` also needs confirmLive: true.",
       ].join("\n"),
       inputSchema: {

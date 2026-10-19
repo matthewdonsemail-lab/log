@@ -54,6 +54,7 @@ bun bin/log.ts account show galwayOne
 bun bin/log.ts account status galwayOne BANNED --reason accountDisabled   # kept; campaign listings replaced
 bun bin/log.ts listings [--status READY] [--account galwayOne] [--campaign <id>]
 bun bin/log.ts listing <agencyListingId>
+bun bin/log.ts listing create --account galwayOne --file ad.json   # a READY row, checked like publish checks it
 
 # sign in to log itself (Twenty OAuth through blaster's web app, same as `blaster login`)
 bun bin/log.ts login | whoami | logout
@@ -68,6 +69,7 @@ bun bin/log.ts proxy balance                             # 2Captcha traffic left
 # live (launches Camoufox through the proxy)
 bun bin/log.ts doctor                                    # setup check, which accounts may run
 bun bin/log.ts connect --account galwayOne               # sign in by hand, cookies saved to Twenty
+bun bin/log.ts connect --account galwayOne --noPrompt    # no Enter: saved cookies or a sign-in in the window, up to --wait 600 s
 bun bin/log.ts scan --account galwayOne                  # Marketplace > Selling, written back to the listings
 bun bin/log.ts status <facebookListingId> --account galwayOne
 
@@ -96,8 +98,11 @@ runs through `runCli`, so every gate above still applies.
 
 - `--live` is refused unless the call also has `confirmLive: true`. Set it
   only when matt asked for that live run (rule 10).
-- `connect`, `launch` and `login` aren't tools: they wait on a person at the
-  terminal, and stdin is the MCP channel. Run them in a terminal.
+- `connect` always runs `--noPrompt` as a tool: it watches the window for
+  a login (up to `--wait` s) instead of waiting for Enter. `launch` and `login`
+  aren't tools, because they wait on a person at the terminal and stdin is the
+  MCP channel.
+- Taking an account from NEEDSLOGIN to a dry run: `skills/accountToDryRun`.
 - It loads `log-cli/.env.local` itself, whatever folder it is started from.
 
 ## Reading the results

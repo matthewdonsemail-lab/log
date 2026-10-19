@@ -135,6 +135,22 @@ describe("live commands", () => {
     expect(out.join("\n")).toContain("needsLogin is ACTIVE again");
   });
 
+  test("connect --noPrompt never takes stdin: the worker watches the page for the login", async () => {
+    const twenty = marketplaceFixture();
+    let seen: { request?: WorkerRequest; interactive?: boolean } = {};
+    const worker = (async (request: WorkerRequest, options?: { interactive?: boolean }) => {
+      seen = { request, interactive: options?.interactive };
+      require("node:fs").writeFileSync(request.storage_state_path!, JSON.stringify({ cookies: [{ name: "c_user", value: "3", domain: ".facebook.com", path: "/" }], origins: [] }));
+      return { ok: true, storageStatePath: request.storage_state_path, loggedIn: true, authFlags: {} };
+    }) as WorkerClient;
+    const code = await runCli(["connect", "--account", "needsLogin", "--noPrompt", "--wait", "120"], { worker, twenty, out: () => {}, err: () => {} });
+    expect(code).toBe(0);
+    expect(seen.interactive).toBe(false);
+    expect(seen.request?.params).toEqual({ waitSeconds: 120 });
+    expect(twenty.rows.socialAccounts.find((r) => r.id === "needsLogin")!.accountStatus).toBe("ACTIVE");
+    expect(await runCli(["connect", "--account", "needsLogin", "--noPrompt", "--wait", "5"], { worker, twenty, out: () => {}, err: () => {} })).toBe(1);
+  });
+
   test("doctor reports the setup and which Twenty accounts may run", async () => {
     const reply = { ok: true, checks: { python: "3.12.10", facebookCamofoxClient: "/fcc", camoufoxBrowser: "/camoufox.exe", camoufoxVersion: "152" } };
     const { code, out } = await run(["doctor", "--json"], () => reply);

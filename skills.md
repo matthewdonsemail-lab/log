@@ -11,6 +11,7 @@ skill in the same commit.
 | [`commitLog`](skills/commitLog/SKILL.md) | Write the `log.md` entry every commit needs, from the AST summary the hook generates |
 | [`captureRule`](skills/captureRule/SKILL.md) | Turn a rule from matt into a hard line in `AGENTS.md`, plus its check |
 | [`reaCapture`](skills/reaCapture/SKILL.md) | Capture live publish runs as a raw HAR, read them with `rea`, and score client design changes with SubQ |
+| [`accountToDryRun`](skills/accountToDryRun/SKILL.md) | Take one account from NEEDSLOGIN to ACTIVE and run a full publish dry run, all through the `log` MCP tools |
 
 These three files stay in step:
 

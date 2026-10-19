@@ -950,3 +950,26 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: `log proxy assign` picks 2Captcha places with `pickPlace`, which only accepts an exact city slug in the home country, and narrows to `--region <state>` when given. A city with punctuation is searched again as its slug (`wilkes-barre` → `wilkesbarre`). `sessionFor` now keys the sticky session on the account, the place and an `attempt`. After the country check, `assignOne` measures the exit IP's GeoIP coordinates against the home city's `CITY_COORDINATES` (`distanceKm`). Anything over `MAX_PROXY_KM` (100) is retried on a new session, up to `PROXY_ATTEMPTS` (3), then `proxyTooFar` and nothing is saved. `ProxyCheck` carries the latitude and longitude that `proxyGate.check` already returned. New catalog code `proxyTooFar`, catalog re-exported, and docs/proxies.md and the logCli skill updated.
 Why: assigning the ten Pennsylvania accounts through the MCP tool put five in the wrong state. The search returns substring hits across states first (philadelphia → newphiladelphia/ohio, reading → northreading/massachusetts, lancaster → kentucky) and the code took the first one. Re-pinning didn't help because 2Captcha kept each session's old IP, and one Lancaster, PA proxy still exited in Dallas. The country check alone let all of them through.
 Checked: unit tests for pickPlace (substring and wrong-state hits refused, wilkesbarre found), sessionFor (a new place or attempt gives a new session, the same one stays stable), distanceKm (Lancaster → Kutztown 97 km, → Dallas over 1,900), and assign (a far exit is retried and the near one saved; three far exits give proxyTooFar and nothing saved). `bun run check` passed: 386 pass / 0 fail. Live through `mcp__log__proxy`: all ten PA accounts now exit in Pennsylvania (ip-api: Allentown, Nazareth, Scranton, Reading, Pittsburgh, Wilkes-Barre, Upper Darby, Erie, Harrisburg, Kutztown). The distance retry itself hasn't run live yet.
+
+## 2026-10-19 07:04Z · feat/publishMachine
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `python/logWorker.py`: added def wait_for_login · changed def login
+- `skills.md`: edited
+- `skills/accountToDryRun/SKILL.md`: new file
+- `skills/logCli/SKILL.md`: edited
+- `src/cli/listing/helpers/index.ts`: added export from "./listingFromJson.ts"
+- `src/cli/listing/helpers/listingFromJson.ts`: added const CONDITIONS, function listingFromJson
+- `src/cli/listing/index.ts`: changed const LISTING_USAGE, const listingCommand
+- `src/cli/live/index.ts`: added const CONNECT_WAIT_SECONDS · changed const CONNECT_USAGE, const connectCommand
+- `src/cli/live/live.test.ts`: added test "connect --noPrompt never takes stdin: the worker watches the page for the login"
+- `src/cli/runner/cli.test.ts`: added test "listing create adds a READY row for the account from a JSON file, and refuses one that can't post"
+- `src/mcp/server/helpers/guardCall.ts`: changed function guardCall
+- `src/mcp/server/helpers/toolsFromCommands.ts`: changed function toolsFromCommands
+- `src/mcp/server/index.ts`: changed export from "./types.ts"
+- `src/mcp/server/server.test.ts`: added test "connect always runs --noPrompt, so it never reads the MCP channel" · changed test "every command is a tool except the terminal-only ones", test "terminal-only, unknown and malformed calls are refused"
+- `src/mcp/server/types.ts`: added const NO_PROMPT · changed const TERMINAL_ONLY
+
+What changed: `log connect --noPrompt [--wait <s>]` sends `params.waitSeconds` to the worker and spawns it without stdin. In Python, `login` then calls the new `wait_for_login`, which checks the page's login markers every 5 s instead of waiting for Enter. It ends at once if the saved cookies are logged in, or when a person finishes signing in, or at the deadline (default `CONNECT_WAIT_SECONDS` 600). The MCP server makes `connect` a tool that always gets `--noPrompt` (`NO_PROMPT`); only `launch` and `login` stay terminal-only. New `log listing create --account <a> --file <ad.json>`: `listingFromJson` reads the ad and checks it with `toPublishListing`, and `createSlot` writes one READY agencyListing for the account. A file that can't post is refused with its problems. New skill `accountToDryRun`, the MCP runbook from NEEDSLOGIN to ACTIVE to a full publish dry run, indexed in skills.md and linked from logCli.
+Why: matt wants one account taken from its status to working, through a dry run that goes all the way to the listing form, entirely through the MCP. `connect` was the only way to ACTIVE, but it waited for Enter on stdin, which is the MCP channel. The listing row could only be made by a hand-written script.
+Checked: new tests: connect --noPrompt spawns non-interactive with `params.waitSeconds` 120, sets the account ACTIVE, and refuses `--wait 5`; the MCP guard appends `--noPrompt` once; listing create makes a READY row with the fixture Twenty and refuses a file without a price or with no --account. `python -m py_compile python/logWorker.py` OK. `bun run check` passed: 389 pass / 0 fail. Live connect hasn't run yet: Pennsylvania was outside waking hours (03:00 EDT).

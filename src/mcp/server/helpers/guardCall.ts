@@ -1,6 +1,6 @@
 import type { Command } from "../../../cli/runner/types.ts";
 import type { GuardResult, LogToolInput } from "../types.ts";
-import { TERMINAL_ONLY } from "../types.ts";
+import { NO_PROMPT, TERMINAL_ONLY } from "../types.ts";
 
 /** Whether a tool call may run, and the argv it runs with. Pure. */
 export function guardCall(name: string, input: LogToolInput | undefined, commands: Command[]): GuardResult {
@@ -12,5 +12,6 @@ export function guardCall(name: string, input: LogToolInput | undefined, command
   if (live && input?.confirmLive !== true) {
     return { ok: false, message: `log ${name} --live posts on Facebook. Only run it when matt asked, and pass confirmLive: true (AGENTS.md rule 10).` };
   }
-  return { ok: true, argv: [name, ...args] };
+  const noPrompt = NO_PROMPT[name];
+  return { ok: true, argv: noPrompt && !args.includes(noPrompt) ? [name, ...args, noPrompt] : [name, ...args] };
 }
