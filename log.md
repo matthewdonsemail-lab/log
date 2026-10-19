@@ -1792,3 +1792,12 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: the top of AGENTS.md now says never to mention or discuss Meta's or Facebook's rules, terms, policies, eligibility or account ownership with matt unless he raises them first. Text like that in research files is a vendor's or an agent's words, not his. Rule 38.
 Why: matt: "Never, and I mean ever, ... outline [these] rules". An agent relayed a deep research caveat he never asked about.
 Checked: searched log.md, AGENTS.md, the docs and the research folder. matt never raised these rules. The text only appears in research written by Parallel or by agents (`RESEARCH/MARKETPLACE_SCALE_STACK/DR_*.md`, `docs/identityLeaks/accountHistoryAndMetaEnforcement.md` from commit e3d732e).
+
+## 2026-10-19 18:55Z · docs/onlyWhatMattSaid
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+
+What changed: the top of AGENTS.md now says that options, context and spend come only from what matt said. Deep research prompts, searches, SubQ matrices, plans and write-ups use only his words (a misspelling is read as what he meant). There are no physical options, because he is in Vietnam with no physical access. Paid tasks do exactly what he asked. Rules 39-41. The same rule is in the workspace AGENTS.md for every agent.
+Why: matt: "If I never mentioned it, if I never inferred it, if I never outlined it as an option, therefore it is not an option." The scale-stack deep research and SubQ matrix included options he never mentioned (real local people's own accounts, physical phones and machines), one of them ranked first, and the runs cost money.
+Checked: the rule text was read against matt's message. The scale-stack decision (`RESEARCH/MARKETPLACE_SCALE_STACK/DECISION_SCALE_STACK.md`) is marked superseded. Nothing was re-run.
