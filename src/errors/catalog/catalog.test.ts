@@ -131,7 +131,7 @@ describe('the boundaries only let catalog codes through', () => {
 })
 
 describe('the Python sends only catalog codes', () => {
-  const files = ['logWorker.py', 'publishSession.py', 'errorCodes.py'].map((name) => ({
+  const files = ['logWorker.py', 'publishSession.py', 'connectSession.py', 'errorCodes.py'].map((name) => ({
     name,
     text: readFileSync(join(root, 'python', name), 'utf8')
   }))

@@ -28,6 +28,13 @@ describe('planNextSolver', () => {
     expect(planNextSolver(recaptcha, spent, both, p)).toMatchObject({ solver: null, reason: 'attemptsUsed' })
   })
 
+  test("FB's text image ('Confirm that you're human'): CaptchaKraken first, then 2Captcha's image solver", () => {
+    const textImage: CaptchaDetection = { kind: 'textImage' }
+    const p = DEFAULT_CAPTCHA_POLICY
+    expect(planNextSolver(textImage, [], both, p)).toMatchObject({ solver: 'captchaKraken' })
+    expect(planNextSolver(textImage, [attempt('captchaKraken'), attempt('captchaKraken')], both, p)).toMatchObject({ solver: 'twoCaptcha', reason: 'text image, 2Captcha image fallback' })
+  })
+
   test('a dead CaptchaKraken key skips straight to 2Captcha', () => {
     const plan = planNextSolver(recaptcha, [attempt('captchaKraken', { code: 'insufficientCredits' })], both, DEFAULT_CAPTCHA_POLICY)
     expect(plan.solver).toBe('twoCaptcha')

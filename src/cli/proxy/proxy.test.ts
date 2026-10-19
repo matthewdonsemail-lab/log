@@ -25,6 +25,9 @@ describe("countryOfLocation", () => {
     expect(countryOfLocation("Salthill, Galway, Ireland")).toBe("IE");
     expect(countryOfLocation("Manchester, UK")).toBe("GB");
     expect(countryOfLocation("Austin, TX, United States")).toBe("US");
+    // Facebook's own US form: "City, ST".
+    expect(countryOfLocation("Philadelphia, PA")).toBe("US");
+    expect(countryOfLocation("Washington, DC")).toBe("US");
     expect(countryOfLocation("Galway")).toBeNull();
     expect(countryOfLocation("Galway, Atlantis")).toBeNull();
   });
@@ -130,6 +133,24 @@ describe("log proxy assign (2Captcha, fetch stubbed)", () => {
       expect(out).toMatch(/\d+ km from Galway\)\. Saved to Twenty\./);
       const saved = String(twenty.rows.socialAccounts.find((r) => r.id === "noProxy")!.proxy);
       expect(saved).toContain("-session-");
+    } finally {
+      restore();
+    }
+  });
+
+  test("an exit too slow for Facebook is skipped like a far one, and a fast one saved", async () => {
+    stub2Captcha();
+    try {
+      const speeds = [11_913, 420];
+      const seen: number[] = [];
+      const { code, out } = await run(["proxy", "assign", "--account", "noProxy"], () => {
+        const facebookMs = speeds[seen.length];
+        seen.push(facebookMs);
+        return { ok: true, exitIp: `198.51.100.${seen.length}`, exitCountry: "IE", country: "IE", latitude: 53.28, longitude: -9.03, facebookMs };
+      });
+      expect(code).toBe(0);
+      expect(seen).toEqual([11_913, 420]);
+      expect(out).toContain("exits at 198.51.100.2");
     } finally {
       restore();
     }

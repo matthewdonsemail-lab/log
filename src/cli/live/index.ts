@@ -7,6 +7,9 @@
  * python/proxyGate.py (the proxy's exit IP is in that country). There is no
  * way around either, signing in included (AGENTS.md rule 12).
  */
+import { createActor, fromPromise, toPromise } from "xstate";
+import { appendAttempt, countArkoseToday, readAttempts, solverAvailability } from "../../captcha/router/index.ts";
+import type { ConnectSession, ConnectStep } from "../../camofox/session/index.ts";
 import { fromCamofoxStatus } from "../../camofox/worker/index.ts";
 import type { DoctorResult, ScanResult, StatusResult, WorkerFailure } from "../../camofox/worker/index.ts";
 import { prepareRun } from "../../camofox/run/index.ts";
@@ -14,21 +17,24 @@ import type { PreparedRun } from "../../camofox/run/index.ts";
 import { ERROR_CATALOG } from "../../errors/catalog/index.ts";
 import { syncDashboard } from "../../marketplace/agencyListing/index.ts";
 import { classifySignal } from "../../marketplace/account/index.ts";
+import { connectMachine } from "../../marketplace/connect/index.ts";
+import type { ActOutput, ConnectActorInputs, ConnectOutput, ReadOutput, SaveOutput, SolveOutput } from "../../marketplace/connect/index.ts";
+import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import { recordAccountIssue } from "../../marketplace/replacement/index.ts";
 import { checkRunnable, findAccount, listFacebookAccounts, saveCookies, saveDeviceProfile, saveSession, setAccountStatus, toFacebookCookies } from "../../marketplace/socialAccount/index.ts";
 import type { FacebookAccount, RunPurpose } from "../../marketplace/socialAccount/index.ts";
 import { parseArgs, refuse, refuseError } from "../runner/helpers/index.ts";
-import { settleRunCapture } from "../../rea/firefox/index.ts";
+import { settleInBackground } from "../../rea/firefox/index.ts";
 import type { LoginSecrets } from "../../twenty/graphql/index.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
-import { renderDoctor, renderLoss, renderScan } from "./helpers/index.ts";
+import { renderConnect, renderDoctor, renderLoss, renderScan, summarizeConnect } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
 
 export const DOCTOR_USAGE = "Usage: log doctor [--json]";
-export const CONNECT_USAGE = "Usage: log connect --account <accountName> [--noPrompt [--wait <seconds>]] [--bypass]";
+export const CONNECT_USAGE = "Usage: log connect --account <accountName> [--noPrompt] [--wait <seconds>] [--bypass]";
 
-/** How long `connect --noPrompt` watches the window for a login. */
+/** How long `connect` reads the window for a login, a person's part included. */
 export const CONNECT_WAIT_SECONDS = 600;
 export const SCAN_USAGE = "Usage: log scan --account <accountName> [--json] [--bypass]";
 export const STATUS_USAGE = "Usage: log status <listingId> --account <accountName> [--json] [--bypass]";
@@ -42,7 +48,7 @@ export async function openAccount(
   purpose: RunPurpose,
   bypassHours = false,
   withLogin = false,
-): Promise<{ account: FacebookAccount; run: PreparedRun } | CommandResult> {
+): Promise<{ account: FacebookAccount; run: PreparedRun; login: LoginSecrets | null } | CommandResult> {
   if (typeof value !== "string") return { code: 1, stderr: `log ${name}: --account is required (log accounts lists them)\n${usage}` };
   let account: FacebookAccount;
   try {
@@ -60,7 +66,7 @@ export async function openAccount(
   }
   const prepared = prepareRun(account, purpose, { now: (context.now ?? (() => new Date()))(), bypassHours, login, action: name });
   if (!prepared.ok) return refuse(name, prepared.code, prepared.detail);
-  return { account, run: prepared.run };
+  return { account, run: prepared.run, login };
 }
 
 /**
@@ -121,7 +127,7 @@ export async function withRun(
   try {
     const device = await keepNewDevice(context, account, run);
     // Rule 22: every action's raw HAR, split per step and read by rea.
-    const capture = run.captureDir ? await settleRunCapture(run.captureDir) : null;
+    const capture = run.captureDir ? settleInBackground(run.captureDir) : null;
     // connect saves its own cookies (it signed in); every other run continues the session.
     return withNote(withNote(withNote(result, device), name === "connect" ? null : await keepSession(context, account, run)), capture);
   } finally {
@@ -185,47 +191,102 @@ export const doctorCommand: Command = {
 
 export const connectCommand: Command = {
   name: "connect",
-  summary: "Sign a Facebook account in by hand through its proxy, save its cookies to Twenty",
-  args: "--account <name> [--noPrompt [--wait <seconds>]] [--bypass]",
+  summary: "Sign a Facebook account in through its proxy (the connect machine), save its cookies to Twenty",
+  args: "--account <name> [--noPrompt] [--wait <seconds>] [--bypass]",
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["noPrompt", "bypass"], valued: ["account", "wait"] });
     if (!parsed.ok) return { code: 1, stderr: `log connect: ${parsed.error}\n${CONNECT_USAGE}` };
-    // --noPrompt: no Enter on stdin (the MCP tool owns it). The worker watches the page instead,
-    // ending at once if the saved cookies are logged in, or when a person finishes signing in.
+    // --noPrompt (always over MCP): auto-login types Twenty's details (rule 21). Without it a
+    // person signs in in the window. Either way the connect machine reads every page until signed in.
     const noPrompt = Boolean(parsed.flags["noPrompt"]);
     const waitSeconds = parsed.flags["wait"] === undefined ? CONNECT_WAIT_SECONDS : Number(parsed.flags["wait"]);
     if (!Number.isInteger(waitSeconds) || waitSeconds < 10 || waitSeconds > 1800) return { code: 1, stderr: `log connect: --wait must be 10 to 1800 seconds\n${CONNECT_USAGE}` };
     const opened = await openAccount(context, "connect", CONNECT_USAGE, parsed.flags["account"], "connect", Boolean(parsed.flags["bypass"]), noPrompt);
     if (!("run" in opened)) return opened;
-    const { account, run } = opened;
+    const { account, run, login } = opened;
     return withRun(context, "connect", account, run, async () => {
-      const result = await context.worker(
-        {
-          action: "login",
-          account_id: account.id,
-          storage_state_path: run.statePath,
-          proxy_path: run.proxyPath,
-          device_path: run.devicePath,
-          capture_dir: run.captureDir,
-          ...(noPrompt ? { params: { waitSeconds }, login_path: run.loginPath } : {}),
+      let session: ConnectSession | null = null;
+      const call = <T>(step: ConnectStep, params: Record<string, unknown> = {}) =>
+        (session ??= context.connectSession({
+          accountId: account.id,
+          storageStatePath: run.statePath,
+          proxyPath: run.proxyPath,
+          devicePath: run.devicePath,
+          captureDir: run.captureDir!,
+          loginPath: run.loginPath,
+        })).call<T>(step, params);
+      const machine = connectMachine.provide({
+        actors: {
+          open: fromPromise<ActOutput, undefined>(() => call("open")),
+          read: fromPromise<ReadOutput, undefined>(() => call("read")),
+          submitCredentials: fromPromise<ActOutput, ConnectActorInputs["submitCredentials"]>(({ input }) => call("submitCredentials", input)),
+          chooseAuthApp: fromPromise<ActOutput, undefined>(() => call("chooseAuthApp")),
+          submitCode: fromPromise<ActOutput, ConnectActorInputs["submitCode"]>(({ input }) => call("submitCode", input)),
+          dismiss: fromPromise<ActOutput, ConnectActorInputs["dismiss"]>(({ input }) => call("dismiss", input)),
+          save: fromPromise<SaveOutput, undefined>(() => call("save")),
+          solveCaptcha: fromPromise<SolveOutput, ConnectActorInputs["solveCaptcha"]>(({ input }) => call("solveCaptcha", input)),
         },
-        { interactive: !noPrompt },
-      );
-      if (!result.ok) return await workerFailed(context, "connect", account, result);
-      const cookies = run.readCookies();
-      if (cookies.length === 0) return refuse("connect", "neverConnected", "the browser saved no cookies");
-      await saveCookies(context.twenty, account.id, cookies);
-      const lines = [`Saved ${cookies.length} Facebook cookies for ${account.accountName} to Twenty.`];
-      if (result.loggedIn && (account.status === "needsLogin" || account.status === "checkpoint")) {
-        await setAccountStatus(context.twenty, account.id, "active", "connected", "signed in by hand through its proxy");
-        lines.push(`${account.accountName} is ACTIVE again.`);
-      } else if (!result.loggedIn) {
-        lines.push("Facebook still showed login markers. If the page looked logged in, try `log scan` anyway.");
+      });
+      const actor = createActor(machine, {
+        id: `connect:${account.accountName}`,
+        input: {
+          accountId: account.accountName,
+          hasPassword: Boolean(login?.email && login?.password),
+          hasTotp: Boolean(login?.totpSecret),
+          availability: solverAvailability(),
+          arkoseToday: countArkoseToday(readAttempts(), account.accountName),
+          timing: { deadlineMs: waitSeconds * 1000, pollMs: 5000, codeWindowMs: 30_000, ...context.connectTiming },
+        },
+        inspect: createInspector((line) => context.err(formatTraceLine(line)), summarizeConnect),
+      });
+      let output: ConnectOutput;
+      try {
+        actor.start();
+        output = (await toPromise(actor)) as ConnectOutput;
+      } finally {
+        if (session) await (session as ConnectSession).close();
       }
-      return { code: 0, stdout: lines.join("\n") };
+      // Every solve goes to the same ledger as publish, with whether the page accepted it.
+      for (const attempt of output.captchaAttempts) appendAttempt(attempt);
+      return await connectEnded(context, account, run, output);
     });
   },
 };
+
+/** The connect machine's end → Twenty (cookies, the account's status) and the terminal. */
+async function connectEnded(context: CommandContext, account: FacebookAccount, run: PreparedRun, output: ConnectOutput): Promise<CommandResult> {
+  const lines = [renderConnect(account.accountName, output)];
+  if (output.result === "connected") {
+    const cookies = run.readCookies();
+    if (cookies.length === 0) return refuse("connect", "neverConnected", "the browser saved no cookies");
+    await saveCookies(context.twenty, account.id, cookies);
+    lines.push(`Saved ${cookies.length} Facebook cookies for ${account.accountName} to Twenty.`);
+    // Listaro's post-login Marketplace check (facebook-auto-login.ts:717-823): signed in but
+    // unable to buy or sell is an account issue, recorded with the cookies kept.
+    const issue = classifySignal({ url: output.page?.path ?? "", text: output.bodySample ?? "" });
+    if (issue && issue !== "loginWall" && issue !== "sessionExpired" && issue !== "readOnlyLimited") {
+      const loss = await recordAccountIssue(context.twenty, account, issue, "seen on Marketplace right after signing in");
+      lines.push(`Signed in, but Marketplace shows ${issue}.`);
+      if (loss) lines.push(renderLoss(loss));
+      return { code: 1, stdout: lines.join("\n"), stderr: refuse("connect", issue, "seen on Marketplace right after signing in").stderr };
+    }
+    if (account.status === "needsLogin" || account.status === "checkpoint") {
+      await setAccountStatus(context.twenty, account.id, "active", "connected", "signed in through its proxy");
+      lines.push(`${account.accountName} is ACTIVE again.`);
+    }
+    return { code: 0, stdout: lines.join("\n") };
+  }
+  const failure = output.failure!;
+  if (ERROR_CATALOG[failure.code].layer === "account") {
+    try {
+      const loss = await recordAccountIssue(context.twenty, account, failure.code, failure.detail ?? null);
+      if (loss) lines.push(renderLoss(loss));
+    } catch (error) {
+      lines.push(`(could not update Twenty: ${refuseError("connect", error).stderr})`);
+    }
+  }
+  return { code: 1, stdout: lines.join("\n"), stderr: refuse("connect", failure.code, failure.detail).stderr };
+}
 
 export const scanCommand: Command = {
   name: "scan",

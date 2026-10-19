@@ -1,9 +1,12 @@
+import { summarizeConnect } from "../../live/helpers/renderConnect.ts";
 import type { PublishContext, PublishOutput } from "../../../marketplace/publish/index.ts";
 
 /** The context fields worth showing on each state line of the trace. Pure. */
 export function summarizePublish(context: unknown): Record<string, unknown> {
   const c = context as PublishContext | undefined;
   if (!c) return {};
+  // The in-browser sign-in (rule 24) is the connect machine as a child: its lines read like connect's.
+  if (!Array.isArray(c.photoPaths)) return summarizeConnect(context);
   const detail: Record<string, unknown> = {};
   if (c.photoPaths.length) detail.photos = c.photoCount ? `${c.photoCount}/10 on form` : `${c.photoPaths.length} ready`;
   if (c.captcha) detail.captcha = c.captcha.kind;
@@ -27,6 +30,7 @@ export function renderPublishOutput(output: PublishOutput, runDir: string): stri
   const lines = [RESULT_TEXT[output.result]];
   if (output.listingId) lines.push(`Listing: ${output.listingId}  ${output.listingUrl ?? ""}`.trimEnd());
   if (output.issue) lines.push(`Account issue: ${output.issue}`);
+  if (output.signIn) lines.push(`Signed in in this browser (rule 24): ${output.signIn.result}. Pages: ${output.signIn.pages.join(" → ") || "none"}`);
   if (output.failure) {
     lines.push(`Where: ${output.failure.state}  code: ${output.failure.code}${output.failure.detail ? `  (${output.failure.detail})` : ""}`);
   }

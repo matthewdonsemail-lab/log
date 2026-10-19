@@ -4,7 +4,7 @@
  * Commands are declared once here; usage text is generated from the same list,
  * so a new command cannot ship without documentation.
  */
-import { startSession } from "../../camofox/session/index.ts";
+import { startConnectSession, startSession } from "../../camofox/session/index.ts";
 import { runWorker } from "../../camofox/worker/index.ts";
 import { listAccounts } from "../../marketplace/account/index.ts";
 import { listListings } from "../../marketplace/listing/index.ts";
@@ -60,6 +60,8 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     twenty: overrides.twenty ?? createTwentyClient(),
     worker: overrides.worker ?? runWorker,
     session: overrides.session ?? startSession,
+    connectSession: overrides.connectSession ?? startConnectSession,
+    connectTiming: overrides.connectTiming,
     out: overrides.out ?? ((line) => console.log(line)),
     err: overrides.err ?? ((line) => console.error(line)),
     now: overrides.now ?? (() => new Date()),

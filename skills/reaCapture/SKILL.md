@@ -70,8 +70,8 @@ did for that one action, e.g. which GraphQL operations the login submit
 fired.
 
 The run folder gets `firefox/session.har` (raw), `firefox/scripts/scriptN.js`,
-`firefox/scriptsManifest.json`, `firefox/reaNetwork.json` and
-`firefox/reaScripts.json`, and the exit notes print
+`firefox/scriptsManifest.json` and `firefox/reaNetwork.json`, and the exit
+notes print
 `Firefox capture: N requests, M scripts, raw HAR kept. REA ...`.
 
 ### 2. Read with rea (offline)
@@ -81,8 +81,11 @@ The run folder gets `firefox/session.har` (raw), `firefox/scripts/scriptN.js`,
 ```bash
 bun bin/log.ts firefoxCapture --har <path> --out <dir>      # --noRea to only write the files
 rea inspect-web-network-capture <absolute>/session.har har --format json
-rea analyze-javascript-application <absolute>/scripts --format json
 ```
+
+Never `rea analyze-javascript-application` on a run's whole `scripts/`: it
+timed out after 10 minutes on 50 MB of bundles (2026-10-19). Facebook's code
+is read per request instead (step 2b).
 
 - `reaNetwork.json` → `normalized_result.records[]`, one per request:
   method, URL, status, mime, timings, and the request body. On Facebook
@@ -90,13 +93,44 @@ rea analyze-javascript-application <absolute>/scripts --format json
   (`fb_api_req_friendly_name`, `doc_id`, `variables`). rea blanks the
   values of the auth headers and cookies it knows in its own output. The
   HAR still has them. Keep the `evidence_id`.
-- `reaScripts.json` → a `JavaScriptApplicationGraph` over the scripts:
-  files, parse status, vendor markers, calls and the browser surfaces they
-  read.
+
+### 2b. The Facebook client docs (per request, rules 25 and 27)
+
+```bash
+bun bin/log.ts firefoxCapture --docs          # run it live (Monitor), every stage prints
+```
+
+1. Every run under `~/.logCli` is split by its `steps.jsonl`; each request
+   to Facebook is named (GraphQL by `fb_api_req_friendly_name`, or by
+   `doc_id` through Facebook's `_facebookRelayOperation` modules; other
+   POSTs by path) with its step, status, duration and time after our step.
+2. Facebook's bundles are parsed into a syntax tree (TypeScript's compiler,
+   `src/rea/facebookClient/helpers/indexModules.ts`): every
+   `__d("Name", [deps], factory)` module.
+3. Each GraphQL request's slice (`<Name>.graphql`, its doc_id module, and the
+   modules that import it) goes to `rea analyze-javascript-application`:
+   about 4 s each, cached by sha256 in `~/.logCli/rea/facebookClient/`.
+4. `docs/facebookClient/<domain>/<Name>.md` gets the facts block; the three
+   reasoning sections are written by hand from the facts and rea (open the
+   Evidence with `inspect_analysis_view`). lefthook's pre-push refuses a
+   push while any is unwritten, unread by rea, or older than a run.
 
 ### 3. Findings
 
-Per capture, write `docs/rea/findings/<runId>.md`: the operations the
+Every run writes a first pass itself: `firefox/findings.md` in the run
+folder, one section per step with Facebook's GraphQL operations by name
+(`x-fb-friendly-name`), pages loaded, uploads, failed requests and the
+step's rea `evidence_id` (`summarizeStep`). Names and counts only. Read it
+first; e.g. `useUFACSubmitActionMutation` is a checkpoint answer being sent,
+`useMarketplaceComposerAttributesQuery` the category being set.
+
+What rea does per run (`settleInBackground`, its own hidden process):
+- the whole `session.har` only when it is 32 MB or less (rea's
+  `maximum_capture_bytes`); bigger ones are read per step only;
+- the scripts are saved, never read whole: `--docs` reads them per request;
+- `settle.json` says when it finished and what it read.
+
+For a decision, write `docs/rea/findings/<runId>.md` by hand: the operations the
 create page fired, in order, with timing; the fields each one submits;
 what the page's scripts read from the browser; and every gap against
 `src/marketplace/publish/machine.ts` and `docs/listingPublish/formFill.md`.

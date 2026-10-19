@@ -17,7 +17,7 @@ import { DEFAULT_MONITOR_TIMING, monitorMachine } from "../../marketplace/monito
 import type { CheckOutcome, MonitorOutput, WatchedListing } from "../../marketplace/monitor/index.ts";
 import { homeOf, outsideActiveHours } from "../../marketplace/home/index.ts";
 import { recordAccountIssue } from "../../marketplace/replacement/index.ts";
-import { settleRunCapture } from "../../rea/firefox/index.ts";
+import { settleInBackground } from "../../rea/firefox/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import { keepNewDevice, keepSession, openAccount } from "../live/index.ts";
 import { renderLoss } from "../live/helpers/index.ts";
@@ -94,7 +94,7 @@ export const watchCommand: Command = {
             device_path: run.devicePath,
             capture_dir: captureDir,
           });
-          const capture = captureDir ? await settleRunCapture(captureDir) : null;
+          const capture = captureDir ? settleInBackground(captureDir) : null;
           if (capture) context.err(capture);
           if (!deviceSaved) {
             const note = await keepNewDevice(context, account, run);

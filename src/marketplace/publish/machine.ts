@@ -27,6 +27,8 @@ import { assign, fromPromise, setup } from 'xstate'
 import { DEFAULT_CAPTCHA_POLICY, planNextSolver } from '../../captcha/router/index'
 import type { CaptchaPlan } from '../../captcha/router/index'
 import type { AccountIssue } from '../account/types'
+import { connectMachine } from '../connect/machine'
+import type { ConnectOutput } from '../connect/types'
 import { publishEnd, toConditionLabel } from './helpers/index'
 import type {
   CaptureOutput,
@@ -56,6 +58,9 @@ function missing<TOutput, TInput>(name: string) {
 
 const isFailure = (output: { ok?: boolean }): output is StepFailure => output.ok === false
 
+/** What the form can meet that a sign-in clears (rule 24). */
+const SIGN_IN_ISSUES: readonly string[] = ['sessionExpired', 'loginWall', 'checkpointed']
+
 /** A step's `{ ok: false }` output as the failure for `state`. */
 const stepFailure = (state: string, output: unknown): PublishFailure => {
   const out = output as StepFailure
@@ -81,7 +86,9 @@ export const publishMachine = setup({
     review: missing<ReviewOutput, PublishActorInputs['review']>('review'),
     publish: missing<PublishClickOutput, PublishActorInputs['publish']>('publish'),
     confirm: missing<ConfirmOutput, PublishActorInputs['confirm']>('confirm'),
-    captureId: missing<CaptureOutput, PublishActorInputs['captureId']>('captureId')
+    captureId: missing<CaptureOutput, PublishActorInputs['captureId']>('captureId'),
+    // The connect machine as a child: the caller provides its actors over this same browser.
+    signIn: connectMachine
   },
   guards: {
     hasSolver: ({ context }) => context.plan?.solver != null,
@@ -90,6 +97,10 @@ export const publishMachine = setup({
     formReady: (_, outcome: FormOutcome) => outcome.kind === 'ready',
     formCaptcha: (_, outcome: FormOutcome) => outcome.kind === 'captcha',
     formIssue: (_, outcome: FormOutcome) => outcome.kind === 'issue',
+    /** A login wall or checkpoint, and this run may still sign in once in its own browser (rule 24). */
+    canSignIn: ({ context }, outcome: FormOutcome) =>
+      outcome.kind === 'issue' && SIGN_IN_ISSUES.includes(outcome.issue) && context.signInConfig != null && !context.signInTried,
+    signedIn: (_, output: ConnectOutput) => output.result === 'connected',
     rejected: (_, output: { ok?: boolean; code?: string }) => isFailure(output) && output.code === 'rejected',
     hasListingId: (_, output: CaptureOutput) => Boolean(output.listingId),
     endsBlocked: ({ context }) => publishEnd(context.failure!, context.publishClicked).end === 'blocked',
@@ -122,7 +133,10 @@ export const publishMachine = setup({
     listingUrl: null,
     issue: null,
     failure: null,
-    result: null
+    result: null,
+    signInConfig: input.signIn ?? null,
+    signInTried: false,
+    signIn: null
   }),
   initial: 'preparingPhotos',
   states: {
@@ -150,7 +164,7 @@ export const publishMachine = setup({
     openingForm: {
       invoke: {
         src: 'openForm',
-        input: ({ context }) => ({ accountId: context.accountId, recheck: context.formOpened }),
+        input: ({ context }) => ({ accountId: context.accountId, recheck: context.formOpened, location: context.listing.location }),
         onDone: [
           {
             guard: { type: 'formReady', params: ({ event }) => event.output },
@@ -170,6 +184,10 @@ export const publishMachine = setup({
               captcha: (event.output as Extract<FormOutcome, { kind: 'captcha' }>).detection,
               captchaAttempts: markLast(context, false)
             }))
+          },
+          {
+            guard: { type: 'canSignIn', params: ({ event }) => event.output },
+            target: 'signingIn'
           },
           {
             guard: { type: 'formIssue', params: ({ event }) => event.output },
@@ -194,6 +212,44 @@ export const publishMachine = setup({
           }
         ],
         onError: { target: 'stopping', actions: { type: 'recordFailure', params: ({ event }) => crash('openingForm', event.error) } }
+      }
+    },
+    /** The connect machine, once, in this browser; then the form is opened again. */
+    signingIn: {
+      entry: assign({ signInTried: true }),
+      invoke: {
+        src: 'signIn',
+        input: ({ context }) => ({
+          accountId: context.accountId,
+          hasPassword: context.signInConfig!.hasPassword,
+          hasTotp: context.signInConfig!.hasTotp,
+          timing: context.signInConfig!.timing,
+          availability: context.availability,
+          policy: context.policy,
+          arkoseToday: context.arkoseToday
+        }),
+        onDone: [
+          {
+            guard: { type: 'signedIn', params: ({ event }) => event.output },
+            target: 'openingForm',
+            actions: assign(({ event }) => ({ signIn: event.output, formOpened: false }))
+          },
+          {
+            target: 'stopping',
+            actions: [
+              assign(({ event }) => ({ signIn: event.output })),
+              {
+                type: 'recordFailure',
+                params: ({ event }) => ({
+                  state: 'signingIn',
+                  code: event.output.failure?.code ?? 'signInNotFinished',
+                  detail: event.output.failure?.detail ?? event.output.checkpoint ?? undefined
+                })
+              }
+            ]
+          }
+        ],
+        onError: { target: 'stopping', actions: { type: 'recordFailure', params: ({ event }) => crash('signingIn', event.error) } }
       }
     },
     routingCaptcha: {
@@ -404,7 +460,8 @@ export const publishMachine = setup({
     filled: context.filled,
     photoCount: context.photoCount,
     photoHashes: context.photoHashes,
-    receipt: context.receipt
+    receipt: context.receipt,
+    signIn: context.signIn
   })
 })
 

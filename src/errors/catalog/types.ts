@@ -127,6 +127,33 @@ export const ERROR_CATALOG = {
     monitor: 'blocked',
     action: 'Log in by hand and clear the checkpoint, then `log connect`. No solver can do it.'
   },
+  wrongPassword: {
+    layer: 'account',
+    meaning: "Facebook said the password is wrong, or found no account for the email, when `log connect` signed in with Twenty's details.",
+    retryable: false,
+    raisedIn: ['connect.routing'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: "Fix the account's email or password in Twenty, then `log connect` again. Auto-login stops at once so Facebook doesn't see repeated wrong passwords."
+  },
+  videoSelfieRequired: {
+    layer: 'account',
+    meaning: "Facebook's checkpoint wants a video selfie (\"Confirm that you're a real person with a video selfie\"). No solver or auto-login can do it.",
+    retryable: false,
+    raisedIn: ['connect.routing'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: "A person records the selfie in the Camoufox window (or on the account owner's phone), then `log connect` again. Tell matt."
+  },
+  signInNotFinished: {
+    layer: 'account',
+    meaning: '`log connect` reached its deadline (`--wait`) without a logged-in page: the login, two-step or a captcha was not finished.',
+    retryable: false,
+    raisedIn: ['connect.signingIn'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Run `log connect` again and finish the step its last page names in the Camoufox window, or give it a longer `--wait`. A two-step page needs the totpSecret in Twenty.'
+  },
   unconfirmedUser: {
     layer: 'account',
     meaning: 'The account has not confirmed its email or phone.',
@@ -253,6 +280,15 @@ export const ERROR_CATALOG = {
     monitor: 'blocked',
     action: 'Check the proxy is up, then `log proxy check --account <id>`.'
   },
+  proxyTooSlow: {
+    layer: 'account',
+    meaning: "The proxy's exit answers, but takes seconds for each Facebook file, so pages never get past Facebook's loading skeleton. Refused before any page opened.",
+    retryable: true,
+    raisedIn: ['proxyGate'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Run `log proxy assign --account <id>`: it skips slow exits and saves a fresh session that answers quickly.'
+  },
   proxyAuthFailed: {
     layer: 'account',
     meaning: 'The proxy answered 407: it refused the username or password. No browser was opened.',
@@ -351,6 +387,24 @@ export const ERROR_CATALOG = {
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Run it inside the window in the detail, or change activeHoursStart/activeHoursEnd on the socialAccount in Twenty.'
+  },
+  launchTooSoon: {
+    layer: 'account',
+    meaning: "The account's browser opened on Facebook less than 10 minutes ago (rule 24). Nothing opened.",
+    retryable: true,
+    raisedIn: ['camofox/run'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Wait the minutes in the detail. Back-to-back launches are what drew the 2026-10-19 checkpoints.'
+  },
+  launchBudgetSpent: {
+    layer: 'account',
+    meaning: "The account's browser has opened on Facebook 8 times today, its local day, dry runs included (rule 24). Nothing opened.",
+    retryable: true,
+    raisedIn: ['camofox/run'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Run it tomorrow (local time), or from another account in the same country.'
   },
   noHomeLocale: {
     layer: 'account',
@@ -1112,7 +1166,7 @@ export const ERROR_CATALOG = {
   },
   proxyTooFar: {
     layer: 'proxyVendor',
-    meaning: "Every proxy 2Captcha gave exited too far from the account's home city (it doesn't always honour the state and city it was asked for). Nothing was saved.",
+    meaning: "Every proxy 2Captcha gave exited too far from the account's home city (it doesn't always honour the state and city it was asked for), or was too slow for Facebook. Nothing was saved.",
     retryable: true,
     raisedIn: ['proxyVendor/twoCaptcha'],
     action: 'Run `log proxy assign` again, or pick a nearby city it has (--city, --region).'

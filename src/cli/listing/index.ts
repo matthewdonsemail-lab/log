@@ -6,7 +6,8 @@
  */
 import { readFileSync } from "node:fs";
 import { fromTwentyEnum, listFacebookAccounts, findAccount, toTwentyEnum } from "../../marketplace/socialAccount/index.ts";
-import { createSlot, getListing, LISTING_STATUSES, listListingsWhere } from "../../marketplace/agencyListing/index.ts";
+import { countryMismatch, createSlot, getListing, LISTING_STATUSES, listListingsWhere } from "../../marketplace/agencyListing/index.ts";
+import type { AgencyListing } from "../../marketplace/agencyListing/index.ts";
 import type { ListingFilter } from "../../marketplace/agencyListing/index.ts";
 import { parseArgs, refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command } from "../runner/types.ts";
@@ -73,6 +74,9 @@ export const listingCommand: Command = {
       if (!checked.ok) return { code: 1, stderr: `log listing create: ${file} can't be published:\n${checked.problems.map((p) => `  - ${p}`).join("\n")}` };
       try {
         const owner = await findAccount(context.twenty, account);
+        // The same country check publish runs (rule 12), so a row that can never post isn't written.
+        const mismatch = owner.homeCountry ? countryMismatch(checked.ad as unknown as AgencyListing, owner.homeCountry) : "the account has no home country";
+        if (mismatch) return refuse("listing", "listingCountryMismatch", mismatch);
         const created = await createSlot(context.twenty, checked.ad, owner.id, { campaignId: null });
         if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ listing: created }, null, 2) };
         return { code: 0, stdout: `Created ${created.id} (READY) for ${owner.accountName}: ${created.title}\nNext: log publish --listing ${created.id}` };

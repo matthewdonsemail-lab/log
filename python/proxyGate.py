@@ -250,7 +250,51 @@ def check(proxy_path: str | None) -> dict[str, Any]:
     if not timezone:
         raise GateError("proxyCountryMismatch", f"exit IP {ip} has no known timezone")
     return {"ok": True, "exitIp": ip, "exitCountry": country, "country": want, "timezone": timezone,
-            "latitude": where["latitude"], "longitude": where["longitude"]}
+            "latitude": where["latitude"], "longitude": where["longitude"], "facebookMs": facebook_ms(proxy)}
+
+
+# Facebook's own hosts, fetched through the proxy. A page is hundreds of these:
+# an exit that takes seconds for each never gets past the loading skeleton.
+FACEBOOK_PROBES = ("https://www.facebook.com/favicon.ico", "https://static.xx.fbcdn.net/rsrc.php/")
+# A healthy exit answers in about a second; the 2026-10-19 skeleton exit took 3 s here and 5-12 s per page file.
+SLOW_MS = 2500
+PROBE_ROUNDS = 3
+
+
+def facebook_ms(proxy: dict[str, Any]) -> int | None:
+    """The slowest of FACEBOOK_PROBES through the proxy, in ms (any HTTP answer counts,
+    a timeout counts as 15 s). None for a SOCKS proxy, which urllib can't time."""
+    import time
+    import urllib.error
+    import urllib.request
+
+    if not str(proxy["server"]).lower().startswith("http"):
+        return None
+    url = proxy_url(proxy)
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({"http": url, "https": url}))
+
+    def one_round() -> int:
+        worst = 0
+        for probe in FACEBOOK_PROBES:
+            started = time.monotonic()
+            try:
+                opener.open(urllib.request.Request(probe, headers={"User-Agent": "Mozilla/5.0"}), timeout=15).read(256)
+            except urllib.error.HTTPError:
+                pass  # an answer is an answer: only the time matters
+            except Exception:
+                return 15_000
+            worst = max(worst, int((time.monotonic() - started) * 1000))
+        return worst
+
+    # Residential exits swing from one moment to the next (one exit measured 2 s, then 5 s,
+    # three minutes apart): the fastest of three rounds is the exit's real speed. A slow
+    # exit stays slow every round; a fast one is let through on its first.
+    best = 15_000
+    for _ in range(PROBE_ROUNDS):
+        best = min(best, one_round())
+        if best <= SLOW_MS:
+            break
+    return best
 
 
 def apply(kwargs: dict[str, Any], visible: dict[str, Any]) -> dict[str, Any]:
@@ -264,6 +308,9 @@ def apply(kwargs: dict[str, Any], visible: dict[str, Any]) -> dict[str, Any]:
     if proxy is None:
         raise GateError("noProxy", f"no proxy file at {_armed['path']}: no browser opens without one")
     exit_ = check(_armed["path"])
+    if exit_.get("facebookMs") is not None and exit_["facebookMs"] > SLOW_MS:
+        # Loud, before any page: otherwise Facebook sits on its loading skeleton for minutes.
+        raise GateError("proxyTooSlow", f"exit IP {exit_['exitIp']} took {exit_['facebookMs']} ms for one Facebook file (limit {SLOW_MS} ms). Run: log proxy assign --account <name>")
     try:
         run = deviceProfile.read_run_file(_armed["devicePath"])
         profile = run.get("profile")

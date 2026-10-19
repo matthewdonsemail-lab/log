@@ -1,5 +1,5 @@
 /**
- * Spawns `python/publishSession.py` and talks to it one step at a time.
+ * Spawns `python/publishSession.py` (or `connectSession.py`) and talks to it one step at a time.
  * Same interpreter as the worker (`LOG_PYTHON`, default `python`); it needs
  * camoufox, captchakraken and 2captcha-python installed. Every reply's codes
  * are checked against the error catalog here (`normalizeResult`).
@@ -9,15 +9,20 @@ import { fileURLToPath } from 'node:url'
 import type { ErrorCode } from '../../errors/catalog/index'
 import { pipeProcessLog } from '../../observability/processLog/index'
 import { normalizeResult, splitReplies } from './helpers/index'
-import type { PublishSession, SessionConfig, SessionFactory, SessionReply, SessionStep } from './types'
+import type { ConnectSession, ConnectSessionConfig, ConnectSessionFactory, PublishSession, SessionConfig, SessionFactory, SessionReply } from './types'
 
 export const SESSION_PATH = fileURLToPath(new URL('../../../python/publishSession.py', import.meta.url))
+export const CONNECT_SESSION_PATH = fileURLToPath(new URL('../../../python/connectSession.py', import.meta.url))
 
-export const startSession: SessionFactory = (config: SessionConfig): PublishSession => {
+export const startSession: SessionFactory = (config: SessionConfig): PublishSession => spawnSession(SESSION_PATH, config)
+
+export const startConnectSession: ConnectSessionFactory = (config: ConnectSessionConfig): ConnectSession => spawnSession(CONNECT_SESSION_PATH, config)
+
+function spawnSession<TStep extends string>(script: string, config: object): { call<T>(step: TStep, params?: Record<string, unknown>): Promise<T>; close(): Promise<void> } {
   const python = process.env.LOG_PYTHON || 'python'
   // stderr goes through processLog: live on the terminal, and into the MCP
   // tool result and log file when run as a tool.
-  const proc = spawn(python, [SESSION_PATH, JSON.stringify(config)], { stdio: ['pipe', 'pipe', 'pipe'] })
+  const proc = spawn(python, [script, JSON.stringify(config)], { stdio: ['pipe', 'pipe', 'pipe'] })
   pipeProcessLog(proc.stderr, 'session')
   let buffer = ''
   let nextId = 1
@@ -44,7 +49,7 @@ export const startSession: SessionFactory = (config: SessionConfig): PublishSess
   proc.on('close', (code) => settleAll('sessionExited', `session exited with code ${code}`))
 
   return {
-    call<T>(step: SessionStep, params: Record<string, unknown> = {}): Promise<T> {
+    call<T>(step: TStep, params: Record<string, unknown> = {}): Promise<T> {
       if (exited) return Promise.resolve({ ok: false, ...exited } as T)
       const id = nextId++
       return new Promise<T>((resolve) => {

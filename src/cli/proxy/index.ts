@@ -10,7 +10,7 @@
  *            to Twenty only if it really exits in the home country
  *   balance  the 2Captcha proxy account: traffic left, money balance
  */
-import { countryName } from "../../camofox/proxy/index.ts";
+import { countryName, SLOW_FACEBOOK_MS } from "../../camofox/proxy/index.ts";
 import type { ProxyCheck } from "../../camofox/proxy/index.ts";
 import { prepareRun } from "../../camofox/run/index.ts";
 import { distanceKm, homeOf } from "../../marketplace/home/index.ts";
@@ -108,13 +108,19 @@ async function assignOne(
       misses.push(`${checked.check.exitIp} ${km} km away`);
       continue;
     }
+    // Nor one too slow for Facebook: its pages would never get past the loading skeleton.
+    const ms = checked.check.facebookMs;
+    if (ms != null && ms > SLOW_FACEBOOK_MS) {
+      misses.push(`${checked.check.exitIp} ${ms} ms per Facebook file`);
+      continue;
+    }
     await context.twenty.update("socialAccounts", account.id, { proxy: url });
     await recordProxyCheck(context.twenty, account.id, { exitIp: checked.check.exitIp, exitCountry: checked.check.exitCountry });
     const where = place ? `${place.city}, ${place.region}, ${countryName(country)}` : countryName(country);
     const away = km !== null ? `, ${km} km from ${account.homeCity}` : "";
     return { ok: true, line: `${account.accountName}: ${maskProxyUrl(url)} → exits at ${checked.check.exitIp} in ${countryName(checked.check.exitCountry)} (${where}${away}). Saved to Twenty.` };
   }
-  return { ok: false, line: `${account.accountName}: proxyTooFar: not saved. ${PROXY_ATTEMPTS} sessions exited over ${MAX_PROXY_KM} km from ${account.homeCity} (${misses.join("; ")}). Try again, or --city/--region nearby.` };
+  return { ok: false, line: `${account.accountName}: proxyTooFar: not saved. ${PROXY_ATTEMPTS} sessions exited over ${MAX_PROXY_KM} km from ${account.homeCity} or too slow for Facebook (${misses.join("; ")}). Try again, or --city/--region nearby.` };
 }
 
 export const proxyCommand: Command = {
@@ -211,7 +217,8 @@ export const proxyCommand: Command = {
       if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify({ accountName: account.accountName, proxy: maskProxyUrl(account.proxy), ...check }, null, 2) };
       return {
         code: 0,
-        stdout: `${account.accountName}: ${maskProxyUrl(account.proxy)} exits at ${check.exitIp}, in ${countryName(check.exitCountry)}, matching the account. Saved to Twenty.`,
+        stdout: `${account.accountName}: ${maskProxyUrl(account.proxy)} exits at ${check.exitIp}, in ${countryName(check.exitCountry)}, matching the account. Saved to Twenty.` +
+          (check.facebookMs != null ? `\nFacebook through it: ${check.facebookMs} ms per file${check.facebookMs > SLOW_FACEBOOK_MS ? ` (too slow, over ${SLOW_FACEBOOK_MS} ms: launches are refused with proxyTooSlow; run log proxy assign --account ${account.accountName})` : ""}.` : ""),
       };
     } catch (error) {
       return refuseError("proxy check", error);

@@ -33,6 +33,7 @@ import json
 import os
 import re
 import sys
+import tempfile
 import time
 from pathlib import Path
 from typing import Any
@@ -58,6 +59,7 @@ LIMIT_TEXT = re.compile(
 # The whole account, not just Marketplace: log-cli marks it BANNED and replaces its campaign listings.
 DISABLED_TEXT = re.compile(r"(?:your )?account has been (?:disabled|locked|suspended)|we suspended your account", re.I)
 BLOCKED_TEXT = re.compile(r"you can.t (?:use|buy or sell on) marketplace|marketplace isn.t available to you", re.I)
+TEXT_CAPTCHA = re.compile(r"confirm (?:that )?you.re human|enter the text (?:from|in) the image|can.t read this text", re.I)
 CHALLENGE_TEXT = re.compile(
     r"confirm (?:your identity|it.s you)|enter the code|we sent (?:a|you a) code|upload a (?:photo|video) of yourself"
     r"|security check|suspicious activity", re.I)
@@ -122,6 +124,79 @@ def log(message: str) -> None:
     proxyGate.note_step(message)
 
 
+# Facebook's US suggestions name the state ("Philadelphia, Pennsylvania"); a
+# listing may write its code ("Philadelphia, PA"). Either is the same place.
+US_STATES = {
+    "al": "alabama", "ak": "alaska", "az": "arizona", "ar": "arkansas", "ca": "california", "co": "colorado",
+    "ct": "connecticut", "de": "delaware", "dc": "district of columbia", "fl": "florida", "ga": "georgia",
+    "hi": "hawaii", "id": "idaho", "il": "illinois", "in": "indiana", "ia": "iowa", "ks": "kansas",
+    "ky": "kentucky", "la": "louisiana", "me": "maine", "md": "maryland", "ma": "massachusetts",
+    "mi": "michigan", "mn": "minnesota", "ms": "mississippi", "mo": "missouri", "mt": "montana",
+    "ne": "nebraska", "nv": "nevada", "nh": "new hampshire", "nj": "new jersey", "nm": "new mexico",
+    "ny": "new york", "nc": "north carolina", "nd": "north dakota", "oh": "ohio", "ok": "oklahoma",
+    "or": "oregon", "pa": "pennsylvania", "ri": "rhode island", "sc": "south carolina", "sd": "south dakota",
+    "tn": "tennessee", "tx": "texas", "ut": "utah", "vt": "vermont", "va": "virginia", "wa": "washington",
+    "wv": "west virginia", "wi": "wisconsin", "wy": "wyoming",
+}
+
+
+# The Location input, most specific first. The last two are Listaro's
+# (facebook-poster.ts:1778-1875): the input after a "Location" span, and any
+# input whose label mentions it.
+LOCATION_SELECTORS = (
+    'input[role="combobox"][aria-label="Location"]',
+    'label:has-text("Location") input',
+    'input[aria-label="Location"]',
+    'xpath=//span[text()="Location"]/following-sibling::input[1]',
+    'input[aria-label*="ocation"]',
+    'input[placeholder*="ocation"]',
+)
+
+
+def location_field(s: "Session"):
+    """The first visible Location input, or None."""
+    for selector in LOCATION_SELECTORS:
+        found = s.page.locator(selector)
+        try:
+            for i in range(found.count()):
+                if found.nth(i).is_visible():
+                    return found.nth(i)
+        except Exception:
+            continue
+    return None
+
+
+# The form's preview: "Listed a few seconds ago in Kearney", or "Listed in Philadelphia, PA".
+LISTED_IN = re.compile(r"listed(?: [a-z ]+?)? in ([^\n]+)|marketplace location[:\s]*([^\n]+)", re.I)
+
+
+def listed_in(s: "Session") -> str | None:
+    """Where the form says the listing goes up ("Listed in Philadelphia, PA"), or None."""
+    match = LISTED_IN.search(s.body(12000))
+    return (match.group(1) or match.group(2)).strip()[:80] if match else None
+
+
+def visible_inputs(s: "Session") -> list[str]:
+    """What the form's visible inputs are called, so a missing field says what is there instead."""
+    try:
+        return s.page.evaluate("""() => [...document.querySelectorAll('input, textarea, [role="combobox"]')]
+          .filter((e) => e.offsetParent !== null && e.type !== 'file' && e.type !== 'hidden')
+          .map((e) => e.ariaLabel || e.placeholder || (e.labels && e.labels[0] && e.labels[0].innerText) || e.name || e.type)
+          .map((t) => String(t).trim().slice(0, 40)).filter(Boolean).slice(0, 15)""")
+    except Exception:
+        return []
+
+
+def in_place(text: str, place: str) -> bool:
+    """`text` (a normalized suggestion or field value) names `place`, the
+    listing's last part: a country, or a US state by code or by name, as a
+    whole word (rule 12: never a same-named city elsewhere). Empty: no check."""
+    if not place:
+        return True
+    names = [place] + ([US_STATES[place]] if place in US_STATES else [])
+    return any(re.search(r"\b" + re.escape(name) + r"\b", text) for name in names)
+
+
 def norm(text: str | None) -> str:
     """Dash-insensitive, case-insensitive, whitespace-collapsed (FCC form_driver)."""
     return re.sub(r"\s+", " ", re.sub(r"[–—−]", "-", text or "")).strip().lower()
@@ -176,7 +251,9 @@ class Session:
     # -- lifecycle ---------------------------------------------------------
     def start(self) -> dict[str, Any] | None:
         state = Path(self.config.get("storageStatePath") or "")
-        if not state.is_file():
+        # Only connect (connectSession.py) may start without a session: it is the one that makes it.
+        fresh = bool(self.config.get("allowFresh"))
+        if not state.is_file() and not fresh:
             return {"kind": "issue", "issue": checked("neverConnected"), "detail": f"no saved session at {state}. Run: log connect --account <id>"}
         from camoufox.sync_api import Camoufox
 
@@ -188,7 +265,7 @@ class Session:
             # The gate's self-check runs inside new_context (rule 17): a refusal closes the browser.
             # HAR is Playwright's Firefox recorder (record_har_*), flushed when the context
             # closes. It is kept raw for analysis (rule 19). The gate leaves these kwargs.
-            context_kwargs: dict[str, Any] = {"storage_state": str(state)}
+            context_kwargs: dict[str, Any] = {"storage_state": str(state)} if state.is_file() else {}
             receipt = self.config.get("receiptDir")
             if receipt:
                 capture = Path(receipt) / "firefox"
@@ -266,6 +343,51 @@ class Session:
         except Exception:
             return False
 
+    def text_captcha_image(self):
+        """The text captcha's image, or None (Listaro's image_captcha selectors, fb-login-helper.ts:176)."""
+        found = self.page.locator('img[src*="captcha"], [id*="captcha"] img, [class*="captcha"] img')
+        try:
+            for i in range(found.count()):
+                if found.nth(i).is_visible():
+                    return found.nth(i)
+        except Exception:
+            pass
+        return None
+
+    def text_captcha_field(self):
+        """The box the text captcha's answer goes in: the visible text input on its page."""
+        found = self.page.locator('input[type="text"], input:not([type])')
+        try:
+            for i in range(found.count()):
+                if found.nth(i).is_visible():
+                    return found.nth(i)
+        except Exception:
+            pass
+        return None
+
+    def submit_text_captcha(self) -> bool:
+        """Send the typed answer: Enter in the box, then Continue once FB enables it
+        (it stays disabled until its own scripts see the text). Logs what it did."""
+        url = self.page.url
+        field = self.text_captcha_field()
+        if field is not None:
+            try:
+                field.press("Enter", timeout=5000)
+                self.page.wait_for_timeout(3000)
+            except Exception:
+                pass
+        if self.page.url != url or not TEXT_CAPTCHA.search(self.body()):
+            log("Text captcha: sent with Enter; the page moved on.")
+            return True
+        button = self.enabled_button(re.compile(r"^(continue|submit)$", re.I), 8000)
+        if button is None:
+            log("Text captcha: answer typed, but Continue never enabled.")
+            return False
+        button.click(timeout=8000)
+        self.page.wait_for_timeout(4000)
+        log("Text captcha: clicked Continue.")
+        return True
+
     def detect_captcha(self) -> dict[str, Any] | None:
         """Which captcha is on screen, read from frame URLs (never clicks)."""
         for frame in self.page.frames:
@@ -294,6 +416,11 @@ class Session:
                         "detail": "iframe#captcha-recaptcha"}
         except Exception:
             pass
+        # FB's own text captcha: "Confirm that you're human / Enter the text from the image".
+        # Listaro solved it as an image (captcha-solver.ts, fb-login-helper.ts:170-178).
+        text_image = TEXT_CAPTCHA.search(self.body())
+        if text_image or self.text_captcha_image() is not None:
+            return {"kind": "textImage", "detail": f"text captcha: {text_image.group(0) if text_image else 'captcha image'}"}
         if "/checkpoint" in self.page.url.lower() and CHALLENGE_TEXT.search(self.body()):
             return {"kind": "facebookChallenge", "detail": "checkpoint page: " + CHALLENGE_TEXT.search(self.body()).group(0)}
         return None
@@ -486,11 +613,56 @@ def step_open(s: Session, params: dict[str, Any]) -> dict[str, Any]:
     if params.get("recheck") and "marketplace/create" not in s.page.url and not s.config.get("formUrl"):
         s.page.goto(create_url(), wait_until="domcontentloaded", timeout=90_000)
         s.page.wait_for_timeout(3000)
+    title = s.page.locator('label:has-text("Title") input, input[aria-label="Title"]').first
     try:
-        s.page.locator('label:has-text("Title") input, input[aria-label="Title"]').first.wait_for(state="visible", timeout=15_000)
+        title.wait_for(state="visible", timeout=15_000)
     except Exception:
-        return {"kind": "error", "code": checked("formNotFound"), "detail": f"no Title field on {s.page.url}"}
+        # Still rendering (a slow proxy exit): load it again once and wait longer, as Listaro
+        # does (facebook-poster.ts:1212-1237). Nothing has been typed yet, so this is safe.
+        log("No form after 15 s; loading the create page again once.")
+        try:
+            s.page.goto(s.config.get("formUrl") or create_url(), wait_until="domcontentloaded", timeout=90_000)
+            title.wait_for(state="visible", timeout=30_000)
+        except Exception:
+            return {"kind": "error", "code": checked("formNotFound"), "detail": f"no Title field on {s.page.url}, loaded twice"}
+    # Where Facebook will list it, before any photo goes up (rule 12): the US form has no
+    # Location field and lists at the account's Marketplace location (`sell_location`).
+    wrong = sell_location_mismatch(s, params.get("location"))
+    if wrong:
+        return {"kind": "error", "code": checked("locationNotSet"), "detail": wrong}
     return {"kind": "ready", "url": s.page.url}
+
+
+SELL_LOCATION = re.compile(r'"sell_location":\{"latitude":(-?[\d.]+),"longitude":(-?[\d.]+),"reverse_geocode_detailed":\{"city":"([^"]*)","postal_code":"([^"]*)","country_alpha_two":"([A-Z]{2})"')
+
+
+def read_sell_location(s: Session) -> dict[str, Any] | None:
+    """The account's Marketplace location, as the create page's own data carries it, or None."""
+    try:
+        match = SELL_LOCATION.search(s.page.content())
+    except Exception:
+        return None
+    if not match:
+        return None
+    lat, lng, city, postal, country = match.groups()
+    return {"city": city, "postalCode": postal, "country": country, "latitude": float(lat), "longitude": float(lng)}
+
+
+def sell_location_mismatch(s: Session, location: str | None) -> str | None:
+    """Why the account's Marketplace location isn't the listing's city, or None when it is
+    (or the page doesn't say: the Location field, when there is one, is checked at fillFields)."""
+    if not location or s.config.get("formUrl"):
+        return None
+    where = read_sell_location(s)
+    if where is None:
+        return None
+    log(f"Marketplace location: {where['city']} {where['postalCode']} {where['country']}")
+    city = norm(location.split(",")[0])
+    home = str(proxyGate.pinned().get("country") or "").upper()
+    if city and city == norm(where["city"]) and (not home or where["country"] == home):
+        return None
+    return (f"the account's Marketplace location is {where['city']} ({where['postalCode']}, {where['country']}), "
+            f"not {location!r}: Facebook would list it there. Change the account's Marketplace location first.")
 
 
 def kraken_code(exc: Exception) -> str:
@@ -512,6 +684,9 @@ def solve_kraken(s: Session, detection: dict[str, Any]) -> dict[str, Any]:
     except Exception as exc:
         return {"solved": False, "code": checked(kraken_code(exc)), "detail": str(exc)[:300]}
     verdicts = [f"{getattr(v, 'vendor', '?')}:{getattr(v, 'verdict', '?')}" for v in (result.verdicts or [])]
+    if detection.get("kind") == "textImage" and result.is_solved:
+        # Kraken types the text; FB's Continue may still need the click. The next read judges it.
+        s.submit_text_captcha()
     return {"solved": bool(result.is_solved), "detail": f"verdicts={verdicts}"}
 
 
@@ -552,6 +727,8 @@ def solve_twocaptcha(s: Session, detection: dict[str, Any]) -> dict[str, Any]:
     except Exception as exc:
         return {"solved": False, "code": checked("captchaNoProxy"), "detail": f"could not read the browser's userAgent ({type(exc).__name__})"}
     solver = TwoCaptcha(key, defaultTimeout=180, recaptchaTimeout=600, pollingInterval=5)
+    if detection.get("kind") == "textImage":
+        return solve_text_image(s, solver)
     site_key = detection.get("siteKey")
     try:
         if detection["kind"] == "recaptcha":
@@ -598,6 +775,28 @@ def solve_twocaptcha(s: Session, detection: dict[str, Any]) -> dict[str, Any]:
         return {"solved": False, "code": checked("notInjected"), "detail": f"token ({len(token)} chars) found no field to go into"}
     s.page.wait_for_timeout(6000)
     return {"solved": True, "detail": f"token {len(token)} chars into {injected} place(s)"}
+
+
+def solve_text_image(s: Session, solver) -> dict[str, Any]:
+    """2Captcha's image solver on FB's text captcha, as Listaro did (captcha-solver.ts:
+    ImageToText): screenshot the image, type the answer, click Continue."""
+    image = s.text_captcha_image()
+    field = s.text_captcha_field()
+    if image is None or field is None:
+        return {"solved": False, "code": checked("noWidget"), "detail": "no captcha image or answer box on the page"}
+    shot = Path(s.config.get("receiptDir") or tempfile.gettempdir(), "textCaptcha.png")
+    try:
+        image.screenshot(path=str(shot), timeout=10_000)
+        log("2Captcha: submitting the text image")
+        answer = str(solver.normal(str(shot))["code"]).strip()
+    except Exception as exc:
+        return {"solved": False, "code": checked(twocaptcha_code(exc)), "detail": str(exc)[:300]}
+    if not answer:
+        return {"solved": False, "code": checked("unsolvable"), "detail": "2Captcha returned an empty answer"}
+    field.click(timeout=8000)
+    s.page.keyboard.type(answer, delay=90)
+    submitted = s.submit_text_captcha()
+    return {"solved": True, "detail": f"{len(answer)} characters typed" + ("" if submitted else ", Continue not found")}
 
 
 def step_solve_captcha(s: Session, params: dict[str, Any]) -> dict[str, Any]:
@@ -682,11 +881,21 @@ def step_fill_fields(s: Session, params: dict[str, Any]) -> dict[str, Any]:
         city = norm(location.split(",")[0])
         # "City, Country": the suggestion must be in that country too, never a same-named city abroad (rule 12).
         country = norm(location.split(",")[-1]) if "," in location else ""
-        loc = s.page.locator('input[role="combobox"][aria-label="Location"]').first
-        if loc.count() == 0:
-            loc = s.field("Location")
-        if loc is None or loc.count() == 0:
-            return fail("locationNotSet", "no Location field")
+        loc = location_field(s)
+        if loc is None:
+            # The US form has no Location field: the listing goes up at the account's own
+            # Marketplace location, as Listaro posted (facebook-poster.ts:1170-1198,1921-1923).
+            # Rule 12 still holds: the "Listed in ..." the form shows must be the listing's place.
+            listed = listed_in(s)
+            if listed and city in norm(listed) and in_place(norm(listed), country):
+                filled["location"] = f"{listed} (the account's Marketplace location)"
+                return {"ok": True, "filled": filled}
+            receipt = s.config.get("receiptDir")
+            if receipt:
+                # The form as it read, to see where Facebook would list it (local run folder only).
+                Path(receipt, "formText.txt").write_text(s.body(20000), encoding="utf8")
+            return fail("locationNotSet", f"no Location field, and the form lists it in {listed or 'nowhere it says'}, not {location!r}; "
+                                          f"inputs on the form: {visible_inputs(s)}")
         loc.click(timeout=8000)
         s.page.keyboard.press("ControlOrMeta+A")
         s.page.keyboard.press("Backspace")
@@ -699,14 +908,15 @@ def step_fill_fields(s: Session, params: dict[str, Any]) -> dict[str, Any]:
         picked = False
         for i in range(options.count()):
             text = norm(options.nth(i).inner_text())
-            if city and city in text and (not country or country in text):
+            if city and city in text and in_place(text, country):
                 options.nth(i).click(timeout=5000)
                 picked = True
                 break
         if not picked:
-            return fail("locationNotSet", f"no suggestion matched {city!r} in {country!r}")
+            seen = [norm(options.nth(i).inner_text())[:60] for i in range(min(options.count(), 5))]
+            return fail("locationNotSet", f"no suggestion matched {city!r} in {country!r}: {seen}")
         s.page.wait_for_timeout(800)
-        if city not in norm(loc.input_value()) or (country and country not in norm(loc.input_value())):
+        if city not in norm(loc.input_value()) or not in_place(norm(loc.input_value()), country):
             return fail("locationNotSet", f"Location reads {loc.input_value()!r}")
         filled["location"] = loc.input_value()
     return {"ok": True, "filled": filled}
@@ -833,6 +1043,21 @@ def main() -> int:
     receipt = config.get("receiptDir")
     proxyGate.arm(config.get("proxyPath"), config.get("devicePath"), str(Path(receipt) / "firefox") if receipt else None)
     session = Session(config)
+    # Rule 24: a login wall or checkpoint met while publishing is signed through in this
+    # same browser (connectSession.py's steps), never in a second launch. Imported here:
+    # connectSession imports this module.
+    import connectSession
+
+    session.secrets = connectSession.read_login(config.get("loginPath"))
+    STEPS.update({
+        "signInOpen": connectSession.step_open_in_session,
+        "signInRead": connectSession.step_read,
+        "signInSubmitCredentials": connectSession.step_submit_credentials,
+        "signInChooseAuthApp": connectSession.step_choose_auth_app,
+        "signInSubmitCode": connectSession.step_submit_code,
+        "signInDismiss": connectSession.step_dismiss,
+        "signInSave": connectSession.step_save,
+    })
 
     def reply(request_id: Any, result: dict[str, Any]) -> None:
         reply_out.write(json.dumps({"id": request_id, "result": result}) + "\n")
@@ -864,6 +1089,12 @@ def main() -> int:
                 result = fail(exc.code, exc.detail)
             except Exception as exc:
                 result = fail("crashed", f"{type(exc).__name__}: {exc}"[:400])
+            if result.get("ok") is False or result.get("kind") in ("error", "issue"):
+                # Why a step failed, on the trace at once, and the page as it read (local run folder only).
+                log(f"{step} failed: {result.get('code') or result.get('issue')} {result.get('detail', '')}".rstrip())
+                receipt = session.config.get("receiptDir")
+                if receipt and session.page is not None:
+                    Path(receipt, f"{step}Failed.txt").write_text(f"{session.page.url.split('?', 1)[0]}\n\n{session.body(20000)}", encoding="utf8")
             reply(request.get("id"), result)
     finally:
         session.close()

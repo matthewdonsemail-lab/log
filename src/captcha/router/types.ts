@@ -14,6 +14,8 @@ export type CaptchaKind =
   | 'recaptcha'
   /** Arkose Labs / FunCaptcha. CaptchaKraken can't solve it. */
   | 'arkose'
+  /** FB's "Confirm that you're human: enter the text from the image" (a distorted-text image). CaptchaKraken, then 2Captcha. */
+  | 'textImage'
   /** FB's own checkpoint: SMS code, ID, selfie, "confirm it's you". No solver. */
   | 'facebookChallenge'
   /** Something captcha-like that matched no known vendor. */

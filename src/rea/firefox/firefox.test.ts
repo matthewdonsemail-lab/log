@@ -3,8 +3,9 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { captureFromHar, settleFirefoxCapture } from "./index";
-import { exportScripts } from "./helpers/index";
+import { exportScripts, renderStepSummary, summarizeStep } from "./helpers/index";
 import type { ReaRunner } from "./types";
+
 
 const HAR = {
   log: {
@@ -92,7 +93,9 @@ describe("settleFirefoxCapture", () => {
     expect(readFileSync(join(dir, "session.har"), "utf8")).toBe(written);
     expect(readFileSync(join(dir, "scripts", "script0.js"), "utf8")).toContain("var loaded");
     expect(calls[0].slice(0, 1).concat(calls[0].slice(2))).toEqual(["inspect-web-network-capture", "har", "--format", "json"]);
-    expect(calls[1][0]).toBe("analyze-javascript-application");
+    // The bundle is never read whole (it timed out); `--docs` reads per request.
+    expect(calls).toHaveLength(1);
+    expect(note).toContain("1 scripts saved");
     expect(existsSync(join(dir, "scripts", "manifest.json"))).toBe(false);
     const manifest = JSON.parse(readFileSync(join(dir, "scriptsManifest.json"), "utf8")) as { scripts: Array<{ text?: string }> };
     expect(manifest.scripts[0].text).toBeUndefined();
@@ -134,5 +137,26 @@ describe("publishSession records the HAR through the existing context", () => {
     expect(text).toContain('"full"');
     expect(text.match(/Camoufox\(/g)?.length).toBe(1);
     expect(text).toContain("Camoufox(**launch_kwargs(");
+  });
+});
+
+describe("summarizeStep", () => {
+  test("names Facebook's GraphQL operations, uploads and failures, never values", () => {
+    const step = {
+      log: {
+        entries: [
+          { request: { method: "POST", url: "https://www.facebook.com/api/graphql/", headers: [{ name: "X-FB-Friendly-Name", value: "useUFACSubmitActionMutation" }], postData: { text: "fb_dtsg=secretToken" } }, response: { status: 200, content: { mimeType: "application/json" } } },
+          { request: { method: "POST", url: "https://www.facebook.com/api/graphql/", headers: [], postData: { text: "a=1&fb_api_req_friendly_name=useMarketplaceComposerAttributesQuery&fb_dtsg=x" } }, response: { status: 200, content: {} } },
+          { request: { method: "POST", url: "https://upload.facebook.com/ajax/react_composer/attachments/photo/upload", headers: [] }, response: { status: 200, content: {} } },
+          { request: { method: "GET", url: "https://www.facebook.com/ajax/bz", headers: [] }, response: { status: -1, content: {} } },
+        ],
+      },
+    };
+    const summary = summarizeStep(step);
+    expect(summary).toMatchObject({ requests: 4, uploads: 1, graphql: { useUFACSubmitActionMutation: 1, useMarketplaceComposerAttributesQuery: 1 }, failed: { "-1 www.facebook.com/ajax/bz": 1 } });
+    const text = renderStepSummary(3, "Text captcha: clicked Continue.", summary, "ev_1");
+    expect(text).toContain("`useUFACSubmitActionMutation`");
+    expect(text).toContain("rea `ev_1`");
+    expect(text).not.toContain("secretToken");
   });
 });

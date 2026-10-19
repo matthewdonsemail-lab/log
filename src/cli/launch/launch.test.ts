@@ -18,6 +18,9 @@ function capture() {
     session: () => {
       throw new Error("session not stubbed");
     },
+    connectSession: () => {
+      throw new Error("connectSession not stubbed");
+    },
     out: (line) => out.push(line),
     err: (line) => err.push(line),
   };

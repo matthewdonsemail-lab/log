@@ -18,12 +18,15 @@ import { join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
 import { appendAttempt, countArkoseToday, readAttempts, solverAvailability } from "../../captcha/router/index.ts";
 import { prepareRun } from "../../camofox/run/index.ts";
-import { settleFirefoxCapture } from "../../rea/firefox/index.ts";
+import { settleInBackground } from "../../rea/firefox/index.ts";
 import type { PublishSession } from "../../camofox/session/index.ts";
 import type { ErrorCode } from "../../errors/catalog/index.ts";
 import { countryMismatch, getListing, listListingsWhere, PUBLISHABLE_STATUSES, recordRun, setListingStatus, toPublishListing } from "../../marketplace/agencyListing/index.ts";
 import type { AgencyListing } from "../../marketplace/agencyListing/index.ts";
 import { publishMachine } from "../../marketplace/publish/index.ts";
+import { connectMachine } from "../../marketplace/connect/index.ts";
+import type { ActOutput, ConnectActorInputs, ReadOutput, SaveOutput, SolveOutput as ConnectSolveOutput } from "../../marketplace/connect/index.ts";
+import type { LoginSecrets } from "../../twenty/graphql/index.ts";
 import type {
   CaptureOutput,
   ConfirmOutput,
@@ -137,7 +140,17 @@ export const publishCommand: Command = {
     if (!content.ok) return refuse("publish", "listingInvalid", content.problems.join("; "));
 
     // Rule 12: no proxy, no home country, or an unusable account means no files and no browser.
-    const prepared = prepareRun(account, "run", { now, bypassHours: Boolean(parsed.flags["bypass"]) });
+    // The saved fixture form (file://) never reaches Facebook: not counted against rule 24.
+    const fixture = typeof parsed.flags.formUrl === "string" && parsed.flags.formUrl.startsWith("file:");
+    // Rule 24: a login wall or checkpoint on the form is signed through in this browser, so
+    // the run gets Twenty's login details the way connect does (rule 21: a 0600 file, deleted after).
+    let login: LoginSecrets | null = null;
+    try {
+      login = await context.twenty.loginSecrets(account.id);
+    } catch {
+      login = null; // no details: a login wall ends the run as before
+    }
+    const prepared = prepareRun(account, "run", { now, bypassHours: Boolean(parsed.flags["bypass"]), skipLaunchBudget: fixture, login });
     if (!prepared.ok) return refuseListing(context, listing, prepared.code, prepared.detail);
     const run = prepared.run;
 
@@ -155,6 +168,7 @@ export const publishCommand: Command = {
         devicePath: run.devicePath,
         receiptDir: runDir,
         formUrl: typeof parsed.flags.formUrl === "string" ? parsed.flags.formUrl : undefined,
+        loginPath: run.loginPath,
       }));
     const call = <T>(step: Parameters<PublishSession["call"]>[0], params: Record<string, unknown> = {}) => open().call<T>(step, params);
     // The exit IP is re-read through the browser at review and right before Publish (rule 12):
@@ -182,7 +196,7 @@ export const publishCommand: Command = {
         }),
         openForm: fromPromise<FormOutcome, PublishActorInputs["openForm"]>(async ({ input }) => {
           // A crashed step replies { ok: false, code }, not a FormOutcome.
-          const result = await call<Partial<FormOutcome> & { code?: ErrorCode; detail?: string }>("open", { recheck: input.recheck });
+          const result = await call<Partial<FormOutcome> & { code?: ErrorCode; detail?: string }>("open", { recheck: input.recheck, location: input.location });
           if (result.kind) return result as FormOutcome;
           return { kind: "error", code: result.code ?? "badReply", detail: result.detail ?? JSON.stringify(result).slice(0, 200) };
         }),
@@ -196,6 +210,19 @@ export const publishCommand: Command = {
         publish: fromPromise<PublishClickOutput, PublishActorInputs["publish"]>(async () => noteExit(await call<PublishClickOutput>("publish"))),
         confirm: fromPromise<ConfirmOutput, PublishActorInputs["confirm"]>(async () => call<ConfirmOutput>("confirm")),
         captureId: fromPromise<CaptureOutput, PublishActorInputs["captureId"]>(async ({ input }) => call<CaptureOutput>("captureId", input)),
+        // The connect machine over this same browser (rule 24): its steps are the session's signIn* steps.
+        signIn: connectMachine.provide({
+          actors: {
+            open: fromPromise<ActOutput, undefined>(() => call("signInOpen")),
+            read: fromPromise<ReadOutput, undefined>(() => call("signInRead")),
+            submitCredentials: fromPromise<ActOutput, ConnectActorInputs["submitCredentials"]>(({ input }) => call("signInSubmitCredentials", input)),
+            chooseAuthApp: fromPromise<ActOutput, undefined>(() => call("signInChooseAuthApp")),
+            submitCode: fromPromise<ActOutput, ConnectActorInputs["submitCode"]>(({ input }) => call("signInSubmitCode", input)),
+            dismiss: fromPromise<ActOutput, ConnectActorInputs["dismiss"]>(({ input }) => call("signInDismiss", input)),
+            save: fromPromise<SaveOutput, undefined>(() => call("signInSave")),
+            solveCaptcha: fromPromise<ConnectSolveOutput, ConnectActorInputs["solveCaptcha"]>(({ input }) => call("solveCaptcha", input)),
+          },
+        }),
       },
     });
 
@@ -211,6 +238,11 @@ export const publishCommand: Command = {
         dryRun,
         availability: solverAvailability(),
         arkoseToday: countArkoseToday(ledger, account.accountName),
+        signIn: {
+          hasPassword: Boolean(login?.email && login?.password),
+          hasTotp: Boolean(login?.totpSecret),
+          timing: { deadlineMs: 300_000, pollMs: 5000, codeWindowMs: 30_000, ...context.connectTiming },
+        },
       },
       inspect,
     });
@@ -225,7 +257,7 @@ export const publishCommand: Command = {
     } finally {
       if (session) await (session as PublishSession).close();
       try {
-        const captureNote = await settleFirefoxCapture(join(runDir, "firefox"));
+        const captureNote = settleInBackground(join(runDir, "firefox"));
         if (captureNote) exitNotes.push(captureNote);
       } catch (error) {
         exitNotes.push(`Firefox capture: ${error instanceof Error ? error.message : String(error)}`);

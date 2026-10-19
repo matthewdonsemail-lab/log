@@ -2,6 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { existsSync, readFileSync } from "node:fs";
 import { toListingStatus } from "../../camofox/worker/index.ts";
 import type { WorkerClient, WorkerRequest } from "../../camofox/worker/index.ts";
+import type { ConnectSessionConfig } from "../../camofox/session/index.ts";
 import { FIXTURE_COOKIES, marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { runCli } from "../runner/index.ts";
 
@@ -115,70 +116,135 @@ describe("live commands", () => {
     expect(out).toContain("Live status active");
   });
 
-  test("connect signs in through the proxy and saves the cookies to Twenty", async () => {
+  /** A connect session that shows `pages` in turn (the last repeats) and records every step. */
+  function scriptedConnect(pages: string[], cookies = [{ name: "c_user", value: "2", domain: ".facebook.com", path: "/" }], bodySample = "Your listings") {
+    const steps: string[] = [];
+    const configs: ConnectSessionConfig[] = [];
+    let handed: unknown = null;
+    let closed = 0;
+    const factory = (config: ConnectSessionConfig) => {
+      configs.push(config);
+      if (config.loginPath) handed = JSON.parse(require("node:fs").readFileSync(config.loginPath, "utf8"));
+      let current = pages[0];
+      return {
+        async call<T>(step: string): Promise<T> {
+          steps.push(step);
+          if (step === "read") current = pages.length > 1 ? pages.shift()! : pages[0];
+          if (step === "read") return { ok: true, kind: current, path: "/x", heading: current === "checkpoint" ? "Confirm your identity" : "" } as T;
+          if (step === "save") {
+            // The browser leaves its storage_state where it was told to.
+            require("node:fs").writeFileSync(config.storageStatePath, JSON.stringify({ cookies, origins: [] }));
+            return { ok: true, loggedIn: current === "loggedIn", bodySample } as T;
+          }
+          return { ok: true } as T;
+        },
+        async close() {
+          closed++;
+        },
+      };
+    };
+    return { factory, steps, configs, handed: () => handed, closed: () => closed };
+  }
+  const FAST_CONNECT = { pollMs: 1, codeWindowMs: 1 };
+
+  test("connect runs the connect machine through the proxy and saves the cookies to Twenty", async () => {
     const twenty = marketplaceFixture();
-    let interactive: boolean | undefined;
-    const fresh = [{ name: "c_user", value: "2", domain: ".facebook.com", path: "/" }];
-    const worker = (async (request: WorkerRequest, options?: { interactive?: boolean }) => {
-      interactive = options?.interactive;
-      // The browser leaves its storage_state where it was told to.
-      require("node:fs").writeFileSync(request.storage_state_path!, JSON.stringify({ cookies: fresh, origins: [] }));
-      return { ok: true, storageStatePath: request.storage_state_path, loggedIn: true, authFlags: {} };
-    }) as WorkerClient;
+    const session = scriptedConnect(["loggedIn"]);
     const out: string[] = [];
-    const code = await runCli(["connect", "--account", "needsLogin"], { worker, twenty, out: (l) => out.push(l), err: () => {} });
+    const err: string[] = [];
+    const code = await runCli(["connect", "--account", "needsLogin"], { connectSession: session.factory, connectTiming: FAST_CONNECT, twenty, out: (l) => out.push(l), err: (l) => err.push(l) });
     expect(code).toBe(0);
-    expect(interactive).toBe(true);
     const account = twenty.rows.socialAccounts.find((r) => r.id === "needsLogin")!;
-    expect(account.cookies).toEqual(fresh);
+    expect(account.cookies).toEqual([{ name: "c_user", value: "2", domain: ".facebook.com", path: "/" }]);
     expect(account.accountStatus).toBe("ACTIVE");
     expect(out.join("\n")).toContain("needsLogin is ACTIVE again");
+    expect(session.steps).toEqual(["open", "read", "save"]);
+    expect(session.closed()).toBe(1);
+    // Every state is printed (rule 6), and rule 22's HAR folder comes with the run.
+    expect(err.join("\n")).toContain("signingIn.reading");
+    expect(session.configs[0].captureDir.replaceAll("\\", "/")).toMatch(/\/connect\/\d{8}T\d{6}_needsLogin\/firefox$/);
+    expect(await runCli(["connect", "--account", "needsLogin", "--wait", "5"], { connectSession: session.factory, twenty, out: () => {}, err: () => {} })).toBe(1);
   });
 
-  test("connect --noPrompt never takes stdin: the worker watches the page for the login", async () => {
-    const twenty = marketplaceFixture();
-    let seen: { request?: WorkerRequest; interactive?: boolean } = {};
-    const worker = (async (request: WorkerRequest, options?: { interactive?: boolean }) => {
-      seen = { request, interactive: options?.interactive };
-      require("node:fs").writeFileSync(request.storage_state_path!, JSON.stringify({ cookies: [{ name: "c_user", value: "3", domain: ".facebook.com", path: "/" }], origins: [] }));
-      return { ok: true, storageStatePath: request.storage_state_path, loggedIn: true, authFlags: {} };
-    }) as WorkerClient;
-    const code = await runCli(["connect", "--account", "needsLogin", "--noPrompt", "--wait", "120"], { worker, twenty, out: () => {}, err: () => {} });
-    expect(code).toBe(0);
-    expect(seen.interactive).toBe(false);
-    expect(seen.request?.params).toEqual({ waitSeconds: 120 });
-    // Rule 22: every action brings its HAR folder, kept after the run.
-    expect(String(seen.request?.capture_dir).replaceAll("\\", "/")).toMatch(/\/connect\/\d{8}T\d{6}_needsLogin\/firefox$/);
-    expect(twenty.rows.socialAccounts.find((r) => r.id === "needsLogin")!.accountStatus).toBe("ACTIVE");
-    expect(await runCli(["connect", "--account", "needsLogin", "--noPrompt", "--wait", "5"], { worker, twenty, out: () => {}, err: () => {} })).toBe(1);
-  });
-
-  test("connect --noPrompt hands the worker Twenty's login details in a private file, deleted after the run", async () => {
+  test("connect --noPrompt types Twenty's details from a private file, deleted after the run, through two-step", async () => {
     const twenty = marketplaceFixture();
     await twenty.update("socialAccounts", "needsLogin", { email: "fixture@example.com", password: "fixturePass", totpSecret: "GEZDGNBVGY3TQOJQ" } as never);
-    let handed: unknown = null;
-    let loginPath: string | null | undefined;
-    const worker = (async (request: WorkerRequest) => {
-      loginPath = request.login_path;
-      handed = JSON.parse(require("node:fs").readFileSync(request.login_path!, "utf8"));
-      require("node:fs").writeFileSync(request.storage_state_path!, JSON.stringify({ cookies: [{ name: "c_user", value: "4", domain: ".facebook.com", path: "/" }], origins: [] }));
-      return { ok: true, storageStatePath: request.storage_state_path, loggedIn: true, authFlags: {} };
-    }) as WorkerClient;
+    const session = scriptedConnect(["loginForm", "twoStepMethod", "twoStepCode", "trustDevice", "loggedIn"]);
     const out: string[] = [];
-    const code = await runCli(["connect", "--account", "needsLogin", "--noPrompt"], { worker, twenty, out: (l) => out.push(l), err: (l) => out.push(l) });
+    const code = await runCli(["connect", "--account", "needsLogin", "--noPrompt"], { connectSession: session.factory, connectTiming: FAST_CONNECT, twenty, out: (l) => out.push(l), err: (l) => out.push(l) });
     expect(code).toBe(0);
-    expect(handed).toEqual({ email: "fixture@example.com", password: "fixturePass", totpSecret: "GEZDGNBVGY3TQOJQ" });
-    expect(require("node:fs").existsSync(loginPath!)).toBe(false);
+    expect(session.handed()).toEqual({ email: "fixture@example.com", password: "fixturePass", totpSecret: "GEZDGNBVGY3TQOJQ" });
+    expect(require("node:fs").existsSync(session.configs[0].loginPath!)).toBe(false);
+    expect(session.steps.filter((s) => s !== "read")).toEqual(["open", "submitCredentials", "chooseAuthApp", "submitCode", "dismiss", "save"]);
+    expect(out.join("\n")).toContain("Pages: loginForm → twoStepMethod → twoStepCode → trustDevice → loggedIn");
     expect(out.join("\n")).not.toContain("fixturePass");
 
-    // A hand sign-in (no --noPrompt) never reads them.
-    let plain: WorkerRequest | null = null;
-    const watcher = (async (request: WorkerRequest) => {
-      plain = request;
-      return { ok: true, storageStatePath: request.storage_state_path, loggedIn: false, authFlags: {} };
-    }) as WorkerClient;
-    await runCli(["connect", "--account", "needsLogin"], { worker: watcher, twenty, out: () => {}, err: () => {} });
-    expect(plain!.login_path).toBeUndefined();
+    // A hand sign-in (no --noPrompt) never reads them, and types nothing.
+    const plain = scriptedConnect(["loginForm", "loggedIn"]);
+    await runCli(["connect", "--account", "needsLogin"], { connectSession: plain.factory, connectTiming: FAST_CONNECT, twenty, out: () => {}, err: () => {} });
+    expect(plain.configs[0].loginPath).toBeNull();
+    expect(plain.steps).not.toContain("submitCredentials");
+  });
+
+  test("connect stuck on Facebook's checkpoint ends checkpointed: status CHECKPOINT, cookies left as they were", async () => {
+    const twenty = marketplaceFixture();
+    await twenty.update("socialAccounts", "galwayOne", { email: "fixture@example.com", password: "fixturePass" } as never);
+    const before = twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")!.cookies;
+    const session = scriptedConnect(["loginForm", "checkpoint"]);
+    const out: string[] = [];
+    const err: string[] = [];
+    const code = await runCli(["connect", "--account", "galwayOne", "--noPrompt", "--wait", "10"], { connectSession: session.factory, connectTiming: { ...FAST_CONNECT, deadlineMs: 50 }, twenty, out: (l) => out.push(l), err: (l) => err.push(l) });
+    expect(code).toBe(1);
+    expect(err.join("\n")).toContain("checkpointed");
+    expect(out.join("\n")).toContain('Checkpoint: "Confirm your identity"');
+    expect(session.steps.filter((s) => s !== "read")).toEqual(["open", "submitCredentials"]);
+    const account = twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")!;
+    expect(account.accountStatus).toBe("CHECKPOINT");
+    expect(account.cookies).toEqual(before);
+  });
+
+  test("Listaro's post-login check: signed in but unable to buy or sell is recorded, cookies kept", async () => {
+    const twenty = marketplaceFixture();
+    const session = scriptedConnect(["loggedIn"], undefined, "You can't buy or sell on Facebook");
+    const err: string[] = [];
+    const code = await runCli(["connect", "--account", "needsLogin"], { connectSession: session.factory, connectTiming: FAST_CONNECT, twenty, out: () => {}, err: (l) => err.push(l) });
+    expect(code).toBe(1);
+    expect(err.join("\n")).toContain("suspended");
+    const account = twenty.rows.socialAccounts.find((r) => r.id === "needsLogin")!;
+    expect(account.accountStatus).toBe("RESTRICTED");
+    expect(account.cookies).toEqual([{ name: "c_user", value: "2", domain: ".facebook.com", path: "/" }]);
+  });
+
+  test("auto-login reads each sign-in page as its kind", () => {
+    const cases: [string, string, string, Record<string, boolean>, string][] = [
+      ["https://www.facebook.com/marketplace/you/selling", "Marketplace", "Your listings", { login_markers: false }, "loggedIn"],
+      ["https://www.facebook.com/login/", "Log in", "The password that you've entered is incorrect.", { password_field: true }, "wrongPassword"],
+      ["https://www.facebook.com/checkpoint/1501092823525282/", "Check your notifications on another device", "Try another way", {}, "twoStepMethod"],
+      ["https://www.facebook.com/two_step_verification/authentication/", "Go to your authentication app", "Enter the 6-digit code", { code_field: true }, "twoStepCode"],
+      ["https://www.facebook.com/checkpoint/1501092823525282/", "We suspect automated behaviour on your account", "Dismiss", {}, "automatedBehaviour"],
+      ["https://www.facebook.com/login/", "Find your account", "Search", {}, "findAccount"],
+      ["https://www.facebook.com/", "", "Allow the use of cookies", { cookie_banner: true }, "cookieBanner"],
+      ["https://www.facebook.com/marketplace/you/selling", "Marketplace", "Your listings", { login_markers: false, session_cookies: false }, "unknown"],
+      ["https://www.facebook.com/checkpoint/828281030927956/", "Confirm your identity", "Upload a photo of yourself", {}, "checkpoint"],
+      // The 2026-10-19 page after the text captcha.
+      ["https://www.facebook.com/checkpoint/1501092823525282/", "Confirm your identity", "Confirm that you're a real person with a video selfie We need more info to make sure that you're human. Start video selfie", {}, "videoSelfie"],
+      ["https://www.facebook.com/checkpoint/x/", "Enter the code we sent to +353", "Try another way", { code_field: true }, "twoStepMethod"],
+      ["https://www.facebook.com/checkpoint/x/", "Add your phone number", "", {}, "checkpoint"],
+      ["https://www.facebook.com/checkpoint/x/", "Trust this device?", "Trust this device", {}, "trustDevice"],
+      ["https://www.facebook.com/", "", "Your account has been locked", {}, "disabled"],
+    ];
+    const script = `import sys, json; sys.path.insert(0, 'python'); import autoLogin as a
+cases = json.loads(sys.stdin.read())
+print(json.dumps([a.classify(u, h, t, **{"password_field": False, "code_field": False, "captcha": False, "login_markers": True, **f}) for u, h, t, f, _ in cases]))`;
+    const run = require("node:child_process").spawnSync(process.env.LOG_PYTHON || "python", ["-c", script], { encoding: "utf8", input: JSON.stringify(cases) });
+    expect(JSON.parse(run.stdout.trim())).toEqual(cases.map((c) => c[4]));
+  });
+
+  test("auto-login hands Facebook's own checkpoints to a person and types codes only on two-step pages", () => {
+    const headings = ["We suspect automated behaviour on your account", "Confirm your identity", "Your account has been locked", "Check your notifications on another device", "Go to your authentication app", "Enter the 6-digit code"];
+    const script = `import sys, json; sys.path.insert(0, 'python'); import autoLogin as a; print(json.dumps([bool(a.TWO_STEP.search(h)) for h in ${JSON.stringify(headings)}]))`;
+    const run = require("node:child_process").spawnSync(process.env.LOG_PYTHON || "python", ["-c", script], { encoding: "utf8" });
+    expect(JSON.parse(run.stdout.trim())).toEqual([false, false, false, true, true, true]);
   });
 
   test("auto-login's TOTP matches RFC 6238", () => {

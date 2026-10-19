@@ -15,6 +15,8 @@ import type { TwentyClient, TwentyObject, TwentyObjects } from './types'
 
 const TIMEOUT_MS = 30_000
 const PAGE = 60
+/** Waits before retrying a dropped connection to Twenty (`guarded`): reads and updates only. */
+export const RETRY_MS = [1000, 3000]
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
 export const SOCIAL_ACCOUNT_FIELDS = {
@@ -114,10 +116,18 @@ export function createTwentyClient(env: Record<string, string | undefined> = pro
   }
 
   async function guarded<T>(what: string, run: () => Promise<T>): Promise<T> {
-    try {
-      return await run()
-    } catch (error) {
-      throw toTwentyError(error, what)
+    // A dropped socket ("connection was closed unexpectedly") is retried, 1 s then 3 s:
+    // losing it cost a fresh sign-in's session on 2026-10-19. Reads and updates only:
+    // a create retried after a drop could write the row twice, and rows are never deleted (rule 13).
+    const retries = what.startsWith('create') ? [] : RETRY_MS
+    for (let attempt = 0; ; attempt++) {
+      try {
+        return await run()
+      } catch (error) {
+        const failed = toTwentyError(error, what)
+        if (failed.code !== 'twentyUnreachable' || attempt >= retries.length) throw failed
+        await new Promise((resolve) => setTimeout(resolve, retries[attempt]))
+      }
     }
   }
 

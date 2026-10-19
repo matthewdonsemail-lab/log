@@ -3,12 +3,12 @@
  * An injected clock; no browser, no network.
  */
 import { afterAll, describe, expect, test } from 'bun:test'
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { findAccount } from '../../marketplace/socialAccount/index'
 import { marketplaceFixture } from '../../twenty/graphql/index'
-import { prepareRun } from './index'
+import { listLaunches, overLaunchBudget, prepareRun } from './index'
 
 const DAY = new Date('2026-10-18T10:00:00Z') // 11:00 in Galway
 const NIGHT = new Date('2026-10-18T02:00:00Z') // 03:00 in Galway, 09:00 in Vietnam
@@ -116,5 +116,34 @@ describe('prepareRun: home, hours and device', () => {
     writeFileSync(prepared.run.devicePath!, JSON.stringify({ ...file, profile: made, created: true }))
     expect(prepared.run.newDeviceProfile()).toEqual(made as never)
     prepared.run.cleanup()
+  })
+})
+
+describe('launch budget (rule 24)', () => {
+  const launchAt = (root: string, action: string, at: string, account = 'phillyOne') => {
+    const dir = join(root, action, `${at.replace(/[-:]/g, '').slice(0, 15)}_${account}`, 'firefox')
+    mkdirSync(dir, { recursive: true })
+    writeFileSync(join(dir, 'steps.jsonl'), `${JSON.stringify({ at, step: 'Self-check passed: exit 1.2.3.4' })}\n`)
+  }
+
+  test('only launches that reached Facebook count, per account', () => {
+    const root = mkdtempSync(join(tmpdir(), 'logBudget'))
+    launchAt(root, 'connect', '2026-10-19T09:00:00.000Z')
+    launchAt(root, 'scan', '2026-10-19T09:30:00.000Z', 'otherOne')
+    const refused = join(root, 'connect', '20261019T093000_phillyOne', 'firefox')
+    mkdirSync(refused, { recursive: true })
+    writeFileSync(join(refused, 'steps.jsonl'), `${JSON.stringify({ at: '2026-10-19T09:30:00.000Z', step: 'open failed: proxyTooSlow' })}\n`)
+    expect(listLaunches('phillyOne', { runs: root, publish: join(root, 'none') }).map((d) => d.toISOString())).toEqual(['2026-10-19T09:00:00.000Z'])
+  })
+
+  test('too soon after the last launch, then too many in the local day', () => {
+    const tz = 'America/New_York'
+    const at = (iso: string) => new Date(iso)
+    expect(overLaunchBudget([at('2026-10-19T13:00:00Z')], at('2026-10-19T13:04:00Z'), tz)).toMatchObject({ code: 'launchTooSoon' })
+    expect(overLaunchBudget([at('2026-10-19T13:00:00Z')], at('2026-10-19T13:10:00Z'), tz)).toBeNull()
+    const eight = Array.from({ length: 8 }, (_, i) => at(`2026-10-19T${String(12 + i).padStart(2, '0')}:00:00Z`))
+    expect(overLaunchBudget(eight, at('2026-10-19T21:00:00Z'), tz)).toMatchObject({ code: 'launchBudgetSpent' })
+    // 02:00 local the next day (06:00Z): a new local day.
+    expect(overLaunchBudget(eight, at('2026-10-20T06:00:00Z'), tz)).toBeNull()
   })
 })

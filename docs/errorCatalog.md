@@ -25,9 +25,13 @@ stateDiagram-v2
   preparingPhotos --> stopping: error
   openingForm --> choosingCategory: done [formReady]
   openingForm --> routingCaptcha: done [formCaptcha]
+  openingForm --> signingIn: done [canSignIn]
   openingForm --> stopping: done [formIssue]
   openingForm --> stopping: done
   openingForm --> stopping: error
+  signingIn --> openingForm: done [signedIn]
+  signingIn --> stopping: done
+  signingIn --> stopping: error
   routingCaptcha --> solvingCaptcha: always [hasSolver]
   routingCaptcha --> stopping: always
   solvingCaptcha --> openingForm: done
@@ -100,6 +104,9 @@ stateDiagram-v2
 | `sessionExpired` | no | `worker`, `publish.openingForm`, `marketplace/account` | publish→blocked, monitor→blocked | Facebook sent the session to the login page. | Run `log connect --account <id>` and log in by hand. |
 | `sessionInvalidatedChanged` | no | `marketplace/account` | publish→blocked, monitor→blocked | The session was invalidated, usually by a password change. | Run `log connect --account <id>` and log in by hand. |
 | `checkpointed` | no | `worker`, `publish.openingForm`, `marketplace/account` | publish→blocked, monitor→blocked | Facebook put the account on a checkpoint (verify identity, SMS code, ID). | Log in by hand and clear the checkpoint, then `log connect`. No solver can do it. |
+| `wrongPassword` | no | `connect.routing` | publish→blocked, monitor→blocked | Facebook said the password is wrong, or found no account for the email, when `log connect` signed in with Twenty's details. | Fix the account's email or password in Twenty, then `log connect` again. Auto-login stops at once so Facebook doesn't see repeated wrong passwords. |
+| `videoSelfieRequired` | no | `connect.routing` | publish→blocked, monitor→blocked | Facebook's checkpoint wants a video selfie ("Confirm that you're a real person with a video selfie"). No solver or auto-login can do it. | A person records the selfie in the Camoufox window (or on the account owner's phone), then `log connect` again. Tell matt. |
+| `signInNotFinished` | no | `connect.signingIn` | publish→blocked, monitor→blocked | `log connect` reached its deadline (`--wait`) without a logged-in page: the login, two-step or a captcha was not finished. | Run `log connect` again and finish the step its last page names in the Camoufox window, or give it a longer `--wait`. A two-step page needs the totpSecret in Twenty. |
 | `unconfirmedUser` | no | `marketplace/account` | publish→blocked, monitor→blocked | The account has not confirmed its email or phone. | Confirm the email or phone on Facebook by hand. |
 | `cookieInvalid` | no | `marketplace/account` | publish→blocked, monitor→blocked | The saved cookies are not accepted. | Run `log connect --account <id>` and log in by hand. |
 | `suspended` | no | `worker`, `publish.openingForm`, `marketplace/account` | publish→blocked, monitor→blocked | Marketplace is restricted or the account is disabled ("can't buy or sell"). | Tell matt. Don't retry the account until it's looked at. |
@@ -114,6 +121,7 @@ stateDiagram-v2
 | `joinGate` | no | `marketplace/account` | publish→blocked, monitor→blocked | A group asks the account to join first. | Join the group by hand. |
 | `removedFromGroup` | no | `marketplace/account` | publish→blocked, monitor→blocked | The account was removed from a group. | Tell matt. Don't retry the account until it's looked at. |
 | `proxyUnreachable` | yes | `proxyGate`, `publish.openingForm`, `worker`, `marketplace/account` | publish→blocked, monitor→blocked | No exit IP through the account's proxy: it is down or refusing connections. No browser was opened. | Check the proxy is up, then `log proxy check --account <id>`. |
+| `proxyTooSlow` | yes | `proxyGate` | publish→blocked, monitor→blocked | The proxy's exit answers, but takes seconds for each Facebook file, so pages never get past Facebook's loading skeleton. Refused before any page opened. | Run `log proxy assign --account <id>`: it skips slow exits and saves a fresh session that answers quickly. |
 | `proxyAuthFailed` | no | `proxyGate`, `publish.openingForm`, `worker`, `marketplace/account` | publish→blocked, monitor→blocked | The proxy answered 407: it refused the username or password. No browser was opened. | Fix the username and password in the socialAccount proxy in Twenty. |
 | `proxyMalformed` | no | `proxyGate`, `marketplace/socialAccount`, `publish.openingForm`, `worker`, `marketplace/account` | publish→blocked, monitor→blocked | The account's proxy can't be read: it needs scheme://user:pass@host:port. | Fix the socialAccount proxy in Twenty. |
 | `accountNotFacebook` | no | `marketplace/socialAccount` | publish→blocked, monitor→blocked | The socialAccount is not platform FACEBOOK. log-cli only runs Facebook accounts. | Pick a FACEBOOK account, or fix its platform in Twenty. |
@@ -125,6 +133,8 @@ stateDiagram-v2
 | `proxyCountryMismatch` | no | `proxyGate`, `publish.openingForm`, `worker` | publish→blocked, monitor→blocked | The proxy's exit IP is not in the account's country, so Facebook would see the account in the wrong place. No browser was opened. | Use a proxy that exits in the account's homeCountry, or fix homeCountry in Twenty if it is wrong. |
 | `proxyCountryChanged` | yes | `publish.reviewing`, `publish.publishing` | publish→blocked, monitor→blocked | The proxy's exit IP moved to another country during the run (2Captcha's sticky session rotated). Stopped before Publish was clicked. | Run `log proxy check --account <id>`; if it keeps leaving the country, `log proxy assign` it a new session. |
 | `outsideActiveHours` | yes | `camofox/run`, `cli/watch` | publish→blocked, monitor→blocked | It is outside the account's local waking hours (08:00-22:00 in its home timezone unless activeHoursStart/End say otherwise). Nothing opened. The detail has the local time and when the window opens. | Run it inside the window in the detail, or change activeHoursStart/activeHoursEnd on the socialAccount in Twenty. |
+| `launchTooSoon` | yes | `camofox/run` | publish→blocked, monitor→blocked | The account's browser opened on Facebook less than 10 minutes ago (rule 24). Nothing opened. | Wait the minutes in the detail. Back-to-back launches are what drew the 2026-10-19 checkpoints. |
+| `launchBudgetSpent` | yes | `camofox/run` | publish→blocked, monitor→blocked | The account's browser has opened on Facebook 8 times today, its local day, dry runs included (rule 24). Nothing opened. | Run it tomorrow (local time), or from another account in the same country. |
 | `noHomeLocale` | no | `marketplace/home`, `camofox/run` | publish→blocked, monitor→blocked | log-cli has no browser locale for the account's homeCountry, so it can't pin one. Nothing opened. | Add the country to HOME_COUNTRIES in src/marketplace/home/types.ts, or fix homeCountry in Twenty. |
 | `noHomeTimezone` | no | `marketplace/home`, `camofox/run` | publish→blocked, monitor→blocked | The account's homeCountry has several timezones and its homeCity isn't in the city table, so its local time is unknown. Nothing opened. | Add the city to CITY_TIMEZONES in src/marketplace/home/types.ts, or fix homeCity in Twenty. |
 | `deviceProfileInvalid` | no | `camofox/run`, `proxyGate`, `publish.openingForm`, `worker` | publish→blocked, monitor→blocked | The account's stored deviceProfile can't be read, or the run's device file is missing. Nothing opened: a new device would look like a different computer. | Tell matt. Don't clear deviceProfile unless he decides the account may get a new device. |
@@ -251,7 +261,7 @@ stateDiagram-v2
 | `twoCaptchaNotConfigured` | no | `proxyVendor/twoCaptcha` | command exits | The 2Captcha proxy API key or proxy password isn't set. | Put 2CAPTCHA_API_KEY and 2CAPTCHA_PROXY_PASSWORD (dashboard → Proxy → sub-account password) in log-cli/.env.local. |
 | `twoCaptchaRefused` | yes | `proxyVendor/twoCaptcha` | command exits | 2Captcha's API refused or didn't answer (bad key, no proxy product, network). | Read the detail. Check the key and that the proxy product is active with traffic left (log proxy balance). |
 | `twoCaptchaNoPlace` | no | `proxyVendor/twoCaptcha` | command exits | 2Captcha has no exit in that city of the account's home country. | Pick a city it has (--city), or --anyCity for anywhere in the country. |
-| `proxyTooFar` | yes | `proxyVendor/twoCaptcha` | command exits | Every proxy 2Captcha gave exited too far from the account's home city (it doesn't always honour the state and city it was asked for). Nothing was saved. | Run `log proxy assign` again, or pick a nearby city it has (--city, --region). |
+| `proxyTooFar` | yes | `proxyVendor/twoCaptcha` | command exits | Every proxy 2Captcha gave exited too far from the account's home city (it doesn't always honour the state and city it was asked for), or was too slow for Facebook. Nothing was saved. | Run `log proxy assign` again, or pick a nearby city it has (--city, --region). |
 
 ## auth
 

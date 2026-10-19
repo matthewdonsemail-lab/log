@@ -14,4 +14,9 @@ export interface ProxyCheck {
   /** Where Camoufox's GeoIP puts the exit IP. */
   latitude?: number;
   longitude?: number;
+  /** The slowest Facebook file through the proxy, in ms (null for SOCKS). Over `SLOW_FACEBOOK_MS` a launch is refused. */
+  facebookMs?: number | null;
 }
+
+/** Same limit as `SLOW_MS` in python/proxyGate.py: over it, pages sit on Facebook's loading skeleton. */
+export const SLOW_FACEBOOK_MS = 2500;

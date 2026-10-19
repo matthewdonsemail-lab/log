@@ -60,7 +60,7 @@ turns it into `underReviewDuplicate`.
 These keep their own spelling because we can't rename them:
 
 - Other repos and packages: `facebook-camofox-client`, `@clack/prompts`, `Listaro_backup`.
-- Git's fixed names: the hook file `.githooks/pre-commit`, the `rev-parse` command. The Linux opener `xdg-open`.
+- Git's fixed names: the `pre-commit` and `pre-push` hooks, the `rev-parse` command. The Linux opener `xdg-open`.
 - npm's package `name` (`log-cli`). npm doesn't allow capital letters there.
 - HTTP header names (`set-cookie`, `proxy-authorization`) and rea-agents commands
   (`inspect-web-network-capture`, `analyze-javascript-application`).

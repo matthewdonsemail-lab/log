@@ -1,6 +1,7 @@
 /** Command surface types. */
 
-import type { SessionFactory } from "../../camofox/session/index.ts";
+import type { ConnectSessionFactory, SessionFactory } from "../../camofox/session/index.ts";
+import type { ConnectTiming } from "../../marketplace/connect/index.ts";
 import type { WorkerClient } from "../../camofox/worker/index.ts";
 import type { ConnectionRecord } from "../../marketplace/account/index.ts";
 import type { ListingRecord } from "../../marketplace/listing/index.ts";
@@ -27,6 +28,10 @@ export interface CommandContext {
   worker: WorkerClient;
   /** Starts a publish session (a long-lived Camoufox browser). Injected so tests never do. */
   session: SessionFactory;
+  /** Starts a connect session (`log connect`'s browser). Injected so tests never launch one. */
+  connectSession: ConnectSessionFactory;
+  /** The connect machine's timings, for tests (default: 5 s reads, 30 s code windows, `--wait`). */
+  connectTiming?: Partial<ConnectTiming>;
   /** Writes to stdout. Injected so commands stay testable. */
   out: (line: string) => void;
   /** Writes to stderr. */

@@ -3,16 +3,16 @@
 Same contract as the old inferencesaver `facebook-worker.py`: one request in,
 one JSON result out. The request is a JSON object in argv[1]:
 
-    {"action": "doctor" | "login" | "marketplace.scan" | "marketplace.status",
+    {"action": "doctor" | "proxy.check" | "marketplace.scan" | "marketplace.status",
      "account_id": "fbGalwayRubbish",
      "storage_state_path": "C:/Users/.../fbGalwayRubbish.json",
      "params": {"listing_id": "1583545526797714"}}
 
-The result is the only thing written to stdout (one JSON line). Progress and
-prompts go to stderr, and stdin stays free so `login` can wait for Enter.
+The result is the only thing written to stdout (one JSON line). Progress goes
+to stderr.
 
-Every action is read-only on Facebook except `login`, which only saves the
-session you log into by hand.
+Every action is read-only on Facebook. Signing in is `log connect`, run by
+the connect machine through python/connectSession.py.
 """
 from __future__ import annotations
 
@@ -24,7 +24,6 @@ from pathlib import Path
 from typing import Any
 
 from errorCodes import failure
-import autoLogin
 import proxyGate
 from visibleBrowser import force_visible
 
@@ -146,98 +145,6 @@ async def acquire(request: dict[str, Any], storage_state_path: str | None):
     return manager, session
 
 
-def page_path(url: str) -> str:
-    """The URL without its query: enough to see where Facebook is, without tokens."""
-    return url.split("?", 1)[0].split("#", 1)[0]
-
-
-def read_login(path: str | None) -> dict[str, Any] | None:
-    """The run's login.json (email, password, totpSecret), or None. Never logged."""
-    if not path or not Path(path).exists():
-        return None
-    try:
-        secrets = json.loads(Path(path).read_text(encoding="utf8"))
-    except Exception:
-        return None
-    return secrets if isinstance(secrets, dict) and secrets.get("password") else None
-
-
-async def wait_for_login(page, wait_seconds: int, secrets: dict[str, Any] | None = None) -> None:
-    """Polls the page's login markers every 5 s until none show, or the time is up.
-    With `secrets` (auto-login), each pass also fills in what the page asks for."""
-    how = "Signing in from Twenty's details" if secrets else "Sign in in the Camoufox window if it asks"
-    log(f"Waiting up to {wait_seconds}s for a logged-in Facebook page. {how}.")
-    tries: dict[str, Any] = {}
-    await page.wait_for_timeout(4000)
-    loop = asyncio.get_running_loop()
-    started = loop.time()
-    deadline = started + wait_seconds
-    seen = ""
-    while True:
-        try:
-            flags = await auth_flags(page)
-            # Report the page whenever it changes: where it is and what it shows.
-            dialog = await page.locator('[role="dialog"]').count() > 0
-            now = f"{page_path(page.url)} | {', '.join(k for k, v in flags.items() if v) or 'no login markers'}{' | dialog open' if dialog else ''}"
-            if now != seen:
-                log(f"[{int(loop.time() - started)}s] Page: {now}")
-                seen = now
-            if not any(flags.values()):
-                log("Logged in.")
-                await page.wait_for_timeout(3000)
-                return
-        except Exception as exc:
-            log(f"[{int(loop.time() - started)}s] Page check skipped: {type(exc).__name__} (mid-navigation)")
-        if secrets:
-            try:
-                await autoLogin.step(page, secrets, tries, log)
-            except Exception as exc:
-                log(f"Auto-login step failed: {type(exc).__name__}; it tries again on the next pass")  # never the message: it can echo typed text
-        if loop.time() >= deadline:
-            log(f"Still not logged in after {wait_seconds}s. Last page: {seen}")
-            return
-        await asyncio.sleep(5)
-
-
-async def login(request: dict[str, Any]) -> dict[str, Any]:
-    state = Path(request["storage_state_path"])
-    manager, session = await acquire(request, str(state) if state.exists() else None)
-    try:
-        page = await session.new_page()
-        page.set_default_timeout(120_000)
-        try:
-            await page.goto(SELLING_URL, wait_until="domcontentloaded")
-        except Exception as exc:
-            log(f"Navigation warning: {exc}. The browser stays open, carry on in it.")
-        wait_seconds = (request.get("params") or {}).get("waitSeconds")
-        if wait_seconds:
-            # `log connect --noPrompt` (the MCP tool): stdin isn't ours, so watch the
-            # page instead. Saved cookies that still work end it at once; otherwise
-            # a person signs in in the visible window before the deadline.
-            await wait_for_login(page, int(wait_seconds), read_login(request.get("login_path")))
-        else:
-            log("")
-            log("In the Camoufox window:")
-            log("  1. Log into Facebook (finish any checkpoint or 2FA)")
-            log("  2. Check you can see Marketplace > Selling > Your listings")
-            log("  3. Come back here and press Enter to save the session")
-            log("Do not close the browser yourself.")
-            await asyncio.to_thread(sys.stdin.readline)
-        try:
-            await page.reload(wait_until="domcontentloaded")
-            await page.wait_for_timeout(2500)
-            flags = await auth_flags(page)
-        except Exception as exc:
-            log(f"Could not re-check login: {exc}")
-            flags = {"recheck_failed": True}
-        state.parent.mkdir(parents=True, exist_ok=True)
-        await session.context.storage_state(path=str(state))
-        return {"ok": True, "storageStatePath": str(state),
-                "loggedIn": not any(flags.values()), "authFlags": flags}
-    finally:
-        await manager.release(session)
-
-
 async def scan(request: dict[str, Any]) -> dict[str, Any]:
     """Read the seller dashboard (/you/selling). Deletes and edits nothing."""
     from facebook_camofox_client.domain_marketplace.health import (
@@ -332,7 +239,7 @@ async def status(request: dict[str, Any]) -> dict[str, Any]:
             "status": out.status, "title": out.title}
 
 
-ACTIONS = {"login": login, "marketplace.scan": scan, "marketplace.status": status}
+ACTIONS = {"marketplace.scan": scan, "marketplace.status": status}
 
 
 def main() -> int:
@@ -358,7 +265,7 @@ def main() -> int:
         elif action == "proxy.check":
             result = proxyGate.check(request.get("proxy_path"))
         elif action in ACTIONS:
-            if action != "login" and not Path(request.get("storage_state_path") or "").exists():
+            if not Path(request.get("storage_state_path") or "").exists():
                 result = failure("neverConnected", "no saved session",
                                  storageStatePath=request.get("storage_state_path"))
             else:

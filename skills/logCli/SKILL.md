@@ -70,8 +70,8 @@ bun bin/log.ts proxy balance                             # 2Captcha traffic left
 
 # live (launches Camoufox through the proxy)
 bun bin/log.ts doctor                                    # setup check, which accounts may run
-bun bin/log.ts connect --account galwayOne               # sign in by hand, cookies saved to Twenty
-bun bin/log.ts connect --account galwayOne --noPrompt    # no Enter: saved cookies or a sign-in in the window, up to --wait 600 s
+bun bin/log.ts connect --account galwayOne               # the connect machine; a person signs in in the window, cookies saved to Twenty
+bun bin/log.ts connect --account galwayOne --noPrompt    # the same, auto-login typing Twenty's details (rule 21), up to --wait 600 s
 bun bin/log.ts scan --account galwayOne                  # Marketplace > Selling, written back to the listings
 bun bin/log.ts status <facebookListingId> --account galwayOne
 
@@ -100,8 +100,12 @@ runs through `runCli`, so every gate above still applies.
 
 - `--live` is refused unless the call also has `confirmLive: true`. Set it
   only when matt asked for that live run (rule 10).
-- `connect` always runs `--noPrompt` as a tool: it watches the window for
-  a login (up to `--wait` s) instead of waiting for Enter. `launch` and `login`
+- `connect` always runs `--noPrompt` as a tool. It is the connect machine
+  (`marketplace/connect/machine.ts`): every page is read as a kind (loggedIn,
+  loginForm, twoStepCode, twoStepMethod, trustDevice, automatedBehaviour,
+  cookieBanner, findAccount, checkpoint, captcha, wrongPassword, disabled...)
+  and printed as a state, until signed in or `--wait` s. Each page takes
+  Listaro's path (rule 23). `launch` and `login`
   aren't tools, because they wait on a person at the terminal and stdin is the
   MCP channel.
 - Taking an account from NEEDSLOGIN to a dry run: `skills/accountToDryRun`.
@@ -130,5 +134,7 @@ explains one (meaning, retryable, where each machine ends, what to do), and
 | `neverConnected` | No saved session for that account | `log connect --account <accountId>` |
 | `loginWall` / `sessionExpired` | Facebook wants a fresh login | `log connect` again |
 | `checkpointed`, `suspended` | Account problem; the monitor stops at `blocked` | Tell matt, don't retry |
+| `wrongPassword` | connect: Facebook said Twenty's password is wrong | Fix it in Twenty, then `log connect` |
+| `signInNotFinished` | connect: `--wait` ran out; the output names the last page | Finish that page in the window, or a longer `--wait` |
 | `tripped` | Same error 3 times in a row | Read the trace, fix the cause, run again |
 | Repost `yes (#n)` | A takedown that's within the repost budget | Decision only; nothing was posted |

@@ -1,5 +1,69 @@
 # AGENTS.md — log-cli
 
+## Always run it live, so matt can watch (matt, 2026-10-19)
+
+Every command that takes more than a few seconds (a run, a settle, a docs
+build, rea, tests) is run so its lines show up live as they happen, never
+only at the end. matt must always be able to see what is going on.
+
+- **Agents (Claude Code):** run it with **Monitor**, as
+  `<command> 2>&1 | tee <runFolder>/<name>.log; echo "EXIT ${PIPESTATUS[0]}"`.
+  Each line streams into the chat. Never pipe through `tail` or `head`
+  (they hold everything back until the end), never run it silent in the
+  background.
+- **Code:** anything that runs over time logs one line per stage as it
+  happens (`context.err`, or the run folder's `.log`), never one summary at
+  the end. A step that can take minutes says what it is doing and how far
+  along it is (`rea 3/12 ...`).
+- Say in chat what each stage means as it comes in, in plain words.
+
+Rule 26 below.
+
+## How we fix problems: read the run, then fix (matt, 2026-10-19)
+
+This is the most important outline in the repo. The machines
+(`marketplace/connect`, `marketplace/publish`) already encode most of the
+steps. When a run fails, hangs or meets something new, don't guess: every
+run records a raw HAR of everything (rule 22), and rea reads it, so we can
+see exactly what caused what, then fix the machine.
+
+rea is not a side project. It answers "what caused what" in a run:
+
+> 09:20:13 we pressed Enter on login
+> 09:20:14 Facebook answered request X with field Y = "checkpoint"
+> 09:20:15 the page redirected to /checkpoint
+> So the checkpoint was decided at the login submit, by response X, 1
+> second after we pressed Enter.
+
+That tells us what Facebook reacted to, how fast, and what to wait for
+instead of guessing.
+
+The loop, every time a run doesn't end the way it should:
+
+1. **Run** the action (`log connect`, `log publish`, ...). It records
+   `session.har` and `steps.jsonl` in its run folder.
+2. **Timeline first, in seconds.** Per step: when it started, what we did,
+   what Facebook sent back, how long it took, what changed on the page.
+3. **Cause line for every outcome.** For each stop (login wall, checkpoint,
+   captcha, video selfie, `locationNotSet`, a hang), the first Facebook
+   response that signalled it, and the time from our action to that signal.
+4. **Compare runs.** Same steps, different outcome (e.g. Philadelphia
+   checkpointed, Allentown fine): find where they first differ.
+5. **Code reading last.** rea's slow script analysis runs after the timeline
+   is written, and is used to explain an unfamiliar request or field.
+6. **Fix the machine** from what the timeline and cause lines show, then run
+   once more and read it again (respecting rule 24's launch budget).
+
+Output: one plain `findings.md` per run, timeline and cause lines at the top.
+How: `skills/reaCapture/SKILL.md` (rea tools: `analyze_javascript_application`,
+`inspect_web_network_capture`, `inspect_analysis_view`).
+
+Status 2026-10-19: built: step 5 per request (`log firefoxCapture --docs`,
+`docs/facebookClient/`, rule 27: syntax-tree slices, rea about 4 s each),
+and the per-step request timings that steps 2-3 need (in each doc). Settle no
+longer reads the whole bundle. Not built yet: the per-run timeline file, the
+automatic cause line, and comparing two runs (step 4).
+
 ## Hard rules (from matt)
 
 When matt states a rule, add it here as one dated line in the same session,
@@ -102,6 +166,43 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     folder): `session.har`, `steps.jsonl` (every action the run logged, timed),
     and `steps/NN_<action>.har`, one per step, each read by the local rea
     (`settleRunCapture`). Never committed.
+23. 2026-10-19 · matt: "whatever Listaro did we go with that path". `log
+    connect` is the connect machine (`marketplace/connect`), and every sign-in
+    page takes Listaro_backup's path (`src/lib/auto-login`,
+    `src/lib/fb-login-helper.ts`): the cookie banner is accepted, "Find your
+    account" submitted once, "We suspect automated behaviour" dismissed,
+    login captchas solved (rule 10's solvers), two-step and trust-device
+    answered, signed in only with c_user and xs, then the Marketplace check.
+    For connect this narrows rule 10: only identity, photo, video and SMS
+    checkpoints go to a person. `marketplace/connect/machine.test.ts`.
+24. 2026-10-19 · matt: "fix them issues now" (the launch budget from
+    RESEARCH/LOG_CLI_RUN_CAPTURES_2026_10_19.md). One account's browser opens
+    on Facebook at most 8 times per local day, dry runs counted, at least 10
+    minutes apart. A launch counts once it passed the gate ("Self-check
+    passed" in its `steps.jsonl`). Refused before anything opens:
+    `launchTooSoon`, `launchBudgetSpent` (`camofox/run/helpers/launchBudget.ts`).
+    `--bypass` doesn't skip it; only a publish against the saved fixture form
+    (`--formUrl file://...`) isn't counted. A publish meets a login wall or
+    checkpoint in its own browser (the connect steps run there), never in a
+    second launch.
+25. 2026-10-19 · matt: a run that fails or hangs is fixed from its own
+    recording, never by guessing. Read its HAR with rea (timeline, cause
+    line, compare runs), then fix the machine. The outline is at the top of
+    this file.
+26. 2026-10-19 · matt: "I always want to see what is going on." Every
+    process that runs over time writes a progress line per stage as it
+    happens (never only at the end) and to a log file in its folder. Agents
+    run long commands so the lines stream live (Claude Code: Monitor, never
+    piped through `tail`/`head`).
+27. 2026-10-19 · matt: every request Facebook's client makes in our runs is
+    documented by domain in `docs/facebookClient/<domain>/<request>.md`:
+    what it sends and reads, which step fires it, how fast, what errors it
+    returns, and why it matters to our machines. Built by
+    `log firefoxCapture --docs`: our syntax-tree parse cuts each request's
+    modules out of Facebook's bundles, rea reads each slice (seconds, not the
+    whole bundle). lefthook's pre-push (`check:facebookClientDocs`) refuses a
+    push while a request is undocumented, unread by rea, has its reasoning
+    unwritten, or a run is newer than the docs.
 
 ## Checks
 
@@ -127,10 +228,12 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 
 ## Live mode
 
-- `doctor`, `login`, `scan`, `status` go through `camofox/worker` and launch
-  a real Camoufox browser. Tests always inject `worker` into the context and
-  never launch a browser.
-- Read-only on Facebook, except `login`, which only saves a session, and
+- `doctor`, `scan`, `status` go through `camofox/worker` and launch a real
+  Camoufox browser. `connect` is the connect machine
+  (`marketplace/connect`) driving `python/connectSession.py` one step at a
+  time, like publish. Tests inject `worker` and `connectSession` into the
+  context and never launch a browser.
+- Read-only on Facebook, except `connect`, which only signs in and saves a session, and
   `log publish --live` (rule 10). Don't add editing or deleting without matt
   asking.
 - Cookies, browser storage, proxies, devices and 2FA secrets live in Twenty
@@ -140,7 +243,8 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
   browser left is saved back (only while it still holds a Facebook login),
   and a newly made device is saved once. Never commit, print or paste them;
   `log` never selects password, email or totpSecret, except
-  `twenty.loginSecrets` for `connect`'s auto-login (rule 21). The proxy
+  `twenty.loginSecrets` for `connect`'s auto-login (rule 21) and for
+  `publish`'s in-browser sign-in (rule 24), the same private file both times. The proxy
   username's first part is the 2Captcha password: it is masked too.
   The exception is the raw capture HAR (rule 19), which keeps the session
   cookies and tokens in the local run folder for analysis.
@@ -169,5 +273,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 ## Git
 
 - Commit and push as matt (`GIT_CONFIG_COUNT=0 git ...`), and open PRs on GitHub `origin`.
-- `bun install` sets `core.hooksPath` to `.githooks`, so the `log.md` gate
-  runs on every commit. The flow is in `skills/commitLog/SKILL.md`.
+- Hooks are lefthook (`lefthook.yml`), installed by `bun install`.
+  pre-commit runs the `log.md` gate (rule 5, `skills/commitLog/SKILL.md`);
+  pre-push runs naming, typecheck, tests and the Facebook client docs gate
+  (rule 27). Never `--no-verify`.

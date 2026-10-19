@@ -3,8 +3,10 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { parseSteps, settleRunCapture, splitHarBySteps, stepSlug } from "./index";
+import { parseSteps, settleInBackground, settleRunCapture, splitHarBySteps, stepSlug } from "./index";
+import { runFirefoxCapture } from "../../cli/firefoxCapture/index.ts";
 import type { ReaRunner } from "./index";
+
 
 const entry = (url: string, at: string) => ({ startedDateTime: at, request: { method: "GET", url }, response: { status: 200, content: { mimeType: "text/html", text: "" } } });
 const HAR = {
@@ -114,6 +116,21 @@ describe("the gate makes the HAR mandatory (python/proxyGate.py)", () => {
       const step = JSON.parse(readFileSync(join(dir, "steps.jsonl"), "utf8").trim());
       expect(step.step).toBe("Auto-login: typing the email (try 1).");
       expect(Number.isNaN(Date.parse(step.at))).toBe(false);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("settleInBackground", () => {
+  test("a run returns without waiting on rea; with nothing captured nothing starts", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "logSettle"));
+    try {
+      expect(settleInBackground(dir)).toBeNull();
+      // What the background process runs: it leaves settle.json for the run.
+      const result = await runFirefoxCapture(["--settle", dir], async () => ({ code: 0, stdout: "", stderr: "" }));
+      expect(result.code).toBe(0);
+      expect(JSON.parse(readFileSync(join(dir, "settle.json"), "utf8"))).toMatchObject({ note: null });
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

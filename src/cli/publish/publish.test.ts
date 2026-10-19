@@ -127,6 +127,38 @@ describe("log publish", () => {
     expect(row(twenty, "agencyListings", "readyOne")).toMatchObject({ lastRunResult: "NEEDS_PERSON", lastErrorCode: "noSolverConfigured" });
   });
 
+  test("a login wall on the form is signed through in the same browser, then the form opens again (rule 24)", async () => {
+    const twenty = marketplaceFixture(photo);
+    await twenty.update("socialAccounts", "galwayOne", { email: "fixture@example.com", password: "fixturePass" } as never);
+    const session = fakeSession({
+      open: [{ kind: "issue", issue: "sessionExpired", detail: "login" }, { kind: "ready", url: "x" }],
+      signInRead: [{ ok: true, kind: "loginForm", path: "/login" }, { ok: true, kind: "loggedIn", path: "/marketplace/you/selling" }],
+      signInOpen: [{ ok: true }],
+      signInSubmitCredentials: [{ ok: true }],
+      signInSave: [{ ok: true, loggedIn: true }],
+    });
+    const out: string[] = [];
+    const errs: string[] = [];
+    const code = await runCli(["publish", "--listing", "readyOne"], { session: session.factory, twenty, connectTiming: { pollMs: 1, codeWindowMs: 1 }, out: (l) => out.push(l), err: (l) => errs.push(l) });
+    expect(code).toBe(0);
+    expect(session.configs).toHaveLength(1);
+    expect(session.calls.map((c) => c.step)).toEqual(["open", "signInOpen", "signInRead", "signInSubmitCredentials", "signInRead", "signInSave", "open", "setCategory", "uploadPhotos", "fillFields", "review"]);
+    expect(out.join("\n")).not.toContain("fixturePass");
+  });
+
+  test("a sign-in that ends on a checkpoint stops the run once: no second sign-in, nothing uploaded", async () => {
+    const twenty = marketplaceFixture(photo);
+    const session = fakeSession({
+      open: [{ kind: "issue", issue: "checkpointed", detail: "/checkpoint/1" }],
+      signInRead: [{ ok: true, kind: "videoSelfie", path: "/checkpoint/1", heading: "Confirm your identity" }],
+      signInOpen: [{ ok: true }],
+    });
+    const code = await runCli(["publish", "--listing", "readyOne"], { session: session.factory, twenty, connectTiming: { pollMs: 1, codeWindowMs: 1 }, out: () => {}, err: () => {} });
+    expect(code).toBe(1);
+    expect(session.calls.map((c) => c.step)).toEqual(["open", "signInOpen", "signInRead"]);
+    expect(row(twenty, "socialAccounts", "galwayOne").accountStatus).toBe("CHECKPOINT");
+  });
+
   test("Facebook disabling the account mid-run makes it BANNED and replaces its campaign listings", async () => {
     const session = fakeSession({ open: [{ kind: "issue", issue: "accountDisabled", detail: "Your account has been disabled" }] });
     const { code, out, twenty } = await run(["publish", "--listing", "readyOne", "--live"], session);
@@ -251,5 +283,34 @@ describe("log publish: device, exit IP and local hours (rules 12, 15, 18)", () =
     expect(code).toBe(1);
     expect(err.join("\n")).toContain("outsideActiveHours");
     expect(session.configs).toHaveLength(0);
+  });
+});
+
+describe("publishSession location match", () => {
+  test("a US state code matches Facebook's suggestion naming the state, never another state", () => {
+    const cases: [string, string, boolean][] = [
+      ["philadelphia, pennsylvania", "pa", true],
+      ["philadelphia, pa", "pa", true],
+      ["philadelphia, mississippi", "pa", false],
+      ["galway, ireland", "ireland", true],
+      ["galway, new york", "ireland", false],
+    ];
+    const script = "import sys, json; sys.path.insert(0, 'python'); import publishSession as p; print(json.dumps([p.in_place(t, c) for t, c, _ in json.loads(sys.stdin.read())]))";
+    const run = require("node:child_process").spawnSync(process.env.LOG_PYTHON || "python", ["-c", script], { encoding: "utf8", input: JSON.stringify(cases) });
+    expect(JSON.parse(run.stdout.trim())).toEqual(cases.map((c) => c[2]));
+  });
+
+  test("FB's text captcha page is read as a captcha, not a checkpoint for a person", () => {
+    const texts = ["Confirm that you're human\nEnter the text from the image.\nCan't read this text? Hear this code\nContinue", "Confirm your identity\nUpload a photo"];
+    const script = "import sys, json; sys.path.insert(0, 'python'); import publishSession as p; print(json.dumps([bool(p.TEXT_CAPTCHA.search(t)) for t in json.loads(sys.stdin.read())]))";
+    const run = require("node:child_process").spawnSync(process.env.LOG_PYTHON || "python", ["-c", script], { encoding: "utf8", input: JSON.stringify(texts) });
+    expect(JSON.parse(run.stdout.trim())).toEqual([true, false]);
+  });
+
+  test("with no Location field, the form's preview says where it would be listed", () => {
+    const texts = ["Preview\nListed a few seconds ago in Kearney\nDetails", "Listed in Philadelphia, PA\n", "no preview"];
+    const script = "import sys, json; sys.path.insert(0, 'python'); import publishSession as p; ms = [p.LISTED_IN.search(t) for t in json.loads(sys.stdin.read())]; print(json.dumps([(m.group(1) or m.group(2)).strip() if m else None for m in ms]))";
+    const run = require("node:child_process").spawnSync(process.env.LOG_PYTHON || "python", ["-c", script], { encoding: "utf8", input: JSON.stringify(texts) });
+    expect(JSON.parse(run.stdout.trim())).toEqual(["Kearney", "Philadelphia, PA", null]);
   });
 });

@@ -15,9 +15,10 @@
     "typecheck": "tsc --noEmit",
     "test": "bun test",
     "check:naming": "node scripts/checkNamingConventions.mjs",
+    "check:facebookClientDocs": "node scripts/checkFacebookClientDocs.mjs",
     "errors:export": "bun bin/log.ts errors --json > python/errorCatalog.json && bun bin/log.ts errors --markdown > docs/errorCatalog.md",
     "check": "bun run check:naming && bun run typecheck && bun run test",
-    "prepare": "git config core.hooksPath .githooks",
+    "prepare": "git config --unset core.hooksPath; lefthook install",
     "twenty:client": "node scripts/emitTwentyClient.mjs",
     "twenty:client:check": "node scripts/emitTwentyClient.mjs --check"
   },
@@ -30,6 +31,7 @@
   "devDependencies": {
     "@types/bun": "^1.4.0",
     "graphql": "^16",
+    "lefthook": "^2.2.2",
     "twenty-client-sdk": "^2.43.0",
     "typescript": "^5.9.3"
   },

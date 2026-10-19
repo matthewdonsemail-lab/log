@@ -6,6 +6,7 @@
 import type { CaptchaAttempt, CaptchaDetection, CaptchaPlan, CaptchaPolicy, CaptchaSolverName, SolverAvailability } from '../../captcha/router/index'
 import type { CodedFailure, ErrorCode } from '../../errors/catalog/index'
 import type { AccountIssue } from '../account/types'
+import type { ConnectOutput, ConnectTiming } from '../connect/types'
 
 export interface PublishListing {
   title: string
@@ -29,6 +30,17 @@ export interface PublishInput {
   policy?: CaptchaPolicy
   /** 2Captcha Arkose attempts on this account today (from the ledger). */
   arkoseToday?: number
+  /**
+   * Sign in here when the form meets a login wall or checkpoint (rule 24): the
+   * connect machine runs once, in this browser. Absent: those end the run as before.
+   */
+  signIn?: PublishSignIn
+}
+
+export interface PublishSignIn {
+  hasPassword: boolean
+  hasTotp: boolean
+  timing: ConnectTiming
 }
 
 /** A step that failed, with its catalog code (`src/errors/catalog/types.ts`). */
@@ -101,6 +113,11 @@ export interface PublishContext {
   issue: AccountIssue | null
   failure: PublishFailure | null
   result: PublishResultKind | null
+  signInConfig: PublishSignIn | null
+  /** The in-browser sign-in ran (once per run at most). */
+  signInTried: boolean
+  /** How it went, for the summary. */
+  signIn: ConnectOutput | null
 }
 
 export interface PublishOutput {
@@ -116,12 +133,13 @@ export interface PublishOutput {
   photoCount: number
   photoHashes: string[]
   receipt: string | null
+  signIn: ConnectOutput | null
 }
 
 /** Inputs of each actor the caller provides. */
 export interface PublishActorInputs {
   preparePhotos: { sources: string[] }
-  openForm: { accountId: string; recheck: boolean }
+  openForm: { accountId: string; recheck: boolean; location?: string }
   solveCaptcha: { accountId: string; solver: CaptchaSolverName; detection: CaptchaDetection }
   setCategory: { category: string }
   uploadPhotos: { paths: string[] }

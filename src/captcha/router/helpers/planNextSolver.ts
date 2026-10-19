@@ -34,12 +34,14 @@ export function planNextSolver(
   const usable = (solver: CaptchaSolverName) =>
     availability[solver] && !attempts.some((a) => a.solver === solver && a.code && SOLVER_DEAD_CODES.has(a.code))
 
-  if (detection.kind === 'recaptcha') {
+  if (detection.kind === 'recaptcha' || detection.kind === 'textImage') {
+    // A text image goes the same way: CaptchaKraken reads it on the page, 2Captcha's image solver after.
+    const label = detection.kind === 'recaptcha' ? 'reCAPTCHA' : 'text image'
     if (usable('captchaKraken') && tries('captchaKraken') < policy.krakenAttempts) {
-      return { solver: 'captchaKraken', reason: `reCAPTCHA, CaptchaKraken try ${tries('captchaKraken') + 1}/${policy.krakenAttempts}` }
+      return { solver: 'captchaKraken', reason: `${label}, CaptchaKraken try ${tries('captchaKraken') + 1}/${policy.krakenAttempts}` }
     }
     if (usable('twoCaptcha') && tries('twoCaptcha') < policy.twoCaptchaAttempts) {
-      return { solver: 'twoCaptcha', reason: 'reCAPTCHA, 2Captcha token fallback' }
+      return { solver: 'twoCaptcha', reason: detection.kind === 'recaptcha' ? 'reCAPTCHA, 2Captcha token fallback' : 'text image, 2Captcha image fallback' }
     }
   } else {
     // arkose

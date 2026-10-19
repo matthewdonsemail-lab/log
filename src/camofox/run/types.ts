@@ -52,6 +52,8 @@ export interface PrepareRunOptions {
   action?: string
   /** Where captures go. Default `LOG_RUNS_DIR` or `~/.logCli/runs`. */
   captureRoot?: string
+  /** A run that never reaches Facebook (publish against the saved fixture form): not counted against rule 24. */
+  skipLaunchBudget?: boolean
 }
 
 export type PrepareRunResult = { ok: true; run: PreparedRun } | { ok: false; code: ErrorCode; detail: string }

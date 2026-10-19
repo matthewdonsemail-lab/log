@@ -57,11 +57,16 @@ account's device. If the vendor cookies are still logged in, it saves them
 and ends within seconds. If not, it **signs in by itself** (rule 21): it types
 the Twenty email and password, then on the two-step page the current code
 from `totpSecret` (switching to "Authentication app" if Facebook offers
-another method first), and trusts the device. Each action is printed;
-nothing secret is. Anything it can't handle (a photo checkpoint, a captcha
-Facebook shows) waits for matt in the window. It watches for up to 600 s
-(`--wait <s>` to change it). The fresh session is saved to Twenty, and a
-logged-in result sets the account **ACTIVE**.
+another method first), and trusts the device. This is the connect machine
+(`marketplace/connect/machine.ts`): each page is printed as its kind and
+state; nothing secret is. Every page takes Listaro's path (rule 23): the
+cookie banner is accepted, "We suspect automated behaviour" dismissed, login
+captchas solved (CaptchaKraken, then 2Captcha). Only an identity, photo, video
+or SMS checkpoint is never clicked: it waits for matt in the window. It reads for up to 600 s
+(`--wait <s>` to change it). Signed in: the session is saved to Twenty and
+the account set **ACTIVE**. It can also end `checkpointed` (status
+CHECKPOINT), `wrongPassword`, `disabled` (BANNED) or `signInNotFinished`
+(NEEDSLOGIN), each naming the last page.
 
 Before the first connect, the account needs `email`, `password` and
 `totpSecret` in Twenty: `node scripts/importVendorAccounts.mjs` (dry run, each
@@ -73,8 +78,8 @@ Check it:
 mcp__log__account   args ["show", "<a>"]    Status ACTIVE, May run yes
 ```
 
-"Facebook still showed login markers" means the wait ran out before a login.
-Run step 3 again with someone at the window.
+`signInNotFinished` or `checkpointed` means the wait ran out on the page it
+names. Run step 3 again with someone at the window.
 
 ### 4. Read the account (read-only)
 
@@ -114,6 +119,19 @@ self-check, session, photos varied and attached, title, price, category,
 condition, description, location picked in the home country), then stops
 before Publish. Each step is printed. Look for `dryRun` at the end. Any other
 ending is a code: `mcp__log__errors args ["--code", "<code>"]`.
+
+Before photos go up, the open step reads the account's Marketplace location
+from the page (`sell_location`). The US form has no Location field: if that
+isn't the listing's city, it stops there with `locationNotSet` and names the
+place ("Kearney (68847, US)"), and nothing is uploaded. A login wall or
+checkpoint on the form is signed through in the same browser (rule 24).
+
+**Rule 24: launches cost.** Each account opens on Facebook at most 8 times
+per local day, 10 minutes apart, dry runs counted (`launchTooSoon`,
+`launchBudgetSpent`). The fixture-form run doesn't count. Fix what a run
+reports before running it again; don't loop dry runs. On 2026-10-19 one
+account opened 14 times in 90 minutes and went to a video-selfie checkpoint
+(`RESEARCH/LOG_CLI_RUN_CAPTURES_2026_10_19.md`).
 
 ### 7. Live (only on matt's go)
 

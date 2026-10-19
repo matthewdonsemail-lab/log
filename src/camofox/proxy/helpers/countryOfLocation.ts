@@ -1,5 +1,8 @@
 const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
 
+/** USPS codes for the 50 states and DC. No country's English name is two letters, so none collide. */
+const US_STATES = "al ak az ar ca co ct de dc fl ga hi id il in ia ks ky la me md ma mi mn ms mo mt ne nv nh nj nm ny nc nd oh ok or pa ri sc sd tn tx ut vt va wa wv wi wy".split(" ");
+
 /** Every ISO 3166-1 alpha-2 code Intl knows, by lower-case English name. */
 const CODE_BY_NAME: Map<string, string> = (() => {
   const map = new Map<string, string>();
@@ -14,6 +17,8 @@ const CODE_BY_NAME: Map<string, string> = (() => {
   for (const [alias, code] of [["uk", "GB"], ["england", "GB"], ["scotland", "GB"], ["wales", "GB"], ["northern ireland", "GB"], ["usa", "US"], ["us", "US"]]) {
     map.set(alias, code);
   }
+  // Facebook writes US places as "City, ST" ("Philadelphia, PA"): the state code is the US.
+  for (const state of US_STATES) map.set(state, "US");
   return map;
 })();
 

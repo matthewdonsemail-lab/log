@@ -6,7 +6,7 @@
 import type { CodedFailure } from "../../errors/catalog/index.ts";
 import type { ProxyCheck } from "../proxy/index.ts";
 
-export type WorkerAction = "doctor" | "login" | "marketplace.scan" | "marketplace.status" | "proxy.check";
+export type WorkerAction = "doctor" | "marketplace.scan" | "marketplace.status" | "proxy.check";
 
 export interface WorkerRequest {
   action: WorkerAction;
@@ -24,8 +24,6 @@ export interface WorkerRequest {
    * and the account's device. The proxy gate opens no browser without it.
    */
   device_path?: string | null;
-  /** `login`'s auto-login details (email, password, totpSecret) in the run folder. Never on argv. */
-  login_path?: string | null;
   /** Rule 22: the folder for this action's raw HAR and step timeline. The gate opens no context without it. */
   capture_dir?: string | null;
   params?: Record<string, unknown>;
@@ -69,7 +67,6 @@ export interface ScannedListing {
 export type WorkerFailure = CodedFailure & { [key: string]: unknown };
 
 export type DoctorResult = { ok: boolean; checks: DoctorChecks };
-export type LoginResult = { ok: true; storageStatePath: string; loggedIn: boolean; authFlags: Record<string, boolean> };
 export type ScanResult = {
   ok: true;
   url: string;
@@ -83,7 +80,6 @@ export type StatusResult = { ok: true; listingId: string; listingUrl: string; st
 
 export interface WorkerResultMap {
   doctor: DoctorResult;
-  login: LoginResult;
   "marketplace.scan": ScanResult;
   "marketplace.status": StatusResult;
   "proxy.check": ProxyCheck;
@@ -92,7 +88,7 @@ export interface WorkerResultMap {
 export type WorkerResult<A extends WorkerAction> = WorkerResultMap[A] | WorkerFailure;
 
 export interface WorkerRunOptions {
-  /** Hand the terminal's stdin to the worker (`login` waits for Enter). */
+  /** Hand the terminal's stdin to the worker. */
   interactive?: boolean;
 }
 

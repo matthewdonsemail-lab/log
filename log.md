@@ -1070,3 +1070,128 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: Rule 22, every action records a HAR. `proxyGate.arm` takes a `capture_dir`. `_force_context` now calls `_force_capture`, which puts Playwright's raw HAR recorder (`recordHarPath`, embed, full) on every browser context. A caller's own path is kept (publish), extra contexts get `session2.har`..., and a context with no capture folder is refused with the new catalog code `captureMissing`. Every Python `log` line also goes through `note_step` to `steps.jsonl` with its time. `prepareRun` gives each non-check run a kept `captureDir` (`captureDirFor`: `~/.logCli/runs/<action>/<time>_<account>/firefox`, `LOG_RUNS_DIR`). connect, scan and status send it as `capture_dir`, each watch check gets its own `check<N>/`, and publish arms the gate with its receipt folder. Afterwards `settleRunCapture` runs the existing whole-session rea pass, then `splitHarBySteps` (with `parseSteps` and `stepSlug`) cuts the HAR at the step times into `steps/NN_<action>.har`. rea reads each one (`.rea.json`), and `steps/index.json` lists them. `withRun` appends the capture note to the result. Also in this commit, the auto-login fix from the previous live run: the form is submitted with Enter in the field, not a button click; with a dialog open only the dialog is searched; and each action is logged before it runs. The reaCapture and logCli skills are updated.
 Why: matt asked for a HAR on every action, every sequential step, with no way around it, so the locally installed rea can analyse each one and its scripts. Until now only `log publish` recorded one, and the login, scan and status traffic was never captured. The second live connect showed the login stuck: the email and password were typed, but the "Log in" click hit the covered header button and timed out (TimeoutError in the live log).
 Checked: new tests: splitHarBySteps puts each request in the step it started in and leaves quiet steps out; parseSteps sorts and skips a half-written line; settleRunCapture with a fake rea reads the whole HAR and then 3 step HARs and writes index.json; no HAR gives nothing. The real Python gate refuses a bare context with captureMissing, injects session.har (embed, full), numbers a second context session2.har, keeps a caller's path, and log() writes a timed step. connect sends capture_dir `.../connect/<time>_needsLogin/firefox`; a proxy check has none. visible.test pins the new arm calls. `py_compile` OK. `bun run check` passed: 408 pass / 0 fail. Not run live yet.
+
+## 2026-10-19 10:22Z · feat/publishMachine
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `.githooks/pre-commit`: file deleted
+- `AGENTS.md`: edited
+- `bun.lock`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/facebookClient/README.md`: new file
+- `docs/facebookClient/background/CometClassicHomeLeftRailContainerQuery.md`: new file
+- `docs/facebookClient/background/CometFeedInlineComposerQuery.md`: new file
+- `docs/facebookClient/background/CometHomeContactChannelsContainerQuery.md`: new file
+- `docs/facebookClient/background/CometHomeContactCommunityChatsContainerQuery.md`: new file
+- `docs/facebookClient/background/CometHomeContactGroupsContainerQuery.md`: new file
+- `docs/facebookClient/background/CometHomeContactsContainerQuery.md`: new file
+- `docs/facebookClient/background/CometHomeContentQuery.md`: new file
+- `docs/facebookClient/background/CometMegaphoneRootQuery.md`: new file
+- `docs/facebookClient/background/CometModernHomeFeedQuery.md`: new file
+- `docs/facebookClient/background/CometNotificationsDropdownQuery.md`: new file
+- `docs/facebookClient/background/CometRightSideHeaderCardsQuery.md`: new file
+- `docs/facebookClient/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: new file
+- `docs/facebookClient/background/FBYRPTimeLimitsEnforcementQuery.md`: new file
+- `docs/facebookClient/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: new file
+- `docs/facebookClient/background/OhaiWebPublicKeyConfigQuery.md`: new file
+- `docs/facebookClient/background/RTWebCallBlockSettingHooksQuery.md`: new file
+- `docs/facebookClient/background/StoriesTrayRectangularRootQuery.md`: new file
+- `docs/facebookClient/background/ajaxBnzai.md`: new file
+- `docs/facebookClient/background/ajaxBulkRouteDefinitions.md`: new file
+- `docs/facebookClient/background/ajaxBz.md`: new file
+- `docs/facebookClient/background/ajaxQm.md`: new file
+- `docs/facebookClient/background/ajaxRelayEf.md`: new file
+- `docs/facebookClient/background/fetchMWChatVideoAutoplaySettingQuery.md`: new file
+- `docs/facebookClient/background/sharedUserPreferences.md`: new file
+- `docs/facebookClient/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: new file
+- `docs/facebookClient/checkpoint/FBScrapingWarningMutation.md`: new file
+- `docs/facebookClient/checkpoint/UFACAISupportChatExperienceQuery.md`: new file
+- `docs/facebookClient/checkpoint/useCometAISupportConversationLoggerMutation.md`: new file
+- `docs/facebookClient/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: new file
+- `docs/facebookClient/checkpoint/useUFACSubmitActionMutation.md`: new file
+- `docs/facebookClient/listingForm/useCometMarketplaceAIListingSettingsQuery.md`: new file
+- `docs/facebookClient/listingForm/useListingShippableEligibilityCheckQuery.md`: new file
+- `docs/facebookClient/listingForm/useMarketplaceComposerAttributesQuery.md`: new file
+- `docs/facebookClient/listingForm/useMarketplaceComposerBISNumberEligibilityRefetchQuery.md`: new file
+- `docs/facebookClient/listingForm/useMarketplaceComposerPricePredictionQuery.md`: new file
+- `docs/facebookClient/login/CometLogoutHandlerQuery.md`: new file
+- `docs/facebookClient/login/ajaxTimezoneUpdatePhp.md`: new file
+- `docs/facebookClient/login/ajaxWebstorageProcessKeys.md`: new file
+- `docs/facebookClient/login/loginDeviceBasedRegularLogin.md`: new file
+- `docs/facebookClient/operations.json`: new file
+- `docs/facebookClient/photos/ajaxReactComposerAttachmentsPhotoUpload.md`: new file
+- `docs/facebookClient/photos/useSherlockPhotoPredictionMutation.md`: new file
+- `docs/namingConventions.md`: edited
+- `lefthook.yml`: new file
+- `package.json`: edited
+- `python/autoLogin.py`: added const TWO_STEP, const AUTOMATED_TEXT, const VIDEO_SELFIE_TEXT, const CHECKPOINT_TEXT, const SMS_TEXT, const ANOTHER_WAY, const DISABLED_TEXT, const DISABLED_URL, const WRONG_PASSWORD_TEXT, const FIND_ACCOUNT_TEXT, const COOKIE_BANNER, const TRUST_TEXT, const SAVE_LOGIN_TEXT, const CONTINUE_AS_TEXT, const CHECKPOINT_URL, const LOGIN_URL, const CODE_FIELD, const PASSWORD_FIELD, const EMAIL_FIELD, def classify, def _scope, def heading, def frames_text, def button_names, def login_markers, def read, def submit_credentials, def choose_auth_app, def submit_code, const DISMISS, const DISMISS_SELECTOR, def dismiss · changed def _visible, def _pick, def _click_button, def _type · removed const LOGIN_TRIES, const CODE_TRIES, def _scopes, def step
+- `python/connectSession.py`: added def read_login, def captcha_on, def session_cookies, def step_open, def step_open_in_session, def step_read, def acted, def step_submit_credentials, def step_choose_auth_app, def step_submit_code, def step_dismiss, def step_save, const STEPS, def main
+- `python/errorCatalog.json`: edited
+- `python/logWorker.py`: changed const ACTIONS, def main · removed def page_path, def read_login, def wait_for_login, def login
+- `python/proxyGate.py`: added const FACEBOOK_PROBES, const SLOW_MS, const PROBE_ROUNDS, def facebook_ms · changed def check, def apply
+- `python/publishSession.py`: added const TEXT_CAPTCHA, const US_STATES, const LOCATION_SELECTORS, def location_field, const LISTED_IN, def listed_in, def visible_inputs, def in_place, const SELL_LOCATION, def read_sell_location, def sell_location_mismatch, def solve_text_image · changed class Session, def step_open, def solve_kraken, def solve_twocaptcha, def step_fill_fields, def main
+- `scripts/checkFacebookClientDocs.mjs`: added const root, const docsDir, const indexPath, const problems, const index, const listed, const captures, const builtAt, const newer, const walk, const documented, const named, const scan
+- `scripts/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `skills/accountToDryRun/SKILL.md`: edited
+- `skills/commitLog/SKILL.md`: edited
+- `skills/logCli/SKILL.md`: edited
+- `skills/reaCapture/SKILL.md`: edited
+- `src/camofox/proxy/helpers/countryOfLocation.ts`: added const US_STATES · changed const CODE_BY_NAME
+- `src/camofox/proxy/types.ts`: added const SLOW_FACEBOOK_MS · changed interface ProxyCheck
+- `src/camofox/run/client.ts`: changed function prepareRun
+- `src/camofox/run/helpers/index.ts`: added export from "./launchBudget"
+- `src/camofox/run/helpers/launchBudget.ts`: added interface LaunchLimits, const LAUNCH_LIMITS, const SELF_CHECK, function listLaunches, function dirNames, const dayIn, function overLaunchBudget
+- `src/camofox/run/index.ts`: added export from "./helpers/index"
+- `src/camofox/run/run.test.ts`: added test "only launches that reached Facebook count, per account", test "too soon after the last launch, then too many in the local day"
+- `src/camofox/run/types.ts`: changed interface PrepareRunOptions
+- `src/camofox/session/client.ts`: added const CONNECT_SESSION_PATH, const startConnectSession, function spawnSession · changed const startSession
+- `src/camofox/session/types.ts`: added type ConnectStep, interface ConnectSessionConfig, interface ConnectSession, type ConnectSessionFactory · changed type SessionStep, interface SessionConfig
+- `src/camofox/worker/types.ts`: changed type WorkerAction, interface WorkerRequest, interface WorkerResultMap, interface WorkerRunOptions · removed type LoginResult
+- `src/captcha/router/helpers/planNextSolver.ts`: changed function planNextSolver
+- `src/captcha/router/router.test.ts`: added test "FB's text image ('Confirm that you're human'): CaptchaKraken first, then 2Captcha's image solver"
+- `src/captcha/router/types.ts`: changed type CaptchaKind
+- `src/cli/firefoxCapture/index.ts`: added const FACEBOOK_CLIENT_DOCS · changed const FIREFOX_CAPTURE_USAGE, function runFirefoxCapture, const firefoxCaptureCommand
+- `src/cli/launch/launch.test.ts`: changed function capture
+- `src/cli/listing/index.ts`: changed const listingCommand
+- `src/cli/live/helpers/index.ts`: added export from "./renderConnect.ts"
+- `src/cli/live/helpers/renderConnect.ts`: added function summarizeConnect, const RESULT_TEXT, function renderConnect
+- `src/cli/live/index.ts`: added function connectEnded · changed const CONNECT_USAGE, function openAccount, function withRun, const connectCommand
+- `src/cli/live/live.test.ts`: added test "connect runs the connect machine through the proxy and saves the cookies to Twenty", test "connect --noPrompt types Twenty's details from a private file, deleted after the run, through two-step", test "connect stuck on Facebook's checkpoint ends checkpointed: status CHECKPOINT, cookies left as they were", test "Listaro's post-login check: signed in but unable to buy or sell is recorded, cookies kept", test "auto-login reads each sign-in page as its kind", test "auto-login hands Facebook's own checkpoints to a person and types codes only on two-step pages" · removed test "connect signs in through the proxy and saves the cookies to Twenty", test "connect --noPrompt never takes stdin: the worker watches the page for the login", test "connect --noPrompt hands the worker Twenty's login details in a private file, deleted after the run"
+- `src/cli/proxy/index.ts`: changed function assignOne, const proxyCommand
+- `src/cli/proxy/proxy.test.ts`: added test "an exit too slow for Facebook is skipped like a far one, and a fast one saved" · changed test "reads the last part, and refuses to guess"
+- `src/cli/publish/helpers/summarizePublish.ts`: changed function summarizePublish, function renderPublishOutput
+- `src/cli/publish/index.ts`: changed const publishCommand
+- `src/cli/publish/publish.test.ts`: added test "a login wall on the form is signed through in the same browser, then the form opens again (rule 24)", test "a sign-in that ends on a checkpoint stops the run once: no second sign-in, nothing uploaded", test "a US state code matches Facebook's suggestion naming the state, never another state", test "FB's text captcha page is read as a captcha, not a checkpoint for a person", test "with no Location field, the form's preview says where it would be listed"
+- `src/cli/runner/cli.test.ts`: changed test "listing create adds a READY row for the account from a JSON file, and refuses one that can't post"
+- `src/cli/runner/index.ts`: changed function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/cli/watch/index.ts`: changed const watchCommand
+- `src/errors/catalog/catalog.test.ts`: no declaration changed (comments, formatting or line endings)
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/marketplace/connect/index.ts`: added export from "./machine", export from "./types"
+- `src/marketplace/connect/machine.test.ts`: added const FAST, const page, function runConnect, test "password, two-step through "Try another way", trust device, signed in", test "saved cookies that still work: straight to saving, nothing typed", test "Facebook's checkpoint is the third outcome: nothing is clicked, a person gets it, and at the deadline it ends checkpointed", test "a checkpoint a person clears in the window carries on to signed in", test "a wrong password stops at once: no second try", test "a video selfie ends the run at once: nothing clicked, no waiting out --wait", test "a disabled or locked account ends disabled", test "the login form is submitted twice at most, then left to a person until the deadline", test "three authenticator codes at most, one per code window", test "two-step without a totpSecret is a person's: nothing typed", test "without Twenty details (connect without --noPrompt) every page is the person's", test "a failed click is read again; a dead session stops", test "the proxy gate refusing the launch ends it before any page", test "signed out again on the save reload goes back to reading, inside the same deadline", test "Listaro's path: 'We suspect automated behaviour' is dismissed and the sign-in carries on", test "Listaro's path: a login captcha is solved, CaptchaKraken first, and the page is the judge", test "a captcha with no solver configured waits for a person", test "Listaro's path: 'Find your account' is submitted once, and coming back is wrong credentials", test "Listaro's path: the cookie banner is accepted first"
+- `src/marketplace/connect/machine.ts`: added function missing, const isFailure, const sessionGone, const crash, const codeWindow, const pageIs, const RESULT_FOR_CODE, const actDone, const actError, const connectMachine, function markLast
+- `src/marketplace/connect/types.ts`: added type ConnectPageKind, interface ConnectPage, type ReadOutput, type ActOutput, type SaveOutput, interface SolveOutput, interface ConnectActorInputs, interface ConnectTiming, interface ConnectLimits, const DEFAULT_CONNECT_LIMITS, interface ConnectInput, type ConnectResultKind, interface ConnectFailure, interface ConnectContext, interface ConnectOutput
+- `src/marketplace/publish/machine.ts`: added const SIGN_IN_ISSUES · changed const publishMachine
+- `src/marketplace/publish/types.ts`: added interface PublishSignIn · changed interface PublishInput, interface PublishContext, interface PublishOutput, interface PublishActorInputs
+- `src/marketplace/socialAccount/helpers/statusForIssue.ts`: changed const STATUS_FOR_ISSUE
+- `src/rea/facebookClient/client.ts`: added interface RunCapture, interface BuildClientMapOptions, const DOCS_INDEX, function capturesRoot, function findRunCaptures, function requestsInRun, function stepEvidence, function indexRunModules, function operationNamesByDocId, function mergeOperations, function eachLimited, function readSlices, function existingDoc, function writeOperationDocs, function buildClientMap
+- `src/rea/facebookClient/facebookClient.test.ts`: added const BUNDLE, const modulesOf, test "cuts every __d module out of a bundle with its dependencies", test "a request's slice is its definition, its doc_id and what imports it, nothing else", test "reads the kind, the variables and the fields, through minified locals", test "names GraphQL by friendly name and doc_id, other POSTs by path, and skips static files", test "never keeps a value: only variable names", test "reads multipart bodies (the photo step's requests)", test "reads Facebook's errors, and error:false is not one", test "an unnamed request is named from its doc_id", test "narrow domains win, and the rest is background", test "step lines lose exit IPs, account ids and URLs before they are committed", test "a new doc asks for its reasoning; a rebuild keeps what was written"
+- `src/rea/facebookClient/helpers/domainOf.ts`: added const DOMAIN_PATTERNS, function domainOf
+- `src/rea/facebookClient/helpers/index.ts`: added export from "./domainOf", export from "./indexModules", export from "./operationsInHar", export from "./renderOperationDoc"
+- `src/rea/facebookClient/helpers/indexModules.ts`: added function indexModules, function sliceFor, function importersOf, function readGraphqlDefinition
+- `src/rea/facebookClient/helpers/operationsInHar.ts`: added interface RequestSeen, interface HarEntry, function formFields, const isFacebook, function endpointName, function responseErrors, function requestsInStep, function variableNames
+- `src/rea/facebookClient/helpers/renderOperationDoc.ts`: added const FACTS_START, const FACTS_END, const TO_WRITE, const REASONING, function stepLabel, const range, function renderSightings, const code, function renderFacts, function renderOperationDoc
+- `src/rea/facebookClient/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/rea/facebookClient/types.ts`: added interface FacebookModule, type ClientDomain, type OperationKind, interface OperationSighting, interface GraphqlDefinition, interface ClientOperation
+- `src/rea/firefox/capture.test.ts`: added test "a run returns without waiting on rea; with nothing captured nothing starts"
+- `src/rea/firefox/client.ts`: added function evidenceIdOf, const REA_MAX_CAPTURE_BYTES, const SCRIPTS_TIMEOUT_MS, const LOG_BIN, function settleInBackground · changed function defaultReaRunner, function inspectFirefoxCapture, function settleFirefoxCapture, function captureFromHar, function settleRunCapture
+- `src/rea/firefox/firefox.test.ts`: added test "names Facebook's GraphQL operations, uploads and failures, never values" · changed test "leaves the session HAR as written and records the rea commands"
+- `src/rea/firefox/helpers/index.ts`: added export from "./summarizeStep"
+- `src/rea/firefox/helpers/summarizeStep.ts`: added interface StepSummary, interface HarEntry, const operation, function summarizeStep, function renderStepSummary
+- `src/twenty/graphql/client.test.ts`: added const ENV, function flaky, test "a dropped connection on an update is retried, so a sign-in is never lost to it", test "a create is never retried: a second write could make the row twice"
+- `src/twenty/graphql/client.ts`: added const RETRY_MS · changed function createTwentyClient
+
+What changed: Two sessions of work. (1) Connect is now an XState machine (`marketplace/connect`, `python/connectSession.py`) that reads each page and acts per kind: loginForm, findAccount, twoStepCode, trustDevice, cookieBanner, automatedBehaviour (dismissed, Listaro's path, rule 23), captcha (CaptchaKraken then 2Captcha; the new `textImage` kind presses Enter then Continue), videoSelfie (ends at once), checkpoint, disabled. Publish signs in inside its own browser through the connect machine when it meets a login wall, reads `sell_location` and stops with `locationNotSet` before any upload, reloads a form that hasn't drawn after 15 s, and saves page text on a failed step. The proxy gate times Facebook through the exit (`proxyTooSlow`). Rule 24's launch budget (`launchBudget.ts`: 8 a day, 10 min apart). Twenty retries a dropped socket on reads and updates, never on creates. (2) New `rea/facebookClient`: `log firefoxCapture --docs` splits every run's HAR by its steps, names each request to Facebook (multipart bodies and doc_id lookup included), parses Facebook's bundles into a syntax tree (`indexModules`, `readGraphqlDefinition`), and has rea read each GraphQL request's slice (about 4 s each, cached by sha256) instead of the whole bundle. It writes `docs/facebookClient/<domain>/<request>.md` (41 docs, facts block plus written reasoning, no names, account ids or IPs) and `operations.json`. Settle no longer reads the whole bundle. Hooks moved from `.githooks` to lefthook: pre-commit runs this log gate, pre-push runs naming, typecheck, tests and the new `check:facebookClientDocs`. AGENTS.md opens with "Always run it live" and the fix-from-the-recording loop; rules 25-27; reaCapture and commitLog skills updated.
+Why: matt: "whatever Listaro did we go with that path" (connect) and "fix them issues now" (launch budget). The settle ran 10 minutes silently and rea timed out on 50 MB of bundles, so nothing was learned; matt asked to use the syntax tree to cut Facebook's client into domain-scoped requests, document each with rea as the basis, enforce it in lefthook, and "I always want to see what is going on" (rule 26). Rule 25: a failing run is fixed from its own recording, never by guessing.
+Checked: `bun run check:naming` OK, `tsc --noEmit` clean, `bun test` 460 pass / 0 fail (new: facebookClient parse, slice, definition, multipart, errors, doc_id naming, domains, step-line cleaning, reasoning kept across rebuilds; settle never reads the whole bundle). `bun bin/log.ts firefoxCapture --docs` on today's 16 runs: 41 requests, rea read 40 (31 new slices, 3-6 s each), rebuild kept every written section and read 0 slices again. `check:facebookClientDocs` passes. Docs grep: no display names, account ids or exit IPs. Live: Allentown connect signed in clean; Allentown publish dry run stopped at `locationNotSet` (Hopkins). Not run live: in-publish sign-in, text-captcha submit, video-selfie end, `proxyTooSlow` in assign. The per-run timeline, automatic cause line and run comparison are not built.

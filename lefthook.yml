@@ -1,0 +1,31 @@
+# Git hooks, managed by lefthook (https://github.com/evilmartians/lefthook).
+# `bun install` installs them (`prepare`). Never skip them with --no-verify.
+
+# Rule 5: every commit adds a log.md entry. The hook parses the staged code
+# into an abstract syntax tree and refuses the commit until the entry's
+# What changed / Why / Checked are written from it (skills/commitLog/SKILL.md).
+pre-commit:
+  commands:
+    commitLog:
+      run: node scripts/commitLog.mjs
+
+pre-push:
+  parallel: false
+  commands:
+    # Rule 1: camelCase everywhere.
+    naming:
+      run: bun run check:naming
+
+    typecheck:
+      run: bun run typecheck
+
+    test:
+      run: bun test
+
+    # Rules 25 and 27: every request Facebook's pages made in our runs has a
+    # doc in docs/facebookClient/, rea has read each GraphQL request's slice,
+    # the reasoning is written, and no run is newer than the last docs build
+    # (`bun bin/log.ts firefoxCapture --docs`). Why: AGENTS.md, "How we fix
+    # problems", and docs/facebookClient/README.md.
+    facebookClientDocs:
+      run: bun run check:facebookClientDocs

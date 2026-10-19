@@ -69,6 +69,13 @@ describe("runCli", () => {
       expect(refused.code).toBe(1);
       expect(refused.err).toContain("price must be 1 or more");
       expect((await run(["listing", "create", "--file", good])).code).toBe(1);
+      // The same country check publish runs (rule 12): a row that can never post is never written.
+      const abroad = join(dir, "abroad.json");
+      writeFileSync(abroad, JSON.stringify({ title: "Junk removal", description: "We haul it", price: 99, priceCurrency: "USD", category: "Miscellaneous", condition: "new", photos: ["a.jpg"], locationQuery: "Philadelphia, PA", locationCity: "philadelphia", locationCountry: "US" }));
+      const before = twenty.rows.agencyListings.length;
+      const elsewhere = await runCli(["listing", "create", "--account", "galwayOne", "--file", abroad], { twenty, out: () => {}, err: () => {} });
+      expect(elsewhere).toBe(1);
+      expect(twenty.rows.agencyListings.length).toBe(before);
       expect((await run(["listing", "liveOne", "--account", "galwayOne"])).code).toBe(1);
     } finally {
       rmSync(dir, { recursive: true, force: true });
