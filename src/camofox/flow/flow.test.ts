@@ -30,6 +30,28 @@ const RECORDING: RecordedCommand[] = [
   cmd('click', ['e317'], '12_click', NAME, ['POST 200 useFXIMUpdateNameMutation (2394 ms)'])
 ]
 
+describe('flowFromRecording: a warm-up recording (rule 35)', () => {
+  const warm = flowFromRecording('warmupMarketplaceBrowse', 'test', [
+    cmd('goto', ['https://www.facebook.com/marketplace/'], '01_goto', ''),
+    cmd('dwell', ['3-5'], '02_dwell', ''),
+    cmd('scroll', ['3-5', '400-700'], '03_scroll', ''),
+    cmd('openAny', ['/marketplace/item/', '2-4'], '04_openAny', ''),
+    cmd('wait', ['2'], '05_wait', ''),
+    cmd('clickAny', ['button', '^Like$', '2-3'], '06_clickAny', '')
+  ], { runDir: '/r', account: 'reading' })
+
+  test('scroll, openAny, clickAny and dwell keep their ranges and pin no element; a settling wait is dropped', () => {
+    expect(warm.steps.map((s) => [s.action, s.args ?? s.url])).toEqual([
+      ['goto', 'https://www.facebook.com/marketplace/'],
+      ['dwell', ['3-5']],
+      ['scroll', ['3-5', '400-700']],
+      ['openAny', ['/marketplace/item/', '2-4']],
+      ['clickAny', ['button', '^Like$', '2-3']]
+    ])
+    expect(warm.steps.every((s) => s.role === undefined)).toBe(true)
+  })
+})
+
 describe('flowFromRecording', () => {
   const flow = flowFromRecording('profileSetup', 'test', RECORDING, { runDir: '/r', account: '61593967241658' }, { text1: 'firstName', file1: 'profilePhoto' })
 

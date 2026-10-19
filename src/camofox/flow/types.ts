@@ -9,6 +9,8 @@
  */
 
 export type FlowAction = 'goto' | 'click' | 'fill' | 'upload' | 'signIn' | 'code' | 'solve'
+  /** Warm-up steps (rule 35): their ranges are drawn on every run, so the flow never repeats itself exactly. */
+  | 'scroll' | 'openAny' | 'clickAny' | 'dwell'
 
 export interface FlowStep {
   /** `s03_clickChooseProfilePicture`: stable, camelCase. */
@@ -23,6 +25,8 @@ export interface FlowStep {
   value?: string
   /** The request that confirms the step (`ProfileCometProfilePictureSetMutation`); the run waits for it. */
   expect?: string
+  /** scroll, openAny, clickAny, dwell: the recorded arguments (`["4-7", "300-600"]`, `["/marketplace/item/", "2-4"]`). */
+  args?: string[]
   /** What the recording saw: the step it came from, its time, its rea Evidence. */
   recorded: { step: string; ms: number | null; reaEvidenceId: string | null; requests: string[] }
 }

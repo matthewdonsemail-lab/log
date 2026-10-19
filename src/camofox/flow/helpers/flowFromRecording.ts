@@ -27,7 +27,7 @@ export function confirmingRequest(lines: string[]): string | null {
   return null
 }
 
-const ACTED: Record<string, FlowAction> = { click: 'click', type: 'fill', upload: 'upload', signIn: 'signIn', code: 'code', solve: 'solve', goto: 'goto' }
+const ACTED: Record<string, FlowAction> = { click: 'click', type: 'fill', upload: 'upload', signIn: 'signIn', code: 'code', solve: 'solve', goto: 'goto', scroll: 'scroll', openAny: 'openAny', clickAny: 'clickAny', dwell: 'dwell' }
 
 const camel = (text: string): string =>
   text
@@ -73,6 +73,11 @@ export function flowFromRecording(
       // Opening a page waits for the page, not for whatever request the page load happened to send.
       const url = command.args[0] ?? command.url
       steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_goto${camel(new URL(url).pathname.replace(/\d{6,}/g, ''))}`, action, url: url.replace(/\d{10,}/g, '{uid}'), recorded })
+      return
+    }
+    // Warm-up steps keep their recorded ranges; they choose what to act on each run, so no element is pinned.
+    if (action === 'scroll' || action === 'openAny' || action === 'clickAny' || action === 'dwell') {
+      steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_${action}`, action, args: command.args, recorded })
       return
     }
     if (action === 'signIn' || action === 'code' || action === 'solve') {
