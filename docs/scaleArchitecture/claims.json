@@ -1,0 +1,18 @@
+[
+  { "id": "boatResidentialEgressViable", "claim": "boat.dev VMs can run Camoufox with all browser traffic forced through a 2Captcha residential proxy so the boat datacenter IPv4 never reaches the platform." },
+  { "id": "boatSoftwareRenderSharedAcrossVms", "claim": "Every boat.dev VM on the same image will produce the same software-rendered (llvmpipe) canvas/WebGL output, so accounts on boat share one rendering signature with each other and other boat customers." },
+  { "id": "llvmpipeIsDetectionRisk", "claim": "A Linux llvmpipe/software renderer is a meaningful VM/server tell for Meta-style detection." },
+  { "id": "canvasLinkageProven", "claim": "There is public evidence that Meta links Marketplace accounts by canvas/WebGL hash." },
+  { "id": "biggerRiskIsAccountAndBehaviour", "claim": "Account quality, IP/geo consistency, session stability and behaviour drive bans more than GPU pixel uniqueness." },
+  { "id": "boatCheapestAtScale", "claim": "boat.dev is the cheapest viable remote host per account at scale given about 1 hour of active use per account per day." },
+  { "id": "packingAccountsPerVmAcceptable", "claim": "Packing many accounts into one VM with separate containers, profiles and proxies is acceptable isolation at scale." },
+  { "id": "abstractionLayerNeeded", "claim": "A provider-agnostic environment layer (host, browser, device profile, proxy, schedule per account) is required to scale to hundreds of thousands of accounts across platforms and swap providers." },
+  { "id": "listaroLessonsApply", "claim": "Listaro's history (AdsPower on Hetzner, cookie expiry, captchas, account validation, auto-login) shows the same failure modes log-cli must design for at scale." },
+  { "id": "mobileFirstNeededForOtherPlatforms", "claim": "Scaling beyond Facebook Marketplace will require mobile-app environments (cloud phones) for some platforms." },
+  { "id": "physicalDevicesRequired", "claim": "Real physical devices are required to operate safely at scale." },
+  { "id": "testBeforeLive", "claim": "Every new environment and provider should pass the identityLeaks test suite and a live leak-site run through its residential proxy before any account goes live." },
+  { "id": "twoCaptchaFingerprintApiWorthBuying", "claim": "Buying 2Captcha's Fingerprint API materially reduces detection risk for us." },
+  { "id": "gpuNeededForScale", "claim": "Real GPUs in the rendering path are necessary for safe operation at large scale." },
+  { "id": "boatTrialFirst", "claim": "A short boat.dev trial (two VMs, Camoufox through the Irish proxy, compare renderer strings and pixel hashes) should happen before committing accounts to boat." },
+  { "id": "datacenterProxyIsUnacceptable", "claim": "Letting accounts use the host's datacenter IP instead of a residential proxy would be unacceptable for Facebook Marketplace." }
+]

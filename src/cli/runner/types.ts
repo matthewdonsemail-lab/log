@@ -1,8 +1,12 @@
 /** Command surface types. */
 
+import type { CurrentInspect, InspectAction, InspectSessionRunner, InspectStepResult } from "../../camofox/inspect/index.ts";
+import type { ConnectSessionFactory, ProfileSessionFactory, SessionFactory } from "../../camofox/session/index.ts";
+import type { ConnectTiming } from "../../marketplace/connect/index.ts";
 import type { WorkerClient } from "../../camofox/worker/index.ts";
 import type { ConnectionRecord } from "../../marketplace/account/index.ts";
 import type { ListingRecord } from "../../marketplace/listing/index.ts";
+import type { TwentyClient } from "../../twenty/graphql/index.ts";
 
 export interface CommandResult {
   code: number;
@@ -17,14 +21,30 @@ export interface MarketplaceData {
 }
 
 export interface CommandContext {
-  /** Loads the Marketplace data. Injectable so tests can pin the rows. */
+  /** The listeningkit-hackathon seed, kept for the listing machine port. Live commands use `twenty`. */
   load: () => MarketplaceData;
+  /** Twenty, where the Facebook accounts (socialAccounts) and listings (agencyListings) live. Injected in tests. */
+  twenty: TwentyClient;
   /** Runs the camofox worker (launches a real browser). Injected so tests never do. */
   worker: WorkerClient;
+  /** Starts a publish session (a long-lived Camoufox browser). Injected so tests never do. */
+  session: SessionFactory;
+  /** Starts a connect session (`log connect`'s browser). Injected so tests never launch one. */
+  connectSession: ConnectSessionFactory;
+  /** Starts a profile session (`log profile setup`). Injected so tests never launch one. */
+  profileSession: ProfileSessionFactory;
+  /** Runs a `log inspect` session to its end. Injected so tests never launch one. */
+  inspectSession: InspectSessionRunner;
+  /** Sends one step to the open inspect session and waits for its reply. Injected in tests. */
+  sendInspect: (current: CurrentInspect, action: InspectAction, args: string[], timeoutMs: number, expect?: { name: string; ms?: number }) => Promise<InspectStepResult | null>;
+  /** The connect machine's timings, for tests (default: 5 s reads, 30 s code windows, `--wait`). */
+  connectTiming?: Partial<ConnectTiming>;
   /** Writes to stdout. Injected so commands stay testable. */
   out: (line: string) => void;
   /** Writes to stderr. */
   err: (line: string) => void;
+  /** The clock for the local-hours gate (rule 18). Tests inject it; default: now. */
+  now?: () => Date;
 }
 
 export interface Command {

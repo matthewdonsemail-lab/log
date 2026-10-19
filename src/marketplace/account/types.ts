@@ -7,49 +7,16 @@
  * to Facebook: X and Reddit are out of scope for the Marketplace CLI.
  */
 
+import type { CodeOfLayer } from '../../errors/catalog/index'
+
 /**
  * The normalized, platform-agnostic vocabulary of everything that can happen
  * to an account. Raw platform signals (HTTP status, `code`/`subcode`, page
- * markers) map onto these values.
+ * markers) map onto these values. Defined once, with meanings and outcomes, in
+ * the error catalog (`src/errors/catalog/types.ts`, layer `account`). The
+ * hackathon's snake_case spelling is converted at its API boundary.
  */
-export type AccountIssue =
-  // Lifecycle — from our connection model, not the platform.
-  | 'never_connected'
-  | 'disconnected'
-  | 'stale'
-  // Session / credential.
-  | 'session_expired'
-  | 'session_invalidated_changed'
-  | 'checkpointed'
-  | 'unconfirmed_user'
-  | 'cookie_invalid'
-  // Suspended / banned.
-  | 'suspended'
-  | 'read_only_limited'
-  | 'automated_flagged'
-  // Rate / limit (transient).
-  | 'rate_limited'
-  | 'proxy_rate_limited'
-  // Blocked / challenged.
-  | 'challenge_interstitial'
-  | 'ip_or_account_blocked'
-  // Policy / permission / group.
-  | 'restricted_policy'
-  | 'permission_denied'
-  | 'join_gate'
-  | 'removed_from_group'
-  // Transport (proxy).
-  | 'proxy_unreachable'
-  | 'proxy_auth_failed'
-  | 'proxy_malformed'
-  // False success — HTTP 200 whose body is not data.
-  | 'login_wall'
-  | 'captcha_html'
-  // Roster.
-  | 'unknown_platform'
-  // Catch-all — the client saw a failure it could not map.
-  | 'unknown'
-
+export type AccountIssue = CodeOfLayer<'account'>
 
 export interface RawSignal {
   /** HTTP status the client saw (200 for the false-success cases). */

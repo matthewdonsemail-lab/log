@@ -3,16 +3,16 @@
 Same contract as the old inferencesaver `facebook-worker.py`: one request in,
 one JSON result out. The request is a JSON object in argv[1]:
 
-    {"action": "doctor" | "login" | "marketplace.scan" | "marketplace.status",
+    {"action": "doctor" | "proxy.check" | "marketplace.scan" | "marketplace.status",
      "account_id": "fbGalwayRubbish",
      "storage_state_path": "C:/Users/.../fbGalwayRubbish.json",
      "params": {"listing_id": "1583545526797714"}}
 
-The result is the only thing written to stdout (one JSON line). Progress and
-prompts go to stderr, and stdin stays free so `login` can wait for Enter.
+The result is the only thing written to stdout (one JSON line). Progress goes
+to stderr.
 
-Every action is read-only on Facebook except `login`, which only saves the
-session you log into by hand.
+Every action is read-only on Facebook. Signing in is `log connect`, run by
+the connect machine through python/connectSession.py.
 """
 from __future__ import annotations
 
@@ -22,6 +22,10 @@ import re
 import sys
 from pathlib import Path
 from typing import Any
+
+from errorCodes import failure
+import proxyGate
+from visibleBrowser import force_visible
 
 SELLING_URL = "https://www.facebook.com/marketplace/you/selling"
 
@@ -46,6 +50,7 @@ EXTRACT_JS = """() => {
 
 def log(message: str) -> None:
     print(message, file=sys.stderr, flush=True)
+    proxyGate.note_step(message)
 
 
 # Titles under the selling page's "Needs attention" heading, the zone Listaro's
@@ -114,45 +119,30 @@ def doctor(_: dict[str, Any]) -> dict[str, Any]:
     return {"ok": ok, "checks": checks}
 
 
+def keep_state_on_release(manager, state_path: str | None) -> None:
+    """Before the browser closes, write its session (cookies and localStorage) to the
+    run's state file, so log-cli saves it to Twenty and the next run continues it."""
+    real_release = manager.release
+
+    async def release(session):
+        if state_path and not getattr(session, "_closed", False):
+            try:
+                await session.context.storage_state(path=state_path)
+            except Exception as exc:
+                log(f"could not save the session state ({type(exc).__name__})")
+        await real_release(session)
+
+    manager.release = release  # type: ignore[method-assign]
+
+
 async def acquire(request: dict[str, Any], storage_state_path: str | None):
     from facebook_camofox_client.domain_camofox.session_manager import CamofoxSessionManager
 
     manager = CamofoxSessionManager()
+    keep_state_on_release(manager, request.get("storage_state_path"))
     session = await manager.acquire(
         request.get("account_id") or "default", storage_state_path=storage_state_path)
     return manager, session
-
-
-async def login(request: dict[str, Any]) -> dict[str, Any]:
-    state = Path(request["storage_state_path"])
-    manager, session = await acquire(request, str(state) if state.exists() else None)
-    try:
-        page = await session.new_page()
-        page.set_default_timeout(120_000)
-        try:
-            await page.goto(SELLING_URL, wait_until="domcontentloaded")
-        except Exception as exc:
-            log(f"Navigation warning: {exc}. The browser stays open, carry on in it.")
-        log("")
-        log("In the Camoufox window:")
-        log("  1. Log into Facebook (finish any checkpoint or 2FA)")
-        log("  2. Check you can see Marketplace > Selling > Your listings")
-        log("  3. Come back here and press Enter to save the session")
-        log("Do not close the browser yourself.")
-        await asyncio.to_thread(sys.stdin.readline)
-        try:
-            await page.reload(wait_until="domcontentloaded")
-            await page.wait_for_timeout(2500)
-            flags = await auth_flags(page)
-        except Exception as exc:
-            log(f"Could not re-check login: {exc}")
-            flags = {"recheck_failed": True}
-        state.parent.mkdir(parents=True, exist_ok=True)
-        await session.context.storage_state(path=str(state))
-        return {"ok": True, "storageStatePath": str(state),
-                "loggedIn": not any(flags.values()), "authFlags": flags}
-    finally:
-        await manager.release(session)
 
 
 async def scan(request: dict[str, Any]) -> dict[str, Any]:
@@ -170,8 +160,8 @@ async def scan(request: dict[str, Any]) -> dict[str, Any]:
         await page.wait_for_timeout(4000)
         flags = await auth_flags(page)
         if any(flags.values()):
-            return {"ok": False, "error": "loginWall", "authFlags": flags,
-                    "url": page.url, "bodySample": await body_sample(page)}
+            return failure("loginWall", "Facebook showed login markers", authFlags=flags,
+                           url=page.url, bodySample=await body_sample(page))
         try:
             tab = page.get_by_text(re.compile(r"^Your listings$", re.I)).first
             if await tab.count() > 0:
@@ -224,9 +214,10 @@ async def status(request: dict[str, Any]) -> dict[str, Any]:
 
     listing_id = str(request.get("params", {}).get("listing_id", ""))
     if not listing_id:
-        return {"ok": False, "error": "params.listing_id is required"}
+        return failure("badRequest", "params.listing_id is required")
     state = request["storage_state_path"]
     manager = CamofoxSessionManager()
+    keep_state_on_release(manager, state)
     real_acquire = manager.acquire
 
     async def acquire_with_state(account_id, **kwargs):
@@ -248,31 +239,43 @@ async def status(request: dict[str, Any]) -> dict[str, Any]:
             "status": out.status, "title": out.title}
 
 
-ACTIONS = {"login": login, "marketplace.scan": scan, "marketplace.status": status}
+ACTIONS = {"marketplace.scan": scan, "marketplace.status": status}
 
 
 def main() -> int:
     try:
         request = json.loads(sys.argv[1]) if len(sys.argv) > 1 else {}
     except json.JSONDecodeError as exc:
-        print(json.dumps({"ok": False, "error": f"bad request JSON: {exc}"}))
+        print(json.dumps(failure("badRequest", f"request is not JSON: {exc}")))
         return 1
     action = request.get("action")
+    # No browser without the account's proxy, for any action, signing in included (rule 12).
+    proxyGate.arm(request.get("proxy_path"), request.get("device_path"), request.get("capture_dir"))
+    try:
+        # Every Camoufox facebook-camofox-client launches: proxy gate, then headed,
+        # humanized, cursor shown (rules 11 and 12).
+        force_visible()
+    except ImportError:
+        pass  # no camoufox: `doctor` reports it
     # Anything a library prints goes to stderr, so stdout carries only the result.
     real_stdout, sys.stdout = sys.stdout, sys.stderr
     try:
         if action == "doctor":
             result = doctor(request)
+        elif action == "proxy.check":
+            result = proxyGate.check(request.get("proxy_path"))
         elif action in ACTIONS:
-            if action != "login" and not Path(request.get("storage_state_path") or "").exists():
-                result = {"ok": False, "error": "noSession",
-                          "storageStatePath": request.get("storage_state_path")}
+            if not Path(request.get("storage_state_path") or "").exists():
+                result = failure("neverConnected", "no saved session",
+                                 storageStatePath=request.get("storage_state_path"))
             else:
                 result = asyncio.run(ACTIONS[action](request))
         else:
-            result = {"ok": False, "error": f"unknown action: {action}"}
+            result = failure("unknownAction", str(action))
+    except proxyGate.GateError as exc:
+        result = failure(exc.code, exc.detail)
     except Exception as exc:
-        result = {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+        result = failure("crashed", f"{type(exc).__name__}: {exc}"[:400])
     finally:
         sys.stdout = real_stdout
     print(json.dumps(result))

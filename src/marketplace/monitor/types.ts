@@ -10,6 +10,7 @@
  *    limit, the empty-scan safety guard, and the repost dedup guard.
  * The monitor only decides. It never posts, edits or deletes.
  */
+import type { ErrorCode } from '../../errors/catalog/index'
 import type { AccountIssue } from '../account/types'
 import type { ListingStatus } from '../listing/types'
 
@@ -88,7 +89,8 @@ export interface RelistDecision {
 export type CheckOutcome =
   | { kind: 'ok'; seen: { listingId: string; title: string | null; health: ListingHealth }[]; needsAttention: string[]; issue: AccountIssue | null }
   | { kind: 'issue'; issue: AccountIssue; detail: string }
-  | { kind: 'error'; code: string; detail: string; retryable: boolean }
+  /** `retryable` comes from the error catalog. */
+  | { kind: 'error'; code: ErrorCode; detail: string; retryable: boolean }
 
 export interface MonitorInput {
   accountId: string
@@ -107,7 +109,7 @@ export interface MonitorContext {
   maxChecks: number
   checks: number
   /** Consecutive failures with the same code (circuit breaker). */
-  failure: { code: string; count: number } | null
+  failure: { code: ErrorCode; count: number } | null
   /** Quick retries spent on the current check. */
   retries: number
   issue: AccountIssue | null

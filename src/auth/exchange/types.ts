@@ -1,3 +1,4 @@
+import type { ErrorCode } from "../../errors/catalog/index.ts";
 import type { SessionRecord } from "../session/index.ts";
 
 /** What blaster's web app POSTs to the loopback once the operator signed in to Twenty. */
@@ -11,7 +12,7 @@ export interface ExchangeRequest {
 
 export type ExchangeResult =
   | { ok: true; session: Pick<SessionRecord, "accessToken" | "refreshToken" | "expiresIn" | "obtainedAtMs"> }
-  | { ok: false; error: "timedOut" | "invalidExchange" };
+  | { ok: false; error: Extract<ErrorCode, "timedOut" | "invalidExchange"> };
 
 export interface ExchangeServer {
   /** `http://127.0.0.1:<port>` once listening. */

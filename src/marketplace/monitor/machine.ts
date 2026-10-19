@@ -44,7 +44,7 @@ export const monitorMachine = setup({
   },
   guards: {
     isOk: (_, outcome: CheckOutcome) => outcome.kind === 'ok',
-    isRateLimited: (_, outcome: CheckOutcome) => outcome.kind === 'issue' && outcome.issue === 'rate_limited',
+    isRateLimited: (_, outcome: CheckOutcome) => outcome.kind === 'issue' && outcome.issue === 'rateLimited',
     isIssue: (_, outcome: CheckOutcome) => outcome.kind === 'issue',
     circuitOpen: ({ context }) => (context.failure?.count ?? 0) >= CIRCUIT_BREAKER_THRESHOLD,
     canQuickRetry: ({ context }) =>

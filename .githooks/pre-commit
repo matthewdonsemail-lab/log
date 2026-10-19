@@ -1,3 +1,0 @@
-#!/bin/sh
-# Git requires this exact file name. The logic lives in scripts/commitLog.mjs.
-exec node "$(git rev-parse --show-toplevel)/scripts/commitLog.mjs"

@@ -1,31 +1,18 @@
 /** Human renderers for the live camofox results. Pure, so tests assert text. */
-import { toListingStatus } from "../../../camofox/worker/index.ts";
 import type { DoctorChecks, ScanResult } from "../../../camofox/worker/index.ts";
-import { LISTING_STATUS_LABELS } from "../../../marketplace/listing/index.ts";
-import type { ListingRecord } from "../../../marketplace/listing/index.ts";
+import type { LossReport } from "../../../marketplace/replacement/index.ts";
 import { renderTable } from "../../runner/helpers/index.ts";
 
-/** Live dashboard rows next to what log's data says for the same listing id. */
-export function renderScan(scan: ScanResult, known: ListingRecord[]): string {
+/** The dashboard cards as Facebook shows them. */
+export function renderScan(scan: ScanResult): string {
   const lines: string[] = [];
   if (scan.listings.length === 0) {
     lines.push("No listing cards found on Marketplace > Selling.");
   } else {
     lines.push(
       renderTable(
-        ["Listing ID", "Title", "Live status", "Clicks", "In log"],
-        scan.listings.map((row) => {
-          const live = toListingStatus(row.health);
-          const label = LISTING_STATUS_LABELS[live.status] + (live.removedBy ? ` (${live.removedBy})` : "");
-          const match = known.find((listing) => listing.listingId === row.listingId);
-          return [
-            row.listingId,
-            row.title ?? "(no title)",
-            label,
-            String(row.clicks),
-            match ? LISTING_STATUS_LABELS[match.status] : "not in log",
-          ];
-        }),
+        ["Listing ID", "Title", "Health", "Clicks"],
+        scan.listings.map((row) => [row.listingId, row.title ?? "(no title)", row.health, String(row.clicks)]),
       ),
     );
   }
@@ -35,14 +22,41 @@ export function renderScan(scan: ScanResult, known: ListingRecord[]): string {
   return lines.join("\n");
 }
 
-export function renderDoctor(checks: DoctorChecks, sessions: { accountId: string; path: string; exists: boolean }[]): string {
+/** What losing (or flagging) an account did in Twenty. */
+export function renderLoss(loss: LossReport): string {
+  const lines = [`${loss.account.accountName} is now ${loss.status.toUpperCase()} in Twenty (kept, never deleted).`];
+  if (loss.lost.length) lines.push(`${loss.lost.length} listing(s) moved to ACCOUNT_LOST.`);
+  for (const r of loss.replacements) {
+    lines.push(
+      r.next && r.account
+        ? `  "${r.old.title}" → new READY listing ${r.next.id} on ${r.account.accountName} (${r.account.homeCity ?? "?"}, ${r.account.homeCountry})`
+        : `  "${r.old.title}" → no replacement: ${r.detail}`,
+    );
+  }
+  if (loss.replacements.some((r) => r.next)) lines.push("Publish them with `log campaign run --campaign <id>` (dry run unless --live).");
+  return lines.join("\n");
+}
+
+export function renderDoctor(
+  checks: DoctorChecks,
+  accounts: { accountName: string; ready: boolean; why: string | null; hasCookies: boolean }[],
+  twentyError: string | null,
+): string {
   const mark = (ok: boolean) => (ok ? "ok  " : "MISS");
-  return [
-    `${mark(true)}  python ${checks.python}`,
-    `${mark(Boolean(checks.facebookCamofoxClient))}  facebook-camofox-client  ${checks.facebookCamofoxClient ?? checks.facebookCamofoxClientError ?? ""}`,
-    `${mark(Boolean(checks.camoufoxBrowser))}  camoufox browser ${checks.camoufoxVersion ?? ""}  ${checks.camoufoxBrowser ?? checks.camoufoxBrowserError ?? ""}`,
-    "",
-    "Facebook sessions:",
-    ...sessions.map((s) => `  ${mark(s.exists)}  ${s.accountId}  ${s.exists ? s.path : `run: log connect --account ${s.accountId}`}`),
-  ].join("\n");
+  const lines = [
+    `${mark(true)} python ${checks.python}`,
+    `${mark(!!checks.facebookCamofoxClient)} facebook-camofox-client ${checks.facebookCamofoxClient ?? checks.facebookCamofoxClientError ?? ""}`.trimEnd(),
+    `${mark(!!checks.camoufoxBrowser)} Camoufox ${checks.camoufoxVersion ?? ""} ${checks.camoufoxBrowser ?? checks.camoufoxBrowserError ?? ""}`.trimEnd(),
+    `${mark(!twentyError)} Twenty ${twentyError ? twentyError.split("\n")[0] : `${accounts.length} FACEBOOK account(s)`}`,
+  ];
+  if (accounts.length) {
+    lines.push(
+      "",
+      renderTable(
+        ["Account", "May run", "Cookies", "Why not"],
+        accounts.map((a) => [a.accountName, a.ready ? "yes" : "no", a.hasCookies ? "yes" : "no", a.why ?? ""]),
+      ),
+    );
+  }
+  return lines.join("\n");
 }

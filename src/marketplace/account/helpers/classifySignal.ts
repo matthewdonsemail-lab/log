@@ -9,6 +9,8 @@ import type { AccountIssue, RawSignal } from '../types'
  * most severe first. Returns null when the page shows no account problem.
  */
 const RULES: { issue: AccountIssue; phrases: string[] }[] = [
+  // The whole account, not just Marketplace: it becomes BANNED and its campaign listings are replaced.
+  { issue: 'accountDisabled', phrases: ['account has been disabled', 'account has been locked', 'we suspended your account', 'your account has been suspended'] },
   {
     issue: 'suspended',
     phrases: [
@@ -17,18 +19,16 @@ const RULES: { issue: AccountIssue; phrases: string[] }[] = [
       'access to marketplace has been restricted',
       "can't use marketplace",
       'removed from marketplace',
-      "didn't follow our community standards",
-      'account has been disabled',
-      'account has been locked'
+      "didn't follow our community standards"
     ]
   },
   {
     issue: 'checkpointed',
     phrases: ['verify your identity', 'confirm your identity', 'security check', 'code we sent', 'add your phone number']
   },
-  { issue: 'captcha_html', phrases: ['captcha', 'arkose'] },
+  { issue: 'captchaHtml', phrases: ['captcha', 'arkose'] },
   {
-    issue: 'rate_limited',
+    issue: 'rateLimited',
     phrases: [
       'limit reached',
       'try again later',
@@ -37,14 +37,14 @@ const RULES: { issue: AccountIssue; phrases: string[] }[] = [
       "you can't create any more listings"
     ]
   },
-  { issue: 'read_only_limited', phrases: ['oops', 'something went wrong', 'facebook rejected'] },
-  { issue: 'login_wall', phrases: ['log in or sign up for facebook', 'log in to continue', 'forgot account'] }
+  { issue: 'readOnlyLimited', phrases: ['oops', 'something went wrong', 'facebook rejected'] },
+  { issue: 'loginWall', phrases: ['log in or sign up for facebook', 'log in to continue', 'forgot account'] }
 ]
 
 export function classifySignal(signal: RawSignal & { text?: string }): AccountIssue | null {
   const url = (signal.url ?? '').toLowerCase()
   if (url.includes('/checkpoint')) return 'checkpointed'
-  if (url.includes('/login') || url.includes('login.php')) return 'session_expired'
+  if (url.includes('/login') || url.includes('login.php')) return 'sessionExpired'
   const text = `${signal.marker ?? ''} ${signal.text ?? ''}`.toLowerCase()
   for (const rule of RULES) {
     if (rule.phrases.some((phrase) => text.includes(phrase))) return rule.issue

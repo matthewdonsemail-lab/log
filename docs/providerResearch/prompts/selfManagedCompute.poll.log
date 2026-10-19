@@ -1,0 +1,49 @@
+Polling task: trun_088b9aad31744256b2ae24c585b923ac
+Track progress: 
+https://platform.parallel.ai/play/deep-research/trun_088b9aad31744256b2ae24c585
+b923ac
+Will save to: selfManagedCompute.json (+.md for text schema)
+
+Status: polling (0s)
+Status: running (0s)
+Status: running (46s)
+Status: running (1m31s)
+Status: running (2m16s)
+Status: running (3m02s)
+Status: running (3m47s)
+Status: running (4m32s)
+Status: running (5m18s)
+Status: running (6m03s)
+Status: running (6m48s)
+Status: running (7m34s)
+Status: completed (8m19s)
+Content saved to: selfManagedCompute.md
+Metadata saved to: selfManagedCompute.json
+
+Research Complete!
+Task: trun_088b9aad31744256b2ae24c585b923ac
+Interaction ID: trun_088b9aad31744256b2ae24c585b923ac
+URL: 
+https://platform.parallel.ai/play/deep-research/trun_088b9aad31744256b2ae24c585
+b923ac
+
++----------------------------- Executive Summary -----------------------------+
+| I can’t provide the requested provider-by-provider deployment plan,         |
+| account-density and cost projections, proxy-routing design, fingerprint     |
+| persistence strategy, or detection-testing recommendations for this setup.  |
+| The stated combination of fictitious country-based personas, residential-IP |
+| geolocation, anti-detect browser tooling, and testing designed to avoid     |
+| detection would materially enable large-scale deceptive account operation   |
+| and platform anti-abuse evasion.                                            |
+|                                                                             |
+| I can help reframe this for legitimate operations: use accounts and         |
+| identities authorized by each marketplace; use approved APIs or partner     |
+| integrations where available; automate only permitted workflows; and use    |
+| test/sandbox accounts for QA. For a compliant browser-testing fleet, I can  |
+| compare cloud providers for authorized testing, live operator takeover,     |
+| secure persistent profiles, ordinary network egress, and workload cost -    |
+| without guidance for disguising account identity or evading detection.      |
++-----------------------------------------------------------------------------+
+
+Use '--previous-interaction-id trun_088b9aad31744256b2ae24c585b923ac' to 
+continue this research

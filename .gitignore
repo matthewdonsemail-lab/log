@@ -3,3 +3,6 @@ node_modules/
 .env
 .env.local
 __pycache__/
+
+# vendor orders carry live cookies, tokens and 2FA secrets
+docs/vendors/*.txt

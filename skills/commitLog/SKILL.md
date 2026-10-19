@@ -6,7 +6,7 @@ description: Write the log.md entry every log-cli commit needs. On commit, the p
 # commitLog
 
 `log.md` is the running record of the repo, one entry per commit, newest at
-the bottom. `.githooks/pre-commit` runs `scripts/commitLog.mjs`, which uses
+the bottom. lefthook's pre-commit (`lefthook.yml`) runs `scripts/commitLog.mjs`, which uses
 `scripts/astSummary.mjs`:
 
 - `.ts` / `.mjs` files are parsed with the TypeScript compiler API.
