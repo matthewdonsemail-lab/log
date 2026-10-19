@@ -11,16 +11,20 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_262d88fab3be7aa47300d07ddd7f69a8108be9bd772dc983116781db97cc2690` |
+| rea | `ev_5a868e88094489f9152e54cf6c06833679ecdfeb9dffddf5d9f9fabd280635b9` |
 
-Seen 41 time(s) in 24 run(s).
+Seen 64 time(s) in 38 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 1: goto /me | 1 | -1 | -1 ms | 2798 ms | — |
-| flow | step 9: goto /profiles/<id>/name | 1 | -1 | -1 ms | 1525 ms | — |
-| connect | Opening Marketplace > Selling. | 5 | -1 | -1 ms | 1634–3673 ms | — |
-| connect | Auto-login: typing the email. | 2 | -1 | -1 ms | 546–695 ms | — |
+| inspect | step 1: goto /marketplace/ | 11 | -1 | -1 ms | 1503–4086 ms | — |
+| connect | Opening Marketplace > Selling. | 7 | -1 | -1 ms | 1634–3673 ms | — |
+| connect | Page: loginForm /marketplace/selling/ "…" | 1 | -1 | -1 ms | 337 ms | — |
+| connect | Auto-login: answered automatedBehaviour. | 8 | -1 | -1 ms | 1106–3991 ms | — |
+| connect | Page: loggedIn /marketplace/selling/ | 4 | -1 | -1 ms | 611–4358 ms | — |
+| flow | step 1: goto /me | 2 | -1 | -1 ms | 2798–3067 ms | — |
+| flow | step 9: goto /profiles/<id>/name | 2 | -1 | -1 ms | 1525–4967 ms | — |
+| connect | Auto-login: typing the email. | 3 | -1 | -1 ms | 546–3262 ms | — |
 | connect | Page: loggedIn /marketplace/selling/ "…" | 2 | -1 | -1 ms | 1423–2139 ms | — |
 | inspect | step 1: goto /me | 3 | -1 | -1 ms | 2837–6273 ms | — |
 | inspect | step 14: goto /profiles/<id>/name | 1 | -1 | -1 ms | 1638 ms | — |
@@ -30,8 +34,6 @@ Seen 41 time(s) in 24 run(s).
 | profile | Opening the profile (facebook.com/me). | 1 | 200 | 315 ms | 2142 ms | — |
 | publish | Opening /marketplace/create/item | 12 | -1, 200 | -1–290 ms | 1643–8396 ms | — |
 | connect | Auto-login: submitting (Enter). | 2 | -1 | -1 ms | 2976–3138 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ | 2 | -1 | -1 ms | 611–788 ms | — |
-| connect | Auto-login: answered automatedBehaviour. | 4 | -1 | -1 ms | 1106–2053 ms | — |
 
 <!-- facts:end -->
 

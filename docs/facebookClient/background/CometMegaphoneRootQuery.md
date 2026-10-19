@@ -13,10 +13,12 @@
 | Called from | `CometMegaphoneRoot.react` |
 | rea | `ev_a2e1e82b09a10f9f97361e424dc787adb4a3a8c0a7bb15f7feb91de015e7d2fa` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T122 | 1 | 200 | 459 ms | 1230 ms | — |
+| inspect | step 2: wait 20s | 1 | 200 | 664 ms | 21003 ms | — |
 | publish | Opening /marketplace/create/item | 1 | 200 | 1044 ms | 11856 ms | — |
 
 <!-- facts:end -->

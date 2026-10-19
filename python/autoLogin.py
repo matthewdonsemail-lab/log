@@ -30,6 +30,8 @@ import struct
 import time
 from typing import Any
 
+from humanMouse import human_click
+
 # Two-step: the code page or its "approve on another device" first screen
 # (fb-login-helper.ts:161-167, validate.ts:334-343, new_user_onboard.ts:137-147).
 TWO_STEP = re.compile(
@@ -168,14 +170,14 @@ def _click_button(page, pattern: str) -> bool:
     for role in ("button", "link", "radio"):
         found = _scope(page).get_by_role(role, name=re.compile(pattern, re.I))
         if _visible(found):
-            found.first.click(timeout=CLICK_MS)
+            human_click(found.first, timeout=CLICK_MS)
             return True
     return False
 
 
 def _type(page, field, text: str) -> None:
     """Click the field and type like a person (Camoufox moves the cursor)."""
-    field.click(timeout=CLICK_MS)
+    human_click(field, circle=False, timeout=CLICK_MS)
     field.fill("", timeout=CLICK_MS)
     page.keyboard.type(text, delay=random.randint(60, 140))
     page.wait_for_timeout(random.randint(300, 700))
@@ -283,14 +285,14 @@ def choose_auth_app(page, log) -> bool:
         found = page.get_by_text(re.compile(r"try another way", re.I))
         if not _visible(found):
             return False
-        found.first.click(timeout=CLICK_MS)
+        human_click(found.first, timeout=CLICK_MS)
     page.wait_for_timeout(random.randint(2500, 3500))
     choice = _scope(page).get_by_role("radio", name=re.compile(r"authentication app|authenticator", re.I))
     if not _visible(choice):
         choice = _scope(page).get_by_text(re.compile(r"authentication app|authenticator", re.I))
     if not _visible(choice):
         return False
-    choice.first.click(timeout=CLICK_MS)
+    human_click(choice.first, timeout=CLICK_MS)
     page.wait_for_timeout(800)
     _click_button(page, r"^(continue|next)$")
     page.wait_for_timeout(random.randint(1500, 2500))
@@ -329,14 +331,14 @@ def dismiss(page, kind: str, log) -> bool:
         target = _pick(page, DISMISS_SELECTOR[kind])
         if target is None:
             return False
-        target.click(timeout=CLICK_MS)
+        human_click(target, timeout=CLICK_MS)
     elif kind in DISMISS:
         if not _click_button(page, DISMISS[kind]):
             # Listaro's last fallback: any visible "Dismiss" text (fb-login-helper.ts:204).
             found = page.get_by_text(re.compile(DISMISS[kind], re.I))
             if kind != "automatedBehaviour" or not _visible(found):
                 return False
-            found.first.click(timeout=CLICK_MS)
+            human_click(found.first, timeout=CLICK_MS)
     else:
         return False
     log(f"Auto-login: answered {kind}.")

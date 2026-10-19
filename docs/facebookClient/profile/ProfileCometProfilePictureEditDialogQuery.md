@@ -13,11 +13,11 @@
 | Called from | `ProfileCometProfilePictureEditDialog.react` |
 | rea | `ev_a1594c4525f5cabce6e10584b06177b3d354c7298036ae632d76e561f54bb565` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 3: clickRole menuitem "…" | 1 | 200 | 378 ms | 606 ms | — |
+| flow | step 3: clickRole menuitem "…" | 2 | 200 | 378–800 ms | 577–606 ms | — |
 | inspect | step 3: click e1096 | 1 | 200 | 399 ms | 791 ms | — |
 
 <!-- facts:end -->

@@ -13,17 +13,21 @@
 | Called from | `FBYRPTimeLimitsEnforcement.react` |
 | rea | `ev_ed1a3cfe4b9656a9ad3ddf8f3e05b4767495c0d780a6a027450c86c6d19c34c6` |
 
-Seen 18 time(s) in 17 run(s).
+Seen 31 time(s) in 29 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 1: goto /me | 1 | 200 | 317 ms | 6911 ms | — |
+| connect | Page: loggedIn /marketplace/selling/ | 5 | 200 | 343–513 ms | 1479–5302 ms | — |
+| inspect | step 1: goto /marketplace/ | 6 | 200 | 308–537 ms | 5692–12777 ms | — |
+| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1223 | 1 | 200 | 667 ms | 2665 ms | — |
+| inspect | step 2: waitRole link "…" | 1 | 200 | 1505 ms | 2968 ms | — |
+| inspect | POST 0 /ajax/qm/ (0 ms) | 1 | 200 | 415 ms | 2913 ms | — |
+| flow | step 1: goto /me | 2 | 200 | 317–395 ms | 6911–12551 ms | — |
 | connect | Auto-login: typing the email. | 1 | 200 | 316 ms | 2764 ms | — |
 | connect | Page: loggedIn /marketplace/selling/ "…" | 2 | 200 | 310–346 ms | 2494–4161 ms | — |
 | inspect | step 1: goto /me | 1 | 200 | 462 ms | 11788 ms | — |
 | inspect | step 2: click e53 | 1 | 200 | 351 ms | 5967 ms | — |
 | publish | Opening /marketplace/create/item | 10 | 200 | 297–1407 ms | 6097–29472 ms | — |
-| connect | Page: loggedIn /marketplace/selling/ | 2 | 200 | 343–373 ms | 2601–3955 ms | — |
 
 <!-- facts:end -->
 

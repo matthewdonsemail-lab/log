@@ -12,6 +12,7 @@ export function renderInspectStep(result: InspectStepResult, showElements = 40):
   const lines = [`${result.step}: ${result.ok ? 'done' : `failed (${result.error})`}`, `  Page: ${result.url} "${result.title ?? ''}"`]
   lines.push(`  ${result.requests ?? 0} request(s) in this step${result.notable?.length ? ':' : ''}`)
   for (const line of result.notable ?? []) lines.push(`    ${line}`)
+  if (result.mouse) lines.push(`  mouse: ${result.mouse.legs} humanized leg(s), ${result.mouse.idleMoves} idle drift move(s) (mouse.json)`)
   if (result.rea) lines.push(`  rea: exit ${result.rea.code}${result.rea.evidenceId ? `, ${result.rea.evidenceId}` : ''}${result.rea.records !== undefined ? `, ${result.rea.records} record(s)` : ''}`)
   const elements = result.interactive ?? []
   lines.push(`  ${elements.length} element(s) on the page${elements.length ? ' (use the ref to click/type):' : ''}`)

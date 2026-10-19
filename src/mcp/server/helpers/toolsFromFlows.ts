@@ -17,6 +17,7 @@ export function toolsFromFlows(flows: FlowDefinition[]): LogTool[] {
     properties.live = { type: "boolean", description: "Run it on Facebook. Without it the steps are listed and nothing opens." };
     properties.bypass = { type: "boolean", description: "Skip the waking-hours gate only (rule 20), when matt asked" };
     properties.now = { type: "boolean", description: "Skip the 10-minute launch gap only (rule 30)" };
+    properties.proxyMs = { type: "integer", description: "This run's proxy speed limit to Facebook, in ms (default 2500, rule 33)" };
     properties.confirmLive = { type: "boolean", description: "Set true only when matt asked for this live run" };
     return {
       name: toolName(flow.name),
@@ -41,5 +42,6 @@ export function flowArgv(flow: FlowDefinition, input: Record<string, unknown> | 
     argv.push("--set", `${p.name}=${value}`);
   }
   for (const flag of ["live", "bypass", "now"]) if (input?.[flag] === true) argv.push(`--${flag}`);
+  if (typeof input?.proxyMs === "number") argv.push("--proxyMs", String(input.proxyMs));
   return { ok: true, argv, live: input?.live === true };
 }

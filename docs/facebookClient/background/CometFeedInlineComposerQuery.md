@@ -13,10 +13,13 @@
 | Called from | `CometFeedInlineComposer.react` |
 | rea | `ev_3e02863ff58798e0b4e157f2227e5ceed62786408d21a22ae2d4cce84f7332b8` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 5 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T122 | 1 | 200 | 345 ms | 1175 ms | — |
+| inspect | step 2: wait 20s | 1 | 200 | 332 ms | 20975 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T120 | 2 | 200 | 314–523 ms | 9992–90138 ms | — |
 | publish | Opening /marketplace/create/item | 1 | 200 | 415 ms | 11840 ms | — |
 
 <!-- facts:end -->

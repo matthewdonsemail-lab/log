@@ -13,11 +13,11 @@
 | Called from | `FXAccountsCenterBirthdayRouteResolver` |
 | rea | `ev_456ab1ec3c706706ddefabc99ffa27f3b67dd2f399885750f9c052d5850448a7` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 9: goto /profiles/<id>/name | 1 | 200 | 337 ms | 2940 ms | — |
+| flow | step 9: goto /profiles/<id>/name | 2 | 200 | 337–1415 ms | 2940–8243 ms | — |
 | inspect | step 14: goto /profiles/<id>/name | 1 | 200 | 575 ms | 3974 ms | — |
 
 <!-- facts:end -->

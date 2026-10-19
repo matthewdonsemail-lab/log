@@ -33,6 +33,26 @@ while an `expect` is pending). Typed values are redacted in snapshots. A HAR
 over rea's 32 MB limit gets a copy without static bodies for rea; the raw HAR
 is kept (rule 19). `--now` skips only the 10-minute launch gap (rule 30).
 
+## The cursor (rule 32)
+
+`python/humanMouse.py`, used by every session. Fitted to matt's own mouse,
+recorded by `python/recordMouse.py` (run it for N seconds, then it analyses
+the recording; `--analyze <file>` re-analyses one). What the recording showed
+and the module reproduces: one continuous velocity profile per move, an early
+speed peak and a long settle, overshoot-and-return about half the time, loose
+loops around whatever is being looked at, short pauses, ~25 % still. Every
+step writes `mouse.json` (its legs) and `mouseSamples.json` (every emitted
+point, in the recorder's format), so the same analyser compares ours with his:
+
+```bash
+python python/recordMouse.py 60                      # record your hand, then analyse
+python python/recordMouse.py --analyze <run>/steps/02_wait60s/mouseSamples.json
+```
+
+Camoufox's humanize stays on but is capped to 20 ms per hop in these
+sessions (`launch_kwargs(…, own_trajectory=True)`): measured, its default
+cost ~100 ms per 5 px hop, which is what made earlier motion crawl.
+
 ## Saved flows
 
 | Flow | Recorded on | Proven on | Steps |

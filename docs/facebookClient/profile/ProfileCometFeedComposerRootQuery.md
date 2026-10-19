@@ -13,10 +13,11 @@
 | Called from | `ProfileCometFeedComposerRoot.react` |
 | rea | `ev_707ed2d0b800f5a37aabe9528cbad4bf698cd97e6638a5708ad807ed8f142a6c` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| flow | step 5: clickRole button "…" | 1 | 200 | 836 ms | 10692 ms | — |
 | inspect | now on /profile.php "…" after 2734 ms; 0 request(s) | 1 | 200 | 531 ms | 1448 ms | — |
 
 <!-- facts:end -->

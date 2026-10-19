@@ -45,6 +45,7 @@ from typing import Any
 
 import autoLogin
 import proxyGate
+from humanMouse import HumanMouse
 from errorCodes import failure
 from visibleBrowser import launch_kwargs
 
@@ -79,10 +80,26 @@ class Recorder:
     def __init__(self) -> None:
         self.entries: list[dict[str, Any]] = []
         self.pending: set[asyncio.Task] = set()
+        self.inflight = 0
+        self.last_start = 0.0
+
+    def busy(self) -> bool:
+        """The page is loading: requests in flight, or one started in the last 0.4 s (the cursor waits, rule 32)."""
+        # A request still open 4 s after the last one started is a long poll, not the page loading.
+        since = time.monotonic() - self.last_start
+        return since < 0.4 or (self.inflight > 0 and since < 4.0)
+
+    def _started(self, _request: Any) -> None:
+        self.inflight += 1
+        self.last_start = time.monotonic()
+
+    def _ended(self) -> None:
+        self.inflight = max(0, self.inflight - 1)
 
     def attach(self, context: Any) -> None:
-        context.on("requestfinished", lambda request: self._track(self._entry(request, None)))
-        context.on("requestfailed", lambda request: self._track(self._entry(request, request.failure or "failed")))
+        context.on("request", self._started)
+        context.on("requestfinished", lambda request: (self._ended(), self._track(self._entry(request, None))))
+        context.on("requestfailed", lambda request: (self._ended(), self._track(self._entry(request, request.failure or "failed"))))
 
     def _track(self, coro: Any) -> None:
         task = asyncio.ensure_future(coro)
@@ -263,7 +280,17 @@ class Inspector:
         started = time.monotonic()
         error = None
         try:
-            await act()
+            # The cursor is the step's while it acts; between steps it drifts (humanMouse, rule 32).
+            self.mouse.preempt = True
+            async with self.mouse.lock:
+                self.mouse.preempt = False
+                self.mouse.navigating = action in ("goto", "back")
+                if self.mouse.navigating:
+                    self.mouse.fresh_page = True
+                try:
+                    await act()
+                finally:
+                    self.mouse.navigating = False
         except Exception as exc:
             error = f"{type(exc).__name__}: {str(exc).splitlines()[0][:200] if str(exc) else ''}"
             log(f"  {action} failed: {error}")
@@ -297,6 +324,13 @@ class Inspector:
         except Exception as exc:
             snapshot = f"(no snapshot: {type(exc).__name__})"
         (folder / "snapshot.yml").write_text(snapshot, encoding="utf8")
+        mouse = self.mouse.take()
+        (folder / "mouseSamples.json").write_text(json.dumps(mouse.pop("recording")), encoding="utf8")
+        (folder / "mouse.json").write_text(json.dumps(mouse), encoding="utf8")
+        kinds: dict[str, int] = {}
+        for leg in mouse["legs"]:
+            kinds[leg["kind"]] = kinds.get(leg["kind"], 0) + 1
+        log(f"  mouse: {', '.join(f'{n} {k}' for k, n in kinds.items()) or 'no legs'}; {mouse['idleMoves']} idle drift move(s)")
         try:
             await self.page.screenshot(path=str(folder / "screenshot.png"))
         except Exception:
@@ -320,7 +354,7 @@ class Inspector:
         return {"ok": ok, **({"error": error} if error else {}), **({"expect": {"name": expect, "seen": expect_seen}} if expect else {}),
                 "step": name, "action": action, "args": [label] if label else [],
                 "ms": round((time.monotonic() - started) * 1000), "url": url, "title": title,
-                "requests": len(entries), "notable": seen, "rea": rea, "interactive": interactive, "folder": str(folder)}
+                "requests": len(entries), "notable": seen, "mouse": {"legs": len(mouse["legs"]), "idleMoves": mouse["idleMoves"]}, "rea": rea, "interactive": interactive, "folder": str(folder)}
 
     async def first_visible(self, selector: str):
         found = self.page.locator(selector)
@@ -414,12 +448,12 @@ class Inspector:
         # Flow steps (`log flow run`): the element by role and name, and the request that confirms it.
         if action == "clickRole" and len(args) >= 2:
             async def click_role() -> None:
-                await (await self.by_role(args[0], args[1])).click(timeout=10_000)
+                await self.mouse.click(await self.by_role(args[0], args[1]))
             return await self.step("clickRole", f'{args[0]} "{args[1]}"', click_role, expect, expect_ms)
         if action == "fillRole" and len(args) >= 3:
             async def fill_role() -> None:
                 field = await self.by_role(args[0], args[1])
-                await field.click(timeout=10_000)
+                await self.mouse.click(field, circle=False)
                 await page.keyboard.press("Control+a")
                 await field.press_sequentially(" ".join(args[2:]), delay=90)
             return await self.step("fillRole", f'{args[0]} "{args[1]}"', fill_role, expect, expect_ms)
@@ -431,7 +465,7 @@ class Inspector:
                     raise RuntimeError("no such file")
                 target = await self.by_role(args[0], args[1])
                 async with page.expect_file_chooser(timeout=15_000) as chooser:
-                    await target.click(timeout=10_000)
+                    await self.mouse.click(target)
                 await (await chooser.value).set_files(path)
                 log(f"  upload: {Path(path).name} handed to the file chooser")
             return await self.step("uploadRole", f'{args[0]} "{args[1]}"', upload_role, expect, expect_ms)
@@ -447,7 +481,14 @@ class Inspector:
             seconds = float(args[0]) if args else 5
             return await self.step("wait", f"{seconds:g}s", lambda: asyncio.sleep(seconds))
         if action == "click" and args:
-            return await self.step("click", args[0], lambda: page.locator(f"aria-ref={args[0]}").click(timeout=10_000))
+            return await self.step("click", args[0], lambda: self.mouse.click(page.locator(f"aria-ref={args[0]}")))
+        if action == "highlight" and len(args) >= 2:
+            async def highlight() -> None:
+                box = await (await self.by_role(args[0], args[1])).bounding_box()
+                if not box:
+                    raise RuntimeError("the element has no box on screen")
+                await self.mouse.circle(box)
+            return await self.step("highlight", f'{args[0]} "{args[1]}"', highlight)
         if action == "type" and len(args) >= 2:
             text = " ".join(args[1:])
             return await self.step("type", args[0], lambda: page.locator(f"aria-ref={args[0]}").press_sequentially(text, delay=90))
@@ -458,7 +499,7 @@ class Inspector:
                 if not Path(path).is_file():
                     raise RuntimeError("no such file")
                 async with page.expect_file_chooser(timeout=15_000) as chooser:
-                    await page.locator(f"aria-ref={args[0]}").click(timeout=10_000)
+                    await self.mouse.click(page.locator(f"aria-ref={args[0]}"))
                 await (await chooser.value).set_files(path)
                 log(f"  upload: {Path(path).name} handed to the file chooser")
 
@@ -480,12 +521,22 @@ class Inspector:
         replies = Path(self.config["repliesPath"])
         commands.touch(exist_ok=True)
         state = Path(self.config["storageStatePath"])
-        async with AsyncCamoufox(**launch_kwargs({})) as browser:
+        # humanMouse draws the cursor's every move (rule 32): humanize's own per-hop curve is kept tiny.
+        async with AsyncCamoufox(**launch_kwargs({}, own_trajectory=True)) as browser:
             # The proxy gate's self-check runs inside new_context (rule 17); it adds the raw session HAR (rule 22).
             self.context = await browser.new_context(**({"storage_state": str(state)} if state.is_file() else {}))
             self.recorder.attach(self.context)
             self.page = await self.context.new_page()
             self.page.set_default_timeout(30_000)
+            self.mouse = HumanMouse(self.page, log, busy=self.recorder.busy)
+            # A closed window ends the session at once (a person closed it, or the browser went away).
+            self.closed = False
+            self.page.on("close", lambda _page: setattr(self, "closed", True))
+            # --noIdleMouse: a person drives this window (recordMouse.py records their hand), so ours stays still.
+            if self.config.get("idleMouse", True):
+                self.mouse.start_idle()
+            else:
+                log("Our cursor stays still in this session (--noIdleMouse).")
             log("Inspect session open. Send steps with: log inspect do <action>.")
             # `log flow run` waits for this before its first step: commands sent earlier are skipped.
             with replies.open("a", encoding="utf8") as out:
@@ -500,6 +551,9 @@ class Inspector:
             try:
                 while time.monotonic() - last < IDLE_SECONDS:
                     await asyncio.sleep(0.3)
+                    if self.closed:
+                        log("The browser window was closed: stopping.")
+                        return 0
                     size = commands.stat().st_size
                     if size <= offset:
                         continue
@@ -531,6 +585,7 @@ class Inspector:
                 log("Idle for 30 minutes: stopping.")
                 return 0
             finally:
+                await self.mouse.stop_idle()
                 try:
                     await self.context.storage_state(path=str(state))
                 except Exception as exc:

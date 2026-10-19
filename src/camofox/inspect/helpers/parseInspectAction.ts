@@ -1,7 +1,7 @@
 import type { InspectAction } from '../types'
 
 /** Each action and how many arguments it needs. */
-const ARITY: Record<InspectAction, number> = { goto: 1, snapshot: 0, click: 1, type: 2, press: 1, solve: 0, upload: 2, signIn: 0, code: 0, back: 0, wait: 0, stop: 0, clickRole: 2, fillRole: 3, uploadRole: 3, waitRole: 2 }
+const ARITY: Record<InspectAction, number> = { goto: 1, snapshot: 0, click: 1, type: 2, press: 1, solve: 0, upload: 2, signIn: 0, code: 0, back: 0, wait: 0, stop: 0, clickRole: 2, fillRole: 3, uploadRole: 3, waitRole: 2, highlight: 2 }
 
 /**
  * Actions that change something on Facebook: a click, typed text, a key, a

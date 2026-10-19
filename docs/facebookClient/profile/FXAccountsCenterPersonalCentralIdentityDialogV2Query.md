@@ -13,11 +13,11 @@
 | Called from | `FXAccountsCenterPersonalCentralIdentityDialogV2.react` |
 | rea | `ev_db7f6ed0a549a1eb468bf9ce512e287ce7553d3c8a0100f128e6a958c4479a78` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 13: clickRole button "…" | 1 | 200 | 524 ms | 2758 ms | — |
+| flow | step 13: clickRole button "…" | 2 | 200 | 524–1164 ms | 2758–6053 ms | — |
 | inspect | now on /profiles/<id>/name "…" after 2328 ms; 0 request(s) | 1 | 200 | 520 ms | 1482 ms | — |
 
 <!-- facts:end -->

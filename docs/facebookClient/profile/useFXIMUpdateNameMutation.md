@@ -13,11 +13,11 @@
 | Called from | `useFXIMUpdateName` |
 | rea | `ev_0cb10e66e3b1d3f88e333bbb826fc7a9fbef67de807436e86a26073912dafea0` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 13: clickRole button "…" | 1 | 200 | 1539 ms | 424 ms | — |
+| flow | step 13: clickRole button "…" | 2 | 200 | 1539–4359 ms | 424–539 ms | — |
 | inspect | step 23: click e317 | 1 | 200 | 2389 ms | 505 ms | — |
 
 <!-- facts:end -->

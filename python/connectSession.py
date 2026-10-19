@@ -184,6 +184,8 @@ def main() -> int:
                 reply(request.get("id"), failure("notOpen", "send open first"))
                 continue
             try:
+                if session.mouse is not None and step not in ("open",):
+                    session.mouse.look(0.3, 1.2)
                 result = handler(session, request.get("params") or {})
             except proxyGate.GateError as exc:
                 result = failure(exc.code, exc.detail)

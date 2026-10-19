@@ -249,6 +249,26 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     unless `--live`), recording every step again; and every saved flow is an
     MCP tool of its own (`flowProfileSetup`). The docs gate requires each
     flow's doc.
+32. 2026-10-19 · matt: the cursor moves as his own hand does, measured, not
+    guessed. `python/recordMouse.py` recorded his mouse on a Facebook page
+    (60 s, ~/.logCli/mouse/20261019T192448.json); `python/humanMouse.py` is
+    fitted to it: one continuous velocity profile per move (Bezier path, speed
+    peak in the first third, long settle, 0.42-0.45 s for 400-800 px),
+    overshoot of 10-60 px and return in about half of reaches, loose 80-350 px
+    loops around what is looked at, pauses of 0.1-1.5 s, still ~25 % of the
+    time. The same module drives every session: the async inspect/flow
+    sessions (idle loop between steps, preempted by any step) and the sync
+    publish/connect/profile sessions (`Session.mouse.look()` before each step,
+    every click through `human_click`). Those sessions launch with
+    `own_trajectory=True`: humanize stays on (rule 11) with its per-hop curve
+    capped at 20 ms, because its 0.6 s cap cost 100 ms per 5 px hop and made
+    every move crawl. Each step saves its samples (`mouseSamples.json`) so
+    `recordMouse.py --analyze` measures ours the way it measured his. Nothing
+    is injected into the page.
+33. 2026-10-19 · matt: the proxy speed limit is set per run, not hardcoded:
+    `--proxyMs <ms>` on any log command (and `proxyMs` on the flow MCP
+    tools) sets `LOG_PROXY_MAX_MS` for that run, which the Python gate and
+    `log proxy` both read. Default 2500 ms; 500-60000 allowed.
 
 ## Checks
 

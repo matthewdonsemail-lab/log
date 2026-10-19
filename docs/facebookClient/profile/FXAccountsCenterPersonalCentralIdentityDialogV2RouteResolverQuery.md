@@ -13,12 +13,12 @@
 | Called from | `FXAccountsCenterPersonalCentralIdentityDialogV2RouteResolver` |
 | rea | `ev_2872f274fac3ffd912799886da4eda0dfb3f8bc8b8c2ebd692e261ee8e7344a1` |
 
-Seen 4 time(s) in 2 run(s).
+Seen 6 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 9: goto /profiles/<id>/name | 1 | 200 | 366 ms | 2939 ms | — |
-| flow | step 13: clickRole button "…" | 1 | 200 | 328 ms | 2389 ms | — |
+| flow | step 9: goto /profiles/<id>/name | 2 | 200 | 366–1510 ms | 2939–8230 ms | — |
+| flow | step 13: clickRole button "…" | 2 | 200 | 328–676 ms | 2389–5329 ms | — |
 | inspect | step 14: goto /profiles/<id>/name | 1 | 200 | 583 ms | 3971 ms | — |
 | inspect | now on /profiles/<id>/name "…" after 2328 ms; 0 request(s) | 1 | 200 | 423 ms | 1007 ms | — |
 

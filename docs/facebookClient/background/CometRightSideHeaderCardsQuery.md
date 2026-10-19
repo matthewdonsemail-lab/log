@@ -13,10 +13,13 @@
 | Called from | `CometRightSideHeaderCards.react` |
 | rea | `ev_0ca298c8c568c93036a5e8e8d989f3baf2a29fa5ca4d1fd7a8070819f4515962` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 5 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T122 | 1 | 200 | 403 ms | 1240 ms | — |
+| inspect | step 2: wait 20s | 1 | 200 | 374 ms | 21004 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T120 | 2 | 200 | 407–456 ms | 10094–90182 ms | — |
 | publish | Opening /marketplace/create/item | 1 | 200 | 1245 ms | 11860 ms | — |
 
 <!-- facts:end -->

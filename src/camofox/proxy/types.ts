@@ -18,5 +18,11 @@ export interface ProxyCheck {
   facebookMs?: number | null;
 }
 
-/** Same limit as `SLOW_MS` in python/proxyGate.py: over it, pages sit on Facebook's loading skeleton. */
+/** Same default as `SLOW_MS` in python/proxyGate.py: over it, pages sit on Facebook's loading skeleton. */
 export const SLOW_FACEBOOK_MS = 2500;
+
+/** This run's limit: `--proxyMs <ms>` on any command sets LOG_PROXY_MAX_MS (rule 33), which the Python gate reads too. */
+export function slowFacebookMs(env: Record<string, string | undefined> = process.env): number {
+  const set = Number(env.LOG_PROXY_MAX_MS);
+  return Number.isFinite(set) && set > 0 ? set : SLOW_FACEBOOK_MS;
+}

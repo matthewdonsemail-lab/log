@@ -22,9 +22,9 @@ import { parseArgs } from "../runner/helpers/index.ts";
 import type { Command } from "../runner/types.ts";
 
 export const INSPECT_USAGE = [
-  "Usage: log inspect start --account <accountName> [--url <https://www.facebook.com/...>] [--bypass] [--now]",
+  "Usage: log inspect start --account <accountName> [--url <https://www.facebook.com/...>] [--bypass] [--now] [--noIdleMouse]",
   "       log inspect map [<runDir>] [--all]  (the recorded steps as states and transitions: flow.md, machine.json; default the latest run; --all collates every run)",
-  "       log inspect do <goto <url>|snapshot|back|wait [s]|click <ref>|type <ref> <text>|press <key>|upload <ref> <file>|solve|signIn|code|stop> [--live] [--timeout <s>] [--json]",
+  "       log inspect do <goto <url>|snapshot|back|wait [s]|click <ref>|type <ref> <text>|press <key>|upload <ref> <file>|highlight <role> <name>|solve|signIn|code|stop> [--live] [--timeout <s>] [--json]",
 ].join("\n");
 
 export const inspectCommand: Command = {
@@ -32,7 +32,7 @@ export const inspectCommand: Command = {
   summary: "Drive one gated Camoufox a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29)",
   args: "start --account <name> [--url <u>] [--bypass] | do <action> [args] [--live]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["bypass", "live", "json", "all", "now"], valued: ["account", "url", "timeout"] });
+    const parsed = parseArgs(argv, { boolean: ["bypass", "live", "json", "all", "now", "noIdleMouse"], valued: ["account", "url", "timeout"] });
     if (!parsed.ok) return { code: 1, stderr: `log inspect: ${parsed.error}\n${INSPECT_USAGE}` };
     const [sub, ...rest] = parsed.positionals;
 
@@ -61,6 +61,7 @@ export const inspectCommand: Command = {
             commandsPath: current.commandsPath,
             repliesPath: current.repliesPath,
             loginPath: run.loginPath,
+            idleMouse: !parsed.flags["noIdleMouse"],
             startUrl: url,
           });
         } finally {

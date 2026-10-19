@@ -13,10 +13,13 @@
 | Called from | `CometClassicHomeLeftRailContainer.react` |
 | rea | `ev_344ab74ba79925e4c65e7d7e1baed54ed21b8b5516428816c330a8a229cfc2b5` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 5 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T122 | 1 | 200 | 637 ms | 1214 ms | — |
+| inspect | step 2: wait 20s | 1 | 200 | 551 ms | 21000 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T120 | 2 | 200 | 374–471 ms | 10055–90179 ms | — |
 | publish | Opening /marketplace/create/item | 1 | 200 | 1034 ms | 11854 ms | — |
 
 <!-- facts:end -->

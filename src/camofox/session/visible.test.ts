@@ -17,7 +17,10 @@ describe("Camoufox always launches visible", () => {
   test("visibleBrowser.py forces headed, humanize and the cursor, through the gate", () => {
     const text = read("visibleBrowser.py");
     expect(text).toContain('VISIBLE_LAUNCH: dict[str, Any] = {"headless": False, "humanize": HUMANIZE_MAX_SECONDS, "showcursor": True}');
-    expect(text).toContain("return proxyGate.apply(kwargs, VISIBLE_LAUNCH)");
+    expect(text).toContain("return proxyGate.apply(kwargs, visible)");
+    // humanMouse-driven sessions keep humanize on with a 20 ms per-hop cap (rule 32); nothing turns it off.
+    expect(text).toContain("HUMANIZE_HOP_SECONDS = 0.02");
+    expect(text).not.toContain('"humanize": False');
     // No ungated helper is left to call.
     expect(text).not.toContain("def visible_kwargs");
   });

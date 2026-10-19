@@ -1332,3 +1332,108 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: The record-to-machine pipeline (rules 25-31, docs/recordToFlow.md). `log inspect start|do|map` (python/inspectSession.py on Camoufox's async API, src/camofox/inspect, src/rea/inspectMap): one gated, headed browser kept open and driven a step at a time (goto, snapshot, click, type, press, upload, solve via 2Captcha, signIn/code from the private login.json, and role-based clickRole/fillRole/uploadRole/waitRole); every step records its accessibility snapshot with refs (aria_snapshot mode ai, typed values redacted), screenshot, its own HAR and rea's reading of it at once; steps settle on network quiet and can wait for a confirming request (`expect`); `map` turns a recording into states and transitions, `--all` collates every run. `log flow fromInspect|docs|list|show|run` (src/camofox/flow, src/cli/flow): a recording becomes a flow definition (each step's element by role and name from the snapshot it acted on, its confirming mutation, params), its doc in docs/facebookClient/flows, an XState machine (createFlowMachine), and a run on any account (dry run unless --live, recorded again); every saved flow is its own MCP tool (toolsFromFlows, flowProfileSetup). First flow: profileSetup (13 steps), recorded on Lancaster and run by itself on Bethlehem. Also: `log profile setup` with Twenty fields profilePhoto, coverPhoto, profileName, profileSetAt and the profile machine; error layer `profile`; `--now` on inspect, connect and flow skips only rule 24's gap; the request docs gain a `profile` domain and 33 new documented requests (74 in all); the docs gate requires each flow's doc; skills inspect, flow, profileSetup; README section.
 Why: matt: look at a page before writing code for it, "run rea as we go", record each step in order, "turn that into the full-on state machine… run as a command line… register it as an MCP", and "take what's being done inside of the REA, convert that into documentation, then convert the actions into a state machine, and then translate the state machine into an MCP". matt asked for the profile picture, cover photo and name, and to try it again on a new account. Rule 30: "If I tell you to do something, do it completely." The first profile code was written before anyone had seen the page; the recordings replaced it.
 Checked: `bun run check:naming` OK, `tsc --noEmit` clean, `bun test` 495 pass / 0 fail (new: inspect actions and replies, redaction of typed values, flow from a recording, the flow machine running and stopping at a failed step, flows as MCP tools with confirmLive, profile machine and command). `check:facebookClientDocs`: 74 requests documented, every GraphQL slice read by rea. Live, headed, through every gate: Allentown inspect (lock page, Continue, text captcha solved by 2Captcha in 1.5 s, video selfie: account set to CHECKPOINT); Lancaster inspect (first sign-in hit "automated behaviour", Dismiss, signed in; profile picture, cover and name "Lancaster Trash" saved, each confirmed by its mutation); Bethlehem connect then `log flow run profileSetup --live`: 13/13 states, name "Bethlehem Trash". Not done: connect re-reads 1 s after Enter and retries; the connect machine does not yet click through "Confirm that you're human"; the map names some states by the page's first sentence; Lancaster's password was shown once in a session and must be changed.
+
+## 2026-10-19 12:50Z · feat/publishMachine
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/facebookClient/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/facebookClient/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/facebookClient/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/facebookClient/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/facebookClient/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/facebookClient/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/facebookClient/background/CometHomeContentQuery.md`: edited
+- `docs/facebookClient/background/CometHomeCreateMenuContentQuery.md`: new file
+- `docs/facebookClient/background/CometHomeMegaMenuAllProductsQuery.md`: new file
+- `docs/facebookClient/background/CometHomeMegaMenuShortcutsQuery.md`: new file
+- `docs/facebookClient/background/CometMarketplaceNUXUpdateStateMutation.md`: edited
+- `docs/facebookClient/background/CometMegaphoneRootQuery.md`: edited
+- `docs/facebookClient/background/CometModernHomeFeedQuery.md`: edited
+- `docs/facebookClient/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/facebookClient/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/facebookClient/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/facebookClient/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/facebookClient/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/facebookClient/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/facebookClient/background/MarketplaceCometBrowseFeedLightPaginationQuery.md`: new file
+- `docs/facebookClient/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/facebookClient/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/facebookClient/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/facebookClient/background/ajaxBnzai.md`: edited
+- `docs/facebookClient/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/facebookClient/background/ajaxBz.md`: edited
+- `docs/facebookClient/background/ajaxNavigation.md`: edited
+- `docs/facebookClient/background/ajaxQm.md`: edited
+- `docs/facebookClient/background/ajaxRelayEf.md`: edited
+- `docs/facebookClient/background/ajaxRouteDefinition.md`: edited
+- `docs/facebookClient/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/facebookClient/background/sharedUserPreferences.md`: edited
+- `docs/facebookClient/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/facebookClient/checkpoint/FBScrapingWarningMutation.md`: edited
+- `docs/facebookClient/checkpoint/UFACAISupportChatExperienceQuery.md`: edited
+- `docs/facebookClient/checkpoint/useCometAISupportConversationLoggerMutation.md`: edited
+- `docs/facebookClient/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/facebookClient/login/CometLogoutHandlerQuery.md`: edited
+- `docs/facebookClient/login/ajaxTimezoneUpdatePhp.md`: edited
+- `docs/facebookClient/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/facebookClient/login/loginDeviceBasedRegularLogin.md`: edited
+- `docs/facebookClient/operations.json`: edited
+- `docs/facebookClient/photos/profileCoverCometUpload.md`: edited
+- `docs/facebookClient/profile/FXAccountsCenterAdProfileCenterRouteResolverQuery.md`: edited
+- `docs/facebookClient/profile/FXAccountsCenterBirthdayRouteResolverQuery.md`: edited
+- `docs/facebookClient/profile/FXAccountsCenterConnectedExperienceRouteResolverQuery.md`: edited
+- `docs/facebookClient/profile/FXAccountsCenterContactPointsInProfilesRouteResolverQuery.md`: edited
+- `docs/facebookClient/profile/FXAccountsCenterIdentityPhotoEditorDialogRouteResolverQuery.md`: new file
+- `docs/facebookClient/profile/FXAccountsCenterIdentityUsernameEditDialogRouteResolverQuery.md`: edited
+- `docs/facebookClient/profile/FXAccountsCenterIdentityUsernameSettingsDialogRouteResolverQuery.md`: edited
+- `docs/facebookClient/profile/FXAccountsCenterInformationAndActivityRouteResolverQuery.md`: edited
+- `docs/facebookClient/profile/FXAccountsCenterManageAccountsPageRouteResolverQuery.md`: edited
+- `docs/facebookClient/profile/FXAccountsCenterMetaPayWalletRouteResolverQuery.md`: edited
+- `docs/facebookClient/profile/FXAccountsCenterNMEOnboardingRouteResolverQuery.md`: edited
+- `docs/facebookClient/profile/FXAccountsCenterPersonalCentralIdentityDialogV2Query.md`: edited
+- `docs/facebookClient/profile/FXAccountsCenterPersonalCentralIdentityDialogV2RouteResolverQuery.md`: edited
+- `docs/facebookClient/profile/FXAccountsCenterPhotoSettingsDialogV2RouteResolverQuery.md`: new file
+- `docs/facebookClient/profile/FXAccountsCenterProfilesPageV2RouteResolverQuery.md`: edited
+- `docs/facebookClient/profile/FXAccountsCenterSecurityAndLoginPageRouteResolverQuery.md`: edited
+- `docs/facebookClient/profile/FXAccountsCenterSubscriptionsRouteResolverQuery.md`: edited
+- `docs/facebookClient/profile/FXAccountsCenterYourAccountPageRouteResolverQuery.md`: edited
+- `docs/facebookClient/profile/FXIMIdentityNameEditorAuthenticPreviewDialogQuery.md`: edited
+- `docs/facebookClient/profile/ProfileCometCoverPhotoUpdateMutation.md`: edited
+- `docs/facebookClient/profile/ProfileCometFeedComposerRootQuery.md`: edited
+- `docs/facebookClient/profile/ProfileCometProfilePictureEditDialogQuery.md`: edited
+- `docs/facebookClient/profile/ProfileCometProfilePictureSetMutation.md`: edited
+- `docs/facebookClient/profile/ProfileCometTilesFeedPaginationQuery.md`: edited
+- `docs/facebookClient/profile/ProfilePromptQuickPromotionMutation.md`: edited
+- `docs/facebookClient/profile/profilePictureUpload.md`: edited
+- `docs/facebookClient/profile/useFXIMNameValidatorQuery.md`: edited
+- `docs/facebookClient/profile/useFXIMUpdateNameMutation.md`: edited
+- `docs/proxies.md`: edited
+- `docs/recordToFlow.md`: edited
+- `python/autoLogin.py`: changed def _click_button, def _type, def choose_auth_app, def dismiss
+- `python/connectSession.py`: changed def main
+- `python/deviceProfile.py`: added const HUMANIZE_MIN_SECONDS · changed def launch_config
+- `python/humanMouse.py`: added const MOVE_TIMEOUT, const EMIT_HZ, def min_jerk, def bezier, const TARGETS_JS, class Gesture, def duration_for, def reach, def loops, def ellipse, def rest_for, def look_for, class MouseBase, class HumanMouse, class SyncHumanMouse, def human_click
+- `python/inspectSession.py`: changed class Recorder, class Inspector
+- `python/profileSession.py`: changed def choose_file, def upload, def main
+- `python/proxyGate.py`: added def slow_ms · changed def facebook_ms, def apply
+- `python/publishSession.py`: changed class Session, def step_open, def solve_text_image, def step_fill_fields, def main
+- `python/recordMouse.py`: added const HZ, const MOVING_PX_S, const STILL_GAP_S, class POINT, def record, def analyze, def main
+- `python/visibleBrowser.py`: added const HUMANIZE_HOP_SECONDS · changed const HUMANIZE_MAX_SECONDS, def launch_kwargs
+- `skills.md`: edited
+- `skills/humanMouse/SKILL.md`: new file
+- `src/camofox/inspect/helpers/parseInspectAction.ts`: changed const ARITY
+- `src/camofox/inspect/helpers/renderInspectStep.ts`: changed function renderInspectStep
+- `src/camofox/inspect/types.ts`: changed type InspectAction, interface InspectSessionConfig, interface InspectStepResult
+- `src/camofox/proxy/types.ts`: added function slowFacebookMs
+- `src/camofox/session/visible.test.ts`: changed test "visibleBrowser.py forces headed, humanize and the cursor, through the gate"
+- `src/cli/inspect/index.ts`: changed const INSPECT_USAGE, const inspectCommand
+- `src/cli/proxy/index.ts`: changed function assignOne, const proxyCommand
+- `src/cli/runner/cli.test.ts`: added test "is taken off any command and checked", test "sets the run's limit and restores it afterwards"
+- `src/cli/runner/index.ts`: added function takeProxyMs, function dispatch · changed function runCli
+- `src/mcp/server/flowTools.test.ts`: changed test "profileSetup is the tool flowProfileSetup, with its params by name"
+- `src/mcp/server/helpers/toolsFromFlows.ts`: changed function toolsFromFlows, function flowArgv
+
+What changed: The cursor as matt's own hand (rule 32). New `python/recordMouse.py` polls the Windows cursor and buttons at ~120 Hz for N seconds with no browser involved, saves `~/.logCli/mouse/<time>.json`, and analyses a recording into moves and still periods (duration vs distance, peak-speed position, straightness, side deviation, overshoot share, pauses, share still). New `python/humanMouse.py`, fitted to his 60 s recording on Facebook: one continuous velocity profile per move (cubic Bezier path, minimum-jerk profile time-warped so the speed peaks early and settles long, 0.42-0.45 s for 400-800 px), overshoot of 10-60 px and ease-out return in about half of reaches, loose 80-350 px loops around what is looked at, pauses of 0.1-1.5 s with occasional still moments; `HumanMouse` for the async inspect/flow sessions (an idle loop between steps that flicks to a visible element, loops, pauses, and is preempted by any step; still for 2.5 s after a navigation) and `SyncHumanMouse` plus `human_click` for the sync publish/connect/profile sessions (`Session.mouse.look()` before each step; every `.click()` in publishSession, autoLogin and profileSession now goes through it). Those sessions launch with `launch_kwargs(…, own_trajectory=True)`: humanize stays on with its per-hop curve capped at 20 ms (`HUMANIZE_HOP_SECONDS`), after measuring that the 0.6 s cap cost 100-530 ms per hop; `HUMANIZE_MAX_SECONDS` 1.5 → 0.6 and `humanize:minTime` set at launch. Each inspect step writes `mouse.json` (its legs) and `mouseSamples.json` in the recorder's format, so `recordMouse.py --analyze` measures ours as it measured his; the step reply carries a `mouse` summary. `log inspect` gains `highlight <role> <name>` and `--noIdleMouse` (a person drives the window while recordMouse runs); a closed window ends the session cleanly; the idle loop logs its first error of each kind instead of swallowing it. `--proxyMs <ms>` on any command (and `proxyMs` on the flow MCP tools) sets this run's proxy speed limit (`LOG_PROXY_MAX_MS`, read by the Python gate and `log proxy`), default 2500 (rule 33). Docs: rules 32-33, `docs/recordToFlow.md` cursor section, `docs/proxies.md` speed limit, new `skills/humanMouse`, 6 new request docs (80 in all).
+Why: matt watched the first circling cursor and said it moved "weird", never stopped, and was slow; then recorded his own hand so the motion is measured, not guessed: "the way that my motion was moving… it was able to transition between being still to then a fluid motion… a Bezier… speed ramping"; "make us able to pass through a flag for a proxy, then have a timer that we're able to set, not just a hardcoded one"; and "make it so we can insert it into the actual stuff within the libraries itself" (one module for every session).
+Checked: `bun run check:naming` OK, `tsc --noEmit` clean, `bun test` 497 pass / 0 fail, `check:facebookClientDocs` 80 requests, every GraphQL slice read by rea. Live, headed: Bethlehem 60 s of the idle loop measured with the recorder's analyser (7 flicks, 7 loops; 3/7 overshoots) before the humanize cap, then Scranton after it (a 40+ px hop 62 ms, was 336-531); Reading signed in end to end through the sync mouse (`human_click` on Dismiss) and is ACTIVE; `--proxyMs 12000` let slow proxies through where the 2500 default refused; `--noIdleMouse` held our cursor still while matt's hand was recorded on Scranton's page. Not done: connect still re-reads 1-3 s after Enter and tries a second time; Scranton and Lancaster are now on the "confirm you're human" lock (to read from the recordings, rule 25); the per-run timeline/cause-line files (rule 25 steps 2-4) are not built.

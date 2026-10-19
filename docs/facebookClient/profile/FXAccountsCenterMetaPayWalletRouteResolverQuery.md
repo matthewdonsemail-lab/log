@@ -13,11 +13,11 @@
 | Called from | `FXAccountsCenterMetaPayWalletRouteResolver` |
 | rea | `ev_1116046bfde1de283d35f1b8760021d982506b6bf2a0fc819e40880ad7afb2be` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| flow | step 9: goto /profiles/<id>/name | 1 | 200 | 482 ms | 2999 ms | — |
+| flow | step 9: goto /profiles/<id>/name | 2 | 200 | 482–1341 ms | 2999–8219 ms | — |
 | inspect | step 14: goto /profiles/<id>/name | 1 | 200 | 377 ms | 3969 ms | — |
 
 <!-- facts:end -->
