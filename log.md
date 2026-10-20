@@ -2448,3 +2448,12 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: The next warm-up stage is in: FEED (src/warmup/facebook/helpers/feed.ts) is Listaro's stage 1 (account-warmup.ts runStage1) as our steps, openFeed, settle, readFeed, a like (only with --likes), then a short look at Marketplace, each saying what it must achieve, registered in FACEBOOK_ACTIVITIES as `log warmup facebook feed`. runPlatformActivity plans and runs activities other than reel as their steps in order (`plan` lists them; --persona stays reel-only, refused for others). `log capture --docs` rebuilt the request docs from today's Reels and group runs (45 requests, 41 read by rea), with new reels/ and background/ docs and the reasoning written for 24 of them. checkFacebookClientDocs reads docs/platforms/facebook (the rule 48 move had left it on docs/facebookClient) and no longer counts a domain's README as an orphan.
 Why: matt asked to commit the Reels work, pull the docs in for what was done, and move on to the next warm-up stage from what Listaro did. The docs gate had been checking a folder that no longer exists.
 Checked: `bun test` 686 pass, 0 fail, and `tsc --noEmit` clean (without the other session's uncommitted launch changes). `log warmup facebook feed plan` lists the seven steps with their Listaro sources and the known issues. `node scripts/checkFacebookClientDocs.mjs` reports one problem left: useGroupRequestToJoinMutation, named in src/group/join/helpers/joinOptions.ts, has no doc (no run recorded it firing). The feed stage isn't recorded live yet: 2Captcha's proxy traffic is spent (0 of 1992 MB left).
+
+## 2026-10-20 09:09Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `scripts/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+
+What changed: ALLOWED_KEBAB in scripts/checkNamingConventions.mjs allows `subq-snap-preview`, SubQ's own model id, beside the other systems' fixed names it already allows (x-fb-friendly-name, inspect-web-network-capture).
+Why: the push gate's naming check refused the SubQ Decisions client and its test over that id. It is another system's name, sent as is (rule 1 converts other systems' names at the boundary, and this one is the boundary).
+Checked: `bun run check:naming` OK.
