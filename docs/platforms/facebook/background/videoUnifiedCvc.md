@@ -11,12 +11,13 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_82bc931ee747eb6c5aeb464f9b7b312140035009710555d64bc7148ba3b22213` |
+| rea | `ev_5d3cac30315cb1a9bd2ae5cca82b79da284d1bcc88dd6161aeeaadaf05f8dbd6` |
 
-Seen 121 time(s) in 8 run(s).
+Seen 122 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | scroll: +654px in 15 wheel steps, 1219 ms | 1 | 200 | 420 ms | 3432 ms | — |
 | inspect | step 4: nextPost | 1 | 200 | 562 ms | 1082 ms | — |
 | inspect | rea read step 13_nextpost: exit 0, ev_8e60547c67f77e2d6517b71170983bf6b8a3c480b7e1effffe71 | 1 | 200 | 496 ms | 238 ms | — |
 | inspect | step 18: nextPost | 2 | 200 | 548–816 ms | 1059–1161 ms | — |

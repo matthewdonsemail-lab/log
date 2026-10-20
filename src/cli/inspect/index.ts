@@ -21,7 +21,7 @@
  * its own HAR and rea's reading of it, in order, in the run's `steps/`.
  */
 import { spawn } from "node:child_process";
-import { closeSync, existsSync, mkdirSync, openSync, readFileSync } from "node:fs";
+import { closeSync, existsSync, mkdirSync, openSync, readFileSync, statSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -66,8 +66,11 @@ export const inspectDetachDeps: {
  */
 async function startDetached(accountName: string, argv: string[]): Promise<{ code: number; stdout?: string; stderr?: string }> {
   const logPath = join(homedir(), ".logCli", "runs", "inspect", `${accountName}.start.log`);
+  // The log is appended to by every start: only what THIS start wrote is shown (a refusal used to print the
+  // previous session's ending, as if a browser had opened and closed).
+  const from = existsSync(logPath) ? statSync(logPath).size : 0;
   const child = inspectDetachDeps.start(["inspect", ...argv.filter((a) => a !== "--detach")], logPath);
-  const tail = () => (existsSync(logPath) ? readFileSync(logPath, "utf8").split(/\r?\n/).filter(Boolean).slice(-12).join("\n") : "");
+  const tail = () => (existsSync(logPath) ? readFileSync(logPath).subarray(from).toString("utf8").split(/\r?\n/).filter(Boolean).slice(-12).join("\n") : "");
   const deadline = Date.now() + inspectDetachDeps.timeoutMs;
   while (Date.now() < deadline) {
     const current = readCurrentInspect(undefined, accountName);

@@ -21,6 +21,9 @@ from typing import Any
 STATIC = re.compile(r"javascript|css|image/|font/|woff", re.I)
 TEXT_TYPES = re.compile(r"json|javascript|text|html|xml|x-www-form-urlencoded", re.I)
 MAX_BODY = 2_000_000
+# A page's own HTML is kept whole up to this: a Facebook group page is 2.3 MB, and its first posts are
+# embedded in it (Bethlehem 2026-10-20: the 2 MB cap dropped them). Everything else keeps MAX_BODY.
+MAX_DOCUMENT_BODY = 16_000_000
 
 
 class Recorder:
@@ -81,7 +84,8 @@ class Recorder:
                 try:
                     raw = await response.body()
                     content["size"] = len(raw)
-                    if len(raw) <= MAX_BODY:
+                    limit = MAX_DOCUMENT_BODY if "html" in mime.lower() else MAX_BODY
+                    if len(raw) <= limit:
                         if TEXT_TYPES.search(mime):
                             content["text"] = raw.decode("utf8", "replace")
                         else:

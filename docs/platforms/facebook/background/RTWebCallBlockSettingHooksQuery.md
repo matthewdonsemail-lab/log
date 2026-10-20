@@ -13,10 +13,11 @@
 | Called from | `RTWebCallBlockSettingHooks` |
 | rea | `ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6` |
 
-Seen 24 time(s) in 9 run(s).
+Seen 25 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /groups/<id> | 1 | 200 | 418 ms | 7356 ms | — |
 | inspect | step 1: goto / | 5 | 200 | 468–542 ms | 7022–9299 ms | — |
 | inspect | step 7: goto / | 1 | 200 | 480 ms | 4926 ms | — |
 | inspect | rea read step 33_dwell028s: exit 0, ev_d164a9c78021b1afb8ce6c5a24456a0d8f46efdbc7c54440f7f | 1 | 200 | 583 ms | 3389 ms | — |

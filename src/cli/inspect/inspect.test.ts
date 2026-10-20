@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { mkdtempSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import type { InspectSessionConfig } from "../../browser/inspect/index.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
@@ -113,6 +113,29 @@ describe("log inspect start --detach (how an MCP agent opens the account's brows
       const code = await runCli(["inspect", "start", "--account", "galwayOne", "--detach"], { twenty: marketplaceFixture(), out: () => {}, err: (l) => err.push(l) });
       expect(code).toBe(1);
       expect(err.join("\n")).toContain("ended before its browser was ready");
+    } finally {
+      Object.assign(inspectDetachDeps, real);
+    }
+  });
+
+  test("a refusal shows only this start's lines, never the previous session's (Bethlehem 2026-10-20)", async () => {
+    const { inspectDetachDeps } = await import("./index.ts");
+    const { appendFileSync, mkdirSync } = await import("node:fs");
+    const { dirname } = await import("node:path");
+    const real = { ...inspectDetachDeps };
+    inspectDetachDeps.start = (_argv, logPath) => {
+      appendFileSync(logPath, "log inspect: launchBudgetSpent: nothing opened\n");
+      return { exited: () => 1 };
+    };
+    try {
+      const logPath = join(homedir(), ".logCli", "runs", "inspect", "galwayOne.start.log");
+      mkdirSync(dirname(logPath), { recursive: true });
+      appendFileSync(logPath, "AdsPower profile k1 stopped\nInspect session for galwayOne ended (exit 0).\n");
+      const err: string[] = [];
+      const code = await runCli(["inspect", "start", "--account", "galwayOne", "--detach"], { twenty: marketplaceFixture(), out: () => {}, err: (l) => err.push(l) });
+      expect(code).toBe(1);
+      expect(err.join("\n")).toContain("launchBudgetSpent");
+      expect(err.join("\n")).not.toContain("AdsPower profile k1 stopped");
     } finally {
       Object.assign(inspectDetachDeps, real);
     }

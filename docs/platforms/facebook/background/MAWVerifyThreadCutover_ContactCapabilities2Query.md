@@ -13,10 +13,11 @@
 | Called from | `MAWVerifyThreadCutover` |
 | rea | `ev_2ef4fcf81840e4c44dfd19b7c86b9e3e65429109c06595cfc96262bcea9f2bc2` |
 
-Seen 24 time(s) in 9 run(s).
+Seen 25 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /groups/<id> | 1 | 200 | 358 ms | 7157 ms | — |
 | inspect | step 1: goto / | 5 | 200 | 501–553 ms | 6626–8849 ms | — |
 | inspect | step 7: goto / | 1 | 200 | 500 ms | 4963 ms | — |
 | inspect | rea read step 33_dwell028s: exit 0, ev_d164a9c78021b1afb8ce6c5a24456a0d8f46efdbc7c54440f7f | 1 | 200 | 524 ms | 3462 ms | — |

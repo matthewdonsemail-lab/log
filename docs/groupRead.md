@@ -1,6 +1,6 @@
 # Reading a Facebook group's posts (issue #27)
 
-Status: **planned**. This file is the plan, kept up to date as each step is built. Issue: [#27](https://github.com/matthewdonsemail-lab/log-cli/issues/27), part of the epic [#22](https://github.com/matthewdonsemail-lab/log-cli/issues/22).
+Status: **steps 1-2 done** (recorded and documented, 2026-10-20). This file is the plan, kept up to date as each step is built. Issue: [#27](https://github.com/matthewdonsemail-lab/log-cli/issues/27), part of the epic [#22](https://github.com/matthewdonsemail-lab/log-cli/issues/22).
 
 log-cli already joins a group and answers its questions (`src/group/join`, `src/group/answer`, rule 45), and keeps each group in Twenty as an `agencyGroup`. This adds reading the posts of a group an account is in.
 
@@ -20,8 +20,8 @@ What changes is how it runs: on the account's browser through the driver, AdsPow
 
 ## Steps
 
-1. **Record a group read.** `log inspect start --account <a member> --detach`, then `goto` the group, `snapshot`, and several `scroll` steps with a `snapshot` after each. It only reads; nothing needs `--live`. Each step keeps its HAR and rea's reading of it.
-2. **Document what Facebook sends** (`log capture --docs`, rules 27, 48): the first page of the discussion feed (`CometGroupDiscussionRootSuccessQuery`, already seen loading about 1.9 s after the group opens, by `groupID`), the query that loads more posts on scroll (not recorded yet), and the fields each post comes in. rea reads the request and its response: where the post id, the group, the time, the author and the text are.
+1. **Record a group read.** Done: `log inspect` (through the `log` MCP) on Bethlehem in "Recommendations of Bethlehem, PA and Greater Lehigh Valley Region" (4191018610937243), run `20261020T134155`: open the group, snapshot, three scrolls, every step's HAR read by rea. Read-only, no `--live`.
+2. **Document what Facebook sends.** Done (`log capture --docs`): [`GroupsCometFeedRegularStoriesPaginationQuery`](platforms/facebook/groups/GroupsCometFeedRegularStoriesPaginationQuery.md), `doc_id 28956948070566246`. One query is the whole feed: on load and on scroll, `count: 3`, `CHRONOLOGICAL`, `DISCUSSION`, the group's `id` and a `cursor` whose position moves 2, 5, 8. Its answer is streamed (4-10 JSON chunks) and holds, per post: `post_id`, the group's id, `creation_time`, the author (`actors`), the text (`message.text`), the permalink, the `feedback` id, and the next `end_cursor` / `has_next_page`. The first 2 posts come embedded in the group page's HTML (2.3 MB), which the HAR now keeps whole (`MAX_DOCUMENT_BODY`).
 3. **Read the posts from the recording.** `src/group/read`, with the role files (rule 2): the extractor (the facebook-camofox-client rules above), tested on that recording kept as a fixture. A post that fails a rule is counted and dropped, never patched.
 4. **Twenty.** Fields added only (rule 13): on `agencyGroup`, the read cursor (last post id, the watermark, when last read). The posts themselves go to Twenty too: which object is matt's call (below).
 5. **The flow and its machine.** The recorded steps become a flow (`log flow fromInspect`, rule 31) and the read an XState machine (rule 6): open the group, scroll until the cursor or the page limit, read the posts out of each step, save them, then move the cursor.

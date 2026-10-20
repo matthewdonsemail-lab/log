@@ -11,12 +11,17 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_f702733ce2e225a5a245a67080e89b89d0d6d817fb9553440b5e1ba9aa23b5d8` |
+| rea | `ev_02c025bfb721d1d30157b7b73f37ef1edff2605cfa8efe8cd1d079d49bef6c12` |
 
-Seen 207 time(s) in 9 run(s).
+Seen 226 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /groups/<id> | 2 | 200 | 340 ms | 9272–13038 ms | — |
+| inspect | POST 200 /ajax/bulk-route-definitions/ (530 ms) | 1 | 200 | 358 ms | 3908 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T134 | 14 | 200 | 344–1507 ms | 101–111592 ms | — |
+| inspect | scroll: +654px in 15 wheel steps, 1219 ms | 1 | 200 | 332 ms | 3326 ms | — |
+| inspect | POST 200 /video/unified_cvc/ (420 ms) | 1 | 200 | 346 ms | 800 ms | — |
 | inspect | step 1: goto / | 13 | 200 | 417–734 ms | 5971–18635 ms | — |
 | inspect | POST 200 /ajax/bulk-route-definitions/ (688 ms) | 1 | 200 | 495 ms | 1842 ms | — |
 | inspect | step 4: nextPost | 1 | 200 | 580 ms | 1906 ms | — |

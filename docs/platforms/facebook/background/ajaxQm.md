@@ -11,12 +11,13 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_f702733ce2e225a5a245a67080e89b89d0d6d817fb9553440b5e1ba9aa23b5d8` |
+| rea | `ev_02c025bfb721d1d30157b7b73f37ef1edff2605cfa8efe8cd1d079d49bef6c12` |
 
-Seen 27 time(s) in 9 run(s).
+Seen 28 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /groups/<id> | 1 | 200 | 673 ms | 1809 ms | — |
 | inspect | step 1: goto / | 5 | 200 | 443–793 ms | 1957–3150 ms | — |
 | inspect | step 7: goto / | 1 | 200 | 544 ms | 1020 ms | — |
 | inspect | rea read step 33_dwell028s: exit 0, ev_d164a9c78021b1afb8ce6c5a24456a0d8f46efdbc7c54440f7f | 1 | 200 | 7107 ms | 5115 ms | — |

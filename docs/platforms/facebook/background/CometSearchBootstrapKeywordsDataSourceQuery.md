@@ -13,10 +13,11 @@
 | Called from | — |
 | rea | not read yet |
 
-Seen 23 time(s) in 8 run(s).
+Seen 24 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /groups/<id> | 1 | 200 | 364 ms | 7210 ms | — |
 | inspect | step 1: goto / | 5 | 200 | 458–534 ms | 6491–8720 ms | — |
 | inspect | step 7: goto / | 1 | 200 | 466 ms | 4918 ms | — |
 | inspect | rea read step 33_dwell028s: exit 0, ev_d164a9c78021b1afb8ce6c5a24456a0d8f46efdbc7c54440f7f | 1 | 200 | 495 ms | 3174 ms | — |

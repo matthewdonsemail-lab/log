@@ -805,12 +805,14 @@ class Inspector:
             # `log flow run` waits for this before its first step: commands sent earlier are skipped.
             with replies.open("a", encoding="utf8") as out:
                 out.write(json.dumps({"id": "ready", "result": {"ok": True}}) + "\n")
+            # Read from here, before the start page loads: a step sent while it loads is kept and run
+            # after it, never skipped (Bethlehem 2026-10-20: a snapshot sent mid-load got no reply).
+            offset = commands.stat().st_size
             start = self.config.get("startUrl")
             if start:
                 reply = await self.handle({"action": "goto", "args": [start]})
                 with replies.open("a", encoding="utf8") as out:
                     out.write(json.dumps({"id": "start", "result": reply}) + "\n")
-            offset = commands.stat().st_size
             last = time.monotonic()
             try:
                 while time.monotonic() - last < IDLE_SECONDS:

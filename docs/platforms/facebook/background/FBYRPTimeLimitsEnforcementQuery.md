@@ -13,10 +13,11 @@
 | Called from | `FBYRPTimeLimitsEnforcement.react` |
 | rea | `ev_ed1a3cfe4b9656a9ad3ddf8f3e05b4767495c0d780a6a027450c86c6d19c34c6` |
 
-Seen 24 time(s) in 9 run(s).
+Seen 25 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /groups/<id> | 1 | 200 | 468 ms | 5401 ms | — |
 | inspect | step 1: goto / | 5 | 200 | 482–744 ms | 3182–6402 ms | — |
 | inspect | step 7: goto / | 1 | 200 | 470 ms | 1729 ms | — |
 | inspect | rea read step 33_dwell028s: exit 0, ev_d164a9c78021b1afb8ce6c5a24456a0d8f46efdbc7c54440f7f | 1 | 200 | 492 ms | 2213 ms | — |

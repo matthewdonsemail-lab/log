@@ -11,12 +11,15 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_b62aec4954eb8afd5ccd9f28bd6cee6c1ccdc179db797e9b8514d08e06082240` |
+| rea | `ev_02c025bfb721d1d30157b7b73f37ef1edff2605cfa8efe8cd1d079d49bef6c12` |
 
-Seen 233 time(s) in 9 run(s).
+Seen 238 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /groups/<id> | 1 | 200 | 1075 ms | 15850 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T134 | 3 | 200 | 344–729 ms | 82487–131388 ms | — |
+| inspect | POST 200 /ajax/bulk-route-definitions/ (342 ms) | 1 | 200 | 337 ms | 1488 ms | — |
 | inspect | step 1: goto / | 8 | 200 | 440–713 ms | 8878–21947 ms | — |
 | inspect | step 2: clickRole button "…" | 3 | 200 | 362–657 ms | 11–9245 ms | — |
 | inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T105 | 4 | 200 | 455–608 ms | 1251–7706 ms | — |

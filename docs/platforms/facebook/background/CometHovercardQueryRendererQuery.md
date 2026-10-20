@@ -13,10 +13,13 @@
 | Called from | `CometHovercardQueryRenderer.react` |
 | rea | `ev_95529720f6ba751fe065571b8fd81d09f67f7e4539594c0761343470652ec320` |
 
-Seen 39 time(s) in 6 run(s).
+Seen 53 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /groups/<id> | 1 | 200 | 815 ms | 12991 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T134 | 12 | 200 | 506–1400 ms | 824–134834 ms | — |
+| inspect | scroll: +654px in 15 wheel steps, 1219 ms | 1 | 200 | 844 ms | 3277 ms | — |
 | inspect | step 12: nextPost | 1 | 200 | 895 ms | 107 ms | — |
 | inspect | step 14: nextPost | 1 | 200 | 1101 ms | 147 ms | — |
 | inspect | mouse: 1 flick, 1 wander, 1 scrollPosition; 1 idle drift move(s) | 1 | 200 | 1231 ms | 36 ms | — |

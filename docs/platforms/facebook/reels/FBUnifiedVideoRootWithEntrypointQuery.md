@@ -13,10 +13,11 @@
 | Called from | `FBUnifiedVideoRootWithEntrypoint.react` |
 | rea | `ev_efecfaf4b1626f5631a80618b3ce7481212611829b7bb70ce4f0f9e5177f6dc8` |
 
-Seen 5 time(s) in 3 run(s).
+Seen 6 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | POST 200 /video/unified_cvc/ (420 ms) | 1 | 200 | 2173 ms | 2759 ms | — |
 | inspect | POST 200 /ajax/bulk-route-definitions/ (688 ms) | 1 | 200 | 2370 ms | 2242 ms | — |
 | inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T105 | 1 | 200 | 2277 ms | 1734 ms | — |
 | inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T103 | 2 | 200 | 2874–4099 ms | 2876–8745 ms | — |

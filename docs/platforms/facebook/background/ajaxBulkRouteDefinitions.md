@@ -11,12 +11,19 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_f702733ce2e225a5a245a67080e89b89d0d6d817fb9553440b5e1ba9aa23b5d8` |
+| rea | `ev_02c025bfb721d1d30157b7b73f37ef1edff2605cfa8efe8cd1d079d49bef6c12` |
 
-Seen 355 time(s) in 9 run(s).
+Seen 374 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /groups/<id> | 8 | 200 | 382–644 ms | 6374–9299 ms | — |
+| inspect | POST 200 /ajax/bulk-route-definitions/ (530 ms) | 1 | 200 | 1610 ms | 1979 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T134 | 3 | 200 | 361–368 ms | 106263–135889 ms | — |
+| inspect | scroll: +700px in 16 wheel steps, 1219 ms | 1 | 200 | 342 ms | 724 ms | — |
+| inspect | step 4: scroll 2 x 600-800px | 2 | 200 | 388–674 ms | 1390–1392 ms | — |
+| inspect | step 5: scroll 2 x 600-800px | 2 | 200 | 343–527 ms | 448–513 ms | — |
+| inspect | scroll: +767px in 16 wheel steps, 1093 ms | 2 | 200 | 373–610 ms | 679–680 ms | — |
 | inspect | step 1: goto / | 40 | 200 | 459–743 ms | 2878–9835 ms | — |
 | inspect | post: "…", 103 words, 0 image(s), scrolled 58 px | 4 | 200 | 587–1167 ms | 260–1896 ms | — |
 | inspect | step 4: nextPost | 4 | 200 | 597–903 ms | 1011–1680 ms | — |

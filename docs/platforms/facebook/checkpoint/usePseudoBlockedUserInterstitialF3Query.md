@@ -13,10 +13,11 @@
 | Called from | `usePseudoBlockedUserInterstitial` |
 | rea | `ev_4f0f59bc7d5ff4c02ef9f2aba85fc9de893084a7a8fbdf3f1627ce6c1c3456fe` |
 
-Seen 27 time(s) in 9 run(s).
+Seen 29 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /groups/<id> | 2 | 200 | 348–386 ms | 5609–6614 ms | — |
 | inspect | step 1: goto / | 5 | 200 | 477–594 ms | 6589–8804 ms | — |
 | inspect | step 7: goto / | 1 | 200 | 453 ms | 4922 ms | — |
 | inspect | rea read step 33_dwell028s: exit 0, ev_d164a9c78021b1afb8ce6c5a24456a0d8f46efdbc7c54440f7f | 1 | 200 | 471 ms | 3385 ms | — |

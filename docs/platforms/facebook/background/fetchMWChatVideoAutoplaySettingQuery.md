@@ -13,10 +13,11 @@
 | Called from | `fetchMWChatVideoAutoplaySetting` |
 | rea | `ev_cec3d0049369021eb11311f83bae206c05ab77298da76206b6788d2cdc5c8ee1` |
 
-Seen 24 time(s) in 9 run(s).
+Seen 25 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /groups/<id> | 1 | 200 | 346 ms | 6619 ms | — |
 | inspect | step 1: goto / | 5 | 200 | 459–551 ms | 3226–8392 ms | — |
 | inspect | step 7: goto / | 1 | 200 | 465 ms | 1788 ms | — |
 | inspect | rea read step 33_dwell028s: exit 0, ev_d164a9c78021b1afb8ce6c5a24456a0d8f46efdbc7c54440f7f | 1 | 200 | 604 ms | 2275 ms | — |

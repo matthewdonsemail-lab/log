@@ -13,12 +13,11 @@
 | Called from | `useGroupsCometVisitMutation` |
 | rea | `ev_2c88e3ef14f464196a06b0ac6105cdffb275c24ee965feffc7bee400f8fa9337` |
 
-Seen 2 time(s) in 1 run(s).
+Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 5: click e2647 | 1 | 200 | 458 ms | 2858 ms | — |
-| inspect | step 7: click e2606 | 1 | 200 | 472 ms | 7513 ms | — |
+| inspect | step 1: goto /groups/<id> | 1 | 200 | 726 ms | 5607 ms | — |
 
 <!-- facts:end -->
 

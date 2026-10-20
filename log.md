@@ -3094,3 +3094,38 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `docs/groupRead.md`, the plan for reading a Facebook group's posts (issue #27). It takes facebook-camofox-client's approach: read the page's own responses, never call GraphQL; keep a post only with its id, the expected group and its time; a cursor per group so each read yields only new posts, saved before the cursor moves. It runs that on log-cli's pieces: each step's HAR read by rea, a flow from a `log inspect` recording, an XState machine in the account's open browser (AdsPower first), a command that is an MCP tool and hooked. It lists the steps, what matt decides (where posts live in Twenty, the command's name, comments or not), and that it builds on #21.
 Why: matt asked for a feature branch and PR for #27 that brings facebook-camofox-client's group listening into log-cli, ported onto its definitions and the browser-agnostic driver, built from what rea reads in the recordings rather than by hand, with the plan in the issue.
 Checked: every gate in the commit hook; the doc names only files and requests that exist (facebook-camofox-client at 29e9730, `docs/platforms/facebook/groups/CometGroupDiscussionRootSuccessQuery.md`).
+
+## 2026-10-20 13:51Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/groupRead.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/FBReelsEntityDialogImplQuery.md`: new file
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometFeedRegularStoriesPaginationQuery.md`: new file
+- `docs/platforms/facebook/groups/useGroupsCometVisitMutation.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoRootWithEntrypointQuery.md`: edited
+- `python/browser/harRecorder.py`: added const MAX_DOCUMENT_BODY · changed class Recorder
+- `python/session/inspectSession.py`: changed class Inspector
+- `src/cli/inspect/index.ts`: changed function startDetached
+- `src/cli/inspect/inspect.test.ts`: added test "a refusal shows only this start's lines, never the previous session's (Bethlehem 2026-10-20)"
+
+What changed: A live group read was recorded through the log MCP (inspect start --detach, inspect do snapshot and scroll, capture --docs) on Bethlehem in "Recommendations of Bethlehem, PA" (run 20261020T134155, AdsPower, Byteful proxy, read-only). It found Facebook's group feed query, `GroupsCometFeedRegularStoriesPaginationQuery` (doc_id 28956948070566246): on load and on scroll, three posts a page, newest first, with a cursor; each post's id, group, time, author, text, permalink and feedback id. It's documented in `docs/platforms/facebook/groups/` with its reasoning, and so is the reel dialog query it picked up. The run exposed three faults, fixed here. `python/browser/harRecorder.py` dropped bodies over 2 MB, so the 2.3 MB group page and its embedded first posts were lost: HTML documents now keep up to `MAX_DOCUMENT_BODY` (16 MB). `python/session/inspectSession.py` took its read position on `commands.jsonl` after the opening goto, so a step sent while the first page loaded was skipped: it now reads from right after "ready". `inspect start --detach` showed the last lines of the account's start log whatever session wrote them, so a refused start printed the previous session's ending: it now shows only this start's lines (`statSync` offset), with a test. `docs/groupRead.md` marks steps 1-2 done with what the run showed.
+Why: matt asked for a new run with `log inspect do` through the MCP and the rea skill, to define the scope of issue #27 from the facebook-camofox-client files listed there, and to make the system better from what the run found.
+Checked: the run itself (5 steps, each HAR read by rea, the feed query in steps 1, 3 and 5, its 3 rules present in every response); `check:naming`, `check:layout`, `check:browsers`, `check:agentHooks`, `check:docs`, `check:facebookClientDocs` (145 requests, every GraphQL slice read by rea) pass; `tsc --noEmit` clean; `bun test` 721 pass, 0 fail, with the new detach test. The scope, file by file, is on #27.
