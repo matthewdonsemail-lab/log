@@ -60,5 +60,11 @@ export interface Command {
    * table and the MCP tool's description are generated from it (rule 56).
    */
   usage: string;
+  /**
+   * Which platform it acts on (rule 60): `facebook` (Facebook only today),
+   * `any` (no platform, or every one), or `byArgument` (the platform is its
+   * first argument, `log warmup <platform> …`, and every usage line names it).
+   */
+  platform: "facebook" | "any" | "byArgument";
   run(context: CommandContext, argv: string[]): Promise<CommandResult> | CommandResult;
 }

@@ -117,6 +117,7 @@ export async function checkPublishable(
 
 export const publishCommand: Command = {
   usage: PUBLISH_USAGE,
+  platform: "facebook",
   name: "publish",
   summary: "Post one Twenty listing (dry run unless --live), printing every machine step",
   args: "--listing <id> [--live] [--json] [--bypass] [--now]",

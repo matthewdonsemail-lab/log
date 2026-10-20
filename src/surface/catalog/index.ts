@@ -64,6 +64,7 @@ export function commandEntry(command: Command): CommandEntry {
     terminalOnly,
     longRunning: LONG_RUNNING.has(command.name),
     browser: commandBrowser(command.name),
+    platform: command.platform,
     rules: [...(COMMAND_RULES[command.name] ?? []), ...EVERY_TOOL_RULES],
     hooks: { cli: hooksOn("Bash"), mcp: terminalOnly ? [] : hooksOn(`mcp__${MCP_SERVER_NAME}__${command.name}`) },
   };

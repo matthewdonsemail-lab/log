@@ -3,8 +3,8 @@ import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createActor, fromPromise, toPromise } from 'xstate'
-import { WARMUP_ACTIVITIES } from '../lifecycle/types'
-import { ACTIVITY_SCRIPTS, appendFeed, pickActivities, readFeed, renderFeedLine, SCRIPTS_IN_ORDER, warmupMachine } from './index'
+import { WARMUP_ACTIVITIES } from '../../marketplace/lifecycle/types'
+import { ACTIVITY_SCRIPTS, appendStageLog, pickActivities, readStageLog, renderStageLogLine, SCRIPTS_IN_ORDER, warmupMachine } from './index'
 import type { ActivityOutcome, WarmupActivity } from './index'
 
 function run(outcomes: Partial<Record<WarmupActivity, ActivityOutcome>> = {}, activities: WarmupActivity[] = [...WARMUP_ACTIVITIES]) {
@@ -74,14 +74,14 @@ describe('the recording scripts', () => {
   })
 })
 
-describe('the activity feed', () => {
+describe('the stage log', () => {
   test('lines are appended as they happen and read back per account', () => {
     const path = join(mkdtempSync(join(tmpdir(), 'warmupFeed')), 'feed.jsonl')
-    appendFeed({ at: '2026-10-19T18:00:00.000Z', account: 'erie', run: 'r1', event: 'activity', activity: 'feedBrowse', detail: '7 steps' }, path)
-    appendFeed({ at: '2026-10-19T18:00:05.000Z', account: 'erie', run: 'r1', event: 'step', activity: 'feedBrowse', step: 's03_scroll', ok: true }, path)
-    appendFeed({ at: '2026-10-19T18:00:06.000Z', account: 'reading', run: 'r2', event: 'start' }, path)
-    expect(readFeed({ account: 'erie' }, path).map((l) => l.event)).toEqual(['activity', 'step'])
-    expect(readFeed({}, path)).toHaveLength(3)
-    expect(renderFeedLine(readFeed({ account: 'erie' }, path)[1])).toBe('18:00:05  erie            ✓ step     feedBrowse s03_scroll')
+    appendStageLog({ at: '2026-10-19T18:00:00.000Z', account: 'erie', run: 'r1', event: 'activity', activity: 'feedBrowse', detail: '7 steps' }, path)
+    appendStageLog({ at: '2026-10-19T18:00:05.000Z', account: 'erie', run: 'r1', event: 'step', activity: 'feedBrowse', step: 's03_scroll', ok: true }, path)
+    appendStageLog({ at: '2026-10-19T18:00:06.000Z', account: 'reading', run: 'r2', event: 'start' }, path)
+    expect(readStageLog({ account: 'erie' }, path).map((l) => l.event)).toEqual(['activity', 'step'])
+    expect(readStageLog({}, path)).toHaveLength(3)
+    expect(renderStageLogLine(readStageLog({ account: 'erie' }, path)[1])).toBe('18:00:05  erie            ✓ step     feedBrowse s03_scroll')
   })
 })

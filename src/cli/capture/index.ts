@@ -62,6 +62,7 @@ export async function runCapture(argv: string[], runner?: ReaRunner, log: (line:
 
 export const captureCommand: Command = {
   usage: CAPTURE_USAGE,
+  platform: "facebook",
   name: "capture",
   summary: "Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds the Facebook client docs. No browser.",
   args: "--har <path> [--out <dir>] [--noRea] [--json] | --settle <dir> | --docs [--noRea]",

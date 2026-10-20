@@ -19,6 +19,8 @@ const cell = (text: string) => text.replace(/\|/g, "\\|").replace(/\n/g, " ");
 
 const BROWSER_TEXT: Record<CommandEntry["browser"], string> = { accountBrowser: "the account's", camoufoxOnly: "Camoufox only", none: "none" };
 
+const PLATFORM_TEXT: Record<CommandEntry["platform"], string> = { facebook: "Facebook only (today)", any: "any", byArgument: "by argument: `<platform>`" };
+
 const flagText = (f: Flag) => `\`--${f.name}${f.value ? ` <${f.value}>` : ""}\``;
 
 /** The diagram in the README and where its source lives. Pure. */
@@ -39,6 +41,7 @@ export function renderSurface(entries: readonly CommandEntry[], flows: readonly 
     "## Commands, MCP tools and hooks",
     "",
     "log-cli is browser-agnostic: each account's browser is a driver (AdsPower first, Camoufox kept, more browser providers to come), and every driver opens through the same gates.",
+    "It is platform-agnostic too: Facebook (Marketplace and groups) is the first platform. Each command says which platform it acts on (the Platform column): Facebook only today, any, or by argument (`log warmup <platform> <activity>`), and where it is scoped by platform every form of it names the platform (rule 60).",
     "Every command is a CLI command (`bun bin/log.ts <command>`) and, unless it only works in a terminal, an MCP tool of the same name on the `log` server.",
     "The same hooks fire whether it runs from a shell or over MCP, and both write the same live log, `~/.logCli/mcp/<day>.log`.",
     "This section and `docs/diagrams/*.mmd` are generated from the code (`COMMANDS`, `AGENT_HOOKS`, `PAGE_STATES`, the saved flows) by `bun run docs:build`.",
@@ -66,13 +69,13 @@ export function renderSurface(entries: readonly CommandEntry[], flows: readonly 
     "",
     `Every command also takes ${GLOBAL_FLAGS.map(flagText).join(", ")} (this run's proxy speed limit, rule 33). \`--live\` acts on Facebook and over MCP needs \`confirmLive: true\`; \`--bypass\` needs \`confirmBypass: true\` (rules 8, 10, 20).`,
     "",
-    "| Command | What it does | Flags | Browser | MCP tool | Hooks: shell · MCP | Live log | Rules |",
-    "| --- | --- | --- | --- | --- | --- | --- | --- |",
+    "| Command | What it does | Platform | Flags | Browser | MCP tool | Hooks: shell · MCP | Live log | Rules |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
   );
   for (const e of entries) {
     const tool = e.tool ? `\`${e.tool}\`` : `terminal only: ${cell(e.terminalOnly ?? "")}`;
     const hooksText = `${e.hooks.cli.join(", ") || "none"} · ${e.tool ? e.hooks.mcp.join(", ") || "none" : "n/a"}`;
-    out.push(`| [\`log ${e.name}\`](#log-${e.name.toLowerCase()}) | ${cell(e.summary)} | ${e.flags.map(flagText).join(" ") || "none"} | ${BROWSER_TEXT[e.browser]} | ${tool} | ${hooksText} | ${e.longRunning ? "yes: watch it" : "no"} | ${e.rules.join(", ")} |`);
+    out.push(`| [\`log ${e.name}\`](#log-${e.name.toLowerCase()}) | ${cell(e.summary)} | ${PLATFORM_TEXT[e.platform]} | ${e.flags.map(flagText).join(" ") || "none"} | ${BROWSER_TEXT[e.browser]} | ${tool} | ${hooksText} | ${e.longRunning ? "yes: watch it" : "no"} | ${e.rules.join(", ")} |`);
   }
   out.push("");
 

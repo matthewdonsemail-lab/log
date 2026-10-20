@@ -17,7 +17,7 @@ import { fetchProxyUrl, saveSession } from "../../../marketplace/socialAccount/i
 import { preparePhotos } from "../../../media/photo/index.ts";
 import { join } from "node:path";
 import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
-import { ACTIVITY_SCRIPTS } from "../../../marketplace/warmup/index.ts";
+import { ACTIVITY_SCRIPTS } from "../../../warmup/facebookStages/index.ts";
 import { runFlowInSession, openInspectSession } from "../../flow/helpers/index.ts";
 import type { OpenSession } from "../../flow/helpers/index.ts";
 import { keepNewDevice, keepSession, openAccount } from "../../live/index.ts";

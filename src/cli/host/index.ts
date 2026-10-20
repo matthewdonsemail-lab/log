@@ -32,6 +32,7 @@ const EVENTS: HostControl["type"][] = ["PERSON_DONE", "PAUSE", "RESUME", "SHUTDO
 
 export const hostCommand: Command = {
   usage: HOST_USAGE,
+  platform: "facebook",
   name: "host",
   summary: "Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); send it events; read its progress",
   args: "<start|send|status> --account <name> [--live] [--bypass]",

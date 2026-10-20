@@ -163,6 +163,7 @@ export async function workerFailed(context: CommandContext, name: string, accoun
 
 export const doctorCommand: Command = {
   usage: DOCTOR_USAGE,
+  platform: "facebook",
   name: "doctor",
   summary: "Check python, facebook-camofox-client, Camoufox, Twenty, and which accounts may run",
   args: "[--json]",
@@ -197,6 +198,7 @@ export const doctorCommand: Command = {
 
 export const connectCommand: Command = {
   usage: CONNECT_USAGE,
+  platform: "facebook",
   name: "connect",
   summary: "Sign a Facebook account in through its proxy (the connect machine), save its cookies to Twenty",
   args: "--account <name> [--noPrompt] [--wait <seconds>] [--bypass] [--now]",
@@ -297,6 +299,7 @@ async function connectEnded(context: CommandContext, account: FacebookAccount, r
 
 export const scanCommand: Command = {
   usage: SCAN_USAGE,
+  platform: "facebook",
   name: "scan",
   summary: "Read Marketplace > Selling live for one account and update its listings in Twenty",
   args: "--account <name> [--json] [--bypass]",
@@ -328,6 +331,7 @@ export const scanCommand: Command = {
 
 export const statusCommand: Command = {
   usage: STATUS_USAGE,
+  platform: "facebook",
   name: "status",
   summary: "Open one Marketplace item page live and classify its status",
   args: "<listingId> --account <name> [--json] [--bypass]",

@@ -63,7 +63,7 @@ const cliDir = join(root, "src/cli");
 for (const dir of readdirSync(cliDir)) {
   const index = join(cliDir, dir, "index.ts");
   if (dir === "runner" || !existsSync(index)) continue;
-  const names = [...readFileSync(index, "utf8").matchAll(/Command: Command = \{\s*usage: \w+,\s*name: "(\w+)"/g)].map((m) => m[1]);
+  const names = [...readFileSync(index, "utf8").matchAll(/Command: Command = \{\s*usage: \w+,\s*(?:platform: "\w+",\s*)?name: "(\w+)"/g)].map((m) => m[1]);
   const usage = new Set(entries.filter((e) => names.includes(e.name)).flatMap((e) => flagsOf(e.usage.join("\n")).map((f) => f.name)));
   const parsed = new Set<string>();
   for (const file of filesUnder(join(cliDir, dir))) {
@@ -109,6 +109,17 @@ for (const e of entries) {
 const prose = readme.replace(/<!-- surface:start[\s\S]*?<!-- surface:end -->/, "");
 for (const heading of prose.match(/^#{1,3} .*$/gm) ?? []) {
   if (BROWSER_NAME.test(heading) && !/setup/i.test(heading)) problems.push(`README heading "${heading}" names one browser: log-cli is browser-agnostic, its browsers are in the generated Browsers section (rules 46, 57)`);
+}
+
+// 6. Platform scope (rule 60): a command scoped by argument names the platform in every usage line, so no form
+//    of it skips the platform (`log warmup plan` beside `log warmup <platform> <activity>` did).
+const PLATFORMS = ["facebook"];
+for (const e of entries.filter((x) => x.platform === "byArgument")) {
+  for (const line of e.usage) {
+    if (!line.startsWith(`log ${e.name} `)) continue;
+    const first = line.slice(`log ${e.name} `.length).split(/\s+/)[0];
+    if (first !== "<platform>" && !PLATFORMS.includes(first)) problems.push(`log ${e.name} is scoped by platform, but "${line.slice(0, 80)}" doesn't name one: every form is log ${e.name} <platform> … (rule 60)`);
+  }
 }
 
 if (problems.length) {

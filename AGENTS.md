@@ -595,6 +595,23 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     the hooks diagram on GitHub), a command summary that names one browser
     (unless it is that browser's own command or Camoufox-only), and a README
     heading outside the generated section that names one browser.
+60. 2026-10-20 · matt: log-cli is platform-agnostic as well as
+    browser-agnostic. Facebook (Marketplace and groups) is the first platform,
+    and what is scoped by platform names it in every form: `log warmup
+    <platform> <activity>`, with no form that skips the platform. Listaro's five
+    Facebook activities are the Facebook activity `stages`: `log warmup facebook
+    stages plan|record|run|log` (was `log warmup plan|record|run|feed`; those
+    are refused with the form they became), their code in
+    `src/warmup/facebookStages` (was `src/marketplace/warmup`), and their log
+    the stage log (`~/.logCli/runs/warmup/stageLog.jsonl`, was the "activity
+    feed", which clashed with the Facebook feed activity). Every command
+    declares its platform (`Command.platform`: `facebook`, `any` or
+    `byArgument`, a typecheck error without one), the README shows it in its
+    Platform column, and `check:docs` refuses a `byArgument` command with a
+    usage line that doesn't name the platform. The Facebook-only commands that
+    don't yet take the platform in their name are listed in issue #20
+    (github.com/matthewdonsemail-lab/log-cli/issues/20), to be scoped as matt
+    decides.
 
 ## Checks
 

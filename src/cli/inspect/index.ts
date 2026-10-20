@@ -87,6 +87,7 @@ async function startDetached(accountName: string, argv: string[]): Promise<{ cod
 
 export const inspectCommand: Command = {
   usage: INSPECT_USAGE,
+  platform: "any",
   name: "inspect",
   summary: "Drive the account's browser, gated and headed, a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29)",
   args: "start --account <name> [--url <u>] [--bypass] | do <action> [args] [--live]",

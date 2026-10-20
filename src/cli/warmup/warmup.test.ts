@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { runCli } from "../runner/index.ts";
 
-process.env.LOG_WARMUP_FEED = join(mkdtempSync(join(tmpdir(), "logWarmupFeed")), "feed.jsonl");
+process.env.LOG_WARMUP_STAGE_LOG = join(mkdtempSync(join(tmpdir(), "logWarmupFeed")), "feed.jsonl");
 
 async function run(argv: string[], overrides: Record<string, unknown> = {}) {
   const out: string[] = [];
@@ -16,7 +16,7 @@ async function run(argv: string[], overrides: Record<string, unknown> = {}) {
 
 describe("log warmup", () => {
   test("plan lists each activity's recording script and whether its flow exists", async () => {
-    const result = await run(["warmup", "plan"]);
+    const result = await run(["warmup", "facebook", "stages", "plan"]);
     expect(result.code).toBe(0);
     expect(result.out).toContain("feedBrowse → flow warmupFeedBrowse");
     expect(result.out).toContain("clickAny button ^Like$ 2-3  (live: only with --likes)");
@@ -25,20 +25,28 @@ describe("log warmup", () => {
 
   test("run refuses an activity whose flow hasn't been recorded, before any browser opens", async () => {
     let opened = false;
-    const result = await run(["warmup", "run", "--account", "galwayOne", "--only", "messagesVisit"], { inspectSession: async () => ((opened = true), 0) });
+    const result = await run(["warmup", "facebook", "stages", "run", "--account", "galwayOne", "--only", "messagesVisit"], { inspectSession: async () => ((opened = true), 0) });
     expect(result.code).toBe(1);
     expect(result.err).toContain("flowNotRecorded");
-    expect(result.err).toContain("log warmup record --account <a> --only messagesVisit");
+    expect(result.err).toContain("log warmup facebook stages record --account <a> --only messagesVisit");
     expect(opened).toBe(false);
   });
 
   test("unknown activities and subcommands are named", async () => {
-    expect((await run(["warmup", "run", "--account", "galwayOne", "--only", "dance"])).err).toContain("unknown activity dance");
-    expect((await run(["warmup", "nap"])).err).toContain("pick plan, record, run or feed");
+    expect((await run(["warmup", "facebook", "stages", "run", "--account", "galwayOne", "--only", "dance"])).err).toContain("unknown activity dance");
+    expect((await run(["warmup", "nap"])).err).toContain("pick a platform (facebook)");
+    expect((await run(["warmup", "facebook", "stages", "nap"])).err).toContain("pick plan, record, run or log");
   });
 
-  test("feed shows the activity feed, empty to start", async () => {
-    expect((await run(["warmup", "feed"])).out).toBe("The warm-up feed is empty.");
+  test("a form without the platform is refused with the one it became (rule 60)", async () => {
+    expect((await run(["warmup", "plan"])).err).toContain("It is now: log warmup facebook stages plan");
+    expect((await run(["warmup", "record", "--account", "galwayOne"])).err).toContain("log warmup facebook stages record");
+    expect((await run(["warmup", "feed"])).err).toContain("log warmup facebook stages log");
+    expect((await run(["warmup", "run"])).code).toBe(1);
+  });
+
+  test("stages log shows the stage log, empty to start", async () => {
+    expect((await run(["warmup", "facebook", "stages", "log"])).out).toBe("The stage log is empty.");
   });
 });
 

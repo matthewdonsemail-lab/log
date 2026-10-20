@@ -4,10 +4,10 @@
  *
  *   picking ─▶ running (runActivity) ─ok─▶ resting ─after gap─▶ picking ─ none left ─▶ done
  *                 ├── the page went to a checkpoint or a login ─▶ blocked (the account's issue)
- *                 └── a step failed ─▶ stopped (the activity and step are in the feed)
+ *                 └── a step failed ─▶ stopped (the activity and step are in the stage log)
  *   STOP (anywhere) ─▶ stopped
  *
- * `runActivity` is the one side effect, provided by the caller: `log warmup run`
+ * `runActivity` is the one side effect, provided by the caller: `log warmup facebook stages run`
  * runs the activity's flow in its inspect session; tests script it. The same
  * activities are the lifecycle machine's `warmupActivity` (onboarding.warming).
  */

@@ -99,6 +99,7 @@ async function browserSignIn(context: CommandContext, webUrl: string): Promise<S
 
 export const loginCommand: Command = {
   usage: LOGIN_USAGE,
+  platform: "any",
   name: "login",
   summary: "Sign in with Twenty through blaster's web app (OAuth), like `blaster login`",
   args: "[--webUrl <url>] [--apiUrl <url>] [--token <t>] [--json]",
@@ -152,6 +153,7 @@ function pickSession(name: string, usage: string, apiUrl: string | undefined): S
 
 export const logoutCommand: Command = {
   usage: LOGOUT_USAGE,
+  platform: "any",
   name: "logout",
   summary: "Forget the stored Twenty session",
   args: "[--apiUrl <url>] [--json]",
@@ -168,6 +170,7 @@ export const logoutCommand: Command = {
 
 export const whoamiCommand: Command = {
   usage: WHOAMI_USAGE,
+  platform: "any",
   name: "whoami",
   summary: "Show who is signed in, refreshing the session if it expired",
   args: "[--apiUrl <url>] [--json]",

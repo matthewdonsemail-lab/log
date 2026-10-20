@@ -1,26 +1,26 @@
 import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
-import type { FeedLine } from '../types'
+import type { StageLogLine } from '../types'
 
-/** `~/.logCli/runs/warmup/feed.jsonl`, or `LOG_WARMUP_FEED`: every account's warm-up, one line per step. */
-export function feedPath(env: Record<string, string | undefined> = process.env): string {
-  return env.LOG_WARMUP_FEED || join(homedir(), '.logCli', 'runs', 'warmup', 'feed.jsonl')
+/** `~/.logCli/runs/warmup/stageLog.jsonl`, or `LOG_WARMUP_STAGE_LOG`: every account's warm-up, one line per step. */
+export function stageLogPath(env: Record<string, string | undefined> = process.env): string {
+  return env.LOG_WARMUP_STAGE_LOG || join(homedir(), '.logCli', 'runs', 'warmup', 'stageLog.jsonl')
 }
 
-export function appendFeed(line: FeedLine, path = feedPath()): void {
+export function appendStageLog(line: StageLogLine, path = stageLogPath()): void {
   mkdirSync(dirname(path), { recursive: true })
   appendFileSync(path, `${JSON.stringify(line)}\n`)
 }
 
 /** The last `count` lines, for one account or all. */
-export function readFeed(options: { account?: string; count?: number } = {}, path = feedPath()): FeedLine[] {
+export function readStageLog(options: { account?: string; count?: number } = {}, path = stageLogPath()): StageLogLine[] {
   if (!existsSync(path)) return []
-  const lines: FeedLine[] = []
+  const lines: StageLogLine[] = []
   for (const raw of readFileSync(path, 'utf8').split(/\r?\n/)) {
     if (!raw.trim()) continue
     try {
-      const line = JSON.parse(raw) as FeedLine
+      const line = JSON.parse(raw) as StageLogLine
       if (!options.account || line.account === options.account) lines.push(line)
     } catch {
       // a line still being written
@@ -30,7 +30,7 @@ export function readFeed(options: { account?: string; count?: number } = {}, pat
 }
 
 /** One feed line as a person reads it. Pure. */
-export function renderFeedLine(line: FeedLine): string {
+export function renderStageLogLine(line: StageLogLine): string {
   const time = line.at.replace('T', ' ').slice(11, 19)
   const mark = line.ok === false ? '✗' : line.ok ? '✓' : '·'
   const what = [line.activity, line.step].filter(Boolean).join(' ')

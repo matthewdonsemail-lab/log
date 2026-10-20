@@ -17,6 +17,7 @@ export const GRAPH_USAGE = `Usage: log graph <${Object.keys(MACHINES).join("|")}
 
 export const errorsCommand: Command = {
   usage: ERRORS_USAGE,
+  platform: "any",
   name: "errors",
   summary: "List every error code: meaning, retryable, where each machine ends up",
   args: "[--layer <layer>] [--code <code>] [--json] [--markdown]",
@@ -48,6 +49,7 @@ export const errorsCommand: Command = {
 
 export const graphCommand: Command = {
   usage: GRAPH_USAGE,
+  platform: "any",
   name: "graph",
   summary: "Print a machine's states and transitions as a Mermaid diagram",
   args: `<${Object.keys(MACHINES).join("|")}>`,

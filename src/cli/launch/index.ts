@@ -285,6 +285,7 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
 
 export const launchCommand: Command = {
   usage: LAUNCH_USAGE,
+  platform: "any",
   name: "launch",
   summary: "Guided Clack menu over the listings, accounts and live commands",
   args: "[--json]",

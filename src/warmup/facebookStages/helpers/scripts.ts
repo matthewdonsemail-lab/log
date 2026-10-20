@@ -1,4 +1,4 @@
-import { WARMUP_ACTIVITIES } from '../../lifecycle/types'
+import { WARMUP_ACTIVITIES } from '../../../marketplace/lifecycle/types'
 import type { ActivityScript, WarmupActivity } from '../types'
 
 const FB = 'https://www.facebook.com'

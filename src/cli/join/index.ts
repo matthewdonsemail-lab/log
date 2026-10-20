@@ -407,6 +407,7 @@ export async function runJoin(context: CommandContext, argv: string[]): Promise<
 
 export const joinCommand: Command = {
   usage: JOIN_USAGE,
+  platform: "facebook",
   name: "join",
   summary: "Join a Facebook group as one account, in its open browser: read the gate, --live presses Join; every step patches agencyGroups.joinSubmission (rule 45)",
   args: "group --account <a> --group <g> [--live] | --show | --answer [--set n=v]... [--agree] | --fill [--live [--submit]] [--bypass] [--json]",

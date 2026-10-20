@@ -3027,3 +3027,61 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: The README now describes log-cli as it is: browser-agnostic, AdsPower first, Camoufox kept, more browser providers to come, each one more driver. Which browser each command runs on is code: `IN_OPEN_BROWSER` and `CAMOUFOX_ONLY` beside `OPENER_ACTIONS`, and `commandBrowser` (`src/browser/run`); the catalog carries it (`CommandEntry.browser`). From it the README gets a Browser column in the command table and a generated Browsers section, and a new diagram, `docs/diagrams/browsers.mmd` (`browsersDiagram`): the driver picked from Twenty, every driver through the same gates, and which commands run on the account's browser (inspect, flow, warmup, host, join) and which still launch Camoufox themselves (doctor, connect, scan, status, watch, publish, profile, campaign). The hand-written intro, the "The browser: AdsPower, with Camoufox kept" and "Live mode (Camoufox)" sections and the layout are rewritten: one "Browser setup" section with AdsPower and Camoufox setup under it. The hooks diagram didn't render on GitHub: a `;` in a note ends a Mermaid statement. `label()` now escapes `;` (first, before the entities that end in one). `check:docs` now parses every diagram with Mermaid (mermaid 11.4.1 and jsdom 25.0.1 as dev dependencies), and refuses a command summary that names one browser (unless it is that browser's own command or Camoufox-only; `log inspect`'s said "Camoufox", now "the account's browser") and a README heading outside the generated section that names one browser. Rule 59 in AGENTS.md and the MCP instructions (`RULES_REVIEWED_THROUGH` 59); `skills/surfaceDocs` updated.
 Why: matt merged #18 and found the README's hooks diagram failing to render on GitHub ("Parse error on line 13"), and that the README's hand-written parts still presented log-cli as a Camoufox tool, when it is browser-agnostic and works through AdsPower first, with more browser providers planned. He asked for it to be right, and for it to stay right.
 Checked: the old hooks.mmd fails Mermaid's parser on line 13, as GitHub reported, and all five new diagrams parse. `check:docs` refused the three problems before the fix (inspect's summary, the two README headings). `check:naming`, `check:layout`, `check:browsers`, `check:agentHooks`, `check:docs` (README and 5 diagrams), `check:facebookClientDocs` all pass; `tsc --noEmit` is clean; `bun test` 719 pass, 0 fail. A test for the `;` escape found the first version mangling `#quot;`; the escape order is fixed.
+
+## 2026-10-20 12:21Z · refactor/platformScopedCommands
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/adsPower.md`: edited
+- `docs/lifecycle.md`: edited
+- `scripts/docs/buildDocs.ts`: added const PLATFORMS
+- `skills/warmup/SKILL.md`: edited
+- `src/cli/account/index.ts`: changed const accountsCommand, const accountCommand
+- `src/cli/adsPower/index.ts`: changed const adsPowerCommand
+- `src/cli/auth/index.ts`: changed const loginCommand, const logoutCommand, const whoamiCommand
+- `src/cli/campaign/index.ts`: changed const campaignCommand
+- `src/cli/capture/index.ts`: changed const captureCommand
+- `src/cli/conversation/index.ts`: changed const conversationsCommand, const conversationCommand
+- `src/cli/errors/index.ts`: changed const errorsCommand, const graphCommand
+- `src/cli/flow/index.ts`: changed const flowCommand
+- `src/cli/host/helpers/hostActors.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/host/index.ts`: changed const hostCommand
+- `src/cli/inspect/index.ts`: changed const inspectCommand
+- `src/cli/join/index.ts`: changed const joinCommand
+- `src/cli/launch/index.ts`: changed const launchCommand
+- `src/cli/lifecycle/index.ts`: changed const lifecycleCommand
+- `src/cli/listing/index.ts`: changed const listingsCommand, const listingCommand
+- `src/cli/live/index.ts`: changed const doctorCommand, const connectCommand, const scanCommand, const statusCommand
+- `src/cli/profile/index.ts`: changed const profileCommand
+- `src/cli/proxy/index.ts`: changed const proxyCommand
+- `src/cli/publish/index.ts`: changed const publishCommand
+- `src/cli/runner/types.ts`: changed interface Command
+- `src/cli/warmup/helpers/index.ts`: added export from "./stages.ts"
+- `src/cli/warmup/helpers/platformActivity.ts`: changed const PLATFORM_USAGE
+- `src/cli/warmup/helpers/stages.ts`: added const STAGES_USAGE, const runName, function stage, function runStages, function record, function runWarmup, function accountIssue, function showStageLog
+- `src/cli/warmup/index.ts`: added const MOVED · changed const WARMUP_USAGE, const warmupCommand · removed const runName, function feed, function record, function runWarmup, function accountIssue, function showFeed
+- `src/cli/warmup/warmup.test.ts`: added test "a form without the platform is refused with the one it became (rule 60)", test "stages log shows the stage log, empty to start" · changed test "plan lists each activity's recording script and whether its flow exists", test "run refuses an activity whose flow hasn't been recorded, before any browser opens", test "unknown activities and subcommands are named" · removed test "feed shows the activity feed, empty to start"
+- `src/cli/watch/index.ts`: changed const watchCommand
+- `src/marketplace/warmup/helpers/feed.ts`: file deleted · removed function feedPath, function appendFeed, function readFeed, function renderFeedLine
+- `src/marketplace/warmup/helpers/index.ts`: file deleted · removed export from "./feed", export from "./scripts"
+- `src/marketplace/warmup/helpers/scripts.ts`: file deleted · removed const FB, const ACTIVITY_SCRIPTS, const SCRIPTS_IN_ORDER, function pickActivities
+- `src/marketplace/warmup/index.ts`: file deleted · removed export from "./helpers/index", export from "./machine", export from "./types"
+- `src/marketplace/warmup/machine.ts`: file deleted · removed const warmupMachine
+- `src/marketplace/warmup/types.ts`: file deleted · removed interface ScriptStep, interface ActivityScript, interface FeedLine, type ActivityOutcome, interface WarmupInput, interface WarmupContext
+- `src/marketplace/warmup/warmup.test.ts`: file deleted · removed function run, test "runs Listaro's five activities in its stage order, one after another", test "a failed step stops the warm-up there, and says which activity and step", test "Erie's case: the first page was a checkpoint, so the warm-up is blocked there and goes no further", test "--only runs just those, and STOP ends it", test "follow Listaro's stages, and only the likes act on Facebook (rule 8)", test "pickActivities keeps the stage order and names anything unknown", test "lines are appended as they happen and read back per account"
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `src/surface/catalog/index.ts`: changed function commandEntry
+- `src/surface/catalog/types.ts`: changed interface CommandEntry
+- `src/surface/readme/index.ts`: added const PLATFORM_TEXT · changed function renderSurface
+- `src/warmup/facebookStages/helpers/index.ts`: added export from "./stageLog", export from "./scripts"
+- `src/warmup/facebookStages/helpers/scripts.ts`: added const FB, const ACTIVITY_SCRIPTS, const SCRIPTS_IN_ORDER, function pickActivities
+- `src/warmup/facebookStages/helpers/stageLog.ts`: added function stageLogPath, function appendStageLog, function readStageLog, function renderStageLogLine
+- `src/warmup/facebookStages/index.ts`: added export from "./helpers/index", export from "./machine", export from "./types"
+- `src/warmup/facebookStages/machine.ts`: added const warmupMachine
+- `src/warmup/facebookStages/types.ts`: added interface ScriptStep, interface ActivityScript, interface StageLogLine, type ActivityOutcome, interface WarmupInput, interface WarmupContext
+- `src/warmup/facebookStages/warmup.test.ts`: added function run, test "runs Listaro's five activities in its stage order, one after another", test "a failed step stops the warm-up there, and says which activity and step", test "Erie's case: the first page was a checkpoint, so the warm-up is blocked there and goes no further", test "--only runs just those, and STOP ends it", test "follow Listaro's stages, and only the likes act on Facebook (rule 8)", test "pickActivities keeps the stage order and names anything unknown", test "lines are appended as they happen and read back per account"
+
+What changed: The warm-up is scoped by platform in every form. Listaro's five Facebook activities are the Facebook activity `stages`: `log warmup facebook stages plan|record|run|log` (`runStages` and `STAGES_USAGE` in `src/cli/warmup/helpers/stages.ts`), beside `reel` and `feed`. `log warmup` now only takes `<platform> <activity>`. The old `plan`, `record`, `run` and `feed` are refused with the form each became (`MOVED`), and anything else asks for a platform. The usage names the platform and activity wherever flags belong to one (`log warmup facebook reel plan [--reels …]`, not `<platform> <activity> plan [--reels …]`). The code moved from `src/marketplace/warmup` to `src/warmup/facebookStages` (a warm-up isn't Marketplace), its "activity feed" renamed the stage log so it no longer shares a word with the Facebook feed activity: `StageLogLine`, `stageLogPath`, `appendStageLog`, `readStageLog`, `renderStageLogLine`, `LOG_WARMUP_STAGE_LOG`, `~/.logCli/runs/warmup/stageLog.jsonl`. Every command declares its platform (`Command.platform`: `facebook`, `any`, `byArgument`; a typecheck error without one), the catalog carries it, and the README's command table has a Platform column. `check:docs` refuses a `byArgument` command whose usage line doesn't name the platform. The docs and skills that taught the old forms (`skills/warmup`, `docs/lifecycle.md`, `docs/adsPower.md`) use the new ones. Rule 60 in AGENTS.md and the MCP instructions (`RULES_REVIEWED_THROUGH` 60, `warmup` cites it). Issue #20 lists the Facebook-only commands that don't take the platform yet, for matt to decide how a second platform is named.
+Why: matt pointed out that the command line mixed `log warmup run --account` with `log warmup <platform> <activity>`. log-cli is platform-agnostic as well as browser-agnostic: anything scoped by platform has to name it every time, and the docs have to say which platform each command acts on, so an agent arriving later isn't misled.
+Checked: `check:naming`, `check:layout`, `check:browsers`, `check:agentHooks`, `check:docs` (README and 5 diagrams), `check:facebookClientDocs` all pass; `tsc --noEmit` is clean; `bun test` 720 pass, 0 fail, with new tests that the old forms are refused with the form they became and that a missing platform is asked for. Putting `log warmup plan` back into the usage makes `check:docs` refuse it ("doesn't name one: every form is log warmup <platform> …"); the line was taken out again.

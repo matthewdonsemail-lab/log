@@ -43,8 +43,8 @@ through one day (`activityGapMs`, default 2.5 h):
 | `messagesVisit` | stage 5 | Stage 4, then Messages |
 
 Each activity is a flow recorded once in a headed `log inspect` session
-(`log warmup record`, rule 36) and run by the warm-up machine in one open
-browser (`log warmup run`), every step in the activity feed (`log warmup feed
+(`log warmup facebook stages record`, rule 36) and run by the warm-up machine in one open
+browser (`log warmup facebook stages run`), every step in the stage log (`log warmup facebook stages log
 --follow`). Warm-up steps are `scroll 4-7 300-600` (wheel ticks, not jumps),
 `openAny /marketplace/item/ 2-4` (random listings, read, back), `clickAny
 button ^Like$ 2-3` (live, `--likes` only) and `dwell 3-5`, their ranges drawn

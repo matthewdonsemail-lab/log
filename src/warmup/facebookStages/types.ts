@@ -3,9 +3,9 @@
  * (`Listaro_backup/src/lib/account-warmup.ts`, stages 1-5), each recorded once
  * with `log inspect` in a headed session (rule 29), turned into a flow (rule 31),
  * and run in order, in ONE browser that stays open, by the warm-up machine.
- * Every step is written to the activity feed as it happens (rule 26).
+ * Every step is written to the stage log as it happens (rule 26).
  */
-import type { WarmupActivity } from '../lifecycle/types'
+import type { WarmupActivity } from '../../marketplace/lifecycle/types'
 
 export type { WarmupActivity }
 
@@ -28,8 +28,8 @@ export interface ActivityScript {
   steps: ScriptStep[]
 }
 
-/** One line of the activity feed (`~/.logCli/runs/warmup/feed.jsonl`). */
-export interface FeedLine {
+/** One line of the stage log (`~/.logCli/runs/warmup/stageLog.jsonl`). */
+export interface StageLogLine {
   at: string
   account: string
   run: string
