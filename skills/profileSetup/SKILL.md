@@ -15,7 +15,7 @@ does that for one account, both photos in one run (matt's choice).
 1. **Dry run first, `--live` only when matt asks** (rules 8, 28). Over MCP,
    `--live` also needs `confirmLive: true`.
 2. **Read before clicking** (rule 25). The upload clicks in
-   `python/profileSession.py` were written before the page was seen. The dry
+   `python/session/profileSession.py` were written before the page was seen. The dry
    run writes every button, link and file input the profile page has to
    `profileFound.txt`; check the patterns (`PROFILE_PICTURE`, `COVER`,
    `UPLOAD`, `SAVE`) against it, and fix them, before the first `--live`.
@@ -47,7 +47,7 @@ does that for one account, both photos in one run (matt's choice).
    (`~/.logCli/runs/profile/<time>_<a>/`).
 4. Read `profileFound.txt` in that folder and the step HARs (`firefox/steps/`).
    If the picture or cover control isn't the one the patterns match, fix the
-   pattern in `python/profileSession.py` and its test, commit, and dry run
+   pattern in `python/session/profileSession.py` and its test, commit, and dry run
    again after the launch gap.
 5. When matt says go: `--live`. The machine uploads the profile photo, then
    the cover; any failed step stops the run (nothing is retried on

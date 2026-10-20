@@ -1,12 +1,12 @@
 /**
- * The error catalog: every code log-cli, `python/logWorker.py` and
- * `python/publishSession.py` can produce, once, with what it means, whether it
+ * The error catalog: every code log-cli, `python/session/logWorker.py` and
+ * `python/session/publishSession.py` can produce, once, with what it means, whether it
  * clears by itself, where it is raised and where each machine ends up.
  *
  * This is the only place a code is defined. The TypeScript unions
  * (`ErrorCode`, `AccountIssue`, the captcha plan reasons) are derived from it,
  * `SOLVER_DEAD_CODES` is read from it, and the Python reads the same list from
- * `python/errorCatalog.json` (`bun run errors:export`). Tests fail when a code
+ * `python/errors/errorCatalog.json` (`bun run errors:export`). Tests fail when a code
  * is used anywhere that isn't here (`catalog.test.ts`).
  *
  * `AccountIssue` started as listeningkit-hackathon's snake_case vocabulary
@@ -1039,7 +1039,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['proxyGate', 'worker', 'publish.openingForm'],
     publish: 'failed',
     monitor: 'failed',
-    action: 'Tell matt. Every launch goes through python/proxyGate.py apply(); find the caller in the detail.'
+    action: 'Tell matt. Every launch goes through python/browser/proxyGate.py apply(); find the caller in the detail.'
   },
   crashed: {
     layer: 'runtime',
@@ -1157,7 +1157,7 @@ export const ERROR_CATALOG = {
     meaning: 'Twenty answered with an error. The detail has its status and message.',
     retryable: true,
     raisedIn: ['twenty/graphql'],
-    action: 'Read the detail. A field error means scripts/twentySetup.mjs needs running.'
+    action: 'Read the detail. A field error means scripts/twenty/twentySetup.mjs needs running.'
   },
   accountNotFound: {
     layer: 'twenty',
@@ -1245,7 +1245,7 @@ export const ERROR_CATALOG = {
     meaning: "The profile page had no control for the change (the button, its menu item or the file chooser).",
     retryable: false,
     raisedIn: ['profile.uploadingProfilePhoto', 'profile.uploadingCoverPhoto', 'profileSession'],
-    action: "Read the run's capture (rule 25): profileFound.txt lists every button the page had. Update python/profileSession.py from it."
+    action: "Read the run's capture (rule 25): profileFound.txt lists every button the page had. Update python/session/profileSession.py from it."
   },
   profileUploadNotSaved: {
     layer: 'profile',

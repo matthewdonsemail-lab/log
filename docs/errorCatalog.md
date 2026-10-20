@@ -4,7 +4,7 @@ Generated from `src/errors/catalog/types.ts` by `bun run errors:export`. Don't e
 change the catalog, re-export, and `catalog.test.ts` checks the two match.
 
 Every failure in log-cli carries one of these codes, whether it starts in TypeScript or in
-`python/logWorker.py` / `python/publishSession.py`. A code the catalog doesn't have becomes
+`python/session/logWorker.py` / `python/session/publishSession.py`. A code the catalog doesn't have becomes
 `uncatalogued` at the boundary, so nothing unknown passes as known.
 
 - **Retry**: yes means it can clear by itself (a retry, or time). No means a person acts.
@@ -239,7 +239,7 @@ stateDiagram-v2
 | `unknownStep` | no | `session` | publish→failed | publishSession.py got a step it does not have. | A bug: camofox/session and publishSession.py disagree. |
 | `notOpen` | no | `session` | publish→failed | A step was sent before the form was opened. | A bug in the machine order. |
 | `captureMissing` | no | `proxyGate`, `worker`, `publish.openingForm` | publish→failed, monitor→failed | A browser context was about to open with no HAR capture folder. Every action records a raw HAR (rule 22), so nothing opened. | Pass capture_dir with the worker request (prepareRun sets run.captureDir), or receiptDir for the publish session. |
-| `unguardedLaunch` | no | `proxyGate`, `worker`, `publish.openingForm` | publish→failed, monitor→failed | Something tried to launch Camoufox outside the proxy gate, or with launch options the gate does not allow (locale, config, env, persistent context...). Refused. | Tell matt. Every launch goes through python/proxyGate.py apply(); find the caller in the detail. |
+| `unguardedLaunch` | no | `proxyGate`, `worker`, `publish.openingForm` | publish→failed, monitor→failed | Something tried to launch Camoufox outside the proxy gate, or with launch options the gate does not allow (locale, config, env, persistent context...). Refused. | Tell matt. Every launch goes through python/browser/proxyGate.py apply(); find the caller in the detail. |
 | `crashed` | yes | `worker`, `session`, `publish.preparingPhotos`, `publish.openingForm`, `publish.solvingCaptcha`, `publish.choosingCategory`, `publish.uploadingPhotos`, `publish.fillingFields`, `publish.reviewing` | publish→failed, monitor→failed | A step threw before Publish was clicked. Nothing was posted. | Read the detail (exception and message). Run again. |
 | `crashedAfterPublish` | no | `publish.publishing`, `publish.capturingId` | publish→unconfirmedId | A step threw after Publish was clicked. The listing may be live. | Check Marketplace > Selling by hand. Never re-publish: it would duplicate. |
 | `checkCrashed` | no | `monitor.checking` | monitor→failed | The monitor's check threw instead of returning an outcome. | A bug in toCheckOutcome or the worker client. |
@@ -253,7 +253,7 @@ stateDiagram-v2
 | `twentyUnreachable` | yes | `twenty/graphql` | command exits | Twenty didn't answer. | Check the network and twenty.inferencesaver.com, then run again. |
 | `twentyRateLimited` | yes | `twenty/graphql` | command exits | Twenty refused the call for its rate limit ("Limit reached (100 tokens per 60000 ms)"). Nothing was written. | Nothing to do: the client waits out the minute and tries again (twice). If it still fails, fewer calls per minute. |
 | `twentyAuthFailed` | no | `twenty/graphql` | command exits | Twenty refused the API key (401/403). | Make a new API key in Twenty and put it in log-cli/.env.local. |
-| `twentyRequestFailed` | yes | `twenty/graphql` | command exits | Twenty answered with an error. The detail has its status and message. | Read the detail. A field error means scripts/twentySetup.mjs needs running. |
+| `twentyRequestFailed` | yes | `twenty/graphql` | command exits | Twenty answered with an error. The detail has its status and message. | Read the detail. A field error means scripts/twenty/twentySetup.mjs needs running. |
 | `accountNotFound` | no | `marketplace/socialAccount` | command exits | No socialAccount with that accountName or id in Twenty. | log accounts lists the Facebook accounts. |
 
 ## proxyVendor
@@ -280,6 +280,6 @@ stateDiagram-v2
 | Code | Retry | Raised in | Ends in | Meaning | Do |
 | --- | --- | --- | --- | --- | --- |
 | `profilePhotoMissing` | no | `profile.preparing` | command exits | The account has no profilePhoto or coverPhoto in Twenty, or the file can't be read. | Set socialAccounts.profilePhoto and coverPhoto (a URL or a local path) in Twenty, then run again. |
-| `profileControlNotFound` | no | `profile.uploadingProfilePhoto`, `profile.uploadingCoverPhoto`, `profileSession` | command exits | The profile page had no control for the change (the button, its menu item or the file chooser). | Read the run's capture (rule 25): profileFound.txt lists every button the page had. Update python/profileSession.py from it. |
+| `profileControlNotFound` | no | `profile.uploadingProfilePhoto`, `profile.uploadingCoverPhoto`, `profileSession` | command exits | The profile page had no control for the change (the button, its menu item or the file chooser). | Read the run's capture (rule 25): profileFound.txt lists every button the page had. Update python/session/profileSession.py from it. |
 | `profileUploadNotSaved` | yes | `profile.uploadingProfilePhoto`, `profile.uploadingCoverPhoto` | command exits | The photo was chosen, but Facebook did not show it saved (no Save button, or the dialog stayed open). | Read the run's capture and its saved page text; run once more after the launch gap (rule 24). |
 

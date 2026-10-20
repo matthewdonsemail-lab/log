@@ -22,7 +22,7 @@ something the next session has to rediscover.
 1. Write the rule as one line in matt's meaning, in plain words. Number it
    and date it (`9. 2026-10-18 · ...`).
 2. Make it enforceable where you can:
-   - a check in `scripts/checkNamingConventions.mjs` or a test, or
+   - a check in `scripts/checks/checkNamingConventions.mjs` or a test, or
    - a step in the skill that covers the routine (`skills/<name>/SKILL.md`).
 3. Fix everything the rule already breaks in the repo, in the same commit.
 4. Put the rule in the `log.md` entry's `Why:` line.

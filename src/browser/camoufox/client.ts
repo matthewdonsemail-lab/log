@@ -1,6 +1,6 @@
 /**
  * Camoufox as a `BrowserDriver` for the session machine (rule 44). Camoufox's gate and
- * self-check run inside its launch (python/proxyGate.py), so this driver's steps are given
+ * self-check run inside its launch (python/browser/proxyGate.py), so this driver's steps are given
  * by the caller that opens the Python session, the same way AdsPower's are. A step not given
  * refuses with a catalog code, never silently.
  */

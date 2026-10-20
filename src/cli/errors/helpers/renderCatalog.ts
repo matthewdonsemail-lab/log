@@ -58,7 +58,7 @@ export function renderCatalogMarkdown(): string {
     "change the catalog, re-export, and `catalog.test.ts` checks the two match.",
     "",
     "Every failure in log-cli carries one of these codes, whether it starts in TypeScript or in",
-    "`python/logWorker.py` / `python/publishSession.py`. A code the catalog doesn't have becomes",
+    "`python/session/logWorker.py` / `python/session/publishSession.py`. A code the catalog doesn't have becomes",
     "`uncatalogued` at the boundary, so nothing unknown passes as known.",
     "",
     "- **Retry**: yes means it can clear by itself (a retry, or time). No means a person acts.",

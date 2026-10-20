@@ -75,7 +75,7 @@ keeps only Camoufox's config (the `CAMOU_CONFIG_*` payload) and the Firefox
 prefs, and stores them in `socialAccounts.deviceProfile`. The environment that
 `launch_options()` normally copies (every secret in the process) is never
 kept, and the browser only ever gets the system variables Firefox needs
-(`SAFE_ENV` in `python/deviceProfile.py`) plus `CAMOU_CONFIG_*`.
+(`SAFE_ENV` in `python/device/deviceProfile.py`) plus `CAMOU_CONFIG_*`.
 
 - Windows always: this PC's real GPU and font stack draw it, so a Mac or Linux
   claim couldn't match the pixels.

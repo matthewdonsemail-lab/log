@@ -13,7 +13,7 @@ export const DEFAULT_BROWSER_DRIVER: BrowserDriverName = 'camoufox'
 /**
  * What every browser must do, the same way (rule 44). Each browser domain (`src/browser/<name>`)
  * declares its row; `bun run check:browsers` refuses a browser missing from the parity table
- * (docs/browsers.md, generated from these rows) or from python/browserDriver.py's OPENERS.
+ * (docs/browsers.md, generated from these rows) or from python/browser/browserDriver.py's OPENERS.
  * `notBuilt` is allowed, and listed on every commit so it stays visible.
  */
 export const BROWSER_CAPABILITIES = {
@@ -28,7 +28,7 @@ export const BROWSER_CAPABILITIES = {
   localePinned: "navigator, Accept-Language and Intl in the home country's locale (rule 16)",
   sessionCarried: "The account's signed-in session carries over from one open to the next",
   sessionSaved: 'The session is saved back to Twenty (saveState)',
-  inspectSession: 'log inspect, the flows, the warm-up and log host run in it (python/inspectSession.py)',
+  inspectSession: 'log inspect, the flows, the warm-up and log host run in it (python/session/inspectSession.py)',
   syncSessions: 'publishSession, connectSession and profileSession (the sync sessions) run in it',
   oneMachineAtATime: 'It refuses to open where another machine already has the account open'
 } as const

@@ -167,7 +167,7 @@ export async function syncProfiles(
 
 /**
  * AdsPower as a `BrowserDriver` for the session machine (rule 44), the same shape as Camoufox's.
- * The browser itself is opened by python/browserDriver.py (open_ads_power): the gate, the proxy
+ * The browser itself is opened by python/browser/browserDriver.py (open_ads_power): the gate, the proxy
  * put on the profile, the start, the CDP attach and the self-check, all on the machine AdsPower
  * runs on (docs/deployment.md). This driver only adds what is AdsPower's own: the account must
  * have its profile linked in Twenty. Gate, open and close are given by the caller; one not given

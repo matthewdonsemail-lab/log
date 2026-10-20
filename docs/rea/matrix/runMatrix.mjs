@@ -33,12 +33,12 @@ const evidence = [
   ["docs/rea/facebookClient.md", read("docs/rea/facebookClient.md")],
   ["docs/rea/comparison.md", read("docs/rea/comparison.md")],
   ["docs/identityLeaks/README.md", read("docs/identityLeaks/README.md")],
-  ["python/visibleBrowser.py", read("python/visibleBrowser.py")],
+  ["python/browser/visibleBrowser.py", read("python/browser/visibleBrowser.py")],
 ];
 
 const situation = `SITUATION
 log-cli publishes Facebook Marketplace listings through Playwright driving Camoufox.
-python/visibleBrowser.py is the only launch: headed, humanize 1.5 (a float; a boolean hangs mouse.move), cursor shown.
+python/browser/visibleBrowser.py is the only launch: headed, humanize 1.5 (a float; a boolean hangs mouse.move), cursor shown.
 The proxy gate, one device per account, pinned locale, launch self-check and local hours run before Facebook loads.
 REA (morluto/rea, rea-agents 6.7.0) is installed globally. Its page tools speak Chrome CDP. Camoufox is Firefox.
 The goal is to observe the create page's scripts and the requests the page itself makes, then check that evidence

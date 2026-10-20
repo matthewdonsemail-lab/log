@@ -2,7 +2,7 @@ import type { BrowserDriverName } from '../driver/types'
 /**
  * `log inspect` (rule 29): the account's browser (AdsPower or Camoufox, rule 44) kept open and driven a
  * step at a time, each step recorded and read by rea as it happens
- * (`python/inspectSession.py`). Commands go to the session as JSON lines in a
+ * (`python/session/inspectSession.py`). Commands go to the session as JSON lines in a
  * file it watches; replies come back the same way, so the session can be
  * driven from a second terminal, a script or an agent.
  */
@@ -40,7 +40,7 @@ export interface InspectSessionConfig {
   idleMouse?: boolean
   /** Opened as step 1, or null. */
   startUrl: string | null
-  /** The account's browser (rule 44): python/browserDriver.py opens it. Absent: Camoufox. */
+  /** The account's browser (rule 44): python/browser/browserDriver.py opens it. Absent: Camoufox. */
   browser?: { driver: BrowserDriverName; profileId: string | null }
 }
 

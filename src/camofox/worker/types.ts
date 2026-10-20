@@ -1,5 +1,5 @@
 /**
- * The contract between log-cli and `python/logWorker.py`, the bridge into
+ * The contract between log-cli and `python/session/logWorker.py`, the bridge into
  * facebook-camofox-client (github.com/PRACE1/facebook-camofox-client).
  * One JSON request in (argv), one JSON result out (stdout).
  */

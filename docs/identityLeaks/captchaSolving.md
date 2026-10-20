@@ -31,7 +31,7 @@ page and adds no network identity.
 
 ## Evidence
 
-- **Our code.** `python/publishSession.py:461-496` (`solve_twocaptcha`):
+- **Our code.** `python/session/publishSession.py:461-496` (`solve_twocaptcha`):
   - `:469` `TwoCaptcha(key, defaultTimeout=180, recaptchaTimeout=600, pollingInterval=5)`
   - `:483` `solver.recaptcha(sitekey=site_key, url=s.page.url, enterprise=...)`
   - `:496` `solver.funcaptcha(**kwargs)` with `kwargs = {"sitekey": site_key, "url": s.page.url}`
@@ -47,7 +47,7 @@ page and adds no network identity.
   (S40, S41). Turnstile's are single-use for 300 s, with an optional `remoteip`
   (S42). *vendorDocs*
 - **CaptchaKraken stays in the page.** `solve_kraken`
-  (`python/publishSession.py:437`) takes screenshots and clicks inside the
+  (`python/session/publishSession.py:437`) takes screenshots and clicks inside the
   proxied page. captchakraken 3.2.1 `page_solver.py` uses
   `element.screenshot`/`page.screenshot`. It makes no direct fetch of challenge
   assets, and its overlays are drawn with PIL, not in the DOM (R2 §5, R4).
@@ -79,7 +79,7 @@ page and adds no network identity.
 
 ## Where in our code it can happen again
 
-- `python/publishSession.py:461-496`: any new solver call, or any new task type
+- `python/session/publishSession.py:461-496`: any new solver call, or any new task type
   (hCaptcha, Turnstile).
 - `src/captcha/router/`: the order of solvers. AGENTS.md rule 10:
   CaptchaKraken first, then 2Captcha. Arkose goes to 2Captcha only, capped per
@@ -100,7 +100,7 @@ page and adds no network identity.
 3. **Pass the browser's user agent:** `userAgent=s.page.evaluate("navigator.userAgent")`,
    plus the page cookies, and the captcha **frame** URL.
 4. **Refuse without a proxy.** New catalog code `captchaNoProxy`, added to
-   `src/errors/catalog/types.ts` and exported to `python/errorCatalog.json`.
+   `src/errors/catalog/types.ts` and exported to `python/errors/errorCatalog.json`.
 5. **Record it.** Write whether a proxy was used into the captcha ledger
    (`src/captcha/router/client.ts`, `~/.logCli/captcha/attempts.jsonl`).
 6. **Treat Arkose through 2Captcha as account-burning.** That matches the
@@ -122,7 +122,7 @@ Leaking at `f033e63` (2Captcha path only). **Fixed at `2de5ff5`.** *unitTested*
 
 - 2Captcha now gets the account's proxy, the browser's own `userAgent` and
   Google's cookies only. Facebook session cookies are never sent
-  (`recaptcha_cookies` in `python/publishSession.py`).
+  (`recaptcha_cookies` in `python/session/publishSession.py`).
 - With no usable proxy it refuses with `captchaNoProxy`. CaptchaKraken is tried
   first.
 - Not checked live: no captcha came up during the dry runs.

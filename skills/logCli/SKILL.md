@@ -42,7 +42,7 @@ none of them prompt unless you run `log launch` in a terminal.
   (`python -m camoufox fetch`).
 - `log-cli/.env.local` (git-ignored): `TWENTY_BASE_URL`, `TWENTY_API_KEY`,
   `CAPTCHA_KRAKEN_API_KEY`, `2CAPTCHA_API_KEY`. `LOG_PYTHON` picks the interpreter.
-- After adding Twenty fields: `node scripts/twentySetup.mjs --apply`, then
+- After adding Twenty fields: `node scripts/twenty/twentySetup.mjs --apply`, then
   `bun run twenty:client` (the generated client, rule 14).
 
 ## Commands

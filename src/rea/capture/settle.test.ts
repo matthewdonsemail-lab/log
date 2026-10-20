@@ -129,7 +129,7 @@ describe("settleCapture", () => {
 
 describe("publishSession records the HAR through the existing context", () => {
   test("record_har_path is a new_context argument, and Camoufox is still launched once", () => {
-    const text = readFileSync(join(import.meta.dir, "..", "..", "..", "python", "publishSession.py"), "utf8");
+    const text = readFileSync(join(import.meta.dir, "..", "..", "..", "python", "session", "publishSession.py"), "utf8");
     expect(text).toContain('record_har_path');
     expect(text).toContain('record_har_content');
     expect(text).toContain('"embed"');

@@ -65,8 +65,8 @@ bibliography is `sources.md` (R1 to R4, S1 to S53).
 **Line numbers were re-checked for this study** against `f033e63` and
 `29e9730`. R4 cites some log-cli lines that don't match the files:
 
-- `python/visibleBrowser.py`: R4's `:474-503` is `:23-52`. The file is 53 lines.
-- `python/logWorker.py`: R4's `:292-298` is `:142`; `:314-371` is `:162`;
+- `python/browser/visibleBrowser.py`: R4's `:474-503` is `:23-52`. The file is 53 lines.
+- `python/session/logWorker.py`: R4's `:292-298` is `:142`; `:314-371` is `:162`;
   `:374-404` is `:222`; `:418-422` is `:270`.
 - `src/proxyVendor/twoCaptcha/helpers/buildProxyUrl.ts`: R4's `:306-312` is
   `:38-44`.
@@ -198,7 +198,7 @@ durable route is the proposed `python/leakProbe.py` plus `log proxy probe`
 Re-run every probe after:
 
 - any upgrade of Camoufox, the browser build or Playwright;
-- any change to `python/proxyGate.py` or `python/visibleBrowser.py`;
+- any change to `python/browser/proxyGate.py` or `python/browser/visibleBrowser.py`;
 - adding a launch path;
 - changing proxy vendor or protocol.
 

@@ -2,7 +2,7 @@
  * The known page states and what resolves each (matt, 2026-10-20: "we already
  * know this exists, so solve it"). A page an inspect step landed on is matched
  * from its URL and accessibility snapshot, the same signals as
- * `python/autoLogin.py` `classify` (the connect machine's pages), and recorded
+ * `python/login/autoLogin.py` `classify` (the connect machine's pages), and recorded
  * on Reading's checkpoint (inspect 20261020T105346 steps 38-44). The Claude Code
  * hook (`scripts/hooks/pageState.ts`, rule 54) puts the state and its resolver
  * into the agent's context after every tool call, so a known state is never a

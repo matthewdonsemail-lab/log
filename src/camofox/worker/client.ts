@@ -1,5 +1,5 @@
 /**
- * Spawns `python/logWorker.py`, the bridge into facebook-camofox-client. This
+ * Spawns `python/session/logWorker.py`, the bridge into facebook-camofox-client. This
  * is the piece the seed-only CLI was missing: it launches a real Camoufox
  * browser. Ported from inferencesaver `scripts/facebook-client.mjs`, which
  * spawned the old `facebook-worker.py` the same way.
@@ -13,7 +13,7 @@ import { pipeProcessLog } from "../../observability/processLog/index.ts";
 import { parseWorkerOutput } from "./helpers/index.ts";
 import type { WorkerAction, WorkerClient, WorkerRequest, WorkerResult, WorkerRunOptions } from "./types.ts";
 
-export const WORKER_PATH = fileURLToPath(new URL("../../../python/logWorker.py", import.meta.url));
+export const WORKER_PATH = fileURLToPath(new URL("../../../python/session/logWorker.py", import.meta.url));
 
 export const runWorker: WorkerClient = <A extends WorkerAction>(
   request: WorkerRequest & { action: A },

@@ -4,7 +4,7 @@
  * Accounts come from Twenty (socialAccounts, platform FACEBOOK). Every one of
  * these that opens Camoufox first passes `prepareRun` (the account is
  * Facebook, usable, has a proxy and a home country) and then
- * python/proxyGate.py (the proxy's exit IP is in that country). There is no
+ * python/browser/proxyGate.py (the proxy's exit IP is in that country). There is no
  * way around either, signing in included (AGENTS.md rule 12).
  */
 import { createActor, fromPromise, toPromise } from "xstate";

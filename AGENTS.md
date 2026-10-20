@@ -175,10 +175,10 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     holds for editing and deleting.
 11. 2026-10-18 · Camoufox is never headless. Every launch is headed so the
     window can be watched, with humanize on and the cursor shown
-    (`python/visibleBrowser.py`). There is no flag to turn it off.
+    (`python/browser/visibleBrowser.py`). There is no flag to turn it off.
     `camofox/session/visible.test.ts` enforces it.
 12. 2026-10-18 · No browser opens for an account unless its proxy is attached
-    and its exit IP is in the account's country (`python/proxyGate.py`). There
+    and its exit IP is in the account's country (`python/browser/proxyGate.py`). There
     is no exception: not dry runs, not signing in (matt: "never, ever open"
     without one). Listings must be in the account's country, and the form's
     location must be picked in that country. How it works: `docs/proxies.md`.
@@ -187,7 +187,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `agencyListings`. Never delete either: a banned or dead account keeps its
     record with its status, and its campaign listings get replacement accounts
     in the same country (`docs/accountsAndListings.md`). Fields are only ever
-    added (`scripts/twentySetup.mjs`), never renamed or retyped, so the
+    added (`scripts/twenty/twentySetup.mjs`), never renamed or retyped, so the
     twitter-controller keeps working.
 14. 2026-10-18 · Twenty is reached through the generated GraphQL client, the
     same one blaster and the dialer use (`bun run twenty:client`,
@@ -195,7 +195,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 15. 2026-10-18 · One device per account: its first launch makes one Windows
     Camoufox identity (screen, GPU, fonts, voices, audio seed, geolocation)
     stored in `socialAccounts.deviceProfile`, and every launch
-    replays it exactly (`python/deviceProfile.py`). Never regenerated or
+    replays it exactly (`python/device/deviceProfile.py`). Never regenerated or
     printed; an unreadable one is refused (`deviceProfileInvalid`).
 16. 2026-10-18 · The locale is pinned per home country at launch, from one
     table (`HOME_COUNTRIES` in `src/marketplace/home/types.ts`: IE en-IE, GB
@@ -224,11 +224,11 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 21. 2026-10-19 · matt asked for auto-login: `log connect --noPrompt` (always,
     over MCP) signs in by itself with the account's Twenty email, password
     and totpSecret, typing the current authenticator code on the two-step
-    page (`python/autoLogin.py`). They are read only by
+    page (`python/login/autoLogin.py`). They are read only by
     `twenty.loginSecrets`, for that run, into the run folder's `login.json`
     (0600, deleted with it), and are never printed or logged. Every vendor
     order in `docs/vendors/*.txt` (git-ignored) is imported with all its fields
-    by `scripts/importVendorAccounts.mjs`, which shows each field only as
+    by `scripts/twenty/importVendorAccounts.mjs`, which shows each field only as
     `<set>` or `<empty>`.
 22. 2026-10-19 · Every action records a HAR, with no way to turn it off.
     The proxy gate puts a raw HAR recorder (rule 19) on every browser context,
@@ -280,7 +280,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     (`socialAccounts.profilePhoto`, `coverPhoto`; a URL or path, fetched
     through the account's proxy and varied, `media/photo`), both in one run
     (matt's choice), through the profile machine (`marketplace/profile`,
-    `python/profileSession.py`). A dry run unless `--live`; the dry run
+    `python/session/profileSession.py`). A dry run unless `--live`; the dry run
     lists every control the profile page has in `profileFound.txt`, and the
     clicks are checked against it before the first `--live` (rule 25). It is
     a launch like any other (rules 11-12, 15-18, 22, 24). 2026-10-19, matt
@@ -322,8 +322,8 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     MCP tool of its own (`flowProfileSetup`). The docs gate requires each
     flow's doc.
 32. 2026-10-19 · matt: the cursor moves as his own hand does, measured, not
-    guessed. `python/recordMouse.py` recorded his mouse on a Facebook page
-    (60 s, ~/.logCli/mouse/20261019T192448.json); `python/humanMouse.py` is
+    guessed. `python/human/recordMouse.py` recorded his mouse on a Facebook page
+    (60 s, ~/.logCli/mouse/20261019T192448.json); `python/human/humanMouse.py` is
     fitted to it: one continuous velocity profile per move (Bezier path, speed
     peak in the first third, long settle, 0.42-0.45 s for 400-800 px),
     overshoot of 10-60 px and return in about half of reaches, loose 80-350 px
@@ -347,7 +347,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     to `agencyListing` and `socialAccount`; `agencyMessage` gains its
     relation to `agencyConversation` and Listaro's per-message fields
     (`isRead`, `sentBy`, `aiStatus`), all additive (rule 13,
-    `scripts/twentySetup.mjs`). A conversation is keyed on the account and
+    `scripts/twenty/twentySetup.mjs`). A conversation is keyed on the account and
     Facebook's thread id, never a hash of the buyer's name; a message on
     Facebook's message id or a stable hash, so a rescan adds nothing. The
     listing is matched by its Facebook id or a unique title, never guessed.
@@ -416,7 +416,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     AdsPower (Chromium, attached over CDP) and Camoufox (Firefox, launched)
     are both driven with Playwright's async API, never Puppeteer. AdsPower's
     `ws.puppeteer` is only the name of the CDP websocket it returns.
-    `python/browserDriver.py` opens either and hands every session the same
+    `python/browser/browserDriver.py` opens either and hands every session the same
     context. So the proxy gate (`gate_attached`), the self-check
     (`check_attached`), the session HAR (`harRecorder.SessionHar`), HumanMouse,
     scrollMotion, the flows and the warm-up are the same code on both. This
@@ -488,7 +488,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     watch is the viewer's next real play scaled by the interest effect
     measured on KuaiRand-Pure's random log (their kind ×1.10-1.67, outside
     ×0.90-0.99; likes ×1.28 against ×0.95, comments ×1.40 against ×0.93,
-    `scripts/buildInterestEffect.ts`), and at most one action (U = p ×
+    `scripts/datasets/buildInterestEffect.ts`), and at most one action (U = p ×
     interest effect × segment weight × attention fit, a like cooldown of 3
     reels, only what the run allows, rule 8), a close call settled by the
     read's pick. The watch counts from when the reel landed, so SubQ's answer
@@ -572,6 +572,18 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     own: `device`, `session`, `worker`. The `browserParity` check allows
     these shared domains (`SHARED_DOMAINS`) and nothing else that isn't a
     browser.
+58. 2026-10-20 · matt: no loose files. `python/` and `scripts/` hold domain
+    folders only, as `src/` holds `{library}/{domain}/`. Python:
+    `browser/` (browserDriver, adsPowerBrowser, visibleBrowser, proxyGate,
+    harRecorder), `human/` (humanMouse, scrollMotion, recordMouse),
+    `session/` (inspect, connect, publish, profile sessions, logWorker),
+    `login/` (autoLogin), `device/` (deviceProfile), `errors/` (errorCodes,
+    errorCatalog.json), `fixtures/`; each is a package (`__init__.py`), imports
+    are by package (`from browser import proxyGate`), and a script run
+    directly puts `python/` on its path. Scripts: `checks/`, `commitLog/`,
+    `datasets/`, `docs/`, `hooks/`, `twenty/`. lefthook's `layout` (`bun run
+    check:layout`, pre-commit and pre-push) refuses a file loose at the top of
+    either, tracked or new, and a Python domain without its `__init__.py`.
 
 ## Checks
 
@@ -599,7 +611,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 
 - `doctor`, `scan`, `status` go through `camofox/worker` and launch a real
   Camoufox browser. `connect` is the connect machine
-  (`marketplace/connect`) driving `python/connectSession.py` one step at a
+  (`marketplace/connect`) driving `python/session/connectSession.py` one step at a
   time, like publish. Tests inject `worker` and `connectSession` into the
   context and never launch a browser.
 - Read-only on Facebook, except `connect`, which only signs in and saves a session, and

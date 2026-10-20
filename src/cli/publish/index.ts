@@ -5,7 +5,7 @@
  * The listing row says what to post and which socialAccount posts it. Before
  * anything opens (dry run or live, rule 12): the account is Facebook and
  * usable, has a proxy and a home country, and the listing is in that country.
- * At launch python/proxyGate.py checks the proxy's exit IP is in it too.
+ * At launch python/browser/proxyGate.py checks the proxy's exit IP is in it too.
  *
  * Dry run by default: it opens the form, uploads the photos, fills and reads
  * back every field, screenshots the review, and stops before Publish. Only

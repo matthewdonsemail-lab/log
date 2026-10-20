@@ -7,7 +7,7 @@ and it does not drive it.
 
 ## log-cli
 
-`python/publishSession.py` is the only publish browser. The module docstring
+`python/session/publishSession.py` is the only publish browser. The module docstring
 states the split: `src/marketplace/publish/machine.ts` decides, the Python
 only acts. One Camoufox process stays up. TypeScript sends a JSON line per
 step and reads one JSON line back.
@@ -16,7 +16,7 @@ Before `open`, `checkRunnable` in
 `src/marketplace/socialAccount/helpers/checkRunnable.ts` refuses anything
 that is not a FACEBOOK account with a usable status, a readable proxy and a
 home country. Sign-in is included. `prepareRun` in `src/browser/run/client.ts`
-then refuses `outsideActiveHours`. `python/proxyGate.py` checks the exit
+then refuses `outsideActiveHours`. `python/browser/proxyGate.py` checks the exit
 country, and the launch self-check compares timezone, locale and exit IP
 before Facebook is loaded.
 
@@ -29,7 +29,7 @@ What this path does not do: it does not save the page's scripts, and it does
 not record a HAR. The selectors it trusts are the ones written up in
 `docs/listingPublish/formFill.md`.
 
-`log scan`, `log status` and `log watch` go through `python/logWorker.py`
+`log scan`, `log status` and `log watch` go through `python/session/logWorker.py`
 into facebook-camofox-client. They read. They do not post. `log watch` only
 decides a relist. Nothing in the monitor posts.
 

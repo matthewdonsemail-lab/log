@@ -46,7 +46,7 @@ export function captureDirFor(accountName: string, action: string, now: Date, ro
   return join(root ?? (process.env.LOG_RUNS_DIR || join(homedir(), '.logCli', 'runs')), action, `${stamp}_${accountName.replace(/\W/g, '')}`, browser)
 }
 
-/** The actions that open through python/browserDriver.py, so they run on the account's browser (rule 44). The rest still launch Camoufox. */
+/** The actions that open through python/browser/browserDriver.py, so they run on the account's browser (rule 44). The rest still launch Camoufox. */
 export const OPENER_ACTIONS: ReadonlySet<string> = new Set(['inspect', 'flow', 'warmup', 'host'])
 
 /** Which browser a run of this action uses, so its capture folder can say so. Pure. */

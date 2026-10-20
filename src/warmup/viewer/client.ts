@@ -5,19 +5,19 @@ import { seeded } from '../facebook/helpers/reelSession'
 import type { InterestEffect } from './helpers/interestEffect'
 import type { ReelViewer, ViewerFile } from './types'
 
-/** `~/.logCli/datasets/reelViewers/kuaiRand1k.json`, built by `scripts/buildReelViewers.ts`. */
+/** `~/.logCli/datasets/reelViewers/kuaiRand1k.json`, built by `scripts/datasets/buildReelViewers.ts`. */
 export const viewersPath = (dir = datasetsDir()) => join(dir, 'reelViewers', 'kuaiRand1k.json')
 
-/** `~/.logCli/datasets/reelViewers/interestEffect.json`, built by `scripts/buildInterestEffect.ts`. */
+/** `~/.logCli/datasets/reelViewers/interestEffect.json`, built by `scripts/datasets/buildInterestEffect.ts`. */
 export const interestEffectPath = (dir = datasetsDir()) => join(dir, 'reelViewers', 'interestEffect.json')
 
 export function readInterestEffect(path = interestEffectPath()): InterestEffect {
-  if (!existsSync(path)) throw Object.assign(new Error(`the interest effect isn't measured yet (${path}): bun scripts/buildInterestEffect.ts`), { code: 'interestEffectMissing' })
+  if (!existsSync(path)) throw Object.assign(new Error(`the interest effect isn't measured yet (${path}): bun scripts/datasets/buildInterestEffect.ts`), { code: 'interestEffectMissing' })
   return JSON.parse(readFileSync(path, 'utf8')) as InterestEffect
 }
 
 export function readViewers(path = viewersPath()): ViewerFile {
-  if (!existsSync(path)) throw Object.assign(new Error(`the real viewers aren't built yet (${path}): bun scripts/buildReelViewers.ts`), { code: 'viewersMissing' })
+  if (!existsSync(path)) throw Object.assign(new Error(`the real viewers aren't built yet (${path}): bun scripts/datasets/buildReelViewers.ts`), { code: 'viewersMissing' })
   return JSON.parse(readFileSync(path, 'utf8')) as ViewerFile
 }
 

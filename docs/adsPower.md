@@ -22,8 +22,8 @@ Its client, `Listaro_backup/src/lib/adspower-client.ts`, is ported here.
 | `src/browser/adsPower/client.ts` | The Local API client (v2 endpoints, `Authorization: Bearer <ADSPOWER_API_KEY>`, "Too many request" retried twice, catalog errors), `syncProfiles`, and `adsPowerDriver` |
 | `src/browser/adsPower/helpers/` | `profileRequest` (the create body) and `planSync` (create, relink, linked or skip, per account) |
 | `src/browser/adsPower/types.ts` | Its types, and `adsPowerCapabilities`, its row of the parity table |
-| `python/adsPowerBrowser.py` | The same Local API from Python: set the profile's proxy, start, stop |
-| `python/browserDriver.py` | `open_ads_power`: gate, proxy on, start headed, `connect_over_cdp`, the profile's context, session HAR, self-check; at the end, stop and proxy off |
+| `python/browser/adsPowerBrowser.py` | The same Local API from Python: set the profile's proxy, start, stop |
+| `python/browser/browserDriver.py` | `open_ads_power`: gate, proxy on, start headed, `connect_over_cdp`, the profile's context, session HAR, self-check; at the end, stop and proxy off |
 | `src/cli/adsPower/` | `log adsPower status`, `log adsPower profiles`, `log adsPower sync [--apply]` |
 
 Twenty gains two fields, both additive (rule 13):
@@ -47,7 +47,7 @@ Twenty's saved session is carried in once, only into a profile with no Facebook 
 ## Opening an account on AdsPower
 
 1. Set `socialAccounts.browserDriver` to `adsPower` for the account. Its profile must be linked (`log adsPower sync --apply`).
-2. `log inspect start --account <a>`, `log flow run`, `log warmup run` and `log host start` then open its AdsPower profile through `python/browserDriver.py`. The gate, self-check, session HAR, human mouse and scroll are the same as on Camoufox.
+2. `log inspect start --account <a>`, `log flow run`, `log warmup run` and `log host start` then open its AdsPower profile through `python/browser/browserDriver.py`. The gate, self-check, session HAR, human mouse and scroll are the same as on Camoufox.
 
 ## Not built yet
 

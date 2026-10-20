@@ -10,7 +10,7 @@ it is in. The browser is chosen per account in Twenty (`socialAccounts.browserDr
 TS  log host / log inspect / log flow / log warmup
       └─ openInspectSession(account)  ── browser: browserFor(account)  (src/browser/driver)
 Py  inspectSession.py
-      └─ browserDriver.open_browser(config)                (python/browserDriver.py)
+      └─ browserDriver.open_browser(config)                (python/browser/browserDriver.py)
            camoufox: AsyncCamoufox(launch_kwargs) → new_context  (the gate's launch and context guards)
            adsPower: gate_attached → profile proxy → Local API start → connect_over_cdp
                      → the profile's context → SessionHar → check_attached
@@ -35,7 +35,7 @@ From `Listaro_backup/src/lib/adspower-client.ts` and its AdsPower server plan (2
 
 | Listaro | log-cli |
 | --- | --- |
-| The Local API client: start, stop and list profiles, then Playwright over CDP | `src/browser/adsPower/client.ts` (v2 endpoints) and `python/adsPowerBrowser.py` |
+| The Local API client: start, stop and list profiles, then Playwright over CDP | `src/browser/adsPower/client.ts` (v2 endpoints) and `python/browser/adsPowerBrowser.py` |
 | One AdsPower window per account, held open | `log host` (rule 35) opens the account's profile once a day and keeps it open; every action is a tab |
 | Never close the AdsPower context | Sessions close only their own tabs. The profile is stopped through the Local API at the end, never by `context.close()` |
 | No stealth scripts for AdsPower | Nothing is injected into any page (rule 32) |
@@ -53,7 +53,7 @@ it is listed on every commit, not refused.
 
 | Capability | What it means | camoufox | adsPower |
 | --- | --- | --- | --- |
-| `headedWindow` | A visible window you can watch, never headless (rule 11) | built: visibleBrowser.launch_kwargs: headless False, humanize, showcursor (rule 11) | built: Local API start with headless "0" (python/adsPowerBrowser.py); on a server the window renders on Xvfb |
+| `headedWindow` | A visible window you can watch, never headless (rule 11) | built: visibleBrowser.launch_kwargs: headless False, humanize, showcursor (rule 11) | built: Local API start with headless "0" (python/browser/adsPowerBrowser.py); on a server the window renders on Xvfb |
 | `proxyGate` | The account's proxy, exit IP in its country and speed checked before the browser starts (rule 12) | built: proxyGate.apply() builds the only launch options; the launch guard refuses any other | built: proxyGate.gate_attached() before the profile starts; the proxy is put on the profile only then |
 | `selfCheck` | Timezone, language, Intl and exit IP agree in a page and a worker before Facebook loads (rule 17) | built: proxyGate's new_context guard runs _self_check before the caller gets the context | built: proxyGate.check_attached() on the CDP context, the same verdict as Camoufox |
 | `sessionHar` | The raw session HAR of every request (rules 19, 22) | built: Playwright's record_har_path, forced on every context by the gate | built: harRecorder.SessionHar from the context events, written as session.har at close |
@@ -64,7 +64,7 @@ it is listed on every commit, not refused.
 | `localePinned` | navigator, Accept-Language and Intl in the home country's locale (rule 16) | built: HOME_COUNTRIES locale in the launch; the self-check checks it (rule 16) | built: the profile's language from HOME_COUNTRIES; the self-check checks it |
 | `sessionCarried` | The account's signed-in session carries over from one open to the next | built: Twenty's cookies and localStorage as the context's storage_state each open | built: the profile keeps its own cookies; Twenty's session is carried in once when it has none |
 | `sessionSaved` | The session is saved back to Twenty (saveState) | built: saveState writes the context storage state, saved to Twenty | built: saveState writes the context storage state, saved to Twenty |
-| `inspectSession` | log inspect, the flows, the warm-up and log host run in it (python/inspectSession.py) | built: python/browserDriver.py open_camoufox | built: python/browserDriver.py open_ads_power |
+| `inspectSession` | log inspect, the flows, the warm-up and log host run in it (python/session/inspectSession.py) | built: python/browser/browserDriver.py open_camoufox | built: python/browser/browserDriver.py open_ads_power |
 | `syncSessions` | publishSession, connectSession and profileSession (the sync sessions) run in it | built: publishSession, connectSession and profileSession launch it (sync API) | **not built**: publishSession, connectSession and profileSession still launch Camoufox (sync API) |
 | `oneMachineAtATime` | It refuses to open where another machine already has the account open | n/a: Camoufox runs only where log-cli runs; there is no shared profile to open twice | **not built**: cloud-active before open (docs/deployment.md) |
 
@@ -74,5 +74,5 @@ it is listed on every commit, not refused.
 
 1. Add its name to `BROWSER_DRIVERS` (`src/browser/driver/types.ts`).
 2. Write `src/browser/<name>/`: `types.ts` with its capabilities row, `client.ts` with its driver, `index.ts`, and `<name>.test.ts`.
-3. Add its opener to `python/browserDriver.py` (`BROWSERS` and `OPENERS`). It must return a gated, self-checked Playwright context and record a session HAR.
+3. Add its opener to `python/browser/browserDriver.py` (`BROWSERS` and `OPENERS`). It must return a gated, self-checked Playwright context and record a session HAR.
 4. Run `bun run browsers:docs`, and commit.

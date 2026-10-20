@@ -37,7 +37,7 @@ reflexive candidate that no STUN exchange ever produced.
   *verifiedSource*
 - **Spoofed address.** `camoufox/utils.py:746-748`: unless `block_webrtc`,
   `webrtc:ipv4` is set to the geoip IP, which the gate pins to the checked exit
-  IP (`python/proxyGate.py:131`). The gate never sets `block_webrtc`.
+  IP (`python/browser/proxyGate.py:131`). The gate never sets `block_webrtc`.
   *verifiedSource*
 - **Live candidates (R3 T4, gateA):**
   ```
@@ -77,7 +77,7 @@ reflexive candidate that no STUN exchange ever produced.
 
 ## Where in our code it can happen again
 
-- `python/proxyGate.py:123-131`: caller kwargs pass through. A
+- `python/browser/proxyGate.py:123-131`: caller kwargs pass through. A
   `block_webrtc=`, `config={'webrtc:*': ...}` or `firefox_user_prefs` that
   changes `media.peerconnection.*` would change this (`gateBypasses.md`).
 - **Proxy rotation.** `webrtc:ipv4` is fixed at launch. After a mid-run

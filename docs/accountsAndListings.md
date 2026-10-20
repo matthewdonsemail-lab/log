@@ -15,7 +15,7 @@ the CLI does it.
 
 The twitter-controller reads the same `socialAccounts` (only `accountName`,
 `platform` and `cookies` on TWITTER rows). log-cli only ever **added** fields
-(`scripts/twentySetup.mjs`), so nothing it relies on changed.
+(`scripts/twenty/twentySetup.mjs`), so nothing it relies on changed.
 
 ## Account status
 
@@ -83,7 +83,7 @@ Before any browser opens, dry run or live:
 3. The listing is in the account's country (`locationCountry`, and the country in
    `locationQuery`).
 4. A live publish is under the account's daily cap.
-5. python/proxyGate.py: the proxy's exit IP is in the home country, and the
+5. python/browser/proxyGate.py: the proxy's exit IP is in the home country, and the
    browser's timezone, locale and WebRTC come from that IP.
 6. On the form, the Location suggestion picked must name that country too.
 

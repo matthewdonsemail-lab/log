@@ -98,8 +98,8 @@ describe('the catalog itself', () => {
     expect([...SOLVER_DEAD_CODES].sort()).toEqual(entries.filter(([, e]) => e.captcha === 'skipSolver').map(([c]) => c).sort())
   })
 
-  test('python/errorCatalog.json is the current export (run `bun run errors:export`)', () => {
-    const exported = JSON.parse(readFileSync(join(root, 'python', 'errorCatalog.json'), 'utf8'))
+  test('python/errors/errorCatalog.json is the current export (run `bun run errors:export`)', () => {
+    const exported = JSON.parse(readFileSync(join(root, 'python', 'errors', 'errorCatalog.json'), 'utf8'))
     expect(exported).toEqual(JSON.parse(JSON.stringify(ERROR_CATALOG)))
   })
 })
@@ -131,7 +131,7 @@ describe('the boundaries only let catalog codes through', () => {
 })
 
 describe('the Python sends only catalog codes', () => {
-  const files = ['logWorker.py', 'publishSession.py', 'connectSession.py', 'errorCodes.py'].map((name) => ({
+  const files = ['session/logWorker.py', 'session/publishSession.py', 'session/connectSession.py', 'errors/errorCodes.py'].map((name) => ({
     name,
     text: readFileSync(join(root, 'python', name), 'utf8')
   }))

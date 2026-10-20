@@ -2824,3 +2824,182 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: Every command now carries its full usage (`Command.usage`, the typecheck refuses one without), and the MCP tool descriptions include it, so the terminal, MCP and README show the same flags. `src/surface` builds a catalog of the surface (`catalog`, `commandEntry`, `flagsOf`, `hooksOn`): each command's usage, flags, MCP tool or terminal-only reason, the hooks that fire on it from a shell and over MCP, live log, rules. From it `src/surface/diagrams` draws four Mermaid diagrams (surface, commands, hooks, pageStates; `resolverStep` keeps edge labels short) and `src/surface/readme` writes the README's section between the surface markers. `scripts/buildDocs.ts` (`bun run docs:build`) writes README.md and `docs/diagrams/*.mmd`; `--check` (`bun run check:docs`, lefthook pre-commit and pre-push) refuses drift, a stale .mmd, and a flag a command parses (parseArgs, takePairs, `=== "--x"`) that its usage doesn't name, or the reverse. That check found and fixed: host parsed an unused --json (removed), and the warmup plan's --json wasn't in its usage (added). The README's hand-written command table, which had gone stale, is replaced by a pointer to the generated section. `flow`, `inspect`, `run` and `proxy` moved from `src/camofox/` to `src/browser/` (git mv per file; every import rewritten by resolving it against the old layout; the path mentions in docs, Python, the error catalog and comments updated; `log.md` left as history), their comments no longer say Camoufox where they mean the account's browser, and `checkBrowserParity` allows these shared domains (`SHARED_DOMAINS`). `src/camofox/` keeps Camoufox's own device, session and worker. Rules 56 and 57 in AGENTS.md and the MCP instructions (`RULES_REVIEWED_THROUGH` 57), the skill `skills/surfaceDocs`.
 Why: matt asked for the README to outline what the MCP, the CLI and the hooks do, with each command's arguments and flags, and Mermaid diagrams kept as `.mmd` files, generated so they stay true. He also pointed out that `src/camofox/flow` is named for one browser while flows run on AdsPower (rule 46): what every browser uses belongs in the browser library, named for what it is.
 Checked: `bun run check:naming`, `check:browsers`, `check:agentHooks`, `check:docs` (README and 4 diagrams match: 29 commands, 1 flow, every flag in its usage), `check:facebookClientDocs` (143 requests) all pass; `tsc --noEmit` clean; `bun test` 718 pass, 0 fail, with the new `src/surface/surface.test.ts`; the error catalog re-exported (`bun run errors:export`) after its `raisedIn` paths moved. The git mv of whole folders was refused while the log MCP server watched the flow definitions folder, so files were moved one by one.
+
+## 2026-10-20 11:52Z · feat/adsPower
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/accountsAndListings.md`: edited
+- `docs/adsPower.md`: edited
+- `docs/browsers.md`: edited
+- `docs/conversations.md`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/identityLeaks/README.md`: edited
+- `docs/identityLeaks/accountHistoryAndMetaEnforcement.md`: edited
+- `docs/identityLeaks/captchaSolving.md`: edited
+- `docs/identityLeaks/deviceFingerprintChurn.md`: edited
+- `docs/identityLeaks/dns.md`: edited
+- `docs/identityLeaks/gateBypasses.md`: edited
+- `docs/identityLeaks/geolocationApi.md`: edited
+- `docs/identityLeaks/http3Quic.md`: edited
+- `docs/identityLeaks/listingContentAndCurrency.md`: edited
+- `docs/identityLeaks/localeAndLanguage.md`: edited
+- `docs/identityLeaks/manualSignIn.md`: edited
+- `docs/identityLeaks/proxyCredentials.md`: edited
+- `docs/identityLeaks/proxyRotationAndGeoAccuracy.md`: edited
+- `docs/identityLeaks/sessionStatePersistence.md`: edited
+- `docs/identityLeaks/standaloneFacebookCamofoxClient.md`: edited
+- `docs/identityLeaks/timezone.md`: edited
+- `docs/identityLeaks/webrtc.md`: edited
+- `docs/listingPublish/captchaKraken.md`: edited
+- `docs/namingConventions.md`: edited
+- `docs/platforms/facebook/login/loginDeviceBasedRegularLogin.md`: edited
+- `docs/proxies.md`: edited
+- `docs/rea/README.md`: edited
+- `docs/rea/comparison.md`: edited
+- `docs/rea/facebookClient.md`: edited
+- `docs/rea/matrix/README.md`: edited
+- `docs/rea/matrix/claims.json`: edited
+- `docs/rea/matrix/criteria.json`: edited
+- `docs/rea/matrix/runMatrix.mjs`: changed const evidence, const situation
+- `docs/rea/sources.md`: edited
+- `docs/rea/spec.md`: edited
+- `docs/recordToFlow.md`: edited
+- `lefthook.yml`: edited
+- `package.json`: edited
+- `python/adsPowerBrowser.py`: file deleted · removed const DEFAULT_HOST, const RATE_LIMIT_WAIT_S, def base_url, def _call, def user_proxy_config, const NO_PROXY, def set_proxy, def start, def stop
+- `python/autoLogin.py`: file deleted · removed const TWO_STEP, const AUTOMATED_TEXT, const VIDEO_SELFIE_TEXT, const CHECKPOINT_TEXT, const SMS_TEXT, const ANOTHER_WAY, const DISABLED_TEXT, const DISABLED_URL, const WRONG_PASSWORD_TEXT, const FIND_ACCOUNT_TEXT, const COOKIE_BANNER, const TRUST_TEXT, const SAVE_LOGIN_TEXT, const CONTINUE_AS_TEXT, const CHECKPOINT_URL, const LOGIN_URL, const CODE_FIELD, const PASSWORD_FIELD, const EMAIL_FIELD, const CLICK_MS, def totp, def classify, def _visible, def _scope, def _pick, def _click_button, def _type, def heading, def frames_text, def button_names, def login_markers, def read, def submit_credentials, def choose_auth_app, def submit_code, const DISMISS, const DISMISS_SELECTOR, def dismiss
+- `python/browser/__init__.py`: new file, no top-level declarations
+- `python/browser/adsPowerBrowser.py`: added const DEFAULT_HOST, const RATE_LIMIT_WAIT_S, def base_url, def _call, def user_proxy_config, const NO_PROXY, def set_proxy, def start, def stop
+- `python/browser/browserDriver.py`: added const BROWSERS, class Opened, def driver_of, def open_camoufox, def open_ads_power, def carry_session_once, const OPENERS, def open_browser
+- `python/browser/harRecorder.py`: added const STATIC, const TEXT_TYPES, const MAX_BODY, class Recorder, class SessionHar
+- `python/browser/proxyGate.py`: added const ALLOWED_CALLER_KEYS, const IP_ECHO_URLS, const IP_TEXT, const SELF_CHECK_JS, def log, def note_step, class GateError, def arm, def load_proxy, def playwright_proxy, def proxy_url, def loaded_proxy, def twocaptcha_proxy, def locate_ip, def exit_location, def check, const FACEBOOK_PROBES, const SLOW_MS, const PROBE_ROUNDS, def slow_ms, def facebook_ms, def apply, def gate_attached, def check_attached, def pinned, def _require_gate, def _force_context, def har_path, def _force_capture, def expected, def compare, def _ip_from_text, def _self_check, def _checked, def install_guards, def recheck_exit
+- `python/browser/visibleBrowser.py`: added const HUMANIZE_MAX_SECONDS, const HUMANIZE_HOP_SECONDS, def launch_kwargs, def force_visible
+- `python/browserDriver.py`: file deleted · removed const BROWSERS, class Opened, def driver_of, def open_camoufox, def open_ads_power, def carry_session_once, const OPENERS, def open_browser
+- `python/connectSession.py`: file deleted · removed def read_login, def captcha_on, def session_cookies, def step_open, def step_open_in_session, def step_read, def acted, def step_submit_credentials, def step_choose_auth_app, def step_submit_code, def step_dismiss, def step_save, const STEPS, def main
+- `python/device/__init__.py`: new file, no top-level declarations
+- `python/device/deviceProfile.py`: added const PROFILE_VERSION, const HUMANIZE_MIN_SECONDS, const PER_LAUNCH, const SAFE_ENV, const PINNED_PREFS, const PER_LAUNCH_PREFS, const ACCURACY_RANGE_M, class ProfileError, def is_per_launch, def strip_per_launch, def decode_env_config, def safe_env, def locale_config, def refresh_version, def pinned_geolocation, def screen_bounds, def versions, def new_profile, def check_profile, def read_run_file, def write_run_file, def launch_config, def launch_prefs, def build_launch
+- `python/deviceProfile.py`: file deleted · removed const PROFILE_VERSION, const HUMANIZE_MIN_SECONDS, const PER_LAUNCH, const SAFE_ENV, const PINNED_PREFS, const PER_LAUNCH_PREFS, const ACCURACY_RANGE_M, class ProfileError, def is_per_launch, def strip_per_launch, def decode_env_config, def safe_env, def locale_config, def refresh_version, def pinned_geolocation, def screen_bounds, def versions, def new_profile, def check_profile, def read_run_file, def write_run_file, def launch_config, def launch_prefs, def build_launch
+- `python/errorCatalog.json`: file deleted
+- `python/errorCodes.py`: file deleted · removed const CATALOG_PATH, def _load_codes, const CODES, def checked, def register_secret, def redact, def failure
+- `python/errors/__init__.py`: new file, no top-level declarations
+- `python/errors/errorCatalog.json`: new file
+- `python/errors/errorCodes.py`: added const CATALOG_PATH, def _load_codes, const CODES, def checked, def register_secret, def redact, def failure
+- `python/harRecorder.py`: file deleted · removed const STATIC, const TEXT_TYPES, const MAX_BODY, class Recorder, class SessionHar
+- `python/human/__init__.py`: new file, no top-level declarations
+- `python/human/humanMouse.py`: added const MOVE_TIMEOUT, const EMIT_HZ, def min_jerk, def bezier, const TARGETS_JS, const HIT_JS, const ON_TARGET_JS, const MAX_AIMS, def inside_box, class Gesture, def duration_for, def reach, def loops, def ellipse, def rest_for, def look_for, class MouseBase, class HumanMouse, class SyncHumanMouse, def human_scroll_into_view, def human_scroll_by, def human_click
+- `python/human/recordMouse.py`: added const HZ, const MOVING_PX_S, const STILL_GAP_S, class POINT, def record, def analyze, def main
+- `python/human/scrollMotion.py`: added class ScrollStep, def _bell_phase, def human_scroll_trajectory, const OWNER_JS, const DISTANCE_JS, const CONTAINER_STEP_JS, def _viewport, def _wheel_point, def scroll_by, def scroll_into_view, def scroll_by_sync, def scroll_into_view_sync
+- `python/humanMouse.py`: file deleted · removed const MOVE_TIMEOUT, const EMIT_HZ, def min_jerk, def bezier, const TARGETS_JS, const HIT_JS, const ON_TARGET_JS, const MAX_AIMS, def inside_box, class Gesture, def duration_for, def reach, def loops, def ellipse, def rest_for, def look_for, class MouseBase, class HumanMouse, class SyncHumanMouse, def human_scroll_into_view, def human_scroll_by, def human_click
+- `python/inspectSession.py`: file deleted · removed const IDLE_SECONDS, const QUIET_MS, const SETTLE_MAX_MS, const REA_MAX_BYTES, def log, def now_iso, def slug, const FRIENDLY_NAME, def request_names, def notable, def rea_copy, def run_rea, const FIELD_VALUE, def redact_fields, const INTERACTIVE, def read_login, const SELL_LOCATION, const HITTABLE_JS, def draw, const VISIBLE_LINKS_JS, const POST_OF_HEADING_JS, const POST_HEADINGS, const FEED_POSTS_JS, class Inspector, def main
+- `python/logWorker.py`: file deleted · removed const SELLING_URL, const EXTRACT_JS, def log, const NEEDS_ATTENTION_JS, def body_sample, def auth_flags, def doctor, def keep_state_on_release, def acquire, def scan, def status, const ACTIONS, def main
+- `python/login/__init__.py`: new file, no top-level declarations
+- `python/login/autoLogin.py`: added const TWO_STEP, const AUTOMATED_TEXT, const VIDEO_SELFIE_TEXT, const CHECKPOINT_TEXT, const SMS_TEXT, const ANOTHER_WAY, const DISABLED_TEXT, const DISABLED_URL, const WRONG_PASSWORD_TEXT, const FIND_ACCOUNT_TEXT, const COOKIE_BANNER, const TRUST_TEXT, const SAVE_LOGIN_TEXT, const CONTINUE_AS_TEXT, const CHECKPOINT_URL, const LOGIN_URL, const CODE_FIELD, const PASSWORD_FIELD, const EMAIL_FIELD, const CLICK_MS, def totp, def classify, def _visible, def _scope, def _pick, def _click_button, def _type, def heading, def frames_text, def button_names, def login_markers, def read, def submit_credentials, def choose_auth_app, def submit_code, const DISMISS, const DISMISS_SELECTOR, def dismiss
+- `python/profileSession.py`: file deleted · removed const PROFILE_URL, const NAME_URL, const PROFILE_PICTURE, const COVER, const UPLOAD, const SAVE, const CONTROLS_JS, const NAME_FIELDS_JS, def session_cookies, def run_dir, def save_text, def opener, def label_of, def step_open, def step_read, def step_read_name, def choose_file, def upload, def step_upload_profile_photo, def step_upload_cover_photo, const STEPS, def main
+- `python/proxyGate.py`: file deleted · removed const ALLOWED_CALLER_KEYS, const IP_ECHO_URLS, const IP_TEXT, const SELF_CHECK_JS, def log, def note_step, class GateError, def arm, def load_proxy, def playwright_proxy, def proxy_url, def loaded_proxy, def twocaptcha_proxy, def locate_ip, def exit_location, def check, const FACEBOOK_PROBES, const SLOW_MS, const PROBE_ROUNDS, def slow_ms, def facebook_ms, def apply, def gate_attached, def check_attached, def pinned, def _require_gate, def _force_context, def har_path, def _force_capture, def expected, def compare, def _ip_from_text, def _self_check, def _checked, def install_guards, def recheck_exit
+- `python/publishSession.py`: file deleted · removed const CREATE_PATH, def create_url, const SELLING_URL, const LIMIT_TEXT, const DISABLED_TEXT, const RESTRICTED_TEXT, const BLOCKED_TEXT, const TEXT_CAPTCHA, const CHALLENGE_TEXT, const OOPS_TEXT, const PUBLISHED_TEXT, const PHOTO_COUNT_JS, const EXTRACT_JS, const INJECT_RECAPTCHA_JS, const INJECT_ARKOSE_JS, const DISABLED_JS, def log, const US_STATES, const LOCATION_SELECTORS, def location_field, const LISTED_IN, def listed_in, def visible_inputs, def in_place, def norm, def fail, const NOT_SET_CODES, const KRAKEN_CODES, const TWOCAPTCHA_CODES, class Session, def step_open, def set_marketplace_location, const SELL_LOCATION, def read_sell_location, def sell_location_mismatch, def kraken_code, def solve_kraken, def twocaptcha_code, def recaptcha_cookies, def solve_twocaptcha, def solve_text_image, def step_solve_captcha, def step_set_category, def step_upload_photos, def step_fill_fields, def step_review, def step_publish, def step_confirm, const REVIEW_NEAR, def listing_review, def step_capture_id, const STEPS, def main
+- `python/recordMouse.py`: file deleted · removed const HZ, const MOVING_PX_S, const STILL_GAP_S, class POINT, def record, def analyze, def main
+- `python/scrollMotion.py`: file deleted · removed class ScrollStep, def _bell_phase, def human_scroll_trajectory, const OWNER_JS, const DISTANCE_JS, const CONTAINER_STEP_JS, def _viewport, def _wheel_point, def scroll_by, def scroll_into_view, def scroll_by_sync, def scroll_into_view_sync
+- `python/session/__init__.py`: new file, no top-level declarations
+- `python/session/connectSession.py`: added def read_login, def captcha_on, def session_cookies, def step_open, def step_open_in_session, def step_read, def acted, def step_submit_credentials, def step_choose_auth_app, def step_submit_code, def step_dismiss, def step_save, const STEPS, def main
+- `python/session/inspectSession.py`: added const IDLE_SECONDS, const QUIET_MS, const SETTLE_MAX_MS, const REA_MAX_BYTES, def log, def now_iso, def slug, const FRIENDLY_NAME, def request_names, def notable, def rea_copy, def run_rea, const FIELD_VALUE, def redact_fields, const INTERACTIVE, def read_login, const SELL_LOCATION, const HITTABLE_JS, def draw, const VISIBLE_LINKS_JS, const POST_OF_HEADING_JS, const POST_HEADINGS, const FEED_POSTS_JS, class Inspector, def main
+- `python/session/logWorker.py`: added const SELLING_URL, const EXTRACT_JS, def log, const NEEDS_ATTENTION_JS, def body_sample, def auth_flags, def doctor, def keep_state_on_release, def acquire, def scan, def status, const ACTIONS, def main
+- `python/session/profileSession.py`: added const PROFILE_URL, const NAME_URL, const PROFILE_PICTURE, const COVER, const UPLOAD, const SAVE, const CONTROLS_JS, const NAME_FIELDS_JS, def session_cookies, def run_dir, def save_text, def opener, def label_of, def step_open, def step_read, def step_read_name, def choose_file, def upload, def step_upload_profile_photo, def step_upload_cover_photo, const STEPS, def main
+- `python/session/publishSession.py`: added const CREATE_PATH, def create_url, const SELLING_URL, const LIMIT_TEXT, const DISABLED_TEXT, const RESTRICTED_TEXT, const BLOCKED_TEXT, const TEXT_CAPTCHA, const CHALLENGE_TEXT, const OOPS_TEXT, const PUBLISHED_TEXT, const PHOTO_COUNT_JS, const EXTRACT_JS, const INJECT_RECAPTCHA_JS, const INJECT_ARKOSE_JS, const DISABLED_JS, def log, const US_STATES, const LOCATION_SELECTORS, def location_field, const LISTED_IN, def listed_in, def visible_inputs, def in_place, def norm, def fail, const NOT_SET_CODES, const KRAKEN_CODES, const TWOCAPTCHA_CODES, class Session, def step_open, def set_marketplace_location, const SELL_LOCATION, def read_sell_location, def sell_location_mismatch, def kraken_code, def solve_kraken, def twocaptcha_code, def recaptcha_cookies, def solve_twocaptcha, def solve_text_image, def step_solve_captcha, def step_set_category, def step_upload_photos, def step_fill_fields, def step_review, def step_publish, def step_confirm, const REVIEW_NEAR, def listing_review, def step_capture_id, const STEPS, def main
+- `python/visibleBrowser.py`: file deleted · removed const HUMANIZE_MAX_SECONDS, const HUMANIZE_HOP_SECONDS, def launch_kwargs, def force_visible
+- `scripts/astSummary.mjs`: file deleted · removed const root, const git, function readAt, const normalize, function declarationName, function collectDeclarations, const PY_AST, function collectPython, function diffDeclarations, function renderSummary, function summarize
+- `scripts/buildDocs.ts`: file deleted · removed const root, const check, const problems, const wrote, const entries, const flows, const all, function put, const diagramDir, const readme, const filesUnder, const strings, const cliDir
+- `scripts/buildInterestEffect.ts`: file deleted · removed const dataDir, const csv, const videos, const tags, const plays, const standard, const random, const effect, const out
+- `scripts/buildReelViewers.ts`: file deleted · removed const dataDir, const files, const byUser, const read, const viewers, const out
+- `scripts/checkAgentHooks.ts`: file deleted · removed const root, const write, const problems, const HOST_FILES, const scratch, const commandNames, const tools, const toolNames, const mcpJson, const serverSource
+- `scripts/checkBrowserParity.ts`: file deleted · removed const root, const SHARED_DOMAINS, const problems, const rows, const capabilities, const python, const pyBrowsers, const pyOpeners, const START, const END, const mark, const cell, const table, const docsPath, const docs, const current, const notBuilt
+- `scripts/checkFacebookClientDocs.mjs`: file deleted · removed const root, const docsDir, const indexPath, const problems, const index, const listed, const flowsDir, const captures, const builtAt, const newer, const walk, const documented, const named, const scan
+- `scripts/checkNamingConventions.mjs`: file deleted · removed const root, const CAMEL, const TS_FILE, const violations, const rel, function walk, function checkHelpers, function checkDomains, const KEBAB, const ALLOWED_KEBAB, const LITERAL, function checkLiterals, function checkNames
+- `scripts/checks/checkAgentHooks.ts`: added const root, const write, const problems, const HOST_FILES, const scratch, const commandNames, const tools, const toolNames, const mcpJson, const serverSource
+- `scripts/checks/checkBrowserParity.ts`: added const root, const SHARED_DOMAINS, const problems, const rows, const capabilities, const python, const pyBrowsers, const pyOpeners, const START, const END, const mark, const cell, const table, const docsPath, const docs, const current, const notBuilt
+- `scripts/checks/checkFacebookClientDocs.mjs`: added const root, const docsDir, const indexPath, const problems, const index, const listed, const flowsDir, const captures, const builtAt, const newer, const walk, const documented, const named, const scan
+- `scripts/checks/checkLayout.ts`: added const root, const DOMAIN_ROOTS, const git, const files, const onDisk, const present, const problems, const pyDomains
+- `scripts/checks/checkNamingConventions.mjs`: added const root, const CAMEL, const TS_FILE, const violations, const rel, function walk, function checkHelpers, function checkDomains, const KEBAB, const ALLOWED_KEBAB, const LITERAL, function checkLiterals, function checkNames
+- `scripts/commitLog.mjs`: file deleted · removed const root, const LOG, const PLACEHOLDER, const AST_HEADING, const AGENT_FIELDS, const HEADER, const git, function renderEntry, function addedLines, function astBlock, function checkAdded, function replaceLastAstBlock, function main
+- `scripts/commitLog.test.ts`: file deleted · removed test "reports added, changed and removed declarations from the syntax tree", test "whitespace and comment-only moves inside a declaration don't count as changes", test "test files report test titles", test "renders one line per file", test "the template carries the AST block and three fields to write", test "a written entry with a matching AST passes; a stale AST is caught", test "replaceLastAstBlock swaps only the newest entry's block", test "addedLines reads only the + lines of a diff"
+- `scripts/commitLog/astSummary.mjs`: added const root, const git, function readAt, const normalize, function declarationName, function collectDeclarations, const PY_AST, function collectPython, function diffDeclarations, function renderSummary, function summarize
+- `scripts/commitLog/commitLog.mjs`: added const root, const LOG, const PLACEHOLDER, const AST_HEADING, const AGENT_FIELDS, const HEADER, const git, function renderEntry, function addedLines, function astBlock, function checkAdded, function replaceLastAstBlock, function main
+- `scripts/commitLog/commitLog.test.ts`: added test "reports added, changed and removed declarations from the syntax tree", test "whitespace and comment-only moves inside a declaration don't count as changes", test "test files report test titles", test "renders one line per file", test "the template carries the AST block and three fields to write", test "a written entry with a matching AST passes; a stale AST is caught", test "replaceLastAstBlock swaps only the newest entry's block", test "addedLines reads only the + lines of a diff"
+- `scripts/datasets/buildInterestEffect.ts`: added const dataDir, const csv, const videos, const tags, const plays, const standard, const random, const effect, const out
+- `scripts/datasets/buildReelViewers.ts`: added const dataDir, const files, const byUser, const read, const viewers, const out
+- `scripts/docs/buildDocs.ts`: added const root, const check, const problems, const wrote, const entries, const flows, const all, function put, const diagramDir, const readme, const filesUnder, const strings, const cliDir
+- `scripts/emitTwentyClient.mjs`: file deleted · removed const root, const TARGET_DIR, const HEADER, function loadEnv, const isSource, const toTypeScriptSpecifiers, const withoutOwnTsNocheck, function collect, function readSchema, const schema, const scratch, const emitted
+- `scripts/importVendorAccounts.mjs`: file deleted · removed const root, function loadEnv, const env, const base, const APPLY, function api, const VENDORS, const FIELDS, const files, const accounts, const PA_CITIES, const LOCATION, const existing, const rows, const byName, const shape, const plan, const failed
+- `scripts/twenty/emitTwentyClient.mjs`: added const root, const TARGET_DIR, const HEADER, function loadEnv, const isSource, const toTypeScriptSpecifiers, const withoutOwnTsNocheck, function collect, function readSchema, const schema, const scratch, const emitted
+- `scripts/twenty/importVendorAccounts.mjs`: added const root, function loadEnv, const env, const base, const APPLY, function api, const VENDORS, const FIELDS, const files, const accounts, const PA_CITIES, const LOCATION, const existing, const rows, const byName, const shape, const plan, const failed
+- `scripts/twenty/twentySetup.mjs`: added const root, function loadEnv, const option, const SOCIAL_ACCOUNT_FIELDS, const AGENCY_LISTING_FIELDS, const CHANNEL, const AGENCY_CONVERSATION_FIELDS, const AGENCY_MESSAGE_FIELDS, const NEW_OBJECTS, const AGENCY_GROUP_FIELDS, const RELATIONS, const STATUS_ADDITIONS, const env, const base, function gql, function loadObjects, const CREATE_OBJECT, const CREATE_FIELD, const UPDATE_FIELD, const apply, const objects, const newObjects, const plan, const status, const existing, const missing, const failed
+- `scripts/twentySetup.mjs`: file deleted · removed const root, function loadEnv, const option, const SOCIAL_ACCOUNT_FIELDS, const AGENCY_LISTING_FIELDS, const CHANNEL, const AGENCY_CONVERSATION_FIELDS, const AGENCY_MESSAGE_FIELDS, const NEW_OBJECTS, const AGENCY_GROUP_FIELDS, const RELATIONS, const STATUS_ADDITIONS, const env, const base, function gql, function loadObjects, const CREATE_OBJECT, const CREATE_FIELD, const UPDATE_FIELD, const apply, const objects, const newObjects, const plan, const status, const existing, const missing, const failed
+- `skills.md`: edited
+- `skills/accountToDryRun/SKILL.md`: edited
+- `skills/adsPower/SKILL.md`: edited
+- `skills/captureRule/SKILL.md`: edited
+- `skills/commitLog/SKILL.md`: edited
+- `skills/conversations/SKILL.md`: edited
+- `skills/humanMouse/SKILL.md`: edited
+- `skills/layout/SKILL.md`: new file
+- `skills/lifecycle/SKILL.md`: edited
+- `skills/logCli/SKILL.md`: edited
+- `skills/profileSetup/SKILL.md`: edited
+- `skills/reaCapture/SKILL.md`: edited
+- `skills/warmup/SKILL.md`: edited
+- `src/browser/adsPower/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/adsPower/types.ts`: changed const adsPowerCapabilities
+- `src/browser/camoufox/camoufox.test.ts`: added test "python/browser/browserDriver.py opens exactly the TS browsers, and maps the gate's proxy to AdsPower's" · removed test "python/browserDriver.py opens exactly the TS browsers, and maps the gate's proxy to AdsPower's"
+- `src/browser/camoufox/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/camoufox/types.ts`: changed const camoufoxCapabilities
+- `src/browser/driver/types.ts`: changed const BROWSER_CAPABILITIES
+- `src/browser/flow/helpers/pageState.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/inspect/client.ts`: changed const INSPECT_SESSION_PATH
+- `src/browser/inspect/types.ts`: changed interface InspectSessionConfig
+- `src/browser/proxy/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/run/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/run/types.ts`: changed interface PreparedRun
+- `src/camofox/device/device.test.ts`: changed test "per-launch keys are never stored; the rest of the config is", test "the pinned locale has no script key (with it Intl falls back to plain 'en')", test "a launch replays the stored device and sets this launch's values", test "prefs: the UI locale is this launch's pinned locale, HTTP/3 and DoH are off, nothing per-launch is replayed", test "the browser gets only system environment variables: no keys, no CAMOU_ overrides, no TZ", test "geolocation is near the city, never its centroid, with a believable accuracy", test "a profile that stores per-launch keys, or isn't windows, is refused", test "callers can't add launch options, and can't ask for headless", test "2Captcha gets the account's own proxy in its format, or nothing", test "the proxy password and username prefix never leave in a failure", test "an IP echo's text is read as an IP and nothing else"
+- `src/camofox/device/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/camofox/session/client.ts`: changed const SESSION_PATH, const CONNECT_SESSION_PATH, const PROFILE_SESSION_PATH
+- `src/camofox/session/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/camofox/session/visible.test.ts`: added const pyFiles · changed const read, test "nothing can ask for headless"
+- `src/camofox/worker/client.ts`: changed const WORKER_PATH
+- `src/camofox/worker/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/errors/helpers/renderCatalog.ts`: changed function renderCatalogMarkdown
+- `src/cli/errors/index.ts`: changed const errorsCommand
+- `src/cli/live/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/live/live.test.ts`: changed test "auto-login reads each sign-in page as its kind", test "auto-login hands Facebook's own checkpoints to a person and types codes only on two-step pages", test "auto-login's TOTP matches RFC 6238", test "the first launch's device is saved to Twenty once and never printed"
+- `src/cli/publish/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/publish/publish.test.ts`: changed test "a US state code matches Facebook's suggestion naming the state, never another state", test "FB's text captcha page is read as a captcha, not a checkpoint for a person", test "with no Location field, the form's preview says where it would be listed"
+- `src/errors/catalog/catalog.test.ts`: added test "python/errors/errorCatalog.json is the current export (run `bun run errors:export`)" · removed test "python/errorCatalog.json is the current export (run `bun run errors:export`)"
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/marketplace/agencyListing/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/connect/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/conversation/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/home/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/socialAccount/helpers/checkRunnable.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/socialAccount/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS
+- `src/rea/capture/capture.test.ts`: changed test "no capture folder refuses the context; one is injected, a caller's kept, more contexts numbered"
+- `src/rea/capture/settle.test.ts`: changed test "record_har_path is a new_context argument, and Camoufox is still launched once"
+- `src/rea/facebookClient/helpers/indexModules.ts`: no declaration changed (comments, formatting or line endings)
+- `src/rea/facebookClient/helpers/renderOperationDoc.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/runtime/batcher.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/runtime/createClient.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/runtime/error.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/runtime/fetcher.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/runtime/generateGraphqlOperation.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/runtime/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/runtime/linkTypeMap.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/runtime/typeSelection.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/runtime/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/schema.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/warmup/viewer/client.ts`: changed function readInterestEffect, function readViewers
+
+What changed: No loose files in `python/` or `scripts/`. Python moved into domain packages, each with an `__init__.py` saying what it holds: `browser/` (browserDriver, adsPowerBrowser, visibleBrowser, proxyGate, harRecorder), `human/` (humanMouse, scrollMotion, recordMouse), `session/` (inspect, connect, publish and profile sessions, logWorker), `login/` (autoLogin), `device/` (deviceProfile), `errors/` (errorCodes, errorCatalog.json). Their imports are by package (`from browser import proxyGate`), and each script run directly puts `python/` on its path before its first local import. Scripts moved into `checks/`, `commitLog/`, `datasets/`, `docs/` and `twenty/` beside `hooks/`, their `src` imports and repo root one level up. Every path that names them is updated: the TypeScript launchers (session, worker, inspect), the tests that import or read Python (by package; `visible.test.ts` finds each file by name across the packages), package.json, lefthook.yml, AGENTS.md, the docs, the skills and the generated README; `log.md` is left as history. A new gate, `scripts/checks/checkLayout.ts` (`bun run check:layout`, lefthook pre-commit and pre-push), refuses a file loose at the top of either folder, tracked or new, and a Python domain without its `__init__.py`. The naming gate allows git's `ls-files`, as it already allowed `rev-parse`. Rule 58 in AGENTS.md and the MCP instructions (`RULES_REVIEWED_THROUGH` 58), and the skill `skills/layout`.
+Why: matt pointed out that `python/` and `scripts/` had loose files outside any domain folder (only `scripts/hooks/` was right), and asked for every file to sit in its domain and for a pre-commit gate so it can't happen again.
+Checked: every Python module imports through its package, and each of the six scripts run directly gets past its imports from its new place. `check:naming`, `check:layout` (6 Python packages; it refused a planted `python/looseTest.py`), `check:browsers`, `check:agentHooks`, `check:docs`, `check:facebookClientDocs` all pass; `tsc --noEmit` is clean; `bun test` 718 pass, 0 fail. The first run had 715: three tests in the error catalog read Python files by their old paths while being collected, and bun dropped them without failing. A run of the previous commit in a separate worktree showed which file lost them, and they run again. Removing that worktree followed its node_modules link and emptied the repo's node_modules; `bun install --frozen-lockfile` restored it from the lockfile.

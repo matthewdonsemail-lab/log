@@ -69,7 +69,7 @@ CHECKPOINT), `wrongPassword`, `disabled` (BANNED) or `signInNotFinished`
 (NEEDSLOGIN), each naming the last page.
 
 Before the first connect, the account needs `email`, `password` and
-`totpSecret` in Twenty: `node scripts/importVendorAccounts.mjs` (dry run, each
+`totpSecret` in Twenty: `node scripts/twenty/importVendorAccounts.mjs` (dry run, each
 field `<set>`/`<empty>`), then `--apply`. It reads every `docs/vendors/*.txt`.
 
 Check it:

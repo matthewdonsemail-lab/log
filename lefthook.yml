@@ -6,8 +6,14 @@
 # What changed / Why / Checked are written from it (skills/commitLog/SKILL.md).
 pre-commit:
   commands:
+    # Rule 58: no loose files. python/ and scripts/ hold domain folders only
+    # (python/browser/, scripts/checks/, ...), each Python domain a package
+    # with its __init__.py (scripts/checks/checkLayout.ts).
+    layout:
+      run: bun run check:layout
+
     commitLog:
-      run: node scripts/commitLog.mjs
+      run: node scripts/commitLog/commitLog.mjs
 
     # Rule 44: every browser has the same pieces (its src/browser/<name> domain, capability row,
     # driver, tests, Python opener and docs/browsers.md column). A capability may be notBuilt;
@@ -19,7 +25,7 @@ pre-commit:
     # .claude/settings.json, Codex's .codex/hooks.json) and the live log stay in
     # step: both hosts' hooks are written from src/agentHooks/registry, every MCP
     # tool is hooked, every hook script answers its events, and every resolver a
-    # page state names is a real command (scripts/checkAgentHooks.ts).
+    # page state names is a real command (scripts/checks/checkAgentHooks.ts).
     agentHooks:
       run: bun run check:agentHooks
 
@@ -36,6 +42,9 @@ pre-push:
     # Rule 1: camelCase everywhere.
     naming:
       run: bun run check:naming
+
+    layout:
+      run: bun run check:layout
 
     browserParity:
       run: bun run check:browsers

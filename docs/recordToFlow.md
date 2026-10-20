@@ -35,8 +35,8 @@ is kept (rule 19). `--now` skips only the 10-minute launch gap (rule 30).
 
 ## The cursor (rule 32)
 
-`python/humanMouse.py`, used by every session. Fitted to matt's own mouse,
-recorded by `python/recordMouse.py` (run it for N seconds, then it analyses
+`python/human/humanMouse.py`, used by every session. Fitted to matt's own mouse,
+recorded by `python/human/recordMouse.py` (run it for N seconds, then it analyses
 the recording; `--analyze <file>` re-analyses one). What the recording showed
 and the module reproduces: one continuous velocity profile per move, an early
 speed peak and a long settle, overshoot-and-return about half the time, loose
@@ -45,8 +45,8 @@ step writes `mouse.json` (its legs) and `mouseSamples.json` (every emitted
 point, in the recorder's format), so the same analyser compares ours with his:
 
 ```bash
-python python/recordMouse.py 60                      # record your hand, then analyse
-python python/recordMouse.py --analyze <run>/steps/02_wait60s/mouseSamples.json
+python python/human/recordMouse.py 60                      # record your hand, then analyse
+python python/human/recordMouse.py --analyze <run>/steps/02_wait60s/mouseSamples.json
 ```
 
 Camoufox's humanize stays on but is capped to 20 ms per hop in these
@@ -85,7 +85,7 @@ cost ~100 ms per 5 px hop, which is what made earlier motion crawl.
 
 | Path | What |
 | --- | --- |
-| `python/inspectSession.py` | The inspect session (async Camoufox) |
+| `python/session/inspectSession.py` | The inspect session (async Camoufox) |
 | `src/browser/inspect/` | Talking to it: commands, replies, rendering |
 | `src/rea/inspectMap/` | Recording → states and transitions |
 | `src/browser/flow/` | Recording → definition, machine, docs; `definitions/` |

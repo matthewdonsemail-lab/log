@@ -23,6 +23,7 @@ skill in the same commit.
 | [`profileSetup`](skills/profileSetup/SKILL.md) | Give an account its profile picture and cover photo (`log profile setup`, rule 28): dry run, read the page's controls, then `--live` |
 | [`agentHooks`](skills/agentHooks/SKILL.md) | Keep the CLI, MCP tools, agent hooks (Claude Code, Codex) and the live log in step (rule 55): add a hook, a command or a page state |
 | [`surfaceDocs`](skills/surfaceDocs/SKILL.md) | Keep the README command table (flags, MCP tool, hooks) and the Mermaid `.mmd` diagrams generated from the code (rule 56) |
+| [`layout`](skills/layout/SKILL.md) | Where a new file goes: every file in a domain folder, never loose in `python/` or `scripts/` (rule 58) |
 
 These three files stay in step:
 

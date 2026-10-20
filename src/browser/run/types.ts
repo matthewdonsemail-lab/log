@@ -11,7 +11,7 @@ import type { PlaywrightCookie } from '../../marketplace/socialAccount/index'
 
 export interface PreparedRun {
   dir: string
-  /** `{ server, username, password, country }` for python/proxyGate.py. */
+  /** `{ server, username, password, country }` for python/browser/proxyGate.py. */
   proxyPath: string
   /** Playwright storage_state. Only written when the account has cookies. */
   statePath: string

@@ -15,7 +15,7 @@ and where each field came from (Listaro, blaster), is in
 1. **Twenty only.** These commands never open a browser and never write to
    Facebook (rule 8). Replying waits for matt.
 2. **Additive** (rule 13). A field is only ever added through
-   `scripts/twentySetup.mjs`, then the client is regenerated
+   `scripts/twenty/twentySetup.mjs`, then the client is regenerated
    (`bun run twenty:client`, rule 14). blaster's SMS fields are never
    renamed or retyped.
 3. **Never guess the listing.** A thread is tied to a listing by the

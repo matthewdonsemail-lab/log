@@ -611,7 +611,7 @@ log whoami [--apiUrl <url>] [--json]
 
 ## Twenty
 
-- `scripts/twentySetup.mjs` adds the fields log-cli needs (additive only; prints
+- `scripts/twenty/twentySetup.mjs` adds the fields log-cli needs (additive only; prints
   the plan, `--apply` creates them).
 - `bun run twenty:client` regenerates `src/twenty/graphql/generated` from the live
   workspace (twenty-client-sdk), the same way blaster (`pnpm twenty:client`) and the
@@ -684,7 +684,7 @@ bun bin/log.ts adsPower sync --apply    # make them, link each in socialAccounts
 ```
 
 A profile holds no proxy, password or 2FA key: those stay in Twenty. Both browsers are
-opened by one Python layer (`python/browserDriver.py`), which hands every session the same
+opened by one Python layer (`python/browser/browserDriver.py`), which hands every session the same
 Playwright context. So the proxy gate, the self-check, the session HAR, the human mouse and
 scroll, the flows and the warm-up are the same on either. `docs/browsers.md` is the parity
 table, and `bun run check:browsers` (pre-commit) keeps it. Setup and what's next:
@@ -694,9 +694,9 @@ table, and `bun run check:browsers` (pre-commit) keeps it. Setup and what's next
 
 `doctor`, `connect`, `scan`, `status` and `watch` launch Camoufox through
 [facebook-camofox-client](https://github.com/PRACE1/facebook-camofox-client)
-(`python/logWorker.py`); `publish` drives its own session
-(`python/publishSession.py`). Before either starts, the account must pass the
-account check, and at launch `python/proxyGate.py` checks the proxy exits in the
+(`python/session/logWorker.py`); `publish` drives its own session
+(`python/session/publishSession.py`). Before either starts, the account must pass the
+account check, and at launch `python/browser/proxyGate.py` checks the proxy exits in the
 account's home country (rule 12). The proxy and cookies come from Twenty, are
 written to a private temp folder for the run, and are deleted afterwards.
 Every launch is headed, humanized, with the cursor shown (rule 11).
@@ -738,15 +738,15 @@ src/browser/proxy/              the proxy check's result types (every browser)
 src/browser/inspect/            log inspect: one open browser driven a step at a time (every browser)
 src/browser/flow/               recordings → flows, their XState machines, the page states (every browser)
 src/camofox/device/             Camoufox's one device per account (rule 15)
-src/camofox/worker/             spawns python/logWorker.py
-src/camofox/session/            drives python/publishSession.py step by step
+src/camofox/worker/             spawns python/session/logWorker.py
+src/camofox/session/            drives python/session/publishSession.py step by step
 src/captcha/router/             CaptchaKraken → 2Captcha → a person
 src/errors/catalog/             every error code, once
 src/cli/*                       the commands
 src/agentHooks/                 the agent hooks (Claude Code, Codex) and what each decides (rule 55)
 src/surface/                    the catalog of commands, MCP tools and hooks; the README section and diagrams (rule 56)
-python/proxyGate.py             no launch unless the proxy exits in the home country
-python/visibleBrowser.py        headed, humanized, cursor shown
+python/browser/proxyGate.py             no launch unless the proxy exits in the home country
+python/browser/visibleBrowser.py        headed, humanized, cursor shown
 ```
 
 See `docs/namingConventions.md`. Run `bun run check` for the naming gate, typecheck and tests.

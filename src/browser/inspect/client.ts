@@ -1,5 +1,5 @@
 /**
- * Starts `python/inspectSession.py` and talks to the open session through its
+ * Starts `python/session/inspectSession.py` and talks to the open session through its
  * command and reply files. The session's own lines stream live through
  * processLog (rule 26).
  */
@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url'
 import { pipeProcessLog } from '../../observability/processLog/index'
 import type { CurrentInspect, InspectAction, InspectSessionConfig, InspectSessionRunner, InspectStepOptions, InspectStepResult } from './types'
 
-export const INSPECT_SESSION_PATH = fileURLToPath(new URL('../../../python/inspectSession.py', import.meta.url))
+export const INSPECT_SESSION_PATH = fileURLToPath(new URL('../../../python/session/inspectSession.py', import.meta.url))
 
 /** `~/.logCli/runs/inspect/current.json`, or `LOG_INSPECT_CURRENT`. */
 export function currentInspectPath(env: Record<string, string | undefined> = process.env): string {
@@ -75,7 +75,7 @@ export function clearCurrentInspect(path = currentInspectPath(), account?: strin
   rmSync(path, { force: true })
 }
 
-/** The real session: Python with the account's browser headed (AdsPower or Camoufox, `python/browserDriver.py`), until `stop` or 30 idle minutes. */
+/** The real session: Python with the account's browser headed (AdsPower or Camoufox, `python/browser/browserDriver.py`), until `stop` or 30 idle minutes. */
 export const runInspectSession: InspectSessionRunner = (config: InspectSessionConfig) =>
   new Promise((resolve) => {
     const python = process.env.LOG_PYTHON || 'python'

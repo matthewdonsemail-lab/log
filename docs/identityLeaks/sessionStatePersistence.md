@@ -27,12 +27,12 @@ behave like that (R4 M4).
 - `src/browser/run/client.ts:34-41` (`readCookies`) keeps only cookies.
   *verifiedSource*
 - Only `connect` saves:
-  - `python/logWorker.py:155` calls `session.context.storage_state(path=...)`
+  - `python/session/logWorker.py:155` calls `session.context.storage_state(path=...)`
     in `login`;
   - `src/cli/live/index.ts:121-123` reads the cookies and saves them to Twenty.
   *verifiedSource*
-- `scan` (`python/logWorker.py:162`), `status` (`:222`) and `publish`
-  (`python/publishSession.py:174`, `new_context(storage_state=...)`) load state
+- `scan` (`python/session/logWorker.py:162`), `status` (`:222`) and `publish`
+  (`python/session/publishSession.py:174`, `new_context(storage_state=...)`) load state
   and never call `storage_state()` to save it. *verifiedSource*
 - Facebook rotates `xs`, `fr` and presence cookies, and keeps state in
   localStorage and IndexedDB (R4 M4). Not measured. *inference*
@@ -47,8 +47,8 @@ behave like that (R4 M4).
 
 - `src/browser/run/client.ts`: what is written to and read from the temp
   `state` file.
-- `python/logWorker.py` (`login`, `scan`, `status`) and
-  `python/publishSession.py`: every place a context is closed.
+- `python/session/logWorker.py` (`login`, `scan`, `status`) and
+  `python/session/publishSession.py`: every place a context is closed.
 - `src/cli/live/index.ts`, `src/cli/publish/index.ts`, `src/cli/watch/index.ts`:
   what is saved back to Twenty after a run.
 - Twenty `socialAccounts.cookies` (rule 13: fields only added, never retyped).
@@ -60,7 +60,7 @@ behave like that (R4 M4).
 2. **Read cookies and origins.** Add `readStorageState()` in `browser/run`.
 3. **Write it back to Twenty** after every scan, status, watch check and
    publish. Add a `storageState` RAW_JSON field through
-   `scripts/twentySetup.mjs`, or keep `cookies` for cookies and add
+   `scripts/twenty/twentySetup.mjs`, or keep `cookies` for cookies and add
    `localStorage` (R4 M4).
 4. **Or use a persistent profile per account** (`user_data_dir`). That also
    keeps IndexedDB and cache. Only do this after the persistent-context

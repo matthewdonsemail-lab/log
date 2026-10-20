@@ -49,7 +49,7 @@ through an account's sticky session.
   - `log proxy check`, text and `--json` (`src/cli/proxy/index.ts:183`, `:186`).
 
   *verifiedSource* (found for this study)
-- **The gate never echoes the URL.** `python/proxyGate.py:94-98`: "Never echo
+- **The gate never echoes the URL.** `python/browser/proxyGate.py:94-98`: "Never echo
   the proxy URL back: it carries the password." Errors name only the server.
   *verifiedSource*
 - **A test script hard-codes the username.**
@@ -71,7 +71,7 @@ through an account's sticky session.
 - `maskProxyUrl` and every caller of it.
 - Any log line, error message, `--json` output or `log.md` entry that includes a
   proxy URL or username.
-- The Python gate's error messages (`python/proxyGate.py`).
+- The Python gate's error messages (`python/browser/proxyGate.py`).
 - The captcha fix that will pass the proxy to 2Captcha (`captchaSolving.md`):
   the URI holds both values. 2Captcha already has them, but our ledger
   (`attempts.jsonl`) must not.

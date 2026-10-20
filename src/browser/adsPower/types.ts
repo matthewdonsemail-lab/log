@@ -118,7 +118,7 @@ export interface ProfileSyncResult {
 
 /** AdsPower's row of the parity table (rule 44, docs/browsers.md). */
 export const adsPowerCapabilities = {
-  headedWindow: { status: 'built', how: 'Local API start with headless "0" (python/adsPowerBrowser.py); on a server the window renders on Xvfb' },
+  headedWindow: { status: 'built', how: 'Local API start with headless "0" (python/browser/adsPowerBrowser.py); on a server the window renders on Xvfb' },
   proxyGate: { status: 'built', how: 'proxyGate.gate_attached() before the profile starts; the proxy is put on the profile only then' },
   selfCheck: { status: 'built', how: 'proxyGate.check_attached() on the CDP context, the same verdict as Camoufox' },
   sessionHar: { status: 'built', how: 'harRecorder.SessionHar from the context events, written as session.har at close' },
@@ -129,7 +129,7 @@ export const adsPowerCapabilities = {
   localePinned: { status: 'built', how: "the profile's language from HOME_COUNTRIES; the self-check checks it" },
   sessionCarried: { status: 'built', how: "the profile keeps its own cookies; Twenty's session is carried in once when it has none" },
   sessionSaved: { status: 'built', how: 'saveState writes the context storage state, saved to Twenty' },
-  inspectSession: { status: 'built', how: 'python/browserDriver.py open_ads_power' },
+  inspectSession: { status: 'built', how: 'python/browser/browserDriver.py open_ads_power' },
   syncSessions: { status: 'notBuilt', how: 'publishSession, connectSession and profileSession still launch Camoufox (sync API)' },
   oneMachineAtATime: { status: 'notBuilt', how: 'cloud-active before open (docs/deployment.md)' }
 } as const satisfies BrowserCapabilities

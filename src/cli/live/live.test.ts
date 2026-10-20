@@ -241,7 +241,7 @@ describe("live commands", () => {
       ["https://www.facebook.com/checkpoint/x/", "Trust this device?", "Trust this device", {}, "trustDevice"],
       ["https://www.facebook.com/", "", "Your account has been locked", {}, "disabled"],
     ];
-    const script = `import sys, json; sys.path.insert(0, 'python'); import autoLogin as a
+    const script = `import sys, json; sys.path.insert(0, 'python'); from login import autoLogin as a
 cases = json.loads(sys.stdin.read())
 print(json.dumps([a.classify(u, h, t, **{"password_field": False, "code_field": False, "captcha": False, "login_markers": True, **f}) for u, h, t, f, _ in cases]))`;
     const run = require("node:child_process").spawnSync(process.env.LOG_PYTHON || "python", ["-c", script], { encoding: "utf8", input: JSON.stringify(cases) });
@@ -250,13 +250,13 @@ print(json.dumps([a.classify(u, h, t, **{"password_field": False, "code_field": 
 
   test("auto-login hands Facebook's own checkpoints to a person and types codes only on two-step pages", () => {
     const headings = ["We suspect automated behaviour on your account", "Confirm your identity", "Your account has been locked", "Check your notifications on another device", "Go to your authentication app", "Enter the 6-digit code"];
-    const script = `import sys, json; sys.path.insert(0, 'python'); import autoLogin as a; print(json.dumps([bool(a.TWO_STEP.search(h)) for h in ${JSON.stringify(headings)}]))`;
+    const script = `import sys, json; sys.path.insert(0, 'python'); from login import autoLogin as a; print(json.dumps([bool(a.TWO_STEP.search(h)) for h in ${JSON.stringify(headings)}]))`;
     const run = require("node:child_process").spawnSync(process.env.LOG_PYTHON || "python", ["-c", script], { encoding: "utf8" });
     expect(JSON.parse(run.stdout.trim())).toEqual([false, false, false, true, true, true]);
   });
 
   test("auto-login's TOTP matches RFC 6238", () => {
-    const script = "import sys; sys.path.insert(0, 'python'); import autoLogin as a; s = 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ'; print(a.totp(s, 59, 8), a.totp(s, 1111111109, 8), a.totp(s, 59), a.totp('gezd gnbv gy3t qojq gezd gnbv gy3t qojq', 59))";
+    const script = "import sys; sys.path.insert(0, 'python'); from login import autoLogin as a; s = 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ'; print(a.totp(s, 59, 8), a.totp(s, 1111111109, 8), a.totp(s, 59), a.totp('gezd gnbv gy3t qojq gezd gnbv gy3t qojq', 59))";
     const run = require("node:child_process").spawnSync(process.env.LOG_PYTHON || "python", ["-c", script], { encoding: "utf8" });
     expect(run.stdout.trim()).toBe("94287082 07081804 287082 287082");
   });
@@ -323,7 +323,7 @@ describe("rules 15 and 18: the device and the local hours", () => {
     const worker = (async (request: WorkerRequest) => {
       const file = JSON.parse(readFileSync(request.device_path!, "utf8"));
       expect(file).toMatchObject({ locale: "en-IE", languages: ["en-IE", "en"], homeTimezone: "Europe/Dublin", profile: null });
-      // What python/proxyGate.py does on a first launch.
+      // What python/browser/proxyGate.py does on a first launch.
       require("node:fs").writeFileSync(request.device_path!, JSON.stringify({ ...file, profile: DEVICE, created: true }));
       return SCAN;
     }) as WorkerClient;

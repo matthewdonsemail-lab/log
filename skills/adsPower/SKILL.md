@@ -10,7 +10,7 @@ description: Give every Facebook account in Twenty its AdsPower profile, check t
 1. **Twenty stays the source** (rule 13). An AdsPower profile is the browser for one
    `socialAccounts` row, linked by `adsPowerProfileId`. Nothing is deleted on either side.
 2. **No secret in AdsPower at rest.** Profiles are made with no proxy, password or 2FA key.
-   `python/browserDriver.py` puts the proxy on only to open, after the gate, and clears it at close.
+   `python/browser/browserDriver.py` puts the proxy on only to open, after the gate, and clears it at close.
 3. **Same as Camoufox** (rule 44). An AdsPower session goes through the same gate (rule 12),
    self-check (rule 17), session HAR (rule 22), human mouse and scroll. `docs/browsers.md`
    lists what's built; `bun run check:browsers` keeps every browser in step.

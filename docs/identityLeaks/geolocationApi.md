@@ -71,11 +71,11 @@ R3 T7).
 
 ## Where in our code it can happen again
 
-- `python/proxyGate.py:131`: `geoip=<exit IP>` sets `geolocation:*`.
+- `python/browser/proxyGate.py:131`: `geoip=<exit IP>` sets `geolocation:*`.
 - Caller kwargs and `config={'geolocation:*': ...}` pass through `apply()`
   (`gateBypasses.md`).
 - `new_context(geolocation=..., permissions=...)` in
-  `python/publishSession.py:174` and facebook-camofox-client
+  `python/session/publishSession.py:174` and facebook-camofox-client
   `session_manager.py:130`.
 - **Proxy rotation** leaves the coordinates on the old IP's city
   (`proxyRotationAndGeoAccuracy.md`).
