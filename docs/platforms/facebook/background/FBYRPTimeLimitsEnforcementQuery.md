@@ -13,10 +13,11 @@
 | Called from | `FBYRPTimeLimitsEnforcement.react` |
 | rea | `ev_ed1a3cfe4b9656a9ad3ddf8f3e05b4767495c0d780a6a027450c86c6d19c34c6` |
 
-Seen 30 time(s) in 13 run(s).
+Seen 31 time(s) in 14 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /profile.php | 1 | 200 | 536 ms | 6095 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 4 | 200 | 361–528 ms | 2885–5196 ms | — |
 | inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 361 ms | 4598 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 356 ms | 4731 ms | — |

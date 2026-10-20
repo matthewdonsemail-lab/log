@@ -97,6 +97,41 @@ describe('flowFromRecording: a group page recorded with clickRole (Bethlehem, 20
   })
 })
 
+describe('flowFromRecording: posting and deleting on the own profile (Bethlehem, run 20261020T162343)', () => {
+  const photo = flowFromRecording('profilePhotoPost', 'test', [
+    cmd('goto', ['https://www.facebook.com/profile.php?id=61594063207669'], '01_goto', ''),
+    cmd('uploadRole', ['button', 'Photo/video', 'C:/photos/garbageRoom.jpg'], '10_uploadRole', ''),
+    cmd('wait', ['5'], '11_wait', '', ['POST 200 /ajax/react_composer/attachments/photo/upload (5129 ms)']),
+    cmd('clickRole', ['button', 'Post'], '12_clickRole', '', [], true),
+    cmd('wait', ['8'], '13_wait', '', ['POST 200 ComposerStoryCreateMutation (3802 ms)'])
+  ], { runDir: '/r', account: '61594063207669' }, { file1: 'photo' })
+  const remove = flowFromRecording('deletePost', 'test', [
+    cmd('clickRole', ['button', 'Actions for this post by Pat Example'], '14_clickRole', ''),
+    cmd('clickRole', ['button', 'Move'], '17_clickRole', '', ['POST 200 useCometTrashPostMutation (848 ms)'])
+  ], { runDir: '/r', account: '1' }, { 'Pat Example': 'profileName' })
+
+  test('uploadRole is an upload step whose file is a param, and the Post waits for the create request', () => {
+    expect(photo.steps.map((s) => [s.action, s.role ?? s.url, s.name ?? null, s.value ?? null])).toEqual([
+      ['goto', 'https://www.facebook.com/profile.php?id={uid}', null, null],
+      ['upload', 'button', 'Photo/video', '{photo}'],
+      ['click', 'button', 'Post', null]
+    ])
+    expect(photo.params).toEqual([{ name: 'photo', kind: 'file', description: 'uploaded through button "Photo/video"' }])
+    expect(photo.steps[2].expect).toBe('ComposerStoryCreateMutation')
+  })
+
+  test('a comment waits for the create request, not the typing broadcast around it', () => {
+    expect(confirmingRequest(['POST 200 CometUFILiveTypingBroadcastMutation_StartMutation (505 ms)', 'POST 200 CometUFILiveTypingBroadcastMutation_StopMutation (479 ms)', 'POST 200 useCometUFICreateCommentMutation (2434 ms)'])).toBe('useCometUFICreateCommentMutation')
+    expect(confirmingRequest(['POST 200 CometUFILiveTypingBroadcastMutation_StartMutation (675 ms)'])).toBeNull()
+  })
+
+  test("the account's own name in an element's name is {profileName}, filled on each run, never a --set", () => {
+    expect(remove.steps[0].name).toBe('Actions for this post by {profileName}')
+    expect(remove.params).toEqual([])
+    expect(fillStep(remove.steps[0], { uid: '1', profileName: 'Another Account' }).name).toBe('Actions for this post by Another Account')
+  })
+})
+
 describe('flowFromRecording', () => {
   const flow =flowFromRecording('profileSetup', 'test', RECORDING, { runDir: '/r', account: '61593967241658' }, { text1: 'firstName', file1: 'profilePhoto' })
 

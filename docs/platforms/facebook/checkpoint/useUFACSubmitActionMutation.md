@@ -13,10 +13,12 @@
 | Called from | `useUFACSubmitAction` |
 | rea | `ev_e4f13bdff7b9aeebfd4f4bc936b4cade3eba5b723439cf5aa62ef31b4e9a43ef` |
 
-Seen 2 time(s) in 1 run(s).
+Seen 4 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 3: click e53 | 1 | 200 | 2820 ms | 1209 ms | — |
+| inspect | Text captcha: Continue is plain text here, clicking it. | 1 | 200 | 4558 ms | 1157 ms | — |
 | inspect | step 41: click e69 | 1 | 200 | 2488 ms | 1196 ms | — |
 | inspect | step 43: click e113 | 1 | 200 | 4046 ms | 1143 ms | — |
 

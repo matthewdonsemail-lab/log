@@ -71,7 +71,8 @@ async function runFlow(context: Parameters<Command["run"]>[0], flow: FlowDefinit
   const missing = flow.params.filter((p) => !(p.name in values)).map((p) => p.name);
   if (missing.length) return { code: 1, stderr: `log flow: ${flow.name} needs ${missing.map((m) => `--set ${m}=…`).join(" ")}` };
   const uid = typeof flags["account"] === "string" ? flags["account"] : "";
-  const filled: Record<string, string> = { ...values, uid };
+  // `{uid}` and `{profileName}` are the account's own: never a --set, filled from the account itself.
+  const filled: Record<string, string> = { ...values, uid, profileName: "<the account's profile name>" };
   if (!flags["live"]) {
     const lines = [`Flow ${flow.name} (dry run: nothing opens). With --live it runs:`];
     flow.steps.forEach((step, i) => lines.push(`  ${i + 1}. ${describe(fillStep(step, filled))}${step.expect ? `  → waits for ${step.expect}` : ""}`));
@@ -90,6 +91,10 @@ async function runFlow(context: Parameters<Command["run"]>[0], flow: FlowDefinit
       fileParams.forEach((p, i) => (filled[p.name] = prepared.photos[i].path));
     }
     filled.uid = account.accountName;
+    if (flow.steps.some((s) => s.name?.includes("{profileName}"))) {
+      if (!account.profileName) return { code: 1, stderr: `log flow: ${flow.name} names the account's own posts by its profile name, and ${account.accountName} has none in Twenty (socialAccounts.profileName)` };
+      filled.profileName = account.profileName;
+    }
     const opened = await openInspectSession(context, account, run);
     if ("error" in opened) return { code: 1, stderr: `log flow: ${opened.error}` };
     const { current, session } = opened;

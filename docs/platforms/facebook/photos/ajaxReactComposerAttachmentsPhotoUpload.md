@@ -11,14 +11,13 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_1efa699a762f9e039dbc68751e3a9a1c3aef426c7a7a7bb563c2c943e21b165c` |
+| rea | `ev_8b10203fa7ed4c46187f3082cd07972a974f875d58b6dfdd8b3cbf8c464c2012` |
 
-Seen 49 time(s) in 11 run(s).
+Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| publish | Uploading 5 photo(s) | 45 | 200 | 1646–7281 ms | 381–9350 ms | — |
-| publish | Uploading 2 photo(s) | 4 | 200 | 1336–2672 ms | 353–724 ms | — |
+| inspect | upload: garbageRoom.jpg handed to the file chooser | 1 | 200 | 5129 ms | 3163 ms | — |
 
 <!-- facts:end -->
 

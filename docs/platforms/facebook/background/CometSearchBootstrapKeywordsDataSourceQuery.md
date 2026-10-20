@@ -13,10 +13,11 @@
 | Called from | — |
 | rea | not read yet |
 
-Seen 29 time(s) in 12 run(s).
+Seen 30 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /profile.php | 1 | 200 | 425 ms | 7450 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 3 | 200 | 371–428 ms | 3759–5153 ms | — |
 | inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 414 ms | 6533 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 556 ms | 7197 ms | — |

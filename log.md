@@ -3355,3 +3355,72 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: Every workflow on a group page mapped live (issue #27, matt: map out all the workflows we can run on the client). Run 20261020T153648 on Bethlehem through `log inspect` (48 steps, one browser; clicks that open things with --live as matt asked; nothing typed, sent, reacted to, shared, invited, joined or left) recorded the seven group tabs, search within the group, the More and Joined menus, the Invite dialog, the Share sheet, a post's actions menu, comments opened inline (Open questions) and in the post dialog, the "All comments" sort, the comment box focused, and the photo viewer. Four read-only flows were made from it with `log flow fromInspect` (`src/browser/flow/definitions/groupTabs|groupHeaderMenus|groupPostComments|groupPostDialog.json`, docs in `docs/platforms/facebook/flows/`, each an MCP tool, `groupId` a parameter); the flow builder (`flowFromRecording.ts`, `types.ts`, `flowSession.ts`) now takes click-by-name, Escape and in-dialog scroll steps and keeps a group id a parameter instead of the account's id. `log capture --docs` documented the 25 new requests (groups tabs and menus, the share sheet's own requests, the post menu, group search, the photo viewer in a new `photos/` domain), each with its reasoning, and the groups README marks those rows recorded. `docs/platforms/facebook/workflows.md` lists the 22 client workflows log-cli runs, the 30 inspect step actions and the gaps, each with its file. Two faults the run hit are fixed: `draw` in `python/session/inspectSession.py` read "-600--500" as an empty number (scrolling up), and now takes negative numbers and ranges; `aim` in `python/human/humanMouse.py` re-aimed at a random point in the middle 30-70% of a target that a neighbouring <i> icon covered (Facebook's React button, refused three times), and now moves to a point of the target that shows on screen (`VISIBLE_POINT_JS`), still pressing only when the point is on it. The README and command diagram are regenerated for the four flow tools.
 Why: matt asked to map out all the CLI inspect tools and every workflow that can be run on the client, with agents doing it live.
 Checked: the run itself (every tab, menu and dialog opened and closed; no checkpoint); Reading (61594131334566) could not be mapped: every page redirects to the video selfie checkpoint, only a person can clear it, the session was stopped without pressing anything. The reaction picker is not recorded: it opens on hover, and `log inspect` has no hover step. `draw` checked on "4-7", "3", "-500", "-600--500", "-50-50" and a bad value; the aim fix is not yet run live. `bun run check` (naming, layout, browsers, agentHooks with 32 MCP tools, docs, tsc, 738 tests pass, 0 fail), `check:facebookClientDocs` (171 requests, every GraphQL slice read by rea).
+
+## 2026-10-20 16:39Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/platforms/facebook/background/CometFeedStoryMenuQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometIXTFacebookAuthenticityWizardTriggerRootQuery.md`: new file
+- `docs/platforms/facebook/background/CometMediaEditorAIProductTagSuggestionTriggerQuery.md`: new file
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsUpdateSeenStateMutation.md`: new file
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometUFIConversationGuideContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometUFILiveTypingBroadcastMutation_StartMutation.md`: new file
+- `docs/platforms/facebook/background/CometUFILiveTypingBroadcastMutation_StopMutation.md`: new file
+- `docs/platforms/facebook/background/ComposerStoryCreateMutation.md`: new file
+- `docs/platforms/facebook/background/ConversationalSupportCometAIChatExperienceCreateThreadMutation.md`: new file
+- `docs/platforms/facebook/background/ConversationalSupportCometAIChatExperienceOnChatOpenedMutation.md`: new file
+- `docs/platforms/facebook/background/ConversationalSupportCometAIChatExperienceProductQuery.md`: new file
+- `docs/platforms/facebook/background/FBReelsEntityDialogImplQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/ajaxRouteDefinition.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useCometTrashPostMutation.md`: new file
+- `docs/platforms/facebook/background/useCometUFICreateCommentMutation.md`: new file
+- `docs/platforms/facebook/background/useConversationalSupportPingMutation.md`: new file
+- `docs/platforms/facebook/background/useFeedComposerCometMentionsBootloadDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/useFeedComposerCometMentionsBootloadDataSourceWithTaggingTransparencyQuery.md`: edited
+- `docs/platforms/facebook/background/useFeedComposerCometMentionsNullstateDataSourceWithTaggingTransparencyQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/useMetaSupportAssistantVoiceOnboardingNuxQuery.md`: new file
+- `docs/platforms/facebook/checkpoint/UFACAISupportChatExperienceQuery.md`: edited
+- `docs/platforms/facebook/checkpoint/useCometAISupportConversationLoggerMutation.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/checkpoint/useUFACSubmitActionMutation.md`: edited
+- `docs/platforms/facebook/flows/deletePost.md`: new file
+- `docs/platforms/facebook/flows/postComment.md`: new file
+- `docs/platforms/facebook/flows/profilePhotoPost.md`: new file
+- `docs/platforms/facebook/flows/profilePost.md`: new file
+- `docs/platforms/facebook/login/CometLogoutHandlerQuery.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/photos/EntPhotoCollageItemContainerQuery.md`: new file
+- `docs/platforms/facebook/photos/ajaxReactComposerAttachmentsPhotoUpload.md`: edited
+- `docs/platforms/facebook/photos/useComposerVideoUploaderConfigQuery.md`: new file
+- `docs/platforms/facebook/profile/ProfileCometAboutAppSectionQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometFeedComposerRootQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTilesFeedPaginationQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTimelineFeedRefetchQuery.md`: new file
+- `docs/platforms/facebook/workflows.md`: edited
+- `src/browser/flow/definitions/deletePost.json`: new file
+- `src/browser/flow/definitions/postComment.json`: new file
+- `src/browser/flow/definitions/profilePhotoPost.json`: new file
+- `src/browser/flow/definitions/profilePost.json`: new file
+- `src/browser/flow/flow.test.ts`: added test "uploadRole is an upload step whose file is a param, and the Post waits for the create request", test "a comment waits for the create request, not the typing broadcast around it", test "the account's own name in an element's name is {profileName}, filled on each run, never a --set"
+- `src/browser/flow/helpers/flowFromRecording.ts`: changed const NOT_CONFIRMING, const ACTED, function flowFromRecording, function fillStep
+- `src/cli/flow/index.ts`: changed function runFlow
+
+What changed: Posting, commenting, photo posting, deleting and notifications, recorded live and made into flows (matt: how do I comment, make a post, a post of an image, delete a post, get notified). Run 20261020T162343 on Bethlehem's own profile (`log inspect`, --live as matt asked): a text post ("Test post", `ComposerStoryCreateMutation` 3.6 s), a comment on it ("Test comment", `useCometUFICreateCommentMutation` 2.4 s, with the `CometUFILiveTypingBroadcastMutation` start/stop around it), a photo post (one of the account's own photos: `/ajax/react_composer/attachments/photo/upload` 5.1 s, then `ComposerStoryCreateMutation` 3.8 s), that photo post deleted (its menu, Move to bin, Move: `useCometTrashPostMutation` 0.85 s), and the notifications list opened and closed (`CometNotificationsUpdateSeenStateMutation`). Four flows, each an MCP tool: `profilePost` (text), `profilePhotoPost` (photo), `postComment` (comment), `deletePost`. The flow builder (`flowFromRecording.ts`) now turns a recorded `uploadRole` into an upload step whose file is a param, turns the account's own name in an element's name into `{profileName}` (`--rename "<name>=profileName"`), filled when the flow runs from Twenty's `profileName` (`src/cli/flow`), fills `{…}` in element names (`fillStep`), and never takes a `LiveTyping` broadcast as a step's confirming request. The 16 new requests are documented with their reasoning (posting, commenting, deleting, the photo upload, notifications, the video selfie's wizard and the support chat's requests); `workflows.md` lists the write workflows. A second account for the two-account test: the 2Captcha proxies have no traffic left (407 on all five), so Lancaster was moved to Byteful (`log proxy assign --vendor byteful --proxyMs 4000`, already-paid traffic, exits in Lancaster), opened, and its checkpoint resolved by rule 54 (Continue, text captcha solved) up to a video selfie; Reading's checkpoint was recorded up to the camera prompt. Both are CHECKPOINT (videoSelfieRequired) in Twenty.
+Why: matt asked for every write (comment, post, photo post, delete) and notifications, made to work and tested with one account acting and another receiving, without being asked questions.
+Checked: each action live on Bethlehem, its request answering 200 and the page confirming it ("Your comment was submitted", the post in and then out of the timeline); the "Test post" and its comment stay up as the target for the second account. The two-account side is not run: no second account clears its checkpoint without a person's video selfie. Flow tests for the upload step, `{profileName}` and the typing broadcast; `bun run check` (naming, layout, browsers, agentHooks with 36 MCP tools, docs, tsc, 741 tests pass, 0 fail), `check:facebookClientDocs` (187 requests, every GraphQL slice read by rea).

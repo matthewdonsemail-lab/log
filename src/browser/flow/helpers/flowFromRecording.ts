@@ -16,7 +16,9 @@ export interface RecordedCommand {
 }
 
 /** Requests that are logging, not the step's effect. */
-const NOT_CONFIRMING = /Logger|ScreenTime|_syncMutation|relay-ef|webstorage|Prompt|QuickPromotion|CIXLog/i
+// LiveTyping: the "someone is typing" broadcast a comment box sends while typing and around the send, never
+// what the step did (run 20261020T162343: useCometUFICreateCommentMutation is what posted the comment).
+const NOT_CONFIRMING = /Logger|ScreenTime|_syncMutation|relay-ef|webstorage|Prompt|QuickPromotion|CIXLog|LiveTyping/i
 
 /** The first mutation a step (and the looks after it) sent: what confirms it. Pure. */
 export function confirmingRequest(lines: string[]): string | null {
@@ -27,7 +29,7 @@ export function confirmingRequest(lines: string[]): string | null {
   return null
 }
 
-const ACTED: Record<string, FlowAction> = { click: 'click', clickRole: 'click', type: 'fill', upload: 'upload', signIn: 'signIn', code: 'code', solve: 'solve', goto: 'goto', scroll: 'scroll', openAny: 'openAny', clickAny: 'clickAny', dwell: 'dwell', press: 'press', scrollIn: 'scrollIn' }
+const ACTED: Record<string, FlowAction> = { click: 'click', clickRole: 'click', type: 'fill', upload: 'upload', uploadRole: 'upload', signIn: 'signIn', code: 'code', solve: 'solve', goto: 'goto', scroll: 'scroll', openAny: 'openAny', clickAny: 'clickAny', dwell: 'dwell', press: 'press', scrollIn: 'scrollIn' }
 
 const camel = (text: string): string =>
   text
@@ -63,6 +65,11 @@ export function flowFromRecording(
     params.push({ name: final, kind, description: described })
     return `{${final}}`
   }
+  // A rename whose key is text the page showed, not a param (`Bethlehem Trash=profileName`), turns that text
+  // in an element's name into `{profileName}`: filled when the flow runs (the account's own name, from Twenty),
+  // so "Actions for this post by <name>" works on any account.
+  const literals = Object.entries(rename).filter(([from]) => !/^(text|file)\d+$|^groupId$/.test(from))
+  const named = (text: string): string => literals.reduce((out, [from, to]) => out.split(from).join(`{${to}}`), text)
   commands.forEach((command, i) => {
     const action = ACTED[command.action]
     if (!action || !command.ok) return
@@ -101,7 +108,13 @@ export function flowFromRecording(
     // clickRole named its element itself: the role and name are the step's own arguments.
     if (command.action === 'clickRole') {
       const [role, name] = command.args
-      steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_click${camel(name)[0]?.toUpperCase() ?? ''}${camel(name).slice(1)}`, action, role, name, ...(expect ? { expect } : {}), recorded })
+      steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_click${camel(name)[0]?.toUpperCase() ?? ''}${camel(name).slice(1)}`, action, role, name: named(name), ...(expect ? { expect } : {}), recorded })
+      return
+    }
+    // uploadRole named its element and its file: the file becomes a param (run 20261020T162343, Photo/video).
+    if (command.action === 'uploadRole') {
+      const [role, name] = command.args
+      steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_upload${camel(name)[0]?.toUpperCase() ?? ''}${camel(name).slice(1)}`, action: 'upload', role, name: named(name), value: param('file', `uploaded through ${role} "${name}"`), ...(expect ? { expect } : {}), recorded })
       return
     }
     if (action === 'signIn' || action === 'code' || action === 'solve') {
@@ -134,5 +147,5 @@ export function fillStep(step: FlowStep, values: Record<string, string>): FlowSt
       if (!(key in values)) throw new Error(`missing value for {${key}}`)
       return values[key]
     })
-  return { ...step, ...(step.url ? { url: fill(step.url) } : {}), ...(step.value ? { value: fill(step.value) } : {}) }
+  return { ...step, ...(step.url ? { url: fill(step.url) } : {}), ...(step.value ? { value: fill(step.value) } : {}), ...(step.name ? { name: fill(step.name) } : {}) }
 }

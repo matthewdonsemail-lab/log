@@ -13,10 +13,11 @@
 | Called from | `useFeedComposerCometMentionsBootloadDataSource` |
 | rea | `ev_b88de894e472c9e4c2ec2c53351f0c403c976168c8326f9aebe1899c251181fb` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 3: clickRole button "…" | 1 | 200 | 641 ms | 2325 ms | — |
 | inspect | step 20: clickRole button "…" | 1 | 200 | 992 ms | 3303 ms | — |
 
 <!-- facts:end -->

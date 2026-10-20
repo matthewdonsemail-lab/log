@@ -11,12 +11,19 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_6181f0d02a60d00c8c87b8bb715761dc6ca89cbe2b273bc0d89acff41087fe5f` |
+| rea | `ev_c207e65dcc79de7bf8b8a06c71ff6b2dcc267b603e1104f677cb52baee8dd97b` |
 
-Seen 507 time(s) in 13 run(s).
+Seen 521 time(s) in 14 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /profile.php | 7 | 200 | 354–630 ms | 5815–8764 ms | — |
+| inspect | step 5: clickRole button "…" | 4 | 200 | 346–553 ms | 490–5414 ms | — |
+| inspect | step 6: wait 6s | 1 | 200 | 437 ms | 43001 ms | — |
+| inspect | step 8: clickRole button "…" | 2 | 200 | 370–409 ms | 1685–3942 ms | — |
+| inspect | step 12: clickRole button "…" | 2 | 200 | 416–531 ms | 572–6606 ms | — |
+| inspect | step 13: wait 8s | 1 | 200 | 410 ms | 10710 ms | — |
+| inspect | step 19: clickRole button "…" | 5 | 200 | 330–1617 ms | 593–46085 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 34 | 200 | 356–621 ms | 2065–24212 ms | — |
 | inspect | step 3: clickRole tab "…" | 4 | 200 | 873–1022 ms | 9768–9774 ms | — |
 | inspect | step 4: clickRole tab "…" | 4 | 200 | 617–787 ms | 5274–7693 ms | — |
@@ -136,15 +143,12 @@ Seen 507 time(s) in 13 run(s).
 | inspect | scroll: +411px in 10 wheel steps, 484 ms | 1 | 200 | 525 ms | 3981 ms | — |
 | inspect | step 4: goto /marketplace/ | 8 | 200 | 453–636 ms | 4581–6383 ms | — |
 | inspect | step 1: goto /reel/ | 11 | 200 | 332–519 ms | 2079–4655 ms | — |
-| inspect | step 5: clickRole button "…" | 3 | 200 | 346–553 ms | 490–2274 ms | — |
 | inspect | step 7: clickRole button "…" | 2 | 200 | 386–397 ms | 523–1138 ms | — |
 | inspect | step 9: clickRole button "…" | 2 | 200 | 409–510 ms | 729–1200 ms | — |
 | inspect | step 11: clickRole button "…" | 2 | 200 | 395–552 ms | 561–1606 ms | — |
-| inspect | step 12: clickRole button "…" | 1 | 200 | 531 ms | 572 ms | — |
 | inspect | step 13: clickRole button "…" | 1 | 200 | 971 ms | 495 ms | — |
 | inspect | step 16: clickRole button "…" | 4 | 200 | 353–1092 ms | 560–3567 ms | — |
 | inspect | step 18: clickRole button "…" | 3 | 200 | 332–371 ms | 429–2446 ms | — |
-| inspect | step 19: clickRole button "…" | 3 | 200 | 330–385 ms | 593–5642 ms | — |
 | inspect | step 21: clickRole button "…" | 1 | 200 | 647 ms | 367 ms | — |
 | inspect | step 23: clickRole button "…" | 1 | 200 | 439 ms | 441 ms | — |
 | inspect | step 25: clickRole button "…" | 2 | 200 | 330–349 ms | 1209–2352 ms | — |
@@ -180,7 +184,6 @@ Seen 507 time(s) in 13 run(s).
 | inspect | step 71: goto /reel/ | 2 | 200 | 386–411 ms | 3141–4354 ms | — |
 | inspect | clickRole failed: RuntimeError: no visible button "…" | 2 | 200 | 400–423 ms | 15727–15795 ms | — |
 | inspect | scroll: +353px in 8 wheel steps, 265 ms | 1 | 200 | 357 ms | 4499 ms | — |
-| inspect | step 8: clickRole button "…" | 1 | 200 | 370 ms | 1685 ms | — |
 | inspect | step 10: clickRole button "…" | 1 | 200 | 474 ms | 1439 ms | — |
 | inspect | step 12: clickAny 1 x link /see owner profile$/ | 2 | 200 | 401–458 ms | 2970–2972 ms | — |
 | inspect | clickAny: 1 link /see owner profile$/ | 7 | 200 | 544–1044 ms | 300–6934 ms | — |

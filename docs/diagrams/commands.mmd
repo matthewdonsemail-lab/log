@@ -106,6 +106,9 @@ flowchart TB
   c_whoami["whoami"]
   cli --> c_whoami
   mcp --> c_whoami
+  f_deletePost["flowDeletePost: flow run deletePost"]
+  mcp --> f_deletePost
+  f_deletePost --> c_flow
   f_groupHeaderMenus["flowGroupHeaderMenus: flow run groupHeaderMenus"]
   mcp --> f_groupHeaderMenus
   f_groupHeaderMenus --> c_flow
@@ -118,6 +121,15 @@ flowchart TB
   f_groupTabs["flowGroupTabs: flow run groupTabs"]
   mcp --> f_groupTabs
   f_groupTabs --> c_flow
+  f_postComment["flowPostComment: flow run postComment"]
+  mcp --> f_postComment
+  f_postComment --> c_flow
+  f_profilePhotoPost["flowProfilePhotoPost: flow run profilePhotoPost"]
+  mcp --> f_profilePhotoPost
+  f_profilePhotoPost --> c_flow
+  f_profilePost["flowProfilePost: flow run profilePost"]
+  mcp --> f_profilePost
+  f_profilePost --> c_flow
   f_profileSetup["flowProfileSetup: flow run profileSetup"]
   mcp --> f_profileSetup
   f_profileSetup --> c_flow

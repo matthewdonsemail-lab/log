@@ -13,10 +13,11 @@
 | Called from | `usePseudoBlockedUserInterstitial` |
 | rea | `ev_4f0f59bc7d5ff4c02ef9f2aba85fc9de893084a7a8fbdf3f1627ce6c1c3456fe` |
 
-Seen 39 time(s) in 13 run(s).
+Seen 40 time(s) in 14 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /profile.php | 1 | 200 | 428 ms | 7454 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 6 | 200 | 347–464 ms | 3118–5866 ms | — |
 | inspect | step 7: clickRole tab "…" | 1 | 200 | 559 ms | 2247 ms | — |
 | inspect | step 11: clickRole tab "…" | 1 | 200 | 382 ms | 2960 ms | — |

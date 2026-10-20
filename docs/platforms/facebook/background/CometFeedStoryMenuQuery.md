@@ -13,10 +13,11 @@
 | Called from | `CometFeedStoryMenu.react` |
 | rea | `ev_8ade7107a98c2567f93789e6e5c0964b64519c2f923501d4130eb1804a64ec50` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 14: clickRole button "…" | 1 | 200 | 2405 ms | 1936 ms | — |
 | inspect | step 22: clickRole button "…" | 1 | 200 | 792 ms | 841 ms | — |
 
 <!-- facts:end -->

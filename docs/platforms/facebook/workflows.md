@@ -96,3 +96,17 @@ Live set: `LIVE_ACTIONS` in `src/browser/inspect/helpers/parseInspectAction.ts`;
 ### Lifecycle
 - Host never ran to the end (`runs/host/harrisburg*.log`); acting (publish, replies as a tab) is not built (AGENTS.md, rule 35 status).
 - Stages flows (`warmupFeedBrowse` …) were never saved to `src/browser/flow/definitions/`.
+
+## Writes on the account's own profile (recorded 2026-10-20, run 20261020T162343)
+
+Each is a flow and an MCP tool, `--live` only (rule 8). Recorded live on Bethlehem: a text post, a comment on it, a photo post and its deletion.
+
+| Workflow | Run it | What it sends | Status |
+| --- | --- | --- | --- |
+| Post text | `log flow run profilePost --account <a> --set text=… --live` (`flowProfilePost`) | `ComposerStoryCreateMutation` | recorded live, flow built, not yet run as a flow |
+| Post a photo | `log flow run profilePhotoPost --account <a> --set photo=<path or URL> --live` (`flowProfilePhotoPost`) | `/ajax/react_composer/attachments/photo/upload`, then `ComposerStoryCreateMutation` | recorded live, flow built, not yet run as a flow |
+| Comment on the newest own post | `log flow run postComment --account <a> --set comment=… --live` (`flowPostComment`) | `useCometUFICreateCommentMutation` (typing broadcasts around it) | recorded live, flow built, not yet run as a flow |
+| Delete the newest own post | `log flow run deletePost --account <a> --live` (`flowDeletePost`; its menu is named by the account's `profileName` from Twenty) | `CometFeedStoryMenuQuery`, `useCometTrashPostMutation` (to the bin, emptied after 30 days) | recorded live, flow built, not yet run as a flow |
+| Read notifications | recorded only (step 19): each notification is a link with its text and age | the list opens from the bell; closing it sends `CometNotificationsUpdateSeenStateMutation` | not a flow: the bell's name carries the unread count |
+
+**Two accounts, one acting and one receiving:** not run yet. Every other account is on Facebook's checkpoint 1501092823525282, which ends at a video selfie after its text captcha (Reading, Allentown, Lancaster on 2026-10-20), and the 2Captcha proxies the rest use have no traffic left (`log proxy balance`). Lancaster is now on Byteful and opens; a second account needs its video selfie done by a person first.

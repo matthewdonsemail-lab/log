@@ -13,11 +13,11 @@
 | Called from | `CometLogoutHandler.react` |
 | rea | `ev_93007121314a1431e49915cf3c087648f0520a262c82854fa989a18c7ba27e6d` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 4 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto / | 1 | 200 | 456 ms | 6734 ms | — |
+| inspect | step 1: goto / | 3 | 200 | 409–797 ms | 3016–6734 ms | — |
 | inspect | step 38: goto /marketplace/ | 1 | 200 | 541 ms | 12959 ms | — |
 
 <!-- facts:end -->

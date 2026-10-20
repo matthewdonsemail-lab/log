@@ -13,10 +13,14 @@
 | Called from | `CometHovercardQueryRenderer.react` |
 | rea | `ev_95529720f6ba751fe065571b8fd81d09f67f7e4539594c0761343470652ec320` |
 
-Seen 151 time(s) in 10 run(s).
+Seen 156 time(s) in 11 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 2: snapshot | 6 | 200 | 627–814 ms | 373–11488 ms | — |
+| inspect | step 5: clickRole button "…" | 1 | 200 | 445 ms | 6889 ms | — |
+| inspect | step 6: wait 6s | 2 | 200 | 1626–1861 ms | 41727–95250 ms | — |
+| inspect | step 8: clickRole button "…" | 1 | 200 | 474 ms | 7700 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 15 | 200 | 503–822 ms | 6679–17970 ms | — |
 | inspect | step 3: clickRole tab "…" | 1 | 200 | 1001 ms | 5545 ms | — |
 | inspect | step 4: clickRole tab "…" | 3 | 200 | 868–1514 ms | 1475–6750 ms | — |
@@ -50,7 +54,6 @@ Seen 151 time(s) in 10 run(s).
 | inspect | step 7: clickRole menuitem "…" | 2 | 200 | 428–659 ms | 3457–13643 ms | — |
 | inspect | scroll: +800px in 17 wheel steps, 641 ms | 1 | 200 | 748 ms | 2575 ms | — |
 | inspect | scroll: +800px in 17 wheel steps, 672 ms | 1 | 200 | 665 ms | 13224 ms | — |
-| inspect | step 2: snapshot | 5 | 200 | 627–814 ms | 373–11488 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 1000 ms | 2 | 200 | 799–803 ms | 8515–10668 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 656 ms | 1 | 200 | 745 ms | 11384 ms | — |
 | inspect | step 1: goto /groups/<id> | 13 | 200 | 506–1400 ms | 12991–160409 ms | — |

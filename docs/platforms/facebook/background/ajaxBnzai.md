@@ -11,17 +11,30 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_6181f0d02a60d00c8c87b8bb715761dc6ca89cbe2b273bc0d89acff41087fe5f` |
+| rea | `ev_9dba9514d791f3d9298ecfd9b88406e17e9d90cc1b7c9a80f4bad67aa2fb5a98` |
 
-Seen 282 time(s) in 14 run(s).
+Seen 312 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 2: snapshot | 2 | 200 | 336–385 ms | 6316–11045 ms | — |
+| inspect | step 2: snapshot | 3 | 200 | 336–385 ms | 6316–16662 ms | — |
+| inspect | step 4: type e1681 | 1 | 200 | 1400 ms | 1138 ms | — |
+| inspect | step 6: wait 6s | 1 | 200 | 365 ms | 21607 ms | — |
+| inspect | step 8: clickRole button "…" | 1 | 200 | 363 ms | 10817 ms | — |
+| inspect | step 12: clickRole button "…" | 4 | 200 | 309–1348 ms | 116–11918 ms | — |
+| inspect | step 13: wait 8s | 2 | 200 | 346–348 ms | 23242–26763 ms | — |
+| inspect | step 16: clickRole menuitem "…" | 1 | 200 | 351 ms | 3326 ms | — |
+| inspect | step 18: wait 4s | 1 | 200 | 360 ms | 11022 ms | — |
+| inspect | step 19: clickRole button "…" | 4 | 200 | 342–354 ms | 183–27015 ms | — |
+| inspect | step 1: goto / | 22 | 200 | 338–1441 ms | 8118–21947 ms | — |
+| inspect | step 3: click e53 | 4 | 200 | 369–384 ms | 3205–9558 ms | — |
+| inspect | step 5: wait 4s | 1 | 200 | 369 ms | 18038 ms | — |
+| inspect | step 3: click e97 | 1 | 200 | 356 ms | 5103 ms | — |
+| inspect | step 5: clickRole button "…" | 3 | 200 | 319–348 ms | 932–9811 ms | — |
+| inspect | step 6: clickRole button "…" | 1 | 200 | 350 ms | 1444 ms | — |
 | inspect | step 4: clickRole tab "…" | 1 | 200 | 1870 ms | 907 ms | — |
 | inspect | step 6: clickRole tab "…" | 2 | 200 | 449–1109 ms | 11020–12017 ms | — |
 | inspect | step 8: clickRole tab "…" | 1 | 200 | 733 ms | 5761 ms | — |
-| inspect | step 12: clickRole button "…" | 3 | 200 | 309–611 ms | 116–11918 ms | — |
 | inspect | step 14: clickRole button "…" | 2 | 200 | 360–431 ms | 4274–8762 ms | — |
 | inspect | step 20: clickRole button "…" | 1 | 200 | 559 ms | 13118 ms | — |
 | inspect | step 21: press Escape | 1 | 200 | 507 ms | 3084 ms | — |
@@ -39,7 +52,6 @@ Seen 282 time(s) in 14 run(s).
 | inspect | step 44: clickRole button "…" | 1 | 200 | 578 ms | 3093 ms | — |
 | inspect | clickRole failed: RuntimeError: the element kept moving under the cursor: the point is on  | 1 | 200 | 996 ms | 1270 ms | — |
 | inspect | step 48: clickRole button "…" | 3 | 200 | 399–1547 ms | 707–17074 ms | — |
-| inspect | step 1: goto / | 13 | 200 | 338–740 ms | 8118–21947 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 3 | 200 | 836–1369 ms | 9432–34308 ms | — |
 | inspect | step 3: clickRole button "…" | 4 | 200 | 345–361 ms | 717–47421 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 351 ms | 36274 ms | — |
@@ -98,11 +110,9 @@ Seen 282 time(s) in 14 run(s).
 | inspect | step 4: scrollIn heading "…" 2-3 x 300-500px | 1 | 200 | 324 ms | 590 ms | — |
 | inspect | step 5: dwell 1.33s | 1 | 200 | 419 ms | 1106 ms | — |
 | inspect | step 13: dwell 6.00s | 1 | 200 | 423 ms | 5804 ms | — |
-| inspect | step 19: clickRole button "…" | 1 | 200 | 342 ms | 183 ms | — |
 | inspect | step 22: dwell 6.00s | 1 | 200 | 448 ms | 4337 ms | — |
 | inspect | step 23: goto /reel/<id> | 3 | 200 | 359–415 ms | 6040–7231 ms | — |
 | inspect | step 24: clickRole button "…" | 13 | 200 | 327–2729 ms | 18257–1629627 ms | — |
-| inspect | step 5: clickRole button "…" | 1 | 200 | 319 ms | 932 ms | — |
 | inspect | step 8: clickAny 1 x link /see owner profile$/ | 1 | 200 | 345 ms | 1382 ms | — |
 | inspect | step 9: goto /reel/<id> | 3 | 200 | 410–1157 ms | 7602–9606 ms | — |
 | inspect | step 10: clickRole button "…" | 1 | 200 | 345 ms | 3241 ms | — |

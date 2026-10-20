@@ -154,10 +154,14 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 
 | MCP tool | Runs | What it does | Params | Steps |
 | --- | --- | --- | --- | --- |
+| `flowDeletePost` | `log flow run deletePost` | Delete the newest post on the account's own profile: its Actions menu, Move to bin, Move (useCometTrashPostMutation; Facebook empties the bin after 30 days). Writes on Facebook (--live). | none | gotoprofilePhp → clickActionsForThisPost → clickMoveToBinItems → clickMove |
 | `flowGroupHeaderMenus` | `log flow run groupHeaderMenus` | Open and close the group header's search, More menu, Joined menu, Invite dialog and Share sheet; nothing inside them is picked | `groupId` | gotogroups → clickSearchWithinThisGroup → pressEscape → clickMore → pressEscape → clickJoined → pressEscape → clickInvite → pressEscape → clickShareGroup → pressEscape |
 | `flowGroupPostComments` | `log flow run groupPostComments` | On a group's Open questions tab, open a post's comments, switch the sort to All comments and scroll them; read-only | `groupId` | gotogroupsQuestions → clickLeaveAComment → clickMostRelevant → clickAllCommentsShowAll → scroll |
 | `flowGroupPostDialog` | `log flow run groupPostDialog` | On a group's Discussion feed, open a post in its dialog with Leave a comment (the comment box takes focus, nothing is typed) and close it | `groupId` | gotogroups → clickLeaveAComment → clickClose |
 | `flowGroupTabs` | `log flow run groupTabs` | Open each tab of a group the account is in (Featured, Open questions, People, Events, Media, Files, About) and come back to Discussion; read-only | `groupId` | gotogroups → clickFeatured → clickOpenQuestions → clickPeople → clickEvents → clickMedia → clickFiles → clickAbout → clickDiscussion |
+| `flowPostComment` | `log flow run postComment` | Comment on the newest post on the account's own profile: type in its Write a comment box, Post comment (useCometUFICreateCommentMutation). Writes on Facebook (--live). | `comment` | gotoprofilePhp → fillWriteAComment → clickPostComment |
+| `flowProfilePhotoPost` | `log flow run profilePhotoPost` | Post a photo on the account's own profile: Photo/video hands the file to the chooser, the upload finishes, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live). | `photo` | gotoprofilePhp → uploadPhotoVideo → clickPost |
+| `flowProfilePost` | `log flow run profilePost` | Post text on the account's own profile: open the composer, type the text, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live). | `text` | gotoprofilePhp → clickWhatSOnYour → fillWhatSOnYour → clickPost |
 | `flowProfileSetup` | `log flow run profileSetup` | Give an account its profile picture, cover photo and name, as recorded on Lancaster 2026-10-19 (rule 28): profile picture menu, Choose profile picture, Upload Photo, Save; Add Cover Photo, Upload photo, Save changes; Accounts Center name, Review change, Done. | `profilePhoto`, `coverPhoto`, `firstName`, `lastName` | gotome → clickProfilePictureActions → clickChooseProfilePicture → uploadUploadPhoto → clickSave → clickAddCoverPhoto → uploadUploadPhoto → clickSaveChanges → gotoprofilesName → fillFirstName → fillSurname → clickReviewChange → clickDone |
 
 ### Every command, CLI and MCP
@@ -271,6 +275,9 @@ flowchart TB
   c_whoami["whoami"]
   cli --> c_whoami
   mcp --> c_whoami
+  f_deletePost["flowDeletePost: flow run deletePost"]
+  mcp --> f_deletePost
+  f_deletePost --> c_flow
   f_groupHeaderMenus["flowGroupHeaderMenus: flow run groupHeaderMenus"]
   mcp --> f_groupHeaderMenus
   f_groupHeaderMenus --> c_flow
@@ -283,6 +290,15 @@ flowchart TB
   f_groupTabs["flowGroupTabs: flow run groupTabs"]
   mcp --> f_groupTabs
   f_groupTabs --> c_flow
+  f_postComment["flowPostComment: flow run postComment"]
+  mcp --> f_postComment
+  f_postComment --> c_flow
+  f_profilePhotoPost["flowProfilePhotoPost: flow run profilePhotoPost"]
+  mcp --> f_profilePhotoPost
+  f_profilePhotoPost --> c_flow
+  f_profilePost["flowProfilePost: flow run profilePost"]
+  mcp --> f_profilePost
+  f_profilePost --> c_flow
   f_profileSetup["flowProfileSetup: flow run profileSetup"]
   mcp --> f_profileSetup
   f_profileSetup --> c_flow

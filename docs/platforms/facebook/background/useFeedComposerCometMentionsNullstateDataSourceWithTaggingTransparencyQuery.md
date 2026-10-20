@@ -13,10 +13,12 @@
 | Called from | `useFeedComposerCometMentionsNullstateDataSourceWithTaggingTransparency` |
 | rea | `ev_8b0329e14c4f35ad3ddbb0b020461ec3a6d58633405ba9747ea7802a082a47bc` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 3 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 3: clickRole button "…" | 1 | 200 | 381 ms | 2321 ms | — |
+| inspect | step 7: type e2129 | 1 | 200 | 654 ms | 59 ms | — |
 | inspect | step 20: clickRole button "…" | 1 | 200 | 775 ms | 3301 ms | — |
 
 <!-- facts:end -->

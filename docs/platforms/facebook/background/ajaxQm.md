@@ -11,15 +11,16 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_6181f0d02a60d00c8c87b8bb715761dc6ca89cbe2b273bc0d89acff41087fe5f` |
+| rea | `ev_c207e65dcc79de7bf8b8a06c71ff6b2dcc267b603e1104f677cb52baee8dd97b` |
 
-Seen 34 time(s) in 14 run(s).
+Seen 37 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /profile.php | 1 | 200 | 468 ms | 2145 ms | — |
+| inspect | step 1: goto / | 8 | 200 | 431–2879 ms | 1957–4779 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 4 | 200 | 414–655 ms | 1640–1899 ms | — |
 | inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 431 ms | 736 ms | — |
-| inspect | step 1: goto / | 6 | 200 | 443–793 ms | 1957–3150 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 7439 ms | 7856 ms | — |
 | inspect | step 1: goto /groups/<id> | 1 | 200 | 673 ms | 1809 ms | — |
 | inspect | step 7: goto / | 1 | 200 | 544 ms | 1020 ms | — |

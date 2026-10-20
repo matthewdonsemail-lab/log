@@ -11,14 +11,25 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_6181f0d02a60d00c8c87b8bb715761dc6ca89cbe2b273bc0d89acff41087fe5f` |
+| rea | `ev_c207e65dcc79de7bf8b8a06c71ff6b2dcc267b603e1104f677cb52baee8dd97b` |
 
-Seen 295 time(s) in 13 run(s).
+Seen 314 time(s) in 15 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /profile.php | 3 | 200 | 354–455 ms | 7766–20765 ms | — |
+| inspect | step 2: snapshot | 6 | 200 | 356–1507 ms | 7961–14754 ms | — |
+| inspect | step 3: clickRole button "…" | 6 | 200 | 307–405 ms | 301–5352 ms | — |
+| inspect | step 5: clickRole button "…" | 1 | 200 | 365 ms | 9345 ms | — |
+| inspect | step 6: wait 6s | 1 | 200 | 365 ms | 55301 ms | — |
+| inspect | step 7: type e2129 | 2 | 200 | 357–395 ms | 9680–10066 ms | — |
+| inspect | step 8: clickRole button "…" | 3 | 200 | 352–494 ms | 3313–10333 ms | — |
+| inspect | step 14: clickRole button "…" | 1 | 200 | 1573 ms | 22775 ms | — |
+| inspect | step 15: snapshot | 1 | 200 | 384 ms | 9216 ms | — |
+| inspect | step 18: wait 4s | 2 | 200 | 359–378 ms | 6222–7921 ms | — |
+| inspect | step 19: clickRole button "…" | 1 | 200 | 1050 ms | 45652 ms | — |
+| inspect | step 3: click e97 | 1 | 200 | 1562 ms | 875 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 21 | 200 | 329–2023 ms | 6733–19936 ms | — |
-| inspect | step 2: snapshot | 4 | 200 | 360–1507 ms | 7961–14754 ms | — |
 | inspect | step 3: clickRole tab "…" | 4 | 200 | 457–677 ms | 5426–9746 ms | — |
 | inspect | step 4: clickRole tab "…" | 3 | 200 | 497–627 ms | 517–6804 ms | — |
 | inspect | clickRole failed: RuntimeError: the element kept moving under the cursor: the point is on  | 1 | 200 | 391 ms | 5120 ms | — |
@@ -39,7 +50,6 @@ Seen 295 time(s) in 13 run(s).
 | inspect | step 44: clickRole button "…" | 1 | 200 | 354 ms | 419 ms | — |
 | inspect | scroll: +657px in 17 wheel steps, 1328 ms | 1 | 200 | 607 ms | 9742 ms | — |
 | inspect | scroll: +600px in 13 wheel steps, 891 ms | 1 | 200 | 376 ms | 2922 ms | — |
-| inspect | step 3: clickRole button "…" | 5 | 200 | 307–405 ms | 794–5352 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 5 | 200 | 348–477 ms | 26534–41735 ms | — |
 | inspect | scroll: +700px in 16 wheel steps, 812 ms | 1 | 200 | 360 ms | 2707 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 1000 ms | 4 | 200 | 355–541 ms | 3096–13327 ms | — |

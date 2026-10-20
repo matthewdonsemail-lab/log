@@ -1,6 +1,6 @@
 {
-  "builtAt": "2026-10-20T15:53:50.407Z",
-  "runs": 16,
+  "builtAt": "2026-10-20T16:37:12.688Z",
+  "runs": 21,
   "operations": [
     {
       "name": "ajaxBnzai",
@@ -8,8 +8,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxBnzai.md",
-      "reaEvidenceId": "ev_6181f0d02a60d00c8c87b8bb715761dc6ca89cbe2b273bc0d89acff41087fe5f",
-      "seen": 282
+      "reaEvidenceId": "ev_9dba9514d791f3d9298ecfd9b88406e17e9d90cc1b7c9a80f4bad67aa2fb5a98",
+      "seen": 312
     },
     {
       "name": "ajaxBulkRouteDefinitions",
@@ -17,8 +17,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxBulkRouteDefinitions.md",
-      "reaEvidenceId": "ev_6181f0d02a60d00c8c87b8bb715761dc6ca89cbe2b273bc0d89acff41087fe5f",
-      "seen": 507
+      "reaEvidenceId": "ev_c207e65dcc79de7bf8b8a06c71ff6b2dcc267b603e1104f677cb52baee8dd97b",
+      "seen": 521
     },
     {
       "name": "ajaxBz",
@@ -35,7 +35,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxNavigation.md",
-      "reaEvidenceId": "ev_b22f83f3006e356320037f7ca085abebbe39917f9ab108a6121a45ef22a39bcb",
+      "reaEvidenceId": "ev_a0e5b20534b8dab39f1ccb5cc0284da6cf94d77fbffeddfc239a11ee937bdc3c",
       "seen": 20
     },
     {
@@ -44,7 +44,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxQm.md",
-      "reaEvidenceId": "ev_6181f0d02a60d00c8c87b8bb715761dc6ca89cbe2b273bc0d89acff41087fe5f",
+      "reaEvidenceId": "ev_c207e65dcc79de7bf8b8a06c71ff6b2dcc267b603e1104f677cb52baee8dd97b",
       "seen": 95
     },
     {
@@ -53,7 +53,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "photos/ajaxReactComposerAttachmentsPhotoUpload.md",
-      "reaEvidenceId": "ev_1efa699a762f9e039dbc68751e3a9a1c3aef426c7a7a7bb563c2c943e21b165c",
+      "reaEvidenceId": "ev_8b10203fa7ed4c46187f3082cd07972a974f875d58b6dfdd8b3cbf8c464c2012",
       "seen": 49
     },
     {
@@ -62,8 +62,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxRelayEf.md",
-      "reaEvidenceId": "ev_6181f0d02a60d00c8c87b8bb715761dc6ca89cbe2b273bc0d89acff41087fe5f",
-      "seen": 295
+      "reaEvidenceId": "ev_c207e65dcc79de7bf8b8a06c71ff6b2dcc267b603e1104f677cb52baee8dd97b",
+      "seen": 314
     },
     {
       "name": "ajaxRouteDefinition",
@@ -71,8 +71,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxRouteDefinition.md",
-      "reaEvidenceId": "ev_51bd45f59053378e2776af5dd11c0e1970d68fbaec1ccb0f261522336d4ac4d2",
-      "seen": 11
+      "reaEvidenceId": "ev_c207e65dcc79de7bf8b8a06c71ff6b2dcc267b603e1104f677cb52baee8dd97b",
+      "seen": 12
     },
     {
       "name": "ajaxTimezoneUpdatePhp",
@@ -135,7 +135,7 @@
       "docId": "39102912022688640",
       "doc": "background/CometFeedStoryMenuQuery.md",
       "reaEvidenceId": "ev_8ade7107a98c2567f93789e6e5c0964b64519c2f923501d4130eb1804a64ec50",
-      "seen": 1
+      "seen": 2
     },
     {
       "name": "CometGroupAboutRootQuery",
@@ -261,7 +261,16 @@
       "docId": "29231152373168310",
       "doc": "background/CometHovercardQueryRendererQuery.md",
       "reaEvidenceId": "ev_95529720f6ba751fe065571b8fd81d09f67f7e4539594c0761343470652ec320",
-      "seen": 151
+      "seen": 156
+    },
+    {
+      "name": "CometIXTFacebookAuthenticityWizardTriggerRootQuery",
+      "domain": "background",
+      "kind": "query",
+      "docId": "39059966040317376",
+      "doc": "background/CometIXTFacebookAuthenticityWizardTriggerRootQuery.md",
+      "reaEvidenceId": "ev_6150497d1b443ddefeb7a0fa6d42ad1908ddf84117060e33a416bae343af3513",
+      "seen": 1
     },
     {
       "name": "CometLinkSharingInlineDisclosureCountQuery",
@@ -336,6 +345,15 @@
       "seen": 3
     },
     {
+      "name": "CometMediaEditorAIProductTagSuggestionTriggerQuery",
+      "domain": "background",
+      "kind": "query",
+      "docId": "9721737794576988",
+      "doc": "background/CometMediaEditorAIProductTagSuggestionTriggerQuery.md",
+      "reaEvidenceId": "ev_e36bcd72b1107647131ff1b657ae5809ddc2fa322938d2bbc121b346234b91b4",
+      "seen": 1
+    },
+    {
       "name": "CometMegaphoneRootQuery",
       "domain": "background",
       "kind": "query",
@@ -369,7 +387,16 @@
       "docId": "29240849615602606",
       "doc": "background/CometNotificationsDropdownQuery.md",
       "reaEvidenceId": "ev_ab1965911932cb7fcf25b222bf92e0487c624ad5aa06bc6a0e5e7860bc09d85a",
-      "seen": 58
+      "seen": 59
+    },
+    {
+      "name": "CometNotificationsUpdateSeenStateMutation",
+      "domain": "background",
+      "kind": "mutation",
+      "docId": "32345368141745868",
+      "doc": "background/CometNotificationsUpdateSeenStateMutation.md",
+      "reaEvidenceId": "ev_93bb6af69452a5ed938292ec5a182e1e93cfbf55e743c8f55451b1103fbb50e5",
+      "seen": 1
     },
     {
       "name": "CometPhotoRootContentQuery",
@@ -441,7 +468,7 @@
       "docId": "25316047617978702",
       "doc": "background/CometUFIConversationGuideContainerQuery.md",
       "reaEvidenceId": "ev_935e23bdd0f1bbad483c8864ac3a297d9f2626846cf37db734cdfc47e418538f",
-      "seen": 4
+      "seen": 5
     },
     {
       "name": "CometUFIFeedbackReactMutation",
@@ -451,6 +478,24 @@
       "doc": "background/CometUFIFeedbackReactMutation.md",
       "reaEvidenceId": "ev_a524d63aa67afda368f84d97715d9e407ac62c8b9888f10a4ba1af4a0c4a24ba",
       "seen": 8
+    },
+    {
+      "name": "CometUFILiveTypingBroadcastMutation_StartMutation",
+      "domain": "background",
+      "kind": "mutation",
+      "docId": "9815271091886179",
+      "doc": "background/CometUFILiveTypingBroadcastMutation_StartMutation.md",
+      "reaEvidenceId": "ev_cd93da68f37862111cec7575333efdea8ed629c8438bfb6a069de0377c193052",
+      "seen": 4
+    },
+    {
+      "name": "CometUFILiveTypingBroadcastMutation_StopMutation",
+      "domain": "background",
+      "kind": "mutation",
+      "docId": "9972315006159780",
+      "doc": "background/CometUFILiveTypingBroadcastMutation_StopMutation.md",
+      "reaEvidenceId": "ev_082400740ed9343024c268903092af48f8f81859d7e36d9223fbfb69bbc717c6",
+      "seen": 2
     },
     {
       "name": "CometUFIReactionIconTooltipContentQuery",
@@ -489,12 +534,57 @@
       "seen": 1
     },
     {
+      "name": "ComposerStoryCreateMutation",
+      "domain": "background",
+      "kind": "mutation",
+      "docId": "39388780844101115",
+      "doc": "background/ComposerStoryCreateMutation.md",
+      "reaEvidenceId": "ev_ee39a9322906272c03845e3e08146c9c2172ac47705a40bda6a8f073fff0f84c",
+      "seen": 2
+    },
+    {
+      "name": "ConversationalSupportCometAIChatExperienceCreateThreadMutation",
+      "domain": "background",
+      "kind": "mutation",
+      "docId": "34071142532499112",
+      "doc": "background/ConversationalSupportCometAIChatExperienceCreateThreadMutation.md",
+      "reaEvidenceId": "ev_6965352394f48ab836cbc27405d967445bbc361b29c83c0dee4f9b706c2ff903",
+      "seen": 1
+    },
+    {
+      "name": "ConversationalSupportCometAIChatExperienceOnChatOpenedMutation",
+      "domain": "background",
+      "kind": "mutation",
+      "docId": "26970463202639788",
+      "doc": "background/ConversationalSupportCometAIChatExperienceOnChatOpenedMutation.md",
+      "reaEvidenceId": "ev_1d51694cc274411bbea5bb3eae2f9bdf4974614a533ed13d17054cac3cb067aa",
+      "seen": 1
+    },
+    {
+      "name": "ConversationalSupportCometAIChatExperienceProductQuery",
+      "domain": "background",
+      "kind": "query",
+      "docId": "28589048424048504",
+      "doc": "background/ConversationalSupportCometAIChatExperienceProductQuery.md",
+      "reaEvidenceId": "ev_ac4aff1b6e4a52af2d038d1a05131cbbfc21b4169aebc58ea09c17b19f75740b",
+      "seen": 1
+    },
+    {
       "name": "cspReporting",
       "domain": "background",
       "kind": "endpoint",
       "docId": null,
       "doc": "background/cspReporting.md",
       "reaEvidenceId": "ev_4621b73d8b9b816243f5682004e9502ffdc0cf1e2ec8364d65e1974481381e99",
+      "seen": 1
+    },
+    {
+      "name": "EntPhotoCollageItemContainerQuery",
+      "domain": "photos",
+      "kind": "query",
+      "docId": "9831027213684486",
+      "doc": "photos/EntPhotoCollageItemContainerQuery.md",
+      "reaEvidenceId": "ev_419dbaa7bf65cd0a31ebaad2ad3a070e1eefc5a2ee0345af9dcf5714b9f6e8ae",
       "seen": 1
     },
     {
@@ -512,7 +602,7 @@
       "kind": "query",
       "docId": "29594255990177227",
       "doc": "background/FBReelsEntityDialogImplQuery.md",
-      "reaEvidenceId": "ev_1c9ecb519e36a75e908d872df0a78df956a3b414ed42530799e05c7a882b1839",
+      "reaEvidenceId": "ev_f5969ab093dcf8fb0850c1bb82801d9d3e05bcaf68764bc21f414b635f91bece",
       "seen": 2
     },
     {
@@ -531,7 +621,7 @@
       "docId": "28969188822673160",
       "doc": "background/FBScreenTimeLogger_syncMutation.md",
       "reaEvidenceId": "ev_9c20c08fbf4c14d62fa5b772be9b8dc2f4b32b06aa445a78cfb8f8ea86ba73c3",
-      "seen": 29
+      "seen": 30
     },
     {
       "name": "FBUnifiedVideoContainerQuery",
@@ -1035,7 +1125,7 @@
       "docId": "28872732712336652",
       "doc": "profile/ProfileCometAboutAppSectionQuery.md",
       "reaEvidenceId": "ev_8d791e67d202e82b87375766750b1d234cf58a9260d5e9308a1c8de5280525ac",
-      "seen": 2
+      "seen": 3
     },
     {
       "name": "ProfileCometCoverPhotoUpdateMutation",
@@ -1052,7 +1142,7 @@
       "kind": "query",
       "docId": "28551060007882075",
       "doc": "profile/ProfileCometFeedComposerRootQuery.md",
-      "reaEvidenceId": "ev_707ed2d0b800f5a37aabe9528cbad4bf698cd97e6638a5708ad807ed8f142a6c",
+      "reaEvidenceId": "ev_5e421655ea792fc53f82eaa14ed803d162f1b26a8b42802407f4582fdbb6acaa",
       "seen": 2
     },
     {
@@ -1108,6 +1198,15 @@
       "doc": "profile/ProfileCometTimelineFeedQuery.md",
       "reaEvidenceId": "ev_282b916578ee6b56699ec681289b9e96fb60fcb5f636ae6ebac63b027c419c54",
       "seen": 2
+    },
+    {
+      "name": "ProfileCometTimelineFeedRefetchQuery",
+      "domain": "profile",
+      "kind": "query",
+      "docId": "27938457129160881",
+      "doc": "profile/ProfileCometTimelineFeedRefetchQuery.md",
+      "reaEvidenceId": "ev_10700decc0a4c6407f669bfb19e481323e095dc537726bb3fc56562c8bc3fbda",
+      "seen": 1
     },
     {
       "name": "ProfileCometTimelineListViewRootQuery",
@@ -1269,7 +1368,7 @@
       "docId": "26372148759079397",
       "doc": "checkpoint/useCometAISupportConversationLoggerMutation.md",
       "reaEvidenceId": "ev_9b8131e20d25cf5f2615540fd47b41670ee2c3b239082dde00fe6367de015a5b",
-      "seen": 6
+      "seen": 22
     },
     {
       "name": "useCometMarketplaceAIListingSettingsQuery",
@@ -1290,13 +1389,49 @@
       "seen": 1
     },
     {
+      "name": "useCometTrashPostMutation",
+      "domain": "background",
+      "kind": "mutation",
+      "docId": "26146132388368957",
+      "doc": "background/useCometTrashPostMutation.md",
+      "reaEvidenceId": "ev_b1bf15ec42a06bc60c28bac670233657b1ae315021240ab2896823b836a9577d",
+      "seen": 1
+    },
+    {
+      "name": "useCometUFICreateCommentMutation",
+      "domain": "background",
+      "kind": "mutation",
+      "docId": "40023273857271114",
+      "doc": "background/useCometUFICreateCommentMutation.md",
+      "reaEvidenceId": "ev_6b2a30ce7fed847573a40255a56a05ff1dfd3c70b65609378585434e925085a0",
+      "seen": 1
+    },
+    {
+      "name": "useComposerVideoUploaderConfigQuery",
+      "domain": "photos",
+      "kind": "query",
+      "docId": "9734072893355148",
+      "doc": "photos/useComposerVideoUploaderConfigQuery.md",
+      "reaEvidenceId": "ev_43e51478f73ac5653f4e10a6464c2536c9382842eb7ac8bcce0c9468f6d2c58a",
+      "seen": 1
+    },
+    {
+      "name": "useConversationalSupportPingMutation",
+      "domain": "background",
+      "kind": "mutation",
+      "docId": "26960647576878710",
+      "doc": "background/useConversationalSupportPingMutation.md",
+      "reaEvidenceId": "ev_fdf83fcc433c266ea5bcb764c902c5ab5428c2c2a03809ea8bee57b316983332",
+      "seen": 4
+    },
+    {
       "name": "useFeedComposerCometMentionsBootloadDataSourceQuery",
       "domain": "background",
       "kind": "query",
       "docId": "24037885915835927",
       "doc": "background/useFeedComposerCometMentionsBootloadDataSourceQuery.md",
       "reaEvidenceId": "ev_b88de894e472c9e4c2ec2c53351f0c403c976168c8326f9aebe1899c251181fb",
-      "seen": 1
+      "seen": 2
     },
     {
       "name": "useFeedComposerCometMentionsBootloadDataSourceWithTaggingTransparencyQuery",
@@ -1305,7 +1440,7 @@
       "docId": "28627214963600515",
       "doc": "background/useFeedComposerCometMentionsBootloadDataSourceWithTaggingTransparencyQuery.md",
       "reaEvidenceId": "ev_8d387b00b3cc69329a57d19248dc4993264e6b7ef7f54dc0fcb42d78f7ea8224",
-      "seen": 1
+      "seen": 3
     },
     {
       "name": "useFeedComposerCometMentionsNullstateDataSourceWithTaggingTransparencyQuery",
@@ -1314,7 +1449,7 @@
       "docId": "28514457521508322",
       "doc": "background/useFeedComposerCometMentionsNullstateDataSourceWithTaggingTransparencyQuery.md",
       "reaEvidenceId": "ev_8b0329e14c4f35ad3ddbb0b020461ec3a6d58633405ba9747ea7802a082a47bc",
-      "seen": 1
+      "seen": 3
     },
     {
       "name": "useFXIMNameValidatorQuery",
@@ -1479,6 +1614,15 @@
       "seen": 11
     },
     {
+      "name": "useMetaSupportAssistantVoiceOnboardingNuxQuery",
+      "domain": "background",
+      "kind": "query",
+      "docId": "27116697791312599",
+      "doc": "background/useMetaSupportAssistantVoiceOnboardingNuxQuery.md",
+      "reaEvidenceId": "ev_062f82e8c7b3e1a0fec543f912f5797bdcd92c35f42c2c377d178a5466cf77d0",
+      "seen": 1
+    },
+    {
       "name": "useMWEncryptedBackupsFetchBackupIdsV2Query",
       "domain": "background",
       "kind": "query",
@@ -1521,7 +1665,7 @@
       "docId": "28911931891824700",
       "doc": "checkpoint/useUFACSubmitActionMutation.md",
       "reaEvidenceId": "ev_e4f13bdff7b9aeebfd4f4bc936b4cade3eba5b723439cf5aa62ef31b4e9a43ef",
-      "seen": 3
+      "seen": 4
     },
     {
       "name": "videoUnifiedCvc",

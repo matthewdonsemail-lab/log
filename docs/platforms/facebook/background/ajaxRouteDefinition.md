@@ -11,12 +11,13 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_51bd45f59053378e2776af5dd11c0e1970d68fbaec1ccb0f261522336d4ac4d2` |
+| rea | `ev_c207e65dcc79de7bf8b8a06c71ff6b2dcc267b603e1104f677cb52baee8dd97b` |
 
-Seen 10 time(s) in 2 run(s).
+Seen 12 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /profile.php | 2 | 200 | 935–1029 ms | 7265–7287 ms | — |
 | inspect | step 12: clickAny 1 x link /see owner profile$/ | 2 | 200 | 1301–1496 ms | 2966–2968 ms | — |
 | inspect | step 21: clickAny 1 x link /see owner profile$/ | 2 | 200 | 875–1135 ms | 2572–2573 ms | — |
 | inspect | step 8: clickAny 1 x link /see owner profile$/ | 2 | 200 | 1125–2019 ms | 2767–2769 ms | — |

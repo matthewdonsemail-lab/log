@@ -13,10 +13,11 @@
 | Called from | `fetchMWChatVideoAutoplaySetting` |
 | rea | `ev_cec3d0049369021eb11311f83bae206c05ab77298da76206b6788d2cdc5c8ee1` |
 
-Seen 30 time(s) in 13 run(s).
+Seen 31 time(s) in 14 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /profile.php | 1 | 200 | 426 ms | 7458 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 4 | 200 | 424–689 ms | 3028–5407 ms | — |
 | inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 351 ms | 5739 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 362 ms | 5343 ms | — |
