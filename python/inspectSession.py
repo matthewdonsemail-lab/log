@@ -426,7 +426,14 @@ class Inspector:
         button = self.page.get_by_role("button", name=re.compile(r"^(continue|submit)$", re.I))
         if await button.count() and await button.first.is_visible() and await button.first.is_enabled():
             log("  Text captcha: Continue still there, clicking it.")
-            await button.first.click(timeout=8000)
+            await self.mouse.click(button.first)
+            return
+        # Facebook's checkpoint draws Continue as plain text, not a button (Reading 20261020T105346 step 43):
+        # the answer stays typed until it is pressed.
+        text = self.page.get_by_text(re.compile(r"^continue$", re.I)).last
+        if await text.count() and await text.is_visible():
+            log("  Text captcha: Continue is plain text here, clicking it.")
+            await self.mouse.click(text)
 
     async def sign_in(self) -> None:
         """Email and password from login.json into the page's own fields, then Enter. Values never logged."""

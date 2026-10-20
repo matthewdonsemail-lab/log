@@ -523,6 +523,19 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     lookup, and pull the actual candidates from it. A suggestion names where
     it came from (the page, the search), and a pick is one of what the search
     returned.
+54. 2026-10-20 · matt: a known state is resolved, never a reason to stop.
+    When a page lands on a state log-cli already knows (a checkpoint's first
+    page, a text captcha, the Remember password prompt, the login form, two-step,
+    "automated behaviour"), its resolver runs: press the checkpoint's Continue
+    (plain text, by its ref), `solve` the captcha (2Captcha, then Continue),
+    Not now, signIn, code. Only what a person must clear stops an account (a
+    video selfie, an ID or photo, a disabled account; rules 10, 23), and that is
+    said to matt. A Claude Code hook (`.claude/settings.json`,
+    `scripts/hooks/pageState.ts`) reads the latest step of every open browser
+    after each tool call and each prompt, matches it against the known states
+    (`pageStateOf`, `src/camofox/flow/helpers/pageState.ts`) and puts the state
+    and its resolver into the agent's context. A state not mapped yet is
+    pressed through (its Continue) and added to the map.
 
 ## Checks
 
