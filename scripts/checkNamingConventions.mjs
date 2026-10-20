@@ -68,7 +68,7 @@ const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)+$/;
 // inspect-web-network-capture, analyze-javascript-application: rea-agents commands (src/rea/capture).
 // wilkes-barre: the real city name in Pennsylvania (src/marketplace/home).
 // Numbers joined by dashes (`3-5`, `300-600`: the warm-up's draws, rule 36; a date, `2026-10-19`) are quantities, not names: rule 1 doesn't apply.
-const ALLOWED_KEBAB = [/^\d+(?:-\d+)+$/, /^2-digit$/, /^rev-parse$/, /^xdg-open$/, /^zone-custom$/, /^set-cookie$/, /^content-type$/, /^proxy-authorization$/, /^mcp-session-id$/, /^x-fb-friendly-name$/, /^inspect-web-network-capture$/, /^analyze-javascript-application$/, /^photo-\d+-[0-9a-f]+$/, /^x{8}-x{4}-4x{3}-yx{3}-x{12}$/, /^wilkes-barre$/, /^aria-[a-z]+$/, /^subq-snap-preview$/];
+const ALLOWED_KEBAB = [/^\d+(?:-\d+)+$/, /^2-digit$/, /^rev-parse$/, /^xdg-open$/, /^zone-custom$/, /^set-cookie$/, /^content-type$/, /^proxy-authorization$/, /^mcp-session-id$/, /^x-fb-friendly-name$/, /^inspect-web-network-capture$/, /^analyze-javascript-application$/, /^photo-\d+-[0-9a-f]+$/, /^x{8}-x{4}-4x{3}-yx{3}-x{12}$/, /^wilkes-barre$/, /^aria-[a-z]+$/, /^subq-snap-preview$/, /^[a-z]{2}-[a-z0-9]{1,3}$/];
 // A single- or double-quoted string on one line.
 const LITERAL = /(['"])((?:(?!\1)[^\\\n])*)\1/g;
 

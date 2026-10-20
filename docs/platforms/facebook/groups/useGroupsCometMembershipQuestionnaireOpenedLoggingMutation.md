@@ -17,7 +17,7 @@ Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 2: click e220 | 1 | 200 | 484 ms | 1391 ms | — |
+| inspect | step 2: clickRole button "…" | 1 | 200 | 349 ms | 3529 ms | — |
 
 <!-- facts:end -->
 

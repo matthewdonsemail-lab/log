@@ -10,7 +10,7 @@ import type { DecisionImage, DecisionsClient } from "../../../subq/decisions/ind
 import { readReelRead, REEL, reelCaption, reelPersonaMachine, reelReadRequest } from "../../../warmup/facebook/index.ts";
 import type { ActivityStep, AllowedActions, ReelLabel, ReelRead, StepReply } from "../../../warmup/facebook/index.ts";
 import type { InterestEffect } from "../../../warmup/viewer/index.ts";
-import { DEFAULT_TRAFFIC_BUDGET_MB, readTrafficLedger, recordTraffic, trafficBudget, twoCaptchaMeter } from "../../../proxyVendor/traffic/index.ts";
+import { DEFAULT_TRAFFIC_BUDGET_MB, meterForProxy, readTrafficLedger, recordTraffic, trafficBudget } from "../../../proxyVendor/traffic/index.ts";
 import type { TrafficMeter } from "../../../proxyVendor/traffic/index.ts";
 import { buildPersonaPack, datasetsDir, drawPersona, readDatasets, readPackDatasets } from "../../../warmup/persona/index.ts";
 import type { BehaviourProfile, PackDatasets, PersonaPack } from "../../../warmup/persona/index.ts";
@@ -116,21 +116,24 @@ export async function runPersonaSession(
   viewer: ReelViewer,
   pack: PersonaPack,
   effect: InterestEffect,
-  options: { reels: number; seed: number; live: boolean; likes: boolean; trafficMb?: number },
+  options: { reels: number; seed: number; live: boolean; likes: boolean; trafficMb?: number; proxy?: string | null },
 ): Promise<CommandResult> {
   const current = readCurrentInspect(undefined, account);
   if (!current) return { code: 1, stderr: `log warmup: no open browser for ${account}` };
-  // Proxy traffic (matt, 2026-10-20): the account's budget for 24 hours, measured on 2Captcha's counter before and after.
-  const meter = context.trafficMeter ?? twoCaptchaMeter();
+  // Proxy traffic (matt, 2026-10-20): the account's budget for 24 hours, measured on its provider's counter before and
+  // after (rule 51). A static IP's traffic is in its price, so it has no meter and no budget.
+  const meter = context.trafficMeter ?? meterForProxy(options.proxy);
   const budget = trafficBudget(readTrafficLedger(), account, context.now?.() ?? new Date(), options.trafficMb ?? DEFAULT_TRAFFIC_BUDGET_MB);
-  if (budget.leftMb <= 0) return { code: 1, stderr: `log warmup: trafficBudgetSpent: ${account} used ${budget.usedMb} MB of its ${budget.budgetMb} MB proxy traffic in the last 24 hours (~/.logCli/proxyTraffic.jsonl).` };
-  let startMb: number;
-  try {
-    startMb = await meter();
-  } catch (error) {
-    return { code: 1, stderr: `log warmup: trafficUnmeasured: ${(error as Error).message}` };
-  }
-  context.err(`Proxy traffic: ${budget.usedMb} MB used in the last 24 hours, ${budget.leftMb} MB left of ${budget.budgetMb} MB; checked every 5 reels.`);
+  if (meter && budget.leftMb <= 0) return { code: 1, stderr: `log warmup: trafficBudgetSpent: ${account} used ${budget.usedMb} MB of its ${budget.budgetMb} MB proxy traffic in the last 24 hours (~/.logCli/proxyTraffic.jsonl).` };
+  let startMb = 0;
+  if (meter) {
+    try {
+      startMb = await meter();
+    } catch (error) {
+      return { code: 1, stderr: `log warmup: trafficUnmeasured: ${(error as Error).message}` };
+    }
+    context.err(`Proxy traffic: ${budget.usedMb} MB used in the last 24 hours, ${budget.leftMb} MB left of ${budget.budgetMb} MB; checked every 5 reels.`);
+  } else context.err("Proxy traffic: a static IP (its traffic is in its price), not metered.");
   let runMb = 0;
   let swipes = 0;
   // The first definition of each id (REEL lists swipe and glance more than once).
@@ -164,7 +167,7 @@ export async function runPersonaSession(
           }
           args = [(remaining / 1000).toFixed(2)];
         }
-        if (step.id === "swipe" && ++swipes % 5 === 0) {
+        if (meter && step.id === "swipe" && ++swipes % 5 === 0) {
           // Every 5 reels: what this run used so far; stop at the budget, before the next reel streams.
           try {
             runMb = Math.round(((await meter()) - startMb) * 100) / 100;
@@ -233,12 +236,14 @@ export async function runPersonaSession(
   });
   run.start();
   const output = await toPromise(run);
-  try {
-    runMb = Math.round(((await meter()) - startMb) * 100) / 100;
-  } catch {
-    context.err("  ⧗ proxy traffic: the counter couldn't be read at the end; the last check stands");
+  if (meter) {
+    try {
+      runMb = Math.round(((await meter()) - startMb) * 100) / 100;
+    } catch {
+      context.err("  ⧗ proxy traffic: the counter couldn't be read at the end; the last check stands");
+    }
+    recordTraffic({ at: new Date().toISOString(), account, run: `warmup facebook reel ${current.runDir.split(/[\\/]/).pop()}`, mb: runMb });
   }
-  recordTraffic({ at: new Date().toISOString(), account, run: `warmup facebook reel ${current.runDir.split(/[\\/]/).pop()}`, mb: runMb });
   const planned = output.labels.map((l) => l.plan.watchMs).sort((a, b) => a - b);
   const shown = [...onScreen].sort((a, b) => a - b);
   const med = (xs: number[]) => (xs.length ? (xs[Math.floor(xs.length / 2)] / 1000).toFixed(1) : "-");

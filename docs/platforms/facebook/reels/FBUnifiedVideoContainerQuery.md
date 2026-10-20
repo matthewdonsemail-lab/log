@@ -13,11 +13,22 @@
 | Called from | `FBUnifiedVideoContainer_reels.graphql` |
 | rea | `ev_e0f416e05899b25acdf92584bfaa3ab0f3705c0b194d01f500c834c0c5a17a4d` |
 
-Seen 15 time(s) in 2 run(s).
+Seen 27 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /reel/ | 2 | 200 | 2512–3015 ms | 2974–3004 ms | — |
+| inspect | step 1: goto /reel/ | 3 | 200 | 1007–3015 ms | 2974–3857 ms | — |
+| inspect | step 7: clickRole button "…" | 1 | 200 | 1132 ms | 362 ms | — |
+| inspect | rea read step 12_clickroleButtonNextCard: exit 0, ev_85d3eb6b06cf8f36f4642c89361343e8626c6 | 1 | 200 | 4128 ms | 306 ms | — |
+| inspect | rea read step 19_clickroleButtonNextCard: exit 0, ev_45ef075c58fbdae3bab1ffabc78a118951f55 | 1 | 200 | 1253 ms | 98 ms | — |
+| inspect | step 28: clickRole button "…" | 1 | 200 | 3456 ms | 370 ms | — |
+| inspect | step 37: clickRole button "…" | 2 | 200 | 1188–3499 ms | 364–1186 ms | — |
+| inspect | rea read step 43_clickroleButtonNextCard: exit 0, ev_aedaa378a6ea54807b97d6e5c8f6fe5bb7a5d | 1 | 200 | 3089 ms | 163 ms | — |
+| inspect | step 51: clickRole button "…" | 1 | 200 | 1026 ms | 377 ms | — |
+| inspect | step 56: clickRole button "…" | 1 | 200 | 3336 ms | 407 ms | — |
+| inspect | step 63: clickRole button "…" | 1 | 200 | 1058 ms | 463 ms | — |
+| inspect | rea read step 68_clickroleButtonNextCard: exit 0, ev_b27fc6005b1ef2e36a37391948d57bdd4f3e4 | 1 | 200 | 3029 ms | 285 ms | — |
+| inspect | step 71: goto /reel/ | 1 | 200 | 3110 ms | 3721 ms | — |
 | inspect | rea read step 08_clickroleButtonNextCard: exit 0, ev_f6a7635960b1919bdfac52d21fd673ed4dc6c | 1 | 200 | 1155 ms | 261 ms | — |
 | inspect | rea read step 13_dwell600s: exit 0, ev_e8922deafb7ba9951a51bda6f8cd82b5b68c41db19bfe0cd164 | 1 | 200 | 2028 ms | 634 ms | — |
 | inspect | rea read step 18_clickroleButtonNextCard: exit 0, ev_33faffe301518f4ece688324618192249fe69 | 1 | 200 | 1058 ms | 1658 ms | — |
@@ -27,7 +38,6 @@ Seen 15 time(s) in 2 run(s).
 | inspect | step 20: goto /reel/<id> | 1 | 200 | 1749 ms | 2416 ms | — |
 | inspect | step 22: goto /reel/ | 1 | 200 | 2519 ms | 2175 ms | — |
 | inspect | step 29: clickRole button "…" | 1 | 200 | 1914 ms | 2539 ms | — |
-| inspect | step 37: clickRole button "…" | 1 | 200 | 3499 ms | 1186 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 1282 ms | 4886 ms | — |
 | inspect | step 65: clickRole button "…" | 1 | 200 | 1032 ms | 2013 ms | — |
 | inspect | step 80: clickRole button "…" | 1 | 200 | 3174 ms | 1202 ms | — |

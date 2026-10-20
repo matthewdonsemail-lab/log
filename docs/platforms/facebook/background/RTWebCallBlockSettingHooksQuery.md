@@ -13,11 +13,13 @@
 | Called from | `RTWebCallBlockSettingHooks` |
 | rea | `ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6` |
 
-Seen 10 time(s) in 2 run(s).
+Seen 13 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /reel/ | 2 | 200 | 340–342 ms | 3376–3379 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 1 | 200 | 372 ms | 6425 ms | — |
+| inspect | step 1: goto /reel/ | 3 | 200 | 340–381 ms | 3376–4292 ms | — |
+| inspect | step 71: goto /reel/ | 1 | 200 | 358 ms | 4007 ms | — |
 | inspect | rea read step 13_dwell600s: exit 0, ev_e8922deafb7ba9951a51bda6f8cd82b5b68c41db19bfe0cd164 | 1 | 200 | 1005 ms | 2080 ms | — |
 | inspect | rea read step 22_dwell600s: exit 0, ev_59385bb1add05e2efe91692d85b295ae9cd6334beafd2bccb4a | 1 | 200 | 364 ms | 2222 ms | — |
 | inspect | step 9: goto /reel/<id> | 1 | 200 | 1008 ms | 6031 ms | — |

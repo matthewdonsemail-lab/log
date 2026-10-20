@@ -13,11 +13,11 @@
 | Called from | `GroupsCometMembershipQuestionsPreloadedDialog.react` |
 | rea | `ev_dd616c3f30730d9acd44f2f8fb04c41d5895a0739b85b96be369e95f587f31fd` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 2: click e220 | 1 | 200 | 556 ms | 744 ms | — |
+| inspect | step 2: clickRole button "…" | 2 | 200 | 409–412 ms | 1211–3027 ms | — |
 
 <!-- facts:end -->
 

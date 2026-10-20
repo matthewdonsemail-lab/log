@@ -139,7 +139,7 @@ export async function runPlatformActivity(context: CommandContext, positionals: 
       const range = built.options.reels;
       const reels = typeof flags.reels === "string" ? range.min + Math.floor(seeded(seed)() * (range.max - range.min + 1)) : pack.traits.sessionReels;
       context.err(`Warm-up facebook reel, each reel read by SubQ and planned by the orderer for this pack: ${reels} reels, in ${account.accountName}'s open browser (${current.runDir}).`);
-      return await runPersonaSession(context, account.accountName, persona, viewer, pack, readInterestEffect(), { reels, seed, live: flags.live === true, likes: flags.likes === true, trafficMb: typeof flags.trafficMb === "string" ? Number(flags.trafficMb) : undefined });
+      return await runPersonaSession(context, account.accountName, persona, viewer, pack, readInterestEffect(), { reels, seed, live: flags.live === true, likes: flags.likes === true, trafficMb: typeof flags.trafficMb === "string" ? Number(flags.trafficMb) : undefined, proxy: account.proxy });
     }
     const steps = sub === "run" && drawnSession ? planSession(built.options, Math.floor((context.now?.() ?? new Date()).getTime() % 2 ** 31)).map((s) => s.step) : activity.steps;
     context.err(`Warm-up ${platform} ${activity.activity} (${sub}) in ${account.accountName}'s open browser (${current.runDir}): ${steps.length} steps, each checked.`);

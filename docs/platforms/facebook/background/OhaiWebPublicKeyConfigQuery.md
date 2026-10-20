@@ -13,11 +13,13 @@
 | Called from | `OhaiWebPublicKeyConfig` |
 | rea | `ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013` |
 
-Seen 10 time(s) in 2 run(s).
+Seen 13 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /reel/ | 2 | 200 | 351–358 ms | 3193–3281 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 1 | 200 | 343 ms | 5713 ms | — |
+| inspect | step 1: goto /reel/ | 3 | 200 | 339–358 ms | 3193–4211 ms | — |
+| inspect | step 71: goto /reel/ | 1 | 200 | 323 ms | 3846 ms | — |
 | inspect | rea read step 13_dwell600s: exit 0, ev_e8922deafb7ba9951a51bda6f8cd82b5b68c41db19bfe0cd164 | 1 | 200 | 1035 ms | 2019 ms | — |
 | inspect | rea read step 22_dwell600s: exit 0, ev_59385bb1add05e2efe91692d85b295ae9cd6334beafd2bccb4a | 1 | 200 | 360 ms | 2128 ms | — |
 | inspect | step 9: goto /reel/<id> | 1 | 200 | 940 ms | 5978 ms | — |

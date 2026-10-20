@@ -13,10 +13,13 @@
 | Called from | `FBUnifiedVideoHashtagSearchDialogSnippet.react` |
 | rea | `ev_42edb6bfb115aea2e256a57ae3bab291549def6c304446e472aa5f9ba7e2a5e2` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 4 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /reel/ | 1 | 200 | 389 ms | 15950 ms | — |
+| inspect | step 2: clickRole button "…" | 1 | 200 | 378 ms | 57 ms | — |
+| inspect | rea read step 01_gotoHttpsWwwFacebook: exit 0, ev_89bbdc6903778aed1be1fa77542b3415430e6712 | 1 | 200 | 327 ms | 5555 ms | — |
 | inspect | step 35: clickRole button "…" | 1 | 200 | 362 ms | 4755 ms | — |
 
 <!-- facts:end -->

@@ -5,6 +5,10 @@ its proxy is attached and its exit IP is in the account's country. There is no
 exception, not for dry runs and not for signing in. A listing must be in the
 account's country too, and so must the Location picked on the form.
 
+The providers a proxy comes from (2Captcha, Byteful), and how log-cli stays
+provider-agnostic around Twenty's `proxy` field, are in
+[`proxyVendors/`](proxyVendors/README.md).
+
 ## Where a proxy lives
 
 On the account in Twenty: `socialAccounts.proxy`, as

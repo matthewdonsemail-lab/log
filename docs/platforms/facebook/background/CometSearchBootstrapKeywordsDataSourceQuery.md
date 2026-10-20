@@ -13,11 +13,12 @@
 | Called from | — |
 | rea | not read yet |
 
-Seen 10 time(s) in 2 run(s).
+Seen 12 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /reel/ | 2 | 200 | 347–359 ms | 3276–3365 ms | — |
+| inspect | step 1: goto /reel/ | 3 | 200 | 347–391 ms | 3276–3898 ms | — |
+| inspect | step 71: goto /reel/ | 1 | 200 | 338 ms | 3839 ms | — |
 | inspect | rea read step 13_dwell600s: exit 0, ev_e8922deafb7ba9951a51bda6f8cd82b5b68c41db19bfe0cd164 | 1 | 200 | 1402 ms | 1224 ms | — |
 | inspect | step 23: goto /reel/<id> | 1 | 200 | 488 ms | 2166 ms | — |
 | inspect | step 9: goto /reel/<id> | 1 | 200 | 1565 ms | 3485 ms | — |

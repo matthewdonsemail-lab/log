@@ -13,10 +13,11 @@
 | Called from | `CometProfileVerificationBadgePopover.react` |
 | rea | `ev_30cb73a9fa4178a0bd1e40df058036b7959d3c2ac3c9f1ce44965dc85a402bb8` |
 
-Seen 3 time(s) in 1 run(s).
+Seen 4 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | rea read step 70_clickany1XLink: exit 1 | 1 | 200 | 340 ms | 215712 ms | — |
 | inspect | step 21: clickRole button "…" | 1 | 200 | 459 ms | 3352 ms | — |
 | inspect | now on /reel/<id> "…" after 2890 ms; 0 request(s) | 2 | 200 | 347 ms | 731–1268 ms | — |
 

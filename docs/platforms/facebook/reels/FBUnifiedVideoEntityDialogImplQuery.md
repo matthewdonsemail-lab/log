@@ -13,10 +13,11 @@
 | Called from | `FBUnifiedVideoEntityDialogImpl.react` |
 | rea | `ev_86c55860632301261adc729568972b8c68698dd7f99a2d2b9710325b4f021afc` |
 
-Seen 12 time(s) in 2 run(s).
+Seen 13 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | rea read step 70_clickany1XLink: exit 1 | 1 | 200 | 1405 ms | 147578 ms | — |
 | inspect | rea read step 24_clickroleButtonNextCard: exit 0, ev_08bd0b0aa3e491db75fd341d53b6ccf63883a | 1 | 200 | 1995 ms | 1609190 ms | — |
 | inspect | step 9: goto /reel/<id> | 1 | 200 | 1969 ms | 5894 ms | — |
 | inspect | step 11: goto /reel/ | 1 | 200 | 1082 ms | 2621 ms | — |

@@ -13,11 +13,13 @@
 | Called from | `MAWVerifyThreadCutover` |
 | rea | `ev_2ef4fcf81840e4c44dfd19b7c86b9e3e65429109c06595cfc96262bcea9f2bc2` |
 
-Seen 10 time(s) in 2 run(s).
+Seen 13 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /reel/ | 2 | 200 | 339–353 ms | 3408–3469 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 1 | 200 | 389 ms | 6555 ms | — |
+| inspect | step 1: goto /reel/ | 3 | 200 | 339–353 ms | 3408–4338 ms | — |
+| inspect | step 71: goto /reel/ | 1 | 200 | 328 ms | 4281 ms | — |
 | inspect | rea read step 13_dwell600s: exit 0, ev_e8922deafb7ba9951a51bda6f8cd82b5b68c41db19bfe0cd164 | 1 | 200 | 1714 ms | 1264 ms | — |
 | inspect | rea read step 22_dwell600s: exit 0, ev_59385bb1add05e2efe91692d85b295ae9cd6334beafd2bccb4a | 1 | 200 | 328 ms | 2264 ms | — |
 | inspect | step 9: goto /reel/<id> | 1 | 200 | 401 ms | 5863 ms | — |

@@ -11,14 +11,19 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_4bb3e0322d035f08a136122015975f24f87a85da63b2a5a25f606a6b131115e2` |
+| rea | `ev_1c4949e0e0ebaff7ed1c3b03146838ea4b9a2efc6e5a86ffab116266543e39e5` |
 
-Seen 63 time(s) in 2 run(s).
+Seen 76 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /reel/ | 1 | 200 | 1107 ms | 11286 ms | — |
-| inspect | step 2: clickRole button "…" | 1 | 200 | 337 ms | 1733 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 2 | 200 | 329–335 ms | 12853–16381 ms | — |
+| inspect | step 2: clickRole button "…" | 2 | 200 | 324–337 ms | 637–1733 ms | — |
+| inspect | step 1: goto /reel/ | 3 | 200 | 330–1107 ms | 8092–11595 ms | — |
+| inspect | rea read step 64_clickroleButtonNextCard: exit 0, ev_6aa01e56964e455e448bbd9cb3d6580eda760 | 1 | 200 | 303 ms | 1598 ms | — |
+| inspect | rea read step 70_clickany1XLink: exit 1 | 1 | 200 | 343 ms | 62029 ms | — |
+| inspect | step 71: goto /reel/ | 1 | 200 | 322 ms | 11344 ms | — |
+| inspect | rea read step 72_clickroleButtonUnmute: exit 0, ev_183079e9de4526e8398a72e352c35b5ac9ce8fe | 5 | 200, 0 | 0–343 ms | 10069–94742 ms | — |
 | inspect | step 3: clickRole button "…" | 4 | 200 | 307–341 ms | 1630–5352 ms | — |
 | inspect | rea read step 11_clickroleButtonNextCard: exit 0, ev_189e7df832ac014018be21a4d2fe3eb4b862d | 1 | 200 | 348 ms | 588 ms | — |
 | inspect | clickAny: 1 link /see owner profile$/ | 5 | 200 | 326–404 ms | 182–7657 ms | — |

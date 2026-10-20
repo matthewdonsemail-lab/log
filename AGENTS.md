@@ -503,6 +503,26 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     refuses to start over the budget (`trafficBudgetSpent`), checks every 5
     reels and stops at it, and writes each run's use to
     `~/.logCli/proxyTraffic.jsonl` (`src/proxyVendor/traffic`).
+52. 2026-10-20 · matt: proxies are provider-agnostic, and Byteful is added
+    beside 2Captcha (this widens rule 43). Twenty keeps one `proxy` URL per
+    account, whichever provider it came from. The provider is read from its
+    host (`vendorOfProxy`, `src/proxyVendor/vendor`), and each provider is a
+    domain of its own (`src/proxyVendor/twoCaptcha`, `src/proxyVendor/byteful`).
+    `log proxy assign --vendor byteful` takes a sticky (24 h) Byteful
+    residential proxy in the account's city and checks it (home country,
+    100 km, speed) before saving, as for 2Captcha. `log proxy balance` shows
+    every provider set up, and `log proxy static` lists Byteful's static IPs
+    with where each is. A traffic-billed proxy is metered by its own provider
+    (rule 51); a static IP is not. log-cli never buys from a provider (rule
+    41). Docs: `docs/proxyVendors/`; Byteful's own docs and API spec are in
+    `RESEARCH/MARKETPLACE_PROVIDERS/proxies/byteful/`.
+53. 2026-10-20 · matt: when something has to be found (a group to join, a
+    provider, a price, a fact), it comes from an external source, never from
+    memory or a guess: search with TinyFish through treg (`treg call
+    tinyfish.web.search`, `tinyfish.web.fetch`, free) as the basis for every
+    lookup, and pull the actual candidates from it. A suggestion names where
+    it came from (the page, the search), and a pick is one of what the search
+    returned.
 
 ## Checks
 

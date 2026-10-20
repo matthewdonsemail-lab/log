@@ -13,10 +13,11 @@
 | Called from | `CometUFIFeedbackReactMutation` |
 | rea | `ev_a524d63aa67afda368f84d97715d9e407ac62c8b9888f10a4ba1af4a0c4a24ba` |
 
-Seen 5 time(s) in 1 run(s).
+Seen 6 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | rea read step 64_clickroleButtonNextCard: exit 0, ev_6aa01e56964e455e448bbd9cb3d6580eda760 | 1 | 200 | 1161 ms | 912 ms | — |
 | inspect | step 10: clickRole button "…" | 1 | 200 | 960 ms | 1745 ms | — |
 | inspect | step 21: clickRole button "…" | 1 | 200 | 872 ms | 1290 ms | — |
 | inspect | step 45: clickRole button "…" | 1 | 200 | 1424 ms | 1325 ms | — |

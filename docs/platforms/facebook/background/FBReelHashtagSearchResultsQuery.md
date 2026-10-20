@@ -13,10 +13,12 @@
 | Called from | `FBReelHashtagSearchResults.react` |
 | rea | `ev_3ef714540a23ef82c40a5d13339e2663b055d23d569c643010201605ba744874` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 3 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /reel/ | 1 | 200 | 2055 ms | 15952 ms | — |
+| inspect | step 2: clickRole button "…" | 1 | 200 | 2624 ms | 59 ms | — |
 | inspect | step 35: clickRole button "…" | 1 | 200 | 2108 ms | 4757 ms | — |
 
 <!-- facts:end -->

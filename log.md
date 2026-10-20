@@ -2457,3 +2457,70 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: ALLOWED_KEBAB in scripts/checkNamingConventions.mjs allows `subq-snap-preview`, SubQ's own model id, beside the other systems' fixed names it already allows (x-fb-friendly-name, inspect-web-network-capture).
 Why: the push gate's naming check refused the SubQ Decisions client and its test over that id. It is another system's name, sent as is (rule 1 converts other systems' names at the boundary, and this one is the boundary).
 Checked: `bun run check:naming` OK.
+
+## 2026-10-20 10:17Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `.env.example`: edited
+- `AGENTS.md`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuShortcutsQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometProfileVerificationBadgePopoverQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometUFIFeedbackReactMutation.md`: edited
+- `docs/platforms/facebook/background/FBReelHashtagSearchResultsQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useInstreamAdsHaloFetcherQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometMembershipQuestionsPreloadedDialogQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometRecAffordanceSectionQuery.md`: new file
+- `docs/platforms/facebook/groups/useGroupRequestToJoinMutation.md`: new file
+- `docs/platforms/facebook/groups/useGroupsCometHeaderControlsQuery.md`: new file
+- `docs/platforms/facebook/groups/useGroupsCometMembershipQuestionnaireOpenedLoggingMutation.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoContainerQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoEntityDialogImplQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoHashtagSearchDialogSnippetQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoRootWithEntrypointQuery.md`: new file
+- `docs/platforms/facebook/reels/FBUnifiedVideoSeenStateMutation.md`: edited
+- `docs/proxies.md`: edited
+- `docs/proxyVendors/README.md`: new file
+- `docs/proxyVendors/byteful.md`: new file
+- `python/errorCatalog.json`: edited
+- `scripts/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `src/cli/proxy/index.ts`: added function saveFirstGood, function centreOf, function assignByteful · changed const PROXY_USAGE, function assignOne, const proxyCommand
+- `src/cli/warmup/helpers/personaRun.ts`: changed function runPersonaSession
+- `src/cli/warmup/helpers/platformActivity.ts`: changed function runPlatformActivity
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `src/proxyVendor/byteful/byteful.test.ts`: added const creds, function fakeFetch, test "the keys come from BYTEFUL_PUBLIC_KEY and BYTEFUL_PRIVATE_KEY, and go in headers, never the URL", test "the account's city is the one of that name nearest home (Bethlehem PA, not South Africa); none with devices is null", test "a city search reads each city with where it is and its devices", test "a residential proxy is one sticky URL from the list endpoint, pinned to the city, 24 hours", test "an ISP quote is a POST to /checkout/quote and buys nothing", test "each provider's host; a static IP has none and isn't metered", test "--vendor reads either spelling", test "is title-cased, because its city search is case-sensitive"
+- `src/proxyVendor/byteful/client.ts`: added const API, const TIMEOUT_MS, function bytefulCredentials, function call, const num, function getResidentialSummary, function getCreditCents, const cityTitle, function searchCities, function residentialProxyUrl, function staticProxies, function quoteIsp
+- `src/proxyVendor/byteful/helpers/index.ts`: added export from "./pickCity"
+- `src/proxyVendor/byteful/helpers/pickCity.ts`: added const norm, const km, function pickCity
+- `src/proxyVendor/byteful/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/proxyVendor/byteful/types.ts`: added class BytefulError, interface BytefulCredentials, interface BytefulResidentialSummary, interface BytefulCity, interface BytefulResidentialRequest, interface BytefulStaticProxy, interface BytefulQuote
+- `src/proxyVendor/traffic/client.ts`: added function bytefulMeter, function meterForProxy
+- `src/proxyVendor/traffic/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/proxyVendor/vendor/helpers/index.ts`: added export from "./vendorOfProxy"
+- `src/proxyVendor/vendor/helpers/vendorOfProxy.ts`: added const HOSTS, function vendorOfProxy, function parseVendor
+- `src/proxyVendor/vendor/index.ts`: added export from "./helpers/index", export from "./types"
+- `src/proxyVendor/vendor/types.ts`: added type ProxyVendorName, const PROXY_VENDORS, type ProxyBilling
+
+What changed: Proxies are provider-agnostic. src/proxyVendor/vendor reads an account's provider from its Twenty `proxy` URL's host (vendorOfProxy, parseVendor, PROXY_VENDORS); nothing new is stored in Twenty. src/proxyVendor/byteful is Byteful's client: credentials from BYTEFUL_PUBLIC_KEY/BYTEFUL_PRIVATE_KEY in headers, the residential summary, credit, city search (case-sensitive, so cityTitle), one sticky 24 h residential URL from /residential/list, static proxies with their location, and an ISP quote that never buys; pickCity takes the named city nearest the account's home. `log proxy assign --vendor byteful` checks each candidate through the proxy before saving (saveFirstGood, shared with 2Captcha's assign, which now uses it too); `log proxy balance` shows every provider set up; `log proxy static` lists Byteful's static IPs. The traffic meter is per provider (bytefulMeter, meterForProxy): a static IP is not metered, and the Reels warm-up passes the account's proxy. Error codes bytefulNotConfigured, bytefulRefused, bytefulNoCity. docs/proxyVendors/README.md (the agnostic model) and byteful.md (all 58 endpoints and what each is for us); Byteful's 172 doc pages and OpenAPI spec are in RESEARCH/MARKETPLACE_PROVIDERS/proxies/byteful. The naming gate allows ISO 3166-2 ids (us-pa). The group join request useGroupRequestToJoinMutation is documented from a new recording (run 20261020T101203), with the join run's other new requests; AGENTS.md rules 52 (agnostic proxies, Byteful) and 53 (finding things through TinyFish), distilled into the MCP rules.
+Why: matt set Byteful's keys and asked for its docs, every endpoint's use, and proxies that are agnostic and aligned with Twenty. The push was blocked because useGroupRequestToJoinMutation had no recording (the earlier HAR was deleted when the disk was cleared); matt asked to record it through Byteful now. He asked that anything to be found comes from an external TinyFish search.
+Checked: `bun test` 694 pass, 0 fail; `tsc --noEmit` clean; check:naming OK; check:facebookClientDocs: 129 requests documented, rea read every GraphQL slice. Live: `log proxy balance` showed Byteful 1,000 MB left and $0 credit; `log proxy assign --account 61594063207669 --vendor byteful` saved a Byteful proxy exiting 10 km from Bethlehem; Bethlehem's browser opened through every gate (exit 216.164.207.34, America/New_York) and `log join group --live --bypass` on Northeast Bethlehem Neighbors (found with TinyFish) got useGroupRequestToJoinMutation 200, viewer_join_state REQUESTED, 3 membership questions kept unanswered. The browser was closed with a logged reason so its HAR was written.

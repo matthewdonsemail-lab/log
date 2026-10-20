@@ -11,13 +11,23 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_4bb3e0322d035f08a136122015975f24f87a85da63b2a5a25f606a6b131115e2` |
+| rea | `ev_1c4949e0e0ebaff7ed1c3b03146838ea4b9a2efc6e5a86ffab116266543e39e5` |
 
-Seen 73 time(s) in 2 run(s).
+Seen 132 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /reel/ | 2 | 200 | 798–825 ms | 6115–7453 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 1 | 200 | 836 ms | 9432 ms | — |
+| inspect | step 2: clickRole button "…" | 1 | 200 | 362 ms | 5549 ms | — |
+| inspect | page has 71 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T101 | 4 | 200 | 317–1273 ms | 69533–171128 ms | — |
+| inspect | step 1: goto /reel/ | 3 | 200 | 617–825 ms | 6115–7601 ms | — |
+| inspect | step 4: dwell 10.63s | 1 | 200 | 311 ms | 1798 ms | — |
+| inspect | step 12: clickRole button "…" | 1 | 200 | 309 ms | 116 ms | — |
+| inspect | rea read step 64_clickroleButtonNextCard: exit 0, ev_6aa01e56964e455e448bbd9cb3d6580eda760 | 1 | 200 | 296 ms | 2701 ms | — |
+| inspect | rea read step 70_clickany1XLink: exit 1 | 26 | 200 | 304–362 ms | 56485–279128 ms | — |
+| inspect | step 71: goto /reel/ | 14 | 200 | 312–664 ms | 7676–21182 ms | — |
+| inspect | rea read step 71_gotoHttpsWwwFacebook: exit 0, ev_28bf5eb1b3cc1a6716e2040dd53ac05c19eeaed7 | 1 | 200 | 314 ms | 5843 ms | — |
+| inspect | rea read step 72_clickroleButtonUnmute: exit 0, ev_183079e9de4526e8398a72e352c35b5ac9ce8fe | 8 | 200, 0 | 0–342 ms | 10467–96053 ms | — |
 | inspect | step 4: scrollIn heading "…" 2-3 x 300-500px | 1 | 200 | 324 ms | 590 ms | — |
 | inspect | step 5: dwell 1.33s | 1 | 200 | 419 ms | 1106 ms | — |
 | inspect | rea read step 12_clickany1XLink: exit 0, ev_6d89f50042dfceb0e354f2776b178e146e5eab0542b727 | 1 | 200 | 423 ms | 3079 ms | — |

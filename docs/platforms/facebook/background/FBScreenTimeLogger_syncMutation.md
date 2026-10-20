@@ -13,10 +13,12 @@
 | Called from | — |
 | rea | not read yet |
 
-Seen 18 time(s) in 2 run(s).
+Seen 20 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | page has 46 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T082 | 1 | 200 | 497 ms | 319 ms | — |
+| inspect | rea read step 70_clickany1XLink: exit 1 | 1 | 200 | 396 ms | 271512 ms | — |
 | inspect | page has 45 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T062 | 1 | 200 | 447 ms | 1459 ms | — |
 | inspect | rea read step 24_clickroleButtonNextCard: exit 0, ev_08bd0b0aa3e491db75fd341d53b6ccf63883a | 6 | 200 | 426–5897 ms | 258787–1759534 ms | — |
 | inspect | step 17: scrollIn heading "…" 2-3 x 300-500px | 1 | 200 | 412 ms | 36 ms | — |

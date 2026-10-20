@@ -1189,6 +1189,27 @@ export const ERROR_CATALOG = {
     raisedIn: ['proxyVendor/twoCaptcha'],
     action: 'Pick a city it has (--city), or --anyCity for anywhere in the country.'
   },
+  bytefulNotConfigured: {
+    layer: 'proxyVendor',
+    meaning: "The Byteful API keys aren't set.",
+    retryable: false,
+    raisedIn: ['proxyVendor/byteful'],
+    action: 'Put BYTEFUL_PUBLIC_KEY and BYTEFUL_PRIVATE_KEY (Byteful dashboard → API keys) in log-cli/.env.local.'
+  },
+  bytefulRefused: {
+    layer: 'proxyVendor',
+    meaning: "Byteful's API refused or didn't answer (bad keys, no plan, no traffic left, network).",
+    retryable: true,
+    raisedIn: ['proxyVendor/byteful'],
+    action: 'Read the detail. Check the keys and that the plan has traffic left (log proxy balance --vendor byteful).'
+  },
+  bytefulNoCity: {
+    layer: 'proxyVendor',
+    meaning: "Byteful's residential pool has no devices in that city.",
+    retryable: false,
+    raisedIn: ['proxyVendor/byteful'],
+    action: 'Pick a nearby city it has (--city), or --anyCity for anywhere in the country.'
+  },
   proxyTooFar: {
     layer: 'proxyVendor',
     meaning: "Every proxy 2Captcha gave exited too far from the account's home city (it doesn't always honour the state and city it was asked for), or was too slow for Facebook. Nothing was saved.",

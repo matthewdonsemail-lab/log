@@ -13,11 +13,13 @@
 | Called from | `usePseudoBlockedUserInterstitial` |
 | rea | `ev_4f0f59bc7d5ff4c02ef9f2aba85fc9de893084a7a8fbdf3f1627ce6c1c3456fe` |
 
-Seen 10 time(s) in 2 run(s).
+Seen 13 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /reel/ | 2 | 200 | 332–341 ms | 3372–3404 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 1 | 200 | 347 ms | 5866 ms | — |
+| inspect | step 1: goto /reel/ | 3 | 200 | 332–388 ms | 3372–4289 ms | — |
+| inspect | step 71: goto /reel/ | 1 | 200 | 357 ms | 4001 ms | — |
 | inspect | rea read step 13_dwell600s: exit 0, ev_e8922deafb7ba9951a51bda6f8cd82b5b68c41db19bfe0cd164 | 1 | 200 | 1721 ms | 1227 ms | — |
 | inspect | rea read step 22_dwell600s: exit 0, ev_59385bb1add05e2efe91692d85b295ae9cd6334beafd2bccb4a | 1 | 200 | 370 ms | 2220 ms | — |
 | inspect | step 9: goto /reel/<id> | 1 | 200 | 391 ms | 5831 ms | — |

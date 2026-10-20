@@ -13,11 +13,13 @@
 | Called from | `useMWEncryptedBackupsFetchBackupIdsV2` |
 | rea | `ev_16df7daca80a72c8f44b7a489690336b7def96e564429f0639a122f48023372a` |
 
-Seen 10 time(s) in 2 run(s).
+Seen 13 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /reel/ | 2 | 200 | 339–361 ms | 3347–3390 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 1 | 200 | 354 ms | 5840 ms | — |
+| inspect | step 1: goto /reel/ | 3 | 200 | 320–361 ms | 3347–4263 ms | — |
+| inspect | step 71: goto /reel/ | 1 | 200 | 337 ms | 3941 ms | — |
 | inspect | rea read step 13_dwell600s: exit 0, ev_e8922deafb7ba9951a51bda6f8cd82b5b68c41db19bfe0cd164 | 1 | 200 | 1021 ms | 2054 ms | — |
 | inspect | rea read step 22_dwell600s: exit 0, ev_59385bb1add05e2efe91692d85b295ae9cd6334beafd2bccb4a | 1 | 200 | 336 ms | 2185 ms | — |
 | inspect | step 9: goto /reel/<id> | 1 | 200 | 933 ms | 6007 ms | — |
