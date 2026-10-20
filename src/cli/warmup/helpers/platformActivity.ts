@@ -12,6 +12,7 @@ import { inspectCommand } from "../../inspect/index.ts";
 import { refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { CommandContext, CommandResult } from "../../runner/types.ts";
 import { describePack, describePersona, describeViewerLines, packFor, personaFor, personaPath, runPersonaSession } from "./personaRun.ts";
+import { runFeedSession } from "./feedRun.ts";
 import { readInterestEffect, viewerFor } from "../../../warmup/viewer/index.ts";
 import { seeded } from "../../../warmup/facebook/index.ts";
 
@@ -20,6 +21,7 @@ export const PLATFORM_USAGE = [
   "       log warmup <platform> <activity> plan [--reels 8-20] [--watch 4-25] [--skip 0.6] [--comments 0.3] [--profile 0.15] [--likes] [--seed <n>]",
   "       log warmup <platform> <activity> run --account <a> [plan flags] [--live] [--likes] [--bypass]   (a drawn session, stopped at the first step that doesn't do what it should)",
   "       log warmup <platform> <activity> run --account <a> --persona [--newPersona] [--reels 8-20] [--trafficMb 1024] [--live] [--likes] [--bypass]   (the persona's For you feed: SubQ reads each reel, the orderer plans it from the pack and real viewer, rule 50)",
+  "       log warmup facebook feed run --account <a> --persona [--posts 8-15] [--trafficMb 1024] [--live] [--likes] [--bypass]   (the home feed post by post: SubQ reads each post, a glance or a read and a like where the persona would, then Marketplace and listings)",
   "       log warmup <platform> persona --account <a> [--newPersona] [--seed <n>]   (the account's behaviour profile and real viewer, from the datasets; no browser, no SubQ)",
   `  Platforms: ${WARMUP_PLATFORMS.join(", ")}. Facebook activities: ${Object.keys(FACEBOOK_ACTIVITIES).join(", ")}.`,
 ].join("\n");
@@ -128,7 +130,20 @@ export async function runPlatformActivity(context: CommandContext, positionals: 
       if (!current) return { code: 1, stderr: "log warmup: the browser opened but its session isn't listed" };
     }
 
-    if (sub === "run" && flags.persona && !drawnSession) return { code: 1, stderr: `log warmup ${platform} ${activity.activity}: --persona is built for reel only so far` };
+    if (sub === "run" && flags.persona && activity.activity === "feed") {
+      const { persona, drawn } = personaFor(account.accountName, account.homeCountry ?? "US", { fresh: flags.newPersona === true });
+      const { viewer } = viewerFor(personaPath(account.accountName), persona.seed, { fresh: flags.newPersona === true, scrollSpeed: persona.summary.scrollSpeed });
+      const { pack } = packFor(account.accountName, persona, viewer, { fresh: flags.newPersona === true });
+      context.err([`${drawn ? "Drew" : "Using"} ${account.accountName}'s persona:`, ...describePack(pack)].join("\n"));
+      const seed = Math.floor((context.now?.() ?? new Date()).getTime() % 2 ** 31);
+      // How many posts: --posts (a range, drawn), else the pack's session length (doomscrolling and the real viewer).
+      const range = typeof flags.posts === "string" ? parseRange(flags.posts) : null;
+      if (typeof flags.posts === "string" && !range) return { code: 1, stderr: "log warmup: --posts is a number or a range, 8-15" };
+      const posts = range ? range.min + Math.floor(seeded(seed)() * (range.max - range.min + 1)) : pack.traits.sessionReels;
+      context.err(`Warm-up facebook feed for this pack: ${posts} posts, each read by SubQ and planned, then Marketplace, in ${account.accountName}'s open browser (${current.runDir}).`);
+      return await runFeedSession(context, account.accountName, persona, pack, readInterestEffect(), { posts, seed, live: flags.live === true, likes: flags.likes === true, trafficMb: typeof flags.trafficMb === "string" ? Number(flags.trafficMb) : undefined, proxy: account.proxy });
+    }
+    if (sub === "run" && flags.persona && !drawnSession) return { code: 1, stderr: `log warmup ${platform} ${activity.activity}: --persona is built for reel and feed so far` };
     if (sub === "run" && flags.persona) {
       const { persona, drawn } = personaFor(account.accountName, account.homeCountry ?? "US", { fresh: flags.newPersona === true });
       const { viewer } = viewerFor(personaPath(account.accountName), persona.seed, { fresh: flags.newPersona === true, scrollSpeed: persona.summary.scrollSpeed });

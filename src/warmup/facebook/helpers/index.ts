@@ -1,5 +1,6 @@
 export * from './checkStep'
 export * from './feed'
+export * from './feedOrderer'
 export * from './reel'
 export * from './reelDecision'
 export * from './reelOrderer'

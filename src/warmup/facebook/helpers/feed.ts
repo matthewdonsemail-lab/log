@@ -20,6 +20,11 @@ const RUN = 'run 20261020T102133_61594131334566 (Reading, AdsPower, Byteful)'
  *     378-501 px, 9-12 wheel steps each, 86 requests as more posts loaded;
  *     3 posts on screen after them, mostly suggested groups
  *   Marketplace: 248 requests to load, one scroll of 783 px
+ *
+ * With --persona (`log warmup facebook feed run --persona`) the feed is read
+ * post by post as the persona would (`feedPersonaMachine`, `planPost`): each
+ * post SubQ reads, a glance or a read, a like where they would; then
+ * Marketplace and a few listings.
  */
 export const FEED: PlatformActivity = {
   platform: 'facebook',
@@ -37,10 +42,17 @@ export const FEED: PlatformActivity = {
     { id: 'settle', action: 'dwell', args: ['3-5'], why: "the feed loads; a person looks at the top before reading down (Listaro: 3-5 s)" },
     { id: 'readFeed', action: 'scroll', args: ['4-7', '300-600'], why: 'read down the feed: 4-7 wheel scrolls of 300-600 px (Listaro stage 1)', recorded: `${RUN} step 03: +378, +386, +411, +501 px, 86 requests, 3 posts on screen` },
     {
-      id: 'like',
-      action: 'clickAny',
-      args: ['button', '^Like$', '1'],
-      why: 'like a post they would (acts on Facebook)',
+      id: 'nextPost',
+      action: 'nextPost',
+      args: [],
+      why: 'the next post not read yet, into view by the wheel, with its heading, text and image descriptions',
+      recorded: `new, from ${RUN} step 03's snapshot: a post is a level-4 heading and the block around it holding one button "Like"`
+    },
+    {
+      id: 'likePost',
+      action: 'likePost',
+      args: [],
+      why: "like the post in view: its own Like, not the first on the page (acts on Facebook)",
       expect: { shows: { role: 'button', name: 'Remove Like' } },
       clicks: true,
       likes: true,
@@ -55,9 +67,17 @@ export const FEED: PlatformActivity = {
       recorded: `${RUN} step 04: /marketplace/, 248 requests, 19 s`
     },
     { id: 'lookMarketplace', action: 'dwell', args: ['3-5'], why: 'Marketplace loads; a look at it (Listaro: 3-5 s)' },
-    { id: 'scrollMarketplace', action: 'scroll', args: ['1', '400-800'], why: 'one scroll down Marketplace (Listaro: 400-800 px)', recorded: `${RUN} step 06: +783 px` }
+    { id: 'scrollMarketplace', action: 'scroll', args: ['1', '400-800'], why: 'one scroll down Marketplace (Listaro: 400-800 px)', recorded: `${RUN} step 06: +783 px` },
+    {
+      id: 'openListings',
+      action: 'openAny',
+      args: ['/marketplace/item/', '1-3'],
+      why: 'open 1-3 listings, read each and come back (Listaro stage 2: 2-4)',
+      clicks: true
+    }
   ],
   knownIssues: [
-    "the like is a click on the first visible Like: which post the persona likes isn't chosen yet (on Reels SubQ reads each reel; the feed's posts would need the same), and it hasn't been recorded with --likes"
+    'nextPost, likePost and openListings are new: not recorded yet (record with --live --likes)',
+    "opening a post's comments isn't built: the recording didn't show its Comment button (rule 29)"
   ]
 }

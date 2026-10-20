@@ -206,6 +206,40 @@ VISIBLE_LINKS_JS = """(pattern) => {
   return out;
 }"""
 
+# A feed post from its level-4 heading: the smallest block around it that holds exactly one `button "Like"`
+# (Reading, 2026-10-20: each post has its own Like, its count is a separate "Like: N people"). Null when the
+# heading isn't a post's (no Like around it). Read only: its text, Facebook's image descriptions, liked or not.
+POST_OF_HEADING_JS = """(h) => {
+  const likes = (el) => [...el.querySelectorAll('[role="button"][aria-label="Like"], [role="button"][aria-label="Remove Like"]')];
+  let el = h.parentElement;
+  while (el && el !== document.body) {
+    const found = likes(el);
+    if (found.length > 1) return null;
+    if (found.length === 1) {
+      const images = [...el.querySelectorAll('img[alt]')].map((i) => i.getAttribute('alt')).filter((a) => a && a.length > 3);
+      return { text: (el.innerText || '').replace(/\\s+/g, ' ').trim(), images, liked: found[0].getAttribute('aria-label') === 'Remove Like' };
+    }
+    el = el.parentElement;
+  }
+  return null;
+}"""
+
+# The feed's post headings: level-4 headings, as the accessibility snapshot shows them (Reading, 2026-10-20).
+POST_HEADINGS = 'h4, [role="heading"][aria-level="4"]'
+
+# Every feed post on the page in one read: each level-4 heading whose block holds exactly one Like (a post),
+# with where it is on screen, its text, image descriptions and whether it is liked. Read only, nothing changed.
+FEED_POSTS_JS = """() => {
+  const out = [];
+  const heads = [...document.querySelectorAll('h4, [role="heading"][aria-level="4"]')];
+  heads.forEach((h, index) => {
+    const post = (""" + POST_OF_HEADING_JS + """)(h);
+    if (!post) return;
+    out.push({ index, name: (h.innerText || '').replace(/\\s+/g, ' ').trim(), top: h.getBoundingClientRect().top, viewport: innerHeight, ...post });
+  });
+  return out;
+}"""
+
 class Inspector:
     def __init__(self, config: dict[str, Any]) -> None:
         self.config = config
@@ -599,6 +633,44 @@ class Inspector:
             async def save_state() -> None:
                 await self.context.storage_state(path=str(self.config["storageStatePath"]))
             return await self.step("saveState", "", save_state)
+        # `nextPost`: the next feed post not read yet, brought into view by the wheel (one trajectory, rule 32),
+        # with its heading, text and Facebook's image descriptions. A post is a level-4 heading (its author or
+        # group) and the smallest block around it holding one `button "Like"` (Reading, 2026-10-20). The post is
+        # kept for `likePost`.
+        if action == "nextPost":
+            async def next_post() -> None:
+                # Every post on the page in one read (60 one-by-one round trips made it crawl, run
+                # 20261020T103516), then the wheel by the feed's own scroll (scroll_by, as readFeed) the distance
+                # that brings the next unread post to a fifth of the way down the screen.
+                read = getattr(self, "read_posts", set())
+                posts = await page.evaluate(FEED_POSTS_JS)
+                for post in posts:
+                    name = post["name"]
+                    if not name or name in read or post["top"] < 40:
+                        continue
+                    distance = post["top"] - post["viewport"] * 0.2
+                    if distance > 40:
+                        await scrollMotion.scroll_by(page, int(distance), self.mouse, log)
+                    read.add(name)
+                    self.read_posts = read
+                    self.post = page.locator(POST_HEADINGS).nth(post["index"])
+                    words = len(post["text"].split())
+                    self.extra = {"post": {"heading": name[:200], "text": post["text"][:1500], "images": post["images"][:6], "words": words, "liked": post["liked"]}}
+                    log(f'  post: "{name[:80]}", {words} words, {len(post["images"])} image(s), scrolled {int(max(distance, 0))} px')
+                    return
+                # None left below: a scroll down loads more, the next nextPost finds them.
+                await scrollMotion.scroll_by(page, random.randint(500, 800), self.mouse, log)
+                self.extra = {"post": None}
+            return await self.step("nextPost", "", next_post)
+        # `likePost`: the Like of the post `nextPost` last brought into view, by the human mouse.
+        if action == "likePost":
+            async def like_post() -> None:
+                post = getattr(self, "post", None)
+                if post is None:
+                    raise RuntimeError("no post in view: nextPost first")
+                button = post.locator(f"xpath=ancestor::*[.//*[@role='button' and @aria-label='Like']][1]").get_by_role("button", name="Like", exact=True).first
+                await self.mouse.click(button)
+            return await self.step("likePost", "", like_post)
         if action == "pageText":
             async def page_text() -> None:
                 text = await page.evaluate("() => document.body ? document.body.innerText : ''")

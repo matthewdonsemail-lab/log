@@ -138,8 +138,8 @@ describe('warmupActivityMachine', () => {
 describe('the feed: Listaro stage 1 as a warm-up activity', () => {
   test('its steps in Listaro order, each saying what it must achieve; the like only with --likes (rule 8)', () => {
     const feed = FACEBOOK_ACTIVITIES.feed
-    expect(feed.steps.map((s) => s.id)).toEqual(['openFeed', 'settle', 'readFeed', 'like', 'openMarketplace', 'lookMarketplace', 'scrollMarketplace'])
-    expect(feed.steps.find((s) => s.id === 'like')).toMatchObject({ likes: true, clicks: true, expect: { shows: { role: 'button', name: 'Remove Like' } } })
-    expect(feed.steps.filter((s) => s.recorded).map((s) => s.id)).toEqual(['openFeed', 'readFeed', 'like', 'openMarketplace', 'scrollMarketplace'])
+    expect(feed.steps.map((s) => s.id)).toEqual(['openFeed', 'settle', 'readFeed', 'nextPost', 'likePost', 'openMarketplace', 'lookMarketplace', 'scrollMarketplace', 'openListings'])
+    expect(feed.steps.find((s) => s.id === 'likePost')).toMatchObject({ likes: true, clicks: true, expect: { shows: { role: 'button', name: 'Remove Like' } } })
+    expect(feed.steps.filter((s) => s.recorded).map((s) => s.id)).toEqual(['openFeed', 'readFeed', 'nextPost', 'likePost', 'openMarketplace', 'scrollMarketplace'])
   })
 })

@@ -51,7 +51,7 @@ export const warmupCommand: Command = {
   summary: "The warm-up, by platform and activity (`log warmup facebook reel`: the browser opened primed with it, each step checked, the outline written, rule 49), and Listaro's five activities (record, run, feed, rule 36)",
   args: "<platform> <activity> [plan|record|run] [--account <a>] [--live] [--likes] [--bypass] | <plan|record|run|feed> [--account <name>] [--only …] [--likes] [--gapMinutes n] [--follow]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["likes", "bypass", "now", "follow", "json", "live", "persona", "newPersona"], valued: ["account", "only", "gapMinutes", "lines", "seconds", "reels", "watch", "skip", "comments", "profile", "seed", "trafficMb"] });
+    const parsed = parseArgs(argv, { boolean: ["likes", "bypass", "now", "follow", "json", "live", "persona", "newPersona"], valued: ["account", "only", "gapMinutes", "lines", "seconds", "reels", "watch", "skip", "comments", "profile", "seed", "trafficMb", "posts"] });
     if (!parsed.ok) return { code: 1, stderr: `log warmup: ${parsed.error}\n${WARMUP_USAGE}` };
     const [sub] = parsed.positionals;
     // By platform (rule 49): `log warmup facebook reel [plan|record|run]`, one activity of the warm-up at a time.

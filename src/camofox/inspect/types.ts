@@ -16,6 +16,8 @@ export type InspectAction = 'goto' | 'snapshot' | 'click' | 'type' | 'press' | '
   | 'scroll' | 'scrollIn' | 'openAny' | 'clickAny'
   /** Closes the tab a click opened (Reels' creator profile) and brings the session's tab back to the front. */
   | 'closeTab'
+  /** Feed: the next unread post into view, with its heading, text and image descriptions; its Like. */
+  | 'nextPost' | 'likePost'
   /** `dwell 2-4`: stays on the page that long, the cursor moving (a recorded pause; `wait` is only for a page to settle). */
   | 'dwell'
   /** The host (rule 35): keep the session now, read the page's text, read and set the Marketplace location. */
@@ -79,6 +81,15 @@ export interface InspectStepOptions {
   already?: [string, string]
 }
 
+/** A feed post as `nextPost` read it: its heading (author or group), text, Facebook's image descriptions. */
+export interface FeedPost {
+  heading: string
+  text: string
+  images: string[]
+  words: number
+  liked: boolean
+}
+
 /** One step's reply, as `inspectSession.py` writes it. */
 export interface InspectStepResult {
   ok: boolean
@@ -97,6 +108,8 @@ export interface InspectStepResult {
   landedMs?: number
   /** A tab the step's click opened, and its URL: it stays in front until `closeTab`. */
   openedTab?: string
+  /** `nextPost`: the post brought into view (null when none was left on the page and it scrolled for more). */
+  post?: FeedPost | null
   expect?: { name: string; seen: boolean }
   /** The step's cursor: humanized legs it drove (approach, circle, wander) and idle drift moves (rule 32). */
   mouse?: { legs: number; idleMoves: number }

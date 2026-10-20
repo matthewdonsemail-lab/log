@@ -18,7 +18,7 @@ export const WARMUP_PLATFORMS = ['facebook'] as const
 export type WarmupPlatform = (typeof WARMUP_PLATFORMS)[number]
 
 /** An inspect step, as the open session takes it. */
-export type ActivityAction = 'goto' | 'dwell' | 'wait' | 'snapshot' | 'clickRole' | 'clickAny' | 'scrollIn' | 'scroll' | 'back'
+export type ActivityAction = 'goto' | 'dwell' | 'wait' | 'snapshot' | 'clickRole' | 'clickAny' | 'scrollIn' | 'scroll' | 'back' | 'openAny' | 'nextPost' | 'likePost'
 
 /** What a step must achieve, checked against its reply (the page after it). */
 export interface StepExpect {

@@ -9,6 +9,8 @@ export interface StepReply {
   folder?: string
   /** A tab the step's click opened (Reels opens the creator's profile in one). */
   openedTab?: string
+  /** `nextPost`: the post it brought into view (null: none left, it scrolled for more). */
+  post?: { heading: string; text: string; images: string[]; words: number; liked: boolean } | null
 }
 
 /** Whether the snapshot shows `role "name"` (its accessibility tree line). Pure. */
