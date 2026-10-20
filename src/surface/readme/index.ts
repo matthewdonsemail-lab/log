@@ -17,6 +17,8 @@ export const SURFACE_END = "<!-- surface:end -->";
 /** Text safe in a Markdown table cell. Pure. */
 const cell = (text: string) => text.replace(/\|/g, "\\|").replace(/\n/g, " ");
 
+const BROWSER_TEXT: Record<CommandEntry["browser"], string> = { accountBrowser: "the account's", camoufoxOnly: "Camoufox only", none: "none" };
+
 const flagText = (f: Flag) => `\`--${f.name}${f.value ? ` <${f.value}>` : ""}\``;
 
 /** The diagram in the README and where its source lives. Pure. */
@@ -36,12 +38,26 @@ export function renderSurface(entries: readonly CommandEntry[], flows: readonly 
     SURFACE_START,
     "## Commands, MCP tools and hooks",
     "",
+    "log-cli is browser-agnostic: each account's browser is a driver (AdsPower first, Camoufox kept, more browser providers to come), and every driver opens through the same gates.",
     "Every command is a CLI command (`bun bin/log.ts <command>`) and, unless it only works in a terminal, an MCP tool of the same name on the `log` server.",
     "The same hooks fire whether it runs from a shell or over MCP, and both write the same live log, `~/.logCli/mcp/<day>.log`.",
     "This section and `docs/diagrams/*.mmd` are generated from the code (`COMMANDS`, `AGENT_HOOKS`, `PAGE_STATES`, the saved flows) by `bun run docs:build`.",
     "`bun run check:docs` (lefthook pre-commit and pre-push) refuses a commit where they differ (rule 56).",
     "",
   ];
+  const browsers = pick("browsers");
+  if (browsers) {
+    const on = (kind: CommandEntry["browser"]) => entries.filter((e) => e.browser === kind).map((e) => `\`${e.name}\``).join(", ");
+    out.push(
+      ...diagramBlock(browsers),
+      `- **The account's browser, through the driver:** ${on("accountBrowser")}. They run on whichever browser the account uses: AdsPower when it has a linked profile (\`socialAccounts.adsPowerProfileId\`), Camoufox otherwise, or what \`socialAccounts.browserDriver\` says.`,
+      `- **Camoufox only, not on the driver yet:** ${on("camoufoxOnly")}. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into \`OPENER_ACTIONS\` (\`src/browser/run\`).`,
+      `- **No browser:** ${on("none")}.`,
+      "",
+      "Each browser's capabilities, built or not: [`docs/browsers.md`](docs/browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](docs/adsPower.md).",
+      "",
+    );
+  }
   const surface = pick("surface");
   if (surface) out.push(...diagramBlock(surface));
 
@@ -50,13 +66,13 @@ export function renderSurface(entries: readonly CommandEntry[], flows: readonly 
     "",
     `Every command also takes ${GLOBAL_FLAGS.map(flagText).join(", ")} (this run's proxy speed limit, rule 33). \`--live\` acts on Facebook and over MCP needs \`confirmLive: true\`; \`--bypass\` needs \`confirmBypass: true\` (rules 8, 10, 20).`,
     "",
-    "| Command | What it does | Flags | MCP tool | Hooks: shell · MCP | Live log | Rules |",
-    "| --- | --- | --- | --- | --- | --- | --- |",
+    "| Command | What it does | Flags | Browser | MCP tool | Hooks: shell · MCP | Live log | Rules |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- |",
   );
   for (const e of entries) {
     const tool = e.tool ? `\`${e.tool}\`` : `terminal only: ${cell(e.terminalOnly ?? "")}`;
     const hooksText = `${e.hooks.cli.join(", ") || "none"} · ${e.tool ? e.hooks.mcp.join(", ") || "none" : "n/a"}`;
-    out.push(`| [\`log ${e.name}\`](#log-${e.name.toLowerCase()}) | ${cell(e.summary)} | ${e.flags.map(flagText).join(" ") || "none"} | ${tool} | ${hooksText} | ${e.longRunning ? "yes: watch it" : "no"} | ${e.rules.join(", ")} |`);
+    out.push(`| [\`log ${e.name}\`](#log-${e.name.toLowerCase()}) | ${cell(e.summary)} | ${e.flags.map(flagText).join(" ") || "none"} | ${BROWSER_TEXT[e.browser]} | ${tool} | ${hooksText} | ${e.longRunning ? "yes: watch it" : "no"} | ${e.rules.join(", ")} |`);
   }
   out.push("");
 

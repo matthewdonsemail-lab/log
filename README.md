@@ -2,10 +2,17 @@
 
 The command line for ListeningKit's Facebook Marketplace work. Accounts and
 listings live in Twenty (`socialAccounts`, `agencyListings`), reached through
-the same generated GraphQL client blaster and the dialer use. log-cli checks an
-account may run (proxy in its home country, rule 12), drives Camoufox through
-facebook-camofox-client and its own publish session, and writes every result
-back to Twenty.
+the same generated GraphQL client blaster and the dialer use.
+
+log-cli is **browser-agnostic**. Each account's browser is a driver picked from
+Twenty: **AdsPower** first (one profile per account, Listaro's browser),
+Camoufox kept, and more browser providers to come, each one more driver
+(`src/browser/<name>`). Every driver opens through the same gates: the proxy in
+the account's home country (rule 12), the launch self-check (rule 17), a raw HAR
+of everything (rule 22), and one human mouse (rule 32). Which commands run on
+the account's browser, and which still launch Camoufox themselves, is in
+[Browsers](#the-browser-layer) below, generated from the code. Every result is
+written back to Twenty.
 
 Built the same way as the Rank CLI from the Nebius hackathon: a command registry
 that generates its own usage, commands that return results rather than
@@ -35,10 +42,42 @@ How proxies load and are checked: `docs/proxies.md`. Where accounts are bought:
 <!-- surface:start · written by `bun run docs:build` from the code. Not edited by hand. -->
 ## Commands, MCP tools and hooks
 
+log-cli is browser-agnostic: each account's browser is a driver (AdsPower first, Camoufox kept, more browser providers to come), and every driver opens through the same gates.
 Every command is a CLI command (`bun bin/log.ts <command>`) and, unless it only works in a terminal, an MCP tool of the same name on the `log` server.
 The same hooks fire whether it runs from a shell or over MCP, and both write the same live log, `~/.logCli/mcp/<day>.log`.
 This section and `docs/diagrams/*.mmd` are generated from the code (`COMMANDS`, `AGENT_HOOKS`, `PAGE_STATES`, the saved flows) by `bun run docs:build`.
 `bun run check:docs` (lefthook pre-commit and pre-push) refuses a commit where they differ (rule 56).
+
+### The browser layer
+
+log-cli is browser-agnostic: each account's browser is a driver picked from Twenty, AdsPower first, and every driver opens through the same gates. From `BROWSER_DRIVERS` (`src/browser/driver`) and `commandBrowser` (`src/browser/run`).
+
+```mermaid
+flowchart LR
+  twenty["Twenty socialAccounts: browserDriver, adsPowerProfileId"]
+  pick{"driverNameOf"}
+  gates["Every driver: proxy gate, self-check, HAR, human mouse (rules 12, 17, 22, 32)"]
+  session["One Playwright context: python/browser/browserDriver.py"]
+  twenty --> pick
+  pick -->|"browserDriver camoufox, or no profile"| d_camoufox["camoufox"]
+  pick -->|"a linked profile, or browserDriver adsPower"| d_adsPower["adsPower"]
+  d_camoufox --> gates
+  d_adsPower --> gates
+  more["Next browser provider: one more driver (src/browser/name), rule 44"] -.-> gates
+  gates --> session
+  account["On the account's browser: host, inspect, flow, warmup, join"]
+  camoufox["Camoufox only, not on the driver yet: doctor, connect, profile, scan, status, watch, publish, campaign"]
+  session --> account
+  camoufox -.->|"launches Camoufox itself"| d_camoufox
+```
+
+Source: [`docs/diagrams/browsers.mmd`](docs/diagrams/browsers.mmd).
+
+- **The account's browser, through the driver:** `host`, `inspect`, `flow`, `warmup`, `join`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
+- **Camoufox only, not on the driver yet:** `doctor`, `connect`, `profile`, `scan`, `status`, `watch`, `publish`, `campaign`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
+- **No browser:** `launch`, `listings`, `listing`, `accounts`, `account`, `adsPower`, `lifecycle`, `proxy`, `conversations`, `conversation`, `errors`, `graph`, `capture`, `login`, `logout`, `whoami`.
+
+Each browser's capabilities, built or not: [`docs/browsers.md`](docs/browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](docs/adsPower.md).
 
 ### How a call reaches log-cli
 
@@ -78,37 +117,37 @@ Source: [`docs/diagrams/surface.mmd`](docs/diagrams/surface.mmd).
 
 Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33). `--live` acts on Facebook and over MCP needs `confirmLive: true`; `--bypass` needs `confirmBypass: true` (rules 8, 10, 20).
 
-| Command | What it does | Flags | MCP tool | Hooks: shell · MCP | Live log | Rules |
-| --- | --- | --- | --- | --- | --- | --- |
-| [`log launch`](#log-launch) | Guided Clack menu over the listings, accounts and live commands | `--json` | terminal only: prompts in a terminal (Clack). Call the commands it wraps directly. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
-| [`log listings`](#log-listings) | List the Twenty listings, by status, account or campaign | `--status <STATUS>` `--account <accountName>` `--campaign <campaignId>` `--json` | `listings` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
-| [`log listing`](#log-listing) | Show one Twenty listing, or create one for an account from a JSON file | `--json` `--account <accountName>` `--file <listing.json>` | `listing` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
-| [`log accounts`](#log-accounts) | List the FACEBOOK accounts in Twenty: status, home, proxy, and whether each may run | `--json` | `accounts` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
-| [`log account`](#log-account) | Show one account, or set its status (banned/dead/restricted replace its campaign listings) | `--json` `--from <folder>` `--reason <text>` `--detail <text>` | `account` | PreToolUse, PostToolUse · PostToolUse | no | 13, 37, 30, 38, 39, 40, 41 |
-| [`log adsPower`](#log-adspower) | AdsPower: Local API status, its profiles, and one profile per Twenty account (sync) | `--json` `--apply` `--account <accountName>` | `adsPower` | PreToolUse, PostToolUse · PostToolUse | no | 42, 44, 30, 38, 39, 40, 41 |
-| [`log lifecycle`](#log-lifecycle) | Each account's place in its lifecycle (rule 35): status, state, what onboarding has left; `states` prints the machine | `--account <name>` `--json` `--write` | `lifecycle` | PreToolUse, PostToolUse · PostToolUse | no | 35, 30, 38, 39, 40, 41 |
-| [`log doctor`](#log-doctor) | Check python, facebook-camofox-client, Camoufox, Twenty, and which accounts may run | `--json` | `doctor` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 30, 38, 39, 40, 41 |
-| [`log connect`](#log-connect) | Sign a Facebook account in through its proxy (the connect machine), save its cookies to Twenty | `--account <accountName>` `--noPrompt` `--wait <seconds>` `--bypass` `--now` | `connect` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 18, 21, 23, 24, 30, 38, 39, 40, 41 |
-| [`log profile`](#log-profile) | Set an account's profile picture and cover photo from Twenty (dry run unless --live, rule 28) | `--account <accountName>` `--live` `--bypass` `--json` | `profile` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 28, 30, 38, 39, 40, 41 |
-| [`log host`](#log-host) | Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); send it events; read its progress | `--account <accountName>` `--live` `--likes` `--bypass` `--gapMinutes <n>` `--watchMinutes <n>` | `host` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 18, 35, 30, 38, 39, 40, 41 |
-| [`log inspect`](#log-inspect) | Drive one gated Camoufox a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29) | `--account <accountName>` `--url <https://www.facebook.com/...>` `--bypass` `--now` `--noIdleMouse` `--detach` `--all` `--live` `--timeout <s>` `--json` | `inspect` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 30, 38, 39, 40, 41 |
-| [`log flow`](#log-flow) | Recorded inspect runs as flows: docs, an XState machine per flow, run on any account (rule 31) | `--name <name>` `--summary <text>` `--rename` `--account <accountName>` `--set <param>` `--live` `--bypass` `--now` `--json` | `flow` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 29, 31, 30, 38, 39, 40, 41 |
-| [`log warmup`](#log-warmup) | The warm-up, by platform and activity (`log warmup facebook reel`: the browser opened primed with it, each step checked, the outline written, rule 49), and Listaro's five activities (record, run, feed, rule 36) | `--account <accountName>` `--only` `--likes` `--bypass` `--now` `--gapMinutes <n>` `--lines <n>` `--follow` `--seconds <n>` `--live` `--reels` `--watch` `--skip` `--comments` `--profile` `--seed <n>` `--json` `--persona` `--newPersona` `--trafficMb` `--posts` | `warmup` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 18, 20, 25, 26, 29, 32, 35, 36, 49, 50, 51, 54, 55, 30, 38, 39, 40, 41 |
-| [`log join`](#log-join) | Join a Facebook group as one account, in its open browser: read the gate, --live presses Join; every step patches agencyGroups.joinSubmission (rule 45) | `--account <accountName>` `--group <group url, id or name>` `--live` `--json` `--show` `--answer` `--set <n>` `--agree` `--fill` `--submit` `--bypass` | `join` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 10, 18, 20, 25, 26, 29, 35, 45, 30, 38, 39, 40, 41 |
-| [`log scan`](#log-scan) | Read Marketplace > Selling live for one account and update its listings in Twenty | `--account <accountName>` `--json` `--bypass` | `scan` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 18, 22, 30, 38, 39, 40, 41 |
-| [`log status`](#log-status) | Open one Marketplace item page live and classify its status | `--account <accountName>` `--json` `--bypass` | `status` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 18, 22, 30, 38, 39, 40, 41 |
-| [`log watch`](#log-watch) | Run the listing monitor (XState) for one account and print every step | `--account <accountName>` `--checks <n>` `--interval <minutes>` `--json` `--bypass` | `watch` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 6, 18, 30, 38, 39, 40, 41 |
-| [`log proxy`](#log-proxy) | Check an account's proxy, give it one from a provider (2Captcha, Byteful) in its home city, or see providers' traffic | `--account <accountName>` `--json` `--missing` `--vendor` `--city <city>` `--region <state>` `--anyCity` `--minutes <1-120>` `--socks5` | `proxy` | PreToolUse, PostToolUse · PostToolUse | no | 12, 33, 41, 43, 51, 52, 30, 38, 39, 40, 41 |
-| [`log publish`](#log-publish) | Post one Twenty listing (dry run unless --live), printing every machine step | `--listing <agencyListingId>` `--live` `--json` `--formUrl <url>` `--bypass` `--now` | `publish` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 10, 12, 18, 22, 24, 30, 38, 39, 40, 41 |
-| [`log campaign`](#log-campaign) | Put one ad on N accounts in one place, replace lost accounts, publish the campaign | `--campaign <agencyCampaignId>` `--from <agencyListingId>` `--accounts <n>` `--live` `--bypass` `--json` | `campaign` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 13, 18, 30, 38, 39, 40, 41 |
-| [`log conversations`](#log-conversations) | List buyers' Marketplace conversations in Twenty, newest first, by account or listing | `--account <name>` `--listing <agencyListingId>` `--json` | `conversations` | PreToolUse, PostToolUse · PostToolUse | no | 34, 30, 38, 39, 40, 41 |
-| [`log conversation`](#log-conversation) | One conversation: show its messages, mark read, set its lead status, link its listing, or store a scanned thread | `--json` `--listing <agencyListingId>` `--account <name>` `--file <threads.json>` | `conversation` | PreToolUse, PostToolUse · PostToolUse | no | 34, 30, 38, 39, 40, 41 |
-| [`log errors`](#log-errors) | List every error code: meaning, retryable, where each machine ends up | `--layer <account|listing|photo|form|captcha|runtime|twenty|proxyVendor|auth|profile>` `--code <code>` `--json` `--markdown` | `errors` | PreToolUse, PostToolUse · PostToolUse | no | 25, 30, 38, 39, 40, 41 |
-| [`log graph`](#log-graph) | Print a machine's states and transitions as a Mermaid diagram | none | `graph` | PreToolUse, PostToolUse · PostToolUse | no | 6, 25, 30, 38, 39, 40, 41 |
-| [`log capture`](#log-capture) | Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds the Facebook client docs. No browser. | `--har <path>` `--out <dir>` `--noRea` `--json` `--settle <runCaptureDir>` `--docs` | `capture` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 19, 22, 26, 27, 46, 48, 30, 38, 39, 40, 41 |
-| [`log login`](#log-login) | Sign in with Twenty through blaster's web app (OAuth), like `blaster login` | `--webUrl <url>` `--apiUrl <url>` `--token <accessToken>` `--json` | terminal only: opens a browser for Twenty OAuth and waits for it. Run `bun bin/log.ts login` in a terminal. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
-| [`log logout`](#log-logout) | Forget the stored Twenty session | `--apiUrl <url>` `--json` | `logout` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
-| [`log whoami`](#log-whoami) | Show who is signed in, refreshing the session if it expired | `--apiUrl <url>` `--json` | `whoami` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
+| Command | What it does | Flags | Browser | MCP tool | Hooks: shell · MCP | Live log | Rules |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| [`log launch`](#log-launch) | Guided Clack menu over the listings, accounts and live commands | `--json` | none | terminal only: prompts in a terminal (Clack). Call the commands it wraps directly. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
+| [`log listings`](#log-listings) | List the Twenty listings, by status, account or campaign | `--status <STATUS>` `--account <accountName>` `--campaign <campaignId>` `--json` | none | `listings` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
+| [`log listing`](#log-listing) | Show one Twenty listing, or create one for an account from a JSON file | `--json` `--account <accountName>` `--file <listing.json>` | none | `listing` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
+| [`log accounts`](#log-accounts) | List the FACEBOOK accounts in Twenty: status, home, proxy, and whether each may run | `--json` | none | `accounts` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
+| [`log account`](#log-account) | Show one account, or set its status (banned/dead/restricted replace its campaign listings) | `--json` `--from <folder>` `--reason <text>` `--detail <text>` | none | `account` | PreToolUse, PostToolUse · PostToolUse | no | 13, 37, 30, 38, 39, 40, 41 |
+| [`log adsPower`](#log-adspower) | AdsPower: Local API status, its profiles, and one profile per Twenty account (sync) | `--json` `--apply` `--account <accountName>` | none | `adsPower` | PreToolUse, PostToolUse · PostToolUse | no | 42, 44, 30, 38, 39, 40, 41 |
+| [`log lifecycle`](#log-lifecycle) | Each account's place in its lifecycle (rule 35): status, state, what onboarding has left; `states` prints the machine | `--account <name>` `--json` `--write` | none | `lifecycle` | PreToolUse, PostToolUse · PostToolUse | no | 35, 30, 38, 39, 40, 41 |
+| [`log doctor`](#log-doctor) | Check python, facebook-camofox-client, Camoufox, Twenty, and which accounts may run | `--json` | Camoufox only | `doctor` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 30, 38, 39, 40, 41 |
+| [`log connect`](#log-connect) | Sign a Facebook account in through its proxy (the connect machine), save its cookies to Twenty | `--account <accountName>` `--noPrompt` `--wait <seconds>` `--bypass` `--now` | Camoufox only | `connect` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 18, 21, 23, 24, 30, 38, 39, 40, 41 |
+| [`log profile`](#log-profile) | Set an account's profile picture and cover photo from Twenty (dry run unless --live, rule 28) | `--account <accountName>` `--live` `--bypass` `--json` | Camoufox only | `profile` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 28, 30, 38, 39, 40, 41 |
+| [`log host`](#log-host) | Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); send it events; read its progress | `--account <accountName>` `--live` `--likes` `--bypass` `--gapMinutes <n>` `--watchMinutes <n>` | the account's | `host` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 18, 35, 30, 38, 39, 40, 41 |
+| [`log inspect`](#log-inspect) | Drive the account's browser, gated and headed, a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29) | `--account <accountName>` `--url <https://www.facebook.com/...>` `--bypass` `--now` `--noIdleMouse` `--detach` `--all` `--live` `--timeout <s>` `--json` | the account's | `inspect` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 30, 38, 39, 40, 41 |
+| [`log flow`](#log-flow) | Recorded inspect runs as flows: docs, an XState machine per flow, run on any account (rule 31) | `--name <name>` `--summary <text>` `--rename` `--account <accountName>` `--set <param>` `--live` `--bypass` `--now` `--json` | the account's | `flow` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 29, 31, 30, 38, 39, 40, 41 |
+| [`log warmup`](#log-warmup) | The warm-up, by platform and activity (`log warmup facebook reel`: the browser opened primed with it, each step checked, the outline written, rule 49), and Listaro's five activities (record, run, feed, rule 36) | `--account <accountName>` `--only` `--likes` `--bypass` `--now` `--gapMinutes <n>` `--lines <n>` `--follow` `--seconds <n>` `--live` `--reels` `--watch` `--skip` `--comments` `--profile` `--seed <n>` `--json` `--persona` `--newPersona` `--trafficMb` `--posts` | the account's | `warmup` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 18, 20, 25, 26, 29, 32, 35, 36, 49, 50, 51, 54, 55, 30, 38, 39, 40, 41 |
+| [`log join`](#log-join) | Join a Facebook group as one account, in its open browser: read the gate, --live presses Join; every step patches agencyGroups.joinSubmission (rule 45) | `--account <accountName>` `--group <group url, id or name>` `--live` `--json` `--show` `--answer` `--set <n>` `--agree` `--fill` `--submit` `--bypass` | the account's | `join` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 10, 18, 20, 25, 26, 29, 35, 45, 30, 38, 39, 40, 41 |
+| [`log scan`](#log-scan) | Read Marketplace > Selling live for one account and update its listings in Twenty | `--account <accountName>` `--json` `--bypass` | Camoufox only | `scan` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 18, 22, 30, 38, 39, 40, 41 |
+| [`log status`](#log-status) | Open one Marketplace item page live and classify its status | `--account <accountName>` `--json` `--bypass` | Camoufox only | `status` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 18, 22, 30, 38, 39, 40, 41 |
+| [`log watch`](#log-watch) | Run the listing monitor (XState) for one account and print every step | `--account <accountName>` `--checks <n>` `--interval <minutes>` `--json` `--bypass` | Camoufox only | `watch` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 6, 18, 30, 38, 39, 40, 41 |
+| [`log proxy`](#log-proxy) | Check an account's proxy, give it one from a provider (2Captcha, Byteful) in its home city, or see providers' traffic | `--account <accountName>` `--json` `--missing` `--vendor` `--city <city>` `--region <state>` `--anyCity` `--minutes <1-120>` `--socks5` | none | `proxy` | PreToolUse, PostToolUse · PostToolUse | no | 12, 33, 41, 43, 51, 52, 30, 38, 39, 40, 41 |
+| [`log publish`](#log-publish) | Post one Twenty listing (dry run unless --live), printing every machine step | `--listing <agencyListingId>` `--live` `--json` `--formUrl <url>` `--bypass` `--now` | Camoufox only | `publish` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 10, 12, 18, 22, 24, 30, 38, 39, 40, 41 |
+| [`log campaign`](#log-campaign) | Put one ad on N accounts in one place, replace lost accounts, publish the campaign | `--campaign <agencyCampaignId>` `--from <agencyListingId>` `--accounts <n>` `--live` `--bypass` `--json` | Camoufox only | `campaign` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 13, 18, 30, 38, 39, 40, 41 |
+| [`log conversations`](#log-conversations) | List buyers' Marketplace conversations in Twenty, newest first, by account or listing | `--account <name>` `--listing <agencyListingId>` `--json` | none | `conversations` | PreToolUse, PostToolUse · PostToolUse | no | 34, 30, 38, 39, 40, 41 |
+| [`log conversation`](#log-conversation) | One conversation: show its messages, mark read, set its lead status, link its listing, or store a scanned thread | `--json` `--listing <agencyListingId>` `--account <name>` `--file <threads.json>` | none | `conversation` | PreToolUse, PostToolUse · PostToolUse | no | 34, 30, 38, 39, 40, 41 |
+| [`log errors`](#log-errors) | List every error code: meaning, retryable, where each machine ends up | `--layer <account|listing|photo|form|captcha|runtime|twenty|proxyVendor|auth|profile>` `--code <code>` `--json` `--markdown` | none | `errors` | PreToolUse, PostToolUse · PostToolUse | no | 25, 30, 38, 39, 40, 41 |
+| [`log graph`](#log-graph) | Print a machine's states and transitions as a Mermaid diagram | none | none | `graph` | PreToolUse, PostToolUse · PostToolUse | no | 6, 25, 30, 38, 39, 40, 41 |
+| [`log capture`](#log-capture) | Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds the Facebook client docs. No browser. | `--har <path>` `--out <dir>` `--noRea` `--json` `--settle <runCaptureDir>` `--docs` | none | `capture` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 19, 22, 26, 27, 46, 48, 30, 38, 39, 40, 41 |
+| [`log login`](#log-login) | Sign in with Twenty through blaster's web app (OAuth), like `blaster login` | `--webUrl <url>` `--apiUrl <url>` `--token <accessToken>` `--json` | none | terminal only: opens a browser for Twenty OAuth and waits for it. Run `bun bin/log.ts login` in a terminal. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
+| [`log logout`](#log-logout) | Forget the stored Twenty session | `--apiUrl <url>` `--json` | none | `logout` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
+| [`log whoami`](#log-whoami) | Show who is signed in, refreshing the session if it expired | `--apiUrl <url>` `--json` | none | `whoami` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
 
 ### Saved flows: MCP tools of their own (rule 31)
 
@@ -265,7 +304,7 @@ sequenceDiagram
   Note over Hook: where every open browser is, with each of matt's prompts
   loop each tool call
     Agent->>Hook: PreToolUse
-    Note over Hook: a log-cli run that would hide its lines (piped through tail or head) is refused before it starts; a long one off a Monitor is told to start one (rule 26)
+    Note over Hook: a log-cli run that would hide its lines (piped through tail or head) is refused before it starts#59; a long one off a Monitor is told to start one (rule 26)
     alt a log run piped through tail/head
       Hook-->>Agent: refused (exit 2), run it live
     else
@@ -427,7 +466,7 @@ log host status [--account <accountName>]
 
 #### log inspect
 
-Drive one gated Camoufox a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29) MCP tool: `inspect` (`args` takes the same arguments).
+Drive the account's browser, gated and headed, a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29) MCP tool: `inspect` (`args` takes the same arguments).
 
 ```text
 log inspect start --account <accountName> [--url <https://www.facebook.com/...>] [--bypass] [--now] [--noIdleMouse] [--detach]   (one session per account: two accounts can be open at once; --detach runs it as its own process and returns once it is open)
@@ -664,17 +703,18 @@ Twenty is the identity provider, and blaster's hosted web app
 (or `LOG_WEB_URL` / `LOG_API_URL`) point at a local blaster. The CLI never holds the
 OAuth client secret.
 
-## The browser: AdsPower, with Camoufox kept (rule 42)
+## Browser setup
 
-The direction from 2026-10-19: accounts move to **AdsPower**, Listaro's browser and
-SubQ's pick on our recorded issues. **Camoufox stays** and can be used again later.
-Twenty's `socialAccounts` logic doesn't change.
+The browser layer, which commands run where, and each browser's capabilities are
+generated from the code: [The browser layer](#the-browser-layer) above and
+[`docs/browsers.md`](docs/browsers.md). A new browser provider is one more
+driver: its domain `src/browser/<name>` (capability row, driver, tests), its
+Python opener in `python/browser/browserDriver.py` and its column in
+`docs/browsers.md`; `bun run check:browsers` (pre-commit) refuses one missing a
+piece (rule 44). A profile holds no proxy, password or 2FA key: those stay in
+Twenty, and the proxy goes on only to open and comes off at close.
 
-The browser is a driver (`src/browser/driver`). One XState machine runs every
-account's session, whichever browser it uses: prepare, gate, start, self-check,
-open, close. A browser can't open without its proxy gate (rule 12), and isn't open
-before its self-check (rule 17). Another browser is added by writing one more
-driver.
+### AdsPower setup
 
 ```bash
 bun bin/log.ts adsPower status          # AdsPower's Local API answers
@@ -683,25 +723,15 @@ bun bin/log.ts adsPower sync            # dry run: one profile per Facebook acco
 bun bin/log.ts adsPower sync --apply    # make them, link each in socialAccounts.adsPowerProfileId
 ```
 
-A profile holds no proxy, password or 2FA key: those stay in Twenty. Both browsers are
-opened by one Python layer (`python/browser/browserDriver.py`), which hands every session the same
-Playwright context. So the proxy gate, the self-check, the session HAR, the human mouse and
-scroll, the flows and the warm-up are the same on either. `docs/browsers.md` is the parity
-table, and `bun run check:browsers` (pre-commit) keeps it. Setup and what's next:
-`docs/adsPower.md`. Across servers: `docs/deployment.md`.
+More: [`docs/adsPower.md`](docs/adsPower.md). Across servers: [`docs/deployment.md`](docs/deployment.md).
 
-## Live mode (Camoufox)
+### Camoufox setup
 
-`doctor`, `connect`, `scan`, `status` and `watch` launch Camoufox through
+Camoufox runs the accounts without an AdsPower profile, and the commands not on
+the driver yet launch it themselves, through
 [facebook-camofox-client](https://github.com/PRACE1/facebook-camofox-client)
-(`python/session/logWorker.py`); `publish` drives its own session
-(`python/session/publishSession.py`). Before either starts, the account must pass the
-account check, and at launch `python/browser/proxyGate.py` checks the proxy exits in the
-account's home country (rule 12). The proxy and cookies come from Twenty, are
-written to a private temp folder for the run, and are deleted afterwards.
-Every launch is headed, humanized, with the cursor shown (rule 11).
-
-Setup, once:
+(`python/session/logWorker.py`) or their own sessions
+(`python/session/publishSession.py`, `connectSession.py`, `profileSession.py`).
 
 ```bash
 git clone https://github.com/PRACE1/facebook-camofox-client ../facebook-camofox-client
@@ -710,10 +740,16 @@ python -m camoufox fetch          # downloads the Camoufox browser
 bun bin/log.ts doctor
 ```
 
+Whichever browser runs, the account must pass the account check first, its
+proxy and cookies come from Twenty into a private temp folder for the run and
+are deleted afterwards, and every launch is headed with the cursor shown
+(rule 11).
+
 ## Record a procedure, then run it anywhere (`log inspect`, `log flow`)
 
-`log inspect` drives one gated, headed Camoufox a step at a time and records
-every step (snapshot, screenshot, HAR, rea). `log flow fromInspect` turns that
+`log inspect` drives the account's browser (AdsPower or Camoufox, through the
+driver), gated and headed, a step at a time, and records every step (snapshot,
+screenshot, HAR, rea). `log flow fromInspect` turns that
 recording into a flow: its docs, an XState machine, `log flow run <name>` for
 any account, and an MCP tool of its own (`flowProfileSetup`). The whole
 pipeline, the actions, the saved flows and what the recordings showed:
@@ -731,22 +767,21 @@ src/marketplace/publish/        the XState publish machine
 src/marketplace/monitor/        the XState listing monitor + relist rules
 src/marketplace/listing/        the listeningkit-hackathon listing machine port (+ its seed)
 src/browser/driver/             the browser-agnostic session machine and capability list (rules 42, 44)
-src/browser/camoufox/           Camoufox's driver and capability row
+src/browser/camoufox/           Camoufox's driver and capability row (kept)
 src/browser/adsPower/           AdsPower: Local API client (from Listaro), profile sync, its driver and capability row
 src/browser/run/                one run's private proxy/cookie files, the launch budget (every browser)
 src/browser/proxy/              the proxy check's result types (every browser)
 src/browser/inspect/            log inspect: one open browser driven a step at a time (every browser)
 src/browser/flow/               recordings → flows, their XState machines, the page states (every browser)
-src/camofox/device/             Camoufox's one device per account (rule 15)
-src/camofox/worker/             spawns python/session/logWorker.py
-src/camofox/session/            drives python/session/publishSession.py step by step
+src/camofox/                    what only Camoufox needs: its device per account (rule 15), its worker and sync sessions
 src/captcha/router/             CaptchaKraken → 2Captcha → a person
 src/errors/catalog/             every error code, once
 src/cli/*                       the commands
 src/agentHooks/                 the agent hooks (Claude Code, Codex) and what each decides (rule 55)
 src/surface/                    the catalog of commands, MCP tools and hooks; the README section and diagrams (rule 56)
-python/browser/proxyGate.py             no launch unless the proxy exits in the home country
-python/browser/visibleBrowser.py        headed, humanized, cursor shown
+python/browser/                 every driver's opener (browserDriver.py), the proxy gate, the HAR recorder, headed launch
+python/session/                 the processes TypeScript runs: inspect, connect, publish, profile, the worker
+python/human/                   the cursor and the wheel, fitted to matt's hand (rule 32)
 ```
 
 See `docs/namingConventions.md`. Run `bun run check` for the naming gate, typecheck and tests.
