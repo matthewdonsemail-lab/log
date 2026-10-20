@@ -1,5 +1,5 @@
-import type { FlowDefinition } from "../../../camofox/flow/index.ts";
-import { toolName } from "../../../camofox/flow/index.ts";
+import type { FlowDefinition } from "../../../browser/flow/index.ts";
+import { toolName } from "../../../browser/flow/index.ts";
 import type { LogTool } from "../types.ts";
 import { TOOL_RESULT_SCHEMA } from "../types.ts";
 import { rulesLine } from "./agentRules.ts";

@@ -38,7 +38,7 @@ export interface DeviceProfile {
   home: { city: string | null; country: string; timezone: string | null }
 }
 
-/** What `device.json` holds for one run (written by `camofox/run`, read by python/proxyGate.py). */
+/** What `device.json` holds for one run (written by `browser/run`, read by python/proxyGate.py). */
 export interface DeviceRunFile {
   accountName: string
   locale: string

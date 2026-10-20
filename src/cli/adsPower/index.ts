@@ -17,6 +17,7 @@ export const ADS_POWER_USAGE = [
 ].join("\n");
 
 export const adsPowerCommand: Command = {
+  usage: ADS_POWER_USAGE,
   name: "adsPower",
   summary: "AdsPower: Local API status, its profiles, and one profile per Twenty account (sync)",
   args: "<status|profiles|sync> [--apply] [--account <a>] [--json]",

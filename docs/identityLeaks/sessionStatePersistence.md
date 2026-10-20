@@ -22,9 +22,9 @@ behave like that (R4 M4).
 
 ## Evidence
 
-- `src/camofox/run/client.ts:26` writes `{ cookies, origins: [] }`, so the
+- `src/browser/run/client.ts:26` writes `{ cookies, origins: [] }`, so the
   `origins` (localStorage) are always empty. *verifiedSource*
-- `src/camofox/run/client.ts:34-41` (`readCookies`) keeps only cookies.
+- `src/browser/run/client.ts:34-41` (`readCookies`) keeps only cookies.
   *verifiedSource*
 - Only `connect` saves:
   - `python/logWorker.py:155` calls `session.context.storage_state(path=...)`
@@ -45,7 +45,7 @@ behave like that (R4 M4).
 
 ## Where in our code it can happen again
 
-- `src/camofox/run/client.ts`: what is written to and read from the temp
+- `src/browser/run/client.ts`: what is written to and read from the temp
   `state` file.
 - `python/logWorker.py` (`login`, `scan`, `status`) and
   `python/publishSession.py`: every place a context is closed.
@@ -57,7 +57,7 @@ behave like that (R4 M4).
 
 1. **Save state at the end of every run.** In both Python processes, call
    `context.storage_state(path=statePath)` before closing.
-2. **Read cookies and origins.** Add `readStorageState()` in `camofox/run`.
+2. **Read cookies and origins.** Add `readStorageState()` in `browser/run`.
 3. **Write it back to Twenty** after every scan, status, watch check and
    publish. Add a `storageState` RAW_JSON field through
    `scripts/twentySetup.mjs`, or keep `cookies` for cookies and add

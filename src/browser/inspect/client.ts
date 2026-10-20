@@ -75,7 +75,7 @@ export function clearCurrentInspect(path = currentInspectPath(), account?: strin
   rmSync(path, { force: true })
 }
 
-/** The real session: Python, headed Camoufox, until `stop` or 30 idle minutes. */
+/** The real session: Python with the account's browser headed (AdsPower or Camoufox, `python/browserDriver.py`), until `stop` or 30 idle minutes. */
 export const runInspectSession: InspectSessionRunner = (config: InspectSessionConfig) =>
   new Promise((resolve) => {
     const python = process.env.LOG_PYTHON || 'python'

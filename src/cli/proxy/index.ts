@@ -15,9 +15,9 @@
  * Provider-agnostic (`proxyVendor/vendor`): Twenty keeps one `proxy` URL per
  * account, whichever provider it is from.
  */
-import { countryName, slowFacebookMs } from "../../camofox/proxy/index.ts";
-import type { ProxyCheck } from "../../camofox/proxy/index.ts";
-import { prepareRun } from "../../camofox/run/index.ts";
+import { countryName, slowFacebookMs } from "../../browser/proxy/index.ts";
+import type { ProxyCheck } from "../../browser/proxy/index.ts";
+import { prepareRun } from "../../browser/run/index.ts";
 import { distanceKm, homeOf } from "../../marketplace/home/index.ts";
 import { findAccount, listFacebookAccounts, maskProxyUrl, recordProxyCheck } from "../../marketplace/socialAccount/index.ts";
 import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
@@ -181,6 +181,7 @@ async function assignOne(
 }
 
 export const proxyCommand: Command = {
+  usage: PROXY_USAGE,
   name: "proxy",
   summary: "Check an account's proxy, give it one from a provider (2Captcha, Byteful) in its home city, or see providers' traffic",
   args: "<check|assign|balance|static> [--account <name>] [--vendor twoCaptcha|byteful] [...]",

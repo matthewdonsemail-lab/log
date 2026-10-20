@@ -6,7 +6,7 @@ import { renderFlowDoc } from './helpers/index'
 import type { RecordedCommand } from './helpers/index'
 import type { FlowDefinition } from './types'
 
-/** Saved flows, committed: `src/camofox/flow/definitions/<name>.json`. */
+/** Saved flows, committed: `src/browser/flow/definitions/<name>.json`. */
 export const FLOWS_DIR = fileURLToPath(new URL('./definitions', import.meta.url))
 /** Their docs: `docs/platforms/facebook/flows/<name>.md`. */
 export const FLOW_DOCS_DIR = fileURLToPath(new URL('../../../docs/platforms/facebook/flows', import.meta.url))

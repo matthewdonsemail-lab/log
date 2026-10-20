@@ -47,7 +47,7 @@ for (const domain of readdirSync(docsDir)) {
   }
 }
 
-// 6: every saved flow (src/camofox/flow/definitions) has its doc (`log flow docs <name>`).
+// 6: every saved flow (src/browser/flow/definitions) has its doc (`log flow docs <name>`).
 const flowsDir = join(root, 'src', 'camofox', 'flow', 'definitions');
 if (existsSync(flowsDir)) {
   for (const file of readdirSync(flowsDir).filter((f) => f.endsWith('.json'))) {

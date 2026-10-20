@@ -24,6 +24,7 @@ export const ACCOUNT_USAGE = [
 ].join("\n");
 
 export const accountsCommand: Command = {
+  usage: ACCOUNTS_USAGE,
   name: "accounts",
   summary: "List the FACEBOOK accounts in Twenty: status, home, proxy, and whether each may run",
   args: "[--json]",
@@ -45,6 +46,7 @@ export const accountsCommand: Command = {
 };
 
 export const accountCommand: Command = {
+  usage: ACCOUNT_USAGE,
   name: "account",
   summary: "Show one account, or set its status (banned/dead/restricted replace its campaign listings)",
   args: "<show|status|resave|resetOpens> <name> [STATUS] [--reason <code>]",

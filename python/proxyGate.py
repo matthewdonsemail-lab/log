@@ -5,7 +5,7 @@ after a self-check (rule 17).
 
 The TypeScript side writes the account's proxy (Twenty socialAccounts.proxy
 and homeCountry) and its device file (pinned locale, home timezone, stored
-device) to a private temp folder per run (camofox/run) and passes the paths,
+device) to a private temp folder per run (browser/run) and passes the paths,
 never the credentials. This process calls arm() once. Every launch goes
 through apply(), from visibleBrowser.launch_kwargs(), which:
 

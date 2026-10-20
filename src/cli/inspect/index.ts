@@ -25,7 +25,7 @@ import { closeSync, existsSync, mkdirSync, openSync, readFileSync } from "node:f
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { clearCurrentInspect, currentInspectPath, LIVE_ACTIONS, openInspects, parseInspectAction, readCurrentInspect, renderInspectStep, writeCurrentInspect } from "../../camofox/inspect/index.ts";
+import { clearCurrentInspect, currentInspectPath, LIVE_ACTIONS, openInspects, parseInspectAction, readCurrentInspect, renderInspectStep, writeCurrentInspect } from "../../browser/inspect/index.ts";
 import { findAccount } from "../../marketplace/socialAccount/index.ts";
 import { inspectRuns, mapAllInspectRuns, mapInspectRun } from "../../rea/inspectMap/index.ts";
 import { openAccount, withRun } from "../live/index.ts";
@@ -86,6 +86,7 @@ async function startDetached(accountName: string, argv: string[]): Promise<{ cod
 }
 
 export const inspectCommand: Command = {
+  usage: INSPECT_USAGE,
   name: "inspect",
   summary: "Drive one gated Camoufox a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29)",
   args: "start --account <name> [--url <u>] [--bypass] | do <action> [args] [--live]",

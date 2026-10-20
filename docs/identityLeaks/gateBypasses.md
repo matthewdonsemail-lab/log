@@ -92,7 +92,7 @@ An ungated launch shows Facebook whatever the route defaults to:
   `publishSession.main`), and `watch` starts a new worker per check. No browser
   or `_armed` state is shared between accounts.
 - The proxy reaches Python as a file path, never on argv, and is deleted
-  afterwards (`camofox/run`).
+  afterwards (`browser/run`).
 
 ## Where in our code it can happen again
 

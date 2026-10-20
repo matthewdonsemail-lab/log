@@ -23,7 +23,7 @@ learn.chatgpt.com/docs/hooks): `hookSpecificOutput.additionalContext`,
 What each hook decides is pure and tested: `src/agentHooks/pageState` (`hookReply`),
 `src/agentHooks/liveLog` (`liveLogVerdict`), `src/agentHooks/agentHooks.test.ts`.
 The known states and their resolvers are `PAGE_STATES` in
-`src/camofox/flow/helpers/pageState.ts`.
+`src/browser/flow/helpers/pageState.ts`.
 
 ## The live log
 

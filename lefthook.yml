@@ -23,6 +23,13 @@ pre-commit:
     agentHooks:
       run: bun run check:agentHooks
 
+    # Rule 56: the README's command table (every command, its flags, its MCP
+    # tool, the hooks that fire on it) and docs/diagrams/*.mmd are generated
+    # from the code by `bun run docs:build`; this refuses a commit where they
+    # differ, or where a command parses a flag its usage doesn't name.
+    docs:
+      run: bun run check:docs
+
 pre-push:
   parallel: false
   commands:
@@ -35,6 +42,9 @@ pre-push:
 
     agentHooks:
       run: bun run check:agentHooks
+
+    docs:
+      run: bun run check:docs
 
     typecheck:
       run: bun run typecheck

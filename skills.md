@@ -22,6 +22,7 @@ skill in the same commit.
 | [`adsPower`](skills/adsPower/SKILL.md) | Give every Twenty account its AdsPower profile (`log adsPower sync`), check the Local API, add a browser driver (rule 42) |
 | [`profileSetup`](skills/profileSetup/SKILL.md) | Give an account its profile picture and cover photo (`log profile setup`, rule 28): dry run, read the page's controls, then `--live` |
 | [`agentHooks`](skills/agentHooks/SKILL.md) | Keep the CLI, MCP tools, agent hooks (Claude Code, Codex) and the live log in step (rule 55): add a hook, a command or a page state |
+| [`surfaceDocs`](skills/surfaceDocs/SKILL.md) | Keep the README command table (flags, MCP tool, hooks) and the Mermaid `.mmd` diagrams generated from the code (rule 56) |
 
 These three files stay in step:
 

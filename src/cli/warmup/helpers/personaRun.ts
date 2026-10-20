@@ -2,8 +2,8 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFil
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
-import { readCurrentInspect } from "../../../camofox/inspect/index.ts";
-import type { InspectAction, InspectStepOptions } from "../../../camofox/inspect/index.ts";
+import { readCurrentInspect } from "../../../browser/inspect/index.ts";
+import type { InspectAction, InspectStepOptions } from "../../../browser/inspect/index.ts";
 import { createInspector, formatTraceLine } from "../../../observability/trace/index.ts";
 import { createDecisionsClient } from "../../../subq/decisions/index.ts";
 import type { DecisionImage, DecisionsClient } from "../../../subq/decisions/index.ts";

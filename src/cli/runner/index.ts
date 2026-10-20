@@ -4,7 +4,7 @@
  * Commands are declared once here; usage text is generated from the same list,
  * so a new command cannot ship without documentation.
  */
-import { runInspectSession, sendInspectCommand } from "../../camofox/inspect/index.ts";
+import { runInspectSession, sendInspectCommand } from "../../browser/inspect/index.ts";
 import { startConnectSession, startProfileSession, startSession } from "../../camofox/session/index.ts";
 import { runWorker } from "../../camofox/worker/index.ts";
 import { listAccounts } from "../../marketplace/account/index.ts";

@@ -56,7 +56,7 @@ through an account's sticky session.
   `C:\Users\0\.buzz\.scratch\leakTests\common.py:30` (outside the repo). R3
   redacted its outputs as `<REDACTED>-zone-…`, but the script itself holds the
   username. *verifiedSource*
-- **Temp files.** The proxy reaches Python as a temp file (`camofox/run`),
+- **Temp files.** The proxy reaches Python as a temp file (`browser/run`),
   deleted after each run. `0o600` does nothing on Windows (R4, "What is right").
   *verifiedSource*
 - **Environment.** `2CAPTCHA_PROXY_PASSWORD` and the other keys are passed into

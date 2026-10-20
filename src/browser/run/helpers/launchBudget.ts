@@ -1,7 +1,7 @@
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
-import { CAPTURE_FOLDERS } from '../../../browser/driver/types'
+import { CAPTURE_FOLDERS } from '../../driver/types'
 
 /**
  * Rule 24: how often one account's browser may open on Facebook. On

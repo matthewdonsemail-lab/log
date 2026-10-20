@@ -1,8 +1,8 @@
 import { appendFileSync, existsSync, mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
-import { readCurrentInspect } from "../../../camofox/inspect/index.ts";
-import type { InspectAction } from "../../../camofox/inspect/index.ts";
+import { readCurrentInspect } from "../../../browser/inspect/index.ts";
+import type { InspectAction } from "../../../browser/inspect/index.ts";
 import { createInspector, formatTraceLine } from "../../../observability/trace/index.ts";
 import { DEFAULT_TRAFFIC_BUDGET_MB, meterForProxy, readTrafficLedger, recordTraffic, trafficBudget } from "../../../proxyVendor/traffic/index.ts";
 import type { TrafficMeter } from "../../../proxyVendor/traffic/index.ts";

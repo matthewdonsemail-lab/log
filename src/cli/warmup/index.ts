@@ -15,7 +15,7 @@
  * --likes (rule 8). Everything else only reads.
  */
 import { createActor, fromPromise, toPromise } from "xstate";
-import { flowFromRecording, loadFlow, pageProblem, readRecordedCommands, saveFlow, writeFlowDoc } from "../../camofox/flow/index.ts";
+import { flowFromRecording, loadFlow, pageProblem, readRecordedCommands, saveFlow, writeFlowDoc } from "../../browser/flow/index.ts";
 import type { ErrorCode } from "../../errors/catalog/index.ts";
 import { recordAccountIssue } from "../../marketplace/replacement/index.ts";
 import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
@@ -47,6 +47,7 @@ function feed(context: CommandContext, line: Omit<FeedLine, "at">): void {
 }
 
 export const warmupCommand: Command = {
+  usage: WARMUP_USAGE,
   name: "warmup",
   summary: "The warm-up, by platform and activity (`log warmup facebook reel`: the browser opened primed with it, each step checked, the outline written, rule 49), and Listaro's five activities (record, run, feed, rule 36)",
   args: "<platform> <activity> [plan|record|run] [--account <a>] [--live] [--likes] [--bypass] | <plan|record|run|feed> [--account <name>] [--only …] [--likes] [--gapMinutes n] [--follow]",

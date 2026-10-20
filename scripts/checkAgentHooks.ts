@@ -16,7 +16,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { AGENT_HOOKS, hooksFor, MCP_SERVER_NAME, toolIsHooked } from "../src/agentHooks/registry/index.ts";
 import type { HookEvent, HookHost } from "../src/agentHooks/registry/index.ts";
-import { PAGE_STATES } from "../src/camofox/flow/helpers/pageState.ts";
+import { PAGE_STATES } from "../src/browser/flow/helpers/pageState.ts";
 import { COMMANDS } from "../src/cli/runner/index.ts";
 import { LONG_RUNNING, toolsFromCommands } from "../src/mcp/server/helpers/toolsFromCommands.ts";
 import { toolsFromFlows } from "../src/mcp/server/helpers/toolsFromFlows.ts";

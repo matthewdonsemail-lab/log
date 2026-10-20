@@ -11,7 +11,7 @@
  *   blocks. When the agent was already sent back once and nothing has changed
  *   since, the turn may end, so a state nothing can move never loops.
  */
-import { pageStateOf } from "../../camofox/flow/helpers/pageState.ts";
+import { pageStateOf } from "../../browser/flow/helpers/pageState.ts";
 import type { BrowserAt, Finding, HookEvent, HookMemory, HookReply } from "./types.ts";
 
 export type { BrowserAt, Finding, HookMemory, HookReply } from "./types.ts";

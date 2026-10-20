@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { InspectSessionConfig } from "../../camofox/inspect/index.ts";
+import type { InspectSessionConfig } from "../../browser/inspect/index.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { runCli } from "../runner/index.ts";
 
@@ -53,7 +53,7 @@ describe("log inspect", () => {
   });
 
   test("two accounts' sessions are open at once; do picks one by --account and refuses to guess", async () => {
-    const { writeCurrentInspect, clearCurrentInspect, openInspects } = await import("../../camofox/inspect/index.ts");
+    const { writeCurrentInspect, clearCurrentInspect, openInspects } = await import("../../browser/inspect/index.ts");
     const base = { commandsPath: "c", repliesPath: "r", startedAt: "2026-10-19T00:00:00.000Z" };
     writeCurrentInspect({ ...base, account: "galwayOne", runDir: "/runs/one" });
     writeCurrentInspect({ ...base, account: "galwayTwo", runDir: "/runs/two" });
@@ -80,7 +80,7 @@ describe("log inspect", () => {
 describe("log inspect start --detach (how an MCP agent opens the account's browser)", () => {
   test("starts the session as its own process and returns once its browser is ready", async () => {
     const { inspectDetachDeps } = await import("./index.ts");
-    const { writeCurrentInspect, clearCurrentInspect } = await import("../../camofox/inspect/index.ts");
+    const { writeCurrentInspect, clearCurrentInspect } = await import("../../browser/inspect/index.ts");
     const { writeFileSync } = await import("node:fs");
     const real = { ...inspectDetachDeps };
     const started: string[][] = [];

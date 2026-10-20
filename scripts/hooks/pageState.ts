@@ -15,7 +15,7 @@ import { dirname, join } from 'node:path'
 import { hookReply, parseMemory } from '../../src/agentHooks/pageState/index'
 import type { BrowserAt } from '../../src/agentHooks/pageState/index'
 import type { HookEvent } from '../../src/agentHooks/registry/index'
-import { openInspects } from '../../src/camofox/inspect/index'
+import { openInspects } from '../../src/browser/inspect/index'
 
 interface HookInput {
   hook_event_name?: HookEvent

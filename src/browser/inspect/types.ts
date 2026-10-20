@@ -1,6 +1,6 @@
-import type { BrowserDriverName } from '../../browser/driver/types'
+import type { BrowserDriverName } from '../driver/types'
 /**
- * `log inspect` (rule 29): one Camoufox kept open for an account and driven a
+ * `log inspect` (rule 29): the account's browser (AdsPower or Camoufox, rule 44) kept open and driven a
  * step at a time, each step recorded and read by rea as it happens
  * (`python/inspectSession.py`). Commands go to the session as JSON lines in a
  * file it watches; replies come back the same way, so the session can be

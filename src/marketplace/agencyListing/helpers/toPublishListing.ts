@@ -1,4 +1,4 @@
-import { countryOfLocation } from '../../../camofox/proxy/index'
+import { countryOfLocation } from '../../../browser/proxy/index'
 import { validateListing } from '../../publish/helpers/index'
 import type { PublishListing } from '../../publish/types'
 import type { AgencyListing } from '../types'

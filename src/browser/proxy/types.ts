@@ -1,6 +1,6 @@
 /**
  * Countries and the proxy check. An account's proxy lives in Twenty
- * (`socialAccounts.proxy`), its country in `homeCountry`; `camofox/run` hands
+ * (`socialAccounts.proxy`), its country in `homeCountry`; `browser/run` hands
  * both to `python/proxyGate.py`, which refuses any launch whose exit IP isn't
  * in that country (AGENTS.md rule 12, docs/proxies.md).
  */
@@ -11,7 +11,7 @@ export interface ProxyCheck {
   exitIp: string;
   exitCountry: string;
   country: string;
-  /** Where Camoufox's GeoIP puts the exit IP. */
+  /** Where the GeoIP lookup (Camoufox's database) puts the exit IP. */
   latitude?: number;
   longitude?: number;
   /** The slowest Facebook file through the proxy, in ms (null for SOCKS). Over `SLOW_FACEBOOK_MS` a launch is refused. */

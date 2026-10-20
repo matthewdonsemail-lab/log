@@ -33,7 +33,7 @@ import { cancel, confirm, intro, isCancel, multiselect, note, outro, select, tex
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
-import { readCurrentInspect } from "../../camofox/inspect/index.ts";
+import { readCurrentInspect } from "../../browser/inspect/index.ts";
 import { draftComplete, draftFrom, ensureGroup, findGroup, groupJoinMachine, parseGroupRef, patchGroupStep, readJoinOptions, recordGroupRead, saveDraft, stepsFor } from "../../group/join/index.ts";
 import type { Group, GroupJoinOutput, GroupRef, GroupStepInput, GroupStepReply, JoinAnswer, JoinOptions } from "../../group/join/index.ts";
 import { describePlan, groupAnswerMachine, patchApplication } from "../../group/answer/index.ts";
@@ -406,6 +406,7 @@ export async function runJoin(context: CommandContext, argv: string[]): Promise<
 }
 
 export const joinCommand: Command = {
+  usage: JOIN_USAGE,
   name: "join",
   summary: "Join a Facebook group as one account, in its open browser: read the gate, --live presses Join; every step patches agencyGroups.joinSubmission (rule 45)",
   args: "group --account <a> --group <g> [--live] | --show | --answer [--set n=v]... [--agree] | --fill [--live [--submit]] [--bypass] [--json]",

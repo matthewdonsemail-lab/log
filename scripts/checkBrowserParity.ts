@@ -7,7 +7,7 @@
 //   src/browser/<name>/<name>.test.ts its tests
 //   python/browserDriver.py           the name in BROWSERS and an opener in OPENERS
 //   docs/browsers.md                  its column, the table generated from the rows
-// and no folder in src/browser/ other than driver/ that isn't a listed browser.
+// and no folder in src/browser/ other than a listed browser or a domain every browser shares (SHARED_DOMAINS).
 // Not too strict: a capability may be `notBuilt`; those are listed on every commit, never refused.
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -15,6 +15,8 @@ import { BROWSER_CAPABILITIES, BROWSER_DRIVERS } from "../src/browser/driver/typ
 import type { BrowserCapabilities } from "../src/browser/driver/types.ts";
 
 const root = join(import.meta.dir, "..");
+/** The domains every browser shares, beside the browsers themselves (rule 57): the driver, each run's files and launch budget, the proxy, inspect and flows. */
+const SHARED_DOMAINS = ["driver", "run", "proxy", "inspect", "flow"];
 const problems: string[] = [];
 const rows = new Map<string, BrowserCapabilities>();
 const capabilities = Object.keys(BROWSER_CAPABILITIES) as (keyof typeof BROWSER_CAPABILITIES)[];
@@ -37,8 +39,8 @@ for (const name of BROWSER_DRIVERS) {
 }
 
 for (const entry of readdirSync(join(root, "src/browser"), { withFileTypes: true })) {
-  if (entry.isDirectory() && entry.name !== "driver" && !(BROWSER_DRIVERS as readonly string[]).includes(entry.name)) {
-    problems.push(`src/browser/${entry.name} isn't in BROWSER_DRIVERS: add it there, or move it out of src/browser`);
+  if (entry.isDirectory() && !SHARED_DOMAINS.includes(entry.name) && !(BROWSER_DRIVERS as readonly string[]).includes(entry.name)) {
+    problems.push(`src/browser/${entry.name} isn't in BROWSER_DRIVERS: add it there, add it to SHARED_DOMAINS when every browser uses it, or move it out of src/browser`);
   }
 }
 

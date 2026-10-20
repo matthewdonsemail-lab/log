@@ -23,8 +23,8 @@ import { COMMANDS, runCli } from "../../cli/runner/index.ts";
 import type { CommandContext } from "../../cli/runner/types.ts";
 import { setLogSink } from "../../observability/processLog/index.ts";
 import type { LogLine } from "../../observability/processLog/index.ts";
-import { FLOWS_DIR, listFlows, loadFlow, toolName } from "../../camofox/flow/index.ts";
-import type { FlowDefinition } from "../../camofox/flow/index.ts";
+import { FLOWS_DIR, listFlows, loadFlow, toolName } from "../../browser/flow/index.ts";
+import type { FlowDefinition } from "../../browser/flow/index.ts";
 import { appendLiveLine, liveLogDir } from "../../observability/liveLog/index.ts";
 import { AGENTS_URI, flowArgv, guardCall, parseEnvText, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
@@ -61,7 +61,7 @@ export type OnLogLine = (tool: string, stream: LogStream, line: string) => void;
 const inFlight = new Set<(entry: LogLine) => void>();
 
 /** Runs one tool call as `log <name> <args>`. Tests inject the context (fixture Twenty, no browser). */
-/** The saved flows (`src/camofox/flow/definitions`), each an MCP tool (rule 31). */
+/** The saved flows (`src/browser/flow/definitions`), each an MCP tool (rule 31). */
 export function savedFlows(): FlowDefinition[] {
   return listFlows().flatMap((name) => {
     const flow = loadFlow(name);

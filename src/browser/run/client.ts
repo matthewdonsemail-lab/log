@@ -1,15 +1,15 @@
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import { homedir, tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { hasStoredDevice, toDeviceProfile } from '../device/index'
-import type { DeviceProfile, DeviceRunFile } from '../device/index'
+import { hasStoredDevice, toDeviceProfile } from '../../camofox/device/index'
+import type { DeviceProfile, DeviceRunFile } from '../../camofox/device/index'
 import { homeOf, outsideActiveHours } from '../../marketplace/home/index'
 import { checkRunnable, toFacebookCookies } from '../../marketplace/socialAccount/index'
 import type { FacebookAccount, PlaywrightCookie, RunPurpose } from '../../marketplace/socialAccount/index'
 import { LAUNCH_LIMITS, listLaunches, overLaunchBudget } from './helpers/index'
 import type { PrepareRunOptions, PrepareRunResult } from './types'
-import { driverNameOf } from '../../browser/driver/client'
-import type { BrowserDriverName } from '../../browser/driver/types'
+import { driverNameOf } from '../driver/client'
+import type { BrowserDriverName } from '../driver/types'
 
 /** Stored localStorage origins (Playwright's `[{ origin, localStorage: [...] }]`), or none. Pure. */
 export function toOrigins(raw: unknown): unknown[] {
@@ -26,7 +26,7 @@ export function toOrigins(raw: unknown): unknown[] {
 }
 
 /**
- * Everything a Camoufox run for `account` needs, or why it may not run. The
+ * Everything a run for `account` needs on its browser, or why it may not run. The
  * account check comes first (`checkRunnable`, rule 12): no proxy, no home
  * country, a non-Facebook or unusable account means no files and no browser.
  * Then its home (rule 16: a pinned locale and timezone for the country, or

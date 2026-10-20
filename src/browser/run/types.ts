@@ -5,7 +5,7 @@
  * argv), and deleted afterwards.
  */
 import type { LoginSecrets } from '../../twenty/graphql/index'
-import type { DeviceProfile } from '../device/index'
+import type { DeviceProfile } from '../../camofox/device/index'
 import type { ErrorCode } from '../../errors/catalog/index'
 import type { PlaywrightCookie } from '../../marketplace/socialAccount/index'
 

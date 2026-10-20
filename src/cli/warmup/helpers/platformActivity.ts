@@ -1,8 +1,8 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
-import { readCurrentInspect } from "../../../camofox/inspect/index.ts";
-import type { InspectAction } from "../../../camofox/inspect/index.ts";
+import { readCurrentInspect } from "../../../browser/inspect/index.ts";
+import type { InspectAction } from "../../../browser/inspect/index.ts";
 import { homeOf, outsideActiveHours } from "../../../marketplace/home/index.ts";
 import { checkRunnable, findAccount } from "../../../marketplace/socialAccount/index.ts";
 import { createInspector, formatTraceLine } from "../../../observability/trace/index.ts";
@@ -18,7 +18,7 @@ import { seeded } from "../../../warmup/facebook/index.ts";
 
 export const PLATFORM_USAGE = [
   "       log warmup <platform> <activity> [--account <a>] [--live] [--likes] [--bypass] [--now]   (record: the account's browser opened primed with the activity, each step checked, the outline written)",
-  "       log warmup <platform> <activity> plan [--reels 8-20] [--watch 4-25] [--skip 0.6] [--comments 0.3] [--profile 0.15] [--likes] [--seed <n>]",
+  "       log warmup <platform> <activity> plan [--reels 8-20] [--watch 4-25] [--skip 0.6] [--comments 0.3] [--profile 0.15] [--likes] [--seed <n>] [--json]",
   "       log warmup <platform> <activity> run --account <a> [plan flags] [--live] [--likes] [--bypass]   (a drawn session, stopped at the first step that doesn't do what it should)",
   "       log warmup <platform> <activity> run --account <a> --persona [--newPersona] [--reels 8-20] [--trafficMb 1024] [--live] [--likes] [--bypass]   (the persona's For you feed: SubQ reads each reel, the orderer plans it from the pack and real viewer, rule 50)",
   "       log warmup facebook feed run --account <a> --persona [--posts 8-15] [--trafficMb 1024] [--live] [--likes] [--bypass]   (the home feed post by post: SubQ reads each post, a glance or a read and a like where the persona would, then Marketplace and listings)",

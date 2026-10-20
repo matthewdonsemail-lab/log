@@ -15,6 +15,8 @@ export function toolsFromCommands(commands: Command[]): LogTool[] {
       description: [
         `log ${command.name}${command.args ? ` ${command.args}` : ""}`,
         command.summary,
+        // Every subcommand and flag, the same text the terminal shows and the README lists (rule 56).
+        command.usage,
         ...(command.name === "connect" ? ["Runs --noPrompt: saved cookies that work end it at once; otherwise it signs in by itself from Twenty's email, password and 2FA secret (rule 21), and anything it can't handle waits for matt in the visible window (up to --wait seconds, default 600). Progress streams to ~/.logCli/mcp/<day>.log."] : []),
         ...(command.name === "inspect" ? ["Open the account's browser from here with `start --account <a> --detach`: it runs as its own process and returns once the gate and self-check passed (plain `start` stays running: a terminal only). The browser stays open until `do stop` (or 30 idle minutes). `do <action>` sends one step to that open session and returns its snapshot (element refs), requests and rea reading. click/type/press act on Facebook: --live, only when matt asked."] : []),
         ...(command.name === "join"

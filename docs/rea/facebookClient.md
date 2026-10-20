@@ -15,7 +15,7 @@ step and reads one JSON line back.
 Before `open`, `checkRunnable` in
 `src/marketplace/socialAccount/helpers/checkRunnable.ts` refuses anything
 that is not a FACEBOOK account with a usable status, a readable proxy and a
-home country. Sign-in is included. `prepareRun` in `src/camofox/run/client.ts`
+home country. Sign-in is included. `prepareRun` in `src/browser/run/client.ts`
 then refuses `outsideActiveHours`. `python/proxyGate.py` checks the exit
 country, and the launch self-check compares timezone, locale and exit IP
 before Facebook is loaded.

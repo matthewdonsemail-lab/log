@@ -1,6 +1,6 @@
 /** Command surface types. */
 
-import type { CurrentInspect, InspectAction, InspectSessionRunner, InspectStepOptions, InspectStepResult } from "../../camofox/inspect/index.ts";
+import type { CurrentInspect, InspectAction, InspectSessionRunner, InspectStepOptions, InspectStepResult } from "../../browser/inspect/index.ts";
 import type { ConnectSessionFactory, ProfileSessionFactory, SessionFactory } from "../../camofox/session/index.ts";
 import type { ConnectTiming } from "../../marketplace/connect/index.ts";
 import type { WorkerClient } from "../../camofox/worker/index.ts";
@@ -55,5 +55,10 @@ export interface Command {
   summary: string;
   /** Positional argument names, for usage output. */
   args?: string;
+  /**
+   * Its full usage: every subcommand, argument and flag. The README's command
+   * table and the MCP tool's description are generated from it (rule 56).
+   */
+  usage: string;
   run(context: CommandContext, argv: string[]): Promise<CommandResult> | CommandResult;
 }

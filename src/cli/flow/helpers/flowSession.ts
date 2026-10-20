@@ -1,10 +1,10 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
-import { createFlowMachine, fillStep, pageProblem } from "../../../camofox/flow/index.ts";
-import { clearCurrentInspect, writeCurrentInspect } from "../../../camofox/inspect/index.ts";
-import type { FlowActInput, FlowDefinition, FlowRunOutput, FlowStep, FlowStepResult } from "../../../camofox/flow/index.ts";
-import type { CurrentInspect, InspectAction } from "../../../camofox/inspect/index.ts";
+import { createFlowMachine, fillStep, pageProblem } from "../../../browser/flow/index.ts";
+import { clearCurrentInspect, writeCurrentInspect } from "../../../browser/inspect/index.ts";
+import type { FlowActInput, FlowDefinition, FlowRunOutput, FlowStep, FlowStepResult } from "../../../browser/flow/index.ts";
+import type { CurrentInspect, InspectAction } from "../../../browser/inspect/index.ts";
 import { createInspector, formatTraceLine } from "../../../observability/trace/index.ts";
 import type { CommandContext } from "../../runner/types.ts";
 import { browserFor } from "../../../browser/driver/index.ts";

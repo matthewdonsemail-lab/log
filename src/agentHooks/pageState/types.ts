@@ -1,4 +1,4 @@
-import type { PageState } from "../../camofox/flow/helpers/pageState.ts";
+import type { PageState } from "../../browser/flow/helpers/pageState.ts";
 import type { HookEvent } from "../registry/types.ts";
 
 /** Where one open browser is: its last step, read from the session's own files. */

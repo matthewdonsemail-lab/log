@@ -393,7 +393,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "It is outside the account's local waking hours (08:00-22:00 in its home timezone unless activeHoursStart/End say otherwise). Nothing opened. The detail has the local time and when the window opens.",
     retryable: true,
-    raisedIn: ['camofox/run', 'cli/watch'],
+    raisedIn: ['browser/run', 'cli/watch'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Run it inside the window in the detail, or change activeHoursStart/activeHoursEnd on the socialAccount in Twenty.'
@@ -402,7 +402,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "The account's browser opened on Facebook less than 10 minutes ago (rule 24). Nothing opened.",
     retryable: true,
-    raisedIn: ['camofox/run'],
+    raisedIn: ['browser/run'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Wait the minutes in the detail. Back-to-back launches are what drew the 2026-10-19 checkpoints.'
@@ -411,7 +411,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "The account's browser has opened on Facebook 8 times today, its local day, dry runs included (rule 24). Nothing opened.",
     retryable: true,
-    raisedIn: ['camofox/run'],
+    raisedIn: ['browser/run'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Run it tomorrow (local time), or from another account in the same country.'
@@ -420,7 +420,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "log-cli has no browser locale for the account's homeCountry, so it can't pin one. Nothing opened.",
     retryable: false,
-    raisedIn: ['marketplace/home', 'camofox/run'],
+    raisedIn: ['marketplace/home', 'browser/run'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Add the country to HOME_COUNTRIES in src/marketplace/home/types.ts, or fix homeCountry in Twenty.'
@@ -429,7 +429,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "The account's homeCountry has several timezones and its homeCity isn't in the city table, so its local time is unknown. Nothing opened.",
     retryable: false,
-    raisedIn: ['marketplace/home', 'camofox/run'],
+    raisedIn: ['marketplace/home', 'browser/run'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Add the city to CITY_TIMEZONES in src/marketplace/home/types.ts, or fix homeCity in Twenty.'
@@ -438,7 +438,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "The account's stored deviceProfile can't be read, or the run's device file is missing. Nothing opened: a new device would look like a different computer.",
     retryable: false,
-    raisedIn: ['camofox/run', 'proxyGate', 'publish.openingForm', 'worker'],
+    raisedIn: ['browser/run', 'proxyGate', 'publish.openingForm', 'worker'],
     publish: 'blocked',
     monitor: 'blocked',
     action: "Tell matt. Don't clear deviceProfile unless he decides the account may get a new device."

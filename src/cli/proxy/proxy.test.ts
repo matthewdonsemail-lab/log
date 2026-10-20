@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
-import { countryOfLocation } from "../../camofox/proxy/index.ts";
+import { countryOfLocation } from "../../browser/proxy/index.ts";
 import type { WorkerClient, WorkerRequest } from "../../camofox/worker/index.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { runCli } from "../runner/index.ts";

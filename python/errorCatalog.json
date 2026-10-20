@@ -407,7 +407,7 @@
     "meaning": "It is outside the account's local waking hours (08:00-22:00 in its home timezone unless activeHoursStart/End say otherwise). Nothing opened. The detail has the local time and when the window opens.",
     "retryable": true,
     "raisedIn": [
-      "camofox/run",
+      "browser/run",
       "cli/watch"
     ],
     "publish": "blocked",
@@ -419,7 +419,7 @@
     "meaning": "The account's browser opened on Facebook less than 10 minutes ago (rule 24). Nothing opened.",
     "retryable": true,
     "raisedIn": [
-      "camofox/run"
+      "browser/run"
     ],
     "publish": "blocked",
     "monitor": "blocked",
@@ -430,7 +430,7 @@
     "meaning": "The account's browser has opened on Facebook 8 times today, its local day, dry runs included (rule 24). Nothing opened.",
     "retryable": true,
     "raisedIn": [
-      "camofox/run"
+      "browser/run"
     ],
     "publish": "blocked",
     "monitor": "blocked",
@@ -442,7 +442,7 @@
     "retryable": false,
     "raisedIn": [
       "marketplace/home",
-      "camofox/run"
+      "browser/run"
     ],
     "publish": "blocked",
     "monitor": "blocked",
@@ -454,7 +454,7 @@
     "retryable": false,
     "raisedIn": [
       "marketplace/home",
-      "camofox/run"
+      "browser/run"
     ],
     "publish": "blocked",
     "monitor": "blocked",
@@ -465,7 +465,7 @@
     "meaning": "The account's stored deviceProfile can't be read, or the run's device file is missing. Nothing opened: a new device would look like a different computer.",
     "retryable": false,
     "raisedIn": [
-      "camofox/run",
+      "browser/run",
       "proxyGate",
       "publish.openingForm",
       "worker"

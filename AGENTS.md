@@ -252,7 +252,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     on Facebook at most 8 times per local day, dry runs counted, at least 10
     minutes apart. A launch counts once it passed the gate ("Self-check
     passed" in its `steps.jsonl`). Refused before anything opens:
-    `launchTooSoon`, `launchBudgetSpent` (`camofox/run/helpers/launchBudget.ts`).
+    `launchTooSoon`, `launchBudgetSpent` (`browser/run/helpers/launchBudget.ts`).
     `--bypass` doesn't skip it; only a publish against the saved fixture form
     (`--formUrl file://...`) isn't counted. A publish meets a login wall or
     checkpoint in its own browser (the connect steps run there), never in a
@@ -314,7 +314,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     turns the recording into a flow definition (each step's element by role
     and name from the snapshot it acted on, each step's confirming request
     from what it sent, rea's Evidence per step,
-    `src/camofox/flow/definitions/<name>.json`); `log flow docs` writes its
+    `src/browser/flow/definitions/<name>.json`); `log flow docs` writes its
     documentation (`docs/platforms/facebook/flows/<name>.md`, linked to each
     request's doc); `createFlowMachine` makes it an XState machine; `log flow
     run <name> --account <a> --set …` runs it on any account (dry run
@@ -533,7 +533,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     said to matt. A Claude Code hook (`.claude/settings.json`,
     `scripts/hooks/pageState.ts`) reads the latest step of every open browser
     after each tool call and each prompt, matches it against the known states
-    (`pageStateOf`, `src/camofox/flow/helpers/pageState.ts`) and puts the state
+    (`pageStateOf`, `src/browser/flow/helpers/pageState.ts`) and puts the state
     and its resolver into the agent's context. A state not mapped yet is
     pressed through (its Continue) and added to the map.
 55. 2026-10-20 · matt: the CLI, the MCP tools, the agent hooks and the live
@@ -552,6 +552,26 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     pre-push) refuses drift: both hosts' files, every command an MCP tool or
     terminal-only, every MCP tool hooked, every hook script answering its
     events, every resolver a real command (`skills/agentHooks/SKILL.md`).
+56. 2026-10-20 · matt: the README says what every command, MCP tool and
+    hook does, with Mermaid diagrams kept as `.mmd` files, all generated from
+    the code. Each command carries its full usage (`Command.usage`), so its
+    flags are in one place: the terminal's usage, its MCP tool's description
+    and the README's table (command, what it does, flags, MCP tool, the hooks
+    that fire on it from a shell and over MCP, live log, rules) all come from
+    it. `src/surface` builds the catalog (`catalog`), the diagrams
+    (`docs/diagrams/surface|commands|hooks|pageStates.mmd`) and the README's
+    section between the surface markers; `bun run docs:build` writes them.
+    lefthook's `docs` (`bun run check:docs`, pre-commit and pre-push) refuses
+    a README or `.mmd` that differs from the code, and a command that parses a
+    flag its usage doesn't name, or names one it doesn't parse.
+57. 2026-10-20 · matt: what every browser uses lives under `src/browser`,
+    named for what it is, never under a browser's name (rule 46). `flow`,
+    `inspect`, `run` and `proxy` moved from `src/camofox/` to `src/browser/`,
+    beside `driver`, `adsPower` and `camoufox`: they drive AdsPower and
+    Camoufox alike (rule 44). `src/camofox/` keeps only what is Camoufox's
+    own: `device`, `session`, `worker`. The `browserParity` check allows
+    these shared domains (`SHARED_DOMAINS`) and nothing else that isn't a
+    browser.
 
 ## Checks
 
@@ -588,7 +608,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
 - Cookies, browser storage, proxies, devices and 2FA secrets live in Twenty
   only. A run writes the account's proxy, device file and session
   (cookies + localStorage) to a private temp folder for the Python
-  (`camofox/run`) and deletes it afterwards. After the run the session the
+  (`browser/run`) and deletes it afterwards. After the run the session the
   browser left is saved back (only while it still holds a Facebook login),
   and a newly made device is saved once. Never commit, print or paste them;
   `log` never selects password, email or totpSecret, except

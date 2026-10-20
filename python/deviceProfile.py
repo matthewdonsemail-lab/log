@@ -20,7 +20,7 @@ first launch and replayed exactly on every launch after:
   system variables Firefox needs plus CAMOU_CONFIG_*. Never os.environ: it
   holds the Twenty and 2Captcha keys.
 
-The profile travels Twenty → camofox/run → device.json → here, and a new one
+The profile travels Twenty → browser/run → device.json → here, and a new one
 goes back the same way (`created: true`). It is never printed.
 """
 from __future__ import annotations

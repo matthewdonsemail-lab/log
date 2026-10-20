@@ -12,7 +12,7 @@
  *   a step it may not take (a like without --likes, a click without --live) is skipped and said so.
  */
 import { assign, fromPromise, setup } from 'xstate'
-import { pageProblem } from '../../camofox/flow/index'
+import { pageProblem } from '../../browser/flow/index'
 import { checkStep } from './helpers/checkStep'
 import type { AllowedActions, ReelRead } from './helpers/reelDecision'
 import { planPost } from './helpers/feedOrderer'

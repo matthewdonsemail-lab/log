@@ -54,7 +54,7 @@ describe("log warmup facebook reel (rule 49)", () => {
 
   test("record runs every step in the open browser, checks each, and writes the outline", async () => {
     const { runCli } = await import("../runner/index.ts");
-    const { writeCurrentInspect, clearCurrentInspect } = await import("../../camofox/inspect/index.ts");
+    const { writeCurrentInspect, clearCurrentInspect } = await import("../../browser/inspect/index.ts");
     const { marketplaceFixture } = await import("../../twenty/graphql/index.ts");
     const { mkdtempSync, readFileSync } = await import("node:fs");
     const { tmpdir } = await import("node:os");
