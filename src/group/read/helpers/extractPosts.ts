@@ -1,32 +1,8 @@
 import type { FeedPage, GroupPost, ReadCursor, RejectReason } from "../types.ts";
+import { at, chunksOf, embeddedResults, type Json, obj, responsesOf, str } from "./json.ts";
 
 /** The feed query, by the name Facebook's client sends it under (`fb_api_req_friendly_name`). */
 export const FEED_QUERY = "GroupsCometFeedRegularStoriesPaginationQuery";
-
-type Json = Record<string, unknown>;
-const obj = (v: unknown): Json | null => (v && typeof v === "object" && !Array.isArray(v) ? (v as Json) : null);
-const str = (v: unknown): string => (typeof v === "string" ? v : "");
-const at = (o: unknown, ...keys: (string | number)[]): unknown => keys.reduce<unknown>((v, k) => (Array.isArray(v) ? v[k as number] : obj(v)?.[k as string]), o);
-
-/**
- * The feed units in one response. Facebook streams it: the first chunk holds the first unit
- * at `data.node.group_feed.edges[0].node`, each `$stream` chunk one more at `data.node`, and the
- * last `$defer` chunk `data.page_info` (recorded 2026-10-20). Pure.
- */
-function chunksOf(text: string): Json[] {
-  const body = text.startsWith("for (;;);") ? text.slice(9) : text;
-  const chunks: Json[] = [];
-  for (const line of body.split("\n")) {
-    if (!line.trim()) continue;
-    try {
-      const chunk = obj(JSON.parse(line));
-      if (chunk) chunks.push(chunk);
-    } catch {
-      // A line cut short: the rest of the response still counts.
-    }
-  }
-  return chunks;
-}
 
 /** One feed unit → a post, or why not (facebook-camofox-client's `validate_identity`: rejected, never filled in). Pure. */
 export function postOf(unit: unknown, expectedGroupId: string): GroupPost | RejectReason {
@@ -52,7 +28,9 @@ export function postOf(unit: unknown, expectedGroupId: string): GroupPost | Reje
 }
 
 /**
- * The posts in a run of feed chunks. The feed sits under `data.node` in the query's answer and under
+ * The posts in a run of feed chunks. Facebook streams the feed: the first chunk holds the first unit
+ * under `group_feed.edges`, each `$stream` chunk one more at `data.node`, and the last `$defer` chunk
+ * `data.page_info` (recorded 2026-10-20). The feed sits under `data.node` in the query's answer and under
  * `data.group` in the group page's HTML; a unit that isn't a `Story` (the "New posts" `GroupsSectionHeaderUnit`
  * the page starts with, run 20261020T143506) is not a post: counted in `skipped`, never rejected. Pure.
  */
@@ -99,36 +77,13 @@ export function postsFromFeedResponse(text: string, expectedGroupId: string): Fe
  * `$stream` chunks, the `$defer` page_info), recorded 2026-10-20 (run 20261020T143506). Pure.
  */
 export function postsFromGroupPage(html: string, expectedGroupId: string): FeedPage {
-  const chunks: Json[] = [];
-  const walk = (v: unknown): void => {
-    if (!v || typeof v !== "object") return;
-    const result = obj(at(v, "__bbox", "result"));
-    if (result && obj(result.data) && (at(result, "data", "group", "group_feed") || str(result.label).includes("group_feed"))) chunks.push(result);
-    for (const child of Object.values(v)) walk(child);
-  };
-  for (const [, block] of html.matchAll(/<script type="application\/json"[^>]*>(.*?)<\/script>/gs)) {
-    try {
-      walk(JSON.parse(block ?? ""));
-    } catch {
-      // A block that isn't JSON: the rest of the page still counts.
-    }
-  }
+  const chunks = embeddedResults(html).filter((r) => at(r, "data", "group", "group_feed") || str(r.label).includes("group_feed"));
   return pageOf(chunks, expectedGroupId);
 }
 
 /** The feed responses a recorded step holds, in the order they came (a HAR's entries). Pure. */
 export function feedResponses(har: { log?: { entries?: unknown[] } }): string[] {
-  const out: string[] = [];
-  for (const entry of har.log?.entries ?? []) {
-    const request = obj(at(entry, "request"));
-    const form = obj(request?.postData);
-    const params = Array.isArray(form?.params) ? (form?.params as Json[]) : [];
-    const name = params.find((p) => p.name === "fb_api_req_friendly_name")?.value ?? new URLSearchParams(str(form?.text)).get("fb_api_req_friendly_name");
-    if (name !== FEED_QUERY) continue;
-    const text = str(at(entry, "response", "content", "text"));
-    if (text) out.push(text);
-  }
-  return out;
+  return responsesOf(har, [FEED_QUERY]);
 }
 
 /**

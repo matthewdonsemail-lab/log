@@ -11,12 +11,17 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_d858810777cc937ea6bc2c74af6e5eb6c83a51de8fa45ebeca7ec2043ec124df` |
+| rea | `ev_6181f0d02a60d00c8c87b8bb715761dc6ca89cbe2b273bc0d89acff41087fe5f` |
 
-Seen 240 time(s) in 11 run(s).
+Seen 249 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /groups/<id>/ | 3 | 200 | 836–1369 ms | 9432–34308 ms | — |
+| inspect | step 3: clickRole button "…" | 4 | 200 | 345–361 ms | 717–47421 ms | — |
+| inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 351 ms | 36274 ms | — |
+| inspect | step 7: clickRole menuitem "…" | 2 | 200 | 350–356 ms | 1856–13502 ms | — |
+| inspect | step 8: scrollIn dialog "…" 4 x 800px | 1 | 200 | 346 ms | 256 ms | — |
 | inspect | step 2: snapshot | 1 | 200 | 336 ms | 11045 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 672 ms | 1 | 200 | 342 ms | 1627 ms | — |
 | inspect | step 1: goto /groups/<id> | 4 | 200 | 344–1075 ms | 15850–156963 ms | — |
@@ -62,7 +67,6 @@ Seen 240 time(s) in 11 run(s).
 | inspect | step 3: scroll 4-7 x 300-600px | 1 | 200 | 437 ms | 1556 ms | — |
 | inspect | step 4: goto /marketplace/ | 1 | 200 | 424 ms | 161 ms | — |
 | inspect | scroll: +783px in 18 wheel steps, 797 ms | 4 | 200 | 441–488 ms | 3056–183074 ms | — |
-| inspect | step 1: goto /groups/<id>/ | 1 | 200 | 836 ms | 9432 ms | — |
 | inspect | step 3: snapshot | 4 | 200 | 317–1273 ms | 74040–175635 ms | — |
 | inspect | step 1: goto /reel/ | 3 | 200 | 617–825 ms | 6115–7601 ms | — |
 | inspect | step 4: dwell 10.63s | 1 | 200 | 311 ms | 1798 ms | — |
@@ -78,7 +82,6 @@ Seen 240 time(s) in 11 run(s).
 | inspect | step 22: dwell 6.00s | 1 | 200 | 448 ms | 4337 ms | — |
 | inspect | step 23: goto /reel/<id> | 3 | 200 | 359–415 ms | 6040–7231 ms | — |
 | inspect | step 24: clickRole button "…" | 13 | 200 | 327–2729 ms | 18257–1629627 ms | — |
-| inspect | step 3: clickRole button "…" | 1 | 200 | 361 ms | 717 ms | — |
 | inspect | step 5: clickRole button "…" | 1 | 200 | 319 ms | 932 ms | — |
 | inspect | step 8: clickAny 1 x link /see owner profile$/ | 1 | 200 | 345 ms | 1382 ms | — |
 | inspect | step 9: goto /reel/<id> | 3 | 200 | 410–1157 ms | 7602–9606 ms | — |

@@ -13,11 +13,12 @@
 | Called from | — |
 | rea | not read yet |
 
-Seen 25 time(s) in 10 run(s).
+Seen 27 time(s) in 11 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 1 | 200 | 415 ms | 3759 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 2 | 200 | 415–428 ms | 3759–4453 ms | — |
+| inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 556 ms | 7197 ms | — |
 | inspect | step 1: goto /groups/<id> | 1 | 200 | 364 ms | 7210 ms | — |
 | inspect | step 1: goto / | 5 | 200 | 458–534 ms | 6491–8720 ms | — |
 | inspect | step 7: goto / | 1 | 200 | 466 ms | 4918 ms | — |

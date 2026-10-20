@@ -13,11 +13,12 @@
 | Called from | `OhaiWebPublicKeyConfig` |
 | rea | `ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013` |
 
-Seen 26 time(s) in 11 run(s).
+Seen 28 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 2 | 200 | 343–391 ms | 3558–5713 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 3 | 200 | 343–391 ms | 3558–5713 ms | — |
+| inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 349 ms | 5502 ms | — |
 | inspect | step 1: goto /groups/<id> | 1 | 200 | 354 ms | 6943 ms | — |
 | inspect | step 1: goto / | 5 | 200 | 467–582 ms | 6556–8723 ms | — |
 | inspect | step 7: goto / | 1 | 200 | 580 ms | 4381 ms | — |

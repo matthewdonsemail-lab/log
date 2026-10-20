@@ -1,6 +1,6 @@
 {
-  "builtAt": "2026-10-20T14:52:17.096Z",
-  "runs": 12,
+  "builtAt": "2026-10-20T15:26:44.388Z",
+  "runs": 13,
   "operations": [
     {
       "name": "ajaxBnzai",
@@ -8,7 +8,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxBnzai.md",
-      "reaEvidenceId": "ev_d858810777cc937ea6bc2c74af6e5eb6c83a51de8fa45ebeca7ec2043ec124df",
+      "reaEvidenceId": "ev_6181f0d02a60d00c8c87b8bb715761dc6ca89cbe2b273bc0d89acff41087fe5f",
       "seen": 257
     },
     {
@@ -17,8 +17,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxBulkRouteDefinitions.md",
-      "reaEvidenceId": "ev_6302aa346c6838543aba5281d71973927ea248dd7be4ed2ee6455aebcb5d4e67",
-      "seen": 397
+      "reaEvidenceId": "ev_6181f0d02a60d00c8c87b8bb715761dc6ca89cbe2b273bc0d89acff41087fe5f",
+      "seen": 428
     },
     {
       "name": "ajaxBz",
@@ -44,7 +44,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxQm.md",
-      "reaEvidenceId": "ev_6302aa346c6838543aba5281d71973927ea248dd7be4ed2ee6455aebcb5d4e67",
+      "reaEvidenceId": "ev_6181f0d02a60d00c8c87b8bb715761dc6ca89cbe2b273bc0d89acff41087fe5f",
       "seen": 95
     },
     {
@@ -62,8 +62,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxRelayEf.md",
-      "reaEvidenceId": "ev_6302aa346c6838543aba5281d71973927ea248dd7be4ed2ee6455aebcb5d4e67",
-      "seen": 240
+      "reaEvidenceId": "ev_6181f0d02a60d00c8c87b8bb715761dc6ca89cbe2b273bc0d89acff41087fe5f",
+      "seen": 256
     },
     {
       "name": "ajaxRouteDefinition",
@@ -225,7 +225,7 @@
       "docId": "29231152373168310",
       "doc": "background/CometHovercardQueryRendererQuery.md",
       "reaEvidenceId": "ev_95529720f6ba751fe065571b8fd81d09f67f7e4539594c0761343470652ec320",
-      "seen": 73
+      "seen": 87
     },
     {
       "name": "CometLogoutHandlerQuery",
@@ -324,7 +324,7 @@
       "docId": "29240849615602606",
       "doc": "background/CometNotificationsDropdownQuery.md",
       "reaEvidenceId": "ev_ab1965911932cb7fcf25b222bf92e0487c624ad5aa06bc6a0e5e7860bc09d85a",
-      "seen": 54
+      "seen": 56
     },
     {
       "name": "CometProfileVerificationBadgePopoverQuery",
@@ -369,7 +369,7 @@
       "docId": "39729885346602636",
       "doc": "background/CometSinglePostDialogContentQuery.md",
       "reaEvidenceId": "ev_201f80db413ddb9f32756c466afa12132645ff9ecc340dc86d410953f02aea70",
-      "seen": 6
+      "seen": 8
     },
     {
       "name": "CometUFIConversationGuideContainerQuery",
@@ -378,7 +378,7 @@
       "docId": "25316047617978702",
       "doc": "background/CometUFIConversationGuideContainerQuery.md",
       "reaEvidenceId": "ev_935e23bdd0f1bbad483c8864ac3a297d9f2626846cf37db734cdfc47e418538f",
-      "seen": 1
+      "seen": 2
     },
     {
       "name": "CometUFIFeedbackReactMutation",
@@ -406,6 +406,24 @@
       "doc": "background/CometUnifiedShareSheetDialogQuery.md",
       "reaEvidenceId": "ev_7035e27a70b6da58b992c6e61088868e0fe0ad453f923f702505c93025db22f8",
       "seen": 3
+    },
+    {
+      "name": "CommentListComponentsRootQuery",
+      "domain": "background",
+      "kind": "query",
+      "docId": "29409681848615704",
+      "doc": "background/CommentListComponentsRootQuery.md",
+      "reaEvidenceId": "ev_29ce496a3b9bd75206ce21e277f754b153a86abe0412914df481eb662ef8fbb0",
+      "seen": 1
+    },
+    {
+      "name": "CommentsListComponentsPaginationQuery",
+      "domain": "background",
+      "kind": "query",
+      "docId": "29265821953021786",
+      "doc": "background/CommentsListComponentsPaginationQuery.md",
+      "reaEvidenceId": "ev_a2877f95582af5773dfc0f8ab6c1b53eb0081d00bb5a7ead9456cca6c5942d9f",
+      "seen": 1
     },
     {
       "name": "cspReporting",
@@ -729,7 +747,7 @@
       "docId": "28956948070566246",
       "doc": "groups/GroupsCometFeedRegularStoriesPaginationQuery.md",
       "reaEvidenceId": "ev_f792b6f23388f17a7eb603f72f37e195afb43b871879be102f5697f32505edb6",
-      "seen": 7
+      "seen": 9
     },
     {
       "name": "GroupsCometMembershipQuestionsPreloadedDialogQuery",
@@ -1170,7 +1188,7 @@
       "docId": "32718853531093343",
       "doc": "groups/useGroupsCometMentionsBootloadDataSourceWithTaggingTransparencyQuery.md",
       "reaEvidenceId": "ev_534f8a3a8503f74518584157008704d25271d0228a6b93408b4f3a7bee430d1f",
-      "seen": 1
+      "seen": 2
     },
     {
       "name": "useGroupsCometMentionsNullstateDataSourceWithTaggingTransparencyQuery",
@@ -1179,7 +1197,7 @@
       "docId": "32525175867125771",
       "doc": "groups/useGroupsCometMentionsNullstateDataSourceWithTaggingTransparencyQuery.md",
       "reaEvidenceId": "ev_31e1bb1ed4650cf3dec8b243999fc5e8a274807f4d3169d297a5fc186417fe52",
-      "seen": 1
+      "seen": 2
     },
     {
       "name": "useGroupsCometTypeaheadBootloadDataSourceQuery",
@@ -1188,7 +1206,7 @@
       "docId": "9778341108915180",
       "doc": "groups/useGroupsCometTypeaheadBootloadDataSourceQuery.md",
       "reaEvidenceId": "ev_c2ef8a4628a13bebcc27d99e98aee652489e57518d36f840f2d66654133e643d",
-      "seen": 1
+      "seen": 2
     },
     {
       "name": "useGroupsCometVisitMutation",
@@ -1197,7 +1215,7 @@
       "docId": "27788177020768038",
       "doc": "groups/useGroupsCometVisitMutation.md",
       "reaEvidenceId": "ev_2c88e3ef14f464196a06b0ac6105cdffb275c24ee965feffc7bee400f8fa9337",
-      "seen": 2
+      "seen": 3
     },
     {
       "name": "useInstreamAdsHaloFetcherQuery",

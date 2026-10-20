@@ -11,13 +11,14 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_6302aa346c6838543aba5281d71973927ea248dd7be4ed2ee6455aebcb5d4e67` |
+| rea | `ev_6181f0d02a60d00c8c87b8bb715761dc6ca89cbe2b273bc0d89acff41087fe5f` |
 
-Seen 29 time(s) in 11 run(s).
+Seen 31 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 2 | 200 | 414–516 ms | 1684–1899 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 3 | 200 | 414–655 ms | 1684–1899 ms | — |
+| inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 7439 ms | 7856 ms | — |
 | inspect | step 1: goto /groups/<id> | 1 | 200 | 673 ms | 1809 ms | — |
 | inspect | step 1: goto / | 5 | 200 | 443–793 ms | 1957–3150 ms | — |
 | inspect | step 7: goto / | 1 | 200 | 544 ms | 1020 ms | — |

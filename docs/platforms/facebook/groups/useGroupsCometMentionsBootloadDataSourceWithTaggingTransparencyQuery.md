@@ -13,10 +13,11 @@
 | Called from | `useGroupsCometMentionsBootloadDataSourceWithTaggingTransparency` |
 | rea | `ev_534f8a3a8503f74518584157008704d25271d0228a6b93408b4f3a7bee430d1f` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 3: clickRole button "…" | 1 | 200 | 368 ms | 2520 ms | — |
 | inspect | scroll: +1731px in 35 wheel steps, 2093 ms | 1 | 200 | 1056 ms | 3236 ms | — |
 
 <!-- facts:end -->

@@ -13,11 +13,12 @@
 | Called from | `usePseudoBlockedUserInterstitial` |
 | rea | `ev_4f0f59bc7d5ff4c02ef9f2aba85fc9de893084a7a8fbdf3f1627ce6c1c3456fe` |
 
-Seen 30 time(s) in 11 run(s).
+Seen 33 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 2 | 200 | 347–393 ms | 3530–5866 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 4 | 200 | 347–419 ms | 3118–5866 ms | — |
+| inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 506 ms | 6059 ms | — |
 | inspect | step 1: goto /groups/<id> | 2 | 200 | 348–386 ms | 5609–6614 ms | — |
 | inspect | step 1: goto / | 5 | 200 | 477–594 ms | 6589–8804 ms | — |
 | inspect | step 7: goto / | 1 | 200 | 453 ms | 4922 ms | — |

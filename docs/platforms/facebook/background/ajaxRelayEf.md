@@ -11,13 +11,17 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_6302aa346c6838543aba5281d71973927ea248dd7be4ed2ee6455aebcb5d4e67` |
+| rea | `ev_6181f0d02a60d00c8c87b8bb715761dc6ca89cbe2b273bc0d89acff41087fe5f` |
 
-Seen 240 time(s) in 11 run(s).
+Seen 256 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 10 | 200 | 329–897 ms | 7593–19936 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 18 | 200 | 329–2023 ms | 7504–19936 ms | — |
+| inspect | scroll: +600px in 13 wheel steps, 891 ms | 1 | 200 | 376 ms | 2922 ms | — |
+| inspect | step 3: clickRole button "…" | 5 | 200 | 307–405 ms | 794–5352 ms | — |
+| inspect | step 4: goto /groups/<id>/permalink/<id>/ | 5 | 200 | 348–477 ms | 26534–41735 ms | — |
+| inspect | scroll: +700px in 16 wheel steps, 812 ms | 1 | 200 | 360 ms | 2707 ms | — |
 | inspect | step 2: snapshot | 3 | 200 | 360–1507 ms | 9678–14754 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 1000 ms | 4 | 200 | 355–541 ms | 3096–13327 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 672 ms | 1 | 200 | 562 ms | 3123 ms | — |
@@ -83,7 +87,6 @@ Seen 240 time(s) in 11 run(s).
 | inspect | clickAny: 1 link /see owner profile$/ | 8 | 200 | 326–1404 ms | 182–68643 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 322 ms | 11344 ms | — |
 | inspect | clickRole failed: RuntimeError: no visible button "…" | 5 | 200, 0 | 0–343 ms | 17170–101843 ms | — |
-| inspect | step 3: clickRole button "…" | 4 | 200 | 307–341 ms | 1630–5352 ms | — |
 | inspect | step 12: clickAny 1 x link /see owner profile$/ | 1 | 200 | 348 ms | 1852 ms | — |
 | inspect | step 14: goto /reel/<id> | 4 | 200 | 344–848 ms | 5853–12982 ms | — |
 | inspect | step 21: clickAny 1 x link /see owner profile$/ | 1 | 200 | 339 ms | 1582 ms | — |

@@ -13,10 +13,11 @@
 | Called from | `CometSinglePostDialogContent.react` |
 | rea | `ev_201f80db413ddb9f32756c466afa12132645ff9ecc340dc86d410953f02aea70` |
 
-Seen 6 time(s) in 4 run(s).
+Seen 8 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 3: clickRole button "…" | 2 | 200 | 926–972 ms | 907–1084 ms | — |
 | inspect | post: "…", 66 words, 0 image(s), scrolled 776 px | 1 | 200 | 1292 ms | 533 ms | — |
 | inspect | post: "…", 49 words, 0 image(s), scrolled 737 px | 1 | 200 | 1776 ms | 510 ms | — |
 | inspect | scroll: +1731px in 35 wheel steps, 2093 ms | 3 | 200 | 1449–1578 ms | 622–20785 ms | — |

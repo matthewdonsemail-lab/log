@@ -3229,3 +3229,44 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: Fixes from a new live group read (run 20261020T143506, Bethlehem in "Recommendations of Bethlehem, PA", through the log MCP: inspect start --detach, a snapshot, three scrolls; read-only), each found in its HAR or snapshots. `src/group/read`: `postsFromGroupPage` reads the first posts from the group page's own HTML, now recorded whole (2.3 MB): its JSON script blocks hold `__bbox.result`s in the feed query's chunk shapes, with the feed under `data.group` rather than `data.node`, which `pageOf` now finds under either; the page's first unit is a "New posts" `GroupsSectionHeaderUnit`, so a unit that isn't a `Story` is counted in `skipped`, not rejected; posts can share a second, so `newPosts` keeps every id at the watermark (`idsAtWatermark`) and none is read twice or lost. `python/session/inspectSession.py`: a step counted only the first 80 interactive lines and listed the same header every time (the page had 810 after the scrolls); it now counts them all and lists first those new since the last step (`interactiveTotal`, `interactiveNew`, shown by `renderInspectStep`). `parseSteps` (`REPORT_LINE`): a step's report lines (now on, the request echoes, mouse, rea read, page has) are not steps, so the step HARs and the docs' "Our step" name the action and not a report with a local path; docs kept from removed runs show such sightings as "a step (older run, split by its report lines)". `log capture --docs` rebuilt from the run. `docs/platforms/facebook/groups/README.md` maps every control on a group page (110 kinds) with what it does, whether it writes, and the request it sends where a run recorded it.
 Why: matt asked to use log inspect over the MCP, read the HARs for anything new and fix what they showed, then whether the work sits in a properly named domain and a map of every interaction on the page.
 Checked: on run 20261020T143506, 13 posts (1 from the HTML, 12 over 4 feed pages), none rejected, the header unit skipped, newest first throughout, a second read with the cursor keeps 0; run 20261020T134155 still gives its 9. New tests: the page HTML shape, same-second posts, the element count, report lines. No doc keeps a report-line step or a local path; every link in the groups README resolves. `bun run check` (naming, layout, browsers, agentHooks, docs, tsc, 731 tests pass, 0 fail), `check:facebookClientDocs` (145 requests, every GraphQL slice read by rea).
+
+## 2026-10-20 15:28Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/groupRead.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometSinglePostDialogContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometUFIConversationGuideContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CommentListComponentsRootQuery.md`: new file
+- `docs/platforms/facebook/background/CommentsListComponentsPaginationQuery.md`: new file
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometFeedRegularStoriesPaginationQuery.md`: edited
+- `docs/platforms/facebook/groups/README.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometMentionsBootloadDataSourceWithTaggingTransparencyQuery.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometMentionsNullstateDataSourceWithTaggingTransparencyQuery.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometTypeaheadBootloadDataSourceQuery.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometVisitMutation.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `src/group/read/comments.test.ts`: added const GROUP, const POST, const relay, function comment, function answer, test "a comment's relay id carries its post", test "every comment and reply of an answer, each with its post, parent, author, text and link, and the list's paging", test "a comment without its id's post, its group or its time, or from another group, is counted and dropped", test "the first comments in a post page's own HTML", test "the comment answers of a recorded step, by the three queries' names"
+- `src/group/read/helpers/extractComments.ts`: added const COMMENT_QUERIES, function commentIdsOf, function commentOf, function commentPageOf, function commentsFromResponse, function commentsFromPostPage, function commentResponses
+- `src/group/read/helpers/extractPosts.ts`: changed function postsFromGroupPage, function feedResponses · removed type Json, const obj, const str, const at, function chunksOf
+- `src/group/read/helpers/index.ts`: added export from "./extractComments.ts"
+- `src/group/read/helpers/json.ts`: added type Json, const obj, const str, const at, function chunksOf, function embeddedResults, function responsesOf
+- `src/group/read/index.ts`: changed export from "./types.ts"
+- `src/group/read/types.ts`: added interface GroupComment, type CommentRejectReason, interface CommentPage
+
+What changed: The group read now reads comments (issue #27). A live recording through the log MCP (run 20261020T151100, Bethlehem in "Recommendations of Bethlehem, PA": a scroll, a post opened by "Leave a comment", a post with comments opened by its link, the dialog scrolled, the comment sort set to Newest, scrolled again; clicks with --live as matt asked, nothing typed, reacted to or sent) showed where a post's comments come from: the post page's own HTML, `CometSinglePostDialogContentQuery`, `CommentListComponentsRootQuery` (picking a sort; Newest is `REVERSE_CHRONOLOGICAL_UNFILTERED_INTENT_V1`) and `CommentsListComponentsPaginationQuery` (scrolling, with `commentsAfterCursor`). `src/group/read/helpers/extractComments.ts`: `commentOf` keeps a comment only with its `legacy_fbid`, its post (`commentIdsOf`: the relay id decodes to `comment:<postId>_<commentId>`), its group (`group_comment_info.group.id`, this group only) and `created_time`, and returns why not (`CommentRejectReason`); a reply's parent comes from `comment_direct_parent`, and a parent stub (`parent_object_ent`, no `legacy_fbid`) is never a comment. `commentsFromResponse`, `commentsFromPostPage` and `commentResponses` (`COMMENT_QUERIES`) give `CommentPage` with the top-level list's `comments.page_info`. `GroupComment` holds the comment, post, group, parent, depth, time, author (with `anonymous`), text, permalink, feedback id and reply count. The JSON helpers the post and comment readers share moved to `helpers/json.ts` (`chunksOf`, `embeddedResults`, `responsesOf`). The two new requests are documented in `docs/platforms/facebook/background/` with their reasoning; `docs/groupRead.md` (step 3b, comments read per matt) and the groups README map (the comment sort and its requests) are updated.
+Why: matt: "I need to see the comments as well. Do that."
+Checked: on run 20261020T151100, the post "Looking for someone to shovel snow…" (16 comments by Facebook's count): 10 in its HTML (Most relevant), 10 on Newest and 5 more on scrolling, 15 distinct, none rejected, each with its id, post, author (one anonymous), link and time, text on 13 (two are photos only); the 16th is filtered as potential spam, which only "All comments" shows. `comments.test.ts` (invented values): the relay id, every field of a comment and a reply, the list's paging over the reply thread's, each rejection, the post page HTML, the three queries. `bun run check` (naming, layout, browsers, agentHooks, docs, tsc, 736 tests pass, 0 fail), `check:facebookClientDocs` (147 requests, every GraphQL slice read by rea).

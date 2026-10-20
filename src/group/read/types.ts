@@ -39,6 +39,49 @@ export interface FeedPage {
   hasNextPage: boolean | null;
 }
 
+/**
+ * One comment or reply on a group post, as the comment queries answered it (recorded 2026-10-20,
+ * run 20261020T151100: `CometSinglePostDialogContentQuery`, `CommentListComponentsRootQuery`,
+ * `CommentsListComponentsPaginationQuery`, and the post page's own HTML).
+ */
+export interface GroupComment {
+  /** `legacy_fbid`. */
+  commentId: string;
+  /** The post it is on: its `id` decodes to `comment:<postId>_<commentId>`. */
+  postId: string;
+  /** `group_comment_info.group.id`: always the group read. */
+  groupId: string;
+  /** A reply's comment (`comment_direct_parent.id`, decoded the same way); null on a comment. */
+  parentCommentId: string | null;
+  /** 0 a comment, 1 a reply. */
+  depth: number;
+  /** `created_time`, unix seconds. */
+  createdTime: number;
+  createdAt: string;
+  /** `author`; `anonymous` when the group shows it as an anonymous member (`group_comment_info.is_author_anonymous`). */
+  author: { id: string; name: string; url: string; anonymous: boolean };
+  /** `body.text`; "" for a comment that is only a photo or a sticker. */
+  text: string;
+  /** `feedback.url`: the post's link with `comment_id` (and `reply_comment_id`). */
+  permalink: string;
+  /** `feedback.id`: what a reply or a reaction to the comment is sent to. */
+  feedbackId: string;
+  /** `feedback.replies_fields.total_count`. */
+  replyCount: number;
+}
+
+/** Why a comment was not kept (the post's rules: never patched, always counted). */
+export type CommentRejectReason = "missingCommentId" | "missingPost" | "missingGroup" | "wrongGroup" | "missingCreationTime";
+
+/** What one comment answer yielded. */
+export interface CommentPage {
+  comments: GroupComment[];
+  rejected: Partial<Record<CommentRejectReason, number>>;
+  /** The top-level list's `comments.page_info`: more comments follow while `hasNextPage`. */
+  endCursor: string | null;
+  hasNextPage: boolean | null;
+}
+
 /** The read cursor kept per group (on its `agencyGroup`): the newest post read so far. */
 export interface ReadCursor {
   lastPostId: string | null;

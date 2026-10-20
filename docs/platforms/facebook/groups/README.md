@@ -90,7 +90,8 @@ unnamed (24 refs): it isn't clickable.
 | textbox "Submit your first comment…" | The comment box | sending a comment | on focus: [`useGroupsCometTypeaheadBootloadDataSourceQuery`](useGroupsCometTypeaheadBootloadDataSourceQuery.md), [`useGroupsCometMentionsBootloadDataSourceWithTaggingTransparencyQuery`](useGroupsCometMentionsBootloadDataSourceWithTaggingTransparencyQuery.md), [`CometUFIConversationGuideContainerQuery`](../background/CometUFIConversationGuideContainerQuery.md) |
 | button "Comment with an avatar sticker", "Insert an emoji", "Attach a photo or video", "Comment with a GIF", "Comment with a sticker" | Parts of a comment | with the comment | not recorded |
 | button "Share, send this to friends or post it on your profile." | The share sheet for the post | sharing | [`CometUnifiedShareSheetDialogQuery`](../background/CometUnifiedShareSheetDialogQuery.md) |
-| button "View more comments" | Loads more of the post's comments | no | not recorded |
+| button "View more comments" | Loads more of the post's comments | no | not shown on run 20261020T151100: scrolling the post's dialog loads them, [`CommentsListComponentsPaginationQuery`](../background/CommentsListComponentsPaginationQuery.md) |
+| button "Most relevant" (in the post) | The comments' sort: Most relevant, Newest (every comment, newest first), All comments (with potential spam) | no | picking one: [`CommentListComponentsRootQuery`](../background/CommentListComponentsRootQuery.md) |
 
 ### Each comment (shown under a post)
 
@@ -114,7 +115,8 @@ unnamed (24 refs): it isn't clickable.
 
 The group read touches none of these: it scrolls, and reads the posts from
 what the page already sent, the group page's HTML and the feed query (rule 22,
-`src/group/read`). Comments, if they are read too (matt's decision, issue
-#27), come from "View more comments" and the post dialog, which a recording
-must show first. Every control marked "not recorded" is one `log inspect` step
+`src/group/read`). Comments are read too (matt, 2026-10-20): from the post's
+dialog or its own page, sorted Newest, scrolled until the list ends
+(`commentsFromResponse`, `commentsFromPostPage`, recorded on run
+20261020T151100). Every control marked "not recorded" is one `log inspect` step
 away from a doc of its own.

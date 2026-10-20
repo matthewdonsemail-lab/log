@@ -11,13 +11,22 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_6302aa346c6838543aba5281d71973927ea248dd7be4ed2ee6455aebcb5d4e67` |
+| rea | `ev_6181f0d02a60d00c8c87b8bb715761dc6ca89cbe2b273bc0d89acff41087fe5f` |
 
-Seen 397 time(s) in 11 run(s).
+Seen 428 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 12 | 200 | 356–621 ms | 2456–12385 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 23 | 200 | 356–621 ms | 2384–12385 ms | — |
+| inspect | step 2: scroll 1 x 600px | 1 | 200 | 378 ms | 1233 ms | — |
+| inspect | scroll: +600px in 13 wheel steps, 891 ms | 1 | 200 | 374 ms | 1017 ms | — |
+| inspect | step 3: clickRole button "…" | 5 | 200 | 348–460 ms | 1365–3236 ms | — |
+| inspect | step 4: goto /groups/<id>/permalink/<id>/ | 10 | 200 | 370–614 ms | 5091–32363 ms | — |
+| inspect | scroll: +700px in 16 wheel steps, 812 ms | 1 | 200 | 389 ms | 3693 ms | — |
+| inspect | step 7: clickRole menuitem "…" | 3 | 200 | 361–369 ms | 2243–7468 ms | — |
+| inspect | scroll: +800px in 18 wheel steps, 875 ms | 1 | 200 | 372 ms | 544 ms | — |
+| inspect | scroll: +800px in 18 wheel steps, 906 ms | 1 | 200 | 390 ms | 22 ms | — |
+| inspect | scroll: +800px in 17 wheel steps, 672 ms | 1 | 200 | 378 ms | 4141 ms | — |
 | inspect | step 2: snapshot | 5 | 200 | 367–588 ms | 1095–7489 ms | — |
 | inspect | scroll: +700px in 16 wheel steps, 766 ms | 5 | 200 | 369–619 ms | 1172–3862 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 1000 ms | 2 | 200 | 368–395 ms | 9372–10621 ms | — |
@@ -97,7 +106,6 @@ Seen 397 time(s) in 11 run(s).
 | inspect | scroll: +411px in 10 wheel steps, 484 ms | 1 | 200 | 525 ms | 3981 ms | — |
 | inspect | step 4: goto /marketplace/ | 8 | 200 | 453–636 ms | 4581–6383 ms | — |
 | inspect | step 1: goto /reel/ | 11 | 200 | 332–519 ms | 2079–4655 ms | — |
-| inspect | step 3: clickRole button "…" | 4 | 200 | 348–376 ms | 1365–3236 ms | — |
 | inspect | step 5: clickRole button "…" | 3 | 200 | 346–553 ms | 490–2274 ms | — |
 | inspect | step 7: clickRole button "…" | 2 | 200 | 386–397 ms | 523–1138 ms | — |
 | inspect | step 9: clickRole button "…" | 2 | 200 | 409–510 ms | 729–1200 ms | — |

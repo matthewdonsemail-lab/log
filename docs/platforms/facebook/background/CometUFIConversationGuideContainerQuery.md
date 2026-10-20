@@ -13,10 +13,11 @@
 | Called from | `CometUFIConversationGuideContainer.react` |
 | rea | `ev_935e23bdd0f1bbad483c8864ac3a297d9f2626846cf37db734cdfc47e418538f` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 3: clickRole button "…" | 1 | 200 | 2823 ms | 2527 ms | — |
 | inspect | scroll: +1731px in 35 wheel steps, 2093 ms | 1 | 200 | 837 ms | 3243 ms | — |
 
 <!-- facts:end -->

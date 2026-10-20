@@ -13,11 +13,19 @@
 | Called from | `CometHovercardQueryRenderer.react` |
 | rea | `ev_95529720f6ba751fe065571b8fd81d09f67f7e4539594c0761343470652ec320` |
 
-Seen 73 time(s) in 8 run(s).
+Seen 87 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 12 | 200 | 503–822 ms | 10246–17970 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 13 | 200 | 503–822 ms | 10246–17970 ms | — |
+| inspect | scroll: +600px in 13 wheel steps, 891 ms | 1 | 200 | 387 ms | 3300 ms | — |
+| inspect | step 4: goto /groups/<id>/permalink/<id>/ | 3 | 200 | 633–801 ms | 26485–36380 ms | — |
+| inspect | scroll: +700px in 16 wheel steps, 812 ms | 2 | 200 | 640–819 ms | 2845–2959 ms | — |
+| inspect | scroll: +700px in 16 wheel steps, 750 ms | 1 | 200 | 761 ms | 3555 ms | — |
+| inspect | scroll: container -525px in 13 steps | 2 | 200 | 683–1636 ms | 290–9364 ms | — |
+| inspect | step 7: clickRole menuitem "…" | 2 | 200 | 428–659 ms | 3457–13643 ms | — |
+| inspect | scroll: +800px in 17 wheel steps, 641 ms | 1 | 200 | 748 ms | 2575 ms | — |
+| inspect | scroll: +800px in 17 wheel steps, 672 ms | 1 | 200 | 665 ms | 13224 ms | — |
 | inspect | step 2: snapshot | 5 | 200 | 627–814 ms | 373–11488 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 1000 ms | 2 | 200 | 799–803 ms | 8515–10668 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 656 ms | 1 | 200 | 745 ms | 11384 ms | — |
