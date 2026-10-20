@@ -2372,3 +2372,79 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: Groups are their own library: `log join group --account --group` (src/cli/join, src/group/join with readGroupPage, joinOptions, the submission schema; src/group/answer fills and submits a group's questions), with Twenty's agencyGroup gaining joinStatus, joinStatusReason, membersLabel, joinRequestedAt, lastCheckedAt and joinSubmission. `log capture` replaces firefoxCapture (src/rea/capture, kept as an alias) and the request docs move to docs/platforms/facebook/ with groups and reels domains. The MCP server runs remote over HTTP with a token, declares an outputSchema on every tool, carries AGENTS.md as its instructions and the log://agents resource (agentRules.ts, RULES_REVIEWED_THROUGH 51). The warm-up is by platform and activity: `log warmup facebook reel plan|record|run` (src/warmup/facebook: the REEL steps, checkStep, the activity machine). With --persona, the run builds the persona's For you feed: src/warmup/persona draws the persona and its pack from the datasets (buildPersonaPack, every dataset a trait with its provenance), src/warmup/viewer gives each account a real KuaiRand-1K viewer matched to its scroll speed (buildViewers, viewersForSpeed) and the interest effect measured on KuaiRand-Pure (measureInterestEffect, watchRatio), reelDecision asks SubQ (src/subq/decisions) to read each reel from its frame (reelReadRequest, readReelRead, reelCaption), and reelOrderer plans each reel (planReel, playAt, segmentWeight). The inspect session gains reaLater, urlChange, rest, already, landedMs, openedTab and closeTab; humanMouse presses in place when the cursor is already on its target and rests with a tremor between quick swipes; rea.json keeps rea's answer only. src/proxyVendor/traffic keeps each run's proxy traffic and a 24-hour budget per account (trafficBudget, twoCaptchaMeter, recordTraffic). Scripts buildReelViewers.ts and buildInterestEffect.ts build the viewer and effect files. AGENTS.md rules 47-51, the warmup skill and README updated.
 Why: matt asked for the groups work, the MCP server carrying the repo's rules, browser-agnostic names, and a Reels warm-up that engages with what the persona would engage with, from the datasets he collated (the persona-conditioned Reels handoff), with SubQ reading each reel's images. Live runs showed each skip took 20-30 s (per-step recording waits), the persona run watched nearly every reel, the watch ignored what was on screen, the profile opened in its own tab, and the Reels video used the last 222.5 MB of 2Captcha's traffic: each of those is fixed here, and the traffic is now budgeted per account (rule 51).
 Checked: `bun test` 685 pass, 0 fail, and `tsc --noEmit` clean, without the other session's uncommitted launch changes (menus.ts, parseLaunchArgs). Live on Bethlehem (61594063207669) with --live --likes --bypass at matt's ask: 48 reels in one AdsPower session, SubQ read every reel (50,086 input tokens, about 1.6 s each), 32 judged theirs, a median 3.0 s on screen per reel against 2.3 s planned, one like; the run stopped at openProfile, which the recording showed had opened the profile in a new tab. The KuaiRand-1K build made 980 viewers from 11.7 M rows; the interest effect came out at x1.10-1.67 watch, x1.28 likes, x1.40 comments in their categories (182,442 and 966,864 random plays).
+
+## 2026-10-20 09:05Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometAddTypeaheadRecentSearchMutation.md`: edited
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuShortcutsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometProfileVerificationBadgePopoverQuery.md`: new file
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchKeywordDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometUFIFeedbackReactMutation.md`: new file
+- `docs/platforms/facebook/background/CometUnifiedShareSheetDialogQuery.md`: edited
+- `docs/platforms/facebook/background/FBReelHashtagSearchResultsQuery.md`: new file
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/SearchCometResultsInitialResultsParallelFetchQuery.md`: edited
+- `docs/platforms/facebook/background/SearchCometResultsInitialResultsQuery.md`: edited
+- `docs/platforms/facebook/background/SearchCometResultsPaginatedResultsQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/UnifiedShareSheetMessengerSectionQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/ajaxRouteDefinition.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useInstreamAdsHaloFetcherQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/useSearchCometTypeaheadBootstrapValidationQuery.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/background/withSearchCometTypeaheadSERPWarmCallDecoratorQuery.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/groups/CometGroupDiscussionRootSuccessQuery.md`: edited
+- `docs/platforms/facebook/groups/CometGroupRootQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometDiscussionLayoutRootQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometMembershipQuestionsPreloadedDialogQuery.md`: edited
+- `docs/platforms/facebook/groups/useGroupMembershipAnswersSaveMutation.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometMembershipQuestionnaireOpenedLoggingMutation.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometVisitMutation.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/profile/ProfileCometAboutAppSectionQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometHeaderQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTopAppSectionQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoContainerQuery.md`: new file
+- `docs/platforms/facebook/reels/FBUnifiedVideoEntityDialogImplQuery.md`: new file
+- `docs/platforms/facebook/reels/FBUnifiedVideoFeedbackRightRailWithCommentPreloadingQuery.md`: new file
+- `docs/platforms/facebook/reels/FBUnifiedVideoHashtagSearchDialogSnippetQuery.md`: new file
+- `docs/platforms/facebook/reels/FBUnifiedVideoSeenStateMutation.md`: new file
+- `scripts/checkFacebookClientDocs.mjs`: changed const docsDir
+- `src/cli/warmup/helpers/platformActivity.ts`: changed function runPlatformActivity
+- `src/warmup/facebook/helpers/feed.ts`: added const FEED
+- `src/warmup/facebook/helpers/index.ts`: added export from "./feed"
+- `src/warmup/facebook/index.ts`: changed const FACEBOOK_ACTIVITIES
+- `src/warmup/facebook/warmup.test.ts`: added test "its steps in Listaro order, each saying what it must achieve; the like only with --likes (rule 8)"
+
+What changed: The next warm-up stage is in: FEED (src/warmup/facebook/helpers/feed.ts) is Listaro's stage 1 (account-warmup.ts runStage1) as our steps, openFeed, settle, readFeed, a like (only with --likes), then a short look at Marketplace, each saying what it must achieve, registered in FACEBOOK_ACTIVITIES as `log warmup facebook feed`. runPlatformActivity plans and runs activities other than reel as their steps in order (`plan` lists them; --persona stays reel-only, refused for others). `log capture --docs` rebuilt the request docs from today's Reels and group runs (45 requests, 41 read by rea), with new reels/ and background/ docs and the reasoning written for 24 of them. checkFacebookClientDocs reads docs/platforms/facebook (the rule 48 move had left it on docs/facebookClient) and no longer counts a domain's README as an orphan.
+Why: matt asked to commit the Reels work, pull the docs in for what was done, and move on to the next warm-up stage from what Listaro did. The docs gate had been checking a folder that no longer exists.
+Checked: `bun test` 686 pass, 0 fail, and `tsc --noEmit` clean (without the other session's uncommitted launch changes). `log warmup facebook feed plan` lists the seven steps with their Listaro sources and the known issues. `node scripts/checkFacebookClientDocs.mjs` reports one problem left: useGroupRequestToJoinMutation, named in src/group/join/helpers/joinOptions.ts, has no doc (no run recorded it firing). The feed stage isn't recorded live yet: 2Captcha's proxy traffic is spent (0 of 1992 MB left).

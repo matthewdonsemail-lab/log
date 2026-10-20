@@ -25,12 +25,12 @@ Seen 3 time(s) in 1 run(s).
 
 ## What it does
 
-<!-- toWrite --> What this request is for on Facebook's side, from its definition and the step it fires in.
+Adds a search to the account's recent searches in Facebook's search box (`search_typeahead_add_recent_search`); it reads back only `client_mutation_id`. In our one run it fired 50 ms after step 3 (press Enter on the search) and again after the clicks at steps 5 and 7.
 
 ## What our machine does with it
 
-<!-- toWrite --> Which state of `marketplace/connect` or `marketplace/publish` waits for it, reads it, or ignores it, and why.
+Nothing. No machine of ours searches Facebook: `log join group` opens the group by its own URL (`groupJoin`, state `opening`), and `parseGroupRef` refuses `search` as a group. The steps it fired in were a hand-run `log inspect` session, so no state waits for it or reads it.
 
 ## What can go wrong
 
-<!-- toWrite --> The errors and statuses it can return, what each means for the run, and the end or retry our machine takes.
+None seen: all three calls answered 200 in 327-423 ms. If it failed, only the recent searches list would miss the entry; nothing of ours depends on it.

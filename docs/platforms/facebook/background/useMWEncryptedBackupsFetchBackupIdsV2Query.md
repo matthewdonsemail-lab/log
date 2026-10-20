@@ -13,15 +13,19 @@
 | Called from | `useMWEncryptedBackupsFetchBackupIdsV2` |
 | rea | `ev_16df7daca80a72c8f44b7a489690336b7def96e564429f0639a122f48023372a` |
 
-Seen 7 time(s) in 4 run(s).
+Seen 10 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 3 | 200 | 406–440 ms | 3417–3752 ms | — |
-| inspect | step 10: goto /groups/<id>/ | 1 | 200 | 571 ms | 2791 ms | — |
-| inspect | step 11: goto /groups/<id>/ | 1 | 200 | 451 ms | 2552 ms | — |
-| inspect | step 4: goto /groups/<id>/ | 1 | 200 | 388 ms | 2114 ms | — |
-| inspect | step 1: goto / | 1 | 200 | 347 ms | 6661 ms | — |
+| inspect | step 1: goto /reel/ | 2 | 200 | 339–361 ms | 3347–3390 ms | — |
+| inspect | rea read step 13_dwell600s: exit 0, ev_e8922deafb7ba9951a51bda6f8cd82b5b68c41db19bfe0cd164 | 1 | 200 | 1021 ms | 2054 ms | — |
+| inspect | rea read step 22_dwell600s: exit 0, ev_59385bb1add05e2efe91692d85b295ae9cd6334beafd2bccb4a | 1 | 200 | 336 ms | 2185 ms | — |
+| inspect | step 9: goto /reel/<id> | 1 | 200 | 933 ms | 6007 ms | — |
+| inspect | step 11: goto /reel/ | 1 | 200 | 626 ms | 5227 ms | — |
+| inspect | step 20: goto /reel/<id> | 1 | 200 | 817 ms | 2811 ms | — |
+| inspect | step 22: goto /reel/ | 1 | 200 | 2263 ms | 2912 ms | — |
+| inspect | mouse: 1 wander, 1 approach, 1 flick; 1 idle drift move(s) | 1 | 200 | 2016 ms | 572 ms | — |
+| inspect | step 53: goto /reel/ | 1 | 200 | 359 ms | 5571 ms | — |
 
 <!-- facts:end -->
 

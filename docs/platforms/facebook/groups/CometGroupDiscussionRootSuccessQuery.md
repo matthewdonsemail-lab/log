@@ -24,12 +24,12 @@ Seen 2 time(s) in 1 run(s).
 
 ## What it does
 
-<!-- toWrite --> What this request is for on Facebook's side, from its definition and the step it fires in.
+Loads a group's discussion feed (`CometGroupDiscussionRoot.Success.react`) by `groupID`, with the feed's sort, story counts and cursor. It fired 1891 ms after step 5 (click e2647) and 6108 ms after step 7 (click e2606), each time a group page opened in that `log inspect` session.
 
 ## What our machine does with it
 
-<!-- toWrite --> Which state of `marketplace/connect` or `marketplace/publish` waits for it, reads it, or ignores it, and why.
+Nothing. `groupJoin` reads the membership from the group page's own HTML (`viewer_join_state`, `readJoinOptions`) and the Join or Joined button from the snapshot (`readGroupPage`), never from this feed. No code refers to it.
 
 ## What can go wrong
 
-<!-- toWrite --> The errors and statuses it can return, what each means for the run, and the end or retry our machine takes.
+None seen: both calls 200, in 990-1577 ms. If the feed failed to load, the Join button and the page's HTML would still decide. If the step fails anyway, `groupJoin` stops on the page, not on this request: a checkpoint or login page (`pageProblem`) or a failed step gives `groupPageNotOpened` or `groupJoinNotConfirmed`.

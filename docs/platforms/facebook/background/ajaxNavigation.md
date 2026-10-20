@@ -11,17 +11,16 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_9cf1a55f98141197efedbe510bdbc0af91d43dd54026da3d684cb0aebb9630bd` |
+| rea | `ev_2cc284eb516f0beefa9fd6d08ce43290191409c99d9e18dffb465f686bcdd604` |
 
-Seen 5 time(s) in 1 run(s).
+Seen 4 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 3: press Enter | 1 | 200 | 310 ms | 543 ms | — |
-| inspect | step 4: click e1506 | 1 | 200 | 312 ms | 1385 ms | — |
-| inspect | step 5: click e2647 | 1 | 200 | 324 ms | 2000 ms | — |
-| inspect | step 6: back | 1 | 200 | 320 ms | 141 ms | — |
-| inspect | step 7: click e2606 | 1 | 200 | 325 ms | 6303 ms | — |
+| inspect | rea read step 11_clickroleButtonNextCard: exit 0, ev_189e7df832ac014018be21a4d2fe3eb4b862d | 1 | 200 | 661 ms | 1226 ms | — |
+| inspect | rea read step 20_clickroleButtonNextCard: exit 0, ev_b8ad981adedd3a055cbb6fd651deb9976e71e | 1 | 200 | 508 ms | 1249 ms | — |
+| inspect | step 8: clickAny 1 x link /see owner profile$/ | 1 | 200 | 544 ms | 2125 ms | — |
+| inspect | step 19: clickAny 1 x link /see owner profile$/ | 1 | 200 | 533 ms | 2388 ms | — |
 
 <!-- facts:end -->
 

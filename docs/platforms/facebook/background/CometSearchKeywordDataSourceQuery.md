@@ -23,12 +23,12 @@ Seen 20 time(s) in 1 run(s).
 
 ## What it does
 
-<!-- toWrite --> What this request is for on Facebook's side, from its definition and the step it fires in.
+Fetches keyword suggestions for Facebook's search box as text is typed: it sends the typed `query` and reads `search_keywords_suggestion.suggestions`. It fired 20 times during one step (step 2, typing into e20), 260-2424 ms after the step began.
 
 ## What our machine does with it
 
-<!-- toWrite --> Which state of `marketplace/connect` or `marketplace/publish` waits for it, reads it, or ignores it, and why.
+Nothing. No machine of ours searches Facebook: `log join group` opens the group by its own URL (`groupJoin`, state `opening`), and `parseGroupRef` refuses `search` as a group. The steps it fired in were a hand-run `log inspect` session, so no state waits for it or reads it.
 
 ## What can go wrong
 
-<!-- toWrite --> The errors and statuses it can return, what each means for the run, and the end or retry our machine takes.
+None seen: all 20 calls answered 200 in 385-861 ms. If it failed, the box would show no suggestions; an inspect `type` step records the page either way.

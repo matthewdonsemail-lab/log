@@ -23,12 +23,12 @@ Seen 1 time(s) in 1 run(s).
 
 ## What it does
 
-<!-- toWrite --> What this request is for on Facebook's side, from its definition and the step it fires in.
+Tells Facebook the membership questionnaire was opened (`group_membership_questionnaire_opened`); it reads back the `group`. It fired 1391 ms after step 2 (click e220), after `GroupsCometMembershipQuestionsPreloadedDialogQuery` (744 ms) had loaded the questions.
 
 ## What our machine does with it
 
-<!-- toWrite --> Which state of `marketplace/connect` or `marketplace/publish` waits for it, reads it, or ignores it, and why.
+Nothing. The answer machine reads the dialog from its snapshot (`reading`, `planFill`) and the questions from `GroupsCometMembershipQuestionsPreloadedDialogQuery`; no code refers to this request.
 
 ## What can go wrong
 
-<!-- toWrite --> The errors and statuses it can return, what each means for the run, and the end or retry our machine takes.
+None seen: one call, 200 in 484 ms. If the dialog did not open, the answer machine stops with `groupQuestionsNotReopened`, from the page, not from this request.

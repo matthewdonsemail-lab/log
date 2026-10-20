@@ -24,12 +24,12 @@ Seen 2 time(s) in 1 run(s).
 
 ## What it does
 
-<!-- toWrite --> What this request is for on Facebook's side, from its definition and the step it fires in.
+Loads the group page's root (`CometGroupRoot.react`) by `groupID`, with the section and invite link key it sends. It fired 1885 ms after step 5 (click e2647) and 6102 ms after step 7 (click e2606), each time a group page opened.
 
 ## What our machine does with it
 
-<!-- toWrite --> Which state of `marketplace/connect` or `marketplace/publish` waits for it, reads it, or ignores it, and why.
+Nothing. `groupJoin` (`opening`, `reading`) reads the membership from the group page's own HTML (`viewer_join_state`, `readJoinOptions`) and the Join or Joined button from the snapshot (`readGroupPage`). This request is only named in a domain test (`facebookClient.test.ts`); no state waits for it or reads it.
 
 ## What can go wrong
 
-<!-- toWrite --> The errors and statuses it can return, what each means for the run, and the end or retry our machine takes.
+None seen: both calls 200, in 571-1128 ms. If the page did not render a Join or Joined button, `groupJoin` stops with `groupGateUnknown`. If the step fails anyway, `groupJoin` stops on the page, not on this request: a checkpoint or login page (`pageProblem`) or a failed step gives `groupPageNotOpened` or `groupJoinNotConfirmed`.

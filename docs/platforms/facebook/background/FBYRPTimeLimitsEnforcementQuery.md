@@ -13,15 +13,19 @@
 | Called from | — |
 | rea | not read yet |
 
-Seen 7 time(s) in 4 run(s).
+Seen 10 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 3 | 200 | 433–483 ms | 2644–2918 ms | — |
-| inspect | step 10: goto /groups/<id>/ | 1 | 200 | 434 ms | 1821 ms | — |
-| inspect | step 11: goto /groups/<id>/ | 1 | 200 | 406 ms | 1673 ms | — |
-| inspect | step 4: goto /groups/<id>/ | 1 | 200 | 382 ms | 1177 ms | — |
-| inspect | step 1: goto / | 1 | 200 | 558 ms | 5079 ms | — |
+| inspect | step 1: goto /reel/ | 2 | 200 | 344–378 ms | 2016–2521 ms | — |
+| inspect | rea read step 13_dwell600s: exit 0, ev_e8922deafb7ba9951a51bda6f8cd82b5b68c41db19bfe0cd164 | 1 | 200 | 359 ms | 655 ms | — |
+| inspect | step 23: goto /reel/<id> | 1 | 200 | 324 ms | 1251 ms | — |
+| inspect | step 9: goto /reel/<id> | 1 | 200 | 650 ms | 3072 ms | — |
+| inspect | step 11: goto /reel/ | 1 | 200 | 578 ms | 1032 ms | — |
+| inspect | step 20: goto /reel/<id> | 1 | 200 | 400 ms | 1667 ms | — |
+| inspect | step 22: goto /reel/ | 1 | 200 | 327 ms | 1438 ms | — |
+| inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 465 ms | 4009 ms | — |
+| inspect | step 53: goto /reel/ | 1 | 200 | 333 ms | 4910 ms | — |
 
 <!-- facts:end -->
 

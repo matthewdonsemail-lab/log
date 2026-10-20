@@ -13,13 +13,13 @@
 | Called from | `StoriesTrayRectangularRoot.react` |
 | rea | `ev_c974048d5563e87d75f5e8ddd458fdc3829a195d00e0a636a969922c24e6ae81` |
 
-Seen 3 time(s) in 3 run(s).
+Seen 3 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | POST 200 /ajax/bulk-route-definitions/ (489 ms) | 1 | 200 | 544 ms | 234 ms | — |
-| inspect | page has 63 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T234 | 1 | 200 | 744 ms | 28689 ms | — |
-| inspect | step 9: snapshot | 1 | 200 | 703 ms | 279 ms | — |
+| inspect | rea read step 24_clickroleButtonNextCard: exit 0, ev_08bd0b0aa3e491db75fd341d53b6ccf63883a | 1 | 200 | 862 ms | 1250248 ms | — |
+| inspect | step 3: clickRole button "…" | 1 | 200 | 575 ms | 5497 ms | — |
+| inspect | page has 46 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 1 | 200 | 625 ms | 2583 ms | — |
 
 <!-- facts:end -->
 

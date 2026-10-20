@@ -13,15 +13,19 @@
 | Called from | `RTWebCallBlockSettingHooks` |
 | rea | `ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6` |
 
-Seen 7 time(s) in 4 run(s).
+Seen 10 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 3 | 200 | 408–428 ms | 3442–4164 ms | — |
-| inspect | step 10: goto /groups/<id>/ | 1 | 200 | 416 ms | 2923 ms | — |
-| inspect | step 11: goto /groups/<id>/ | 1 | 200 | 593 ms | 2704 ms | — |
-| inspect | step 4: goto /groups/<id>/ | 1 | 200 | 371 ms | 2307 ms | — |
-| inspect | step 1: goto / | 1 | 200 | 311 ms | 6768 ms | — |
+| inspect | step 1: goto /reel/ | 2 | 200 | 340–342 ms | 3376–3379 ms | — |
+| inspect | rea read step 13_dwell600s: exit 0, ev_e8922deafb7ba9951a51bda6f8cd82b5b68c41db19bfe0cd164 | 1 | 200 | 1005 ms | 2080 ms | — |
+| inspect | rea read step 22_dwell600s: exit 0, ev_59385bb1add05e2efe91692d85b295ae9cd6334beafd2bccb4a | 1 | 200 | 364 ms | 2222 ms | — |
+| inspect | step 9: goto /reel/<id> | 1 | 200 | 1008 ms | 6031 ms | — |
+| inspect | step 11: goto /reel/ | 1 | 200 | 645 ms | 5250 ms | — |
+| inspect | step 20: goto /reel/<id> | 1 | 200 | 1348 ms | 2829 ms | — |
+| inspect | step 22: goto /reel/ | 1 | 200 | 3699 ms | 2945 ms | — |
+| inspect | mouse: 1 wander, 1 approach, 1 flick; 1 idle drift move(s) | 1 | 200 | 1921 ms | 602 ms | — |
+| inspect | step 53: goto /reel/ | 1 | 200 | 337 ms | 5594 ms | — |
 
 <!-- facts:end -->
 

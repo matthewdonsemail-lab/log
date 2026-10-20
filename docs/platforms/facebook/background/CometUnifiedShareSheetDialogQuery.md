@@ -24,12 +24,12 @@ Seen 3 time(s) in 2 run(s).
 
 ## What it does
 
-<!-- toWrite --> What this request is for on Facebook's side, from its definition and the step it fires in.
+Loads Facebook's share dialog for a story: its link preview (`link_preview.story`) and the sharing options (`UnifiedShareSheetSharingOptionsSection_share`), with the privacy and composer settings it sends. In our runs it fired during `log inspect` snapshot steps on 2026-10-19, 12-91 s after the step started, never right after a click of ours.
 
 ## What our machine does with it
 
-<!-- toWrite --> Which state of `marketplace/connect` or `marketplace/publish` waits for it, reads it, or ignores it, and why.
+Nothing. None of our machines opens a share dialog: `reelOrderer.ts` says this repo has no save, follow or share, and no code refers to this request. No state waits for it or reads it.
 
 ## What can go wrong
 
-<!-- toWrite --> The errors and statuses it can return, what each means for the run, and the end or retry our machine takes.
+None seen: three calls, all 200 in 547-951 ms. If it failed, only the share dialog would be empty; a snapshot step records the page either way.

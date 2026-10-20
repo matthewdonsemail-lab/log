@@ -24,12 +24,12 @@ Seen 2 time(s) in 1 run(s).
 
 ## What it does
 
-<!-- toWrite --> What this request is for on Facebook's side, from its definition and the step it fires in.
+Logs a visit to a group for the account's Groups tab (`viewer_groups_tab_log_group_visit`), with the group's `bookmarkID`; it reads back the group bookmark and the home page's unread count. It fired 2858 ms after step 5 (click e2647) and 7513 ms after step 7 (click e2606), each time a group page opened.
 
 ## What our machine does with it
 
-<!-- toWrite --> Which state of `marketplace/connect` or `marketplace/publish` waits for it, reads it, or ignores it, and why.
+Nothing. `groupJoin` reads the group page's HTML and snapshot, not this request; it is only named in a domain test (`facebookClient.test.ts`).
 
 ## What can go wrong
 
-<!-- toWrite --> The errors and statuses it can return, what each means for the run, and the end or retry our machine takes.
+None seen: both calls 200, in 458-472 ms. Nothing of ours depends on it. If the step fails anyway, `groupJoin` stops on the page, not on this request: a checkpoint or login page (`pageProblem`) or a failed step gives `groupPageNotOpened` or `groupJoinNotConfirmed`.

@@ -10,18 +10,22 @@
 | Path | `/api/graphql/` |
 | Sends | — |
 | Reads | — |
-| Called from | — |
-| rea | not read yet |
+| Called from | `OhaiWebPublicKeyConfig` |
+| rea | `ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013` |
 
-Seen 7 time(s) in 4 run(s).
+Seen 10 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 3 | 200 | 394–448 ms | 3362–3704 ms | — |
-| inspect | step 10: goto /groups/<id>/ | 1 | 200 | 428 ms | 2626 ms | — |
-| inspect | step 11: goto /groups/<id>/ | 1 | 200 | 433 ms | 2348 ms | — |
-| inspect | step 4: goto /groups/<id>/ | 1 | 200 | 344 ms | 1944 ms | — |
-| inspect | step 1: goto / | 1 | 200 | 312 ms | 5981 ms | — |
+| inspect | step 1: goto /reel/ | 2 | 200 | 351–358 ms | 3193–3281 ms | — |
+| inspect | rea read step 13_dwell600s: exit 0, ev_e8922deafb7ba9951a51bda6f8cd82b5b68c41db19bfe0cd164 | 1 | 200 | 1035 ms | 2019 ms | — |
+| inspect | rea read step 22_dwell600s: exit 0, ev_59385bb1add05e2efe91692d85b295ae9cd6334beafd2bccb4a | 1 | 200 | 360 ms | 2128 ms | — |
+| inspect | step 9: goto /reel/<id> | 1 | 200 | 940 ms | 5978 ms | — |
+| inspect | step 11: goto /reel/ | 1 | 200 | 630 ms | 5195 ms | — |
+| inspect | step 20: goto /reel/<id> | 1 | 200 | 358 ms | 2721 ms | — |
+| inspect | step 22: goto /reel/ | 1 | 200 | 2420 ms | 2624 ms | — |
+| inspect | mouse: 1 wander, 1 approach, 1 flick; 1 idle drift move(s) | 1 | 200 | 1307 ms | 350 ms | — |
+| inspect | step 53: goto /reel/ | 1 | 200 | 340 ms | 5471 ms | — |
 
 <!-- facts:end -->
 

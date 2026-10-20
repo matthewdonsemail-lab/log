@@ -13,13 +13,13 @@
 | Called from | `CometMegaphoneRoot.react` |
 | rea | `ev_a2e1e82b09a10f9f97361e424dc787adb4a3a8c0a7bb15f7feb91de015e7d2fa` |
 
-Seen 3 time(s) in 3 run(s).
+Seen 3 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | POST 200 /ajax/bulk-route-definitions/ (489 ms) | 1 | 200 | 543 ms | 229 ms | — |
-| inspect | page has 63 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T234 | 1 | 200 | 643 ms | 28683 ms | — |
-| inspect | step 9: snapshot | 1 | 200 | 728 ms | 273 ms | — |
+| inspect | rea read step 24_clickroleButtonNextCard: exit 0, ev_08bd0b0aa3e491db75fd341d53b6ccf63883a | 1 | 200 | 739 ms | 1250244 ms | — |
+| inspect | step 3: clickRole button "…" | 1 | 200 | 613 ms | 5493 ms | — |
+| inspect | page has 46 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 1 | 200 | 518 ms | 2578 ms | — |
 
 <!-- facts:end -->
 

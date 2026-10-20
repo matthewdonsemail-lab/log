@@ -11,27 +11,47 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_e642c5ea830afe2876447a54b55015ae0e0f3c5ada04188796278a671712d802` |
+| rea | `ev_4bb3e0322d035f08a136122015975f24f87a85da63b2a5a25f606a6b131115e2` |
 
-Seen 29 time(s) in 5 run(s).
+Seen 73 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 4 | 200 | 443–863 ms | 5965–8923 ms | — |
-| inspect | step 2: click e220 | 1 | 200 | 454 ms | 3415 ms | — |
-| inspect | step 10: goto /groups/<id>/ | 1 | 200 | 774 ms | 5567 ms | — |
-| inspect | page has 62 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T234 | 5 | 200, 0 | 0–413 ms | 13565–163139 ms | — |
-| inspect | step 11: goto /groups/<id>/ | 1 | 200 | 765 ms | 5532 ms | — |
-| inspect | page has 63 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T234 | 2 | 200 | 367–403 ms | 5094–35091 ms | — |
-| inspect | page has 63 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T232 | 2 | 200 | 385–394 ms | 4996–35008 ms | — |
-| inspect | step 4: goto /groups/<id>/ | 1 | 200 | 726 ms | 5040 ms | — |
-| inspect | step 7: wait 4s | 1 | 200 | 359 ms | 4550 ms | — |
-| inspect | POST 200 /ajax/relay-ef/ (338 ms) | 1 | 200 | 382 ms | 3455 ms | — |
-| inspect | step 2: type e20 | 1 | 200 | 298 ms | 1157 ms | — |
-| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T212 | 3 | 200 | 302–325 ms | 4822–13113 ms | — |
-| inspect | step 1: goto / | 2 | 200 | 360–371 ms | 8806–8927 ms | — |
-| inspect | POST 200 /ajax/bnzai (360 ms) | 2 | 200 | 360–1837 ms | 2063–2613 ms | — |
-| inspect | page has 5 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T2127 | 2 | 200 | 364–365 ms | 1854–3859 ms | — |
+| inspect | step 1: goto /reel/ | 2 | 200 | 798–825 ms | 6115–7453 ms | — |
+| inspect | step 4: scrollIn heading "…" 2-3 x 300-500px | 1 | 200 | 324 ms | 590 ms | — |
+| inspect | step 5: dwell 1.33s | 1 | 200 | 419 ms | 1106 ms | — |
+| inspect | rea read step 12_clickany1XLink: exit 0, ev_6d89f50042dfceb0e354f2776b178e146e5eab0542b727 | 1 | 200 | 423 ms | 3079 ms | — |
+| inspect | step 19: clickRole button "…" | 1 | 200 | 342 ms | 183 ms | — |
+| inspect | rea read step 21_clickany1XLink: exit 0, ev_0405ebfaafac113292906c01522a8eb0fc27e43cf0684d | 1 | 200 | 448 ms | 679 ms | — |
+| inspect | rea read step 22_dwell600s: exit 0, ev_59385bb1add05e2efe91692d85b295ae9cd6334beafd2bccb4a | 3 | 200 | 359–415 ms | 3299–4490 ms | — |
+| inspect | rea read step 24_clickroleButtonNextCard: exit 0, ev_08bd0b0aa3e491db75fd341d53b6ccf63883a | 13 | 200 | 327–2729 ms | 10482–1621852 ms | — |
+| inspect | step 3: clickRole button "…" | 1 | 200 | 361 ms | 717 ms | — |
+| inspect | step 5: clickRole button "…" | 1 | 200 | 319 ms | 932 ms | — |
+| inspect | step 8: clickAny 1 x link /see owner profile$/ | 1 | 200 | 345 ms | 1382 ms | — |
+| inspect | step 9: goto /reel/<id> | 3 | 200 | 410–1157 ms | 7602–9606 ms | — |
+| inspect | step 10: clickRole button "…" | 1 | 200 | 345 ms | 3241 ms | — |
+| inspect | step 11: goto /reel/ | 2 | 200 | 327–760 ms | 44–6743 ms | — |
+| inspect | step 13: dwell 6-12s | 1 | 200 | 347 ms | 5089 ms | — |
+| inspect | step 18: clickRole button "…" | 1 | 200 | 320 ms | 2820 ms | — |
+| inspect | step 20: goto /reel/<id> | 5 | 200 | 369–1242 ms | 455–8476 ms | — |
+| inspect | step 21: clickRole button "…" | 1 | 200 | 454 ms | 3247 ms | — |
+| inspect | page has 39 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 1 | 200 | 409 ms | 1698 ms | — |
+| inspect | step 22: goto /reel/ | 2 | 200 | 313–864 ms | 36–11734 ms | — |
+| inspect | step 24: dwell 3s | 1 | 200 | 644 ms | 3386 ms | — |
+| inspect | step 27: clickRole button "…" | 1 | 200 | 582 ms | 7102 ms | — |
+| inspect | step 36: dwell 3s | 1 | 200 | 434 ms | 564 ms | — |
+| inspect | step 45: clickRole button "…" | 1 | 200 | 368 ms | 3002 ms | — |
+| inspect | mouse: 1 wander, 1 approach, 1 flick; 1 idle drift move(s) | 1 | 200 | 318 ms | 3 ms | — |
+| inspect | step 47: dwell 4s | 3 | 200 | 334–348 ms | 2571–6569 ms | — |
+| inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 386 ms | 542 ms | — |
+| inspect | POST 200 /ajax/bnzai (386 ms) | 1 | 200 | 1093 ms | 904 ms | — |
+| inspect | page has 45 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 14 | 200 | 305–2506 ms | 15–855955 ms | — |
+| inspect | step 53: goto /reel/ | 1 | 200 | 672 ms | 11122 ms | — |
+| inspect | step 56: dwell 1s | 1 | 200 | 333 ms | 688 ms | — |
+| inspect | step 61: clickRole button "…" | 1 | 200 | 307 ms | 3039 ms | — |
+| inspect | step 68: dwell 9s | 1 | 200 | 383 ms | 8039 ms | — |
+| inspect | step 87: clickRole button "…" | 1 | 200 | 631 ms | 3276 ms | — |
+| inspect | step 92: clickRole button "…" | 1 | 200 | 876 ms | 3859 ms | — |
 
 <!-- facts:end -->
 

@@ -13,11 +13,12 @@
 | Called from | `CometHomeCreateMenuContent.react` |
 | rea | `ev_3fc31279229a8a77c780fdc3d85b3e4a969f9714a54952d71db8fff6a6ab0305` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 9: snapshot | 1 | 200 | 504 ms | 12158 ms | — |
+| inspect | rea read step 24_clickroleButtonNextCard: exit 0, ev_08bd0b0aa3e491db75fd341d53b6ccf63883a | 1 | 200 | 401 ms | 737520 ms | — |
+| inspect | step 67: dwell 1s | 1 | 200 | 706 ms | 50 ms | — |
 
 <!-- facts:end -->
 

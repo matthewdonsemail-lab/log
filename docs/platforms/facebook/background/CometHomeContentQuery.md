@@ -11,15 +11,16 @@
 | Sends | — |
 | Reads | — |
 | Called from | `CometHomeContent.react` |
-| rea | `ev_c39813b09a6d101ec07e15decbcfc3b7d00474b5f7b79ea04cace0fb088e78a8` |
+| rea | `ev_cf23e67c25aa3ceb49db2a20048e8ce344dfa1f57457ba9df343170946991f9b` |
 
-Seen 3 time(s) in 3 run(s).
+Seen 4 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | POST 200 /ajax/bulk-route-definitions/ (489 ms) | 1 | 200 | 476 ms | 224 ms | — |
-| inspect | page has 63 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T234 | 1 | 200 | 407 ms | 28679 ms | — |
-| inspect | step 9: snapshot | 1 | 200 | 480 ms | 270 ms | — |
+| inspect | rea read step 24_clickroleButtonNextCard: exit 0, ev_08bd0b0aa3e491db75fd341d53b6ccf63883a | 1 | 200 | 568 ms | 1250240 ms | — |
+| inspect | step 3: clickRole button "…" | 1 | 200 | 396 ms | 5489 ms | — |
+| inspect | page has 46 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 1 | 200 | 412 ms | 2575 ms | — |
+| inspect | page has 45 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 1 | 200 | 493 ms | 1294646 ms | — |
 
 <!-- facts:end -->
 

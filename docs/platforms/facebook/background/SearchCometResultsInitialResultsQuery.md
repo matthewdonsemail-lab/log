@@ -23,12 +23,12 @@ Seen 1 time(s) in 1 run(s).
 
 ## What it does
 
-<!-- toWrite --> What this request is for on Facebook's side, from its definition and the step it fires in.
+Loads the first page of Facebook's search results (`SearchCometResultsPaginatedResults_searchQuery`), from the search `args`, `count`, `cursor` and filters it sends. It fired once, 1211 ms after step 4 (click e1506).
 
 ## What our machine does with it
 
-<!-- toWrite --> Which state of `marketplace/connect` or `marketplace/publish` waits for it, reads it, or ignores it, and why.
+Nothing. No machine of ours searches Facebook: `log join group` opens the group by its own URL (`groupJoin`, state `opening`), and `parseGroupRef` refuses `search` as a group. The steps it fired in were a hand-run `log inspect` session, so no state waits for it or reads it.
 
 ## What can go wrong
 
-<!-- toWrite --> The errors and statuses it can return, what each means for the run, and the end or retry our machine takes.
+None seen: one call, 200 in 800 ms. If it failed the results page would be empty; an inspect step records the page either way.

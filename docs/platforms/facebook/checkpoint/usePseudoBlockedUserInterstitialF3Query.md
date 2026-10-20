@@ -13,17 +13,19 @@
 | Called from | `usePseudoBlockedUserInterstitial` |
 | rea | `ev_4f0f59bc7d5ff4c02ef9f2aba85fc9de893084a7a8fbdf3f1627ce6c1c3456fe` |
 
-Seen 9 time(s) in 4 run(s).
+Seen 10 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 3 | 200 | 381–459 ms | 3311–3501 ms | — |
-| inspect | step 10: goto /groups/<id>/ | 1 | 200 | 422 ms | 2919 ms | — |
-| inspect | step 11: goto /groups/<id>/ | 1 | 200 | 595 ms | 2702 ms | — |
-| inspect | step 4: goto /groups/<id>/ | 1 | 200 | 411 ms | 2304 ms | — |
-| inspect | step 1: goto / | 1 | 200 | 319 ms | 6764 ms | — |
-| inspect | step 5: click e2647 | 1 | 200 | 310 ms | 2871 ms | — |
-| inspect | step 7: click e2606 | 1 | 200 | 306 ms | 7519 ms | — |
+| inspect | step 1: goto /reel/ | 2 | 200 | 332–341 ms | 3372–3404 ms | — |
+| inspect | rea read step 13_dwell600s: exit 0, ev_e8922deafb7ba9951a51bda6f8cd82b5b68c41db19bfe0cd164 | 1 | 200 | 1721 ms | 1227 ms | — |
+| inspect | rea read step 22_dwell600s: exit 0, ev_59385bb1add05e2efe91692d85b295ae9cd6334beafd2bccb4a | 1 | 200 | 370 ms | 2220 ms | — |
+| inspect | step 9: goto /reel/<id> | 1 | 200 | 391 ms | 5831 ms | — |
+| inspect | step 11: goto /reel/ | 1 | 200 | 653 ms | 5247 ms | — |
+| inspect | step 20: goto /reel/<id> | 1 | 200 | 2153 ms | 2827 ms | — |
+| inspect | step 22: goto /reel/ | 1 | 200 | 3020 ms | 2940 ms | — |
+| inspect | mouse: 1 wander, 1 approach, 1 flick; 1 idle drift move(s) | 1 | 200 | 1315 ms | 400 ms | — |
+| inspect | step 53: goto /reel/ | 1 | 200 | 334 ms | 5589 ms | — |
 
 <!-- facts:end -->
 

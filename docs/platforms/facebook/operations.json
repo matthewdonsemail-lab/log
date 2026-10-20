@@ -1,6 +1,6 @@
 {
-  "builtAt": "2026-10-20T04:54:07.088Z",
-  "runs": 5,
+  "builtAt": "2026-10-20T08:55:28.050Z",
+  "runs": 2,
   "operations": [
     {
       "name": "ajaxBnzai",
@@ -8,7 +8,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxBnzai.md",
-      "reaEvidenceId": "ev_e642c5ea830afe2876447a54b55015ae0e0f3c5ada04188796278a671712d802",
+      "reaEvidenceId": "ev_4bb3e0322d035f08a136122015975f24f87a85da63b2a5a25f606a6b131115e2",
       "seen": 257
     },
     {
@@ -17,7 +17,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxBulkRouteDefinitions.md",
-      "reaEvidenceId": "ev_e642c5ea830afe2876447a54b55015ae0e0f3c5ada04188796278a671712d802",
+      "reaEvidenceId": "ev_4bb3e0322d035f08a136122015975f24f87a85da63b2a5a25f606a6b131115e2",
       "seen": 254
     },
     {
@@ -35,7 +35,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxNavigation.md",
-      "reaEvidenceId": "ev_9cf1a55f98141197efedbe510bdbc0af91d43dd54026da3d684cb0aebb9630bd",
+      "reaEvidenceId": "ev_2cc284eb516f0beefa9fd6d08ce43290191409c99d9e18dffb465f686bcdd604",
       "seen": 9
     },
     {
@@ -44,7 +44,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxQm.md",
-      "reaEvidenceId": "ev_e642c5ea830afe2876447a54b55015ae0e0f3c5ada04188796278a671712d802",
+      "reaEvidenceId": "ev_4bb3e0322d035f08a136122015975f24f87a85da63b2a5a25f606a6b131115e2",
       "seen": 95
     },
     {
@@ -62,7 +62,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxRelayEf.md",
-      "reaEvidenceId": "ev_d0bc6046b88d7ac4496521682ae9642a7371c0cb0dc6a649419b2f8d1e1795d7",
+      "reaEvidenceId": "ev_4bb3e0322d035f08a136122015975f24f87a85da63b2a5a25f606a6b131115e2",
       "seen": 117
     },
     {
@@ -71,7 +71,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxRouteDefinition.md",
-      "reaEvidenceId": "ev_9cf1a55f98141197efedbe510bdbc0af91d43dd54026da3d684cb0aebb9630bd",
+      "reaEvidenceId": "ev_2cc284eb516f0beefa9fd6d08ce43290191409c99d9e18dffb465f686bcdd604",
       "seen": 11
     },
     {
@@ -89,7 +89,7 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "login/ajaxWebstorageProcessKeys.md",
-      "reaEvidenceId": "ev_bb6173700b6cbdd3ab340abedb998066a29b141080a58ece6a88f0c1091ec2c1",
+      "reaEvidenceId": "ev_27ded1af329398c4558d4994388f13b22684355f9aa4ee16af1bd1dab74e68bf",
       "seen": 27
     },
     {
@@ -188,7 +188,7 @@
       "kind": "query",
       "docId": "28262615193401316",
       "doc": "background/CometHomeContentQuery.md",
-      "reaEvidenceId": "ev_c39813b09a6d101ec07e15decbcfc3b7d00474b5f7b79ea04cace0fb088e78a8",
+      "reaEvidenceId": "ev_cf23e67c25aa3ceb49db2a20048e8ce344dfa1f57457ba9df343170946991f9b",
       "seen": 9
     },
     {
@@ -198,7 +198,7 @@
       "docId": "28430483319975420",
       "doc": "background/CometHomeCreateMenuContentQuery.md",
       "reaEvidenceId": "ev_3fc31279229a8a77c780fdc3d85b3e4a969f9714a54952d71db8fff6a6ab0305",
-      "seen": 1
+      "seen": 2
     },
     {
       "name": "CometHomeMegaMenuAllProductsQuery",
@@ -207,7 +207,7 @@
       "docId": "26943575645248441",
       "doc": "background/CometHomeMegaMenuAllProductsQuery.md",
       "reaEvidenceId": "ev_78a10afc58bb765d71fab141fd85b3c18aea439a22cd1af1ebfa86cb7d38ffd1",
-      "seen": 1
+      "seen": 2
     },
     {
       "name": "CometHomeMegaMenuShortcutsQuery",
@@ -216,7 +216,7 @@
       "docId": "26833428399625311",
       "doc": "background/CometHomeMegaMenuShortcutsQuery.md",
       "reaEvidenceId": "ev_387da7dffb2d726280e5df4abfd25b5a3f00569b707462e4a6fe946ba8004ba8",
-      "seen": 1
+      "seen": 2
     },
     {
       "name": "CometHovercardQueryRendererQuery",
@@ -225,7 +225,7 @@
       "docId": "29231152373168310",
       "doc": "background/CometHovercardQueryRendererQuery.md",
       "reaEvidenceId": "ev_95529720f6ba751fe065571b8fd81d09f67f7e4539594c0761343470652ec320",
-      "seen": 6
+      "seen": 14
     },
     {
       "name": "CometLogoutHandlerQuery",
@@ -285,9 +285,9 @@
       "name": "CometModernHomeFeedQuery",
       "domain": "background",
       "kind": "query",
-      "docId": "28853390814299999",
+      "docId": "28687558054228926",
       "doc": "background/CometModernHomeFeedQuery.md",
-      "reaEvidenceId": "ev_3ce25c6049c186515af5b71ab505638faf9a17d16c166222c126862c227e8871",
+      "reaEvidenceId": "ev_bc95ca94531eada21d5e96d859be9a5a77124f8d5402aa91387d024e892017a7",
       "seen": 7
     },
     {
@@ -298,6 +298,15 @@
       "doc": "background/CometNotificationsDropdownQuery.md",
       "reaEvidenceId": "ev_ab1965911932cb7fcf25b222bf92e0487c624ad5aa06bc6a0e5e7860bc09d85a",
       "seen": 45
+    },
+    {
+      "name": "CometProfileVerificationBadgePopoverQuery",
+      "domain": "background",
+      "kind": "query",
+      "docId": "9684350218300346",
+      "doc": "background/CometProfileVerificationBadgePopoverQuery.md",
+      "reaEvidenceId": "ev_30cb73a9fa4178a0bd1e40df058036b7959d3c2ac3c9f1ce44965dc85a402bb8",
+      "seen": 3
     },
     {
       "name": "CometRightSideHeaderCardsQuery",
@@ -327,6 +336,15 @@
       "seen": 20
     },
     {
+      "name": "CometUFIFeedbackReactMutation",
+      "domain": "background",
+      "kind": "mutation",
+      "docId": "27646120298312844",
+      "doc": "background/CometUFIFeedbackReactMutation.md",
+      "reaEvidenceId": "ev_a524d63aa67afda368f84d97715d9e407ac62c8b9888f10a4ba1af4a0c4a24ba",
+      "seen": 5
+    },
+    {
       "name": "CometUnifiedShareSheetDialogQuery",
       "domain": "background",
       "kind": "query",
@@ -345,6 +363,15 @@
       "seen": 1
     },
     {
+      "name": "FBReelHashtagSearchResultsQuery",
+      "domain": "background",
+      "kind": "query",
+      "docId": "28370228809316719",
+      "doc": "background/FBReelHashtagSearchResultsQuery.md",
+      "reaEvidenceId": "ev_3ef714540a23ef82c40a5d13339e2663b055d23d569c643010201605ba744874",
+      "seen": 1
+    },
+    {
       "name": "FBScrapingWarningMutation",
       "domain": "checkpoint",
       "kind": "mutation",
@@ -360,7 +387,52 @@
       "docId": "28969188822673160",
       "doc": "background/FBScreenTimeLogger_syncMutation.md",
       "reaEvidenceId": "ev_9c20c08fbf4c14d62fa5b772be9b8dc2f4b32b06aa445a78cfb8f8ea86ba73c3",
-      "seen": 9
+      "seen": 18
+    },
+    {
+      "name": "FBUnifiedVideoContainerQuery",
+      "domain": "reels",
+      "kind": "query",
+      "docId": "29227112143560769",
+      "doc": "reels/FBUnifiedVideoContainerQuery.md",
+      "reaEvidenceId": "ev_e0f416e05899b25acdf92584bfaa3ab0f3705c0b194d01f500c834c0c5a17a4d",
+      "seen": 15
+    },
+    {
+      "name": "FBUnifiedVideoEntityDialogImplQuery",
+      "domain": "reels",
+      "kind": "query",
+      "docId": "29652989050968472",
+      "doc": "reels/FBUnifiedVideoEntityDialogImplQuery.md",
+      "reaEvidenceId": "ev_86c55860632301261adc729568972b8c68698dd7f99a2d2b9710325b4f021afc",
+      "seen": 12
+    },
+    {
+      "name": "FBUnifiedVideoFeedbackRightRailWithCommentPreloadingQuery",
+      "domain": "reels",
+      "kind": "query",
+      "docId": "29079032155042331",
+      "doc": "reels/FBUnifiedVideoFeedbackRightRailWithCommentPreloadingQuery.md",
+      "reaEvidenceId": "ev_ef51bf429e9a556285182a803a3bcfc710b9288ce82047b0e69760e04d6c8e9e",
+      "seen": 4
+    },
+    {
+      "name": "FBUnifiedVideoHashtagSearchDialogSnippetQuery",
+      "domain": "reels",
+      "kind": "query",
+      "docId": "26058960353727272",
+      "doc": "reels/FBUnifiedVideoHashtagSearchDialogSnippetQuery.md",
+      "reaEvidenceId": "ev_42edb6bfb115aea2e256a57ae3bab291549def6c304446e472aa5f9ba7e2a5e2",
+      "seen": 1
+    },
+    {
+      "name": "FBUnifiedVideoSeenStateMutation",
+      "domain": "reels",
+      "kind": "mutation",
+      "docId": "9749301061815436",
+      "doc": "reels/FBUnifiedVideoSeenStateMutation.md",
+      "reaEvidenceId": "ev_5b1d67703bcc2154905f7461407849c35b29d19eaf9efca5ad6f5e1b8f46008a",
+      "seen": 40
     },
     {
       "name": "FBYRPTimeLimitsEnforcementQuery",
@@ -672,9 +744,9 @@
       "name": "ProfileCometAboutAppSectionQuery",
       "domain": "profile",
       "kind": "query",
-      "docId": "28809323828719725",
+      "docId": "28872732712336652",
       "doc": "profile/ProfileCometAboutAppSectionQuery.md",
-      "reaEvidenceId": "ev_2b692f5713fd3e8b88dbb95acb774de307be3de1f0cf1de8a44131604c91d7e0",
+      "reaEvidenceId": "ev_8d791e67d202e82b87375766750b1d234cf58a9260d5e9308a1c8de5280525ac",
       "seen": 2
     },
     {
@@ -702,7 +774,7 @@
       "docId": "28621615384199313",
       "doc": "profile/ProfileCometHeaderQuery.md",
       "reaEvidenceId": "ev_4cedb55954fe0c35463d9aac371107df285f48cd40a1dfe186a84c7c4647ff7d",
-      "seen": 2
+      "seen": 4
     },
     {
       "name": "ProfileCometProfilePictureEditDialogQuery",
@@ -762,10 +834,10 @@
       "name": "ProfileCometTopAppSectionQuery",
       "domain": "profile",
       "kind": "query",
-      "docId": "28795085583437567",
+      "docId": "28515231488168342",
       "doc": "profile/ProfileCometTopAppSectionQuery.md",
-      "reaEvidenceId": "ev_524a096b20df58a81f41f19180b445b83582aaee5b9dd9e2e8fd2320f5301946",
-      "seen": 1
+      "reaEvidenceId": "ev_9bbbd928975f74b154e7604fb84acb74e7256b6da02fcdceb8730c7a42d19328",
+      "seen": 4
     },
     {
       "name": "profileCoverCometUpload",
@@ -954,7 +1026,7 @@
       "docId": "27513705568291109",
       "doc": "background/useInstreamAdsHaloFetcherQuery.md",
       "reaEvidenceId": "ev_bc80c702731406ede85a4bf0d106132ad8d196bcbbe7bed37ed3b4a3a542a982",
-      "seen": 1
+      "seen": 17
     },
     {
       "name": "useListingShippableEligibilityCheckQuery",
@@ -1043,8 +1115,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/videoUnifiedCvc.md",
-      "reaEvidenceId": null,
-      "seen": 1
+      "reaEvidenceId": "ev_4bb3e0322d035f08a136122015975f24f87a85da63b2a5a25f606a6b131115e2",
+      "seen": 44
     },
     {
       "name": "withSearchCometTypeaheadSERPWarmCallDecoratorQuery",

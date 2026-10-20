@@ -11,13 +11,15 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_bb6173700b6cbdd3ab340abedb998066a29b141080a58ece6a88f0c1091ec2c1` |
+| rea | `ev_27ded1af329398c4558d4994388f13b22684355f9aa4ee16af1bd1dab74e68bf` |
 
-Seen 2 time(s) in 1 run(s).
+Seen 8 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | Inspect session open. Send steps with: log inspect do <action>. | 2 | 200 | 314–390 ms | 91097–341102 ms | — |
+| inspect | step 44: dwell 18s | 1 | 200 | 345 ms | 12469 ms | — |
+| inspect | page has 45 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 6 | 200 | 328–496 ms | 4427–1278544 ms | — |
+| inspect | now on /reel/<id> "…" after 3046 ms; 0 request(s) | 1 | 200 | 387 ms | 1495 ms | — |
 
 <!-- facts:end -->
 

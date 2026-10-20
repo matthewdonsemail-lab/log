@@ -17,7 +17,7 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const docsDir = join(root, 'docs', 'facebookClient');
+const docsDir = join(root, 'docs', 'platforms', 'facebook');
 const indexPath = join(docsDir, 'operations.json');
 const problems = [];
 
@@ -43,7 +43,7 @@ for (const domain of readdirSync(docsDir)) {
   // flows/ holds the flow docs (rule 31), checked below.
   if (domain === 'flows' || !statSync(join(docsDir, domain)).isDirectory()) continue;
   for (const file of readdirSync(join(docsDir, domain))) {
-    if (file.endsWith('.md') && !listed.has(`${domain}/${file}`)) problems.push(`${domain}/${file}: not in operations.json (rebuild the docs)`);
+    if (file.endsWith('.md') && file !== 'README.md' && !listed.has(`${domain}/${file}`)) problems.push(`${domain}/${file}: not in operations.json (rebuild the docs)`);
   }
 }
 

@@ -24,12 +24,12 @@ Seen 3 time(s) in 2 run(s).
 
 ## What it does
 
-<!-- toWrite --> What this request is for on Facebook's side, from its definition and the step it fires in.
+Loads the Messenger section of Facebook's share dialog (`UnifiedShareSheetMessengerHscroll_messenger`). It fired in the same `log inspect` snapshot steps as `CometUnifiedShareSheetDialogQuery`, within a few ms of it, so it is part of that dialog loading.
 
 ## What our machine does with it
 
-<!-- toWrite --> Which state of `marketplace/connect` or `marketplace/publish` waits for it, reads it, or ignores it, and why.
+Nothing. None of our machines opens a share dialog (`reelOrderer.ts`: no save, follow or share), and no code refers to this request. No state waits for it or reads it.
 
 ## What can go wrong
 
-<!-- toWrite --> The errors and statuses it can return, what each means for the run, and the end or retry our machine takes.
+None seen: three calls, all 200 in 400-465 ms. Nothing of ours depends on it.

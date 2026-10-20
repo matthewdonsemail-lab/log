@@ -9,17 +9,23 @@
 | doc_id | `27797631676573850` |
 | Path | `/api/graphql/` |
 | Sends | `first` |
-| Reads | `viewer.bootstrap_keywords` |
-| Called from | `CometSearchBootstrapKeywordsDataSource.query` |
-| rea | `ev_5cb62e3a7cd21788732d77960d11bcea0adc8730aaaa23e6a78c097c1c44c7a6` |
+| Reads | — |
+| Called from | — |
+| rea | not read yet |
 
-Seen 4 time(s) in 3 run(s).
+Seen 10 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 2 | 200 | 425–448 ms | 3463–4159 ms | — |
-| inspect | step 4: goto /groups/<id>/ | 1 | 200 | 381 ms | 2302 ms | — |
-| inspect | step 1: goto / | 1 | 200 | 347 ms | 6761 ms | — |
+| inspect | step 1: goto /reel/ | 2 | 200 | 347–359 ms | 3276–3365 ms | — |
+| inspect | rea read step 13_dwell600s: exit 0, ev_e8922deafb7ba9951a51bda6f8cd82b5b68c41db19bfe0cd164 | 1 | 200 | 1402 ms | 1224 ms | — |
+| inspect | step 23: goto /reel/<id> | 1 | 200 | 488 ms | 2166 ms | — |
+| inspect | step 9: goto /reel/<id> | 1 | 200 | 1565 ms | 3485 ms | — |
+| inspect | step 11: goto /reel/ | 1 | 200 | 403 ms | 2368 ms | — |
+| inspect | step 20: goto /reel/<id> | 1 | 200 | 423 ms | 2623 ms | — |
+| inspect | step 22: goto /reel/ | 1 | 200 | 2547 ms | 2568 ms | — |
+| inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 696 ms | 4939 ms | — |
+| inspect | step 53: goto /reel/ | 1 | 200 | 370 ms | 5585 ms | — |
 
 <!-- facts:end -->
 

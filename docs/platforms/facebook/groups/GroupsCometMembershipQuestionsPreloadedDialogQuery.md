@@ -23,12 +23,12 @@ Seen 1 time(s) in 1 run(s).
 
 ## What it does
 
-<!-- toWrite --> What this request is for on Facebook's side, from its definition and the step it fires in.
+Loads the membership questions dialog for a group (`group_id`): whether the viewer must answer to submit (`viewer_must_answer_membership_question_to_submit`) and the dialog's contents. It fired 744 ms after step 2 (click e220), the click that opened the questions.
 
 ## What our machine does with it
 
-<!-- toWrite --> Which state of `marketplace/connect` or `marketplace/publish` waits for it, reads it, or ignores it, and why.
+`readJoinOptions` (`src/group/join/helpers/joinOptions.ts`) reads it from the Join click's HAR: each question's id, type and options, `viewer_must_answer_membership_question_to_submit`, `is_rules_agreement_enabled`, the group rules, `has_email_verification_question` and the dialog's own words. `groupJoin`'s `checking` state infers from it whether posting asks for questions, a rules agreement or nothing (`inferJoinState`), and `log join group --answer` and the answer machine (`planFill`) build the stepper and the fill from those questions.
 
 ## What can go wrong
 
-<!-- toWrite --> The errors and statuses it can return, what each means for the run, and the end or retry our machine takes.
+None seen: one call, 200 in 556 ms. A response with no `data.group` (only a `for (;;);` line) is skipped, so the questions stay unread (`questionsQueried` false) and `inferJoinState` falls back to the dialog in the snapshot, else posting `unknown`. Facebook answers it twice (preloaded, then opened); the last full answer stands.

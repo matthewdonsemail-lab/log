@@ -24,12 +24,12 @@ Seen 2 time(s) in 1 run(s).
 
 ## What it does
 
-<!-- toWrite --> What this request is for on Facebook's side, from its definition and the step it fires in.
+Loads the layout around a group's discussion tab (`GroupsCometDiscussionLayoutRoot.react`) by `groupID`. It fired 1888 ms after step 5 (click e2647) and 6105 ms after step 7 (click e2606), with the other group page requests.
 
 ## What our machine does with it
 
-<!-- toWrite --> Which state of `marketplace/connect` or `marketplace/publish` waits for it, reads it, or ignores it, and why.
+Nothing. `groupJoin` decides from the group page's HTML and its snapshot (`readJoinOptions`, `readGroupPage`), not from this request; it is only named in a domain test (`facebookClient.test.ts`).
 
 ## What can go wrong
 
-<!-- toWrite --> The errors and statuses it can return, what each means for the run, and the end or retry our machine takes.
+None seen: both calls 200, in 645-716 ms. If the step fails anyway, `groupJoin` stops on the page, not on this request: a checkpoint or login page (`pageProblem`) or a failed step gives `groupPageNotOpened` or `groupJoinNotConfirmed`.

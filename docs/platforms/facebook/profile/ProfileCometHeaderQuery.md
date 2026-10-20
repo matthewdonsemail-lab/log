@@ -13,12 +13,14 @@
 | Called from | `ProfileCometHeader.react` |
 | rea | `ev_4cedb55954fe0c35463d9aac371107df285f48cd40a1dfe186a84c7c4647ff7d` |
 
-Seen 2 time(s) in 1 run(s).
+Seen 4 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| host | POST 200 /ajax/bulk-route-definitions/ (752 ms) | 1 | 200 | 965 ms | 5056 ms | — |
-| host | step 9: saveState | 1 | 200 | 1540 ms | 1524 ms | — |
+| inspect | rea read step 11_clickroleButtonNextCard: exit 0, ev_189e7df832ac014018be21a4d2fe3eb4b862d | 1 | 200 | 944 ms | 989 ms | — |
+| inspect | rea read step 20_clickroleButtonNextCard: exit 0, ev_b8ad981adedd3a055cbb6fd651deb9976e71e | 1 | 200 | 717 ms | 1154 ms | — |
+| inspect | step 8: clickAny 1 x link /see owner profile$/ | 1 | 200 | 757 ms | 1915 ms | — |
+| inspect | step 19: clickAny 1 x link /see owner profile$/ | 1 | 200 | 610 ms | 2108 ms | — |
 
 <!-- facts:end -->
 

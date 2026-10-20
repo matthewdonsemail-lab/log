@@ -81,6 +81,20 @@ export async function runPlatformActivity(context: CommandContext, positionals: 
 
   const built = sessionOptions(flags);
   if (!built.ok) return { code: 1, stderr: `log warmup: ${built.error}` };
+  // Reels has a drawn session (glances, streaks, watches); every other activity is its steps in order, each
+  // step's ranges drawn as it runs.
+  const drawnSession = activity.activity === "reel";
+  if (sub === "plan" && !drawnSession) {
+    if (flags.json) return { code: 0, stdout: JSON.stringify({ platform, activity: activity.activity, steps: activity.steps, knownIssues: activity.knownIssues }, null, 2) };
+    return {
+      code: 0,
+      stdout: [
+        `Warm-up ${platform} ${activity.activity}: ${activity.summary}`,
+        ...activity.steps.map((st, i) => `${String(i + 1).padStart(2)}. ${st.id}: ${st.action} ${st.args.join(" ")}  (${st.why})${st.likes ? "  [--likes]" : st.clicks ? "  [--live]" : ""}`),
+        ...(activity.knownIssues.length ? ["Known issues:", ...activity.knownIssues.map((i) => `  - ${i}`)] : []),
+      ].join("\n"),
+    };
+  }
   if (sub === "plan") {
     const seed = typeof flags.seed === "string" ? Number(flags.seed) : Math.floor((context.now?.() ?? new Date()).getTime() % 2 ** 31);
     if (!Number.isInteger(seed)) return { code: 1, stderr: "log warmup: --seed is a whole number" };
@@ -114,6 +128,7 @@ export async function runPlatformActivity(context: CommandContext, positionals: 
       if (!current) return { code: 1, stderr: "log warmup: the browser opened but its session isn't listed" };
     }
 
+    if (sub === "run" && flags.persona && !drawnSession) return { code: 1, stderr: `log warmup ${platform} ${activity.activity}: --persona is built for reel only so far` };
     if (sub === "run" && flags.persona) {
       const { persona, drawn } = personaFor(account.accountName, account.homeCountry ?? "US", { fresh: flags.newPersona === true });
       const { viewer } = viewerFor(personaPath(account.accountName), persona.seed, { fresh: flags.newPersona === true, scrollSpeed: persona.summary.scrollSpeed });
@@ -126,7 +141,7 @@ export async function runPlatformActivity(context: CommandContext, positionals: 
       context.err(`Warm-up facebook reel, each reel read by SubQ and planned by the orderer for this pack: ${reels} reels, in ${account.accountName}'s open browser (${current.runDir}).`);
       return await runPersonaSession(context, account.accountName, persona, viewer, pack, readInterestEffect(), { reels, seed, live: flags.live === true, likes: flags.likes === true, trafficMb: typeof flags.trafficMb === "string" ? Number(flags.trafficMb) : undefined });
     }
-    const steps = sub === "run" ? planSession(built.options, Math.floor((context.now?.() ?? new Date()).getTime() % 2 ** 31)).map((s) => s.step) : activity.steps;
+    const steps = sub === "run" && drawnSession ? planSession(built.options, Math.floor((context.now?.() ?? new Date()).getTime() % 2 ** 31)).map((s) => s.step) : activity.steps;
     context.err(`Warm-up ${platform} ${activity.activity} (${sub}) in ${account.accountName}'s open browser (${current.runDir}): ${steps.length} steps, each checked.`);
     const machine = warmupActivityMachine.provide({ actors: { act: actor(context, current) } });
     const run = createActor(machine, {

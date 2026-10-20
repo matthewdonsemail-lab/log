@@ -23,12 +23,12 @@ Seen 1 time(s) in 1 run(s).
 
 ## What it does
 
-<!-- toWrite --> What this request is for on Facebook's side, from its definition and the step it fires in.
+Saves the account's answers to a group's membership questions when Submit is pressed; it reads back `email_verification_response` and the `group`. It fired 1058 ms after step 8 (click e1225), the Submit click.
 
 ## What our machine does with it
 
-<!-- toWrite --> Which state of `marketplace/connect` or `marketplace/publish` waits for it, reads it, or ignores it, and why.
+The answer machine's `submitting` state clicks Submit, and `readJoinOptions` reads this response from that step's HAR: `viewer_membership_questions_answer_state` and `viewer_join_state`. In `answered`, `QUESTIONNAIRE_COMPLETED` means submitted (Facebook's own answer first); without it, the dialog closing in the `checking` snapshot also counts as submitted.
 
 ## What can go wrong
 
-<!-- toWrite --> The errors and statuses it can return, what each means for the run, and the end or retry our machine takes.
+None seen: one call, 200 in 1289 ms. If it shows no `QUESTIONNAIRE_COMPLETED` and the dialog stays open, the machine stops with `groupSubmitNotConfirmed` and does not press Submit again. A failed click or a checkpoint or login page after it stops the run the same way.

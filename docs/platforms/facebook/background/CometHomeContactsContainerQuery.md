@@ -13,14 +13,14 @@
 | Called from | `CometHomeContactsContainer.react` |
 | rea | `ev_e995d66efcc3f1441f66a4a1830248686b9e9528015dfffb1ae7ad809a2f133c` |
 
-Seen 5 time(s) in 4 run(s).
+Seen 4 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | POST 200 /ajax/bulk-route-definitions/ (489 ms) | 1 | 200 | 495 ms | 222 ms | — |
-| inspect | page has 63 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T234 | 1 | 200 | 653 ms | 28676 ms | — |
-| inspect | step 9: snapshot | 1 | 200 | 504 ms | 268 ms | — |
-| inspect | page has 79 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T212 | 2 | 200 | 333–341 ms | 7192–14221 ms | — |
+| inspect | rea read step 24_clickroleButtonNextCard: exit 0, ev_08bd0b0aa3e491db75fd341d53b6ccf63883a | 1 | 200 | 609 ms | 1250236 ms | A server error field_exception occured. Check server logs for details. |
+| inspect | step 3: clickRole button "…" | 1 | 200 | 623 ms | 5487 ms | — |
+| inspect | page has 46 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 1 | 200 | 417 ms | 2573 ms | A server error field_exception occured. Check server logs for details. |
+| inspect | page has 45 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 1 | 200 | 389 ms | 1294644 ms | A server error field_exception occured. Check server logs for details. |
 
 <!-- facts:end -->
 
