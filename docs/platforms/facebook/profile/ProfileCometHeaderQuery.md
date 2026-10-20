@@ -17,8 +17,8 @@ Seen 4 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | rea read step 11_clickroleButtonNextCard: exit 0, ev_189e7df832ac014018be21a4d2fe3eb4b862d | 1 | 200 | 944 ms | 989 ms | — |
-| inspect | rea read step 20_clickroleButtonNextCard: exit 0, ev_b8ad981adedd3a055cbb6fd651deb9976e71e | 1 | 200 | 717 ms | 1154 ms | — |
+| inspect | step 12: clickAny 1 x link /see owner profile$/ | 1 | 200 | 944 ms | 2253 ms | — |
+| inspect | step 21: clickAny 1 x link /see owner profile$/ | 1 | 200 | 717 ms | 1889 ms | — |
 | inspect | step 8: clickAny 1 x link /see owner profile$/ | 1 | 200 | 757 ms | 1915 ms | — |
 | inspect | step 19: clickAny 1 x link /see owner profile$/ | 1 | 200 | 610 ms | 2108 ms | — |
 

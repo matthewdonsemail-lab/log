@@ -21,21 +21,20 @@ Seen 23 time(s) in 5 run(s).
 | inspect | step 5: nextPost | 1 | 200 | 3922 ms | 1192 ms | — |
 | inspect | step 10: nextPost | 2 | 200 | 1646–3791 ms | 313–939 ms | — |
 | inspect | step 13: nextPost | 1 | 200 | 1016 ms | 349 ms | — |
-| inspect | rea read step 13_nextpost: exit 0, ev_8e60547c67f77e2d6517b71170983bf6b8a3c480b7e1effffe71 | 1 | 200 | 3333 ms | 259 ms | — |
+| inspect | step 14: nextPost | 1 | 200 | 3333 ms | 1321 ms | — |
 | inspect | step 23: likePost Like | 1 | 200 | 1701 ms | 856 ms | — |
-| inspect | rea read step 30_nextpost: exit 0, ev_c6ab1e57db6c10741a55563fc784095f4639600a95a386d79cbb | 1 | 200 | 4230 ms | 1305 ms | — |
+| inspect | step 32: nextPost | 1 | 200 | 4230 ms | 1497 ms | — |
 | inspect | post: "…", 103 words, 0 image(s), scrolled 70 px | 1 | 200 | 1888 ms | 264 ms | — |
-| inspect | rea read step 06_nextpost: exit 0, ev_070bec0bb692f885a945ff0f4533570067826ee8a67ceea03648 | 1 | 200 | 1153 ms | 490 ms | — |
-| inspect | rea read step 15_nextpost: exit 0, ev_73d8c780b0d161f8dcfd41619e2748beffb1aafd874af53092bb | 1 | 200 | 2000 ms | 125 ms | — |
+| inspect | step 8: nextPost | 2 | 200 | 1153–1654 ms | 985–992 ms | — |
+| inspect | step 16: nextPost | 1 | 200 | 2000 ms | 1070 ms | — |
 | inspect | step 22: likePost Like | 1 | 200 | 3600 ms | 984 ms | — |
-| inspect | mouse: the target moved from under the cursor (59,913 not on it, box 36,1794 66x32): re-ai | 1 | 200 | 2616 ms | 1110 ms | — |
-| inspect | rea read step 06_nextpost: exit 0, ev_64e676f0de69966db8ada3ff6ca5e56d1756eaf2b88396515729 | 1 | 200 | 1310 ms | 162 ms | — |
-| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T103 | 1 | 200 | 2625 ms | 595 ms | — |
+| inspect | scroll: +1489px in 35 wheel steps, 2750 ms | 1 | 200 | 2616 ms | 2433 ms | — |
+| inspect | step 7: nextPost | 1 | 200 | 1310 ms | 1105 ms | — |
+| inspect | post: "…", 73 words, 1 image(s), scrolled 757 px | 1 | 200 | 2625 ms | 1086 ms | — |
 | inspect | step 12: nextPost | 1 | 200 | 2069 ms | 1288 ms | — |
 | inspect | step 28: scroll 1 x 700px | 1 | 200 | 2061 ms | 434 ms | — |
 | inspect | step 30: clickRole button "…" | 1 | 200 | 1613 ms | 2299 ms | — |
 | inspect | step 4: nextPost | 1 | 200 | 2013 ms | 955 ms | — |
-| inspect | step 8: nextPost | 1 | 200 | 1654 ms | 985 ms | — |
 | inspect | step 11: nextPost | 1 | 200 | 3464 ms | 1020 ms | — |
 | inspect | step 3: scroll 4-7 x 300-600px | 1 | 200 | 1708 ms | 964 ms | — |
 

@@ -15,7 +15,9 @@ export function renderInspectStep(result: InspectStepResult, showElements = 40):
   if (result.mouse) lines.push(`  mouse: ${result.mouse.legs} humanized leg(s), ${result.mouse.idleMoves} idle drift move(s) (mouse.json)`)
   if (result.rea) lines.push(`  rea: exit ${result.rea.code}${result.rea.evidenceId ? `, ${result.rea.evidenceId}` : ''}${result.rea.records !== undefined ? `, ${result.rea.records} record(s)` : ''}`)
   const elements = result.interactive ?? []
-  lines.push(`  ${elements.length} element(s) on the page${elements.length ? ' (use the ref to click/type):' : ''}`)
+  const total = result.interactiveTotal ?? elements.length
+  const fresh = result.interactiveNew === undefined ? '' : `, ${result.interactiveNew} new since the last step${result.interactiveNew ? ', listed first' : ''}`
+  lines.push(`  ${total} element(s) on the page${fresh}${elements.length ? ' (use the ref to click/type):' : ''}`)
   for (const line of elements.slice(0, showElements)) lines.push(`    ${redactFieldValue(line)}`)
   if (elements.length > showElements) lines.push(`    … ${elements.length - showElements} more in ${result.folder}/snapshot.yml`)
   if (result.folder) lines.push(`  Recorded: ${result.folder} (snapshot.yml, screenshot.png, network.har, rea.json)`)

@@ -67,6 +67,12 @@ describe('renderInspectStep', () => {
     expect(text).toContain('[ref=e5]')
   })
 
+  test('counts every element on the page and says how many the step brought (a scroll\'s new posts, listed first)', () => {
+    const text = renderInspectStep({ ok: true, step: '05_scroll2X700px', url: 'u', interactive: ['- article [ref=e1041]', '- link "Facebook" [ref=e7]'], interactiveTotal: 810, interactiveNew: 1 })
+    expect(text).toContain('810 element(s) on the page, 1 new since the last step, listed first')
+    expect(text.indexOf('e1041')).toBeLessThan(text.indexOf('e7]'))
+  })
+
   test('never shows what is typed in a field (rule 21)', () => {
     const text = renderInspectStep({ ok: true, step: '03_signin', url: 'u', interactive: ['- textbox "Password" [ref=e24]: secretValue', '- textbox "Email or phone" [ref=e21]: someone@example.com', '- button "Log In" [ref=e27]'] })
     expect(text).not.toContain('secretValue')

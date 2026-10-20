@@ -17,19 +17,20 @@ Seen 27 time(s) in 8 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | rea read step 21_postbuttonSeeMore: exit 0, ev_6554716166c312b82c145726603d0285e9ee80b92d3 | 1 | 200 | 764 ms | 18338 ms | — |
-| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T105 | 1 | 200 | 912 ms | 4 ms | — |
-| inspect | page has 64 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T103 | 1 | 200 | 538 ms | 2269 ms | — |
-| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T103 | 2 | 200 | 660–845 ms | 935–85573 ms | — |
-| inspect | page has 67 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T102 | 2 | 200 | 539–704 ms | 208498–508771 ms | — |
-| inspect | page has 46 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T082 | 1 | 200 | 497 ms | 319 ms | — |
-| inspect | rea read step 70_clickany1XLink: exit 1 | 1 | 200 | 396 ms | 271512 ms | — |
-| inspect | page has 45 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T062 | 1 | 200 | 447 ms | 1459 ms | — |
-| inspect | rea read step 24_clickroleButtonNextCard: exit 0, ev_08bd0b0aa3e491db75fd341d53b6ccf63883a | 6 | 200 | 426–5897 ms | 258787–1759534 ms | — |
+| inspect | step 22: dwell 21.38s | 1 | 200 | 764 ms | 20848 ms | — |
+| inspect | post: "…", 50 words, 0 image(s), scrolled 742 px | 1 | 200 | 912 ms | 443 ms | — |
+| inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 538 ms | 6418 ms | — |
+| inspect | step 31: clickRole button "…" | 1 | 200 | 660 ms | 96068 ms | — |
+| inspect | post: "…", 106 words, 1 image(s) | 1 | 200 | 845 ms | 5619 ms | — |
+| inspect | scroll: +783px in 18 wheel steps, 797 ms | 2 | 200 | 539–704 ms | 216636–516909 ms | — |
+| inspect | step 64: clickRole button "…" | 1 | 200 | 497 ms | 1245 ms | — |
+| inspect | clickAny: 1 link /see owner profile$/ | 3 | 200 | 396–426 ms | 219147–519435 ms | — |
+| inspect | step 20: clickRole button "…" | 1 | 200 | 447 ms | 4790 ms | — |
+| inspect | step 24: clickRole button "…" | 6 | 200 | 426–5897 ms | 266562–1767309 ms | — |
 | inspect | step 17: scrollIn heading "…" 2-3 x 300-500px | 1 | 200 | 412 ms | 36 ms | — |
 | inspect | step 44: dwell 18s | 1 | 200 | 474 ms | 790 ms | — |
-| inspect | page has 45 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 8 | 200 | 386–1201 ms | 173296–1675414 ms | — |
-| inspect | now on /reel/<id> "…" after 2875 ms; 1 request(s) | 1 | 200 | 425 ms | 2181 ms | — |
+| inspect | step 82: dwell 1s | 1 | 200 | 425 ms | 5069 ms | — |
+| inspect | step 96: clickRole button "…" | 6 | 200 | 386–1201 ms | 184115–1686233 ms | — |
 
 <!-- facts:end -->
 

@@ -17,9 +17,9 @@ Seen 3 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | rea read step 24_clickroleButtonNextCard: exit 0, ev_08bd0b0aa3e491db75fd341d53b6ccf63883a | 1 | 200 | 2948 ms | 1250229 ms | — |
+| inspect | step 24: clickRole button "…" | 1 | 200 | 2948 ms | 1258004 ms | — |
 | inspect | step 3: clickRole button "…" | 1 | 200 | 2988 ms | 5480 ms | — |
-| inspect | page has 46 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 1 | 200 | 3485 ms | 2566 ms | — |
+| inspect | step 71: dwell 1s | 1 | 200 | 3485 ms | 8254 ms | — |
 
 <!-- facts:end -->
 

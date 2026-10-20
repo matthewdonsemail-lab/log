@@ -17,7 +17,7 @@ Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | POST 200 fetchMWChatVideoAutoplaySettingQuery (574 ms) | 1 | 200 | 512 ms | 3999 ms | — |
+| inspect | step 38: goto /marketplace/ | 1 | 200 | 512 ms | 22071 ms | — |
 
 <!-- facts:end -->
 

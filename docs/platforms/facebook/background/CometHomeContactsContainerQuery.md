@@ -17,10 +17,10 @@ Seen 4 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | rea read step 24_clickroleButtonNextCard: exit 0, ev_08bd0b0aa3e491db75fd341d53b6ccf63883a | 1 | 200 | 609 ms | 1250236 ms | A server error field_exception occured. Check server logs for details. |
+| inspect | step 24: clickRole button "…" | 1 | 200 | 609 ms | 1258011 ms | A server error field_exception occured. Check server logs for details. |
 | inspect | step 3: clickRole button "…" | 1 | 200 | 623 ms | 5487 ms | — |
-| inspect | page has 46 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 1 | 200 | 417 ms | 2573 ms | A server error field_exception occured. Check server logs for details. |
-| inspect | page has 45 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 1 | 200 | 389 ms | 1294644 ms | A server error field_exception occured. Check server logs for details. |
+| inspect | step 71: dwell 1s | 1 | 200 | 417 ms | 8261 ms | A server error field_exception occured. Check server logs for details. |
+| inspect | step 96: clickRole button "…" | 1 | 200 | 389 ms | 1305463 ms | A server error field_exception occured. Check server logs for details. |
 
 <!-- facts:end -->
 

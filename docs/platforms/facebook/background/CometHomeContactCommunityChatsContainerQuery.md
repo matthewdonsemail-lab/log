@@ -17,10 +17,10 @@ Seen 4 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | rea read step 24_clickroleButtonNextCard: exit 0, ev_08bd0b0aa3e491db75fd341d53b6ccf63883a | 1 | 200 | 593 ms | 1250233 ms | — |
+| inspect | step 24: clickRole button "…" | 1 | 200 | 593 ms | 1258008 ms | — |
 | inspect | step 3: clickRole button "…" | 1 | 200 | 404 ms | 5483 ms | — |
-| inspect | page has 46 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 1 | 200 | 399 ms | 2570 ms | — |
-| inspect | page has 45 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 1 | 200 | 389 ms | 1294639 ms | — |
+| inspect | step 71: dwell 1s | 1 | 200 | 399 ms | 8258 ms | — |
+| inspect | step 96: clickRole button "…" | 1 | 200 | 389 ms | 1305458 ms | — |
 
 <!-- facts:end -->
 

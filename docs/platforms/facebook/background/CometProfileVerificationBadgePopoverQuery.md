@@ -17,9 +17,9 @@ Seen 4 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | rea read step 70_clickany1XLink: exit 1 | 1 | 200 | 340 ms | 215712 ms | — |
+| inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 340 ms | 222326 ms | — |
 | inspect | step 21: clickRole button "…" | 1 | 200 | 459 ms | 3352 ms | — |
-| inspect | now on /reel/<id> "…" after 2890 ms; 0 request(s) | 2 | 200 | 347 ms | 731–1268 ms | — |
+| inspect | step 78: dwell 1s | 2 | 200 | 347 ms | 3630–4167 ms | — |
 
 <!-- facts:end -->
 

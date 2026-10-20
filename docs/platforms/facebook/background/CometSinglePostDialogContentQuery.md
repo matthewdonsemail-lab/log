@@ -17,10 +17,10 @@ Seen 6 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T105 | 2 | 200 | 1292–1776 ms | 27–53 ms | — |
-| inspect | scroll: +1731px in 35 wheel steps, 2093 ms | 2 | 200 | 1449–1562 ms | 622–882 ms | — |
-| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T103 | 1 | 200 | 1578 ms | 9529 ms | — |
-| inspect | rea read step 14_nextpost: exit 0, ev_6209fcf52acf0f7a90e081fed57af389f95de778645cfd8464dd | 1 | 200 | 1427 ms | 52912 ms | — |
+| inspect | post: "…", 66 words, 0 image(s), scrolled 776 px | 1 | 200 | 1292 ms | 533 ms | — |
+| inspect | post: "…", 49 words, 0 image(s), scrolled 737 px | 1 | 200 | 1776 ms | 510 ms | — |
+| inspect | scroll: +1731px in 35 wheel steps, 2093 ms | 3 | 200 | 1449–1578 ms | 622–20785 ms | — |
+| inspect | nextPost failed: TimeoutError: Locator.evaluate: Timeout 30000ms exceeded. | 1 | 200 | 1427 ms | 57732 ms | — |
 
 <!-- facts:end -->
 

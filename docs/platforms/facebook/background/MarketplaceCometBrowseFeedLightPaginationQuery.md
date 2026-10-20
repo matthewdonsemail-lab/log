@@ -18,9 +18,9 @@ Seen 10 time(s) in 7 run(s).
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 1: goto /marketplace/ | 4 | 200 | 2082–2951 ms | 6416–7692 ms | — |
-| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1223 | 2 | 200 | 4323–4349 ms | 2864–8120 ms | — |
+| inspect | a step (older run, split by its report lines) | 2 | 200 | 4323–4349 ms | 2864–8120 ms | — |
 | inspect | step 2: waitRole link "…" | 2 | 200 | 3828–4805 ms | 3804–8264 ms | — |
-| inspect | page has 0 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T1216 | 2 | 200 | 2562–9527 ms | 397–3665 ms | — |
+| inspect | a step (older run, split by its report lines) | 2 | 200 | 2562–9527 ms | 397–3665 ms | — |
 
 <!-- facts:end -->
 

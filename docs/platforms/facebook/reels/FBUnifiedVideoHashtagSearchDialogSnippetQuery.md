@@ -18,8 +18,7 @@ Seen 4 time(s) in 2 run(s).
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 1: goto /reel/ | 1 | 200 | 389 ms | 15950 ms | — |
-| inspect | step 2: clickRole button "…" | 1 | 200 | 378 ms | 57 ms | — |
-| inspect | rea read step 01_gotoHttpsWwwFacebook: exit 0, ev_89bbdc6903778aed1be1fa77542b3415430e6712 | 1 | 200 | 327 ms | 5555 ms | — |
+| inspect | step 2: clickRole button "…" | 2 | 200 | 327–378 ms | 57–8108 ms | — |
 | inspect | step 35: clickRole button "…" | 1 | 200 | 362 ms | 4755 ms | — |
 
 <!-- facts:end -->

@@ -104,7 +104,11 @@ export interface InspectStepResult {
   requests?: number
   notable?: string[]
   rea?: { code: number; evidenceId: string | null; records?: number }
+  /** Up to 80 interactive lines: the ones new since the last step first, then the rest in page order. */
   interactive?: string[]
+  /** Every interactive line on the page, and how many of them the step brought. */
+  interactiveTotal?: number
+  interactiveNew?: number
   folder?: string
   /** When the page landed (with `urlChange`, the new URL), in ms from the step's start. */
   landedMs?: number

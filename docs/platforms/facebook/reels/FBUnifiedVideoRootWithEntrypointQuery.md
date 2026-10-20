@@ -17,11 +17,10 @@ Seen 6 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | POST 200 /video/unified_cvc/ (420 ms) | 1 | 200 | 2173 ms | 2759 ms | — |
-| inspect | POST 200 /ajax/bulk-route-definitions/ (688 ms) | 1 | 200 | 2370 ms | 2242 ms | — |
-| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T105 | 1 | 200 | 2277 ms | 1734 ms | — |
-| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T103 | 2 | 200 | 2874–4099 ms | 2876–8745 ms | — |
-| inspect | rea read step 72_clickroleButtonUnmute: exit 0, ev_183079e9de4526e8398a72e352c35b5ac9ce8fe | 1 | 200 | 1547 ms | 72131 ms | — |
+| inspect | scroll: +799px in 19 wheel steps, 1313 ms | 1 | 200 | 2173 ms | 9154 ms | — |
+| inspect | post: "…", 103 words, 0 image(s), scrolled 58 px | 2 | 200 | 2277–2370 ms | 7233–9536 ms | — |
+| inspect | scroll: +700px in 16 wheel steps, 1140 ms | 2 | 200 | 2874–4099 ms | 14677–20546 ms | — |
+| inspect | clickRole failed: RuntimeError: no visible button "…" | 1 | 200 | 1547 ms | 79232 ms | — |
 
 <!-- facts:end -->
 

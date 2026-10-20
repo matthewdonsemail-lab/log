@@ -13,10 +13,11 @@
 | Called from | `FBReelsEntityDialogImpl.react` |
 | rea | `ev_1c9ecb519e36a75e908d872df0a78df956a3b414ed42530799e05c7a882b1839` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | scroll: +700px in 15 wheel steps, 766 ms | 1 | 200 | 1181 ms | 4178 ms | — |
 | inspect | step 5: scroll 2 x 600-800px | 1 | 200 | 716 ms | 559 ms | — |
 
 <!-- facts:end -->

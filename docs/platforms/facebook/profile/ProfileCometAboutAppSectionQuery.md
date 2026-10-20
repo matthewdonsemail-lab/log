@@ -17,7 +17,7 @@ Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | POST 200 /ajax/relay-ef/ (347 ms) | 1 | 200 | 506 ms | 302 ms | — |
+| inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 506 ms | 10813 ms | — |
 
 <!-- facts:end -->
 

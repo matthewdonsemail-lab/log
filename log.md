@@ -3143,3 +3143,89 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `src/group/read`, the group read's extractor (issue #27, step 3), built from the live recording (run 20261020T134155). `postsFromFeedResponse` reads one streamed answer of `GroupsCometFeedRegularStoriesPaginationQuery`: the first feed unit under `data.node.group_feed.edges`, each `$stream` chunk's `data.node`, and the deferred `page_info` (`endCursor`, `hasNextPage`). `postOf` keeps a post only with its `post_id`, its group (`content.story.target_group.id`, this group only) and its `creation_time`, as facebook-camofox-client's `validate_identity` did, and returns why it didn't (`missingPostId`, `missingGroup`, `wrongGroup`, `missingCreationTime`), counted in `rejected`, never patched. A kept post has its author (`actors[0]`), text (`message.text`), permalink (`wwwURL`) and `feedbackId`. `feedResponses` takes the feed answers out of a recorded step's HAR by the query's name; `newPosts` is facebook-camofox-client's `listen.py` cursor: only posts newer than the last post id and the time watermark, newest first, the cursor only moving forward. `docs/groupRead.md` marks step 3 done for the feed query; the posts embedded in the group page's HTML wait for a recording made with the 16 MB document limit.
 Why: matt asked to resume the group-read work from the recording, after the scope on #27.
 Checked: `bun test src/group/read` 6 pass (a fixture in the recorded shape with invented values: every field, every rejection, a duplicate, a line cut short, the HAR filter, the cursor). On the real recording, run locally and not committed: 9 posts over 3 pages, none rejected, each with its id, group, time, author, permalink and feedback id, text on 6 (photo and shared posts have none), next page true. All lefthook gates pass; `tsc --noEmit` clean; `bun test` 727 pass, 0 fail.
+
+## 2026-10-20 14:56Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/groupRead.md`: edited
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuShortcutsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSetProductItemSeenStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNewsFeedPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometProfileVerificationBadgePopoverQuery.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometSinglePostDialogContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometUFIFeedbackReactMutation.md`: edited
+- `docs/platforms/facebook/background/CometUFIReactionIconTooltipContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometUnifiedShareSheetDialogQuery.md`: edited
+- `docs/platforms/facebook/background/FBReelsEntityDialogImplQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPC2CMediaViewerWithImagesQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPRightColumnAdsQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/UnifiedShareSheetMessengerSectionQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/ajaxRouteDefinition.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useCIXLogMutation.md`: edited
+- `docs/platforms/facebook/background/useInstreamAdsHaloFetcherQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/checkpoint/UFACAISupportChatExperienceQuery.md`: edited
+- `docs/platforms/facebook/checkpoint/useCometAISupportConversationLoggerMutation.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometFeedRegularStoriesPaginationQuery.md`: edited
+- `docs/platforms/facebook/groups/README.md`: new file
+- `docs/platforms/facebook/groups/useGroupsCometVisitMutation.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterIdentityUsernameEditDialogRouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterIdentityUsernameSettingsDialogRouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterPersonalCentralIdentityDialogV2Query.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterPersonalCentralIdentityDialogV2RouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometAboutAppSectionQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometFeedComposerRootQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometHeaderQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTopAppSectionQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoContainerQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoEntityDialogImplQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoHashtagSearchDialogSnippetQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoRootWithEntrypointQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoSeenStateMutation.md`: edited
+- `python/session/inspectSession.py`: changed class Inspector
+- `src/browser/inspect/helpers/renderInspectStep.ts`: changed function renderInspectStep
+- `src/browser/inspect/inspect.test.ts`: added test "counts every element on the page and says how many the step brought (a scroll's new posts, listed first)"
+- `src/browser/inspect/types.ts`: changed interface InspectStepResult
+- `src/group/read/helpers/extractPosts.ts`: added function pageOf, function postsFromGroupPage · changed function postsFromFeedResponse, function newPosts
+- `src/group/read/read.test.ts`: added test "the first posts, from the group page's own HTML: the feed under data.group, the header unit skipped, not rejected", test "posts that share the watermark's second are each read once, never lost" · changed test "a first read keeps everything, newest first, and the cursor moves to the newest"
+- `src/group/read/types.ts`: changed interface FeedPage, interface ReadCursor
+- `src/rea/capture/capture.test.ts`: added test "a step's report lines are not steps: the requests after them stay the step's"
+- `src/rea/capture/helpers/splitHarBySteps.ts`: added const REPORT_LINE · changed function parseSteps
+- `src/rea/facebookClient/helpers/renderOperationDoc.ts`: changed function renderSightings
+
+What changed: Fixes from a new live group read (run 20261020T143506, Bethlehem in "Recommendations of Bethlehem, PA", through the log MCP: inspect start --detach, a snapshot, three scrolls; read-only), each found in its HAR or snapshots. `src/group/read`: `postsFromGroupPage` reads the first posts from the group page's own HTML, now recorded whole (2.3 MB): its JSON script blocks hold `__bbox.result`s in the feed query's chunk shapes, with the feed under `data.group` rather than `data.node`, which `pageOf` now finds under either; the page's first unit is a "New posts" `GroupsSectionHeaderUnit`, so a unit that isn't a `Story` is counted in `skipped`, not rejected; posts can share a second, so `newPosts` keeps every id at the watermark (`idsAtWatermark`) and none is read twice or lost. `python/session/inspectSession.py`: a step counted only the first 80 interactive lines and listed the same header every time (the page had 810 after the scrolls); it now counts them all and lists first those new since the last step (`interactiveTotal`, `interactiveNew`, shown by `renderInspectStep`). `parseSteps` (`REPORT_LINE`): a step's report lines (now on, the request echoes, mouse, rea read, page has) are not steps, so the step HARs and the docs' "Our step" name the action and not a report with a local path; docs kept from removed runs show such sightings as "a step (older run, split by its report lines)". `log capture --docs` rebuilt from the run. `docs/platforms/facebook/groups/README.md` maps every control on a group page (110 kinds) with what it does, whether it writes, and the request it sends where a run recorded it.
+Why: matt asked to use log inspect over the MCP, read the HARs for anything new and fix what they showed, then whether the work sits in a properly named domain and a map of every interaction on the page.
+Checked: on run 20261020T143506, 13 posts (1 from the HTML, 12 over 4 feed pages), none rejected, the header unit skipped, newest first throughout, a second read with the cursor keeps 0; run 20261020T134155 still gives its 9. New tests: the page HTML shape, same-second posts, the element count, report lines. No doc keeps a report-line step or a local path; every link in the groups README resolves. `bun run check` (naming, layout, browsers, agentHooks, docs, tsc, 731 tests pass, 0 fail), `check:facebookClientDocs` (145 requests, every GraphQL slice read by rea).

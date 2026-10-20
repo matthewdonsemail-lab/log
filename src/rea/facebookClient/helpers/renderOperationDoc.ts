@@ -1,3 +1,4 @@
+import { REPORT_LINE } from '../../capture/helpers/splitHarBySteps'
 import type { ClientOperation, OperationSighting } from '../types'
 
 export const FACTS_START = '<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->'
@@ -44,7 +45,9 @@ const range = (values: number[]): string => {
 export function renderSightings(sightings: OperationSighting[]): string {
   const groups = new Map<string, OperationSighting[]>()
   for (const s of sightings) {
-    const key = `${s.action}\u0000${stepLabel(s.step)}`
+    // A sighting kept from a run split before report lines stopped being steps: its step is unknown, never the report.
+    const step = REPORT_LINE.test(s.step) ? 'a step (older run, split by its report lines)' : stepLabel(s.step)
+    const key = `${s.action}\u0000${step}`
     groups.set(key, [...(groups.get(key) ?? []), s])
   }
   const rows = [...groups].map(([key, list]) => {

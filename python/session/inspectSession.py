@@ -378,8 +378,14 @@ class Inspector:
         else:
             rea = await run_rea(rea_copy(har, entries))
             log(f"  rea read the step: exit {rea['code']}{', ' + rea['evidenceId'] if rea.get('evidenceId') else ''}")
-        interactive = [l.strip() for l in snapshot.splitlines() if INTERACTIVE.search(l)][:80]
-        log(f"  page has {len(interactive)} interactive element(s); snapshot: {folder / 'snapshot.yml'}")
+        # Every interactive line, counted; the ones this step brought (refs are stable across snapshots)
+        # listed first, so a scroll's new posts show instead of the same header each time (run 20261020T143506).
+        every = [l.strip() for l in snapshot.splitlines() if INTERACTIVE.search(l)]
+        before = getattr(self, "last_interactive", None)
+        fresh = [l for l in every if l not in before] if before is not None else every
+        interactive = (fresh + [l for l in every if l in before] if before is not None else every)[:80]
+        self.last_interactive = set(every)
+        log(f"  page has {len(every)} interactive element(s), {len(fresh)} new since the last step; snapshot: {folder / 'snapshot.yml'}")
         ok = error is None and (not expect or expect_seen)
         if error is None and expect and not expect_seen:
             error = f"expected request {expect} was not sent"
@@ -387,7 +393,7 @@ class Inspector:
                 "step": name, "action": action, "args": [label] if label else [],
                 **getattr(self, "extra", {}),
                 "ms": round((time.monotonic() - started) * 1000), "landedMs": landed_ms, "url": url, "title": title,
-                "requests": len(entries), "notable": seen, "mouse": {"legs": len(mouse["legs"]), "idleMoves": mouse["idleMoves"]}, "rea": rea, "interactive": interactive, "folder": str(folder)}
+                "requests": len(entries), "notable": seen, "mouse": {"legs": len(mouse["legs"]), "idleMoves": mouse["idleMoves"]}, "rea": rea, "interactive": interactive, "interactiveTotal": len(every), "interactiveNew": len(fresh), "folder": str(folder)}
 
     async def read_later(self, har: Path, entries: list[dict[str, Any]], name: str) -> None:
         rea = await run_rea(rea_copy(har, entries))

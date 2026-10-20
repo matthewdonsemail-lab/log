@@ -32,6 +32,8 @@ export type RejectReason = "missingPostId" | "missingGroup" | "wrongGroup" | "mi
 export interface FeedPage {
   posts: GroupPost[];
   rejected: Partial<Record<RejectReason, number>>;
+  /** Feed units that aren't posts, by `__typename` (the page's "New posts" `GroupsSectionHeaderUnit`). */
+  skipped: Record<string, number>;
   /** `page_info.end_cursor` and `has_next_page`, from the response's last (deferred) chunk; null when it had none. */
   endCursor: string | null;
   hasNextPage: boolean | null;
@@ -42,4 +44,6 @@ export interface ReadCursor {
   lastPostId: string | null;
   /** The newest `creationTime` read, unix seconds. */
   watermark: number | null;
+  /** Every post id read at the watermark's second: posts can share one, and none of them is read twice or lost. */
+  idsAtWatermark?: string[];
 }

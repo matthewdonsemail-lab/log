@@ -18,7 +18,7 @@ Seen 2 time(s) in 2 run(s).
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | flow | step 5: clickRole button "…" | 1 | 200 | 836 ms | 10692 ms | — |
-| inspect | now on /profile.php "…" after 2734 ms; 0 request(s) | 1 | 200 | 531 ms | 1448 ms | — |
+| inspect | a step (older run, split by its report lines) | 1 | 200 | 531 ms | 1448 ms | — |
 
 <!-- facts:end -->
 

@@ -17,8 +17,8 @@ Seen 3 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | page has 62 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T234 | 1 | 200 | 407 ms | 91185 ms | — |
-| inspect | page has 63 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T232 | 2 | 200 | 400–465 ms | 12215–46671 ms | — |
+| inspect | a step (older run, split by its report lines) | 1 | 200 | 407 ms | 91185 ms | — |
+| inspect | a step (older run, split by its report lines) | 2 | 200 | 400–465 ms | 12215–46671 ms | — |
 
 <!-- facts:end -->
 

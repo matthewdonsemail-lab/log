@@ -15,14 +15,21 @@ export interface StepHar {
   har: Record<string, unknown>
 }
 
-/** `steps.jsonl` → steps in time order; unreadable lines are skipped. Pure. */
+/**
+ * A step's own report, written after its action: where the page landed, each request it saw, the mouse,
+ * rea's reading, the element count. Not an action, so not a step: the requests during it are still the
+ * step's (the page keeps loading), and a doc never names one as "Our step" (run 20261020T143506).
+ */
+export const REPORT_LINE = /^\s*(?:now on |rea read |page has |mouse: |(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS) \d{3} )/
+
+/** `steps.jsonl` → steps in time order; unreadable lines and a step's report lines are skipped. Pure. */
 export function parseSteps(text: string): RunStep[] {
   const steps: RunStep[] = []
   for (const line of text.split(/\r?\n/)) {
     if (!line.trim()) continue
     try {
       const value = JSON.parse(line) as Partial<RunStep>
-      if (typeof value.at === 'string' && typeof value.step === 'string' && !Number.isNaN(Date.parse(value.at))) steps.push({ at: value.at, step: value.step })
+      if (typeof value.at === 'string' && typeof value.step === 'string' && !Number.isNaN(Date.parse(value.at)) && !REPORT_LINE.test(value.step)) steps.push({ at: value.at, step: value.step })
     } catch {
       // a half-written last line from a killed run
     }

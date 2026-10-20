@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { FEED_QUERY, feedResponses, newPosts, postOf, postsFromFeedResponse } from "./index.ts";
+import { FEED_QUERY, feedResponses, newPosts, postOf, postsFromFeedResponse, postsFromGroupPage } from "./index.ts";
 
 const GROUP = "4191018610937243";
 
@@ -64,6 +64,22 @@ describe("group read: posts from the feed query", () => {
     expect(postsFromFeedResponse(`for (;;);${text}`, GROUP).posts.map((p) => p.postId)).toEqual(["301", "302"]);
   });
 
+  test("the first posts, from the group page's own HTML: the feed under data.group, the header unit skipped, not rejected", () => {
+    const bbox = (result: unknown) => `<script type="application/json" data-sjs>${JSON.stringify({ require: [["ScheduledServerJS", "handle", null, [{ __bbox: { require: [["RelayPrefetchedStreamCache", "next", [], ["adp_CometGroupDiscussionRootSuccessQueryRelayPreloader_1", { __bbox: { complete: false, result } }]]] } }]]] })}</script>`;
+    const header = { __typename: "GroupsSectionHeaderUnit", title: { text: "New posts" }, target_group: { id: GROUP } };
+    const html = [
+      "<html><body>",
+      bbox({ data: { group: { id: GROUP, group_feed: { edges: [{ node: header, cursor: "h" }] } } }, extensions: {} }),
+      `<script type="application/json" data-sjs>not json</script>`,
+      bbox({ label: "GroupsCometFeedRegularStories_paginationGroup$stream$GroupsCometFeedRegularStories_group_group_feed", path: ["group", "group_feed", "edges", 1], data: { node: unit("501", 900), cursor: "c1" } }),
+      bbox({ label: "GroupsCometFeedRegularStories_paginationGroup$defer$GroupsCometFeedRegularStories_group_group_feed$page_info", path: ["group", "group_feed"], data: { page_info: { end_cursor: "PAGE1", has_next_page: true } } }),
+      "</body></html>",
+    ].join("");
+    const page = postsFromGroupPage(html, GROUP);
+    expect(page.posts.map((p) => p.postId)).toEqual(["501"]);
+    expect(page).toMatchObject({ rejected: {}, skipped: { GroupsSectionHeaderUnit: 1 }, endCursor: "PAGE1", hasNextPage: true });
+  });
+
   test("the feed responses of a recorded step, by the query's name", () => {
     const entry = (name: string, text: string) => ({ request: { postData: { params: [{ name: "fb_api_req_friendly_name", value: name }] } }, response: { content: { text } } });
     const har = { log: { entries: [entry("CometHovercardQueryRendererQuery", "x"), entry(FEED_QUERY, "feed1"), { request: { postData: { text: `fb_api_req_friendly_name=${FEED_QUERY}&doc_id=1` } }, response: { content: { text: "feed2" } } }] } };
@@ -75,7 +91,17 @@ describe("group read: the cursor (facebook-camofox-client's listen.py)", () => {
   const posts = postsFromFeedResponse(response([unit("401", 300), unit("402", 200), unit("403", 100)]), GROUP).posts;
 
   test("a first read keeps everything, newest first, and the cursor moves to the newest", () => {
-    expect(newPosts(posts, { lastPostId: null, watermark: null })).toEqual({ posts: [posts[0], posts[1], posts[2]], cursor: { lastPostId: "401", watermark: 300 } });
+    expect(newPosts(posts, { lastPostId: null, watermark: null })).toEqual({ posts: [posts[0], posts[1], posts[2]], cursor: { lastPostId: "401", watermark: 300, idsAtWatermark: ["401"] } });
+  });
+
+  test("posts that share the watermark's second are each read once, never lost", () => {
+    const same = postsFromFeedResponse(response([unit("601", 500), unit("602", 500), unit("603", 400)]), GROUP).posts;
+    const first = newPosts(same.filter((p) => p.postId !== "602"), { lastPostId: null, watermark: null });
+    expect(first.cursor).toEqual({ lastPostId: "601", watermark: 500, idsAtWatermark: ["601"] });
+    const later = newPosts(same, first.cursor);
+    expect(later.posts.map((p) => p.postId)).toEqual(["602"]);
+    expect(later.cursor.idsAtWatermark).toEqual(["601", "602"]);
+    expect(newPosts(same, later.cursor).posts).toEqual([]);
   });
 
   test("a later read keeps only what is newer; with nothing new the cursor stays", () => {
