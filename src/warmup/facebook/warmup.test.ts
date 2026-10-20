@@ -140,6 +140,6 @@ describe('the feed: Listaro stage 1 as a warm-up activity', () => {
     const feed = FACEBOOK_ACTIVITIES.feed
     expect(feed.steps.map((s) => s.id)).toEqual(['openFeed', 'settle', 'readFeed', 'like', 'openMarketplace', 'lookMarketplace', 'scrollMarketplace'])
     expect(feed.steps.find((s) => s.id === 'like')).toMatchObject({ likes: true, clicks: true, expect: { shows: { role: 'button', name: 'Remove Like' } } })
-    expect(feed.knownIssues[0]).toContain('not recorded yet')
+    expect(feed.steps.filter((s) => s.recorded).map((s) => s.id)).toEqual(['openFeed', 'readFeed', 'like', 'openMarketplace', 'scrollMarketplace'])
   })
 })
