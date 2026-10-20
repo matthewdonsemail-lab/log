@@ -13,16 +13,35 @@
 | Called from | — |
 | rea | `ev_6181f0d02a60d00c8c87b8bb715761dc6ca89cbe2b273bc0d89acff41087fe5f` |
 
-Seen 256 time(s) in 12 run(s).
+Seen 295 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 18 | 200 | 329–2023 ms | 7504–19936 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 21 | 200 | 329–2023 ms | 6733–19936 ms | — |
+| inspect | step 2: snapshot | 4 | 200 | 360–1507 ms | 7961–14754 ms | — |
+| inspect | step 3: clickRole tab "…" | 4 | 200 | 457–677 ms | 5426–9746 ms | — |
+| inspect | step 4: clickRole tab "…" | 3 | 200 | 497–627 ms | 517–6804 ms | — |
+| inspect | clickRole failed: RuntimeError: the element kept moving under the cursor: the point is on  | 1 | 200 | 391 ms | 5120 ms | — |
+| inspect | step 7: clickRole tab "…" | 2 | 200 | 426–461 ms | 6021–6410 ms | — |
+| inspect | step 8: clickRole tab "…" | 1 | 200 | 679 ms | 2628 ms | — |
+| inspect | step 12: clickRole button "…" | 1 | 200 | 360 ms | 591 ms | — |
+| inspect | step 18: clickRole button "…" | 2 | 200 | 329–616 ms | 74–1336 ms | — |
+| inspect | step 20: clickRole button "…" | 3 | 200 | 348–582 ms | 7449–8619 ms | — |
+| inspect | step 25: goto /groups/<id>/questions | 6 | 200 | 342–1153 ms | 7166–15187 ms | — |
+| inspect | step 26: clickRole button "…" | 1 | 200 | 357 ms | 2876 ms | — |
+| inspect | step 27: clickRole button "…" | 2 | 200 | 349–569 ms | 6272–6889 ms | — |
+| inspect | step 28: clickRole menuitem "…" | 2 | 200 | 348–351 ms | 7752–11359 ms | — |
+| inspect | scroll: +428px in 11 wheel steps, 688 ms | 2 | 200 | 348–643 ms | 5595–17741 ms | — |
+| inspect | scroll failed: ValueError: invalid literal for int() with base 10: '' | 1 | 200 | 539 ms | 11211 ms | — |
+| inspect | step 31: press PageUp | 1 | 200 | 1487 ms | 17980 ms | — |
+| inspect | step 42: clickRole tab "…" | 1 | 200 | 607 ms | 14601 ms | — |
+| inspect | scroll: +705px in 15 wheel steps, 656 ms | 1 | 200 | 551 ms | 21633 ms | — |
+| inspect | step 44: clickRole button "…" | 1 | 200 | 354 ms | 419 ms | — |
+| inspect | scroll: +657px in 17 wheel steps, 1328 ms | 1 | 200 | 607 ms | 9742 ms | — |
 | inspect | scroll: +600px in 13 wheel steps, 891 ms | 1 | 200 | 376 ms | 2922 ms | — |
 | inspect | step 3: clickRole button "…" | 5 | 200 | 307–405 ms | 794–5352 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 5 | 200 | 348–477 ms | 26534–41735 ms | — |
 | inspect | scroll: +700px in 16 wheel steps, 812 ms | 1 | 200 | 360 ms | 2707 ms | — |
-| inspect | step 2: snapshot | 3 | 200 | 360–1507 ms | 9678–14754 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 1000 ms | 4 | 200 | 355–541 ms | 3096–13327 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 672 ms | 1 | 200 | 562 ms | 3123 ms | — |
 | inspect | step 1: goto /groups/<id> | 13 | 200 | 340–496 ms | 9272–137167 ms | — |
@@ -100,7 +119,6 @@ Seen 256 time(s) in 12 run(s).
 | inspect | step 10: clickRole button "…" | 2 | 200 | 329–370 ms | 2196–44571 ms | — |
 | inspect | step 11: goto /reel/ | 2 | 200 | 341–383 ms | 2614–18955 ms | — |
 | inspect | step 13: dwell 6-12s | 1 | 200 | 376 ms | 17492 ms | — |
-| inspect | step 18: clickRole button "…" | 1 | 200 | 329 ms | 74 ms | — |
 | inspect | step 20: goto /reel/<id> | 4 | 200 | 409–1554 ms | 4546–9491 ms | — |
 | inspect | step 21: clickRole button "…" | 1 | 200 | 492 ms | 11141 ms | — |
 | inspect | step 22: goto /reel/ | 3 | 200 | 369–1632 ms | 2429–20067 ms | — |

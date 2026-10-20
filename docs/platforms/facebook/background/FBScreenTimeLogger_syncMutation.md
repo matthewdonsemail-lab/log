@@ -13,10 +13,12 @@
 | Called from | `FBScreenTimeLogger.react` |
 | rea | `ev_9c20c08fbf4c14d62fa5b772be9b8dc2f4b32b06aa445a78cfb8f8ea86ba73c3` |
 
-Seen 27 time(s) in 8 run(s).
+Seen 29 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 23: press Escape | 1 | 200 | 633 ms | 5741 ms | — |
+| inspect | step 39: snapshot | 1 | 200 | 2124 ms | 4241 ms | — |
 | inspect | step 22: dwell 21.38s | 1 | 200 | 764 ms | 20848 ms | — |
 | inspect | post: "…", 50 words, 0 image(s), scrolled 742 px | 1 | 200 | 912 ms | 443 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 538 ms | 6418 ms | — |

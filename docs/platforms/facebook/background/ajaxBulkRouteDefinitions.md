@@ -13,11 +13,41 @@
 | Called from | — |
 | rea | `ev_6181f0d02a60d00c8c87b8bb715761dc6ca89cbe2b273bc0d89acff41087fe5f` |
 
-Seen 428 time(s) in 12 run(s).
+Seen 507 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 23 | 200 | 356–621 ms | 2384–12385 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 34 | 200 | 356–621 ms | 2065–24212 ms | — |
+| inspect | step 3: clickRole tab "…" | 4 | 200 | 873–1022 ms | 9768–9774 ms | — |
+| inspect | step 4: clickRole tab "…" | 4 | 200 | 617–787 ms | 5274–7693 ms | — |
+| inspect | clickRole failed: RuntimeError: the element kept moving under the cursor: the point is on  | 2 | 200 | 419–568 ms | 1771–9124 ms | — |
+| inspect | step 6: clickRole tab "…" | 2 | 200 | 375–657 ms | 3585–7444 ms | — |
+| inspect | step 7: clickRole tab "…" | 1 | 200 | 806 ms | 2304 ms | — |
+| inspect | step 8: clickRole tab "…" | 3 | 200 | 449–766 ms | 1704–11418 ms | — |
+| inspect | step 9: clickRole tab "…" | 2 | 200 | 364–391 ms | 1831–2082 ms | — |
+| inspect | step 10: clickRole tab "…" | 2 | 200 | 368–380 ms | 172–5431 ms | — |
+| inspect | step 11: clickRole tab "…" | 1 | 200 | 362 ms | 7043 ms | — |
+| inspect | step 13: press Escape | 2 | 200 | 644–692 ms | 2174–2175 ms | — |
+| inspect | step 14: clickRole button "…" | 3 | 200 | 348–783 ms | 332–2259 ms | — |
+| inspect | step 17: press Escape | 1 | 200 | 402 ms | 551 ms | — |
+| inspect | step 20: clickRole button "…" | 3 | 200 | 384–924 ms | 472–3364 ms | — |
+| inspect | step 21: press Escape | 1 | 200 | 408 ms | 991 ms | — |
+| inspect | step 22: clickRole button "…" | 1 | 200 | 551 ms | 5085 ms | — |
+| inspect | scroll: +667px in 15 wheel steps, 1063 ms | 3 | 200 | 1011–1122 ms | 865–3231 ms | — |
+| inspect | step 25: goto /groups/<id>/questions | 10 | 200 | 374–1327 ms | 6611–26479 ms | — |
+| inspect | step 26: clickRole button "…" | 2 | 200 | 343–360 ms | 359–1298 ms | — |
+| inspect | step 28: clickRole menuitem "…" | 1 | 200 | 347 ms | 14853 ms | — |
+| inspect | scroll failed: ValueError: invalid literal for int() with base 10: '' | 2 | 200 | 380–464 ms | 213–10916 ms | — |
+| inspect | step 31: press PageUp | 6 | 200 | 451–681 ms | 2193–20798 ms | — |
+| inspect | step 32: clickRole link "…" | 1 | 200 | 817 ms | 3527 ms | — |
+| inspect | step 34: clickRole menuitem "…" | 3 | 200 | 377–446 ms | 2750–16733 ms | — |
+| inspect | scroll: +552px in 12 wheel steps, 516 ms | 1 | 200 | 1493 ms | 11720 ms | — |
+| inspect | scroll: +534px in 14 wheel steps, 844 ms | 1 | 200 | 617 ms | 3290 ms | — |
+| inspect | step 42: clickRole tab "…" | 3 | 200 | 1149–1418 ms | 1659–5963 ms | — |
+| inspect | scroll: +705px in 15 wheel steps, 656 ms | 3 | 200 | 887–1683 ms | 1247–2843 ms | — |
+| inspect | step 45: clickRole button "…" | 2 | 200 | 829–843 ms | 2401–3866 ms | — |
+| inspect | step 47: clickRole button "…" | 2 | 200 | 657–815 ms | 1647–1648 ms | — |
+| inspect | scroll: +657px in 17 wheel steps, 1328 ms | 1 | 200 | 1192 ms | 2618 ms | — |
 | inspect | step 2: scroll 1 x 600px | 1 | 200 | 378 ms | 1233 ms | — |
 | inspect | scroll: +600px in 13 wheel steps, 891 ms | 1 | 200 | 374 ms | 1017 ms | — |
 | inspect | step 3: clickRole button "…" | 5 | 200 | 348–460 ms | 1365–3236 ms | — |
@@ -112,15 +142,12 @@ Seen 428 time(s) in 12 run(s).
 | inspect | step 11: clickRole button "…" | 2 | 200 | 395–552 ms | 561–1606 ms | — |
 | inspect | step 12: clickRole button "…" | 1 | 200 | 531 ms | 572 ms | — |
 | inspect | step 13: clickRole button "…" | 1 | 200 | 971 ms | 495 ms | — |
-| inspect | step 14: clickRole button "…" | 2 | 200 | 348–783 ms | 332–970 ms | — |
 | inspect | step 16: clickRole button "…" | 4 | 200 | 353–1092 ms | 560–3567 ms | — |
 | inspect | step 18: clickRole button "…" | 3 | 200 | 332–371 ms | 429–2446 ms | — |
 | inspect | step 19: clickRole button "…" | 3 | 200 | 330–385 ms | 593–5642 ms | — |
-| inspect | step 20: clickRole button "…" | 2 | 200 | 384–561 ms | 472–1413 ms | — |
 | inspect | step 21: clickRole button "…" | 1 | 200 | 647 ms | 367 ms | — |
 | inspect | step 23: clickRole button "…" | 1 | 200 | 439 ms | 441 ms | — |
 | inspect | step 25: clickRole button "…" | 2 | 200 | 330–349 ms | 1209–2352 ms | — |
-| inspect | step 26: clickRole button "…" | 1 | 200 | 343 ms | 359 ms | — |
 | inspect | step 28: clickRole button "…" | 1 | 200 | 421 ms | 552 ms | — |
 | inspect | step 33: clickRole button "…" | 2 | 200 | 357–2251 ms | 446–2454 ms | — |
 | inspect | step 35: clickRole button "…" | 2 | 200 | 379–487 ms | 426–1501 ms | — |

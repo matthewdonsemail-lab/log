@@ -13,10 +13,12 @@
 | Called from | `CometUFIConversationGuideContainer.react` |
 | rea | `ev_935e23bdd0f1bbad483c8864ac3a297d9f2626846cf37db734cdfc47e418538f` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 4 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 40: clickRole textbox "…" | 1 | 200 | 901 ms | 1142 ms | — |
+| inspect | scroll: +657px in 17 wheel steps, 1328 ms | 1 | 200 | 1369 ms | 4002 ms | — |
 | inspect | step 3: clickRole button "…" | 1 | 200 | 2823 ms | 2527 ms | — |
 | inspect | scroll: +1731px in 35 wheel steps, 2093 ms | 1 | 200 | 837 ms | 3243 ms | — |
 

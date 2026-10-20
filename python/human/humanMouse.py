@@ -83,6 +83,19 @@ TARGETS_JS = """() => {
 # Whether the point is on the element (or inside it): the last look before a press.
 HIT_JS = "([x, y]) => { const hit = document.elementFromPoint(x, y); return { on: !!hit, hit: hit ? (hit.getAttribute('aria-label') || hit.textContent || hit.tagName).trim().slice(0, 60) : '' } }"
 ON_TARGET_JS = "(el, [x, y]) => { const hit = document.elementFromPoint(x, y); return !!hit && (el === hit || el.contains(hit)) }"
+# A point of the element that is the element on screen, nearest its middle first: a neighbour can cover
+# the middle (2026-10-20, run 20261020T153648: a sibling <i> icon over Facebook's "React" button, three
+# times, in a post dialog and the photo viewer). null when no part of it shows.
+VISIBLE_POINT_JS = """(el) => {
+  const r = el.getBoundingClientRect(), points = [];
+  for (const fx of [0.5, 0.3, 0.7, 0.15, 0.85]) for (const fy of [0.5, 0.3, 0.7, 0.15, 0.85]) points.push([r.left + r.width * fx, r.top + r.height * fy]);
+  for (const [x, y] of points) {
+    if (x < 0 || y < 0 || x > innerWidth || y > innerHeight) continue;
+    const hit = document.elementFromPoint(x, y);
+    if (hit && (hit === el || el.contains(hit))) return { x, y };
+  }
+  return null;
+}"""
 # Re-aims before a press: Complainers of Bethlehem, 2026-10-20, the "Related groups" panel opened while the
 # cursor travelled and pushed "Answer questions" 45 px down; the press landed on empty space above it.
 MAX_AIMS = 3
@@ -422,7 +435,9 @@ class HumanMouse(MouseBase):
             self.log(f"  mouse: the target moved from under the cursor ({round(x)},{round(y)} not on it, box {round(box['x'])},{round(box['y'])} {round(box['width'])}x{round(box['height'])}): re-aiming ({attempt + 1}/{MAX_AIMS})")
             await scrollMotion.scroll_into_view(locator, self, self.log)
             box = await locator.bounding_box() or box
-            tx, ty = self.inside(box, 0.3, 0.7, 0.35, 0.65)
+            # Where the element shows, not a random middle point a neighbour may cover.
+            shown = await locator.evaluate(VISIBLE_POINT_JS)
+            tx, ty = (shown["x"], shown["y"]) if shown else self.inside(box, 0.3, 0.7, 0.35, 0.65)
             await self.glide(tx, ty, "correct")
             await asyncio.sleep(self.rng.uniform(0.08, 0.2))
         hit = await self.page.evaluate(HIT_JS, [self.x or 0, self.y or 0])
@@ -563,7 +578,8 @@ class SyncHumanMouse(MouseBase):
             self.log(f"  mouse: the target moved from under the cursor: re-aiming ({attempt + 1}/{MAX_AIMS})")
             scrollMotion.scroll_into_view_sync(locator, self, self.log)
             box = locator.bounding_box() or box
-            tx, ty = self.inside(box, 0.3, 0.7, 0.35, 0.65)
+            shown = locator.evaluate(VISIBLE_POINT_JS)
+            tx, ty = (shown["x"], shown["y"]) if shown else self.inside(box, 0.3, 0.7, 0.35, 0.65)
             self.glide(tx, ty, "correct")
             time.sleep(self.rng.uniform(0.08, 0.2))
         hit = self.page.evaluate(HIT_JS, [self.x or 0, self.y or 0])

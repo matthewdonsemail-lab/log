@@ -13,12 +13,11 @@
 | Called from | `CometUnifiedShareSheetDialog.react` |
 | rea | `ev_7035e27a70b6da58b992c6e61088868e0fe0ad453f923f702505c93025db22f8` |
 
-Seen 3 time(s) in 2 run(s).
+Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | a step (older run, split by its report lines) | 1 | 200 | 951 ms | 91187 ms | — |
-| inspect | a step (older run, split by its report lines) | 2 | 200 | 547–667 ms | 12219–46674 ms | — |
+| inspect | step 20: clickRole button "…" | 1 | 200 | 1864 ms | 1291 ms | — |
 
 <!-- facts:end -->
 

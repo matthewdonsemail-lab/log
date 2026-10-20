@@ -13,10 +13,12 @@
 | Called from | `useGroupsCometTypeaheadBootloadDataSource` |
 | rea | `ev_c2ef8a4628a13bebcc27d99e98aee652489e57518d36f840f2d66654133e643d` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 4 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 40: clickRole textbox "…" | 1 | 200 | 862 ms | 1138 ms | — |
+| inspect | scroll: +657px in 17 wheel steps, 1328 ms | 1 | 200 | 957 ms | 3999 ms | — |
 | inspect | step 3: clickRole button "…" | 1 | 200 | 597 ms | 2524 ms | — |
 | inspect | scroll: +1731px in 35 wheel steps, 2093 ms | 1 | 200 | 2190 ms | 3239 ms | — |
 

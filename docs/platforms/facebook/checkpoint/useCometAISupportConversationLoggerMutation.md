@@ -13,10 +13,11 @@
 | Called from | `useCometAISupportConversationLogger.react` |
 | rea | `ev_9b8131e20d25cf5f2615540fd47b41670ee2c3b239082dde00fe6367de015a5b` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto / | 1 | 200 | 1322 ms | 9345 ms | — |
 | inspect | step 38: goto /marketplace/ | 1 | 200 | 512 ms | 22071 ms | — |
 
 <!-- facts:end -->

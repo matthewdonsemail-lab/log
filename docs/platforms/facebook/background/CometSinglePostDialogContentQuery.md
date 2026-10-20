@@ -13,10 +13,14 @@
 | Called from | `CometSinglePostDialogContent.react` |
 | rea | `ev_201f80db413ddb9f32756c466afa12132645ff9ecc340dc86d410953f02aea70` |
 
-Seen 8 time(s) in 5 run(s).
+Seen 13 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 32: clickRole link "…" | 1 | 200 | 1272 ms | 2049 ms | — |
+| inspect | scroll: +552px in 12 wheel steps, 516 ms | 1 | 200 | 2386 ms | 11587 ms | — |
+| inspect | scroll: +534px in 14 wheel steps, 844 ms | 1 | 200 | 1010 ms | 14075 ms | — |
+| inspect | scroll: +657px in 17 wheel steps, 1328 ms | 2 | 200 | 1401–1527 ms | 1871–2118 ms | — |
 | inspect | step 3: clickRole button "…" | 2 | 200 | 926–972 ms | 907–1084 ms | — |
 | inspect | post: "…", 66 words, 0 image(s), scrolled 776 px | 1 | 200 | 1292 ms | 533 ms | — |
 | inspect | post: "…", 49 words, 0 image(s), scrolled 737 px | 1 | 200 | 1776 ms | 510 ms | — |

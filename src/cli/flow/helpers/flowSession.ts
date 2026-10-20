@@ -24,6 +24,8 @@ export function commandFor(step: FlowStep): { action: InspectAction; args: strin
     case "openAny":
     case "clickAny":
     case "dwell":
+    case "press":
+    case "scrollIn":
       return { action: step.action, args: step.args ?? [] };
     default:
       return { action: step.action, args: [] };

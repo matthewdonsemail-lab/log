@@ -3270,3 +3270,88 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: The group read now reads comments (issue #27). A live recording through the log MCP (run 20261020T151100, Bethlehem in "Recommendations of Bethlehem, PA": a scroll, a post opened by "Leave a comment", a post with comments opened by its link, the dialog scrolled, the comment sort set to Newest, scrolled again; clicks with --live as matt asked, nothing typed, reacted to or sent) showed where a post's comments come from: the post page's own HTML, `CometSinglePostDialogContentQuery`, `CommentListComponentsRootQuery` (picking a sort; Newest is `REVERSE_CHRONOLOGICAL_UNFILTERED_INTENT_V1`) and `CommentsListComponentsPaginationQuery` (scrolling, with `commentsAfterCursor`). `src/group/read/helpers/extractComments.ts`: `commentOf` keeps a comment only with its `legacy_fbid`, its post (`commentIdsOf`: the relay id decodes to `comment:<postId>_<commentId>`), its group (`group_comment_info.group.id`, this group only) and `created_time`, and returns why not (`CommentRejectReason`); a reply's parent comes from `comment_direct_parent`, and a parent stub (`parent_object_ent`, no `legacy_fbid`) is never a comment. `commentsFromResponse`, `commentsFromPostPage` and `commentResponses` (`COMMENT_QUERIES`) give `CommentPage` with the top-level list's `comments.page_info`. `GroupComment` holds the comment, post, group, parent, depth, time, author (with `anonymous`), text, permalink, feedback id and reply count. The JSON helpers the post and comment readers share moved to `helpers/json.ts` (`chunksOf`, `embeddedResults`, `responsesOf`). The two new requests are documented in `docs/platforms/facebook/background/` with their reasoning; `docs/groupRead.md` (step 3b, comments read per matt) and the groups README map (the comment sort and its requests) are updated.
 Why: matt: "I need to see the comments as well. Do that."
 Checked: on run 20261020T151100, the post "Looking for someone to shovel snow…" (16 comments by Facebook's count): 10 in its HTML (Most relevant), 10 on Newest and 5 more on scrolling, 15 distinct, none rejected, each with its id, post, author (one anonymous), link and time, text on 13 (two are photos only); the 16th is filtered as potential spam, which only "All comments" shows. `comments.test.ts` (invented values): the relay id, every field of a comment and a reply, the list's paging over the reply thread's, each rejection, the post page HTML, the three queries. `bun run check` (naming, layout, browsers, agentHooks, docs, tsc, 736 tests pass, 0 fail), `check:facebookClientDocs` (147 requests, every GraphQL slice read by rea).
+
+## 2026-10-20 16:09Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/platforms/facebook/background/CometFeedStoryMenuQuery.md`: new file
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometLinkSharingInlineDisclosureCountQuery.md`: new file
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometSinglePostDialogContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometUFIConversationGuideContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometUnifiedShareSheetDialogQuery.md`: edited
+- `docs/platforms/facebook/background/CommentListComponentsRootQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/GroupsEntityScopedCometTypeaheadDialogQuery.md`: new file
+- `docs/platforms/facebook/background/MAWFetchXMAData_fetchXmaPreviewDataQuery.md`: new file
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/UnifiedShareSheetMessengerSectionQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/triggerGroupsCometHeaderInviteWithEmailExposureQuery.md`: new file
+- `docs/platforms/facebook/background/useCIXLogMutation.md`: edited
+- `docs/platforms/facebook/background/useFeedComposerCometMentionsBootloadDataSourceQuery.md`: new file
+- `docs/platforms/facebook/background/useFeedComposerCometMentionsBootloadDataSourceWithTaggingTransparencyQuery.md`: new file
+- `docs/platforms/facebook/background/useFeedComposerCometMentionsNullstateDataSourceWithTaggingTransparencyQuery.md`: new file
+- `docs/platforms/facebook/background/useIncrementLinkSharingDisclosureImpressionCountMutation.md`: new file
+- `docs/platforms/facebook/background/useLinkSharingCreateWrappedUrlMutation.md`: new file
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/withSearchCometTypeaheadSERPWarmCallDecoratorQuery.md`: edited
+- `docs/platforms/facebook/checkpoint/UFACAISupportChatExperienceQuery.md`: edited
+- `docs/platforms/facebook/checkpoint/useCometAISupportConversationLoggerMutation.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/flows/groupHeaderMenus.md`: new file
+- `docs/platforms/facebook/flows/groupPostComments.md`: new file
+- `docs/platforms/facebook/flows/groupPostDialog.md`: new file
+- `docs/platforms/facebook/flows/groupTabs.md`: new file
+- `docs/platforms/facebook/groups/CometGroupAboutRootQuery.md`: new file
+- `docs/platforms/facebook/groups/CometGroupAnnouncementsRootFeedQuery.md`: new file
+- `docs/platforms/facebook/groups/CometGroupDiscussionRootSuccessQuery.md`: edited
+- `docs/platforms/facebook/groups/CometGroupEventsRootQuery.md`: new file
+- `docs/platforms/facebook/groups/CometGroupRootQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometDiscussionLayoutRootQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometFeedRegularStoriesPaginationQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometFilesTabRootQuery.md`: new file
+- `docs/platforms/facebook/groups/GroupsCometInviteFriendsCategorizedInviteSearchQuery.md`: new file
+- `docs/platforms/facebook/groups/GroupsCometInviteFriendsDialogQuery.md`: new file
+- `docs/platforms/facebook/groups/GroupsCometJoinedActionMenuQuery.md`: new file
+- `docs/platforms/facebook/groups/GroupsCometMembersRootQuery.md`: new file
+- `docs/platforms/facebook/groups/GroupsCometMoreActionMenuQuery.md`: new file
+- `docs/platforms/facebook/groups/GroupsCometPhotosRootQueryContainerQuery.md`: new file
+- `docs/platforms/facebook/groups/GroupsCometQuestionsRootSuccessQuery.md`: new file
+- `docs/platforms/facebook/groups/README.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometMentionsBootloadDataSourceWithTaggingTransparencyQuery.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometMentionsNullstateDataSourceWithTaggingTransparencyQuery.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometTypeaheadBootloadDataSourceQuery.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometVisitMutation.md`: edited
+- `docs/platforms/facebook/groups/useGroupsEntityScopedRecentSearchAndExploreDataSourceQuery.md`: new file
+- `docs/platforms/facebook/login/CometLogoutHandlerQuery.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/photos/CometPhotoRootContentQuery.md`: new file
+- `docs/platforms/facebook/photos/CometPhotoTagLayerQuery.md`: new file
+- `docs/platforms/facebook/workflows.md`: new file
+- `python/human/humanMouse.py`: added const VISIBLE_POINT_JS · changed class HumanMouse, class SyncHumanMouse
+- `python/session/inspectSession.py`: changed def draw
+- `src/browser/flow/definitions/groupHeaderMenus.json`: new file
+- `src/browser/flow/definitions/groupPostComments.json`: new file
+- `src/browser/flow/definitions/groupPostDialog.json`: new file
+- `src/browser/flow/definitions/groupTabs.json`: new file
+- `src/browser/flow/flow.test.ts`: added test "clickRole keeps its own role and name, Escape and scrollIn keep their arguments, a chord and a failure are dropped", test "the group's id is a param, filled on each run"
+- `src/browser/flow/helpers/flowFromRecording.ts`: changed const NOT_CONFIRMING, const ACTED, function flowFromRecording
+- `src/browser/flow/types.ts`: changed type FlowAction, interface FlowStep
+- `src/cli/flow/helpers/flowSession.ts`: changed function commandFor
+
+What changed: Every workflow on a group page mapped live (issue #27, matt: map out all the workflows we can run on the client). Run 20261020T153648 on Bethlehem through `log inspect` (48 steps, one browser; clicks that open things with --live as matt asked; nothing typed, sent, reacted to, shared, invited, joined or left) recorded the seven group tabs, search within the group, the More and Joined menus, the Invite dialog, the Share sheet, a post's actions menu, comments opened inline (Open questions) and in the post dialog, the "All comments" sort, the comment box focused, and the photo viewer. Four read-only flows were made from it with `log flow fromInspect` (`src/browser/flow/definitions/groupTabs|groupHeaderMenus|groupPostComments|groupPostDialog.json`, docs in `docs/platforms/facebook/flows/`, each an MCP tool, `groupId` a parameter); the flow builder (`flowFromRecording.ts`, `types.ts`, `flowSession.ts`) now takes click-by-name, Escape and in-dialog scroll steps and keeps a group id a parameter instead of the account's id. `log capture --docs` documented the 25 new requests (groups tabs and menus, the share sheet's own requests, the post menu, group search, the photo viewer in a new `photos/` domain), each with its reasoning, and the groups README marks those rows recorded. `docs/platforms/facebook/workflows.md` lists the 22 client workflows log-cli runs, the 30 inspect step actions and the gaps, each with its file. Two faults the run hit are fixed: `draw` in `python/session/inspectSession.py` read "-600--500" as an empty number (scrolling up), and now takes negative numbers and ranges; `aim` in `python/human/humanMouse.py` re-aimed at a random point in the middle 30-70% of a target that a neighbouring <i> icon covered (Facebook's React button, refused three times), and now moves to a point of the target that shows on screen (`VISIBLE_POINT_JS`), still pressing only when the point is on it. The README and command diagram are regenerated for the four flow tools.
+Why: matt asked to map out all the CLI inspect tools and every workflow that can be run on the client, with agents doing it live.
+Checked: the run itself (every tab, menu and dialog opened and closed; no checkpoint); Reading (61594131334566) could not be mapped: every page redirects to the video selfie checkpoint, only a person can clear it, the session was stopped without pressing anything. The reaction picker is not recorded: it opens on hover, and `log inspect` has no hover step. `draw` checked on "4-7", "3", "-500", "-600--500", "-50-50" and a bad value; the aim fix is not yet run live. `bun run check` (naming, layout, browsers, agentHooks with 32 MCP tools, docs, tsc, 738 tests pass, 0 fail), `check:facebookClientDocs` (171 requests, every GraphQL slice read by rea).

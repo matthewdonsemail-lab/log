@@ -13,10 +13,11 @@
 | Called from | `useCIXLogMutation` |
 | rea | `ev_861b046d2fca8f66f0fb54a8cbcb72051f984ac968338f63fa57bbc89194bb2d` |
 
-Seen 3 time(s) in 2 run(s).
+Seen 4 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 22: clickRole button "…" | 1 | 200 | 583 ms | 3161 ms | — |
 | inspect | scroll: -577px in 13 wheel steps, 859 ms | 1 | 200 | 503 ms | 3589 ms | — |
 | inspect | scroll: +978px in 22 wheel steps, 1531 ms | 1 | 200 | 468 ms | 1992 ms | — |
 | inspect | step 25: openAny 1-3 x /marketplace/item/ | 1 | 200 | 486 ms | 4053 ms | — |

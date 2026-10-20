@@ -13,10 +13,12 @@
 | Called from | `useGroupsCometMentionsBootloadDataSourceWithTaggingTransparency` |
 | rea | `ev_534f8a3a8503f74518584157008704d25271d0228a6b93408b4f3a7bee430d1f` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 4 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 40: clickRole textbox "…" | 1 | 200 | 493 ms | 1135 ms | — |
+| inspect | scroll: +657px in 17 wheel steps, 1328 ms | 1 | 200 | 875 ms | 3996 ms | — |
 | inspect | step 3: clickRole button "…" | 1 | 200 | 368 ms | 2520 ms | — |
 | inspect | scroll: +1731px in 35 wheel steps, 2093 ms | 1 | 200 | 1056 ms | 3236 ms | — |
 

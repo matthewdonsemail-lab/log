@@ -11,6 +11,8 @@
 export type FlowAction = 'goto' | 'click' | 'fill' | 'upload' | 'signIn' | 'code' | 'solve'
   /** Warm-up steps (rule 35): their ranges are drawn on every run, so the flow never repeats itself exactly. */
   | 'scroll' | 'openAny' | 'clickAny' | 'dwell'
+  /** A key (`Escape` closes a menu or dialog) and the wheel over one element (`scrollIn dialog "<name>"`): their recorded arguments. */
+  | 'press' | 'scrollIn'
 
 export interface FlowStep {
   /** `s03_clickChooseProfilePicture`: stable, camelCase. */
@@ -25,7 +27,7 @@ export interface FlowStep {
   value?: string
   /** The request that confirms the step (`ProfileCometProfilePictureSetMutation`); the run waits for it. */
   expect?: string
-  /** scroll, openAny, clickAny, dwell: the recorded arguments (`["4-7", "300-600"]`, `["/marketplace/item/", "2-4"]`). */
+  /** scroll, openAny, clickAny, dwell, press, scrollIn: the recorded arguments (`["4-7", "300-600"]`, `["/marketplace/item/", "2-4"]`, `["Escape"]`). */
   args?: string[]
   /** What the recording saw: the step it came from, its time, its rea Evidence. */
   recorded: { step: string; ms: number | null; reaEvidenceId: string | null; requests: string[] }

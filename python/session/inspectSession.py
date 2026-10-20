@@ -195,9 +195,12 @@ HITTABLE_JS = """(el) => {
 
 
 def draw(spec: str) -> int:
-    """ "4-7" -> a whole number from 4 to 7; "3" -> 3."""
-    low, _, high = str(spec).partition("-")
-    return random.randint(int(low), int(high or low))
+    """ "4-7" -> a whole number from 4 to 7; "3" -> 3; "-600--500" or "-500" -> upward (a scroll up)."""
+    match = re.fullmatch(r"\s*(-?\d+)\s*(?:-\s*(-?\d+))?\s*", str(spec))
+    if not match:
+        raise ValueError(f"not a number or a range: {spec!r}")
+    low, high = int(match.group(1)), int(match.group(2) or match.group(1))
+    return random.randint(min(low, high), max(low, high))
 
 
 # The page's visible links whose href matches, deduplicated (isolated world).

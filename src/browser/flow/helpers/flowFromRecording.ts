@@ -16,7 +16,7 @@ export interface RecordedCommand {
 }
 
 /** Requests that are logging, not the step's effect. */
-const NOT_CONFIRMING = /Logger|ScreenTime|_syncMutation|relay-ef|webstorage|Prompt|QuickPromotion/i
+const NOT_CONFIRMING = /Logger|ScreenTime|_syncMutation|relay-ef|webstorage|Prompt|QuickPromotion|CIXLog/i
 
 /** The first mutation a step (and the looks after it) sent: what confirms it. Pure. */
 export function confirmingRequest(lines: string[]): string | null {
@@ -27,7 +27,7 @@ export function confirmingRequest(lines: string[]): string | null {
   return null
 }
 
-const ACTED: Record<string, FlowAction> = { click: 'click', type: 'fill', upload: 'upload', signIn: 'signIn', code: 'code', solve: 'solve', goto: 'goto', scroll: 'scroll', openAny: 'openAny', clickAny: 'clickAny', dwell: 'dwell' }
+const ACTED: Record<string, FlowAction> = { click: 'click', clickRole: 'click', type: 'fill', upload: 'upload', signIn: 'signIn', code: 'code', solve: 'solve', goto: 'goto', scroll: 'scroll', openAny: 'openAny', clickAny: 'clickAny', dwell: 'dwell', press: 'press', scrollIn: 'scrollIn' }
 
 const camel = (text: string): string =>
   text
@@ -42,7 +42,9 @@ const camel = (text: string): string =>
  * failed, or selected text (Control+a) are left out: a fill clears its field
  * itself. A ref becomes the role and name the previous snapshot gave it.
  * Typed text and uploaded files become params (`{text1}`, `{file1}`, renamed
- * with `rename`); the account's id in a URL becomes `{uid}`. Pure.
+ * with `rename`); a group's id in a URL becomes `{groupId}`, and the
+ * account's id `{uid}`. A `clickRole` step already names its element; a key
+ * press is kept (Escape closes a menu) unless it is a chord (Control+a). Pure.
  */
 export function flowFromRecording(
   name: string,
@@ -72,12 +74,34 @@ export function flowFromRecording(
     if (action === 'goto') {
       // Opening a page waits for the page, not for whatever request the page load happened to send.
       const url = command.args[0] ?? command.url
-      steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_goto${camel(new URL(url).pathname.replace(/\d{6,}/g, ''))}`, action, url: url.replace(/\d{10,}/g, '{uid}'), recorded })
+      // A group is a param of its own, so the flow runs on any group the account is in.
+      const grouped = url.replace(/\/groups\/\d+/, () => {
+        if (!params.some((p) => p.name === (rename.groupId ?? 'groupId'))) params.push({ name: rename.groupId ?? 'groupId', kind: 'text', description: "the group's numeric id, from its URL" })
+        return `/groups/{${rename.groupId ?? 'groupId'}}`
+      })
+      steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_goto${camel(new URL(url).pathname.replace(/\d{6,}/g, ''))}`, action, url: grouped.replace(/\d{10,}/g, '{uid}'), recorded })
       return
     }
     // Warm-up steps keep their recorded ranges; they choose what to act on each run, so no element is pinned.
     if (action === 'scroll' || action === 'openAny' || action === 'clickAny' || action === 'dwell') {
       steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_${action}`, action, args: command.args, recorded })
+      return
+    }
+    // A key: Escape closes the menu or dialog the step before opened. A chord selects text, which a fill does itself.
+    if (action === 'press') {
+      const key = command.args[0] ?? ''
+      if (!key || key.includes('+')) return
+      steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_press${key[0].toUpperCase()}${key.slice(1)}`, action, args: [key], recorded })
+      return
+    }
+    if (action === 'scrollIn') {
+      steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_scrollIn${camel(command.args[0] ?? '')[0]?.toUpperCase() ?? ''}${camel(command.args[0] ?? '').slice(1)}`, action, args: command.args, recorded })
+      return
+    }
+    // clickRole named its element itself: the role and name are the step's own arguments.
+    if (command.action === 'clickRole') {
+      const [role, name] = command.args
+      steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_click${camel(name)[0]?.toUpperCase() ?? ''}${camel(name).slice(1)}`, action, role, name, ...(expect ? { expect } : {}), recorded })
       return
     }
     if (action === 'signIn' || action === 'code' || action === 'solve') {

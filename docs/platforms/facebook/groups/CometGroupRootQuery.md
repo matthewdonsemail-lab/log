@@ -13,12 +13,19 @@
 | Called from | `CometGroupRoot.react` |
 | rea | `ev_a98ebd6ffd0f02b69adb73f0d74cab822ba3a52a2acce66518c4c73a7975606e` |
 
-Seen 2 time(s) in 1 run(s).
+Seen 9 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 5: click e2647 | 1 | 200 | 571 ms | 1885 ms | — |
-| inspect | step 7: click e2606 | 1 | 200 | 1128 ms | 6102 ms | — |
+| inspect | step 3: clickRole tab "…" | 1 | 200 | 2501 ms | 1707 ms | — |
+| inspect | step 4: clickRole tab "…" | 1 | 200 | 1575 ms | 1084 ms | — |
+| inspect | step 6: clickRole tab "…" | 1 | 200 | 612 ms | 2073 ms | — |
+| inspect | step 7: clickRole tab "…" | 1 | 200 | 801 ms | 970 ms | — |
+| inspect | step 8: clickRole tab "…" | 1 | 200 | 718 ms | 753 ms | — |
+| inspect | step 9: clickRole tab "…" | 1 | 200 | 563 ms | 742 ms | — |
+| inspect | step 10: clickRole tab "…" | 1 | 200 | 707 ms | 1331 ms | — |
+| inspect | step 11: clickRole tab "…" | 1 | 200 | 670 ms | 2106 ms | — |
+| inspect | step 42: clickRole tab "…" | 1 | 200 | 2004 ms | 846 ms | — |
 
 <!-- facts:end -->
 

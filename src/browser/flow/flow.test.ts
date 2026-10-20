@@ -69,8 +69,36 @@ describe('flowFromRecording: a warm-up recording (rule 35)', () => {
   })
 })
 
+describe('flowFromRecording: a group page recorded with clickRole (Bethlehem, 2026-10-20)', () => {
+  const group = flowFromRecording('groupHeaderMenus', 'test', [
+    cmd('goto', ['https://www.facebook.com/groups/4191018610937243/'], '01_goto', ''),
+    cmd('clickRole', ['button', 'More'], '02_clickRole', '', ['POST 200 GroupsCometMoreActionMenuQuery (578 ms)']),
+    cmd('press', ['Escape'], '03_press', ''),
+    cmd('clickRole', ['tab', 'People'], '04_clickRole', '', [], false),
+    cmd('scrollIn', ['dialog', 'Comments', '3', '400-600'], '05_scrollIn', ''),
+    cmd('press', ['Control+a'], '06_press', ''),
+    cmd('clickRole', ['button', 'Actions for this post'], '07_clickRole', '', ['POST 200 useCIXLogMutation (583 ms)'])
+  ], { runDir: '/r', account: '61594063207669' })
+
+  test('clickRole keeps its own role and name, Escape and scrollIn keep their arguments, a chord and a failure are dropped', () => {
+    expect(group.steps.map((s) => [s.action, s.role ?? s.url ?? s.args, s.name ?? null])).toEqual([
+      ['goto', 'https://www.facebook.com/groups/{groupId}/', null],
+      ['click', 'button', 'More'],
+      ['press', ['Escape'], null],
+      ['scrollIn', ['dialog', 'Comments', '3', '400-600'], null],
+      ['click', 'button', 'Actions for this post']
+    ])
+    expect(group.steps[4].expect).toBeUndefined()
+  })
+
+  test("the group's id is a param, filled on each run", () => {
+    expect(group.params).toEqual([{ name: 'groupId', kind: 'text', description: "the group's numeric id, from its URL" }])
+    expect(fillStep(group.steps[0], { groupId: '123', uid: 'a' }).url).toBe('https://www.facebook.com/groups/123/')
+  })
+})
+
 describe('flowFromRecording', () => {
-  const flow = flowFromRecording('profileSetup', 'test', RECORDING, { runDir: '/r', account: '61593967241658' }, { text1: 'firstName', file1: 'profilePhoto' })
+  const flow =flowFromRecording('profileSetup', 'test', RECORDING, { runDir: '/r', account: '61593967241658' }, { text1: 'firstName', file1: 'profilePhoto' })
 
   test('turns refs into the role and name the step acted on, and drops looks, failures and field clicks', () => {
     expect(flow.steps.map((s) => [s.action, s.role ?? s.url, s.name ?? null])).toEqual([

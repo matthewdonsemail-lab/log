@@ -13,10 +13,12 @@
 | Called from | `useCometUFITopLevelCommentListComponents_feedback.graphql` |
 | rea | `ev_29ce496a3b9bd75206ce21e277f754b153a86abe0412914df481eb662ef8fbb0` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 3 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 28: clickRole menuitem "…" | 1 | 200 | 694 ms | 1226 ms | — |
+| inspect | step 34: clickRole menuitem "…" | 1 | 200 | 659 ms | 1868 ms | — |
 | inspect | step 7: clickRole menuitem "…" | 1 | 200 | 791 ms | 1241 ms | — |
 
 <!-- facts:end -->

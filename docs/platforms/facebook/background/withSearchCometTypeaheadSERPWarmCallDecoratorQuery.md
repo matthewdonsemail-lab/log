@@ -17,7 +17,7 @@ Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 2: type e20 | 1 | 200 | 446 ms | 64 ms | — |
+| inspect | step 12: clickRole button "…" | 1 | 200 | 845 ms | 1032 ms | — |
 
 <!-- facts:end -->
 

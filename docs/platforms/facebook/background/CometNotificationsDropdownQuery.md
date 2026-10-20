@@ -13,11 +13,12 @@
 | Called from | `CometNotificationsDropdown.react` |
 | rea | `ev_ab1965911932cb7fcf25b222bf92e0487c624ad5aa06bc6a0e5e7860bc09d85a` |
 
-Seen 56 time(s) in 12 run(s).
+Seen 58 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 3 | 200 | 1129–2133 ms | 4061–6412 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 4 | 200 | 930–2133 ms | 4061–6412 ms | — |
+| inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 1075 ms | 4614 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 876 ms | 5698 ms | — |
 | inspect | step 1: goto /groups/<id> | 1 | 200 | 1837 ms | 7273 ms | — |
 | inspect | step 1: goto / | 5 | 200 | 1260–1765 ms | 3655–7988 ms | — |

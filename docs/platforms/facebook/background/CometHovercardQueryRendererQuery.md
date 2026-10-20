@@ -13,11 +13,35 @@
 | Called from | `CometHovercardQueryRenderer.react` |
 | rea | `ev_95529720f6ba751fe065571b8fd81d09f67f7e4539594c0761343470652ec320` |
 
-Seen 87 time(s) in 9 run(s).
+Seen 151 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 13 | 200 | 503–822 ms | 10246–17970 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 15 | 200 | 503–822 ms | 6679–17970 ms | — |
+| inspect | step 3: clickRole tab "…" | 1 | 200 | 1001 ms | 5545 ms | — |
+| inspect | step 4: clickRole tab "…" | 3 | 200 | 868–1514 ms | 1475–6750 ms | — |
+| inspect | clickRole failed: RuntimeError: the element kept moving under the cursor: the point is on  | 1 | 200 | 1043 ms | 3662 ms | — |
+| inspect | step 6: clickRole tab "…" | 4 | 200 | 692–1301 ms | 6525–12540 ms | — |
+| inspect | step 8: clickRole tab "…" | 9 | 200 | 689–1077 ms | 8453–11158 ms | — |
+| inspect | step 9: clickRole tab "…" | 1 | 200 | 676 ms | 10162 ms | — |
+| inspect | step 10: clickRole tab "…" | 1 | 200 | 869 ms | 488 ms | — |
+| inspect | step 11: clickRole tab "…" | 1 | 200 | 632 ms | 6374 ms | — |
+| inspect | step 21: press Escape | 1 | 200 | 664 ms | 292 ms | — |
+| inspect | scroll: +700px in 15 wheel steps, 750 ms | 1 | 200 | 708 ms | 6839 ms | — |
+| inspect | step 25: goto /groups/<id>/questions | 9 | 200 | 485–1000 ms | 8586–15714 ms | — |
+| inspect | step 28: clickRole menuitem "…" | 2 | 200 | 601–800 ms | 13898–14006 ms | — |
+| inspect | scroll: +428px in 11 wheel steps, 688 ms | 2 | 200 | 714–944 ms | 16902–17359 ms | — |
+| inspect | scroll failed: ValueError: invalid literal for int() with base 10: '' | 3 | 200 | 653–688 ms | 1077–10499 ms | — |
+| inspect | step 31: press PageUp | 8 | 200 | 613–900 ms | 1149–24827 ms | — |
+| inspect | step 32: clickRole link "…" | 1 | 200 | 951 ms | 14218 ms | — |
+| inspect | step 33: clickRole button "…" | 2 | 200 | 613–722 ms | 1041–1180 ms | — |
+| inspect | step 34: clickRole menuitem "…" | 5 | 200 | 605–904 ms | 8118–15752 ms | — |
+| inspect | step 37: click e3080 | 1 | 200 | 743 ms | 354 ms | — |
+| inspect | step 40: clickRole textbox "…" | 1 | 200 | 1612 ms | 6616 ms | — |
+| inspect | step 42: clickRole tab "…" | 1 | 200 | 2152 ms | 2779 ms | — |
+| inspect | scroll: +705px in 15 wheel steps, 656 ms | 2 | 200 | 426–666 ms | 10957–21581 ms | — |
+| inspect | scroll: +657px in 17 wheel steps, 1328 ms | 1 | 200 | 1524 ms | 2300 ms | — |
+| inspect | step 48: clickRole button "…" | 3 | 200 | 633–930 ms | 4116–6490 ms | — |
 | inspect | scroll: +600px in 13 wheel steps, 891 ms | 1 | 200 | 387 ms | 3300 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 3 | 200 | 633–801 ms | 26485–36380 ms | — |
 | inspect | scroll: +700px in 16 wheel steps, 812 ms | 2 | 200 | 640–819 ms | 2845–2959 ms | — |
@@ -61,7 +85,6 @@ Seen 87 time(s) in 9 run(s).
 | inspect | step 6: scrollIn heading "…" 2-3 x 300-500px | 1 | 200 | 980 ms | 599 ms | — |
 | inspect | step 17: scrollIn heading "…" 2-3 x 300-500px | 2 | 200 | 781–879 ms | 383–857 ms | — |
 | inspect | scroll: +484px in 11 wheel steps, 421 ms | 1 | 200 | 738 ms | 7207 ms | — |
-| inspect | step 48: clickRole button "…" | 2 | 200 | 633–930 ms | 4116–6490 ms | — |
 | inspect | step 49: scrollIn heading "…" 2-3 x 300-500px | 3 | 200 | 673–911 ms | 319–2152 ms | — |
 
 <!-- facts:end -->

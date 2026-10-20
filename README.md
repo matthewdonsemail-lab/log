@@ -154,6 +154,10 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 
 | MCP tool | Runs | What it does | Params | Steps |
 | --- | --- | --- | --- | --- |
+| `flowGroupHeaderMenus` | `log flow run groupHeaderMenus` | Open and close the group header's search, More menu, Joined menu, Invite dialog and Share sheet; nothing inside them is picked | `groupId` | gotogroups → clickSearchWithinThisGroup → pressEscape → clickMore → pressEscape → clickJoined → pressEscape → clickInvite → pressEscape → clickShareGroup → pressEscape |
+| `flowGroupPostComments` | `log flow run groupPostComments` | On a group's Open questions tab, open a post's comments, switch the sort to All comments and scroll them; read-only | `groupId` | gotogroupsQuestions → clickLeaveAComment → clickMostRelevant → clickAllCommentsShowAll → scroll |
+| `flowGroupPostDialog` | `log flow run groupPostDialog` | On a group's Discussion feed, open a post in its dialog with Leave a comment (the comment box takes focus, nothing is typed) and close it | `groupId` | gotogroups → clickLeaveAComment → clickClose |
+| `flowGroupTabs` | `log flow run groupTabs` | Open each tab of a group the account is in (Featured, Open questions, People, Events, Media, Files, About) and come back to Discussion; read-only | `groupId` | gotogroups → clickFeatured → clickOpenQuestions → clickPeople → clickEvents → clickMedia → clickFiles → clickAbout → clickDiscussion |
 | `flowProfileSetup` | `log flow run profileSetup` | Give an account its profile picture, cover photo and name, as recorded on Lancaster 2026-10-19 (rule 28): profile picture menu, Choose profile picture, Upload Photo, Save; Add Cover Photo, Upload photo, Save changes; Accounts Center name, Review change, Done. | `profilePhoto`, `coverPhoto`, `firstName`, `lastName` | gotome → clickProfilePictureActions → clickChooseProfilePicture → uploadUploadPhoto → clickSave → clickAddCoverPhoto → uploadUploadPhoto → clickSaveChanges → gotoprofilesName → fillFirstName → fillSurname → clickReviewChange → clickDone |
 
 ### Every command, CLI and MCP
@@ -267,6 +271,18 @@ flowchart TB
   c_whoami["whoami"]
   cli --> c_whoami
   mcp --> c_whoami
+  f_groupHeaderMenus["flowGroupHeaderMenus: flow run groupHeaderMenus"]
+  mcp --> f_groupHeaderMenus
+  f_groupHeaderMenus --> c_flow
+  f_groupPostComments["flowGroupPostComments: flow run groupPostComments"]
+  mcp --> f_groupPostComments
+  f_groupPostComments --> c_flow
+  f_groupPostDialog["flowGroupPostDialog: flow run groupPostDialog"]
+  mcp --> f_groupPostDialog
+  f_groupPostDialog --> c_flow
+  f_groupTabs["flowGroupTabs: flow run groupTabs"]
+  mcp --> f_groupTabs
+  f_groupTabs --> c_flow
   f_profileSetup["flowProfileSetup: flow run profileSetup"]
   mcp --> f_profileSetup
   f_profileSetup --> c_flow

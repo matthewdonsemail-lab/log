@@ -13,11 +13,15 @@
 | Called from | `usePseudoBlockedUserInterstitial` |
 | rea | `ev_4f0f59bc7d5ff4c02ef9f2aba85fc9de893084a7a8fbdf3f1627ce6c1c3456fe` |
 
-Seen 33 time(s) in 12 run(s).
+Seen 39 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 4 | 200 | 347–419 ms | 3118–5866 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 6 | 200 | 347–464 ms | 3118–5866 ms | — |
+| inspect | step 7: clickRole tab "…" | 1 | 200 | 559 ms | 2247 ms | — |
+| inspect | step 11: clickRole tab "…" | 1 | 200 | 382 ms | 2960 ms | — |
+| inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 354 ms | 5734 ms | — |
+| inspect | step 42: clickRole tab "…" | 1 | 200 | 1352 ms | 5136 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 506 ms | 6059 ms | — |
 | inspect | step 1: goto /groups/<id> | 2 | 200 | 348–386 ms | 5609–6614 ms | — |
 | inspect | step 1: goto / | 5 | 200 | 477–594 ms | 6589–8804 ms | — |

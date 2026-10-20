@@ -1,0 +1,75 @@
+{
+  "name": "groupPostDialog",
+  "summary": "On a group's Discussion feed, open a post in its dialog with Leave a comment (the comment box takes focus, nothing is typed) and close it",
+  "params": [
+    {
+      "name": "groupId",
+      "kind": "text",
+      "description": "the group's numeric id, from its URL"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s01_gotogroups",
+      "action": "goto",
+      "url": "https://www.facebook.com/groups/{groupId}/",
+      "recorded": {
+        "step": "01_gotoHttpsWwwFacebook",
+        "ms": 27391,
+        "reaEvidenceId": "ev_08ee3372ed9790e46019fd8699391203ada2c19f39482b50711f064ea98496d9",
+        "requests": [
+          "FBYRPTimeLimitsEnforcementQuery",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query",
+          "CometNotificationsDropdownQuery",
+          "useGroupsCometVisitMutation",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "OhaiWebPublicKeyConfigQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "RTWebCallBlockSettingHooksQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    },
+    {
+      "id": "s02_clickLeaveAComment",
+      "action": "click",
+      "role": "button",
+      "name": "Leave a comment",
+      "recorded": {
+        "step": "47_clickroleButtonLeaveA",
+        "ms": 12125,
+        "reaEvidenceId": "ev_93afc71785ac953dc1adeed873c000044dffb02f38da90b842a57366dc68e8aa",
+        "requests": [
+          "CometSinglePostDialogContentQuery",
+          "CometSinglePostDialogContentQuery",
+          "CometHovercardQueryRendererQuery",
+          "useGroupsCometMentionsBootloadDataSourceWithTaggingTransparencyQuery",
+          "useGroupsCometMentionsNullstateDataSourceWithTaggingTransparencyQuery",
+          "useGroupsCometTypeaheadBootloadDataSourceQuery",
+          "CometUFIConversationGuideContainerQuery"
+        ]
+      }
+    },
+    {
+      "id": "s03_clickClose",
+      "action": "click",
+      "role": "button",
+      "name": "Close",
+      "recorded": {
+        "step": "48_clickroleButtonClose",
+        "ms": 8016,
+        "reaEvidenceId": "ev_590978bd84c726d2ed9a85632fa2ddbcca6f32743a1380f0e032af00762a969e",
+        "requests": []
+      }
+    }
+  ],
+  "source": {
+    "runDir": "C:/Users/0/.logCli/runs/inspect/20261020T153648_61594063207669/sequences/groupPostDialog",
+    "account": "groupPostDialog",
+    "builtAt": "2026-10-20T15:52:01.403Z"
+  }
+}

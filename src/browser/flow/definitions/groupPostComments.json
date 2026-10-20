@@ -1,0 +1,104 @@
+{
+  "name": "groupPostComments",
+  "summary": "On a group's Open questions tab, open a post's comments, switch the sort to All comments and scroll them; read-only",
+  "params": [
+    {
+      "name": "groupId",
+      "kind": "text",
+      "description": "the group's numeric id, from its URL"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s01_gotogroupsQuestions",
+      "action": "goto",
+      "url": "https://www.facebook.com/groups/{groupId}/questions",
+      "recorded": {
+        "step": "25_gotoHttpsWwwFacebook",
+        "ms": 22766,
+        "reaEvidenceId": "ev_3235ea8826b37f499f4706888546a12794cb18a245f8c9aa1cc6c8d84977b329",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "FBYRPTimeLimitsEnforcementQuery",
+          "CometNotificationsDropdownQuery",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "RTWebCallBlockSettingHooksQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    },
+    {
+      "id": "s02_clickLeaveAComment",
+      "action": "click",
+      "role": "button",
+      "name": "Leave a comment",
+      "recorded": {
+        "step": "26_clickroleButtonLeaveA",
+        "ms": 8438,
+        "reaEvidenceId": "ev_ec1bc8964578ad347bf7f0ba6cf1e12498db6d60d9d5e1f288c1f6fc9ac474c1",
+        "requests": []
+      }
+    },
+    {
+      "id": "s03_clickMostRelevant",
+      "action": "click",
+      "role": "button",
+      "name": "Most relevant",
+      "recorded": {
+        "step": "27_clickroleButtonMostRelevant",
+        "ms": 6094,
+        "reaEvidenceId": "ev_f9e08ef5012157df1a9d331191c17d34ff3ccfa0997182f2c7ec868a233dcf90",
+        "requests": []
+      }
+    },
+    {
+      "id": "s04_clickAllCommentsShowAll",
+      "action": "click",
+      "role": "menuitem",
+      "name": "All comments Show all comments, including potential spam.",
+      "recorded": {
+        "step": "28_clickroleMenuitemAllComments",
+        "ms": 6843,
+        "reaEvidenceId": "ev_913de8ddf58c2715835c34d7287e81be5ec40c8d7eb0799bf83be8ff840abf0c",
+        "requests": [
+          "CommentListComponentsRootQuery"
+        ]
+      }
+    },
+    {
+      "id": "s05_scroll",
+      "action": "scroll",
+      "args": [
+        "1",
+        "400-500"
+      ],
+      "recorded": {
+        "step": "29_scroll1X400",
+        "ms": 9547,
+        "reaEvidenceId": "ev_d936645c5e69468f57d31581683a97916ca7650360f3cb1f7ae0ebe4104e9263",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    }
+  ],
+  "source": {
+    "runDir": "C:/Users/0/.logCli/runs/inspect/20261020T153648_61594063207669/sequences/groupPostComments",
+    "account": "groupPostComments",
+    "builtAt": "2026-10-20T15:52:00.519Z"
+  }
+}

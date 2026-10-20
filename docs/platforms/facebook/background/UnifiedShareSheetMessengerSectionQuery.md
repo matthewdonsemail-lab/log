@@ -13,12 +13,11 @@
 | Called from | `UnifiedShareSheetMessengerSection.react` |
 | rea | `ev_4e9844fcc357413d99295417750833b29f6f0dc5dbf4020e81d9cb65904242c5` |
 
-Seen 3 time(s) in 2 run(s).
+Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | a step (older run, split by its report lines) | 1 | 200 | 407 ms | 91185 ms | — |
-| inspect | a step (older run, split by its report lines) | 2 | 200 | 400–465 ms | 12215–46671 ms | — |
+| inspect | step 20: clickRole button "…" | 1 | 200 | 1619 ms | 1289 ms | — |
 
 <!-- facts:end -->
 

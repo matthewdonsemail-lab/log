@@ -13,11 +13,12 @@
 | Called from | `MAWVerifyThreadCutover` |
 | rea | `ev_2ef4fcf81840e4c44dfd19b7c86b9e3e65429109c06595cfc96262bcea9f2bc2` |
 
-Seen 28 time(s) in 12 run(s).
+Seen 30 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 3 | 200 | 361–390 ms | 4440–6555 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 4 | 200 | 361–390 ms | 3689–6555 ms | — |
+| inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 363 ms | 6445 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 357 ms | 7132 ms | — |
 | inspect | step 1: goto /groups/<id> | 1 | 200 | 358 ms | 7157 ms | — |
 | inspect | step 1: goto / | 5 | 200 | 501–553 ms | 6626–8849 ms | — |

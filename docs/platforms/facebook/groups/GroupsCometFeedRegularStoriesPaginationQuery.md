@@ -13,10 +13,14 @@
 | Called from | `GroupsCometFeedRegularStories_paginationGroup.graphql` |
 | rea | `ev_f792b6f23388f17a7eb603f72f37e195afb43b871879be102f5697f32505edb6` |
 
-Seen 9 time(s) in 3 run(s).
+Seen 13 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 13: press Escape | 1 | 200 | 1422 ms | 75 ms | — |
+| inspect | step 24: scroll 2 x 500-700px | 1 | 200 | 1198 ms | 1467 ms | — |
+| inspect | step 43: clickRole link "…" | 1 | 200 | 2996 ms | 1023 ms | — |
+| inspect | step 45: clickRole button "…" | 1 | 200 | 1716 ms | 2313 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 1 | 200 | 2623 ms | 4640 ms | — |
 | inspect | step 2: scroll 1 x 600px | 1 | 200 | 1216 ms | 1269 ms | — |
 | inspect | step 3: scroll 2 x 700px | 1 | 200 | 1346 ms | 877 ms | — |
