@@ -11,12 +11,19 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_1c4949e0e0ebaff7ed1c3b03146838ea4b9a2efc6e5a86ffab116266543e39e5` |
+| rea | `ev_f702733ce2e225a5a245a67080e89b89d0d6d817fb9553440b5e1ba9aa23b5d8` |
 
-Seen 15 time(s) in 4 run(s).
+Seen 27 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto / | 5 | 200 | 443–793 ms | 1957–3150 ms | — |
+| inspect | step 7: goto / | 1 | 200 | 544 ms | 1020 ms | — |
+| inspect | rea read step 33_dwell028s: exit 0, ev_d164a9c78021b1afb8ce6c5a24456a0d8f46efdbc7c54440f7f | 1 | 200 | 7107 ms | 5115 ms | — |
+| inspect | step 38: goto /marketplace/ | 2 | 200 | 482–2441 ms | 970–11572 ms | — |
+| inspect | step 22: goto /marketplace/ | 1 | 200 | 548 ms | 1536 ms | — |
+| inspect | step 27: goto / | 1 | 200 | 886 ms | 770 ms | — |
+| inspect | step 4: goto /marketplace/ | 1 | 200 | 7230 ms | 7678 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 1 | 200 | 414 ms | 1899 ms | — |
 | inspect | step 1: goto /reel/ | 3 | 200 | 415–497 ms | 1357–1504 ms | — |
 | inspect | clickAny: 1 link /see owner profile$/ | 2 | 200 | 301–4072 ms | 366–3657 ms | — |

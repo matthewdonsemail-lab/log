@@ -11,14 +11,83 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_1c4949e0e0ebaff7ed1c3b03146838ea4b9a2efc6e5a86ffab116266543e39e5` |
+| rea | `ev_f702733ce2e225a5a245a67080e89b89d0d6d817fb9553440b5e1ba9aa23b5d8` |
 
-Seen 154 time(s) in 4 run(s).
+Seen 355 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto / | 40 | 200 | 459–743 ms | 2878–9835 ms | — |
+| inspect | post: "…", 103 words, 0 image(s), scrolled 58 px | 4 | 200 | 587–1167 ms | 260–1896 ms | — |
+| inspect | step 4: nextPost | 4 | 200 | 597–903 ms | 1011–1680 ms | — |
+| inspect | POST 200 /ajax/bnzai (493 ms) | 3 | 200 | 557–640 ms | 980–1457 ms | — |
+| inspect | step 7: goto / | 8 | 200 | 512–581 ms | 1364–3803 ms | — |
+| inspect | step 10: nextPost | 1 | 200 | 784 ms | 361 ms | — |
+| inspect | step 11: nextPost | 2 | 200 | 587–723 ms | 575–576 ms | — |
+| inspect | step 12: nextPost | 3 | 200 | 554–755 ms | 685–1066 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T105 | 5 | 200 | 525–617 ms | 41–1478 ms | — |
+| inspect | rea read step 13_nextpost: exit 0, ev_8e60547c67f77e2d6517b71170983bf6b8a3c480b7e1effffe71 | 1 | 200 | 485 ms | 510 ms | — |
+| inspect | step 15: dwell 0.73s | 2 | 200 | 509–516 ms | 6–8 ms | — |
+| inspect | step 16: nextPost | 4 | 200 | 525–721 ms | 127–2031 ms | — |
+| inspect | step 18: nextPost | 5 | 200 | 536–812 ms | 241–2633 ms | — |
+| inspect | step 19: dwell 1.04s | 1 | 200 | 700 ms | 145 ms | — |
+| inspect | rea read step 22_dwell2138s: exit 0, ev_9b3387a47c4644c0466e205ebb878f0d8fff21ead68c325229 | 1 | 200 | 595 ms | 868 ms | — |
+| inspect | rea read step 24_nextpost: exit 0, ev_bf240e7e52ec8297d2292ae9aaf8559e9f1d7460beef64036f10 | 1 | 200 | 521 ms | 431 ms | — |
+| inspect | rea read step 26_nextpost: exit 0, ev_caf46f61953ad566ab1f57eae862935225bd60f8052915d62917 | 1 | 200 | 551 ms | 809 ms | — |
+| inspect | rea read step 29_dwell097s: exit 0, ev_fe268417fac51196a845c2ba2e40b4ad7841d8cd8c818446a71 | 2 | 200 | 1883–2047 ms | 154–420 ms | — |
+| inspect | rea read step 30_nextpost: exit 0, ev_c6ab1e57db6c10741a55563fc784095f4639600a95a386d79cbb | 2 | 200 | 624 ms | 580–1851 ms | — |
+| inspect | rea read step 33_dwell028s: exit 0, ev_d164a9c78021b1afb8ce6c5a24456a0d8f46efdbc7c54440f7f | 7 | 200 | 537–694 ms | 1966–3966 ms | — |
+| inspect | rea read step 36_scroll1X400: exit 0, ev_878f93e2480d9215dd7481db9487a1ed4fb3874251015daaf | 2 | 200 | 487–832 ms | 3178–4110 ms | — |
+| inspect | scroll: +978px in 22 wheel steps, 1531 ms | 2 | 200 | 539–557 ms | 2019–2725 ms | — |
+| inspect | step 38: goto /marketplace/ | 7 | 200 | 542–879 ms | 1486–7745 ms | — |
+| inspect | step 2: clickRole button "…" | 3 | 200 | 339–726 ms | 1274–2298 ms | — |
+| inspect | post: "…", 103 words, 0 image(s), scrolled 70 px | 1 | 200 | 870 ms | 361 ms | — |
+| inspect | rea read step 03_dwell35s: exit 0, ev_47b836a9614da8409d32b77091438f6707979d88e03e83d09eb8 | 1 | 200 | 657 ms | 326 ms | — |
+| inspect | rea read step 04_nextpost: exit 0, ev_538b3d4fe783b9bd0baf58ed1d25499b39e7eba6d25ec1c168f3 | 1 | 200 | 600 ms | 1944 ms | — |
+| inspect | rea read step 07_dwell037s: exit 0, ev_f8a878d8b1347eda4377b36362f516b055eb21c774a020dbee1 | 1 | 200 | 541 ms | 101 ms | — |
+| inspect | rea read step 09_dwell033s: exit 0, ev_66946c26067d2fb6dc287e1c0e0b43c73fe271994ff34f60250 | 1 | 200 | 519 ms | 1084 ms | — |
+| inspect | step 11: dwell 0.69s | 1 | 200 | 540 ms | 154 ms | — |
+| inspect | step 13: nextPost | 1 | 200 | 612 ms | 406 ms | — |
+| inspect | step 15: nextPost | 2 | 200 | 522–685 ms | 781–998 ms | — |
+| inspect | rea read step 15_nextpost: exit 0, ev_73d8c780b0d161f8dcfd41619e2748beffb1aafd874af53092bb | 1 | 200 | 810 ms | 1355 ms | — |
+| inspect | step 20: nextPost | 2 | 200 | 503–2185 ms | 307–2248 ms | — |
+| inspect | step 21: nextPost | 1 | 200 | 540 ms | 321 ms | — |
+| inspect | rea read step 21_nextpost: exit 0, ev_290a368a021d2c7d72802aad675f1757eb95e384e175fda02f25 | 2 | 200 | 643–700 ms | 272–747 ms | — |
+| inspect | mouse: the target moved from under the cursor (60,913 not on it, box 36,1746 81x32): re-ai | 4 | 200 | 649–1015 ms | 2358–2625 ms | — |
+| inspect | mouse: the target moved from under the cursor (59,913 not on it, box 36,1794 66x32): re-ai | 1 | 200 | 551 ms | 2660 ms | — |
+| inspect | scroll: +1537px in 32 wheel steps, 2016 ms | 2 | 200 | 644–796 ms | 460–719 ms | — |
+| inspect | mouse: the target moved from under the cursor (80,913 not on it, box 36,2090 78x32): re-ai | 2 | 200 | 488–613 ms | 2977–3440 ms | — |
+| inspect | rea read step 22_likepostLike: exit 0, ev_540383c4fa642403a764fbc232e14ac51cafa5f313056b88 | 1 | 200 | 552 ms | 23120 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T103 | 7 | 200 | 521–791 ms | 654–16040 ms | — |
+| inspect | rea read step 03_nextpost: exit 0, ev_baab77eb28577c6ee04b1b7578e4248df1961e047aab273e4a1e | 1 | 200 | 1329 ms | 2371 ms | — |
+| inspect | rea read step 07_nextpost: exit 0, ev_4ef05c022ef4c3525bcff6a6333bfb8419a33b12e12e1b181dd5 | 1 | 200 | 602 ms | 666 ms | — |
+| inspect | step 9: nextPost | 1 | 200 | 684 ms | 1842 ms | — |
+| inspect | mouse: 1 flick, 1 wander, 1 scrollPosition; 1 idle drift move(s) | 1 | 200 | 597 ms | 6 ms | — |
+| inspect | post: "…", 46 words, 0 image(s), scrolled 451 px | 2 | 200 | 783–863 ms | 495–497 ms | — |
+| inspect | rea read step 17_dwell063s: exit 0, ev_4413c19d1d18754cd48db4cf034e5fbd35472b6d2d076fc39e3 | 1 | 200 | 609 ms | 247 ms | — |
+| inspect | step 22: goto /marketplace/ | 1 | 200 | 537 ms | 1993 ms | — |
+| inspect | rea read step 21_dwell078s: exit 0, ev_87a54a6ea91a3418cb413686bdc6108f946bdf45884c8230e49 | 6 | 200 | 509–725 ms | 429–2080 ms | — |
+| inspect | rea read step 24_scroll1X400: exit 0, ev_b216c28b15aac8907d6b5a345798a611d298acedb29f1a6ac | 1 | 200 | 665 ms | 1577 ms | — |
+| inspect | step 27: goto / | 7 | 200 | 467–582 ms | 1457–3797 ms | — |
+| inspect | step 28: scroll 1 x 700px | 2 | 200 | 619–713 ms | 281–446 ms | — |
+| inspect | scroll: +700px in 16 wheel steps, 1140 ms | 3 | 200 | 520–620 ms | 1933–2255 ms | — |
+| inspect | step 29: clickRole button "…" | 2 | 200 | 415–589 ms | 1468–2597 ms | — |
+| inspect | scroll: +1142px in 26 wheel steps, 1813 ms | 1 | 200 | 573 ms | 375 ms | — |
+| inspect | scroll: +1731px in 35 wheel steps, 2093 ms | 4 | 200 | 678–855 ms | 1393–3713 ms | — |
+| inspect | scroll: +610px in 13 wheel steps, 1313 ms | 2 | 200 | 540–789 ms | 1377–1379 ms | — |
+| inspect | step 5: nextPost | 1 | 200 | 598 ms | 2613 ms | — |
+| inspect | step 7: nextPost | 1 | 200 | 523 ms | 29 ms | — |
+| inspect | post: "…", 83 words, 1 image(s) | 2 | 200 | 555–617 ms | 147–729 ms | — |
+| inspect | post: "…", 59 words, 1 image(s) | 1 | 200 | 561 ms | 1571 ms | — |
+| inspect | step 12: dwell 0.14s | 3 | 200 | 474–835 ms | 265–270 ms | — |
+| inspect | rea read step 13_nextpost: exit 0, ev_237251697affaf51f1774ffd22c55e20cf9d4b765fd495dbbd3e | 1 | 200 | 582 ms | 1418 ms | — |
+| inspect | rea read step 14_nextpost: exit 0, ev_6209fcf52acf0f7a90e081fed57af389f95de778645cfd8464dd | 2 | 200 | 541–885 ms | 50330–72972 ms | — |
+| inspect | step 3: scroll 4-7 x 300-600px | 1 | 200 | 650 ms | 1131 ms | — |
+| inspect | scroll: +378px in 10 wheel steps, 875 ms | 2 | 200 | 482–544 ms | 828–1493 ms | — |
+| inspect | scroll: +386px in 9 wheel steps, 469 ms | 1 | 200 | 536 ms | 3489 ms | — |
+| inspect | scroll: +411px in 10 wheel steps, 484 ms | 1 | 200 | 525 ms | 3981 ms | — |
+| inspect | step 4: goto /marketplace/ | 8 | 200 | 453–636 ms | 4581–6383 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 4 | 200 | 383–519 ms | 5100–8621 ms | — |
-| inspect | step 2: clickRole button "…" | 1 | 200 | 339 ms | 2298 ms | — |
 | inspect | step 1: goto /reel/ | 11 | 200 | 332–519 ms | 2079–4655 ms | — |
 | inspect | rea read step 02_clickroleButtonUnmute: exit 0, ev_38d5a40446aa313ae78f087c9fd5e06ff89ebb9 | 1 | 200 | 362 ms | 618 ms | — |
 | inspect | step 5: clickRole button "…" | 3 | 200 | 346–553 ms | 490–2274 ms | — |
@@ -94,7 +163,6 @@ Seen 154 time(s) in 4 run(s).
 | inspect | step 20: goto /reel/<id> | 2 | 200 | 544–585 ms | 1918–2528 ms | — |
 | inspect | step 22: goto /reel/ | 5 | 200 | 357–3685 ms | 1581–2970 ms | — |
 | inspect | step 27: clickRole button "…" | 1 | 200 | 382 ms | 1392 ms | — |
-| inspect | step 29: clickRole button "…" | 1 | 200 | 415 ms | 2597 ms | — |
 | inspect | scroll: +490px in 12 wheel steps, 578 ms | 1 | 200 | 715 ms | 865 ms | — |
 | inspect | mouse: 1 wander, 1 approach, 1 flick; 1 idle drift move(s) | 1 | 200 | 832 ms | 1823 ms | — |
 | inspect | step 53: goto /reel/ | 3 | 200 | 408–475 ms | 5853–6489 ms | — |

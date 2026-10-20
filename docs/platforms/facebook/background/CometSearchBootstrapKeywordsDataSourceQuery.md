@@ -13,10 +13,17 @@
 | Called from | — |
 | rea | not read yet |
 
-Seen 12 time(s) in 3 run(s).
+Seen 23 time(s) in 8 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto / | 5 | 200 | 458–534 ms | 6491–8720 ms | — |
+| inspect | step 7: goto / | 1 | 200 | 466 ms | 4918 ms | — |
+| inspect | rea read step 33_dwell028s: exit 0, ev_d164a9c78021b1afb8ce6c5a24456a0d8f46efdbc7c54440f7f | 1 | 200 | 495 ms | 3174 ms | — |
+| inspect | step 38: goto /marketplace/ | 1 | 200 | 813 ms | 7818 ms | — |
+| inspect | rea read step 21_dwell078s: exit 0, ev_87a54a6ea91a3418cb413686bdc6108f946bdf45884c8230e49 | 1 | 200 | 516 ms | 3526 ms | — |
+| inspect | step 27: goto / | 1 | 200 | 472 ms | 3177 ms | — |
+| inspect | step 4: goto /marketplace/ | 1 | 200 | 503 ms | 5697 ms | — |
 | inspect | step 1: goto /reel/ | 3 | 200 | 347–391 ms | 3276–3898 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 338 ms | 3839 ms | — |
 | inspect | rea read step 13_dwell600s: exit 0, ev_e8922deafb7ba9951a51bda6f8cd82b5b68c41db19bfe0cd164 | 1 | 200 | 1402 ms | 1224 ms | — |

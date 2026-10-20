@@ -17,7 +17,7 @@ Seen 2 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto / | 2 | 200 | 445–514 ms | 8290–8842 ms | — |
+| inspect | POST 200 fetchMWChatVideoAutoplaySettingQuery (574 ms) | 2 | 200 | 728–936 ms | 3040–4003 ms | — |
 
 <!-- facts:end -->
 

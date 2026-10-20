@@ -11,12 +11,62 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_1c4949e0e0ebaff7ed1c3b03146838ea4b9a2efc6e5a86ffab116266543e39e5` |
+| rea | `ev_f702733ce2e225a5a245a67080e89b89d0d6d817fb9553440b5e1ba9aa23b5d8` |
 
-Seen 76 time(s) in 4 run(s).
+Seen 207 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto / | 13 | 200 | 417–734 ms | 5971–18635 ms | — |
+| inspect | POST 200 /ajax/bulk-route-definitions/ (688 ms) | 1 | 200 | 495 ms | 1842 ms | — |
+| inspect | step 4: nextPost | 1 | 200 | 580 ms | 1906 ms | — |
+| inspect | post: "…", 46 words, 1 image(s), scrolled 1584 px | 2 | 200 | 491–514 ms | 375–607 ms | — |
+| inspect | POST 200 /ajax/bnzai (493 ms) | 1 | 200 | 459 ms | 1495 ms | — |
+| inspect | step 7: goto / | 1 | 200 | 470 ms | 4148 ms | — |
+| inspect | mouse: 1 flick, 1 wander; 1 idle drift move(s) | 1 | 200 | 487 ms | 4 ms | — |
+| inspect | step 12: nextPost | 1 | 200 | 488 ms | 797 ms | — |
+| inspect | step 14: nextPost | 1 | 200 | 503 ms | 202 ms | — |
+| inspect | post: "…", 57 words, 2 image(s), scrolled 773 px | 1 | 200 | 643 ms | 210 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T105 | 12 | 200 | 459–641 ms | 0–655 ms | — |
+| inspect | step 20: nextPost | 1 | 200 | 681 ms | 794 ms | — |
+| inspect | step 24: nextPost | 1 | 200 | 536 ms | 570 ms | — |
+| inspect | rea read step 25_dwell131s: exit 0, ev_3853b90a908a3ebc884fece6571e45a4fb8372a189d0efb4529 | 1 | 200 | 534 ms | 93 ms | — |
+| inspect | rea read step 33_dwell028s: exit 0, ev_d164a9c78021b1afb8ce6c5a24456a0d8f46efdbc7c54440f7f | 3 | 200 | 455–544 ms | 3541–4159 ms | — |
+| inspect | page has 55 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T105 | 1 | 200 | 551 ms | 31 ms | — |
+| inspect | step 36: scroll 1 x 400-800px | 1 | 200 | 501 ms | 183 ms | — |
+| inspect | page has 57 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T105 | 2 | 200 | 469–507 ms | 34–265 ms | — |
+| inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 485 ms | 3091 ms | — |
+| inspect | page has 64 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T105 | 1 | 200 | 494 ms | 3555 ms | — |
+| inspect | rea read step 37_openany13X: exit 0, ev_562cc396d5126ff6e882da4cd5016d4107ff9ce38bc3bd6ddc | 6 | 200 | 450–571 ms | 4368–100045 ms | — |
+| inspect | step 38: goto /marketplace/ | 2 | 200 | 692–699 ms | 7697–7703 ms | — |
+| inspect | rea read step 04_nextpost: exit 0, ev_538b3d4fe783b9bd0baf58ed1d25499b39e7eba6d25ec1c168f3 | 2 | 200 | 539–559 ms | 1116–2223 ms | — |
+| inspect | post: "…", 46 words, 3 image(s), scrolled 755 px | 1 | 200 | 458 ms | 424 ms | — |
+| inspect | rea read step 09_dwell033s: exit 0, ev_66946c26067d2fb6dc287e1c0e0b43c73fe271994ff34f60250 | 1 | 200 | 632 ms | 198 ms | — |
+| inspect | step 16: nextPost | 1 | 200 | 466 ms | 62 ms | — |
+| inspect | step 18: nextPost | 1 | 200 | 474 ms | 2550 ms | — |
+| inspect | rea read step 19_dwell054s: exit 0, ev_7c56ae415fac1cbff094532104e1e36c23dd6a4f69277e52dab | 1 | 200 | 508 ms | 385 ms | — |
+| inspect | rea read step 03_nextpost: exit 0, ev_baab77eb28577c6ee04b1b7578e4248df1961e047aab273e4a1e | 3 | 200 | 647–964 ms | 1539–2799 ms | — |
+| inspect | step 5: dwell 0.67s | 1 | 200 | 473 ms | 66 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T103 | 10 | 200 | 473–1775 ms | 85–16640 ms | — |
+| inspect | step 15: nextPost | 1 | 200 | 475 ms | 616 ms | — |
+| inspect | rea read step 21_dwell078s: exit 0, ev_87a54a6ea91a3418cb413686bdc6108f946bdf45884c8230e49 | 5 | 200 | 443–582 ms | 3720–14949 ms | — |
+| inspect | rea read step 23_dwell35s: exit 0, ev_1a2794a971ab72b963443518fa8a4721042c180002e6589e9d5f | 2 | 200 | 457–516 ms | 2507–2619 ms | — |
+| inspect | scroll: +332px in 8 wheel steps, 265 ms | 1 | 200 | 523 ms | 481 ms | — |
+| inspect | rea read step 25_openany13X: exit 0, ev_e8402dceb0c2b14f56e881b407fe5b4853a53e8671a90afa48 | 6 | 200 | 471–2208 ms | 37327–58390 ms | — |
+| inspect | page has 64 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T103 | 2 | 200 | 438–447 ms | 14014–17421 ms | — |
+| inspect | step 27: goto / | 2 | 200 | 487–528 ms | 4837–13757 ms | — |
+| inspect | POST 200 /ajax/bulk-route-definitions/ (582 ms) | 1 | 200 | 453 ms | 2651 ms | — |
+| inspect | page has 41 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T103 | 1 | 200 | 630 ms | 4586 ms | — |
+| inspect | step 29: clickRole button "…" | 2 | 200 | 480–649 ms | 1600–2248 ms | — |
+| inspect | scroll: +1731px in 35 wheel steps, 2093 ms | 2 | 200 | 495–575 ms | 337–479 ms | — |
+| inspect | step 5: nextPost | 3 | 200 | 462–489 ms | 1640–2886 ms | — |
+| inspect | step 7: nextPost | 4 | 200 | 459–540 ms | 90–925 ms | — |
+| inspect | post: "…", 83 words, 1 image(s) | 1 | 200 | 468 ms | 894 ms | — |
+| inspect | rea read step 06_dwell026s: exit 0, ev_54e990657a369f1a2e920d90ccc593c5ed8b3f69be5abf13b4b | 1 | 200 | 465 ms | 1894 ms | — |
+| inspect | rea read step 14_nextpost: exit 0, ev_6209fcf52acf0f7a90e081fed57af389f95de778645cfd8464dd | 5 | 200 | 503–791 ms | 787–56746 ms | — |
+| inspect | scroll: +378px in 10 wheel steps, 875 ms | 1 | 200 | 435 ms | 3663 ms | — |
+| inspect | step 4: goto /marketplace/ | 5 | 200 | 437–533 ms | 11555–14399 ms | — |
+| inspect | page has 67 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T102 | 10 | 200 | 467–2059 ms | 8423–87226 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 2 | 200 | 329–335 ms | 12853–16381 ms | — |
 | inspect | step 2: clickRole button "…" | 2 | 200 | 324–337 ms | 637–1733 ms | — |
 | inspect | step 1: goto /reel/ | 3 | 200 | 330–1107 ms | 8092–11595 ms | — |

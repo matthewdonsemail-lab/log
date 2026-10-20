@@ -13,10 +13,17 @@
 | Called from | `CometNotificationsDropdown.react` |
 | rea | `ev_ab1965911932cb7fcf25b222bf92e0487c624ad5aa06bc6a0e5e7860bc09d85a` |
 
-Seen 41 time(s) in 4 run(s).
+Seen 52 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto / | 5 | 200 | 1260–1765 ms | 3655–7988 ms | — |
+| inspect | step 7: goto / | 1 | 200 | 1674 ms | 2008 ms | — |
+| inspect | rea read step 33_dwell028s: exit 0, ev_d164a9c78021b1afb8ce6c5a24456a0d8f46efdbc7c54440f7f | 1 | 200 | 1266 ms | 2574 ms | — |
+| inspect | step 38: goto /marketplace/ | 1 | 200 | 1512 ms | 2155 ms | — |
+| inspect | rea read step 21_dwell078s: exit 0, ev_87a54a6ea91a3418cb413686bdc6108f946bdf45884c8230e49 | 1 | 200 | 1586 ms | 388 ms | — |
+| inspect | step 27: goto / | 1 | 200 | 1365 ms | 2346 ms | — |
+| inspect | step 4: goto /marketplace/ | 1 | 200 | 1066 ms | 5217 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 1 | 200 | 2133 ms | 6412 ms | — |
 | inspect | step 1: goto /reel/ | 3 | 200 | 844–899 ms | 2297–3569 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 882 ms | 3045 ms | — |

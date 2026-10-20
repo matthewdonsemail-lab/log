@@ -11,13 +11,13 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_94f96326c6e9ef29cdc59c9f6cfcccf673df9cca2e500bf8f1aef1564757b748` |
+| rea | `ev_315f7692a209571048ce2c004c2bb681d1989abf8498737a4e591be11f714362` |
 
 Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | POST 200 RTWebCallBlockSettingHooksQuery (311 ms) | 1 | 200 | 623 ms | 4384 ms | — |
+| inspect | step 1: goto / | 1 | 200 | 975 ms | 19172 ms | — |
 
 <!-- facts:end -->
 

@@ -2624,3 +2624,56 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: one hook list (`src/agentHooks/registry`, `AGENT_HOOKS`) now writes both hosts' files, Claude Code's `.claude/settings.json` and Codex's new `.codex/hooks.json`. SessionStart and UserPromptSubmit say where every open browser is. PostToolUse (Bash, PowerShell, Monitor, `mcp__log__.*`) gives a new known state its resolver, and a failed step is reported as an unconfirmed page (snapshot, then resolve). Stop (`hookReply`) blocks the turn's end while a browser sits on a state log-cli resolves itself, never on a person's state, and lets go when sent back once with nothing changed. PreToolUse (`scripts/hooks/liveLogs.ts`, `liveLogVerdict`) refuses a log run whose own pipeline goes through tail/head, and reminds a long one off a Monitor. The live log moved into `observability/liveLog` (`appendLiveLine`), and `bin/log.ts` now writes the terminal CLI's lines, and its Python's, to the same `~/.logCli/mcp/<day>.log` as the MCP, as `cli:<command>`. `scripts/checkAgentHooks.ts` (`bun run check:agentHooks`, lefthook pre-commit and pre-push) refuses drift: both hosts' files, each hook script answering its events, every command an MCP tool or terminal-only, every MCP tool hooked, every long tool pointing at the live log, `.mcp.json` and the server name, and every resolver a real command (`PAGE_STATES` exported). Rule 55 is in AGENTS.md, the MCP instructions and COMMAND_RULES (inspect, warmup), with the skill `skills/agentHooks`.
 Why: matt asked for every action through inspect, the CLI or MCP to work with the agent hooks, for an unknown or unconfirmed state to trigger its resolution, for lefthook to keep the CLI, MCP definitions, hooks and Monitor in step, and for live logging behind every Monitor (he saw Monitors with none). How both hosts take hooks comes from their docs, read through TinyFish (code.claude.com/docs/en/hooks, learn.chatgpt.com/docs/hooks): the same `additionalContext`, Stop `decision: block` and exit-2 shapes.
 Checked: `bun test src/agentHooks src/mcp src/camofox/flow/pageState.test.ts` 41 pass; the full `bun test` 710 pass and 1 fail, in `parseLaunchArgs` (another session's uncommitted launch files, not in this commit); `bun run check:agentHooks` (5 hooks on both hosts, 29 commands, 28 MCP tools hooked, 9 page states), `check:naming` and `check:browsers` OK; the hook run live reports Reading on videoSelfie (a person's state, so Stop doesn't block); `bun bin/log.ts errors --code launchTooSoon` wrote its lines to the live log as `cli:errors`; the PreToolUse hook refused a real buffered command in this session, and a false positive (a tail on a later command of the line) was fixed and tested.
+
+## 2026-10-20 11:26Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuShortcutsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceRecordPDPDwellTimeMutation.md`: new file
+- `docs/platforms/facebook/background/CometMarketplaceSetProductItemSeenStateMutation.md`: new file
+- `docs/platforms/facebook/background/CometNewsFeedPaginationQuery.md`: new file
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometSinglePostDialogContentQuery.md`: new file
+- `docs/platforms/facebook/background/CometUFIConversationGuideContainerQuery.md`: new file
+- `docs/platforms/facebook/background/CometUFIFeedbackReactMutation.md`: edited
+- `docs/platforms/facebook/background/CometUFIReactionIconTooltipContentQuery.md`: new file
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/FeedComposerCometRootQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPC2CMediaViewerWithImagesQuery.md`: new file
+- `docs/platforms/facebook/background/MarketplacePDPContainerQuery.md`: new file
+- `docs/platforms/facebook/background/MarketplacePDPRightColumnAdsQuery.md`: new file
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/pushRegisterServiceWorker.md`: new file
+- `docs/platforms/facebook/background/sharedUserPreferences.md`: edited
+- `docs/platforms/facebook/background/useCIXLogMutation.md`: new file
+- `docs/platforms/facebook/background/useInstreamAdsHaloFetcherQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/checkpoint/UFACAISupportChatExperienceQuery.md`: edited
+- `docs/platforms/facebook/checkpoint/useCometAISupportConversationLoggerMutation.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/checkpoint/useUFACSubmitActionMutation.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometMentionsBootloadDataSourceWithTaggingTransparencyQuery.md`: new file
+- `docs/platforms/facebook/groups/useGroupsCometMentionsNullstateDataSourceWithTaggingTransparencyQuery.md`: new file
+- `docs/platforms/facebook/groups/useGroupsCometTypeaheadBootloadDataSourceQuery.md`: new file
+- `docs/platforms/facebook/login/CometLogoutHandlerQuery.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoRootWithEntrypointQuery.md`: edited
+
+What changed: `log capture --docs` rebuilt the Facebook request docs from 9 runs (71 requests, 13 new slices read by rea), with the newest the checkpoint run on Reading (20261020T105346) and the feed warm-ups. 14 new docs have their reasoning written: the Marketplace listing requests (dwell time, seen state, the listing page, its photo viewer and right-column ads), the feed paging, post dialog, conversation guide and reaction tooltip, the push service worker registration (how the checkpoint notification reached the page), a logging call, and three group comment-box requests (mentions, typeahead).
+Why: matt asked to push; the pre-push docs gate refuses while a run is newer than the docs or a doc has no reasoning. Reading's browser was closed first, on his ask, with its reason logged in the run (`closeReason.json`: checkpoint, video selfie).
+Checked: `bun run check:facebookClientDocs`: 143 requests documented, rea read every GraphQL slice; no `<!-- toWrite -->` left in a request doc; the timings in each section are from its own facts table.
