@@ -24,7 +24,7 @@ interface StateRule extends PageState {
 }
 
 /** First match wins, most final first (as `classify`). */
-const STATES: StateRule[] = [
+export const PAGE_STATES: readonly StateRule[] = [
   { id: 'disabled', url: /checkpoint\/disabled|account\/disabled/i, what: 'the account is disabled', resolve: 'a person: the account is lost or appealed (rule 13: keep its record)', person: true },
   { id: 'videoSelfie', text: /video selfie|record a video|upload a video|take a video|verify with video|video verification/i, what: "Facebook's video selfie check", resolve: 'a person on camera (rules 10, 23): stop the account, tell matt', person: true },
   { id: 'textCaptcha', text: /enter the text from the image/i, what: 'a text captcha ("Enter the text from the image")', resolve: '`log inspect do solve --live --account <a>` (2Captcha image solver, types the answer, presses Continue), then a snapshot for the next state', person: false },
@@ -45,7 +45,7 @@ const STATES: StateRule[] = [
 
 /** The known state of a page from its URL and snapshot text, or null when it isn't one. Pure. */
 export function pageStateOf(url: string, text: string): PageState | null {
-  for (const s of STATES) {
+  for (const s of PAGE_STATES) {
     if (s.url && !s.url.test(url)) continue
     if (s.text && !s.text.test(text)) continue
     if (!s.url && !s.text) continue

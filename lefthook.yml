@@ -15,6 +15,14 @@ pre-commit:
     browserParity:
       run: bun run check:browsers
 
+    # Rule 55: the CLI's commands, the MCP tools, the agent hooks (Claude Code's
+    # .claude/settings.json, Codex's .codex/hooks.json) and the live log stay in
+    # step: both hosts' hooks are written from src/agentHooks/registry, every MCP
+    # tool is hooked, every hook script answers its events, and every resolver a
+    # page state names is a real command (scripts/checkAgentHooks.ts).
+    agentHooks:
+      run: bun run check:agentHooks
+
 pre-push:
   parallel: false
   commands:
@@ -24,6 +32,9 @@ pre-push:
 
     browserParity:
       run: bun run check:browsers
+
+    agentHooks:
+      run: bun run check:agentHooks
 
     typecheck:
       run: bun run typecheck

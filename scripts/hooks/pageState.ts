@@ -1,22 +1,32 @@
 #!/usr/bin/env bun
 /**
- * Claude Code hook (rule 54): after every tool call (PostToolUse) and every
- * prompt (UserPromptSubmit), read the latest step of every open inspect
- * session, match its page against the known states (`pageStateOf`) and put the
- * state and what resolves it into the agent's context (`additionalContext`),
- * so a known state (a checkpoint, a captcha, a prompt) is resolved, never a
- * reason to stop. After a tool call it speaks only when a session's state is
- * new; on a prompt it always says where each open browser is. Reads only the
- * session's own files; never prints a snapshot's typed values (they are
- * redacted already) or anything from Twenty.
+ * Agent hook (rules 54-55), registered for Claude Code (`.claude/settings.json`)
+ * and Codex (`.codex/hooks.json`) from one list (`src/agentHooks/registry`).
+ * Reads the last step of every open inspect session (every browser log-cli
+ * drives is one) and prints what `hookReply` decides: the state and its
+ * resolver into the agent's context, or a Stop block while a browser sits on
+ * something log-cli resolves itself. Reads only the session's own files;
+ * snapshots carry no typed values (redacted at the source) and nothing from
+ * Twenty is read. `LOG_HOOK_MEMORY` moves the memory file (the parity check
+ * runs this against a scratch one).
  */
-import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+import { hookReply, parseMemory } from '../../src/agentHooks/pageState/index'
+import type { BrowserAt } from '../../src/agentHooks/pageState/index'
+import type { HookEvent } from '../../src/agentHooks/registry/index'
 import { openInspects } from '../../src/camofox/inspect/index'
-import { pageStateOf } from '../../src/camofox/flow/helpers/pageState'
 
 interface HookInput {
-  hook_event_name?: string
+  hook_event_name?: HookEvent
+  stop_hook_active?: boolean
+}
+
+interface Reply {
+  ok?: boolean
+  error?: string
+  step?: string
+  url?: string
 }
 
 const raw = await Bun.stdin.text().catch(() => '')
@@ -26,52 +36,39 @@ try {
 } catch {
   input = {}
 }
-const event = input.hook_event_name ?? 'PostToolUse'
+const event: HookEvent = input.hook_event_name ?? 'PostToolUse'
 
-const seenPath = join(process.env.USERPROFILE ?? process.env.HOME ?? '.', '.logCli', 'runs', 'inspect', 'hookState.json')
-let seen: Record<string, string> = {}
-try {
-  seen = JSON.parse(readFileSync(seenPath, 'utf8')) as Record<string, string>
-} catch {
-  seen = {}
+const memoryPath = process.env.LOG_HOOK_MEMORY || join(process.env.USERPROFILE ?? process.env.HOME ?? '.', '.logCli', 'runs', 'inspect', 'hookState.json')
+const memory = parseMemory(existsSync(memoryPath) ? readFileSync(memoryPath, 'utf8') : '')
+
+/** The session's last reply: its step, URL and whether it failed. */
+function lastReply(path: string): Reply | null {
+  if (!existsSync(path)) return null
+  for (const line of readFileSync(path, 'utf8').trim().split('\n').reverse()) {
+    try {
+      const reply = (JSON.parse(line) as { result?: Reply }).result
+      if (reply?.step) return reply
+    } catch {
+      // A line still being written: the one before it decides.
+    }
+  }
+  return null
 }
 
-const lines: string[] = []
+const browsers: BrowserAt[] = []
 for (const session of openInspects()) {
   const stepsDir = join(session.runDir, 'steps')
-  if (!existsSync(stepsDir)) continue
-  const last = readdirSync(stepsDir).filter((d) => /^\d+_/.test(d)).sort().pop()
-  if (!last) continue
-  const snapshotPath = join(stepsDir, last, 'snapshot.yml')
-  const text = existsSync(snapshotPath) ? readFileSync(snapshotPath, 'utf8') : ''
-  // The step's URL from the session's replies (the last one with this step's folder).
-  let url = ''
-  try {
-    const replies = readFileSync(session.repliesPath ?? join(session.runDir, 'replies.jsonl'), 'utf8').trim().split('\n').reverse()
-    for (const line of replies) {
-      const reply = (JSON.parse(line) as { result?: { step?: string; url?: string } }).result
-      if (reply?.step === last && reply.url) {
-        url = reply.url
-        break
-      }
-    }
-  } catch {
-    // No replies yet: the snapshot alone decides.
-  }
-  const state = pageStateOf(url, text)
-  const key = `${session.account}`
-  const mark = `${last}:${state?.id ?? 'none'}`
-  if (event !== 'UserPromptSubmit' && seen[key] === mark) continue
-  seen[key] = mark
-  if (!state) {
-    if (event === 'UserPromptSubmit') lines.push(`${session.account}: open browser on ${url || 'a page'} (step ${last}), no known blocking state.`)
-    continue
-  }
-  lines.push(`${session.account}: page state **${state.id}**: ${state.what} (step ${last}, ${url}). ${state.person ? 'Only a person can clear it: stop this account and tell matt.' : 'Known state, resolve it, do not stop:'} ${state.resolve}.`)
+  const reply = lastReply(session.repliesPath ?? join(session.runDir, 'replies.jsonl'))
+  const folders = existsSync(stepsDir) ? readdirSync(stepsDir).filter((d) => /^\d+_/.test(d)).sort() : []
+  const step = reply?.step ?? folders.at(-1)
+  if (!step) continue
+  // The step's own snapshot; a failed step may have none, then the last one taken.
+  const withSnapshot = [step, ...folders.slice().reverse()].find((d) => existsSync(join(stepsDir, d, 'snapshot.yml')))
+  const text = withSnapshot ? readFileSync(join(stepsDir, withSnapshot, 'snapshot.yml'), 'utf8') : ''
+  browsers.push({ account: session.account, step, url: reply?.url ?? '', text, failed: reply && reply.ok === false ? (reply.error ?? 'failed') : null })
 }
-writeFileSync(seenPath, JSON.stringify(seen))
 
-if (lines.length) {
-  const context = ['log-cli page state (rule 54, scripts/hooks/pageState.ts):', ...lines.map((l) => `- ${l}`)].join('\n')
-  process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: event, additionalContext: context } }))
-}
+const result = hookReply(event, browsers, memory, input.stop_hook_active === true)
+mkdirSync(dirname(memoryPath), { recursive: true })
+writeFileSync(memoryPath, JSON.stringify(result.memory))
+if (result.output) process.stdout.write(JSON.stringify(result.output))

@@ -536,6 +536,22 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     (`pageStateOf`, `src/camofox/flow/helpers/pageState.ts`) and puts the state
     and its resolver into the agent's context. A state not mapped yet is
     pressed through (its Continue) and added to the map.
+55. 2026-10-20 · matt: the CLI, the MCP tools, the agent hooks and the live
+    log line up, and a commit is refused when they don't. One hook list
+    (`src/agentHooks/registry`) writes both hosts' files, Claude Code's
+    `.claude/settings.json` and Codex's `.codex/hooks.json`: SessionStart and
+    UserPromptSubmit say where every open browser is; PostToolUse (Bash,
+    PowerShell, Monitor, every `mcp__log__` tool) gives a known state its
+    resolver, and a failed step is an unconfirmed page (snapshot, then
+    resolve); Stop keeps the turn going while a browser sits on a state log-cli
+    resolves itself (rule 54), never on a person's state, and never twice on
+    the same unchanged one; PreToolUse refuses a log run piped through
+    tail/head (rule 26). The terminal CLI writes the same live log as the MCP,
+    `~/.logCli/mcp/<day>.log`, so one Monitor shows a run however it started.
+    lefthook's `agentHooks` (`bun run check:agentHooks`, pre-commit and
+    pre-push) refuses drift: both hosts' files, every command an MCP tool or
+    terminal-only, every MCP tool hooked, every hook script answering its
+    events, every resolver a real command (`skills/agentHooks/SKILL.md`).
 
 ## Checks
 

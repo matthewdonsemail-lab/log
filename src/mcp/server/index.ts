@@ -11,8 +11,7 @@
  * call like `connect` can be watched as it happens.
  */
 import { timingSafeEqual } from "node:crypto";
-import { appendFileSync, existsSync, mkdirSync, readFileSync, watch } from "node:fs";
-import { homedir } from "node:os";
+import { existsSync, readFileSync, watch } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
@@ -26,7 +25,8 @@ import { setLogSink } from "../../observability/processLog/index.ts";
 import type { LogLine } from "../../observability/processLog/index.ts";
 import { FLOWS_DIR, listFlows, loadFlow, toolName } from "../../camofox/flow/index.ts";
 import type { FlowDefinition } from "../../camofox/flow/index.ts";
-import { AGENTS_URI, flowArgv, formatLogLine, guardCall, logFileName, parseEnvText, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
+import { appendLiveLine, liveLogDir } from "../../observability/liveLog/index.ts";
+import { AGENTS_URI, flowArgv, guardCall, parseEnvText, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
 import type { LogToolInput, ToolResult } from "./types.ts";
 
@@ -143,17 +143,10 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
     { name: "log", version: "0.1.0" },
     { capabilities: { tools: { listChanged: true }, logging: {}, resources: {} }, instructions: SERVER_INSTRUCTIONS },
   );
-  const logDir = options.logDir === undefined ? process.env.LOG_MCP_DIR || join(homedir(), ".logCli", "mcp") : options.logDir;
-  if (logDir) mkdirSync(logDir, { recursive: true });
+  const logDir = options.logDir === undefined ? liveLogDir() : options.logDir;
   const onLine: OnLogLine = (tool, stream, line) => {
-    const at = new Date().toISOString();
-    if (logDir) {
-      try {
-        appendFileSync(join(logDir, logFileName(at)), `${formatLogLine(at, tool, stream, line)}\n`);
-      } catch {
-        // The log file is a convenience; the tool result still carries every line.
-      }
-    }
+    // The same live log the terminal CLI writes (rule 26); the tool result still carries every line.
+    if (logDir) appendLiveLine(logDir, tool, stream, line);
     server.sendLoggingMessage({ level: stream === "err" ? "warning" : "info", logger: `log.${tool}.${stream}`, data: line }).catch(() => {});
   };
   server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: [...toolsFromCommands(COMMANDS), ...toolsFromFlows(savedFlows())] }));
