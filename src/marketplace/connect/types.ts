@@ -5,7 +5,7 @@
  * two-step code page, an "approve on another device" screen, a "trust this
  * device" prompt, or a checkpoint of its own (automated behaviour, confirm
  * your identity, a photo of yourself, a locked account). Each is a page kind
- * the session reads (`python/connectSession.py`) and a state here, so the run
+ * the session reads (`python/session/connectSession.py`) and a state here, so the run
  * says which one it is in and what ended it. Every browser step is an actor
  * the caller provides; tests never open a browser.
  */

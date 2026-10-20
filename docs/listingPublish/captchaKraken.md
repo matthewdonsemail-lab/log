@@ -72,7 +72,7 @@ const result = await solver.solve(page)
   `humanization: 'none'`.
 - `mobile` mode doesn't work in Firefox (no touch dispatch,
   `js/src/humanize.ts:187-340`).
-- **Our worker is Python.** log-cli drives Camoufox from `python/logWorker.py`,
+- **Our worker is Python.** log-cli drives Camoufox from `python/session/logWorker.py`,
   so the page lives in Python. The PyPI package gives the same solver in
   Python (`captchakraken` `page_solver.py`), which means the solve can run
   inside the worker with no extra hop to TS.

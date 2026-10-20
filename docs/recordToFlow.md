@@ -12,7 +12,7 @@ hours, launch budget, raw HAR).
 | 1. Look | `log inspect start --account <a> --url <facebook url>`, then `log inspect do <action>` | One headed Camoufox (async API) kept open; every step recorded in order: accessibility snapshot with refs, screenshot, the step's own HAR, rea's reading of that HAR at once |
 | 2. Read | `log capture --docs` | `docs/platforms/facebook/<domain>/<request>.md`: every request Facebook's pages made, with what it sends and reads, which step fires it, timings, errors, reasoning and rea Evidence (rule 27) |
 | 3. Map | `log inspect map [<run>] [--all]` | The recording as states and transitions (`flow.md`, `machine.json`); `--all` collates every run |
-| 4. Flow | `log flow fromInspect <run> --name <n> --rename text1=firstName …` | `src/camofox/flow/definitions/<n>.json`: each step's element by role and name, each step's confirming request, params; and `docs/platforms/facebook/flows/<n>.md` |
+| 4. Flow | `log flow fromInspect <run> --name <n> --rename text1=firstName …` | `src/browser/flow/definitions/<n>.json`: each step's element by role and name, each step's confirming request, params; and `docs/platforms/facebook/flows/<n>.md` |
 | 5. Machine | `createFlowMachine(definition)` | An XState machine: one state per step, `failed` on the first step that fails |
 | 6. Run | `log flow run <n> --account <a> --set k=v … [--live]` | Dry run lists the filled steps; `--live` runs the machine through an inspect session, so the run is recorded again and mapped |
 | 7. MCP | the `log` MCP server | Every saved flow is a tool of its own (`flowProfileSetup`), params by name, `live` needs `confirmLive` |
@@ -35,8 +35,8 @@ is kept (rule 19). `--now` skips only the 10-minute launch gap (rule 30).
 
 ## The cursor (rule 32)
 
-`python/humanMouse.py`, used by every session. Fitted to matt's own mouse,
-recorded by `python/recordMouse.py` (run it for N seconds, then it analyses
+`python/human/humanMouse.py`, used by every session. Fitted to matt's own mouse,
+recorded by `python/human/recordMouse.py` (run it for N seconds, then it analyses
 the recording; `--analyze <file>` re-analyses one). What the recording showed
 and the module reproduces: one continuous velocity profile per move, an early
 speed peak and a long settle, overshoot-and-return about half the time, loose
@@ -45,8 +45,8 @@ step writes `mouse.json` (its legs) and `mouseSamples.json` (every emitted
 point, in the recorder's format), so the same analyser compares ours with his:
 
 ```bash
-python python/recordMouse.py 60                      # record your hand, then analyse
-python python/recordMouse.py --analyze <run>/steps/02_wait60s/mouseSamples.json
+python python/human/recordMouse.py 60                      # record your hand, then analyse
+python python/human/recordMouse.py --analyze <run>/steps/02_wait60s/mouseSamples.json
 ```
 
 Camoufox's humanize stays on but is capped to 20 ms per hop in these
@@ -85,10 +85,10 @@ cost ~100 ms per 5 px hop, which is what made earlier motion crawl.
 
 | Path | What |
 | --- | --- |
-| `python/inspectSession.py` | The inspect session (async Camoufox) |
-| `src/camofox/inspect/` | Talking to it: commands, replies, rendering |
+| `python/session/inspectSession.py` | The inspect session (async Camoufox) |
+| `src/browser/inspect/` | Talking to it: commands, replies, rendering |
 | `src/rea/inspectMap/` | Recording → states and transitions |
-| `src/camofox/flow/` | Recording → definition, machine, docs; `definitions/` |
+| `src/browser/flow/` | Recording → definition, machine, docs; `definitions/` |
 | `src/cli/inspect/`, `src/cli/flow/` | The commands |
 | `src/mcp/server/helpers/toolsFromFlows.ts` | Flows as MCP tools |
 | `src/rea/facebookClient/` | The per-request docs build |

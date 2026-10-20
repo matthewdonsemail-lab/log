@@ -12,7 +12,7 @@ checked with the same analyser that measured him.
 
 1. **Measured, not guessed.** A motion change comes from a number in a
    recording (his or ours), never from how it "should" look.
-2. **One module drives every session** (`python/humanMouse.py`): the async
+2. **One module drives every session** (`python/human/humanMouse.py`): the async
    inspect/flow sessions (idle loop, preempted by any step) and the sync
    publish/connect/profile sessions (`look()` before a step, `human_click`).
    Nothing clicks with Playwright's own `.click()` in a Facebook session.
@@ -25,13 +25,13 @@ checked with the same analyser that measured him.
 ```bash
 # 1. his hand: open a page with our cursor still, record 60 s, analyse
 bun bin/log.ts inspect start --account <a> --url https://www.facebook.com/marketplace/ --noIdleMouse --proxyMs 12000
-python python/recordMouse.py 60                 # "GO": matt uses the window; prints the summary
+python python/human/recordMouse.py 60                 # "GO": matt uses the window; prints the summary
 #   -> ~/.logCli/mouse/<time>.json and .analysis.json
 
 # 2. ours: a session with the idle loop, a long wait step, the same analyser
 bun bin/log.ts inspect start --account <a> --url https://www.facebook.com/marketplace/ --now --proxyMs 12000
 bun bin/log.ts inspect do wait 60
-python python/recordMouse.py --analyze ~/.logCli/runs/inspect/<run>/steps/02_wait60s/mouseSamples.json
+python python/human/recordMouse.py --analyze ~/.logCli/runs/inspect/<run>/steps/02_wait60s/mouseSamples.json
 ```
 
 Compare: moves, move ms, px per 100 ms, straightness, side px, overshoot

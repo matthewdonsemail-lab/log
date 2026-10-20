@@ -26,6 +26,7 @@ export * from "./helpers/index.ts";
 export const PROFILE_USAGE = "Usage: log profile setup --account <accountName> [--live] [--bypass] [--json]";
 
 export const profileCommand: Command = {
+  usage: PROFILE_USAGE,
   name: "profile",
   summary: "Set an account's profile picture and cover photo from Twenty (dry run unless --live, rule 28)",
   args: "setup --account <name> [--live] [--bypass] [--json]",

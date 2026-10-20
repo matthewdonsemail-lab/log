@@ -21,7 +21,7 @@ export interface ScriptStep {
 
 export interface ActivityScript {
   activity: WarmupActivity
-  /** The flow it becomes: `warmupFeedBrowse`... (`src/camofox/flow/definitions/<flow>.json`). */
+  /** The flow it becomes: `warmupFeedBrowse`... (`src/browser/flow/definitions/<flow>.json`). */
   flow: string
   /** Where in Listaro it comes from. */
   source: string

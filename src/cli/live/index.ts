@@ -4,7 +4,7 @@
  * Accounts come from Twenty (socialAccounts, platform FACEBOOK). Every one of
  * these that opens Camoufox first passes `prepareRun` (the account is
  * Facebook, usable, has a proxy and a home country) and then
- * python/proxyGate.py (the proxy's exit IP is in that country). There is no
+ * python/browser/proxyGate.py (the proxy's exit IP is in that country). There is no
  * way around either, signing in included (AGENTS.md rule 12).
  */
 import { createActor, fromPromise, toPromise } from "xstate";
@@ -12,8 +12,8 @@ import { appendAttempt, countArkoseToday, readAttempts, solverAvailability } fro
 import type { ConnectSession, ConnectStep } from "../../camofox/session/index.ts";
 import { fromCamofoxStatus } from "../../camofox/worker/index.ts";
 import type { DoctorResult, ScanResult, StatusResult, WorkerFailure } from "../../camofox/worker/index.ts";
-import { prepareRun } from "../../camofox/run/index.ts";
-import type { PreparedRun } from "../../camofox/run/index.ts";
+import { prepareRun } from "../../browser/run/index.ts";
+import type { PreparedRun } from "../../browser/run/index.ts";
 import { ERROR_CATALOG } from "../../errors/catalog/index.ts";
 import { syncDashboard } from "../../marketplace/agencyListing/index.ts";
 import { classifySignal } from "../../marketplace/account/index.ts";
@@ -162,6 +162,7 @@ export async function workerFailed(context: CommandContext, name: string, accoun
 }
 
 export const doctorCommand: Command = {
+  usage: DOCTOR_USAGE,
   name: "doctor",
   summary: "Check python, facebook-camofox-client, Camoufox, Twenty, and which accounts may run",
   args: "[--json]",
@@ -195,6 +196,7 @@ export const doctorCommand: Command = {
 };
 
 export const connectCommand: Command = {
+  usage: CONNECT_USAGE,
   name: "connect",
   summary: "Sign a Facebook account in through its proxy (the connect machine), save its cookies to Twenty",
   args: "--account <name> [--noPrompt] [--wait <seconds>] [--bypass] [--now]",
@@ -294,6 +296,7 @@ async function connectEnded(context: CommandContext, account: FacebookAccount, r
 }
 
 export const scanCommand: Command = {
+  usage: SCAN_USAGE,
   name: "scan",
   summary: "Read Marketplace > Selling live for one account and update its listings in Twenty",
   args: "--account <name> [--json] [--bypass]",
@@ -324,6 +327,7 @@ export const scanCommand: Command = {
 };
 
 export const statusCommand: Command = {
+  usage: STATUS_USAGE,
   name: "status",
   summary: "Open one Marketplace item page live and classify its status",
   args: "<listingId> --account <name> [--json] [--bypass]",

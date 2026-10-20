@@ -5,7 +5,7 @@ import type { FacebookModule, GraphqlDefinition, OperationKind } from '../types'
  * Facebook ships its client as bundles of `__d("Name", [deps], factory)`
  * modules (12,000 of them across one create page). rea timed out reading the
  * bundles whole, so we parse them into a syntax tree ourselves, the same way
- * `scripts/astSummary.mjs` reads our own code, and hand rea only the modules
+ * `scripts/commitLog/astSummary.mjs` reads our own code, and hand rea only the modules
  * behind each request. Pure.
  */
 export function indexModules(file: string, text: string): FacebookModule[] {

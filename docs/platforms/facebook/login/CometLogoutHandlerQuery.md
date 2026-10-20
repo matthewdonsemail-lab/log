@@ -17,7 +17,7 @@ Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto / | 1 | 200 | 824 ms | 6261 ms | — |
+| inspect | step 38: goto /marketplace/ | 1 | 200 | 541 ms | 12959 ms | — |
 
 <!-- facts:end -->
 

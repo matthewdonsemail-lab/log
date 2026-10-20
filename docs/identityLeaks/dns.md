@@ -94,5 +94,5 @@ build.
 
 Not leaking at `f033e63`, live-verified (R3 T5) and probe-verified (R2).
 **DoH pinned off at `2de5ff5`:** `network.trr.mode=5` in `PINNED_PREFS`
-(`python/deviceProfile.py`), covered by `src/camofox/device/device.test.ts`.
+(`python/device/deviceProfile.py`), covered by `src/camofox/device/device.test.ts`.
 *verifiedSource, unitTested* The pinned build was not re-measured for DNS.

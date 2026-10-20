@@ -41,13 +41,13 @@ inconsistent (R2 §11, §13; R3 T1, T11; R4 M3).
 - `src/proxyVendor/twoCaptcha/helpers/buildProxyUrl.ts:38-44` builds
   `session-<id>-sessTime-<minutes>`. `docs/proxies.md` step 4 says it is at
   most 120. *verifiedSource*
-- `python/proxyGate.py:128` checks the exit once per launch. `:131` pins
+- `python/browser/proxyGate.py:128` checks the exit once per launch. `:131` pins
   `geoip` to it. `camoufox/utils.py:746-748` copies it into `webrtc:ipv4`.
   *verifiedSource*
 - `camoufox/ip.py:88` puts `@lru_cache(maxsize=None)` on `public_ip`, so a
   long-lived process never notices a rotation. *verifiedSource*
 - Publishing can run long: the reCAPTCHA timeout is 600 s
-  (`python/publishSession.py:469`), plus captcha rounds. *verifiedSource*
+  (`python/session/publishSession.py:469`), plus captcha rounds. *verifiedSource*
 - **Live (R3 T11):** session `k7m2q9x4a` gave 109.78.211.66 on every launch
   from 16:41 to about 16:51, at the start and end of each launch. A new session
   id gave a different IP and ISP (86.43.185.91, Eircom). The 120-minute expiry
@@ -67,7 +67,7 @@ inconsistent (R2 §11, §13; R3 T1, T11; R4 M3).
 Session q3v8n1z6b (86.43.185.91): **Galway**, Eircom, proxy and hosting false.
 All sources agree on Ireland and a residential ISP.
 
-- `python/proxyGate.py:115-117` compares only the country. *verifiedSource*
+- `python/browser/proxyGate.py:115-117` compares only the country. *verifiedSource*
 - MaxMind: IP geolocation is never precise enough for a household. US city
   accuracy is 66% within 50 km, with a typical radius around 100 km (S46).
   *vendorDocs*
@@ -104,13 +104,13 @@ All sources agree on Ireland and a residential ISP.
 
 ## Where in our code it can happen again
 
-- `python/proxyGate.py:109-131` (`check`, `apply`): one check, country only.
+- `python/browser/proxyGate.py:109-131` (`check`, `apply`): one check, country only.
 - `src/proxyVendor/twoCaptcha/helpers/buildProxyUrl.ts`: `sessTime`, session
   id and city targeting. `log proxy assign --anyCity` targets the whole country.
 - `src/cli/proxy/index.ts` and `marketplace/socialAccount` `recordProxyCheck`:
   what gets saved to Twenty.
 - Any long-running Python process (`camoufox.ip.public_ip` is cached).
-- `python/publishSession.py` before `step_publish`: the irreversible step.
+- `python/session/publishSession.py` before `step_publish`: the irreversible step.
 
 ## Mitigation
 

@@ -1,12 +1,12 @@
 /**
- * The error catalog: every code log-cli, `python/logWorker.py` and
- * `python/publishSession.py` can produce, once, with what it means, whether it
+ * The error catalog: every code log-cli, `python/session/logWorker.py` and
+ * `python/session/publishSession.py` can produce, once, with what it means, whether it
  * clears by itself, where it is raised and where each machine ends up.
  *
  * This is the only place a code is defined. The TypeScript unions
  * (`ErrorCode`, `AccountIssue`, the captcha plan reasons) are derived from it,
  * `SOLVER_DEAD_CODES` is read from it, and the Python reads the same list from
- * `python/errorCatalog.json` (`bun run errors:export`). Tests fail when a code
+ * `python/errors/errorCatalog.json` (`bun run errors:export`). Tests fail when a code
  * is used anywhere that isn't here (`catalog.test.ts`).
  *
  * `AccountIssue` started as listeningkit-hackathon's snake_case vocabulary
@@ -393,7 +393,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "It is outside the account's local waking hours (08:00-22:00 in its home timezone unless activeHoursStart/End say otherwise). Nothing opened. The detail has the local time and when the window opens.",
     retryable: true,
-    raisedIn: ['camofox/run', 'cli/watch'],
+    raisedIn: ['browser/run', 'cli/watch'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Run it inside the window in the detail, or change activeHoursStart/activeHoursEnd on the socialAccount in Twenty.'
@@ -402,7 +402,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "The account's browser opened on Facebook less than 10 minutes ago (rule 24). Nothing opened.",
     retryable: true,
-    raisedIn: ['camofox/run'],
+    raisedIn: ['browser/run'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Wait the minutes in the detail. Back-to-back launches are what drew the 2026-10-19 checkpoints.'
@@ -411,7 +411,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "The account's browser has opened on Facebook 8 times today, its local day, dry runs included (rule 24). Nothing opened.",
     retryable: true,
-    raisedIn: ['camofox/run'],
+    raisedIn: ['browser/run'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Run it tomorrow (local time), or from another account in the same country.'
@@ -420,7 +420,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "log-cli has no browser locale for the account's homeCountry, so it can't pin one. Nothing opened.",
     retryable: false,
-    raisedIn: ['marketplace/home', 'camofox/run'],
+    raisedIn: ['marketplace/home', 'browser/run'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Add the country to HOME_COUNTRIES in src/marketplace/home/types.ts, or fix homeCountry in Twenty.'
@@ -429,7 +429,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "The account's homeCountry has several timezones and its homeCity isn't in the city table, so its local time is unknown. Nothing opened.",
     retryable: false,
-    raisedIn: ['marketplace/home', 'camofox/run'],
+    raisedIn: ['marketplace/home', 'browser/run'],
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Add the city to CITY_TIMEZONES in src/marketplace/home/types.ts, or fix homeCity in Twenty.'
@@ -438,7 +438,7 @@ export const ERROR_CATALOG = {
     layer: 'account',
     meaning: "The account's stored deviceProfile can't be read, or the run's device file is missing. Nothing opened: a new device would look like a different computer.",
     retryable: false,
-    raisedIn: ['camofox/run', 'proxyGate', 'publish.openingForm', 'worker'],
+    raisedIn: ['browser/run', 'proxyGate', 'publish.openingForm', 'worker'],
     publish: 'blocked',
     monitor: 'blocked',
     action: "Tell matt. Don't clear deviceProfile unless he decides the account may get a new device."
@@ -1039,7 +1039,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['proxyGate', 'worker', 'publish.openingForm'],
     publish: 'failed',
     monitor: 'failed',
-    action: 'Tell matt. Every launch goes through python/proxyGate.py apply(); find the caller in the detail.'
+    action: 'Tell matt. Every launch goes through python/browser/proxyGate.py apply(); find the caller in the detail.'
   },
   crashed: {
     layer: 'runtime',
@@ -1157,7 +1157,7 @@ export const ERROR_CATALOG = {
     meaning: 'Twenty answered with an error. The detail has its status and message.',
     retryable: true,
     raisedIn: ['twenty/graphql'],
-    action: 'Read the detail. A field error means scripts/twentySetup.mjs needs running.'
+    action: 'Read the detail. A field error means scripts/twenty/twentySetup.mjs needs running.'
   },
   accountNotFound: {
     layer: 'twenty',
@@ -1245,7 +1245,7 @@ export const ERROR_CATALOG = {
     meaning: "The profile page had no control for the change (the button, its menu item or the file chooser).",
     retryable: false,
     raisedIn: ['profile.uploadingProfilePhoto', 'profile.uploadingCoverPhoto', 'profileSession'],
-    action: "Read the run's capture (rule 25): profileFound.txt lists every button the page had. Update python/profileSession.py from it."
+    action: "Read the run's capture (rule 25): profileFound.txt lists every button the page had. Update python/session/profileSession.py from it."
   },
   profileUploadNotSaved: {
     layer: 'profile',

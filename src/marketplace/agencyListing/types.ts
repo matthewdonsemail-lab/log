@@ -2,7 +2,7 @@
  * A Marketplace listing, as Twenty's `agencyListings` object holds it: one row
  * is one listing on one account. facebook-camofox-client syncs the health
  * fields; log-cli adds the ad, the location, the run results and the
- * relations (`scripts/twentySetup.mjs`). SELECT values are UPPER_SNAKE in
+ * relations (`scripts/twenty/twentySetup.mjs`). SELECT values are UPPER_SNAKE in
  * Twenty and camelCase here (rule 1).
  */
 import type { AgencyListing as AgencyListingRecord } from '../../twenty/graphql/generated/index'

@@ -13,11 +13,12 @@
 | Called from | `FeedComposerCometRoot.react` |
 | rea | `ev_74df5fe04dcbed1ebf7e87e31af1f3fdfc75be3825828c415b2e908697f06b2b` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| host | signIn: password typed; submitting with Enter | 1 | 200 | 698 ms | 21717 ms | — |
+| inspect | step 27: goto / | 1 | 200 | 614 ms | 4855 ms | — |
+| inspect | step 1: goto / | 2 | 200 | 731–801 ms | 7877–16609 ms | — |
 
 <!-- facts:end -->
 

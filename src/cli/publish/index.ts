@@ -5,7 +5,7 @@
  * The listing row says what to post and which socialAccount posts it. Before
  * anything opens (dry run or live, rule 12): the account is Facebook and
  * usable, has a proxy and a home country, and the listing is in that country.
- * At launch python/proxyGate.py checks the proxy's exit IP is in it too.
+ * At launch python/browser/proxyGate.py checks the proxy's exit IP is in it too.
  *
  * Dry run by default: it opens the form, uploads the photos, fills and reads
  * back every field, screenshots the review, and stops before Publish. Only
@@ -17,7 +17,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
 import { appendAttempt, countArkoseToday, readAttempts, solverAvailability } from "../../captcha/router/index.ts";
-import { prepareRun } from "../../camofox/run/index.ts";
+import { prepareRun } from "../../browser/run/index.ts";
 import { settleInBackground } from "../../rea/capture/index.ts";
 import type { PublishSession } from "../../camofox/session/index.ts";
 import type { ErrorCode } from "../../errors/catalog/index.ts";
@@ -116,6 +116,7 @@ export async function checkPublishable(
 }
 
 export const publishCommand: Command = {
+  usage: PUBLISH_USAGE,
   name: "publish",
   summary: "Post one Twenty listing (dry run unless --live), printing every machine step",
   args: "--listing <id> [--live] [--json] [--bypass] [--now]",

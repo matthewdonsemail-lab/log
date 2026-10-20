@@ -27,7 +27,7 @@ log lifecycle --account <name>      # one, with its standing
 log lifecycle states                # the state tree from the machine itself
 ```
 
-A field the lifecycle reads is added through `scripts/twentySetup.mjs` and the
+A field the lifecycle reads is added through `scripts/twenty/twentySetup.mjs` and the
 client regenerated (rules 13-14). A fact it reads from a past run (a rename, a
 location) is backfilled only from that run's recording (rule 25), never guessed.
 

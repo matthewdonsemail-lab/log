@@ -6,8 +6,8 @@ description: Write the log.md entry every log-cli commit needs. On commit, the p
 # commitLog
 
 `log.md` is the running record of the repo, one entry per commit, newest at
-the bottom. lefthook's pre-commit (`lefthook.yml`) runs `scripts/commitLog.mjs`, which uses
-`scripts/astSummary.mjs`:
+the bottom. lefthook's pre-commit (`lefthook.yml`) runs `scripts/commitLog/commitLog.mjs`, which uses
+`scripts/commitLog/astSummary.mjs`:
 
 - `.ts` / `.mjs` files are parsed with the TypeScript compiler API.
 - `.py` files are parsed with Python's own `ast` module.
@@ -20,7 +20,7 @@ the bottom. lefthook's pre-commit (`lefthook.yml`) runs `scripts/commitLog.mjs`,
 
 1. **Every commit gets an entry.** No `--no-verify`, ever.
 2. **Never edit the AST block.** The tool writes it. If it looks wrong, fix
-   `scripts/astSummary.mjs`, not the entry. The hook rejects a block that
+   `scripts/commitLog/astSummary.mjs`, not the entry. The hook rejects a block that
    doesn't match the staged code, and rewrites it.
 3. **Never edit old entries.** Only add.
 4. **Write the three fields from the AST,** in plain words, naming the real
@@ -44,7 +44,7 @@ If you change code after the entry was written, the hook updates the AST
 block in place and stops once more. Re-read your What changed line, re-stage
 log.md, commit again.
 
-To see the AST for any commit: `node scripts/astSummary.mjs <commit>`. With
+To see the AST for any commit: `node scripts/commitLog/astSummary.mjs <commit>`. With
 no argument it shows the staged change.
 
 ## The entry
@@ -52,7 +52,7 @@ no argument it shows the staged change.
 ```markdown
 ## 2026-10-18 05:40Z · feat/branchName
 
-AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
 - `src/camofox/worker/helpers/fromCamofoxStatus.ts`: added function fromCamofoxStatus
 - `src/cli/live/index.ts`: added const connectCommand · removed const loginCommand
 

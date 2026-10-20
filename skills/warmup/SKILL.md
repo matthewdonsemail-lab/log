@@ -21,7 +21,7 @@ description: Record and run the account warm-up (rule 36) - Listaro's five activ
    (`pageProblem`): a checkpoint, a login wall or another section ends the
    activity (`blocked`), and the account's issue is written to Twenty. Erie,
    2026-10-19, scrolled a checkpoint page for a minute before this.
-6. **Scrolls like a hand** (`python/scrollMotion.py`, ported from the Robotic
+6. **Scrolls like a hand** (`python/human/scrollMotion.py`, ported from the Robotic
    VSL repo): bell-curve wheel steps, overshoot and recoil, mid-pauses. No
    `scrollBy` or `scroll_into_view_if_needed` anywhere.
 
@@ -46,8 +46,8 @@ Doc: `docs/lifecycle.md` (the warm-up section); scripts:
 ## By platform: Facebook Reels, for a persona (rules 49-51)
 
 ```bash
-bun scripts/buildReelViewers.ts                        # once: 980 real viewers from KuaiRand-1K (~/.logCli/datasets)
-bun scripts/buildInterestEffect.ts                     # once: the interest effect, from KuaiRand-Pure's random log
+bun scripts/datasets/buildReelViewers.ts                        # once: 980 real viewers from KuaiRand-1K (~/.logCli/datasets)
+bun scripts/datasets/buildInterestEffect.ts                     # once: the interest effect, from KuaiRand-Pure's random log
 log warmup facebook persona --account <a>              # the persona, its real viewer and its pack (every dataset a trait)
 log proxy balance                                      # 2Captcha traffic left, before a run
 log warmup facebook reel run --account <a> --persona --live [--likes] [--trafficMb 1024]

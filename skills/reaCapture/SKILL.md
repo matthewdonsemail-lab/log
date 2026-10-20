@@ -40,7 +40,7 @@ Why a HAR plus scripts, read offline: `docs/rea/matrix/` and
   `docs/rea/matrix/runMatrix.mjs`.
 - Code: `src/rea/capture/` (`exportScripts`, `settleCapture`,
   `captureFromHar`), `src/cli/capture/`, and the `record_har_*`
-  arguments in `python/publishSession.py`.
+  arguments in `python/session/publishSession.py`.
 
 ## The loop
 

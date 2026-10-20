@@ -1,7 +1,7 @@
 /**
  * Rules 15-17: one device per account, the pinned locale, the launch
  * self-check. The TypeScript half is tested directly; the Python half
- * (python/deviceProfile.py, python/proxyGate.py) through its pure functions,
+ * (python/device/deviceProfile.py, python/browser/proxyGate.py) through its pure functions,
  * run in `LOG_PYTHON` with no browser and no network.
  */
 import { describe, expect, test } from "bun:test";
@@ -54,16 +54,16 @@ describe("the stored device (TypeScript)", () => {
   });
 });
 
-describe("python/deviceProfile.py (pure parts)", () => {
+describe("python/device/deviceProfile.py (pure parts)", () => {
   test("per-launch keys are never stored; the rest of the config is", () => {
-    const out = py(`import deviceProfile as d
+    const out = py(`from device import deviceProfile as d
 print(json.dumps(d.strip_per_launch({"timezone": "x", "webrtc:ipv4": "1.2.3.4", "geolocation:latitude": 1, "locale:language": "en",
   "humanize": True, "humanize:maxTime": 1.5, "showcursor": True, "addons": ["p"], "canvas:seed": 5, "navigator.userAgent": "ua", "fonts": ["Arial"]})))`);
     expect(out).toEqual({ "canvas:seed": 5, "navigator.userAgent": "ua", fonts: ["Arial"] });
   });
 
   test("the pinned locale has no script key (with it Intl falls back to plain 'en')", () => {
-    expect(py(`import deviceProfile as d\nprint(json.dumps(d.locale_config("en-IE", ["en-IE", "en"])))`)).toEqual({
+    expect(py(`from device import deviceProfile as d\nprint(json.dumps(d.locale_config("en-IE", ["en-IE", "en"])))`)).toEqual({
       "locale:language": "en",
       "locale:region": "IE",
       "locale:all": "en-IE, en",
@@ -71,7 +71,7 @@ print(json.dumps(d.strip_per_launch({"timezone": "x", "webrtc:ipv4": "1.2.3.4", 
   });
 
   test("a launch replays the stored device and sets this launch's values", () => {
-    const out = py(`import deviceProfile as d
+    const out = py(`from device import deviceProfile as d
 profile = ${JSON.stringify(JSON.stringify(PROFILE))}
 p = json.loads(profile)
 run = {"locale": "en-IE", "languages": ["en-IE", "en"]}
@@ -94,7 +94,7 @@ print(json.dumps(c))`) as Record<string, unknown>;
   });
 
   test("prefs: the UI locale is this launch's pinned locale, HTTP/3 and DoH are off, nothing per-launch is replayed", () => {
-    const out = py(`import deviceProfile as d
+    const out = py(`from device import deviceProfile as d
 p = {"firefoxUserPrefs": {"webgl.force-enabled": True, "intl.locale.requested": "en-US", "network.dns.disableIPv6": False}}
 print(json.dumps([d.launch_prefs(p, {"locale": "en-IE"}, "86.41.85.43"), d.launch_prefs(p, {"locale": "en-GB"}, "2001:db8::1")]))`) as Record<string, unknown>[];
     expect(out[0]).toEqual({
@@ -109,13 +109,14 @@ print(json.dumps([d.launch_prefs(p, {"locale": "en-IE"}, "86.41.85.43"), d.launc
   });
 
   test("the browser gets only system environment variables: no keys, no CAMOU_ overrides, no TZ", () => {
-    const out = py(`import deviceProfile as d
+    const out = py(`from device import deviceProfile as d
 print(json.dumps(d.safe_env({"SYSTEMROOT": "C:/Windows", "TEMP": "t", "TWENTY_API_KEY": "k", "2CAPTCHA_API_KEY": "k", "CAMOU_CONFIG_1": "{}", "TZ": "Asia/Bangkok", "LANG": "vi_VN"})))`);
     expect(out).toEqual({ SYSTEMROOT: "C:/Windows", TEMP: "t" });
   });
 
   test("geolocation is near the city, never its centroid, with a believable accuracy", () => {
-    const out = py(`import deviceProfile as d, random, math
+    const out = py(`from device import deviceProfile as d
+import random, math
 r = random.Random(1)
 pts = [d.pinned_geolocation(53.2702, -9.0503, r) for _ in range(200)]
 print(json.dumps({"minAcc": min(p["accuracy"] for p in pts), "maxAcc": max(p["accuracy"] for p in pts),
@@ -128,7 +129,7 @@ print(json.dumps({"minAcc": min(p["accuracy"] for p in pts), "maxAcc": max(p["ac
   });
 
   test("a profile that stores per-launch keys, or isn't windows, is refused", () => {
-    const out = py(`import deviceProfile as d
+    const out = py(`from device import deviceProfile as d
 p = json.loads(${JSON.stringify(JSON.stringify(PROFILE))})
 res = []
 for bad in ({**p, "os": "macos"}, {**p, "config": {**p["config"], "timezone": "Asia/Bangkok"}}, {**p, "geolocation": {}}):
@@ -142,10 +143,10 @@ print(json.dumps(res))`);
   });
 });
 
-describe("python/proxyGate.py (pure parts)", () => {
+describe("python/browser/proxyGate.py (pure parts)", () => {
   const WANT = { timezone: "Europe/Dublin", locale: "en-IE", languages: ["en-IE", "en"], exitIp: "109.78.211.66" };
   const realm = { timeZone: "Europe/Dublin", intlLocale: "en-IE", numberLocale: "en-IE", language: "en-IE", languages: ["en-IE", "en"], offset: -60 };
-  const verdict = (observed: unknown) => py(`import proxyGate as g\nprint(json.dumps(g.compare(json.loads(${JSON.stringify(JSON.stringify(observed))}), json.loads(${JSON.stringify(JSON.stringify(WANT))}))))`);
+  const verdict = (observed: unknown) => py(`from browser import proxyGate as g\nprint(json.dumps(g.compare(json.loads(${JSON.stringify(JSON.stringify(observed))}), json.loads(${JSON.stringify(JSON.stringify(WANT))}))))`);
 
   test("the self-check passes only when page and worker match what was pinned", () => {
     expect(verdict({ ip: WANT.exitIp, page: realm, worker: realm })).toBeNull();
@@ -166,7 +167,7 @@ describe("python/proxyGate.py (pure parts)", () => {
   });
 
   test("callers can't add launch options, and can't ask for headless", () => {
-    const out = py(`import proxyGate as g
+    const out = py(`from browser import proxyGate as g
 res = []
 for kw in ({"locale": "vi-VN"}, {"config": {"timezone": "Asia/Bangkok"}}, {"env": {}}, {"block_webrtc": True}, {"persistent_context": True}, {"headless": True}):
     try:
@@ -178,7 +179,7 @@ print(json.dumps(res))`);
   });
 
   test("2Captcha gets the account's own proxy in its format, or nothing", () => {
-    const out = py(`import proxyGate as g
+    const out = py(`from browser import proxyGate as g
 res = [g.twocaptcha_proxy()]
 g._armed["proxy"] = {"server": "http://eu.proxy.2captcha.com:2334", "username": "U7e9-zone-custom", "password": "u7e9", "country": "IE"}
 res.append(g.twocaptcha_proxy())
@@ -189,7 +190,7 @@ print(json.dumps(res))`);
   });
 
   test("the proxy password and username prefix never leave in a failure", () => {
-    const out = py(`import errorCodes as e
+    const out = py(`from errors import errorCodes as e
 e.register_secret("u7e9secret")
 print(json.dumps([e.failure("crashed", "launch failed for http://u7e9secret-zone-custom:u7e9secret@eu.proxy.2captcha.com:2334")["detail"]]))`) as string[];
     expect(out[0]).not.toContain("u7e9secret");
@@ -197,7 +198,7 @@ print(json.dumps([e.failure("crashed", "launch failed for http://u7e9secret-zone
   });
 
   test("an IP echo's text is read as an IP and nothing else", () => {
-    expect(py(`import proxyGate as g\nprint(json.dumps([g._ip_from_text("109.78.211.66\\n"), g._ip_from_text("<html>"), g._ip_from_text("")]))`)).toEqual([
+    expect(py(`from browser import proxyGate as g\nprint(json.dumps([g._ip_from_text("109.78.211.66\\n"), g._ip_from_text("<html>"), g._ip_from_text("")]))`)).toEqual([
       "109.78.211.66",
       null,
       null,

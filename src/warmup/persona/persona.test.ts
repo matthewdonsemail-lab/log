@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { createActor, fromPromise, toPromise } from 'xstate'
-import { planReel, playAt, readReelRead, realPlay, REEL, REEL_LABELS, reelCaption, reelPersonaMachine, reelReadRequest, segmentWeight, stepsForPlan } from '../facebook/index'
-import type { ActivityStep, AllowedActions, ReelLabel, ReelPlan, ReelRead, StepReply } from '../facebook/index'
+import { FEED, feedPersonaMachine, planPost, stepsForPost, postReadRequest, planReel, playAt, readReelRead, realPlay, REEL, REEL_LABELS, reelCaption, reelPersonaMachine, reelReadRequest, segmentWeight, stepsForPlan } from '../facebook/index'
+import type { ActivityStep, AllowedActions, FeedLabel, ReelLabel, ReelPlan, ReelRead, StepReply } from '../facebook/index'
 import { buildViewers, describeViewer, measureInterestEffect, viewersForSpeed, watchBands, watchRatio } from '../viewer/index'
 import type { InterestEffect, KuaiRow, ReelViewer } from '../viewer/index'
 import { buildPersonaPack, drawPersona, parseTable, segmentOf } from './index'
@@ -285,6 +285,64 @@ describe('reelPersonaMachine', () => {
     actor.start()
     const output = await toPromise(actor)
     expect(output.labels.map((l) => [l.read, l.plan.match])).toEqual([[null, false], [null, false]])
+    expect(output.ok).toBe(true)
+  })
+})
+
+describe('the feed, post by post (planPost, feedPersonaMachine)', () => {
+  const pack = basePack({ likeP: 0.3, attentionCapS: 60 })
+  const post = { words: 119, liked: false }
+  test("a post that isn't theirs gets a glance around Facebook's 2.5 s; theirs its reading time, longer by the interest effect", () => {
+    const glance = planPost({ pack, effect, read: read(0), post, index: 1, seed: 1, allowLike: false, lastLikeIndex: null })
+    expect(glance.match).toBe(false)
+    expect(glance.dwellMs).toBeGreaterThanOrEqual(1250)
+    expect(glance.dwellMs).toBeLessThanOrEqual(3000)
+    const theirs = planPost({ pack, effect, read: read(1), post, index: 1, seed: 1, allowLike: false, lastLikeIndex: null })
+    expect(theirs.match).toBe(true)
+    expect(theirs.dwellMs).toBe(Math.round(((119 / 238) * 60_000 + 2500) * effect.watchIn[1]))
+    expect(planPost({ pack: basePack({ attentionCapS: 5 }), effect, read: read(1), post, index: 1, seed: 1, allowLike: false, lastLikeIndex: null }).dwellMs).toBe(5000)
+  })
+
+  test('a like only when allowed (rule 8), never on a post already liked, never in the cooldown', () => {
+    const plans = (over: Partial<Parameters<typeof planPost>[0]>) => Array.from({ length: 30 }, (_, i) => planPost({ pack, effect, read: read(1, 'like'), post, index: 10, seed: i, allowLike: true, lastLikeIndex: null, ...over }))
+    expect(plans({}).some((p) => p.like)).toBe(true)
+    expect(plans({ allowLike: false }).every((p) => !p.like)).toBe(true)
+    expect(plans({ post: { words: 5, liked: true } }).every((p) => !p.like)).toBe(true)
+    expect(plans({ lastLikeIndex: 9 }).every((p) => !p.like && p.likeScore === 0)).toBe(true)
+  })
+
+  test("the post's read sent to SubQ: its frame, heading, text and image descriptions; a like asked only when allowed", () => {
+    const frame = { mediaType: 'image/png' as const, base64: 'iVBORw0KGgo=' }
+    const request = postReadRequest(pack, { age: '31' }, frame, { heading: 'Blue Ridge Parkway Photography', text: 'Fall colors this morning', images: ['May be an image of road and nature'], sessionSoFar: 'The first post of the session.', allowLike: false })
+    expect(String((request.state as { post: string }).post)).toContain('From: Blue Ridge Parkway Photography')
+    expect(String((request.state as { post: string }).post)).toContain('May be an image of road and nature')
+    expect(Object.keys((request.questions.pick as { criteria: object }).criteria)).toEqual(['none'])
+  })
+
+  test('the session: the feed, each post into view then read, then Marketplace and listings; without --likes no like', async () => {
+    const feedSteps: Record<string, ActivityStep> = {}
+    for (const step of FEED.steps) feedSteps[step.id] ??= step
+    const acted: string[] = []
+    const machine = feedPersonaMachine.provide({
+      actors: {
+        act: fromPromise<StepReply, { account: string; step: ActivityStep }>(async ({ input }) => {
+          acted.push(input.step.id)
+          const url = input.step.id.toLowerCase().includes('marketplace') ? 'https://www.facebook.com/marketplace/' : 'https://www.facebook.com/'
+          return { ok: true, url, folder: `steps/${acted.length}`, post: input.step.id === 'nextPost' ? { heading: `Post ${acted.length}`, text: 'a few words here', images: [], words: 4, liked: false } : undefined }
+        }),
+        read: fromPromise<ReelRead, { account: string; index: number; frame: string | null; post: { heading: string; text: string; images: string[]; words: number; liked: boolean }; labels: FeedLabel[] }>(async ({ input }) => read(input.index === 1 ? 1 : 0, 'like'))
+      }
+    })
+    const actor = createActor(machine, { input: { account: 'reading', posts: 2, seed: 3, live: true, likes: false, steps: feedSteps, pack, effect } })
+    actor.start()
+    const output = await toPromise(actor)
+    expect(acted).toEqual(['openFeed', 'dismissPrompt', 'settle', 'nextPost', 'onPost', 'nextPost', 'onPost', 'openMarketplace', 'lookMarketplace', 'scrollMarketplace', 'openListings'])
+    expect(output.labels.map((l) => [l.index, l.plan?.match, l.plan?.like])).toEqual([[1, true, false], [2, false, false]])
+    // A pack that opens comments always: the post's comments opened, read and closed; one action per post.
+    const commenter = basePack({ likeP: 0, commentP: 1 })
+    const opened = planPost({ pack: commenter, effect, read: read(1, 'openComments'), post: { words: 20, liked: false, truncated: true }, index: 2, seed: 1, allowLike: false, allowClicks: true, lastLikeIndex: null })
+    expect(opened).toMatchObject({ match: true, seeMore: true, action: 'openComments', like: false })
+    expect(stepsForPost(opened, feedSteps).map((s) => s.id)).toEqual(['seeMore', 'onPost', 'openComments', 'scrollComments', 'inComments', 'closeComments'])
     expect(output.ok).toBe(true)
   })
 })

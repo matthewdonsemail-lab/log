@@ -13,10 +13,17 @@
 | Called from | `useMWEncryptedBackupsFetchBackupIdsV2` |
 | rea | `ev_16df7daca80a72c8f44b7a489690336b7def96e564429f0639a122f48023372a` |
 
-Seen 13 time(s) in 4 run(s).
+Seen 24 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto / | 5 | 200 | 423–552 ms | 7000–9249 ms | — |
+| inspect | step 7: goto / | 1 | 200 | 454 ms | 4907 ms | — |
+| inspect | rea read step 33_dwell028s: exit 0, ev_d164a9c78021b1afb8ce6c5a24456a0d8f46efdbc7c54440f7f | 1 | 200 | 507 ms | 3341 ms | — |
+| inspect | step 38: goto /marketplace/ | 1 | 200 | 587 ms | 7809 ms | — |
+| inspect | rea read step 21_dwell078s: exit 0, ev_87a54a6ea91a3418cb413686bdc6108f946bdf45884c8230e49 | 1 | 200 | 572 ms | 3624 ms | — |
+| inspect | step 27: goto / | 1 | 200 | 471 ms | 5193 ms | — |
+| inspect | step 4: goto /marketplace/ | 1 | 200 | 461 ms | 5260 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 1 | 200 | 354 ms | 5840 ms | — |
 | inspect | step 1: goto /reel/ | 3 | 200 | 320–361 ms | 3347–4263 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 337 ms | 3941 ms | — |

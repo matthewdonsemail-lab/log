@@ -1,0 +1,111 @@
+%% Every command, CLI and MCP. Each command is a CLI command and, unless terminal-only, an MCP tool of the same name; the long-running ones write the live log. Saved flows are MCP tools that run `log flow run`.
+%% Written by `bun run docs:build` from the code (rule 56). Not edited by hand.
+flowchart TB
+  cli["log (CLI)"]
+  mcp["MCP server log"]
+  live[("live log")]
+  terminal["terminal only"]
+  c_launch["launch"]
+  cli --> c_launch
+  c_launch -.- terminal
+  c_listings["listings"]
+  cli --> c_listings
+  mcp --> c_listings
+  c_listing["listing"]
+  cli --> c_listing
+  mcp --> c_listing
+  c_accounts["accounts"]
+  cli --> c_accounts
+  mcp --> c_accounts
+  c_account["account"]
+  cli --> c_account
+  mcp --> c_account
+  c_adsPower["adsPower"]
+  cli --> c_adsPower
+  mcp --> c_adsPower
+  c_lifecycle["lifecycle"]
+  cli --> c_lifecycle
+  mcp --> c_lifecycle
+  c_doctor["doctor"]
+  cli --> c_doctor
+  mcp --> c_doctor
+  c_doctor --> live
+  c_connect["connect"]
+  cli --> c_connect
+  mcp --> c_connect
+  c_connect --> live
+  c_profile["profile"]
+  cli --> c_profile
+  mcp --> c_profile
+  c_profile --> live
+  c_host["host"]
+  cli --> c_host
+  mcp --> c_host
+  c_host --> live
+  c_inspect["inspect"]
+  cli --> c_inspect
+  mcp --> c_inspect
+  c_inspect --> live
+  c_flow["flow"]
+  cli --> c_flow
+  mcp --> c_flow
+  c_flow --> live
+  c_warmup["warmup"]
+  cli --> c_warmup
+  mcp --> c_warmup
+  c_warmup --> live
+  c_join["join"]
+  cli --> c_join
+  mcp --> c_join
+  c_join --> live
+  c_scan["scan"]
+  cli --> c_scan
+  mcp --> c_scan
+  c_scan --> live
+  c_status["status"]
+  cli --> c_status
+  mcp --> c_status
+  c_status --> live
+  c_watch["watch"]
+  cli --> c_watch
+  mcp --> c_watch
+  c_watch --> live
+  c_proxy["proxy"]
+  cli --> c_proxy
+  mcp --> c_proxy
+  c_publish["publish"]
+  cli --> c_publish
+  mcp --> c_publish
+  c_publish --> live
+  c_campaign["campaign"]
+  cli --> c_campaign
+  mcp --> c_campaign
+  c_campaign --> live
+  c_conversations["conversations"]
+  cli --> c_conversations
+  mcp --> c_conversations
+  c_conversation["conversation"]
+  cli --> c_conversation
+  mcp --> c_conversation
+  c_errors["errors"]
+  cli --> c_errors
+  mcp --> c_errors
+  c_graph["graph"]
+  cli --> c_graph
+  mcp --> c_graph
+  c_capture["capture"]
+  cli --> c_capture
+  mcp --> c_capture
+  c_capture --> live
+  c_login["login"]
+  cli --> c_login
+  c_login -.- terminal
+  c_logout["logout"]
+  cli --> c_logout
+  mcp --> c_logout
+  c_whoami["whoami"]
+  cli --> c_whoami
+  mcp --> c_whoami
+  f_profileSetup["flowProfileSetup: flow run profileSetup"]
+  mcp --> f_profileSetup
+  f_profileSetup --> c_flow

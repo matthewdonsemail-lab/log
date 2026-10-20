@@ -9,6 +9,8 @@ export interface StepReply {
   folder?: string
   /** A tab the step's click opened (Reels opens the creator's profile in one). */
   openedTab?: string
+  /** `nextPost`: the post it brought into view (null: none left, it scrolled for more). */
+  post?: { heading: string; text: string; images: string[]; words: number; liked: boolean } | null
 }
 
 /** Whether the snapshot shows `role "name"` (its accessibility tree line). Pure. */
@@ -24,6 +26,8 @@ function shows(snapshot: string, role: string, name: string): boolean {
  */
 export function checkStep(step: ActivityStep, before: string | null, reply: StepReply): StepOutcome {
   const base = { id: step.id, url: reply.url, folder: reply.folder }
+  // An optional step with nothing to act on (no prompt shown this time) passes, saying so.
+  if (!reply.ok && step.optional) return { ...base, ok: true, skipped: `nothing to act on (${reply.error ?? 'the step failed'})` }
   if (!reply.ok) return { ...base, ok: false, error: reply.error ?? 'the step failed' }
   const expect = step.expect
   if (!expect) return { ...base, ok: true }

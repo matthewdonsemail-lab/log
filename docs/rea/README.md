@@ -45,7 +45,7 @@ Existing studies stay where they are. This folder does not copy them.
 
 `docs/listingPublish/README.md` still says log-cli has no publish code. That
 sentence is stale. The machine is `src/marketplace/publish/machine.ts` and
-`python/publishSession.py` on this branch.
+`python/session/publishSession.py` on this branch.
 
 ## Where the work sits
 
@@ -71,7 +71,7 @@ Camoufox, and switching the Facebook window to Chrome all lost. Numbers:
 ## Do this next
 
 1. Do not attach REA to the live Camoufox window.
-2. Keep `humanize` at `1.5` in `python/visibleBrowser.py`. Upstream also
+2. Keep `humanize` at `1.5` in `python/browser/visibleBrowser.py`. Upstream also
    allows `True`. This build's client comment says a boolean hangs
    `mouse.move`. The matrix did not justify a change.
 3. When a capture is added, strip cookies before the HAR is written, and

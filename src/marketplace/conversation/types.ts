@@ -2,7 +2,7 @@
  * A buyer's conversation about a Marketplace listing (rule 34), in Twenty's
  * `agencyConversations` and `agencyMessages`, the same objects blaster's SMS
  * threads use. log-cli added the Marketplace fields and the relations
- * (`scripts/twentySetup.mjs`): a conversation is about one `agencyListing` on
+ * (`scripts/twenty/twentySetup.mjs`): a conversation is about one `agencyListing` on
  * one `socialAccount`, and each message belongs to one conversation.
  *
  * The shape is Listaro's (`leads` + `inbox_messages`) keyed on Facebook's own

@@ -42,7 +42,7 @@ none of them prompt unless you run `log launch` in a terminal.
   (`python -m camoufox fetch`).
 - `log-cli/.env.local` (git-ignored): `TWENTY_BASE_URL`, `TWENTY_API_KEY`,
   `CAPTCHA_KRAKEN_API_KEY`, `2CAPTCHA_API_KEY`. `LOG_PYTHON` picks the interpreter.
-- After adding Twenty fields: `node scripts/twentySetup.mjs --apply`, then
+- After adding Twenty fields: `node scripts/twenty/twentySetup.mjs --apply`, then
   `bun run twenty:client` (the generated client, rule 14).
 
 ## Commands
@@ -118,8 +118,9 @@ runs through `runCli`, so every gate above still applies.
   go through `observability/processLog`. As a tool, each line (with the
   command's own output) is in the result under `log:`, is sent as an MCP log
   notification, and is appended live to `~/.logCli/mcp/<day>.log`
-  (`LOG_MCP_DIR` to move it). Watch a long call (`connect`, `publish`) with
-  `tail -f ~/.logCli/mcp/<day>.log`. Lines name actions and page paths only,
+  (`LOG_MCP_DIR` to move it). The terminal CLI (`bin/log.ts`) appends
+  its own lines there too, as `cli:<command>` (rule 55). Watch a long call
+  (`connect`, `publish`) with `tail -f ~/.logCli/mcp/<day>.log`. Lines name actions and page paths only,
   never credentials or query strings.
 
 ## Reading the results

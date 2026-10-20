@@ -36,9 +36,10 @@ describe('browser parity (rule 44)', () => {
     expect(browserFor({ browserDriver: 'camoufox', adsPowerProfileId: 'k9' })).toEqual({ driver: 'camoufox', profileId: 'k9' })
   })
 
-  test("python/browserDriver.py opens exactly the TS browsers, and maps the gate's proxy to AdsPower's", () => {
+  test("python/browser/browserDriver.py opens exactly the TS browsers, and maps the gate's proxy to AdsPower's", () => {
     const script = [
-      'import json, browserDriver, adsPowerBrowser',
+      'import json',
+      'from browser import browserDriver, adsPowerBrowser',
       'print(json.dumps({"browsers": list(browserDriver.BROWSERS), "openers": sorted(browserDriver.OPENERS),',
       ' "default": browserDriver.driver_of({}), "ads": browserDriver.driver_of({"browser": {"driver": "adsPower", "profileId": "k1"}}),',
       ' "proxy": adsPowerBrowser.user_proxy_config({"server": "http://na.proxy.2captcha.com:2334", "username": "proxyUser", "password": "p"})}))'

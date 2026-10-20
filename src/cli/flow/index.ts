@@ -16,9 +16,9 @@
 import { existsSync, readFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
-import { createFlowMachine, fillStep, flowFromRecording, listFlows, loadFlow, readRecordedCommands, saveFlow, toolName, writeFlowDoc } from "../../camofox/flow/index.ts";
-import type { FlowActInput, FlowDefinition, FlowRunOutput, FlowStep, FlowStepResult } from "../../camofox/flow/index.ts";
-import type { InspectAction } from "../../camofox/inspect/index.ts";
+import { createFlowMachine, fillStep, flowFromRecording, listFlows, loadFlow, readRecordedCommands, saveFlow, toolName, writeFlowDoc } from "../../browser/flow/index.ts";
+import type { FlowActInput, FlowDefinition, FlowRunOutput, FlowStep, FlowStepResult } from "../../browser/flow/index.ts";
+import type { InspectAction } from "../../browser/inspect/index.ts";
 import { preparePhotos } from "../../media/photo/index.ts";
 import { fetchProxyUrl } from "../../marketplace/socialAccount/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
@@ -108,6 +108,7 @@ async function runFlow(context: Parameters<Command["run"]>[0], flow: FlowDefinit
 }
 
 export const flowCommand: Command = {
+  usage: FLOW_USAGE,
   name: "flow",
   summary: "Recorded inspect runs as flows: docs, an XState machine per flow, run on any account (rule 31)",
   args: "fromInspect <runDir> --name <n> | docs <n> | list | show <n> | run <n> --account <a> [--set k=v]... [--live]",

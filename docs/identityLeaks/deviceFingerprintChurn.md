@@ -40,9 +40,9 @@ the same person?" signal any of the four reports found (R2 §1, R3 T9, R4 H2).
   (`fingerprints.py:107`) and a random WebGL pair (`sample_webgl`). *verifiedSource (R2; not re-read for this study)*
 - log-cli passes none of `os`, `fingerprint`, `config` seeds, `locale` or a
   stored identity:
-  - `python/publishSession.py:172`: `Camoufox(**launch_kwargs({}))`.
-  - `python/visibleBrowser.py:23-30`: adds only `headless`, `humanize` and `config.showcursor`.
-  - `python/proxyGate.py:131`: adds only `proxy` and `geoip`.
+  - `python/session/publishSession.py:172`: `Camoufox(**launch_kwargs({}))`.
+  - `python/browser/visibleBrowser.py:23-30`: adds only `headless`, `humanize` and `config.showcursor`.
+  - `python/browser/proxyGate.py:131`: adds only `proxy` and `geoip`.
   - `facebook-camofox-client/src/facebook_camofox_client/domain_camofox/session_manager.py:109-113`:
     `AsyncCamoufox(humanize=1.5, geoip=True, proxy=proxy_config)`.
   - Only cookies persist (see `sessionStatePersistence.md`). *verifiedSource*
@@ -115,7 +115,7 @@ same UA, cores, screen, GPU, canvas, audio and text widths on both launches.
 
 ### Viewport (related, untested)
 
-- `browser.new_context()` without `no_viewport=True` (`python/publishSession.py:174`,
+- `browser.new_context()` without `no_viewport=True` (`python/session/publishSession.py:174`,
   `session_manager.py:130`) likely gives every account Playwright's default
   1280x720 viewport, whatever screen the fingerprint claims (R4 L10).
   *inference*
@@ -128,8 +128,8 @@ same UA, cores, screen, GPU, canvas, audio and text widths on both launches.
 
 Check any change that touches these:
 
-- Every Camoufox launch: `python/publishSession.py:172`,
-  `python/visibleBrowser.py:26-52`, `python/proxyGate.py:123-131`.
+- Every Camoufox launch: `python/session/publishSession.py:172`,
+  `python/browser/visibleBrowser.py:26-52`, `python/browser/proxyGate.py:123-131`.
 - facebook-camofox-client `session_manager.py:109-113` (reached through
   `force_visible()`).
 - Any new `Camoufox(...)`, `AsyncCamoufox(...)`, `NewBrowser(...)` or
@@ -156,7 +156,7 @@ What log-cli must do:
    the whole process environment into it (`camoufox/utils.py:606`). R2's test
    file had 218 variables, including secrets (see `proxyCredentials.md`).
 3. **Store it in Twenty.** A new `socialAccounts.devicePersona` field
-   (RAW_JSON), added through `scripts/twentySetup.mjs` (rule 13). Proposed TS
+   (RAW_JSON), added through `scripts/twenty/twentySetup.mjs` (rule 13). Proposed TS
    domain: `src/camofox/device/` with `types.ts`, `client.ts`, `helpers/` (R4 H2).
 4. **Replay it on every launch.** Pass it as `from_options` (`camoufox/sync_api.py:109-110`,
    per R4) from `proxyGate.apply()`. The three seeds (`canvas:seed`,
@@ -195,7 +195,7 @@ What log-cli must do:
 ## Status
 
 Leaking at `f033e63`: nothing was pinned per account. **Mostly fixed at `2de5ff5`**
-(rule 15, `python/deviceProfile.py`, `src/camofox/device/`). *verifiedLive (proxied)*
+(rule 15, `python/device/deviceProfile.py`, `src/camofox/device/`). *verifiedLive (proxied)*
 
 - The device is made once and stored in Twenty `socialAccounts.deviceProfile`.
 - Three relaunches (two on the publishSession path, one on the

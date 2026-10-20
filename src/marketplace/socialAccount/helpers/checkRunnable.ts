@@ -66,7 +66,7 @@ export function maskProxyUrl(raw: string | null): string {
  * May this account open a browser for `purpose`? Every log-cli run asks this
  * first, dry or live, sign-in included (AGENTS.md rule 12): FACEBOOK, a usable
  * status, a readable proxy and a home country. There is no override and no
- * fallback. The proxy's exit country is checked next, in python/proxyGate.py.
+ * fallback. The proxy's exit country is checked next, in python/browser/proxyGate.py.
  * Pure.
  */
 export function checkRunnable(account: FacebookAccount, purpose: RunPurpose): RunnableCheck {

@@ -18,7 +18,7 @@
  * Nothing is clicked twice: a Join that is not confirmed stops the run.
  */
 import { assign, fromPromise, setup } from 'xstate'
-import { pageProblem } from '../../camofox/flow/index'
+import { pageProblem } from '../../browser/flow/index'
 import type { ErrorCode } from '../../errors/catalog/index'
 import { inferJoinState, readGroupPage, readJoinDialog } from './helpers/index'
 import type { GroupJoinContext, GroupJoinInput, GroupJoinOutput, GroupStepReply } from './types'

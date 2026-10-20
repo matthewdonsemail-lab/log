@@ -1,5 +1,5 @@
 /**
- * The contract between log-cli and `python/publishSession.py`: one long-lived
+ * The contract between log-cli and `python/session/publishSession.py`: one long-lived
  * Camoufox browser, driven one step at a time over JSON lines (stdin out,
  * stdout back), so the XState publish machine can own every transition.
  */
@@ -59,7 +59,7 @@ export interface PublishSession {
 /** Starts a session. Injectable so tests never launch a browser. */
 export type SessionFactory = (config: SessionConfig) => PublishSession
 
-/** `python/connectSession.py`'s steps: what the connect machine's actors ask for. */
+/** `python/session/connectSession.py`'s steps: what the connect machine's actors ask for. */
 export type ConnectStep = 'open' | 'read' | 'submitCredentials' | 'chooseAuthApp' | 'submitCode' | 'dismiss' | 'solveCaptcha' | 'save' | 'close'
 
 export interface ConnectSessionConfig {
@@ -84,7 +84,7 @@ export interface ConnectSession {
 /** Starts a connect session. Injectable so tests never launch a browser. */
 export type ConnectSessionFactory = (config: ConnectSessionConfig) => ConnectSession
 
-/** `python/profileSession.py`'s steps (`log profile setup`, rule 28). */
+/** `python/session/profileSession.py`'s steps (`log profile setup`, rule 28). */
 export type ProfileStep = 'open' | 'read' | 'readName' | 'uploadProfilePhoto' | 'uploadCoverPhoto' | 'close'
 
 export interface ProfileSessionConfig {

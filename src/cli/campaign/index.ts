@@ -30,6 +30,7 @@ export const CAMPAIGN_USAGE = [
 ].join("\n");
 
 export const campaignCommand: Command = {
+  usage: CAMPAIGN_USAGE,
   name: "campaign",
   summary: "Put one ad on N accounts in one place, replace lost accounts, publish the campaign",
   args: "<fill|heal|run|show> --campaign <id> [...]",

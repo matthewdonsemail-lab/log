@@ -35,6 +35,7 @@ export const CONVERSATION_USAGE = [
 ].join("\n");
 
 export const conversationsCommand: Command = {
+  usage: CONVERSATIONS_USAGE,
   name: "conversations",
   summary: "List buyers' Marketplace conversations in Twenty, newest first, by account or listing",
   args: "[--account <name>] [--listing <id>] [--json]",
@@ -55,6 +56,7 @@ export const conversationsCommand: Command = {
 };
 
 export const conversationCommand: Command = {
+  usage: CONVERSATION_USAGE,
   name: "conversation",
   summary: "One conversation: show its messages, mark read, set its lead status, link its listing, or store a scanned thread",
   args: "<show|read|lead|link|record> [id] [STATUS] [--listing <id>] [--account <name> --file <json>]",

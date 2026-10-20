@@ -25,7 +25,7 @@ opening a browser, and writes the result to `proxyCheckedAt`, `proxyExitIp` and
 
 ```text
 log scan / status / watch / publish / campaign run / connect / proxy check
-  │  TS: findAccount (Twenty) → prepareRun (camofox/run)
+  │  TS: findAccount (Twenty) → prepareRun (browser/run)
   │      not FACEBOOK / unusable status / no proxy / no homeCountry ──▶ refused, no Python started
   │      (publish) listing country ≠ homeCountry ──▶ listingCountryMismatch
   │      no locale / timezone for the home (marketplace/home) ──▶ noHomeLocale / noHomeTimezone
@@ -33,7 +33,7 @@ log scan / status / watch / publish / campaign run / connect / proxy check
   │      deviceProfile stored but unreadable ──▶ deviceProfileInvalid
   │      (proxy check skips home, hours and device: it opens no browser)
   ▼
-camofox/run writes proxy.json, device.json (pinned locale, home timezone, stored
+browser/run writes proxy.json, device.json (pinned locale, home timezone, stored
 device) and state.json (cookies + localStorage) from Twenty to a private temp
 folder; Python gets the file PATHS, never credentials on argv; deleted after
   │  proxyGate.arm(proxyPath, devicePath)     (same for every action, sign-in included)
@@ -75,7 +75,7 @@ keeps only Camoufox's config (the `CAMOU_CONFIG_*` payload) and the Firefox
 prefs, and stores them in `socialAccounts.deviceProfile`. The environment that
 `launch_options()` normally copies (every secret in the process) is never
 kept, and the browser only ever gets the system variables Firefox needs
-(`SAFE_ENV` in `python/deviceProfile.py`) plus `CAMOU_CONFIG_*`.
+(`SAFE_ENV` in `python/device/deviceProfile.py`) plus `CAMOU_CONFIG_*`.
 
 - Windows always: this PC's real GPU and font stack draw it, so a Mac or Linux
   claim couldn't match the pixels.

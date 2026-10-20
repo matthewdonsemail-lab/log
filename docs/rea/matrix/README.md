@@ -3,7 +3,7 @@
 Run 2026-10-18. Model `subq-snap-preview`, `POST https://api.subq.ai/v1/systemone`.
 State was 83,051 characters: `spec.md`, the three Parallel reports, the
 client and comparison notes, the identity-leak status table, and
-`python/visibleBrowser.py`. 279,432 input tokens. Both repeats of the
+`python/browser/visibleBrowser.py`. 279,432 input tokens. Both repeats of the
 choice pass and both repeats of the claim pass returned the same answer.
 Raw output: `subqResults.json`. Rerun: `node docs/rea/matrix/runMatrix.mjs`.
 

@@ -36,7 +36,7 @@ recount.
   and no review comments. Open issues on the repo: 0.
 - PR #5: <https://github.com/matthewdonsemail-lab/log-cli/pull/5>, still
   open onto `main`.
-- `python/publishSession.py`, `src/marketplace/publish/machine.ts`,
+- `python/session/publishSession.py`, `src/marketplace/publish/machine.ts`,
   `src/marketplace/socialAccount/helpers/checkRunnable.ts`,
   `src/cli/runner/index.ts`.
 - facebook-camofox-client:

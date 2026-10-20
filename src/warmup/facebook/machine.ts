@@ -12,9 +12,11 @@
  *   a step it may not take (a like without --likes, a click without --live) is skipped and said so.
  */
 import { assign, fromPromise, setup } from 'xstate'
-import { pageProblem } from '../../camofox/flow/index'
+import { pageProblem } from '../../browser/flow/index'
 import { checkStep } from './helpers/checkStep'
 import type { AllowedActions, ReelRead } from './helpers/reelDecision'
+import { planPost } from './helpers/feedOrderer'
+import type { PostPlan } from './helpers/feedOrderer'
 import { planReel } from './helpers/reelOrderer'
 import type { ReelPlan } from './helpers/reelOrderer'
 import type { PersonaPack } from '../persona/types'
@@ -330,4 +332,178 @@ export const reelPersonaMachine = setup({
     problem: context.problem,
     ok: !context.blocked && !context.problem
   })
+})
+
+/**
+ * The home feed for a persona pack (rule 50; matt 2026-10-20: use the
+ * platform as the persona would, not a scroll and away). Each post is brought
+ * into view by the wheel (`nextPost`), read by SubQ from its screen, heading,
+ * text and image descriptions (`read`), and planned (`planPost`): a glance or a
+ * read, timed from when it came into view, and a like where they would (only
+ * with --live and --likes, rule 8). Then Marketplace, a look and a scroll, and
+ * a few listings opened. Its side effects are `act` and `read`, provided by the
+ * caller; tests script both.
+ *
+ *   openFeed, settle ─▶ per post: nextPost ─▶ reading (SubQ) ─▶ the time on it [, likePost] ─▶ …
+ *     ─▶ openMarketplace, lookMarketplace, scrollMarketplace, openListings
+ *   a checkpoint or a login ─▶ blocked; a step that didn't do what it should ─▶ stopped
+ */
+export interface FeedLabel {
+  index: number
+  post: { heading: string; words: number; images: number } | null
+  read: ReelRead | null
+  plan: PostPlan | null
+}
+
+export interface FeedSessionInput {
+  account: string
+  posts: number
+  seed: number
+  live: boolean
+  likes: boolean
+  steps: Record<string, ActivityStep>
+  pack: PersonaPack
+  effect: InterestEffect
+}
+
+type FeedQueueItem = ActivityStep | { id: 'readPost' }
+type FeedPostSeen = NonNullable<StepReply['post']>
+
+interface FeedSessionContext extends FeedSessionInput {
+  queue: FeedQueueItem[]
+  index: number
+  post: FeedPostSeen | null
+  frame: string | null
+  lastLikeIndex: number | null
+  outcomes: StepOutcome[]
+  labels: FeedLabel[]
+  blocked: { code: string; detail: string } | null
+  problem: string | null
+}
+
+export interface FeedSessionOutput {
+  account: string
+  outcomes: StepOutcome[]
+  labels: FeedLabel[]
+  blocked: FeedSessionContext['blocked']
+  problem: string | null
+  ok: boolean
+}
+
+/** The feed session's queue: the feed opened, each post found and read, then Marketplace. Pure. */
+export function feedQueue(steps: Record<string, ActivityStep>, posts: number): FeedQueueItem[] {
+  const perPost: FeedQueueItem[] = []
+  for (let i = 0; i < posts; i++) perPost.push(steps.nextPost, { id: 'readPost' })
+  return [steps.openFeed, steps.dismissPrompt, steps.settle, ...perPost, steps.openMarketplace, steps.lookMarketplace, steps.scrollMarketplace, steps.openListings]
+}
+
+/**
+ * The steps for one post's plan: its full text first when it is theirs and cut
+ * short, the time on it (from when it came into view), then its one action: a
+ * like, or its comments opened, read down for the persona's comment time and
+ * closed. Pure.
+ */
+export function stepsForPost(plan: PostPlan, steps: Record<string, ActivityStep>): ActivityStep[] {
+  const queue: ActivityStep[] = []
+  if (plan.seeMore) queue.push(steps.seeMore)
+  queue.push(dwell(steps.settle, 'onPost', plan.dwellMs, `${(plan.dwellMs / 1000).toFixed(1)} s on it from when it came into view (${plan.match ? 'theirs' : 'not theirs'}): ${plan.from}`))
+  if (plan.action === 'like') queue.push(steps.likePost)
+  if (plan.action === 'openComments') queue.push(steps.openComments, steps.scrollComments, dwell(steps.settle, 'inComments', plan.commentMs, `${(plan.commentMs / 1000).toFixed(1)} s in the comments (the pack's comment time)`), steps.closeComments)
+  return queue
+}
+
+const plannedPost = (context: FeedSessionContext, read: ReelRead | null) => {
+  if (!context.post) return { queue: context.queue.slice(1), labels: [...context.labels, { index: context.index, post: null, read: null, plan: null }] }
+  const plan = planPost({ pack: context.pack, effect: context.effect, read, post: { ...context.post, truncated: context.post.text.includes('See more') }, index: context.index, seed: context.seed, allowLike: context.live && context.likes, allowClicks: context.live, lastLikeIndex: context.lastLikeIndex })
+  return {
+    queue: [...stepsForPost(plan, context.steps), ...context.queue.slice(1)],
+    labels: [...context.labels, { index: context.index, post: { heading: context.post.heading, words: context.post.words, images: context.post.images.length }, read, plan }],
+    lastLikeIndex: plan.like ? context.index : context.lastLikeIndex
+  }
+}
+
+export const feedPersonaMachine = setup({
+  types: { context: {} as FeedSessionContext, input: {} as FeedSessionInput, output: {} as FeedSessionOutput },
+  actors: {
+    act: fromPromise<StepReply, { account: string; step: ActivityStep }>(async () => {
+      throw new Error('feedPersonaMachine: provide an `act` actor')
+    }),
+    read: fromPromise<ReelRead, { account: string; index: number; frame: string | null; post: FeedPostSeen; labels: FeedLabel[] }>(async () => {
+      throw new Error('feedPersonaMachine: provide a `read` actor')
+    })
+  },
+  guards: {
+    halted: ({ context }) => context.blocked !== null || context.problem !== null,
+    empty: ({ context }) => context.queue.length === 0,
+    // No post came into view (none left on the page, it scrolled for more): nothing to read.
+    nothingToRead: ({ context }) => context.queue[0]?.id === 'readPost' && context.post === null,
+    reading: ({ context }) => context.queue[0]?.id === 'readPost',
+    skip: ({ context }) => {
+      const step = context.queue[0] as ActivityStep
+      return (step.likes === true && !context.likes) || (step.clicks === true && !context.live)
+    }
+  }
+}).createMachine({
+  id: 'feedPersona',
+  context: ({ input }) => ({ ...input, queue: feedQueue(input.steps, input.posts), index: 0, post: null, frame: null, lastLikeIndex: null, outcomes: [], labels: [], blocked: null, problem: null }),
+  initial: 'next',
+  states: {
+    next: {
+      always: [
+        { guard: 'halted', target: 'stopped' },
+        { guard: 'empty', target: 'done' },
+        { guard: 'nothingToRead', target: 'next', reenter: true, actions: assign(({ context }) => plannedPost(context, null)) },
+        { guard: 'reading', target: 'reading' },
+        {
+          guard: 'skip',
+          target: 'next',
+          reenter: true,
+          actions: assign(({ context }) => {
+            const step = context.queue[0] as ActivityStep
+            return { queue: context.queue.slice(1), outcomes: [...context.outcomes, { id: step.id, ok: true, skipped: step.likes ? 'a like acts on Facebook: --likes (rule 8)' : 'it clicks on the page: --live (rule 8)' }] }
+          })
+        },
+        { target: 'acting' }
+      ]
+    },
+    acting: {
+      invoke: {
+        src: 'act',
+        input: ({ context }) => ({ account: context.account, step: context.queue[0] as ActivityStep }),
+        onDone: {
+          target: 'next',
+          actions: assign(({ context, event }) => {
+            const step = context.queue[0] as ActivityStep
+            const reply = event.output as StepReply
+            const landed = pageProblem({ action: step.action, url: step.action === 'goto' ? step.args[0] : undefined }, reply)
+            const walled = landed !== null && (landed.code === 'checkpointed' || landed.code === 'loginWall')
+            const outcome: StepOutcome = walled ? { id: step.id, ok: false, issue: `${landed!.code}: ${landed!.detail}`, url: reply.url, folder: reply.folder } : checkStep(step, null, reply)
+            const isPost = step.id === 'nextPost'
+            return {
+              queue: context.queue.slice(1),
+              index: isPost ? context.index + 1 : context.index,
+              post: isPost ? (reply.post ?? null) : context.post,
+              frame: isPost && reply.folder ? reply.folder : context.frame,
+              outcomes: [...context.outcomes, outcome],
+              blocked: walled ? { code: landed!.code, detail: landed!.detail } : null,
+              problem: outcome.ok ? null : `${step.id}: ${outcome.issue ?? outcome.error}`
+            }
+          })
+        },
+        onError: { target: 'stopped', actions: assign(({ context, event }) => ({ problem: `${(context.queue[0] as ActivityStep).id}: ${String(event.error)}` })) }
+      }
+    },
+    reading: {
+      invoke: {
+        src: 'read',
+        input: ({ context }) => ({ account: context.account, index: context.index, frame: context.frame, post: context.post!, labels: context.labels }),
+        onDone: { target: 'next', actions: assign(({ context, event }) => plannedPost(context, event.output as ReelRead)) },
+        // SubQ down: the post is planned as not theirs and the session goes on.
+        onError: { target: 'next', actions: assign(({ context }) => plannedPost(context, null)) }
+      }
+    },
+    done: { type: 'final' },
+    stopped: { type: 'final' }
+  },
+  output: ({ context }) => ({ account: context.account, outcomes: context.outcomes, labels: context.labels, blocked: context.blocked, problem: context.problem, ok: !context.blocked && !context.problem })
 })

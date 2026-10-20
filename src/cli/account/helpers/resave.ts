@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { toDeviceProfile } from "../../../camofox/device/helpers/deviceProfile.ts";
-import { toOrigins } from "../../../camofox/run/client.ts";
+import { toOrigins } from "../../../browser/run/client.ts";
 import { saveDeviceProfile, saveSession, toFacebookCookies } from "../../../marketplace/socialAccount/index.ts";
 import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
 import type { TwentyClient } from "../../../twenty/graphql/index.ts";

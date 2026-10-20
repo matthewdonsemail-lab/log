@@ -27,7 +27,7 @@ The sign-in itself: the login form's POST to `/login/device-based/regular/login/
 
 ## What our machine does with it
 
-The connect machine's auto-login submits with Enter (`python/autoLogin.py`), then reads the next page (`loggedIn`, `checkpoint`, `twoStepCode`, `wrongPassword`...). The redirect target is Facebook's decision; our page read follows it.
+The connect machine's auto-login submits with Enter (`python/login/autoLogin.py`), then reads the next page (`loggedIn`, `checkpoint`, `twoStepCode`, `wrongPassword`...). The redirect target is Facebook's decision; our page read follows it.
 
 ## What can go wrong
 

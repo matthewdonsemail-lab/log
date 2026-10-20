@@ -30,13 +30,13 @@ currency the form shows. The location, by contrast, is checked well (R4 M8).
 - `src/marketplace/agencyListing/client.ts:38` reads `priceCurrency`. Nothing
   uses it for a check. It is only displayed (`src/cli/launch/index.ts:122`,
   `src/cli/listing/helpers/renderListing.ts:33`). *verifiedSource*
-- `python/publishSession.py` types the price as digits and never reads which
+- `python/session/publishSession.py` types the price as digits and never reads which
   currency the form shows (R4 M8, `step_review`). *verifiedSource*
 - **Earlier systems.** Listaro hit this with bought accounts: commits `504ea63`
   and `0c7c8bc` ("RUB0/wrong currency", "skip foreign accounts") (R4).
   *verifiedSource*
 - **What's right.** The form's Location suggestion must contain both the city
-  and the country (`python/publishSession.py:593-621`, failing with
+  and the country (`python/session/publishSession.py:593-621`, failing with
   `locationNotSet`). The live test caught "Hanoi, Ireland" being picked, and it was
   fixed (PR #6 description, `docs/proxies.md` "Checked"). *verifiedLive (proxied)*
 
@@ -44,7 +44,7 @@ currency the form shows. The location, by contrast, is checked well (R4 M8).
 
 - `src/marketplace/publish/helpers/validateListing.ts`: the pre-publish checks.
 - `src/marketplace/agencyListing/`: the mapping from Twenty.
-- `python/publishSession.py`: the price and review steps.
+- `python/session/publishSession.py`: the price and review steps.
 - Any tool that writes listing text into Twenty (copy generation, imports).
 
 ## Mitigation
@@ -63,7 +63,7 @@ currency the form shows. The location, by contrast, is checked well (R4 M8).
    `expectedCurrency(homeCountry)` (IE → EUR, GB → GBP, US → USD, CA → CAD,
    AU → AUD), and compare it with `priceCurrency` in `checkPublishable`
    (`src/cli/publish/index.ts:78`).
-3. **Check it on the form.** In `step_review` (`python/publishSession.py:626`), read the Price field's currency
+3. **Check it on the form.** In `step_review` (`python/session/publishSession.py:626`), read the Price field's currency
    prefix or aria-label, and fail with a new code `currencyMismatch`.
 
 ## How to re-test

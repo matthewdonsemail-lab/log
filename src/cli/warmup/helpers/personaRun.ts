@@ -2,8 +2,8 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFil
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
-import { readCurrentInspect } from "../../../camofox/inspect/index.ts";
-import type { InspectAction, InspectStepOptions } from "../../../camofox/inspect/index.ts";
+import { readCurrentInspect } from "../../../browser/inspect/index.ts";
+import type { InspectAction, InspectStepOptions } from "../../../browser/inspect/index.ts";
 import { createInspector, formatTraceLine } from "../../../observability/trace/index.ts";
 import { createDecisionsClient } from "../../../subq/decisions/index.ts";
 import type { DecisionImage, DecisionsClient } from "../../../subq/decisions/index.ts";
@@ -87,14 +87,14 @@ export function sessionSoFar(labels: ReelLabel[]): string {
 }
 
 /** A step folder's screenshot as a SubQ image (PNG, at most 4 MiB decoded), or null. */
-function frameOf(folder: string): DecisionImage | null {
+export function frameOf(folder: string): DecisionImage | null {
   const path = join(folder, "screenshot.png");
   if (!existsSync(path) || statSync(path).size > 4 * 1024 * 1024) return null;
   return { mediaType: "image/png", base64: readFileSync(path).toString("base64") };
 }
 
 /** About what a dwell step costs beyond its sleep (its screenshot, snapshot and HAR): taken off the sleep. */
-const DWELL_OVERHEAD_MS = 400;
+export const DWELL_OVERHEAD_MS = 400;
 /** Steps after which a new reel is on screen. */
 const LANDS = new Set(["openReels", "unmute", "swipe"]);
 

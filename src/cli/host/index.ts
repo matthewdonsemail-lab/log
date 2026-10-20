@@ -31,11 +31,12 @@ export const HOST_USAGE = [
 const EVENTS: HostControl["type"][] = ["PERSON_DONE", "PAUSE", "RESUME", "SHUTDOWN", "LOST"];
 
 export const hostCommand: Command = {
+  usage: HOST_USAGE,
   name: "host",
   summary: "Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); send it events; read its progress",
   args: "<start|send|status> --account <name> [--live] [--bypass]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["live", "likes", "bypass", "json"], valued: ["account", "gapMinutes", "watchMinutes"] });
+    const parsed = parseArgs(argv, { boolean: ["live", "likes", "bypass"], valued: ["account", "gapMinutes", "watchMinutes"] });
     if (!parsed.ok) return { code: 1, stderr: `log host: ${parsed.error}\n${HOST_USAGE}` };
     const [sub, event] = parsed.positionals;
     const flags = parsed.flags;

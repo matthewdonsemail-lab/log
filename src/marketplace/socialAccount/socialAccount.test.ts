@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { existsSync, readFileSync } from 'node:fs'
-import { prepareRun } from '../../camofox/run/index'
+import { prepareRun } from '../../browser/run/index'
 import { marketplaceFixture } from '../../twenty/graphql/index'
 import {
   checkRunnable,

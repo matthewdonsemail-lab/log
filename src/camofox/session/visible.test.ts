@@ -11,7 +11,9 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 const python = join(import.meta.dir, "..", "..", "..", "python");
-const read = (name: string) => readFileSync(join(python, name), "utf8");
+/** Every Python file under python/, by its own name (each sits in its domain package). */
+const pyFiles = (readdirSync(python, { recursive: true }) as string[]).filter((f) => f.endsWith(".py"));
+const read = (name: string) => readFileSync(join(python, pyFiles.find((f) => f.split(/[\\/]/).pop() === name) ?? name), "utf8");
 
 describe("Camoufox always launches visible", () => {
   test("visibleBrowser.py forces headed, humanize and the cursor, through the gate", () => {
@@ -47,8 +49,8 @@ describe("Camoufox always launches visible", () => {
   });
 
   test("nothing can ask for headless", () => {
-    for (const name of readdirSync(python).filter((f) => f.endsWith(".py"))) {
-      const text = read(name);
+    for (const name of pyFiles) {
+      const text = readFileSync(join(python, name), "utf8");
       expect(/headless\s*=\s*True|get\("headless"/.test(text), name).toBe(false);
     }
   });

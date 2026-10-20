@@ -10,7 +10,7 @@
  * Firefox prefs are kept. Never the environment `launch_options()` copies:
  * that holds every secret in the process. Values that belong to one launch
  * (timezone, WebRTC IP, locale, humanize, cursor, addon paths) are set fresh
- * each time by python/proxyGate.py and never stored.
+ * each time by python/browser/proxyGate.py and never stored.
  */
 
 export const DEVICE_PROFILE_VERSION = 1
@@ -38,7 +38,7 @@ export interface DeviceProfile {
   home: { city: string | null; country: string; timezone: string | null }
 }
 
-/** What `device.json` holds for one run (written by `camofox/run`, read by python/proxyGate.py). */
+/** What `device.json` holds for one run (written by `browser/run`, read by python/browser/proxyGate.py). */
 export interface DeviceRunFile {
   accountName: string
   locale: string

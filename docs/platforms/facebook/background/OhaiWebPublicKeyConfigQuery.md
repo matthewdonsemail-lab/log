@@ -13,10 +13,17 @@
 | Called from | `OhaiWebPublicKeyConfig` |
 | rea | `ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013` |
 
-Seen 13 time(s) in 4 run(s).
+Seen 24 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto / | 5 | 200 | 467–582 ms | 6556–8723 ms | — |
+| inspect | step 7: goto / | 1 | 200 | 580 ms | 4381 ms | — |
+| inspect | rea read step 33_dwell028s: exit 0, ev_d164a9c78021b1afb8ce6c5a24456a0d8f46efdbc7c54440f7f | 1 | 200 | 515 ms | 3259 ms | — |
+| inspect | step 38: goto /marketplace/ | 1 | 200 | 846 ms | 7746 ms | — |
+| inspect | rea read step 21_dwell078s: exit 0, ev_87a54a6ea91a3418cb413686bdc6108f946bdf45884c8230e49 | 1 | 200 | 469 ms | 3582 ms | — |
+| inspect | step 27: goto / | 1 | 200 | 464 ms | 5159 ms | — |
+| inspect | step 4: goto /marketplace/ | 1 | 200 | 647 ms | 5532 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 1 | 200 | 343 ms | 5713 ms | — |
 | inspect | step 1: goto /reel/ | 3 | 200 | 339–358 ms | 3193–4211 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 323 ms | 3846 ms | — |

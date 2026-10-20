@@ -2524,3 +2524,482 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: Proxies are provider-agnostic. src/proxyVendor/vendor reads an account's provider from its Twenty `proxy` URL's host (vendorOfProxy, parseVendor, PROXY_VENDORS); nothing new is stored in Twenty. src/proxyVendor/byteful is Byteful's client: credentials from BYTEFUL_PUBLIC_KEY/BYTEFUL_PRIVATE_KEY in headers, the residential summary, credit, city search (case-sensitive, so cityTitle), one sticky 24 h residential URL from /residential/list, static proxies with their location, and an ISP quote that never buys; pickCity takes the named city nearest the account's home. `log proxy assign --vendor byteful` checks each candidate through the proxy before saving (saveFirstGood, shared with 2Captcha's assign, which now uses it too); `log proxy balance` shows every provider set up; `log proxy static` lists Byteful's static IPs. The traffic meter is per provider (bytefulMeter, meterForProxy): a static IP is not metered, and the Reels warm-up passes the account's proxy. Error codes bytefulNotConfigured, bytefulRefused, bytefulNoCity. docs/proxyVendors/README.md (the agnostic model) and byteful.md (all 58 endpoints and what each is for us); Byteful's 172 doc pages and OpenAPI spec are in RESEARCH/MARKETPLACE_PROVIDERS/proxies/byteful. The naming gate allows ISO 3166-2 ids (us-pa). The group join request useGroupRequestToJoinMutation is documented from a new recording (run 20261020T101203), with the join run's other new requests; AGENTS.md rules 52 (agnostic proxies, Byteful) and 53 (finding things through TinyFish), distilled into the MCP rules.
 Why: matt set Byteful's keys and asked for its docs, every endpoint's use, and proxies that are agnostic and aligned with Twenty. The push was blocked because useGroupRequestToJoinMutation had no recording (the earlier HAR was deleted when the disk was cleared); matt asked to record it through Byteful now. He asked that anything to be found comes from an external TinyFish search.
 Checked: `bun test` 694 pass, 0 fail; `tsc --noEmit` clean; check:naming OK; check:facebookClientDocs: 129 requests documented, rea read every GraphQL slice. Live: `log proxy balance` showed Byteful 1,000 MB left and $0 credit; `log proxy assign --account 61594063207669 --vendor byteful` saved a Byteful proxy exiting 10 km from Bethlehem; Bethlehem's browser opened through every gate (exit 216.164.207.34, America/New_York) and `log join group --live --bypass` on Northeast Bethlehem Neighbors (found with TinyFish) got useGroupRequestToJoinMutation 200, viewer_join_state REQUESTED, 3 membership questions kept unanswered. The browser was closed with a logged reason so its HAR was written.
+
+## 2026-10-20 10:24Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `src/warmup/facebook/helpers/feed.ts`: added const RUN · changed const FEED
+- `src/warmup/facebook/warmup.test.ts`: changed test "its steps in Listaro order, each saying what it must achieve; the like only with --likes (rule 8)"
+
+What changed: FEED (src/warmup/facebook/helpers/feed.ts) carries its first recording: each step's `recorded` line (RUN 20261020T102133 on Reading, AdsPower, Byteful) and, in its doc comment, what the feed is on the page (each post's level-4 heading, Facebook's image description, button "Like" beside its count button "Like: N people"), how the wheel moved it and what Marketplace loaded. The "not recorded yet" known issue is gone; the one left is that the like isn't chosen per persona and hasn't been recorded with --likes. The test checks which steps carry a recording.
+Why: matt asked to work on the feed stage. Bethlehem had used its 8 opens, so the recording ran on Reading with a Byteful proxy (0 km from Reading) and --bypass, which matt said was fine.
+Checked: `log warmup facebook feed record --account 61594131334566 --live --bypass`: every step did what it should (openFeed 296 requests, readFeed 4 scrolls of 378-501 px, openMarketplace, lookMarketplace, scrollMarketplace 783 px; the like skipped without --likes). `bun test src/warmup` 36 pass; tsc clean.
+
+## 2026-10-20 10:42Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `python/inspectSession.py`: added const POST_OF_HEADING_JS, const POST_HEADINGS, const FEED_POSTS_JS · changed class Inspector
+- `src/camofox/inspect/helpers/parseInspectAction.ts`: changed const ARITY, const LIVE_ACTIONS
+- `src/camofox/inspect/types.ts`: added interface FeedPost · changed type InspectAction, interface InspectStepResult
+- `src/cli/warmup/helpers/feedRun.ts`: added function feedSoFar, function runFeedSession
+- `src/cli/warmup/helpers/personaRun.ts`: changed function frameOf
+- `src/cli/warmup/helpers/platformActivity.ts`: changed const PLATFORM_USAGE, function runPlatformActivity
+- `src/cli/warmup/index.ts`: changed const warmupCommand
+- `src/warmup/facebook/helpers/checkStep.ts`: changed interface StepReply
+- `src/warmup/facebook/helpers/feed.ts`: changed const FEED
+- `src/warmup/facebook/helpers/feedOrderer.ts`: added const FEED_GLANCE_MS, const FEED_READING_WPM, interface PostPlanInput, interface PostPlan, function planPost, function postReadRequest
+- `src/warmup/facebook/helpers/index.ts`: added export from "./feedOrderer"
+- `src/warmup/facebook/machine.ts`: added interface FeedLabel, interface FeedSessionInput, type FeedQueueItem, type FeedPostSeen, interface FeedSessionContext, interface FeedSessionOutput, function feedQueue, function stepsForPost, const plannedPost, const feedPersonaMachine
+- `src/warmup/facebook/types.ts`: changed type ActivityAction
+- `src/warmup/facebook/warmup.test.ts`: changed test "its steps in Listaro order, each saying what it must achieve; the like only with --likes (rule 8)"
+- `src/warmup/persona/persona.test.ts`: added test "a post that isn't theirs gets a glance around Facebook's 2.5 s; theirs its reading time, longer by the interest effect", test "a like only when allowed (rule 8), never on a post already liked, never in the cooldown", test "the post's read sent to SubQ: its frame, heading, text and image descriptions; a like asked only when allowed", test "the session: the feed, each post into view then read, then Marketplace and listings; without --likes no like"
+
+What changed: The feed warm-up reads the home feed as the persona would, post by post. `log warmup facebook feed run --persona [--posts 8-15] [--live] [--likes]` (feedRun.ts, runFeedSession) drives feedPersonaMachine (machine.ts): openFeed, settle, then per post nextPost (the next unread post brought to a fifth of the way down by the feed's own wheel scroll, scroll_by, its heading, text and image descriptions found in one read of the page, FEED_POSTS_JS) and SubQ's read of it (postReadRequest: its frame, heading, text, images, the persona and pack), planned by planPost (feedOrderer.ts): not theirs a glance around Facebook's 2.5 s desktop figure, theirs its text at 238 words a minute plus a 2.5 s look, longer by the measured interest effect and capped by the attention span, and a like drawn from the pack's rate, the cooldown and only with --live --likes (likePost clicks that post's own Like); then openMarketplace, lookMarketplace, scrollMarketplace and openListings (1-3 listings, Listaro stage 2). The inspect session gains nextPost and likePost; post steps don't wait for the network to go quiet. FEED's steps gain nextPost, likePost and openListings (replacing the first-visible like); feedLabels.jsonl per run.
+Why: matt watched the first feed recording and said it only scrolled a little and went to Marketplace: it has to use the site as the persona would, autonomously, and faster. The 2.5 s figure was found with TinyFish (rule 53): facebook.com/business, Capturing attention in feed.
+Checked: `bun test src/warmup` 40 pass; tsc clean. Live on Reading (61594131334566, Byteful, --live --likes --bypass): the first run stopped at post 8 on a 30 s wait for a heading the feed had dropped and was slow (one round trip per heading); after the fix the second run went to its end, 30 steps, none failing: 12 posts, each scrolled into view by 451-1,543 px of wheel about 4-5 s apart, SubQ read all 12 (12,418 tokens), 1 theirs (Smartphone Astrophotography, read 25.8 s), the rest glanced at 1.5-2.7 s, no like drawn, then Marketplace and listings opened; 36.8 MB of proxy traffic.
+
+## 2026-10-20 10:59Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `python/inspectSession.py`: changed class Inspector
+- `src/camofox/inspect/helpers/parseInspectAction.ts`: changed const ARITY, const LIVE_ACTIONS
+- `src/camofox/inspect/inspect.test.ts`: changed test "click, type, press, solve, signIn and code are the actions that act on Facebook (rule 8)"
+- `src/camofox/inspect/types.ts`: changed type InspectAction, interface InspectStepOptions, interface InspectStepResult
+- `src/cli/warmup/helpers/feedRun.ts`: added const SETTLE · changed function runFeedSession
+- `src/warmup/facebook/helpers/checkStep.ts`: changed function checkStep
+- `src/warmup/facebook/helpers/feed.ts`: added const INSPECT · changed const FEED
+- `src/warmup/facebook/helpers/feedOrderer.ts`: added type PostAction · changed interface PostPlanInput, interface PostPlan, function planPost, function postReadRequest
+- `src/warmup/facebook/machine.ts`: changed function feedQueue, function stepsForPost, const plannedPost
+- `src/warmup/facebook/types.ts`: changed type ActivityAction, interface ActivityStep
+- `src/warmup/facebook/warmup.test.ts`: changed test "its steps in Listaro order, each saying what it must achieve; the like only with --likes (rule 8)"
+- `src/warmup/persona/persona.test.ts`: changed test "the session: the feed, each post into view then read, then Marketplace and listings; without --likes no like"
+
+What changed: The feed warm-up rebuilt from a timed inspect on Reading (inspect 20261020T103913, steps 26-31, each step timed by hand). Each feed step settles on what it needs, not on the network going quiet (SETTLE in feedRun.ts: a page open 0.5 s quiet up to 4 s, a click 0.3 s up to 1.5 s, scrolls and nextPost none); every step's time in the browser and round trip is printed live. New steps from the inspect: dismissPrompt (the Remember password prompt, Not now, optional: an optional step looks for 1.5 s, findMs, and passes when absent), seeMore (a theirs post cut short), openComments (Leave a comment opens the post in a dialog with its comments), scrollComments and closeComments; postButton clicks a named button inside the post in view. planPost draws one action per post, a like or the comments opened, from the pack's like and comment rates and the interest effect, and See more for a theirs post cut short. nextPost keeps the post by its heading text (an index went stale while the post was read). StepReply carries the step's ms; ActivityStep gains optional.
+Why: matt watched the feed run and said it was too slow and did too little, and asked for an inspect job first, timing everything. The inspect showed each step waiting 6-20 s for the network to go quiet (a page open 18-23 s, a click 6-9 s, a scroll 9 s), rea read inline in a by-hand step (3.3 s), the comment control named Leave a comment, a Remember password prompt over the feed, and the like failing because the post's index had moved on.
+Checked: bun test (camofox, warmup) 100 pass; tsc clean. By hand: likePost on Soup Lovers became Remove Like. Live run (Reading, Byteful, --live --likes --bypass): 33 steps, none failing, 13 posts; nextPost median 2.4 s, a theirs post got See more (2.5 s), a 26.4 s read and a like (4.2 s); a page open 9.6 s (was 18-23 s); 77 MB of proxy traffic; 11,364 SubQ tokens.
+
+## 2026-10-20 11:09Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `.claude/settings.json`: new file
+- `AGENTS.md`: edited
+- `python/inspectSession.py`: changed class Inspector
+- `scripts/hooks/pageState.ts`: added interface HookInput, const raw, const input, const event, const seenPath, const seen, const lines
+- `src/camofox/flow/helpers/pageState.ts`: added interface PageState, interface StateRule, const STATES, function pageStateOf
+- `src/camofox/flow/pageState.test.ts`: added const CHECKPOINT, test "Reading's checkpoint as recorded: its first page, the text captcha, then the video selfie", test "the feed prompt, the login form, an unmapped checkpoint; an ordinary page is none"
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS
+
+What changed: pageStateOf (src/camofox/flow/helpers/pageState.ts) names the known page states from a step's URL and snapshot, with what resolves each: disabled and videoSelfie (a person), textCaptcha (solve), checkpointStart (Continue, plain text, by its ref), automatedBehaviour, rememberPassword (Not now), twoStepCode (code), loginForm (signIn), and an unmapped checkpoint (press through and add it). scripts/hooks/pageState.ts, registered in .claude/settings.json on PostToolUse and UserPromptSubmit, reads the latest step of every open inspect session and puts its state and resolver into the agent's context (only when new after a tool call; always on a prompt). The text captcha's solve clicks Continue when it is plain text (it stayed typed and unsent on Reading). AGENTS.md rule 54, in the MCP rules.
+Why: Reading was checkpointed while I was inspecting Marketplace and I stopped; matt: a known state is resolved, never a stop, and he asked for Claude hooks per state that inject what the page is.
+Checked: by hand on Reading (inspect 20261020T105346): steps 39-44 went checkpointStart (Continue clicked by ref e69), textCaptcha (solve: 2Captcha answered in 1.6 s, Continue pressed by ref e113), then videoSelfie (a person: stopped there). The hook reported videoSelfie on a prompt and stayed quiet on the next tool call. bun test src/camofox src/mcp 84 pass; tsc clean; check:naming OK.
+
+## 2026-10-20 11:21Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `.claude/settings.json`: edited
+- `.codex/hooks.json`: new file
+- `AGENTS.md`: edited
+- `bin/log.ts`: added const argv, const tool, const dir · changed const code
+- `lefthook.yml`: edited
+- `package.json`: edited
+- `scripts/checkAgentHooks.ts`: added const root, const write, const problems, const HOST_FILES, const scratch, const commandNames, const tools, const toolNames, const mcpJson, const serverSource
+- `scripts/hooks/liveLogs.ts`: added interface HookInput, const raw, const input, const verdict
+- `scripts/hooks/pageState.ts`: added interface Reply, const memoryPath, const memory, function lastReply, const browsers, const result · changed interface HookInput, const event · removed const seenPath, const seen, const lines
+- `skills.md`: edited
+- `skills/agentHooks/SKILL.md`: new file
+- `skills/logCli/SKILL.md`: edited
+- `src/agentHooks/agentHooks.test.ts`: added const empty, const at, const captcha, const selfie, test "both hosts get every event, each with its script", test "every log MCP tool and the shells are hooked after the call", test "a known state carries its resolver; a person's state says so", test "a failed step is an unconfirmed page: snapshot, then resolve", test "PostToolUse speaks once per change; prompts always", test "Stop blocks on what log-cli resolves, never on a person's state, and never loops", test "memory reads the older shape and survives junk", test "finds the log command a shell line runs", test "tail/head buffer; tail -f and tee don't", test "a buffered log run is refused; a long one off a Monitor is reminded; Monitor with tee goes through", test "the CLI and the MCP append to the same day's file"
+- `src/agentHooks/liveLog/index.ts`: added interface LiveLogVerdict, function logCommandOf, function logPipelines, function buffersOutput, function liveLogVerdict
+- `src/agentHooks/pageState/index.ts`: added export from "./types.ts", const HEADER, function findingOf, function context, function hookReply, function parseMemory
+- `src/agentHooks/pageState/types.ts`: added interface BrowserAt, interface Finding, interface HookMemory, interface HookReply
+- `src/agentHooks/registry/index.ts`: added export from "./types.ts", const MCP_SERVER_NAME, const TOOL_MATCHER, const SHELL_MATCHER, const PAGE_STATE, const LIVE_LOGS, const AGENT_HOOKS, function hookCommand, function hooksFor, function toolIsHooked
+- `src/agentHooks/registry/types.ts`: added type HookEvent, interface AgentHook, type HookHost
+- `src/camofox/flow/helpers/pageState.ts`: added const PAGE_STATES · changed function pageStateOf · removed const STATES
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `src/mcp/server/helpers/formatLogLine.ts`: added export from "../../../observability/liveLog/index.ts" · removed type LogStream, function formatLogLine, function logFileName
+- `src/mcp/server/index.ts`: changed function createLogMcpServer
+- `src/observability/liveLog/index.ts`: added export from "./types.ts", function formatLogLine, function logFileName, function liveLogDir, function appendLiveLine
+- `src/observability/liveLog/types.ts`: added type LogStream
+
+What changed: one hook list (`src/agentHooks/registry`, `AGENT_HOOKS`) now writes both hosts' files, Claude Code's `.claude/settings.json` and Codex's new `.codex/hooks.json`. SessionStart and UserPromptSubmit say where every open browser is. PostToolUse (Bash, PowerShell, Monitor, `mcp__log__.*`) gives a new known state its resolver, and a failed step is reported as an unconfirmed page (snapshot, then resolve). Stop (`hookReply`) blocks the turn's end while a browser sits on a state log-cli resolves itself, never on a person's state, and lets go when sent back once with nothing changed. PreToolUse (`scripts/hooks/liveLogs.ts`, `liveLogVerdict`) refuses a log run whose own pipeline goes through tail/head, and reminds a long one off a Monitor. The live log moved into `observability/liveLog` (`appendLiveLine`), and `bin/log.ts` now writes the terminal CLI's lines, and its Python's, to the same `~/.logCli/mcp/<day>.log` as the MCP, as `cli:<command>`. `scripts/checkAgentHooks.ts` (`bun run check:agentHooks`, lefthook pre-commit and pre-push) refuses drift: both hosts' files, each hook script answering its events, every command an MCP tool or terminal-only, every MCP tool hooked, every long tool pointing at the live log, `.mcp.json` and the server name, and every resolver a real command (`PAGE_STATES` exported). Rule 55 is in AGENTS.md, the MCP instructions and COMMAND_RULES (inspect, warmup), with the skill `skills/agentHooks`.
+Why: matt asked for every action through inspect, the CLI or MCP to work with the agent hooks, for an unknown or unconfirmed state to trigger its resolution, for lefthook to keep the CLI, MCP definitions, hooks and Monitor in step, and for live logging behind every Monitor (he saw Monitors with none). How both hosts take hooks comes from their docs, read through TinyFish (code.claude.com/docs/en/hooks, learn.chatgpt.com/docs/hooks): the same `additionalContext`, Stop `decision: block` and exit-2 shapes.
+Checked: `bun test src/agentHooks src/mcp src/camofox/flow/pageState.test.ts` 41 pass; the full `bun test` 710 pass and 1 fail, in `parseLaunchArgs` (another session's uncommitted launch files, not in this commit); `bun run check:agentHooks` (5 hooks on both hosts, 29 commands, 28 MCP tools hooked, 9 page states), `check:naming` and `check:browsers` OK; the hook run live reports Reading on videoSelfie (a person's state, so Stop doesn't block); `bun bin/log.ts errors --code launchTooSoon` wrote its lines to the live log as `cli:errors`; the PreToolUse hook refused a real buffered command in this session, and a false positive (a tail on a later command of the line) was fixed and tested.
+
+## 2026-10-20 11:26Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuShortcutsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceRecordPDPDwellTimeMutation.md`: new file
+- `docs/platforms/facebook/background/CometMarketplaceSetProductItemSeenStateMutation.md`: new file
+- `docs/platforms/facebook/background/CometNewsFeedPaginationQuery.md`: new file
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometSinglePostDialogContentQuery.md`: new file
+- `docs/platforms/facebook/background/CometUFIConversationGuideContainerQuery.md`: new file
+- `docs/platforms/facebook/background/CometUFIFeedbackReactMutation.md`: edited
+- `docs/platforms/facebook/background/CometUFIReactionIconTooltipContentQuery.md`: new file
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/FeedComposerCometRootQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPC2CMediaViewerWithImagesQuery.md`: new file
+- `docs/platforms/facebook/background/MarketplacePDPContainerQuery.md`: new file
+- `docs/platforms/facebook/background/MarketplacePDPRightColumnAdsQuery.md`: new file
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/pushRegisterServiceWorker.md`: new file
+- `docs/platforms/facebook/background/sharedUserPreferences.md`: edited
+- `docs/platforms/facebook/background/useCIXLogMutation.md`: new file
+- `docs/platforms/facebook/background/useInstreamAdsHaloFetcherQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/checkpoint/UFACAISupportChatExperienceQuery.md`: edited
+- `docs/platforms/facebook/checkpoint/useCometAISupportConversationLoggerMutation.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/checkpoint/useUFACSubmitActionMutation.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometMentionsBootloadDataSourceWithTaggingTransparencyQuery.md`: new file
+- `docs/platforms/facebook/groups/useGroupsCometMentionsNullstateDataSourceWithTaggingTransparencyQuery.md`: new file
+- `docs/platforms/facebook/groups/useGroupsCometTypeaheadBootloadDataSourceQuery.md`: new file
+- `docs/platforms/facebook/login/CometLogoutHandlerQuery.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoRootWithEntrypointQuery.md`: edited
+
+What changed: `log capture --docs` rebuilt the Facebook request docs from 9 runs (71 requests, 13 new slices read by rea), with the newest the checkpoint run on Reading (20261020T105346) and the feed warm-ups. 14 new docs have their reasoning written: the Marketplace listing requests (dwell time, seen state, the listing page, its photo viewer and right-column ads), the feed paging, post dialog, conversation guide and reaction tooltip, the push service worker registration (how the checkpoint notification reached the page), a logging call, and three group comment-box requests (mentions, typeahead).
+Why: matt asked to push; the pre-push docs gate refuses while a run is newer than the docs or a doc has no reasoning. Reading's browser was closed first, on his ask, with its reason logged in the run (`closeReason.json`: checkpoint, video selfie).
+Checked: `bun run check:facebookClientDocs`: 143 requests documented, rea read every GraphQL slice; no `<!-- toWrite -->` left in a request doc; the timings in each section are from its own facts table.
+
+## 2026-10-20 11:43Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: new file
+- `docs/diagrams/hooks.mmd`: new file
+- `docs/diagrams/pageStates.mmd`: new file
+- `docs/diagrams/surface.mmd`: new file
+- `docs/errorCatalog.md`: edited
+- `docs/identityLeaks/gateBypasses.md`: edited
+- `docs/identityLeaks/proxyCredentials.md`: edited
+- `docs/identityLeaks/sessionStatePersistence.md`: edited
+- `docs/proxies.md`: edited
+- `docs/rea/facebookClient.md`: edited
+- `docs/recordToFlow.md`: edited
+- `lefthook.yml`: edited
+- `package.json`: edited
+- `python/deviceProfile.py`: no declaration changed (comments, formatting or line endings)
+- `python/errorCatalog.json`: edited
+- `python/proxyGate.py`: no declaration changed (comments, formatting or line endings)
+- `scripts/buildDocs.ts`: added const root, const check, const problems, const wrote, const entries, const flows, const all, function put, const diagramDir, const readme, const filesUnder, const strings, const cliDir
+- `scripts/checkAgentHooks.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/checkBrowserParity.ts`: added const SHARED_DOMAINS
+- `scripts/checkFacebookClientDocs.mjs`: no declaration changed (comments, formatting or line endings)
+- `scripts/hooks/pageState.ts`: no declaration changed (comments, formatting or line endings)
+- `skills.md`: edited
+- `skills/agentHooks/SKILL.md`: edited
+- `skills/surfaceDocs/SKILL.md`: new file
+- `src/agentHooks/pageState/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/agentHooks/pageState/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/flow/client.ts`: added const FLOWS_DIR, const FLOW_DOCS_DIR, const REQUEST_DOCS, const jsonLines, function laterEvidence, function readRecordedCommands, function listFlows, function loadFlow, function saveFlow, function requestDocFor, function writeFlowDoc
+- `src/browser/flow/definitions/profileSetup.json`: new file
+- `src/browser/flow/flow.test.ts`: added const PROFILE, const MENU, const DIALOG, const CROP, const NAME, const cmd, const RECORDING, test "Erie's lock, a sign-out and a wrong page stop the step; Marketplace settling on its city page doesn't", test "scroll, openAny, clickAny and dwell keep their ranges and pin no element; a settling wait is dropped", test "turns refs into the role and name the step acted on, and drops looks, failures and field clicks", test "the confirming request is the step’s own mutation, from the looks after it too; a page open waits for none", test "typed text and files become named params; the account id becomes {uid}", test "its doc lists every step with its confirming request, rea Evidence and the machine", test "runs every step in order and ends done", test "a failed step ends the run there: nothing after it runs"
+- `src/browser/flow/helpers/flowFromRecording.ts`: added interface RecordedCommand, const NOT_CONFIRMING, function confirmingRequest, const ACTED, const camel, function flowFromRecording, function fillStep
+- `src/browser/flow/helpers/index.ts`: added export from "./flowFromRecording", export from "./pageCheck", export from "./renderFlowDoc"
+- `src/browser/flow/helpers/pageCheck.ts`: added function pageProblem
+- `src/browser/flow/helpers/pageState.ts`: added interface PageState, interface StateRule, const PAGE_STATES, function pageStateOf
+- `src/browser/flow/helpers/renderFlowDoc.ts`: added function renderFlowDoc, function toolName
+- `src/browser/flow/index.ts`: added export from "./client", export from "./helpers/index", export from "./machine", export from "./types"
+- `src/browser/flow/machine.ts`: added interface FlowContext, function createFlowMachine
+- `src/browser/flow/pageState.test.ts`: added const CHECKPOINT, test "Reading's checkpoint as recorded: its first page, the text captcha, then the video selfie", test "the feed prompt, the login form, an unmapped checkpoint; an ordinary page is none"
+- `src/browser/flow/types.ts`: added type FlowAction, interface FlowStep, interface FlowParam, interface FlowDefinition, interface FlowStepResult, interface FlowRunOutput, interface FlowActInput
+- `src/browser/inspect/client.ts`: added const INSPECT_SESSION_PATH, function currentInspectPath, function inspectSessionsDir, function sessionFile, function readJson, function openInspects, function readCurrentInspect, function writeCurrentInspect, function clearCurrentInspect, const runInspectSession, function findReply, function sendInspectCommand
+- `src/browser/inspect/helpers/index.ts`: added export from "./parseInspectAction", export from "./renderInspectStep"
+- `src/browser/inspect/helpers/parseInspectAction.ts`: added const ARITY, const LIVE_ACTIONS, function parseInspectAction
+- `src/browser/inspect/helpers/renderInspectStep.ts`: added function redactFieldValue, function renderInspectStep
+- `src/browser/inspect/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/browser/inspect/inspect.test.ts`: added test "knows each action and its arguments", test "goto only takes Facebook", test "click, type, press, solve, signIn and code are the actions that act on Facebook (rule 8)", test "appends the command and returns the reply with its id", test "no reply in time is null", test "shows the page, the requests, rea and the refs to act on", test "never shows what is typed in a field (rule 21)"
+- `src/browser/inspect/types.ts`: added type InspectAction, interface InspectSessionConfig, interface CurrentInspect, interface InspectCommand, interface InspectStepOptions, interface FeedPost, interface InspectStepResult, type InspectSessionRunner
+- `src/browser/proxy/helpers/countryOfLocation.ts`: added const regionNames, const US_STATES, const CODE_BY_NAME, function countryOfLocation, function countryName
+- `src/browser/proxy/helpers/index.ts`: added export from "./countryOfLocation.ts"
+- `src/browser/proxy/index.ts`: added export from "./helpers/index.ts", export from "./types.ts"
+- `src/browser/proxy/types.ts`: added interface ProxyCheck, const SLOW_FACEBOOK_MS, function slowFacebookMs
+- `src/browser/run/client.ts`: added function toOrigins, function captureDirFor, const OPENER_ACTIONS, function runBrowserOf, function prepareRun
+- `src/browser/run/helpers/index.ts`: added export from "./launchBudget"
+- `src/browser/run/helpers/launchBudget.ts`: added interface LaunchLimits, const LAUNCH_LIMITS, const SELF_CHECK, const launchResetsPath, function lastLaunchReset, function recordLaunchReset, function listLaunches, function dirNames, const dayIn, function overLaunchBudget
+- `src/browser/run/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/browser/run/run.test.ts`: added const DAY, const NIGHT, const ROOT, function account, test "login.json goes at once; the rest moves out of the temp folder, and cleanup leaves it", test "writes the pinned home and no device on the first launch", test "outside the local window nothing is written and nothing opens, connect included", test "the capture folder is named after the browser that runs: inspect, flow, warmup and host follow the account, the rest are Camoufox", test "a run carries its capture folder (rule 22); a proxy check opens nothing and has none", test "bypassHours skips only the waking hours: the proxy rule still refuses", test "the account's own window is used", test "a country with no pinned locale is refused", test "a stored device goes to Python as it is; an unreadable one is refused, never replaced", test "a device Python made in the run is handed back once, to save", test "only launches that reached Facebook count, per account", test "a reset (log account resetOpens) makes earlier launches stop counting, for that account only, keeping the recordings", test "too soon after the last launch, then too many in the local day"
+- `src/browser/run/types.ts`: added interface PreparedRun, interface PrepareRunOptions, type PrepareRunResult
+- `src/camofox/device/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/camofox/flow/client.ts`: file deleted · removed const FLOWS_DIR, const FLOW_DOCS_DIR, const REQUEST_DOCS, const jsonLines, function laterEvidence, function readRecordedCommands, function listFlows, function loadFlow, function saveFlow, function requestDocFor, function writeFlowDoc
+- `src/camofox/flow/definitions/profileSetup.json`: file deleted
+- `src/camofox/flow/flow.test.ts`: file deleted · removed const PROFILE, const MENU, const DIALOG, const CROP, const NAME, const cmd, const RECORDING, test "Erie's lock, a sign-out and a wrong page stop the step; Marketplace settling on its city page doesn't", test "scroll, openAny, clickAny and dwell keep their ranges and pin no element; a settling wait is dropped", test "turns refs into the role and name the step acted on, and drops looks, failures and field clicks", test "the confirming request is the step’s own mutation, from the looks after it too; a page open waits for none", test "typed text and files become named params; the account id becomes {uid}", test "its doc lists every step with its confirming request, rea Evidence and the machine", test "runs every step in order and ends done", test "a failed step ends the run there: nothing after it runs"
+- `src/camofox/flow/helpers/flowFromRecording.ts`: file deleted · removed interface RecordedCommand, const NOT_CONFIRMING, function confirmingRequest, const ACTED, const camel, function flowFromRecording, function fillStep
+- `src/camofox/flow/helpers/index.ts`: file deleted · removed export from "./flowFromRecording", export from "./pageCheck", export from "./renderFlowDoc"
+- `src/camofox/flow/helpers/pageCheck.ts`: file deleted · removed function pageProblem
+- `src/camofox/flow/helpers/pageState.ts`: file deleted · removed interface PageState, interface StateRule, const PAGE_STATES, function pageStateOf
+- `src/camofox/flow/helpers/renderFlowDoc.ts`: file deleted · removed function renderFlowDoc, function toolName
+- `src/camofox/flow/index.ts`: file deleted · removed export from "./client", export from "./helpers/index", export from "./machine", export from "./types"
+- `src/camofox/flow/machine.ts`: file deleted · removed interface FlowContext, function createFlowMachine
+- `src/camofox/flow/pageState.test.ts`: file deleted · removed const CHECKPOINT, test "Reading's checkpoint as recorded: its first page, the text captcha, then the video selfie", test "the feed prompt, the login form, an unmapped checkpoint; an ordinary page is none"
+- `src/camofox/flow/types.ts`: file deleted · removed type FlowAction, interface FlowStep, interface FlowParam, interface FlowDefinition, interface FlowStepResult, interface FlowRunOutput, interface FlowActInput
+- `src/camofox/inspect/client.ts`: file deleted · removed const INSPECT_SESSION_PATH, function currentInspectPath, function inspectSessionsDir, function sessionFile, function readJson, function openInspects, function readCurrentInspect, function writeCurrentInspect, function clearCurrentInspect, const runInspectSession, function findReply, function sendInspectCommand
+- `src/camofox/inspect/helpers/index.ts`: file deleted · removed export from "./parseInspectAction", export from "./renderInspectStep"
+- `src/camofox/inspect/helpers/parseInspectAction.ts`: file deleted · removed const ARITY, const LIVE_ACTIONS, function parseInspectAction
+- `src/camofox/inspect/helpers/renderInspectStep.ts`: file deleted · removed function redactFieldValue, function renderInspectStep
+- `src/camofox/inspect/index.ts`: file deleted · removed export from "./client", export from "./helpers/index", export from "./types"
+- `src/camofox/inspect/inspect.test.ts`: file deleted · removed test "knows each action and its arguments", test "goto only takes Facebook", test "click, type, press, solve, signIn and code are the actions that act on Facebook (rule 8)", test "appends the command and returns the reply with its id", test "no reply in time is null", test "shows the page, the requests, rea and the refs to act on", test "never shows what is typed in a field (rule 21)"
+- `src/camofox/inspect/types.ts`: file deleted · removed type InspectAction, interface InspectSessionConfig, interface CurrentInspect, interface InspectCommand, interface InspectStepOptions, interface FeedPost, interface InspectStepResult, type InspectSessionRunner
+- `src/camofox/proxy/helpers/countryOfLocation.ts`: file deleted · removed const regionNames, const US_STATES, const CODE_BY_NAME, function countryOfLocation, function countryName
+- `src/camofox/proxy/helpers/index.ts`: file deleted · removed export from "./countryOfLocation.ts"
+- `src/camofox/proxy/index.ts`: file deleted · removed export from "./helpers/index.ts", export from "./types.ts"
+- `src/camofox/proxy/types.ts`: file deleted · removed interface ProxyCheck, const SLOW_FACEBOOK_MS, function slowFacebookMs
+- `src/camofox/run/client.ts`: file deleted · removed function toOrigins, function captureDirFor, const OPENER_ACTIONS, function runBrowserOf, function prepareRun
+- `src/camofox/run/helpers/index.ts`: file deleted · removed export from "./launchBudget"
+- `src/camofox/run/helpers/launchBudget.ts`: file deleted · removed interface LaunchLimits, const LAUNCH_LIMITS, const SELF_CHECK, const launchResetsPath, function lastLaunchReset, function recordLaunchReset, function listLaunches, function dirNames, const dayIn, function overLaunchBudget
+- `src/camofox/run/index.ts`: file deleted · removed export from "./client", export from "./helpers/index", export from "./types"
+- `src/camofox/run/run.test.ts`: file deleted · removed const DAY, const NIGHT, const ROOT, function account, test "login.json goes at once; the rest moves out of the temp folder, and cleanup leaves it", test "writes the pinned home and no device on the first launch", test "outside the local window nothing is written and nothing opens, connect included", test "the capture folder is named after the browser that runs: inspect, flow, warmup and host follow the account, the rest are Camoufox", test "a run carries its capture folder (rule 22); a proxy check opens nothing and has none", test "bypassHours skips only the waking hours: the proxy rule still refuses", test "the account's own window is used", test "a country with no pinned locale is refused", test "a stored device goes to Python as it is; an unreadable one is refused, never replaced", test "a device Python made in the run is handed back once, to save", test "only launches that reached Facebook count, per account", test "a reset (log account resetOpens) makes earlier launches stop counting, for that account only, keeping the recordings", test "too soon after the last launch, then too many in the local day"
+- `src/camofox/run/types.ts`: file deleted · removed interface PreparedRun, interface PrepareRunOptions, type PrepareRunResult
+- `src/camofox/worker/types.ts`: changed interface WorkerRequest
+- `src/cli/account/helpers/resave.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/account/helpers/resetOpens.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/account/index.ts`: changed const accountsCommand, const accountCommand
+- `src/cli/adsPower/index.ts`: changed const adsPowerCommand
+- `src/cli/auth/index.ts`: changed const loginCommand, const logoutCommand, const whoamiCommand
+- `src/cli/campaign/index.ts`: changed const campaignCommand
+- `src/cli/capture/index.ts`: changed const captureCommand
+- `src/cli/conversation/index.ts`: changed const conversationsCommand, const conversationCommand
+- `src/cli/errors/index.ts`: changed const errorsCommand, const graphCommand
+- `src/cli/flow/helpers/flowSession.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/flow/index.ts`: changed const flowCommand
+- `src/cli/host/helpers/hostActors.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/host/index.ts`: changed const hostCommand
+- `src/cli/inspect/index.ts`: changed const inspectCommand
+- `src/cli/inspect/inspect.test.ts`: changed test "two accounts' sessions are open at once; do picks one by --account and refuses to guess", test "starts the session as its own process and returns once its browser is ready"
+- `src/cli/join/index.ts`: changed const joinCommand
+- `src/cli/join/join.test.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/launch/index.ts`: changed const launchCommand
+- `src/cli/lifecycle/index.ts`: changed const lifecycleCommand
+- `src/cli/listing/index.ts`: changed const listingsCommand, const listingCommand
+- `src/cli/live/index.ts`: changed const doctorCommand, const connectCommand, const scanCommand, const statusCommand
+- `src/cli/profile/index.ts`: changed const profileCommand
+- `src/cli/proxy/index.ts`: changed const proxyCommand
+- `src/cli/proxy/proxy.test.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/publish/index.ts`: changed const publishCommand
+- `src/cli/runner/cli.test.ts`: changed test "sets the run's limit and restores it afterwards"
+- `src/cli/runner/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/runner/types.ts`: changed interface Command
+- `src/cli/warmup/helpers/feedRun.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/warmup/helpers/personaRun.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/warmup/helpers/platformActivity.ts`: changed const PLATFORM_USAGE
+- `src/cli/warmup/index.ts`: changed const warmupCommand
+- `src/cli/warmup/warmup.test.ts`: changed test "record runs every step in the open browser, checks each, and writes the outline"
+- `src/cli/watch/index.ts`: changed const watchCommand
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/group/answer/machine.ts`: no declaration changed (comments, formatting or line endings)
+- `src/group/join/machine.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/agencyListing/helpers/toPublishListing.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/socialAccount/socialAccount.test.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/warmup/types.ts`: changed interface ActivityScript
+- `src/mcp/server/flowTools.test.ts`: no declaration changed (comments, formatting or line endings)
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS
+- `src/mcp/server/helpers/toolsFromCommands.ts`: changed function toolsFromCommands
+- `src/mcp/server/helpers/toolsFromFlows.ts`: no declaration changed (comments, formatting or line endings)
+- `src/mcp/server/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/surface/catalog/index.ts`: added export from "./types.ts", const GLOBAL_FLAGS, function usageLines, function flagsOf, const TOOL_EVENTS, function hooksOn, function sessionHooks, function commandEntry, function catalog, function flowEntries
+- `src/surface/catalog/types.ts`: added interface Flag, interface CommandEntry, interface FlowEntry
+- `src/surface/diagrams/index.ts`: added interface Diagram, function label, const scriptName, function surfaceDiagram, function hooksDiagram, function resolverStep, function pageStatesDiagram, function commandsDiagram, function diagrams
+- `src/surface/readme/index.ts`: added const SURFACE_START, const SURFACE_END, const cell, const flagText, function diagramBlock, function hookRow, function renderSurface, function withSurface
+- `src/surface/surface.test.ts`: added test "usage lines lose `Usage:` and the indent under it", test "flags come from the usage, once each, with their value", test "every command has its usage, flags and MCP tool or terminal-only reason", test "labels hold no raw quote or angle bracket", test "a resolver's edge stops at its first explanation", test "four diagrams, each Mermaid", test "the section replaces the old one and is idempotent"
+- `src/warmup/facebook/machine.ts`: no declaration changed (comments, formatting or line endings)
+
+What changed: Every command now carries its full usage (`Command.usage`, the typecheck refuses one without), and the MCP tool descriptions include it, so the terminal, MCP and README show the same flags. `src/surface` builds a catalog of the surface (`catalog`, `commandEntry`, `flagsOf`, `hooksOn`): each command's usage, flags, MCP tool or terminal-only reason, the hooks that fire on it from a shell and over MCP, live log, rules. From it `src/surface/diagrams` draws four Mermaid diagrams (surface, commands, hooks, pageStates; `resolverStep` keeps edge labels short) and `src/surface/readme` writes the README's section between the surface markers. `scripts/buildDocs.ts` (`bun run docs:build`) writes README.md and `docs/diagrams/*.mmd`; `--check` (`bun run check:docs`, lefthook pre-commit and pre-push) refuses drift, a stale .mmd, and a flag a command parses (parseArgs, takePairs, `=== "--x"`) that its usage doesn't name, or the reverse. That check found and fixed: host parsed an unused --json (removed), and the warmup plan's --json wasn't in its usage (added). The README's hand-written command table, which had gone stale, is replaced by a pointer to the generated section. `flow`, `inspect`, `run` and `proxy` moved from `src/camofox/` to `src/browser/` (git mv per file; every import rewritten by resolving it against the old layout; the path mentions in docs, Python, the error catalog and comments updated; `log.md` left as history), their comments no longer say Camoufox where they mean the account's browser, and `checkBrowserParity` allows these shared domains (`SHARED_DOMAINS`). `src/camofox/` keeps Camoufox's own device, session and worker. Rules 56 and 57 in AGENTS.md and the MCP instructions (`RULES_REVIEWED_THROUGH` 57), the skill `skills/surfaceDocs`.
+Why: matt asked for the README to outline what the MCP, the CLI and the hooks do, with each command's arguments and flags, and Mermaid diagrams kept as `.mmd` files, generated so they stay true. He also pointed out that `src/camofox/flow` is named for one browser while flows run on AdsPower (rule 46): what every browser uses belongs in the browser library, named for what it is.
+Checked: `bun run check:naming`, `check:browsers`, `check:agentHooks`, `check:docs` (README and 4 diagrams match: 29 commands, 1 flow, every flag in its usage), `check:facebookClientDocs` (143 requests) all pass; `tsc --noEmit` clean; `bun test` 718 pass, 0 fail, with the new `src/surface/surface.test.ts`; the error catalog re-exported (`bun run errors:export`) after its `raisedIn` paths moved. The git mv of whole folders was refused while the log MCP server watched the flow definitions folder, so files were moved one by one.
+
+## 2026-10-20 11:52Z · feat/adsPower
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/accountsAndListings.md`: edited
+- `docs/adsPower.md`: edited
+- `docs/browsers.md`: edited
+- `docs/conversations.md`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/identityLeaks/README.md`: edited
+- `docs/identityLeaks/accountHistoryAndMetaEnforcement.md`: edited
+- `docs/identityLeaks/captchaSolving.md`: edited
+- `docs/identityLeaks/deviceFingerprintChurn.md`: edited
+- `docs/identityLeaks/dns.md`: edited
+- `docs/identityLeaks/gateBypasses.md`: edited
+- `docs/identityLeaks/geolocationApi.md`: edited
+- `docs/identityLeaks/http3Quic.md`: edited
+- `docs/identityLeaks/listingContentAndCurrency.md`: edited
+- `docs/identityLeaks/localeAndLanguage.md`: edited
+- `docs/identityLeaks/manualSignIn.md`: edited
+- `docs/identityLeaks/proxyCredentials.md`: edited
+- `docs/identityLeaks/proxyRotationAndGeoAccuracy.md`: edited
+- `docs/identityLeaks/sessionStatePersistence.md`: edited
+- `docs/identityLeaks/standaloneFacebookCamofoxClient.md`: edited
+- `docs/identityLeaks/timezone.md`: edited
+- `docs/identityLeaks/webrtc.md`: edited
+- `docs/listingPublish/captchaKraken.md`: edited
+- `docs/namingConventions.md`: edited
+- `docs/platforms/facebook/login/loginDeviceBasedRegularLogin.md`: edited
+- `docs/proxies.md`: edited
+- `docs/rea/README.md`: edited
+- `docs/rea/comparison.md`: edited
+- `docs/rea/facebookClient.md`: edited
+- `docs/rea/matrix/README.md`: edited
+- `docs/rea/matrix/claims.json`: edited
+- `docs/rea/matrix/criteria.json`: edited
+- `docs/rea/matrix/runMatrix.mjs`: changed const evidence, const situation
+- `docs/rea/sources.md`: edited
+- `docs/rea/spec.md`: edited
+- `docs/recordToFlow.md`: edited
+- `lefthook.yml`: edited
+- `package.json`: edited
+- `python/adsPowerBrowser.py`: file deleted · removed const DEFAULT_HOST, const RATE_LIMIT_WAIT_S, def base_url, def _call, def user_proxy_config, const NO_PROXY, def set_proxy, def start, def stop
+- `python/autoLogin.py`: file deleted · removed const TWO_STEP, const AUTOMATED_TEXT, const VIDEO_SELFIE_TEXT, const CHECKPOINT_TEXT, const SMS_TEXT, const ANOTHER_WAY, const DISABLED_TEXT, const DISABLED_URL, const WRONG_PASSWORD_TEXT, const FIND_ACCOUNT_TEXT, const COOKIE_BANNER, const TRUST_TEXT, const SAVE_LOGIN_TEXT, const CONTINUE_AS_TEXT, const CHECKPOINT_URL, const LOGIN_URL, const CODE_FIELD, const PASSWORD_FIELD, const EMAIL_FIELD, const CLICK_MS, def totp, def classify, def _visible, def _scope, def _pick, def _click_button, def _type, def heading, def frames_text, def button_names, def login_markers, def read, def submit_credentials, def choose_auth_app, def submit_code, const DISMISS, const DISMISS_SELECTOR, def dismiss
+- `python/browser/__init__.py`: new file, no top-level declarations
+- `python/browser/adsPowerBrowser.py`: added const DEFAULT_HOST, const RATE_LIMIT_WAIT_S, def base_url, def _call, def user_proxy_config, const NO_PROXY, def set_proxy, def start, def stop
+- `python/browser/browserDriver.py`: added const BROWSERS, class Opened, def driver_of, def open_camoufox, def open_ads_power, def carry_session_once, const OPENERS, def open_browser
+- `python/browser/harRecorder.py`: added const STATIC, const TEXT_TYPES, const MAX_BODY, class Recorder, class SessionHar
+- `python/browser/proxyGate.py`: added const ALLOWED_CALLER_KEYS, const IP_ECHO_URLS, const IP_TEXT, const SELF_CHECK_JS, def log, def note_step, class GateError, def arm, def load_proxy, def playwright_proxy, def proxy_url, def loaded_proxy, def twocaptcha_proxy, def locate_ip, def exit_location, def check, const FACEBOOK_PROBES, const SLOW_MS, const PROBE_ROUNDS, def slow_ms, def facebook_ms, def apply, def gate_attached, def check_attached, def pinned, def _require_gate, def _force_context, def har_path, def _force_capture, def expected, def compare, def _ip_from_text, def _self_check, def _checked, def install_guards, def recheck_exit
+- `python/browser/visibleBrowser.py`: added const HUMANIZE_MAX_SECONDS, const HUMANIZE_HOP_SECONDS, def launch_kwargs, def force_visible
+- `python/browserDriver.py`: file deleted · removed const BROWSERS, class Opened, def driver_of, def open_camoufox, def open_ads_power, def carry_session_once, const OPENERS, def open_browser
+- `python/connectSession.py`: file deleted · removed def read_login, def captcha_on, def session_cookies, def step_open, def step_open_in_session, def step_read, def acted, def step_submit_credentials, def step_choose_auth_app, def step_submit_code, def step_dismiss, def step_save, const STEPS, def main
+- `python/device/__init__.py`: new file, no top-level declarations
+- `python/device/deviceProfile.py`: added const PROFILE_VERSION, const HUMANIZE_MIN_SECONDS, const PER_LAUNCH, const SAFE_ENV, const PINNED_PREFS, const PER_LAUNCH_PREFS, const ACCURACY_RANGE_M, class ProfileError, def is_per_launch, def strip_per_launch, def decode_env_config, def safe_env, def locale_config, def refresh_version, def pinned_geolocation, def screen_bounds, def versions, def new_profile, def check_profile, def read_run_file, def write_run_file, def launch_config, def launch_prefs, def build_launch
+- `python/deviceProfile.py`: file deleted · removed const PROFILE_VERSION, const HUMANIZE_MIN_SECONDS, const PER_LAUNCH, const SAFE_ENV, const PINNED_PREFS, const PER_LAUNCH_PREFS, const ACCURACY_RANGE_M, class ProfileError, def is_per_launch, def strip_per_launch, def decode_env_config, def safe_env, def locale_config, def refresh_version, def pinned_geolocation, def screen_bounds, def versions, def new_profile, def check_profile, def read_run_file, def write_run_file, def launch_config, def launch_prefs, def build_launch
+- `python/errorCatalog.json`: file deleted
+- `python/errorCodes.py`: file deleted · removed const CATALOG_PATH, def _load_codes, const CODES, def checked, def register_secret, def redact, def failure
+- `python/errors/__init__.py`: new file, no top-level declarations
+- `python/errors/errorCatalog.json`: new file
+- `python/errors/errorCodes.py`: added const CATALOG_PATH, def _load_codes, const CODES, def checked, def register_secret, def redact, def failure
+- `python/harRecorder.py`: file deleted · removed const STATIC, const TEXT_TYPES, const MAX_BODY, class Recorder, class SessionHar
+- `python/human/__init__.py`: new file, no top-level declarations
+- `python/human/humanMouse.py`: added const MOVE_TIMEOUT, const EMIT_HZ, def min_jerk, def bezier, const TARGETS_JS, const HIT_JS, const ON_TARGET_JS, const MAX_AIMS, def inside_box, class Gesture, def duration_for, def reach, def loops, def ellipse, def rest_for, def look_for, class MouseBase, class HumanMouse, class SyncHumanMouse, def human_scroll_into_view, def human_scroll_by, def human_click
+- `python/human/recordMouse.py`: added const HZ, const MOVING_PX_S, const STILL_GAP_S, class POINT, def record, def analyze, def main
+- `python/human/scrollMotion.py`: added class ScrollStep, def _bell_phase, def human_scroll_trajectory, const OWNER_JS, const DISTANCE_JS, const CONTAINER_STEP_JS, def _viewport, def _wheel_point, def scroll_by, def scroll_into_view, def scroll_by_sync, def scroll_into_view_sync
+- `python/humanMouse.py`: file deleted · removed const MOVE_TIMEOUT, const EMIT_HZ, def min_jerk, def bezier, const TARGETS_JS, const HIT_JS, const ON_TARGET_JS, const MAX_AIMS, def inside_box, class Gesture, def duration_for, def reach, def loops, def ellipse, def rest_for, def look_for, class MouseBase, class HumanMouse, class SyncHumanMouse, def human_scroll_into_view, def human_scroll_by, def human_click
+- `python/inspectSession.py`: file deleted · removed const IDLE_SECONDS, const QUIET_MS, const SETTLE_MAX_MS, const REA_MAX_BYTES, def log, def now_iso, def slug, const FRIENDLY_NAME, def request_names, def notable, def rea_copy, def run_rea, const FIELD_VALUE, def redact_fields, const INTERACTIVE, def read_login, const SELL_LOCATION, const HITTABLE_JS, def draw, const VISIBLE_LINKS_JS, const POST_OF_HEADING_JS, const POST_HEADINGS, const FEED_POSTS_JS, class Inspector, def main
+- `python/logWorker.py`: file deleted · removed const SELLING_URL, const EXTRACT_JS, def log, const NEEDS_ATTENTION_JS, def body_sample, def auth_flags, def doctor, def keep_state_on_release, def acquire, def scan, def status, const ACTIONS, def main
+- `python/login/__init__.py`: new file, no top-level declarations
+- `python/login/autoLogin.py`: added const TWO_STEP, const AUTOMATED_TEXT, const VIDEO_SELFIE_TEXT, const CHECKPOINT_TEXT, const SMS_TEXT, const ANOTHER_WAY, const DISABLED_TEXT, const DISABLED_URL, const WRONG_PASSWORD_TEXT, const FIND_ACCOUNT_TEXT, const COOKIE_BANNER, const TRUST_TEXT, const SAVE_LOGIN_TEXT, const CONTINUE_AS_TEXT, const CHECKPOINT_URL, const LOGIN_URL, const CODE_FIELD, const PASSWORD_FIELD, const EMAIL_FIELD, const CLICK_MS, def totp, def classify, def _visible, def _scope, def _pick, def _click_button, def _type, def heading, def frames_text, def button_names, def login_markers, def read, def submit_credentials, def choose_auth_app, def submit_code, const DISMISS, const DISMISS_SELECTOR, def dismiss
+- `python/profileSession.py`: file deleted · removed const PROFILE_URL, const NAME_URL, const PROFILE_PICTURE, const COVER, const UPLOAD, const SAVE, const CONTROLS_JS, const NAME_FIELDS_JS, def session_cookies, def run_dir, def save_text, def opener, def label_of, def step_open, def step_read, def step_read_name, def choose_file, def upload, def step_upload_profile_photo, def step_upload_cover_photo, const STEPS, def main
+- `python/proxyGate.py`: file deleted · removed const ALLOWED_CALLER_KEYS, const IP_ECHO_URLS, const IP_TEXT, const SELF_CHECK_JS, def log, def note_step, class GateError, def arm, def load_proxy, def playwright_proxy, def proxy_url, def loaded_proxy, def twocaptcha_proxy, def locate_ip, def exit_location, def check, const FACEBOOK_PROBES, const SLOW_MS, const PROBE_ROUNDS, def slow_ms, def facebook_ms, def apply, def gate_attached, def check_attached, def pinned, def _require_gate, def _force_context, def har_path, def _force_capture, def expected, def compare, def _ip_from_text, def _self_check, def _checked, def install_guards, def recheck_exit
+- `python/publishSession.py`: file deleted · removed const CREATE_PATH, def create_url, const SELLING_URL, const LIMIT_TEXT, const DISABLED_TEXT, const RESTRICTED_TEXT, const BLOCKED_TEXT, const TEXT_CAPTCHA, const CHALLENGE_TEXT, const OOPS_TEXT, const PUBLISHED_TEXT, const PHOTO_COUNT_JS, const EXTRACT_JS, const INJECT_RECAPTCHA_JS, const INJECT_ARKOSE_JS, const DISABLED_JS, def log, const US_STATES, const LOCATION_SELECTORS, def location_field, const LISTED_IN, def listed_in, def visible_inputs, def in_place, def norm, def fail, const NOT_SET_CODES, const KRAKEN_CODES, const TWOCAPTCHA_CODES, class Session, def step_open, def set_marketplace_location, const SELL_LOCATION, def read_sell_location, def sell_location_mismatch, def kraken_code, def solve_kraken, def twocaptcha_code, def recaptcha_cookies, def solve_twocaptcha, def solve_text_image, def step_solve_captcha, def step_set_category, def step_upload_photos, def step_fill_fields, def step_review, def step_publish, def step_confirm, const REVIEW_NEAR, def listing_review, def step_capture_id, const STEPS, def main
+- `python/recordMouse.py`: file deleted · removed const HZ, const MOVING_PX_S, const STILL_GAP_S, class POINT, def record, def analyze, def main
+- `python/scrollMotion.py`: file deleted · removed class ScrollStep, def _bell_phase, def human_scroll_trajectory, const OWNER_JS, const DISTANCE_JS, const CONTAINER_STEP_JS, def _viewport, def _wheel_point, def scroll_by, def scroll_into_view, def scroll_by_sync, def scroll_into_view_sync
+- `python/session/__init__.py`: new file, no top-level declarations
+- `python/session/connectSession.py`: added def read_login, def captcha_on, def session_cookies, def step_open, def step_open_in_session, def step_read, def acted, def step_submit_credentials, def step_choose_auth_app, def step_submit_code, def step_dismiss, def step_save, const STEPS, def main
+- `python/session/inspectSession.py`: added const IDLE_SECONDS, const QUIET_MS, const SETTLE_MAX_MS, const REA_MAX_BYTES, def log, def now_iso, def slug, const FRIENDLY_NAME, def request_names, def notable, def rea_copy, def run_rea, const FIELD_VALUE, def redact_fields, const INTERACTIVE, def read_login, const SELL_LOCATION, const HITTABLE_JS, def draw, const VISIBLE_LINKS_JS, const POST_OF_HEADING_JS, const POST_HEADINGS, const FEED_POSTS_JS, class Inspector, def main
+- `python/session/logWorker.py`: added const SELLING_URL, const EXTRACT_JS, def log, const NEEDS_ATTENTION_JS, def body_sample, def auth_flags, def doctor, def keep_state_on_release, def acquire, def scan, def status, const ACTIONS, def main
+- `python/session/profileSession.py`: added const PROFILE_URL, const NAME_URL, const PROFILE_PICTURE, const COVER, const UPLOAD, const SAVE, const CONTROLS_JS, const NAME_FIELDS_JS, def session_cookies, def run_dir, def save_text, def opener, def label_of, def step_open, def step_read, def step_read_name, def choose_file, def upload, def step_upload_profile_photo, def step_upload_cover_photo, const STEPS, def main
+- `python/session/publishSession.py`: added const CREATE_PATH, def create_url, const SELLING_URL, const LIMIT_TEXT, const DISABLED_TEXT, const RESTRICTED_TEXT, const BLOCKED_TEXT, const TEXT_CAPTCHA, const CHALLENGE_TEXT, const OOPS_TEXT, const PUBLISHED_TEXT, const PHOTO_COUNT_JS, const EXTRACT_JS, const INJECT_RECAPTCHA_JS, const INJECT_ARKOSE_JS, const DISABLED_JS, def log, const US_STATES, const LOCATION_SELECTORS, def location_field, const LISTED_IN, def listed_in, def visible_inputs, def in_place, def norm, def fail, const NOT_SET_CODES, const KRAKEN_CODES, const TWOCAPTCHA_CODES, class Session, def step_open, def set_marketplace_location, const SELL_LOCATION, def read_sell_location, def sell_location_mismatch, def kraken_code, def solve_kraken, def twocaptcha_code, def recaptcha_cookies, def solve_twocaptcha, def solve_text_image, def step_solve_captcha, def step_set_category, def step_upload_photos, def step_fill_fields, def step_review, def step_publish, def step_confirm, const REVIEW_NEAR, def listing_review, def step_capture_id, const STEPS, def main
+- `python/visibleBrowser.py`: file deleted · removed const HUMANIZE_MAX_SECONDS, const HUMANIZE_HOP_SECONDS, def launch_kwargs, def force_visible
+- `scripts/astSummary.mjs`: file deleted · removed const root, const git, function readAt, const normalize, function declarationName, function collectDeclarations, const PY_AST, function collectPython, function diffDeclarations, function renderSummary, function summarize
+- `scripts/buildDocs.ts`: file deleted · removed const root, const check, const problems, const wrote, const entries, const flows, const all, function put, const diagramDir, const readme, const filesUnder, const strings, const cliDir
+- `scripts/buildInterestEffect.ts`: file deleted · removed const dataDir, const csv, const videos, const tags, const plays, const standard, const random, const effect, const out
+- `scripts/buildReelViewers.ts`: file deleted · removed const dataDir, const files, const byUser, const read, const viewers, const out
+- `scripts/checkAgentHooks.ts`: file deleted · removed const root, const write, const problems, const HOST_FILES, const scratch, const commandNames, const tools, const toolNames, const mcpJson, const serverSource
+- `scripts/checkBrowserParity.ts`: file deleted · removed const root, const SHARED_DOMAINS, const problems, const rows, const capabilities, const python, const pyBrowsers, const pyOpeners, const START, const END, const mark, const cell, const table, const docsPath, const docs, const current, const notBuilt
+- `scripts/checkFacebookClientDocs.mjs`: file deleted · removed const root, const docsDir, const indexPath, const problems, const index, const listed, const flowsDir, const captures, const builtAt, const newer, const walk, const documented, const named, const scan
+- `scripts/checkNamingConventions.mjs`: file deleted · removed const root, const CAMEL, const TS_FILE, const violations, const rel, function walk, function checkHelpers, function checkDomains, const KEBAB, const ALLOWED_KEBAB, const LITERAL, function checkLiterals, function checkNames
+- `scripts/checks/checkAgentHooks.ts`: added const root, const write, const problems, const HOST_FILES, const scratch, const commandNames, const tools, const toolNames, const mcpJson, const serverSource
+- `scripts/checks/checkBrowserParity.ts`: added const root, const SHARED_DOMAINS, const problems, const rows, const capabilities, const python, const pyBrowsers, const pyOpeners, const START, const END, const mark, const cell, const table, const docsPath, const docs, const current, const notBuilt
+- `scripts/checks/checkFacebookClientDocs.mjs`: added const root, const docsDir, const indexPath, const problems, const index, const listed, const flowsDir, const captures, const builtAt, const newer, const walk, const documented, const named, const scan
+- `scripts/checks/checkLayout.ts`: added const root, const DOMAIN_ROOTS, const git, const files, const onDisk, const present, const problems, const pyDomains
+- `scripts/checks/checkNamingConventions.mjs`: added const root, const CAMEL, const TS_FILE, const violations, const rel, function walk, function checkHelpers, function checkDomains, const KEBAB, const ALLOWED_KEBAB, const LITERAL, function checkLiterals, function checkNames
+- `scripts/commitLog.mjs`: file deleted · removed const root, const LOG, const PLACEHOLDER, const AST_HEADING, const AGENT_FIELDS, const HEADER, const git, function renderEntry, function addedLines, function astBlock, function checkAdded, function replaceLastAstBlock, function main
+- `scripts/commitLog.test.ts`: file deleted · removed test "reports added, changed and removed declarations from the syntax tree", test "whitespace and comment-only moves inside a declaration don't count as changes", test "test files report test titles", test "renders one line per file", test "the template carries the AST block and three fields to write", test "a written entry with a matching AST passes; a stale AST is caught", test "replaceLastAstBlock swaps only the newest entry's block", test "addedLines reads only the + lines of a diff"
+- `scripts/commitLog/astSummary.mjs`: added const root, const git, function readAt, const normalize, function declarationName, function collectDeclarations, const PY_AST, function collectPython, function diffDeclarations, function renderSummary, function summarize
+- `scripts/commitLog/commitLog.mjs`: added const root, const LOG, const PLACEHOLDER, const AST_HEADING, const AGENT_FIELDS, const HEADER, const git, function renderEntry, function addedLines, function astBlock, function checkAdded, function replaceLastAstBlock, function main
+- `scripts/commitLog/commitLog.test.ts`: added test "reports added, changed and removed declarations from the syntax tree", test "whitespace and comment-only moves inside a declaration don't count as changes", test "test files report test titles", test "renders one line per file", test "the template carries the AST block and three fields to write", test "a written entry with a matching AST passes; a stale AST is caught", test "replaceLastAstBlock swaps only the newest entry's block", test "addedLines reads only the + lines of a diff"
+- `scripts/datasets/buildInterestEffect.ts`: added const dataDir, const csv, const videos, const tags, const plays, const standard, const random, const effect, const out
+- `scripts/datasets/buildReelViewers.ts`: added const dataDir, const files, const byUser, const read, const viewers, const out
+- `scripts/docs/buildDocs.ts`: added const root, const check, const problems, const wrote, const entries, const flows, const all, function put, const diagramDir, const readme, const filesUnder, const strings, const cliDir
+- `scripts/emitTwentyClient.mjs`: file deleted · removed const root, const TARGET_DIR, const HEADER, function loadEnv, const isSource, const toTypeScriptSpecifiers, const withoutOwnTsNocheck, function collect, function readSchema, const schema, const scratch, const emitted
+- `scripts/importVendorAccounts.mjs`: file deleted · removed const root, function loadEnv, const env, const base, const APPLY, function api, const VENDORS, const FIELDS, const files, const accounts, const PA_CITIES, const LOCATION, const existing, const rows, const byName, const shape, const plan, const failed
+- `scripts/twenty/emitTwentyClient.mjs`: added const root, const TARGET_DIR, const HEADER, function loadEnv, const isSource, const toTypeScriptSpecifiers, const withoutOwnTsNocheck, function collect, function readSchema, const schema, const scratch, const emitted
+- `scripts/twenty/importVendorAccounts.mjs`: added const root, function loadEnv, const env, const base, const APPLY, function api, const VENDORS, const FIELDS, const files, const accounts, const PA_CITIES, const LOCATION, const existing, const rows, const byName, const shape, const plan, const failed
+- `scripts/twenty/twentySetup.mjs`: added const root, function loadEnv, const option, const SOCIAL_ACCOUNT_FIELDS, const AGENCY_LISTING_FIELDS, const CHANNEL, const AGENCY_CONVERSATION_FIELDS, const AGENCY_MESSAGE_FIELDS, const NEW_OBJECTS, const AGENCY_GROUP_FIELDS, const RELATIONS, const STATUS_ADDITIONS, const env, const base, function gql, function loadObjects, const CREATE_OBJECT, const CREATE_FIELD, const UPDATE_FIELD, const apply, const objects, const newObjects, const plan, const status, const existing, const missing, const failed
+- `scripts/twentySetup.mjs`: file deleted · removed const root, function loadEnv, const option, const SOCIAL_ACCOUNT_FIELDS, const AGENCY_LISTING_FIELDS, const CHANNEL, const AGENCY_CONVERSATION_FIELDS, const AGENCY_MESSAGE_FIELDS, const NEW_OBJECTS, const AGENCY_GROUP_FIELDS, const RELATIONS, const STATUS_ADDITIONS, const env, const base, function gql, function loadObjects, const CREATE_OBJECT, const CREATE_FIELD, const UPDATE_FIELD, const apply, const objects, const newObjects, const plan, const status, const existing, const missing, const failed
+- `skills.md`: edited
+- `skills/accountToDryRun/SKILL.md`: edited
+- `skills/adsPower/SKILL.md`: edited
+- `skills/captureRule/SKILL.md`: edited
+- `skills/commitLog/SKILL.md`: edited
+- `skills/conversations/SKILL.md`: edited
+- `skills/humanMouse/SKILL.md`: edited
+- `skills/layout/SKILL.md`: new file
+- `skills/lifecycle/SKILL.md`: edited
+- `skills/logCli/SKILL.md`: edited
+- `skills/profileSetup/SKILL.md`: edited
+- `skills/reaCapture/SKILL.md`: edited
+- `skills/warmup/SKILL.md`: edited
+- `src/browser/adsPower/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/adsPower/types.ts`: changed const adsPowerCapabilities
+- `src/browser/camoufox/camoufox.test.ts`: added test "python/browser/browserDriver.py opens exactly the TS browsers, and maps the gate's proxy to AdsPower's" · removed test "python/browserDriver.py opens exactly the TS browsers, and maps the gate's proxy to AdsPower's"
+- `src/browser/camoufox/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/camoufox/types.ts`: changed const camoufoxCapabilities
+- `src/browser/driver/types.ts`: changed const BROWSER_CAPABILITIES
+- `src/browser/flow/helpers/pageState.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/inspect/client.ts`: changed const INSPECT_SESSION_PATH
+- `src/browser/inspect/types.ts`: changed interface InspectSessionConfig
+- `src/browser/proxy/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/run/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/run/types.ts`: changed interface PreparedRun
+- `src/camofox/device/device.test.ts`: changed test "per-launch keys are never stored; the rest of the config is", test "the pinned locale has no script key (with it Intl falls back to plain 'en')", test "a launch replays the stored device and sets this launch's values", test "prefs: the UI locale is this launch's pinned locale, HTTP/3 and DoH are off, nothing per-launch is replayed", test "the browser gets only system environment variables: no keys, no CAMOU_ overrides, no TZ", test "geolocation is near the city, never its centroid, with a believable accuracy", test "a profile that stores per-launch keys, or isn't windows, is refused", test "callers can't add launch options, and can't ask for headless", test "2Captcha gets the account's own proxy in its format, or nothing", test "the proxy password and username prefix never leave in a failure", test "an IP echo's text is read as an IP and nothing else"
+- `src/camofox/device/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/camofox/session/client.ts`: changed const SESSION_PATH, const CONNECT_SESSION_PATH, const PROFILE_SESSION_PATH
+- `src/camofox/session/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/camofox/session/visible.test.ts`: added const pyFiles · changed const read, test "nothing can ask for headless"
+- `src/camofox/worker/client.ts`: changed const WORKER_PATH
+- `src/camofox/worker/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/errors/helpers/renderCatalog.ts`: changed function renderCatalogMarkdown
+- `src/cli/errors/index.ts`: changed const errorsCommand
+- `src/cli/live/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/live/live.test.ts`: changed test "auto-login reads each sign-in page as its kind", test "auto-login hands Facebook's own checkpoints to a person and types codes only on two-step pages", test "auto-login's TOTP matches RFC 6238", test "the first launch's device is saved to Twenty once and never printed"
+- `src/cli/publish/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/publish/publish.test.ts`: changed test "a US state code matches Facebook's suggestion naming the state, never another state", test "FB's text captcha page is read as a captcha, not a checkpoint for a person", test "with no Location field, the form's preview says where it would be listed"
+- `src/errors/catalog/catalog.test.ts`: added test "python/errors/errorCatalog.json is the current export (run `bun run errors:export`)" · removed test "python/errorCatalog.json is the current export (run `bun run errors:export`)"
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/marketplace/agencyListing/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/connect/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/conversation/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/home/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/socialAccount/helpers/checkRunnable.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/socialAccount/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS
+- `src/rea/capture/capture.test.ts`: changed test "no capture folder refuses the context; one is injected, a caller's kept, more contexts numbered"
+- `src/rea/capture/settle.test.ts`: changed test "record_har_path is a new_context argument, and Camoufox is still launched once"
+- `src/rea/facebookClient/helpers/indexModules.ts`: no declaration changed (comments, formatting or line endings)
+- `src/rea/facebookClient/helpers/renderOperationDoc.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/runtime/batcher.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/runtime/createClient.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/runtime/error.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/runtime/fetcher.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/runtime/generateGraphqlOperation.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/runtime/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/runtime/linkTypeMap.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/runtime/typeSelection.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/runtime/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/schema.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/generated/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/warmup/viewer/client.ts`: changed function readInterestEffect, function readViewers
+
+What changed: No loose files in `python/` or `scripts/`. Python moved into domain packages, each with an `__init__.py` saying what it holds: `browser/` (browserDriver, adsPowerBrowser, visibleBrowser, proxyGate, harRecorder), `human/` (humanMouse, scrollMotion, recordMouse), `session/` (inspect, connect, publish and profile sessions, logWorker), `login/` (autoLogin), `device/` (deviceProfile), `errors/` (errorCodes, errorCatalog.json). Their imports are by package (`from browser import proxyGate`), and each script run directly puts `python/` on its path before its first local import. Scripts moved into `checks/`, `commitLog/`, `datasets/`, `docs/` and `twenty/` beside `hooks/`, their `src` imports and repo root one level up. Every path that names them is updated: the TypeScript launchers (session, worker, inspect), the tests that import or read Python (by package; `visible.test.ts` finds each file by name across the packages), package.json, lefthook.yml, AGENTS.md, the docs, the skills and the generated README; `log.md` is left as history. A new gate, `scripts/checks/checkLayout.ts` (`bun run check:layout`, lefthook pre-commit and pre-push), refuses a file loose at the top of either folder, tracked or new, and a Python domain without its `__init__.py`. The naming gate allows git's `ls-files`, as it already allowed `rev-parse`. Rule 58 in AGENTS.md and the MCP instructions (`RULES_REVIEWED_THROUGH` 58), and the skill `skills/layout`.
+Why: matt pointed out that `python/` and `scripts/` had loose files outside any domain folder (only `scripts/hooks/` was right), and asked for every file to sit in its domain and for a pre-commit gate so it can't happen again.
+Checked: every Python module imports through its package, and each of the six scripts run directly gets past its imports from its new place. `check:naming`, `check:layout` (6 Python packages; it refused a planted `python/looseTest.py`), `check:browsers`, `check:agentHooks`, `check:docs`, `check:facebookClientDocs` all pass; `tsc --noEmit` is clean; `bun test` 718 pass, 0 fail. The first run had 715: three tests in the error catalog read Python files by their old paths while being collected, and bun dropped them without failing. A run of the previous commit in a separate worktree showed which file lost them, and they run again. Removing that worktree followed its node_modules link and emptied the repo's node_modules; `bun install --frozen-lockfile` restored it from the lockfile.

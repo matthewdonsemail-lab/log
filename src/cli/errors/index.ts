@@ -16,6 +16,7 @@ export const ERRORS_USAGE = `Usage: log errors [--layer <${LAYERS.join("|")}>] [
 export const GRAPH_USAGE = `Usage: log graph <${Object.keys(MACHINES).join("|")}>`;
 
 export const errorsCommand: Command = {
+  usage: ERRORS_USAGE,
   name: "errors",
   summary: "List every error code: meaning, retryable, where each machine ends up",
   args: "[--layer <layer>] [--code <code>] [--json] [--markdown]",
@@ -37,7 +38,7 @@ export const errorsCommand: Command = {
     }
     if (parsed.flags["markdown"]) return { code: 0, stdout: renderCatalogMarkdown() };
     if (parsed.flags["json"]) {
-      // Also the export Python reads (python/errorCatalog.json), so keep it the whole catalog when unfiltered.
+      // Also the export Python reads (python/errors/errorCatalog.json), so keep it the whole catalog when unfiltered.
       const entries = Object.fromEntries(catalogEntries(layer as ErrorLayer | undefined));
       return { code: 0, stdout: JSON.stringify(entries, null, 2) };
     }
@@ -46,6 +47,7 @@ export const errorsCommand: Command = {
 };
 
 export const graphCommand: Command = {
+  usage: GRAPH_USAGE,
   name: "graph",
   summary: "Print a machine's states and transitions as a Mermaid diagram",
   args: `<${Object.keys(MACHINES).join("|")}>`,

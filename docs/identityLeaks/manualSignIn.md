@@ -29,7 +29,7 @@ The prompt warns about none of these (R4 M7; R2 §16).
 
 ## Evidence
 
-- **The prompt.** `python/logWorker.py:142` prints only
+- **The prompt.** `python/session/logWorker.py:142` prints only
   `"1. Log into Facebook (finish any checkpoint or 2FA)"`. *verifiedSource*
 - **This PC's input languages** are en-US, ja and zh-Hans-CN (R3 ground truth).
   Japanese and Chinese IMEs fire composition events (R2 §16). *verifiedLive (proxied)*
@@ -44,7 +44,7 @@ The prompt warns about none of these (R4 M7; R2 §16).
 
 ## Where in our code it can happen again
 
-- `python/logWorker.py` `login` (`:130-155`): the prompt and the open window.
+- `python/session/logWorker.py` `login` (`:130-155`): the prompt and the open window.
 - Any future flow that hands the window to a person (rule 10 challenges in
   `log publish`).
 - `src/cli/live/index.ts` (`connect`).

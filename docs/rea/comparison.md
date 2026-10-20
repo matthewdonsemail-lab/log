@@ -19,7 +19,7 @@ does not mean a live Facebook publish.
 | Command registry, usage generated from `COMMANDS` | `src/cli/runner/index.ts` | |
 | Account check before any browser, including connect | `checkRunnable`, `socialAccount.test.ts` (`noProxy` on connect) | |
 | Publish dry run through the state machine | `publish.test.ts`. PR #6 also reports a headed run against `python/fixtures/createItem.html` reaching `done` | Live facebook.com. `--live` past review. A live captcha solve |
-| Proxy required, exit country checked | `python/proxyGate.py`, proxy tests | A live `log proxy assign` (the PR says the proxy password was not in `.env.local`) |
+| Proxy required, exit country checked | `python/browser/proxyGate.py`, proxy tests | A live `log proxy assign` (the PR says the proxy password was not in `.env.local`) |
 | One device, pinned locale, launch self-check, local hours | `src/camofox/device/`, `src/marketplace/home/`, rules 15–18 | CreepJS re-measure on camoufox 0.5.8 / 156.0.1-beta.39 |
 | Monitor decides, never posts | `src/marketplace/monitor/machine.ts` | A logged-in selling scan on this PC |
 | Captcha route: CaptchaKraken, then 2Captcha, else a person | `src/captcha/router/` | A live solve. The PR says no keys were loaded |

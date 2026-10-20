@@ -31,7 +31,7 @@ contexts.
 - **Host zone name.** CLDR `windowsZones.xml` maps Windows
   `SE Asia Standard Time`, territory `001`, to `Asia/Bangkok` (S27).
   *vendorDocs*
-- **The gate's patch.** `python/proxyGate.py:134-152` replaces
+- **The gate's patch.** `python/browser/proxyGate.py:134-152` replaces
   `playwright._impl._browser.Browser.new_context` so that `timezoneId` is the
   exit IP's zone. `:129` stores the zone. `:118-119` refuses with
   `proxyCountryMismatch` when the exit IP has no known zone. *verifiedSource*
@@ -93,7 +93,7 @@ contexts.
   context runs on the host clock. Nothing uses it today (R3 T12 grep). The
   device-persona work may want it (`deviceFingerprintChurn.md`).
 - **Any launch route that skips the gate** (`gateBypasses.md`).
-- **Where the zone comes from.** `python/proxyGate.py:102-103` takes it from
+- **Where the zone comes from.** `python/browser/proxyGate.py:102-103` takes it from
   Camoufox's GeoLite2 lookup of the exit IP. A wrong database answer gives a
   wrong zone.
 - **Exit IP rotation** in countries with several zones (US, CA, AU) can move the

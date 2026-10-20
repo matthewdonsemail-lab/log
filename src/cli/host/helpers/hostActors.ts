@@ -6,10 +6,10 @@
  * checkpoint, a sign-out or a restriction is the step's outcome, never ignored.
  */
 import { fromPromise } from "xstate";
-import { loadFlow, pageProblem } from "../../../camofox/flow/index.ts";
-import type { FlowStep } from "../../../camofox/flow/index.ts";
-import type { InspectAction, InspectStepResult } from "../../../camofox/inspect/index.ts";
-import type { PreparedRun } from "../../../camofox/run/index.ts";
+import { loadFlow, pageProblem } from "../../../browser/flow/index.ts";
+import type { FlowStep } from "../../../browser/flow/index.ts";
+import type { InspectAction, InspectStepResult } from "../../../browser/inspect/index.ts";
+import type { PreparedRun } from "../../../browser/run/index.ts";
 import { classifySignal } from "../../../marketplace/account/index.ts";
 import { activeWindow, homeOf, hoursUntilOpen, localClock, outsideActiveHours } from "../../../marketplace/home/index.ts";
 import type { LifecycleActorInputs, StepOutcome, WarmupActivity } from "../../../marketplace/lifecycle/index.ts";

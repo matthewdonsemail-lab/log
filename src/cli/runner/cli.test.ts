@@ -114,7 +114,7 @@ describe("--proxyMs (rule 33)", () => {
   });
 
   test("sets the run's limit and restores it afterwards", async () => {
-    const { slowFacebookMs } = await import("../../camofox/proxy/index.ts");
+    const { slowFacebookMs } = await import("../../browser/proxy/index.ts");
     expect(slowFacebookMs({})).toBe(2500);
     expect(slowFacebookMs({ LOG_PROXY_MAX_MS: "6000" })).toBe(6000);
     delete process.env.LOG_PROXY_MAX_MS;

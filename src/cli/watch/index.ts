@@ -38,6 +38,7 @@ export const watchDeps = {
 };
 
 export const watchCommand: Command = {
+  usage: WATCH_USAGE,
   name: "watch",
   summary: "Run the listing monitor (XState) for one account and print every step",
   args: "--account <name> [--checks <n>] [--interval <min>] [--json] [--bypass]",

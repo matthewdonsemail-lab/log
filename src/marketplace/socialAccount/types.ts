@@ -1,7 +1,7 @@
 /**
  * A Facebook account, as Twenty's `socialAccounts` object holds it (the same
  * object the twitter-controller reads; log-cli only adds fields, see
- * `scripts/twentySetup.mjs`). Twenty spells SELECT values in UPPER_SNAKE;
+ * `scripts/twenty/twentySetup.mjs`). Twenty spells SELECT values in UPPER_SNAKE;
  * log-cli is camelCase (rule 1), converted once in `client.ts`.
  */
 import type { ErrorCode } from '../../errors/catalog/index'

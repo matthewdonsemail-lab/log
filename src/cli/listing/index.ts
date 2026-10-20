@@ -23,6 +23,7 @@ export const LISTING_USAGE = [
 ].join("\n");
 
 export const listingsCommand: Command = {
+  usage: LISTINGS_USAGE,
   name: "listings",
   summary: "List the Twenty listings, by status, account or campaign",
   args: "[--status <s>] [--account <name>] [--campaign <id>] [--json]",
@@ -53,6 +54,7 @@ export const listingsCommand: Command = {
 };
 
 export const listingCommand: Command = {
+  usage: LISTING_USAGE,
   name: "listing",
   summary: "Show one Twenty listing, or create one for an account from a JSON file",
   args: "<id> | create --account <name> --file <listing.json> [--json]",

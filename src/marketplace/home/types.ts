@@ -76,7 +76,7 @@ export const CITY_TIMEZONES: Readonly<Record<string, string>> = {
 
 /**
  * Home city centres, keyed `COUNTRY:city` (city lower case). The device's
- * geolocation is pinned near one of these (python/deviceProfile.py); a city not
+ * geolocation is pinned near one of these (python/device/deviceProfile.py); a city not
  * here falls back to the exit IP's location from Camoufox's GeoIP database.
  * Camoufox's own database has no city names since 0.5.8 (GeoIP AIO).
  */

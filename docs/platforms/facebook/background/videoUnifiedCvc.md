@@ -11,12 +11,35 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_1c4949e0e0ebaff7ed1c3b03146838ea4b9a2efc6e5a86ffab116266543e39e5` |
+| rea | `ev_82bc931ee747eb6c5aeb464f9b7b312140035009710555d64bc7148ba3b22213` |
 
-Seen 92 time(s) in 3 run(s).
+Seen 121 time(s) in 8 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 4: nextPost | 1 | 200 | 562 ms | 1082 ms | — |
+| inspect | rea read step 13_nextpost: exit 0, ev_8e60547c67f77e2d6517b71170983bf6b8a3c480b7e1effffe71 | 1 | 200 | 496 ms | 238 ms | — |
+| inspect | step 18: nextPost | 2 | 200 | 548–816 ms | 1059–1161 ms | — |
+| inspect | step 24: nextPost | 1 | 200 | 465 ms | 317 ms | — |
+| inspect | rea read step 26_nextpost: exit 0, ev_caf46f61953ad566ab1f57eae862935225bd60f8052915d62917 | 1 | 200 | 555 ms | 714 ms | — |
+| inspect | rea read step 29_dwell097s: exit 0, ev_fe268417fac51196a845c2ba2e40b4ad7841d8cd8c818446a71 | 1 | 200 | 1824 ms | 417 ms | — |
+| inspect | rea read step 30_nextpost: exit 0, ev_c6ab1e57db6c10741a55563fc784095f4639600a95a386d79cbb | 1 | 200 | 688 ms | 1617 ms | — |
+| inspect | rea read step 04_nextpost: exit 0, ev_538b3d4fe783b9bd0baf58ed1d25499b39e7eba6d25ec1c168f3 | 1 | 200 | 483 ms | 1106 ms | — |
+| inspect | step 12: nextPost | 1 | 200 | 502 ms | 921 ms | — |
+| inspect | step 15: nextPost | 2 | 200 | 576–613 ms | 818–924 ms | — |
+| inspect | step 20: nextPost | 2 | 200 | 540–2279 ms | 518–2137 ms | — |
+| inspect | step 22: likePost Like | 1 | 200 | 541 ms | 903 ms | — |
+| inspect | mouse: the target moved from under the cursor (60,913 not on it, box 36,1746 81x32): re-ai | 1 | 200 | 716 ms | 2468 ms | — |
+| inspect | mouse: the target moved from under the cursor (80,913 not on it, box 36,2090 78x32): re-ai | 2 | 200 | 496–539 ms | 1945–3088 ms | — |
+| inspect | rea read step 03_nextpost: exit 0, ev_baab77eb28577c6ee04b1b7578e4248df1961e047aab273e4a1e | 1 | 200 | 550 ms | 1522 ms | — |
+| inspect | step 14: nextPost | 1 | 200 | 545 ms | 232 ms | — |
+| inspect | step 16: nextPost | 1 | 200 | 629 ms | 1086 ms | — |
+| inspect | rea read step 24_scroll1X400: exit 0, ev_b216c28b15aac8907d6b5a345798a611d298acedb29f1a6ac | 1 | 200 | 464 ms | 1858 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T103 | 3 | 200 | 480–1602 ms | 2979–8199 ms | — |
+| inspect | step 5: nextPost | 1 | 200 | 463 ms | 2058 ms | — |
+| inspect | rea read step 13_nextpost: exit 0, ev_237251697affaf51f1774ffd22c55e20cf9d4b765fd495dbbd3e | 1 | 200 | 554 ms | 1057 ms | — |
+| inspect | scroll: +378px in 10 wheel steps, 875 ms | 1 | 200 | 433 ms | 3650 ms | — |
+| inspect | scroll: +386px in 9 wheel steps, 469 ms | 1 | 200 | 562 ms | 3392 ms | — |
 | inspect | step 1: goto /reel/ | 3 | 200 | 329–508 ms | 4890–5941 ms | — |
 | inspect | rea read step 02_clickroleButtonUnmute: exit 0, ev_38d5a40446aa313ae78f087c9fd5e06ff89ebb9 | 1 | 200 | 337 ms | 616 ms | — |
 | inspect | step 5: clickRole button "…" | 1 | 200 | 363 ms | 627 ms | — |

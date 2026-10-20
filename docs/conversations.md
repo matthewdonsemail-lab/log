@@ -3,7 +3,7 @@
 AGENTS.md rule 34. A buyer who writes about a listing is a conversation in
 Twenty's `agencyConversations`, and every message is an `agencyMessages` row.
 They are the same two objects blaster's SMS threads use. log-cli only added
-fields and relations (`scripts/twentySetup.mjs`, rule 13), so blaster's SMS
+fields and relations (`scripts/twenty/twentySetup.mjs`, rule 13), so blaster's SMS
 rows and the dialer's reads keep working.
 
 ```

@@ -52,7 +52,7 @@ That was confirmed live (R3 T12).
 
 **Why log-cli is safe today**
 
-- `python/logWorker.py:266` arms the gate, and `:270` calls `force_visible()`
+- `python/session/logWorker.py:266` arms the gate, and `:270` calls `force_visible()`
   before any library code runs. *verifiedSource*
 - `session_manager.py:105` imports `AsyncCamoufox` inside `acquire()`, at call
   time, so it gets log-cli's wrapper. *verifiedSource*

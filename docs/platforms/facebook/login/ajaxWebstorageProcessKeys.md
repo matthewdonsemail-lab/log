@@ -11,12 +11,16 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_25fc1ee636b73211d5140233f0bf618d0306c5783e37d26e006e6985d39ea3c8` |
+| rea | `ev_18d704668bc90d49a205e4e3f67a4fcfba273e6c3ddce0b4eff8e49f21111759` |
 
-Seen 12 time(s) in 2 run(s).
+Seen 16 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 2: clickRole button "…" | 1 | 200 | 678 ms | 11786 ms | — |
+| inspect | rea read step 21_postbuttonSeeMore: exit 0, ev_6554716166c312b82c145726603d0285e9ee80b92d3 | 1 | 200 | 477 ms | 16577 ms | — |
+| inspect | rea read step 07_nextpost: exit 0, ev_4ef05c022ef4c3525bcff6a6333bfb8419a33b12e12e1b181dd5 | 1 | 200 | 542 ms | 14652 ms | — |
+| inspect | scroll: +1397px in 29 wheel steps, 1765 ms | 1 | 200 | 1963 ms | 15734 ms | — |
 | inspect | step 6: dwell 51.57s | 1 | 200 | 339 ms | 16729 ms | — |
 | inspect | step 17: dwell 29.77s | 1 | 200 | 308 ms | 17099 ms | — |
 | inspect | rea read step 35_clickroleButtonNextCard: exit 0, ev_90ee2643c24bb0f54850c02468cfedb372d9f | 1 | 200 | 329 ms | 11946 ms | — |

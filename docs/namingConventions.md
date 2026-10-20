@@ -1,6 +1,6 @@
 # Naming conventions
 
-`scripts/checkNamingConventions.mjs` is the gate that keeps this true
+`scripts/checks/checkNamingConventions.mjs` is the gate that keeps this true
 (`bun run check:naming`). If the doc and the gate disagree, the gate is the bug.
 
 This follows the `{library}/{domain}/` shape from `agencyContent` and

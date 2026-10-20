@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { loadFlow } from "../../camofox/flow/index.ts";
+import { loadFlow } from "../../browser/flow/index.ts";
 import { flowArgv, runToolCall, toolsFromFlows } from "./index.ts";
 
 const flow = loadFlow("profileSetup")!;

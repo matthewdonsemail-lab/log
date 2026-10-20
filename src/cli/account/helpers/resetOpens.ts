@@ -1,4 +1,4 @@
-import { recordLaunchReset } from "../../../camofox/run/helpers/index.ts";
+import { recordLaunchReset } from "../../../browser/run/helpers/index.ts";
 import { resetHostOpens } from "../../../marketplace/host/index.ts";
 import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
 

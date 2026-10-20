@@ -6,14 +6,35 @@
 # What changed / Why / Checked are written from it (skills/commitLog/SKILL.md).
 pre-commit:
   commands:
+    # Rule 58: no loose files. python/ and scripts/ hold domain folders only
+    # (python/browser/, scripts/checks/, ...), each Python domain a package
+    # with its __init__.py (scripts/checks/checkLayout.ts).
+    layout:
+      run: bun run check:layout
+
     commitLog:
-      run: node scripts/commitLog.mjs
+      run: node scripts/commitLog/commitLog.mjs
 
     # Rule 44: every browser has the same pieces (its src/browser/<name> domain, capability row,
     # driver, tests, Python opener and docs/browsers.md column). A capability may be notBuilt;
     # those are listed, never refused (docs/browsers.md).
     browserParity:
       run: bun run check:browsers
+
+    # Rule 55: the CLI's commands, the MCP tools, the agent hooks (Claude Code's
+    # .claude/settings.json, Codex's .codex/hooks.json) and the live log stay in
+    # step: both hosts' hooks are written from src/agentHooks/registry, every MCP
+    # tool is hooked, every hook script answers its events, and every resolver a
+    # page state names is a real command (scripts/checks/checkAgentHooks.ts).
+    agentHooks:
+      run: bun run check:agentHooks
+
+    # Rule 56: the README's command table (every command, its flags, its MCP
+    # tool, the hooks that fire on it) and docs/diagrams/*.mmd are generated
+    # from the code by `bun run docs:build`; this refuses a commit where they
+    # differ, or where a command parses a flag its usage doesn't name.
+    docs:
+      run: bun run check:docs
 
 pre-push:
   parallel: false
@@ -22,8 +43,17 @@ pre-push:
     naming:
       run: bun run check:naming
 
+    layout:
+      run: bun run check:layout
+
     browserParity:
       run: bun run check:browsers
+
+    agentHooks:
+      run: bun run check:agentHooks
+
+    docs:
+      run: bun run check:docs
 
     typecheck:
       run: bun run typecheck

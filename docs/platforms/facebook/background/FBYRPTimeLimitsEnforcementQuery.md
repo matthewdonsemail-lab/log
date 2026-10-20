@@ -9,14 +9,21 @@
 | doc_id | `28566509569671415` |
 | Path | `/api/graphql/` |
 | Sends | — |
-| Reads | — |
-| Called from | — |
-| rea | not read yet |
+| Reads | `xfb_youth_regulatory_config_platform.query_configs_by_handler` |
+| Called from | `FBYRPTimeLimitsEnforcement.react` |
+| rea | `ev_ed1a3cfe4b9656a9ad3ddf8f3e05b4767495c0d780a6a027450c86c6d19c34c6` |
 
-Seen 13 time(s) in 4 run(s).
+Seen 24 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto / | 5 | 200 | 482–744 ms | 3182–6402 ms | — |
+| inspect | step 7: goto / | 1 | 200 | 470 ms | 1729 ms | — |
+| inspect | rea read step 33_dwell028s: exit 0, ev_d164a9c78021b1afb8ce6c5a24456a0d8f46efdbc7c54440f7f | 1 | 200 | 492 ms | 2213 ms | — |
+| inspect | step 38: goto /marketplace/ | 1 | 200 | 479 ms | 1899 ms | — |
+| inspect | rea read step 21_dwell078s: exit 0, ev_87a54a6ea91a3418cb413686bdc6108f946bdf45884c8230e49 | 1 | 200 | 571 ms | 21 ms | — |
+| inspect | step 27: goto / | 1 | 200 | 501 ms | 2080 ms | — |
+| inspect | step 4: goto /marketplace/ | 1 | 200 | 425 ms | 4879 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 1 | 200 | 528 ms | 5196 ms | — |
 | inspect | step 1: goto /reel/ | 3 | 200 | 344–445 ms | 2016–3547 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 329 ms | 3005 ms | — |

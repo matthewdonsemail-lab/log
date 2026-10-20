@@ -13,10 +13,26 @@
 | Called from | `useInstreamAdsHaloFetcher` |
 | rea | `ev_bc80c702731406ede85a4bf0d106132ad8d196bcbbe7bed37ed3b4a3a542a982` |
 
-Seen 45 time(s) in 3 run(s).
+Seen 64 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 4: nextPost | 2 | 200 | 569–631 ms | 841–1075 ms | — |
+| inspect | rea read step 13_nextpost: exit 0, ev_8e60547c67f77e2d6517b71170983bf6b8a3c480b7e1effffe71 | 1 | 200 | 634 ms | 520 ms | — |
+| inspect | step 18: nextPost | 2 | 200 | 670–912 ms | 1189–1269 ms | — |
+| inspect | step 24: nextPost | 1 | 200 | 612 ms | 699 ms | — |
+| inspect | rea read step 26_nextpost: exit 0, ev_caf46f61953ad566ab1f57eae862935225bd60f8052915d62917 | 1 | 200 | 614 ms | 865 ms | — |
+| inspect | post: "…", 43 words, 0 image(s), scrolled 1091 px | 1 | 200 | 1691 ms | 70 ms | — |
+| inspect | step 15: nextPost | 1 | 200 | 639 ms | 1052 ms | — |
+| inspect | step 20: nextPost | 2 | 200 | 550–2373 ms | 727–2189 ms | — |
+| inspect | rea read step 21_nextpost: exit 0, ev_290a368a021d2c7d72802aad675f1757eb95e384e175fda02f25 | 1 | 200 | 611 ms | 185 ms | — |
+| inspect | mouse: the target moved from under the cursor (80,913 not on it, box 36,2090 78x32): re-ai | 1 | 200 | 535 ms | 2028 ms | — |
+| inspect | rea read step 03_nextpost: exit 0, ev_baab77eb28577c6ee04b1b7578e4248df1961e047aab273e4a1e | 1 | 200 | 584 ms | 1876 ms | — |
+| inspect | rea read step 14_nextpost: exit 0, ev_a4eeea0401e6fc7a500e983d2fc1061726bc67870c63fc9f2c51 | 1 | 200 | 779 ms | 191 ms | — |
+| inspect | step 16: nextPost | 1 | 200 | 760 ms | 1209 ms | — |
+| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T103 | 1 | 200 | 1301 ms | 8683 ms | — |
+| inspect | step 29: clickRole button "…" | 1 | 200 | 628 ms | 319 ms | — |
+| inspect | step 5: nextPost | 1 | 200 | 673 ms | 2647 ms | — |
 | inspect | page has 45 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T082 | 9 | 200 | 342–811 ms | 72–729 ms | — |
 | inspect | step 9: clickRole button "…" | 1 | 200 | 527 ms | 1013 ms | — |
 | inspect | page has 46 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T082 | 8 | 200 | 374–973 ms | 4–678 ms | — |

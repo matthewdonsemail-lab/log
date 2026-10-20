@@ -1,0 +1,32 @@
+%% Known page states (rule 54). From `PAGE_STATES` (`src/browser/flow/helpers/pageState.ts`), first match wins. The hooks report each with its resolver; only a person's state stops the account.
+%% Written by `bun run docs:build` from the code (rule 56). Not edited by hand.
+flowchart LR
+  page["A step lands on a page"]
+  person["Stop the account, tell matt"]
+  disabled["disabled: the account is disabled"]
+  page --> disabled
+  disabled --> person
+  videoSelfie["videoSelfie: Facebook's video selfie check"]
+  page --> videoSelfie
+  videoSelfie --> person
+  textCaptcha["textCaptcha: a text captcha (#quot;Enter the text from the image#quot;)"]
+  page --> textCaptcha
+  textCaptcha -->|"log inspect do solve --live --account #lt;a#gt;"| nexttextCaptcha(["next state"])
+  checkpointStart["checkpointStart: a checkpoint's first page (#quot;confirm that you're human to use your account#quot;)"]
+  page --> checkpointStart
+  checkpointStart -->|"click Continue"| nextcheckpointStart(["next state"])
+  automatedBehaviour["automatedBehaviour: #quot;We suspect automated behaviour#quot;"]
+  page --> automatedBehaviour
+  automatedBehaviour -->|"dismiss it, as Listaro did"| nextautomatedBehaviour(["next state"])
+  rememberPassword["rememberPassword: the #quot;Remember password#quot; prompt"]
+  page --> rememberPassword
+  rememberPassword -->|"click #quot;Not now#quot;"| nextrememberPassword(["next state"])
+  twoStepCode["twoStepCode: two-step: the code field"]
+  page --> twoStepCode
+  twoStepCode -->|"log inspect do code --live --account #lt;a#gt;"| nexttwoStepCode(["next state"])
+  loginForm["loginForm: the login form"]
+  page --> loginForm
+  loginForm -->|"log inspect do signIn --live --account #lt;a#gt;"| nextloginForm(["next state"])
+  checkpoint["checkpoint: a Facebook checkpoint not mapped yet"]
+  page --> checkpoint
+  checkpoint -->|"take a snapshot, read the page, press its Continue/next control to see the next state"| nextcheckpoint(["next state"])

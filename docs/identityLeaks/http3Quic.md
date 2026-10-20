@@ -79,6 +79,6 @@ by default, so this rests on Firefox's logic, not on a setting we control.
 
 Not leaking at `f033e63`, live-verified (R3 T6). **Pinned off at `2de5ff5`:** the
 device profile always sets `network.http.http3.enable=false`
-(`PINNED_PREFS`, `python/deviceProfile.py`), covered by
+(`PINNED_PREFS`, `python/device/deviceProfile.py`), covered by
 `src/camofox/device/device.test.ts`. *verifiedSource, unitTested* The pinned
 build was not re-measured for UDP.

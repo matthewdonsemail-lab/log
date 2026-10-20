@@ -13,10 +13,17 @@
 | Called from | `MAWVerifyThreadCutover` |
 | rea | `ev_2ef4fcf81840e4c44dfd19b7c86b9e3e65429109c06595cfc96262bcea9f2bc2` |
 
-Seen 13 time(s) in 4 run(s).
+Seen 24 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto / | 5 | 200 | 501–553 ms | 6626–8849 ms | — |
+| inspect | step 7: goto / | 1 | 200 | 500 ms | 4963 ms | — |
+| inspect | rea read step 33_dwell028s: exit 0, ev_d164a9c78021b1afb8ce6c5a24456a0d8f46efdbc7c54440f7f | 1 | 200 | 524 ms | 3462 ms | — |
+| inspect | step 38: goto /marketplace/ | 1 | 200 | 734 ms | 7900 ms | — |
+| inspect | rea read step 21_dwell078s: exit 0, ev_87a54a6ea91a3418cb413686bdc6108f946bdf45884c8230e49 | 1 | 200 | 573 ms | 3703 ms | — |
+| inspect | step 27: goto / | 1 | 200 | 549 ms | 5270 ms | — |
+| inspect | step 4: goto /marketplace/ | 1 | 200 | 444 ms | 5803 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 1 | 200 | 389 ms | 6555 ms | — |
 | inspect | step 1: goto /reel/ | 3 | 200 | 339–353 ms | 3408–4338 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 328 ms | 4281 ms | — |

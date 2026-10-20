@@ -5,7 +5,7 @@
 ## Summary
 
 Rule 12 says no browser opens for an account unless its proxy is attached and
-its exit is in the account's country. The gate (`python/proxyGate.py`) enforces
+its exit is in the account's country. The gate (`python/browser/proxyGate.py`) enforces
 this through monkey-patches. `force_visible()` replaces two launcher names, and
 `force_timezone()` replaces `Browser.new_context`. Every launch path that
 exists today goes through the gate. That was confirmed live (R3 T12). But
@@ -29,8 +29,8 @@ An ungated launch shows Facebook whatever the route defaults to:
 
 | Launch path | Through `proxyGate.apply()`? | Timezone forced? |
 |---|---|---|
-| `log connect`, `scan`, `watch`, `status` → `python/logWorker.py` → facebook-camofox-client `acquire()` → `camoufox.async_api.AsyncCamoufox` (patched) | yes (`logWorker.py:266`, `:270`) | yes |
-| `log publish` → `python/publishSession.py:172` `Camoufox(**launch_kwargs({}))` | yes | yes |
+| `log connect`, `scan`, `watch`, `status` → `python/session/logWorker.py` → facebook-camofox-client `acquire()` → `camoufox.async_api.AsyncCamoufox` (patched) | yes (`logWorker.py:266`, `:270`) | yes |
+| `log publish` → `python/session/publishSession.py:172` `Camoufox(**launch_kwargs({}))` | yes | yes |
 | `log proxy check`, `assign`, `doctor` | no browser (`public_ip` through the proxy) | n/a |
 
 - R3 T12 confirmed both paths live. In a gated process, `launch_kwargs` raises
@@ -42,7 +42,7 @@ An ungated launch shows Facebook whatever the route defaults to:
 
 **The routes that skip it** (R4 M1, re-checked against `f033e63`)
 
-1. **Package-level names aren't patched.** `python/visibleBrowser.py:38-52`
+1. **Package-level names aren't patched.** `python/browser/visibleBrowser.py:38-52`
    replaces only `camoufox.async_api.AsyncCamoufox` and
    `camoufox.sync_api.Camoufox`. `camoufox/__init__.py` binds its own copies at
    import. So `from camoufox import AsyncCamoufox` gets the **original**
@@ -57,7 +57,7 @@ An ungated launch shows Facebook whatever the route defaults to:
    (`camoufox/async_api.py:118-121`, per R4), not `Browser.new_context`. So
    `force_timezone()` (`proxyGate.py:134-152`) never runs, and the page shows
    `Asia/Bangkok` (`timezone.md`, R3 T2b). *verifiedSource*
-4. **`visible_kwargs()` is public and ungated.** `python/visibleBrowser.py:26-30`.
+4. **`visible_kwargs()` is public and ungated.** `python/browser/visibleBrowser.py:26-30`.
    `log-cli/.scratch/dbgCondition.py:7` (gitignored; removed since, at `2de5ff5`) called
    `Camoufox(**visible_kwargs({"geoip": False}))`, with no proxy and no gate.
    It loaded a `file://` fixture, so it did no harm, but the pattern is there.
@@ -92,7 +92,7 @@ An ungated launch shows Facebook whatever the route defaults to:
   `publishSession.main`), and `watch` starts a new worker per check. No browser
   or `_armed` state is shared between accounts.
 - The proxy reaches Python as a file path, never on argv, and is deleted
-  afterwards (`camofox/run`).
+  afterwards (`browser/run`).
 
 ## Where in our code it can happen again
 
@@ -110,7 +110,7 @@ This is the list to check on every change:
 
 ## Mitigation
 
-All in `python/proxyGate.py` and `python/visibleBrowser.py` (R4 M1, M2):
+All in `python/browser/proxyGate.py` and `python/browser/visibleBrowser.py` (R4 M1, M2):
 
 1. **Patch every route.** Wrap the package attributes `camoufox.AsyncCamoufox`,
    `camoufox.Camoufox`, `NewBrowser`, `AsyncNewBrowser` and `launch_options`
@@ -168,7 +168,7 @@ No leak at `f033e63`: every existing launch path was gated (R3 T12). **Fixed at
 - `from camoufox import Camoufox` with `geoip=False`, a caller `locale` and
   `persistent_context` were all refused with `unguardedLaunch`.
 - `launch`, `launch_persistent_context` and `new_context` are wrapped in
-  `python/proxyGate.py`; `python/visibleBrowser.py` refuses positional
+  `python/browser/proxyGate.py`; `python/browser/visibleBrowser.py` refuses positional
   arguments.
 - `.scratch/dbgCondition.py` was removed.
 - Still open: the proposed `python/leakProbe.py` and `log proxy probe` don't

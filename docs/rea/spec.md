@@ -9,7 +9,7 @@ Make REA usable on the Facebook client we already open, which is Playwright
 driving Camoufox. Then use that evidence to check two bodies of work we
 already have:
 
-- the humanize launch in `python/visibleBrowser.py`
+- the humanize launch in `python/browser/visibleBrowser.py`
 - the 22 identity-leak vectors in `docs/identityLeaks/`
 
 The way there is public evidence, not a new browser. Parallel searches for
@@ -42,7 +42,7 @@ These are not acceptable readings of the ask:
 
 ## Humanize, the part already in the client
 
-`python/visibleBrowser.py` is the only launch. `HUMANIZE_MAX_SECONDS` is
+`python/browser/visibleBrowser.py` is the only launch. `HUMANIZE_MAX_SECONDS` is
 `1.5`. The comment records the bug: `humanize` must be a float, because a
 boolean hangs `mouse.move` on current Camoufox builds. The same note is in
 facebook-camofox-client `session_manager.py` (`humanize=1.5`). `showcursor`

@@ -12,7 +12,7 @@
  * checked against it (and this number raised), so the MCP never falls behind
  * the file.
  */
-export const RULES_REVIEWED_THROUGH = 53;
+export const RULES_REVIEWED_THROUGH = 58;
 
 /** The resource that serves AGENTS.md itself. */
 export const AGENTS_URI = "log://agents";
@@ -35,20 +35,20 @@ export const SERVER_INSTRUCTIONS = [
   "8. matt sees everything as it happens (rule 26). Before any call that takes more than a few seconds (a browser open, a join, a fill, a publish, a capture), start a Monitor on its live log, `tail -f ~/.logCli/mcp/<day>.log` (UTC day, `YYYY-MM-DD`), so every line shows in the client while it runs, and say in plain words what each stage means. Never wait silently for the result.",
   "9. What a platform's client sends is documented per platform, then domain: `docs/platforms/<platform>/<domain>/<request>.md` (Facebook: `docs/platforms/facebook/`, groups in `groups/`), built by `capture --docs` from the runs' recordings (rule 27). A new platform or domain is explored with `inspect` first and gets its own folder (rule 29).",
   "10. Twenty is the only place accounts, listings and groups live: never delete a row, fields are only added (rules 13, 14).",
-  "11. Names are camelCase (rule 1) and say what a thing does, never which browser runs it (rule 46). Groups are their own library (rule 45). The warm-up is by platform and activity (`warmup facebook reel`): each activity's steps say what they must do, and every run outlines the ones that didn't (rule 49). The Reels warm-up with --persona builds the persona's For you feed: SubQ reads each reel from its frame (theirs or not), and the action orderer plans it from the persona pack (every dataset a trait) and its real KuaiRand-1K viewer, longer and more engaged on their kind as measured on real viewers, one action per reel, only what the run allows (rule 50). Proxy traffic is money: each account has a 24-hour traffic budget (1 GB), checked before and during a warm-up and written to ~/.logCli/proxyTraffic.jsonl (rule 51). Proxies are provider-agnostic: Twenty keeps one proxy URL per account from any provider (2Captcha, Byteful); `proxy assign --vendor byteful` checks before it saves, and log-cli never buys (rule 52). Anything that has to be found (a group, a provider, a fact) comes from an external search, TinyFish through treg, never memory; a suggestion names its source (rule 53).",
+  "11. Names are camelCase (rule 1) and say what a thing does, never which browser runs it (rule 46). Groups are their own library (rule 45). The warm-up is by platform and activity (`warmup facebook reel`): each activity's steps say what they must do, and every run outlines the ones that didn't (rule 49). The Reels warm-up with --persona builds the persona's For you feed: SubQ reads each reel from its frame (theirs or not), and the action orderer plans it from the persona pack (every dataset a trait) and its real KuaiRand-1K viewer, longer and more engaged on their kind as measured on real viewers, one action per reel, only what the run allows (rule 50). Proxy traffic is money: each account has a 24-hour traffic budget (1 GB), checked before and during a warm-up and written to ~/.logCli/proxyTraffic.jsonl (rule 51). Proxies are provider-agnostic: Twenty keeps one proxy URL per account from any provider (2Captcha, Byteful); `proxy assign --vendor byteful` checks before it saves, and log-cli never buys (rule 52). Anything that has to be found (a group, a provider, a fact) comes from an external search, TinyFish through treg, never memory; a suggestion names its source (rule 53). A known page state (a checkpoint's first page, a text captcha, a prompt, the login form) is resolved, never a reason to stop: press its Continue, solve the captcha; only a video selfie, ID or disabled account goes to matt (rule 54). The agent's hooks (Claude Code and Codex, one list) say where every open browser is after each call and keep the turn going while one sits on a state log-cli resolves; the terminal CLI writes the same live log as these tools (rule 55). Every tool's description carries its command's full usage, the same the README lists (rule 56). What every browser uses is under src/browser, never named for one browser (rules 46, 57). No loose files: python/ and scripts/ hold domain folders only (rule 58).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
 /** The AGENTS.md rules each command falls under, besides the ones every tool does (1, 30, 38-41). */
 export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   join: [8, 10, 18, 20, 25, 26, 29, 35, 45],
-  inspect: [8, 12, 17, 22, 24, 26, 29, 30, 35, 48],
+  inspect: [8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55],
   connect: [12, 18, 21, 23, 24],
   publish: [8, 10, 12, 18, 22, 24],
   profile: [8, 28],
   host: [18, 35],
   lifecycle: [35],
-  warmup: [8, 18, 20, 25, 26, 29, 32, 35, 36, 49, 50, 51],
+  warmup: [8, 18, 20, 25, 26, 29, 32, 35, 36, 49, 50, 51, 54, 55],
   flow: [29, 31],
   scan: [12, 18, 22],
   status: [12, 18, 22],

@@ -1,10 +1,10 @@
 /**
- * The contract between log-cli and `python/logWorker.py`, the bridge into
+ * The contract between log-cli and `python/session/logWorker.py`, the bridge into
  * facebook-camofox-client (github.com/PRACE1/facebook-camofox-client).
  * One JSON request in (argv), one JSON result out (stdout).
  */
 import type { CodedFailure } from "../../errors/catalog/index.ts";
-import type { ProxyCheck } from "../proxy/index.ts";
+import type { ProxyCheck } from "../../browser/proxy/index.ts";
 
 export type WorkerAction = "doctor" | "marketplace.scan" | "marketplace.status" | "proxy.check";
 
@@ -15,7 +15,7 @@ export interface WorkerRequest {
   /** Playwright storage_state file holding that account's Facebook session. */
   storage_state_path?: string;
   /**
-   * The account's proxy file (`camofox/proxy`). The worker refuses to open a
+   * The account's proxy file (`browser/proxy`). The worker refuses to open a
    * browser without it, except for `login` (rule 12). Credentials never go on argv.
    */
   proxy_path?: string;

@@ -89,12 +89,12 @@ describe("settleRunCapture", () => {
   });
 });
 
-describe("the gate makes the HAR mandatory (python/proxyGate.py)", () => {
+describe("the gate makes the HAR mandatory (python/browser/proxyGate.py)", () => {
   test("no capture folder refuses the context; one is injected, a caller's kept, more contexts numbered", () => {
     const dir = mkdtempSync(join(tmpdir(), "logGate"));
     try {
       const script = [
-        "import sys, json; sys.path.insert(0, 'python'); import proxyGate as g",
+        "import sys, json; sys.path.insert(0, 'python'); from browser import proxyGate as g",
         "g._armed.update({'timezone': 'America/New_York', 'geolocation': {'latitude': 1, 'longitude': 2}})",
         "out = {}",
         "try:\n    g._force_context({})\n    out['bare'] = 'opened'\nexcept g.GateError as e:\n    out['bare'] = e.code",

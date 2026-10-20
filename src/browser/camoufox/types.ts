@@ -1,7 +1,7 @@
 /**
  * Camoufox as a browser (rule 44): the open-source Firefox log-cli started on. Its launch,
- * device and gate live in the `camofox` library (`src/camofox/*`, `python/visibleBrowser.py`,
- * `python/proxyGate.py`, `python/deviceProfile.py`). This domain is its place among the
+ * device and gate live in the `camofox` library (`src/camofox/*`, `python/browser/visibleBrowser.py`,
+ * `python/browser/proxyGate.py`, `python/device/deviceProfile.py`). This domain is its place among the
  * browsers: its row of the parity table, and its driver for the session machine.
  */
 import type { BrowserCapabilities } from '../driver/types'
@@ -19,7 +19,7 @@ export const camoufoxCapabilities = {
   localePinned: { status: 'built', how: 'HOME_COUNTRIES locale in the launch; the self-check checks it (rule 16)' },
   sessionCarried: { status: 'built', how: "Twenty's cookies and localStorage as the context's storage_state each open" },
   sessionSaved: { status: 'built', how: 'saveState writes the context storage state, saved to Twenty' },
-  inspectSession: { status: 'built', how: 'python/browserDriver.py open_camoufox' },
+  inspectSession: { status: 'built', how: 'python/browser/browserDriver.py open_camoufox' },
   syncSessions: { status: 'built', how: 'publishSession, connectSession and profileSession launch it (sync API)' },
   oneMachineAtATime: { status: 'notApplicable', how: 'Camoufox runs only where log-cli runs; there is no shared profile to open twice' }
 } as const satisfies BrowserCapabilities

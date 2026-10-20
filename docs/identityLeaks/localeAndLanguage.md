@@ -34,7 +34,7 @@ inconsistent, rare and changing language (R2 §3, §9, §16; R3 T3; R4 H3, L2).
 - `camoufox/locales.py:265-271`: `language = np.random.choice(languages, p=probabilities)`,
   weighted by CLDR `territoryInfo.xml` population shares, on every launch.
   *verifiedSource*
-- `python/proxyGate.py:131` returns `geoip=<exit IP>` and no `locale`.
+- `python/browser/proxyGate.py:131` returns `geoip=<exit IP>` and no `locale`.
   *verifiedSource*
 - `camoufox/utils.py:756-757` uses `config.setdefault`, so an explicit
   `locale=` beats the geoip draw. `:772` `handle_locales()` writes it.
@@ -89,7 +89,7 @@ q-values (S19). *verifiedSource*
 
 **The create-form URL forces US English**
 
-- `python/publishSession.py:41`:
+- `python/session/publishSession.py:41`:
   `CREATE_URL = "https://www.facebook.com/marketplace/create/item?locale=en_US"`.
   An Irish browser asks for a US UI (R4 L2). *verifiedSource*
 - Listaro went further and rewrote the account language through
@@ -103,12 +103,12 @@ mechanism.
 
 ## Where in our code it can happen again
 
-- `python/proxyGate.py:123-131` (`apply()`): where the locale must be set.
+- `python/browser/proxyGate.py:123-131` (`apply()`): where the locale must be set.
 - Caller kwargs pass through `apply()` unchecked: `locale=`,
   `config={'locale:*': ...}`. A caller passing `locale="vi-VN"` would get it
   (`gateBypasses.md`).
 - Any `new_context(locale=...)` that doesn't equal the launch locale.
-- `python/publishSession.py:41` and `:386`, `:422` (`CREATE_URL`, `formUrl`).
+- `python/session/publishSession.py:41` and `:386`, `:422` (`CREATE_URL`, `formUrl`).
 - The device persona, once it exists (`deviceFingerprintChurn.md`).
 - Account sign-in by hand: keyboard layout and IME (`manualSignIn.md`).
 
@@ -118,7 +118,7 @@ mechanism.
    pass `locale=<homeLocale>` with a map from `homeCountry`: IE → `en-IE`,
    GB → `en-GB`, US → `en-US`, CA → `en-CA`, AU → `en-AU` (R4 H3).
 2. **Store it.** Better as part of the persona, or a `socialAccounts.homeLocale`
-   field added through `scripts/twentySetup.mjs`. If a bought account's profile
+   field added through `scripts/twenty/twentySetup.mjs`. If a bought account's profile
    language is something else (a French-Canadian account, say), use the
    account's own language, not a population draw. *inference*
 3. **If the context also sets `locale`, use the same value.** Never only on the
