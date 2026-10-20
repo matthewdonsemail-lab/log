@@ -7024,6 +7024,8 @@ export interface Attachment {
     targetDialerAudioSessionId?: Scalars['ID']
     /** Attachments Dialer Filter View */
     targetDialerFilterViewId?: Scalars['ID']
+    /** Attachments Agency group */
+    targetAgencyGroupId?: Scalars['ID']
     /** Attachments Agency Career */
     targetAgencyCareer?: AgencyCareer
     /** Attachments Payment */
@@ -7116,6 +7118,8 @@ export interface Attachment {
     targetDialerAudioSession?: DialerAudioSession
     /** Attachments Dialer Filter View */
     targetDialerFilterView?: DialerFilterView
+    /** Attachments Agency group */
+    targetAgencyGroup?: AgencyGroup
     __typename: 'Attachment'
 }
 
@@ -7724,6 +7728,16 @@ export interface AttachmentConnection {
     percentageEmptyTargetDialerFilterView?: Scalars['Float']
     /** Percentage of non-empty values for targetDialerFilterView */
     percentageNotEmptyTargetDialerFilterView?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroup */
+    countUniqueValuesTargetAgencyGroup?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroup */
+    countEmptyTargetAgencyGroup?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroup */
+    countNotEmptyTargetAgencyGroup?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroup */
+    percentageEmptyTargetAgencyGroup?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroup */
+    percentageNotEmptyTargetAgencyGroup?: Scalars['Float']
     edges: AttachmentEdge[]
     pageInfo: PageInfo
     __typename: 'AttachmentConnection'
@@ -8326,6 +8340,16 @@ export interface AttachmentGroupByConnection {
     percentageEmptyTargetDialerFilterView?: Scalars['Float']
     /** Percentage of non-empty values for targetDialerFilterView */
     percentageNotEmptyTargetDialerFilterView?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroup */
+    countUniqueValuesTargetAgencyGroup?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroup */
+    countEmptyTargetAgencyGroup?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroup */
+    countNotEmptyTargetAgencyGroup?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroup */
+    percentageEmptyTargetAgencyGroup?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroup */
+    percentageNotEmptyTargetAgencyGroup?: Scalars['Float']
     edges: AttachmentEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -10252,6 +10276,8 @@ export interface SocialAccount {
     agencyListings?: AgencyListingConnection
     /** logCli */
     agencyConversations?: AgencyConversationConnection
+    /** logCli */
+    agencyGroups?: AgencyGroupConnection
     __typename: 'SocialAccount'
 }
 
@@ -12475,6 +12501,8 @@ export interface TaskTarget {
     targetDialerAudioSessionId?: Scalars['ID']
     /** TaskTargets Dialer Filter View */
     targetDialerFilterViewId?: Scalars['ID']
+    /** TaskTargets Agency group */
+    targetAgencyGroupId?: Scalars['ID']
     /** TaskTargets Agency Career */
     targetAgencyCareer?: AgencyCareer
     /** TaskTargets Payment */
@@ -12561,6 +12589,8 @@ export interface TaskTarget {
     targetDialerAudioSession?: DialerAudioSession
     /** TaskTargets Dialer Filter View */
     targetDialerFilterView?: DialerFilterView
+    /** TaskTargets Agency group */
+    targetAgencyGroup?: AgencyGroup
     __typename: 'TaskTarget'
 }
 
@@ -13089,6 +13119,16 @@ export interface TaskTargetConnection {
     percentageEmptyTargetDialerFilterView?: Scalars['Float']
     /** Percentage of non-empty values for targetDialerFilterView */
     percentageNotEmptyTargetDialerFilterView?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroup */
+    countUniqueValuesTargetAgencyGroup?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroup */
+    countEmptyTargetAgencyGroup?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroup */
+    countNotEmptyTargetAgencyGroup?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroup */
+    percentageEmptyTargetAgencyGroup?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroup */
+    percentageNotEmptyTargetAgencyGroup?: Scalars['Float']
     edges: TaskTargetEdge[]
     pageInfo: PageInfo
     __typename: 'TaskTargetConnection'
@@ -13611,6 +13651,16 @@ export interface TaskTargetGroupByConnection {
     percentageEmptyTargetDialerFilterView?: Scalars['Float']
     /** Percentage of non-empty values for targetDialerFilterView */
     percentageNotEmptyTargetDialerFilterView?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroup */
+    countUniqueValuesTargetAgencyGroup?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroup */
+    countEmptyTargetAgencyGroup?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroup */
+    countNotEmptyTargetAgencyGroup?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroup */
+    percentageEmptyTargetAgencyGroup?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroup */
+    percentageNotEmptyTargetAgencyGroup?: Scalars['Float']
     edges: TaskTargetEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -15834,6 +15884,8 @@ export interface TimelineActivity {
     targetDialerAudioSessionId?: Scalars['ID']
     /** TimelineActivities Dialer Filter View */
     targetDialerFilterViewId?: Scalars['ID']
+    /** TimelineActivities Agency group */
+    targetAgencyGroupId?: Scalars['ID']
     /** TimelineActivities Pipeline Run Counter */
     targetPipelineRunCounter?: PipelineRunCounter
     /** TimelineActivities Payment */
@@ -15936,6 +15988,8 @@ export interface TimelineActivity {
     targetDialerAudioSession?: DialerAudioSession
     /** TimelineActivities Dialer Filter View */
     targetDialerFilterView?: DialerFilterView
+    /** TimelineActivities Agency group */
+    targetAgencyGroup?: AgencyGroup
     __typename: 'TimelineActivity'
 }
 
@@ -16618,6 +16672,16 @@ export interface TimelineActivityConnection {
     percentageEmptyTargetDialerFilterView?: Scalars['Float']
     /** Percentage of non-empty values for targetDialerFilterView */
     percentageNotEmptyTargetDialerFilterView?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroup */
+    countUniqueValuesTargetAgencyGroup?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroup */
+    countEmptyTargetAgencyGroup?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroup */
+    countNotEmptyTargetAgencyGroup?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroup */
+    percentageEmptyTargetAgencyGroup?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroup */
+    percentageNotEmptyTargetAgencyGroup?: Scalars['Float']
     edges: TimelineActivityEdge[]
     pageInfo: PageInfo
     __typename: 'TimelineActivityConnection'
@@ -17294,6 +17358,16 @@ export interface TimelineActivityGroupByConnection {
     percentageEmptyTargetDialerFilterView?: Scalars['Float']
     /** Percentage of non-empty values for targetDialerFilterView */
     percentageNotEmptyTargetDialerFilterView?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroup */
+    countUniqueValuesTargetAgencyGroup?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroup */
+    countEmptyTargetAgencyGroup?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroup */
+    countNotEmptyTargetAgencyGroup?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroup */
+    percentageEmptyTargetAgencyGroup?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroup */
+    percentageNotEmptyTargetAgencyGroup?: Scalars['Float']
     edges: TimelineActivityEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -17420,6 +17494,8 @@ export interface NoteTarget {
     targetDialerAudioSessionId?: Scalars['ID']
     /** NoteTargets Dialer Filter View */
     targetDialerFilterViewId?: Scalars['ID']
+    /** NoteTargets Agency group */
+    targetAgencyGroupId?: Scalars['ID']
     /** NoteTargets Agency Career */
     targetAgencyCareer?: AgencyCareer
     /** NoteTargets Payment */
@@ -17506,6 +17582,8 @@ export interface NoteTarget {
     targetDialerAudioSession?: DialerAudioSession
     /** NoteTargets Dialer Filter View */
     targetDialerFilterView?: DialerFilterView
+    /** NoteTargets Agency group */
+    targetAgencyGroup?: AgencyGroup
     __typename: 'NoteTarget'
 }
 
@@ -18164,6 +18242,16 @@ export interface NoteTargetConnection {
     percentageEmptyTargetDialerFilterView?: Scalars['Float']
     /** Percentage of non-empty values for targetDialerFilterView */
     percentageNotEmptyTargetDialerFilterView?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroup */
+    countUniqueValuesTargetAgencyGroup?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroup */
+    countEmptyTargetAgencyGroup?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroup */
+    countNotEmptyTargetAgencyGroup?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroup */
+    percentageEmptyTargetAgencyGroup?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroup */
+    percentageNotEmptyTargetAgencyGroup?: Scalars['Float']
     edges: NoteTargetEdge[]
     pageInfo: PageInfo
     __typename: 'NoteTargetConnection'
@@ -18816,6 +18904,16 @@ export interface NoteTargetGroupByConnection {
     percentageEmptyTargetDialerFilterView?: Scalars['Float']
     /** Percentage of non-empty values for targetDialerFilterView */
     percentageNotEmptyTargetDialerFilterView?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroup */
+    countUniqueValuesTargetAgencyGroup?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroup */
+    countEmptyTargetAgencyGroup?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroup */
+    countNotEmptyTargetAgencyGroup?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroup */
+    percentageEmptyTargetAgencyGroup?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroup */
+    percentageNotEmptyTargetAgencyGroup?: Scalars['Float']
     edges: NoteTargetEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -42416,6 +42514,471 @@ export interface DialerFilterViewGroupByConnection {
     __typename: 'DialerFilterViewGroupByConnection'
 }
 
+
+/** log-cli: NOT_MEMBER (a Join button), REQUESTED (Join pressed, not a member yet), MEMBER (Joined), UNKNOWN (a page not recorded yet) */
+export type AgencyGroupJoinStatusEnum = 'NOT_MEMBER' | 'REQUESTED' | 'MEMBER' | 'UNKNOWN'
+
+
+/** log-cli: a Facebook group, on one socialAccount */
+export interface AgencyGroup {
+    /** Name */
+    name?: Scalars['String']
+    /** ID */
+    id: Scalars['UUID']
+    /** Creation date */
+    createdAt: Scalars['DateTime']
+    /** The creator of the record */
+    createdBy: Actor
+    /** Deletion date */
+    deletedAt?: Scalars['DateTime']
+    /** Position */
+    position: Scalars['Position']
+    /** Last time the record was changed */
+    updatedAt: Scalars['DateTime']
+    /** The workspace member who last updated the record */
+    updatedBy: Actor
+    /** Search vector */
+    searchVector?: Scalars['TSVector']
+    /** log-cli: the id in facebook.com/groups/<id>. With the account, the group key */
+    facebookGroupId?: Scalars['String']
+    /** logCli */
+    groupUrl?: Scalars['String']
+    /** logCli */
+    socialAccountId?: Scalars['ID']
+    /** log-cli: NOT_MEMBER (a Join button), REQUESTED (Join pressed, not a member yet), MEMBER (Joined), UNKNOWN (a page not recorded yet) */
+    joinStatus?: AgencyGroupJoinStatusEnum
+    /** log-cli: what the page showed, and the run folder it was read in */
+    joinStatusReason?: Scalars['String']
+    /** log-cli: the member count as the group page shows it (17.3K members) */
+    membersLabel?: Scalars['String']
+    /** log-cli: when log join group --live pressed Join */
+    joinRequestedAt?: Scalars['DateTime']
+    /** log-cli: when a run last read the group page */
+    lastCheckedAt?: Scalars['DateTime']
+    /** log-cli: { formPhase, questions, questionsHash, questionsScrapedAt, draftAnswers, answers, answersComplete, submittedAt, lastActivityAt, history[] } */
+    joinSubmission?: Scalars['JSON']
+    /** AgencyGroups tied to the Timeline Activity */
+    timelineActivities?: TimelineActivityConnection
+    /** AgencyGroups tied to the Attachment */
+    attachments?: AttachmentConnection
+    /** AgencyGroups tied to the Note Target */
+    noteTargets?: NoteTargetConnection
+    /** AgencyGroups tied to the Task Target */
+    taskTargets?: TaskTargetConnection
+    /** logCli */
+    socialAccount?: SocialAccount
+    __typename: 'AgencyGroup'
+}
+
+
+/** log-cli: a Facebook group, on one socialAccount */
+export interface AgencyGroupEdge {
+    node: AgencyGroup
+    cursor: Scalars['Cursor']
+    __typename: 'AgencyGroupEdge'
+}
+
+
+/** log-cli: a Facebook group, on one socialAccount */
+export interface AgencyGroupConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for facebookGroupId */
+    countUniqueValuesFacebookGroupId?: Scalars['Int']
+    /** Number of empty values for facebookGroupId */
+    countEmptyFacebookGroupId?: Scalars['Int']
+    /** Number of non-empty values for facebookGroupId */
+    countNotEmptyFacebookGroupId?: Scalars['Int']
+    /** Percentage of empty values for facebookGroupId */
+    percentageEmptyFacebookGroupId?: Scalars['Float']
+    /** Percentage of non-empty values for facebookGroupId */
+    percentageNotEmptyFacebookGroupId?: Scalars['Float']
+    /** Number of unique values for groupUrl */
+    countUniqueValuesGroupUrl?: Scalars['Int']
+    /** Number of empty values for groupUrl */
+    countEmptyGroupUrl?: Scalars['Int']
+    /** Number of non-empty values for groupUrl */
+    countNotEmptyGroupUrl?: Scalars['Int']
+    /** Percentage of empty values for groupUrl */
+    percentageEmptyGroupUrl?: Scalars['Float']
+    /** Percentage of non-empty values for groupUrl */
+    percentageNotEmptyGroupUrl?: Scalars['Float']
+    /** Number of unique values for joinStatus */
+    countUniqueValuesJoinStatus?: Scalars['Int']
+    /** Number of empty values for joinStatus */
+    countEmptyJoinStatus?: Scalars['Int']
+    /** Number of non-empty values for joinStatus */
+    countNotEmptyJoinStatus?: Scalars['Int']
+    /** Percentage of empty values for joinStatus */
+    percentageEmptyJoinStatus?: Scalars['Float']
+    /** Percentage of non-empty values for joinStatus */
+    percentageNotEmptyJoinStatus?: Scalars['Float']
+    /** Number of unique values for joinStatusReason */
+    countUniqueValuesJoinStatusReason?: Scalars['Int']
+    /** Number of empty values for joinStatusReason */
+    countEmptyJoinStatusReason?: Scalars['Int']
+    /** Number of non-empty values for joinStatusReason */
+    countNotEmptyJoinStatusReason?: Scalars['Int']
+    /** Percentage of empty values for joinStatusReason */
+    percentageEmptyJoinStatusReason?: Scalars['Float']
+    /** Percentage of non-empty values for joinStatusReason */
+    percentageNotEmptyJoinStatusReason?: Scalars['Float']
+    /** Number of unique values for membersLabel */
+    countUniqueValuesMembersLabel?: Scalars['Int']
+    /** Number of empty values for membersLabel */
+    countEmptyMembersLabel?: Scalars['Int']
+    /** Number of non-empty values for membersLabel */
+    countNotEmptyMembersLabel?: Scalars['Int']
+    /** Percentage of empty values for membersLabel */
+    percentageEmptyMembersLabel?: Scalars['Float']
+    /** Percentage of non-empty values for membersLabel */
+    percentageNotEmptyMembersLabel?: Scalars['Float']
+    /** Number of unique values for joinRequestedAt */
+    countUniqueValuesJoinRequestedAt?: Scalars['Int']
+    /** Number of empty values for joinRequestedAt */
+    countEmptyJoinRequestedAt?: Scalars['Int']
+    /** Number of non-empty values for joinRequestedAt */
+    countNotEmptyJoinRequestedAt?: Scalars['Int']
+    /** Percentage of empty values for joinRequestedAt */
+    percentageEmptyJoinRequestedAt?: Scalars['Float']
+    /** Percentage of non-empty values for joinRequestedAt */
+    percentageNotEmptyJoinRequestedAt?: Scalars['Float']
+    /** Earliest date contained in the field joinRequestedAt */
+    minJoinRequestedAt?: Scalars['DateTime']
+    /** Latest date contained in the field joinRequestedAt */
+    maxJoinRequestedAt?: Scalars['DateTime']
+    /** Number of unique values for lastCheckedAt */
+    countUniqueValuesLastCheckedAt?: Scalars['Int']
+    /** Number of empty values for lastCheckedAt */
+    countEmptyLastCheckedAt?: Scalars['Int']
+    /** Number of non-empty values for lastCheckedAt */
+    countNotEmptyLastCheckedAt?: Scalars['Int']
+    /** Percentage of empty values for lastCheckedAt */
+    percentageEmptyLastCheckedAt?: Scalars['Float']
+    /** Percentage of non-empty values for lastCheckedAt */
+    percentageNotEmptyLastCheckedAt?: Scalars['Float']
+    /** Earliest date contained in the field lastCheckedAt */
+    minLastCheckedAt?: Scalars['DateTime']
+    /** Latest date contained in the field lastCheckedAt */
+    maxLastCheckedAt?: Scalars['DateTime']
+    /** Number of unique values for joinSubmission */
+    countUniqueValuesJoinSubmission?: Scalars['Int']
+    /** Number of empty values for joinSubmission */
+    countEmptyJoinSubmission?: Scalars['Int']
+    /** Number of non-empty values for joinSubmission */
+    countNotEmptyJoinSubmission?: Scalars['Int']
+    /** Percentage of empty values for joinSubmission */
+    percentageEmptyJoinSubmission?: Scalars['Float']
+    /** Percentage of non-empty values for joinSubmission */
+    percentageNotEmptyJoinSubmission?: Scalars['Float']
+    edges: AgencyGroupEdge[]
+    pageInfo: PageInfo
+    __typename: 'AgencyGroupConnection'
+}
+
+
+/** log-cli: a Facebook group, on one socialAccount */
+export interface AgencyGroupGroupByConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for facebookGroupId */
+    countUniqueValuesFacebookGroupId?: Scalars['Int']
+    /** Number of empty values for facebookGroupId */
+    countEmptyFacebookGroupId?: Scalars['Int']
+    /** Number of non-empty values for facebookGroupId */
+    countNotEmptyFacebookGroupId?: Scalars['Int']
+    /** Percentage of empty values for facebookGroupId */
+    percentageEmptyFacebookGroupId?: Scalars['Float']
+    /** Percentage of non-empty values for facebookGroupId */
+    percentageNotEmptyFacebookGroupId?: Scalars['Float']
+    /** Number of unique values for groupUrl */
+    countUniqueValuesGroupUrl?: Scalars['Int']
+    /** Number of empty values for groupUrl */
+    countEmptyGroupUrl?: Scalars['Int']
+    /** Number of non-empty values for groupUrl */
+    countNotEmptyGroupUrl?: Scalars['Int']
+    /** Percentage of empty values for groupUrl */
+    percentageEmptyGroupUrl?: Scalars['Float']
+    /** Percentage of non-empty values for groupUrl */
+    percentageNotEmptyGroupUrl?: Scalars['Float']
+    /** Number of unique values for joinStatus */
+    countUniqueValuesJoinStatus?: Scalars['Int']
+    /** Number of empty values for joinStatus */
+    countEmptyJoinStatus?: Scalars['Int']
+    /** Number of non-empty values for joinStatus */
+    countNotEmptyJoinStatus?: Scalars['Int']
+    /** Percentage of empty values for joinStatus */
+    percentageEmptyJoinStatus?: Scalars['Float']
+    /** Percentage of non-empty values for joinStatus */
+    percentageNotEmptyJoinStatus?: Scalars['Float']
+    /** Number of unique values for joinStatusReason */
+    countUniqueValuesJoinStatusReason?: Scalars['Int']
+    /** Number of empty values for joinStatusReason */
+    countEmptyJoinStatusReason?: Scalars['Int']
+    /** Number of non-empty values for joinStatusReason */
+    countNotEmptyJoinStatusReason?: Scalars['Int']
+    /** Percentage of empty values for joinStatusReason */
+    percentageEmptyJoinStatusReason?: Scalars['Float']
+    /** Percentage of non-empty values for joinStatusReason */
+    percentageNotEmptyJoinStatusReason?: Scalars['Float']
+    /** Number of unique values for membersLabel */
+    countUniqueValuesMembersLabel?: Scalars['Int']
+    /** Number of empty values for membersLabel */
+    countEmptyMembersLabel?: Scalars['Int']
+    /** Number of non-empty values for membersLabel */
+    countNotEmptyMembersLabel?: Scalars['Int']
+    /** Percentage of empty values for membersLabel */
+    percentageEmptyMembersLabel?: Scalars['Float']
+    /** Percentage of non-empty values for membersLabel */
+    percentageNotEmptyMembersLabel?: Scalars['Float']
+    /** Number of unique values for joinRequestedAt */
+    countUniqueValuesJoinRequestedAt?: Scalars['Int']
+    /** Number of empty values for joinRequestedAt */
+    countEmptyJoinRequestedAt?: Scalars['Int']
+    /** Number of non-empty values for joinRequestedAt */
+    countNotEmptyJoinRequestedAt?: Scalars['Int']
+    /** Percentage of empty values for joinRequestedAt */
+    percentageEmptyJoinRequestedAt?: Scalars['Float']
+    /** Percentage of non-empty values for joinRequestedAt */
+    percentageNotEmptyJoinRequestedAt?: Scalars['Float']
+    /** Earliest date contained in the field joinRequestedAt */
+    minJoinRequestedAt?: Scalars['DateTime']
+    /** Latest date contained in the field joinRequestedAt */
+    maxJoinRequestedAt?: Scalars['DateTime']
+    /** Number of unique values for lastCheckedAt */
+    countUniqueValuesLastCheckedAt?: Scalars['Int']
+    /** Number of empty values for lastCheckedAt */
+    countEmptyLastCheckedAt?: Scalars['Int']
+    /** Number of non-empty values for lastCheckedAt */
+    countNotEmptyLastCheckedAt?: Scalars['Int']
+    /** Percentage of empty values for lastCheckedAt */
+    percentageEmptyLastCheckedAt?: Scalars['Float']
+    /** Percentage of non-empty values for lastCheckedAt */
+    percentageNotEmptyLastCheckedAt?: Scalars['Float']
+    /** Earliest date contained in the field lastCheckedAt */
+    minLastCheckedAt?: Scalars['DateTime']
+    /** Latest date contained in the field lastCheckedAt */
+    maxLastCheckedAt?: Scalars['DateTime']
+    /** Number of unique values for joinSubmission */
+    countUniqueValuesJoinSubmission?: Scalars['Int']
+    /** Number of empty values for joinSubmission */
+    countEmptyJoinSubmission?: Scalars['Int']
+    /** Number of non-empty values for joinSubmission */
+    countNotEmptyJoinSubmission?: Scalars['Int']
+    /** Percentage of empty values for joinSubmission */
+    percentageEmptyJoinSubmission?: Scalars['Float']
+    /** Percentage of non-empty values for joinSubmission */
+    percentageNotEmptyJoinSubmission?: Scalars['Float']
+    edges: AgencyGroupEdge[]
+    pageInfo: PageInfo
+    groupByDimensionValues: Scalars['JSON']
+    __typename: 'AgencyGroupGroupByConnection'
+}
+
 export interface Query {
     competitors?: CompetitorConnection
     competitor?: Competitor
@@ -42629,6 +43192,9 @@ export interface Query {
     dialerFilterViews?: DialerFilterViewConnection
     dialerFilterView?: DialerFilterView
     dialerFilterViewsGroupBy?: DialerFilterViewGroupByConnection[]
+    agencyGroups?: AgencyGroupConnection
+    agencyGroup?: AgencyGroup
+    agencyGroupsGroupBy?: AgencyGroupGroupByConnection[]
     __typename: 'Query'
 }
 
@@ -43335,6 +43901,16 @@ export interface Mutation {
     destroyDialerFilterViews?: DialerFilterView[]
     restoreDialerFilterView?: DialerFilterView
     restoreDialerFilterViews?: DialerFilterView[]
+    createAgencyGroups?: AgencyGroup[]
+    createAgencyGroup?: AgencyGroup
+    updateAgencyGroup?: AgencyGroup
+    deleteAgencyGroup?: AgencyGroup
+    updateAgencyGroups?: AgencyGroup[]
+    deleteAgencyGroups?: AgencyGroup[]
+    destroyAgencyGroup?: AgencyGroup
+    destroyAgencyGroups?: AgencyGroup[]
+    restoreAgencyGroup?: AgencyGroup
+    restoreAgencyGroups?: AgencyGroup[]
     __typename: 'Mutation'
 }
 
@@ -56671,6 +57247,8 @@ export interface AttachmentGenqlSelection{
     targetDialerAudioSessionId?: boolean | number
     /** Attachments Dialer Filter View */
     targetDialerFilterViewId?: boolean | number
+    /** Attachments Agency group */
+    targetAgencyGroupId?: boolean | number
     /** Attachments Agency Career */
     targetAgencyCareer?: AgencyCareerGenqlSelection
     /** Attachments Payment */
@@ -56763,6 +57341,8 @@ export interface AttachmentGenqlSelection{
     targetDialerAudioSession?: DialerAudioSessionGenqlSelection
     /** Attachments Dialer Filter View */
     targetDialerFilterView?: DialerFilterViewGenqlSelection
+    /** Attachments Agency group */
+    targetAgencyGroup?: AgencyGroupGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -57373,6 +57953,16 @@ export interface AttachmentConnectionGenqlSelection{
     percentageEmptyTargetDialerFilterView?: boolean | number
     /** Percentage of non-empty values for targetDialerFilterView */
     percentageNotEmptyTargetDialerFilterView?: boolean | number
+    /** Number of unique values for targetAgencyGroup */
+    countUniqueValuesTargetAgencyGroup?: boolean | number
+    /** Number of empty values for targetAgencyGroup */
+    countEmptyTargetAgencyGroup?: boolean | number
+    /** Number of non-empty values for targetAgencyGroup */
+    countNotEmptyTargetAgencyGroup?: boolean | number
+    /** Percentage of empty values for targetAgencyGroup */
+    percentageEmptyTargetAgencyGroup?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroup */
+    percentageNotEmptyTargetAgencyGroup?: boolean | number
     edges?: AttachmentEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -57976,6 +58566,16 @@ export interface AttachmentGroupByConnectionGenqlSelection{
     percentageEmptyTargetDialerFilterView?: boolean | number
     /** Percentage of non-empty values for targetDialerFilterView */
     percentageNotEmptyTargetDialerFilterView?: boolean | number
+    /** Number of unique values for targetAgencyGroup */
+    countUniqueValuesTargetAgencyGroup?: boolean | number
+    /** Number of empty values for targetAgencyGroup */
+    countEmptyTargetAgencyGroup?: boolean | number
+    /** Number of non-empty values for targetAgencyGroup */
+    countNotEmptyTargetAgencyGroup?: boolean | number
+    /** Percentage of empty values for targetAgencyGroup */
+    percentageEmptyTargetAgencyGroup?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroup */
+    percentageNotEmptyTargetAgencyGroup?: boolean | number
     edges?: AttachmentEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -58209,7 +58809,11 @@ targetDialerAudioSession?: (DialerAudioSessionRelationInput | null),
 /** Attachments Dialer Filter View */
 targetDialerFilterViewId?: (Scalars['ID'] | null),
 /** Attachments Dialer Filter View */
-targetDialerFilterView?: (DialerFilterViewRelationInput | null)}
+targetDialerFilterView?: (DialerFilterViewRelationInput | null),
+/** Attachments Agency group */
+targetAgencyGroupId?: (Scalars['ID'] | null),
+/** Attachments Agency group */
+targetAgencyGroup?: (AgencyGroupRelationInput | null)}
 
 
 /** An attachment */
@@ -58421,7 +59025,11 @@ targetDialerAudioSession?: (DialerAudioSessionRelationInput | null),
 /** Attachments Dialer Filter View */
 targetDialerFilterViewId?: (Scalars['ID'] | null),
 /** Attachments Dialer Filter View */
-targetDialerFilterView?: (DialerFilterViewRelationInput | null)}
+targetDialerFilterView?: (DialerFilterViewRelationInput | null),
+/** Attachments Agency group */
+targetAgencyGroupId?: (Scalars['ID'] | null),
+/** Attachments Agency group */
+targetAgencyGroup?: (AgencyGroupRelationInput | null)}
 
 
 /** An attachment */
@@ -58633,7 +59241,11 @@ targetDialerAudioSession?: (DialerAudioSessionFilterInput | null),
 /** Attachments Dialer Filter View */
 targetDialerFilterViewId?: (UUIDFilter | null),
 /** Filter on fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewFilterInput | null),and?: ((AttachmentFilterInput | null)[] | null),or?: ((AttachmentFilterInput | null)[] | null),not?: (AttachmentFilterInput | null)}
+targetDialerFilterView?: (DialerFilterViewFilterInput | null),
+/** Attachments Agency group */
+targetAgencyGroupId?: (UUIDFilter | null),
+/** Filter on fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupFilterInput | null),and?: ((AttachmentFilterInput | null)[] | null),or?: ((AttachmentFilterInput | null)[] | null),not?: (AttachmentFilterInput | null)}
 
 export interface AttachmentFileCategoryEnumFilter {eq?: (AttachmentFileCategoryEnum | null),neq?: (AttachmentFileCategoryEnum | null),in?: ((AttachmentFileCategoryEnum | null)[] | null),containsAny?: ((AttachmentFileCategoryEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AttachmentFileCategoryEnum | null),gte?: (AttachmentFileCategoryEnum | null),lt?: (AttachmentFileCategoryEnum | null),lte?: (AttachmentFileCategoryEnum | null)}
 
@@ -58847,7 +59459,11 @@ targetDialerAudioSession?: (DialerAudioSessionOrderByInput | null),
 /** Attachments Dialer Filter View */
 targetDialerFilterViewId?: (OrderByDirection | null),
 /** Order by fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewOrderByInput | null)}
+targetDialerFilterView?: (DialerFilterViewOrderByInput | null),
+/** Attachments Agency group */
+targetAgencyGroupId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupOrderByInput | null)}
 
 
 /** An attachment */
@@ -59061,7 +59677,11 @@ targetDialerAudioSession?: (DialerAudioSessionOrderByWithGroupByInput | null),
 /** Attachments Dialer Filter View */
 targetDialerFilterViewId?: (OrderByDirection | null),
 /** Order by fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewOrderByWithGroupByInput | null)}
+targetDialerFilterView?: (DialerFilterViewOrderByWithGroupByInput | null),
+/** Attachments Agency group */
+targetAgencyGroupId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupOrderByWithGroupByInput | null)}
 
 
 /** Aggregate-based ordering */
@@ -59383,7 +60003,11 @@ targetDialerAudioSession?: (DialerAudioSessionOrderByInput | null),
 /** Attachments Dialer Filter View */
 targetDialerFilterViewId?: (OrderByDirection | null),
 /** Order by fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewOrderByInput | null)}
+targetDialerFilterView?: (DialerFilterViewOrderByInput | null),
+/** Attachments Agency group */
+targetAgencyGroupId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupOrderByInput | null)}
 
 
 /** An attachment */
@@ -59485,7 +60109,9 @@ targetCallCampaign?: (CallCampaignGroupByInput | null),
 /** Group by fields of the related dialerAudioSession */
 targetDialerAudioSession?: (DialerAudioSessionGroupByInput | null),
 /** Group by fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewGroupByInput | null)}
+targetDialerFilterView?: (DialerFilterViewGroupByInput | null),
+/** Group by fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupGroupByInput | null)}
 
 
 /** A note */
@@ -63097,6 +63723,8 @@ export interface SocialAccountGenqlSelection{
     agencyListings?: (AgencyListingConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgencyListingFilterInput | null), orderBy?: ((AgencyListingOrderByInput | null)[] | null)} })
     /** logCli */
     agencyConversations?: (AgencyConversationConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgencyConversationFilterInput | null), orderBy?: ((AgencyConversationOrderByInput | null)[] | null)} })
+    /** logCli */
+    agencyGroups?: (AgencyGroupConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgencyGroupFilterInput | null), orderBy?: ((AgencyGroupOrderByInput | null)[] | null)} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -67390,6 +68018,8 @@ export interface TaskTargetGenqlSelection{
     targetDialerAudioSessionId?: boolean | number
     /** TaskTargets Dialer Filter View */
     targetDialerFilterViewId?: boolean | number
+    /** TaskTargets Agency group */
+    targetAgencyGroupId?: boolean | number
     /** TaskTargets Agency Career */
     targetAgencyCareer?: AgencyCareerGenqlSelection
     /** TaskTargets Payment */
@@ -67476,6 +68106,8 @@ export interface TaskTargetGenqlSelection{
     targetDialerAudioSession?: DialerAudioSessionGenqlSelection
     /** TaskTargets Dialer Filter View */
     targetDialerFilterView?: DialerFilterViewGenqlSelection
+    /** TaskTargets Agency group */
+    targetAgencyGroup?: AgencyGroupGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -68006,6 +68638,16 @@ export interface TaskTargetConnectionGenqlSelection{
     percentageEmptyTargetDialerFilterView?: boolean | number
     /** Percentage of non-empty values for targetDialerFilterView */
     percentageNotEmptyTargetDialerFilterView?: boolean | number
+    /** Number of unique values for targetAgencyGroup */
+    countUniqueValuesTargetAgencyGroup?: boolean | number
+    /** Number of empty values for targetAgencyGroup */
+    countEmptyTargetAgencyGroup?: boolean | number
+    /** Number of non-empty values for targetAgencyGroup */
+    countNotEmptyTargetAgencyGroup?: boolean | number
+    /** Percentage of empty values for targetAgencyGroup */
+    percentageEmptyTargetAgencyGroup?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroup */
+    percentageNotEmptyTargetAgencyGroup?: boolean | number
     edges?: TaskTargetEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -68529,6 +69171,16 @@ export interface TaskTargetGroupByConnectionGenqlSelection{
     percentageEmptyTargetDialerFilterView?: boolean | number
     /** Percentage of non-empty values for targetDialerFilterView */
     percentageNotEmptyTargetDialerFilterView?: boolean | number
+    /** Number of unique values for targetAgencyGroup */
+    countUniqueValuesTargetAgencyGroup?: boolean | number
+    /** Number of empty values for targetAgencyGroup */
+    countEmptyTargetAgencyGroup?: boolean | number
+    /** Number of non-empty values for targetAgencyGroup */
+    countNotEmptyTargetAgencyGroup?: boolean | number
+    /** Percentage of empty values for targetAgencyGroup */
+    percentageEmptyTargetAgencyGroup?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroup */
+    percentageNotEmptyTargetAgencyGroup?: boolean | number
     edges?: TaskTargetEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -68750,7 +69402,11 @@ targetDialerAudioSession?: (DialerAudioSessionRelationInput | null),
 /** TaskTargets Dialer Filter View */
 targetDialerFilterViewId?: (Scalars['ID'] | null),
 /** TaskTargets Dialer Filter View */
-targetDialerFilterView?: (DialerFilterViewRelationInput | null)}
+targetDialerFilterView?: (DialerFilterViewRelationInput | null),
+/** TaskTargets Agency group */
+targetAgencyGroupId?: (Scalars['ID'] | null),
+/** TaskTargets Agency group */
+targetAgencyGroup?: (AgencyGroupRelationInput | null)}
 
 
 /** A task target */
@@ -68942,7 +69598,11 @@ targetDialerAudioSession?: (DialerAudioSessionRelationInput | null),
 /** TaskTargets Dialer Filter View */
 targetDialerFilterViewId?: (Scalars['ID'] | null),
 /** TaskTargets Dialer Filter View */
-targetDialerFilterView?: (DialerFilterViewRelationInput | null)}
+targetDialerFilterView?: (DialerFilterViewRelationInput | null),
+/** TaskTargets Agency group */
+targetAgencyGroupId?: (Scalars['ID'] | null),
+/** TaskTargets Agency group */
+targetAgencyGroup?: (AgencyGroupRelationInput | null)}
 
 
 /** A task target */
@@ -69134,7 +69794,11 @@ targetDialerAudioSession?: (DialerAudioSessionFilterInput | null),
 /** TaskTargets Dialer Filter View */
 targetDialerFilterViewId?: (UUIDFilter | null),
 /** Filter on fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewFilterInput | null),and?: ((TaskTargetFilterInput | null)[] | null),or?: ((TaskTargetFilterInput | null)[] | null),not?: (TaskTargetFilterInput | null)}
+targetDialerFilterView?: (DialerFilterViewFilterInput | null),
+/** TaskTargets Agency group */
+targetAgencyGroupId?: (UUIDFilter | null),
+/** Filter on fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupFilterInput | null),and?: ((TaskTargetFilterInput | null)[] | null),or?: ((TaskTargetFilterInput | null)[] | null),not?: (TaskTargetFilterInput | null)}
 
 
 /** A task target */
@@ -69326,7 +69990,11 @@ targetDialerAudioSession?: (DialerAudioSessionOrderByInput | null),
 /** TaskTargets Dialer Filter View */
 targetDialerFilterViewId?: (OrderByDirection | null),
 /** Order by fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewOrderByInput | null)}
+targetDialerFilterView?: (DialerFilterViewOrderByInput | null),
+/** TaskTargets Agency group */
+targetAgencyGroupId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupOrderByInput | null)}
 
 
 /** A task target */
@@ -69520,7 +70188,11 @@ targetDialerAudioSession?: (DialerAudioSessionOrderByWithGroupByInput | null),
 /** TaskTargets Dialer Filter View */
 targetDialerFilterViewId?: (OrderByDirection | null),
 /** Order by fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewOrderByWithGroupByInput | null)}
+targetDialerFilterView?: (DialerFilterViewOrderByWithGroupByInput | null),
+/** TaskTargets Agency group */
+targetAgencyGroupId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupOrderByWithGroupByInput | null)}
 
 
 /** Aggregate-based ordering */
@@ -69790,7 +70462,11 @@ targetDialerAudioSession?: (DialerAudioSessionOrderByInput | null),
 /** TaskTargets Dialer Filter View */
 targetDialerFilterViewId?: (OrderByDirection | null),
 /** Order by fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewOrderByInput | null)}
+targetDialerFilterView?: (DialerFilterViewOrderByInput | null),
+/** TaskTargets Agency group */
+targetAgencyGroupId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupOrderByInput | null)}
 
 
 /** A task target */
@@ -69884,7 +70560,9 @@ targetCallCampaign?: (CallCampaignGroupByInput | null),
 /** Group by fields of the related dialerAudioSession */
 targetDialerAudioSession?: (DialerAudioSessionGroupByInput | null),
 /** Group by fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewGroupByInput | null)}
+targetDialerFilterView?: (DialerFilterViewGroupByInput | null),
+/** Group by fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupGroupByInput | null)}
 
 
 /** A recording of a meeting */
@@ -74305,6 +74983,8 @@ export interface TimelineActivityGenqlSelection{
     targetDialerAudioSessionId?: boolean | number
     /** TimelineActivities Dialer Filter View */
     targetDialerFilterViewId?: boolean | number
+    /** TimelineActivities Agency group */
+    targetAgencyGroupId?: boolean | number
     /** TimelineActivities Pipeline Run Counter */
     targetPipelineRunCounter?: PipelineRunCounterGenqlSelection
     /** TimelineActivities Payment */
@@ -74407,6 +75087,8 @@ export interface TimelineActivityGenqlSelection{
     targetDialerAudioSession?: DialerAudioSessionGenqlSelection
     /** TimelineActivities Dialer Filter View */
     targetDialerFilterView?: DialerFilterViewGenqlSelection
+    /** TimelineActivities Agency group */
+    targetAgencyGroup?: AgencyGroupGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -75091,6 +75773,16 @@ export interface TimelineActivityConnectionGenqlSelection{
     percentageEmptyTargetDialerFilterView?: boolean | number
     /** Percentage of non-empty values for targetDialerFilterView */
     percentageNotEmptyTargetDialerFilterView?: boolean | number
+    /** Number of unique values for targetAgencyGroup */
+    countUniqueValuesTargetAgencyGroup?: boolean | number
+    /** Number of empty values for targetAgencyGroup */
+    countEmptyTargetAgencyGroup?: boolean | number
+    /** Number of non-empty values for targetAgencyGroup */
+    countNotEmptyTargetAgencyGroup?: boolean | number
+    /** Percentage of empty values for targetAgencyGroup */
+    percentageEmptyTargetAgencyGroup?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroup */
+    percentageNotEmptyTargetAgencyGroup?: boolean | number
     edges?: TimelineActivityEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -75768,6 +76460,16 @@ export interface TimelineActivityGroupByConnectionGenqlSelection{
     percentageEmptyTargetDialerFilterView?: boolean | number
     /** Percentage of non-empty values for targetDialerFilterView */
     percentageNotEmptyTargetDialerFilterView?: boolean | number
+    /** Number of unique values for targetAgencyGroup */
+    countUniqueValuesTargetAgencyGroup?: boolean | number
+    /** Number of empty values for targetAgencyGroup */
+    countEmptyTargetAgencyGroup?: boolean | number
+    /** Number of non-empty values for targetAgencyGroup */
+    countNotEmptyTargetAgencyGroup?: boolean | number
+    /** Percentage of empty values for targetAgencyGroup */
+    percentageEmptyTargetAgencyGroup?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroup */
+    percentageNotEmptyTargetAgencyGroup?: boolean | number
     edges?: TimelineActivityEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -76027,7 +76729,11 @@ targetDialerAudioSession?: (DialerAudioSessionRelationInput | null),
 /** TimelineActivities Dialer Filter View */
 targetDialerFilterViewId?: (Scalars['ID'] | null),
 /** TimelineActivities Dialer Filter View */
-targetDialerFilterView?: (DialerFilterViewRelationInput | null)}
+targetDialerFilterView?: (DialerFilterViewRelationInput | null),
+/** TimelineActivities Agency group */
+targetAgencyGroupId?: (Scalars['ID'] | null),
+/** TimelineActivities Agency group */
+targetAgencyGroup?: (AgencyGroupRelationInput | null)}
 
 
 /** Aggregated / filtered event to be displayed on the timeline */
@@ -76265,7 +76971,11 @@ targetDialerAudioSession?: (DialerAudioSessionRelationInput | null),
 /** TimelineActivities Dialer Filter View */
 targetDialerFilterViewId?: (Scalars['ID'] | null),
 /** TimelineActivities Dialer Filter View */
-targetDialerFilterView?: (DialerFilterViewRelationInput | null)}
+targetDialerFilterView?: (DialerFilterViewRelationInput | null),
+/** TimelineActivities Agency group */
+targetAgencyGroupId?: (Scalars['ID'] | null),
+/** TimelineActivities Agency group */
+targetAgencyGroup?: (AgencyGroupRelationInput | null)}
 
 
 /** Aggregated / filtered event to be displayed on the timeline */
@@ -76503,7 +77213,11 @@ targetDialerAudioSession?: (DialerAudioSessionFilterInput | null),
 /** TimelineActivities Dialer Filter View */
 targetDialerFilterViewId?: (UUIDFilter | null),
 /** Filter on fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewFilterInput | null),and?: ((TimelineActivityFilterInput | null)[] | null),or?: ((TimelineActivityFilterInput | null)[] | null),not?: (TimelineActivityFilterInput | null)}
+targetDialerFilterView?: (DialerFilterViewFilterInput | null),
+/** TimelineActivities Agency group */
+targetAgencyGroupId?: (UUIDFilter | null),
+/** Filter on fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupFilterInput | null),and?: ((TimelineActivityFilterInput | null)[] | null),or?: ((TimelineActivityFilterInput | null)[] | null),not?: (TimelineActivityFilterInput | null)}
 
 
 /** Aggregated / filtered event to be displayed on the timeline */
@@ -76741,7 +77455,11 @@ targetDialerAudioSession?: (DialerAudioSessionOrderByInput | null),
 /** TimelineActivities Dialer Filter View */
 targetDialerFilterViewId?: (OrderByDirection | null),
 /** Order by fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewOrderByInput | null)}
+targetDialerFilterView?: (DialerFilterViewOrderByInput | null),
+/** TimelineActivities Agency group */
+targetAgencyGroupId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupOrderByInput | null)}
 
 
 /** Aggregated / filtered event to be displayed on the timeline */
@@ -76981,7 +77699,11 @@ targetDialerAudioSession?: (DialerAudioSessionOrderByWithGroupByInput | null),
 /** TimelineActivities Dialer Filter View */
 targetDialerFilterViewId?: (OrderByDirection | null),
 /** Order by fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewOrderByWithGroupByInput | null)}
+targetDialerFilterView?: (DialerFilterViewOrderByWithGroupByInput | null),
+/** TimelineActivities Agency group */
+targetAgencyGroupId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupOrderByWithGroupByInput | null)}
 
 
 /** Aggregate-based ordering */
@@ -77357,7 +78079,11 @@ targetDialerAudioSession?: (DialerAudioSessionOrderByInput | null),
 /** TimelineActivities Dialer Filter View */
 targetDialerFilterViewId?: (OrderByDirection | null),
 /** Order by fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewOrderByInput | null)}
+targetDialerFilterView?: (DialerFilterViewOrderByInput | null),
+/** TimelineActivities Agency group */
+targetAgencyGroupId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupOrderByInput | null)}
 
 
 /** Aggregated / filtered event to be displayed on the timeline */
@@ -77469,7 +78195,9 @@ targetCallCampaign?: (CallCampaignGroupByInput | null),
 /** Group by fields of the related dialerAudioSession */
 targetDialerAudioSession?: (DialerAudioSessionGroupByInput | null),
 /** Group by fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewGroupByInput | null)}
+targetDialerFilterView?: (DialerFilterViewGroupByInput | null),
+/** Group by fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupGroupByInput | null)}
 
 
 /** A note target */
@@ -77587,6 +78315,8 @@ export interface NoteTargetGenqlSelection{
     targetDialerAudioSessionId?: boolean | number
     /** NoteTargets Dialer Filter View */
     targetDialerFilterViewId?: boolean | number
+    /** NoteTargets Agency group */
+    targetAgencyGroupId?: boolean | number
     /** NoteTargets Agency Career */
     targetAgencyCareer?: AgencyCareerGenqlSelection
     /** NoteTargets Payment */
@@ -77673,6 +78403,8 @@ export interface NoteTargetGenqlSelection{
     targetDialerAudioSession?: DialerAudioSessionGenqlSelection
     /** NoteTargets Dialer Filter View */
     targetDialerFilterView?: DialerFilterViewGenqlSelection
+    /** NoteTargets Agency group */
+    targetAgencyGroup?: AgencyGroupGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -78333,6 +79065,16 @@ export interface NoteTargetConnectionGenqlSelection{
     percentageEmptyTargetDialerFilterView?: boolean | number
     /** Percentage of non-empty values for targetDialerFilterView */
     percentageNotEmptyTargetDialerFilterView?: boolean | number
+    /** Number of unique values for targetAgencyGroup */
+    countUniqueValuesTargetAgencyGroup?: boolean | number
+    /** Number of empty values for targetAgencyGroup */
+    countEmptyTargetAgencyGroup?: boolean | number
+    /** Number of non-empty values for targetAgencyGroup */
+    countNotEmptyTargetAgencyGroup?: boolean | number
+    /** Percentage of empty values for targetAgencyGroup */
+    percentageEmptyTargetAgencyGroup?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroup */
+    percentageNotEmptyTargetAgencyGroup?: boolean | number
     edges?: NoteTargetEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -78986,6 +79728,16 @@ export interface NoteTargetGroupByConnectionGenqlSelection{
     percentageEmptyTargetDialerFilterView?: boolean | number
     /** Percentage of non-empty values for targetDialerFilterView */
     percentageNotEmptyTargetDialerFilterView?: boolean | number
+    /** Number of unique values for targetAgencyGroup */
+    countUniqueValuesTargetAgencyGroup?: boolean | number
+    /** Number of empty values for targetAgencyGroup */
+    countEmptyTargetAgencyGroup?: boolean | number
+    /** Number of non-empty values for targetAgencyGroup */
+    countNotEmptyTargetAgencyGroup?: boolean | number
+    /** Percentage of empty values for targetAgencyGroup */
+    percentageEmptyTargetAgencyGroup?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroup */
+    percentageNotEmptyTargetAgencyGroup?: boolean | number
     edges?: NoteTargetEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -79207,7 +79959,11 @@ targetDialerAudioSession?: (DialerAudioSessionRelationInput | null),
 /** NoteTargets Dialer Filter View */
 targetDialerFilterViewId?: (Scalars['ID'] | null),
 /** NoteTargets Dialer Filter View */
-targetDialerFilterView?: (DialerFilterViewRelationInput | null)}
+targetDialerFilterView?: (DialerFilterViewRelationInput | null),
+/** NoteTargets Agency group */
+targetAgencyGroupId?: (Scalars['ID'] | null),
+/** NoteTargets Agency group */
+targetAgencyGroup?: (AgencyGroupRelationInput | null)}
 
 
 /** A note target */
@@ -79399,7 +80155,11 @@ targetDialerAudioSession?: (DialerAudioSessionRelationInput | null),
 /** NoteTargets Dialer Filter View */
 targetDialerFilterViewId?: (Scalars['ID'] | null),
 /** NoteTargets Dialer Filter View */
-targetDialerFilterView?: (DialerFilterViewRelationInput | null)}
+targetDialerFilterView?: (DialerFilterViewRelationInput | null),
+/** NoteTargets Agency group */
+targetAgencyGroupId?: (Scalars['ID'] | null),
+/** NoteTargets Agency group */
+targetAgencyGroup?: (AgencyGroupRelationInput | null)}
 
 
 /** A note target */
@@ -79591,7 +80351,11 @@ targetDialerAudioSession?: (DialerAudioSessionFilterInput | null),
 /** NoteTargets Dialer Filter View */
 targetDialerFilterViewId?: (UUIDFilter | null),
 /** Filter on fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewFilterInput | null),and?: ((NoteTargetFilterInput | null)[] | null),or?: ((NoteTargetFilterInput | null)[] | null),not?: (NoteTargetFilterInput | null)}
+targetDialerFilterView?: (DialerFilterViewFilterInput | null),
+/** NoteTargets Agency group */
+targetAgencyGroupId?: (UUIDFilter | null),
+/** Filter on fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupFilterInput | null),and?: ((NoteTargetFilterInput | null)[] | null),or?: ((NoteTargetFilterInput | null)[] | null),not?: (NoteTargetFilterInput | null)}
 
 export interface NoteTargetOutcomeEnumFilter {eq?: (NoteTargetOutcomeEnum | null),neq?: (NoteTargetOutcomeEnum | null),in?: ((NoteTargetOutcomeEnum | null)[] | null),containsAny?: ((NoteTargetOutcomeEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (NoteTargetOutcomeEnum | null),gte?: (NoteTargetOutcomeEnum | null),lt?: (NoteTargetOutcomeEnum | null),lte?: (NoteTargetOutcomeEnum | null)}
 
@@ -79787,7 +80551,11 @@ targetDialerAudioSession?: (DialerAudioSessionOrderByInput | null),
 /** NoteTargets Dialer Filter View */
 targetDialerFilterViewId?: (OrderByDirection | null),
 /** Order by fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewOrderByInput | null)}
+targetDialerFilterView?: (DialerFilterViewOrderByInput | null),
+/** NoteTargets Agency group */
+targetAgencyGroupId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupOrderByInput | null)}
 
 
 /** A note target */
@@ -79981,7 +80749,11 @@ targetDialerAudioSession?: (DialerAudioSessionOrderByWithGroupByInput | null),
 /** NoteTargets Dialer Filter View */
 targetDialerFilterViewId?: (OrderByDirection | null),
 /** Order by fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewOrderByWithGroupByInput | null)}
+targetDialerFilterView?: (DialerFilterViewOrderByWithGroupByInput | null),
+/** NoteTargets Agency group */
+targetAgencyGroupId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupOrderByWithGroupByInput | null)}
 
 
 /** Aggregate-based ordering */
@@ -80381,7 +81153,11 @@ targetDialerAudioSession?: (DialerAudioSessionOrderByInput | null),
 /** NoteTargets Dialer Filter View */
 targetDialerFilterViewId?: (OrderByDirection | null),
 /** Order by fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewOrderByInput | null)}
+targetDialerFilterView?: (DialerFilterViewOrderByInput | null),
+/** NoteTargets Agency group */
+targetAgencyGroupId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupOrderByInput | null)}
 
 
 /** A note target */
@@ -80475,7 +81251,9 @@ targetCallCampaign?: (CallCampaignGroupByInput | null),
 /** Group by fields of the related dialerAudioSession */
 targetDialerAudioSession?: (DialerAudioSessionGroupByInput | null),
 /** Group by fields of the related dialerFilterView */
-targetDialerFilterView?: (DialerFilterViewGroupByInput | null)}
+targetDialerFilterView?: (DialerFilterViewGroupByInput | null),
+/** Group by fields of the related agencyGroup */
+targetAgencyGroup?: (AgencyGroupGroupByInput | null)}
 
 
 /** Outbound prospects — AI-utilising companies for InferenceSaver outreach */
@@ -125179,6 +125957,927 @@ createdAt?: (GroupByDateGranularityInput | null),
 /** Last time the record was changed */
 updatedAt?: (GroupByDateGranularityInput | null),memberId?: (Scalars['Boolean'] | null),scope?: (Scalars['Boolean'] | null)}
 
+
+/** log-cli: a Facebook group, on one socialAccount */
+export interface AgencyGroupGenqlSelection{
+    /** Name */
+    name?: boolean | number
+    /** ID */
+    id?: boolean | number
+    /** Creation date */
+    createdAt?: boolean | number
+    /** The creator of the record */
+    createdBy?: ActorGenqlSelection
+    /** Deletion date */
+    deletedAt?: boolean | number
+    /** Position */
+    position?: boolean | number
+    /** Last time the record was changed */
+    updatedAt?: boolean | number
+    /** The workspace member who last updated the record */
+    updatedBy?: ActorGenqlSelection
+    /** Search vector */
+    searchVector?: boolean | number
+    /** log-cli: the id in facebook.com/groups/<id>. With the account, the group key */
+    facebookGroupId?: boolean | number
+    /** logCli */
+    groupUrl?: boolean | number
+    /** logCli */
+    socialAccountId?: boolean | number
+    /** log-cli: NOT_MEMBER (a Join button), REQUESTED (Join pressed, not a member yet), MEMBER (Joined), UNKNOWN (a page not recorded yet) */
+    joinStatus?: boolean | number
+    /** log-cli: what the page showed, and the run folder it was read in */
+    joinStatusReason?: boolean | number
+    /** log-cli: the member count as the group page shows it (17.3K members) */
+    membersLabel?: boolean | number
+    /** log-cli: when log join group --live pressed Join */
+    joinRequestedAt?: boolean | number
+    /** log-cli: when a run last read the group page */
+    lastCheckedAt?: boolean | number
+    /** log-cli: { formPhase, questions, questionsHash, questionsScrapedAt, draftAnswers, answers, answersComplete, submittedAt, lastActivityAt, history[] } */
+    joinSubmission?: boolean | number
+    /** AgencyGroups tied to the Timeline Activity */
+    timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
+    /** AgencyGroups tied to the Attachment */
+    attachments?: (AttachmentConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AttachmentFilterInput | null), orderBy?: ((AttachmentOrderByInput | null)[] | null)} })
+    /** AgencyGroups tied to the Note Target */
+    noteTargets?: (NoteTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (NoteTargetFilterInput | null), orderBy?: ((NoteTargetOrderByInput | null)[] | null)} })
+    /** AgencyGroups tied to the Task Target */
+    taskTargets?: (TaskTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TaskTargetFilterInput | null), orderBy?: ((TaskTargetOrderByInput | null)[] | null)} })
+    /** logCli */
+    socialAccount?: SocialAccountGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** log-cli: a Facebook group, on one socialAccount */
+export interface AgencyGroupEdgeGenqlSelection{
+    node?: AgencyGroupGenqlSelection
+    cursor?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** log-cli: a Facebook group, on one socialAccount */
+export interface AgencyGroupConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for facebookGroupId */
+    countUniqueValuesFacebookGroupId?: boolean | number
+    /** Number of empty values for facebookGroupId */
+    countEmptyFacebookGroupId?: boolean | number
+    /** Number of non-empty values for facebookGroupId */
+    countNotEmptyFacebookGroupId?: boolean | number
+    /** Percentage of empty values for facebookGroupId */
+    percentageEmptyFacebookGroupId?: boolean | number
+    /** Percentage of non-empty values for facebookGroupId */
+    percentageNotEmptyFacebookGroupId?: boolean | number
+    /** Number of unique values for groupUrl */
+    countUniqueValuesGroupUrl?: boolean | number
+    /** Number of empty values for groupUrl */
+    countEmptyGroupUrl?: boolean | number
+    /** Number of non-empty values for groupUrl */
+    countNotEmptyGroupUrl?: boolean | number
+    /** Percentage of empty values for groupUrl */
+    percentageEmptyGroupUrl?: boolean | number
+    /** Percentage of non-empty values for groupUrl */
+    percentageNotEmptyGroupUrl?: boolean | number
+    /** Number of unique values for joinStatus */
+    countUniqueValuesJoinStatus?: boolean | number
+    /** Number of empty values for joinStatus */
+    countEmptyJoinStatus?: boolean | number
+    /** Number of non-empty values for joinStatus */
+    countNotEmptyJoinStatus?: boolean | number
+    /** Percentage of empty values for joinStatus */
+    percentageEmptyJoinStatus?: boolean | number
+    /** Percentage of non-empty values for joinStatus */
+    percentageNotEmptyJoinStatus?: boolean | number
+    /** Number of unique values for joinStatusReason */
+    countUniqueValuesJoinStatusReason?: boolean | number
+    /** Number of empty values for joinStatusReason */
+    countEmptyJoinStatusReason?: boolean | number
+    /** Number of non-empty values for joinStatusReason */
+    countNotEmptyJoinStatusReason?: boolean | number
+    /** Percentage of empty values for joinStatusReason */
+    percentageEmptyJoinStatusReason?: boolean | number
+    /** Percentage of non-empty values for joinStatusReason */
+    percentageNotEmptyJoinStatusReason?: boolean | number
+    /** Number of unique values for membersLabel */
+    countUniqueValuesMembersLabel?: boolean | number
+    /** Number of empty values for membersLabel */
+    countEmptyMembersLabel?: boolean | number
+    /** Number of non-empty values for membersLabel */
+    countNotEmptyMembersLabel?: boolean | number
+    /** Percentage of empty values for membersLabel */
+    percentageEmptyMembersLabel?: boolean | number
+    /** Percentage of non-empty values for membersLabel */
+    percentageNotEmptyMembersLabel?: boolean | number
+    /** Number of unique values for joinRequestedAt */
+    countUniqueValuesJoinRequestedAt?: boolean | number
+    /** Number of empty values for joinRequestedAt */
+    countEmptyJoinRequestedAt?: boolean | number
+    /** Number of non-empty values for joinRequestedAt */
+    countNotEmptyJoinRequestedAt?: boolean | number
+    /** Percentage of empty values for joinRequestedAt */
+    percentageEmptyJoinRequestedAt?: boolean | number
+    /** Percentage of non-empty values for joinRequestedAt */
+    percentageNotEmptyJoinRequestedAt?: boolean | number
+    /** Earliest date contained in the field joinRequestedAt */
+    minJoinRequestedAt?: boolean | number
+    /** Latest date contained in the field joinRequestedAt */
+    maxJoinRequestedAt?: boolean | number
+    /** Number of unique values for lastCheckedAt */
+    countUniqueValuesLastCheckedAt?: boolean | number
+    /** Number of empty values for lastCheckedAt */
+    countEmptyLastCheckedAt?: boolean | number
+    /** Number of non-empty values for lastCheckedAt */
+    countNotEmptyLastCheckedAt?: boolean | number
+    /** Percentage of empty values for lastCheckedAt */
+    percentageEmptyLastCheckedAt?: boolean | number
+    /** Percentage of non-empty values for lastCheckedAt */
+    percentageNotEmptyLastCheckedAt?: boolean | number
+    /** Earliest date contained in the field lastCheckedAt */
+    minLastCheckedAt?: boolean | number
+    /** Latest date contained in the field lastCheckedAt */
+    maxLastCheckedAt?: boolean | number
+    /** Number of unique values for joinSubmission */
+    countUniqueValuesJoinSubmission?: boolean | number
+    /** Number of empty values for joinSubmission */
+    countEmptyJoinSubmission?: boolean | number
+    /** Number of non-empty values for joinSubmission */
+    countNotEmptyJoinSubmission?: boolean | number
+    /** Percentage of empty values for joinSubmission */
+    percentageEmptyJoinSubmission?: boolean | number
+    /** Percentage of non-empty values for joinSubmission */
+    percentageNotEmptyJoinSubmission?: boolean | number
+    edges?: AgencyGroupEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** log-cli: a Facebook group, on one socialAccount */
+export interface AgencyGroupGroupByConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for facebookGroupId */
+    countUniqueValuesFacebookGroupId?: boolean | number
+    /** Number of empty values for facebookGroupId */
+    countEmptyFacebookGroupId?: boolean | number
+    /** Number of non-empty values for facebookGroupId */
+    countNotEmptyFacebookGroupId?: boolean | number
+    /** Percentage of empty values for facebookGroupId */
+    percentageEmptyFacebookGroupId?: boolean | number
+    /** Percentage of non-empty values for facebookGroupId */
+    percentageNotEmptyFacebookGroupId?: boolean | number
+    /** Number of unique values for groupUrl */
+    countUniqueValuesGroupUrl?: boolean | number
+    /** Number of empty values for groupUrl */
+    countEmptyGroupUrl?: boolean | number
+    /** Number of non-empty values for groupUrl */
+    countNotEmptyGroupUrl?: boolean | number
+    /** Percentage of empty values for groupUrl */
+    percentageEmptyGroupUrl?: boolean | number
+    /** Percentage of non-empty values for groupUrl */
+    percentageNotEmptyGroupUrl?: boolean | number
+    /** Number of unique values for joinStatus */
+    countUniqueValuesJoinStatus?: boolean | number
+    /** Number of empty values for joinStatus */
+    countEmptyJoinStatus?: boolean | number
+    /** Number of non-empty values for joinStatus */
+    countNotEmptyJoinStatus?: boolean | number
+    /** Percentage of empty values for joinStatus */
+    percentageEmptyJoinStatus?: boolean | number
+    /** Percentage of non-empty values for joinStatus */
+    percentageNotEmptyJoinStatus?: boolean | number
+    /** Number of unique values for joinStatusReason */
+    countUniqueValuesJoinStatusReason?: boolean | number
+    /** Number of empty values for joinStatusReason */
+    countEmptyJoinStatusReason?: boolean | number
+    /** Number of non-empty values for joinStatusReason */
+    countNotEmptyJoinStatusReason?: boolean | number
+    /** Percentage of empty values for joinStatusReason */
+    percentageEmptyJoinStatusReason?: boolean | number
+    /** Percentage of non-empty values for joinStatusReason */
+    percentageNotEmptyJoinStatusReason?: boolean | number
+    /** Number of unique values for membersLabel */
+    countUniqueValuesMembersLabel?: boolean | number
+    /** Number of empty values for membersLabel */
+    countEmptyMembersLabel?: boolean | number
+    /** Number of non-empty values for membersLabel */
+    countNotEmptyMembersLabel?: boolean | number
+    /** Percentage of empty values for membersLabel */
+    percentageEmptyMembersLabel?: boolean | number
+    /** Percentage of non-empty values for membersLabel */
+    percentageNotEmptyMembersLabel?: boolean | number
+    /** Number of unique values for joinRequestedAt */
+    countUniqueValuesJoinRequestedAt?: boolean | number
+    /** Number of empty values for joinRequestedAt */
+    countEmptyJoinRequestedAt?: boolean | number
+    /** Number of non-empty values for joinRequestedAt */
+    countNotEmptyJoinRequestedAt?: boolean | number
+    /** Percentage of empty values for joinRequestedAt */
+    percentageEmptyJoinRequestedAt?: boolean | number
+    /** Percentage of non-empty values for joinRequestedAt */
+    percentageNotEmptyJoinRequestedAt?: boolean | number
+    /** Earliest date contained in the field joinRequestedAt */
+    minJoinRequestedAt?: boolean | number
+    /** Latest date contained in the field joinRequestedAt */
+    maxJoinRequestedAt?: boolean | number
+    /** Number of unique values for lastCheckedAt */
+    countUniqueValuesLastCheckedAt?: boolean | number
+    /** Number of empty values for lastCheckedAt */
+    countEmptyLastCheckedAt?: boolean | number
+    /** Number of non-empty values for lastCheckedAt */
+    countNotEmptyLastCheckedAt?: boolean | number
+    /** Percentage of empty values for lastCheckedAt */
+    percentageEmptyLastCheckedAt?: boolean | number
+    /** Percentage of non-empty values for lastCheckedAt */
+    percentageNotEmptyLastCheckedAt?: boolean | number
+    /** Earliest date contained in the field lastCheckedAt */
+    minLastCheckedAt?: boolean | number
+    /** Latest date contained in the field lastCheckedAt */
+    maxLastCheckedAt?: boolean | number
+    /** Number of unique values for joinSubmission */
+    countUniqueValuesJoinSubmission?: boolean | number
+    /** Number of empty values for joinSubmission */
+    countEmptyJoinSubmission?: boolean | number
+    /** Number of non-empty values for joinSubmission */
+    countNotEmptyJoinSubmission?: boolean | number
+    /** Percentage of empty values for joinSubmission */
+    percentageEmptyJoinSubmission?: boolean | number
+    /** Percentage of non-empty values for joinSubmission */
+    percentageNotEmptyJoinSubmission?: boolean | number
+    edges?: AgencyGroupEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    groupByDimensionValues?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface AgencyGroupRelationInput {
+/** Connect to a agencyGroup record */
+connect?: (AgencyGroupConnectInput | null),
+/** Create and connect a agencyGroup record */
+create?: (AgencyGroupCreateInput | null),
+/** Disconnect from a agencyGroup record */
+disconnect?: (Scalars['Boolean'] | null)}
+
+export interface AgencyGroupConnectInput {
+/** Find a agencyGroup record based on its unique fields: id */
+where?: (AgencyGroupWhereUniqueInput | null)}
+
+export interface AgencyGroupWhereUniqueInput {
+/** Connect by ID */
+id?: (Scalars['ID'] | null)}
+
+
+/** log-cli: a Facebook group, on one socialAccount */
+export interface AgencyGroupCreateInput {
+/** Name */
+name?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorCreateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorCreateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),
+/** log-cli: the id in facebook.com/groups/<id>. With the account, the group key */
+facebookGroupId?: (Scalars['String'] | null),
+/** logCli */
+groupUrl?: (Scalars['String'] | null),
+/** logCli */
+socialAccountId?: (Scalars['ID'] | null),
+/** logCli */
+socialAccount?: (SocialAccountRelationInput | null),
+/** log-cli: NOT_MEMBER (a Join button), REQUESTED (Join pressed, not a member yet), MEMBER (Joined), UNKNOWN (a page not recorded yet) */
+joinStatus?: (AgencyGroupJoinStatusEnum | null),
+/** log-cli: what the page showed, and the run folder it was read in */
+joinStatusReason?: (Scalars['String'] | null),
+/** log-cli: the member count as the group page shows it (17.3K members) */
+membersLabel?: (Scalars['String'] | null),
+/** log-cli: when log join group --live pressed Join */
+joinRequestedAt?: (Scalars['DateTime'] | null),
+/** log-cli: when a run last read the group page */
+lastCheckedAt?: (Scalars['DateTime'] | null),
+/** log-cli: { formPhase, questions, questionsHash, questionsScrapedAt, draftAnswers, answers, answersComplete, submittedAt, lastActivityAt, history[] } */
+joinSubmission?: (Scalars['JSON'] | null)}
+
+
+/** log-cli: a Facebook group, on one socialAccount */
+export interface AgencyGroupUpdateInput {
+/** Name */
+name?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorUpdateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorUpdateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),
+/** log-cli: the id in facebook.com/groups/<id>. With the account, the group key */
+facebookGroupId?: (Scalars['String'] | null),
+/** logCli */
+groupUrl?: (Scalars['String'] | null),
+/** logCli */
+socialAccountId?: (Scalars['ID'] | null),
+/** logCli */
+socialAccount?: (SocialAccountRelationInput | null),
+/** log-cli: NOT_MEMBER (a Join button), REQUESTED (Join pressed, not a member yet), MEMBER (Joined), UNKNOWN (a page not recorded yet) */
+joinStatus?: (AgencyGroupJoinStatusEnum | null),
+/** log-cli: what the page showed, and the run folder it was read in */
+joinStatusReason?: (Scalars['String'] | null),
+/** log-cli: the member count as the group page shows it (17.3K members) */
+membersLabel?: (Scalars['String'] | null),
+/** log-cli: when log join group --live pressed Join */
+joinRequestedAt?: (Scalars['DateTime'] | null),
+/** log-cli: when a run last read the group page */
+lastCheckedAt?: (Scalars['DateTime'] | null),
+/** log-cli: { formPhase, questions, questionsHash, questionsScrapedAt, draftAnswers, answers, answersComplete, submittedAt, lastActivityAt, history[] } */
+joinSubmission?: (Scalars['JSON'] | null)}
+
+
+/** log-cli: a Facebook group, on one socialAccount */
+export interface AgencyGroupFilterInput {
+/** Name */
+name?: (StringFilter | null),
+/** ID */
+id?: (UUIDFilter | null),
+/** Creation date */
+createdAt?: (DateTimeFilter | null),
+/** The creator of the record */
+createdBy?: (ActorFilterInput | null),
+/** Deletion date */
+deletedAt?: (DateTimeFilter | null),
+/** Position */
+position?: (FloatFilter | null),
+/** Last time the record was changed */
+updatedAt?: (DateTimeFilter | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorFilterInput | null),
+/** Search vector */
+searchVector?: (TSVectorFilter | null),
+/** log-cli: the id in facebook.com/groups/<id>. With the account, the group key */
+facebookGroupId?: (StringFilter | null),
+/** logCli */
+groupUrl?: (StringFilter | null),
+/** logCli */
+socialAccountId?: (UUIDFilter | null),
+/** Filter on fields of the related socialAccount */
+socialAccount?: (SocialAccountFilterInput | null),
+/** log-cli: NOT_MEMBER (a Join button), REQUESTED (Join pressed, not a member yet), MEMBER (Joined), UNKNOWN (a page not recorded yet) */
+joinStatus?: (AgencyGroupJoinStatusEnumFilter | null),
+/** log-cli: what the page showed, and the run folder it was read in */
+joinStatusReason?: (StringFilter | null),
+/** log-cli: the member count as the group page shows it (17.3K members) */
+membersLabel?: (StringFilter | null),
+/** log-cli: when log join group --live pressed Join */
+joinRequestedAt?: (DateTimeFilter | null),
+/** log-cli: when a run last read the group page */
+lastCheckedAt?: (DateTimeFilter | null),
+/** log-cli: { formPhase, questions, questionsHash, questionsScrapedAt, draftAnswers, answers, answersComplete, submittedAt, lastActivityAt, history[] } */
+joinSubmission?: (RawJsonFilter | null),and?: ((AgencyGroupFilterInput | null)[] | null),or?: ((AgencyGroupFilterInput | null)[] | null),not?: (AgencyGroupFilterInput | null)}
+
+export interface AgencyGroupJoinStatusEnumFilter {eq?: (AgencyGroupJoinStatusEnum | null),neq?: (AgencyGroupJoinStatusEnum | null),in?: ((AgencyGroupJoinStatusEnum | null)[] | null),containsAny?: ((AgencyGroupJoinStatusEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AgencyGroupJoinStatusEnum | null),gte?: (AgencyGroupJoinStatusEnum | null),lt?: (AgencyGroupJoinStatusEnum | null),lte?: (AgencyGroupJoinStatusEnum | null)}
+
+
+/** log-cli: a Facebook group, on one socialAccount */
+export interface AgencyGroupOrderByInput {
+/** Name */
+name?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDirection | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDirection | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDirection | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),
+/** log-cli: the id in facebook.com/groups/<id>. With the account, the group key */
+facebookGroupId?: (OrderByDirection | null),
+/** logCli */
+groupUrl?: (OrderByDirection | null),
+/** logCli */
+socialAccountId?: (OrderByDirection | null),
+/** Order by fields of the related socialAccount */
+socialAccount?: (SocialAccountOrderByInput | null),
+/** log-cli: NOT_MEMBER (a Join button), REQUESTED (Join pressed, not a member yet), MEMBER (Joined), UNKNOWN (a page not recorded yet) */
+joinStatus?: (OrderByDirection | null),
+/** log-cli: what the page showed, and the run folder it was read in */
+joinStatusReason?: (OrderByDirection | null),
+/** log-cli: the member count as the group page shows it (17.3K members) */
+membersLabel?: (OrderByDirection | null),
+/** log-cli: when log join group --live pressed Join */
+joinRequestedAt?: (OrderByDirection | null),
+/** log-cli: when a run last read the group page */
+lastCheckedAt?: (OrderByDirection | null),
+/** log-cli: { formPhase, questions, questionsHash, questionsScrapedAt, draftAnswers, answers, answersComplete, submittedAt, lastActivityAt, history[] } */
+joinSubmission?: (OrderByDirection | null)}
+
+
+/** log-cli: a Facebook group, on one socialAccount */
+export interface AgencyGroupOrderByWithGroupByInput {
+/** Order by aggregate values */
+aggregate?: (AgencyGroupOrderByWithGroupByAggregateInput | null),
+/** Name */
+name?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDateGranularityInput | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDateGranularityInput | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDateGranularityInput | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),
+/** log-cli: the id in facebook.com/groups/<id>. With the account, the group key */
+facebookGroupId?: (OrderByDirection | null),
+/** logCli */
+groupUrl?: (OrderByDirection | null),
+/** logCli */
+socialAccountId?: (OrderByDirection | null),
+/** Order by fields of the related socialAccount */
+socialAccount?: (SocialAccountOrderByWithGroupByInput | null),
+/** log-cli: NOT_MEMBER (a Join button), REQUESTED (Join pressed, not a member yet), MEMBER (Joined), UNKNOWN (a page not recorded yet) */
+joinStatus?: (OrderByDirection | null),
+/** log-cli: what the page showed, and the run folder it was read in */
+joinStatusReason?: (OrderByDirection | null),
+/** log-cli: the member count as the group page shows it (17.3K members) */
+membersLabel?: (OrderByDirection | null),
+/** log-cli: when log join group --live pressed Join */
+joinRequestedAt?: (OrderByDateGranularityInput | null),
+/** log-cli: when a run last read the group page */
+lastCheckedAt?: (OrderByDateGranularityInput | null),
+/** log-cli: { formPhase, questions, questionsHash, questionsScrapedAt, draftAnswers, answers, answersComplete, submittedAt, lastActivityAt, history[] } */
+joinSubmission?: (OrderByDirection | null)}
+
+
+/** Aggregate-based ordering */
+export interface AgencyGroupOrderByWithGroupByAggregateInput {
+/** Total number of records in the connection */
+totalCount?: (OrderByDirection | null),
+/** Number of unique values for name */
+countUniqueValuesName?: (OrderByDirection | null),
+/** Number of empty values for name */
+countEmptyName?: (OrderByDirection | null),
+/** Number of non-empty values for name */
+countNotEmptyName?: (OrderByDirection | null),
+/** Percentage of empty values for name */
+percentageEmptyName?: (OrderByDirection | null),
+/** Percentage of non-empty values for name */
+percentageNotEmptyName?: (OrderByDirection | null),
+/** Number of unique values for id */
+countUniqueValuesId?: (OrderByDirection | null),
+/** Number of empty values for id */
+countEmptyId?: (OrderByDirection | null),
+/** Number of non-empty values for id */
+countNotEmptyId?: (OrderByDirection | null),
+/** Percentage of empty values for id */
+percentageEmptyId?: (OrderByDirection | null),
+/** Percentage of non-empty values for id */
+percentageNotEmptyId?: (OrderByDirection | null),
+/** Number of unique values for createdAt */
+countUniqueValuesCreatedAt?: (OrderByDirection | null),
+/** Number of empty values for createdAt */
+countEmptyCreatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for createdAt */
+countNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for createdAt */
+percentageEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdAt */
+percentageNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field createdAt */
+minCreatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field createdAt */
+maxCreatedAt?: (OrderByDirection | null),
+/** Number of unique values for createdBy */
+countUniqueValuesCreatedBy?: (OrderByDirection | null),
+/** Number of empty values for createdBy */
+countEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for createdBy */
+countNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for createdBy */
+percentageEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdBy */
+percentageNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of unique values for deletedAt */
+countUniqueValuesDeletedAt?: (OrderByDirection | null),
+/** Number of empty values for deletedAt */
+countEmptyDeletedAt?: (OrderByDirection | null),
+/** Number of non-empty values for deletedAt */
+countNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of empty values for deletedAt */
+percentageEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for deletedAt */
+percentageNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field deletedAt */
+minDeletedAt?: (OrderByDirection | null),
+/** Latest date contained in the field deletedAt */
+maxDeletedAt?: (OrderByDirection | null),
+/** Number of unique values for position */
+countUniqueValuesPosition?: (OrderByDirection | null),
+/** Number of empty values for position */
+countEmptyPosition?: (OrderByDirection | null),
+/** Number of non-empty values for position */
+countNotEmptyPosition?: (OrderByDirection | null),
+/** Percentage of empty values for position */
+percentageEmptyPosition?: (OrderByDirection | null),
+/** Percentage of non-empty values for position */
+percentageNotEmptyPosition?: (OrderByDirection | null),
+/** Number of unique values for updatedAt */
+countUniqueValuesUpdatedAt?: (OrderByDirection | null),
+/** Number of empty values for updatedAt */
+countEmptyUpdatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for updatedAt */
+countNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for updatedAt */
+percentageEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedAt */
+percentageNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field updatedAt */
+minUpdatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field updatedAt */
+maxUpdatedAt?: (OrderByDirection | null),
+/** Number of unique values for updatedBy */
+countUniqueValuesUpdatedBy?: (OrderByDirection | null),
+/** Number of empty values for updatedBy */
+countEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for updatedBy */
+countNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for updatedBy */
+percentageEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedBy */
+percentageNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of unique values for searchVector */
+countUniqueValuesSearchVector?: (OrderByDirection | null),
+/** Number of empty values for searchVector */
+countEmptySearchVector?: (OrderByDirection | null),
+/** Number of non-empty values for searchVector */
+countNotEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of empty values for searchVector */
+percentageEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of non-empty values for searchVector */
+percentageNotEmptySearchVector?: (OrderByDirection | null),
+/** Number of unique values for facebookGroupId */
+countUniqueValuesFacebookGroupId?: (OrderByDirection | null),
+/** Number of empty values for facebookGroupId */
+countEmptyFacebookGroupId?: (OrderByDirection | null),
+/** Number of non-empty values for facebookGroupId */
+countNotEmptyFacebookGroupId?: (OrderByDirection | null),
+/** Percentage of empty values for facebookGroupId */
+percentageEmptyFacebookGroupId?: (OrderByDirection | null),
+/** Percentage of non-empty values for facebookGroupId */
+percentageNotEmptyFacebookGroupId?: (OrderByDirection | null),
+/** Number of unique values for groupUrl */
+countUniqueValuesGroupUrl?: (OrderByDirection | null),
+/** Number of empty values for groupUrl */
+countEmptyGroupUrl?: (OrderByDirection | null),
+/** Number of non-empty values for groupUrl */
+countNotEmptyGroupUrl?: (OrderByDirection | null),
+/** Percentage of empty values for groupUrl */
+percentageEmptyGroupUrl?: (OrderByDirection | null),
+/** Percentage of non-empty values for groupUrl */
+percentageNotEmptyGroupUrl?: (OrderByDirection | null),
+/** logCli */
+socialAccountId?: (OrderByDirection | null),
+/** Order by fields of the related socialAccount */
+socialAccount?: (SocialAccountOrderByInput | null),
+/** Number of unique values for joinStatus */
+countUniqueValuesJoinStatus?: (OrderByDirection | null),
+/** Number of empty values for joinStatus */
+countEmptyJoinStatus?: (OrderByDirection | null),
+/** Number of non-empty values for joinStatus */
+countNotEmptyJoinStatus?: (OrderByDirection | null),
+/** Percentage of empty values for joinStatus */
+percentageEmptyJoinStatus?: (OrderByDirection | null),
+/** Percentage of non-empty values for joinStatus */
+percentageNotEmptyJoinStatus?: (OrderByDirection | null),
+/** Number of unique values for joinStatusReason */
+countUniqueValuesJoinStatusReason?: (OrderByDirection | null),
+/** Number of empty values for joinStatusReason */
+countEmptyJoinStatusReason?: (OrderByDirection | null),
+/** Number of non-empty values for joinStatusReason */
+countNotEmptyJoinStatusReason?: (OrderByDirection | null),
+/** Percentage of empty values for joinStatusReason */
+percentageEmptyJoinStatusReason?: (OrderByDirection | null),
+/** Percentage of non-empty values for joinStatusReason */
+percentageNotEmptyJoinStatusReason?: (OrderByDirection | null),
+/** Number of unique values for membersLabel */
+countUniqueValuesMembersLabel?: (OrderByDirection | null),
+/** Number of empty values for membersLabel */
+countEmptyMembersLabel?: (OrderByDirection | null),
+/** Number of non-empty values for membersLabel */
+countNotEmptyMembersLabel?: (OrderByDirection | null),
+/** Percentage of empty values for membersLabel */
+percentageEmptyMembersLabel?: (OrderByDirection | null),
+/** Percentage of non-empty values for membersLabel */
+percentageNotEmptyMembersLabel?: (OrderByDirection | null),
+/** Number of unique values for joinRequestedAt */
+countUniqueValuesJoinRequestedAt?: (OrderByDirection | null),
+/** Number of empty values for joinRequestedAt */
+countEmptyJoinRequestedAt?: (OrderByDirection | null),
+/** Number of non-empty values for joinRequestedAt */
+countNotEmptyJoinRequestedAt?: (OrderByDirection | null),
+/** Percentage of empty values for joinRequestedAt */
+percentageEmptyJoinRequestedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for joinRequestedAt */
+percentageNotEmptyJoinRequestedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field joinRequestedAt */
+minJoinRequestedAt?: (OrderByDirection | null),
+/** Latest date contained in the field joinRequestedAt */
+maxJoinRequestedAt?: (OrderByDirection | null),
+/** Number of unique values for lastCheckedAt */
+countUniqueValuesLastCheckedAt?: (OrderByDirection | null),
+/** Number of empty values for lastCheckedAt */
+countEmptyLastCheckedAt?: (OrderByDirection | null),
+/** Number of non-empty values for lastCheckedAt */
+countNotEmptyLastCheckedAt?: (OrderByDirection | null),
+/** Percentage of empty values for lastCheckedAt */
+percentageEmptyLastCheckedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for lastCheckedAt */
+percentageNotEmptyLastCheckedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field lastCheckedAt */
+minLastCheckedAt?: (OrderByDirection | null),
+/** Latest date contained in the field lastCheckedAt */
+maxLastCheckedAt?: (OrderByDirection | null),
+/** Number of unique values for joinSubmission */
+countUniqueValuesJoinSubmission?: (OrderByDirection | null),
+/** Number of empty values for joinSubmission */
+countEmptyJoinSubmission?: (OrderByDirection | null),
+/** Number of non-empty values for joinSubmission */
+countNotEmptyJoinSubmission?: (OrderByDirection | null),
+/** Percentage of empty values for joinSubmission */
+percentageEmptyJoinSubmission?: (OrderByDirection | null),
+/** Percentage of non-empty values for joinSubmission */
+percentageNotEmptyJoinSubmission?: (OrderByDirection | null)}
+
+
+/** log-cli: a Facebook group, on one socialAccount */
+export interface AgencyGroupGroupByInput {
+/** Name */
+name?: (Scalars['Boolean'] | null),
+/** Creation date */
+createdAt?: (GroupByDateGranularityInput | null),
+/** Last time the record was changed */
+updatedAt?: (GroupByDateGranularityInput | null),
+/** log-cli: the id in facebook.com/groups/<id>. With the account, the group key */
+facebookGroupId?: (Scalars['Boolean'] | null),
+/** logCli */
+groupUrl?: (Scalars['Boolean'] | null),
+/** Group by fields of the related socialAccount */
+socialAccount?: (SocialAccountGroupByInput | null),
+/** log-cli: NOT_MEMBER (a Join button), REQUESTED (Join pressed, not a member yet), MEMBER (Joined), UNKNOWN (a page not recorded yet) */
+joinStatus?: (Scalars['Boolean'] | null),
+/** log-cli: what the page showed, and the run folder it was read in */
+joinStatusReason?: (Scalars['Boolean'] | null),
+/** log-cli: the member count as the group page shows it (17.3K members) */
+membersLabel?: (Scalars['Boolean'] | null),
+/** log-cli: when log join group --live pressed Join */
+joinRequestedAt?: (GroupByDateGranularityInput | null),
+/** log-cli: when a run last read the group page */
+lastCheckedAt?: (GroupByDateGranularityInput | null)}
+
 export interface QueryGenqlSelection{
     competitors?: (CompetitorConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (CompetitorFilterInput | null), orderBy?: ((CompetitorOrderByInput | null)[] | null)} })
     competitor?: (CompetitorGenqlSelection & { __args: {filter: CompetitorFilterInput} })
@@ -125392,6 +127091,9 @@ export interface QueryGenqlSelection{
     dialerFilterViews?: (DialerFilterViewConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (DialerFilterViewFilterInput | null), orderBy?: ((DialerFilterViewOrderByInput | null)[] | null)} })
     dialerFilterView?: (DialerFilterViewGenqlSelection & { __args: {filter: DialerFilterViewFilterInput} })
     dialerFilterViewsGroupBy?: (DialerFilterViewGroupByConnectionGenqlSelection & { __args: {groupBy: DialerFilterViewGroupByInput[], filter?: (DialerFilterViewFilterInput | null), orderBy?: ((DialerFilterViewOrderByWithGroupByInput | null)[] | null), orderByForRecords?: ((DialerFilterViewOrderByInput | null)[] | null), viewId?: (Scalars['UUID'] | null), limit?: (Scalars['Int'] | null), offsetForRecords?: (Scalars['Int'] | null)} })
+    agencyGroups?: (AgencyGroupConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgencyGroupFilterInput | null), orderBy?: ((AgencyGroupOrderByInput | null)[] | null)} })
+    agencyGroup?: (AgencyGroupGenqlSelection & { __args: {filter: AgencyGroupFilterInput} })
+    agencyGroupsGroupBy?: (AgencyGroupGroupByConnectionGenqlSelection & { __args: {groupBy: AgencyGroupGroupByInput[], filter?: (AgencyGroupFilterInput | null), orderBy?: ((AgencyGroupOrderByWithGroupByInput | null)[] | null), orderByForRecords?: ((AgencyGroupOrderByInput | null)[] | null), viewId?: (Scalars['UUID'] | null), limit?: (Scalars['Int'] | null), offsetForRecords?: (Scalars['Int'] | null)} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -126099,6 +127801,16 @@ export interface MutationGenqlSelection{
     destroyDialerFilterViews?: (DialerFilterViewGenqlSelection & { __args: {filter: DialerFilterViewFilterInput} })
     restoreDialerFilterView?: (DialerFilterViewGenqlSelection & { __args: {id: Scalars['UUID']} })
     restoreDialerFilterViews?: (DialerFilterViewGenqlSelection & { __args: {filter: DialerFilterViewFilterInput} })
+    createAgencyGroups?: (AgencyGroupGenqlSelection & { __args: {data: AgencyGroupCreateInput[], upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    createAgencyGroup?: (AgencyGroupGenqlSelection & { __args: {data: AgencyGroupCreateInput, upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    updateAgencyGroup?: (AgencyGroupGenqlSelection & { __args: {id: Scalars['UUID'], data: AgencyGroupUpdateInput} })
+    deleteAgencyGroup?: (AgencyGroupGenqlSelection & { __args: {id: Scalars['UUID']} })
+    updateAgencyGroups?: (AgencyGroupGenqlSelection & { __args: {data: AgencyGroupUpdateInput, filter: AgencyGroupFilterInput} })
+    deleteAgencyGroups?: (AgencyGroupGenqlSelection & { __args: {filter: AgencyGroupFilterInput} })
+    destroyAgencyGroup?: (AgencyGroupGenqlSelection & { __args: {id: Scalars['UUID']} })
+    destroyAgencyGroups?: (AgencyGroupGenqlSelection & { __args: {filter: AgencyGroupFilterInput} })
+    restoreAgencyGroup?: (AgencyGroupGenqlSelection & { __args: {id: Scalars['UUID']} })
+    restoreAgencyGroups?: (AgencyGroupGenqlSelection & { __args: {filter: AgencyGroupFilterInput} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -128452,6 +130164,38 @@ export interface ShareWithInput {workspaceMemberId?: (Scalars['UUID'] | null),ro
     
 
 
+    const AgencyGroup_possibleTypes: string[] = ['AgencyGroup']
+    export const isAgencyGroup = (obj?: { __typename?: any } | null): obj is AgencyGroup => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAgencyGroup"')
+      return AgencyGroup_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AgencyGroupEdge_possibleTypes: string[] = ['AgencyGroupEdge']
+    export const isAgencyGroupEdge = (obj?: { __typename?: any } | null): obj is AgencyGroupEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAgencyGroupEdge"')
+      return AgencyGroupEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AgencyGroupConnection_possibleTypes: string[] = ['AgencyGroupConnection']
+    export const isAgencyGroupConnection = (obj?: { __typename?: any } | null): obj is AgencyGroupConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAgencyGroupConnection"')
+      return AgencyGroupConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AgencyGroupGroupByConnection_possibleTypes: string[] = ['AgencyGroupGroupByConnection']
+    export const isAgencyGroupGroupByConnection = (obj?: { __typename?: any } | null): obj is AgencyGroupGroupByConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAgencyGroupGroupByConnection"')
+      return AgencyGroupGroupByConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
     const Query_possibleTypes: string[] = ['Query']
     export const isQuery = (obj?: { __typename?: any } | null): obj is Query => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isQuery"')
@@ -129797,6 +131541,13 @@ export const enumAgencyConversationLeadStatusEnum = {
 export const enumAgencyConversationChannelEnum = {
    SMS: 'SMS' as const,
    FACEBOOK_MARKETPLACE: 'FACEBOOK_MARKETPLACE' as const
+}
+
+export const enumAgencyGroupJoinStatusEnum = {
+   NOT_MEMBER: 'NOT_MEMBER' as const,
+   REQUESTED: 'REQUESTED' as const,
+   MEMBER: 'MEMBER' as const,
+   UNKNOWN: 'UNKNOWN' as const
 }
 
 export const enumRecordShareAccessLevel = {

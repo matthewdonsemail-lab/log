@@ -94,6 +94,29 @@ Exposing port 50325 or the CDP ports to the internet is not an option:
    tunnel), to run `log` commands, see the Xvfb display over VNC, and read run folders.
    The AdsPower MCP server can work from dev through an SSH tunnel to 127.0.0.1:50325.
 
+## The log MCP server, remotely
+
+The same tools as over stdio, served over MCP's Streamable HTTP so a client on
+another machine can drive the browser server:
+
+```
+LOG_MCP_TOKEN=<a long random token> bun bin/logMcp.ts --http --host <tailscale ip> --port 7337
+```
+
+- **Endpoint:** `http://<host>:7337/mcp`. A client sends `Authorization: Bearer <token>`.
+- **Loopback by default** (`127.0.0.1`, no token needed). Any other address refuses to start
+  without `LOG_MCP_TOKEN`, and checks the Host header (DNS rebinding). Bind it to the private
+  network's address (Tailscale), never a public one; or keep it on loopback and reach it
+  through an SSH tunnel.
+- **One session per client**, its progress lines streamed as they happen (logging
+  notifications), as over stdio.
+- **The same guards:** `--live` needs `confirmLive: true` (rule 10); a join, fill or check runs in
+  the account's open browser, opened with `inspect start --account <a> --detach` (rule 35).
+- **What a client gets** (MCP's client best practices): every tool declares one `outputSchema`
+  and returns `structuredContent` (`exit`, `ok`, `stdout`, `stderr`, `log`, and `json` when the
+  command printed JSON); failures come back as `isError`; `tools.listChanged` is on and a saved
+  flow (a tool of its own) sends `notifications/tools/list_changed`.
+
 ## The 2Captcha proxies (rule 43): what changes with an always-open browser
 
 - **How a session works:** the account's proxy username carries country, state, city,

@@ -1,15 +1,16 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { evidenceIdOf } from '../../rea/capture/client'
 import { renderFlowDoc } from './helpers/index'
 import type { RecordedCommand } from './helpers/index'
 import type { FlowDefinition } from './types'
 
 /** Saved flows, committed: `src/camofox/flow/definitions/<name>.json`. */
 export const FLOWS_DIR = fileURLToPath(new URL('./definitions', import.meta.url))
-/** Their docs: `docs/facebookClient/flows/<name>.md`. */
-export const FLOW_DOCS_DIR = fileURLToPath(new URL('../../../docs/facebookClient/flows', import.meta.url))
-const REQUEST_DOCS = fileURLToPath(new URL('../../../docs/facebookClient', import.meta.url))
+/** Their docs: `docs/platforms/facebook/flows/<name>.md`. */
+export const FLOW_DOCS_DIR = fileURLToPath(new URL('../../../docs/platforms/facebook/flows', import.meta.url))
+const REQUEST_DOCS = fileURLToPath(new URL('../../../docs/platforms/facebook', import.meta.url))
 
 const jsonLines = <T>(path: string): T[] =>
   existsSync(path)
@@ -30,6 +31,18 @@ const jsonLines = <T>(path: string): T[] =>
  * own args (typed text, file paths: the reply only names the ref), and the
  * reply's step, page, requests, rea Evidence and snapshot.
  */
+/** rea's Evidence id from a step's rea.json, written when it finished reading; null while it hasn't. */
+function laterEvidence(path: string): string | null {
+  if (!existsSync(path)) return null
+  try {
+    const read = JSON.parse(readFileSync(path, 'utf8')) as { evidenceId?: string | null; stdout?: string }
+    // Slim rea.json (its answer) or the older full printout.
+    return read.evidenceId ?? evidenceIdOf(String(read.stdout ?? ''))
+  } catch {
+    return null
+  }
+}
+
 export function readRecordedCommands(runDir: string): RecordedCommand[] {
   const commands = new Map(jsonLines<{ id: string; action: string; args: string[] }>(join(runDir, 'commands.jsonl')).map((c) => [c.id, c]))
   const out: RecordedCommand[] = []
@@ -46,7 +59,8 @@ export function readRecordedCommands(runDir: string): RecordedCommand[] {
       url: r.url ?? '',
       ms: r.ms ?? null,
       notable: r.notable ?? [],
-      reaEvidenceId: r.rea?.evidenceId ?? null,
+      // A step whose reply didn't wait for rea (`reaLater`) has its reading in the step's rea.json.
+      reaEvidenceId: r.rea?.evidenceId ?? laterEvidence(join(runDir, 'steps', r.step, 'rea.json')),
       snapshot: existsSync(snapshotPath) ? readFileSync(snapshotPath, 'utf8') : ''
     })
   }
@@ -69,7 +83,7 @@ export function saveFlow(flow: FlowDefinition, dir = FLOWS_DIR): string {
   return path
 }
 
-/** A request's doc in docs/facebookClient, relative to the flow docs, if it has one. */
+/** A request's doc in docs/platforms/facebook, relative to the flow docs, if it has one. */
 function requestDocFor(name: string): string | null {
   try {
     const index = JSON.parse(readFileSync(join(REQUEST_DOCS, 'operations.json'), 'utf8')) as { operations: { name: string; doc: string }[] }

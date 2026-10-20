@@ -164,3 +164,21 @@ describe("the doc", () => {
     expect(rebuilt).not.toContain(TO_WRITE);
   });
 });
+
+describe("the groups domain (rule 48)", () => {
+  test("the group requests recorded on Bethlehem's groups are groups; the chat sidebar's group chats stay background", async () => {
+    const { domainOf } = await import("./index");
+    for (const name of ["CometGroupRootQuery", "GroupsCometDiscussionLayoutRootQuery", "useGroupsCometVisitMutation", "GroupCometJoinForumMutation", "useGroupRequestToJoinMutation", "GroupsCometRequestToParticipateOnJoinDialogQuery", "GroupsCometMembershipQuestionsPreloadedDialogQuery", "useGroupMembershipAnswersSaveMutation"]) {
+      expect(domainOf(name)).toBe("groups");
+    }
+    expect(domainOf("CometHomeContactGroupsContainerQuery")).toBe("background");
+  });
+});
+
+describe("the reels domain, from the first Reels recording (rule 49)", () => {
+  test("desktop Reels' unified video requests are reels; Messenger's video setting stays background", async () => {
+    const { domainOf } = await import("./index");
+    for (const name of ["FBUnifiedVideoSeenStateMutation", "FBUnifiedVideoContainerQuery", "FBUnifiedVideoFeedbackRightRailWithCommentPreloadingQuery", "FBUnifiedVideoProfileSavedReelsQuery", "FBUnifiedVideoEntityDialogImplQuery"]) expect(domainOf(name)).toBe("reels");
+    expect(domainOf("fetchMWChatVideoAutoplaySettingQuery")).toBe("background");
+  });
+});

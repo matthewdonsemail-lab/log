@@ -138,23 +138,35 @@ CONTAINER_STEP_JS = """(el, d) => {
 }"""
 
 
-def _wheel_point(page: Any, rng: random.Random) -> tuple[float, float]:
-    vp = page.viewport_size or {"width": 1280, "height": 800}
+def _viewport(page: Any, mouse: Any = None) -> dict:
+    """The page's viewport, or the window size the mouse measured when Playwright has none (an attached browser, rule 44)."""
+    if mouse is not None and hasattr(mouse, "viewport"):
+        return mouse.viewport()
+    return page.viewport_size or {"width": 1280, "height": 800}
+
+
+def _wheel_point(page: Any, rng: random.Random, mouse: Any = None) -> tuple[float, float]:
+    vp = _viewport(page, mouse)
     return vp["width"] * 0.5 + rng.uniform(-60, 60), vp["height"] * 0.45 + rng.uniform(-50, 50)
 
 
 # -- async (the inspect and flow sessions) --------------------------------------------------------
-async def scroll_by(page: Any, distance: float, mouse: Any = None, log=lambda _l: None) -> int:
+async def scroll_by(page: Any, distance: float, mouse: Any = None, log=lambda _l: None, at: tuple[float, float] | None = None) -> int:
     """One human scroll of `distance` px on the page (scroll_motion.human_scroll_by). The cursor glides onto
-    the page first (humanMouse), so the wheel lands where a hand is. Returns the steps sent."""
+    the page first (humanMouse), so the wheel lands where a hand is. `at`: the point to scroll over (a side
+    panel the page's middle isn't over, e.g. a reel's comments), glided to first. Returns the steps sent."""
     steps = human_scroll_trajectory(distance)
     if not steps:
         return 0
     rng = random.Random()
-    x, y = _wheel_point(page, rng)
-    if mouse is not None and mouse.x is not None:
+    x, y = at if at is not None else _wheel_point(page, rng, mouse)
+    if at is not None and mouse is not None:
+        await mouse.glide(x, y, "scrollPosition")
+    elif at is not None:
+        await asyncio.wait_for(page.mouse.move(x, y), timeout=5.0)
+    elif mouse is not None and mouse.x is not None:
         # Already over the page's middle band: scroll where the hand is, as a person does.
-        vp = page.viewport_size or {"width": 1280, "height": 800}
+        vp = _viewport(page, mouse)
         if not (vp["width"] * 0.2 < mouse.x < vp["width"] * 0.8 and vp["height"] * 0.15 < mouse.y < vp["height"] * 0.85):
             await mouse.glide(x, y, "scrollPosition")
     elif mouse is not None:

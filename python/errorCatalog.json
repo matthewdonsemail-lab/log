@@ -1513,5 +1513,81 @@
       "python/browserDriver"
     ],
     "action": "Run `log adsPower sync --apply` (it makes the profile and links it)."
+  },
+  "groupRefInvalid": {
+    "layer": "group",
+    "meaning": "--group names no Facebook group (a facebook.com/groups/<id or name>/ URL, the id, or the name in the URL).",
+    "retryable": false,
+    "raisedIn": [
+      "group/join"
+    ],
+    "action": "Copy the group's URL from the browser and pass it as --group."
+  },
+  "groupBrowserNotOpen": {
+    "layer": "group",
+    "meaning": "The account's browser is not open: a join is a step in it, never a launch of its own (rule 35).",
+    "retryable": false,
+    "raisedIn": [
+      "cli/join"
+    ],
+    "action": "Open it first: log inspect start --account <a> (or log host start), then run the join again."
+  },
+  "groupPageNotOpened": {
+    "layer": "group",
+    "meaning": "The group page did not open in the account's browser.",
+    "retryable": true,
+    "raisedIn": [
+      "group/join.opening"
+    ],
+    "action": "Read the run's step folder (rule 25): its screenshot and HAR show where the page went."
+  },
+  "groupGateUnknown": {
+    "layer": "group",
+    "meaning": "The group page showed neither a Join nor a Joined button: a page not recorded yet.",
+    "retryable": false,
+    "raisedIn": [
+      "group/join.reading"
+    ],
+    "action": "Read the step's snapshot.yml and screenshot: name the page's button in group/join/helpers/readGroupPage.ts from that recording (rule 29)."
+  },
+  "groupQuestionsNotReopened": {
+    "layer": "group",
+    "meaning": "The group page shows no way back into its questions: no \"Answer questions\" button and no open dialog.",
+    "retryable": false,
+    "raisedIn": [
+      "group/answer.choosing",
+      "group/answer.reopening"
+    ],
+    "action": "Read the opening step's snapshot (rule 25): a public group's participation questions have no recorded way back in yet. Record one with log inspect before filling it (rule 29)."
+  },
+  "groupFillIncomplete": {
+    "layer": "group",
+    "meaning": "A fill step had no element in the dialog, or one failed: the draft and the dialog don't match.",
+    "retryable": false,
+    "raisedIn": [
+      "group/answer.planning",
+      "group/answer.filling"
+    ],
+    "action": "Read the reading step's snapshot.yml: the questions may have changed (run the stepper again: log join group --answer), or a type isn't recorded yet."
+  },
+  "groupSubmitNotConfirmed": {
+    "layer": "group",
+    "meaning": "Submit was pressed and the dialog stayed open, or the click failed. It is not pressed again.",
+    "retryable": false,
+    "raisedIn": [
+      "group/answer.submitting",
+      "group/answer.checking"
+    ],
+    "action": "Read the submitting and checking steps' recordings (rule 25) before another --submit."
+  },
+  "groupJoinNotConfirmed": {
+    "layer": "group",
+    "meaning": "Join was pressed and the page did not change, or the click failed. It is not pressed again.",
+    "retryable": false,
+    "raisedIn": [
+      "group/join.joining",
+      "group/join.checking"
+    ],
+    "action": "Read the joining and checking steps' recordings (rule 25) before another --live run."
   }
 }

@@ -76,3 +76,45 @@ describe("log inspect", () => {
     expect(openInspects()).toEqual([]);
   });
 });
+
+describe("log inspect start --detach (how an MCP agent opens the account's browser)", () => {
+  test("starts the session as its own process and returns once its browser is ready", async () => {
+    const { inspectDetachDeps } = await import("./index.ts");
+    const { writeCurrentInspect, clearCurrentInspect } = await import("../../camofox/inspect/index.ts");
+    const { writeFileSync } = await import("node:fs");
+    const real = { ...inspectDetachDeps };
+    const started: string[][] = [];
+    const runDir = mkdtempSync(join(tmpdir(), "logDetachRun"));
+    inspectDetachDeps.start = (argv) => {
+      started.push(argv);
+      // What the real session writes once its gate and self-check passed.
+      writeCurrentInspect({ account: "galwayOne", runDir, commandsPath: join(runDir, "commands.jsonl"), repliesPath: join(runDir, "replies.jsonl"), startedAt: "2026-10-20T00:00:00.000Z" });
+      writeFileSync(join(runDir, "replies.jsonl"), '{"id": "ready", "result": {"ok": true}}\n');
+      return { exited: () => null };
+    };
+    try {
+      const out: string[] = [];
+      const code = await runCli(["inspect", "start", "--account", "galwayOne", "--detach"], { twenty: marketplaceFixture(), out: (l) => out.push(l), err: () => {} });
+      expect(code).toBe(0);
+      expect(started).toEqual([["inspect", "start", "--account", "galwayOne"]]);
+      expect(out.join("\n")).toContain("is open, as its own process");
+    } finally {
+      Object.assign(inspectDetachDeps, real);
+      clearCurrentInspect(undefined, "galwayOne");
+    }
+  });
+
+  test("a session that ends before it is ready returns its log's reason", async () => {
+    const { inspectDetachDeps } = await import("./index.ts");
+    const real = { ...inspectDetachDeps };
+    inspectDetachDeps.start = () => ({ exited: () => 1 });
+    try {
+      const err: string[] = [];
+      const code = await runCli(["inspect", "start", "--account", "galwayOne", "--detach"], { twenty: marketplaceFixture(), out: () => {}, err: (l) => err.push(l) });
+      expect(code).toBe(1);
+      expect(err.join("\n")).toContain("ended before its browser was ready");
+    } finally {
+      Object.assign(inspectDetachDeps, real);
+    }
+  });
+});

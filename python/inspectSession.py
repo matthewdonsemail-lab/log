@@ -137,13 +137,16 @@ async def run_rea(har: Path) -> dict[str, Any]:
         out, err = await asyncio.wait_for(proc.communicate(), timeout=90)
     except Exception as exc:
         return {"code": 1, "evidenceId": None, "detail": type(exc).__name__}
-    (har.parent / "rea.json").write_text(json.dumps({"code": proc.returncode, "stdout": out.decode("utf8", "replace"), "stderr": err.decode("utf8", "replace")}), encoding="utf8")
+    # rea.json keeps rea's answer, not its whole printout: the printout repeats the HAR beside it (rule 19 keeps
+    # that raw) and was most of a run's size. The reading is redone from the HAR whenever it is needed.
     try:
         parsed = json.loads(out)
         records = parsed.get("normalized_result", {}).get("records") or []
-        return {"code": proc.returncode, "evidenceId": parsed.get("evidence_id"), "records": len(records)}
+        result = {"code": proc.returncode, "evidenceId": parsed.get("evidence_id"), "records": len(records)}
     except Exception:
-        return {"code": proc.returncode, "evidenceId": None}
+        result = {"code": proc.returncode, "evidenceId": None}
+    (har.parent / "rea.json").write_text(json.dumps({**result, "stderr": err.decode("utf8", "replace")[:2000]}), encoding="utf8")
+    return result
 
 
 # What is typed in a field is never kept or shown: a sign-in leaves the email and password in
@@ -173,6 +176,19 @@ def read_login(path: str | None) -> dict[str, Any]:
 # The create page's own data: where Facebook will list (publishSession.SELL_LOCATION).
 SELL_LOCATION = re.compile(r'"sell_location":\{"latitude":(-?[\d.]+),"longitude":(-?[\d.]+),"reverse_geocode_detailed":\{"city":"([^"]*)","postal_code":"([^"]*)","country_alpha_two":"([A-Z]{2})"')
 
+# An element a person can click: its middle is inside the window and the element on top there is it (or
+# inside it), not a card stacked over it. Reels, 2026-10-20: the next reel's Like and Comment sit under
+# this reel's caption.
+HITTABLE_JS = """(el) => {
+  const r = el.getBoundingClientRect();
+  if (r.width < 2 || r.height < 2) return false;
+  const x = r.left + r.width / 2, y = r.top + r.height / 2;
+  if (x < 0 || y < 0 || x > window.innerWidth || y > window.innerHeight) return false;
+  const hit = document.elementFromPoint(x, y);
+  return !!hit && (hit === el || el.contains(hit));
+}"""
+
+
 def draw(spec: str) -> int:
     """ "4-7" -> a whole number from 4 to 7; "3" -> 3."""
     low, _, high = str(spec).partition("-")
@@ -200,6 +216,10 @@ class Inspector:
         self.steps_dir.mkdir(parents=True, exist_ok=True)
         self.index = 0
         self.recorder = Recorder()
+        self.rea_tasks: set[asyncio.Task[None]] = set()
+        # A tab a click opened (the creator's profile), until closeTab.
+        self.popup: Any = None
+        self.opts: dict[str, Any] = {}
         self.page: Any = None
         self.context: Any = None
 
@@ -217,6 +237,8 @@ class Inspector:
         # proxyGate.log also writes the line to steps.jsonl, timed, next to the session HAR.
         log(f"step {self.index}: {action} {label}".rstrip())
         started = time.monotonic()
+        url_before = self.page.url
+        pages_before = set(self.context.pages)
         error = None
         try:
             # The cursor is the step's while it acts; between steps it drifts (humanMouse, rule 32).
@@ -238,9 +260,32 @@ class Inspector:
         except Exception:
             pass
         # Settled when the network has been quiet for QUIET_MS: a fixed wait snapshotted half-drawn pages.
+        # A dwell changes nothing on the page, so it doesn't wait; a command can set both (a reel streams
+        # video, so its network is never quiet: the reel warm-up asks for a short quiet and a cap).
+        opts = getattr(self, "opts", {})
+        quiet_ms = opts.get("quietMs") if opts.get("quietMs") is not None else (0 if action == "dwell" else QUIET_MS)
+        settle_max_ms = opts.get("settleMaxMs") or SETTLE_MAX_MS
         settle_start = time.monotonic()
+        if opts.get("urlChange") and not error:
+            # Settled when the page's URL changed (a swipe lands on the next reel's URL), up to the cap.
+            while self.page.url == url_before and (time.monotonic() - settle_start) * 1000 < settle_max_ms:
+                await asyncio.sleep(0.05)
+            quiet_ms = 0
+        # A click that opened a tab (Reels opens the creator's profile in one, 2026-10-20): that tab is where the
+        # step landed. It stays in front until `closeTab`, which closes it and brings the session's tab back.
+        opened = [p for p in self.context.pages if p not in pages_before]
+        if opened and not error:
+            self.popup = opened[-1]
+            try:
+                await self.popup.wait_for_load_state("domcontentloaded", timeout=15_000)
+            except Exception:
+                pass
+            self.extra["openedTab"] = self.popup.url.split("?", 1)[0]
+            log(f"  opened a tab: {self.extra['openedTab']}")
+        # When the page landed (the next reel's URL), from the step's start: the caller times what follows from it.
+        landed_ms = round((time.monotonic() - started) * 1000)
         count, quiet_since = self.recorder.seen(), time.monotonic()
-        limit_ms = max(SETTLE_MAX_MS, expect_ms) if expect and not error else SETTLE_MAX_MS
+        limit_ms = max(settle_max_ms, expect_ms) if expect and not error else (settle_max_ms if quiet_ms else 0)
         expect_seen = False
         while (time.monotonic() - settle_start) * 1000 < limit_ms:
             await asyncio.sleep(0.25)
@@ -249,13 +294,18 @@ class Inspector:
             now_count = self.recorder.seen()
             if now_count != count:
                 count, quiet_since = now_count, time.monotonic()
-            elif (time.monotonic() - quiet_since) * 1000 >= QUIET_MS and (not expect or expect_seen or error):
+            elif (time.monotonic() - quiet_since) * 1000 >= quiet_ms and (not expect or expect_seen or error):
                 break
         entries = await self.recorder.take()
         if expect and not expect_seen:
             expect_seen = expect in request_names(entries)
         if expect:
             log(f"  expected {expect}: {'sent' if expect_seen else 'NOT seen'}")
+        # The screenshot first: the page as the step left it (a reel as it landed), before the snapshot's time.
+        try:
+            await self.page.screenshot(path=str(folder / "screenshot.png"))
+        except Exception:
+            pass
         har = folder / "network.har"
         har.write_text(json.dumps({"log": {"version": "1.2", "creator": {"name": "log-cli inspect", "version": "1"}, "pages": [], "entries": entries}}), encoding="utf8")
         try:
@@ -270,10 +320,6 @@ class Inspector:
         for leg in mouse["legs"]:
             kinds[leg["kind"]] = kinds.get(leg["kind"], 0) + 1
         log(f"  mouse: {', '.join(f'{n} {k}' for k, n in kinds.items()) or 'no legs'}; {mouse['idleMoves']} idle drift move(s)")
-        try:
-            await self.page.screenshot(path=str(folder / "screenshot.png"))
-        except Exception:
-            pass
         url = self.page.url.split("?", 1)[0]
         try:
             title = await self.page.title()
@@ -283,8 +329,16 @@ class Inspector:
         log(f"  now on {url} \"{title}\" after {round((time.monotonic() - started) * 1000)} ms; {len(entries)} request(s)")
         for line in seen[:15]:
             log(f"    {line}")
-        rea = await run_rea(rea_copy(har, entries))
-        log(f"  rea read the step: exit {rea['code']}{', ' + rea['evidenceId'] if rea.get('evidenceId') else ''}")
+        if opts.get("reaLater"):
+            # rea starts on the step's HAR at once (rule 29) and the next step doesn't wait for it:
+            # its reading lands in the step's rea.json, and the session waits for every one before it closes.
+            task = asyncio.create_task(self.read_later(har, entries, name))
+            self.rea_tasks.add(task)
+            task.add_done_callback(self.rea_tasks.discard)
+            rea = {"code": -1, "evidenceId": None, "pending": True}
+        else:
+            rea = await run_rea(rea_copy(har, entries))
+            log(f"  rea read the step: exit {rea['code']}{', ' + rea['evidenceId'] if rea.get('evidenceId') else ''}")
         interactive = [l.strip() for l in snapshot.splitlines() if INTERACTIVE.search(l)][:80]
         log(f"  page has {len(interactive)} interactive element(s); snapshot: {folder / 'snapshot.yml'}")
         ok = error is None and (not expect or expect_seen)
@@ -293,8 +347,12 @@ class Inspector:
         return {"ok": ok, **({"error": error} if error else {}), **({"expect": {"name": expect, "seen": expect_seen}} if expect else {}),
                 "step": name, "action": action, "args": [label] if label else [],
                 **getattr(self, "extra", {}),
-                "ms": round((time.monotonic() - started) * 1000), "url": url, "title": title,
+                "ms": round((time.monotonic() - started) * 1000), "landedMs": landed_ms, "url": url, "title": title,
                 "requests": len(entries), "notable": seen, "mouse": {"legs": len(mouse["legs"]), "idleMoves": mouse["idleMoves"]}, "rea": rea, "interactive": interactive, "folder": str(folder)}
+
+    async def read_later(self, har: Path, entries: list[dict[str, Any]], name: str) -> None:
+        rea = await run_rea(rea_copy(har, entries))
+        log(f"  rea read step {name}: exit {rea['code']}{', ' + rea['evidenceId'] if rea.get('evidenceId') else ''}")
 
     async def first_visible(self, selector: str):
         found = self.page.locator(selector)
@@ -375,13 +433,22 @@ class Inspector:
 
     async def by_role(self, role: str, name: str, timeout_ms: int = 15_000):
         """The element a flow step names: role and accessible name, as the snapshot shows them (a ref
-        only lives for one session). The last visible match wins: a dialog sits on top of the page."""
+        only lives for one session). The one a person can click wins: on screen and not covered (its
+        middle hits it). Reels keep three cards on the page, the next one preloaded under this one's
+        caption, each with its own Like and Comment (2026-10-20). Otherwise the last visible match,
+        because a dialog sits on top of the page."""
         deadline = time.monotonic() + timeout_ms / 1000
         while True:
             found = self.page.get_by_role(role, name=name, exact=True)
-            for i in reversed(range(await found.count())):
-                if await found.nth(i).is_visible():
-                    return found.nth(i)
+            visible = [found.nth(i) for i in range(await found.count()) if await found.nth(i).is_visible()]
+            for candidate in reversed(visible):
+                try:
+                    if await candidate.evaluate(HITTABLE_JS):
+                        return candidate
+                except Exception:
+                    continue
+            if visible:
+                return visible[-1]
             if time.monotonic() > deadline:
                 raise RuntimeError(f'no visible {role} "{name}"')
             await asyncio.sleep(0.5)
@@ -392,11 +459,30 @@ class Inspector:
         page = self.page
         expect = command.get("expect") or None
         expect_ms = int(command.get("expectMs") or 30_000)
+        self.opts = {k: command.get(k) for k in ("reaLater", "quietMs", "settleMaxMs", "urlChange")}
+        if action == "closeTab":
+            async def close_tab() -> None:
+                # Only the tabs this session's clicks opened: the profile's own tabs and context are AdsPower's.
+                popup = getattr(self, "popup", None)
+                self.popup = None
+                if popup is not None and not popup.is_closed():
+                    await popup.close()
+                await self.page.bring_to_front()
+            return await self.step("closeTab", "", close_tab)
+        # The cursor rests where this step leaves it (Next card, swiped reel after reel) until a step says otherwise.
+        self.mouse.resting = bool(command.get("rest"))
         if action == "goto" and args:
             return await self.step("goto", args[0], lambda: page.goto(args[0], wait_until="domcontentloaded"), expect, expect_ms)
         # Flow steps (`log flow run`): the element by role and name, and the request that confirms it.
         if action == "clickRole" and len(args) >= 2:
+            already = command.get("already")
+
             async def click_role() -> None:
+                # `already` [role, name]: what shows when the click isn't needed (Mute for Unmute: the sound is on).
+                if already and await self.page.get_by_role(already[0], name=already[1], exact=True).count() and not await self.page.get_by_role(args[0], name=args[1], exact=True).count():
+                    self.extra["already"] = f'{already[0]} "{already[1]}"'
+                    log(f'  {args[0]} "{args[1]}" not needed: {already[0]} "{already[1]}" shows')
+                    return
                 await self.mouse.click(await self.by_role(args[0], args[1]))
             return await self.step("clickRole", f'{args[0]} "{args[1]}"', click_role, expect, expect_ms)
         if action == "fillRole" and len(args) >= 3:
@@ -434,6 +520,21 @@ class Inspector:
                     await scrollMotion.scroll_by(page, draw(px), self.mouse, log)
                     await asyncio.sleep(random.uniform(1.5, 3.5))
             return await self.step("scroll", f"{times} x {px}px", scroll)
+        # `scrollIn <role> <name> [times] [px]`: the wheel over one element, the cursor gliding onto it first
+        # (a reel's comments are a side panel: the page's middle is the video, 2026-10-20).
+        if action == "scrollIn" and len(args) >= 2:
+            times, px = (args[2:] + ["2-3", "300-500"][len(args[2:]):])[:2]
+
+            async def scroll_in() -> None:
+                box = await (await self.by_role(args[0], args[1])).bounding_box()
+                if not box:
+                    raise RuntimeError(f'{args[0]} "{args[1]}" has no box on screen')
+                await self.mouse.measure()
+                for _ in range(draw(times)):
+                    at = self.mouse.inside(box, 0.3, 0.7, 0.3, 0.8)
+                    await scrollMotion.scroll_by(page, draw(px), self.mouse, log, at=at)
+                    await asyncio.sleep(random.uniform(1.5, 3.5))
+            return await self.step("scrollIn", f'{args[0]} "{args[1]}" {times} x {px}px', scroll_in)
         if action == "dwell":
             span = args[0] if args else "2-4"
             return await self.step("dwell", f"{span}s", lambda: asyncio.sleep(random.uniform(*[float(x) for x in (span.split("-") + [span])[:2]])))
@@ -469,6 +570,18 @@ class Inspector:
                             options.append(item)
                     except Exception:
                         continue
+                # When some can be clicked where they are (on screen, not covered), only those: a reel's
+                # next card is preloaded under this one, its links covered (2026-10-20). Otherwise every
+                # visible one, each scrolled into view first (the feed's posts below the fold).
+                hittable = []
+                for item in options:
+                    try:
+                        if await item.evaluate(HITTABLE_JS):
+                            hittable.append(item)
+                    except Exception:
+                        continue
+                if hittable:
+                    options = hittable
                 random.shuffle(options)
                 chosen = options[: draw(count)]
                 if not chosen:
@@ -642,6 +755,9 @@ class Inspector:
                 return 0
             finally:
                 await self.mouse.stop_idle()
+                if self.rea_tasks:
+                    log(f"waiting for rea on {len(self.rea_tasks)} step(s) before closing")
+                    await asyncio.wait(set(self.rea_tasks), timeout=180)
                 try:
                     await self.context.storage_state(path=str(self.config["storageStatePath"]))
                 except Exception as exc:

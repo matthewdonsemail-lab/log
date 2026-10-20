@@ -4,7 +4,7 @@
  * MCP tool of its own.
  *
  *   log flow fromInspect <runDir> --name <n> [--summary <s>] [--rename text1=firstName]...
- *   log flow docs <name>          docs/facebookClient/flows/<name>.md from the definition
+ *   log flow docs <name>          docs/platforms/facebook/flows/<name>.md from the definition
  *   log flow list | show <name>
  *   log flow run <name> --account <a> [--set firstName=…]... [--live] [--bypass] [--now]
  *

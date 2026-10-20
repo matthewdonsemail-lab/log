@@ -11,7 +11,7 @@ import { emitLog } from "../../observability/processLog/index.ts";
 import { createLogMcpServer, formatLogLine, guardCall, parseEnvText, runToolCall, TERMINAL_ONLY, toolsFromCommands } from "./index.ts";
 
 async function connected() {
-  const server = createLogMcpServer({ twenty: marketplaceFixture() }, { logDir: null });
+  const server = createLogMcpServer({ twenty: marketplaceFixture() }, { logDir: null, watchFlows: false });
   const client = new Client({ name: "test", version: "0.0.0" });
   const [clientSide, serverSide] = InMemoryTransport.createLinkedPair();
   await Promise.all([server.connect(serverSide), client.connect(clientSide)]);

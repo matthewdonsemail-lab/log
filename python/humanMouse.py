@@ -79,6 +79,18 @@ TARGETS_JS = """() => {
 
 
 # -- the maths: gestures over real time ---------------------------------------
+
+# Whether the point is on the element (or inside it): the last look before a press.
+HIT_JS = "([x, y]) => { const hit = document.elementFromPoint(x, y); return { on: !!hit, hit: hit ? (hit.getAttribute('aria-label') || hit.textContent || hit.tagName).trim().slice(0, 60) : '' } }"
+ON_TARGET_JS = "(el, [x, y]) => { const hit = document.elementFromPoint(x, y); return !!hit && (el === hit || el.contains(hit)) }"
+# Re-aims before a press: Complainers of Bethlehem, 2026-10-20, the "Related groups" panel opened while the
+# cursor travelled and pushed "Answer questions" 45 px down; the press landed on empty space above it.
+MAX_AIMS = 3
+
+
+def inside_box(box: dict, x: float, y: float) -> bool:
+    return box["x"] <= x <= box["x"] + box["width"] and box["y"] <= y <= box["y"] + box["height"]
+
 class Gesture:
     """A trajectory: `at(t)` is the position t seconds in, for 0 <= t <= seconds."""
 
@@ -125,12 +137,13 @@ def reach(rng: random.Random, sx: float, sy: float, tx: float, ty: float, oversh
     return gestures
 
 
-def loops(rng: random.Random, cx: float, cy: float, seconds: float) -> Gesture:
-    """Looking at something: loose continuous loops around here, drifting, starting from here (no jump)."""
-    r1, r2 = rng.uniform(80, 350), rng.uniform(50, 200)
+def loops(rng: random.Random, cx: float, cy: float, seconds: float, resting: bool = False) -> Gesture:
+    """Looking at something: loose continuous loops around here, drifting, starting from here (no jump).
+    Resting (a hand on a button it keeps pressing, Next card reel after reel): a few pixels' tremor."""
+    r1, r2 = (rng.uniform(2, 6), rng.uniform(1, 4)) if resting else (rng.uniform(80, 350), rng.uniform(50, 200))
     f1, f2 = rng.uniform(0.15, 0.7), rng.uniform(0.15, 0.5)
     ph1, ph2 = rng.uniform(0, 2 * math.pi), rng.uniform(0, 2 * math.pi)
-    dx, dy = rng.uniform(-40, 40), rng.uniform(-20, 40)
+    dx, dy = (0.0, 0.0) if resting else (rng.uniform(-40, 40), rng.uniform(-20, 40))
     return Gesture("wander", seconds, lambda t: (cx + dx * t + r1 * (math.sin(2 * math.pi * f1 * t + ph1) - math.sin(ph1)),
                                                  cy + dy * t + r2 * (math.sin(2 * math.pi * f2 * t + ph2) - math.sin(ph2))),
                    {"around": [round(cx), round(cy)]})
@@ -175,11 +188,15 @@ class MouseBase:
         self.idle_moves = 0
         self.last_target: str | None = None
         self.fresh_page = True
+        # The window's size as the page measures it, when Playwright has no viewport (rule 44: AdsPower is
+        # attached over CDP and reports none; the 1280x800 fallback kept the cursor above y=796 while the
+        # window was 917 px tall, so "Answer questions" at y=824 could never be reached, 2026-10-20).
+        self.measured: dict[str, int] | None = None
         self._stop = False
         self._seen_errors: set[str] = set()
 
     def viewport(self) -> dict[str, int]:
-        return self.page.viewport_size or {"width": 1280, "height": 800}
+        return self.page.viewport_size or self.measured or {"width": 1280, "height": 800}
 
     def clamp(self, x: float, y: float) -> tuple[float, float]:
         vp = self.viewport()
@@ -300,7 +317,8 @@ class HumanMouse(MouseBase):
 
     async def wander(self, seconds: float) -> None:
         if self.x is not None:
-            await self._run(loops(self.rng, self.x, self.y, seconds), "wander", interruptible=True)
+            resting = getattr(self, "resting", False)
+            await self._run(loops(self.rng, self.x, self.y, seconds, resting), "rest" if resting else "wander", interruptible=True)
 
     async def circle(self, box: dict[str, float]) -> None:
         if self.x is not None:
@@ -340,7 +358,9 @@ class HumanMouse(MouseBase):
                 if self.busy() and time.monotonic() - self.nav_at < 2.5:
                     await asyncio.sleep(0.1)
                     continue
-                target = self.choose(await self.targets())
+                await self.measure()
+                # Resting on a button it keeps pressing: no flick away, only the tremor of a hand at rest.
+                target = None if getattr(self, "resting", False) else self.choose(await self.targets())
                 async with self.lock:
                     if self.preempt:
                         continue
@@ -363,7 +383,19 @@ class HumanMouse(MouseBase):
                     self.log(f"  mouse: idle loop error {kind}: {str(exc)[:120]}")
                 await asyncio.sleep(0.3)
 
+    async def measure(self) -> None:
+        """The real window size, read from the page when Playwright has no viewport (an attached browser)."""
+        if self.page.viewport_size:
+            return
+        try:
+            size = await self.page.evaluate("() => ({ width: window.innerWidth, height: window.innerHeight })")
+            if size and size.get("width") and size.get("height"):
+                self.measured = {"width": int(size["width"]), "height": int(size["height"])}
+        except Exception:
+            pass
+
     async def approach(self, locator: Any, circle: bool | None = None) -> tuple[float, float]:
+        await self.measure()
         # One trajectory scroll (the Robotic VSL's scroll_to_ref), never scroll_into_view_if_needed's jump.
         await scrollMotion.scroll_into_view(locator, self, self.log)
         box = await locator.bounding_box()
@@ -376,9 +408,34 @@ class HumanMouse(MouseBase):
         await asyncio.sleep(self.rng.uniform(0.05, 0.15))
         return tx, ty
 
+    async def aim(self, locator: Any) -> None:
+        """After the approach, the eye checks again: the element's box as it is now, a correction glide
+        if it moved from under the cursor (a person re-aims), then the point must hit it before a press."""
+        for attempt in range(MAX_AIMS):
+            await self.measure()
+            box = await locator.bounding_box()
+            if not box:
+                raise RuntimeError("the element has no box on screen")
+            x, y = self.x or 0, self.y or 0
+            if inside_box(box, x, y) and await locator.evaluate(ON_TARGET_JS, [x, y]):
+                return
+            self.log(f"  mouse: the target moved from under the cursor ({round(x)},{round(y)} not on it, box {round(box['x'])},{round(box['y'])} {round(box['width'])}x{round(box['height'])}): re-aiming ({attempt + 1}/{MAX_AIMS})")
+            await scrollMotion.scroll_into_view(locator, self, self.log)
+            box = await locator.bounding_box() or box
+            tx, ty = self.inside(box, 0.3, 0.7, 0.35, 0.65)
+            await self.glide(tx, ty, "correct")
+            await asyncio.sleep(self.rng.uniform(0.08, 0.2))
+        hit = await self.page.evaluate(HIT_JS, [self.x or 0, self.y or 0])
+        raise RuntimeError(f"the element kept moving under the cursor: the point is on {hit.get('hit') or 'nothing'}, not the target; nothing pressed")
+
     async def click(self, locator: Any, circle: bool | None = None) -> None:
-        """Approach, then press and release where the cursor is (Playwright's click would jump to the centre)."""
-        await self.approach(locator, circle)
+        """Approach, re-aim if the element moved, then press and release where the cursor is (Playwright's click would jump to the centre).
+        A cursor already resting on it (Next card, clicked reel after reel) presses where it is, as a hand does."""
+        box = await locator.bounding_box()
+        x, y = self.x, self.y
+        if not (box and x is not None and y is not None and inside_box(box, x, y) and await locator.evaluate(ON_TARGET_JS, [x, y])):
+            await self.approach(locator, circle)
+        await self.aim(locator)
         self.button = 1
         await self.page.mouse.down()
         self._sampled(self.x or 0, self.y or 0)
@@ -470,7 +527,18 @@ class SyncHumanMouse(MouseBase):
                 self._seen_errors.add(kind)
                 self.log(f"  mouse: look failed ({kind})")
 
+    def measure(self) -> None:
+        if self.page.viewport_size:
+            return
+        try:
+            size = self.page.evaluate("() => ({ width: window.innerWidth, height: window.innerHeight })")
+            if size and size.get("width") and size.get("height"):
+                self.measured = {"width": int(size["width"]), "height": int(size["height"])}
+        except Exception:
+            pass
+
     def approach(self, locator: Any, circle: bool | None = None) -> tuple[float, float]:
+        self.measure()
         scrollMotion.scroll_into_view_sync(locator, self, self.log)
         box = locator.bounding_box()
         if not box:
@@ -482,8 +550,28 @@ class SyncHumanMouse(MouseBase):
         time.sleep(self.rng.uniform(0.05, 0.15))
         return tx, ty
 
+    def aim(self, locator: Any) -> None:
+        """The same last look as the async driver: re-aim if the element moved, press only on it."""
+        for attempt in range(MAX_AIMS):
+            self.measure()
+            box = locator.bounding_box()
+            if not box:
+                raise RuntimeError("the element has no box on screen")
+            x, y = self.x or 0, self.y or 0
+            if inside_box(box, x, y) and locator.evaluate(ON_TARGET_JS, [x, y]):
+                return
+            self.log(f"  mouse: the target moved from under the cursor: re-aiming ({attempt + 1}/{MAX_AIMS})")
+            scrollMotion.scroll_into_view_sync(locator, self, self.log)
+            box = locator.bounding_box() or box
+            tx, ty = self.inside(box, 0.3, 0.7, 0.35, 0.65)
+            self.glide(tx, ty, "correct")
+            time.sleep(self.rng.uniform(0.08, 0.2))
+        hit = self.page.evaluate(HIT_JS, [self.x or 0, self.y or 0])
+        raise RuntimeError(f"the element kept moving under the cursor: the point is on {hit.get('hit') or 'nothing'}, not the target; nothing pressed")
+
     def click(self, locator: Any, circle: bool | None = None) -> None:
         self.approach(locator, circle)
+        self.aim(locator)
         self.button = 1
         self.page.mouse.down()
         self._sampled(self.x or 0, self.y or 0)

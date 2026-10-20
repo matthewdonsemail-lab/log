@@ -16,7 +16,7 @@ import { campaignCommand } from "../campaign/index.ts";
 import { conversationCommand, conversationsCommand } from "../conversation/index.ts";
 import { loginCommand, logoutCommand, whoamiCommand } from "../auth/index.ts";
 import { errorsCommand, graphCommand } from "../errors/index.ts";
-import { firefoxCaptureCommand } from "../firefoxCapture/index.ts";
+import { captureCommand } from "../capture/index.ts";
 import { launchCommand } from "../launch/index.ts";
 import { lifecycleCommand } from "../lifecycle/index.ts";
 import { listingCommand, listingsCommand } from "../listing/index.ts";
@@ -25,6 +25,7 @@ import { profileCommand } from "../profile/index.ts";
 import { flowCommand } from "../flow/index.ts";
 import { hostCommand } from "../host/index.ts";
 import { inspectCommand } from "../inspect/index.ts";
+import { joinCommand } from "../join/index.ts";
 import { proxyCommand } from "../proxy/index.ts";
 import { publishCommand } from "../publish/index.ts";
 import { warmupCommand } from "../warmup/index.ts";
@@ -50,6 +51,7 @@ export const COMMANDS: Command[] = [
   inspectCommand,
   flowCommand,
   warmupCommand,
+  joinCommand,
   scanCommand,
   statusCommand,
   watchCommand,
@@ -60,13 +62,15 @@ export const COMMANDS: Command[] = [
   conversationCommand,
   errorsCommand,
   graphCommand,
-  firefoxCaptureCommand,
+  captureCommand,
   loginCommand,
   logoutCommand,
   whoamiCommand,
 ];
 
 const ALIASES: Record<string, string> = {
+  // rule 46: the old browser-named command, for a settle already running in the background and older MCP clients.
+  firefoxCapture: "capture",
   "--help": "help",
   "-h": "help",
   help: "help",
@@ -81,7 +85,7 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     connectSession: overrides.connectSession ?? startConnectSession,
     profileSession: overrides.profileSession ?? startProfileSession,
     inspectSession: overrides.inspectSession ?? runInspectSession,
-    sendInspect: overrides.sendInspect ?? ((current, action, args, timeoutMs, expect) => sendInspectCommand(current, action, args, timeoutMs, 300, expect)),
+    sendInspect: overrides.sendInspect ?? ((current, action, args, timeoutMs, expect, options) => sendInspectCommand(current, action, args, timeoutMs, 50, expect, options)),
     adsPower: overrides.adsPower,
     connectTiming: overrides.connectTiming,
     out: overrides.out ?? ((line) => console.log(line)),

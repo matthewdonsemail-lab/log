@@ -21,7 +21,7 @@ import { ACTIVITY_SCRIPTS } from "../../../marketplace/warmup/index.ts";
 import { runFlowInSession, openInspectSession } from "../../flow/helpers/index.ts";
 import type { OpenSession } from "../../flow/helpers/index.ts";
 import { keepNewDevice, keepSession, openAccount } from "../../live/index.ts";
-import { settleInBackground } from "../../../rea/firefox/client.ts";
+import { settleInBackground } from "../../../rea/capture/client.ts";
 import type { CommandContext } from "../../runner/types.ts";
 
 const FB = "https://www.facebook.com";

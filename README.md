@@ -157,7 +157,7 @@ every step (snapshot, screenshot, HAR, rea). `log flow fromInspect` turns that
 recording into a flow: its docs, an XState machine, `log flow run <name>` for
 any account, and an MCP tool of its own (`flowProfileSetup`). The whole
 pipeline, the actions, the saved flows and what the recordings showed:
-`docs/recordToFlow.md`. Every request Facebook's pages made: `docs/facebookClient/`.
+`docs/recordToFlow.md`. Every request Facebook's pages made: `docs/platforms/facebook/`.
 
 ## Layout
 

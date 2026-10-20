@@ -49,6 +49,11 @@ function stubPrompts(answers: unknown[]) {
       if (answers.length === 0) throw new Error("prompt-stub: unexpected select");
       return answers.shift();
     },
+    text: async () => {
+      calls.push("text");
+      if (answers.length === 0) throw new Error("prompt-stub: unexpected text");
+      return answers.shift();
+    },
   };
   return { calls, offered };
 }
@@ -73,7 +78,7 @@ describe("runLaunch", () => {
     const { calls } = stubPrompts([]);
     const result = await runLaunch(capture().context, ["--json"]);
     expect(result.code).toBe(0);
-    expect(JSON.parse(result.stdout!).actions).toEqual(["browse", "status", "account", "accounts", "scan", "watch", "connect", "doctor"]);
+    expect(JSON.parse(result.stdout!).actions).toEqual(["browse", "status", "account", "accounts", "scan", "watch", "connect", "join", "answer", "fill", "reels", "doctor"]);
     expect(calls).toEqual([]);
   });
 
@@ -117,6 +122,33 @@ describe("runLaunch", () => {
     expect(delegated).toEqual([["scan", "--account", "galwayOne"]]);
     expect(offered[1]).toEqual(expect.arrayContaining(["galwayOne", "galwayTwo", "vietnam"]));
     for (const refused of ["noProxy", "noCountry", "banned", "unset", "twitterOne"]) expect(offered[1]).not.toContain(refused);
+  });
+
+  test("join offers only accounts that may run, asks for the group, and delegates a dry run to `join group`", async () => {
+    const { calls, offered } = stubPrompts(["join", "galwayOne", "https://www.facebook.com/groups/4191018610937243/"]);
+    const delegated: string[][] = [];
+    launchDeps.run = (command, _context, argv) => {
+      delegated.push([command.name, ...argv]);
+      return { code: 0, stdout: "read" };
+    };
+    expect((await runLaunch(capture().context, [])).code).toBe(0);
+    expect(offered[0]).toContain("join");
+    expect(offered[1]).not.toContain("banned");
+    expect(calls).toEqual(["intro", "select", "select", "text", "outro"]);
+    expect(delegated).toEqual([["join", "group", "--account", "galwayOne", "--group", "https://www.facebook.com/groups/4191018610937243/"]]);
+    expect(delegated[0]).not.toContain("--live");
+  });
+
+  test("Warm up Facebook Reels: the stepper asks the session's shape, likes default no, and plans it", async () => {
+    const { calls } = stubPrompts(["reels", "8-20", "4-25", "0.6", "0.3", "0.15", "no", "no"]);
+    const delegated: string[][] = [];
+    launchDeps.run = (command, _context, argv) => {
+      delegated.push([command.name, ...argv]);
+      return { code: 0, stdout: "planned" };
+    };
+    expect((await runLaunch(capture().context, [])).code).toBe(0);
+    expect(calls.filter((c) => c === "select")).toHaveLength(8);
+    expect(delegated).toEqual([["warmup", "facebook", "reel", "plan", "--reels", "8-20", "--watch", "4-25", "--skip", "0.6", "--comments", "0.3", "--profile", "0.15"]]);
   });
 
   test("cancel exits 1", async () => {

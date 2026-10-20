@@ -1,0 +1,107 @@
+  - dialog "Answer questions" [ref=e1000]:
+    - heading "Answer questions" [active] [level=2] [ref=e1003]:
+      - generic [ref=e1005]: Answer questions
+    - button "Close" [ref=e1007] [cursor=pointer]
+    - generic [ref=e1011]:
+      - generic [ref=e1012]:
+        - img [ref=e1015]
+        - generic [ref=e1020]:
+          - generic [ref=e1022]: Complainers of Bethlehem, PA
+          - generic [ref=e1025]:
+            - generic [ref=e1027]:
+              - img [ref=e1029]
+              - generic [ref=e1031]: Private group
+            - generic [ref=e1033]: ·
+            - link "10.0K members" [ref=e1036] [cursor=pointer]:
+              - /url: /groups/1640115596230023/members/
+      - generic [ref=e1037]:
+        - generic [ref=e1038]:
+          - generic [ref=e1043]:
+            - generic [ref=e1044]: Your membership is pending approval
+            - generic [ref=e1046]: Answer these questions from the group admins to help them review your request to join. Only the admins and moderators will see your answers.
+          - generic [ref=e1047]:
+            - generic [ref=e1055]:
+              - generic [ref=e1058]:
+                - generic [ref=e1061]: Answering these questions is required to be accepted into the group. Have you in the past, or currently, reside in Bethlehem?
+                - button "More options for this membership question" [ref=e1066] [cursor=pointer]
+              - generic [ref=e1069]:
+                - text: You can choose multiple options
+                - generic [ref=e1070]:
+                  - generic [ref=e1071]:
+                    - checkbox "Yes" [ref=e1073] [cursor=pointer]
+                    - generic [ref=e1074]: "Yes"
+                  - generic [ref=e1075]:
+                    - checkbox "No" [ref=e1077] [cursor=pointer]
+                    - generic [ref=e1078]: "No"
+            - generic [ref=e1086]:
+              - generic [ref=e1089]:
+                - generic [ref=e1092]: What is a general complaint you have about Bethlehem?
+                - button "More options for this membership question" [ref=e1097] [cursor=pointer]
+              - generic [ref=e1105]:
+                - generic "What is a general complaint you have about Bethlehem?": Write an answer...
+                - textbox "What is a general complaint you have about Bethlehem?" [ref=e1107]
+        - generic [ref=e1110]:
+          - generic [ref=e1111]:
+            - generic [ref=e1112]:
+              - generic [ref=e1114]: Group rules
+              - generic [ref=e1116]: "Group members agree to follow these rules:"
+            - generic [ref=e1118]:
+              - checkbox "I agree to the group rules" [ref=e1120] [cursor=pointer]
+              - generic [ref=e1122]: I agree to the group rules
+          - separator [ref=e1123]
+          - generic [ref=e1126]:
+            - generic [ref=e1128]:
+              - generic [ref=e1130]: "1"
+              - generic [ref=e1132]:
+                - generic [ref=e1134]: Topics
+                - generic [ref=e1136]: This group is for complaining about Bethlehem. If it isn't a complaint, or it isn't specific to Bethlehem, it may be removed. We let it slide on occasion.
+            - generic [ref=e1138]:
+              - generic [ref=e1140]: "2"
+              - generic [ref=e1142]:
+                - generic [ref=e1144]: Harassment
+                - generic [ref=e1146]: Harassment/Bullying. If you have a problem with someone, block them. It will save a lot of heartache in the long run.
+            - generic [ref=e1148]:
+              - generic [ref=e1150]: "3"
+              - generic [ref=e1152]:
+                - generic [ref=e1154]: No Doxing
+                - generic [ref=e1156]: No Doxing (Leaking personal information of a person or persons)
+            - generic [ref=e1158]:
+              - generic [ref=e1160]: "4"
+              - generic [ref=e1162]:
+                - generic [ref=e1164]: Public Health and Safety
+                - generic [ref=e1166]: Posts and comments that flagrantly disregard or promote the disregard of public health and safety will be removed and you will likely be blocked without notice.
+            - generic [ref=e1168]:
+              - generic [ref=e1170]: "5"
+              - generic [ref=e1172]:
+                - generic [ref=e1174]: Protected Classes
+                - generic [ref=e1176]: No attacks against Race, Color, Religion or creed, National origin or ancestry, Sex, Age, Physical or mental disability, Veteran status, Citizenship.
+            - generic [ref=e1178]:
+              - generic [ref=e1180]: "6"
+              - generic [ref=e1182]:
+                - generic [ref=e1184]: Moderators
+                - generic [ref=e1186]:
+                  - text: The moderation team reserves the right to remove your post at will. This will not be rampant or abused. If your post is removed and you aren't sure wh…
+                  - button "See more" [ref=e1187] [cursor=pointer]
+            - generic [ref=e1189]:
+              - generic [ref=e1191]: "7"
+              - generic [ref=e1193]:
+                - generic [ref=e1195]: No blocking Admins or Moderators
+                - generic [ref=e1197]: Blocking modmins impedes our ability to moderate the group. You'll be kicked without warning.
+            - generic [ref=e1199]:
+              - generic [ref=e1201]: "8"
+              - generic [ref=e1203]:
+                - generic [ref=e1205]: Attachments
+                - generic [ref=e1207]:
+                  - text: If you share an attachment to the group, please make sure the post is view able as "Public" or no one will be able to view the attachment. If not, the…
+                  - button "See more" [ref=e1208] [cursor=pointer]
+            - generic [ref=e1210]:
+              - generic [ref=e1212]: "9"
+              - generic [ref=e1214]:
+                - generic [ref=e1216]: No Turning Off Comments
+                - generic [ref=e1218]: Users cannot turn off comments on their posts. If a user repeatedly turns off commenting they may be removed from the group.
+      - generic [ref=e1219]:
+        - generic [ref=e1221]: Do not enter your password or other sensitive information here, even if you're asked to by the Complainers of Bethlehem, PA admins.
+        - button "Cancel" [ref=e1223] [cursor=pointer]:
+          - generic [ref=e1226]: Cancel
+        - button "Submit" [disabled] [ref=e1228]:
+          - generic [ref=e1231]: Submit

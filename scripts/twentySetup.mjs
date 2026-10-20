@@ -1,7 +1,8 @@
 // Adds what log-cli needs to Twenty: new fields on socialAccount and
 // agencyListing, the relations between them, the lifecycle values on
 // agencyListing.status, and the Marketplace side of agencyConversation and
-// agencyMessage (rule 34: a buyer's conversation about a listing). Additive only. It never renames, retypes or deletes a
+// agencyMessage (rule 34: a buyer's conversation about a listing), and the
+// agencyGroup object with its relation to socialAccount. Additive only. It never renames, retypes or deletes a
 // field, and existing SELECT options keep their ids, so the twitter-controller
 // and the facebook-camofox-client sync keep working.
 //
@@ -222,6 +223,32 @@ const AGENCY_MESSAGE_FIELDS = [
   { name: 'media', label: 'Media', type: 'RAW_JSON', description: 'log-cli: photos or files in the message: [{ url, kind }]' }
 ]
 
+/** Objects log-cli creates when they're missing. The rest are blaster's and the sync's. */
+const NEW_OBJECTS = [
+  { nameSingular: 'agencyGroup', namePlural: 'agencyGroups', labelSingular: 'Agency group', labelPlural: 'Agency groups', description: 'log-cli: a Facebook group, on one socialAccount', icon: 'IconUsersGroup' }
+]
+
+/** Fields added to agencyGroup. Its name is Twenty's own name field. */
+const AGENCY_GROUP_FIELDS = [
+  { name: 'facebookGroupId', label: 'Facebook group id', type: 'TEXT', description: 'log-cli: the id in facebook.com/groups/<id>. With the account, the group key' },
+  { name: 'groupUrl', label: 'Group URL', type: 'TEXT', description: 'logCli' },
+  // rule 45: where the account stands with the group, as `log join group` last read it on the group page.
+  {
+    name: 'joinStatus',
+    label: 'Join status',
+    type: 'SELECT',
+    description: 'log-cli: NOT_MEMBER (a Join button), REQUESTED (Join pressed, not a member yet), MEMBER (Joined), UNKNOWN (a page not recorded yet)',
+    options: [option('NOT_MEMBER', 'Not a member', 'gray', 0), option('REQUESTED', 'Requested', 'orange', 1), option('MEMBER', 'Member', 'green', 2), option('UNKNOWN', 'Unknown', 'red', 3)]
+  },
+  { name: 'joinStatusReason', label: 'Join status reason', type: 'TEXT', description: 'log-cli: what the page showed, and the run folder it was read in' },
+  { name: 'membersLabel', label: 'Members', type: 'TEXT', description: 'log-cli: the member count as the group page shows it (17.3K members)' },
+  { name: 'joinRequestedAt', label: 'Join requested at', type: 'DATE_TIME', description: 'log-cli: when log join group --live pressed Join' },
+  { name: 'lastCheckedAt', label: 'Last checked at', type: 'DATE_TIME', description: 'log-cli: when a run last read the group page' },
+  // The hackathon's join submission (listeningkit-hackathon communities/types.ts StoredCommunityJoin and the
+  // reportCommunityForm webhook), as one JSON patched after every step of a run and read back by `log join group`.
+  { name: 'joinSubmission', label: 'Join submission', type: 'RAW_JSON', description: 'log-cli: { formPhase, questions, questionsHash, questionsScrapedAt, draftAnswers, answers, answersComplete, submittedAt, lastActivityAt, history[] }' }
+]
+
 /** Relations: [object, field, label, target object, inverse label, join column]. */
 const RELATIONS = [
   { object: 'agencyListing', name: 'socialAccount', label: 'Social account', target: 'socialAccount', targetFieldLabel: 'Agency Listings', icon: 'IconBrandFacebook' },
@@ -230,7 +257,9 @@ const RELATIONS = [
   // rule 34: a buyer's conversation is about one listing, on one account; its messages belong to it.
   { object: 'agencyConversation', name: 'agencyListing', label: 'Agency listing', target: 'agencyListing', targetFieldLabel: 'Agency Conversations', icon: 'IconMessages' },
   { object: 'agencyConversation', name: 'socialAccount', label: 'Social account', target: 'socialAccount', targetFieldLabel: 'Agency Conversations', icon: 'IconBrandFacebook' },
-  { object: 'agencyMessage', name: 'agencyConversation', label: 'Conversation', target: 'agencyConversation', targetFieldLabel: 'Agency Messages', icon: 'IconMessage' }
+  { object: 'agencyMessage', name: 'agencyConversation', label: 'Conversation', target: 'agencyConversation', targetFieldLabel: 'Agency Messages', icon: 'IconMessage' },
+  // A group row is one group on one account: the same group on two accounts is two rows.
+  { object: 'agencyGroup', name: 'socialAccount', label: 'Social account', target: 'socialAccount', targetFieldLabel: 'Agency Groups', icon: 'IconBrandFacebook' }
 ]
 
 /** Lifecycle values added to agencyListing.status, next to the sync's health values. */
@@ -270,12 +299,24 @@ async function loadObjects() {
   return map
 }
 
+const CREATE_OBJECT = `mutation ($input: CreateOneObjectInput!) { createOneObject(input: $input) { id nameSingular } }`
 const CREATE_FIELD = `mutation ($input: CreateOneFieldMetadataInput!) { createOneField(input: $input) { id name } }`
 const UPDATE_FIELD = `mutation ($input: UpdateOneFieldMetadataInput!) { updateOneField(input: $input) { id name options } }`
 
 const apply = process.argv.includes('--apply')
-const objects = await loadObjects()
-for (const name of ['socialAccount', 'agencyListing', 'agencyCampaign', 'agencyConversation', 'agencyMessage']) {
+let objects = await loadObjects()
+const newObjects = NEW_OBJECTS.filter((o) => !objects.has(o.nameSingular))
+for (const o of newObjects) console.log(`${apply ? 'create' : 'missing'}  object ${o.nameSingular} (${o.namePlural})`)
+if (newObjects.length && !apply) {
+  console.log('\nRun with --apply to create them, then their fields and relations.')
+  process.exit(0)
+}
+for (const o of newObjects) {
+  await gql(CREATE_OBJECT, { input: { object: { ...o, isLabelSyncedWithName: false } } })
+  console.log(`ok      object ${o.nameSingular}`)
+}
+if (newObjects.length) objects = await loadObjects()
+for (const name of ['socialAccount', 'agencyListing', 'agencyCampaign', 'agencyConversation', 'agencyMessage', 'agencyGroup']) {
   if (!objects.has(name)) throw new Error(`object ${name} not found in Twenty`)
 }
 
@@ -284,7 +325,8 @@ for (const [objectName, specs] of [
   ['socialAccount', SOCIAL_ACCOUNT_FIELDS],
   ['agencyListing', AGENCY_LISTING_FIELDS],
   ['agencyConversation', AGENCY_CONVERSATION_FIELDS],
-  ['agencyMessage', AGENCY_MESSAGE_FIELDS]
+  ['agencyMessage', AGENCY_MESSAGE_FIELDS],
+  ['agencyGroup', AGENCY_GROUP_FIELDS]
 ]) {
   const object = objects.get(objectName)
   for (const spec of specs) {

@@ -1,14 +1,14 @@
 // The Facebook client docs gate (rule 26), run by lefthook before every push.
 //
-// docs/facebookClient/ holds one doc per request Facebook's pages made in our
-// runs, built by `log firefoxCapture --docs` from the run captures and rea
+// docs/platforms/facebook/ holds one doc per request Facebook's pages made in our
+// runs, built by `log capture --docs` from the run captures and rea
 // (AGENTS.md, "How we fix problems"). This refuses a push when:
 //   1. operations.json and the doc files disagree (a doc missing or orphaned),
 //   2. a doc still has a reasoning section to write (`<!-- toWrite -->`),
 //   3. a GraphQL request has no rea Evidence (rea has not read its slice),
 //   4. a run on this machine recorded after the last build (rebuild the docs),
 //   5. our code names a Facebook operation the docs don't have,
-//   6. a saved flow has no doc in docs/facebookClient/flows/.
+//   6. a saved flow has no doc in docs/platforms/facebook/flows/.
 // Check 4 only runs where the captures are (matt's machine, ~/.logCli); the
 // captures are never committed (rule 19), so CI skips it.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
@@ -22,7 +22,7 @@ const indexPath = join(docsDir, 'operations.json');
 const problems = [];
 
 if (!existsSync(indexPath)) {
-  console.error('facebookClient docs: docs/facebookClient/operations.json is missing. Run `bun bin/log.ts firefoxCapture --docs`.');
+  console.error('facebookClient docs: docs/platforms/facebook/operations.json is missing. Run `bun bin/log.ts capture --docs`.');
   process.exit(1);
 }
 const index = JSON.parse(readFileSync(indexPath, 'utf8'));
@@ -52,7 +52,7 @@ const flowsDir = join(root, 'src', 'camofox', 'flow', 'definitions');
 if (existsSync(flowsDir)) {
   for (const file of readdirSync(flowsDir).filter((f) => f.endsWith('.json'))) {
     const name = file.slice(0, -5);
-    if (!existsSync(join(docsDir, 'flows', `${name}.md`))) problems.push(`flow ${name}: no docs/facebookClient/flows/${name}.md (run \`bun bin/log.ts flow docs ${name}\`)`);
+    if (!existsSync(join(docsDir, 'flows', `${name}.md`))) problems.push(`flow ${name}: no docs/platforms/facebook/flows/${name}.md (run \`bun bin/log.ts flow docs ${name}\`)`);
   }
 }
 
@@ -71,7 +71,7 @@ const walk = (dir, depth) => {
   if (depth > 0) for (const name of names) if (statSync(join(dir, name), { throwIfNoEntry: false })?.isDirectory()) walk(join(dir, name), depth - 1);
 };
 for (const top of ['runs', 'publish']) walk(join(captures, top), 6);
-if (newer.length) problems.push(`${newer.length} run(s) recorded after the docs were built (${newer.slice(0, 3).join(', ')}${newer.length > 3 ? ', …' : ''}): run \`bun bin/log.ts firefoxCapture --docs\``);
+if (newer.length) problems.push(`${newer.length} run(s) recorded after the docs were built (${newer.slice(0, 3).join(', ')}${newer.length > 3 ? ', …' : ''}): run \`bun bin/log.ts capture --docs\``);
 
 // 5
 const documented = new Set(index.operations.map((o) => o.name));
@@ -91,7 +91,7 @@ const scan = (dir) => {
 };
 scan(join(root, 'src'));
 scan(join(root, 'python'));
-for (const [name, file] of named) if (!documented.has(name)) problems.push(`${name} (named in ${file}): no doc in docs/facebookClient`);
+for (const [name, file] of named) if (!documented.has(name)) problems.push(`${name} (named in ${file}): no doc in docs/platforms/facebook`);
 
 if (problems.length) {
   console.error(`facebookClient docs: ${problems.length} problem(s)\n${problems.map((p) => `  - ${p}`).join('\n')}`);

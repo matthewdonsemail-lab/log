@@ -1,0 +1,36 @@
+      - generic [ref=e122]:
+        - generic [ref=e128]:
+          - heading "Complainers of Bethlehem, PA" [level=1] [ref=e130]:
+            - generic [ref=e131]: Complainers of Bethlehem, PA
+          - generic [ref=e137]:
+            - generic [ref=e139]:
+              - img [ref=e141]
+              - generic [ref=e143]: Private group
+            - generic [ref=e145]: ·
+            - link "10.0K members" [ref=e148] [cursor=pointer]:
+              - /url: /groups/1640115596230023/members/
+        - generic [ref=e150]:
+          - button "Cancel Request" [ref=e154] [cursor=pointer]:
+            - generic [ref=e157]: Cancel Request
+          - button "Share group" [ref=e162] [cursor=pointer]:
+            - generic [ref=e166]: Share
+          - button "See Recommended Groups" [expanded] [ref=e169] [cursor=pointer]
+      - generic [ref=e179]:
+        - heading "Related groups" [level=2] [ref=e181]:
+          - generic [ref=e182]: Related groups
+        - generic [ref=e184]:
+          - img [ref=e186]
+          - heading "No recommendations to show" [level=2] [ref=e198]:
+            - generic [ref=e199]: No recommendations to show
+          - link "Explore Groups" [ref=e201] [cursor=pointer]:
+            - /url: /groups/discover/
+            - generic [ref=e204]: Explore Groups
+      - generic [ref=e211]:
+        - generic [ref=e213]:
+          - generic [ref=e214]: Your membership is pending
+          - generic [ref=e216]: Answer a few questions to help the group admins review your request to join.
+        - button "Answer questions" [ref=e220] [cursor=pointer]:
+          - generic [ref=e223]: Answer questions
+    - generic [ref=e227]:
+      - tablist [ref=e236]:
+        - generic [ref=e238]:

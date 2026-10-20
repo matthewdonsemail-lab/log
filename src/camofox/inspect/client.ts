@@ -10,7 +10,7 @@ import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { pipeProcessLog } from '../../observability/processLog/index'
-import type { CurrentInspect, InspectAction, InspectSessionConfig, InspectSessionRunner, InspectStepResult } from './types'
+import type { CurrentInspect, InspectAction, InspectSessionConfig, InspectSessionRunner, InspectStepOptions, InspectStepResult } from './types'
 
 export const INSPECT_SESSION_PATH = fileURLToPath(new URL('../../../python/inspectSession.py', import.meta.url))
 
@@ -108,10 +108,11 @@ export async function sendInspectCommand(
   args: string[],
   timeoutMs = 120_000,
   pollMs = 300,
-  expect?: { name: string; ms?: number }
+  expect?: { name: string; ms?: number },
+  options: InspectStepOptions = {}
 ): Promise<InspectStepResult | null> {
   const id = randomUUID()
-  appendFileSync(current.commandsPath, `${JSON.stringify({ id, action, args, ...(expect ? { expect: expect.name, expectMs: expect.ms ?? 30_000 } : {}) })}\n`)
+  appendFileSync(current.commandsPath, `${JSON.stringify({ id, action, args, ...(expect ? { expect: expect.name, expectMs: expect.ms ?? 30_000 } : {}), ...options })}\n`)
   const deadline = Date.now() + timeoutMs
   while (Date.now() < deadline) {
     const reply = findReply(current.repliesPath, id)

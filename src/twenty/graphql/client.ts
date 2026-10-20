@@ -11,6 +11,7 @@
 import { createClient, GenqlError } from './generated/index'
 import type {
   AgencyConversationGenqlSelection,
+  AgencyGroupGenqlSelection,
   AgencyListingGenqlSelection,
   AgencyMessageGenqlSelection,
   Client,
@@ -150,6 +151,22 @@ export const AGENCY_MESSAGE_FIELDS = {
   createdAt: true
 } satisfies AgencyMessageGenqlSelection
 
+/** rule 45: one group on one account, and where the account stands with it. */
+export const AGENCY_GROUP_FIELDS = {
+  id: true,
+  name: true,
+  socialAccountId: true,
+  facebookGroupId: true,
+  groupUrl: true,
+  joinStatus: true,
+  joinStatusReason: true,
+  membersLabel: true,
+  joinRequestedAt: true,
+  lastCheckedAt: true,
+  joinSubmission: true,
+  createdAt: true
+} satisfies AgencyGroupGenqlSelection
+
 const PAGE_INFO = { hasNextPage: true, endCursor: true } as const
 
 interface Page<T> {
@@ -228,7 +245,8 @@ export function createTwentyClient(env: Record<string, string | undefined> = pro
     socialAccounts: { one: 'SocialAccount', fields: SOCIAL_ACCOUNT_FIELDS },
     agencyListings: { one: 'AgencyListing', fields: AGENCY_LISTING_FIELDS },
     agencyConversations: { one: 'AgencyConversation', fields: AGENCY_CONVERSATION_FIELDS },
-    agencyMessages: { one: 'AgencyMessage', fields: AGENCY_MESSAGE_FIELDS }
+    agencyMessages: { one: 'AgencyMessage', fields: AGENCY_MESSAGE_FIELDS },
+    agencyGroups: { one: 'AgencyGroup', fields: AGENCY_GROUP_FIELDS }
   } as const satisfies Record<TwentyObject, { one: string; fields: Record<string, true> }>
   const untyped = () => client() as unknown as { query(q: unknown): Promise<any>; mutation(q: unknown): Promise<any> }
 

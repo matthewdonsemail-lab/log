@@ -12,6 +12,10 @@ export function guardCall(name: string, input: LogToolInput | undefined, command
   if (live && input?.confirmLive !== true) {
     return { ok: false, message: `log ${name} --live posts on Facebook. Only run it when matt asked, and pass confirmLive: true (AGENTS.md rule 10).` };
   }
+  const bypass = args.some((arg) => arg === "--bypass" || arg.startsWith("--bypass="));
+  if (bypass && input?.confirmBypass !== true) {
+    return { ok: false, message: `log ${name} --bypass runs outside the account's local waking hours (rule 18). Only when matt asked for it, and pass confirmBypass: true (AGENTS.md rule 20). The proxy gate, self-check and launch budget still apply.` };
+  }
   const noPrompt = NO_PROMPT[name];
   return { ok: true, argv: noPrompt && !args.includes(noPrompt) ? [name, ...args, noPrompt] : [name, ...args] };
 }

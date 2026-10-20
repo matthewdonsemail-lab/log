@@ -6,6 +6,12 @@
  *   log inspect start --account <a> [--url <facebook url>] [--bypass]
  *       opens one headed Camoufox for the account and keeps it open (run it
  *       live in its own terminal or Monitor); every step streams here.
+ *   log inspect start --account <a> --detach
+ *       the same session as a process of its own (how an MCP agent opens the
+ *       account's browser: a tool call can't stay running): returns once the
+ *       browser passed its gate and self-check, with its log file. The browser
+ *       stays open for the account's day (rule 35) until `do stop` or 30 idle
+ *       minutes, and no watch or timeout of the caller can close it.
  *   log inspect do <action> [args] [--live] [--timeout <s>]
  *       one step in the open session: goto <url>, snapshot, back, wait [s],
  *       click <ref>, type <ref> <text>, press <key>, stop. click, type and
@@ -14,7 +20,11 @@
  * Each step records its accessibility snapshot (refs to click), a screenshot,
  * its own HAR and rea's reading of it, in order, in the run's `steps/`.
  */
+import { spawn } from "node:child_process";
+import { closeSync, existsSync, mkdirSync, openSync, readFileSync } from "node:fs";
+import { homedir } from "node:os";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { clearCurrentInspect, currentInspectPath, LIVE_ACTIONS, openInspects, parseInspectAction, readCurrentInspect, renderInspectStep, writeCurrentInspect } from "../../camofox/inspect/index.ts";
 import { findAccount } from "../../marketplace/socialAccount/index.ts";
 import { inspectRuns, mapAllInspectRuns, mapInspectRun } from "../../rea/inspectMap/index.ts";
@@ -24,18 +34,63 @@ import type { Command } from "../runner/types.ts";
 import { browserFor } from "../../browser/driver/index.ts";
 
 export const INSPECT_USAGE = [
-  "Usage: log inspect start --account <accountName> [--url <https://www.facebook.com/...>] [--bypass] [--now] [--noIdleMouse]   (one session per account: two accounts can be open at once)",
+  "Usage: log inspect start --account <accountName> [--url <https://www.facebook.com/...>] [--bypass] [--now] [--noIdleMouse] [--detach]   (one session per account: two accounts can be open at once; --detach runs it as its own process and returns once it is open)",
   "       log inspect map [<runDir>] [--all]  (the recorded steps as states and transitions: flow.md, machine.json; default the latest run; --all collates every run)",
   "       log inspect do <goto <url>|snapshot|back|wait [s]|click <ref>|type <ref> <text>|press <key>|upload <ref> <file>|highlight <role> <name>|solve|signIn|code|stop> [--live] [--timeout <s>] [--json] [--account <accountName>]   (--account picks the session when more than one is open)",
   "       log inspect sessions   (the open sessions)",
 ].join("\n");
+
+const LOG_BIN = fileURLToPath(new URL("../../../bin/log.ts", import.meta.url));
+
+/** The detached start's seam: tests replace `start` so no browser opens. */
+export const inspectDetachDeps: {
+  start: (argv: string[], logPath: string) => { exited: () => number | null };
+  timeoutMs: number;
+} = {
+  start(argv, logPath) {
+    mkdirSync(dirname(logPath), { recursive: true });
+    const out = openSync(logPath, "a");
+    const child = spawn(process.execPath, [LOG_BIN, ...argv], { detached: true, stdio: ["ignore", out, out], windowsHide: true });
+    let code: number | null = null;
+    child.on("exit", (c) => (code = c ?? 1));
+    child.unref();
+    closeSync(out);
+    return { exited: () => code };
+  },
+  timeoutMs: 240_000,
+};
+
+/**
+ * `start --detach`: the session as its own process, waited on until its browser is ready (its
+ * replies hold "ready"), or until it ends first (a refused gate, a launch budget), whose log says why.
+ */
+async function startDetached(accountName: string, argv: string[]): Promise<{ code: number; stdout?: string; stderr?: string }> {
+  const logPath = join(homedir(), ".logCli", "runs", "inspect", `${accountName}.start.log`);
+  const child = inspectDetachDeps.start(["inspect", ...argv.filter((a) => a !== "--detach")], logPath);
+  const tail = () => (existsSync(logPath) ? readFileSync(logPath, "utf8").split(/\r?\n/).filter(Boolean).slice(-12).join("\n") : "");
+  const deadline = Date.now() + inspectDetachDeps.timeoutMs;
+  while (Date.now() < deadline) {
+    const current = readCurrentInspect(undefined, accountName);
+    if (current && existsSync(current.repliesPath) && readFileSync(current.repliesPath, "utf8").includes('"id": "ready"')) {
+      const lines = tail().split("\n").filter((l) => /Gate passed|Self-check|Browser:|session open/i.test(l));
+      return {
+        code: 0,
+        stdout: [`Inspect session for ${accountName} is open, as its own process: ${current.runDir}`, ...lines.map((l) => `  ${l.trim()}`), `  Its log: ${logPath}`, `  Steps: log inspect do <action> --account ${accountName}; close it: log inspect do stop --account ${accountName}`].join("\n"),
+      };
+    }
+    const exited = child.exited();
+    if (exited !== null) return { code: exited || 1, stderr: `log inspect: the session ended before its browser was ready (exit ${exited}):\n${tail()}` };
+    await new Promise((r) => setTimeout(r, 500));
+  }
+  return { code: 2, stderr: `log inspect: no ready browser after ${Math.round(inspectDetachDeps.timeoutMs / 1000)} s (it may still be starting):\n${tail()}` };
+}
 
 export const inspectCommand: Command = {
   name: "inspect",
   summary: "Drive one gated Camoufox a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29)",
   args: "start --account <name> [--url <u>] [--bypass] | do <action> [args] [--live]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["bypass", "live", "json", "all", "now", "noIdleMouse"], valued: ["account", "url", "timeout"] });
+    const parsed = parseArgs(argv, { boolean: ["bypass", "live", "json", "all", "now", "noIdleMouse", "detach"], valued: ["account", "url", "timeout"] });
     if (!parsed.ok) return { code: 1, stderr: `log inspect: ${parsed.error}\n${INSPECT_USAGE}` };
     const [sub, ...rest] = parsed.positionals;
 
@@ -48,6 +103,7 @@ export const inspectCommand: Command = {
         const accountName = await findAccount(context.twenty, wanted).then((a) => a.accountName, () => wanted);
         const existing = readCurrentInspect(undefined, accountName);
         if (existing) return { code: 1, stderr: `log inspect: a session is already open for ${existing.account} (${existing.runDir}). Stop it first: log inspect do stop --account ${existing.account}` };
+        if (parsed.flags["detach"]) return startDetached(accountName, argv);
       }
       // Connect's statuses: an account that has never signed in through us (NEEDSLOGIN) can be looked at too, signing in included.
       const opened = await openAccount(context, "inspect", INSPECT_USAGE, parsed.flags["account"], "connect", Boolean(parsed.flags["bypass"]), true, Boolean(parsed.flags["now"]));
