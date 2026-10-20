@@ -16,6 +16,16 @@ import type { InterestEffect } from "../../../warmup/viewer/index.ts";
 import type { CommandContext, CommandResult } from "../../runner/types.ts";
 import { DWELL_OVERHEAD_MS, frameOf } from "./personaRun.ts";
 
+/** How long each feed step waits for the page, by step (none for a dwell): what the inspect timings showed. */
+const SETTLE: Record<string, { quietMs: number; settleMaxMs: number }> = {
+  goto: { quietMs: 500, settleMaxMs: 4000 },
+  click: { quietMs: 300, settleMaxMs: 1500 },
+  nextPost: { quietMs: 0, settleMaxMs: 0 },
+  scrollComments: { quietMs: 0, settleMaxMs: 0 },
+  scrollMarketplace: { quietMs: 0, settleMaxMs: 0 },
+  openListings: { quietMs: 300, settleMaxMs: 1500 },
+};
+
 /** The session so far, for SubQ: the last 12 posts, whether theirs, the time and a like. Pure. */
 export function feedSoFar(labels: FeedLabel[]): string {
   const read = labels.filter((l) => l.plan);
@@ -84,9 +94,15 @@ export async function runFeedSession(
         context.err(`  → ${step.id}: ${step.action} ${args.join(" ")}  (${step.why})`);
         // A post step doesn't wait for the network to go quiet (the feed's images and videos keep it busy, and
         // the wait made each post crawl, run 20261020T103516); rea still reads every step, without holding it up.
-        const quick = step.id === "nextPost" || step.id === "likePost" ? { quietMs: 0, settleMaxMs: 1500 } : {};
-        const reply = await context.sendInspect(current, step.action as InspectAction, args, 180_000, undefined, { reaLater: true, ...quick });
+        // Settled on what each step needs, never on the network going quiet (Facebook's never does): measured by
+        // hand on Reading (inspect 20261020T103913), a page open waited 18-20 s for quiet, a click 6-9 s, a
+        // scroll 9 s, where the page itself was ready in seconds.
+        const quick = SETTLE[step.id] ?? (step.action === "goto" ? SETTLE.goto : step.action === "dwell" ? undefined : SETTLE.click);
+        const sent = Date.now();
+        const reply = await context.sendInspect(current, step.action as InspectAction, args, 180_000, undefined, { reaLater: true, ...quick, ...(step.optional ? { findMs: 1500 } : {}) });
         if (!reply) return { ok: false, error: `no reply from the open browser in 180 s (${current.runDir})` };
+        // Every step timed, live (matt: "time everything"): its own time in the browser, and the round trip.
+        context.err(`    ${reply.ok === false ? "✗" : "✓"} ${step.id} ${reply.ms ?? "?"} ms in the browser, ${Date.now() - sent} ms round trip${reply.error ? `: ${reply.error}` : ""}`);
         const snapshotPath = reply.folder ? join(reply.folder, "snapshot.yml") : null;
         if (step.id === "nextPost") landedAt = Date.now();
         return { ok: reply.ok !== false, error: reply.error, url: reply.url, folder: reply.folder, post: reply.post, snapshot: snapshotPath && existsSync(snapshotPath) ? readFileSync(snapshotPath, "utf8") : undefined };
@@ -95,7 +111,7 @@ export async function runFeedSession(
         const frame = input.frame ? frameOf(input.frame) : null;
         if (!frame) throw new Error("no frame of this post to send");
         const asked = Date.now();
-        const read = readReelRead(await decisions(postReadRequest(pack, persona.summary, frame, { heading: input.post.heading, text: input.post.text, images: input.post.images, sessionSoFar: feedSoFar(input.labels), allowLike: options.live && options.likes })));
+        const read = readReelRead(await decisions(postReadRequest(pack, persona.summary, frame, { heading: input.post.heading, text: input.post.text, images: input.post.images, sessionSoFar: feedSoFar(input.labels), allowLike: options.live && options.likes, allowComments: options.live })));
         tokens += read.inputTokens;
         calls++;
         context.err(`  ? post ${input.index} ("${input.post.heading.slice(0, 50)}", ${input.post.words} words): SubQ read ${read.label} (${read.labelConfidence.toFixed(2)}), theirs ${read.interest.toFixed(2)}, pick ${read.pick}  [${read.inputTokens} tokens, ${((Date.now() - asked) / 1000).toFixed(1)} s]`);

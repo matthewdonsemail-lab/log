@@ -17,7 +17,7 @@ export type InspectAction = 'goto' | 'snapshot' | 'click' | 'type' | 'press' | '
   /** Closes the tab a click opened (Reels' creator profile) and brings the session's tab back to the front. */
   | 'closeTab'
   /** Feed: the next unread post into view, with its heading, text and image descriptions; its Like. */
-  | 'nextPost' | 'likePost'
+  | 'nextPost' | 'likePost' | 'postButton'
   /** `dwell 2-4`: stays on the page that long, the cursor moving (a recorded pause; `wait` is only for a page to settle). */
   | 'dwell'
   /** The host (rule 35): keep the session now, read the page's text, read and set the Marketplace location. */
@@ -79,6 +79,8 @@ export interface InspectStepOptions {
   rest?: boolean
   /** clickRole: what shows when the click isn't needed (["button", "Mute"] for Unmute); the step then passes without clicking. */
   already?: [string, string]
+  /** clickRole: how long to look for the element (default 15 s): an optional prompt's button is given up on quickly. */
+  findMs?: number
 }
 
 /** A feed post as `nextPost` read it: its heading (author or group), text, Facebook's image descriptions. */
@@ -106,6 +108,8 @@ export interface InspectStepResult {
   folder?: string
   /** When the page landed (with `urlChange`, the new URL), in ms from the step's start. */
   landedMs?: number
+  /** The step's whole time in the browser, ms (action, settle, recording). */
+  ms?: number
   /** A tab the step's click opened, and its URL: it stays in front until `closeTab`. */
   openedTab?: string
   /** `nextPost`: the post brought into view (null when none was left on the page and it scrolled for more). */

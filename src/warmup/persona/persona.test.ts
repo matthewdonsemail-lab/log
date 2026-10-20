@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { createActor, fromPromise, toPromise } from 'xstate'
-import { FEED, feedPersonaMachine, planPost, postReadRequest, planReel, playAt, readReelRead, realPlay, REEL, REEL_LABELS, reelCaption, reelPersonaMachine, reelReadRequest, segmentWeight, stepsForPlan } from '../facebook/index'
+import { FEED, feedPersonaMachine, planPost, stepsForPost, postReadRequest, planReel, playAt, readReelRead, realPlay, REEL, REEL_LABELS, reelCaption, reelPersonaMachine, reelReadRequest, segmentWeight, stepsForPlan } from '../facebook/index'
 import type { ActivityStep, AllowedActions, FeedLabel, ReelLabel, ReelPlan, ReelRead, StepReply } from '../facebook/index'
 import { buildViewers, describeViewer, measureInterestEffect, viewersForSpeed, watchBands, watchRatio } from '../viewer/index'
 import type { InterestEffect, KuaiRow, ReelViewer } from '../viewer/index'
@@ -336,8 +336,13 @@ describe('the feed, post by post (planPost, feedPersonaMachine)', () => {
     const actor = createActor(machine, { input: { account: 'reading', posts: 2, seed: 3, live: true, likes: false, steps: feedSteps, pack, effect } })
     actor.start()
     const output = await toPromise(actor)
-    expect(acted).toEqual(['openFeed', 'settle', 'nextPost', 'onPost', 'nextPost', 'onPost', 'openMarketplace', 'lookMarketplace', 'scrollMarketplace', 'openListings'])
+    expect(acted).toEqual(['openFeed', 'dismissPrompt', 'settle', 'nextPost', 'onPost', 'nextPost', 'onPost', 'openMarketplace', 'lookMarketplace', 'scrollMarketplace', 'openListings'])
     expect(output.labels.map((l) => [l.index, l.plan?.match, l.plan?.like])).toEqual([[1, true, false], [2, false, false]])
+    // A pack that opens comments always: the post's comments opened, read and closed; one action per post.
+    const commenter = basePack({ likeP: 0, commentP: 1 })
+    const opened = planPost({ pack: commenter, effect, read: read(1, 'openComments'), post: { words: 20, liked: false, truncated: true }, index: 2, seed: 1, allowLike: false, allowClicks: true, lastLikeIndex: null })
+    expect(opened).toMatchObject({ match: true, seeMore: true, action: 'openComments', like: false })
+    expect(stepsForPost(opened, feedSteps).map((s) => s.id)).toEqual(['seeMore', 'onPost', 'openComments', 'scrollComments', 'inComments', 'closeComments'])
     expect(output.ok).toBe(true)
   })
 })

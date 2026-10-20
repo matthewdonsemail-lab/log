@@ -18,7 +18,7 @@ export const WARMUP_PLATFORMS = ['facebook'] as const
 export type WarmupPlatform = (typeof WARMUP_PLATFORMS)[number]
 
 /** An inspect step, as the open session takes it. */
-export type ActivityAction = 'goto' | 'dwell' | 'wait' | 'snapshot' | 'clickRole' | 'clickAny' | 'scrollIn' | 'scroll' | 'back' | 'openAny' | 'nextPost' | 'likePost'
+export type ActivityAction = 'goto' | 'dwell' | 'wait' | 'snapshot' | 'clickRole' | 'clickAny' | 'scrollIn' | 'scroll' | 'back' | 'openAny' | 'nextPost' | 'likePost' | 'postButton'
 
 /** What a step must achieve, checked against its reply (the page after it). */
 export interface StepExpect {
@@ -43,6 +43,8 @@ export interface ActivityStep {
   clicks?: boolean
   /** It acts on Facebook (a like): only with --likes (rule 8). */
   likes?: boolean
+  /** It may have nothing to act on (a prompt that isn't always shown): when it fails, the session goes on, saying so. */
+  optional?: boolean
   /** What the recordings showed for this step: the run, the step folder, the outcome. */
   recorded?: string
 }

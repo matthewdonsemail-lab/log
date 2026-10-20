@@ -493,7 +493,7 @@ class Inspector:
         page = self.page
         expect = command.get("expect") or None
         expect_ms = int(command.get("expectMs") or 30_000)
-        self.opts = {k: command.get(k) for k in ("reaLater", "quietMs", "settleMaxMs", "urlChange")}
+        self.opts = {k: command.get(k) for k in ("reaLater", "quietMs", "settleMaxMs", "urlChange", "findMs")}
         if action == "closeTab":
             async def close_tab() -> None:
                 # Only the tabs this session's clicks opened: the profile's own tabs and context are AdsPower's.
@@ -517,7 +517,8 @@ class Inspector:
                     self.extra["already"] = f'{already[0]} "{already[1]}"'
                     log(f'  {args[0]} "{args[1]}" not needed: {already[0]} "{already[1]}" shows')
                     return
-                await self.mouse.click(await self.by_role(args[0], args[1]))
+                # `findMs`: how long to look for it (an optional prompt that isn't shown is given up on quickly).
+                await self.mouse.click(await self.by_role(args[0], args[1], int(self.opts.get("findMs") or 15_000)))
             return await self.step("clickRole", f'{args[0]} "{args[1]}"', click_role, expect, expect_ms)
         if action == "fillRole" and len(args) >= 3:
             async def fill_role() -> None:
@@ -653,7 +654,10 @@ class Inspector:
                         await scrollMotion.scroll_by(page, int(distance), self.mouse, log)
                     read.add(name)
                     self.read_posts = read
-                    self.post = page.locator(POST_HEADINGS).nth(post["index"])
+                    # By its heading's text, never its index: the feed adds and drops posts while a post is read,
+                    # and an index went stale (Reading 20261020T105037 step 22: the Like found was off screen, at
+                    # the left edge, not the post's).
+                    self.post = page.locator(POST_HEADINGS).filter(has_text=name[:60]).first
                     words = len(post["text"].split())
                     self.extra = {"post": {"heading": name[:200], "text": post["text"][:1500], "images": post["images"][:6], "words": words, "liked": post["liked"]}}
                     log(f'  post: "{name[:80]}", {words} words, {len(post["images"])} image(s), scrolled {int(max(distance, 0))} px')
@@ -662,15 +666,22 @@ class Inspector:
                 await scrollMotion.scroll_by(page, random.randint(500, 800), self.mouse, log)
                 self.extra = {"post": None}
             return await self.step("nextPost", "", next_post)
-        # `likePost`: the Like of the post `nextPost` last brought into view, by the human mouse.
-        if action == "likePost":
-            async def like_post() -> None:
+        # `likePost`, or `postButton <name>`: a button of the post `nextPost` last brought into view, by the human
+        # mouse: `Like`, `See more` (its full text), `Leave a comment` (the post opens in a dialog with its comments,
+        # Reading 2026-10-20 step 30). Inside that post's block, never the first of its name on the page.
+        if action in ("likePost", "postButton"):
+            name = "Like" if action == "likePost" else (args[0] if args else "")
+
+            async def post_button() -> None:
                 post = getattr(self, "post", None)
                 if post is None:
                     raise RuntimeError("no post in view: nextPost first")
-                button = post.locator(f"xpath=ancestor::*[.//*[@role='button' and @aria-label='Like']][1]").get_by_role("button", name="Like", exact=True).first
+                block = post.locator("xpath=ancestor::*[.//*[@role='button' and (@aria-label='Like' or @aria-label='Remove Like')]][1]")
+                button = block.get_by_role("button", name=name, exact=True).first
+                if not await button.count():
+                    raise RuntimeError(f'no button "{name}" in this post')
                 await self.mouse.click(button)
-            return await self.step("likePost", "", like_post)
+            return await self.step(action, name, post_button)
         if action == "pageText":
             async def page_text() -> None:
                 text = await page.evaluate("() => document.body ? document.body.innerText : ''")

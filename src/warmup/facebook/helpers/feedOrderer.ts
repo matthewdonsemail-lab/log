@@ -20,9 +20,11 @@ import { seeded } from './reelSession'
  *               longer by the interest effect measured on real viewers
  *               (KuaiRand, `InterestEffect.watchIn`), capped by the attention
  *               span. Found with TinyFish, rule 53.
- *   a like      p(like | pack) × interest effect × segment weight, drawn;
- *               a cooldown of the pack's posts; a close draw settled by
- *               SubQ's pick; only with --live and --likes (rule 8).
+ *   one action  a like or the comments opened, each p(action | pack) ×
+ *               interest effect × segment weight, drawn; a like's cooldown;
+ *               a close draw settled by SubQ's pick; clicks only with --live,
+ *               a like only with --likes too (rule 8). A post that is theirs
+ *               and cut short gets "See more" first.
  */
 
 /** Facebook: people spend 2.5 s on average with a piece of feed content on desktop. */
@@ -34,21 +36,33 @@ export interface PostPlanInput {
   pack: PersonaPack
   effect: InterestEffect
   read: ReelRead | null
-  post: { words: number; liked: boolean }
+  /** `truncated`: the post's text ends in "See more". */
+  post: { words: number; liked: boolean; truncated?: boolean }
   /** 1-based. */
   index: number
   seed: number
   allowLike: boolean
+  /** Clicks on the page are allowed (--live): See more and the comments. */
+  allowClicks?: boolean
   lastLikeIndex: number | null
 }
+
+export type PostAction = 'like' | 'openComments'
 
 export interface PostPlan {
   match: boolean
   dwellMs: number
   /** How the time was made: `glance`, or `read 42 words`. */
   from: string
+  /** Their kind and cut short: its full text first ("See more"). */
+  seeMore: boolean
+  /** The one action on it (one per post), or none. */
+  action: PostAction | null
   like: boolean
   likeScore: number
+  commentScore: number
+  /** The persona's comment time (the pack's), when the comments are opened. */
+  commentMs: number
   closeCall: boolean
 }
 
@@ -68,12 +82,33 @@ export function planPost(input: PostPlanInput): PostPlan {
     dwellMs = Math.round(FEED_GLANCE_MS * (0.5 + rng() * 0.7))
     from = 'glance'
   }
+  const clicks = input.allowClicks ?? input.allowLike
   const cooling = input.lastLikeIndex !== null && input.index - input.lastLikeIndex <= pack.traits.likeCooldownReels
-  const likeScore = input.allowLike && !cooling && !post.liked ? Math.round(pack.traits.likeP * (match ? effect.likeIn : effect.likeOut) * segmentWeight(pack.segment, 'like') * 10_000) / 10_000 : 0
+  const round = (x: number) => Math.round(x * 10_000) / 10_000
+  const likeScore = input.allowLike && !cooling && !post.liked ? round(pack.traits.likeP * (match ? effect.likeIn : effect.likeOut) * segmentWeight(pack.segment, 'like')) : 0
+  const commentScore = clicks ? round(pack.traits.commentP * (match ? effect.commentIn : effect.commentOut) * segmentWeight(pack.segment, 'openComments')) : 0
+  // One action per post, drawn from the two scores; a draw within eps of a boundary is settled by SubQ's pick.
   const r = rng()
-  const closeCall = likeScore > 0 && Math.abs(r - likeScore) <= TIE_EPS * likeScore
-  const like = likeScore > 0 && (closeCall ? read?.pick === 'like' : r < likeScore)
-  return { match, dwellMs, from, like, likeScore, closeCall }
+  const order: [PostAction, number][] = (
+    [
+      ['like', likeScore],
+      ['openComments', commentScore]
+    ] as [PostAction, number][]
+  ).sort((a, b) => b[1] - a[1])
+  let action: PostAction | null = null
+  let sum = 0
+  let closeCall = false
+  for (const [a, score] of order) {
+    if (score <= 0) continue
+    if (Math.abs(r - (sum + score)) <= TIE_EPS * score) closeCall = true
+    sum += score
+    if (r < sum) {
+      action = a
+      break
+    }
+  }
+  if (closeCall) action = read?.pick === 'like' && likeScore > 0 ? 'like' : read?.pick === 'openComments' && commentScore > 0 ? 'openComments' : null
+  return { match, dwellMs, from, seeMore: match && clicks && post.truncated === true, action, like: action === 'like', likeScore, commentScore, commentMs: pack.traits.commentMs, closeCall }
 }
 
 /** The read for one post: its frame as the image, its heading, text and image descriptions, the persona. Pure. */
@@ -81,7 +116,7 @@ export function postReadRequest(
   pack: PersonaPack,
   persona: Record<string, string>,
   frame: DecisionImage,
-  input: { heading: string; text: string; images: string[]; sessionSoFar: string; allowLike: boolean }
+  input: { heading: string; text: string; images: string[]; sessionSoFar: string; allowLike: boolean; allowComments?: boolean }
 ): DecisionRequest {
   const into = pack.interests.length ? pack.interests.map((i) => REEL_LABELS[i] ?? i).join('; ') : 'their profile below'
   return {
@@ -102,7 +137,7 @@ export function postReadRequest(
       pick: {
         type: 'choice',
         instructions: 'If this person did one thing on this post beyond reading, which would it be?',
-        criteria: input.allowLike ? { like: 'Like this post', none: 'Nothing: read or scroll on' } : { none: 'Nothing: read or scroll on' }
+        criteria: { ...(input.allowLike ? { like: 'Like this post' } : {}), ...(input.allowComments ? { openComments: "Open this post's comments and read them" } : {}), none: 'Nothing: read or scroll on' }
       }
     }
   }

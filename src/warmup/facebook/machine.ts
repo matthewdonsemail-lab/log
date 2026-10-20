@@ -394,19 +394,27 @@ export interface FeedSessionOutput {
 export function feedQueue(steps: Record<string, ActivityStep>, posts: number): FeedQueueItem[] {
   const perPost: FeedQueueItem[] = []
   for (let i = 0; i < posts; i++) perPost.push(steps.nextPost, { id: 'readPost' })
-  return [steps.openFeed, steps.settle, ...perPost, steps.openMarketplace, steps.lookMarketplace, steps.scrollMarketplace, steps.openListings]
+  return [steps.openFeed, steps.dismissPrompt, steps.settle, ...perPost, steps.openMarketplace, steps.lookMarketplace, steps.scrollMarketplace, steps.openListings]
 }
 
-/** The steps for one post's plan: the time on it (from when it came into view), then its like. Pure. */
+/**
+ * The steps for one post's plan: its full text first when it is theirs and cut
+ * short, the time on it (from when it came into view), then its one action: a
+ * like, or its comments opened, read down for the persona's comment time and
+ * closed. Pure.
+ */
 export function stepsForPost(plan: PostPlan, steps: Record<string, ActivityStep>): ActivityStep[] {
-  const queue: ActivityStep[] = [dwell(steps.settle, 'onPost', plan.dwellMs, `${(plan.dwellMs / 1000).toFixed(1)} s on it from when it came into view (${plan.match ? 'theirs' : 'not theirs'}): ${plan.from}`)]
-  if (plan.like) queue.push(steps.likePost)
+  const queue: ActivityStep[] = []
+  if (plan.seeMore) queue.push(steps.seeMore)
+  queue.push(dwell(steps.settle, 'onPost', plan.dwellMs, `${(plan.dwellMs / 1000).toFixed(1)} s on it from when it came into view (${plan.match ? 'theirs' : 'not theirs'}): ${plan.from}`))
+  if (plan.action === 'like') queue.push(steps.likePost)
+  if (plan.action === 'openComments') queue.push(steps.openComments, steps.scrollComments, dwell(steps.settle, 'inComments', plan.commentMs, `${(plan.commentMs / 1000).toFixed(1)} s in the comments (the pack's comment time)`), steps.closeComments)
   return queue
 }
 
 const plannedPost = (context: FeedSessionContext, read: ReelRead | null) => {
   if (!context.post) return { queue: context.queue.slice(1), labels: [...context.labels, { index: context.index, post: null, read: null, plan: null }] }
-  const plan = planPost({ pack: context.pack, effect: context.effect, read, post: context.post, index: context.index, seed: context.seed, allowLike: context.live && context.likes, lastLikeIndex: context.lastLikeIndex })
+  const plan = planPost({ pack: context.pack, effect: context.effect, read, post: { ...context.post, truncated: context.post.text.includes('See more') }, index: context.index, seed: context.seed, allowLike: context.live && context.likes, allowClicks: context.live, lastLikeIndex: context.lastLikeIndex })
   return {
     queue: [...stepsForPost(plan, context.steps), ...context.queue.slice(1)],
     labels: [...context.labels, { index: context.index, post: { heading: context.post.heading, words: context.post.words, images: context.post.images.length }, read, plan }],
