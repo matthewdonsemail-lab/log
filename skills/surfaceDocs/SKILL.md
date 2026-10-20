@@ -16,10 +16,18 @@ are generated, never edited by hand. Everything comes from the code:
 | Live log, rules | `LONG_RUNNING`, `COMMAND_RULES` |
 | Saved flows | `src/browser/flow/definitions/*.json` |
 | Page states | `PAGE_STATES` (`src/browser/flow/helpers/pageState.ts`) |
+| Which browser each command runs on | `commandBrowser`, `OPENER_ACTIONS`, `IN_OPEN_BROWSER`, `CAMOUFOX_ONLY` (`src/browser/run`) |
+| The browsers | `BROWSER_DRIVERS` (`src/browser/driver`) |
 
 `src/surface/catalog` gathers it, `src/surface/diagrams` draws the four
-diagrams (surface, commands, hooks, pageStates), `src/surface/readme` writes the
+diagrams (browsers, surface, commands, hooks, pageStates), `src/surface/readme` writes the
 section between `<!-- surface:start` and `<!-- surface:end -->`.
+
+log-cli is browser-agnostic (rule 59): the README never presents one browser as
+log-cli's. A command moved onto the driver goes from `CAMOUFOX_ONLY` to
+`OPENER_ACTIONS`, and the Browsers section and its diagram follow. The check
+parses every diagram with Mermaid (as GitHub does): text in a label, note or
+message goes through `label()`, which escapes quotes, angle brackets and `;`.
 
 ## After a change
 

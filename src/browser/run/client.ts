@@ -49,6 +49,23 @@ export function captureDirFor(accountName: string, action: string, now: Date, ro
 /** The actions that open through python/browser/browserDriver.py, so they run on the account's browser (rule 44). The rest still launch Camoufox. */
 export const OPENER_ACTIONS: ReadonlySet<string> = new Set(['inspect', 'flow', 'warmup', 'host'])
 
+/** The commands that act inside the account's browser already open (`inspect start --detach`), so they run on whichever browser that is. */
+export const IN_OPEN_BROWSER: ReadonlySet<string> = new Set(['join'])
+
+/**
+ * The commands that still launch Camoufox themselves (facebook-camofox-client's
+ * worker, or the sync publish, connect and profile sessions), not through the
+ * driver yet: on AdsPower they don't run. Moving one onto the driver moves it
+ * to OPENER_ACTIONS.
+ */
+export const CAMOUFOX_ONLY: ReadonlySet<string> = new Set(['doctor', 'connect', 'scan', 'status', 'watch', 'publish', 'profile', 'campaign'])
+
+/** Which browser a command runs on: the account's (through the driver), Camoufox only, or none. Pure. */
+export function commandBrowser(command: string): 'accountBrowser' | 'camoufoxOnly' | 'none' {
+  if (OPENER_ACTIONS.has(command) || IN_OPEN_BROWSER.has(command)) return 'accountBrowser'
+  return CAMOUFOX_ONLY.has(command) ? 'camoufoxOnly' : 'none'
+}
+
 /** Which browser a run of this action uses, so its capture folder can say so. Pure. */
 export function runBrowserOf(account: { browserDriver: string | null; adsPowerProfileId: string | null }, action: string): BrowserDriverName {
   return OPENER_ACTIONS.has(action) ? driverNameOf(account) : 'camoufox'

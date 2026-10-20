@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { COMMANDS } from "../cli/runner/index.ts";
 import { catalog, commandEntry, flagsOf, usageLines } from "./catalog/index.ts";
-import { diagrams, label, resolverStep } from "./diagrams/index.ts";
+import { browsersDiagram, diagrams, label, resolverStep } from "./diagrams/index.ts";
 import { renderSurface, SURFACE_END, withSurface } from "./readme/index.ts";
 
 describe("catalog", () => {
@@ -26,13 +26,25 @@ describe("catalog", () => {
     expect(connect).toMatchObject({ tool: "connect", longRunning: true });
     expect(connect.flags.map((f) => f.name)).toContain("noPrompt");
     expect(connect.hooks).toEqual({ cli: ["PreToolUse", "PostToolUse"], mcp: ["PostToolUse"] });
-    expect(commandEntry(COMMANDS.find((c) => c.name === "launch")!)).toMatchObject({ tool: null, hooks: { mcp: [] } });
+    expect(commandEntry(COMMANDS.find((c) => c.name === "launch")!)).toMatchObject({ tool: null, hooks: { mcp: [] }, browser: "none" });
+    expect(commandEntry(COMMANDS.find((c) => c.name === "warmup")!).browser).toBe("accountBrowser");
+    expect(commandEntry(COMMANDS.find((c) => c.name === "join")!).browser).toBe("accountBrowser");
+    expect(connect.browser).toBe("camoufoxOnly");
   });
 });
 
 describe("diagrams", () => {
-  test("labels hold no raw quote or angle bracket", () => {
+  test("labels hold no raw quote, angle bracket or semicolon (a `;` ends a Mermaid statement)", () => {
     expect(label('a "b" <c>')).toBe("a #quot;b#quot; #lt;c#gt;");
+    expect(label("refused; run it live")).toBe("refused#59; run it live");
+  });
+
+  test("the browser layer names every driver and each command's browser", () => {
+    const d = browsersDiagram(catalog(COMMANDS));
+    expect(d.mermaid).toContain('d_adsPower["adsPower"]');
+    expect(d.mermaid).toContain('d_camoufox["camoufox"]');
+    expect(d.mermaid).toMatch(/On the account's browser: [^"]*inspect/);
+    expect(d.mermaid).toMatch(/Camoufox only, not on the driver yet: [^"]*publish/);
   });
 
   test("a resolver's edge stops at its first explanation", () => {
@@ -40,9 +52,9 @@ describe("diagrams", () => {
     expect(resolverStep("click Continue: it is plain text")).toBe("click Continue");
   });
 
-  test("four diagrams, each Mermaid", () => {
+  test("five diagrams, each Mermaid", () => {
     const all = diagrams(catalog(COMMANDS), []);
-    expect(all.map((d) => d.name)).toEqual(["surface", "commands", "hooks", "pageStates"]);
+    expect(all.map((d) => d.name)).toEqual(["browsers", "surface", "commands", "hooks", "pageStates"]);
     for (const d of all) expect(d.mermaid).toMatch(/^(flowchart|sequenceDiagram)/);
   });
 });

@@ -12,7 +12,7 @@ sequenceDiagram
   Note over Hook: where every open browser is, with each of matt's prompts
   loop each tool call
     Agent->>Hook: PreToolUse
-    Note over Hook: a log-cli run that would hide its lines (piped through tail or head) is refused before it starts; a long one off a Monitor is told to start one (rule 26)
+    Note over Hook: a log-cli run that would hide its lines (piped through tail or head) is refused before it starts#59; a long one off a Monitor is told to start one (rule 26)
     alt a log run piped through tail/head
       Hook-->>Agent: refused (exit 2), run it live
     else

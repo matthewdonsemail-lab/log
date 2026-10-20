@@ -22,6 +22,8 @@ export interface CommandEntry {
   longRunning: boolean;
   /** The AGENTS.md rules it falls under, its own first. */
   rules: number[];
+  /** Which browser it runs on (`commandBrowser`, src/browser/run): the account's through the driver, Camoufox only (not on the driver yet), or none. */
+  browser: "accountBrowser" | "camoufoxOnly" | "none";
   /** The tool-call hooks that fire on it: run from a shell (Bash, PowerShell, Monitor), or as its MCP tool. */
   hooks: { cli: HookEvent[]; mcp: HookEvent[] };
 }

@@ -81,6 +81,36 @@ for (const dir of readdirSync(cliDir)) {
   for (const f of usage) if (!parsed.has(f) && !global.has(f)) problems.push(`src/cli/${dir}: the usage of ${names.join(", ")} names --${f}, but nothing parses it`);
 }
 
+// 4. Every diagram parses as GitHub's Mermaid would (a `;` in a note broke one on GitHub once).
+{
+  const { JSDOM } = await import("jsdom");
+  const dom = new JSDOM("<!doctype html><html><body></body></html>");
+  Object.assign(globalThis, { window: dom.window, document: dom.window.document, DOMParser: dom.window.DOMParser, Element: dom.window.Element, HTMLElement: dom.window.HTMLElement });
+  const mermaid = (await import("mermaid")).default;
+  mermaid.initialize({ startOnLoad: false });
+  for (const d of all) {
+    try {
+      await mermaid.parse(d.mermaid);
+    } catch (error) {
+      problems.push(`docs/diagrams/${d.name}.mmd doesn't parse as Mermaid: ${String((error as Error).message).split("\n").slice(0, 3).join(" ")}`);
+    }
+  }
+}
+
+// 5. Names are browser-agnostic (rules 46, 57): a command's summary names no browser, unless the command is that
+//    browser's own (`log adsPower`) or launches only Camoufox; and no README heading outside the generated section
+//    presents one browser as log-cli's.
+const BROWSER_NAME = /\b(camoufox|adspower|firefox|chromium)\b/i;
+for (const e of entries) {
+  const named = BROWSER_NAME.exec(e.summary)?.[1].toLowerCase();
+  if (!named || named === e.name.toLowerCase() || (named === "camoufox" && e.browser === "camoufoxOnly")) continue;
+  problems.push(`log ${e.name}'s summary names ${named}: say what it does, on "the account's browser" (rule 46)`);
+}
+const prose = readme.replace(/<!-- surface:start[\s\S]*?<!-- surface:end -->/, "");
+for (const heading of prose.match(/^#{1,3} .*$/gm) ?? []) {
+  if (BROWSER_NAME.test(heading) && !/setup/i.test(heading)) problems.push(`README heading "${heading}" names one browser: log-cli is browser-agnostic, its browsers are in the generated Browsers section (rules 46, 57)`);
+}
+
 if (problems.length) {
   console.error(`The docs are out of step with the code (rule 56):\n${problems.map((p) => `  - ${p}`).join("\n")}`);
   process.exit(1);

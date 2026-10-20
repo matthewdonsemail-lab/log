@@ -6,6 +6,7 @@
  */
 import { AGENT_HOOKS } from "../../agentHooks/registry/index.ts";
 import type { AgentHook } from "../../agentHooks/registry/index.ts";
+import { BROWSER_DRIVERS } from "../../browser/driver/types.ts";
 import { PAGE_STATES } from "../../browser/flow/helpers/pageState.ts";
 import type { CommandEntry, FlowEntry } from "../catalog/index.ts";
 
@@ -17,9 +18,14 @@ export interface Diagram {
   mermaid: string;
 }
 
-/** A label Mermaid can hold in quotes. Pure. */
+/**
+ * Text Mermaid can hold in a label, a note or a message: quotes and angle
+ * brackets as entities, and `;`, which ends a statement in Mermaid (a note
+ * holding one broke the hooks diagram on GitHub), as `#59;`. Pure.
+ */
 export function label(text: string): string {
-  return text.replace(/"/g, "#quot;").replace(/[<>]/g, (c) => (c === "<" ? "#lt;" : "#gt;"));
+  // `;` first: the entities written after it end in `;` themselves.
+  return text.replace(/;/g, "#59;").replace(/"/g, "#quot;").replace(/[<>]/g, (c) => (c === "<" ? "#lt;" : "#gt;"));
 }
 
 const scriptName = (hook: AgentHook) => hook.script.split("/").pop() ?? hook.script;
@@ -132,7 +138,35 @@ export function commandsDiagram(entries: readonly CommandEntry[], flows: readonl
   return { name: "commands", title: "Every command, CLI and MCP", about: "Each command is a CLI command and, unless terminal-only, an MCP tool of the same name; the long-running ones write the live log. Saved flows are MCP tools that run `log flow run`.", mermaid: lines.join("\n") };
 }
 
+/**
+ * The browser layer: an account's driver is picked from Twenty, every driver
+ * opens through the same gates, and each command runs on the account's
+ * browser, on Camoufox only, or on none. Drawn from `BROWSER_DRIVERS` and
+ * `commandBrowser`, so a new browser provider or a command moved onto the
+ * driver shows here. Pure.
+ */
+export function browsersDiagram(entries: readonly CommandEntry[]): Diagram {
+  const on = (kind: CommandEntry["browser"]) => entries.filter((e) => e.browser === kind).map((e) => e.name).join(", ");
+  const lines = [
+    "flowchart LR",
+    `  twenty["Twenty socialAccounts: browserDriver, adsPowerProfileId"]`,
+    `  pick{"driverNameOf"}`,
+    `  gates["Every driver: proxy gate, self-check, HAR, human mouse (rules 12, 17, 22, 32)"]`,
+    `  session["One Playwright context: python/browser/browserDriver.py"]`,
+    "  twenty --> pick",
+    ...BROWSER_DRIVERS.map((d) => `  pick -->|"${label(d === "adsPower" ? "a linked profile, or browserDriver adsPower" : "browserDriver camoufox, or no profile")}"| d_${d}["${label(d)}"]`),
+    ...BROWSER_DRIVERS.map((d) => `  d_${d} --> gates`),
+    `  more["Next browser provider: one more driver (src/browser/name), rule 44"] -.-> gates`,
+    "  gates --> session",
+    `  account["On the account's browser: ${label(on("accountBrowser"))}"]`,
+    `  camoufox["Camoufox only, not on the driver yet: ${label(on("camoufoxOnly"))}"]`,
+    "  session --> account",
+    `  camoufox -.->|"launches Camoufox itself"| d_camoufox`,
+  ];
+  return { name: "browsers", title: "The browser layer", about: "log-cli is browser-agnostic: each account's browser is a driver picked from Twenty, AdsPower first, and every driver opens through the same gates. From `BROWSER_DRIVERS` (`src/browser/driver`) and `commandBrowser` (`src/browser/run`).", mermaid: lines.join("\n") };
+}
+
 /** Every diagram, in the README's order. Pure. */
 export function diagrams(entries: readonly CommandEntry[], flows: readonly FlowEntry[]): Diagram[] {
-  return [surfaceDiagram(entries), commandsDiagram(entries, flows), hooksDiagram(), pageStatesDiagram()];
+  return [browsersDiagram(entries), surfaceDiagram(entries), commandsDiagram(entries, flows), hooksDiagram(), pageStatesDiagram()];
 }

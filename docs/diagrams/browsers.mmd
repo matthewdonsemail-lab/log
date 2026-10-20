@@ -1,0 +1,18 @@
+%% The browser layer. log-cli is browser-agnostic: each account's browser is a driver picked from Twenty, AdsPower first, and every driver opens through the same gates. From `BROWSER_DRIVERS` (`src/browser/driver`) and `commandBrowser` (`src/browser/run`).
+%% Written by `bun run docs:build` from the code (rule 56). Not edited by hand.
+flowchart LR
+  twenty["Twenty socialAccounts: browserDriver, adsPowerProfileId"]
+  pick{"driverNameOf"}
+  gates["Every driver: proxy gate, self-check, HAR, human mouse (rules 12, 17, 22, 32)"]
+  session["One Playwright context: python/browser/browserDriver.py"]
+  twenty --> pick
+  pick -->|"browserDriver camoufox, or no profile"| d_camoufox["camoufox"]
+  pick -->|"a linked profile, or browserDriver adsPower"| d_adsPower["adsPower"]
+  d_camoufox --> gates
+  d_adsPower --> gates
+  more["Next browser provider: one more driver (src/browser/name), rule 44"] -.-> gates
+  gates --> session
+  account["On the account's browser: host, inspect, flow, warmup, join"]
+  camoufox["Camoufox only, not on the driver yet: doctor, connect, profile, scan, status, watch, publish, campaign"]
+  session --> account
+  camoufox -.->|"launches Camoufox itself"| d_camoufox

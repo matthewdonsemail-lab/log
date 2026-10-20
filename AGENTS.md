@@ -584,6 +584,17 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `datasets/`, `docs/`, `hooks/`, `twenty/`. lefthook's `layout` (`bun run
     check:layout`, pre-commit and pre-push) refuses a file loose at the top of
     either, tracked or new, and a Python domain without its `__init__.py`.
+59. 2026-10-20 · matt: the README describes log-cli as it is: browser-agnostic,
+    working through AdsPower first, with more browser providers to come, each
+    one more driver. Which browser each command runs on is code
+    (`commandBrowser` in `src/browser/run`: the account's browser through the
+    driver, Camoufox only while not on the driver yet, or none), and the
+    README's Browsers section, its Browser column and `docs/diagrams/browsers.mmd`
+    are generated from it. `check:docs` parses every diagram with Mermaid,
+    as GitHub does, and refuses one that doesn't parse (a `;` in a note broke
+    the hooks diagram on GitHub), a command summary that names one browser
+    (unless it is that browser's own command or Camoufox-only), and a README
+    heading outside the generated section that names one browser.
 
 ## Checks
 
