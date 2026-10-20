@@ -10,9 +10,9 @@ hours, launch budget, raw HAR).
 | Stage | Command | What it produces |
 | --- | --- | --- |
 | 1. Look | `log inspect start --account <a> --url <facebook url>`, then `log inspect do <action>` | One headed Camoufox (async API) kept open; every step recorded in order: accessibility snapshot with refs, screenshot, the step's own HAR, rea's reading of that HAR at once |
-| 2. Read | `log firefoxCapture --docs` | `docs/facebookClient/<domain>/<request>.md`: every request Facebook's pages made, with what it sends and reads, which step fires it, timings, errors, reasoning and rea Evidence (rule 27) |
+| 2. Read | `log capture --docs` | `docs/platforms/facebook/<domain>/<request>.md`: every request Facebook's pages made, with what it sends and reads, which step fires it, timings, errors, reasoning and rea Evidence (rule 27) |
 | 3. Map | `log inspect map [<run>] [--all]` | The recording as states and transitions (`flow.md`, `machine.json`); `--all` collates every run |
-| 4. Flow | `log flow fromInspect <run> --name <n> --rename text1=firstName …` | `src/camofox/flow/definitions/<n>.json`: each step's element by role and name, each step's confirming request, params; and `docs/facebookClient/flows/<n>.md` |
+| 4. Flow | `log flow fromInspect <run> --name <n> --rename text1=firstName …` | `src/camofox/flow/definitions/<n>.json`: each step's element by role and name, each step's confirming request, params; and `docs/platforms/facebook/flows/<n>.md` |
 | 5. Machine | `createFlowMachine(definition)` | An XState machine: one state per step, `failed` on the first step that fails |
 | 6. Run | `log flow run <n> --account <a> --set k=v … [--live]` | Dry run lists the filled steps; `--live` runs the machine through an inspect session, so the run is recorded again and mapped |
 | 7. MCP | the `log` MCP server | Every saved flow is a tool of its own (`flowProfileSetup`), params by name, `live` needs `confirmLive` |

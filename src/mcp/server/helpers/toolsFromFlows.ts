@@ -1,6 +1,8 @@
 import type { FlowDefinition } from "../../../camofox/flow/index.ts";
 import { toolName } from "../../../camofox/flow/index.ts";
 import type { LogTool } from "../types.ts";
+import { TOOL_RESULT_SCHEMA } from "../types.ts";
+import { rulesLine } from "./agentRules.ts";
 
 /**
  * Every saved flow as an MCP tool of its own (rule 31): `flowProfileSetup`
@@ -19,14 +21,18 @@ export function toolsFromFlows(flows: FlowDefinition[]): LogTool[] {
     properties.now = { type: "boolean", description: "Skip the 10-minute launch gap only (rule 30)" };
     properties.proxyMs = { type: "integer", description: "This run's proxy speed limit to Facebook, in ms (default 2500, rule 33)" };
     properties.confirmLive = { type: "boolean", description: "Set true only when matt asked for this live run" };
+    properties.confirmBypass = { type: "boolean", description: "Set true with bypass, only when matt asked for a run outside the account's hours (rule 20)" };
     return {
       name: toolName(flow.name),
       description: [
         `log flow run ${flow.name} --account <a> ${flow.params.map((p) => `--set ${p.name}=…`).join(" ")} [--live]`,
         flow.summary,
         `Steps: ${flow.steps.map((s) => s.id.replace(/^s\d+_/, "")).join(" → ")}. Every step is recorded (snapshot, screenshot, HAR, rea).`,
+        "Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26).",
+        rulesLine("flow"),
       ].join("\n"),
       inputSchema: { type: "object", properties, additionalProperties: false },
+      outputSchema: TOOL_RESULT_SCHEMA,
     };
   });
 }

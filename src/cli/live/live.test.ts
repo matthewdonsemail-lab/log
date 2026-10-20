@@ -162,7 +162,7 @@ describe("live commands", () => {
     expect(session.closed()).toBe(1);
     // Every state is printed (rule 6), and rule 22's HAR folder comes with the run.
     expect(err.join("\n")).toContain("signingIn.reading");
-    expect(session.configs[0].captureDir.replaceAll("\\", "/")).toMatch(/\/connect\/\d{8}T\d{6}_needsLogin\/firefox$/);
+    expect(session.configs[0].captureDir.replaceAll("\\", "/")).toMatch(/\/connect\/\d{8}T\d{6}_needsLogin\/camoufox$/);
     expect(await runCli(["connect", "--account", "needsLogin", "--wait", "5"], { connectSession: session.factory, twenty, out: () => {}, err: () => {} })).toBe(1);
   });
 

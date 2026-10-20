@@ -8,7 +8,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { findAccount } from '../../marketplace/socialAccount/index'
 import { marketplaceFixture } from '../../twenty/graphql/index'
-import { lastLaunchReset, listLaunches, overLaunchBudget, prepareRun, recordLaunchReset } from './index'
+import { captureDirFor, lastLaunchReset, listLaunches, overLaunchBudget, prepareRun, recordLaunchReset, runBrowserOf } from './index'
 
 const DAY = new Date('2026-10-18T10:00:00Z') // 11:00 in Galway
 const NIGHT = new Date('2026-10-18T02:00:00Z') // 03:00 in Galway, 09:00 in Vietnam
@@ -69,9 +69,18 @@ describe('prepareRun: home, hours and device', () => {
     expect(prepareRun(await account('galwayOne'), 'check', { now: NIGHT, root: ROOT })).toMatchObject({ ok: true })
   })
 
+  test("the capture folder is named after the browser that runs: inspect, flow, warmup and host follow the account, the rest are Camoufox", () => {
+    const linked = { browserDriver: null, adsPowerProfileId: 'k1' }
+    expect(runBrowserOf(linked, 'inspect')).toBe('adsPower')
+    expect(runBrowserOf(linked, 'host')).toBe('adsPower')
+    expect(runBrowserOf(linked, 'connect')).toBe('camoufox')
+    expect(runBrowserOf({ browserDriver: null, adsPowerProfileId: null }, 'inspect')).toBe('camoufox')
+    expect(captureDirFor('galwayOne', 'inspect', DAY, '/captures', 'adsPower').replaceAll('\\', '/')).toMatch(/^\/captures\/inspect\/\d{8}T\d{6}_galwayOne\/adsPower$/)
+  })
+
   test('a run carries its capture folder (rule 22); a proxy check opens nothing and has none', async () => {
     const prepared = prepareRun(await account('galwayOne'), 'run', { now: DAY, root: ROOT, action: 'scan', captureRoot: '/captures' })
-    expect(prepared.ok && prepared.run.captureDir?.replaceAll('\\', '/')).toMatch(/^\/captures\/scan\/\d{8}T\d{6}_galwayOne\/firefox$/)
+    expect(prepared.ok && prepared.run.captureDir?.replaceAll('\\', '/')).toMatch(/^\/captures\/scan\/\d{8}T\d{6}_galwayOne\/camoufox$/)
     const check = prepareRun(await account('galwayOne'), 'check', { now: DAY, root: ROOT })
     expect(check.ok && check.run.captureDir).toBeNull()
     if (prepared.ok) prepared.run.cleanup()

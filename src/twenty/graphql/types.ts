@@ -14,6 +14,10 @@ import type {
   AgencyConversationCreateInput,
   AgencyConversationFilterInput,
   AgencyConversationUpdateInput,
+  AgencyGroup,
+  AgencyGroupCreateInput,
+  AgencyGroupFilterInput,
+  AgencyGroupUpdateInput,
   AgencyListing,
   AgencyListingCreateInput,
   AgencyListingFilterInput,
@@ -35,6 +39,8 @@ export interface TwentyObjects {
   /** A buyer's conversation about a listing (rule 34), and its messages. Shared with blaster's SMS threads. */
   agencyConversations: { row: AgencyConversation; filter: AgencyConversationFilterInput; create: AgencyConversationCreateInput; update: AgencyConversationUpdateInput }
   agencyMessages: { row: AgencyMessage; filter: AgencyMessageFilterInput; create: AgencyMessageCreateInput; update: AgencyMessageUpdateInput }
+  /** A Facebook group on one account (rule 45): where the account stands with it. */
+  agencyGroups: { row: AgencyGroup; filter: AgencyGroupFilterInput; create: AgencyGroupCreateInput; update: AgencyGroupUpdateInput }
 }
 
 export type TwentyObject = keyof TwentyObjects

@@ -46,7 +46,7 @@ describe("log profile setup", () => {
     expect(result.out).toContain("profileFound.txt");
     // Every state is printed live (rules 6, 26), and the run records its HAR folder (rule 22).
     expect(result.err).toContain("reading");
-    expect(result.session.configs[0].captureDir.replaceAll("\\", "/")).toMatch(/\/profile\/\d{8}T\d{6}_galwayOne\/firefox$/);
+    expect(result.session.configs[0].captureDir.replaceAll("\\", "/")).toMatch(/\/profile\/\d{8}T\d{6}_galwayOne\/camoufox$/);
   });
 
   test("--live with no photos in Twenty is refused before a browser opens", async () => {

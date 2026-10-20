@@ -11,6 +11,14 @@ import type { ClientDomain } from '../types'
 export const DOMAIN_PATTERNS: [ClientDomain, RegExp][] = [
   // FBScrapingWarningMutation clears the "We suspect automated behaviour" flag when it is dismissed (rule 23).
   ['checkpoint', /checkpoint|ufac|integrity|captcha|challenge|selfie|appeal|pseudoBlocked|scrapingWarning|aiSupport|IXTNext/i],
+  // Groups (rule 45, `log join group`): the group page, Join, the questions and the answers, recorded on Bethlehem's
+  // groups 2026-10-20. CometHomeContactGroupsContainerQuery is the chat sidebar's group chats: background, not this.
+  ['groups', /^(CometGroup|GroupComet|GroupsComet|useGroup)|MembershipQuestion|MembershipAnswers|RequestToParticipate/],
+  // Reels (rule 49, `log warmup facebook reel`): desktop Reels are Facebook's unified video player, recorded on
+  // Bethlehem 2026-10-20: FBUnifiedVideoSeenStateMutation (each Next card), FBUnifiedVideoContainerQuery,
+  // FBUnifiedVideoFeedbackRightRailWithCommentPreloadingQuery (the comments), FBUnifiedVideoProfileSavedReelsQuery.
+  // fetchMWChatVideoAutoplaySettingQuery is Messenger's: background.
+  ['reels', /^FBUnifiedVideo|Reels?(Query|Mutation)$|SavedReels/],
   ['login', /^login|login$|logout|twoFactor|twoStep|^auth|deviceBased|loginDevice|recover|cookieConsent|webstorageProcessKeys|timezoneUpdate|WebLogin/i],
   // The account's own profile and Accounts Center (`log flow run profileSetup`, rule 28): picture, cover, name.
   ['profile', /^ProfileComet|ProfilePicture|CoverPhoto|^useFXIM|^FXIM|^FXAccountsCenter|ProfilePrompt|accountsCenter/i],

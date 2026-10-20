@@ -285,7 +285,7 @@ class Session:
             context_kwargs: dict[str, Any] = {"storage_state": str(state)} if state.is_file() else {}
             receipt = self.config.get("receiptDir")
             if receipt:
-                capture = Path(receipt) / "firefox"
+                capture = Path(receipt) / "camoufox"
                 capture.mkdir(parents=True, exist_ok=True)
                 context_kwargs["record_har_path"] = str(capture / "session.har")
                 context_kwargs["record_har_content"] = "embed"
@@ -1171,7 +1171,7 @@ def main() -> int:
     sys.stdin.reconfigure(encoding="utf8")
     reply_out, sys.stdout = sys.stdout, sys.stderr
     receipt = config.get("receiptDir")
-    proxyGate.arm(config.get("proxyPath"), config.get("devicePath"), str(Path(receipt) / "firefox") if receipt else None)
+    proxyGate.arm(config.get("proxyPath"), config.get("devicePath"), str(Path(receipt) / "camoufox") if receipt else None)
     session = Session(config)
     # Rule 24: a login wall or checkpoint met while publishing is signed through in this
     # same browser (connectSession.py's steps), never in a second launch. Imported here:

@@ -51,7 +51,9 @@ export function toFacebookAccount(row: SocialAccountRow): FacebookAccount {
     profileNamedAt: row.profileNamedAt ?? null,
     marketplaceLocationAt: row.marketplaceLocationAt ?? null,
     warmupStartedAt: row.warmupStartedAt ?? null,
-    warmedAt: row.warmedAt ?? null
+    warmedAt: row.warmedAt ?? null,
+    adsPowerProfileId: row.adsPowerProfileId?.trim() || null,
+    browserDriver: row.browserDriver?.trim() || null
   }
 }
 
@@ -138,6 +140,11 @@ export async function saveDeviceProfile(twenty: TwentyClient, account: FacebookA
   if (hasStoredDevice(account.deviceProfile)) return false
   await twenty.update(SOCIAL_ACCOUNTS, account.id, { deviceProfile: profile as unknown as AccountUpdate['deviceProfile'] })
   return true
+}
+
+/** `log adsPower sync` made or found the account's AdsPower profile (rule 42): Twenty keeps the link. */
+export async function saveAdsPowerProfileId(twenty: TwentyClient, accountId: string, profileId: string): Promise<void> {
+  await twenty.update(SOCIAL_ACCOUNTS, accountId, { adsPowerProfileId: profileId })
 }
 
 export async function markPosted(twenty: TwentyClient, accountId: string, now: Date = new Date()): Promise<void> {

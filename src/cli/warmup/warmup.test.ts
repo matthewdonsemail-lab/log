@@ -41,3 +41,47 @@ describe("log warmup", () => {
     expect((await run(["warmup", "feed"])).out).toBe("The warm-up feed is empty.");
   });
 });
+
+describe("log warmup facebook reel (rule 49)", () => {
+  test("plan draws a reel session from the activity's own steps; nothing opens", async () => {
+    const { runCli } = await import("../runner/index.ts");
+    const out: string[] = [];
+    const code = await runCli(["warmup", "facebook", "reel", "plan", "--seed", "7"], { out: (l) => out.push(l), err: () => {} });
+    expect(code).toBe(0);
+    expect(out.join("\n")).toContain("Warm-up facebook reel, a session (seed 7)");
+    expect(out.join("\n")).toContain("swipe — on to the next reel");
+  });
+
+  test("record runs every step in the open browser, checks each, and writes the outline", async () => {
+    const { runCli } = await import("../runner/index.ts");
+    const { writeCurrentInspect, clearCurrentInspect } = await import("../../camofox/inspect/index.ts");
+    const { marketplaceFixture } = await import("../../twenty/graphql/index.ts");
+    const { mkdtempSync, readFileSync } = await import("node:fs");
+    const { tmpdir } = await import("node:os");
+    const { join } = await import("node:path");
+    process.env.LOG_INSPECT_CURRENT = join(mkdtempSync(join(tmpdir(), "logWarmupCurrent")), "current.json");
+    const runDir = mkdtempSync(join(tmpdir(), "logWarmupRun"));
+    writeCurrentInspect({ account: "galwayOne", runDir, commandsPath: join(runDir, "c"), repliesPath: join(runDir, "r"), startedAt: "2026-10-20T12:00:00.000Z" });
+    const sent: string[] = [];
+    try {
+      const out: string[] = [];
+      const code = await runCli(["warmup", "facebook", "reel", "--account", "galwayOne", "--live"], {
+        twenty: marketplaceFixture(),
+        // The URL never changes: as the wheel did on the first recording.
+        sendInspect: async (_c, action) => (sent.push(action), { ok: true, url: "https://www.facebook.com/reel/1" }),
+        out: (l) => out.push(l),
+        err: () => {},
+      });
+      expect(code).toBe(1);
+      expect(sent[0]).toBe("goto");
+      expect(sent).not.toContain("press");
+      const text = out.join("\n");
+      expect(text).toContain("✗ swipe: the URL didn't change");
+      expect(text).toContain("– like: skipped, a like acts on Facebook: --likes (rule 8)");
+      const outline = JSON.parse(readFileSync(join(runDir, "warmup_facebook_reel.json"), "utf8"));
+      expect(outline).toMatchObject({ platform: "facebook", activity: "reel", sub: "record", ok: false });
+    } finally {
+      clearCurrentInspect(undefined, "galwayOne");
+    }
+  });
+});

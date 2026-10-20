@@ -26,12 +26,15 @@ import { openInspectSession, runFlowInSession } from "../flow/helpers/index.ts";
 import { openAccount, withRun } from "../live/index.ts";
 import { parseArgs } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
+import { WARMUP_PLATFORMS } from "../../warmup/facebook/index.ts";
+import { PLATFORM_USAGE, runPlatformActivity } from "./helpers/index.ts";
 
 export const WARMUP_USAGE = [
   "Usage: log warmup plan",
   "       log warmup record --account <accountName> [--only feedBrowse,marketplaceBrowse] [--likes] [--bypass] [--now]",
   "       log warmup run --account <accountName> [--only …] [--likes] [--gapMinutes <n>] [--bypass] [--now]",
   "       log warmup feed [--account <accountName>] [--lines <n>] [--follow [--seconds <n>]]",
+  PLATFORM_USAGE,
 ].join("\n");
 
 /** The run's own name in the feed: its folder. */
@@ -45,12 +48,14 @@ function feed(context: CommandContext, line: Omit<FeedLine, "at">): void {
 
 export const warmupCommand: Command = {
   name: "warmup",
-  summary: "Listaro's five warm-up activities: record them headed (once), run them in one open browser, watch the activity feed (rule 35)",
-  args: "<plan|record|run|feed> [--account <name>] [--only …] [--likes] [--gapMinutes n] [--follow]",
+  summary: "The warm-up, by platform and activity (`log warmup facebook reel`: the browser opened primed with it, each step checked, the outline written, rule 49), and Listaro's five activities (record, run, feed, rule 36)",
+  args: "<platform> <activity> [plan|record|run] [--account <a>] [--live] [--likes] [--bypass] | <plan|record|run|feed> [--account <name>] [--only …] [--likes] [--gapMinutes n] [--follow]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["likes", "bypass", "now", "follow", "json"], valued: ["account", "only", "gapMinutes", "lines", "seconds"] });
+    const parsed = parseArgs(argv, { boolean: ["likes", "bypass", "now", "follow", "json", "live", "persona", "newPersona"], valued: ["account", "only", "gapMinutes", "lines", "seconds", "reels", "watch", "skip", "comments", "profile", "seed", "trafficMb"] });
     if (!parsed.ok) return { code: 1, stderr: `log warmup: ${parsed.error}\n${WARMUP_USAGE}` };
     const [sub] = parsed.positionals;
+    // By platform (rule 49): `log warmup facebook reel [plan|record|run]`, one activity of the warm-up at a time.
+    if ((WARMUP_PLATFORMS as readonly string[]).includes(sub ?? "")) return runPlatformActivity(context, parsed.positionals, parsed.flags);
     const flags = parsed.flags;
 
     if (sub === "plan") {

@@ -9,12 +9,21 @@ pre-commit:
     commitLog:
       run: node scripts/commitLog.mjs
 
+    # Rule 44: every browser has the same pieces (its src/browser/<name> domain, capability row,
+    # driver, tests, Python opener and docs/browsers.md column). A capability may be notBuilt;
+    # those are listed, never refused (docs/browsers.md).
+    browserParity:
+      run: bun run check:browsers
+
 pre-push:
   parallel: false
   commands:
     # Rule 1: camelCase everywhere.
     naming:
       run: bun run check:naming
+
+    browserParity:
+      run: bun run check:browsers
 
     typecheck:
       run: bun run typecheck
@@ -23,9 +32,9 @@ pre-push:
       run: bun test
 
     # Rules 25 and 27: every request Facebook's pages made in our runs has a
-    # doc in docs/facebookClient/, rea has read each GraphQL request's slice,
+    # doc in docs/platforms/facebook/, rea has read each GraphQL request's slice,
     # the reasoning is written, and no run is newer than the last docs build
-    # (`bun bin/log.ts firefoxCapture --docs`). Why: AGENTS.md, "How we fix
-    # problems", and docs/facebookClient/README.md.
+    # (`bun bin/log.ts capture --docs`). Why: AGENTS.md, "How we fix
+    # problems", and docs/platforms/facebook/README.md.
     facebookClientDocs:
       run: bun run check:facebookClientDocs

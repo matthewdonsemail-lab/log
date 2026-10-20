@@ -8,7 +8,7 @@ describe("flows as MCP tools (rule 31)", () => {
   test("profileSetup is the tool flowProfileSetup, with its params by name", () => {
     const [tool] = toolsFromFlows([flow]);
     expect(tool.name).toBe("flowProfileSetup");
-    expect(Object.keys(tool.inputSchema.properties)).toEqual(["account", "profilePhoto", "coverPhoto", "firstName", "lastName", "live", "bypass", "now", "proxyMs", "confirmLive"]);
+    expect(Object.keys(tool.inputSchema.properties)).toEqual(["account", "profilePhoto", "coverPhoto", "firstName", "lastName", "live", "bypass", "now", "proxyMs", "confirmLive", "confirmBypass"]);
   });
 
   test("a call becomes log flow run with --set per param", () => {

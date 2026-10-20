@@ -29,6 +29,7 @@ Every command takes `--json` and never prompts, so scripts and agents can use it
 | --- | --- |
 | `log launch` | Clack menu over the commands below |
 | `log accounts` / `log account show <name>` | Facebook accounts: status, home, proxy, last proxy check, whether each may run |
+| `log adsPower status\|profiles\|sync [--apply]` | AdsPower's Local API, its profiles, and one profile per Twenty account (rule 42) |
 | `log account status <name> <STATUS>` | Set an account's status. RESTRICTED, BANNED or DEAD keep the account and replace its campaign listings |
 | `log listings` / `log listing <id>` | Twenty listings by status, account or campaign; one in full |
 | `log proxy check --account <name>` | The proxy's exit IP and country, no browser, written to Twenty |
@@ -103,6 +104,32 @@ Twenty is the identity provider, and blaster's hosted web app
 (or `LOG_WEB_URL` / `LOG_API_URL`) point at a local blaster. The CLI never holds the
 OAuth client secret.
 
+## The browser: AdsPower, with Camoufox kept (rule 42)
+
+The direction from 2026-10-19: accounts move to **AdsPower**, Listaro's browser and
+SubQ's pick on our recorded issues. **Camoufox stays** and can be used again later.
+Twenty's `socialAccounts` logic doesn't change.
+
+The browser is a driver (`src/browser/driver`). One XState machine runs every
+account's session, whichever browser it uses: prepare, gate, start, self-check,
+open, close. A browser can't open without its proxy gate (rule 12), and isn't open
+before its self-check (rule 17). Another browser is added by writing one more
+driver.
+
+```bash
+bun bin/log.ts adsPower status          # AdsPower's Local API answers
+bun bin/log.ts adsPower profiles        # its profiles, and the Twenty account of each
+bun bin/log.ts adsPower sync            # dry run: one profile per Facebook account
+bun bin/log.ts adsPower sync --apply    # make them, link each in socialAccounts.adsPowerProfileId
+```
+
+A profile holds no proxy, password or 2FA key: those stay in Twenty. Both browsers are
+opened by one Python layer (`python/browserDriver.py`), which hands every session the same
+Playwright context. So the proxy gate, the self-check, the session HAR, the human mouse and
+scroll, the flows and the warm-up are the same on either. `docs/browsers.md` is the parity
+table, and `bun run check:browsers` (pre-commit) keeps it. Setup and what's next:
+`docs/adsPower.md`. Across servers: `docs/deployment.md`.
+
 ## Live mode (Camoufox)
 
 `doctor`, `connect`, `scan`, `status` and `watch` launch Camoufox through
@@ -130,7 +157,7 @@ every step (snapshot, screenshot, HAR, rea). `log flow fromInspect` turns that
 recording into a flow: its docs, an XState machine, `log flow run <name>` for
 any account, and an MCP tool of its own (`flowProfileSetup`). The whole
 pipeline, the actions, the saved flows and what the recordings showed:
-`docs/recordToFlow.md`. Every request Facebook's pages made: `docs/facebookClient/`.
+`docs/recordToFlow.md`. Every request Facebook's pages made: `docs/platforms/facebook/`.
 
 ## Layout
 
@@ -143,6 +170,9 @@ src/marketplace/replacement/    losing an account, replacements, campaign fill
 src/marketplace/publish/        the XState publish machine
 src/marketplace/monitor/        the XState listing monitor + relist rules
 src/marketplace/listing/        the listeningkit-hackathon listing machine port (+ its seed)
+src/browser/driver/             the browser-agnostic session machine and capability list (rules 42, 44)
+src/browser/camoufox/           Camoufox's driver and capability row
+src/browser/adsPower/           AdsPower: Local API client (from Listaro), profile sync, its driver and capability row
 src/camofox/run/                one run's private proxy/cookie files
 src/camofox/worker/             spawns python/logWorker.py
 src/camofox/session/            drives python/publishSession.py step by step

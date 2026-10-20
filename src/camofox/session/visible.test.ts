@@ -58,7 +58,7 @@ describe("no browser without the account's proxy (rule 12)", () => {
   test("there is no exception: not for signing in, not for a dry run", () => {
     // ...and every context they open records its HAR (rule 22).
     expect(read("logWorker.py")).toContain('proxyGate.arm(request.get("proxy_path"), request.get("device_path"), request.get("capture_dir"))');
-    expect(read("publishSession.py")).toContain('proxyGate.arm(config.get("proxyPath"), config.get("devicePath"), str(Path(receipt) / "firefox") if receipt else None)');
+    expect(read("publishSession.py")).toContain('proxyGate.arm(config.get("proxyPath"), config.get("devicePath"), str(Path(receipt) / "camoufox") if receipt else None)');
     for (const name of ["logWorker.py", "publishSession.py", "proxyGate.py"]) expect(read(name)).not.toMatch(/allow_no_proxy|allowNoProxy/);
   });
 

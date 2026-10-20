@@ -35,6 +35,14 @@ export type ErrorLayer =
   | 'proxyVendor'
   /** A change on the account's own profile page (`log profile setup`, rule 28). */
   | 'profile'
+  /** A browser session for any driver (`browser/driver`, rule 42). */
+  | 'browser'
+  /** AdsPower's Local API and its profiles (`adsPower/*`). */
+  | 'adsPower'
+  /** A Facebook group on one account (`group/*`, rule 45). */
+  | 'group'
+  /** A warm-up activity on its platform (`warmup/<platform>`, rule 49). */
+  | 'warmup'
 
 /** How a publish run ends when this code is raised (`marketplace/publish`). */
 export type PublishEnd = 'failed' | 'blocked' | 'needsPerson' | 'unconfirmedId'
@@ -1181,6 +1189,27 @@ export const ERROR_CATALOG = {
     raisedIn: ['proxyVendor/twoCaptcha'],
     action: 'Pick a city it has (--city), or --anyCity for anywhere in the country.'
   },
+  bytefulNotConfigured: {
+    layer: 'proxyVendor',
+    meaning: "The Byteful API keys aren't set.",
+    retryable: false,
+    raisedIn: ['proxyVendor/byteful'],
+    action: 'Put BYTEFUL_PUBLIC_KEY and BYTEFUL_PRIVATE_KEY (Byteful dashboard → API keys) in log-cli/.env.local.'
+  },
+  bytefulRefused: {
+    layer: 'proxyVendor',
+    meaning: "Byteful's API refused or didn't answer (bad keys, no plan, no traffic left, network).",
+    retryable: true,
+    raisedIn: ['proxyVendor/byteful'],
+    action: 'Read the detail. Check the keys and that the plan has traffic left (log proxy balance --vendor byteful).'
+  },
+  bytefulNoCity: {
+    layer: 'proxyVendor',
+    meaning: "Byteful's residential pool has no devices in that city.",
+    retryable: false,
+    raisedIn: ['proxyVendor/byteful'],
+    action: 'Pick a nearby city it has (--city), or --anyCity for anywhere in the country.'
+  },
   proxyTooFar: {
     layer: 'proxyVendor',
     meaning: "Every proxy 2Captcha gave exited too far from the account's home city (it doesn't always honour the state and city it was asked for), or was too slow for Facebook. Nothing was saved.",
@@ -1224,6 +1253,106 @@ export const ERROR_CATALOG = {
     retryable: true,
     raisedIn: ['profile.uploadingProfilePhoto', 'profile.uploadingCoverPhoto'],
     action: "Read the run's capture and its saved page text; run once more after the launch gap (rule 24)."
+  },
+  // rule 42: the browser as a driver (browser/driver) and AdsPower's Local API (adsPower/*).
+  browserDriverFailed: {
+    layer: 'browser',
+    meaning: 'A browser driver step threw something without a catalog code, or a session was started without its driver steps.',
+    retryable: false,
+    raisedIn: ['browser/driver'],
+    action: 'Read the detail; give the step a catalog code in its driver.'
+  },
+  browserGone: {
+    layer: 'browser',
+    meaning: 'The open browser went away (crashed, or the window was closed).',
+    retryable: true,
+    raisedIn: ['browser/driver', 'cli/host'],
+    action: 'Nothing: the host reopens it once a day; a second crash goes to a person (rule 35).'
+  },
+  adsPowerUnavailable: {
+    layer: 'adsPower',
+    meaning: "AdsPower's Local API didn't answer (the app isn't running, or ADSPOWER_HOST is wrong).",
+    retryable: true,
+    raisedIn: ['browser/adsPower'],
+    action: 'Start the AdsPower app (or `ads start`), check ADSPOWER_HOST in .env.local, then `log adsPower status`.'
+  },
+  adsPowerRequestFailed: {
+    layer: 'adsPower',
+    meaning: 'The Local API refused the call (its msg is in the detail): a bad field, a missing profile, the plan limit, or a wrong API key.',
+    retryable: false,
+    raisedIn: ['browser/adsPower'],
+    action: "Read the detail. A profile limit means the AdsPower plan holds fewer profiles than accounts; a key error means ADSPOWER_API_KEY doesn't match the app."
+  },
+  adsPowerRateLimited: {
+    layer: 'adsPower',
+    meaning: 'The Local API said "Too many request" three times in a row.',
+    retryable: true,
+    raisedIn: ['browser/adsPower'],
+    action: 'Nothing: run it again in a minute. The plan sets the requests per minute (300, 900 or 1500).'
+  },
+  adsPowerProfileMissing: {
+    layer: 'adsPower',
+    meaning: 'The account has no AdsPower profile linked in Twenty (socialAccounts.adsPowerProfileId).',
+    retryable: false,
+    raisedIn: ['browser/adsPower', 'python/browserDriver'],
+    action: 'Run `log adsPower sync --apply` (it makes the profile and links it).'
+  },
+  // rule 45: groups (`group/join`, `log join group`).
+  groupRefInvalid: {
+    layer: 'group',
+    meaning: '--group names no Facebook group (a facebook.com/groups/<id or name>/ URL, the id, or the name in the URL).',
+    retryable: false,
+    raisedIn: ['group/join'],
+    action: "Copy the group's URL from the browser and pass it as --group."
+  },
+  groupBrowserNotOpen: {
+    layer: 'group',
+    meaning: "The account's browser is not open: a join is a step in it, never a launch of its own (rule 35).",
+    retryable: false,
+    raisedIn: ['cli/join'],
+    action: 'Open it first: log inspect start --account <a> (or log host start), then run the join again.'
+  },
+  groupPageNotOpened: {
+    layer: 'group',
+    meaning: "The group page did not open in the account's browser.",
+    retryable: true,
+    raisedIn: ['group/join.opening'],
+    action: "Read the run's step folder (rule 25): its screenshot and HAR show where the page went."
+  },
+  groupGateUnknown: {
+    layer: 'group',
+    meaning: 'The group page showed neither a Join nor a Joined button: a page not recorded yet.',
+    retryable: false,
+    raisedIn: ['group/join.reading'],
+    action: "Read the step's snapshot.yml and screenshot: name the page's button in group/join/helpers/readGroupPage.ts from that recording (rule 29)."
+  },
+  groupQuestionsNotReopened: {
+    layer: 'group',
+    meaning: 'The group page shows no way back into its questions: no "Answer questions" button and no open dialog.',
+    retryable: false,
+    raisedIn: ['group/answer.choosing', 'group/answer.reopening'],
+    action: "Read the opening step's snapshot (rule 25): a public group's participation questions have no recorded way back in yet. Record one with log inspect before filling it (rule 29)."
+  },
+  groupFillIncomplete: {
+    layer: 'group',
+    meaning: "A fill step had no element in the dialog, or one failed: the draft and the dialog don't match.",
+    retryable: false,
+    raisedIn: ['group/answer.planning', 'group/answer.filling'],
+    action: "Read the reading step's snapshot.yml: the questions may have changed (run the stepper again: log join group --answer), or a type isn't recorded yet."
+  },
+  groupSubmitNotConfirmed: {
+    layer: 'group',
+    meaning: 'Submit was pressed and the dialog stayed open, or the click failed. It is not pressed again.',
+    retryable: false,
+    raisedIn: ['group/answer.submitting', 'group/answer.checking'],
+    action: "Read the submitting and checking steps' recordings (rule 25) before another --submit."
+  },
+  groupJoinNotConfirmed: {
+    layer: 'group',
+    meaning: 'Join was pressed and the page did not change, or the click failed. It is not pressed again.',
+    retryable: false,
+    raisedIn: ['group/join.joining', 'group/join.checking'],
+    action: "Read the joining and checking steps' recordings (rule 25) before another --live run."
   },
 } as const satisfies Record<string, ErrorEntry>
 

@@ -44,7 +44,7 @@ params by name, `live: true` and `confirmLive: true`.
 
 A failed step ends the run (`failedAt`): read that step's folder in the new
 recording (rule 25), re-record the changed part with inspect, rebuild the flow.
-Rebuild the request docs after a run (rule 27): `firefoxCapture --docs`.
+Rebuild the request docs after a run (rule 27): `capture --docs`.
 
 ## Saved flows
 

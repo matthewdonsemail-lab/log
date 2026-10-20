@@ -56,7 +56,7 @@ does that for one account, both photos in one run (matt's choice).
 6. Rebuild the Facebook client docs (rule 27): the profile requests are new.
 
    ```bash
-   bun bin/log.ts firefoxCapture --docs
+   bun bin/log.ts capture --docs
    ```
 
 ## Codes

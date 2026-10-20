@@ -38,7 +38,30 @@ log warmup feed --account <a> --follow                 # the activity feed, live
 use 1-5 when matt is watching. `--only feedBrowse,sellingVisit` limits it.
 
 After recording, read each activity's steps with rea (rule 25) and rebuild the
-request docs (`log firefoxCapture --docs`, rule 27) before pushing.
+request docs (`log capture --docs`, rule 27) before pushing.
 
 Doc: `docs/lifecycle.md` (the warm-up section); scripts:
 `src/marketplace/warmup/helpers/scripts.ts`.
+
+## By platform: Facebook Reels, for a persona (rules 49-51)
+
+```bash
+bun scripts/buildReelViewers.ts                        # once: 980 real viewers from KuaiRand-1K (~/.logCli/datasets)
+bun scripts/buildInterestEffect.ts                     # once: the interest effect, from KuaiRand-Pure's random log
+log warmup facebook persona --account <a>              # the persona, its real viewer and its pack (every dataset a trait)
+log proxy balance                                      # 2Captcha traffic left, before a run
+log warmup facebook reel run --account <a> --persona --live [--likes] [--trafficMb 1024]
+```
+
+- Each reel, the moment it lands, is read by SubQ from its frame (theirs or
+  not, what it is, the one action they'd pick); the orderer (`planReel`)
+  plans the watch from the real viewer's plays (their kind from their median
+  up, the rest from it down, scaled by the measured effect) and at most one
+  action. Watch every line live (rule 26): `= reel N: THEIRS|not theirs; watch …`.
+- Reels streams video through the proxy: about 4.5 MB a reel (2026-10-20).
+  A run is refused when the account used its `--trafficMb` (default 1 GB) in
+  the last 24 hours, checks every 5 reels and stops at it; each run's use goes
+  to `~/.logCli/proxyTraffic.jsonl`.
+- The creator's profile opens in its own tab: back to the reel closes it
+  (`closeTab`). Stop a run with the browser left open (rule 35); if a session
+  dies, close its AdsPower profile and clear its proxy, then log the close.

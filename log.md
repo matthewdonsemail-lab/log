@@ -1801,3 +1801,726 @@ AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
 What changed: the top of AGENTS.md now says that options, context and spend come only from what matt said. Deep research prompts, searches, SubQ matrices, plans and write-ups use only his words (a misspelling is read as what he meant). There are no physical options, because he is in Vietnam with no physical access. Paid tasks do exactly what he asked. Rules 39-41. The same rule is in the workspace AGENTS.md for every agent.
 Why: matt: "If I never mentioned it, if I never inferred it, if I never outlined it as an option, therefore it is not an option." The scale-stack deep research and SubQ matrix included options he never mentioned (real local people's own accounts, physical phones and machines), one of them ranked first, and the runs cost money.
 Checked: the rule text was read against matt's message. The scale-stack decision (`RESEARCH/MARKETPLACE_SCALE_STACK/DECISION_SCALE_STACK.md`) is marked superseded. Nothing was re-run.
+
+## 2026-10-19 20:26Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `.gitignore`: edited
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/adsPower.md`: new file
+- `python/errorCatalog.json`: edited
+- `scripts/twentySetup.mjs`: changed const SOCIAL_ACCOUNT_FIELDS
+- `skills.md`: edited
+- `skills/adsPower/SKILL.md`: new file
+- `src/adsPower/adsPower.test.ts`: added function fakeFetch, function memoryAdsPower, test "sends the key as a Bearer token and reads a started profile's CDP websocket", test ""Too many request" is retried, then refused as adsPowerRateLimited", test "the app not running is adsPowerUnavailable, and lists page through 100 at a time", test "the profile is Windows Chrome with the home locale, IP timezone and noise, and holds no proxy or secret", test "the plan makes a profile per account, skips banned and unlocalisable ones, and relinks one found by its remark", test "sync is a dry run unless applied; applied, it makes the profiles and links each in Twenty, and a rerun only finds them linked", test "the proxy URL becomes AdsPower's user_proxy_config", test "until its gate is built, an AdsPower session is refused before anything starts (rule 12)", test "with a passed gate it starts on the proxy; the unbuilt self-check closes it and takes the proxy back off", test "an account with no linked profile fails in preparing"
+- `src/adsPower/driver/client.ts`: added interface AdsPowerDriverDeps, const fail, function adsPowerDriver
+- `src/adsPower/driver/helpers/index.ts`: added export from "./proxyConfig"
+- `src/adsPower/driver/helpers/proxyConfig.ts`: added const NO_PROXY, function proxyConfig
+- `src/adsPower/driver/index.ts`: added export from "./client", export from "./helpers/index"
+- `src/adsPower/localApi/client.ts`: added const RATE_LIMIT_WAIT_MS, const PAGE_SIZE, function localApiConfig, type Fetch, function createAdsPowerClient
+- `src/adsPower/localApi/index.ts`: added export from "./client", export from "./types"
+- `src/adsPower/localApi/types.ts`: added interface LocalApiConfig, const DEFAULT_LOCAL_API_URL, interface AdsPowerProfile, interface StartedBrowser, interface CreateProfileBody, interface LocalApiReply, interface AdsPowerClient, class AdsPowerError
+- `src/adsPower/profile/client.ts`: added function syncProfiles
+- `src/adsPower/profile/helpers/index.ts`: added export from "./planSync", export from "./profileRequest"
+- `src/adsPower/profile/helpers/planSync.ts`: added function planSync
+- `src/adsPower/profile/helpers/profileRequest.ts`: added const twentyRemark, const remarkAccountId, function profileRequest
+- `src/adsPower/profile/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/adsPower/profile/types.ts`: added const ADS_POWER_GROUP, const NO_PROFILE_STATUSES, type ProfileSyncAction, interface ProfileSyncEntry, interface ProfileSyncResult
+- `src/browser/driver/client.ts`: added function driverNameOf, function sessionMachineFor, function createBrowserSession
+- `src/browser/driver/index.ts`: added export from "./client", export from "./machine", export from "./types"
+- `src/browser/driver/machine.ts`: added const failureOf, const missing, const browserSessionMachine
+- `src/browser/driver/types.ts`: added const BROWSER_DRIVERS, type BrowserDriverName, const DEFAULT_BROWSER_DRIVER, interface BrowserSessionInput, interface DriverFailure, interface BrowserEndpoint, interface GateResult, type CloseReason, interface BrowserDriver, type BrowserSessionEvent, interface BrowserSessionContext, interface BrowserSessionOutput
+- `src/cli/adsPower/index.ts`: added const ADS_POWER_USAGE, const adsPowerCommand
+- `src/cli/runner/index.ts`: changed const COMMANDS, function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/errors/catalog/types.ts`: changed type ErrorLayer, const ERROR_CATALOG
+- `src/marketplace/socialAccount/client.ts`: added function saveAdsPowerProfileId · changed function toFacebookAccount
+- `src/marketplace/socialAccount/types.ts`: changed interface FacebookAccount
+- `src/twenty/graphql/client.ts`: changed const SOCIAL_ACCOUNT_FIELDS
+- `src/twenty/graphql/generated/schema.ts`: changed interface SocialAccount, interface SocialAccountConnection, interface SocialAccountGroupByConnection, interface SocialAccountGenqlSelection, interface SocialAccountConnectionGenqlSelection, interface SocialAccountGroupByConnectionGenqlSelection, interface SocialAccountCreateInput, interface SocialAccountUpdateInput, interface SocialAccountFilterInput, interface SocialAccountOrderByInput, interface SocialAccountOrderByWithGroupByInput, interface SocialAccountOrderByWithGroupByAggregateInput, interface SocialAccountGroupByInput
+- `src/twenty/graphql/generated/types.ts`: no declaration changed (comments, formatting or line endings)
+
+What changed: the browser becomes a driver (rule 42).
+- `src/browser/driver` is one XState v5 session machine for any browser: preparing, gating, starting, selfChecking, open, closing, with final states closed, refused and failed. `starting` is only reachable from a passed gate (rule 12), and `open` only after the self-check (rule 17).
+- Listaro's AdsPower client is ported to `src/adsPower/localApi`: v2 endpoints, the Bearer key, "Too many request" retried twice, and catalog errors (adsPowerUnavailable, adsPowerRequestFailed, adsPowerRateLimited).
+- `src/adsPower/profile` gives every Twenty Facebook account one AdsPower profile:
+  - Windows Chrome, the language from HOME_COUNTRIES, timezone and geolocation from the IP;
+  - AdsPower's canvas, WebGL, audio and media noise;
+  - no proxy, password, cookies or 2FA key;
+  - a `twenty:<id>` remark, so a lost link can be found again.
+- `src/adsPower/driver` makes AdsPower a BrowserDriver. It puts the proxy on only to open and clears it at close. Its gate and self-check refuse until they're wired (adsPowerGateNotBuilt, adsPowerSelfCheckNotBuilt).
+- New command: `log adsPower status|profiles|sync [--apply]`.
+- Twenty gains `socialAccounts.adsPowerProfileId` and `browserDriver`, both additive (rule 13), and the client is regenerated (rule 14).
+- New error layers `browser` and `adsPower`. Docs: `docs/adsPower.md`, `skills/adsPower`, the README section, AGENTS.md rule 42.
+- AdsPower's own skill (`npx skills add ... --skill adspower-browser`) is git-ignored, because its names are vendor kebab-case (rule 1). The AdsPower MCP server was added at local scope, so its key stays out of git.
+Why: matt: swap the browser to AdsPower, keep Camoufox, keep the socialAccounts logic, take the implementation from Listaro, and make the architecture browser-agnostic with XState, so a new browser can be added.
+Checked: the full check, and a live sync.
+- `bun run check`: naming OK, tsc clean, 567 pass, 0 fail, including 10 new AdsPower tests:
+  - fake Local API: Bearer key, rate-limit retry, paging, app down;
+  - profile body holds no secret;
+  - sync plan and apply against the in-memory Twenty, re-run idempotent;
+  - the session refused at the unbuilt gate, so nothing starts;
+  - with a passed gate: update, start, stop, then the proxy cleared.
+- Live:
+  - `twentySetup --apply` created both fields;
+  - `log adsPower status` up;
+  - `sync --apply` made 10 profiles (k1i5dlf8 ... k1i5dlhs) and linked each in Twenty; one record with no home country was skipped;
+  - the re-run reports 10 linked, 0 to create.
+
+## 2026-10-19 20:33Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/deployment.md`: new file
+
+What changed: new `docs/deployment.md`, how log-cli runs with the services on different servers. AdsPower's Local API and CDP websockets are loopback only, so production puts AdsPower (headless mode with the API key, Xvfb, as Listaro did) and log-cli on one browser server. Twenty stays on its own server over HTTPS. 2Captcha's gateway is an outbound connection, and matt reaches the server over a private network. The doc also covers: rules to stop dev and prod opening one profile at once (cloud-active), reading the port from AdsPower's `local_api` file, per-machine `.env.local`, what 2Captcha's 120-minute sticky limit means for an always-open browser (two ways, for matt to choose), and the build order. AGENTS.md rule 43: the proxies stay 2Captcha residential.
+Why: matt asked how dev and prod work when AdsPower is on a separate server, on Twenty's server or elsewhere. He also said to keep the 2Captcha proxies already paid for, whatever a ranking said.
+Checked: read AdsPower's own pages:
+- the API overview, code samples, help API page and system requirements;
+- the troubleshooting guide: `local.adspower.net`, localhost or 127.0.0.1; headless with an API key on several devices; GUI on one device; the port can change;
+- CrocoFactory's SDK note on loopback endpoints in remote setups.
+Also read Listaro's `setup-adspower.sh` and its server plan (AdsPower and the agent on one server, `127.0.0.1:50325`), and log-cli's 2Captcha URL builder (`session-<id>-sessTime-120`, `na.proxy.2captcha.com:2334`). Docs only: no code changed.
+
+## 2026-10-19 21:01Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/adsPower.md`: edited
+- `docs/browsers.md`: new file
+- `lefthook.yml`: edited
+- `package.json`: edited
+- `python/adsPowerBrowser.py`: added const DEFAULT_HOST, const RATE_LIMIT_WAIT_S, def base_url, def _call, def user_proxy_config, const NO_PROXY, def set_proxy, def start, def stop
+- `python/browserDriver.py`: added const BROWSERS, class Opened, def driver_of, def open_camoufox, def open_ads_power, def carry_session_once, const OPENERS, def open_browser
+- `python/errorCatalog.json`: edited
+- `python/harRecorder.py`: added const STATIC, const TEXT_TYPES, const MAX_BODY, class Recorder, class SessionHar
+- `python/inspectSession.py`: changed class Inspector · removed const STATIC, const TEXT_TYPES, const MAX_BODY, class Recorder
+- `python/proxyGate.py`: added def gate_attached, def check_attached
+- `scripts/checkBrowserParity.ts`: added const root, const problems, const rows, const capabilities, const python, const pyBrowsers, const pyOpeners, const START, const END, const mark, const cell, const table, const docsPath, const docs, const current, const notBuilt
+- `skills/adsPower/SKILL.md`: edited
+- `src/adsPower/adsPower.test.ts`: file deleted · removed function fakeFetch, function memoryAdsPower, test "sends the key as a Bearer token and reads a started profile's CDP websocket", test ""Too many request" is retried, then refused as adsPowerRateLimited", test "the app not running is adsPowerUnavailable, and lists page through 100 at a time", test "the profile is Windows Chrome with the home locale, IP timezone and noise, and holds no proxy or secret", test "the plan makes a profile per account, skips banned and unlocalisable ones, and relinks one found by its remark", test "sync is a dry run unless applied; applied, it makes the profiles and links each in Twenty, and a rerun only finds them linked", test "the proxy URL becomes AdsPower's user_proxy_config", test "until its gate is built, an AdsPower session is refused before anything starts (rule 12)", test "with a passed gate it starts on the proxy; the unbuilt self-check closes it and takes the proxy back off", test "an account with no linked profile fails in preparing"
+- `src/adsPower/driver/client.ts`: file deleted · removed interface AdsPowerDriverDeps, const fail, function adsPowerDriver
+- `src/adsPower/driver/helpers/index.ts`: file deleted · removed export from "./proxyConfig"
+- `src/adsPower/driver/helpers/proxyConfig.ts`: file deleted · removed const NO_PROXY, function proxyConfig
+- `src/adsPower/driver/index.ts`: file deleted · removed export from "./client", export from "./helpers/index"
+- `src/adsPower/localApi/client.ts`: file deleted · removed const RATE_LIMIT_WAIT_MS, const PAGE_SIZE, function localApiConfig, type Fetch, function createAdsPowerClient
+- `src/adsPower/localApi/index.ts`: file deleted · removed export from "./client", export from "./types"
+- `src/adsPower/localApi/types.ts`: file deleted · removed interface LocalApiConfig, const DEFAULT_LOCAL_API_URL, interface AdsPowerProfile, interface StartedBrowser, interface CreateProfileBody, interface LocalApiReply, interface AdsPowerClient, class AdsPowerError
+- `src/adsPower/profile/client.ts`: file deleted · removed function syncProfiles
+- `src/adsPower/profile/helpers/index.ts`: file deleted · removed export from "./planSync", export from "./profileRequest"
+- `src/adsPower/profile/helpers/planSync.ts`: file deleted · removed function planSync
+- `src/adsPower/profile/helpers/profileRequest.ts`: file deleted · removed const twentyRemark, const remarkAccountId, function profileRequest
+- `src/adsPower/profile/index.ts`: file deleted · removed export from "./client", export from "./helpers/index", export from "./types"
+- `src/adsPower/profile/types.ts`: file deleted · removed const ADS_POWER_GROUP, const NO_PROFILE_STATUSES, type ProfileSyncAction, interface ProfileSyncEntry, interface ProfileSyncResult
+- `src/browser/adsPower/adsPower.test.ts`: added function fakeFetch, function memoryAdsPower, test "sends the key as a Bearer token and reads a started profile's CDP websocket", test ""Too many request" is retried, then refused as adsPowerRateLimited", test "the app not running is adsPowerUnavailable, and lists page through 100 at a time", test "the profile is Windows Chrome with the home locale, IP timezone and noise, and holds no proxy or secret", test "the plan makes a profile per account, skips banned and unlocalisable ones, and relinks one found by its remark", test "sync is a dry run unless applied; applied, it makes the profiles and links each in Twenty, and a rerun only finds them linked", test "a session with no gate step is refused before anything opens (rule 12)", test "a refused gate never opens; a passed one opens the profile, and CLOSE closes it with its reason (rule 35)", test "an account with no linked profile fails in preparing"
+- `src/browser/adsPower/client.ts`: added const RATE_LIMIT_WAIT_MS, const PAGE_SIZE, function localApiConfig, type Fetch, function createAdsPowerClient, function syncProfiles, interface AdsPowerDriverDeps, const fail, const missing, function adsPowerDriver
+- `src/browser/adsPower/helpers/index.ts`: added export from "./planSync", export from "./profileRequest"
+- `src/browser/adsPower/helpers/planSync.ts`: added function planSync
+- `src/browser/adsPower/helpers/profileRequest.ts`: added const twentyRemark, const remarkAccountId, function profileRequest
+- `src/browser/adsPower/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/browser/adsPower/types.ts`: added interface LocalApiConfig, const DEFAULT_LOCAL_API_URL, interface AdsPowerProfile, interface StartedBrowser, interface CreateProfileBody, interface LocalApiReply, interface AdsPowerClient, class AdsPowerError, const ADS_POWER_GROUP, const NO_PROFILE_STATUSES, type ProfileSyncAction, interface ProfileSyncEntry, interface ProfileSyncResult, const adsPowerCapabilities
+- `src/browser/camoufox/camoufox.test.ts`: added const input, test "refused at a failed gate, opened after a passed one, closed with its reason", test "every browser fills every capability", test "an account's browser comes from Twenty, Camoufox when empty or unknown", test "python/browserDriver.py opens exactly the TS browsers, and maps the gate's proxy to AdsPower's"
+- `src/browser/camoufox/client.ts`: added interface CamoufoxDriverDeps, const missing, function camoufoxDriver
+- `src/browser/camoufox/index.ts`: added export from "./client", export from "./types"
+- `src/browser/camoufox/types.ts`: added const camoufoxCapabilities
+- `src/browser/driver/client.ts`: added function browserFor
+- `src/browser/driver/types.ts`: added const BROWSER_CAPABILITIES, type BrowserCapability, type CapabilityStatus, type BrowserCapabilities
+- `src/camofox/inspect/types.ts`: changed interface InspectSessionConfig
+- `src/cli/adsPower/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/flow/helpers/flowSession.ts`: changed function openInspectSession
+- `src/cli/inspect/index.ts`: changed const inspectCommand
+- `src/cli/runner/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+
+What changed: every browser runs through one Playwright layer (rule 44).
+- `python/browserDriver.py` `open_browser` hands every session the same async Playwright context:
+  - Camoufox: launched, with the gate's guards as before;
+  - AdsPower: `proxyGate.gate_attached()`, the proxy put on the profile, a headed start through the Local API (`python/adsPowerBrowser.py`), `connect_over_cdp`, the profile's own context, `harRecorder.SessionHar`, then `proxyGate.check_attached()`. At the end the profile is stopped and its proxy cleared.
+- `inspectSession.py` opens through it, so the host, flows, warm-up, HumanMouse and scrollMotion are the same code on both.
+- The Recorder moved to `python/harRecorder.py`.
+- Twenty's session goes into a new AdsPower profile once (`carry_session_once`).
+- The TS browsers are domains under `src/browser`: `adsPower` (the old `src/adsPower` localApi, profile and driver merged) and `camoufox`. Each has a capability row (`BROWSER_CAPABILITIES`, 14 capabilities) and a driver with the same shape.
+- `browserFor(account)` puts the account's `browserDriver` and `adsPowerProfileId` into every inspect session's config.
+- New parity gate `scripts/checkBrowserParity.ts` (`bun run check:browsers`), in lefthook pre-commit and pre-push and in `bun run check`. It checks each browser's domain, row, driver, tests, Python opener and `docs/browsers.md` column, and generates the table (`bun run browsers:docs`).
+- The TS-side AdsPower proxy helper and the retired codes adsPowerGateNotBuilt and adsPowerSelfCheckNotBuilt are gone.
+- Docs: `docs/browsers.md` (the layer, Listaro's primitives, the parity table), `docs/adsPower.md`, README, the adsPower skill, AGENTS.md rule 44.
+Why: matt: "for consistency the playwright based approach should stay ... the mouse movements ... agnostic", "they should be directory domain named by this specific capability ... as browser", "parity as with the camoufox work", "version controlling logic ... in the precommit lefthook.yml ... not too strict but ... uniform". Also bring Listaro's primitives in, and drop Puppeteer (`ws.puppeteer` is only AdsPower's name for the CDP URL).
+Checked: `bun run check`: naming OK, check:browsers OK (two not built: adsPower.syncSessions, adsPower.oneMachineAtATime), tsc clean, 570 pass, 0 fail. New tests: both drivers through the session machine (refused at a gate, opened, closed with a reason), every browser fills every capability, `browserFor`, and Python's BROWSERS and OPENERS equal BROWSER_DRIVERS with the 2Captcha proxy mapped to AdsPower's `user_proxy_config`. All Python modules parse and import. Not run live: no AdsPower browser was opened on Facebook in this change.
+
+## 2026-10-19 21:34Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `docs/facebookClient/operations.json`: edited
+- `python/browserDriver.py`: changed def open_ads_power
+- `python/inspectSession.py`: changed class Inspector
+- `python/proxyGate.py`: changed def check_attached, def _self_check
+- `src/browser/camoufox/camoufox.test.ts`: changed test "an account's browser comes from Twenty, Camoufox when empty or unknown"
+- `src/browser/driver/client.ts`: changed function driverNameOf, function browserFor
+
+What changed: AdsPower now works live through the shared opener.
+- `driverNameOf` prefers AdsPower: an account with a linked AdsPower profile runs on it unless `browserDriver` in Twenty says otherwise.
+- `open_ads_power` only stops a profile it started, and a stop or proxy-clear error is logged instead of replacing the first error. That hiding had masked "running out of disk space" and "SunBrowser 154 is updating" on the first live tries.
+- `_self_check` takes `public=True` for public-API contexts. AdsPower's CDP context needs `wait_until`; the internal `waitUntil` failed every IP-echo load instantly. Refusals now carry the load error.
+- The session HAR is written even when the self-check refuses (rule 25).
+- `inspectSession` saves the storage state from the config path (a NameError after the opener move).
+- `operations.json` was refreshed by the docs build that ran before the run data was cleared (36 requests, 0 to write).
+Why: matt: prefer AdsPower throughout, then load one account and find a local community group by searching in the browser, as a dry run he can watch.
+Checked: `bun run check`: naming OK, check:browsers OK, 570 pass, 0 fail. Live on AdsPower:
+- Harrisburg passed the gate and self-check, but Facebook answered the first request (`GET /`) with checkpoint 1501092823525282 ("confirm you're human"). It is recorded CHECKPOINT in Twenty, and nothing was clicked.
+- Bethlehem passed the gate (65.78.106.206), the self-check (America/New_York, en-US, page and worker) and carried Twenty's 7 cookies in once.
+- Steps, each with snapshot, screenshot, HAR and rea: home feed, typed "Bethlehem PA community", Enter (search results), Groups results filter.
+- The first group opened was in Bethlehem, New Hampshire, per its About box, so the run went back and opened "Recommendations of Bethlehem, PA and Greater Lehigh Valley Region" (17.3K members). Nothing was joined.
+- Closed clean: session HAR 735 requests, profile stopped, proxy cleared, session saved (10 cookies).
+Also freed 5.2 GB by removing four unused Camoufox builds (beta.39, the one in use, was kept), and cleared run HARs, screenshots and snapshots after the docs had every request. Drive C: went from 0.43 to 7.1 GB free.
+
+## 2026-10-19 21:43Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `python/connectSession.py`: no declaration changed (comments, formatting or line endings)
+- `python/profileSession.py`: no declaration changed (comments, formatting or line endings)
+- `python/publishSession.py`: changed class Session, def main
+- `skills/reaCapture/SKILL.md`: edited
+- `src/browser/driver/types.ts`: added const CAPTURE_FOLDERS
+- `src/camofox/run/client.ts`: added const OPENER_ACTIONS, function runBrowserOf · changed function captureDirFor, function prepareRun
+- `src/camofox/run/helpers/launchBudget.ts`: changed function listLaunches
+- `src/camofox/run/run.test.ts`: added test "the capture folder is named after the browser that runs: inspect, flow, warmup and host follow the account, the rest are Camoufox" · changed test "a run carries its capture folder (rule 22); a proxy check opens nothing and has none"
+- `src/camofox/session/visible.test.ts`: changed test "there is no exception: not for signing in, not for a dry run"
+- `src/cli/inspect/inspect.test.ts`: changed test "start opens one gated session for the account and ends when it does"
+- `src/cli/live/live.test.ts`: changed test "connect runs the connect machine through the proxy and saves the cookies to Twenty"
+- `src/cli/profile/profile.test.ts`: changed test "a dry run reads the profile through the gates and changes nothing"
+- `src/cli/publish/index.ts`: changed const publishCommand
+- `src/rea/facebookClient/client.ts`: changed function findRunCaptures
+
+What changed: a run's capture folder is named after the browser that ran it: `runs/<action>/<time>_<account>/adsPower` or `.../camoufox`, instead of `firefox` for every run.
+- `captureDirFor` takes the browser, and `runBrowserOf(account, action)` picks it. `inspect`, `flow`, `warmup` and `host` (`OPENER_ACTIONS`, the actions that open through `python/browserDriver.py`) follow the account's driver; the rest still launch Camoufox.
+- Every reader takes `CAPTURE_FOLDERS` (adsPower, camoufox, and firefox for older runs), so earlier runs still count and still feed the docs: the launch budget (`listLaunches`) and the Facebook client docs (`findRunCaptures`). The docs gate already found `session.har` anywhere.
+- The publish session (`publishSession.py`, `cli/publish`) writes `camoufox`; connect and profile share its `Session`.
+- The reaCapture skill's paths now read `<browser>`.
+Why: matt: "if this was running through adspower why is it prefixed with firefox ... wouldnt that make more sense of what we used to run it?"
+Checked: `bun run check`: naming OK, check:browsers OK, 571 pass, 0 fail. The four path tests now expect `camoufox` (the fixture accounts have no AdsPower profile). A new test covers `runBrowserOf` (inspect and host on a linked account give adsPower, connect gives camoufox, an unlinked account gives camoufox) and `captureDirFor(..., 'adsPower')`. The launch-budget tests still read old `firefox` folders.
+
+## 2026-10-20 08:53Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `bin/logMcp.ts`: added const argv, const flag, const root
+- `docs/deployment.md`: edited
+- `docs/facebookClient/README.md`: file deleted
+- `docs/facebookClient/background/CometClassicHomeLeftRailContainerQuery.md`: file deleted
+- `docs/facebookClient/background/CometFeedInlineComposerQuery.md`: file deleted
+- `docs/facebookClient/background/CometHomeContactChannelsContainerQuery.md`: file deleted
+- `docs/facebookClient/background/CometHomeContactCommunityChatsContainerQuery.md`: file deleted
+- `docs/facebookClient/background/CometHomeContactGroupsContainerQuery.md`: file deleted
+- `docs/facebookClient/background/CometHomeContactsContainerQuery.md`: file deleted
+- `docs/facebookClient/background/CometHomeContentQuery.md`: file deleted
+- `docs/facebookClient/background/CometHomeCreateMenuContentQuery.md`: file deleted
+- `docs/facebookClient/background/CometHomeMegaMenuAllProductsQuery.md`: file deleted
+- `docs/facebookClient/background/CometHomeMegaMenuShortcutsQuery.md`: file deleted
+- `docs/facebookClient/background/CometHovercardQueryRendererQuery.md`: file deleted
+- `docs/facebookClient/background/CometMarketplaceLeftRailNavigationContainerQuery.md`: file deleted
+- `docs/facebookClient/background/CometMarketplaceNUXUpdateStateMutation.md`: file deleted
+- `docs/facebookClient/background/CometMarketplaceSetBrowseRadiusMutation.md`: file deleted
+- `docs/facebookClient/background/CometMegaphoneRootQuery.md`: file deleted
+- `docs/facebookClient/background/CometModernHomeFeedQuery.md`: file deleted
+- `docs/facebookClient/background/CometNotificationsDropdownQuery.md`: file deleted
+- `docs/facebookClient/background/CometRightSideHeaderCardsQuery.md`: file deleted
+- `docs/facebookClient/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: file deleted
+- `docs/facebookClient/background/FBScreenTimeLogger_syncMutation.md`: file deleted
+- `docs/facebookClient/background/FBYRPTimeLimitsEnforcementQuery.md`: file deleted
+- `docs/facebookClient/background/FeedComposerCometRootQuery.md`: file deleted
+- `docs/facebookClient/background/FriendingCometMutualFriendsSocialContextTooltipContentQuery.md`: file deleted
+- `docs/facebookClient/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: file deleted
+- `docs/facebookClient/background/MarketplaceCometBrowseFeedLightContainerQuery.md`: file deleted
+- `docs/facebookClient/background/MarketplaceCometBrowseFeedLightPaginationQuery.md`: file deleted
+- `docs/facebookClient/background/MarketplaceSearchAddressDataSourceQuery.md`: file deleted
+- `docs/facebookClient/background/MarketplaceYouSellingUpsellCardQuery.md`: file deleted
+- `docs/facebookClient/background/OhaiWebPublicKeyConfigQuery.md`: file deleted
+- `docs/facebookClient/background/RTWebCallBlockSettingHooksQuery.md`: file deleted
+- `docs/facebookClient/background/StoriesTrayRectangularRootQuery.md`: file deleted
+- `docs/facebookClient/background/ajaxBnzai.md`: file deleted
+- `docs/facebookClient/background/ajaxBulkRouteDefinitions.md`: file deleted
+- `docs/facebookClient/background/ajaxBz.md`: file deleted
+- `docs/facebookClient/background/ajaxNavigation.md`: file deleted
+- `docs/facebookClient/background/ajaxQm.md`: file deleted
+- `docs/facebookClient/background/ajaxRelayEf.md`: file deleted
+- `docs/facebookClient/background/ajaxRouteDefinition.md`: file deleted
+- `docs/facebookClient/background/cspReporting.md`: file deleted
+- `docs/facebookClient/background/fetchMWChatVideoAutoplaySettingQuery.md`: file deleted
+- `docs/facebookClient/background/sharedUserPreferences.md`: file deleted
+- `docs/facebookClient/background/useInstreamAdsHaloFetcherQuery.md`: file deleted
+- `docs/facebookClient/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: file deleted
+- `docs/facebookClient/background/videoUnifiedCvc.md`: file deleted
+- `docs/facebookClient/checkpoint/CometFacebookIXTNextMutation.md`: file deleted
+- `docs/facebookClient/checkpoint/FBScrapingWarningMutation.md`: file deleted
+- `docs/facebookClient/checkpoint/UFACAISupportChatExperienceQuery.md`: file deleted
+- `docs/facebookClient/checkpoint/useCometAISupportConversationLoggerMutation.md`: file deleted
+- `docs/facebookClient/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: file deleted
+- `docs/facebookClient/checkpoint/useUFACSubmitActionMutation.md`: file deleted
+- `docs/facebookClient/flows/profileSetup.md`: file deleted
+- `docs/facebookClient/listingForm/useCometMarketplaceAIListingSettingsQuery.md`: file deleted
+- `docs/facebookClient/listingForm/useListingShippableEligibilityCheckQuery.md`: file deleted
+- `docs/facebookClient/listingForm/useMarketplaceComposerAttributesQuery.md`: file deleted
+- `docs/facebookClient/listingForm/useMarketplaceComposerBISNumberEligibilityRefetchQuery.md`: file deleted
+- `docs/facebookClient/listingForm/useMarketplaceComposerPricePredictionQuery.md`: file deleted
+- `docs/facebookClient/location/CometMarketplaceSetBuyLocationMutation.md`: file deleted
+- `docs/facebookClient/location/MarketplaceBuyLocationDialogLocationUrlQuery.md`: file deleted
+- `docs/facebookClient/location/MarketplaceBuyLocationDialogQuery.md`: file deleted
+- `docs/facebookClient/login/CometLogoutHandlerQuery.md`: file deleted
+- `docs/facebookClient/login/ajaxTimezoneUpdatePhp.md`: file deleted
+- `docs/facebookClient/login/ajaxWebstorageProcessKeys.md`: file deleted
+- `docs/facebookClient/login/loginDeviceBasedRegularLogin.md`: file deleted
+- `docs/facebookClient/login/useCDSWebLoginMutation.md`: file deleted
+- `docs/facebookClient/operations.json`: file deleted
+- `docs/facebookClient/photos/ajaxReactComposerAttachmentsPhotoUpload.md`: file deleted
+- `docs/facebookClient/photos/profileCoverCometUpload.md`: file deleted
+- `docs/facebookClient/photos/useSherlockPhotoPredictionMutation.md`: file deleted
+- `docs/facebookClient/profile/FXAccountsCenterAdProfileCenterRouteResolverQuery.md`: file deleted
+- `docs/facebookClient/profile/FXAccountsCenterBirthdayRouteResolverQuery.md`: file deleted
+- `docs/facebookClient/profile/FXAccountsCenterConnectedExperienceRouteResolverQuery.md`: file deleted
+- `docs/facebookClient/profile/FXAccountsCenterContactPointsInProfilesRouteResolverQuery.md`: file deleted
+- `docs/facebookClient/profile/FXAccountsCenterIdentityPhotoEditorDialogRouteResolverQuery.md`: file deleted
+- `docs/facebookClient/profile/FXAccountsCenterIdentityUsernameEditDialogRouteResolverQuery.md`: file deleted
+- `docs/facebookClient/profile/FXAccountsCenterIdentityUsernameSettingsDialogRouteResolverQuery.md`: file deleted
+- `docs/facebookClient/profile/FXAccountsCenterInformationAndActivityRouteResolverQuery.md`: file deleted
+- `docs/facebookClient/profile/FXAccountsCenterManageAccountsPageRouteResolverQuery.md`: file deleted
+- `docs/facebookClient/profile/FXAccountsCenterMetaPayWalletRouteResolverQuery.md`: file deleted
+- `docs/facebookClient/profile/FXAccountsCenterNMEOnboardingRouteResolverQuery.md`: file deleted
+- `docs/facebookClient/profile/FXAccountsCenterPersonalCentralIdentityDialogV2Query.md`: file deleted
+- `docs/facebookClient/profile/FXAccountsCenterPersonalCentralIdentityDialogV2RouteResolverQuery.md`: file deleted
+- `docs/facebookClient/profile/FXAccountsCenterPhotoSettingsDialogV2RouteResolverQuery.md`: file deleted
+- `docs/facebookClient/profile/FXAccountsCenterProfilesPageV2RouteResolverQuery.md`: file deleted
+- `docs/facebookClient/profile/FXAccountsCenterSecurityAndLoginPageRouteResolverQuery.md`: file deleted
+- `docs/facebookClient/profile/FXAccountsCenterSubscriptionsRouteResolverQuery.md`: file deleted
+- `docs/facebookClient/profile/FXAccountsCenterYourAccountPageRouteResolverQuery.md`: file deleted
+- `docs/facebookClient/profile/FXIMIdentityNameEditorAuthenticPreviewDialogQuery.md`: file deleted
+- `docs/facebookClient/profile/ProfileCometAboutAppSectionQuery.md`: file deleted
+- `docs/facebookClient/profile/ProfileCometCoverPhotoUpdateMutation.md`: file deleted
+- `docs/facebookClient/profile/ProfileCometFeedComposerRootQuery.md`: file deleted
+- `docs/facebookClient/profile/ProfileCometHeaderQuery.md`: file deleted
+- `docs/facebookClient/profile/ProfileCometProfilePictureEditDialogQuery.md`: file deleted
+- `docs/facebookClient/profile/ProfileCometProfilePictureSetMutation.md`: file deleted
+- `docs/facebookClient/profile/ProfileCometTilesFeedPaginationQuery.md`: file deleted
+- `docs/facebookClient/profile/ProfileCometTimelineAccountStatusNoticeQuery.md`: file deleted
+- `docs/facebookClient/profile/ProfileCometTimelineFeedQuery.md`: file deleted
+- `docs/facebookClient/profile/ProfileCometTimelineListViewRootQuery.md`: file deleted
+- `docs/facebookClient/profile/ProfileCometTopAppSectionQuery.md`: file deleted
+- `docs/facebookClient/profile/ProfilePromptQuickPromotionMutation.md`: file deleted
+- `docs/facebookClient/profile/profilePictureUpload.md`: file deleted
+- `docs/facebookClient/profile/useFXIMNameValidatorQuery.md`: file deleted
+- `docs/facebookClient/profile/useFXIMUpdateNameMutation.md`: file deleted
+- `docs/facebookClient/publishing/useCometMarketplaceListingCreateMutation.md`: file deleted
+- `docs/platforms/facebook/README.md`: new file
+- `docs/platforms/facebook/background/CometAddTypeaheadRecentSearchMutation.md`: new file
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: new file
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: new file
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: new file
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: new file
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: new file
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: new file
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: new file
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: new file
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: new file
+- `docs/platforms/facebook/background/CometHomeMegaMenuShortcutsQuery.md`: new file
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: new file
+- `docs/platforms/facebook/background/CometMarketplaceLeftRailNavigationContainerQuery.md`: new file
+- `docs/platforms/facebook/background/CometMarketplaceNUXUpdateStateMutation.md`: new file
+- `docs/platforms/facebook/background/CometMarketplaceSetBrowseRadiusMutation.md`: new file
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: new file
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: new file
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: new file
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: new file
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: new file
+- `docs/platforms/facebook/background/CometSearchKeywordDataSourceQuery.md`: new file
+- `docs/platforms/facebook/background/CometUnifiedShareSheetDialogQuery.md`: new file
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: new file
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: new file
+- `docs/platforms/facebook/background/FeedComposerCometRootQuery.md`: new file
+- `docs/platforms/facebook/background/FriendingCometMutualFriendsSocialContextTooltipContentQuery.md`: new file
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: new file
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightContainerQuery.md`: new file
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightPaginationQuery.md`: new file
+- `docs/platforms/facebook/background/MarketplaceSearchAddressDataSourceQuery.md`: new file
+- `docs/platforms/facebook/background/MarketplaceYouSellingUpsellCardQuery.md`: new file
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: new file
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: new file
+- `docs/platforms/facebook/background/SearchCometResultsInitialResultsParallelFetchQuery.md`: new file
+- `docs/platforms/facebook/background/SearchCometResultsInitialResultsQuery.md`: new file
+- `docs/platforms/facebook/background/SearchCometResultsPaginatedResultsQuery.md`: new file
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: new file
+- `docs/platforms/facebook/background/UnifiedShareSheetMessengerSectionQuery.md`: new file
+- `docs/platforms/facebook/background/ajaxBnzai.md`: new file
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: new file
+- `docs/platforms/facebook/background/ajaxBz.md`: new file
+- `docs/platforms/facebook/background/ajaxNavigation.md`: new file
+- `docs/platforms/facebook/background/ajaxQm.md`: new file
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: new file
+- `docs/platforms/facebook/background/ajaxRouteDefinition.md`: new file
+- `docs/platforms/facebook/background/cspReporting.md`: new file
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: new file
+- `docs/platforms/facebook/background/sharedUserPreferences.md`: new file
+- `docs/platforms/facebook/background/useInstreamAdsHaloFetcherQuery.md`: new file
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: new file
+- `docs/platforms/facebook/background/useSearchCometTypeaheadBootstrapValidationQuery.md`: new file
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: new file
+- `docs/platforms/facebook/background/withSearchCometTypeaheadSERPWarmCallDecoratorQuery.md`: new file
+- `docs/platforms/facebook/checkpoint/CometFacebookIXTNextMutation.md`: new file
+- `docs/platforms/facebook/checkpoint/FBScrapingWarningMutation.md`: new file
+- `docs/platforms/facebook/checkpoint/UFACAISupportChatExperienceQuery.md`: new file
+- `docs/platforms/facebook/checkpoint/useCometAISupportConversationLoggerMutation.md`: new file
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: new file
+- `docs/platforms/facebook/checkpoint/useUFACSubmitActionMutation.md`: new file
+- `docs/platforms/facebook/flows/profileSetup.md`: new file
+- `docs/platforms/facebook/groups/CometGroupDiscussionRootSuccessQuery.md`: new file
+- `docs/platforms/facebook/groups/CometGroupRootQuery.md`: new file
+- `docs/platforms/facebook/groups/GroupsCometDiscussionLayoutRootQuery.md`: new file
+- `docs/platforms/facebook/groups/GroupsCometMembershipQuestionsPreloadedDialogQuery.md`: new file
+- `docs/platforms/facebook/groups/useGroupMembershipAnswersSaveMutation.md`: new file
+- `docs/platforms/facebook/groups/useGroupsCometMembershipQuestionnaireOpenedLoggingMutation.md`: new file
+- `docs/platforms/facebook/groups/useGroupsCometVisitMutation.md`: new file
+- `docs/platforms/facebook/listingForm/useCometMarketplaceAIListingSettingsQuery.md`: new file
+- `docs/platforms/facebook/listingForm/useListingShippableEligibilityCheckQuery.md`: new file
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerAttributesQuery.md`: new file
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerBISNumberEligibilityRefetchQuery.md`: new file
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerPricePredictionQuery.md`: new file
+- `docs/platforms/facebook/location/CometMarketplaceSetBuyLocationMutation.md`: new file
+- `docs/platforms/facebook/location/MarketplaceBuyLocationDialogLocationUrlQuery.md`: new file
+- `docs/platforms/facebook/location/MarketplaceBuyLocationDialogQuery.md`: new file
+- `docs/platforms/facebook/login/CometLogoutHandlerQuery.md`: new file
+- `docs/platforms/facebook/login/ajaxTimezoneUpdatePhp.md`: new file
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: new file
+- `docs/platforms/facebook/login/loginDeviceBasedRegularLogin.md`: new file
+- `docs/platforms/facebook/login/useCDSWebLoginMutation.md`: new file
+- `docs/platforms/facebook/operations.json`: new file
+- `docs/platforms/facebook/photos/ajaxReactComposerAttachmentsPhotoUpload.md`: new file
+- `docs/platforms/facebook/photos/profileCoverCometUpload.md`: new file
+- `docs/platforms/facebook/photos/useSherlockPhotoPredictionMutation.md`: new file
+- `docs/platforms/facebook/profile/FXAccountsCenterAdProfileCenterRouteResolverQuery.md`: new file
+- `docs/platforms/facebook/profile/FXAccountsCenterBirthdayRouteResolverQuery.md`: new file
+- `docs/platforms/facebook/profile/FXAccountsCenterConnectedExperienceRouteResolverQuery.md`: new file
+- `docs/platforms/facebook/profile/FXAccountsCenterContactPointsInProfilesRouteResolverQuery.md`: new file
+- `docs/platforms/facebook/profile/FXAccountsCenterIdentityPhotoEditorDialogRouteResolverQuery.md`: new file
+- `docs/platforms/facebook/profile/FXAccountsCenterIdentityUsernameEditDialogRouteResolverQuery.md`: new file
+- `docs/platforms/facebook/profile/FXAccountsCenterIdentityUsernameSettingsDialogRouteResolverQuery.md`: new file
+- `docs/platforms/facebook/profile/FXAccountsCenterInformationAndActivityRouteResolverQuery.md`: new file
+- `docs/platforms/facebook/profile/FXAccountsCenterManageAccountsPageRouteResolverQuery.md`: new file
+- `docs/platforms/facebook/profile/FXAccountsCenterMetaPayWalletRouteResolverQuery.md`: new file
+- `docs/platforms/facebook/profile/FXAccountsCenterNMEOnboardingRouteResolverQuery.md`: new file
+- `docs/platforms/facebook/profile/FXAccountsCenterPersonalCentralIdentityDialogV2Query.md`: new file
+- `docs/platforms/facebook/profile/FXAccountsCenterPersonalCentralIdentityDialogV2RouteResolverQuery.md`: new file
+- `docs/platforms/facebook/profile/FXAccountsCenterPhotoSettingsDialogV2RouteResolverQuery.md`: new file
+- `docs/platforms/facebook/profile/FXAccountsCenterProfilesPageV2RouteResolverQuery.md`: new file
+- `docs/platforms/facebook/profile/FXAccountsCenterSecurityAndLoginPageRouteResolverQuery.md`: new file
+- `docs/platforms/facebook/profile/FXAccountsCenterSubscriptionsRouteResolverQuery.md`: new file
+- `docs/platforms/facebook/profile/FXAccountsCenterYourAccountPageRouteResolverQuery.md`: new file
+- `docs/platforms/facebook/profile/FXIMIdentityNameEditorAuthenticPreviewDialogQuery.md`: new file
+- `docs/platforms/facebook/profile/ProfileCometAboutAppSectionQuery.md`: new file
+- `docs/platforms/facebook/profile/ProfileCometCoverPhotoUpdateMutation.md`: new file
+- `docs/platforms/facebook/profile/ProfileCometFeedComposerRootQuery.md`: new file
+- `docs/platforms/facebook/profile/ProfileCometHeaderQuery.md`: new file
+- `docs/platforms/facebook/profile/ProfileCometProfilePictureEditDialogQuery.md`: new file
+- `docs/platforms/facebook/profile/ProfileCometProfilePictureSetMutation.md`: new file
+- `docs/platforms/facebook/profile/ProfileCometTilesFeedPaginationQuery.md`: new file
+- `docs/platforms/facebook/profile/ProfileCometTimelineAccountStatusNoticeQuery.md`: new file
+- `docs/platforms/facebook/profile/ProfileCometTimelineFeedQuery.md`: new file
+- `docs/platforms/facebook/profile/ProfileCometTimelineListViewRootQuery.md`: new file
+- `docs/platforms/facebook/profile/ProfileCometTopAppSectionQuery.md`: new file
+- `docs/platforms/facebook/profile/ProfilePromptQuickPromotionMutation.md`: new file
+- `docs/platforms/facebook/profile/profilePictureUpload.md`: new file
+- `docs/platforms/facebook/profile/useFXIMNameValidatorQuery.md`: new file
+- `docs/platforms/facebook/profile/useFXIMUpdateNameMutation.md`: new file
+- `docs/platforms/facebook/publishing/useCometMarketplaceListingCreateMutation.md`: new file
+- `docs/platforms/facebook/reels/README.md`: new file
+- `docs/recordToFlow.md`: edited
+- `lefthook.yml`: edited
+- `python/errorCatalog.json`: edited
+- `python/humanMouse.py`: added const HIT_JS, const ON_TARGET_JS, const MAX_AIMS, def inside_box · changed def loops, class MouseBase, class HumanMouse, class SyncHumanMouse
+- `python/inspectSession.py`: added const HITTABLE_JS · changed def run_rea, class Inspector
+- `python/scrollMotion.py`: added def _viewport · changed def _wheel_point, def scroll_by
+- `scripts/buildInterestEffect.ts`: added const dataDir, const csv, const videos, const tags, const plays, const standard, const random, const effect, const out
+- `scripts/buildReelViewers.ts`: added const dataDir, const files, const byUser, const read, const viewers, const out
+- `scripts/checkFacebookClientDocs.mjs`: no declaration changed (comments, formatting or line endings)
+- `scripts/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `scripts/twentySetup.mjs`: added const NEW_OBJECTS, const AGENCY_GROUP_FIELDS, const CREATE_OBJECT, const newObjects · changed const RELATIONS
+- `skills/flow/SKILL.md`: edited
+- `skills/inspect/SKILL.md`: edited
+- `skills/profileSetup/SKILL.md`: edited
+- `skills/reaCapture/SKILL.md`: edited
+- `skills/warmup/SKILL.md`: edited
+- `src/camofox/flow/client.ts`: added function laterEvidence · changed const FLOW_DOCS_DIR, const REQUEST_DOCS, function readRecordedCommands
+- `src/camofox/flow/helpers/renderFlowDoc.ts`: no declaration changed (comments, formatting or line endings)
+- `src/camofox/inspect/client.ts`: changed function sendInspectCommand
+- `src/camofox/inspect/helpers/parseInspectAction.ts`: changed const ARITY
+- `src/camofox/inspect/types.ts`: added interface InspectStepOptions · changed type InspectAction, interface InspectStepResult
+- `src/cli/capture/index.ts`: added const CAPTURE_USAGE, const FACEBOOK_CLIENT_DOCS, function runCapture, const captureCommand
+- `src/cli/firefoxCapture/index.ts`: file deleted · removed const FIREFOX_CAPTURE_USAGE, const FACEBOOK_CLIENT_DOCS, function runFirefoxCapture, const firefoxCaptureCommand
+- `src/cli/flow/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/host/helpers/hostActors.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/inspect/index.ts`: added const LOG_BIN, const inspectDetachDeps, function startDetached · changed const INSPECT_USAGE, const inspectCommand
+- `src/cli/inspect/inspect.test.ts`: added test "starts the session as its own process and returns once its browser is ready", test "a session that ends before it is ready returns its log's reason"
+- `src/cli/join/helpers/index.ts`: added export from "./parseJoinArgs.ts"
+- `src/cli/join/helpers/parseJoinArgs.ts`: added const JOIN_TARGETS, type JoinTarget, type ParseJoinArgsResult, function parseJoinArgs
+- `src/cli/join/index.ts`: added export from "./helpers/index.ts", const JOIN_USAGE, interface JoinPrompts, const joinDeps, function answered, function runStepper, function answersFromSets, function answerGroup, function stepWith, function fillGroup, function renderGroup, function renderRun, function runJoin, const joinCommand
+- `src/cli/join/join.test.ts`: added const real, const GROUP, function openBrowser, function run, test "takes group, --account, --group, --live, --show", test "never launches a browser: without the account's open one it is refused", test "a dry run in the open browser reads the gate, clicks nothing, and patches joinSubmission per step", test "--live as on Bethlehem: a member, the Participant questions dialog kept in joinSubmission and read back by --show", test "a bad --group is refused before anything", test "never prompts without a terminal", test "Clack asks for what is missing", test "--answer: the Clack stepper over a private group's recorded questions, saved to Twenty as the draft, nothing sent", test "--answer without join options says how to get them", test "outside the account's hours a step in the browser is refused, even with the browser open (rule 18); --bypass runs it (rule 20)", test "an unknown account is refused"
+- `src/cli/launch/index.ts`: changed const ACTIONS, interface LaunchPrompts, const launchDeps, function runLaunch
+- `src/cli/launch/launch.test.ts`: added test "join offers only accounts that may run, asks for the group, and delegates a dry run to `join group`", test "Warm up Facebook Reels: the stepper asks the session's shape, likes default no, and plans it" · changed function stubPrompts, test "--json lists actions without prompting"
+- `src/cli/live/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/publish/index.ts`: changed const publishCommand
+- `src/cli/runner/cli.test.ts`: changed test "no command prints usage for every command"
+- `src/cli/runner/index.ts`: changed const COMMANDS, const ALIASES, function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/cli/warmup/helpers/index.ts`: added export from "./personaRun.ts", export from "./platformActivity.ts"
+- `src/cli/warmup/helpers/personaRun.ts`: added function personaPath, function seedOf, function personaFor, function describePersona, function describeViewerLines, function packFor, function describePack, function sessionSoFar, function frameOf, const DWELL_OVERHEAD_MS, const LANDS, function runPersonaSession
+- `src/cli/warmup/helpers/platformActivity.ts`: added const PLATFORM_USAGE, function sessionOptions, function actor, function runPlatformActivity
+- `src/cli/warmup/index.ts`: changed const WARMUP_USAGE, const warmupCommand
+- `src/cli/warmup/warmup.test.ts`: added test "plan draws a reel session from the activity's own steps; nothing opens", test "record runs every step in the open browser, checks each, and writes the outline"
+- `src/cli/watch/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/errors/catalog/types.ts`: changed type ErrorLayer, const ERROR_CATALOG
+- `src/group/answer/answer.test.ts`: added const fixture, const DIALOG, const PENDING, const GROUP_URL, const OPTIONS, const YES, const DRAFT, function run, test "Yes ticked under its own question, the box clicked then typed, the rules agreed, Submit found disabled", test "no dialog, or an answer missing: nothing planned for it, said as missing", test "a dry run finds "Answer questions" and clicks nothing", test "--live: reopens the dialog, fills every step in order, and stops before Submit", test "--live --submit: presses Submit once, and the dialog closing is the confirmation", test "Facebook's answer to Submit confirms it (useGroupMembershipAnswersSaveMutation: QUESTIONNAIRE_COMPLETED)", test "Submit pressed and the dialog stayed: stopped, never pressed again", test "no dialog after the first click (the page moved, 2026-10-20): it waits, takes a fresh snapshot and clicks once more", test "still no dialog after the second click: stopped, nothing typed, never a third click", test "a dialog that lacks an element stops before anything is typed", test "a page with no way back into the questions: cannotReopen", test "the stepper sets ready or drafting; each fill step patches it with a history line"
+- `src/group/answer/client.ts`: added function applicationFromDraft, function patchApplication
+- `src/group/answer/fixtures/complainersDialog.yml`: new file
+- `src/group/answer/fixtures/complainersPending.yml`: new file
+- `src/group/answer/helpers/fillPlan.ts`: added const squash, const indent, const refOf, const nameOf, const textOf, function planFill, function describePlan
+- `src/group/answer/helpers/index.ts`: added export from "./fillPlan"
+- `src/group/answer/index.ts`: added export from "./client", export from "./helpers/index", export from "./machine", export from "./types"
+- `src/group/answer/machine.ts`: added interface AnswerStepInput, type Done, type Problem, const hasDialog, const answerButton, function problemOf, const noted, const groupAnswerMachine
+- `src/group/answer/types.ts`: added const APPLICATION_STATUSES, type ApplicationStatus, interface Application, interface FillStep, interface FillPlan, interface GroupAnswerInput, interface GroupAnswerContext, interface GroupAnswerOutput
+- `src/group/join/client.ts`: added const AGENCY_GROUPS, type GroupRow, type GroupUpdate, const toJoinStatusEnum, function fromJoinStatusEnum, function toGroup, function findGroup, function listGroups, function ensureGroup, function patchGroupStep, function saveDraft, function recordGroupRead
+- `src/group/join/fixtures/recordedJoins.json`: new file
+- `src/group/join/helpers/index.ts`: added export from "./parseGroupRef", export from "./readGroupPage", export from "./submission", export from "./joinOptions", export from "./stepper"
+- `src/group/join/helpers/joinOptions.ts`: added interface HarEntry, const JOIN_MUTATIONS, const PARTICIPATION_QUERY, const MEMBERSHIP_QUERY, const ANSWERS_MUTATION, const fieldIn, function operationOf, function groupOf, const str, const bool, function typeOf, function questionsFrom, function rulesFrom, function readJoinOptions, function pathOf, const JOIN_STATES, function inferJoinState
+- `src/group/join/helpers/parseGroupRef.ts`: added const SLUG, function parseGroupRef
+- `src/group/join/helpers/readGroupPage.ts`: added interface SnapshotElement, const ELEMENT, const TEXT, function snapshotElements, const GATES, function readGroupPage
+- `src/group/join/helpers/stepper.ts`: added type StepperStep, function stepsFor, function questionsHashOf, function draftFrom, function draftComplete
+- `src/group/join/helpers/submission.ts`: added function emptySubmission, function hashQuestionSet, function answersComplete, function readSubmission, const indent, const quoted, const textOf, function readJoinDialog, function patchSubmission
+- `src/group/join/index.ts`: added export from "./client", export from "./helpers/index", export from "./machine", export from "./types"
+- `src/group/join/join.test.ts`: added const GROUP_URL, const recordedGroupPage, const recordedAfterJoin, function run, function recordedJoinHar, test "a URL, groups/<key>, an id or a slug; never a guess", test "reads the recorded page: Join Group, its name, its members, its id", test "AdsPower's page: an unnamed button takes its own text, and the click goes to its ref", test "the Related groups panel that opens after a Join is a page state of its own (it moves the layout)", test "Joined is a member; a page with neither is unknown", test "the dialog is read from inside itself only: the feed's comment box is not a question", test "patches keep a history, hash the question set, and drop drafts when the set changes", test "whatever Twenty holds reads back whole", test "Recommendations of Bethlehem: MEMBER at once, no questions, the rules to agree (instantRules)", test "Friends of Bethlehem PA: MEMBER at once, then two paragraph questions before posting (instantQuestions)", test "Bethlehem, PA Neighborhood: MEMBER and no questions query at all: open, inferred from what did not come (instant)", test "Complainers of Bethlehem (private): REQUESTED, a checkboxes and a paragraph question, answers required (request)", test "You know you're from Bethlehem (private): REQUESTED, three questions (request)", test "the group page's own HTML and the answers mutation, as recorded after Submit (steps 08 and 10)", test "a reload of a waiting group: its status from the page HTML, nothing clicked", test "no answer in the HAR: the page decides, and the state is ambiguous", test "a viewer_join_state not recorded yet is kept raw, unknown and ambiguous", test "a private group: checkboxes → multiselect over its options, paragraph → text, then the rules and the agreement", test "a public group with rules only: no question steps, the rules and the agreement", test "a saved draft starts the steps from its answers; a changed question set starts blank", test "a type no recording has shown is listed and skipped, never guessed", test "--live on Bethlehem as recorded: the click HAR settles it, member, rules to agree", test "--live on a private group as recorded: requested, its questions kept, nothing answered", test "a dry run opens the group, reads Join and clicks nothing", test "already a member: nothing clicked, even with --live", test "--live presses the recorded button once and reads Joined", test "Bethlehem: Join made it a member, then Participant questions: joined, the dialog kept, nothing ticked", test "a dialog and no Joined: questionsShown, nothing answered, nothing sent", test "the button went, no answer in the HAR, a page not recorded yet: clicked, and the state stays unknown (ambiguous)", test "still Join after the click stops, and Join is never pressed twice", test "a failed click stops before anything else is sent", test "a checkpoint or an unknown page stops at the gate", test "one row per account and group, patched per step, keyed on the id the page gave"
+- `src/group/join/machine.ts`: added interface GroupStepInput, type Done, type Problem, function problemOf, const noted, const groupJoinMachine, function outcomeOf
+- `src/group/join/types.ts`: added const GROUP_JOIN_STATUSES, type GroupJoinStatus, interface GroupRef, interface GroupPage, interface GroupStepReply, interface GroupJoinInput, interface GroupJoinContext, interface GroupJoinOutput, const FORM_PHASES, type FormPhase, interface SubmissionEntry, const JOIN_QUESTION_TYPES, type JoinQuestionType, interface JoinQuestionOption, interface JoinQuestion, interface JoinRule, const JOIN_PATHS, type JoinPath, interface JoinOptions, type JoinAnswer, interface JoinDraft, interface JoinInference, interface JoinDialog, interface GroupJoinSubmission, interface Group
+- `src/mcp/server/agentRules.test.ts`: added const agents, const rules, function connected, test "every rule the instructions and tool descriptions cite is a rule in AGENTS.md (no drift)", test "a rule added to AGENTS.md fails here until the MCP summary is reviewed against it", test "every tool has its own AGENTS.md rules (a new command can't ship without them)", test "the instructions reach the client at initialize, rule 30 first among the principles", test "every tool's description ends with its rules and points back to AGENTS.md", test "AGENTS.md itself is the resource log://agents, read from the file", test "the instructions and every long tool say to start a Monitor on the day's log first"
+- `src/mcp/server/flowTools.test.ts`: changed test "profileSetup is the tool flowProfileSetup, with its params by name"
+- `src/mcp/server/helpers/agentRules.ts`: added const RULES_REVIEWED_THROUGH, const AGENTS_URI, const SERVER_INSTRUCTIONS, const COMMAND_RULES, const EVERY_TOOL_RULES, function rulesLine, function citedRules
+- `src/mcp/server/helpers/guardCall.ts`: changed function guardCall
+- `src/mcp/server/helpers/index.ts`: added export from "./agentRules.ts"
+- `src/mcp/server/helpers/toolsFromCommands.ts`: added const LONG_RUNNING · changed function toolsFromCommands
+- `src/mcp/server/helpers/toolsFromFlows.ts`: changed function toolsFromFlows
+- `src/mcp/server/index.ts`: added function refused, function jsonOf, const AGENTS_MD, function loadEnv, interface LogMcpHttpOptions, const LOOPBACK, function authorized, function serveLogMcpHttp, function startLogMcpHttp · changed export from "./types.ts", function runToolCall, interface LogMcpOptions, function createLogMcpServer, function startLogMcpServer
+- `src/mcp/server/remote.test.ts`: added const stops, function serve, function clientOf, test "a remote client with the token lists the tools and calls one, with its structured result", test "without the token: 401, nothing runs", test "off loopback it refuses to start without a token", test "--live still needs confirmLive over HTTP (rule 10)", test "refused without confirmBypass, before anything runs; runs with it", test "every tool declares the same outputSchema, and listChanged is on"
+- `src/mcp/server/server.test.ts`: changed function connected
+- `src/mcp/server/types.ts`: added const TOOL_RESULT_SCHEMA, interface ToolResult · changed interface LogToolInput, interface LogTool
+- `src/proxyVendor/traffic/client.ts`: added const trafficLedgerPath, function readTrafficLedger, function recordTraffic, function twoCaptchaMeter
+- `src/proxyVendor/traffic/helpers/budget.ts`: added const DEFAULT_TRAFFIC_BUDGET_MB, const DAY_MS, function trafficBudget
+- `src/proxyVendor/traffic/helpers/index.ts`: added export from "./budget"
+- `src/proxyVendor/traffic/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/proxyVendor/traffic/traffic.test.ts`: added test "only the account's last 24 hours count against its budget", test "the ledger keeps each run, one line each"
+- `src/proxyVendor/traffic/types.ts`: added interface TrafficEntry, interface TrafficBudget, type TrafficMeter
+- `src/rea/capture/capture.test.ts`: added const entry, const HAR, const STEPS, test "each request goes to the step it happened in; quiet steps are left out", test "no steps, or not a HAR, gives nothing", test "parseSteps sorts by time and skips a half-written line", test "stepSlug is camelCase and drops the [Ns] prefix", test "reads the whole session, then writes and reads one HAR per step", test "no HAR (the browser never opened) is nothing", test "no capture folder refuses the context; one is injected, a caller's kept, more contexts numbered", test "a run returns without waiting on rea; with nothing captured nothing starts"
+- `src/rea/capture/client.ts`: added function evidenceIdOf, const REA_MAX_CAPTURE_BYTES, const SCRIPTS_TIMEOUT_MS, function defaultReaRunner, function writeCaptureScripts, function inspectCapture, function settleCapture, function captureFromHar, function settleRunCapture, const LOG_BIN, function settleInBackground
+- `src/rea/capture/helpers/exportScripts.ts`: added function isRecord, function scriptText, function isScript, function exportScripts, function manifestFor
+- `src/rea/capture/helpers/index.ts`: added export from "./exportScripts", export from "./splitHarBySteps", export from "./summarizeStep"
+- `src/rea/capture/helpers/splitHarBySteps.ts`: added interface RunStep, interface StepHar, function parseSteps, function stepSlug, function splitHarBySteps, function isRecord
+- `src/rea/capture/helpers/summarizeStep.ts`: added interface StepSummary, interface HarEntry, const operation, function summarizeStep, function renderStepSummary
+- `src/rea/capture/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/rea/capture/settle.test.ts`: added const HAR, const runner, test "keeps the HAR raw and copies the script out", test "decodes a base64 script body", test "leaves the session HAR as written and records the rea commands", test "keeps a HAR that is not JSON and does not run rea", test "captureFromHar copies the HAR unchanged and does not need a browser", test "record_har_path is a new_context argument, and Camoufox is still launched once", test "names Facebook's GraphQL operations, uploads and failures, never values"
+- `src/rea/capture/types.ts`: added interface CapturedScript, interface BrowserCapture, interface ReaRunResult, type ReaRunner
+- `src/rea/facebookClient/client.ts`: changed interface BuildClientMapOptions
+- `src/rea/facebookClient/facebookClient.test.ts`: added test "the group requests recorded on Bethlehem's groups are groups; the chat sidebar's group chats stay background", test "desktop Reels' unified video requests are reels; Messenger's video setting stays background"
+- `src/rea/facebookClient/helpers/domainOf.ts`: changed const DOMAIN_PATTERNS
+- `src/rea/facebookClient/helpers/renderOperationDoc.ts`: changed const FACTS_START
+- `src/rea/facebookClient/types.ts`: added const PLATFORM · changed type ClientDomain
+- `src/rea/firefox/capture.test.ts`: file deleted · removed const entry, const HAR, const STEPS, test "each request goes to the step it happened in; quiet steps are left out", test "no steps, or not a HAR, gives nothing", test "parseSteps sorts by time and skips a half-written line", test "stepSlug is camelCase and drops the [Ns] prefix", test "reads the whole session, then writes and reads one HAR per step", test "no HAR (the browser never opened) is nothing", test "no capture folder refuses the context; one is injected, a caller's kept, more contexts numbered", test "a run returns without waiting on rea; with nothing captured nothing starts"
+- `src/rea/firefox/client.ts`: file deleted · removed function evidenceIdOf, const REA_MAX_CAPTURE_BYTES, const SCRIPTS_TIMEOUT_MS, function defaultReaRunner, function writeFirefoxScripts, function inspectFirefoxCapture, function settleFirefoxCapture, function captureFromHar, function settleRunCapture, const LOG_BIN, function settleInBackground
+- `src/rea/firefox/firefox.test.ts`: file deleted · removed const HAR, const runner, test "keeps the HAR raw and copies the script out", test "decodes a base64 script body", test "leaves the session HAR as written and records the rea commands", test "keeps a HAR that is not JSON and does not run rea", test "captureFromHar copies the HAR unchanged and does not need a browser", test "record_har_path is a new_context argument, and Camoufox is still launched once", test "names Facebook's GraphQL operations, uploads and failures, never values"
+- `src/rea/firefox/helpers/exportScripts.ts`: file deleted · removed function isRecord, function scriptText, function isScript, function exportScripts, function manifestFor
+- `src/rea/firefox/helpers/index.ts`: file deleted · removed export from "./exportScripts", export from "./splitHarBySteps", export from "./summarizeStep"
+- `src/rea/firefox/helpers/splitHarBySteps.ts`: file deleted · removed interface RunStep, interface StepHar, function parseSteps, function stepSlug, function splitHarBySteps, function isRecord
+- `src/rea/firefox/helpers/summarizeStep.ts`: file deleted · removed interface StepSummary, interface HarEntry, const operation, function summarizeStep, function renderStepSummary
+- `src/rea/firefox/index.ts`: file deleted · removed export from "./client", export from "./helpers/index", export from "./types"
+- `src/rea/firefox/types.ts`: file deleted · removed interface FirefoxScript, interface FirefoxCapture, interface ReaRunResult, type ReaRunner
+- `src/subq/decisions/client.ts`: added function subqKey, function createDecisionsClient
+- `src/subq/decisions/index.ts`: added export from "./client", export from "./types"
+- `src/subq/decisions/types.ts`: added const SUBQ_DECISIONS_URL, const SUBQ_DECISIONS_MODEL, type DecisionQuestion, interface DecisionImage, interface DecisionRequest, type DecisionAnswer, interface DecisionResponse, type DecisionsClient
+- `src/twenty/graphql/client.ts`: added const AGENCY_GROUP_FIELDS · changed function createTwentyClient
+- `src/twenty/graphql/generated/schema.ts`: added type AgencyGroupJoinStatusEnum, interface AgencyGroup, interface AgencyGroupEdge, interface AgencyGroupConnection, interface AgencyGroupGroupByConnection, interface AgencyGroupGenqlSelection, interface AgencyGroupEdgeGenqlSelection, interface AgencyGroupConnectionGenqlSelection, interface AgencyGroupGroupByConnectionGenqlSelection, interface AgencyGroupRelationInput, interface AgencyGroupConnectInput, interface AgencyGroupWhereUniqueInput, interface AgencyGroupCreateInput, interface AgencyGroupUpdateInput, interface AgencyGroupFilterInput, interface AgencyGroupJoinStatusEnumFilter, interface AgencyGroupOrderByInput, interface AgencyGroupOrderByWithGroupByInput, interface AgencyGroupOrderByWithGroupByAggregateInput, interface AgencyGroupGroupByInput, const AgencyGroup_possibleTypes, const isAgencyGroup, const AgencyGroupEdge_possibleTypes, const isAgencyGroupEdge, const AgencyGroupConnection_possibleTypes, const isAgencyGroupConnection, const AgencyGroupGroupByConnection_possibleTypes, const isAgencyGroupGroupByConnection, const enumAgencyGroupJoinStatusEnum · changed interface Attachment, interface AttachmentConnection, interface AttachmentGroupByConnection, interface SocialAccount, interface TaskTarget, interface TaskTargetConnection, interface TaskTargetGroupByConnection, interface TimelineActivity, interface TimelineActivityConnection, interface TimelineActivityGroupByConnection, interface NoteTarget, interface NoteTargetConnection, interface NoteTargetGroupByConnection, interface Query, interface Mutation, interface AttachmentGenqlSelection, interface AttachmentConnectionGenqlSelection, interface AttachmentGroupByConnectionGenqlSelection, interface AttachmentCreateInput, interface AttachmentUpdateInput, interface AttachmentFilterInput, interface AttachmentOrderByInput, interface AttachmentOrderByWithGroupByInput, interface AttachmentOrderByWithGroupByAggregateInput, interface AttachmentGroupByInput, interface SocialAccountGenqlSelection, interface TaskTargetGenqlSelection, interface TaskTargetConnectionGenqlSelection, interface TaskTargetGroupByConnectionGenqlSelection, interface TaskTargetCreateInput, interface TaskTargetUpdateInput, interface TaskTargetFilterInput, interface TaskTargetOrderByInput, interface TaskTargetOrderByWithGroupByInput, interface TaskTargetOrderByWithGroupByAggregateInput, interface TaskTargetGroupByInput, interface TimelineActivityGenqlSelection, interface TimelineActivityConnectionGenqlSelection, interface TimelineActivityGroupByConnectionGenqlSelection, interface TimelineActivityCreateInput, interface TimelineActivityUpdateInput, interface TimelineActivityFilterInput, interface TimelineActivityOrderByInput, interface TimelineActivityOrderByWithGroupByInput, interface TimelineActivityOrderByWithGroupByAggregateInput, interface TimelineActivityGroupByInput, interface NoteTargetGenqlSelection, interface NoteTargetConnectionGenqlSelection, interface NoteTargetGroupByConnectionGenqlSelection, interface NoteTargetCreateInput, interface NoteTargetUpdateInput, interface NoteTargetFilterInput, interface NoteTargetOrderByInput, interface NoteTargetOrderByWithGroupByInput, interface NoteTargetOrderByWithGroupByAggregateInput, interface NoteTargetGroupByInput, interface QueryGenqlSelection, interface MutationGenqlSelection
+- `src/twenty/graphql/generated/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/types.ts`: changed interface TwentyObjects
+- `src/warmup/facebook/helpers/checkStep.ts`: added interface StepReply, function shows, function checkStep
+- `src/warmup/facebook/helpers/index.ts`: added export from "./checkStep", export from "./reel", export from "./reelDecision", export from "./reelOrderer", export from "./reelSession"
+- `src/warmup/facebook/helpers/reel.ts`: added const RUN, const REEL
+- `src/warmup/facebook/helpers/reelDecision.ts`: added const REEL_LABELS, interface AllowedActions, const ACTION_TEXT, interface ReelRead, function reelReadRequest, const noul, function readReelRead, function reelCaption
+- `src/warmup/facebook/helpers/reelOrderer.ts`: added type ReelAction, const SEGMENT_ORDERS, function segmentWeight, const TIE_EPS, interface ReelPlanInput, interface ReelPlan, function realPlay, function playQuantile, function playAt, function planReel
+- `src/warmup/facebook/helpers/reelSession.ts`: added interface Range, interface ReelSessionOptions, const DEFAULT_SESSION, function seeded, const draw, function parseRange, function step, interface SessionStep, function planSession, function describeSession
+- `src/warmup/facebook/index.ts`: added export from "./helpers/index", export from "./machine", export from "./types", const FACEBOOK_ACTIVITIES
+- `src/warmup/facebook/machine.ts`: added interface ActivityInput, interface ActivityContext, interface ActivityOutput, function resolveStep, const skipReason, const warmupActivityMachine, interface ReelLabel, interface PersonaSessionInput, type QueueItem, interface PersonaSessionContext, interface PersonaSessionOutput, const allowedActions, const LANDS, const dwell, function stepsForPlan, const SPONSORED, const planned, const reelPersonaMachine
+- `src/warmup/facebook/types.ts`: added const WARMUP_PLATFORMS, type WarmupPlatform, type ActivityAction, interface StepExpect, interface ActivityStep, interface PlatformActivity, interface StepOutcome
+- `src/warmup/facebook/warmup.test.ts`: added const REEL_URL, const step, function run, test "is Facebook's, and moves on with Next card, not the wheel (the wheel scrolled the page, the URL stayed)", test "a swipe that left the URL as it was is an issue, saying so", test "the comments heading must show after opening and be gone after closing", test "back to the reel landing on about:blank (as recorded) is an issue", test "back to the reel goes to the reel's own URL, the one before openProfile, whatever the profile did", test "most reels get a glance and a skip, often several in a row; only watched reels get comments, a profile or a like", test "a glance is 1-3 s", test "the same seed, the same session; Next card between reels; no like without --likes (rule 8)", test "record: every step taken and outlined, the wheel-like swipe issue listed, the like skipped without --likes", test "run: stops at the first step that did not do what it should", test "without --live the clicks are skipped, never taken (rule 8)", test "a checkpoint stops the activity as the account's issue"
+- `src/warmup/persona/helpers/drawPersona.ts`: added function datasetsDir, function parseTable, const COUNTRY_NAMES, const REELS_PLATFORMS, interface DatasetFiles, function readDatasets, function drawPersona
+- `src/warmup/persona/helpers/index.ts`: added export from "./drawPersona", export from "./personaPack"
+- `src/warmup/persona/helpers/personaPack.ts`: added interface PackDatasets, const keep, function readPackDatasets, const num, const clamp, const mean, const median, const genderLetter, function nearest, const bandMiddle, const INTEREST_OF, const READING_WPM, function buildPersonaPack, function segmentOf
+- `src/warmup/persona/index.ts`: added export from "./helpers/index", export from "./types"
+- `src/warmup/persona/persona.test.ts`: added const files, const row, const sessionRows, const viewer, const steps, const allowAll, const packData, const basePack, const effect, const read, test "the account's country and a Facebook or Instagram user where the data has them; a TikTok participant from DaRUS", test "the same seed, the same persona", test "tables read with their quoted fields whole", test "a user's plays in the swipe feed, cut into sessions where the next play didn't follow on", test "other feeds and plays of 0 ms are left out; too few sessions, no viewer", test "the persona's scroll speed picks from the quickest, middle or slowest third of viewers", test "SubQ's context: their numbers and one real session, swipe by swipe; the watch bands are their own fifths", test "traits from the real viewer, the synthetic sets and the real ones; the demographic shell from MovieLens", test "the same persona, viewer and data, the same pack; small enough for one SubQ call", test "the segment from the traits", test "each user's top categories from their feed; random plays in them against outside them", test "a play scaled at its own percentile", test "the watch is the real viewer's next play, scaled by the interest effect: longer on their kind", test "the same pack, viewer, read, seed and reel, the same plan", test "scores are p × interest effect × segment weight × attention fit", test "the like cooldown, the run's allowed actions (rule 8), the attention cap, a sponsored reel skipped", test "a close call is settled by the read's pick when it names one of the two; a clear one never is", test "the frame as the image, the caption and the persona as state; the pick only among what the run allows", test "SubQ's answers read; a missing answer is not theirs, nothing picked", test "each action its steps, with the pack's times; the last reel has no Next card", test "the one "see owner profile" heading, then its text", test "Reels and the sound, then each reel read by SubQ on the frame it landed on, then planned", test "SubQ not answering: the reel is planned as not theirs and the run goes on"
+- `src/warmup/persona/types.ts`: added interface DatasetRow, interface BehaviourProfile, type PersonaSegment, interface PersonaPack
+- `src/warmup/viewer/client.ts`: added const viewersPath, const interestEffectPath, function readInterestEffect, function readViewers, const MIN_VIEWER_SWIPES, function viewersForSpeed, function viewerFor
+- `src/warmup/viewer/helpers/buildViewers.ts`: added interface KuaiRow, const SWIPE_FEED_TAB, const SESSION_GAP_MS, const quantile, const median, function viewerStats, function buildViewers
+- `src/warmup/viewer/helpers/describeViewer.ts`: added const s, const pct, function describeSwipe, function describeViewer, function watchBands, function drawRealMs
+- `src/warmup/viewer/helpers/index.ts`: added export from "./buildViewers", export from "./describeViewer", export from "./interestEffect"
+- `src/warmup/viewer/helpers/interestEffect.ts`: added interface InterestEffect, interface TaggedPlay, const QS, const quantiles, const round, function measureInterestEffect, function watchRatio
+- `src/warmup/viewer/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/warmup/viewer/types.ts`: added type ViewerSwipe, interface ViewerStats, interface ReelViewer, interface ViewerFile
+
+What changed: Groups are their own library: `log join group --account --group` (src/cli/join, src/group/join with readGroupPage, joinOptions, the submission schema; src/group/answer fills and submits a group's questions), with Twenty's agencyGroup gaining joinStatus, joinStatusReason, membersLabel, joinRequestedAt, lastCheckedAt and joinSubmission. `log capture` replaces firefoxCapture (src/rea/capture, kept as an alias) and the request docs move to docs/platforms/facebook/ with groups and reels domains. The MCP server runs remote over HTTP with a token, declares an outputSchema on every tool, carries AGENTS.md as its instructions and the log://agents resource (agentRules.ts, RULES_REVIEWED_THROUGH 51). The warm-up is by platform and activity: `log warmup facebook reel plan|record|run` (src/warmup/facebook: the REEL steps, checkStep, the activity machine). With --persona, the run builds the persona's For you feed: src/warmup/persona draws the persona and its pack from the datasets (buildPersonaPack, every dataset a trait with its provenance), src/warmup/viewer gives each account a real KuaiRand-1K viewer matched to its scroll speed (buildViewers, viewersForSpeed) and the interest effect measured on KuaiRand-Pure (measureInterestEffect, watchRatio), reelDecision asks SubQ (src/subq/decisions) to read each reel from its frame (reelReadRequest, readReelRead, reelCaption), and reelOrderer plans each reel (planReel, playAt, segmentWeight). The inspect session gains reaLater, urlChange, rest, already, landedMs, openedTab and closeTab; humanMouse presses in place when the cursor is already on its target and rests with a tremor between quick swipes; rea.json keeps rea's answer only. src/proxyVendor/traffic keeps each run's proxy traffic and a 24-hour budget per account (trafficBudget, twoCaptchaMeter, recordTraffic). Scripts buildReelViewers.ts and buildInterestEffect.ts build the viewer and effect files. AGENTS.md rules 47-51, the warmup skill and README updated.
+Why: matt asked for the groups work, the MCP server carrying the repo's rules, browser-agnostic names, and a Reels warm-up that engages with what the persona would engage with, from the datasets he collated (the persona-conditioned Reels handoff), with SubQ reading each reel's images. Live runs showed each skip took 20-30 s (per-step recording waits), the persona run watched nearly every reel, the watch ignored what was on screen, the profile opened in its own tab, and the Reels video used the last 222.5 MB of 2Captcha's traffic: each of those is fixed here, and the traffic is now budgeted per account (rule 51).
+Checked: `bun test` 685 pass, 0 fail, and `tsc --noEmit` clean, without the other session's uncommitted launch changes (menus.ts, parseLaunchArgs). Live on Bethlehem (61594063207669) with --live --likes --bypass at matt's ask: 48 reels in one AdsPower session, SubQ read every reel (50,086 input tokens, about 1.6 s each), 32 judged theirs, a median 3.0 s on screen per reel against 2.3 s planned, one like; the run stopped at openProfile, which the recording showed had opened the profile in a new tab. The KuaiRand-1K build made 980 viewers from 11.7 M rows; the interest effect came out at x1.10-1.67 watch, x1.28 likes, x1.40 comments in their categories (182,442 and 966,864 random plays).
+
+## 2026-10-20 09:05Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometAddTypeaheadRecentSearchMutation.md`: edited
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuShortcutsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometProfileVerificationBadgePopoverQuery.md`: new file
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchKeywordDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometUFIFeedbackReactMutation.md`: new file
+- `docs/platforms/facebook/background/CometUnifiedShareSheetDialogQuery.md`: edited
+- `docs/platforms/facebook/background/FBReelHashtagSearchResultsQuery.md`: new file
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/SearchCometResultsInitialResultsParallelFetchQuery.md`: edited
+- `docs/platforms/facebook/background/SearchCometResultsInitialResultsQuery.md`: edited
+- `docs/platforms/facebook/background/SearchCometResultsPaginatedResultsQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/UnifiedShareSheetMessengerSectionQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/ajaxRouteDefinition.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useInstreamAdsHaloFetcherQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/useSearchCometTypeaheadBootstrapValidationQuery.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/background/withSearchCometTypeaheadSERPWarmCallDecoratorQuery.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/groups/CometGroupDiscussionRootSuccessQuery.md`: edited
+- `docs/platforms/facebook/groups/CometGroupRootQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometDiscussionLayoutRootQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometMembershipQuestionsPreloadedDialogQuery.md`: edited
+- `docs/platforms/facebook/groups/useGroupMembershipAnswersSaveMutation.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometMembershipQuestionnaireOpenedLoggingMutation.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometVisitMutation.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/profile/ProfileCometAboutAppSectionQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometHeaderQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTopAppSectionQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoContainerQuery.md`: new file
+- `docs/platforms/facebook/reels/FBUnifiedVideoEntityDialogImplQuery.md`: new file
+- `docs/platforms/facebook/reels/FBUnifiedVideoFeedbackRightRailWithCommentPreloadingQuery.md`: new file
+- `docs/platforms/facebook/reels/FBUnifiedVideoHashtagSearchDialogSnippetQuery.md`: new file
+- `docs/platforms/facebook/reels/FBUnifiedVideoSeenStateMutation.md`: new file
+- `scripts/checkFacebookClientDocs.mjs`: changed const docsDir
+- `src/cli/warmup/helpers/platformActivity.ts`: changed function runPlatformActivity
+- `src/warmup/facebook/helpers/feed.ts`: added const FEED
+- `src/warmup/facebook/helpers/index.ts`: added export from "./feed"
+- `src/warmup/facebook/index.ts`: changed const FACEBOOK_ACTIVITIES
+- `src/warmup/facebook/warmup.test.ts`: added test "its steps in Listaro order, each saying what it must achieve; the like only with --likes (rule 8)"
+
+What changed: The next warm-up stage is in: FEED (src/warmup/facebook/helpers/feed.ts) is Listaro's stage 1 (account-warmup.ts runStage1) as our steps, openFeed, settle, readFeed, a like (only with --likes), then a short look at Marketplace, each saying what it must achieve, registered in FACEBOOK_ACTIVITIES as `log warmup facebook feed`. runPlatformActivity plans and runs activities other than reel as their steps in order (`plan` lists them; --persona stays reel-only, refused for others). `log capture --docs` rebuilt the request docs from today's Reels and group runs (45 requests, 41 read by rea), with new reels/ and background/ docs and the reasoning written for 24 of them. checkFacebookClientDocs reads docs/platforms/facebook (the rule 48 move had left it on docs/facebookClient) and no longer counts a domain's README as an orphan.
+Why: matt asked to commit the Reels work, pull the docs in for what was done, and move on to the next warm-up stage from what Listaro did. The docs gate had been checking a folder that no longer exists.
+Checked: `bun test` 686 pass, 0 fail, and `tsc --noEmit` clean (without the other session's uncommitted launch changes). `log warmup facebook feed plan` lists the seven steps with their Listaro sources and the known issues. `node scripts/checkFacebookClientDocs.mjs` reports one problem left: useGroupRequestToJoinMutation, named in src/group/join/helpers/joinOptions.ts, has no doc (no run recorded it firing). The feed stage isn't recorded live yet: 2Captcha's proxy traffic is spent (0 of 1992 MB left).
+
+## 2026-10-20 09:09Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `scripts/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+
+What changed: ALLOWED_KEBAB in scripts/checkNamingConventions.mjs allows `subq-snap-preview`, SubQ's own model id, beside the other systems' fixed names it already allows (x-fb-friendly-name, inspect-web-network-capture).
+Why: the push gate's naming check refused the SubQ Decisions client and its test over that id. It is another system's name, sent as is (rule 1 converts other systems' names at the boundary, and this one is the boundary).
+Checked: `bun run check:naming` OK.
+
+## 2026-10-20 10:17Z · feat/adsPower
+
+AST (generated from the staged code by scripts/astSummary.mjs, don't edit):
+- `.env.example`: edited
+- `AGENTS.md`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuShortcutsQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometProfileVerificationBadgePopoverQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometUFIFeedbackReactMutation.md`: edited
+- `docs/platforms/facebook/background/FBReelHashtagSearchResultsQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useInstreamAdsHaloFetcherQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometMembershipQuestionsPreloadedDialogQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometRecAffordanceSectionQuery.md`: new file
+- `docs/platforms/facebook/groups/useGroupRequestToJoinMutation.md`: new file
+- `docs/platforms/facebook/groups/useGroupsCometHeaderControlsQuery.md`: new file
+- `docs/platforms/facebook/groups/useGroupsCometMembershipQuestionnaireOpenedLoggingMutation.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoContainerQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoEntityDialogImplQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoHashtagSearchDialogSnippetQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoRootWithEntrypointQuery.md`: new file
+- `docs/platforms/facebook/reels/FBUnifiedVideoSeenStateMutation.md`: edited
+- `docs/proxies.md`: edited
+- `docs/proxyVendors/README.md`: new file
+- `docs/proxyVendors/byteful.md`: new file
+- `python/errorCatalog.json`: edited
+- `scripts/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `src/cli/proxy/index.ts`: added function saveFirstGood, function centreOf, function assignByteful · changed const PROXY_USAGE, function assignOne, const proxyCommand
+- `src/cli/warmup/helpers/personaRun.ts`: changed function runPersonaSession
+- `src/cli/warmup/helpers/platformActivity.ts`: changed function runPlatformActivity
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `src/proxyVendor/byteful/byteful.test.ts`: added const creds, function fakeFetch, test "the keys come from BYTEFUL_PUBLIC_KEY and BYTEFUL_PRIVATE_KEY, and go in headers, never the URL", test "the account's city is the one of that name nearest home (Bethlehem PA, not South Africa); none with devices is null", test "a city search reads each city with where it is and its devices", test "a residential proxy is one sticky URL from the list endpoint, pinned to the city, 24 hours", test "an ISP quote is a POST to /checkout/quote and buys nothing", test "each provider's host; a static IP has none and isn't metered", test "--vendor reads either spelling", test "is title-cased, because its city search is case-sensitive"
+- `src/proxyVendor/byteful/client.ts`: added const API, const TIMEOUT_MS, function bytefulCredentials, function call, const num, function getResidentialSummary, function getCreditCents, const cityTitle, function searchCities, function residentialProxyUrl, function staticProxies, function quoteIsp
+- `src/proxyVendor/byteful/helpers/index.ts`: added export from "./pickCity"
+- `src/proxyVendor/byteful/helpers/pickCity.ts`: added const norm, const km, function pickCity
+- `src/proxyVendor/byteful/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/proxyVendor/byteful/types.ts`: added class BytefulError, interface BytefulCredentials, interface BytefulResidentialSummary, interface BytefulCity, interface BytefulResidentialRequest, interface BytefulStaticProxy, interface BytefulQuote
+- `src/proxyVendor/traffic/client.ts`: added function bytefulMeter, function meterForProxy
+- `src/proxyVendor/traffic/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/proxyVendor/vendor/helpers/index.ts`: added export from "./vendorOfProxy"
+- `src/proxyVendor/vendor/helpers/vendorOfProxy.ts`: added const HOSTS, function vendorOfProxy, function parseVendor
+- `src/proxyVendor/vendor/index.ts`: added export from "./helpers/index", export from "./types"
+- `src/proxyVendor/vendor/types.ts`: added type ProxyVendorName, const PROXY_VENDORS, type ProxyBilling
+
+What changed: Proxies are provider-agnostic. src/proxyVendor/vendor reads an account's provider from its Twenty `proxy` URL's host (vendorOfProxy, parseVendor, PROXY_VENDORS); nothing new is stored in Twenty. src/proxyVendor/byteful is Byteful's client: credentials from BYTEFUL_PUBLIC_KEY/BYTEFUL_PRIVATE_KEY in headers, the residential summary, credit, city search (case-sensitive, so cityTitle), one sticky 24 h residential URL from /residential/list, static proxies with their location, and an ISP quote that never buys; pickCity takes the named city nearest the account's home. `log proxy assign --vendor byteful` checks each candidate through the proxy before saving (saveFirstGood, shared with 2Captcha's assign, which now uses it too); `log proxy balance` shows every provider set up; `log proxy static` lists Byteful's static IPs. The traffic meter is per provider (bytefulMeter, meterForProxy): a static IP is not metered, and the Reels warm-up passes the account's proxy. Error codes bytefulNotConfigured, bytefulRefused, bytefulNoCity. docs/proxyVendors/README.md (the agnostic model) and byteful.md (all 58 endpoints and what each is for us); Byteful's 172 doc pages and OpenAPI spec are in RESEARCH/MARKETPLACE_PROVIDERS/proxies/byteful. The naming gate allows ISO 3166-2 ids (us-pa). The group join request useGroupRequestToJoinMutation is documented from a new recording (run 20261020T101203), with the join run's other new requests; AGENTS.md rules 52 (agnostic proxies, Byteful) and 53 (finding things through TinyFish), distilled into the MCP rules.
+Why: matt set Byteful's keys and asked for its docs, every endpoint's use, and proxies that are agnostic and aligned with Twenty. The push was blocked because useGroupRequestToJoinMutation had no recording (the earlier HAR was deleted when the disk was cleared); matt asked to record it through Byteful now. He asked that anything to be found comes from an external TinyFish search.
+Checked: `bun test` 694 pass, 0 fail; `tsc --noEmit` clean; check:naming OK; check:facebookClientDocs: 129 requests documented, rea read every GraphQL slice. Live: `log proxy balance` showed Byteful 1,000 MB left and $0 credit; `log proxy assign --account 61594063207669 --vendor byteful` saved a Byteful proxy exiting 10 km from Bethlehem; Bethlehem's browser opened through every gate (exit 216.164.207.34, America/New_York) and `log join group --live --bypass` on Northeast Bethlehem Neighbors (found with TinyFish) got useGroupRequestToJoinMutation 200, viewer_join_state REQUESTED, 3 membership questions kept unanswered. The browser was closed with a logged reason so its HAR was written.

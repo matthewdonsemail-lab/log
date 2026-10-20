@@ -130,8 +130,8 @@ Output: one plain `findings.md` per run, timeline and cause lines at the top.
 How: `skills/reaCapture/SKILL.md` (rea tools: `analyze_javascript_application`,
 `inspect_web_network_capture`, `inspect_analysis_view`).
 
-Status 2026-10-19: built: step 5 per request (`log firefoxCapture --docs`,
-`docs/facebookClient/`, rule 27: syntax-tree slices, rea about 4 s each),
+Status 2026-10-19: built: step 5 per request (`log capture --docs`,
+`docs/platforms/facebook/`, rule 27: syntax-tree slices, rea about 4 s each),
 and the per-step request timings that steps 2-3 need (in each doc). Settle no
 longer reads the whole bundle. Not built yet: the per-run timeline file, the
 automatic cause line, and comparing two runs (step 4).
@@ -267,10 +267,10 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     run long commands so the lines stream live (Claude Code: Monitor, never
     piped through `tail`/`head`).
 27. 2026-10-19 · matt: every request Facebook's client makes in our runs is
-    documented by domain in `docs/facebookClient/<domain>/<request>.md`:
+    documented by domain in `docs/platforms/facebook/<domain>/<request>.md`:
     what it sends and reads, which step fires it, how fast, what errors it
     returns, and why it matters to our machines. Built by
-    `log firefoxCapture --docs`: our syntax-tree parse cuts each request's
+    `log capture --docs`: our syntax-tree parse cuts each request's
     modules out of Facebook's bundles, rea reads each slice (seconds, not the
     whole bundle). lefthook's pre-push (`check:facebookClientDocs`) refuses a
     push while a request is undocumented, unread by rea, has its reasoning
@@ -315,7 +315,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     and name from the snapshot it acted on, each step's confirming request
     from what it sent, rea's Evidence per step,
     `src/camofox/flow/definitions/<name>.json`); `log flow docs` writes its
-    documentation (`docs/facebookClient/flows/<name>.md`, linked to each
+    documentation (`docs/platforms/facebook/flows/<name>.md`, linked to each
     request's doc); `createFlowMachine` makes it an XState machine; `log flow
     run <name> --account <a> --set …` runs it on any account (dry run
     unless `--live`), recording every step again; and every saved flow is an
@@ -394,6 +394,135 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     say something, that means you shouldn't do what you think. You should do
     what I say." Paid work (deep research, SubQ, proxies, captcha, vendors)
     does exactly what he asked, nothing more. Ask before anything else.
+42. 2026-10-19 · matt: the browser moves to AdsPower (SubQ's pick on our
+    recorded issues, and Listaro's browser), and Camoufox stays for later.
+    Twenty's socialAccounts logic is unchanged. The browser is a driver:
+    `src/browser/driver` is one XState machine for every browser (prepare,
+    gate, start, selfCheck, open, close), so a new browser is one more
+    driver and can't skip rules 12 and 17. Listaro's AdsPower client is
+    ported to `src/browser/adsPower`. `log adsPower sync --apply` gives each
+    account one profile, linked in `socialAccounts.adsPowerProfileId`, with
+    `browserDriver` picking the driver (empty: camoufox). A profile holds no
+    proxy, password, cookies or 2FA key. The proxy goes on only to open and
+    comes off at close. No AdsPower browser opens on Facebook until its gate,
+    self-check and HAR recording (rule 22) are wired (`docs/adsPower.md`).
+43. 2026-10-20 · matt: the proxies stay 2Captcha residential. The money is
+    already spent, so no other proxy provider is bought or planned, whatever a
+    ranking said. AdsPower uses the same 2Captcha proxy URL from Twenty.
+    Production runs AdsPower and log-cli on one browser server (AdsPower's Local
+    API and CDP are loopback only), with Twenty on its own server over HTTPS
+    (`docs/deployment.md`).
+44. 2026-10-20 · matt: every browser has parity, through one Playwright layer.
+    AdsPower (Chromium, attached over CDP) and Camoufox (Firefox, launched)
+    are both driven with Playwright's async API, never Puppeteer. AdsPower's
+    `ws.puppeteer` is only the name of the CDP websocket it returns.
+    `python/browserDriver.py` opens either and hands every session the same
+    context. So the proxy gate (`gate_attached`), the self-check
+    (`check_attached`), the session HAR (`harRecorder.SessionHar`), HumanMouse,
+    scrollMotion, the flows and the warm-up are the same code on both. This
+    replaces rule 42's "not wired yet". Each browser is a domain of its own,
+    `src/browser/<name>`, holding its capability row, driver and tests. The
+    `browserParity` check in lefthook pre-commit (`bun run check:browsers`)
+    refuses a browser missing its domain, row, driver, tests, Python opener or
+    `docs/browsers.md` column. `notBuilt` is listed, never refused. Listaro's
+    AdsPower rules carry over (`docs/browsers.md`): never close the profile's
+    context, inject no scripts, and let the profile keep its own cookies.
+45. 2026-10-20 · matt: groups have nothing to do with Marketplace. Facebook
+    group work is its own library, `src/group/<domain>/` (first `group/join`
+    for `log join group --account --group`), with the role files of rule 2.
+    It never goes under `src/marketplace/`. This widens rule 3 to groups.
+46. 2026-10-20 · matt: names are browser-agnostic. A command, domain, type or
+    message is named for what it does, never for one browser (Camoufox's
+    Firefox, AdsPower's Chromium, rule 44): `log capture --docs | --settle |
+    --har` (was `firefoxCapture`, kept as an alias), `src/rea/capture`
+    (was `rea/firefox`), `BrowserCapture`, `settleCapture`. Run folders
+    already carry the browser that ran (`adsPower/`, `camoufox/`).
+47. 2026-10-20 · matt: the MCP server carries AGENTS.md, so every agent on
+    the tools works by the same rules. Its `instructions` (sent at initialize,
+    into the model's context) are this file's core, each with its rule number,
+    rule 30 first: when matt says to do something, it is done completely.
+    AGENTS.md itself is the resource `log://agents`, and every tool's
+    description ends with the rules it falls under and points back to it
+    (`src/mcp/server/helpers/agentRules.ts`). A test fails on a cited rule
+    that isn't here, a tool with no rules, or a rule newer than
+    `RULES_REVIEWED_THROUGH`: a new rule is distilled into the MCP in the
+    same commit that adds it.
+48. 2026-10-20 · matt: what a platform's client does is documented by
+    platform first, then domain: `docs/platforms/<platform>/<domain>/<request>.md`
+    (was `docs/facebookClient/`; Facebook is `docs/platforms/facebook/`, and its
+    group requests have a `groups` domain of their own). A new platform or
+    domain is explored with `log inspect` and gets its own folder beside
+    Facebook's. Over MCP, any call that runs long is watched live: the caller
+    starts a Monitor on `~/.logCli/mcp/<day>.log` before it (rule 26), as the
+    server's instructions and each long tool's description say.
+49. 2026-10-20 · matt: the warm-up is by platform, then activity: `log
+    warmup <platform> <activity>`, first `log warmup facebook reel`
+    (`src/warmup/<platform>`, the library the warm-up and the domain the
+    platform). It opens the account's browser (`inspect start --detach`)
+    primed with the activity and runs its steps as a flow of events, each
+    recorded (rule 22). A warm-up spans many activities; each is a unit of its
+    own, so it is watched alone, and every step says what it must achieve (a
+    swipe changes the reel's URL, the comments show their heading): each run
+    writes the outline of the steps that didn't (`warmup_<platform>_<activity>.json`),
+    and the steps are fixed from that recording (rule 25). Reels: sound on first
+    (they start muted: nobody watches a reel with the audio off); most reels
+    get a glance and a skip, often a few in a row, and only some are watched
+    (`--skip`, default 0.6); on those: Next
+    card, the comments opened, scrolled (the wheel over the panel, `scrollIn`)
+    and closed, the creator's profile, a like only with --likes (rule 8); a
+    session is drawn from ranges (`plan`). Its requests are in
+    `docs/platforms/facebook/reels/` (rule 48).
+50. 2026-10-20 · matt: the Reels warm-up builds the persona's For you
+    feed by engaging with what it would engage with, from the datasets (the
+    persona-conditioned Reels handoff he collated;
+    `~/.logCli/datasets/SOURCES.md`). `log warmup facebook reel run
+    --persona` keeps one persona per account (the three datasets he named),
+    one real viewer from KuaiRand-1K (`src/warmup/viewer`, matched to the
+    persona's scroll speed) and one persona pack (`buildPersonaPack`): every
+    dataset gives a trait, said in its provenance, real or synthetic,
+    including what the persona is into (`interests`). Each reel, the moment
+    it lands, is read by SubQ from its frame (matt: SubQ analyses the
+    images), with the caption and the persona: what it is, whether it is
+    this persona's kind of content, the one action they'd pick. The action
+    orderer (`planReel`, deterministic from the seed) then plans it: the
+    watch is the viewer's next real play scaled by the interest effect
+    measured on KuaiRand-Pure's random log (their kind ×1.10-1.67, outside
+    ×0.90-0.99; likes ×1.28 against ×0.95, comments ×1.40 against ×0.93,
+    `scripts/buildInterestEffect.ts`), and at most one action (U = p ×
+    interest effect × segment weight × attention fit, a like cooldown of 3
+    reels, only what the run allows, rule 8), a close call settled by the
+    read's pick. The watch counts from when the reel landed, so SubQ's answer
+    is the glance. rea still reads each step at once without holding up the
+    next (`reaLater`, rule 29); a dwell doesn't wait for the network, a swipe
+    only for the next reel's URL, and the cursor rests on Next card between
+    quick swipes. Save, follow and share aren't built.
+51. 2026-10-20 · matt: proxy traffic is money. Reels ran 2Captcha's traffic
+    out (about 4.5 MB a reel through the residential proxy), so each account
+    has a budget of its own traffic for 24 hours, 1 GB by default
+    (`--trafficMb`). A warm-up reads 2Captcha's counter before and after,
+    refuses to start over the budget (`trafficBudgetSpent`), checks every 5
+    reels and stops at it, and writes each run's use to
+    `~/.logCli/proxyTraffic.jsonl` (`src/proxyVendor/traffic`).
+52. 2026-10-20 · matt: proxies are provider-agnostic, and Byteful is added
+    beside 2Captcha (this widens rule 43). Twenty keeps one `proxy` URL per
+    account, whichever provider it came from. The provider is read from its
+    host (`vendorOfProxy`, `src/proxyVendor/vendor`), and each provider is a
+    domain of its own (`src/proxyVendor/twoCaptcha`, `src/proxyVendor/byteful`).
+    `log proxy assign --vendor byteful` takes a sticky (24 h) Byteful
+    residential proxy in the account's city and checks it (home country,
+    100 km, speed) before saving, as for 2Captcha. `log proxy balance` shows
+    every provider set up, and `log proxy static` lists Byteful's static IPs
+    with where each is. A traffic-billed proxy is metered by its own provider
+    (rule 51); a static IP is not. log-cli never buys from a provider (rule
+    41). Docs: `docs/proxyVendors/`; Byteful's own docs and API spec are in
+    `RESEARCH/MARKETPLACE_PROVIDERS/proxies/byteful/`.
+53. 2026-10-20 · matt: when something has to be found (a group to join, a
+    provider, a price, a fact), it comes from an external source, never from
+    memory or a guess: search with TinyFish through treg (`treg call
+    tinyfish.web.search`, `tinyfish.web.fetch`, free) as the basis for every
+    lookup, and pull the actual candidates from it. A suggestion names where
+    it came from (the page, the search), and a pick is one of what the search
+    returned.
 
 ## Checks
 

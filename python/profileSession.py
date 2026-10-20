@@ -271,7 +271,7 @@ def main() -> int:
     reply_out, sys.stdout = sys.stdout, sys.stderr
     capture = config.get("captureDir")
     proxyGate.arm(config.get("proxyPath"), config.get("devicePath"), capture)
-    # Session.start records the HAR at <receiptDir>/firefox/session.har: the capture folder.
+    # Session.start records the HAR at <receiptDir>/camoufox/session.har: the capture folder.
     session = Session({**config, "receiptDir": str(Path(capture).parent) if capture else None})
 
     def reply(request_id: Any, result: dict[str, Any]) -> None:

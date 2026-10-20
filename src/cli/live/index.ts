@@ -24,7 +24,7 @@ import { recordAccountIssue } from "../../marketplace/replacement/index.ts";
 import { checkRunnable, findAccount, listFacebookAccounts, saveCookies, saveDeviceProfile, saveSession, setAccountStatus, toFacebookCookies } from "../../marketplace/socialAccount/index.ts";
 import type { FacebookAccount, RunPurpose } from "../../marketplace/socialAccount/index.ts";
 import { parseArgs, refuse, refuseError } from "../runner/helpers/index.ts";
-import { settleInBackground } from "../../rea/firefox/index.ts";
+import { settleInBackground } from "../../rea/capture/index.ts";
 import type { LoginSecrets } from "../../twenty/graphql/index.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
 import { renderConnect, renderDoctor, renderLoss, renderScan, summarizeConnect } from "./helpers/index.ts";

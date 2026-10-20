@@ -6,3 +6,12 @@ __pycache__/
 
 # vendor orders carry live cookies, tokens and 2FA secrets
 docs/vendors/*.txt
+
+# AdsPower's own skill, installed by `npx skills add https://github.com/adspower/adspower-browser --skill adspower-browser`
+# (vendor kebab-case names, kept out of git per rule 1; skills/adsPower/SKILL.md says how to reinstall)
+.agents/
+.claude/skills/adspower-browser
+skills/adspower-browser
+skills-lock.json
+# Playwright MCP console logs
+.playwright-mcp/

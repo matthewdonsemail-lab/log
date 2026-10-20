@@ -2,7 +2,7 @@
  * The Facebook client map: every request Facebook's pages made in our runs,
  * sorted by domain, joined to the module in Facebook's own bundles that
  * defines it, and read by rea one small slice at a time. It is the basis of
- * `docs/facebookClient/` (one doc per request) and the AGENTS.md loop: a run
+ * `docs/platforms/facebook/` (one doc per request) and the AGENTS.md loop: a run
  * that fails or hangs is explained from its recording (rule 25).
  */
 
@@ -14,8 +14,15 @@ export interface FacebookModule {
   text: string
 }
 
-/** Where a request belongs. The docs folder is named after it (`docs/facebookClient/<domain>/`). */
-export type ClientDomain = 'login' | 'checkpoint' | 'listingForm' | 'location' | 'photos' | 'publishing' | 'profile' | 'background'
+/**
+ * Where a request belongs on its platform. The docs are platform first, then domain
+ * (`docs/platforms/<platform>/<domain>/<request>.md`, Facebook: `docs/platforms/facebook/`), so a new
+ * platform explored with `log inspect` gets a folder of its own beside Facebook's.
+ */
+export type ClientDomain = 'login' | 'checkpoint' | 'groups' | 'reels' | 'listingForm' | 'location' | 'photos' | 'publishing' | 'profile' | 'background'
+
+/** The platform these docs and this client map are for. */
+export const PLATFORM = 'facebook'
 
 /** GraphQL operations carry their kind in their `.graphql` module; other POSTs are `endpoint`. */
 export type OperationKind = 'query' | 'mutation' | 'subscription' | 'endpoint'

@@ -1,3 +1,4 @@
+import type { BrowserDriverName } from '../../browser/driver/types'
 /**
  * `log inspect` (rule 29): one Camoufox kept open for an account and driven a
  * step at a time, each step recorded and read by rea as it happens
@@ -12,7 +13,9 @@ export type InspectAction = 'goto' | 'snapshot' | 'click' | 'type' | 'press' | '
   /** The cursor circles an element (the Robotic VSL engine's highlight, rule 32): movement only, no click. */
   | 'highlight'
   /** Warm-up (rule 35): `scroll 4-7 300-600` (wheel), `openAny <hrefPattern> 2-4` (read some listings), `clickAny <role> <namePattern> 2-3` (live). */
-  | 'scroll' | 'openAny' | 'clickAny'
+  | 'scroll' | 'scrollIn' | 'openAny' | 'clickAny'
+  /** Closes the tab a click opened (Reels' creator profile) and brings the session's tab back to the front. */
+  | 'closeTab'
   /** `dwell 2-4`: stays on the page that long, the cursor moving (a recorded pause; `wait` is only for a page to settle). */
   | 'dwell'
   /** The host (rule 35): keep the session now, read the page's text, read and set the Marketplace location. */
@@ -35,6 +38,8 @@ export interface InspectSessionConfig {
   idleMouse?: boolean
   /** Opened as step 1, or null. */
   startUrl: string | null
+  /** The account's browser (rule 44): python/browserDriver.py opens it. Absent: Camoufox. */
+  browser?: { driver: BrowserDriverName; profileId: string | null }
 }
 
 /** `~/.logCli/runs/inspect/current.json`: the open session `log inspect do` talks to. */
@@ -55,6 +60,25 @@ export interface InspectCommand {
   expectMs?: number
 }
 
+/**
+ * How one step records, beyond the defaults. `reaLater`: rea starts reading the
+ * step's HAR at once but the reply doesn't wait for it (its reading lands in
+ * the step's `rea.json`). `quietMs`/`settleMaxMs`: how long the network must be
+ * quiet before the step's recording, and the cap (a reel streams video, so it
+ * is never quiet). A dwell doesn't wait for quiet at all.
+ */
+export interface InspectStepOptions {
+  reaLater?: boolean
+  quietMs?: number
+  settleMaxMs?: number
+  /** Settled once the page's URL changed (a swipe to the next reel), up to `settleMaxMs`; no quiet wait after. */
+  urlChange?: boolean
+  /** The cursor rests where the step leaves it (a few pixels' tremor, no flicks) until a step without it. */
+  rest?: boolean
+  /** clickRole: what shows when the click isn't needed (["button", "Mute"] for Unmute); the step then passes without clicking. */
+  already?: [string, string]
+}
+
 /** One step's reply, as `inspectSession.py` writes it. */
 export interface InspectStepResult {
   ok: boolean
@@ -69,6 +93,10 @@ export interface InspectStepResult {
   rea?: { code: number; evidenceId: string | null; records?: number }
   interactive?: string[]
   folder?: string
+  /** When the page landed (with `urlChange`, the new URL), in ms from the step's start. */
+  landedMs?: number
+  /** A tab the step's click opened, and its URL: it stays in front until `closeTab`. */
+  openedTab?: string
   expect?: { name: string; seen: boolean }
   /** The step's cursor: humanized legs it drove (approach, circle, wander) and idle drift moves (rule 32). */
   mouse?: { legs: number; idleMoves: number }

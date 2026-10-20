@@ -44,4 +44,4 @@ page's elements with their refs. Everything is kept in order in
 
 Then write the code from it: the selectors and the order of clicks come from
 `snapshot.yml`, the waits from what `network.har` shows the page asking for.
-Rebuild the Facebook client docs after (rule 27): `firefoxCapture --docs`.
+Rebuild the Facebook client docs after (rule 27): `capture --docs`.

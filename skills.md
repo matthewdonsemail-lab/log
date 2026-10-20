@@ -19,6 +19,7 @@ skill in the same commit.
 | [`humanMouse`](skills/humanMouse/SKILL.md) | Make the cursor move like matt's hand (rule 32): record his mouse, fit `humanMouse.py`, measure ours with the same analyser |
 | [`inspect`](skills/inspect/SKILL.md) | Look at a Facebook page step by step in one gated Camoufox before writing code for it (rule 29): snapshot refs, screenshot, HAR and rea per step |
 | [`flow`](skills/flow/SKILL.md) | Turn an inspect recording into a flow: docs, an XState machine, a `log flow run` command and an MCP tool, then run it on any account (rule 31) |
+| [`adsPower`](skills/adsPower/SKILL.md) | Give every Twenty account its AdsPower profile (`log adsPower sync`), check the Local API, add a browser driver (rule 42) |
 | [`profileSetup`](skills/profileSetup/SKILL.md) | Give an account its profile picture and cover photo (`log profile setup`, rule 28): dry run, read the page's controls, then `--live` |
 
 These three files stay in step:

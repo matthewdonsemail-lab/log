@@ -16,8 +16,10 @@
     "test": "bun test",
     "check:naming": "node scripts/checkNamingConventions.mjs",
     "check:facebookClientDocs": "node scripts/checkFacebookClientDocs.mjs",
+    "check:browsers": "bun scripts/checkBrowserParity.ts",
+    "browsers:docs": "bun scripts/checkBrowserParity.ts --write",
     "errors:export": "bun bin/log.ts errors --json > python/errorCatalog.json && bun bin/log.ts errors --markdown > docs/errorCatalog.md",
-    "check": "bun run check:naming && bun run typecheck && bun run test",
+    "check": "bun run check:naming && bun run check:browsers && bun run typecheck && bun run test",
     "prepare": "git config --unset core.hooksPath; lefthook install",
     "twenty:client": "node scripts/emitTwentyClient.mjs",
     "twenty:client:check": "node scripts/emitTwentyClient.mjs --check"
