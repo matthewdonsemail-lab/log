@@ -52,11 +52,11 @@ FIELDS = [
 ]
 
 LIST_OBJECTS = """query { objects(paging: {first: 200}) {
-  edges { node { id nameSingular namePlural } }
+  edges { node { id nameSingular namePlural labelIdentifierFieldMetadataId } }
 } }"""
 LIST_FIELDS = """query Fields($objectId: UUID!) {
   object(id: $objectId) {
-    fields(paging: {first: 200}) { edges { node { name } } }
+    fields(paging: {first: 200}) { edges { node { id name } } }
   }
 }"""
 CREATE_OBJECT = """mutation CreateObject($input: CreateOneObjectInput!) {
@@ -64,6 +64,9 @@ CREATE_OBJECT = """mutation CreateObject($input: CreateOneObjectInput!) {
 }"""
 CREATE_FIELD = """mutation CreateField($input: CreateOneFieldMetadataInput!) {
   createOneField(input: $input) { id name }
+}"""
+UPDATE_OBJECT = """mutation UpdateObject($input: UpdateOneObjectInput!) {
+  updateOneObject(input: $input) { id labelIdentifierFieldMetadataId }
 }"""
 
 
@@ -177,6 +180,28 @@ def ensure_schema(base: str, key: str) -> None:
         print(f"{'Created' if created else 'Found'} field {index}/{len(FIELDS)}.")
         if created:
             time.sleep(1)
+
+    field_data = metadata(base, key, LIST_FIELDS, {"objectId": object_id})
+    fields_by_name = {
+        edge["node"]["name"]: edge["node"]["id"]
+        for edge in field_data.get("object", {}).get("fields", {}).get("edges", [])
+    }
+    headline_field_id = fields_by_name.get("headline")
+    if not headline_field_id:
+        raise RuntimeError("Twenty did not expose the Buzz Update title field")
+    if not found or found.get("labelIdentifierFieldMetadataId") != headline_field_id:
+        metadata(
+            base,
+            key,
+            UPDATE_OBJECT,
+            {
+                "input": {
+                    "id": object_id,
+                    "update": {"labelIdentifierFieldMetadataId": headline_field_id},
+                }
+            },
+        )
+        print("Configured Title as the Buzz Update display name.")
 
 
 def main() -> int:
