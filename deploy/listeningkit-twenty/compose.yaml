@@ -1,0 +1,184 @@
+name: listeningkit-twenty
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: twenty
+      POSTGRES_USER: twenty
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run ./install.sh first}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U twenty -d twenty"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [internal]
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [internal]
+
+  server:
+    image: ${TWENTY_IMAGE:-twentycrm/twenty:v2.49.0}
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment: &twenty-environment
+      PG_DATABASE_URL: postgres://twenty:${POSTGRES_PASSWORD}@postgres:5432/twenty
+      REDIS_URL: redis://redis:6379
+      SERVER_URL: ${TWENTY_URL:?Run ./install.sh first}
+      FRONT_BASE_URL: ${TWENTY_URL:?Run ./install.sh first}
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET:?Run ./install.sh first}
+      LOGIN_TOKEN_SECRET: ${LOGIN_TOKEN_SECRET:?Run ./install.sh first}
+      REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET:?Run ./install.sh first}
+      FILE_TOKEN_SECRET: ${FILE_TOKEN_SECRET:?Run ./install.sh first}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?Run ./install.sh first}
+      APP_SECRET: ${APP_SECRET:?Run ./install.sh first}
+      IS_MULTIWORKSPACE_ENABLED: "false"
+      MESSAGE_CHANNEL_TYPE_DRIVER: logger
+    volumes:
+      - local-storage:/app/packages/twenty-server/.local-storage
+    networks: [internal]
+
+  worker:
+    image: ${TWENTY_IMAGE:-twentycrm/twenty:v2.49.0}
+    restart: unless-stopped
+    command: ["yarn", "worker:prod"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment: *twenty-environment
+    volumes:
+      - local-storage:/app/packages/twenty-server/.local-storage
+    networks: [internal]
+
+  newsletter-relay:
+    image: node:22-alpine
+    profiles: [relay, cloudflare]
+    restart: unless-stopped
+    command: ["node", "/app/newsletter-relay.mjs"]
+    user: node
+    depends_on:
+      server:
+        condition: service_started
+    environment:
+      NEWSLETTER_RELAY_TOKEN: ${NEWSLETTER_RELAY_TOKEN:-}
+      TWENTY_API_KEY: ${TWENTY_API_KEY:-}
+      TWENTY_BASE_URL: http://server:3000/rest
+    ports:
+      - "127.0.0.1:8787:8787"
+    volumes:
+      - ./newsletter-relay.mjs:/app/newsletter-relay.mjs:ro
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    networks: [internal]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8787/healthz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  buzz-twenty-bridge:
+    image: node:22-trixie-slim@sha256:154ba2f4d6fec323d28e4f4bb86bba4677f1223391a1979cf521304e03a98dfa
+    profiles: [bridge]
+    restart: unless-stopped
+    command: ["node", "/app/buzz-twenty-bridge.mjs"]
+    user: node
+    depends_on:
+      server:
+        condition: service_started
+    environment:
+      BUZZ_RELAY_URL: ${BUZZ_RELAY_URL:-}
+      BUZZ_BRIDGE_CHANNEL_ID: ${BUZZ_BRIDGE_CHANNEL_ID:-}
+      BUZZ_BRIDGE_PRIVATE_KEY: ${BUZZ_BRIDGE_PRIVATE_KEY:-}
+      BUZZ_BRIDGE_AUTH_TAG: ${BUZZ_BRIDGE_AUTH_TAG:-}
+      BUZZ_BRIDGE_PUBKEY: ${BUZZ_BRIDGE_PUBKEY:-}
+      BUZZ_BRIDGE_MENTION_LABEL: ${BUZZ_BRIDGE_MENTION_LABEL:-Twenty CRM Bridge}
+      BUZZ_BRIDGE_STARTED_AT: ${BUZZ_BRIDGE_STARTED_AT:-}
+      BUZZ_BRIDGE_TWENTY_API_KEY: ${BUZZ_BRIDGE_TWENTY_API_KEY:-}
+      BUZZ_BRIDGE_TWENTY_BASE_URL: http://server:3000/rest
+      TWENTY_PUBLIC_URL: ${TWENTY_URL:-}
+      BUZZ_BINARY: /usr/local/bin/buzz
+      BUZZ_BRIDGE_STATE_PATH: /data/state.json
+      PORT: "8790"
+    ports:
+      - "127.0.0.1:8790:8790"
+    volumes:
+      - ./buzz-twenty-bridge.mjs:/app/buzz-twenty-bridge.mjs:ro
+      - ./bin/buzz:/usr/local/bin/buzz:ro
+      - ./bridge-data:/data
+      - /etc/ssl/certs:/etc/ssl/certs:ro
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    networks: [internal]
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8790/healthz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  auth-guard:
+    image: nginx:1.27.5-alpine
+    profiles: [cloudflare]
+    restart: unless-stopped
+    depends_on:
+      server:
+        condition: service_started
+    volumes:
+      - ./auth-guard.nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./auth-guard.proxy-params.conf:/etc/nginx/proxy-params.conf:ro
+      - ./auth-guard.htpasswd:/etc/nginx/htpasswd:ro
+    read_only: true
+    tmpfs: [/var/cache/nginx, /var/run, /tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    cap_add: [CHOWN, SETGID, SETUID]
+    networks: [internal]
+
+  cloudflared:
+    image: cloudflare/cloudflared:2026.6.1
+    profiles: [cloudflare]
+    restart: unless-stopped
+    command: ["tunnel", "--no-autoupdate", "run"]
+    depends_on:
+      auth-guard:
+        condition: service_started
+      newsletter-relay:
+        condition: service_healthy
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARED_TOKEN:-}
+    read_only: true
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    networks: [internal]
+
+networks:
+  internal:
+
+volumes:
+  postgres-data:
+  redis-data:
+  local-storage:

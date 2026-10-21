@@ -1,0 +1,9 @@
+.env
+.env.*
+!.env.example
+backups/
+auth-guard.htpasswd
+bridge-data/
+bin/
+*.zip
+*.deb
