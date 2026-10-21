@@ -162,10 +162,14 @@ Do not paste credentials into Buzz; historical channels are not a secret store.
 ## Legacy Facebook account migration
 
 `migrate_facebook_accounts.py` creates the **Facebook Accounts** object and
-upserts only allowlisted operational metadata. It deliberately rejects cookies,
-passwords, access tokens, TOTP secrets, proxy details, IP addresses and email
-credentials. The source and target modes are designed to be joined through an
-SSH pipe so no plaintext export file is created.
+upserts only allowlisted operational metadata. Every record includes a
+plain-language summary, a safe next action, its migration state, source-system
+context and an explanation of where sensitive access lives. Every custom field
+also has UI help text, and Account is configured as the display name. The script
+deliberately rejects cookies, passwords, access tokens, TOTP secrets, proxy
+details, IP addresses and email credentials. The source and target modes are
+designed to be joined through an SSH pipe so no plaintext export file is
+created.
 
 `migrate_facebook_access.py` is the separate credential handoff. Its target mode
 encrypts each account independently with AES-256-GCM before atomically writing

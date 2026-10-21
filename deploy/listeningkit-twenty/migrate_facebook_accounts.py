@@ -20,26 +20,38 @@ TARGET_SINGULAR = "facebookAccount"
 TARGET_PLURAL = "facebookAccounts"
 
 FIELDS = [
-    {"name": "name", "label": "Account", "type": "TEXT"},
-    {"name": "sourceAccountId", "label": "Legacy source ID", "type": "TEXT"},
-    {"name": "accountStatus", "label": "Account status", "type": "TEXT"},
-    {"name": "lifecycleState", "label": "Lifecycle state", "type": "TEXT"},
-    {"name": "platform", "label": "Platform", "type": "TEXT"},
-    {"name": "browserDriver", "label": "Browser driver", "type": "TEXT"},
-    {"name": "profileName", "label": "Profile name", "type": "TEXT"},
-    {"name": "dailyListingCap", "label": "Daily listing cap", "type": "NUMBER"},
-    {"name": "lastPostedAt", "label": "Last posted", "type": "DATE_TIME"},
-    {"name": "statusChangedAt", "label": "Status changed", "type": "DATE_TIME"},
+    {"name": "name", "label": "Account", "type": "TEXT", "description": "Human-readable Facebook account label used as this record's display name."},
+    {"name": "summary", "label": "What this record means", "type": "TEXT", "description": "Plain-language explanation of the account's current operational state."},
+    {"name": "nextAction", "label": "What to do next", "type": "TEXT", "description": "The safe next step required before this account can be used or retired."},
+    {"name": "sourceAccountId", "label": "Legacy source ID", "type": "TEXT", "description": "Stable identifier from the read-only node01 CRM, used only for idempotent migration."},
+    {"name": "accountStatus", "label": "Facebook account status", "type": "TEXT", "description": "Status last recorded by the legacy Facebook account workflow."},
+    {"name": "lifecycleState", "label": "Lifecycle state", "type": "TEXT", "description": "Lifecycle classification retained from the legacy account record."},
+    {"name": "platform", "label": "Platform", "type": "TEXT", "description": "Social platform represented by this record; expected to be Facebook."},
+    {"name": "browserDriver", "label": "Browser driver", "type": "TEXT", "description": "Browser runtime previously associated with this account. This does not mean the runtime is enabled."},
+    {"name": "profileName", "label": "Profile name", "type": "TEXT", "description": "Legacy non-secret profile label, when one was recorded."},
+    {"name": "dailyListingCap", "label": "Daily listing cap", "type": "NUMBER", "description": "Legacy safety ceiling for daily listing activity. It is not permission to start automation."},
+    {"name": "lastPostedAt", "label": "Last posted", "type": "DATE_TIME", "description": "Most recent posting timestamp retained from the legacy record."},
+    {"name": "statusChangedAt", "label": "Status changed", "type": "DATE_TIME", "description": "When the legacy Facebook account status last changed."},
     {
         "name": "connectionState",
         "label": "Connection state",
         "type": "SELECT",
+        "description": "High-level readiness only. Connected means encrypted access exists, not that automation is running.",
         "options": ["CONNECTED", "NEEDS_ATTENTION", "NOT_CONFIGURED"],
     },
-    {"name": "legacyCredentialPresent", "label": "Legacy login available", "type": "BOOLEAN"},
-    {"name": "credentialsMigrated", "label": "Encrypted login migrated", "type": "BOOLEAN"},
-    {"name": "sourceUpdatedAt", "label": "Legacy record updated", "type": "DATE_TIME"},
-    {"name": "migratedAt", "label": "Migrated at", "type": "DATE_TIME"},
+    {"name": "legacyCredentialPresent", "label": "Legacy login was available", "type": "BOOLEAN", "description": "Whether the source record contained login material. No secret value is stored in Twenty."},
+    {"name": "credentialsMigrated", "label": "Encrypted login migrated", "type": "BOOLEAN", "description": "Whether legacy access was sealed into the protected AES-256-GCM vault on node02."},
+    {
+        "name": "migrationStatus",
+        "label": "Migration status",
+        "type": "SELECT",
+        "description": "Whether only metadata moved or encrypted access also completed.",
+        "options": ["METADATA_ONLY", "ENCRYPTED_ACCESS_MIGRATED"],
+    },
+    {"name": "dataHandling", "label": "Where sensitive access lives", "type": "TEXT", "description": "Explains the security boundary without exposing any credential or proxy detail."},
+    {"name": "sourceSystem", "label": "Source system", "type": "TEXT", "description": "Original system retained as a read-only migration source."},
+    {"name": "sourceUpdatedAt", "label": "Legacy record updated", "type": "DATE_TIME", "description": "Last update timestamp supplied by the legacy source record."},
+    {"name": "migratedAt", "label": "Migrated at", "type": "DATE_TIME", "description": "When this safe metadata snapshot was last synchronized to node02."},
 ]
 
 LIST_OBJECTS = """query { objects(paging: {first: 300}) {
@@ -58,6 +70,9 @@ CREATE_FIELD = """mutation CreateField($input: CreateOneFieldMetadataInput!) {
 }"""
 UPDATE_OBJECT = """mutation UpdateObject($input: UpdateOneObjectInput!) {
   updateOneObject(input: $input) { id labelIdentifierFieldMetadataId }
+}"""
+UPDATE_FIELD = """mutation UpdateField($input: UpdateOneFieldMetadataInput!) {
+  updateOneField(input: $input) { id name description }
 }"""
 
 
@@ -101,6 +116,33 @@ def safe_text(value: object, limit: int = 500) -> str:
     return str(value or "").strip()[:limit]
 
 
+def account_guidance(status: str, has_login: bool) -> tuple[str, str]:
+    if status == "ACTIVE" and has_login:
+        return (
+            "Facebook marked this account active, and its legacy access is encrypted on node02. The runtime remains stopped.",
+            "Run a bounded verification through the approved mandatory-proxy runtime before enabling any workload.",
+        )
+    if status == "CHECKPOINT":
+        return (
+            "Facebook requires an account checkpoint before this account can be used safely.",
+            "Complete the checkpoint manually, refresh the encrypted login, then run a bounded proxy-backed verification.",
+        )
+    if status == "RESTRICTED":
+        return (
+            "Facebook marked this account restricted. It must not be automated in its current state.",
+            "Keep it disabled and decide whether to recover it manually or retire it.",
+        )
+    if has_login:
+        return (
+            "Legacy access exists, but the account's current Facebook health has not been classified.",
+            "Run a bounded account-health check through the approved mandatory-proxy path.",
+        )
+    return (
+        "Metadata was migrated, but no legacy login material was available for this account.",
+        "Connect a dedicated Facebook login through the approved encrypted session flow before use.",
+    )
+
+
 def source_mode() -> None:
     base = required("SOURCE_TWENTY_URL")
     key = required("SOURCE_TWENTY_API_KEY")
@@ -122,9 +164,12 @@ def source_mode() -> None:
             if has_login
             else "NOT_CONFIGURED"
         )
+        summary, next_action = account_guidance(status, has_login)
         safe_rows.append(
             {
                 "name": safe_text(row.get("accountName") or row.get("profileName") or f"Facebook account {index}", 160),
+                "summary": summary,
+                "nextAction": next_action,
                 "sourceAccountId": str(row["id"]),
                 "accountStatus": status,
                 "lifecycleState": safe_text(row.get("lifecycleState"), 100),
@@ -136,7 +181,8 @@ def source_mode() -> None:
                 "statusChangedAt": row.get("statusChangedAt") or None,
                 "connectionState": connection,
                 "legacyCredentialPresent": has_login,
-                "credentialsMigrated": False,
+                "dataHandling": "Secret values are not stored in Twenty. Migrated access is encrypted in node02's protected Facebook vault.",
+                "sourceSystem": "Legacy node01 Twenty (read-only migration source)",
                 "sourceUpdatedAt": row.get("updatedAt") or None,
                 "migratedAt": migrated_at,
             }
@@ -182,7 +228,7 @@ def ensure_schema(base: str, key: str) -> None:
             "name": spec["name"],
             "label": spec["label"],
             "type": spec["type"],
-            "description": "ListeningKit Facebook account migration metadata",
+            "description": spec["description"],
         }
         if spec.get("options"):
             field["options"] = [
@@ -201,16 +247,34 @@ def ensure_schema(base: str, key: str) -> None:
 
     field_data = metadata(base, key, LIST_FIELDS, {"objectId": object_id})
     fields = {edge["node"]["name"]: edge["node"]["id"] for edge in field_data["object"]["fields"]["edges"]}
-    name_field_id = fields.get("name")
-    if not name_field_id:
-        raise RuntimeError("Facebook Account display field is missing")
-    if not found or found.get("labelIdentifierFieldMetadataId") != name_field_id:
+    for spec in FIELDS:
         metadata(
             base,
             key,
-            UPDATE_OBJECT,
-            {"input": {"id": object_id, "update": {"labelIdentifierFieldMetadataId": name_field_id}}},
+            UPDATE_FIELD,
+            {"input": {"id": fields[spec["name"]], "update": {"description": spec["description"]}}},
         )
+    name_field_id = fields.get("name")
+    if not name_field_id:
+        raise RuntimeError("Facebook Account display field is missing")
+    metadata(
+        base,
+        key,
+        UPDATE_OBJECT,
+        {
+            "input": {
+                "id": object_id,
+                "update": {
+                    "labelIdentifierFieldMetadataId": name_field_id,
+                    "description": (
+                        "Canonical inventory of ListeningKit Facebook accounts migrated from node01. "
+                        "Twenty stores understandable operational metadata only; access remains encrypted on node02, "
+                        "and no account is authorized to run until its next action is completed."
+                    ),
+                },
+            }
+        },
+    )
 
 
 def target_mode() -> None:
@@ -231,6 +295,8 @@ def target_mode() -> None:
         )
         existing = request_json(f"{base}/rest/{TARGET_PLURAL}?{params}", key).get("data", {}).get(TARGET_PLURAL, [])
         if existing:
+            migrated = bool(existing[0].get("credentialsMigrated"))
+            clean["migrationStatus"] = "ENCRYPTED_ACCESS_MIGRATED" if migrated else "METADATA_ONLY"
             request_json(
                 f"{base}/rest/{TARGET_PLURAL}/{urllib.parse.quote(existing[0]['id'])}",
                 key,
@@ -239,6 +305,8 @@ def target_mode() -> None:
             )
             updated += 1
         else:
+            clean["credentialsMigrated"] = False
+            clean["migrationStatus"] = "METADATA_ONLY"
             request_json(f"{base}/rest/{TARGET_PLURAL}", key, method="POST", payload=clean)
             created += 1
     total = request_json(f"{base}/rest/{TARGET_PLURAL}?limit=100", key).get("data", {}).get(TARGET_PLURAL, [])

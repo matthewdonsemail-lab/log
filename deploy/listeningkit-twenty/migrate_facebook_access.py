@@ -139,7 +139,10 @@ def target_mode() -> None:
             f"{base}/rest/facebookAccounts/{urllib.parse.quote(matches[0]['id'])}",
             api_key,
             method="PATCH",
-            payload={"credentialsMigrated": True},
+            payload={
+                "credentialsMigrated": True,
+                "migrationStatus": "ENCRYPTED_ACCESS_MIGRATED",
+            },
         )
         updated += 1
     print(f"Facebook access encrypted on node02: vault_records={len(encrypted)} linked_records={updated}")
