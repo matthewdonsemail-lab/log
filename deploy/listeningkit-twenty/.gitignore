@@ -4,6 +4,7 @@
 backups/
 auth-guard.htpasswd
 bridge-data/
+facebook-vault/
 bin/
 *.zip
 *.deb

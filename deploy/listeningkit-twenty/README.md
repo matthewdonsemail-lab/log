@@ -159,6 +159,23 @@ IDs and is gitignored.
 Verify with `./doctor.sh`, then issue `@Twenty CRM Bridge help` in `crm-sync`.
 Do not paste credentials into Buzz; historical channels are not a secret store.
 
+## Legacy Facebook account migration
+
+`migrate_facebook_accounts.py` creates the **Facebook Accounts** object and
+upserts only allowlisted operational metadata. It deliberately rejects cookies,
+passwords, access tokens, TOTP secrets, proxy details, IP addresses and email
+credentials. The source and target modes are designed to be joined through an
+SSH pipe so no plaintext export file is created.
+
+`migrate_facebook_access.py` is the separate credential handoff. Its target mode
+encrypts each account independently with AES-256-GCM before atomically writing
+`facebook-vault/accounts.json`; the vault directory is mode 700, the file is
+mode 600, and both are gitignored. Twenty stores only whether the encrypted
+login has migrated, never the secret values or proxy configuration. Keep the
+vault key only in the mode-600 `.env`, back it up separately, and do not start a
+Facebook runtime until it can consume this vault while preserving owner scope
+and the mandatory deployment proxy boundary.
+
 ## Operations
 
 ```bash
