@@ -14,6 +14,10 @@
  *       "Most relevant" shows some.
  *   log read group --account <a> --group <g> --show
  *       the group's saved posts and comments from Twenty, and nothing opened.
+ *   log read group --worker <request json>
+ *       OpenMagpie's `facebook_group` worker (obris-dev/openmagpie#178, #188): each group is read by
+ *       an account in it whose browser is open (posts only), and the newest saved posts answer as
+ *       one JSON object on stdout (`group/read/helpers/openMagpieWorker.ts`).
  *
  * The posts go to `agencyGroupPosts`, their comments to `agencyGroupComments`, and only
  * then does the group's `readCursor` move (`group/read/client.ts`). Every step prints a
@@ -24,11 +28,15 @@ import { join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
 import { readCurrentInspect } from "../../browser/inspect/index.ts";
 import { ensureGroup, parseGroupRef } from "../../group/join/index.ts";
-import { AGENCY_GROUP_COMMENTS, AGENCY_GROUP_POSTS, groupReadMachine, readStateOf, saveRead } from "../../group/read/index.ts";
-import type { GroupReadOutput, ReadStepInput, ReadStepReply, SavedRead } from "../../group/read/index.ts";
+import type { Group, GroupRef } from "../../group/join/index.ts";
+import { AGENCY_GROUP_COMMENTS, AGENCY_GROUP_POSTS, groupReadMachine, parseWorkerRequest, readStateOf, recordsOf, saveRead, scrollsFor, workerCodeOf } from "../../group/read/index.ts";
+import type { GroupReadOutput, ReadStepInput, ReadStepReply, SavedRead, WorkerAnswer, WorkerRecord } from "../../group/read/index.ts";
+import type { ErrorCode } from "../../errors/catalog/index.ts";
 import { homeOf, outsideActiveHours } from "../../marketplace/home/index.ts";
 import { checkRunnable, findAccount } from "../../marketplace/socialAccount/index.ts";
+import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
+import { TwentyError } from "../../twenty/graphql/index.ts";
 import type { TwentyClient } from "../../twenty/graphql/index.ts";
 import { refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
@@ -39,6 +47,7 @@ export * from "./helpers/index.ts";
 export const READ_USAGE = [
   "Usage: log read group --account <accountName> --group <group url or id> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json]",
   "       log read group --account <accountName> --group <g> --show [--json]",
+  "       log read group --worker <request json>   (OpenMagpie's facebook_group worker: groups.search in, post records out as one JSON line; python/openMagpie/facebookWorker.py calls it)",
   "Reads the group's new posts (since its cursor in Twenty) and the comments of the posts whose comments grew, in the account's open browser.",
   "--scrolls: feed scrolls at most (default 6). --commentPosts: posts whose comments are read at most (default 5; 0 reads none).",
   "--live: each post's comments are switched to Newest first (two clicks, rule 8); without it nothing is clicked and the page's Most relevant comments are read.",
@@ -81,9 +90,142 @@ function renderRun(output: GroupReadOutput, saved: SavedRead, live: boolean): st
   return lines.join("\n");
 }
 
+/** What one read in an account's open browser gave, or why it didn't run (a gate, no open browser). */
+type ReadInBrowser = { ok: true; output: GroupReadOutput; saved: SavedRead } | { ok: false; code: ErrorCode; detail: string };
+
+/**
+ * One read of one group, in the account's open browser: the gates (its hours, rule 18; its open
+ * browser, rule 35), the machine, then Twenty (posts, comments, then the cursor). `log read group`
+ * and OpenMagpie's worker both read through here.
+ */
+async function readInBrowser(context: CommandContext, account: FacebookAccount, group: Group, ref: GroupRef, options: { scrolls: number; commentPosts: number; live: boolean; bypass: boolean }): Promise<ReadInBrowser> {
+  const home = homeOf(account);
+  if (!home.ok) return { ok: false, code: home.code, detail: home.detail };
+  const outside = options.bypass ? null : outsideActiveHours(account, home.home.timezone, context.now?.() ?? new Date());
+  if (outside) return { ok: false, code: "outsideActiveHours", detail: outside };
+  if (options.bypass) context.err("--bypass: the waking-hours gate is skipped for this run only (rule 20).");
+
+  const current = readCurrentInspect(undefined, account.accountName);
+  if (!current) return { ok: false, code: "groupBrowserNotOpen", detail: `no open browser for ${account.accountName}` };
+
+  const state = await readStateOf(context.twenty, group.id);
+  context.err(
+    `Reading ${group.name ?? ref.key} in ${account.accountName}'s open browser (${current.runDir}): ${state.cursor.watermark === null ? "a first read" : `new since ${new Date(state.cursor.watermark * 1000).toISOString().slice(0, 16)}`}, up to ${options.scrolls} scroll(s), comments of up to ${options.commentPosts} post(s)${options.live ? ", --live: comments switched to Newest" : ", nothing clicked"}.`,
+  );
+
+  const machine = groupReadMachine.provide({
+    actors: {
+      step: fromPromise<ReadStepReply, ReadStepInput>(async ({ input }) => {
+        context.err(`  → ${input.action} ${input.args.join(" ")}`);
+        const reply = await context.sendInspect(current, input.action, input.args, 120_000);
+        if (!reply) return { ok: false, error: `no reply from the open browser in 120 s (${current.runDir})` };
+        // The posts and comments are read from the step's own recording (rule 22).
+        const harPath = reply.folder ? join(reply.folder, "network.har") : null;
+        let har: ReadStepReply["har"];
+        try {
+          har = harPath && existsSync(harPath) ? JSON.parse(readFileSync(harPath, "utf8")) : undefined;
+        } catch {
+          har = undefined;
+        }
+        return { ok: reply.ok, error: reply.error, url: reply.url, title: reply.title, folder: reply.folder, har };
+      }),
+    },
+  });
+  const actor = createActor(machine, {
+    input: {
+      account: account.accountName,
+      group: { key: ref.key, url: group.groupUrl ?? ref.url, facebookGroupId: group.facebookGroupId },
+      cursor: state.cursor,
+      commentsRead: state.commentsRead,
+      maxScrolls: options.scrolls,
+      maxCommentPosts: options.commentPosts,
+      live: options.live,
+    },
+    inspect: createInspector((line) => context.err(formatTraceLine(line))),
+  });
+  let shown = 0;
+  actor.subscribe((snapshot) => {
+    const steps = snapshot.context.steps;
+    while (shown < steps.length) {
+      const step = steps[shown++]!;
+      context.err(`  ${step.ok ? "✓" : "✗"} ${step.step}: ${step.detail ?? ""}`);
+    }
+  });
+  actor.start();
+  const output = await toPromise(actor);
+
+  context.err("Saving to Twenty: posts first, then comments, then the cursor.");
+  const saved = await saveRead(context.twenty, group.id, output, readReason(output, current.runDir), context.now?.() ?? new Date(), (line) => context.err(line));
+  return { ok: true, output, saved };
+}
+
+/**
+ * `--worker <request>`: OpenMagpie's `facebook_group` worker (obris-dev/openmagpie#178, #188), called
+ * through `python/openMagpie/facebookWorker.py`. Each group is read by an account that is in it
+ * (its `agencyGroups` row) and has its browser open, posts only (comments stay with `log read group`,
+ * so a cycle fits OpenMagpie's 300 s), then the group's newest saved posts answer, matched to the
+ * terms. OpenMagpie's watermark and its external_id dedup drop what it already has. The answer is
+ * always one JSON object on stdout; every line of the run goes to stderr and the live log (rule 26).
+ */
+async function runWorker(context: CommandContext, text: string): Promise<CommandResult> {
+  const answer = (value: WorkerAnswer): CommandResult => ({ code: value.ok ? 0 : 1, stdout: JSON.stringify(value) });
+  const request = parseWorkerRequest(text);
+  if ("code" in request) return answer({ ok: false, code: request.code, error: request.error });
+  context.err(`OpenMagpie asks for ${request.groupIds.length} group(s), up to ${request.limit} post(s) each${request.terms.length ? `, matching ${request.terms.join(", ")}` : ""}.`);
+  const results: WorkerRecord[] = [];
+  const errors: { group_id: string; code: string; error: string }[] = [];
+  for (const groupId of request.groupIds) {
+    const failed = (code: string, error: string) => {
+      errors.push({ group_id: groupId, code: workerCodeOf(code), error });
+      context.err(`  ✗ group ${groupId}: ${code}: ${error}`);
+    };
+    try {
+      const rows = await context.twenty.list("agencyGroups", { facebookGroupId: { eq: groupId } });
+      if (!rows.length) {
+        failed("groupNoAccount", `no account in Twenty is in group ${groupId}: join it first (log join group)`);
+        continue;
+      }
+      // A member's row first; then the first one whose account may run and has its browser open.
+      const ordered = [...rows].sort((a, b) => Number(b.joinStatus === "MEMBER") - Number(a.joinStatus === "MEMBER"));
+      let picked: { account: FacebookAccount; row: (typeof rows)[number] } | null = null;
+      for (const row of ordered) {
+        if (!row.socialAccountId) continue;
+        const account = await findAccount(context.twenty, row.socialAccountId);
+        if (checkRunnable(account, "run").ok && readCurrentInspect(undefined, account.accountName)) {
+          picked = { account, row };
+          break;
+        }
+      }
+      if (!picked) {
+        failed("groupBrowserNotOpen", `no account in group ${groupId} has its browser open (log inspect start --account <a> --detach)`);
+        continue;
+      }
+      const ref = parseGroupRef(groupId);
+      if (!ref.ok) {
+        failed("groupRefInvalid", ref.error);
+        continue;
+      }
+      const group = await ensureGroup(context.twenty, picked.account.id, ref.group);
+      const read = await readInBrowser(context, picked.account, group, ref.group, { scrolls: scrollsFor(request.limit), commentPosts: 0, live: false, bypass: false });
+      if (!read.ok) failed(read.code, read.detail);
+      else if (read.output.problem) failed(read.output.problem.code, read.output.problem.detail);
+      // What Twenty holds answers, even after a stopped read: the posts it saved before it stopped are there.
+      const posts = await context.twenty.list(AGENCY_GROUP_POSTS, { agencyGroupId: { eq: group.id } });
+      const records = recordsOf(posts, groupId, request.terms, request.limit);
+      results.push(...records);
+      context.err(`  ✓ group ${groupId}: ${records.length} post(s) for OpenMagpie from Twenty${read.ok && !read.output.problem ? `, after ${picked.account.accountName}'s read` : ", saved by earlier reads"}`);
+    } catch (error) {
+      failed(error instanceof TwentyError ? error.code : "crashed", error instanceof Error ? error.message : String(error));
+    }
+  }
+  if (!results.length && errors.length === request.groupIds.length) return answer({ ok: false, code: errors[0]!.code, error: errors.map((e) => `${e.group_id}: ${e.error}`).join("; ") });
+  return answer({ ok: true, result: { results, errors }, new_cookies: [] });
+}
+
 export async function runRead(context: CommandContext, argv: string[]): Promise<CommandResult> {
   const parsed = parseReadArgs(argv);
   if (!parsed.ok) return { code: 1, stderr: `log read: ${parsed.error}\n${READ_USAGE}` };
+  if (parsed.worker !== null) return await runWorker(context, parsed.worker);
   if (!parsed.account || !parsed.group) return { code: 1, stderr: `log read: --account and --group are both needed\n${READ_USAGE}` };
 
   try {
@@ -99,67 +241,11 @@ export async function runRead(context: CommandContext, argv: string[]): Promise<
       return { code: 0, stdout: parsed.json ? JSON.stringify(shown.json, null, 2) : shown.text };
     }
 
-    // Rule 18: a step in the browser runs only inside the account's local hours; --bypass skips it for this run (rule 20).
-    const home = homeOf(account);
-    if (!home.ok) return refuse("read", home.code, home.detail);
-    const outside = parsed.bypass ? null : outsideActiveHours(account, home.home.timezone, context.now?.() ?? new Date());
-    if (outside) return refuse("read", "outsideActiveHours", outside);
-    if (parsed.bypass) context.err("--bypass: the waking-hours gate is skipped for this run only (rule 20).");
-
-    const current = readCurrentInspect(undefined, account.accountName);
-    if (!current) return refuse("read", "groupBrowserNotOpen", `no open browser for ${account.accountName}`);
-
-    const state = await readStateOf(context.twenty, group.id);
-    context.err(
-      `Reading ${group.name ?? ref.group.key} in ${account.accountName}'s open browser (${current.runDir}): ${state.cursor.watermark === null ? "a first read" : `new since ${new Date(state.cursor.watermark * 1000).toISOString().slice(0, 16)}`}, up to ${parsed.scrolls} scroll(s), comments of up to ${parsed.commentPosts} post(s)${parsed.live ? ", --live: comments switched to Newest" : ", nothing clicked"}.`,
-    );
-
-    const machine = groupReadMachine.provide({
-      actors: {
-        step: fromPromise<ReadStepReply, ReadStepInput>(async ({ input }) => {
-          context.err(`  → ${input.action} ${input.args.join(" ")}`);
-          const reply = await context.sendInspect(current, input.action, input.args, 120_000);
-          if (!reply) return { ok: false, error: `no reply from the open browser in 120 s (${current.runDir})` };
-          // The posts and comments are read from the step's own recording (rule 22).
-          const harPath = reply.folder ? join(reply.folder, "network.har") : null;
-          let har: ReadStepReply["har"];
-          try {
-            har = harPath && existsSync(harPath) ? JSON.parse(readFileSync(harPath, "utf8")) : undefined;
-          } catch {
-            har = undefined;
-          }
-          return { ok: reply.ok, error: reply.error, url: reply.url, title: reply.title, folder: reply.folder, har };
-        }),
-      },
-    });
-    const actor = createActor(machine, {
-      input: {
-        account: account.accountName,
-        group: { key: ref.group.key, url: group.groupUrl ?? ref.group.url, facebookGroupId: group.facebookGroupId },
-        cursor: state.cursor,
-        commentsRead: state.commentsRead,
-        maxScrolls: parsed.scrolls,
-        maxCommentPosts: parsed.commentPosts,
-        live: parsed.live,
-      },
-      inspect: createInspector((line) => context.err(formatTraceLine(line))),
-    });
-    let shown = 0;
-    actor.subscribe((snapshot) => {
-      const steps = snapshot.context.steps;
-      while (shown < steps.length) {
-        const step = steps[shown++]!;
-        context.err(`  ${step.ok ? "✓" : "✗"} ${step.step}: ${step.detail ?? ""}`);
-      }
-    });
-    actor.start();
-    const output = await toPromise(actor);
-
-    context.err(`Saving to Twenty: posts first, then comments, then the cursor.`);
-    const saved = await saveRead(context.twenty, group.id, output, readReason(output, current.runDir), context.now?.() ?? new Date(), (line) => context.err(line));
-    const code = output.result === "stopped" ? 1 : 0;
-    if (parsed.json) return { code, stdout: JSON.stringify({ ...output, saved }, null, 2) };
-    return { code, stdout: renderRun(output, saved, parsed.live) };
+    const read = await readInBrowser(context, account, group, ref.group, { scrolls: parsed.scrolls, commentPosts: parsed.commentPosts, live: parsed.live, bypass: parsed.bypass });
+    if (!read.ok) return refuse("read", read.code, read.detail);
+    const code = read.output.result === "stopped" ? 1 : 0;
+    if (parsed.json) return { code, stdout: JSON.stringify({ ...read.output, saved: read.saved }, null, 2) };
+    return { code, stdout: renderRun(read.output, read.saved, parsed.live) };
   } catch (error) {
     return refuseError("read", error);
   }
@@ -170,6 +256,6 @@ export const readCommand: Command = {
   platform: "facebook",
   name: "read",
   summary: "Read a Facebook group's new posts and their comments as one account, in its open browser; saved to agencyGroupPosts and agencyGroupComments, then the cursor moves (#27)",
-  args: "group --account <a> --group <g> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json] | --show",
+  args: "group --account <a> --group <g> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json] | --show | --worker <request>",
   run: runRead,
 };

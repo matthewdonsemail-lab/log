@@ -39,10 +39,23 @@ What changes is how it runs: on the account's browser through the driver, AdsPow
 6. **The command.** Done: `log read group --account <a> --group <url|id> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json]`, and `--show` to read what Twenty holds (`src/cli/read`). `platform: "facebook"`. It refuses without the account's open browser (`groupBrowserNotOpen`) and outside its hours (rule 18). It is an MCP tool (`read`, a long run: watch its live log) with rules 8, 13, 18, 20, 22, 25, 26, 29, 35, 45 and 61, and it is in the generated README.
 7. **Tests.** Done: `src/group/read/readMachine.test.ts` covers a first read, reaching the cursor, a gap, a checkpoint, `--live` with a failed post, the comment targets, and saving to Twenty twice (the second adds nothing, and a stopped read leaves the cursor). `src/cli/read/read.test.ts` covers the command end to end with the step folders' HARs. Every lefthook gate passes.
 
+## OpenMagpie's worker (obris-dev/openmagpie#178, #188)
+
+OpenMagpie's `facebook_group` source runs the script at `FACEBOOK_WORKER_PATH` once per poll cycle, with one JSON request on stdin, and gives up after 300 s. log-cli answers it:
+
+```
+FACEBOOK_WORKER_PATH=<log-cli>/python/openMagpie/facebookWorker.py
+```
+
+- **In:** `{"action": "groups.search", "params": {"group_ids": [...], "terms": [...], "limit": 20}, "account_id", "cookies", "proxy"}`. The script passes only `action` and `params` on to `log read group --worker <request>`. OpenMagpie's cookies, proxy and account are dropped: the account, its session and its proxy come from Twenty (rules 12, 13, 35).
+- **Per group:** the account comes from the group's `agencyGroups` rows (a `MEMBER` first) and must be able to run and have its browser open. The read is a step in that browser, posts only (`--scrolls` from `limit`, about three posts a scroll, at most 6; no comments, so a cycle fits in 300 s). It keeps every gate: the account's hours (rule 18, never bypassed), its open browser (rule 35), nothing clicked (rule 8). Then the group's newest saved posts in Twenty answer (at most `limit`, those matching a term when terms are given). OpenMagpie's watermark and `external_id` dedup drop what it already has.
+- **Out:** `{"ok": true, "result": {"results": [record…], "errors": [{group_id, code, error}…]}, "new_cookies": []}`. A record is `NewFacebookPostPayload.from_record`'s shape: `external_id`, `group_id`, `content`, `url`, `author {name, id, url}`, `occurred_at`, `metrics {likes: null, comments, shares: null}`, `matched_terms`. When every group fails with nothing to answer: `{"ok": false, "code", "error"}`. A checkpoint, a login wall or a video selfie is `auth_required`, which OpenMagpie doesn't retry; any other code is log-cli's own (`outsideActiveHours`, `groupBrowserNotOpen`, `groupNoAccount`…), which OpenMagpie retries with backoff.
+- **Checked** (2026-10-22): the script run with OpenMagpie's request against live Twenty, and its answer fed through OpenMagpie's own `NewFacebookPostPayload.from_record` (PR #178's `payloads.py`). It gave `new_fb_post` items from `facebook_group` with source slug 4191018610937243 and terms matched ("trash" gives the trash post with its 16 comments). It was 02:04 in Bethlehem, so the read itself was refused (`outsideActiveHours`) and the 16 saved posts answered.
+
 ## Next
 
 - **A live run on Bethlehem** in "Recommendations of Bethlehem, PA" (`log inspect start --account <Bethlehem> --detach`, then `log read group`). Read its steps with rea before changing anything (rule 25).
-- The endpoint in front of Twenty from the #27 scope (`refresh`, `updates?since=`).
+- OpenMagpie on node01 calling this worker: it needs log-cli where OpenMagpie runs, or a host that reaches the browser server (rule 43).
 
 ## Decided by matt (2026-10-22)
 

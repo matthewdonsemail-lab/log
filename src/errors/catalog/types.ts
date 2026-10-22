@@ -1362,6 +1362,13 @@ export const ERROR_CATALOG = {
     raisedIn: ['group/read.opening'],
     action: "Read the opening step's recording (rule 25), or pass the group's numeric id as --group."
   },
+  groupNoAccount: {
+    layer: 'group',
+    meaning: 'No account in Twenty is in this group (no agencyGroups row with its id), so none can read it.',
+    retryable: false,
+    raisedIn: ['cli/read.worker'],
+    action: 'Join it first with one account: log join group --account <a> --group <id> --live.'
+  },
   groupReadStepFailed: {
     layer: 'group',
     meaning: "A step of the group read failed in the account's browser (a scroll, a post page, its comments).",
