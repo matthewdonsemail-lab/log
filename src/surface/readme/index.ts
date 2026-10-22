@@ -65,7 +65,7 @@ export function renderSurface(entries: readonly CommandEntry[], flows: readonly 
     "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
   );
   for (const e of entries) {
-    const tool = e.tool ? `\`${e.tool}\`` : `terminal only: ${cell(e.terminalOnly ?? "")}`;
+    const tool = e.tool ? e.tool.split(", ").map((t) => `\`${t}\``).join(", ") : `terminal only: ${cell(e.terminalOnly ?? "")}`;
     const hooksText = `${e.hooks.cli.join(", ") || "none"} · ${e.tool ? e.hooks.mcp.join(", ") || "none" : "n/a"}`;
     out.push(`| [\`log ${e.words}\`](#${anchorOf(e.words)}) | ${cell(e.summary)} | ${PLATFORM_TEXT[e.platform]} | ${e.flags.map(flagText).join(" ") || "none"} | ${BROWSER_TEXT[e.browser]} | ${tool} | ${hooksText} | ${e.longRunning ? "yes: watch it" : "no"} | ${e.rules.join(", ")} |`);
   }
@@ -98,7 +98,7 @@ export function renderSurface(entries: readonly CommandEntry[], flows: readonly 
 
   out.push("### Each command's usage", "");
   for (const e of entries) {
-    out.push(`#### log ${e.words}`, "", e.summary + (e.tool ? ` MCP tool: \`${e.tool}\` (\`args\` takes the same arguments).` : ` Terminal only: ${e.terminalOnly}`), "", "```text", ...e.usage, "```", "");
+    out.push(`#### log ${e.words}`, "", e.summary + (e.tool ? (e.typed ? ` MCP tools: ${e.tool.split(", ").map((t) => `\`${t}\``).join(", ")}, one per form, with named fields.` : ` MCP tool: \`${e.tool}\` (\`args\` takes the same arguments).`) : ` Terminal only: ${e.terminalOnly}`), "", "```text", ...e.usage, "```", "");
   }
   out.push(SURFACE_END);
   return out.join("\n");

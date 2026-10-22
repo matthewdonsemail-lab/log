@@ -11,6 +11,7 @@ export interface CommandEntry {
   usage: string[];
   flags: Flag[];
   tool: string | null;
+  typed: boolean;
   terminalOnly: string | null;
   longRunning: boolean;
   rules: number[];

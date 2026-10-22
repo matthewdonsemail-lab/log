@@ -4945,3 +4945,43 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: every code comment and docstring in the repo is gone (TS, JS and Python; 380 files, about 5,900 lines), and lefthook's new `noComments` gate (pre-commit and pre-push, `bun run check:noComments`, `scripts/checks/checkNoComments.ts` with `python/checks/comments.py` for Python) refuses any tracked code file that has one; `--strip` removes them. Comments are found from each file's syntax tree, so `//` inside strings, regexes and templates is left alone; Python docstrings go too, with `pass` where a body would be left empty. The two `@ts-expect-error` lines in the commitLog test became `.d.mts` declarations. `lefthook.yml` carries no comments. Generated code is exempt. Rule 70 in AGENTS.md, and the MCP instructions carry it (`RULES_REVIEWED_THROUGH` 70).
 Why: matt asked for all code comments to be found and removed and for lefthook to forbid them, "as I think it's causing context rot in our system designs".
 Checked: `check:noComments` passes on 506 code files and fails on a throwaway TS and Python file with one comment each; `checkNoComments.test.ts` covers strings, regexes, templates and inline block comments; `bun run check` (naming, layout, browsers, agentHooks, docs, tsc) is clean, 799 tests pass, Python compiles and imports, and `check:facebookClientDocs` passes after `capture --docs` (67 requests, none unread).
+
+## 2026-10-22 14:12Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `scripts/checks/checkAgentHooks.ts`: added const commandsWithTools · removed const toolNames
+- `scripts/docs/buildDocs.ts`: no declaration changed (comments, formatting or line endings)
+- `skills/accountToDryRun/SKILL.md`: edited
+- `skills/logCli/SKILL.md`: edited
+- `src/browser/inspect/types.ts`: added const INSPECT_ACTIONS · changed type InspectAction
+- `src/cli/account/index.ts`: added const ACCOUNTS_INPUT, const ACCOUNT_NAME, const ACCOUNT_INPUT · changed const accountsCommand, const accountCommand
+- `src/cli/check/index.ts`: added const CHECK_INPUT · changed const checkCommand
+- `src/cli/conversation/index.ts`: added const CONVERSATIONS_INPUT, const CONVERSATION_ID, const CONVERSATION_INPUT · changed const conversationsCommand, const conversationCommand
+- `src/cli/errors/index.ts`: added const ERRORS_INPUT · changed const errorsCommand
+- `src/cli/host/index.ts`: added const HOST_INPUT · changed const hostCommand
+- `src/cli/inspect/index.ts`: added const INSPECT_INPUT · changed const inspectCommand
+- `src/cli/listing/index.ts`: added const LISTINGS_INPUT, const LISTING_INPUT · changed const listingsCommand, const listingCommand
+- `src/cli/publish/index.ts`: added const PUBLISH_INPUT · changed const publishCommand
+- `src/cli/runner/commandInput.test.ts`: added const typed, function sample, function fullInput, test "Duet's commands declare their input", test "every form, filled in full, parses back through the command's own parser to the same words, values and flags", test "a form's schema lists every positional and flag, with the required ones", test "a form's tool name is the command and its words, and no two forms share one", test "false booleans and unset fields add nothing"
+- `src/cli/runner/helpers/commandInput.ts`: added type TypedInput, type InputArgv, const PROXY_MS_FLAG, const JSON_FLAG, function parserSpecOf, function formToolName, function propertyOf, function inputSchemaOf, function checkValue, function argvOfInput, function inputFlagNames
+- `src/cli/runner/helpers/index.ts`: added export from "./commandInput.ts"
+- `src/cli/runner/types.ts`: added interface FlagSpec, interface PositionalSpec, interface InputForm, interface CommandInput · changed interface Command
+- `src/cli/runs/index.ts`: added const RUNS_INPUT · changed const runsCommand
+- `src/mcp/server/agentRules.test.ts`: changed test "the instructions and every long tool say to start a Monitor on the day's log first"
+- `src/mcp/server/helpers/agentRules.ts`: changed const SERVER_INSTRUCTIONS
+- `src/mcp/server/helpers/guardCall.ts`: added const LIVE_REFUSAL, const BYPASS_REFUSAL · changed function guardCall
+- `src/mcp/server/helpers/index.ts`: changed export from "./toolsFromCommands.ts"
+- `src/mcp/server/helpers/toolsFromCommands.ts`: added interface CommandTool, function commandTools, const CONFIRM_LIVE, const CONFIRM_BYPASS, function formUsage, const NOTES, function typedTool, function argsTool · changed function toolsFromCommands
+- `src/mcp/server/remote.test.ts`: changed test "a remote client with the token lists the tools and calls one, with its structured result"
+- `src/mcp/server/server.test.ts`: added test "every command has a tool except the terminal-only ones, one per form when it declares its input", test "a typed tool's schema has its fields, their kinds and what is required, and no args", test "live needs confirmLive, on typed and args tools alike", test "bypass needs confirmBypass", test "a typed call becomes the argv the terminal would run, each value whole", test "a typed call with a missing, unknown or wrong field never runs" · changed test "terminal-only, unknown and malformed calls are refused", test "runs a command against Twenty and returns its output", test "a failing command is an error result with its stderr", test "a live publish without confirmLive never reaches the command" · removed test "every command is a tool except the terminal-only ones", test "--live needs confirmLive"
+- `src/mcp/server/types.ts`: changed interface LogToolInput, interface LogTool
+- `src/surface/catalog/index.ts`: changed function commandEntry
+- `src/surface/catalog/types.ts`: changed interface CommandEntry
+- `src/surface/diagrams/index.ts`: changed function surfaceDiagram
+- `src/surface/readme/index.ts`: changed function renderSurface
+
+What changed: a command can declare its input once (`Command.input`: forms, each with its words, positionals and flags, their kinds, enum values and what is required), and that one spec is its parser (`parserSpecOf`), its MCP schema (`inputSchemaOf`) and the argv a typed call becomes (`argvOfInput`, `--flag=value`, each value whole). Such a command is one MCP tool per form with named fields (`inspectStart`, `inspectDo`, `accountShow`, `listingCreate`, `hostSend`, `runsPrune`…); `guardCall` checks the fields (missing, unknown, wrong kind or value) before anything runs, and `live` and `bypass` still need confirmLive and confirmBypass. Duet's commands come first: accounts, account, check, inspect, listings, listing, publish, conversations, conversation, host, errors, runs. The rest still take `args`. Inspect's actions are a runtime list (`INSPECT_ACTIONS`) the type comes from, so the schema's enum is the real one. `check:docs` refuses a form with no usage line and an input flag its usage doesn't name; the README lists each command's tools; the server instructions and the skills use the typed tools.
+Why: matt asked to start step 1 of the Duet plan (`PLANS/LOG_MCP_DUET_READY_PLAN.md`): typed inputs from one flag spec per command, Duet's commands first, so a client with no terminal habits fills named fields instead of building flags from usage text.
+Checked: `commandInput.test.ts` fills every form of every typed command in full and parses the argv back through the command's own parser to the same words, values and flags; the MCP tests cover the schemas, a multi-line text with quotes and `=` reaching argv whole, refusals for missing, unknown and wrong fields, and live and bypass gates; `bun run check` (no comments, naming, layout, browsers, agentHooks with 62 MCP tools, docs, tsc) passes with 808 tests, and `check:facebookClientDocs` passes.

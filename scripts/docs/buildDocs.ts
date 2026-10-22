@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { isPlatform } from "../../src/cli/runner/helpers/index.ts";
+import { inputFlagNames, isPlatform } from "../../src/cli/runner/helpers/index.ts";
 import { COMMANDS } from "../../src/cli/runner/index.ts";
 import { savedFlows } from "../../src/mcp/server/index.ts";
 import { catalog, flagsOf, flowEntries, GLOBAL_FLAGS } from "../../src/surface/catalog/index.ts";
@@ -55,6 +55,7 @@ for (const dir of readdirSync(cliDir)) {
   const names = [...readFileSync(index, "utf8").matchAll(/Command: Command = \{\s*usage: \w+,\s*(?:platform: "\w+",\s*)?name: "(\w+)"/g)].map((m) => m[1]);
   const usage = new Set(entries.filter((e) => names.includes(e.name)).flatMap((e) => flagsOf(e.usage.join("\n")).map((f) => f.name)));
   const parsed = new Set<string>();
+  for (const command of COMMANDS) if (names.includes(command.name) && command.input) inputFlagNames(command.input).forEach((f) => parsed.add(f));
   for (const file of filesUnder(join(cliDir, dir))) {
     for (const m of readFileSync(file, "utf8").matchAll(/parseArgs\([^,]+,\s*\{([^}]*)\}\)/g)) {
       const spec = m[1];
@@ -82,6 +83,16 @@ for (const dir of readdirSync(cliDir)) {
       problems.push(`docs/diagrams/${d.name}.mmd doesn't parse as Mermaid: ${String((error as Error).message).split("\n").slice(0, 3).join(" ")}`);
     }
   }
+}
+
+for (const command of COMMANDS) {
+  if (!command.input) continue;
+  const entry = entries.find((e) => e.name === command.name);
+  for (const form of command.input.forms) {
+    const head = `${entry?.words ?? command.name}${form.words.length ? ` ${form.words.join(" ")}` : ""}`;
+    if (!entry?.usage.some((line) => line === `log ${head}` || line.startsWith(`log ${head} `) || (form.words[0] === "list" && line.startsWith(`log ${entry.words} [list]`)))) problems.push(`log ${command.name}: its input form "${form.words.join(" ") || "(no words)"}" has no usage line starting \`log ${head}\` (rule 56)`);
+  }
+  for (const flag of command.input.forms.flatMap((f) => f.flags)) if (!flag.global && !entry?.flags.some((f) => f.name === flag.name)) problems.push(`log ${command.name}: its input has --${flag.name}, but its usage doesn't name it (rule 56)`);
 }
 
 const BROWSER_NAME = /\b(camoufox|adspower|firefox|chromium)\b/i;

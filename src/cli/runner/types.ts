@@ -34,11 +34,42 @@ export interface CommandContext {
   now?: () => Date;
 }
 
+export interface FlagSpec {
+  name: string;
+  kind: "string" | "integer" | "boolean" | "enum" | "pairs";
+  description: string;
+  values?: readonly string[];
+  required?: boolean;
+  live?: true;
+  bypass?: true;
+  global?: true;
+}
+
+export interface PositionalSpec {
+  name: string;
+  kind: "string" | "enum" | "rest";
+  description: string;
+  values?: readonly string[];
+  required?: boolean;
+}
+
+export interface InputForm {
+  words: readonly string[];
+  summary: string;
+  positionals: readonly PositionalSpec[];
+  flags: readonly FlagSpec[];
+}
+
+export interface CommandInput {
+  forms: readonly InputForm[];
+}
+
 export interface Command {
   name: string;
   summary: string;
   args?: string;
   usage: string;
   platform: "facebook" | "any" | "byArgument";
+  input?: CommandInput;
   run(context: CommandContext, argv: string[]): Promise<CommandResult> | CommandResult;
 }

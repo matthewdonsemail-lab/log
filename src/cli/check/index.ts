@@ -2,21 +2,37 @@ import { readCurrentInspect } from "../../browser/inspect/index.ts";
 import * as marketplaceCheck from "../../facebook/marketplace/check/index.ts";
 import { homeOf, outsideActiveHours } from "../../marketplace/home/index.ts";
 import { findAccount } from "../../marketplace/socialAccount/index.ts";
-import { parseArgs } from "../runner/helpers/index.ts";
-import type { Command } from "../runner/types.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import type { Command, CommandInput } from "../runner/types.ts";
 
 export const CHECK_USAGE = [
   "Usage: log facebook check --account <accountName> [--bypass] [--json]   (in the account's open browser: Marketplace status, each listing on Selling into Twenty, the seller inbox's chats; nothing clicked)",
 ].join("\n");
 
+export const CHECK_INPUT: CommandInput = {
+  forms: [
+    {
+      words: [],
+      summary: "Check one account in its open browser",
+      positionals: [],
+      flags: [
+        { name: "account", kind: "string", required: true, description: "The account whose browser is open (`inspectStart` opens it)" },
+        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when matt asked (rule 20)" },
+        JSON_FLAG,
+      ],
+    },
+  ],
+};
+
 export const checkCommand: Command = {
   usage: CHECK_USAGE,
   platform: "facebook",
   name: "check",
+  input: CHECK_INPUT,
   summary: "Check one account in its open browser: may it still sell, each listing's state on Selling (into Twenty), and its seller inbox's chats",
   args: "--account <a> [--bypass] [--json]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["bypass", "json"], valued: ["account"] });
+    const parsed = parseArgs(argv, parserSpecOf(CHECK_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log facebook check: ${parsed.error}\n${CHECK_USAGE}` };
     if (parsed.positionals.length) return { code: 1, stderr: `log facebook check: unexpected argument "${parsed.positionals[0]}"\n${CHECK_USAGE}` };
     const ref = parsed.flags["account"];

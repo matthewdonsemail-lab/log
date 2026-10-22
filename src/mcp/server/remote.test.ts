@@ -28,7 +28,7 @@ describe("the log MCP server over Streamable HTTP (remote)", () => {
     const client = await clientOf(served.url, "s3cret");
     const { tools } = await client.listTools();
     expect(tools.some((t) => t.name === "join")).toBe(true);
-    const result = await client.callTool({ name: "accounts", arguments: { args: ["--json"] } });
+    const result = await client.callTool({ name: "accounts", arguments: { json: true } });
     expect(result.isError).toBe(false);
     const structured = result.structuredContent as { exit: number; ok: boolean; json: unknown };
     expect(structured).toMatchObject({ exit: 0, ok: true });

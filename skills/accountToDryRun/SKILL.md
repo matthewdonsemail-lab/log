@@ -32,7 +32,7 @@ matt says so.
 ### 1. Proxy (no browser)
 
 ```text
-mcp__log__account   args ["show", "<a>"]                  Proxy set? Exit checked?
+mcp__log__accountShow   { account: "<a>" }                  Proxy set? Exit checked?
 mcp__log__proxy     args ["check", "--account", "<a>"]    exit IP in the home country
 ```
 
@@ -75,7 +75,7 @@ field `<set>`/`<empty>`), then `--apply`. It reads every `docs/vendors/*.txt`.
 Check it:
 
 ```text
-mcp__log__account   args ["show", "<a>"]    Status ACTIVE, May run yes
+mcp__log__accountShow   { account: "<a>" }    Status ACTIVE, May run yes
 ```
 
 `signInNotFinished` or `checkpointed` means the wait ran out on the page it
@@ -99,8 +99,8 @@ the cover:
 ```
 
 ```text
-mcp__log__listing   args ["create", "--account", "<a>", "--file", "<path.json>"]
-mcp__log__listing   args ["<listingId>"]
+mcp__log__listingCreate   { account: "<a>", file: "<path.json>" }
+mcp__log__listing         { id: "<listingId>" }
 ```
 
 `create` checks the ad the way `publish` will (price, category, photos,
@@ -109,8 +109,8 @@ location) and refuses one that can't post.
 ### 6. Dry run
 
 ```text
-mcp__log__publish   args ["--listing", "<listingId>", "--formUrl", "file:///<repo>/python/fixtures/createItem.html"]
-mcp__log__publish   args ["--listing", "<listingId>"]
+mcp__log__publish   { listing: "<listingId>", formUrl: "file:///<repo>/python/fixtures/createItem.html" }
+mcp__log__publish   { listing: "<listingId>" }
 ```
 
 The first run fills the saved copy of the form and never touches Facebook. The
@@ -118,7 +118,7 @@ second goes to the real create page and runs every machine step (proxy gate,
 self-check, session, photos varied and attached, title, price, category,
 condition, description, location picked in the home country), then stops
 before Publish. Each step is printed. Look for `dryRun` at the end. Any other
-ending is a code: `mcp__log__errors args ["--code", "<code>"]`.
+ending is a code: `mcp__log__errors { code: "<code>" }`.
 
 Before photos go up, the open step reads the account's Marketplace location
 from the page (`sell_location`). The US form has no Location field: if that
@@ -154,7 +154,7 @@ own answer to Publish (`useCometMarketplaceListingCreateMutation`), says
 2026-10-19, was held this way.
 
 ```text
-mcp__log__publish   args ["--listing", "<listingId>", "--live"]   confirmLive: true
+mcp__log__publish   { listing: "<listingId>", live: true, confirmLive: true }
 mcp__log__scan      args ["--account", "<a>"]
 ```
 

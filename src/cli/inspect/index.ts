@@ -3,12 +3,12 @@ import { closeSync, existsSync, mkdirSync, openSync, readFileSync, statSync } fr
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { clearCurrentInspect, currentInspectPath, LIVE_ACTIONS, openInspects, parseInspectAction, readCurrentInspect, renderInspectStep, writeCurrentInspect } from "../../browser/inspect/index.ts";
+import { clearCurrentInspect, currentInspectPath, INSPECT_ACTIONS, LIVE_ACTIONS, openInspects, parseInspectAction, readCurrentInspect, renderInspectStep, writeCurrentInspect } from "../../browser/inspect/index.ts";
 import { findAccount } from "../../marketplace/socialAccount/index.ts";
 import { inspectRuns, mapAllInspectRuns, mapInspectRun } from "../../rea/inspectMap/index.ts";
 import { openAccount, withRun } from "../live/index.ts";
-import { parseArgs } from "../runner/helpers/index.ts";
-import type { Command } from "../runner/types.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, PROXY_MS_FLAG } from "../runner/helpers/index.ts";
+import type { Command, CommandInput } from "../runner/types.ts";
 import { browserFor } from "../../browser/driver/index.ts";
 
 export const INSPECT_USAGE = [
@@ -68,14 +68,50 @@ async function startDetached(accountName: string, argv: string[]): Promise<{ cod
   return { code: 2, stderr: `log inspect: no ready browser after ${Math.round(inspectDetachDeps.timeoutMs / 1000)} s (it may still be starting):\n${tail()}` };
 }
 
+export const INSPECT_INPUT: CommandInput = {
+  forms: [
+    {
+      words: ["start"],
+      summary: "Open the account's browser through every gate and keep it open; over MCP always with detach",
+      positionals: [],
+      flags: [
+        { name: "account", kind: "string", required: true, description: "The account to open" },
+        { name: "url", kind: "string", description: "The first page (https://www.facebook.com/...)" },
+        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when matt asked (rule 20)" },
+        { name: "now", kind: "boolean", description: "Skip the 10-minute launch gap only (rule 30)" },
+        { name: "noIdleMouse", kind: "boolean", description: "No idle mouse loop between steps" },
+        { name: "detach", kind: "boolean", description: "Run as its own process and return once open: set it over MCP" },
+        PROXY_MS_FLAG,
+      ],
+    },
+    {
+      words: ["do"],
+      summary: "Send one step to the open browser; it returns the snapshot (element refs), requests and rea's reading",
+      positionals: [
+        { name: "action", kind: "enum", required: true, values: INSPECT_ACTIONS, description: "The step" },
+        { name: "values", kind: "rest", description: "The step's values in order, each whole: goto [url], wait [s], click [ref], type [ref, text], press [key], upload [ref, file], highlight [role, name]" },
+      ],
+      flags: [
+        { name: "live", kind: "boolean", live: true, description: `Needed for ${LIVE_ACTIONS.join(", ")}: they act on Facebook, only when matt asked (rule 8)` },
+        { name: "timeout", kind: "integer", description: "Seconds to wait for the step" },
+        { name: "account", kind: "string", description: "Picks the session when more than one is open" },
+        JSON_FLAG,
+      ],
+    },
+    { words: ["map"], summary: "The recorded steps as states and transitions (flow.md, machine.json)", positionals: [{ name: "runDir", kind: "string", description: "The run folder (default the latest run)" }], flags: [{ name: "all", kind: "boolean", description: "Collate every run" }] },
+    { words: ["sessions"], summary: "The open sessions", positionals: [], flags: [] },
+  ],
+};
+
 export const inspectCommand: Command = {
   usage: INSPECT_USAGE,
   platform: "any",
   name: "inspect",
+  input: INSPECT_INPUT,
   summary: "Drive the account's browser, gated and headed, a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29)",
   args: "start --account <name> [--url <u>] [--bypass] | do <action> [args] [--live]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["bypass", "live", "json", "all", "now", "noIdleMouse", "detach"], valued: ["account", "url", "timeout"] });
+    const parsed = parseArgs(argv, parserSpecOf(INSPECT_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log inspect: ${parsed.error}\n${INSPECT_USAGE}` };
     const [sub, ...rest] = parsed.positionals;
 

@@ -35,8 +35,8 @@ import { preparePhotos } from "../../media/photo/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import { renderLoss } from "../live/helpers/index.ts";
 import { keepNewDevice, keepSession } from "../live/index.ts";
-import { parseArgs, refuse, refuseError } from "../runner/helpers/index.ts";
-import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, PROXY_MS_FLAG, refuse, refuseError } from "../runner/helpers/index.ts";
+import type { Command, CommandContext, CommandInput, CommandResult } from "../runner/types.ts";
 import { renderPublishOutput, summarizePublish } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
@@ -97,14 +97,34 @@ export async function checkPublishable(
   return { listing, account };
 }
 
+export const PUBLISH_INPUT: CommandInput = {
+  forms: [
+    {
+      words: [],
+      summary: "Post one Twenty listing; a dry run unless live",
+      positionals: [],
+      flags: [
+        { name: "listing", kind: "string", required: true, description: "The agencyListing id" },
+        { name: "live", kind: "boolean", live: true, description: "Click Publish, only when matt asked (rule 10)" },
+        { name: "formUrl", kind: "string", description: "Fill a saved form instead (file://...), not counted as a launch" },
+        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when matt asked (rule 20)" },
+        { name: "now", kind: "boolean", description: "Skip the 10-minute launch gap only (rule 24)" },
+        JSON_FLAG,
+        PROXY_MS_FLAG,
+      ],
+    },
+  ],
+};
+
 export const publishCommand: Command = {
   usage: PUBLISH_USAGE,
   platform: "facebook",
   name: "publish",
+  input: PUBLISH_INPUT,
   summary: "Post one Twenty listing (dry run unless --live), printing every machine step",
   args: "--listing <id> [--live] [--json] [--bypass] [--now]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["live", "json", "bypass", "now"], valued: ["listing", "formUrl"] });
+    const parsed = parseArgs(argv, parserSpecOf(PUBLISH_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log facebook publish: ${parsed.error}\n${PUBLISH_USAGE}` };
     if (parsed.positionals.length > 0) return { code: 1, stderr: `log facebook publish: unexpected argument "${parsed.positionals[0]}"\n${PUBLISH_USAGE}` };
     const listingId = parsed.flags.listing;

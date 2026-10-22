@@ -1,14 +1,18 @@
 import type { BrowserDriverName } from '../driver/types'
 
-export type InspectAction = 'goto' | 'snapshot' | 'click' | 'type' | 'press' | 'solve' | 'upload' | 'signIn' | 'code' | 'back' | 'wait' | 'stop'
-  | 'pin'
-  | 'clickRole' | 'fillRole' | 'uploadRole' | 'waitRole'
-  | 'highlight'
-  | 'scroll' | 'scrollIn' | 'openAny' | 'clickAny'
-  | 'closeTab'
-  | 'nextPost' | 'likePost' | 'postButton'
-  | 'dwell'
-  | 'saveState' | 'pageText' | 'sellLocation' | 'setLocation'
+export const INSPECT_ACTIONS = [
+  'goto', 'snapshot', 'click', 'type', 'press', 'solve', 'upload', 'signIn', 'code', 'back', 'wait', 'stop',
+  'pin',
+  'clickRole', 'fillRole', 'uploadRole', 'waitRole',
+  'highlight',
+  'scroll', 'scrollIn', 'openAny', 'clickAny',
+  'closeTab',
+  'nextPost', 'likePost', 'postButton',
+  'dwell',
+  'saveState', 'pageText', 'sellLocation', 'setLocation',
+] as const
+
+export type InspectAction = (typeof INSPECT_ACTIONS)[number]
 
 export interface InspectSessionConfig {
   accountId: string

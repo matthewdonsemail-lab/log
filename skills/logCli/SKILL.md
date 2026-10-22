@@ -94,12 +94,20 @@ bun bin/log.ts facebook campaign heal --campaign <id>
 
 `bin/logMcp.ts` (`bun run mcp`) serves every command as an MCP tool over
 stdio, registered as `log` in the repo's `.mcp.json`, so in Claude Code they
-show up as `mcp__log__<command>`. A tool takes `args` (what goes after
-`log <command>`) and returns the command's stdout, stderr and exit code. It
-runs through `runCli`, so every gate above still applies.
+show up as `mcp__log__<tool>`. A command that declares its input
+(`Command.input`, one flag spec per form) is one tool per form, named for the
+command and its words (`inspectStart`, `inspectDo`, `accountShow`,
+`runsPrune`…), and takes named fields: the spec gives each its kind, what is
+required and the enum values, and the tool turns them back into the argv the
+terminal would run (`argvOfInput`), each value whole. The command parses with
+`parserSpecOf` of the same spec, so the usage, the parser and the schema can't
+drift (`check:docs`). A command without one is still one tool taking `args`
+(what goes after `log <command>`). Every tool returns the command's stdout,
+stderr and exit code, through `runCli`, so every gate above still applies.
 
-- `--live` is refused unless the call also has `confirmLive: true`. Set it
-  only when matt asked for that live run (rule 10).
+- `live` (`--live`) is refused unless the call also has `confirmLive: true`,
+  and `bypass` unless `confirmBypass: true`. Set them only when matt asked
+  (rules 10, 20).
 - `connect` always runs `--noPrompt` as a tool. It is the connect machine
   (`marketplace/connect/machine.ts`): every page is read as a kind (loggedIn,
   loginForm, twoStepCode, twoStepMethod, trustDevice, automatedBehaviour,

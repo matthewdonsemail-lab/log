@@ -12,8 +12,8 @@ import {
 import type { LeadStatus } from "../../marketplace/conversation/index.ts";
 import { getListing } from "../../marketplace/agencyListing/index.ts";
 import { findAccount, fromTwentyEnum } from "../../marketplace/socialAccount/index.ts";
-import { parseArgs, refuseError } from "../runner/helpers/index.ts";
-import type { Command } from "../runner/types.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuseError } from "../runner/helpers/index.ts";
+import type { Command, CommandInput } from "../runner/types.ts";
 import { parseThreads, renderConversation, renderConversations, renderRecorded } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
@@ -27,14 +27,26 @@ export const CONVERSATION_USAGE = [
   "       log facebook conversation record --account <name> --file <threads.json>",
 ].join("\n");
 
+export const CONVERSATIONS_INPUT: CommandInput = {
+  forms: [
+    {
+      words: [],
+      summary: "List the buyers' conversations",
+      positionals: [],
+      flags: [{ name: "account", kind: "string", description: "Only this account's" }, { name: "listing", kind: "string", description: "Only this listing's (its agencyListing id)" }, JSON_FLAG],
+    },
+  ],
+};
+
 export const conversationsCommand: Command = {
   usage: CONVERSATIONS_USAGE,
   platform: "facebook",
   name: "conversations",
+  input: CONVERSATIONS_INPUT,
   summary: "List buyers' Marketplace conversations in Twenty, newest first, by account or listing",
   args: "[--account <name>] [--listing <id>] [--json]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json"], valued: ["account", "listing"] });
+    const parsed = parseArgs(argv, parserSpecOf(CONVERSATIONS_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log facebook conversations: ${parsed.error}\n${CONVERSATIONS_USAGE}` };
     if (parsed.positionals.length) return { code: 1, stderr: `log facebook conversations: unexpected argument "${parsed.positionals[0]}"\n${CONVERSATIONS_USAGE}` };
     try {
@@ -49,14 +61,32 @@ export const conversationsCommand: Command = {
   },
 };
 
+const CONVERSATION_ID = { name: "id", kind: "string", required: true, description: "The conversation id" } as const;
+
+export const CONVERSATION_INPUT: CommandInput = {
+  forms: [
+    { words: ["show"], summary: "A conversation and its messages", positionals: [CONVERSATION_ID], flags: [JSON_FLAG] },
+    { words: ["read"], summary: "Mark its messages read", positionals: [CONVERSATION_ID], flags: [] },
+    { words: ["lead"], summary: "Set its lead status", positionals: [CONVERSATION_ID, { name: "status", kind: "enum", required: true, values: LEAD_STATUSES.map((s) => s.toUpperCase()), description: "The lead status" }], flags: [] },
+    { words: ["link"], summary: "Link it to its listing", positionals: [CONVERSATION_ID], flags: [{ name: "listing", kind: "string", required: true, description: "The agencyListing id" }] },
+    {
+      words: ["record"],
+      summary: "Store scanned threads",
+      positionals: [],
+      flags: [{ name: "account", kind: "string", required: true, description: "The account the threads are from" }, { name: "file", kind: "string", required: true, description: "The threads.json path" }],
+    },
+  ],
+};
+
 export const conversationCommand: Command = {
   usage: CONVERSATION_USAGE,
   platform: "facebook",
   name: "conversation",
+  input: CONVERSATION_INPUT,
   summary: "One conversation: show its messages, mark read, set its lead status, link its listing, or store a scanned thread",
   args: "<show|read|lead|link|record> [id] [STATUS] [--listing <id>] [--account <name> --file <json>]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json"], valued: ["listing", "account", "file"] });
+    const parsed = parseArgs(argv, parserSpecOf(CONVERSATION_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log facebook conversation: ${parsed.error}\n${CONVERSATION_USAGE}` };
     const [action, id, value] = parsed.positionals;
     try {

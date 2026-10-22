@@ -8,7 +8,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import type { WorkerClient } from "../../camofox/worker/index.ts";
 import { emitLog } from "../../observability/processLog/index.ts";
-import { createLogMcpServer, formatLogLine, guardCall, parseEnvText, runToolCall, TERMINAL_ONLY, toolsFromCommands } from "./index.ts";
+import { commandTools, createLogMcpServer, formatLogLine, guardCall, parseEnvText, runToolCall, TERMINAL_ONLY, toolsFromCommands } from "./index.ts";
 
 async function connected() {
   const server = createLogMcpServer({ twenty: marketplaceFixture() }, { logDir: null, watchFlows: false });
@@ -23,20 +23,60 @@ function textOf(result: Awaited<ReturnType<Client["callTool"]>>): string {
 }
 
 describe("toolsFromCommands", () => {
-  test("every command is a tool except the terminal-only ones", () => {
+  test("every command has a tool except the terminal-only ones, one per form when it declares its input", () => {
+    const entries = commandTools(COMMANDS);
+    for (const command of COMMANDS) expect(entries.some((t) => t.command === command)).toBe(!(command.name in TERMINAL_ONLY));
     const names = toolsFromCommands(COMMANDS).map((tool) => tool.name);
-    for (const command of COMMANDS) expect(names.includes(command.name)).toBe(!(command.name in TERMINAL_ONLY));
-    expect(names).toContain("publish");
-    expect(names).toContain("connect");
+    expect(names).toEqual(expect.arrayContaining(["publish", "connect", "inspectStart", "inspectDo", "accountShow", "runsPrune", "listing", "listingCreate"]));
     expect(names).not.toContain("launch");
+    expect(names).not.toContain("inspect");
+    expect(new Set(names).size).toBe(names.length);
+  });
+
+  test("a typed tool's schema has its fields, their kinds and what is required, and no args", () => {
+    const tools = toolsFromCommands(COMMANDS);
+    const start = tools.find((t) => t.name === "inspectStart")!;
+    expect(start.inputSchema.required).toEqual(["account"]);
+    expect(Object.keys(start.inputSchema.properties)).toEqual(["account", "url", "bypass", "now", "noIdleMouse", "detach", "proxyMs", "confirmBypass"]);
+    const step = tools.find((t) => t.name === "inspectDo")!;
+    expect((step.inputSchema.properties.action as { enum: string[] }).enum).toContain("setLocation");
+    expect((step.inputSchema.properties.values as { type: string }).type).toBe("array");
+    expect(step.inputSchema.properties).toHaveProperty("confirmLive");
+    expect(tools.find((t) => t.name === "accounts")!.inputSchema.properties).not.toHaveProperty("confirmLive");
+    for (const tool of tools.filter((t) => t.name !== "campaign" && "args" in t.inputSchema.properties)) expect(COMMANDS.find((c) => c.name === tool.name)?.input).toBeUndefined();
   });
 });
 
 describe("guardCall", () => {
-  test("--live needs confirmLive", () => {
-    expect(guardCall("publish", { args: ["--listing", "a", "--live"] }, COMMANDS).ok).toBe(false);
+  test("live needs confirmLive, on typed and args tools alike", () => {
+    expect(guardCall("publish", { listing: "a", live: true }, COMMANDS).ok).toBe(false);
     expect(guardCall("campaign", { args: ["run", "--campaign", "c", "--live=true"] }, COMMANDS).ok).toBe(false);
-    expect(guardCall("publish", { args: ["--listing", "a", "--live"], confirmLive: true }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "publish", "--listing", "a", "--live"] });
+    expect(guardCall("publish", { listing: "a", live: true, confirmLive: true }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "publish", "--listing=a", "--live"] });
+    expect(guardCall("inspectDo", { action: "click", values: ["e12"], live: true }, COMMANDS).ok).toBe(false);
+  });
+
+  test("bypass needs confirmBypass", () => {
+    expect(guardCall("check", { account: "a", bypass: true }, COMMANDS).ok).toBe(false);
+    expect(guardCall("check", { account: "a", bypass: true, confirmBypass: true }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "check", "--account=a", "--bypass"] });
+  });
+
+  test("a typed call becomes the argv the terminal would run, each value whole", () => {
+    expect(guardCall("inspectDo", { action: "type", values: ["e7", "Full house clear-out, \"everything\" = gone\nSame day"], live: true, confirmLive: true }, COMMANDS)).toEqual({
+      ok: true,
+      argv: ["inspect", "do", "type", "e7", "Full house clear-out, \"everything\" = gone\nSame day", "--live"],
+    });
+    expect(guardCall("accountStatus", { account: "bethlehem", status: "PAUSED", reason: "setByHand" }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "account", "status", "bethlehem", "PAUSED", "--reason=setByHand"] });
+    expect(guardCall("runsPrune", { apply: true }, COMMANDS)).toEqual({ ok: true, argv: ["runs", "prune", "--apply"] });
+    expect(guardCall("inspectStart", { account: "a", detach: true, proxyMs: 4000 }, COMMANDS)).toEqual({ ok: true, argv: ["inspect", "start", "--account=a", "--detach", "--proxyMs=4000"] });
+  });
+
+  test("a typed call with a missing, unknown or wrong field never runs", () => {
+    expect(guardCall("check", {}, COMMANDS)).toEqual({ ok: false, message: "check: account is needed" });
+    expect(guardCall("check", { account: "a", bogus: 1 }, COMMANDS)).toEqual({ ok: false, message: 'check: unknown field "bogus"' });
+    expect(guardCall("accountStatus", { account: "a", status: "NOPE" }, COMMANDS).ok).toBe(false);
+    expect(guardCall("inspectDo", { action: "teleport" }, COMMANDS).ok).toBe(false);
+    expect(guardCall("hostStart", { account: "a", gapMinutes: "5" }, COMMANDS).ok).toBe(false);
+    expect(guardCall("listings", { args: ["--json"] }, COMMANDS).ok).toBe(false);
   });
 
   test("connect always runs --noPrompt, so it never reads the MCP channel", () => {
@@ -47,7 +87,7 @@ describe("guardCall", () => {
   test("terminal-only, unknown and malformed calls are refused", () => {
     expect(guardCall("launch", {}, COMMANDS).ok).toBe(false);
     expect(guardCall("bogus", {}, COMMANDS).ok).toBe(false);
-    expect(guardCall("listings", { args: [1 as unknown as string] }, COMMANDS).ok).toBe(false);
+    expect(guardCall("connect", { args: [1 as unknown as string] }, COMMANDS).ok).toBe(false);
     expect(guardCall("listings", undefined, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "listings"] });
   });
 });
@@ -68,21 +108,23 @@ describe("log MCP server", () => {
 
   test("runs a command against Twenty and returns its output", async () => {
     const client = await connected();
-    const result = await client.callTool({ name: "listings", arguments: { args: ["--json"] } });
+    const result = await client.callTool({ name: "listings", arguments: { json: true } });
     expect(result.isError).toBe(false);
     expect(JSON.parse(textOf(result).split("\n\nexit 0")[0]).listings).toHaveLength(8);
   });
 
   test("a failing command is an error result with its stderr", async () => {
     const client = await connected();
-    const result = await client.callTool({ name: "listings", arguments: { args: ["--status", "NOPE"] } });
-    expect(result.isError).toBe(true);
-    expect(textOf(result)).toContain("exit 1");
+    const result = await client.callTool({ name: "listings", arguments: { campaign: "nope" } });
+    expect(result.isError).toBe(false);
+    const refused = await client.callTool({ name: "errors", arguments: { code: "notACode" } });
+    expect(refused.isError).toBe(true);
+    expect(textOf(refused)).toContain("exit 1");
   });
 
   test("a live publish without confirmLive never reaches the command", async () => {
     const client = await connected();
-    const result = await client.callTool({ name: "publish", arguments: { args: ["--listing", "x", "--live"] } });
+    const result = await client.callTool({ name: "publish", arguments: { listing: "x", live: true } });
     expect(result.isError).toBe(true);
     expect(textOf(result)).toContain("confirmLive");
   });

@@ -64,7 +64,7 @@ describe("watching a long call live over MCP (rule 26)", () => {
     expect(SERVER_INSTRUCTIONS).toContain("start a Monitor on its live log, `tail -f ~/.logCli/mcp/<day>.log`");
     const client = await connected();
     const { tools } = await client.listTools();
-    for (const name of ["inspect", "join", "warmup", "publish", "capture"]) expect(tools.find((t) => t.name === name)?.description).toContain("start a Monitor on `tail -f ~/.logCli/mcp/<day>.log`");
+    for (const name of ["inspectStart", "inspectDo", "join", "warmup", "publish", "capture"]) expect(tools.find((t) => t.name === name)?.description).toContain("start a Monitor on `tail -f ~/.logCli/mcp/<day>.log`");
     expect(tools.find((t) => t.name === "accounts")?.description).not.toContain("Monitor");
     await client.close();
   });

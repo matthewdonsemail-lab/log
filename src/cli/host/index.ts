@@ -5,8 +5,8 @@ import type { HostControl, MilestoneField } from "../../marketplace/host/index.t
 import { standingOf } from "../../marketplace/lifecycle/index.ts";
 import { findAccount } from "../../marketplace/socialAccount/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
-import { parseArgs, refuseError } from "../runner/helpers/index.ts";
-import type { Command } from "../runner/types.ts";
+import { parseArgs, parserSpecOf, PROXY_MS_FLAG, refuseError } from "../runner/helpers/index.ts";
+import type { Command, CommandInput } from "../runner/types.ts";
 import { dayOf, hostActors } from "./helpers/index.ts";
 import type { HostBrowser } from "./helpers/index.ts";
 
@@ -20,14 +20,41 @@ export const HOST_USAGE = [
 
 const EVENTS: HostControl["type"][] = ["PERSON_DONE", "PAUSE", "RESUME", "SHUTDOWN", "LOST"];
 
+export const HOST_INPUT: CommandInput = {
+  forms: [
+    {
+      words: ["start"],
+      summary: "Run the account's lifecycle in one open browser through its active hours",
+      positionals: [],
+      flags: [
+        { name: "account", kind: "string", required: true, description: "The account" },
+        { name: "live", kind: "boolean", live: true, description: "Profile, name and location on Facebook, only when matt asked (rule 8)" },
+        { name: "likes", kind: "boolean", live: true, description: "The warm-up's likes, only when matt asked (rule 8)" },
+        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when matt asked (rule 20)" },
+        { name: "gapMinutes", kind: "integer", description: "Minutes between rounds" },
+        { name: "watchMinutes", kind: "integer", description: "Minutes between watch checks" },
+        PROXY_MS_FLAG,
+      ],
+    },
+    {
+      words: ["send"],
+      summary: "Send an event to the account's running host",
+      positionals: [{ name: "event", kind: "enum", required: true, values: EVENTS, description: "The event" }],
+      flags: [{ name: "account", kind: "string", required: true, description: "The account" }],
+    },
+    { words: ["status"], summary: "Where each host is", positionals: [], flags: [{ name: "account", kind: "string", description: "Only this account's host" }] },
+  ],
+};
+
 export const hostCommand: Command = {
   usage: HOST_USAGE,
   platform: "facebook",
   name: "host",
+  input: HOST_INPUT,
   summary: "Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); send it events; read its progress",
   args: "<start|send|status> --account <name> [--live] [--bypass]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["live", "likes", "bypass"], valued: ["account", "gapMinutes", "watchMinutes"] });
+    const parsed = parseArgs(argv, parserSpecOf(HOST_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log facebook host: ${parsed.error}\n${HOST_USAGE}` };
     const [sub, event] = parsed.positionals;
     const flags = parsed.flags;

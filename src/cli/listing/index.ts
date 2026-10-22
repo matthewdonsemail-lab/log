@@ -3,8 +3,8 @@ import { fromTwentyEnum, listFacebookAccounts, findAccount, toTwentyEnum } from 
 import { countryMismatch, createSlot, getListing, LISTING_STATUSES, listListingsWhere } from "../../marketplace/agencyListing/index.ts";
 import type { AgencyListing } from "../../marketplace/agencyListing/index.ts";
 import type { ListingFilter } from "../../marketplace/agencyListing/index.ts";
-import { parseArgs, refuse, refuseError } from "../runner/helpers/index.ts";
-import type { Command } from "../runner/types.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, refuse, refuseError } from "../runner/helpers/index.ts";
+import type { Command, CommandInput } from "../runner/types.ts";
 import { listingFromJson, renderListingDetail, renderListingsTable } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
@@ -16,14 +16,31 @@ export const LISTING_USAGE = [
   "The file: title, description, price, priceCurrency, category, condition (new|usedLikeNew|usedGood|usedFair), photos (paths or URLs), locationQuery, locationCity, locationCountry, locationPostalCode (the zip: Facebook finds a US city by it).",
 ].join("\n");
 
+export const LISTINGS_INPUT: CommandInput = {
+  forms: [
+    {
+      words: [],
+      summary: "List the Twenty listings",
+      positionals: [],
+      flags: [
+        { name: "status", kind: "enum", values: LISTING_STATUSES.map(toTwentyEnum), description: "Only listings in this status" },
+        { name: "account", kind: "string", description: "Only this account's listings" },
+        { name: "campaign", kind: "string", description: "Only this campaign's listings (its id)" },
+        JSON_FLAG,
+      ],
+    },
+  ],
+};
+
 export const listingsCommand: Command = {
   usage: LISTINGS_USAGE,
   platform: "facebook",
   name: "listings",
+  input: LISTINGS_INPUT,
   summary: "List the Twenty listings, by status, account or campaign",
   args: "[--status <s>] [--account <name>] [--campaign <id>] [--json]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json"], valued: ["status", "account", "campaign"] });
+    const parsed = parseArgs(argv, parserSpecOf(LISTINGS_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log facebook listings: ${parsed.error}\n${LISTINGS_USAGE}` };
     if (parsed.positionals.length > 0) return { code: 1, stderr: `log facebook listings: unexpected argument "${parsed.positionals[0]}"\n${LISTINGS_USAGE}` };
     const filters: ListingFilter[] = [];
@@ -48,14 +65,31 @@ export const listingsCommand: Command = {
   },
 };
 
+export const LISTING_INPUT: CommandInput = {
+  forms: [
+    { words: [], summary: "One listing in full", positionals: [{ name: "id", kind: "string", required: true, description: "The agencyListing id" }], flags: [JSON_FLAG] },
+    {
+      words: ["create"],
+      summary: "Create a listing in Twenty from a listing.json",
+      positionals: [],
+      flags: [
+        { name: "account", kind: "string", required: true, description: "The account that will publish it" },
+        { name: "file", kind: "string", required: true, description: "The listing.json path: title, description, price, priceCurrency, category, condition, photos, locationQuery, locationCity, locationCountry, locationPostalCode" },
+        JSON_FLAG,
+      ],
+    },
+  ],
+};
+
 export const listingCommand: Command = {
   usage: LISTING_USAGE,
   platform: "facebook",
   name: "listing",
+  input: LISTING_INPUT,
   summary: "Show one Twenty listing, or create one for an account from a JSON file",
   args: "<id> | create --account <name> --file <listing.json> [--json]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json"], valued: ["account", "file"] });
+    const parsed = parseArgs(argv, parserSpecOf(LISTING_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log facebook listing: ${parsed.error}\n${LISTING_USAGE}` };
     const [key, extra] = parsed.positionals;
     if (key === "create") {

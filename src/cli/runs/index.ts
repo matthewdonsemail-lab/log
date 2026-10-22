@@ -1,7 +1,7 @@
 import { diskFree, listRuns, pruneRuns, runsBytes, storageVerdict } from "../../browser/runStore/index.ts";
 import type { RunEntry } from "../../browser/runStore/index.ts";
-import { parseArgs } from "../runner/helpers/index.ts";
-import type { Command } from "../runner/types.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import type { Command, CommandInput } from "../runner/types.ts";
 
 export const RUNS_USAGE = [
   "Usage: log runs [list] [--json]   (every recorded run: its size, settled by rea, in the request docs, and why it is kept or that it may go)",
@@ -20,14 +20,28 @@ function table(entries: RunEntry[]): string {
   return [...lines, `${entries.length} runs, ${gb(total)}; ${entries.filter((e) => !e.keep).length} may go (${gb(free)}).`].join("\n");
 }
 
+export const RUNS_INPUT: CommandInput = {
+  forms: [
+    { words: ["list"], summary: "Every recorded run: its size, settled by rea, in the request docs, and whether it may go", positionals: [], flags: [JSON_FLAG] },
+    {
+      words: ["prune"],
+      summary: "Delete each analysed run, keeping its findings; a dry run unless apply",
+      positionals: [],
+      flags: [{ name: "before", kind: "string", description: "Only runs started before this day, YYYY-MM-DD" }, { name: "apply", kind: "boolean", description: "Delete them (without it, it only lists what would go)" }],
+    },
+    { words: ["space"], summary: "The size of the runs folder and the disk's free space", positionals: [], flags: [] },
+  ],
+};
+
 export const runsCommand: Command = {
   usage: RUNS_USAGE,
   platform: "any",
   name: "runs",
+  input: RUNS_INPUT,
   summary: "The recorded runs on this machine, and pruning the ones rea settled and the request docs hold, keeping each one's findings and domains",
   args: "[list|prune|space] [--before <day>] [--apply]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json", "apply"], valued: ["before"] });
+    const parsed = parseArgs(argv, parserSpecOf(RUNS_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log runs: ${parsed.error}\n${RUNS_USAGE}` };
     const [sub = "list", ...rest] = parsed.positionals;
     if (rest.length) return { code: 1, stderr: `log runs: unexpected argument "${rest[0]}"\n${RUNS_USAGE}` };

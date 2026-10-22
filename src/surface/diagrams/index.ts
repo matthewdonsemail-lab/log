@@ -21,7 +21,7 @@ export function surfaceDiagram(entries: readonly CommandEntry[], hooks: readonly
   const pre = hooks.filter((h) => h.event === "PreToolUse");
   const post = hooks.filter((h) => h.event === "PostToolUse");
   const turn = hooks.filter((h) => h.event !== "PreToolUse" && h.event !== "PostToolUse");
-  const tools = entries.filter((e) => e.tool).length;
+  const tools = entries.reduce((n, e) => n + (e.tool ? e.tool.split(", ").length : 0), 0);
   const lines = [
     "flowchart LR",
     `  agent["Agent (Claude Code, Codex)"]`,

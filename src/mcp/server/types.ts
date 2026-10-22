@@ -2,6 +2,7 @@ export interface LogToolInput {
   args?: string[];
   confirmLive?: boolean;
   confirmBypass?: boolean;
+  [field: string]: unknown;
 }
 
 export interface LogTool {
@@ -10,6 +11,7 @@ export interface LogTool {
   inputSchema: {
     type: "object";
     properties: Record<string, unknown>;
+    required?: string[];
     additionalProperties: false;
   };
   outputSchema: typeof TOOL_RESULT_SCHEMA;

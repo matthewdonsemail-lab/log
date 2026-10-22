@@ -5,7 +5,7 @@ import { commandBrowser } from "../../browser/run/index.ts";
 import type { FlowDefinition } from "../../browser/flow/index.ts";
 import type { Command } from "../../cli/runner/types.ts";
 import { COMMAND_RULES, EVERY_TOOL_RULES } from "../../mcp/server/helpers/agentRules.ts";
-import { commandWords, LONG_RUNNING } from "../../mcp/server/helpers/toolsFromCommands.ts";
+import { commandTools, commandWords, LONG_RUNNING } from "../../mcp/server/helpers/toolsFromCommands.ts";
 import { TERMINAL_ONLY } from "../../mcp/server/types.ts";
 import type { CommandEntry, Flag, FlowEntry } from "./types.ts";
 
@@ -42,19 +42,21 @@ export function sessionHooks(hooks: readonly AgentHook[] = AGENT_HOOKS): AgentHo
 
 export function commandEntry(command: Command): CommandEntry {
   const terminalOnly = TERMINAL_ONLY[command.name] ?? null;
+  const tools = commandTools([command]).map((t) => t.tool);
   return {
     name: command.name,
     summary: command.summary,
     usage: usageLines(command.usage),
     flags: flagsOf(command.usage),
-    tool: terminalOnly ? null : command.name,
+    tool: terminalOnly ? null : tools.join(", "),
+    typed: command.input !== undefined,
     terminalOnly,
     longRunning: LONG_RUNNING.has(command.name),
     browser: commandBrowser(command.name),
     platform: command.platform,
     words: commandWords(command),
     rules: [...(COMMAND_RULES[command.name] ?? []), ...EVERY_TOOL_RULES],
-    hooks: { cli: hooksOn("Bash"), mcp: terminalOnly ? [] : hooksOn(`mcp__${MCP_SERVER_NAME}__${command.name}`) },
+    hooks: { cli: hooksOn("Bash"), mcp: terminalOnly ? [] : hooksOn(`mcp__${MCP_SERVER_NAME}__${tools[0]}`) },
   };
 }
 
