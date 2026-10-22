@@ -4135,3 +4135,12 @@ What changed: Facebook group listening follows obris-dev/openmagpie#188 (rule 65
 - **The two tables:** `agencyGroupPosts` and `agencyGroupComments` stay in Twenty, unused.
 Why: matt, 2026-10-22, going through the spec's four decisions: replace rules 61 and 62 with #188; leave the two tables unused; keep comment reading for step 5; #28's scoring and alerts become OpenMagpie watches. #188's own words: "everything indexed, only the matches go on".
 Checked: `bun run check`: every gate passes and 771 tests pass (the 3 host group-reading tests went with the feature). The rewritten tests show a read and `saveRead` write only the cursor and the last read, never a post or comment row. A stopped read leaves the cursor. `log facebook read group` keeps nothing but the cursor, a second read opens no post, and `--show` prints the cursor. Not checked live: a read or poll in Bethlehem's hours (from 12:00 UTC).
+
+## 2026-10-22 09:08Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/status.md`: new file
+
+What changed: `docs/status.md`, a map of the 53 commands and steps: 21 proven live (with the date of the latest live run), 16 built but never run live, 8 failed live or only partly built, and 8 not built (the Marketplace inbox and messages, sending a reply, the host acting, acting on OpenMagpie's matches, the profile rename, settingName, the browser lock, save/follow/share). It gives the five-step inspect-first path for every gap and fills in steps 1 and 2 for the first ones. It lists the 11 docs that say more than the code, and the housekeeping found (tests writing `galwayOne` run folders into the real `~/.logCli/runs/profile`, recordings from 2026-10-19 gone, no unit tests for `hostActors.ts` or `src/warmup/viewer`).
+Why: matt, 2026-10-22: the docs must be clear about what is fully implemented and what isn't (the conversations and messages aren't built), so it's defined what's done and what has to be built and tested, the normal way (`log inspect` first).
+Checked: four read-only audits of the code, the tests, `log.md`'s Checked lines and the real run folders (`~/.logCli/runs`, `~/.logCli/mcp/*.log`); the counts were taken from the doc's own tables. Not checked: the docs it lists aren't fixed yet.
