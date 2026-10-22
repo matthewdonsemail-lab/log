@@ -20,7 +20,7 @@ const HEADER = "log-cli page state (rules 54-55, scripts/hooks/pageState.ts):";
 
 /** One browser's finding. Pure. */
 export function findingOf(at: BrowserAt): Finding {
-  const state = pageStateOf(at.url, at.text);
+  const state = pageStateOf(at.url, at.text, { messengerPin: at.messengerPin });
   const where = `step ${at.step}, ${at.url || "no url yet"}`;
   if (state) {
     const next = state.person ? "Only a person can clear it: stop this account and tell matt." : "Known state, resolve it, do not stop:";

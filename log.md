@@ -4337,3 +4337,34 @@ Checked: on Bethlehem (inspect 20261022T100521, `--bypass`), the dialog was flag
 - **Docs rebuild:** from the restored committed docs it only adds: FBYRP 55 → 56 sightings in 18 runs, every old row kept. Kind and Reads are kept when the bundle wasn't read.
 - **Gates:** `bun test` 785 pass; `tsc` clean; the docs gate reports 194 requests documented.
 - **Not checked:** the flow run as a flow (Bethlehem's PIN is set now), and the "Enter your PIN" screen a new device would show.
+
+## 2026-10-22 10:22Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/diagrams/pageStates.mmd`: edited
+- `docs/status.md`: edited
+- `scripts/hooks/pageState.ts`: no declaration changed (comments, formatting or line endings)
+- `src/agentHooks/agentHooks.test.ts`: added test "Messenger's Create PIN is resolved with the flow when the session has the PIN, and is matt's when not (rule 67)"
+- `src/agentHooks/pageState/index.ts`: changed function findingOf
+- `src/agentHooks/pageState/types.ts`: changed interface BrowserAt
+- `src/browser/flow/helpers/pageState.ts`: added interface StateContext, const PIN_FROM_MATT · changed interface StateRule, const PAGE_STATES, function pageStateOf
+- `src/browser/flow/pageState.test.ts`: added test ""Create a PIN" without the PIN in Twenty is matt's: he gives it in the Clack prompt", test ""Create a PIN" with the PIN in Twenty resolves itself with the recorded flow", test ""Enter your PIN" is mapped: typed from Twenty when it is there, matt's when not", test "the confirm screen is neither: it is the flow's own step" · removed test ""Create a PIN" is a state matt resolves with his PIN"
+- `src/browser/inspect/types.ts`: changed interface CurrentInspect
+- `src/cli/inspect/index.ts`: added function hasMessengerPin · changed const inspectCommand
+- `src/cli/inspect/inspect.test.ts`: added test "only whether login.json holds a 6-digit PIN leaves it, never the PIN"
+
+What changed: the page-state hook resolves Messenger's PIN states itself when the account's PIN is in Twenty, and flags matt only when it isn't.
+- **The flag:** `log inspect start` records `messengerPin`, a yes or no from the run's private login.json (`hasMessengerPin`), in the session file (`CurrentInspect`). The hook reads it next to the step (`BrowserAt.messengerPin`) and never reads Twenty or the PIN.
+- **The resolver:** `pageStateOf(url, text, { messengerPin })` picks it. A state with `withoutPin` is matt's when there is no PIN (`PIN_FROM_MATT`: the Clack prompt), and otherwise log-cli's.
+- **`messengerPinCreate`** now resolves with `log flow run messengerPinCreate --live`.
+- **New state `messengerPinEnter`** ("Enter your PIN") types the PIN from Twenty with `log inspect do pin --live`, snapshots, and presses its Continue by ref. Each step is recorded until it is the flow `messengerPinEnter`.
+- **Docs:** rule 67 and `docs/status.md` are updated, and the page-state diagram and README regenerated.
+Why: matt pointed out that a known state should show the flow already recorded for it, and asked for `messengerPinCreate` to resolve itself with that flow when the PIN is in Twenty (flagging him only when it isn't), and for "Enter your PIN" to be mapped so it is flagged and pressed through when it shows up.
+Checked: with the PIN, both PIN states are log-cli's (the Stop hook keeps the turn going) and name the flow or `pin`.
+- **Without the PIN:** both are matt's and name `log facebook messenger pin`.
+- **Confirm screen:** "Confirm your PIN" matches neither.
+- **The flag:** `hasMessengerPin` is true only for a 6-digit PIN.
+- **Gates:** `bun test` 790 pass; `tsc` clean; `check:agentHooks` finds 11 page states, each resolvable by real commands.
+- **Not seen live:** the "Enter your PIN" screen has not shown up yet.

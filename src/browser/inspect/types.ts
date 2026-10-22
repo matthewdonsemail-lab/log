@@ -53,6 +53,8 @@ export interface CurrentInspect {
   commandsPath: string
   repliesPath: string
   startedAt: string
+  /** Twenty holds the account's Messenger PIN (yes or no, never the PIN), for the page-state hook's PIN states (rule 67). */
+  messengerPin?: boolean
 }
 
 export interface InspectCommand {

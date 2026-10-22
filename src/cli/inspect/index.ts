@@ -42,6 +42,16 @@ export const INSPECT_USAGE = [
 
 const LOG_BIN = fileURLToPath(new URL("../../../bin/log.ts", import.meta.url));
 
+/** The run's private login.json holds a 6-digit Messenger PIN. Only the yes or no leaves here. */
+export function hasMessengerPin(loginPath: string | null): boolean {
+  if (!loginPath || !existsSync(loginPath)) return false;
+  try {
+    return /^\d{6}$/.test(String((JSON.parse(readFileSync(loginPath, "utf8")) as { messengerPin?: unknown }).messengerPin ?? ""));
+  } catch {
+    return false;
+  }
+}
+
 /** The detached start's seam: tests replace `start` so no browser opens. */
 export const inspectDetachDeps: {
   start: (argv: string[], logPath: string) => { exited: () => number | null };
@@ -115,7 +125,9 @@ export const inspectCommand: Command = {
       if (!("run" in opened)) return opened;
       const { account, run } = opened;
       const runDir = dirname(run.captureDir!);
-      const current = { account: account.accountName, runDir, commandsPath: join(runDir, "commands.jsonl"), repliesPath: join(runDir, "replies.jsonl"), startedAt: new Date().toISOString() };
+      // Whether the PIN is in Twenty, as a yes or no for the page-state hook (rule 67); the PIN stays in the private login.json.
+      const messengerPin = hasMessengerPin(run.loginPath);
+      const current = { account: account.accountName, runDir, commandsPath: join(runDir, "commands.jsonl"), repliesPath: join(runDir, "replies.jsonl"), startedAt: new Date().toISOString(), messengerPin };
       return withRun(context, "inspect", account, run, async () => {
         writeCurrentInspect(current);
         context.err(`Inspect session for ${account.accountName}: ${runDir}. Send steps from another terminal: bun bin/log.ts inspect do snapshot`);

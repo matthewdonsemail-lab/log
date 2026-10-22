@@ -20,7 +20,10 @@ flowchart LR
   automatedBehaviour -->|"dismiss it, as Listaro did"| nextautomatedBehaviour(["next state"])
   messengerPinCreate["messengerPinCreate: Messenger's #quot;Create a PIN to access your chats on any device#quot;: the inbox stays behind it (Bethlehem, warm-up 20261022T092119 steps 25-27)"]
   page --> messengerPinCreate
-  messengerPinCreate --> person
+  messengerPinCreate -->|"run the recorded flow with the PIN from Twenty"| nextmessengerPinCreate(["next state"])
+  messengerPinEnter["messengerPinEnter: Messenger asks for the account's PIN to open its chats here (a PIN set before, met on another browser or device). Mapped 2026-10-22 before its first recording"]
+  page --> messengerPinEnter
+  messengerPinEnter -->|"type the PIN from Twenty"| nextmessengerPinEnter(["next state"])
   rememberPassword["rememberPassword: the #quot;Remember password#quot; prompt"]
   page --> rememberPassword
   rememberPassword -->|"click #quot;Not now#quot;"| nextrememberPassword(["next state"])

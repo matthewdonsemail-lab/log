@@ -35,7 +35,7 @@ Accounts in the runs: Bethlehem 61594063207669, Reading 61594131334566, Lancaste
 | `log facebook watch` | 🔴 2026-10-18 | Stopped at `never_connected` / `session_expired`. Never checked a real listing. |
 | `log proxy check` / `assign` / `balance` | ✅ 2026-10-22 | Byteful for Bethlehem and Lancaster |
 | `log proxy static` | 🟡 | Never run live |
-| `log facebook messenger pin` + the `messengerPinCreate` flow | ✅ 2026-10-22 | Bethlehem: the PIN is in Twenty (`--show`: set). Recorded with `log inspect` (20261022T100521): Create PIN, `pin`, `pin` again; Facebook registered it (`VestaServerGraphQLRegisterProvider…`, 200) and the inbox opened. Made the flow `messengerPinCreate`, which hasn't run as a flow yet (Bethlehem's PIN is set now). The "Enter your PIN" screen a new device would show isn't recorded. |
+| `log facebook messenger pin` + the `messengerPinCreate` flow | ✅ 2026-10-22 | Bethlehem: the PIN is in Twenty (`--show`: set). Recorded with `log inspect` (20261022T100521): Create PIN, `pin`, `pin` again; Facebook registered it (`VestaServerGraphQLRegisterProvider…`, 200) and the inbox opened. Made the flow `messengerPinCreate`, which hasn't run as a flow yet (Bethlehem's PIN is set now). The "Enter your PIN" screen a new device would show is mapped (`messengerPinEnter`: typed from Twenty) but not recorded yet. The hook runs the flow itself when the PIN is in Twenty and flags matt only when it isn't. |
 | `log adsPower sync` / `status` | ✅ 2026-10-19 | Made 10 profiles. Two capabilities are marked not built: `syncSessions` (publish, connect and profile still launch Camoufox) and `oneMachineAtATime` (the per-account browser lock). |
 
 ## 3. The host and the account's lifecycle (rule 35)

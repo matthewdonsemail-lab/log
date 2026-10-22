@@ -10,6 +10,8 @@ export interface BrowserAt {
   text: string;
   /** The step's error when it failed: the page it left is unconfirmed. */
   failed: string | null;
+  /** The session's account has its Messenger PIN in Twenty: the PIN states resolve themselves (rule 67). */
+  messengerPin?: boolean;
 }
 
 /** What the hook makes of one browser. */

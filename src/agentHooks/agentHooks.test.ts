@@ -38,6 +38,16 @@ describe("page state hook", () => {
     expect(findingOf(selfie).line).toContain("tell matt");
   });
 
+  test("Messenger's Create PIN is resolved with the flow when the session has the PIN, and is matt's when not (rule 67)", () => {
+    const create = { url: "https://www.facebook.com/messages/", text: 'heading "Create a PIN to access your chats on any device" [level=2]' };
+    const withPin = findingOf(at({ ...create, messengerPin: true }));
+    expect(withPin).toMatchObject({ kind: "state", resolvable: true });
+    expect(withPin.line).toContain("log flow run messengerPinCreate");
+    const without = findingOf(at(create));
+    expect(without).toMatchObject({ kind: "state", resolvable: false });
+    expect(without.line).toContain("tell matt");
+  });
+
   test("a failed step is an unconfirmed page: snapshot, then resolve", () => {
     const f = findingOf(at({ failed: 'RuntimeError: no visible heading "Comments"' }));
     expect(f).toMatchObject({ kind: "failed", resolvable: true });

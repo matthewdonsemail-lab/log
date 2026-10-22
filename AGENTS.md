@@ -706,7 +706,11 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     types it from the run's private login.json (rule 21). The Create PIN
     screens were recorded with `log inspect` on Bethlehem (rule 29) and made
     the flow `messengerPinCreate` (`log flow run messengerPinCreate --account
-    <a> --live`).
+    <a> --live`). The page-state hook resolves it with that flow when the
+    account's PIN is in Twenty, and flags it to matt only when it isn't (the
+    session records a yes or no when it opens, never the PIN). "Enter your
+    PIN" (`messengerPinEnter`) is mapped the same way: the PIN is typed from
+    Twenty and each step recorded until it is a flow.
 
 ## Checks
 

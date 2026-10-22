@@ -141,3 +141,16 @@ describe("log inspect start --detach (how an MCP agent opens the account's brows
     }
   });
 });
+
+describe("the session's Messenger PIN flag (rule 67)", () => {
+  test("only whether login.json holds a 6-digit PIN leaves it, never the PIN", async () => {
+    const { writeFileSync } = await import("node:fs");
+    const { hasMessengerPin } = await import("./index.ts");
+    const dir = mkdtempSync(join(tmpdir(), "logPinFlag"));
+    const write = (body: unknown) => (writeFileSync(join(dir, "login.json"), JSON.stringify(body)), join(dir, "login.json"));
+    expect(hasMessengerPin(null)).toBe(false);
+    expect(hasMessengerPin(write({ email: "e", messengerPin: "482913" }))).toBe(true);
+    expect(hasMessengerPin(write({ email: "e", messengerPin: null }))).toBe(false);
+    expect(hasMessengerPin(write({ messengerPin: "12ab56" }))).toBe(false);
+  });
+});

@@ -21,7 +21,19 @@ export interface PageState {
 interface StateRule extends PageState {
   url?: RegExp
   text?: RegExp
+  /**
+   * Messenger's PIN states (rule 67): with the account's PIN in Twenty, log-cli resolves them itself
+   * (`resolve`); without it they are matt's, said this way.
+   */
+  withoutPin?: string
 }
+
+/** What the page's account has, as the session recorded it when it opened: a yes or no, never a secret. */
+export interface StateContext {
+  messengerPin?: boolean
+}
+
+const PIN_FROM_MATT = 'matt gives the account\'s 6-digit PIN once: `log facebook messenger pin --account <a>` in his terminal (a Clack prompt, kept in Twenty, never printed). Then reopen the browser so the session has it'
 
 /** First match wins, most final first (as `classify`). */
 export const PAGE_STATES: readonly StateRule[] = [
@@ -41,8 +53,17 @@ export const PAGE_STATES: readonly StateRule[] = [
     id: 'messengerPinCreate',
     text: /create a pin to access your chats/i,
     what: 'Messenger\'s "Create a PIN to access your chats on any device": the inbox stays behind it (Bethlehem, warm-up 20261022T092119 steps 25-27)',
-    resolve: 'with the account\'s PIN in Twenty (`log facebook messenger pin --account <a> --show`; if empty, matt types it once in a Clack prompt in his terminal, never printed), the recorded flow passes it: `log flow run messengerPinCreate --account <a> --live` (Create PIN, the PIN, the PIN again; Bethlehem 20261022T100521)',
-    person: true
+    resolve: 'run the recorded flow with the PIN from Twenty: `log flow run messengerPinCreate --account <a> --live` (Create PIN, the PIN, the PIN again; Bethlehem 20261022T100521), then a snapshot: the inbox shows Chats',
+    withoutPin: PIN_FROM_MATT,
+    person: false
+  },
+  {
+    id: 'messengerPinEnter',
+    text: /enter your pin/i,
+    what: 'Messenger asks for the account\'s PIN to open its chats here (a PIN set before, met on another browser or device). Mapped 2026-10-22 before its first recording',
+    resolve: 'type the PIN from Twenty: `log inspect do pin --live --account <a>`, then `log inspect do snapshot --account <a>`; if it stays, press its Continue/Next by its ref. Not recorded yet: keep each step (rule 29) and make the flow `messengerPinEnter` with `log flow fromInspect`',
+    withoutPin: PIN_FROM_MATT,
+    person: false
   },
   { id: 'rememberPassword', text: /remember password/i, what: 'the "Remember password" prompt', resolve: 'click "Not now" (`clickRole button "Not now"`)', person: false },
   { id: 'twoStepCode', url: /two_step_verification|two_factor|\/checkpoint/i, text: /enter (the )?(6-digit )?code|authentication code|login code/i, what: 'two-step: the code field', resolve: '`log inspect do code --live --account <a>` (the TOTP from Twenty, rule 21)', person: false },
@@ -51,11 +72,12 @@ export const PAGE_STATES: readonly StateRule[] = [
 ]
 
 /** The known state of a page from its URL and snapshot text, or null when it isn't one. Pure. */
-export function pageStateOf(url: string, text: string): PageState | null {
+export function pageStateOf(url: string, text: string, context: StateContext = {}): PageState | null {
   for (const s of PAGE_STATES) {
     if (s.url && !s.url.test(url)) continue
     if (s.text && !s.text.test(text)) continue
     if (!s.url && !s.text) continue
+    if (s.withoutPin && !context.messengerPin) return { id: s.id, what: s.what, resolve: s.withoutPin, person: true }
     return { id: s.id, what: s.what, resolve: s.resolve, person: s.person }
   }
   return null

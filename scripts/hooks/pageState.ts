@@ -7,7 +7,8 @@
  * resolver into the agent's context, or a Stop block while a browser sits on
  * something log-cli resolves itself. Reads only the session's own files;
  * snapshots carry no typed values (redacted at the source) and nothing from
- * Twenty is read. `LOG_HOOK_MEMORY` moves the memory file (the parity check
+ * Twenty is read (whether the account's Messenger PIN is in Twenty is a yes or
+ * no the session wrote when it opened). `LOG_HOOK_MEMORY` moves the memory file (the parity check
  * runs this against a scratch one).
  */
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
@@ -65,7 +66,7 @@ for (const session of openInspects()) {
   // The step's own snapshot; a failed step may have none, then the last one taken.
   const withSnapshot = [step, ...folders.slice().reverse()].find((d) => existsSync(join(stepsDir, d, 'snapshot.yml')))
   const text = withSnapshot ? readFileSync(join(stepsDir, withSnapshot, 'snapshot.yml'), 'utf8') : ''
-  browsers.push({ account: session.account, step, url: reply?.url ?? '', text, failed: reply && reply.ok === false ? (reply.error ?? 'failed') : null })
+  browsers.push({ account: session.account, step, url: reply?.url ?? '', text, failed: reply && reply.ok === false ? (reply.error ?? 'failed') : null, messengerPin: session.messengerPin === true })
 }
 
 const result = hookReply(event, browsers, memory, input.stop_hook_active === true)
