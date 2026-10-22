@@ -129,6 +129,12 @@ stderr and exit code, through `runCli`, so every gate above still applies.
   them. One job holds an account at a time (`accountBusy`). Jobs live on disk,
   so any server or the terminal can follow them; a job whose server stopped
   is `lost`.
+- Over HTTP (`--http`), Claude's connectors (claude.ai, Duet) sign in with OAuth
+  through Twenty when `LOG_MCP_PUBLIC_URL` is set: the server is its own authorization
+  server (`src/mcp/oauth`: discovery, `/oauth/register`, `/oauth/authorize`, Twenty's
+  callback, `/oauth/token`), and only the Twenty user of this server's `log login` gets a
+  token. `log mcp clients|revoke` (terminal only) manage them. How it is deployed:
+  `docs/deployment.md`.
 - Every tool carries a `title` and MCP annotations from its command's
   `effect` (`read`, `write`, `delete`, `browser`, on the command and its
   forms): reads are read-only and idempotent, a browser on Facebook is

@@ -52,6 +52,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   runs: [19, 22, 25, 27, 66],
   browsers: [29, 35, 54, 55],
   job: [10, 26, 35],
+  mcp: [21, 47],
   conversations: [34],
   errors: [25],
   graph: [6, 25],

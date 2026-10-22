@@ -83,6 +83,7 @@ export interface ToolResult {
 export const TERMINAL_ONLY: Readonly<Record<string, string>> = {
   launch: "prompts in a terminal (Clack). Call the commands it wraps directly.",
   login: "opens a browser for Twenty OAuth and waits for it. Run `bun bin/log.ts login` in a terminal.",
+  mcp: "manages who may sign in to this server's MCP (OAuth through Twenty). matt runs `bun bin/log.ts mcp clients` or `mcp revoke <clientId|all>` in a terminal on the server.",
   messenger: "asks matt for the Messenger PIN in a Clack prompt (masked). He runs `bun bin/log.ts facebook messenger pin --account <a>` in a terminal.",
 };
 

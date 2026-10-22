@@ -121,6 +121,9 @@ flowchart TB
   c_job["job"]
   cli --> c_job
   mcp --> c_job
+  c_mcp["mcp"]
+  cli --> c_mcp
+  c_mcp -.- terminal
   c_login["login"]
   cli --> c_login
   c_login -.- terminal

@@ -18,6 +18,8 @@ import type { FlowDefinition } from "../../browser/flow/index.ts";
 import { appendLiveLine, liveLogDir } from "../../observability/liveLog/index.ts";
 import { accountOfArgv, appendProgress, busyJob, cancelRequested, DEFAULT_WAIT_MS, finishJob, MAX_WAIT_MS, startJob } from "../jobs/index.ts";
 import type { JobRecord } from "../jobs/index.ts";
+import { oauthFromEnv } from "../oauth/index.ts";
+import type { OAuthServer } from "../oauth/index.ts";
 import { AGENTS_URI, commandTools, flowArgv, flowOfTool, guardCall, hasShell, LONG_RUNNING, parseEnvText, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
 import type { LogToolInput, ProgressLine, ToolResult } from "./types.ts";
@@ -269,32 +271,42 @@ export interface LogMcpHttpOptions {
   host?: string;
   port?: number;
   token?: string | null;
+  oauth?: OAuthServer | null;
   context?: Partial<CommandContext>;
   server?: LogMcpOptions;
 }
 
 const LOOPBACK = new Set(["127.0.0.1", "localhost", "::1"]);
 
-function authorized(request: Request, token: string | null): boolean {
-  if (!token) return true;
+function authorized(request: Request, token: string | null, oauth: OAuthServer | null): boolean {
+  if (!token && !oauth) return true;
   const given = /^Bearer (.+)$/.exec(request.headers.get("authorization") ?? "")?.[1] ?? "";
-  const a = Buffer.from(given);
-  const b = Buffer.from(token);
-  return a.length === b.length && timingSafeEqual(a, b);
+  if (!given) return false;
+  if (token) {
+    const a = Buffer.from(given);
+    const b = Buffer.from(token);
+    if (a.length === b.length && timingSafeEqual(a, b)) return true;
+  }
+  return oauth ? oauth.verifyBearer(given) : false;
 }
 
 export function serveLogMcpHttp(options: LogMcpHttpOptions = {}): { url: string; stop: () => void } {
   const host = options.host ?? "127.0.0.1";
   const token = options.token ?? null;
-  if (!LOOPBACK.has(host) && !token) throw new Error(`log MCP over HTTP on ${host} needs a token: set LOG_MCP_TOKEN (only loopback runs without one)`);
+  const oauth = options.oauth ?? null;
+  if (!LOOPBACK.has(host) && !token && !oauth) throw new Error(`log MCP over HTTP on ${host} needs a token or OAuth: set LOG_MCP_TOKEN, or LOG_MCP_PUBLIC_URL with Twenty (only loopback runs without one)`);
   const sessions = new Map<string, WebStandardStreamableHTTPServerTransport>();
   const server = Bun.serve({
     hostname: host,
     port: options.port ?? 7337,
     async fetch(request) {
       const url = new URL(request.url);
+      if (oauth) {
+        const answered = await oauth.handle(request);
+        if (answered) return answered;
+      }
       if (url.pathname !== "/mcp") return new Response("Not found: the MCP endpoint is /mcp", { status: 404 });
-      if (!authorized(request, token)) return new Response("Unauthorized", { status: 401, headers: { "WWW-Authenticate": "Bearer" } });
+      if (!authorized(request, token, oauth)) return oauth ? oauth.unauthorized() : new Response("Unauthorized", { status: 401, headers: { "WWW-Authenticate": "Bearer" } });
       const id = request.headers.get("mcp-session-id");
       let transport = id ? sessions.get(id) : undefined;
       if (id && !transport) return Response.json({ jsonrpc: "2.0", error: { code: -32001, message: "Session not found: initialize again" }, id: null }, { status: 404 });
@@ -303,8 +315,8 @@ export function serveLogMcpHttp(options: LogMcpHttpOptions = {}): { url: string;
           sessionIdGenerator: () => crypto.randomUUID(),
           onsessioninitialized: (sessionId) => void sessions.set(sessionId, fresh),
           onsessionclosed: (sessionId) => void sessions.delete(sessionId),
-          enableDnsRebindingProtection: !LOOPBACK.has(host),
-          allowedHosts: LOOPBACK.has(host) ? undefined : [host, `${host}:${server.port}`],
+          enableDnsRebindingProtection: !LOOPBACK.has(host) || oauth !== null,
+          allowedHosts: [...(LOOPBACK.has(host) ? ["127.0.0.1", "localhost", "[::1]"].flatMap((h) => [h, `${h}:${server.port}`]) : [host, `${host}:${server.port}`]), ...(oauth ? [oauth.publicHost] : [])],
         });
         await createLogMcpServer(options.context ?? {}, options.server ?? {}).connect(fresh);
         transport = fresh;
@@ -317,7 +329,9 @@ export function serveLogMcpHttp(options: LogMcpHttpOptions = {}): { url: string;
 
 export async function startLogMcpHttp(root: string, options: { host?: string; port?: number }): Promise<void> {
   loadEnv(root);
-  const served = serveLogMcpHttp({ ...options, token: process.env.LOG_MCP_TOKEN || null });
-  console.error(`log MCP over HTTP: ${served.url}${process.env.LOG_MCP_TOKEN ? " (bearer token required)" : " (loopback, no token)"}`);
+  const oauth = oauthFromEnv();
+  const served = serveLogMcpHttp({ ...options, token: process.env.LOG_MCP_TOKEN || null, oauth });
+  const how = [process.env.LOG_MCP_TOKEN ? "the static bearer token" : "", oauth ? `OAuth through Twenty, resource ${oauth.resource}` : ""].filter(Boolean).join(" or ") || "loopback, no token";
+  console.error(`log MCP over HTTP: ${served.url} (${how})`);
   await new Promise(() => {});
 }

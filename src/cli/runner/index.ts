@@ -28,6 +28,7 @@ import { readCommand } from "../read/index.ts";
 import { runsCommand } from "../runs/index.ts";
 import { browsersCommand } from "../browsers/index.ts";
 import { jobCommand } from "../job/index.ts";
+import { mcpCommand } from "../mcp/index.ts";
 import { publishCommand } from "../publish/index.ts";
 import { warmupCommand } from "../warmup/index.ts";
 import { watchCommand } from "../watch/index.ts";
@@ -71,6 +72,7 @@ export const COMMANDS: Command[] = [
   runsCommand,
   browsersCommand,
   jobCommand,
+  mcpCommand,
   loginCommand,
   logoutCommand,
   whoamiCommand,

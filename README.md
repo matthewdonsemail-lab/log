@@ -76,7 +76,7 @@ Source: [`docs/diagrams/browsers.mmd`](docs/diagrams/browsers.mmd).
 
 - **The account's browser, through the driver:** `host`, `inspect`, `flow`, `warmup`, `join`, `read`, `poll`, `check`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
 - **Camoufox only, not on the driver yet:** `doctor`, `connect`, `profile`, `scan`, `status`, `watch`, `publish`, `campaign`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `listings`, `listing`, `accounts`, `account`, `adsPower`, `lifecycle`, `proxy`, `conversations`, `conversation`, `messenger`, `errors`, `graph`, `capture`, `runs`, `browsers`, `job`, `login`, `logout`, `whoami`.
+- **No browser:** `launch`, `listings`, `listing`, `accounts`, `account`, `adsPower`, `lifecycle`, `proxy`, `conversations`, `conversation`, `messenger`, `errors`, `graph`, `capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`.
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](docs/browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](docs/adsPower.md).
 
@@ -91,7 +91,7 @@ flowchart LR
   shell["Bash / PowerShell / Monitor"]
   mcp["MCP server log: 59 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 36 commands (COMMANDS)"]
+  runCli["runCli: 37 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   browser["The account's browser (one per day, rule 35)"]
   agent --> shell
@@ -155,6 +155,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log runs`](#log-runs) | The recorded runs on this machine, and pruning the ones rea settled and the request docs hold, keeping each one's findings and domains | any (none) | `--json` `--before <YYYY-MM-DD>` `--apply` | none | `runsList`, `runsPrune`, `runsSpace` | PreToolUse, PostToolUse · PostToolUse | no | 19, 22, 25, 27, 66, 30, 38, 39, 40, 41 |
 | [`log browsers`](#log-browsers) | Where every open browser is: its page, the known page state it sits on, the call that resolves it, and what only matt can clear (rules 54-55) | any (none) | `--json` | none | `browsers` | PreToolUse, PostToolUse · PostToolUse | no | 29, 35, 54, 55, 30, 38, 39, 40, 41 |
 | [`log job`](#log-job) | Follow or stop a long MCP run: each runs as a job when it outlasts its call's wait | any (none) | `--afterLine <n>` `--waitMs <ms>` `--json` | none | `jobStatus`, `jobCancel`, `jobList` | PreToolUse, PostToolUse · PostToolUse | no | 10, 26, 35, 30, 38, 39, 40, 41 |
+| [`log mcp`](#log-mcp) | This server's MCP sign-ins over OAuth (through Twenty, the owner only): list the clients, revoke them | any (none) | `--json` | none | terminal only: manages who may sign in to this server's MCP (OAuth through Twenty). matt runs `bun bin/log.ts mcp clients` or `mcp revoke <clientId\|all>` in a terminal on the server. | PreToolUse, PostToolUse · n/a | no | 21, 47, 30, 38, 39, 40, 41 |
 | [`log login`](#log-login) | Sign in with Twenty through blaster's web app (OAuth), like `blaster login` | any (none) | `--webUrl <url>` `--apiUrl <url>` `--token <accessToken>` `--json` | none | terminal only: opens a browser for Twenty OAuth and waits for it. Run `bun bin/log.ts login` in a terminal. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
 | [`log logout`](#log-logout) | Forget the stored Twenty session | any (none) | `--apiUrl <url>` `--json` | none | `logout` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
 | [`log whoami`](#log-whoami) | Show who is signed in, refreshing the session if it expired | any (none) | `--apiUrl <url>` `--json` | none | `whoami` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
@@ -306,6 +307,9 @@ flowchart TB
   c_job["job"]
   cli --> c_job
   mcp --> c_job
+  c_mcp["mcp"]
+  cli --> c_mcp
+  c_mcp -.- terminal
   c_login["login"]
   cli --> c_login
   c_login -.- terminal
@@ -799,6 +803,15 @@ Follow or stop a long MCP run: each runs as a job when it outlasts its call's wa
 log job status <jobId> [--afterLine <n>] [--waitMs <ms>] [--json]   (a long MCP run: its status, the lines after afterLine, and its result once it ends; waits up to waitMs, default 10000, for something new)
 log job cancel <jobId>   (stops it at its next browser step; never once Publish is clicked, rule 10)
 log job list [--json]   (the latest jobs)
+```
+
+#### log mcp
+
+This server's MCP sign-ins over OAuth (through Twenty, the owner only): list the clients, revoke them Terminal only: manages who may sign in to this server's MCP (OAuth through Twenty). matt runs `bun bin/log.ts mcp clients` or `mcp revoke <clientId|all>` in a terminal on the server.
+
+```text
+log mcp clients [--json]   (who signed in to this server's MCP over OAuth: each client, when it was last used, its live tokens, and whether this server has an owner)
+log mcp revoke <clientId|all>   (the client's tokens stop working at once; it must sign in through Twenty again)
 ```
 
 #### log login
