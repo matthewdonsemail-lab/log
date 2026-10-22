@@ -23,8 +23,6 @@ import type { OpenSession } from "../../flow/helpers/index.ts";
 import { keepNewDevice, keepSession, openAccount } from "../../live/index.ts";
 import { settleInBackground } from "../../../rea/capture/client.ts";
 import type { CommandContext } from "../../runner/types.ts";
-import { parseGroupRef, toGroup } from "../../../facebook/group/join/index.ts";
-import { readGroupOnce } from "../../read/index.ts";
 
 const FB = "https://www.facebook.com";
 
@@ -38,21 +36,6 @@ const ok = (detail?: string, endOfDay?: boolean): StepOutcome => ({ kind: "ok", 
 const issue = (code: string, detail?: string): StepOutcome => ({ kind: "issue", issue: code as never, detail });
 const error = (code: string, detail?: string, retryable = false): StepOutcome => ({ kind: "error", code, detail, retryable });
 
-/** How often the host reads each group its account is in, by default (the firehose, matt 2026-10-22). */
-export const DEFAULT_GROUP_MINUTES = 60;
-
-/**
- * The account's groups due a read: it is a member, Facebook's numeric id is known, and no read in the
- * last `minutes` (`agencyGroups.lastReadAt`), the longest-unread first. Pure.
- */
-export function dueGroups<R extends { joinStatus?: string | null; facebookGroupId?: string | null; lastReadAt?: string | null }>(rows: R[], now: Date, minutes: number): R[] {
-  const since = (r: R) => (r.lastReadAt ? Date.parse(r.lastReadAt) : 0);
-  return rows
-    .filter((r) => r.joinStatus === "MEMBER" && /^\d+$/.test(r.facebookGroupId ?? ""))
-    .filter((r) => now.getTime() - since(r) >= minutes * 60_000)
-    .sort((a, b) => since(a) - since(b));
-}
-
 /** The account's local day and whether its active hours are over (rule 18). */
 export function dayOf(account: FacebookAccount, now = new Date()): { today: string; over: boolean; msUntilOpen: number } {
   const home = homeOf(account);
@@ -62,7 +45,7 @@ export function dayOf(account: FacebookAccount, now = new Date()): { today: stri
   return { today: clock.date, over, msUntilOpen: over ? Math.round(hoursUntilOpen(clock.hour, activeWindow(account)) * 3_600_000) : 0 };
 }
 
-export function hostActors(context: CommandContext, account: FacebookAccount, browser: HostBrowser, options: { bypassHours: boolean; likes?: boolean; groupMinutes?: number; log: (line: string) => void }) {
+export function hostActors(context: CommandContext, account: FacebookAccount, browser: HostBrowser, options: { bypassHours: boolean; likes?: boolean; log: (line: string) => void }) {
   const log = options.log;
   /** One command to the open browser; null when there is none. */
   const send = async (action: InspectAction, args: string[] = [], timeoutMs = 240_000): Promise<InspectStepResult | null> => {
@@ -80,31 +63,6 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
     const signal = classifySignal({ url: reply.url ?? "", text: text ?? reply.title ?? "" });
     if (signal && signal !== "readOnlyLimited") return issue(signal, `${reply.url}: ${(text ?? "").slice(0, 120)}`);
     return null;
-  };
-
-  /** The firehose's turn in a watch check: every due group read in the open browser, one after another. */
-  const readGroups = async (): Promise<StepOutcome> => {
-    if (!browser.session) return error("browserGone", "the window went away");
-    const minutes = options.groupMinutes ?? DEFAULT_GROUP_MINUTES;
-    if (minutes <= 0) return ok();
-    const rows = await context.twenty.list("agencyGroups", { socialAccountId: { eq: account.id } });
-    const due = dueGroups(rows, context.now?.() ?? new Date(), minutes);
-    let newPosts = 0;
-    for (const row of due) {
-      const ref = parseGroupRef(row.facebookGroupId!);
-      if (!ref.ok) continue;
-      log(`host ${account.accountName}: reading group ${row.name ?? row.facebookGroupId}`);
-      try {
-        const { output, saved } = await readGroupOnce(context, browser.session.current, account, toGroup(row), ref.group, { scrolls: 6, commentPosts: 5, live: false });
-        newPosts += saved.postsAdded;
-        log(`host ${account.accountName}: group ${row.facebookGroupId}: ${output.posts.length} new post(s), ${saved.commentsAdded} new comment(s)${output.problem ? `, stopped: ${output.problem.code}` : ""}`);
-        if (output.problem && ["checkpointed", "loginWall"].includes(output.problem.code)) return issue(output.problem.code, output.problem.detail);
-      } catch (failure) {
-        // One group failing (Twenty, a step) doesn't stop the others or the host; the next check tries it again.
-        log(`host ${account.accountName}: group ${row.facebookGroupId} not read: ${failure instanceof Error ? failure.message : String(failure)}`);
-      }
-    }
-    return ok(due.length ? `${due.length} group(s) read, ${newPosts} new post(s)` : undefined);
   };
 
   return {
@@ -269,19 +227,12 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
       return ok();
     }),
 
-    /**
-     * The host's check: is the day over, is the account still fine where it sells, then the firehose:
-     * each group the account is in that is due (`--groupMinutes`, default 60) is read in this same
-     * browser, and its new posts and comments go to Twenty (`log facebook read group`'s read, #27). Nothing is
-     * clicked (rule 8). A checkpoint or a sign-out on a group page is the account's issue.
-     */
+    /** The host's check: is the day over, and is the account still fine where it sells. */
     watchCheck: fromPromise<StepOutcome, LifecycleActorInputs["watchCheck"]>(async () => {
       if (dayOf(account).over && !options.bypassHours) return ok("the day is over", true);
       if (!browser.session) return error("browserGone", "the window went away");
       const page = await send("goto", [`${FB}/marketplace/you/selling`]);
-      const landed = problemOf({ action: "goto", url: `${FB}/marketplace/you/selling` }, page);
-      if (landed) return landed;
-      return await readGroups();
+      return problemOf({ action: "goto", url: `${FB}/marketplace/you/selling` }, page) ?? ok();
     }),
 
     act: fromPromise<StepOutcome, LifecycleActorInputs["act"]>(async ({ input }) =>

@@ -634,7 +634,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     don't yet take the platform in their name are listed in issue #20
     (github.com/matthewdonsemail-lab/log-cli/issues/20), to be scoped as matt
     decides.
-61. 2026-10-22 · matt: a Facebook group's posts and comments are read with
+61. 2026-10-22 · (replaced by rule 65, matt 2026-10-22) matt: a Facebook group's posts and comments are read with
     `log read group --account <a> --group <g>` (beside `log join group`) and
     live in Twenty in objects of their own, for Facebook groups only:
     `agencyGroupPosts` on the group's `agencyGroups` row, `agencyGroupComments`
@@ -645,7 +645,7 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     grew, and the cursor moves only after the posts and comments are saved
     (`src/group/read`, `docs/groupRead.md`). Nothing is clicked unless
     `--live`, which switches each post's comments to Newest (rule 8).
-62. 2026-10-22 · matt: "a firehose!" log-cli reads the groups on its own
+62. 2026-10-22 · (replaced by rule 65, matt 2026-10-22) matt: "a firehose!" log-cli reads the groups on its own
     and pours what it finds into Twenty; nothing has to ask it. The host
     (`log host start`, rule 35) reads, in every watch check, each group its
     account is a member of that is due (`--groupMinutes`, default 60, 0 reads
@@ -673,6 +673,19 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `src/warmup/facebookStages`, rule 49). What every platform's warm-up
     draws from stays shared: `src/warmup/persona`, `src/warmup/viewer`. Each
     area has an `index.ts` (`check:naming`). Top of this file.
+65. 2026-10-22 · matt: Facebook group listening is the triage job of
+    obris-dev/openmagpie#188, and it replaces rules 61 and 62. Everything is
+    indexed in OpenMagpie, and only the matches reach Twenty. An account joins
+    (`log facebook join group`). OpenMagpie polls, and its worker is `log
+    facebook poll --request`, a read in the account's open browser. OpenMagpie
+    keeps every post, its watch triages them (`semantic_filter`), and its
+    `webhook` sends the matches to Twenty's `socialListening`. log-cli then
+    acts on the NEW rows from the same account (not built yet). log-cli writes
+    only the group's `readCursor`, `lastReadAt` and `lastReadReason` to
+    Twenty. `agencyGroupPosts` and `agencyGroupComments` stay, unused. The host
+    reads no group on its own. Comment reading is kept for acting on a match,
+    for new posts only, and saves nothing. #28's scoring and alerts become
+    OpenMagpie watches. Spec: `docs/groupListening.md`.
 
 ## Checks
 

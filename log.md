@@ -4106,3 +4106,32 @@ What changed: the code is by platform first, `src/<platform>/<area>/<domain>`, a
 The moves are git renames. Every relative import in `src`, `scripts` and `bin` was recomputed from its file's real target (37 files). The new areas have barrels (`src/facebook/group/index.ts` and `src/facebook/warmup/index.ts`, namespaced: `answer`, `join`, `read`; `activities`, `stages`). Paths in docs, skills and comments, and the error catalog's `raisedIn` labels (`facebook/group/join.opening`…), follow the new layout. The worker test's path to the Python script goes one level further up. Rule 64 is in AGENTS.md's top section and its rules, and the MCP instructions (`RULES_REVIEWED_THROUGH` 64) and the join, read, poll and warmup tools cite it.
 Why: matt, 2026-10-22, on `docs/commandNaming.md`'s question 5: "this is correct src/facebook/group src/facebook/warmup because each has different approaches".
 Checked: `bun run check`: naming (every area has its index.ts), layout, browser parity, agent hooks, docs and typecheck pass, and 774 tests pass. No real URL was changed by the path rewrite: the vendor URLs with `facebook/facebook` are in files it didn't touch, and the docs' diffs are only the moved paths. Not checked live: nothing runs differently, it's the same code in new folders.
+
+## 2026-10-22 08:54Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/groupListening.md`: new file
+- `docs/groupRead.md`: edited
+- `skills/host/SKILL.md`: edited
+- `src/cli/host/helpers/hostActors.ts`: changed function hostActors · removed const DEFAULT_GROUP_MINUTES, function dueGroups
+- `src/cli/host/host.test.ts`: file deleted · removed const GROUP_ID, const T, const NOW, function step, test "a group is due when the account is a member, its id is known, and it wasn't read in the last groupMinutes; the longest-unread first", test "a watch check reads each due group in the host's own browser and saves its posts; a group read lately waits", test "a checkpoint on a group page is the account's issue"
+- `src/cli/host/index.ts`: changed const HOST_USAGE, const hostCommand
+- `src/cli/read/index.ts`: changed const READ_USAGE, function renderSaved, function renderRun, function readGroupOnce, const readCommand
+- `src/cli/read/read.test.ts`: added test "reads the new posts and comments in the open browser, keeps only the cursor in Twenty, and a second read finds nothing new" · removed test "reads the new posts and comments in the open browser, saves them, and a second read adds nothing"
+- `src/facebook/group/read/client.ts`: changed function readStateOf, interface SavedRead, function saveRead · removed const AGENCY_GROUP_POSTS, const AGENCY_GROUP_COMMENTS, type PostRow, type CommentRow, function nameOf, function postsOf, function postFields, function commentFields
+- `src/facebook/group/read/machine.ts`: changed const groupReadMachine
+- `src/facebook/group/read/readMachine.test.ts`: added test "saves the cursor, when and what it read, and no post or comment", test "a read stopped before its feed settled leaves the cursor" · removed test "saves the posts, then the comments, then moves the cursor; a second save adds nothing", test "a read stopped before its feed settled saves what it saw and leaves the cursor"
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+
+What changed: Facebook group listening follows obris-dev/openmagpie#188 (rule 65, which replaces rules 61 and 62, both kept and marked replaced). The spec is `docs/groupListening.md`, now approved with matt's four decisions.
+- **Twenty, cursor only:** the group read writes only the group's `readCursor`, `lastReadAt` and `lastReadReason`. `saveRead` returns `{ cursorMoved }` and no longer writes posts or comments. `readStateOf` no longer lists posts, and its `commentsRead` is empty.
+- **No more host group reading:** `dueGroups`, `readGroups`, `DEFAULT_GROUP_MINUTES` and `--groupMinutes` are gone, and the watch check is the Selling check again. `src/cli/host/host.test.ts`, which only tested the group reading, is removed.
+- **Comments:** read only for new posts (`commentTargets` gets the new posts alone), kept for acting on a match, saved nowhere.
+- **`log facebook read group`:** prints the posts and its line says only the cursor moved. `--show` prints the cursor, `lastReadAt` and `lastReadReason`.
+- **Docs and rules:** the MCP instructions' item 12 is rewritten for #188 and cite rule 65 (`RULES_REVIEWED_THROUGH` 65). `docs/groupRead.md`'s firehose section points to the spec, and the host skill says the host reads no group.
+- **#28:** its decision is posted on its issue (scoring and alerts become OpenMagpie watches).
+- **The two tables:** `agencyGroupPosts` and `agencyGroupComments` stay in Twenty, unused.
+Why: matt, 2026-10-22, going through the spec's four decisions: replace rules 61 and 62 with #188; leave the two tables unused; keep comment reading for step 5; #28's scoring and alerts become OpenMagpie watches. #188's own words: "everything indexed, only the matches go on".
+Checked: `bun run check`: every gate passes and 771 tests pass (the 3 host group-reading tests went with the feature). The rewritten tests show a read and `saveRead` write only the cursor and the last read, never a post or comment row. A stopped read leaves the cursor. `log facebook read group` keeps nothing but the cursor, a second read opens no post, and `--show` prints the cursor. Not checked live: a read or poll in Bethlehem's hours (from 12:00 UTC).

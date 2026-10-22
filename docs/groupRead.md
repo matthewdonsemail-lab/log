@@ -39,22 +39,9 @@ What changes is how it runs: on the account's browser through the driver, AdsPow
 6. **The command.** Done: `log facebook read group --account <a> --group <url|id> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json]`, and `--show` to read what Twenty holds (`src/cli/read`). `platform: "facebook"`. It refuses without the account's open browser (`groupBrowserNotOpen`) and outside its hours (rule 18). It is an MCP tool (`read`, a long run: watch its live log) with rules 8, 13, 18, 20, 22, 25, 26, 29, 35, 45 and 61, and it is in the generated README.
 7. **Tests.** Done: `src/facebook/group/read/readMachine.test.ts` covers a first read, reaching the cursor, a gap, a checkpoint, `--live` with a failed post, the comment targets, and saving to Twenty twice (the second adds nothing, and a stopped read leaves the cursor). `src/cli/read/read.test.ts` covers the command end to end with the step folders' HARs. Every lefthook gate passes.
 
-## The firehose (matt, 2026-10-22, rule 62)
+## How it runs now (rule 65)
 
-log-cli reads the groups on its own; nothing has to ask it.
-
-```mermaid
-flowchart LR
-  H[log facebook host start<br/>one browser per account, its day] -->|every watch check| D{groups due?<br/>member, not read in groupMinutes}
-  D -->|each| R[the group read<br/>in the same browser]
-  R --> T[(Twenty<br/>agencyGroupPosts<br/>agencyGroupComments)]
-  T --> W[log facebook poll --request<br/>a read in the open browser]
-  O[OpenMagpie facebook_group<br/>every poll cycle] -->|groups.search| W
-  W -->|post records| O
-```
-
-- **The host fills Twenty.** `log facebook host start --account <a>` keeps the account's browser open for its day (rule 35). Each watch check (`--watchMinutes`, default 12) reads, one after another, every group the account is a member of whose last read is older than `--groupMinutes` (default 60; 0 reads none), the longest-unread first. It is the same read as `log facebook read group` (`readGroupOnce`): new posts since the cursor, and the comments of posts whose count grew, nothing clicked. A read stops once the feed has shown 3 posts it has already seen, so a read that finds nothing new costs the group page and about one scroll. A checkpoint or a sign-out on a group page is the account's issue (the lifecycle's issue router); a group that fails otherwise is tried again at the next check.
-- **Everything else reads Twenty.** Nothing downstream drives a browser.
+`docs/groupListening.md` is the spec, from obris-dev/openmagpie#188, and it wins over this file where they differ. In short: OpenMagpie polls and its worker is `log facebook poll --request`, a read in the account's open browser. OpenMagpie keeps every post and triages it, and only the matches reach Twenty, in `socialListening`. log-cli keeps only the group's cursor in Twenty. The host reads no group on its own (rule 62, the firehose, was replaced the same day), and `agencyGroupPosts` / `agencyGroupComments` are no longer written.
 
 ## OpenMagpie's worker (obris-dev/openmagpie#178, #188)
 

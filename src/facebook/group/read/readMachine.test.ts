@@ -170,30 +170,26 @@ describe("group read machine", () => {
   });
 });
 
-describe("group read in Twenty", () => {
-  test("saves the posts, then the comments, then moves the cursor; a second save adds nothing", async () => {
+describe("group read in Twenty (rule 65: only the cursor)", () => {
+  test("saves the cursor, when and what it read, and no post or comment", async () => {
     const twenty = createMemoryTwenty({ agencyGroups: [{ id: "g1", facebookGroupId: GROUP }] });
     const { output } = await run([groupPage([unit("4", T + 40, 1)]), feedScroll([unit("3", T + 30)], false), postPage([comment("4", "41", T + 41)]), commentAnswer([], false)]);
     const now = new Date("2026-10-22T10:00:00Z");
-    expect(await saveRead(twenty, "g1", output, "read", now)).toEqual({ postsAdded: 2, postsUpdated: 0, commentsAdded: 1, commentsUpdated: 0, cursorMoved: true });
-    expect(twenty.rows.agencyGroupPosts!.map((r) => [r.facebookPostId, r.agencyGroupId, r.commentsReadCount ?? null])).toEqual([
-      ["3", "g1", null],
-      ["4", "g1", 1],
-    ]);
-    expect(twenty.rows.agencyGroupComments!.map((r) => [r.facebookCommentId, r.agencyGroupPostId])).toEqual([["41", twenty.rows.agencyGroupPosts![1]!.id]]);
-    expect(twenty.rows.agencyGroups![0]!.readCursor).toEqual({ lastPostId: "4", watermark: T + 40, idsAtWatermark: ["4"], seenIds: ["4", "3"] });
-
-    const state = await readStateOf(twenty, "g1");
-    expect(state).toEqual({ cursor: { lastPostId: "4", watermark: T + 40, idsAtWatermark: ["4"], seenIds: ["4", "3"] }, commentsRead: { "4": 1 } });
-    expect(await saveRead(twenty, "g1", output, "read", now)).toEqual({ postsAdded: 0, postsUpdated: 0, commentsAdded: 0, commentsUpdated: 0, cursorMoved: true });
+    expect(await saveRead(twenty, "g1", output, "read; 2 new of 2 seen", now)).toEqual({ cursorMoved: true });
+    expect(twenty.rows.agencyGroupPosts).toBeUndefined();
+    expect(twenty.rows.agencyGroupComments).toBeUndefined();
+    expect(twenty.rows.agencyGroups![0]).toMatchObject({
+      readCursor: { lastPostId: "4", watermark: T + 40, idsAtWatermark: ["4"], seenIds: ["4", "3"] },
+      lastReadAt: now.toISOString(),
+      lastReadReason: "read; 2 new of 2 seen",
+    });
+    expect(await readStateOf(twenty, "g1")).toEqual({ cursor: { lastPostId: "4", watermark: T + 40, idsAtWatermark: ["4"], seenIds: ["4", "3"] }, commentsRead: {} });
   });
 
-  test("a read stopped before its feed settled saves what it saw and leaves the cursor", async () => {
+  test("a read stopped before its feed settled leaves the cursor", async () => {
     const twenty = createMemoryTwenty({ agencyGroups: [{ id: "g1", facebookGroupId: GROUP, readCursor: { lastPostId: "1", watermark: T + 10, idsAtWatermark: ["1"] } }] });
     const { output } = await run([groupPage([unit("4", T + 40)]), { ok: true, url: "https://www.facebook.com/login/" }], { cursor: { lastPostId: "1", watermark: T + 10, idsAtWatermark: ["1"] } });
-    const saved = await saveRead(twenty, "g1", output, "stopped", new Date());
-    expect(saved.postsAdded).toBe(1);
-    expect(saved.cursorMoved).toBe(false);
+    expect(await saveRead(twenty, "g1", output, "stopped", new Date())).toEqual({ cursorMoved: false });
     expect(twenty.rows.agencyGroups![0]!.readCursor).toEqual({ lastPostId: "1", watermark: T + 10, idsAtWatermark: ["1"] });
   });
 });

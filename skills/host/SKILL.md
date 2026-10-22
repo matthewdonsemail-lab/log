@@ -24,17 +24,14 @@ description: Run an account's whole lifecycle (rule 35) in ONE browser kept open
 ## The routine
 
 ```bash
-log facebook host start --account <a> [--live] [--likes] --gapMinutes 2 --watchMinutes 2 [--groupMinutes 60]   # watched; default 150 / 12 / 60
+log facebook host start --account <a> [--live] [--likes] --gapMinutes 2 --watchMinutes 2   # watched; default 150 / 12
 log facebook host status [--account <a>]          # state, warm-up done, opens today, every close and its reason
 log facebook host send --account <a> PERSON_DONE  # after clearing a checkpoint by hand in the window
 log facebook host send --account <a> SHUTDOWN
 ```
 
-Every watch check also reads each group the account is a member of that is
-due (`--groupMinutes`, default 60; 0 reads none): the group firehose (rule 62).
-The posts and comments go to `agencyGroupPosts` and `agencyGroupComments`, and
-OpenMagpie's worker is `log facebook poll --request` (rule 63), a read in the open browser. A checkpoint on
-a group page is the account's issue, as on any page.
+The host reads no Facebook group on its own: OpenMagpie polls, and its worker
+`log facebook poll --request` reads in the browser the host holds (rule 65).
 
 Run `start` through Monitor (rule 26). A restart reads
 `~/.logCli/runs/host/<a>/progress.json` and resumes: the warm-up activities

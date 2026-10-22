@@ -6,19 +6,19 @@
  *       in the account's OPEN browser (rule 35: `log inspect start` or `log facebook host start`
  *       opened it; a read never launches its own): opens the group, scrolls its feed
  *       until the last read's posts show (or --scrolls, default 6), and keeps only the
- *       posts newer than the group's cursor. Then it opens each post whose comment count
- *       grew (at most --commentPosts, default 5) and reads its comments. Every post and
+ *       posts newer than the group's cursor. Then it opens each new post that has comments
+ *       (at most --commentPosts, default 5) and reads them (kept for #188's step 5). Every post and
  *       comment comes from what the page loaded, read from each step's own HAR (rule 22).
  *       Nothing is clicked without --live; --live switches each post's comments to
  *       Newest (two clicks, rule 8), which shows every comment, where the page's own
  *       "Most relevant" shows some.
  *   log facebook read group --account <a> --group <g> --show
- *       the group's saved posts and comments from Twenty, and nothing opened.
+ *       where the reads of the group have got to (its cursor in Twenty), and nothing opened.
  *   OpenMagpie's worker is `log facebook poll` (`src/cli/poll`), which reads through the same machine.
  *
- * The posts go to `agencyGroupPosts`, their comments to `agencyGroupComments`, and only
- * then does the group's `readCursor` move (`facebook/group/read/client.ts`). Every step prints a
- * line as it happens (rule 26).
+ * Nothing but the group's cursor goes to Twenty (rule 65, obris-dev/openmagpie#188): the posts
+ * are printed here and go to OpenMagpie through `poll`, which keeps every one and sends its matches
+ * to `socialListening` (`facebook/group/read/client.ts`). Every step prints a line as it happens (rule 26).
  */
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -27,7 +27,7 @@ import { readCurrentInspect } from "../../browser/inspect/index.ts";
 import type { CurrentInspect } from "../../browser/inspect/index.ts";
 import { ensureGroup, parseGroupRef } from "../../facebook/group/join/index.ts";
 import type { Group, GroupRef } from "../../facebook/group/join/index.ts";
-import { AGENCY_GROUP_COMMENTS, AGENCY_GROUP_POSTS, groupReadMachine, readStateOf, saveRead } from "../../facebook/group/read/index.ts";
+import { cursorOf, groupReadMachine, readStateOf, saveRead } from "../../facebook/group/read/index.ts";
 import type { GroupReadOutput, ReadStepInput, ReadStepReply, SavedRead } from "../../facebook/group/read/index.ts";
 import type { ErrorCode } from "../../errors/catalog/index.ts";
 import { homeOf, outsideActiveHours } from "../../marketplace/home/index.ts";
@@ -44,7 +44,7 @@ export * from "./helpers/index.ts";
 export const READ_USAGE = [
   "Usage: log facebook read group --account <accountName> --group <group url or id> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json]",
   "       log facebook read group --account <accountName> --group <g> --show [--json]",
-  "Reads the group's new posts (since its cursor in Twenty) and the comments of the posts whose comments grew, in the account's open browser.",
+  "Reads the group's new posts (since its cursor in Twenty) and the comments of the new posts that have some, in the account's open browser. Only the cursor is saved to Twenty (rule 65); --show prints it.",
   "--scrolls: feed scrolls at most (default 6). --commentPosts: posts whose comments are read at most (default 5; 0 reads none).",
   "--worker (OpenMagpie's call) is refused here: it became its own command, log facebook poll (its usage).",
   "--live: each post's comments are switched to Newest first (two clicks, rule 8); without it nothing is clicked and the page's Most relevant comments are read.",
@@ -52,18 +52,19 @@ export const READ_USAGE = [
   "The account's browser must be open (log inspect start --account <a>, or log facebook host start): a read is a step in it (rule 35).",
 ].join("\n");
 
-/** The group's saved posts, newest first, with their comments, as `--show` prints them. */
+/** Where the reads of the group have got to, from its Twenty row, as `--show` prints it (rule 65: posts aren't kept there). */
 async function renderSaved(twenty: TwentyClient, groupRowId: string, name: string): Promise<{ text: string; json: unknown }> {
-  const posts = (await twenty.list(AGENCY_GROUP_POSTS, { agencyGroupId: { eq: groupRowId } })).sort((a, b) => String(b.postedAt ?? "").localeCompare(String(a.postedAt ?? "")));
-  const comments = posts.length ? await twenty.list(AGENCY_GROUP_COMMENTS, { agencyGroupPostId: { in: posts.map((p) => p.id) } }) : [];
-  const lines = [`Group ${name}: ${posts.length} post(s) saved, ${comments.length} comment(s).`];
-  for (const post of posts.slice(0, 30)) {
-    const own = comments.filter((c) => c.agencyGroupPostId === post.id);
-    lines.push(`  ${String(post.postedAt ?? "").slice(0, 16)} ${post.authorName || "anonymous"}: ${post.name}  [${post.commentCount ?? "?"} comment(s), ${own.length} saved]`);
-    for (const c of own.sort((a, b) => String(a.commentedAt ?? "").localeCompare(String(b.commentedAt ?? ""))).slice(0, 5)) lines.push(`      ${c.depth ? "↳ " : ""}${c.authorName || "anonymous"}: ${c.name}`);
-  }
-  if (posts.length > 30) lines.push(`  … ${posts.length - 30} older`);
-  return { text: lines.join("\n"), json: { posts, comments } };
+  const row = await twenty.get("agencyGroups", groupRowId);
+  const cursor = cursorOf(row?.readCursor);
+  const lines = [
+    `Group ${name}: ${row?.lastReadAt ? `last read ${row.lastReadAt.slice(0, 16)}Z` : "never read"}.`,
+    cursor.watermark === null && !cursor.seenIds?.length
+      ? "  No cursor yet: the first read keeps every post it sees."
+      : `  Cursor: newest post ${cursor.lastPostId ?? "?"} at ${cursor.watermark === null ? "?" : new Date(cursor.watermark * 1000).toISOString().slice(0, 16)}Z, ${cursor.seenIds?.length ?? 0} post id(s) already seen.`,
+    ...(row?.lastReadReason ? [`  Last read: ${row.lastReadReason}`] : []),
+    "  The posts themselves go to OpenMagpie (log facebook poll); only its matches reach Twenty, in socialListening (rule 65).",
+  ];
+  return { text: lines.join("\n"), json: { lastReadAt: row?.lastReadAt ?? null, lastReadReason: row?.lastReadReason ?? null, cursor } };
 }
 
 /** The run's end as one line for `agencyGroups.lastReadReason`. Pure. */
@@ -82,7 +83,7 @@ function renderRun(output: GroupReadOutput, saved: SavedRead, live: boolean): st
   if (output.gap) lines.push("  The scrolls ran out before the last read's posts showed: posts between may be missing (raise --scrolls).");
   const rejected = Object.entries(output.rejected).map(([why, n]) => `${why} ${n}`);
   if (rejected.length) lines.push(`  rejected (never patched): ${rejected.join(", ")}`);
-  lines.push(`  Twenty: ${saved.postsAdded} post(s) added, ${saved.postsUpdated} updated, ${saved.commentsAdded} comment(s) added, ${saved.commentsUpdated} updated; cursor ${saved.cursorMoved ? "moved" : "kept"}.`);
+  lines.push(`  Twenty: the cursor ${saved.cursorMoved ? "moved" : "stayed"}; no post or comment is saved there (rule 65).`);
   for (const step of output.steps) lines.push(`  ${step.ok ? "✓" : "✗"} ${step.step}${step.detail ? `: ${step.detail}` : ""}${step.folder ? `  (${step.folder})` : ""}`);
   return lines.join("\n");
 }
@@ -99,8 +100,7 @@ export interface ReadOptions {
 
 /**
  * One read of one group in a session that is already open, with no gates of its own: the machine,
- * then Twenty (posts, comments, then the cursor). `log facebook read group` reads through it after its gates;
- * the host (`log facebook host start`, rule 35) through it in the browser it holds, inside its hours.
+ * then the cursor in Twenty (rule 65). `log facebook read group` and `log facebook poll` read through it after their gates.
  */
 export async function readGroupOnce(context: CommandContext, current: CurrentInspect, account: FacebookAccount, group: Group, ref: GroupRef, options: ReadOptions): Promise<{ output: GroupReadOutput; saved: SavedRead }> {
   const state = await readStateOf(context.twenty, group.id);
@@ -149,8 +149,8 @@ export async function readGroupOnce(context: CommandContext, current: CurrentIns
   actor.start();
   const output = await toPromise(actor);
 
-  context.err("Saving to Twenty: posts first, then comments, then the cursor.");
-  const saved = await saveRead(context.twenty, group.id, output, readReason(output, current.runDir), context.now?.() ?? new Date(), (line) => context.err(line));
+  const saved = await saveRead(context.twenty, group.id, output, readReason(output, current.runDir), context.now?.() ?? new Date());
+  context.err(`Twenty: the group's cursor ${saved.cursorMoved ? "moved" : "stayed"} (rule 65: only the cursor is kept there).`);
   return { output, saved };
 }
 
@@ -198,7 +198,7 @@ export const readCommand: Command = {
   usage: READ_USAGE,
   platform: "facebook",
   name: "read",
-  summary: "Read a Facebook group's new posts and their comments as one account, in its open browser; saved to agencyGroupPosts and agencyGroupComments, then the cursor moves (#27)",
+  summary: "Read a Facebook group's new posts and their comments as one account, in its open browser, by hand; only the group's cursor is saved to Twenty (#27, rule 65)",
   args: "group --account <a> --group <g> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json] | --show",
   run: runRead,
 };

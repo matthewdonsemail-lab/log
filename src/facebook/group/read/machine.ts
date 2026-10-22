@@ -8,7 +8,7 @@
  *   opening (goto the group) ─▶ the first posts, from the page's HTML
  *   scrolling (scroll 2 700) ─▶ each feed answer's posts ─┐
  *      ▲───── until the last read's posts show, the feed ends, or maxScrolls ─┘
- *   settled ─▶ the new posts and the cursor after them; the posts whose comments grew
+ *   settled ─▶ the new posts and the cursor after them; the new posts that have comments (rule 65: no counts kept)
  *   for each of those (at most maxCommentPosts):
  *      openingPost (goto its page) ─▶ the first comments, from its HTML
  *        ├── --live: sorting ("Most relevant") ─▶ newest ("Newest", rule 8)
@@ -187,7 +187,7 @@ export const groupReadMachine = setup({
         target: "nextPost",
         actions: assign(({ context }) => {
           const { posts, cursor } = newPosts(context.seen, context.cursor);
-          return { fresh: posts, cursorAfter: cursor, feedDone: true, targets: commentTargets(context.seen, posts, context.commentsRead, context.maxCommentPosts) };
+          return { fresh: posts, cursorAfter: cursor, feedDone: true, targets: commentTargets(posts, posts, context.commentsRead, context.maxCommentPosts) };
         }),
       },
     },

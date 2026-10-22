@@ -53,29 +53,30 @@ describe("log facebook read group", () => {
     expect(sent).toEqual([]);
   });
 
-  test("reads the new posts and comments in the open browser, saves them, and a second read adds nothing", async () => {
+  test("reads the new posts and comments in the open browser, keeps only the cursor in Twenty, and a second read finds nothing new", async () => {
     writeCurrentInspect({ account: "galwayOne", runDir: "/runs/inspect/galwayOne", commandsPath: "/c", repliesPath: "/r", startedAt: "2026-10-22T10:00:00.000Z" });
     const replies = () => [step(groupPage([unit("2", T + 20, 1)])), step(feedScroll([unit("1", T + 10)], false)), step(postPage([comment("2", "21", T + 21)])), step(commentAnswer([], false))];
     const first = await run(["facebook", "read", "group", "--account", "galwayOne", "--group", GROUP], replies());
     expect(first.code).toBe(0);
     expect(first.sent.map((s) => s.action)).toEqual(["goto", "scroll", "goto", "scrollIn"]);
     expect(first.out).toContain("2 new post(s) of 2");
-    expect(first.out).toContain("2 post(s) added, 0 updated, 1 comment(s) added");
+    expect(first.out).toContain("comments on 2: 1 of 1");
+    expect(first.out).toContain("Twenty: the cursor moved; no post or comment is saved there (rule 65)");
     expect(first.err).toContain("a first read");
     const twenty = first.twenty;
-    expect(twenty.rows.agencyGroupPosts).toHaveLength(2);
+    expect(twenty.rows.agencyGroupPosts).toBeUndefined();
     expect(twenty.rows.agencyGroups![0]).toMatchObject({ facebookGroupId: GROUP_ID, readCursor: { lastPostId: "2", watermark: T + 20 } });
 
-    // The same feed again: the cursor is reached on the page itself, nothing is new, and post 2's comments didn't grow.
+    // The same feed again: the cursor is reached on the page itself, nothing is new, so no post is opened for its comments.
     const second = await run(["facebook", "read", "group", "--account", "galwayOne", "--group", GROUP], [step(groupPage([unit("2", T + 20, 1), unit("1", T + 10)]))], twenty);
     expect(second.code).toBe(0);
     expect(second.sent.map((s) => s.action)).toEqual(["goto"]);
     expect(second.out).toContain("0 new post(s) of 2");
-    expect(twenty.rows.agencyGroupPosts).toHaveLength(2);
-    expect(twenty.rows.agencyGroupComments).toHaveLength(1);
+    expect(twenty.rows.agencyGroupComments).toBeUndefined();
 
     const shown = await run(["facebook", "read", "group", "--account", "galwayOne", "--group", GROUP, "--show"], [], twenty);
-    expect(shown.out).toContain("2 post(s) saved, 1 comment(s)");
+    expect(shown.out).toContain("Cursor: newest post 2");
+    expect(shown.out).toContain("2 post id(s) already seen");
     expect(shown.sent).toEqual([]);
   });
 
