@@ -17,6 +17,7 @@ import { join } from "node:path";
 import { AGENT_HOOKS, hooksFor, MCP_SERVER_NAME, toolIsHooked } from "../../src/agentHooks/registry/index.ts";
 import type { HookEvent, HookHost } from "../../src/agentHooks/registry/index.ts";
 import { PAGE_STATES } from "../../src/browser/flow/helpers/pageState.ts";
+import { isPlatform } from "../../src/cli/runner/helpers/index.ts";
 import { COMMANDS } from "../../src/cli/runner/index.ts";
 import { LONG_RUNNING, toolsFromCommands } from "../../src/mcp/server/helpers/toolsFromCommands.ts";
 import { toolsFromFlows } from "../../src/mcp/server/helpers/toolsFromFlows.ts";
@@ -47,7 +48,7 @@ try {
   const samples: Record<HookEvent, Record<string, unknown>> = {
     SessionStart: { hook_event_name: "SessionStart", source: "startup" },
     UserPromptSubmit: { hook_event_name: "UserPromptSubmit", prompt: "check" },
-    PreToolUse: { hook_event_name: "PreToolUse", tool_name: "Bash", tool_input: { command: "bun bin/log.ts warmup facebook feed run | tail -5" } },
+    PreToolUse: { hook_event_name: "PreToolUse", tool_name: "Bash", tool_input: { command: "bun bin/log.ts facebook warmup feed run | tail -5" } },
     PostToolUse: { hook_event_name: "PostToolUse", tool_name: "Bash", tool_input: { command: "echo" } },
     Stop: { hook_event_name: "Stop", stop_hook_active: false },
   };
@@ -102,7 +103,11 @@ if (!serverSource.includes(`name: "${MCP_SERVER_NAME}"`)) problems.push(`src/mcp
 
 // 4. Every resolver the hooks hand the agent is a real command.
 for (const state of PAGE_STATES) {
-  for (const match of state.resolve.matchAll(/`log ([a-zA-Z]+)/g)) if (!commandNames.has(match[1])) problems.push(`page state ${state.id} resolves with \`log ${match[1]}\`, which isn't a command`);
+  // The platform first (rule 63): `log facebook connect` resolves with connect.
+  for (const match of state.resolve.matchAll(/`log ([a-zA-Z]+)(?: ([a-zA-Z]+))?/g)) {
+    const name = isPlatform(match[1]) && match[2] ? match[2] : match[1];
+    if (!commandNames.has(name)) problems.push(`page state ${state.id} resolves with \`log ${match[1]}${match[2] ? ` ${match[2]}` : ""}\`, which isn't a command`);
+  }
 }
 
 if (problems.length) {

@@ -37,7 +37,7 @@ async function run(argv: string[], replies: InspectStepResult[] = [], twenty = m
 
 describe("parseReadArgs", () => {
   test("takes group, --account, --group, --scrolls, --commentPosts, --live, --show", () => {
-    expect(parseReadArgs(["group", "--account", "a", "--group", "1"])).toEqual({ ok: true, target: "group", account: "a", group: "1", scrolls: DEFAULT_SCROLLS, commentPosts: DEFAULT_COMMENT_POSTS, live: false, show: false, bypass: false, json: false, worker: null });
+    expect(parseReadArgs(["group", "--account", "a", "--group", "1"])).toEqual({ ok: true, target: "group", account: "a", group: "1", scrolls: DEFAULT_SCROLLS, commentPosts: DEFAULT_COMMENT_POSTS, live: false, show: false, bypass: false, json: false });
     expect(parseReadArgs(["group", "--scrolls", "2", "--commentPosts", "0"])).toMatchObject({ ok: true, scrolls: 2, commentPosts: 0 });
     expect(parseReadArgs(["group", "--scrolls", "x"])).toMatchObject({ ok: false });
     expect(parseReadArgs(["group", "--live", "--show"])).toMatchObject({ ok: false });
@@ -45,9 +45,9 @@ describe("parseReadArgs", () => {
   });
 });
 
-describe("log read group", () => {
+describe("log facebook read group", () => {
   test("never launches a browser: without the account's open one it is refused", async () => {
-    const { code, err, sent } = await run(["read", "group", "--account", "galwayOne", "--group", GROUP]);
+    const { code, err, sent } = await run(["facebook", "read", "group", "--account", "galwayOne", "--group", GROUP]);
     expect(code).toBe(1);
     expect(err).toContain("groupBrowserNotOpen");
     expect(sent).toEqual([]);
@@ -56,7 +56,7 @@ describe("log read group", () => {
   test("reads the new posts and comments in the open browser, saves them, and a second read adds nothing", async () => {
     writeCurrentInspect({ account: "galwayOne", runDir: "/runs/inspect/galwayOne", commandsPath: "/c", repliesPath: "/r", startedAt: "2026-10-22T10:00:00.000Z" });
     const replies = () => [step(groupPage([unit("2", T + 20, 1)])), step(feedScroll([unit("1", T + 10)], false)), step(postPage([comment("2", "21", T + 21)])), step(commentAnswer([], false))];
-    const first = await run(["read", "group", "--account", "galwayOne", "--group", GROUP], replies());
+    const first = await run(["facebook", "read", "group", "--account", "galwayOne", "--group", GROUP], replies());
     expect(first.code).toBe(0);
     expect(first.sent.map((s) => s.action)).toEqual(["goto", "scroll", "goto", "scrollIn"]);
     expect(first.out).toContain("2 new post(s) of 2");
@@ -67,44 +67,21 @@ describe("log read group", () => {
     expect(twenty.rows.agencyGroups![0]).toMatchObject({ facebookGroupId: GROUP_ID, readCursor: { lastPostId: "2", watermark: T + 20 } });
 
     // The same feed again: the cursor is reached on the page itself, nothing is new, and post 2's comments didn't grow.
-    const second = await run(["read", "group", "--account", "galwayOne", "--group", GROUP], [step(groupPage([unit("2", T + 20, 1), unit("1", T + 10)]))], twenty);
+    const second = await run(["facebook", "read", "group", "--account", "galwayOne", "--group", GROUP], [step(groupPage([unit("2", T + 20, 1), unit("1", T + 10)]))], twenty);
     expect(second.code).toBe(0);
     expect(second.sent.map((s) => s.action)).toEqual(["goto"]);
     expect(second.out).toContain("0 new post(s) of 2");
     expect(twenty.rows.agencyGroupPosts).toHaveLength(2);
     expect(twenty.rows.agencyGroupComments).toHaveLength(1);
 
-    const shown = await run(["read", "group", "--account", "galwayOne", "--group", GROUP, "--show"], [], twenty);
+    const shown = await run(["facebook", "read", "group", "--account", "galwayOne", "--group", GROUP, "--show"], [], twenty);
     expect(shown.out).toContain("2 post(s) saved, 1 comment(s)");
     expect(shown.sent).toEqual([]);
   });
 
-  test("--worker answers OpenMagpie's groups.search from Twenty at once, and opens nothing: the host fills it", async () => {
-    writeCurrentInspect({ account: "galwayOne", runDir: "/runs/inspect/galwayOne", commandsPath: "/c", repliesPath: "/r", startedAt: "2026-10-22T10:00:00.000Z" });
-    const twenty = marketplaceFixture();
-    twenty.rows.agencyGroups = [{ id: "g1", name: "Recommendations of Bethlehem", socialAccountId: "galwayOne", facebookGroupId: GROUP_ID, groupUrl: GROUP, joinStatus: "MEMBER", lastReadAt: new Date().toISOString() }];
-    // What a host's read saved.
-    await run(["read", "group", "--account", "galwayOne", "--group", GROUP], [step(groupPage([unit("2", T + 20, 4), unit("1", T + 10)])), step(feedScroll([], false))], twenty);
-    expect(twenty.rows.agencyGroupPosts).toHaveLength(2);
-
-    const { code, out, err, sent } = await run(["read", "group", "--worker", JSON.stringify({ action: "groups.search", params: { group_ids: [GROUP_ID], terms: ["post 2"], limit: 3 } })], [], twenty);
-    expect(code).toBe(0);
-    expect(sent).toEqual([]);
-    expect(err).toContain("OpenMagpie asks for 1 group(s), up to 3 post(s) each, matching post 2");
-    const answer = JSON.parse(out);
-    expect(answer).toMatchObject({ ok: true, new_cookies: [] });
-    expect(answer.result.errors).toEqual([]);
-    expect(answer.result.results.map((r: { external_id: string; metrics: { comments: number | null }; matched_terms: string[] }) => [r.external_id, r.metrics.comments, r.matched_terms])).toEqual([["2", 4, ["post 2"]]]);
-  });
-
-  test("--worker says why: a group no account is in, and one no host has read yet", async () => {
-    const none = await run(["read", "group", "--worker", JSON.stringify({ action: "groups.search", params: { group_ids: [GROUP_ID] } })]);
-    expect(JSON.parse(none.out)).toMatchObject({ ok: false, code: "groupNoAccount" });
-    const twenty = marketplaceFixture();
-    twenty.rows.agencyGroups = [{ id: "g1", socialAccountId: "galwayOne", facebookGroupId: GROUP_ID, joinStatus: "MEMBER" }];
-    const unread = await run(["read", "group", "--worker", JSON.stringify({ action: "groups.search", params: { group_ids: [GROUP_ID] } })], [], twenty);
-    expect(JSON.parse(unread.out)).toMatchObject({ ok: true, result: { results: [], errors: [{ group_id: GROUP_ID, code: "groupNotReadYet" }] } });
-    expect(unread.sent).toEqual([]);
-    expect(parseReadArgs(["group", "--worker", "{}", "--live"])).toMatchObject({ ok: false });
+  test("--worker became its own command: log facebook poll --request", async () => {
+    const result = await run(["facebook", "read", "group", "--worker", "{}"]);
+    expect(result.code).toBe(1);
+    expect(result.err).toContain("--worker became its own command: log facebook poll --request <request json>");
   });
 });

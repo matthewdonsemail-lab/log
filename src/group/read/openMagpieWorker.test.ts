@@ -2,13 +2,23 @@ import { describe, expect, test } from "bun:test";
 import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { parseWorkerRequest, readFreshness, recordsOf, uniquePosts } from "./index.ts";
+import { parseWorkerRequest, recordsOf, scrollsFor, workerCodeOf } from "./index.ts";
+import type { GroupPost } from "./index.ts";
 
 const GROUP = "4191018610937243";
 
-/** A saved post row, invented values. */
-const row = (id: string, postedAt: string, text: string, commentCount: number | null = 0) =>
-  ({ id: `r${id}`, facebookPostId: id, postedAt, text, authorName: `Author ${id}`, authorFacebookId: `u${id}`, authorUrl: "", permalink: `https://www.facebook.com/groups/${GROUP}/posts/${id}/`, commentCount }) as never;
+/** A post as a read saw it, invented values. */
+const post = (id: string, createdAt: string, text: string, commentCount: number | null = 0): GroupPost => ({
+  postId: id,
+  groupId: GROUP,
+  createdTime: Date.parse(createdAt) / 1000,
+  createdAt,
+  author: { id: `u${id}`, name: `Author ${id}`, url: "" },
+  text,
+  permalink: `https://www.facebook.com/groups/${GROUP}/posts/${id}/`,
+  feedbackId: `fb${id}`,
+  commentCount,
+});
 
 describe("OpenMagpie's facebook_group worker contract", () => {
   test("takes groups.search with its group ids, terms and limit; refuses anything else", () => {
@@ -21,9 +31,9 @@ describe("OpenMagpie's facebook_group worker contract", () => {
     expect(parseWorkerRequest(JSON.stringify({ action: "groups.search", params: { group_ids: ["recommendationsOfBethlehem"] } }))).toMatchObject({ code: "bad_request" });
   });
 
-  test("answers with the newest saved posts in from_record's shape, only those matching a term", () => {
-    const posts = [row("1", "2026-10-21T21:05:00.000Z", "Trash company recommendations?", 16), row("2", "2026-10-21T22:28:00.000Z", ""), row("3", "2026-10-21T21:07:00.000Z", "Fresh mozzarella")];
-    const all = recordsOf(posts, GROUP, [], 20);
+  test("answers with the posts the poll's read saw, in from_record's shape, only those matching a term", () => {
+    const posts = [post("1", "2026-10-21T21:05:00.000Z", "Trash company recommendations?", 16), post("2", "2026-10-21T22:28:00.000Z", ""), post("3", "2026-10-21T21:07:00.000Z", "Fresh mozzarella")];
+    const all = recordsOf(posts, [], 20);
     expect(all.map((r) => r.external_id)).toEqual(["2", "3", "1"]);
     expect(all[2]).toEqual({
       record_id: "1",
@@ -36,23 +46,17 @@ describe("OpenMagpie's facebook_group worker contract", () => {
       metrics: { likes: null, comments: 16, shares: null },
       matched_terms: [],
     });
-    expect(recordsOf(posts, GROUP, ["TRASH", "pizza"], 20).map((r) => [r.external_id, r.matched_terms])).toEqual([["1", ["TRASH"]]]);
-    expect(recordsOf(posts, GROUP, [], 1).map((r) => r.external_id)).toEqual(["2"]);
+    expect(recordsOf(posts, ["TRASH", "pizza"], 20).map((r) => [r.external_id, r.matched_terms])).toEqual([["1", ["TRASH"]]]);
+    expect(recordsOf(posts, [], 1).map((r) => r.external_id)).toEqual(["2"]);
   });
 
-  test("the same group on two accounts answers each post once", () => {
-    const posts = [row("1", "2026-10-21T21:05:00.000Z", "a", 1), row("1", "2026-10-21T21:05:00.000Z", "a", 3), row("2", "2026-10-21T21:06:00.000Z", "b")];
-    expect(uniquePosts(posts).map((p) => [(p as { facebookPostId: string }).facebookPostId, (p as { commentCount: number }).commentCount])).toEqual([
-      ["1", 3],
-      ["2", 0],
-    ]);
+  test("a checkpoint, a login wall or a video selfie is auth_required; the rest keep log-cli's code", () => {
+    expect(["checkpointed", "loginWall", "videoSelfieRequired"].map(workerCodeOf)).toEqual(["auth_required", "auth_required", "auth_required"]);
+    expect(workerCodeOf("outsideActiveHours")).toBe("outsideActiveHours");
   });
 
-  test("says when no host has read the group, or not for three hours", () => {
-    const now = new Date("2026-10-22T12:00:00.000Z");
-    expect(readFreshness([null], now)).toMatchObject({ code: "groupNotReadYet" });
-    expect(readFreshness(["2026-10-22T08:30:00.000Z"], now)).toMatchObject({ code: "groupReadStale" });
-    expect(readFreshness([null, "2026-10-22T08:30:00.000Z", "2026-10-22T11:00:00.000Z"], now)).toBeNull();
+  test("about three posts a scroll, from 1 to 6", () => {
+    expect([1, 3, 4, 20, 100].map(scrollsFor)).toEqual([1, 1, 2, 6, 6]);
   });
 });
 
@@ -70,7 +74,7 @@ describe("python/openMagpie/facebookWorker.py", () => {
   test("passes only the action and params on: OpenMagpie's cookies, proxy and account never reach log-cli", () => {
     const { code, out, err } = worker(JSON.stringify({ account_id: "openmagpie", action: "groups.search", cookies: [{ name: "xs", value: "secret" }], proxy: "http://u:p@h:1", params: { group_ids: [GROUP], terms: [], limit: 20 } }));
     expect(code).toBe(0);
-    expect(out.result.args.slice(0, 3)).toEqual(["read", "group", "--worker"]);
+    expect(out.result.args.slice(0, 3)).toEqual(["facebook", "poll", "--request"]);
     expect(JSON.parse(out.result.args[3])).toEqual({ action: "groups.search", params: { group_ids: [GROUP], terms: [], limit: 20 } });
     expect(JSON.stringify(out)).not.toContain("secret");
     expect(err).toContain("a progress line");

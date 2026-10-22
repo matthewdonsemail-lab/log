@@ -10,7 +10,7 @@ describe("catalog", () => {
   });
 
   test("flags come from the usage, once each, with their value", () => {
-    expect(flagsOf("log connect --account <accountName> [--noPrompt] [--wait <seconds>] [--account <a>]")).toEqual([
+    expect(flagsOf("log facebook connect --account <accountName> [--noPrompt] [--wait <seconds>] [--account <a>]")).toEqual([
       { name: "account", value: "accountName" },
       { name: "noPrompt", value: null },
       { name: "wait", value: "seconds" },
@@ -63,7 +63,7 @@ describe("readme", () => {
   test("the section replaces the old one and is idempotent", () => {
     const entries = catalog(COMMANDS);
     const section = renderSurface(entries, [], diagrams(entries, []));
-    expect(section).toContain("| [`log connect`](#log-connect) |");
+    expect(section).toContain("| [`log facebook connect`](#log-facebook-connect) |");
     expect(section).toContain("```mermaid");
     const first = withSurface("# x\n\nintro\n\n## Twenty\n\nrest\n", section);
     expect(first.indexOf("<!-- surface:start")).toBeLessThan(first.indexOf("## Twenty"));

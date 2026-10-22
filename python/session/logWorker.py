@@ -11,7 +11,7 @@ one JSON result out. The request is a JSON object in argv[1]:
 The result is the only thing written to stdout (one JSON line). Progress goes
 to stderr.
 
-Every action is read-only on Facebook. Signing in is `log connect`, run by
+Every action is read-only on Facebook. Signing in is `log facebook connect`, run by
 the connect machine through python/session/connectSession.py.
 """
 from __future__ import annotations

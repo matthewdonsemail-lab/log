@@ -23,7 +23,7 @@ export interface HostProgress {
   snapshot: unknown
 }
 
-/** What `log host send` writes to the control file: one event per line, for the running machine. */
+/** What `log facebook host send` writes to the control file: one event per line, for the running machine. */
 export type HostControl = Extract<LifecycleEvent, { type: 'PERSON_DONE' | 'PAUSE' | 'RESUME' | 'SHUTDOWN' | 'LOST' }> | Extract<LifecycleEvent, { type: 'ACT' }>
 
 /** A Twenty field the host writes as the account passes a milestone. */

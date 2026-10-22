@@ -25,13 +25,13 @@ The twitter-controller reads the same `socialAccounts` (only `accountName`,
 | WARMING | yes, within its cap | by hand | |
 | LIMITED | no | `rateLimited` seen on a page | after the limit |
 | PAUSED | no | by hand | by hand |
-| NEEDS_LOGIN | no (may sign in) | `sessionExpired`, `loginWall`, `neverConnected`, `cookieInvalid` | `log connect` |
-| CHECKPOINT | no (may sign in) | `checkpointed`, `unconfirmedUser` | `log connect` after a person clears it |
+| NEEDS_LOGIN | no (may sign in) | `sessionExpired`, `loginWall`, `neverConnected`, `cookieInvalid` | `log facebook connect` |
+| CHECKPOINT | no (may sign in) | `checkpointed`, `unconfirmedUser` | `log facebook connect` after a person clears it |
 | RESTRICTED | no | `suspended` ("can't buy or sell"), `readOnlyLimited`, `restrictedPolicy` | by hand |
 | BANNED | no, terminal | `accountDisabled` ("your account has been disabled"), or by hand | never automatically |
 | DEAD | no, terminal | by hand (lost, deleted, unrecoverable) | never automatically |
 
-`log account status <name> <STATUS> [--reason <code>]` sets it by hand. Runs
+`log facebook account status <name> <STATUS> [--reason <code>]` sets it by hand. Runs
 set it themselves from what the page shows (`marketplace/socialAccount`
 `statusForIssue`). Proxy problems never change an account's status: they are
 setup, not the account's fault.
@@ -61,16 +61,16 @@ reposts always went back to the same account (Listaro research, 2026-10-18).
 ## Campaigns
 
 ```bash
-log campaign fill --campaign <agencyCampaignId> --from <agencyListingId> --accounts 10
-log campaign show --campaign <id>
-log campaign run  --campaign <id>            # dry run of every READY listing
-log campaign run  --campaign <id> --live     # publish them
-log campaign heal --campaign <id>            # retry ACCOUNT_LOST listings (after adding accounts)
+log facebook campaign fill --campaign <agencyCampaignId> --from <agencyListingId> --accounts 10
+log facebook campaign show --campaign <id>
+log facebook campaign run  --campaign <id>            # dry run of every READY listing
+log facebook campaign run  --campaign <id> --live     # publish them
+log facebook campaign heal --campaign <id>            # retry ACCOUNT_LOST listings (after adding accounts)
 ```
 
 `fill` takes one ad (any agencyListing, e.g. a DRAFT with no account) and puts
 it on up to N eligible accounts in its country, one row each. `run` publishes
-each READY row through `log publish`, so every listing passes the account
+each READY row through `log facebook publish`, so every listing passes the account
 check and the proxy gate on its own.
 
 ## The checks every run makes

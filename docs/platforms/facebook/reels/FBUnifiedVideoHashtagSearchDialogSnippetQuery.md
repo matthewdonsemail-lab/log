@@ -1,6 +1,6 @@
 # FBUnifiedVideoHashtagSearchDialogSnippetQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -33,4 +33,4 @@ Nothing. No step of the Reels warm-up opens a hashtag (`src/warmup/facebook/help
 
 ## What can go wrong
 
-None seen: one call, 200 in 362 ms. A hashtag dialog over the reel can leave a step's expectation unmet, which `checkStep` names. If the step fails anyway, `checkStep` reports it as an issue: `log warmup facebook reel record` goes on and outlines it, a `run` stops there, and a checkpoint or login page ends it as `blocked`.
+None seen: one call, 200 in 362 ms. A hashtag dialog over the reel can leave a step's expectation unmet, which `checkStep` names. If the step fails anyway, `checkStep` reports it as an issue: `log facebook warmup reel record` goes on and outlines it, a `run` stops there, and a checkpoint or login page ends it as `blocked`.

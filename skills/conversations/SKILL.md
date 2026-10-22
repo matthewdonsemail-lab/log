@@ -20,19 +20,19 @@ and where each field came from (Listaro, blaster), is in
    renamed or retyped.
 3. **Never guess the listing.** A thread is tied to a listing by the
    Facebook listing id, or by a title only one listing on the account has.
-   Otherwise it stays unmatched until `log conversation link`.
+   Otherwise it stays unmatched until `log facebook conversation link`.
 4. **A person's call stands.** `BOOKED`, `LOST` and `SPAM` are never moved
    by a scan.
 
 ## The routine
 
 ```bash
-log conversations --account <name>                  # newest first
-log conversation show <id>                          # every message; * marks unread
-log conversation record --account <name> --file threads.json
-log conversation read <id>
-log conversation lead <id> QUALIFIED
-log conversation link <id> --listing <agencyListingId>
+log facebook conversations --account <name>                  # newest first
+log facebook conversation show <id>                          # every message; * marks unread
+log facebook conversation record --account <name> --file threads.json
+log facebook conversation read <id>
+log facebook conversation lead <id> QUALIFIED
+log facebook conversation link <id> --listing <agencyListingId>
 ```
 
 `record` is idempotent: a second run on the same file adds nothing.

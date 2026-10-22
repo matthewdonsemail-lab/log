@@ -268,7 +268,7 @@ export function writeOperationDocs(operations: ClientOperation[], docsDir: strin
 }
 
 /**
- * `log capture --docs`: every run's recording → the Facebook client
+ * `log facebook capture --docs`: every run's recording → the Facebook client
  * map (`clientMap.json`, local) and `docs/platforms/facebook/` (committed).
  * Timeline first (seconds), rea's reading last (AGENTS.md outline step 5).
  */

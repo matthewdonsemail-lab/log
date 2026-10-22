@@ -1,5 +1,5 @@
 /**
- * The live commands: `log doctor`, `log connect`, `log scan`, `log status`.
+ * The live commands: `log facebook doctor`, `log facebook connect`, `log facebook scan`, `log facebook status`.
  *
  * Accounts come from Twenty (socialAccounts, platform FACEBOOK). Every one of
  * these that opens Camoufox first passes `prepareRun` (the account is
@@ -31,13 +31,13 @@ import { renderConnect, renderDoctor, renderLoss, renderScan, summarizeConnect }
 
 export * from "./helpers/index.ts";
 
-export const DOCTOR_USAGE = "Usage: log doctor [--json]";
-export const CONNECT_USAGE = "Usage: log connect --account <accountName> [--noPrompt] [--wait <seconds>] [--bypass] [--now]";
+export const DOCTOR_USAGE = "Usage: log facebook doctor [--json]";
+export const CONNECT_USAGE = "Usage: log facebook connect --account <accountName> [--noPrompt] [--wait <seconds>] [--bypass] [--now]";
 
 /** How long `connect` reads the window for a login, a person's part included. */
 export const CONNECT_WAIT_SECONDS = 600;
-export const SCAN_USAGE = "Usage: log scan --account <accountName> [--json] [--bypass]";
-export const STATUS_USAGE = "Usage: log status <listingId> --account <accountName> [--json] [--bypass]";
+export const SCAN_USAGE = "Usage: log facebook scan --account <accountName> [--json] [--bypass]";
+export const STATUS_USAGE = "Usage: log facebook status <listingId> --account <accountName> [--json] [--bypass]";
 
 /** `--account` → the Twenty account and its prepared run, or the refusal. Nothing opens on a refusal. */
 export async function openAccount(
@@ -50,7 +50,7 @@ export async function openAccount(
   withLogin = false,
   skipLaunchGap = false,
 ): Promise<{ account: FacebookAccount; run: PreparedRun; login: LoginSecrets | null } | CommandResult> {
-  if (typeof value !== "string") return { code: 1, stderr: `log ${name}: --account is required (log accounts lists them)\n${usage}` };
+  if (typeof value !== "string") return { code: 1, stderr: `log ${name}: --account is required (log facebook accounts lists them)\n${usage}` };
   let account: FacebookAccount;
   try {
     account = await findAccount(context.twenty, value);
@@ -133,7 +133,7 @@ export async function withRun(
     const session = name === "connect" ? null : await keepSession(context, account, run);
     // A save that failed must not lose the device or the session with the run's folder.
     const unsaved = [device, session].some((n) => n?.startsWith("Could not save")) || /twenty(RateLimited|AuthFailed|Unreachable|RequestFailed)/.test(result.stderr ?? "");
-    const kept = unsaved ? `Twenty didn't take everything: kept this run's device and session (login removed) at ${run.keep()}. Save them later: log account resave --account ${account.accountName} --from <that folder>` : null;
+    const kept = unsaved ? `Twenty didn't take everything: kept this run's device and session (login removed) at ${run.keep()}. Save them later: log facebook account resave --account ${account.accountName} --from <that folder>` : null;
     return withNote(withNote(withNote(withNote(result, device), session), capture), kept);
   } finally {
     run.cleanup();
@@ -170,7 +170,7 @@ export const doctorCommand: Command = {
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["json"] });
     if (!parsed.ok || parsed.positionals.length > 0) {
-      return { code: 1, stderr: `log doctor: ${parsed.ok ? `unexpected argument "${parsed.positionals[0]}"` : parsed.error}\n${DOCTOR_USAGE}` };
+      return { code: 1, stderr: `log facebook doctor: ${parsed.ok ? `unexpected argument "${parsed.positionals[0]}"` : parsed.error}\n${DOCTOR_USAGE}` };
     }
     const raw = await context.worker({ action: "doctor" });
     if (!("checks" in raw)) return refuse("doctor", (raw as WorkerFailure).code, (raw as WorkerFailure).detail);
@@ -204,12 +204,12 @@ export const connectCommand: Command = {
   args: "--account <name> [--noPrompt] [--wait <seconds>] [--bypass] [--now]",
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["noPrompt", "bypass", "now"], valued: ["account", "wait"] });
-    if (!parsed.ok) return { code: 1, stderr: `log connect: ${parsed.error}\n${CONNECT_USAGE}` };
+    if (!parsed.ok) return { code: 1, stderr: `log facebook connect: ${parsed.error}\n${CONNECT_USAGE}` };
     // --noPrompt (always over MCP): auto-login types Twenty's details (rule 21). Without it a
     // person signs in in the window. Either way the connect machine reads every page until signed in.
     const noPrompt = Boolean(parsed.flags["noPrompt"]);
     const waitSeconds = parsed.flags["wait"] === undefined ? CONNECT_WAIT_SECONDS : Number(parsed.flags["wait"]);
-    if (!Number.isInteger(waitSeconds) || waitSeconds < 10 || waitSeconds > 1800) return { code: 1, stderr: `log connect: --wait must be 10 to 1800 seconds\n${CONNECT_USAGE}` };
+    if (!Number.isInteger(waitSeconds) || waitSeconds < 10 || waitSeconds > 1800) return { code: 1, stderr: `log facebook connect: --wait must be 10 to 1800 seconds\n${CONNECT_USAGE}` };
     const opened = await openAccount(context, "connect", CONNECT_USAGE, parsed.flags["account"], "connect", Boolean(parsed.flags["bypass"]), noPrompt, Boolean(parsed.flags["now"]));
     if (!("run" in opened)) return opened;
     const { account, run, login } = opened;
@@ -305,7 +305,7 @@ export const scanCommand: Command = {
   args: "--account <name> [--json] [--bypass]",
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["json", "bypass"], valued: ["account"] });
-    if (!parsed.ok) return { code: 1, stderr: `log scan: ${parsed.error}\n${SCAN_USAGE}` };
+    if (!parsed.ok) return { code: 1, stderr: `log facebook scan: ${parsed.error}\n${SCAN_USAGE}` };
     const opened = await openAccount(context, "scan", SCAN_USAGE, parsed.flags["account"], "run", Boolean(parsed.flags["bypass"]));
     if (!("run" in opened)) return opened;
     const { account, run } = opened;
@@ -337,10 +337,10 @@ export const statusCommand: Command = {
   args: "<listingId> --account <name> [--json] [--bypass]",
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["json", "bypass"], valued: ["account"] });
-    if (!parsed.ok) return { code: 1, stderr: `log status: ${parsed.error}\n${STATUS_USAGE}` };
+    if (!parsed.ok) return { code: 1, stderr: `log facebook status: ${parsed.error}\n${STATUS_USAGE}` };
     const [listingId, extra] = parsed.positionals;
-    if (listingId === undefined) return { code: 1, stderr: `log status: a listing id is required\n${STATUS_USAGE}` };
-    if (extra !== undefined) return { code: 1, stderr: `log status: unexpected argument "${extra}"\n${STATUS_USAGE}` };
+    if (listingId === undefined) return { code: 1, stderr: `log facebook status: a listing id is required\n${STATUS_USAGE}` };
+    if (extra !== undefined) return { code: 1, stderr: `log facebook status: unexpected argument "${extra}"\n${STATUS_USAGE}` };
     const opened = await openAccount(context, "status", STATUS_USAGE, parsed.flags["account"], "run", Boolean(parsed.flags["bypass"]));
     if (!("run" in opened)) return opened;
     const { account, run } = opened;

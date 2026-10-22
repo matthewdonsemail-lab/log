@@ -6,6 +6,7 @@
  * of the MCP's LONG_RUNNING tools) run off a Monitor gets a reminder to watch
  * the live log. Pure, so it is tested without an agent.
  */
+import { isPlatform } from "../../cli/runner/helpers/platforms.ts";
 import { LONG_RUNNING } from "../../mcp/server/helpers/toolsFromCommands.ts";
 
 export interface LiveLogVerdict {
@@ -15,10 +16,11 @@ export interface LiveLogVerdict {
   context: string | null;
 }
 
-/** The log-cli command a shell line runs (`bun bin/log.ts warmup …` → "warmup"), or null. Pure. */
+/** The log-cli command a shell line runs (`bun bin/log.ts facebook warmup …` → "warmup", the platform first, rule 63), or null. Pure. */
 export function logCommandOf(command: string): string | null {
-  const match = /\bbin[\\/]log\.ts["']?\s+([A-Za-z]+)/.exec(command);
-  return match ? match[1] : null;
+  const match = /\bbin[\\/]log\.ts["']?\s+([A-Za-z]+)(?:\s+([A-Za-z]+))?/.exec(command);
+  if (!match) return null;
+  return isPlatform(match[1]) && match[2] ? match[2] : match[1];
 }
 
 /** The pipelines in a shell line (split on `;`, `&&`, `||` and newlines) that run log-cli. Pure. */

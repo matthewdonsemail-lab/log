@@ -29,8 +29,8 @@ What this path does not do: it does not save the page's scripts, and it does
 not record a HAR. The selectors it trusts are the ones written up in
 `docs/listingPublish/formFill.md`.
 
-`log scan`, `log status` and `log watch` go through `python/session/logWorker.py`
-into facebook-camofox-client. They read. They do not post. `log watch` only
+`log facebook scan`, `log facebook status` and `log facebook watch` go through `python/session/logWorker.py`
+into facebook-camofox-client. They read. They do not post. `log facebook watch` only
 decides a relist. Nothing in the monitor posts.
 
 ## facebook-camofox-client

@@ -1,6 +1,6 @@
 # GroupsCometFeedRegularStoriesPaginationQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -48,4 +48,4 @@ It is what the group read (issue #27, `docs/groupRead.md`) reads posts from: the
 
 ## What can go wrong
 
-None seen: all three answered 200 in 876-1001 ms. A page that never fires it (a group not joined, a checkpoint) leaves the read with no posts; the page state hook (rules 54-55) reports a checkpoint or login page, and a group the account isn't in shows its Join button (`log join group`). A streamed chunk missing a post's id, group or time is dropped and counted, never patched.
+None seen: all three answered 200 in 876-1001 ms. A page that never fires it (a group not joined, a checkpoint) leaves the read with no posts; the page state hook (rules 54-55) reports a checkpoint or login page, and a group the account isn't in shows its Join button (`log facebook join group`). A streamed chunk missing a post's id, group or time is dropped and counted, never patched.

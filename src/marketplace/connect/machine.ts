@@ -1,5 +1,5 @@
 /**
- * Signing one Facebook account in as an XState machine, so `log connect` can
+ * Signing one Facebook account in as an XState machine, so `log facebook connect` can
  * print every step (`observability/trace`) and says which page ended it.
  *
  *   opening ─▶ signingIn ┬─ reading ─▶ routing ─ loggedIn ──────────────────▶ saving ─▶ done (connected)

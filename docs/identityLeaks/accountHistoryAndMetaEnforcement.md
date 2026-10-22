@@ -87,7 +87,7 @@ study can be read against it.
 
 ## Where in our code it can happen again
 
-- `log connect` (`src/cli/live/index.ts`, `python/session/logWorker.py` `login`): the
+- `log facebook connect` (`src/cli/live/index.ts`, `python/session/logWorker.py` `login`): the
   first session on a new account.
 - `src/marketplace/replacement/`: choosing a replacement account for a banned
   one.

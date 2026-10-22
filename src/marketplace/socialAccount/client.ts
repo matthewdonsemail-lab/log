@@ -127,7 +127,7 @@ export async function saveSession(twenty: TwentyClient, accountId: string, state
   return true
 }
 
-/** `log profile setup --live` saved both photos (rule 28): when, so it isn't redone. */
+/** `log facebook profile setup --live` saved both photos (rule 28): when, so it isn't redone. */
 export async function markProfileSet(twenty: TwentyClient, accountId: string, at: Date): Promise<void> {
   await twenty.update(SOCIAL_ACCOUNTS, accountId, { profileSetAt: at.toISOString() })
 }

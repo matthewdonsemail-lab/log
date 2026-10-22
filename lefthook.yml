@@ -64,7 +64,7 @@ pre-push:
     # Rules 25 and 27: every request Facebook's pages made in our runs has a
     # doc in docs/platforms/facebook/, rea has read each GraphQL request's slice,
     # the reasoning is written, and no run is newer than the last docs build
-    # (`bun bin/log.ts capture --docs`). Why: AGENTS.md, "How we fix
+    # (`bun bin/log.ts facebook capture --docs`). Why: AGENTS.md, "How we fix
     # problems", and docs/platforms/facebook/README.md.
     facebookClientDocs:
       run: bun run check:facebookClientDocs

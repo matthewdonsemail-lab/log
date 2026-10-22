@@ -1,5 +1,5 @@
 /**
- * Answering a group's questions in its dialog (`log join group --fill`,
+ * Answering a group's questions in its dialog (`log facebook join group --fill`,
  * rule 45): the draft the Clack stepper saved (`joinSubmission.draft`) typed
  * and ticked into Facebook's own dialog, one step per stepper step, in the
  * account's open browser, every step recorded (rules 22, 29, 35).

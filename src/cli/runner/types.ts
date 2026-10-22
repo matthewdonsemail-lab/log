@@ -30,9 +30,9 @@ export interface CommandContext {
   worker: WorkerClient;
   /** Starts a publish session (a long-lived Camoufox browser). Injected so tests never do. */
   session: SessionFactory;
-  /** Starts a connect session (`log connect`'s browser). Injected so tests never launch one. */
+  /** Starts a connect session (`log facebook connect`'s browser). Injected so tests never launch one. */
   connectSession: ConnectSessionFactory;
-  /** Starts a profile session (`log profile setup`). Injected so tests never launch one. */
+  /** Starts a profile session (`log facebook profile setup`). Injected so tests never launch one. */
   profileSession: ProfileSessionFactory;
   /** Runs a `log inspect` session to its end. Injected so tests never launch one. */
   inspectSession: InspectSessionRunner;
@@ -61,9 +61,9 @@ export interface Command {
    */
   usage: string;
   /**
-   * Which platform it acts on (rule 60): `facebook` (Facebook only today),
-   * `any` (no platform, or every one), or `byArgument` (the platform is its
-   * first argument, `log warmup <platform> …`, and every usage line names it).
+   * Which platform it acts on (rules 60, 63): `facebook` (Facebook only today) or `byArgument` (one of several,
+   * the warm-up), both run as `log <platform> <command> …` with the platform first in every usage line; or `any`
+   * (no platform, or every one), which takes none.
    */
   platform: "facebook" | "any" | "byArgument";
   run(context: CommandContext, argv: string[]): Promise<CommandResult> | CommandResult;

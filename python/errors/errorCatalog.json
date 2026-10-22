@@ -9,7 +9,7 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Run `log connect --account <id>` and log in by hand."
+    "action": "Run `log facebook connect --account <id>` and log in by hand."
   },
   "disconnected": {
     "layer": "account",
@@ -20,7 +20,7 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Run `log connect --account <id>` and log in by hand."
+    "action": "Run `log facebook connect --account <id>` and log in by hand."
   },
   "stale": {
     "layer": "account",
@@ -31,7 +31,7 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Run `log scan --account <id>`."
+    "action": "Run `log facebook scan --account <id>`."
   },
   "sessionExpired": {
     "layer": "account",
@@ -44,7 +44,7 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Run `log connect --account <id>` and log in by hand."
+    "action": "Run `log facebook connect --account <id>` and log in by hand."
   },
   "sessionInvalidatedChanged": {
     "layer": "account",
@@ -55,7 +55,7 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Run `log connect --account <id>` and log in by hand."
+    "action": "Run `log facebook connect --account <id>` and log in by hand."
   },
   "checkpointed": {
     "layer": "account",
@@ -68,18 +68,18 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Log in by hand and clear the checkpoint, then `log connect`. No solver can do it."
+    "action": "Log in by hand and clear the checkpoint, then `log facebook connect`. No solver can do it."
   },
   "wrongPassword": {
     "layer": "account",
-    "meaning": "Facebook said the password is wrong, or found no account for the email, when `log connect` signed in with Twenty's details.",
+    "meaning": "Facebook said the password is wrong, or found no account for the email, when `log facebook connect` signed in with Twenty's details.",
     "retryable": false,
     "raisedIn": [
       "connect.routing"
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Fix the account's email or password in Twenty, then `log connect` again. Auto-login stops at once so Facebook doesn't see repeated wrong passwords."
+    "action": "Fix the account's email or password in Twenty, then `log facebook connect` again. Auto-login stops at once so Facebook doesn't see repeated wrong passwords."
   },
   "videoSelfieRequired": {
     "layer": "account",
@@ -90,18 +90,18 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "A person records the selfie in the Camoufox window (or on the account owner's phone), then `log connect` again. Tell matt."
+    "action": "A person records the selfie in the Camoufox window (or on the account owner's phone), then `log facebook connect` again. Tell matt."
   },
   "signInNotFinished": {
     "layer": "account",
-    "meaning": "`log connect` reached its deadline (`--wait`) without a logged-in page: the login, two-step or a captcha was not finished.",
+    "meaning": "`log facebook connect` reached its deadline (`--wait`) without a logged-in page: the login, two-step or a captcha was not finished.",
     "retryable": false,
     "raisedIn": [
       "connect.signingIn"
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Run `log connect` again and finish the step its last page names in the Camoufox window, or give it a longer `--wait`. A two-step page needs the totpSecret in Twenty."
+    "action": "Run `log facebook connect` again and finish the step its last page names in the Camoufox window, or give it a longer `--wait`. A two-step page needs the totpSecret in Twenty."
   },
   "unconfirmedUser": {
     "layer": "account",
@@ -123,7 +123,7 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Run `log connect --account <id>` and log in by hand."
+    "action": "Run `log facebook connect --account <id>` and log in by hand."
   },
   "suspended": {
     "layer": "account",
@@ -325,7 +325,7 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Set accountStatus in Twenty (log account status), or use another account."
+    "action": "Set accountStatus in Twenty (log facebook account status), or use another account."
   },
   "noHomeCountry": {
     "layer": "account",
@@ -547,7 +547,7 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Run `log connect --account <id>` and log in by hand."
+    "action": "Run `log facebook connect --account <id>` and log in by hand."
   },
   "captchaHtml": {
     "layer": "account",
@@ -558,7 +558,7 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Open the account by hand. `log publish` routes captchas itself; `scan` does not."
+    "action": "Open the account by hand. `log facebook publish` routes captchas itself; `scan` does not."
   },
   "unknownPlatform": {
     "layer": "account",
@@ -1103,7 +1103,7 @@
     ],
     "publish": "failed",
     "monitor": "failed",
-    "action": "Set LOG_PYTHON to a Python with facebook-camofox-client installed (`log doctor`)."
+    "action": "Set LOG_PYTHON to a Python with facebook-camofox-client installed (`log facebook doctor`)."
   },
   "workerNoOutput": {
     "layer": "runtime",
@@ -1282,7 +1282,7 @@
     "raisedIn": [
       "marketplace/agencyListing"
     ],
-    "action": "Check the id (log listings shows them)."
+    "action": "Check the id (log facebook listings shows them)."
   },
   "listingNoAccount": {
     "layer": "listing",
@@ -1291,7 +1291,7 @@
     "raisedIn": [
       "marketplace/agencyListing"
     ],
-    "action": "Set its Social account in Twenty, or fill the campaign with log campaign fill."
+    "action": "Set its Social account in Twenty, or fill the campaign with log facebook campaign fill."
   },
   "listingNotPublishable": {
     "layer": "listing",
@@ -1318,7 +1318,7 @@
     "raisedIn": [
       "marketplace/replacement"
     ],
-    "action": "Add or activate an account in that country (with a proxy there), then run log campaign heal."
+    "action": "Add or activate an account in that country (with a proxy there), then run log facebook campaign heal."
   },
   "twentyNotConfigured": {
     "layer": "twenty",
@@ -1372,7 +1372,7 @@
     "raisedIn": [
       "marketplace/socialAccount"
     ],
-    "action": "log accounts lists the Facebook accounts."
+    "action": "log facebook accounts lists the Facebook accounts."
   },
   "twoCaptchaNotConfigured": {
     "layer": "proxyVendor",
@@ -1558,7 +1558,7 @@
       "cli/join",
       "cli/read"
     ],
-    "action": "Open it first: log inspect start --account <a> (or log host start), then run the join or the read again."
+    "action": "Open it first: log inspect start --account <a> (or log facebook host start), then run the join or the read again."
   },
   "groupPageNotOpened": {
     "layer": "group",
@@ -1596,7 +1596,7 @@
       "group/answer.planning",
       "group/answer.filling"
     ],
-    "action": "Read the reading step's snapshot.yml: the questions may have changed (run the stepper again: log join group --answer), or a type isn't recorded yet."
+    "action": "Read the reading step's snapshot.yml: the questions may have changed (run the stepper again: log facebook join group --answer), or a type isn't recorded yet."
   },
   "groupSubmitNotConfirmed": {
     "layer": "group",
@@ -1634,7 +1634,7 @@
     "raisedIn": [
       "cli/read.worker"
     ],
-    "action": "Join it first with one account: log join group --account <a> --group <id> --live."
+    "action": "Join it first with one account: log facebook join group --account <a> --group <id> --live."
   },
   "groupReadStepFailed": {
     "layer": "group",

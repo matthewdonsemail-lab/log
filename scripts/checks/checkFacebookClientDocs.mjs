@@ -1,7 +1,7 @@
 // The Facebook client docs gate (rule 26), run by lefthook before every push.
 //
 // docs/platforms/facebook/ holds one doc per request Facebook's pages made in our
-// runs, built by `log capture --docs` from the run captures and rea
+// runs, built by `log facebook capture --docs` from the run captures and rea
 // (AGENTS.md, "How we fix problems"). This refuses a push when:
 //   1. operations.json and the doc files disagree (a doc missing or orphaned),
 //   2. a doc still has a reasoning section to write (`<!-- toWrite -->`),
@@ -22,7 +22,7 @@ const indexPath = join(docsDir, 'operations.json');
 const problems = [];
 
 if (!existsSync(indexPath)) {
-  console.error('facebookClient docs: docs/platforms/facebook/operations.json is missing. Run `bun bin/log.ts capture --docs`.');
+  console.error('facebookClient docs: docs/platforms/facebook/operations.json is missing. Run `bun bin/log.ts facebook capture --docs`.');
   process.exit(1);
 }
 const index = JSON.parse(readFileSync(indexPath, 'utf8'));
@@ -71,7 +71,7 @@ const walk = (dir, depth) => {
   if (depth > 0) for (const name of names) if (statSync(join(dir, name), { throwIfNoEntry: false })?.isDirectory()) walk(join(dir, name), depth - 1);
 };
 for (const top of ['runs', 'publish']) walk(join(captures, top), 6);
-if (newer.length) problems.push(`${newer.length} run(s) recorded after the docs were built (${newer.slice(0, 3).join(', ')}${newer.length > 3 ? ', …' : ''}): run \`bun bin/log.ts capture --docs\``);
+if (newer.length) problems.push(`${newer.length} run(s) recorded after the docs were built (${newer.slice(0, 3).join(', ')}${newer.length > 3 ? ', …' : ''}): run \`bun bin/log.ts facebook capture --docs\``);
 
 // 5
 const documented = new Set(index.operations.map((o) => o.name));

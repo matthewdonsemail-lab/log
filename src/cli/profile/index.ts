@@ -1,5 +1,5 @@
 /**
- * `log profile setup --account <name> [--live]` (rule 28): the account's
+ * `log facebook profile setup --account <name> [--live]` (rule 28): the account's
  * profile picture and cover photo, from Twenty's socialAccounts.profilePhoto
  * and coverPhoto, through the profile machine (`marketplace/profile`).
  *
@@ -23,7 +23,7 @@ import { renderProfile, summarizeProfile } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
 
-export const PROFILE_USAGE = "Usage: log profile setup --account <accountName> [--live] [--bypass] [--json]";
+export const PROFILE_USAGE = "Usage: log facebook profile setup --account <accountName> [--live] [--bypass] [--json]";
 
 export const profileCommand: Command = {
   usage: PROFILE_USAGE,
@@ -33,8 +33,8 @@ export const profileCommand: Command = {
   args: "setup --account <name> [--live] [--bypass] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["live", "bypass", "json"], valued: ["account"] });
-    if (!parsed.ok) return { code: 1, stderr: `log profile: ${parsed.error}\n${PROFILE_USAGE}` };
-    if (parsed.positionals[0] !== "setup" || parsed.positionals.length > 1) return { code: 1, stderr: `log profile: expected "setup"\n${PROFILE_USAGE}` };
+    if (!parsed.ok) return { code: 1, stderr: `log facebook profile: ${parsed.error}\n${PROFILE_USAGE}` };
+    if (parsed.positionals[0] !== "setup" || parsed.positionals.length > 1) return { code: 1, stderr: `log facebook profile: expected "setup"\n${PROFILE_USAGE}` };
     const live = Boolean(parsed.flags["live"]);
     const opened = await openAccount(context, "profile", PROFILE_USAGE, parsed.flags["account"], "run", Boolean(parsed.flags["bypass"]));
     if (!("run" in opened)) return opened;

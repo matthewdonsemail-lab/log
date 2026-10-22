@@ -1,5 +1,22 @@
 # AGENTS.md — log-cli
 
+## The platform comes first: `log <platform> <command> …` (matt, 2026-10-22)
+
+This is the shape of every command, at the start of this file because it
+was broken across the CLI.
+
+- **The platform is the first word after `log`:** `log <platform> <command>
+  <what> …`, e.g. `log facebook warmup reel`, `log facebook join group`.
+  There is no form without it.
+- **The poll is `log facebook poll <group> <account> <how long to poll>`**,
+  not a flag on another command.
+- **Old forms are refused** with the form they became, as rule 60 did for
+  the warm-up.
+- **A command that works on any platform** (`inspect`, `flow`, `proxy`,
+  `errors`, `login`…) takes none.
+
+The full table, every command old and new: `docs/commandNaming.md`. Rule 63.
+
 ## Only what matt said: never add options, context or spend he didn't ask for (matt, 2026-10-19)
 
 This comes first, before every other rule. On 2026-10-19 an agent added two
@@ -633,6 +650,16 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     worker (`log read group --worker`, obris-dev/openmagpie#178) answers from
     Twenty at once and opens no browser, saying which groups no host has read
     lately (`groupNotReadYet`, `groupReadStale`).
+63. 2026-10-22 · matt: the platform comes first. Every command that acts
+    on one platform is `log <platform> <command> …` (`log facebook warmup
+    reel`, `log facebook join group`); there is no form without it. The poll
+    is `log facebook poll <group> <account> <how long to poll>`. Old forms
+    are refused with the form they became. This replaces rule 60's
+    `log warmup <platform> <activity>` and settles issue #20. OpenMagpie's
+    worker is `log facebook poll --request` (it was `read group --worker`),
+    a read in the account's open browser. `bun run check:docs` refuses a
+    usage line without the platform first. Top of this file; the table is
+    `docs/commandNaming.md`.
 
 ## Checks
 

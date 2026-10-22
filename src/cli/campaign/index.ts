@@ -1,5 +1,5 @@
 /**
- * `log campaign` — one ad on many accounts in one place, through Twenty.
+ * `log facebook campaign` — one ad on many accounts in one place, through Twenty.
  *
  *   fill  --campaign <id> --from <listingId> --accounts <n>
  *         puts the ad on n accounts in its country: new READY listings, one
@@ -23,10 +23,10 @@ import { parseArgs, refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command } from "../runner/types.ts";
 
 export const CAMPAIGN_USAGE = [
-  "Usage: log campaign fill --campaign <agencyCampaignId> --from <agencyListingId> --accounts <n>",
-  "       log campaign heal --campaign <agencyCampaignId>",
-  "       log campaign run  --campaign <agencyCampaignId> [--live] [--bypass]",
-  "       log campaign show --campaign <agencyCampaignId> [--json]",
+  "Usage: log facebook campaign fill --campaign <agencyCampaignId> --from <agencyListingId> --accounts <n>",
+  "       log facebook campaign heal --campaign <agencyCampaignId>",
+  "       log facebook campaign run  --campaign <agencyCampaignId> [--live] [--bypass]",
+  "       log facebook campaign show --campaign <agencyCampaignId> [--json]",
 ].join("\n");
 
 export const campaignCommand: Command = {
@@ -37,11 +37,11 @@ export const campaignCommand: Command = {
   args: "<fill|heal|run|show> --campaign <id> [...]",
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["live", "json", "bypass"], valued: ["campaign", "from", "accounts"] });
-    if (!parsed.ok) return { code: 1, stderr: `log campaign: ${parsed.error}\n${CAMPAIGN_USAGE}` };
+    if (!parsed.ok) return { code: 1, stderr: `log facebook campaign: ${parsed.error}\n${CAMPAIGN_USAGE}` };
     const [action, extra] = parsed.positionals;
     const campaignId = parsed.flags["campaign"];
     if (!action || extra !== undefined || !["fill", "heal", "run", "show"].includes(action) || typeof campaignId !== "string") {
-      return { code: 1, stderr: `log campaign: pick fill, heal, run or show, with --campaign\n${CAMPAIGN_USAGE}` };
+      return { code: 1, stderr: `log facebook campaign: pick fill, heal, run or show, with --campaign\n${CAMPAIGN_USAGE}` };
     }
     try {
       if (action === "show") {
@@ -54,7 +54,7 @@ export const campaignCommand: Command = {
         const from = parsed.flags["from"];
         const count = Number(parsed.flags["accounts"]);
         if (typeof from !== "string" || !Number.isInteger(count) || count < 1) {
-          return { code: 1, stderr: `log campaign fill: --from <listingId> and --accounts <n> are required\n${CAMPAIGN_USAGE}` };
+          return { code: 1, stderr: `log facebook campaign fill: --from <listingId> and --accounts <n> are required\n${CAMPAIGN_USAGE}` };
         }
         const ad = await getListing(context.twenty, from);
         if (!ad) return refuse("campaign fill", "listingNotFound", from);
@@ -64,7 +64,7 @@ export const campaignCommand: Command = {
         const lines = report.created.map((c) => `  READY ${c.listing.id} on ${c.account.accountName} (${c.account.homeCity ?? "?"}, ${c.account.homeCountry})`);
         lines.unshift(`Created ${report.created.length} of ${count} listing(s) for "${ad.title}" in ${ad.locationQuery}.`);
         if (report.short) lines.push(`${report.short} short: no more FACEBOOK accounts in ${ad.locationCountry} that are ACTIVE, proxied, under their cap and not already in this campaign.`);
-        lines.push("Publish with `log campaign run --campaign <id>` (dry run unless --live).");
+        lines.push("Publish with `log facebook campaign run --campaign <id>` (dry run unless --live).");
         return { code: report.short ? 1 : 0, stdout: lines.join("\n") };
       }
 

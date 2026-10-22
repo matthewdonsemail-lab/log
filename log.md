@@ -3562,3 +3562,374 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: whether a group post was already read now goes by its id, not its time. The cursor (`ReadCursor`) keeps `seenIds`, the ids the latest reads saw, newest first, at most 500 (`SEEN_IDS_KEPT`). `seenBy` decides "already seen" by id. `newPosts` keeps every post whose id isn't there, whatever its time, and puts every id the read saw at the front of the list. The watermark still only moves forward. `reachedCursor` stops the scrolling once the feed has shown 3 seen posts (`STOP_AFTER_SEEN`), or every id the cursor knows when it knows fewer. A new post between seen ones is still caught by its id. A cursor saved before it had ids (Bethlehem's group, this morning) is read once by the old time rule and then keeps ids. `cursorOf` reads `seenIds` back from Twenty, so they survive between reads.
 Why: matt, 2026-10-22: "so this needs to be fixed", on the cursor judging "older" by Facebook's time alone. A post that went live late with an earlier time would have counted as already read and been skipped, and OpenMagpie never sees what log-cli skips.
 Checked: `bun run check`: every gate passes and 765 tests pass. New tests in `src/group/read/read.test.ts`: a post that shows up after a read, stamped earlier than everything that read saw, is new; posts sharing a second are each read once; a cursor without ids is read by time once and then keeps ids; the stop after 3 seen posts. On the recording (run 20261022T054544), this morning's 16 posts went live 21:05:46 to 21:07:41 with their ids running backwards about 2 s apart, so Facebook's time looks like the time a post went live. The id check doesn't depend on that. Not checked live: a second read of the group (from 12:00 UTC, Bethlehem's hours).
+
+## 2026-10-22 08:37Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/accountsAndListings.md`: edited
+- `docs/adsPower.md`: edited
+- `docs/browsers.md`: edited
+- `docs/commandNaming.md`: new file
+- `docs/conversations.md`: edited
+- `docs/deployment.md`: edited
+- `docs/diagrams/browsers.mmd`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/groupRead.md`: edited
+- `docs/identityLeaks/README.md`: edited
+- `docs/identityLeaks/accountHistoryAndMetaEnforcement.md`: edited
+- `docs/identityLeaks/activityHours.md`: edited
+- `docs/identityLeaks/camoufoxDetectability.md`: edited
+- `docs/identityLeaks/deviceFingerprintChurn.md`: edited
+- `docs/identityLeaks/dns.md`: edited
+- `docs/identityLeaks/fontsAndVoices.md`: edited
+- `docs/identityLeaks/gateBypasses.md`: edited
+- `docs/identityLeaks/http3Quic.md`: edited
+- `docs/identityLeaks/localeAndLanguage.md`: edited
+- `docs/identityLeaks/manualSignIn.md`: edited
+- `docs/identityLeaks/proxyCredentials.md`: edited
+- `docs/identityLeaks/sessionStatePersistence.md`: edited
+- `docs/identityLeaks/standaloneFacebookCamofoxClient.md`: edited
+- `docs/identityLeaks/timezone.md`: edited
+- `docs/identityLeaks/webglGpuLinkage.md`: edited
+- `docs/identityLeaks/webrtc.md`: edited
+- `docs/lifecycle.md`: edited
+- `docs/namingConventions.md`: edited
+- `docs/platforms/facebook/README.md`: edited
+- `docs/platforms/facebook/background/CometAddTypeaheadRecentSearchMutation.md`: edited
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedStoryMenuQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuShortcutsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometIXTFacebookAuthenticityWizardTriggerRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometLinkSharingInlineDisclosureCountQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceLeftRailNavigationContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceNUXUpdateStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceRecordPDPDwellTimeMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSetBrowseRadiusMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSetProductItemSeenStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMediaEditorAIProductTagSuggestionTriggerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNewsFeedPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsUpdateSeenStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometProfileVerificationBadgePopoverQuery.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchKeywordDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometSinglePostDialogContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometUFICommentReactionIconTooltipContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometUFIConversationGuideContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometUFIFeedbackReactMutation.md`: edited
+- `docs/platforms/facebook/background/CometUFILiveTypingBroadcastMutation_StartMutation.md`: edited
+- `docs/platforms/facebook/background/CometUFILiveTypingBroadcastMutation_StopMutation.md`: edited
+- `docs/platforms/facebook/background/CometUFIReactionIconTooltipContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometUnifiedShareSheetDialogQuery.md`: edited
+- `docs/platforms/facebook/background/CommentListComponentsRootQuery.md`: edited
+- `docs/platforms/facebook/background/CommentsListComponentsPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/ComposerStoryCreateMutation.md`: edited
+- `docs/platforms/facebook/background/ConversationalSupportCometAIChatExperienceCreateThreadMutation.md`: edited
+- `docs/platforms/facebook/background/ConversationalSupportCometAIChatExperienceOnChatOpenedMutation.md`: edited
+- `docs/platforms/facebook/background/ConversationalSupportCometAIChatExperienceProductQuery.md`: edited
+- `docs/platforms/facebook/background/FBReelHashtagSearchResultsQuery.md`: edited
+- `docs/platforms/facebook/background/FBReelsEntityDialogImplQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/FeedComposerCometRootQuery.md`: edited
+- `docs/platforms/facebook/background/FriendingCometMutualFriendsSocialContextTooltipContentQuery.md`: edited
+- `docs/platforms/facebook/background/GroupsEntityScopedCometTypeaheadDialogQuery.md`: edited
+- `docs/platforms/facebook/background/MAWFetchXMAData_fetchXmaPreviewDataQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPC2CMediaViewerWithImagesQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPRightColumnAdsQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceSearchAddressDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYouSellingUpsellCardQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/SearchCometResultsInitialResultsParallelFetchQuery.md`: edited
+- `docs/platforms/facebook/background/SearchCometResultsInitialResultsQuery.md`: edited
+- `docs/platforms/facebook/background/SearchCometResultsPaginatedResultsQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/UnifiedShareSheetMessengerSectionQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxBz.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/ajaxRouteDefinition.md`: edited
+- `docs/platforms/facebook/background/cspReporting.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/pushRegisterServiceWorker.md`: edited
+- `docs/platforms/facebook/background/sharedUserPreferences.md`: edited
+- `docs/platforms/facebook/background/triggerGroupsCometHeaderInviteWithEmailExposureQuery.md`: edited
+- `docs/platforms/facebook/background/useCIXLogMutation.md`: edited
+- `docs/platforms/facebook/background/useCometTrashPostMutation.md`: edited
+- `docs/platforms/facebook/background/useCometUFICreateCommentMutation.md`: edited
+- `docs/platforms/facebook/background/useConversationalSupportPingMutation.md`: edited
+- `docs/platforms/facebook/background/useFeedComposerCometMentionsBootloadDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/useFeedComposerCometMentionsBootloadDataSourceWithTaggingTransparencyQuery.md`: edited
+- `docs/platforms/facebook/background/useFeedComposerCometMentionsNullstateDataSourceWithTaggingTransparencyQuery.md`: edited
+- `docs/platforms/facebook/background/useIncrementLinkSharingDisclosureImpressionCountMutation.md`: edited
+- `docs/platforms/facebook/background/useInstreamAdsHaloFetcherQuery.md`: edited
+- `docs/platforms/facebook/background/useLinkSharingCreateWrappedUrlMutation.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/useMetaSupportAssistantVoiceOnboardingNuxQuery.md`: edited
+- `docs/platforms/facebook/background/useSearchCometTypeaheadBootstrapValidationQuery.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/background/withSearchCometTypeaheadSERPWarmCallDecoratorQuery.md`: edited
+- `docs/platforms/facebook/checkpoint/CometFacebookIXTNextMutation.md`: edited
+- `docs/platforms/facebook/checkpoint/FBScrapingWarningMutation.md`: edited
+- `docs/platforms/facebook/checkpoint/UFACAISupportChatExperienceQuery.md`: edited
+- `docs/platforms/facebook/checkpoint/useCometAISupportConversationLoggerMutation.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/checkpoint/useUFACSubmitActionMutation.md`: edited
+- `docs/platforms/facebook/groups/CometGroupAboutRootQuery.md`: edited
+- `docs/platforms/facebook/groups/CometGroupAnnouncementsRootFeedQuery.md`: edited
+- `docs/platforms/facebook/groups/CometGroupDiscussionRootSuccessQuery.md`: edited
+- `docs/platforms/facebook/groups/CometGroupEventsRootQuery.md`: edited
+- `docs/platforms/facebook/groups/CometGroupRootQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometDiscussionLayoutRootQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometFeedRegularStoriesPaginationQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometFilesTabRootQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometInviteFriendsCategorizedInviteSearchQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometInviteFriendsDialogQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometJoinedActionMenuQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometMembersRootQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometMembershipQuestionsPreloadedDialogQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometMoreActionMenuQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometPhotosRootQueryContainerQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometQuestionsRootSuccessQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometRecAffordanceSectionQuery.md`: edited
+- `docs/platforms/facebook/groups/README.md`: edited
+- `docs/platforms/facebook/groups/useGroupMembershipAnswersSaveMutation.md`: edited
+- `docs/platforms/facebook/groups/useGroupRequestToJoinMutation.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometHeaderControlsQuery.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometMembershipQuestionnaireOpenedLoggingMutation.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometMentionsBootloadDataSourceWithTaggingTransparencyQuery.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometMentionsNullstateDataSourceWithTaggingTransparencyQuery.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometTypeaheadBootloadDataSourceQuery.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometVisitMutation.md`: edited
+- `docs/platforms/facebook/groups/useGroupsEntityScopedRecentSearchAndExploreDataSourceQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useCometMarketplaceAIListingSettingsQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useListingShippableEligibilityCheckQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerAttributesQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerBISNumberEligibilityRefetchQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerPricePredictionQuery.md`: edited
+- `docs/platforms/facebook/location/CometMarketplaceSetBuyLocationMutation.md`: edited
+- `docs/platforms/facebook/location/MarketplaceBuyLocationDialogLocationUrlQuery.md`: edited
+- `docs/platforms/facebook/location/MarketplaceBuyLocationDialogQuery.md`: edited
+- `docs/platforms/facebook/login/CometLogoutHandlerQuery.md`: edited
+- `docs/platforms/facebook/login/ajaxTimezoneUpdatePhp.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/login/loginDeviceBasedRegularLogin.md`: edited
+- `docs/platforms/facebook/login/useCDSWebLoginMutation.md`: edited
+- `docs/platforms/facebook/photos/CometPhotoRootContentQuery.md`: edited
+- `docs/platforms/facebook/photos/CometPhotoTagLayerQuery.md`: edited
+- `docs/platforms/facebook/photos/EntPhotoCollageItemContainerQuery.md`: edited
+- `docs/platforms/facebook/photos/ajaxReactComposerAttachmentsPhotoUpload.md`: edited
+- `docs/platforms/facebook/photos/profileCoverCometUpload.md`: edited
+- `docs/platforms/facebook/photos/useComposerVideoUploaderConfigQuery.md`: edited
+- `docs/platforms/facebook/photos/useSherlockPhotoPredictionMutation.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterAdProfileCenterRouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterBirthdayRouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterConnectedExperienceRouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterContactPointsInProfilesRouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterIdentityPhotoEditorDialogRouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterIdentityUsernameEditDialogRouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterIdentityUsernameSettingsDialogRouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterInformationAndActivityRouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterManageAccountsPageRouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterMetaPayWalletRouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterNMEOnboardingRouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterPersonalCentralIdentityDialogV2Query.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterPersonalCentralIdentityDialogV2RouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterPhotoSettingsDialogV2RouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterProfilesPageV2RouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterSecurityAndLoginPageRouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterSubscriptionsRouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/FXAccountsCenterYourAccountPageRouteResolverQuery.md`: edited
+- `docs/platforms/facebook/profile/FXIMIdentityNameEditorAuthenticPreviewDialogQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometAboutAppSectionQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometCoverPhotoUpdateMutation.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometFeedComposerRootQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometHeaderQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometProfilePictureEditDialogQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometProfilePictureSetMutation.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTilesFeedPaginationQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTimelineAccountStatusNoticeQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTimelineFeedQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTimelineFeedRefetchQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTimelineListViewRootQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTopAppSectionQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfilePromptQuickPromotionMutation.md`: edited
+- `docs/platforms/facebook/profile/profilePictureUpload.md`: edited
+- `docs/platforms/facebook/profile/useFXIMNameValidatorQuery.md`: edited
+- `docs/platforms/facebook/profile/useFXIMUpdateNameMutation.md`: edited
+- `docs/platforms/facebook/publishing/useCometMarketplaceListingCreateMutation.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoContainerQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoEntityDialogImplQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoFeedbackRightRailWithCommentPreloadingQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoHashtagSearchDialogSnippetQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoRootWithEntrypointQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoSeenStateMutation.md`: edited
+- `docs/platforms/facebook/reels/README.md`: edited
+- `docs/platforms/facebook/workflows.md`: edited
+- `docs/proxies.md`: edited
+- `docs/rea/README.md`: edited
+- `docs/rea/comparison.md`: edited
+- `docs/rea/facebookClient.md`: edited
+- `docs/recordToFlow.md`: edited
+- `docs/vendors/README.md`: edited
+- `lefthook.yml`: edited
+- `python/errors/errorCatalog.json`: edited
+- `python/login/autoLogin.py`: no declaration changed (comments, formatting or line endings)
+- `python/openMagpie/facebookWorker.py`: changed def main
+- `python/session/logWorker.py`: no declaration changed (comments, formatting or line endings)
+- `python/session/profileSession.py`: no declaration changed (comments, formatting or line endings)
+- `python/session/publishSession.py`: changed class Session
+- `scripts/checks/checkAgentHooks.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/checks/checkFacebookClientDocs.mjs`: no declaration changed (comments, formatting or line endings)
+- `scripts/docs/buildDocs.ts`: removed const PLATFORMS
+- `scripts/twenty/twentySetup.mjs`: changed const SOCIAL_ACCOUNT_FIELDS, const NEW_OBJECTS, const AGENCY_GROUP_FIELDS
+- `skills.md`: edited
+- `skills/accountToDryRun/SKILL.md`: edited
+- `skills/commitLog/SKILL.md`: edited
+- `skills/conversations/SKILL.md`: edited
+- `skills/host/SKILL.md`: edited
+- `skills/lifecycle/SKILL.md`: edited
+- `skills/logCli/SKILL.md`: edited
+- `skills/profileSetup/SKILL.md`: edited
+- `skills/reaCapture/SKILL.md`: edited
+- `skills/warmup/SKILL.md`: edited
+- `src/agentHooks/agentHooks.test.ts`: changed test "finds the log command a shell line runs", test "tail/head buffer; tail -f and tee don't", test "a buffered log run is refused; a long one off a Monitor is reminded; Monitor with tee goes through", test "the CLI and the MCP append to the same day's file"
+- `src/agentHooks/liveLog/index.ts`: changed function logCommandOf
+- `src/browser/driver/types.ts`: changed const BROWSER_CAPABILITIES
+- `src/browser/flow/helpers/pageState.ts`: changed const PAGE_STATES
+- `src/browser/run/client.ts`: changed const IN_OPEN_BROWSER, function prepareRun
+- `src/browser/run/helpers/launchBudget.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/run/run.test.ts`: added test "a reset (log facebook account resetOpens) makes earlier launches stop counting, for that account only, keeping the recordings" · removed test "a reset (log account resetOpens) makes earlier launches stop counting, for that account only, keeping the recordings"
+- `src/browser/run/types.ts`: changed interface PreparedRun
+- `src/camofox/device/helpers/deviceProfile.ts`: no declaration changed (comments, formatting or line endings)
+- `src/camofox/session/types.ts`: changed interface ProfileSessionConfig
+- `src/cli/account/helpers/resetOpens.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/account/index.ts`: changed const ACCOUNTS_USAGE, const ACCOUNT_USAGE, const accountsCommand, const accountCommand
+- `src/cli/account/resave.test.ts`: changed test "saves a kept run's session to Twenty, then removes the folder", test "refuses a folder that belongs to another account", test "writes one dated reset per account and puts the host's opens back to 0, deleting nothing"
+- `src/cli/campaign/campaign.test.ts`: changed test "fill puts the ad on every eligible account in its country, and says how many it couldn't", test "run dry-runs every READY listing in the campaign, each through the account check", test "heal reports when nothing is lost", test "needs an action and --campaign"
+- `src/cli/campaign/index.ts`: changed const CAMPAIGN_USAGE, const campaignCommand
+- `src/cli/capture/index.ts`: changed const CAPTURE_USAGE, function runCapture
+- `src/cli/conversation/conversation.test.ts`: changed test "record stores scanned threads, ties them to listings, and a second record adds nothing", test "show, read, lead and link", test "unknown actions and missing ids print the usage"
+- `src/cli/conversation/helpers/renderConversation.ts`: changed function renderConversation
+- `src/cli/conversation/index.ts`: changed const CONVERSATIONS_USAGE, const CONVERSATION_USAGE, const conversationsCommand, const conversationCommand
+- `src/cli/host/helpers/hostActors.ts`: changed function hostActors
+- `src/cli/host/index.ts`: changed const HOST_USAGE, const hostCommand
+- `src/cli/join/helpers/parseJoinArgs.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/join/index.ts`: changed const JOIN_USAGE, function answerGroup, function fillGroup, function renderRun, function runJoin
+- `src/cli/join/join.test.ts`: changed test "never launches a browser: without the account's open one it is refused", test "a dry run in the open browser reads the gate, clicks nothing, and patches joinSubmission per step", test "--live as on Bethlehem: a member, the Participant questions dialog kept in joinSubmission and read back by --show", test "a bad --group is refused before anything", test "never prompts without a terminal", test "Clack asks for what is missing", test "--answer: the Clack stepper over a private group's recorded questions, saved to Twenty as the draft, nothing sent", test "--answer without join options says how to get them", test "outside the account's hours a step in the browser is refused, even with the browser open (rule 18); --bypass runs it (rule 20)", test "an unknown account is refused"
+- `src/cli/launch/index.ts`: changed function runLaunch
+- `src/cli/lifecycle/index.ts`: changed const LIFECYCLE_USAGE, const GENERATED, const lifecycleCommand
+- `src/cli/lifecycle/lifecycle.test.ts`: changed test "every account: its status, the machine's state, and what onboarding has left", test "the state tree comes from the machine itself"
+- `src/cli/listing/helpers/listingFromJson.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/listing/index.ts`: changed const LISTINGS_USAGE, const LISTING_USAGE, const listingsCommand, const listingCommand
+- `src/cli/live/helpers/renderScan.ts`: changed function renderLoss
+- `src/cli/live/index.ts`: changed const DOCTOR_USAGE, const CONNECT_USAGE, const SCAN_USAGE, const STATUS_USAGE, function openAccount, function withRun, const doctorCommand, const connectCommand, const scanCommand, const statusCommand
+- `src/cli/live/live.test.ts`: changed test "connect refuses an account with no proxy too: signing in is no exception", test "scan hands the worker file paths only, and the files carry the proxy and cookies from Twenty", test "scan writes the dashboard back to the account's listings in Twenty", test "a ban seen on the page makes the account RESTRICTED and replaces its campaign listings", test "a worker failure with an account code updates the account", test "status opens one listing", test "connect runs the connect machine through the proxy and saves the cookies to Twenty", test "connect --noPrompt types Twenty's details from a private file, deleted after the run, through two-step", test "connect stuck on Facebook's checkpoint ends checkpointed: status CHECKPOINT, cookies left as they were", test "signed in but restricted account-wide (Pittsburgh's notice) is RESTRICTED, never ACTIVE", test "Listaro's post-login check: signed in but unable to buy or sell is recorded, cookies kept", test "doctor reports the setup and which Twenty accounts may run", test "scan at 03:00 Galway time is refused with the local time; no worker starts", test "scan --bypass at 03:00 runs anyway (rule 18 skipped, the proxy gate still in the worker)", test "the first launch's device is saved to Twenty once and never printed", test "an account that has a device keeps it: it goes to Python and is never overwritten", test "scan saves the cookies and localStorage the browser left, and the next run starts from them", test "a logged-out jar never replaces the stored session"
+- `src/cli/poll/helpers/index.ts`: added export from "./parsePollArgs.ts"
+- `src/cli/poll/helpers/parsePollArgs.ts`: added const POLL_TARGETS, const MAX_POLL_MS, type ParsePollArgsResult, function durationMs, function parsePollArgs
+- `src/cli/poll/index.ts`: added export from "./helpers/index.ts", const POLL_EVERY_MS, const POLL_USAGE, const pollDeps, type GroupError, function pollOnce, function pollRequest, function runPoll, const pollCommand
+- `src/cli/poll/poll.test.ts`: added const realSleep, const GROUP_ID, const GROUP, const T, function step, function run, const openBrowser, test "<group> <account> [<how long to poll>], or --request alone", test "the platform comes first: log poll is refused with the form it became (rule 63)", test "never launches a browser: without the account's open one the poll answers why", test "one poll reads the group in the open browser, posts only, and answers one JSON line of records", test "with a time it polls every 5 minutes until the time is up, a line each", test "--request answers OpenMagpie's groups.search from an account in the group with its browser open"
+- `src/cli/profile/index.ts`: changed const PROFILE_USAGE, const profileCommand
+- `src/cli/profile/profile.test.ts`: changed test "a dry run reads the profile through the gates and changes nothing", test "--live with no photos in Twenty is refused before a browser opens", test "--live uploads both photos in one run and records profileSetAt", test "not signed in: stops and says to connect first", test "needs the setup subcommand"
+- `src/cli/publish/helpers/summarizePublish.ts`: changed function renderPublishOutput
+- `src/cli/publish/index.ts`: changed const PUBLISH_USAGE, const publishCommand
+- `src/cli/publish/publish.test.ts`: changed test "dry run by default: fills, reviews, never clicks Publish, records the run in Twenty", test "--live publishes, and the listing and account are updated in Twenty", test "a reCAPTCHA goes to CaptchaKraken, and the attempt lands in the ledger", test "Arkose with no 2Captcha key stops for a person, without solving", test "a login wall on the form is signed through in the same browser, then the form opens again (rule 24)", test "a sign-in that ends on a checkpoint stops the run once: no second sign-in, nothing uploaded", test "Facebook disabling the account mid-run makes it BANNED and replaces its campaign listings", test "--json streams the trace then the output, and writes the run record", test "the refusal is written to the listing row", test "--live stops at the account's daily cap", test "the session gets the run's device file, and a first-launch device is saved to Twenty", test "an exit IP that moved inside the country is recorded on the account", test "an exit that left the country before Publish blocks the run; Publish isn't retried", test "at 03:00 in Galway nothing opens, dry run included"
+- `src/cli/read/helpers/parseReadArgs.ts`: changed type ParseReadArgsResult, function parseReadArgs
+- `src/cli/read/index.ts`: changed const READ_USAGE, function renderRun, type ReadInBrowser, function readInBrowser, function runRead, const readCommand · removed function runWorker
+- `src/cli/read/read.test.ts`: added test "--worker became its own command: log facebook poll --request" · changed test "takes group, --account, --group, --scrolls, --commentPosts, --live, --show", test "never launches a browser: without the account's open one it is refused", test "reads the new posts and comments in the open browser, saves them, and a second read adds nothing" · removed test "--worker answers OpenMagpie's groups.search from Twenty at once, and opens nothing: the host fills it", test "--worker says why: a group no account is in, and one no host has read yet"
+- `src/cli/runner/cli.test.ts`: added test "a Facebook command without the platform, or with it after the command, is refused with the form it became", test "a platform needs a command after it, and an any-platform command takes none", test "the platform first runs the command" · changed test "listings --json returns every Twenty listing", test "listings filters by status, account and campaign, and validates", test "listing shows one row with its account", test "listing create adds a READY row for the account from a JSON file, and refuses one that can't post", test "accounts --json lists the FACEBOOK accounts, never their proxy or cookies", test "account status BANNED keeps the account and replaces its campaign listings"
+- `src/cli/runner/helpers/index.ts`: added export from "./platforms.ts"
+- `src/cli/runner/helpers/platforms.ts`: added const PLATFORMS, type Platform, const isPlatform, function resolvePlatformForm
+- `src/cli/runner/index.ts`: changed const COMMANDS, function dispatch
+- `src/cli/runner/types.ts`: changed interface CommandContext, interface Command
+- `src/cli/warmup/helpers/feedRun.ts`: changed function runFeedSession
+- `src/cli/warmup/helpers/personaRun.ts`: changed function runPersonaSession
+- `src/cli/warmup/helpers/platformActivity.ts`: changed const PLATFORM_USAGE, function runPlatformActivity
+- `src/cli/warmup/helpers/stages.ts`: changed const STAGES_USAGE, function runStages, function record, function runWarmup
+- `src/cli/warmup/index.ts`: changed const MOVED, const warmupCommand
+- `src/cli/warmup/warmup.test.ts`: added test "the platform comes first: the old order is refused with the new one (rule 63)" · changed test "plan lists each activity's recording script and whether its flow exists", test "run refuses an activity whose flow hasn't been recorded, before any browser opens", test "unknown activities and subcommands are named", test "a form without the platform is refused with the one it became (rule 60)", test "stages log shows the stage log, empty to start", test "plan draws a reel session from the activity's own steps; nothing opens", test "record runs every step in the open browser, checks each, and writes the outline"
+- `src/cli/watch/index.ts`: changed const WATCH_USAGE, const watchCommand
+- `src/cli/watch/watch.test.ts`: changed test "runs one check against the account's Twenty listings, prints the trace and the decisions", test "--json streams NDJSON trace lines, then the output", test "a login wall stops with code 1 and marks the account NEEDS_LOGIN in Twenty", test "validates flags, and never starts for an account that may not run", test "a check that falls outside the window stops the watch without opening a browser"
+- `src/errors/catalog/types.ts`: changed type ErrorLayer, const reconnect, const ERROR_CATALOG
+- `src/group/answer/client.ts`: changed function applicationFromDraft
+- `src/group/answer/machine.ts`: no declaration changed (comments, formatting or line endings)
+- `src/group/answer/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/group/join/helpers/stepper.ts`: no declaration changed (comments, formatting or line endings)
+- `src/group/join/machine.ts`: no declaration changed (comments, formatting or line endings)
+- `src/group/join/types.ts`: changed interface GroupJoinSubmission
+- `src/group/read/helpers/openMagpieWorker.ts`: added function workerCodeOf, const scrollsFor · changed function recordOf, function recordsOf · removed type PostRow, function uniquePosts, const STALE_AFTER_MS, function readFreshness
+- `src/group/read/machine.ts`: no declaration changed (comments, formatting or line endings)
+- `src/group/read/openMagpieWorker.test.ts`: added const post, test "answers with the posts the poll's read saw, in from_record's shape, only those matching a term", test "a checkpoint, a login wall or a video selfie is auth_required; the rest keep log-cli's code", test "about three posts a scroll, from 1 to 6" · changed test "passes only the action and params on: OpenMagpie's cookies, proxy and account never reach log-cli" · removed const row, test "answers with the newest saved posts in from_record's shape, only those matching a term", test "the same group on two accounts answers each post once", test "says when no host has read the group, or not for three hours"
+- `src/marketplace/agencyListing/types.ts`: changed const LISTING_STATUSES
+- `src/marketplace/connect/machine.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/connect/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/host/helpers/progress.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/host/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/monitor/machine.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/profile/machine.ts`: changed const profileMachine
+- `src/marketplace/profile/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/publish/machine.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/socialAccount/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/socialAccount/types.ts`: changed interface FacebookAccount
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `src/mcp/server/helpers/guardCall.ts`: added function commandLine · changed function guardCall
+- `src/mcp/server/helpers/toolsFromCommands.ts`: added const commandWords · changed const LONG_RUNNING, function toolsFromCommands
+- `src/mcp/server/helpers/toolsFromFlows.ts`: changed function toolsFromFlows
+- `src/mcp/server/server.test.ts`: changed test "--live needs confirmLive", test "connect always runs --noPrompt, so it never reads the MCP channel", test "terminal-only, unknown and malformed calls are refused", test "the worker's stderr lines reach the tool result and the live callback, in order"
+- `src/rea/capture/client.ts`: changed function inspectCapture
+- `src/rea/facebookClient/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/rea/facebookClient/helpers/domainOf.ts`: changed const DOMAIN_PATTERNS
+- `src/rea/facebookClient/helpers/renderOperationDoc.ts`: changed const FACTS_START
+- `src/surface/catalog/index.ts`: changed function commandEntry
+- `src/surface/catalog/types.ts`: changed interface CommandEntry
+- `src/surface/readme/index.ts`: added const anchorOf · changed const PLATFORM_TEXT, function renderSurface
+- `src/surface/surface.test.ts`: changed test "flags come from the usage, once each, with their value", test "the section replaces the old one and is idempotent"
+- `src/twenty/graphql/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/types.ts`: changed interface TwentyObjects, interface TwentyClient
+- `src/warmup/facebook/helpers/feed.ts`: no declaration changed (comments, formatting or line endings)
+- `src/warmup/facebook/helpers/reel.ts`: no declaration changed (comments, formatting or line endings)
+- `src/warmup/facebook/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/warmup/facebook/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/warmup/facebookStages/machine.ts`: no declaration changed (comments, formatting or line endings)
+
+What changed: the platform comes first in every command that acts on one, `log <platform> <command> …`. The runner (`resolvePlatformForm`, `PLATFORMS`) reads the platform, then the command:
+- A Facebook command gets what follows it. The warm-up gets its platform back as its first argument, so its own parsing is unchanged.
+- A form without the platform, or with it after the command, is refused with the form it became (`log connect --account x` → `log facebook connect --account x`). The warm-up's own old forms (`log warmup plan`) still get its exact replacement.
+- A command that works on any platform is refused with a platform in front of it.
+
+`log facebook poll <group> <account> [<how long to poll>] [--bypass]` is new (`src/cli/poll`). One poll reads the group in the account's open browser, posts only, nothing clicked, and prints one JSON line of OpenMagpie's records (`recordsOf` now builds them from the posts the read saw). With a time it polls every 5 minutes (`POLL_EVERY_MS`) until the time is up. `--request <json>` is OpenMagpie's worker call, which replaces `read group --worker`; `read` now refuses `--worker` with the command it became. `readInBrowser` is exported for it, and `python/openMagpie/facebookWorker.py` calls `facebook poll --request`.
+
+Everything that names a command follows the new form:
+- MCP calls (`commandLine` in guardCall, `commandWords` in tool descriptions);
+- the live-log hook (`logCommandOf` skips the platform);
+- the README (`words`, anchors);
+- the hooks check;
+- 607 quoted forms across the code, Python, scripts, docs and skills, and the tests' calls.
+
+`check:docs` section 6 refuses any usage line of a one-platform command that doesn't start with its platform, and any platform in front of an any-platform command. Rule 63 is at the top of AGENTS.md and in its rules, and the MCP instructions (item 13, `RULES_REVIEWED_THROUGH` 63) and per-tool rules cite it. `docs/commandNaming.md` has the table, old and new, and what was decided.
+Why: matt, 2026-10-22: "THE PLATFORM FIRST LOG PLATFORM", then "yes that is correct enforce that fucking rule". Of 30 commands, 19 were Facebook-only without naming it (issue #20), and OpenMagpie's poll was a flag on `read` instead of `log facebook poll <group> <account> <how long to poll>`.
+Checked: `bun run check`: every gate passes and 774 tests pass. New tests: the runner refuses old forms and an any-platform command with a platform (`src/cli/runner/cli.test.ts`); the warm-up's old order is refused with the new one; `src/cli/poll/poll.test.ts` covers the arguments, the old form, no open browser, one poll, polling for a time with a line per poll, and `--request` with an unknown group. `check:docs` refused a usage line put back to `log scan --account` (then restored). Not run live: a poll on Bethlehem's group (from 12:00 UTC, its hours). Still open, in `docs/commandNaming.md`: whether group code moves to `src/group/facebook/` and whether saved flows carry the platform.

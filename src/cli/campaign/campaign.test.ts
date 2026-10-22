@@ -40,9 +40,9 @@ async function run(argv: string[], twenty = marketplaceFixture(photo), session =
   return { code, out: out.join("\n"), err: err.join("\n"), twenty, session };
 }
 
-describe("log campaign", () => {
+describe("log facebook campaign", () => {
   test("fill puts the ad on every eligible account in its country, and says how many it couldn't", async () => {
-    const { code, out, twenty } = await run(["campaign", "fill", "--campaign", "campaignNew", "--from", "adTemplate", "--accounts", "5"]);
+    const { code, out, twenty } = await run(["facebook", "campaign", "fill", "--campaign", "campaignNew", "--from", "adTemplate", "--accounts", "5"]);
     expect(code).toBe(1);
     expect(out).toContain("Created 4 of 5 listing(s)");
     expect(out).toContain("1 short");
@@ -50,18 +50,18 @@ describe("log campaign", () => {
   });
 
   test("run dry-runs every READY listing in the campaign, each through the account check", async () => {
-    const { code, out, session } = await run(["campaign", "run", "--campaign", FIXTURE_CAMPAIGN]);
+    const { code, out, session } = await run(["facebook", "campaign", "run", "--campaign", FIXTURE_CAMPAIGN]);
     expect(code).toBe(0);
     expect(out).toContain("1/1 dry-run ok");
     expect(session.opened).toEqual(["galwayOne"]);
   });
 
   test("heal reports when nothing is lost", async () => {
-    expect((await run(["campaign", "heal", "--campaign", FIXTURE_CAMPAIGN])).out).toContain("No ACCOUNT_LOST listings");
+    expect((await run(["facebook", "campaign", "heal", "--campaign", FIXTURE_CAMPAIGN])).out).toContain("No ACCOUNT_LOST listings");
   });
 
   test("needs an action and --campaign", async () => {
-    expect((await run(["campaign"])).code).toBe(1);
-    expect((await run(["campaign", "fill", "--campaign", "x"])).code).toBe(1);
+    expect((await run(["facebook", "campaign"])).code).toBe(1);
+    expect((await run(["facebook", "campaign", "fill", "--campaign", "x"])).code).toBe(1);
   });
 });

@@ -59,7 +59,7 @@ export function milestones(before: LifecycleContext | null, after: LifecycleCont
   return { ...out, lifecycleState: state }
 }
 
-/** Today's host opens back to 0 (`log account resetOpens`). False when the account has no host progress yet. */
+/** Today's host opens back to 0 (`log facebook account resetOpens`). False when the account has no host progress yet. */
 export function resetHostOpens(account: string): boolean {
   const progress = readProgress(account)
   if (!progress) return false
@@ -67,7 +67,7 @@ export function resetHostOpens(account: string): boolean {
   return true
 }
 
-/** Events sent to a running host (`log host send`), read from the control file as they arrive. */
+/** Events sent to a running host (`log facebook host send`), read from the control file as they arrive. */
 export function readControl(account: string, offset: number): { events: HostControl[]; offset: number } {
   const path = controlPath(account)
   if (!existsSync(path)) return { events: [], offset: 0 }

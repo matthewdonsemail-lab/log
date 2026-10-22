@@ -1,6 +1,6 @@
 # FBUnifiedVideoContainerQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -54,4 +54,4 @@ No state reads it. The Reels warm-up checks where it landed instead: `openReels`
 
 ## What can go wrong
 
-None seen: 15 calls, all 200 in 1032-3499 ms. If the feed did not load, `openReels` would not reach a `/reel/<id>` URL or a swipe would leave the URL unchanged, and `checkStep` names it. If the step fails anyway, `checkStep` reports it as an issue: `log warmup facebook reel record` goes on and outlines it, a `run` stops there, and a checkpoint or login page ends it as `blocked`.
+None seen: 15 calls, all 200 in 1032-3499 ms. If the feed did not load, `openReels` would not reach a `/reel/<id>` URL or a swipe would leave the URL unchanged, and `checkStep` names it. If the step fails anyway, `checkStep` reports it as an issue: `log facebook warmup reel record` goes on and outlines it, a `run` stops there, and a checkpoint or login page ends it as `blocked`.

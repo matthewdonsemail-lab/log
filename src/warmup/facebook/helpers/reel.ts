@@ -5,7 +5,7 @@ const RUN = 'run 20261020T050610_61594063207669 (Bethlehem, AdsPower)'
 
 /**
  * Facebook Reels as a warm-up activity, from its first recording (2026-10-20,
- * Bethlehem). Each step says what it must achieve; `log warmup facebook reel
+ * Bethlehem). Each step says what it must achieve; `log facebook warmup reel
  * record` checks it after every step and lists what didn't happen.
  *
  * What the recording showed:

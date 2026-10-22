@@ -1,6 +1,6 @@
 # SearchCometResultsInitialResultsQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -27,7 +27,7 @@ Loads the first page of Facebook's search results (`SearchCometResultsPaginatedR
 
 ## What our machine does with it
 
-Nothing. No machine of ours searches Facebook: `log join group` opens the group by its own URL (`groupJoin`, state `opening`), and `parseGroupRef` refuses `search` as a group. The steps it fired in were a hand-run `log inspect` session, so no state waits for it or reads it.
+Nothing. No machine of ours searches Facebook: `log facebook join group` opens the group by its own URL (`groupJoin`, state `opening`), and `parseGroupRef` refuses `search` as a group. The steps it fired in were a hand-run `log inspect` session, so no state waits for it or reads it.
 
 ## What can go wrong
 

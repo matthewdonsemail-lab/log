@@ -1,4 +1,4 @@
-"""Facebook's sign-in pages, for `log connect` (python/session/connectSession.py).
+"""Facebook's sign-in pages, for `log facebook connect` (python/session/connectSession.py).
 
 `classify` says which page the browser is on. It is the page kind the connect
 machine (`src/marketplace/connect/machine.ts`) routes on: loggedIn, loginForm,

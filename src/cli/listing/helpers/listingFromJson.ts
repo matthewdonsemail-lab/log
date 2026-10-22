@@ -4,8 +4,8 @@ import type { AgencyListing, ListingCondition } from "../../../marketplace/agenc
 const CONDITIONS: readonly ListingCondition[] = ["new", "usedLikeNew", "usedGood", "usedFair"];
 
 /**
- * A `log listing create --file` JSON → the ad to copy onto an account, checked
- * the way `log publish` will check it, so a row that can't post is never made. Pure.
+ * A `log facebook listing create --file` JSON → the ad to copy onto an account, checked
+ * the way `log facebook publish` will check it, so a row that can't post is never made. Pure.
  */
 export function listingFromJson(raw: unknown): { ok: true; ad: AgencyListing } | { ok: false; problems: string[] } {
   if (!raw || typeof raw !== "object" || Array.isArray(raw)) return { ok: false, problems: ["the file must hold one JSON object"] };

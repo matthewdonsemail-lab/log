@@ -50,7 +50,7 @@ export function captureDirFor(accountName: string, action: string, now: Date, ro
 export const OPENER_ACTIONS: ReadonlySet<string> = new Set(['inspect', 'flow', 'warmup', 'host'])
 
 /** The commands that act inside the account's browser already open (`inspect start --detach`), so they run on whichever browser that is. */
-export const IN_OPEN_BROWSER: ReadonlySet<string> = new Set(['join', 'read'])
+export const IN_OPEN_BROWSER: ReadonlySet<string> = new Set(['join', 'read', 'poll'])
 
 /**
  * The commands that still launch Camoufox themselves (facebook-camofox-client's
@@ -76,7 +76,7 @@ export function prepareRun(account: FacebookAccount, purpose: RunPurpose, option
   if (!check.ok) return check
   const cookies = toFacebookCookies(account.cookies)
   if (purpose === 'run' && cookies.length === 0) {
-    return { ok: false, code: 'neverConnected', detail: `${account.accountName} has no cookies in Twenty. Run: log connect --account ${account.accountName}` }
+    return { ok: false, code: 'neverConnected', detail: `${account.accountName} has no cookies in Twenty. Run: log facebook connect --account ${account.accountName}` }
   }
 
   let device: DeviceRunFile | null = null

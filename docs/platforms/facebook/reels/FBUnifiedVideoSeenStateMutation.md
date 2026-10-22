@@ -1,6 +1,6 @@
 # FBUnifiedVideoSeenStateMutation
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -97,4 +97,4 @@ The `swipe` step (`button "Next card"`) sends it, and `reel.ts` records it as Fa
 
 ## What can go wrong
 
-None seen: 40 calls, all 200, mostly under 800 ms, at most 3601 ms. If a swipe did not move on, the URL stays the same and `checkStep` reports `the URL didn't change`. If the step fails anyway, `checkStep` reports it as an issue: `log warmup facebook reel record` goes on and outlines it, a `run` stops there, and a checkpoint or login page ends it as `blocked`.
+None seen: 40 calls, all 200, mostly under 800 ms, at most 3601 ms. If a swipe did not move on, the URL stays the same and `checkStep` reports `the URL didn't change`. If the step fails anyway, `checkStep` reports it as an issue: `log facebook warmup reel record` goes on and outlines it, a `run` stops there, and a checkpoint or login page ends it as `blocked`.

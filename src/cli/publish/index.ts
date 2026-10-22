@@ -1,5 +1,5 @@
 /**
- * `log publish --listing <agencyListingId>` — post one Marketplace listing from
+ * `log facebook publish --listing <agencyListingId>` — post one Marketplace listing from
  * Twenty through the publish machine (XState) and print every step.
  *
  * The listing row says what to post and which socialAccount posts it. Before
@@ -56,7 +56,7 @@ import { renderPublishOutput, summarizePublish } from "./helpers/index.ts";
 export * from "./helpers/index.ts";
 
 export const PUBLISH_USAGE = [
-  "Usage: log publish --listing <agencyListingId> [--live] [--json] [--formUrl <url>] [--bypass] [--now]",
+  "Usage: log facebook publish --listing <agencyListingId> [--live] [--json] [--formUrl <url>] [--bypass] [--now]",
   "Dry run unless --live: fills and checks everything, never clicks Publish.",
   "The listing, its account and the account's proxy all come from Twenty.",
   "--bypass skips only the account's waking hours (rule 18); every other gate still runs.",
@@ -123,10 +123,10 @@ export const publishCommand: Command = {
   args: "--listing <id> [--live] [--json] [--bypass] [--now]",
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["live", "json", "bypass", "now"], valued: ["listing", "formUrl"] });
-    if (!parsed.ok) return { code: 1, stderr: `log publish: ${parsed.error}\n${PUBLISH_USAGE}` };
-    if (parsed.positionals.length > 0) return { code: 1, stderr: `log publish: unexpected argument "${parsed.positionals[0]}"\n${PUBLISH_USAGE}` };
+    if (!parsed.ok) return { code: 1, stderr: `log facebook publish: ${parsed.error}\n${PUBLISH_USAGE}` };
+    if (parsed.positionals.length > 0) return { code: 1, stderr: `log facebook publish: unexpected argument "${parsed.positionals[0]}"\n${PUBLISH_USAGE}` };
     const listingId = parsed.flags.listing;
-    if (typeof listingId !== "string") return { code: 1, stderr: `log publish: --listing is required (an agencyListing id)\n${PUBLISH_USAGE}` };
+    if (typeof listingId !== "string") return { code: 1, stderr: `log facebook publish: --listing is required (an agencyListing id)\n${PUBLISH_USAGE}` };
     const dryRun = !parsed.flags.live;
     const json = Boolean(parsed.flags.json);
 

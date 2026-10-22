@@ -54,7 +54,7 @@ describe("rule 12: no browser for an account that may not run", () => {
   ];
   for (const [account, code] of refusals) {
     test(`scan --account ${account} → ${code}, worker never started`, async () => {
-      const result = await run(["scan", "--account", account], () => SCAN);
+      const result = await run(["facebook", "scan", "--account", account], () => SCAN);
       expect(result.code).toBe(1);
       expect(result.err).toContain(code);
       expect(result.requests).toHaveLength(0);
@@ -64,7 +64,7 @@ describe("rule 12: no browser for an account that may not run", () => {
   test("connect refuses an account with no proxy too: signing in is no exception", async () => {
     const twenty = marketplaceFixture();
     await twenty.update("socialAccounts", "needsLogin", { proxy: null });
-    const result = await run(["connect", "--account", "needsLogin"], () => ({ ok: true }), twenty);
+    const result = await run(["facebook", "connect", "--account", "needsLogin"], () => ({ ok: true }), twenty);
     expect(result.code).toBe(1);
     expect(result.err).toContain("noProxy");
     expect(result.requests).toHaveLength(0);
@@ -73,7 +73,7 @@ describe("rule 12: no browser for an account that may not run", () => {
 
 describe("live commands", () => {
   test("scan hands the worker file paths only, and the files carry the proxy and cookies from Twenty", async () => {
-    const { code, requests, files } = await run(["scan", "--account", "galwayOne"], () => SCAN);
+    const { code, requests, files } = await run(["facebook", "scan", "--account", "galwayOne"], () => SCAN);
     expect(code).toBe(0);
     expect(JSON.stringify(requests[0])).not.toContain("secretPass");
     expect(files.proxy).toEqual({ server: "http://203.0.113.7:8080", username: "user", password: "secretPass", country: "IE" });
@@ -83,7 +83,7 @@ describe("live commands", () => {
   });
 
   test("scan writes the dashboard back to the account's listings in Twenty", async () => {
-    const { out, twenty } = await run(["scan", "--account", "galwayOne"], () => SCAN);
+    const { out, twenty } = await run(["facebook", "scan", "--account", "galwayOne"], () => SCAN);
     expect(out).toContain("Updated 1 listing(s) in Twenty.");
     const row = twenty.rows.agencyListings.find((r) => r.id === "liveOne")!;
     expect(row.status).toBe("DUPLICATE_TAKEDOWN");
@@ -92,7 +92,7 @@ describe("live commands", () => {
 
   test("a ban seen on the page makes the account RESTRICTED and replaces its campaign listings", async () => {
     const banned = { ...SCAN, bodySample: "You can't buy or sell on Facebook" };
-    const { out, twenty } = await run(["scan", "--account", "galwayOne"], () => banned);
+    const { out, twenty } = await run(["facebook", "scan", "--account", "galwayOne"], () => banned);
     expect(out).toContain("galwayOne is now RESTRICTED");
     const account = twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")!;
     expect(account).toMatchObject({ accountStatus: "RESTRICTED", statusReason: "suspended" });
@@ -102,7 +102,7 @@ describe("live commands", () => {
   });
 
   test("a worker failure with an account code updates the account", async () => {
-    const { code, err, twenty } = await run(["scan", "--account", "galwayOne"], () => ({ ok: false, code: "checkpointed", detail: "verify" }));
+    const { code, err, twenty } = await run(["facebook", "scan", "--account", "galwayOne"], () => ({ ok: false, code: "checkpointed", detail: "verify" }));
     expect(code).toBe(1);
     expect(err).toContain("checkpointed");
     expect(twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")!.accountStatus).toBe("CHECKPOINT");
@@ -110,7 +110,7 @@ describe("live commands", () => {
 
   test("status opens one listing", async () => {
     const reply = { ok: true, listingId: "111", listingUrl: "https://x", status: "active", title: "Rubbish" };
-    const { code, out, requests } = await run(["status", "111", "--account", "galwayOne"], () => reply);
+    const { code, out, requests } = await run(["facebook", "status", "111", "--account", "galwayOne"], () => reply);
     expect(code).toBe(0);
     expect(requests[0].params).toEqual({ listing_id: "111" });
     expect(out).toContain("Live status active");
@@ -152,7 +152,7 @@ describe("live commands", () => {
     const session = scriptedConnect(["loggedIn"]);
     const out: string[] = [];
     const err: string[] = [];
-    const code = await runCli(["connect", "--account", "needsLogin"], { connectSession: session.factory, connectTiming: FAST_CONNECT, twenty, out: (l) => out.push(l), err: (l) => err.push(l) });
+    const code = await runCli(["facebook", "connect", "--account", "needsLogin"], { connectSession: session.factory, connectTiming: FAST_CONNECT, twenty, out: (l) => out.push(l), err: (l) => err.push(l) });
     expect(code).toBe(0);
     const account = twenty.rows.socialAccounts.find((r) => r.id === "needsLogin")!;
     expect(account.cookies).toEqual([{ name: "c_user", value: "2", domain: ".facebook.com", path: "/" }]);
@@ -163,7 +163,7 @@ describe("live commands", () => {
     // Every state is printed (rule 6), and rule 22's HAR folder comes with the run.
     expect(err.join("\n")).toContain("signingIn.reading");
     expect(session.configs[0].captureDir.replaceAll("\\", "/")).toMatch(/\/connect\/\d{8}T\d{6}_needsLogin\/camoufox$/);
-    expect(await runCli(["connect", "--account", "needsLogin", "--wait", "5"], { connectSession: session.factory, twenty, out: () => {}, err: () => {} })).toBe(1);
+    expect(await runCli(["facebook", "connect", "--account", "needsLogin", "--wait", "5"], { connectSession: session.factory, twenty, out: () => {}, err: () => {} })).toBe(1);
   });
 
   test("connect --noPrompt types Twenty's details from a private file, deleted after the run, through two-step", async () => {
@@ -171,7 +171,7 @@ describe("live commands", () => {
     await twenty.update("socialAccounts", "needsLogin", { email: "fixture@example.com", password: "fixturePass", totpSecret: "GEZDGNBVGY3TQOJQ" } as never);
     const session = scriptedConnect(["loginForm", "twoStepMethod", "twoStepCode", "trustDevice", "loggedIn"]);
     const out: string[] = [];
-    const code = await runCli(["connect", "--account", "needsLogin", "--noPrompt"], { connectSession: session.factory, connectTiming: FAST_CONNECT, twenty, out: (l) => out.push(l), err: (l) => out.push(l) });
+    const code = await runCli(["facebook", "connect", "--account", "needsLogin", "--noPrompt"], { connectSession: session.factory, connectTiming: FAST_CONNECT, twenty, out: (l) => out.push(l), err: (l) => out.push(l) });
     expect(code).toBe(0);
     expect(session.handed()).toEqual({ email: "fixture@example.com", password: "fixturePass", totpSecret: "GEZDGNBVGY3TQOJQ" });
     expect(require("node:fs").existsSync(session.configs[0].loginPath!)).toBe(false);
@@ -181,7 +181,7 @@ describe("live commands", () => {
 
     // A hand sign-in (no --noPrompt) never reads them, and types nothing.
     const plain = scriptedConnect(["loginForm", "loggedIn"]);
-    await runCli(["connect", "--account", "needsLogin"], { connectSession: plain.factory, connectTiming: FAST_CONNECT, twenty, out: () => {}, err: () => {} });
+    await runCli(["facebook", "connect", "--account", "needsLogin"], { connectSession: plain.factory, connectTiming: FAST_CONNECT, twenty, out: () => {}, err: () => {} });
     expect(plain.configs[0].loginPath).toBeNull();
     expect(plain.steps).not.toContain("submitCredentials");
   });
@@ -193,7 +193,7 @@ describe("live commands", () => {
     const session = scriptedConnect(["loginForm", "checkpoint"]);
     const out: string[] = [];
     const err: string[] = [];
-    const code = await runCli(["connect", "--account", "galwayOne", "--noPrompt", "--wait", "10"], { connectSession: session.factory, connectTiming: { ...FAST_CONNECT, deadlineMs: 50 }, twenty, out: (l) => out.push(l), err: (l) => err.push(l) });
+    const code = await runCli(["facebook", "connect", "--account", "galwayOne", "--noPrompt", "--wait", "10"], { connectSession: session.factory, connectTiming: { ...FAST_CONNECT, deadlineMs: 50 }, twenty, out: (l) => out.push(l), err: (l) => err.push(l) });
     expect(code).toBe(1);
     expect(err.join("\n")).toContain("checkpointed");
     expect(out.join("\n")).toContain('Checkpoint: "Confirm your identity"');
@@ -206,7 +206,7 @@ describe("live commands", () => {
   test("signed in but restricted account-wide (Pittsburgh's notice) is RESTRICTED, never ACTIVE", async () => {
     const twenty = marketplaceFixture();
     const session = scriptedConnect(["loggedIn"], undefined, "Marketplace What happened 9 Sep 2026 You can no longer request a review");
-    const code = await runCli(["connect", "--account", "needsLogin"], { connectSession: session.factory, connectTiming: FAST_CONNECT, twenty, out: () => {}, err: () => {} });
+    const code = await runCli(["facebook", "connect", "--account", "needsLogin"], { connectSession: session.factory, connectTiming: FAST_CONNECT, twenty, out: () => {}, err: () => {} });
     expect(code).toBe(1);
     expect(twenty.rows.socialAccounts.find((r) => r.id === "needsLogin")).toMatchObject({ accountStatus: "RESTRICTED", statusReason: "restrictedPolicy" });
   });
@@ -215,7 +215,7 @@ describe("live commands", () => {
     const twenty = marketplaceFixture();
     const session = scriptedConnect(["loggedIn"], undefined, "You can't buy or sell on Facebook");
     const err: string[] = [];
-    const code = await runCli(["connect", "--account", "needsLogin"], { connectSession: session.factory, connectTiming: FAST_CONNECT, twenty, out: () => {}, err: (l) => err.push(l) });
+    const code = await runCli(["facebook", "connect", "--account", "needsLogin"], { connectSession: session.factory, connectTiming: FAST_CONNECT, twenty, out: () => {}, err: (l) => err.push(l) });
     expect(code).toBe(1);
     expect(err.join("\n")).toContain("suspended");
     const account = twenty.rows.socialAccounts.find((r) => r.id === "needsLogin")!;
@@ -263,7 +263,7 @@ print(json.dumps([a.classify(u, h, t, **{"password_field": False, "code_field": 
 
   test("doctor reports the setup and which Twenty accounts may run", async () => {
     const reply = { ok: true, checks: { python: "3.12.10", facebookCamofoxClient: "/fcc", camoufoxBrowser: "/camoufox.exe", camoufoxVersion: "152" } };
-    const { code, out } = await run(["doctor", "--json"], () => reply);
+    const { code, out } = await run(["facebook", "doctor", "--json"], () => reply);
     expect(code).toBe(0);
     const accounts = JSON.parse(out).accounts as { accountName: string; ready: boolean }[];
     expect(accounts.find((a) => a.accountName === "galwayOne")!.ready).toBe(true);
@@ -301,7 +301,7 @@ describe("rules 15 and 18: the device and the local hours", () => {
       started++;
       return SCAN;
     }) as WorkerClient;
-    const result = await runAt(["scan", "--account", "galwayOne"], NIGHT, worker);
+    const result = await runAt(["facebook", "scan", "--account", "galwayOne"], NIGHT, worker);
     expect(result.code).toBe(1);
     expect(result.err).toContain("outsideActiveHours");
     expect(result.err).toContain("it is 03:00 in Galway (Europe/Dublin)");
@@ -314,7 +314,7 @@ describe("rules 15 and 18: the device and the local hours", () => {
       started++;
       return SCAN;
     }) as WorkerClient;
-    const result = await runAt(["scan", "--account", "galwayOne", "--bypass"], NIGHT, worker);
+    const result = await runAt(["facebook", "scan", "--account", "galwayOne", "--bypass"], NIGHT, worker);
     expect(result.err).not.toContain("outsideActiveHours");
     expect(started).toBe(1);
   });
@@ -327,7 +327,7 @@ describe("rules 15 and 18: the device and the local hours", () => {
       require("node:fs").writeFileSync(request.device_path!, JSON.stringify({ ...file, profile: DEVICE, created: true }));
       return SCAN;
     }) as WorkerClient;
-    const result = await runAt(["scan", "--account", "galwayOne", "--json"], DAY, worker);
+    const result = await runAt(["facebook", "scan", "--account", "galwayOne", "--json"], DAY, worker);
     expect(result.code).toBe(0);
     expect(result.err).toContain("Pinned a new device for galwayOne");
     expect(result.out + result.err).not.toContain("canvas:seed");
@@ -345,7 +345,7 @@ describe("rules 15 and 18: the device and the local hours", () => {
       require("node:fs").writeFileSync(request.device_path!, JSON.stringify({ ...file, profile: { ...DEVICE, createdAt: "other" }, created: true }));
       return SCAN;
     }) as WorkerClient;
-    const result = await runAt(["scan", "--account", "galwayOne"], DAY, worker, twenty);
+    const result = await runAt(["facebook", "scan", "--account", "galwayOne"], DAY, worker, twenty);
     expect(result.code).toBe(0);
     expect(twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")!.deviceProfile).toEqual(DEVICE);
   });
@@ -376,7 +376,7 @@ describe("the session continues from run to run", () => {
       return SCAN;
     }) as WorkerClient;
     const err: string[] = [];
-    expect(await runCli(["scan", "--account", "galwayOne"], { worker, twenty, out: () => {}, err: (l) => err.push(l) })).toBe(0);
+    expect(await runCli(["facebook", "scan", "--account", "galwayOne"], { worker, twenty, out: () => {}, err: (l) => err.push(l) })).toBe(0);
     const row = twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")!;
     expect(row.cookies).toEqual(fresh);
     expect(row.storageOrigins).toEqual(origins);
@@ -389,7 +389,7 @@ describe("the session continues from run to run", () => {
       seen = JSON.parse(readFileSync(request.storage_state_path!, "utf8"));
       return SCAN;
     }) as WorkerClient;
-    await runCli(["scan", "--account", "galwayOne"], { worker: next, twenty, out: () => {}, err: () => {} });
+    await runCli(["facebook", "scan", "--account", "galwayOne"], { worker: next, twenty, out: () => {}, err: () => {} });
     expect(seen).toEqual({ cookies: fresh, origins });
   });
 
@@ -399,7 +399,7 @@ describe("the session continues from run to run", () => {
       require("node:fs").writeFileSync(request.storage_state_path!, JSON.stringify({ cookies: [{ name: "datr", value: "x", domain: ".facebook.com", path: "/" }], origins: [] }));
       return SCAN;
     }) as WorkerClient;
-    await runCli(["scan", "--account", "galwayOne"], { worker, twenty, out: () => {}, err: () => {} });
+    await runCli(["facebook", "scan", "--account", "galwayOne"], { worker, twenty, out: () => {}, err: () => {} });
     expect(twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")!.cookies).toEqual(FIXTURE_COOKIES);
   });
 });

@@ -150,7 +150,7 @@ Facebook offers no way to hurry it (`appeal_status: appeal_not_exist`; an
 appeal exists only after a rejection). The run reads the id from Facebook's
 own answer to Publish (`useCometMarketplaceListingCreateMutation`), says
 "Held for review", and writes the row UNDER_REVIEW, not ACTIVE. A later
-`log scan` moves it to ACTIVE once the badge is gone. Reading's first listing,
+`log facebook scan` moves it to ACTIVE once the badge is gone. Reading's first listing,
 2026-10-19, was held this way.
 
 ```text

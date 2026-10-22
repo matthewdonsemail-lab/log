@@ -13,7 +13,7 @@ import { rulesLine } from "./agentRules.ts";
 export function toolsFromFlows(flows: FlowDefinition[]): LogTool[] {
   return flows.map((flow) => {
     const properties: Record<string, unknown> = {
-      account: { type: "string", description: "The account (`log accounts` lists them)" },
+      account: { type: "string", description: "The account (`log facebook accounts` lists them)" },
     };
     for (const p of flow.params) properties[p.name] = { type: "string", description: `${p.description}${p.kind === "file" ? " (a URL or a local path)" : ""}` };
     properties.live = { type: "boolean", description: "Run it on Facebook. Without it the steps are listed and nothing opens." };

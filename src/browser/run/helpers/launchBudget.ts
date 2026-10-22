@@ -24,7 +24,7 @@ const SELF_CHECK = 'Self-check passed'
 export const launchResetsPath = (env: Record<string, string | undefined> = process.env) => env.LOG_LAUNCH_RESETS || join(homedir(), '.logCli', 'launchResets.jsonl')
 
 /**
- * When this account's opens were last reset (`log account resetOpens`, matt
+ * When this account's opens were last reset (`log facebook account resetOpens`, matt
  * 2026-10-19): launches before it no longer count against rule 24. Nothing
  * is deleted; the recordings stay. Null when never reset.
  */

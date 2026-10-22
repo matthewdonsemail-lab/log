@@ -275,7 +275,7 @@ class Session:
         # Only connect (connectSession.py) may start without a session: it is the one that makes it.
         fresh = bool(self.config.get("allowFresh"))
         if not state.is_file() and not fresh:
-            return {"kind": "issue", "issue": checked("neverConnected"), "detail": f"no saved session at {state}. Run: log connect --account <id>"}
+            return {"kind": "issue", "issue": checked("neverConnected"), "detail": f"no saved session at {state}. Run: log facebook connect --account <id>"}
         from camoufox.sync_api import Camoufox
 
         # Proxy gate (rule 12), the account's device and locale (15-16), headed,

@@ -1,13 +1,13 @@
 /**
- * `log warmup facebook stages` (rules 36, 60): Listaro's five Facebook warm-up
+ * `log facebook warmup stages` (rules 36, 60): Listaro's five Facebook warm-up
  * activities (feedBrowse, marketplaceBrowse, createAccessCheck, sellingVisit,
  * messagesVisit), recorded once in a headed inspect session, turned into flows,
  * and run in one browser that stays open, every step in the stage log.
  *
- *   log warmup facebook stages plan        each activity: its script, its flow, recorded or not
- *   log warmup facebook stages record --account <a> [--only a,b] [--likes] [--bypass] [--now]
- *   log warmup facebook stages run --account <a> [--only a,b] [--likes] [--gapMinutes <n>] [--bypass] [--now]
- *   log warmup facebook stages log [--account <a>] [--lines <n>] [--follow [--seconds <n>]]
+ *   log facebook warmup stages plan        each activity: its script, its flow, recorded or not
+ *   log facebook warmup stages record --account <a> [--only a,b] [--likes] [--bypass] [--now]
+ *   log facebook warmup stages run --account <a> [--only a,b] [--likes] [--gapMinutes <n>] [--bypass] [--now]
+ *   log facebook warmup stages log [--account <a>] [--lines <n>] [--follow [--seconds <n>]]
  *
  * The likes (`clickAny button ^Like$`) act on Facebook: they are skipped unless
  * --likes (rule 8). Everything else only reads.
@@ -25,10 +25,10 @@ import { openAccount, withRun } from "../../live/index.ts";
 import type { CommandContext, CommandResult } from "../../runner/types.ts";
 
 export const STAGES_USAGE = [
-  "       log warmup facebook stages plan",
-  "       log warmup facebook stages record --account <accountName> [--only feedBrowse,marketplaceBrowse] [--likes] [--bypass] [--now]",
-  "       log warmup facebook stages run --account <accountName> [--only …] [--likes] [--gapMinutes <n>] [--bypass] [--now]",
-  "       log warmup facebook stages log [--account <accountName>] [--lines <n>] [--follow [--seconds <n>]]",
+  "       log facebook warmup stages plan",
+  "       log facebook warmup stages record --account <accountName> [--only feedBrowse,marketplaceBrowse] [--likes] [--bypass] [--now]",
+  "       log facebook warmup stages run --account <accountName> [--only …] [--likes] [--gapMinutes <n>] [--bypass] [--now]",
+  "       log facebook warmup stages log [--account <accountName>] [--lines <n>] [--follow [--seconds <n>]]",
 ].join("\n");
 
 /** The run's own name in the stage log: its folder. */
@@ -40,10 +40,10 @@ function stage(context: CommandContext, line: Omit<StageLogLine, "at">): void {
   context.err(`stage ${renderStageLogLine(full)}`);
 }
 
-/** `log warmup facebook stages <sub>`: plan, record, run or log. */
+/** `log facebook warmup stages <sub>`: plan, record, run or log. */
 export async function runStages(context: CommandContext, sub: string | undefined, flags: Record<string, string | true>): Promise<CommandResult> {
   if (sub === "plan") {
-    const lines = ["The warm-up: Listaro's five activities, in its stage order (account-warmup.ts). Record once with `log warmup facebook stages record`, run with `log warmup facebook stages run`."];
+    const lines = ["The warm-up: Listaro's five activities, in its stage order (account-warmup.ts). Record once with `log facebook warmup stages record`, run with `log facebook warmup stages run`."];
     for (const script of SCRIPTS_IN_ORDER) {
       const flow = loadFlow(script.flow);
       lines.push(`\n${script.activity} → flow ${script.flow}: ${flow ? `recorded (${flow.steps.length} steps)` : "NOT RECORDED"}  [${script.source}]`);
@@ -54,24 +54,24 @@ export async function runStages(context: CommandContext, sub: string | undefined
 
   if (sub === "log") return showStageLog(context, flags);
 
-  if (sub !== "record" && sub !== "run") return { code: 1, stderr: `log warmup facebook stages: pick plan, record, run or log\n${STAGES_USAGE}` };
+  if (sub !== "record" && sub !== "run") return { code: 1, stderr: `log facebook warmup stages: pick plan, record, run or log\n${STAGES_USAGE}` };
   const picked = pickActivities(typeof flags["only"] === "string" ? flags["only"] : undefined);
-  if (!picked.ok) return { code: 1, stderr: `log warmup: ${picked.error}` };
+  if (!picked.ok) return { code: 1, stderr: `log facebook warmup: ${picked.error}` };
   if (sub === "run") {
     const missing = picked.activities.filter((a) => !loadFlow(ACTIVITY_SCRIPTS[a].flow));
     if (missing.length) {
-      return { code: 1, stderr: `log warmup: flowNotRecorded: ${missing.map((a) => ACTIVITY_SCRIPTS[a].flow).join(", ")} not recorded yet. Record them first, headed: log warmup facebook stages record --account <a> --only ${missing.join(",")}` };
+      return { code: 1, stderr: `log facebook warmup: flowNotRecorded: ${missing.map((a) => ACTIVITY_SCRIPTS[a].flow).join(", ")} not recorded yet. Record them first, headed: log facebook warmup stages record --account <a> --only ${missing.join(",")}` };
     }
   }
   const gapMinutes = flags["gapMinutes"] === undefined ? 150 : Number(flags["gapMinutes"]);
-  if (!Number.isFinite(gapMinutes) || gapMinutes < 0 || gapMinutes > 600) return { code: 1, stderr: "log warmup: --gapMinutes must be 0 to 600" };
+  if (!Number.isFinite(gapMinutes) || gapMinutes < 0 || gapMinutes > 600) return { code: 1, stderr: "log facebook warmup: --gapMinutes must be 0 to 600" };
 
   const opened = await openAccount(context, "warmup", STAGES_USAGE, flags["account"], "run", Boolean(flags["bypass"]), true, Boolean(flags["now"]));
   if (!("run" in opened)) return opened;
   const { account, run } = opened;
   return withRun(context, "warmup", account, run, async () => {
     const session = await openInspectSession(context, account, run);
-    if ("error" in session) return { code: 1, stderr: `log warmup: ${session.error}` };
+    if ("error" in session) return { code: 1, stderr: `log facebook warmup: ${session.error}` };
     const name = runName(session.current.runDir);
     const base = { account: account.accountName, run: name };
     stage(context, { ...base, event: "start", detail: `${sub} ${picked.activities.join(", ")}${flags["likes"] ? " (likes on)" : " (no likes)"}` });
@@ -116,11 +116,11 @@ async function record(
       stage(context, { ...base, event: "step", activity, step: `${step.action} ${step.args.join(" ")}`, ok, detail: ok ? step.why : problem ? `${problem.code}: ${problem.detail}` : (reply?.error ?? "no reply") });
       if (problem) {
         await accountIssue(context, account, problem.code, problem.detail, base, activity);
-        return { code: 1, stderr: `log warmup record: ${problem.code}: ${problem.detail} (${current.runDir}). Nothing was turned into a flow.` };
+        return { code: 1, stderr: `log facebook warmup record: ${problem.code}: ${problem.detail} (${current.runDir}). Nothing was turned into a flow.` };
       }
       if (!ok) {
         stage(context, { ...base, event: "stopped", activity, ok: false, detail: "a step failed: nothing is turned into a flow from a broken recording" });
-        return { code: 1, stderr: `log warmup record: ${activity} failed at ${step.action} ${step.args.join(" ")}: ${reply?.error ?? "no reply"} (${current.runDir})` };
+        return { code: 1, stderr: `log facebook warmup record: ${activity} failed at ${step.action} ${step.args.join(" ")}: ${reply?.error ?? "no reply"} (${current.runDir})` };
       }
     }
     spans.push({ activity, from, to: sent });
@@ -137,7 +137,7 @@ async function record(
     lines.push(`  ${span.activity} → ${flow.name}: ${flow.steps.length} steps (${files.join(", ")})`);
   }
   stage(context, { ...base, event: "done", detail: `recorded ${spans.map((s) => s.activity).join(", ")}` });
-  lines.push("Run them: log warmup facebook stages run --account <a> [--likes] [--gapMinutes <n>]");
+  lines.push("Run them: log facebook warmup stages run --account <a> [--likes] [--gapMinutes <n>]");
   return { code: 0, stdout: lines.join("\n") };
 }
 
@@ -177,7 +177,7 @@ async function runWarmup(
   const failure = output.failure;
   if (output.blocked && failure?.issue) await accountIssue(context, account, failure.issue as ErrorCode, failure.error ?? "", base, failure.activity);
   stage(context, { ...base, event: failure ? "stopped" : "done", ok: !failure, detail: failure ? `${failure.activity} at ${failure.failedAt ?? "?"}: ${failure.error ?? ""}` : `${output.done.length} activities` });
-  const lines = [`Warm-up on ${base.account}: ${output.done.length}/${activities.length} activities done in one browser${failure ? `; stopped in ${failure.activity} at ${failure.failedAt}` : ""}.`, `Stage log: log warmup facebook stages log --account ${base.account}   (${stageLogPath()})`];
+  const lines = [`Warm-up on ${base.account}: ${output.done.length}/${activities.length} activities done in one browser${failure ? `; stopped in ${failure.activity} at ${failure.failedAt}` : ""}.`, `Stage log: log facebook warmup stages log --account ${base.account}   (${stageLogPath()})`];
   return { code: failure ? 1 : 0, stdout: lines.join("\n") };
 }
 

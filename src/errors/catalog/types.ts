@@ -33,7 +33,7 @@ export type ErrorLayer =
   | 'twenty'
   /** A proxy seller's API (2Captcha), used to give accounts proxies. */
   | 'proxyVendor'
-  /** A change on the account's own profile page (`log profile setup`, rule 28). */
+  /** A change on the account's own profile page (`log facebook profile setup`, rule 28). */
   | 'profile'
   /** A browser session for any driver (`browser/driver`, rule 42). */
   | 'browser'
@@ -78,7 +78,7 @@ export interface ErrorEntry {
   action: string
 }
 
-const reconnect = 'Run `log connect --account <id>` and log in by hand.'
+const reconnect = 'Run `log facebook connect --account <id>` and log in by hand.'
 const tellMatt = "Tell matt. Don't retry the account until it's looked at."
 
 export const ERROR_CATALOG = {
@@ -108,7 +108,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['marketplace/account'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Run `log scan --account <id>`.'
+    action: 'Run `log facebook scan --account <id>`.'
   },
   sessionExpired: {
     layer: 'account',
@@ -135,16 +135,16 @@ export const ERROR_CATALOG = {
     raisedIn: ['worker', 'publish.openingForm', 'marketplace/account'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Log in by hand and clear the checkpoint, then `log connect`. No solver can do it.'
+    action: 'Log in by hand and clear the checkpoint, then `log facebook connect`. No solver can do it.'
   },
   wrongPassword: {
     layer: 'account',
-    meaning: "Facebook said the password is wrong, or found no account for the email, when `log connect` signed in with Twenty's details.",
+    meaning: "Facebook said the password is wrong, or found no account for the email, when `log facebook connect` signed in with Twenty's details.",
     retryable: false,
     raisedIn: ['connect.routing'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: "Fix the account's email or password in Twenty, then `log connect` again. Auto-login stops at once so Facebook doesn't see repeated wrong passwords."
+    action: "Fix the account's email or password in Twenty, then `log facebook connect` again. Auto-login stops at once so Facebook doesn't see repeated wrong passwords."
   },
   videoSelfieRequired: {
     layer: 'account',
@@ -153,16 +153,16 @@ export const ERROR_CATALOG = {
     raisedIn: ['connect.routing'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: "A person records the selfie in the Camoufox window (or on the account owner's phone), then `log connect` again. Tell matt."
+    action: "A person records the selfie in the Camoufox window (or on the account owner's phone), then `log facebook connect` again. Tell matt."
   },
   signInNotFinished: {
     layer: 'account',
-    meaning: '`log connect` reached its deadline (`--wait`) without a logged-in page: the login, two-step or a captcha was not finished.',
+    meaning: '`log facebook connect` reached its deadline (`--wait`) without a logged-in page: the login, two-step or a captcha was not finished.',
     retryable: false,
     raisedIn: ['connect.signingIn'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Run `log connect` again and finish the step its last page names in the Camoufox window, or give it a longer `--wait`. A two-step page needs the totpSecret in Twenty.'
+    action: 'Run `log facebook connect` again and finish the step its last page names in the Camoufox window, or give it a longer `--wait`. A two-step page needs the totpSecret in Twenty.'
   },
   unconfirmedUser: {
     layer: 'account',
@@ -333,7 +333,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['marketplace/socialAccount'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Set accountStatus in Twenty (log account status), or use another account.'
+    action: 'Set accountStatus in Twenty (log facebook account status), or use another account.'
   },
   noHomeCountry: {
     layer: 'account',
@@ -504,7 +504,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['marketplace/account'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Open the account by hand. `log publish` routes captchas itself; `scan` does not.'
+    action: 'Open the account by hand. `log facebook publish` routes captchas itself; `scan` does not.'
   },
   unknownPlatform: {
     layer: 'account',
@@ -948,7 +948,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['worker', 'session'],
     publish: 'failed',
     monitor: 'failed',
-    action: 'Set LOG_PYTHON to a Python with facebook-camofox-client installed (`log doctor`).'
+    action: 'Set LOG_PYTHON to a Python with facebook-camofox-client installed (`log facebook doctor`).'
   },
   workerNoOutput: {
     layer: 'runtime',
@@ -1092,14 +1092,14 @@ export const ERROR_CATALOG = {
     meaning: 'No agencyListing with that id in Twenty.',
     retryable: false,
     raisedIn: ['marketplace/agencyListing'],
-    action: 'Check the id (log listings shows them).'
+    action: 'Check the id (log facebook listings shows them).'
   },
   listingNoAccount: {
     layer: 'listing',
     meaning: 'The agencyListing has no socialAccount, so nothing knows which account posts it.',
     retryable: false,
     raisedIn: ['marketplace/agencyListing'],
-    action: 'Set its Social account in Twenty, or fill the campaign with log campaign fill.'
+    action: 'Set its Social account in Twenty, or fill the campaign with log facebook campaign fill.'
   },
   listingNotPublishable: {
     layer: 'listing',
@@ -1120,7 +1120,7 @@ export const ERROR_CATALOG = {
     meaning: "No FACEBOOK account in the listing's country is ACTIVE, proxied, under its cap and not already in the campaign. The listing stays ACCOUNT_LOST.",
     retryable: true,
     raisedIn: ['marketplace/replacement'],
-    action: 'Add or activate an account in that country (with a proxy there), then run log campaign heal.'
+    action: 'Add or activate an account in that country (with a proxy there), then run log facebook campaign heal.'
   },
 
   // ── twenty ─────────────────────────────────────────────────────────────
@@ -1164,7 +1164,7 @@ export const ERROR_CATALOG = {
     meaning: 'No socialAccount with that accountName or id in Twenty.',
     retryable: false,
     raisedIn: ['marketplace/socialAccount'],
-    action: 'log accounts lists the Facebook accounts.'
+    action: 'log facebook accounts lists the Facebook accounts.'
   },
 
   // ── proxyVendor ────────────────────────────────────────────────────────
@@ -1297,7 +1297,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['browser/adsPower', 'python/browserDriver'],
     action: 'Run `log adsPower sync --apply` (it makes the profile and links it).'
   },
-  // rule 45: groups (`group/join`, `log join group`).
+  // rule 45: groups (`group/join`, `log facebook join group`).
   groupRefInvalid: {
     layer: 'group',
     meaning: '--group names no Facebook group (a facebook.com/groups/<id or name>/ URL, the id, or the name in the URL).',
@@ -1310,7 +1310,7 @@ export const ERROR_CATALOG = {
     meaning: "The account's browser is not open: a join or a read is a step in it, never a launch of its own (rule 35).",
     retryable: false,
     raisedIn: ['cli/join', 'cli/read'],
-    action: 'Open it first: log inspect start --account <a> (or log host start), then run the join or the read again.'
+    action: 'Open it first: log inspect start --account <a> (or log facebook host start), then run the join or the read again.'
   },
   groupPageNotOpened: {
     layer: 'group',
@@ -1338,7 +1338,7 @@ export const ERROR_CATALOG = {
     meaning: "A fill step had no element in the dialog, or one failed: the draft and the dialog don't match.",
     retryable: false,
     raisedIn: ['group/answer.planning', 'group/answer.filling'],
-    action: "Read the reading step's snapshot.yml: the questions may have changed (run the stepper again: log join group --answer), or a type isn't recorded yet."
+    action: "Read the reading step's snapshot.yml: the questions may have changed (run the stepper again: log facebook join group --answer), or a type isn't recorded yet."
   },
   groupSubmitNotConfirmed: {
     layer: 'group',
@@ -1354,7 +1354,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['group/join.joining', 'group/join.checking'],
     action: "Read the joining and checking steps' recordings (rule 25) before another --live run."
   },
-  // #27: reading a group (`group/read`, `log read group`).
+  // #27: reading a group (`group/read`, `log facebook read group`).
   groupIdUnknown: {
     layer: 'group',
     meaning: "The group page never gave the group's numeric id (the read keeps a post only with its group's id).",
@@ -1367,7 +1367,7 @@ export const ERROR_CATALOG = {
     meaning: 'No account in Twenty is in this group (no agencyGroups row with its id), so none can read it.',
     retryable: false,
     raisedIn: ['cli/read.worker'],
-    action: 'Join it first with one account: log join group --account <a> --group <id> --live.'
+    action: 'Join it first with one account: log facebook join group --account <a> --group <id> --live.'
   },
   groupReadStepFailed: {
     layer: 'group',

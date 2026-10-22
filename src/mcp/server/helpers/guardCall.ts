@@ -1,6 +1,17 @@
+import { isPlatform, PLATFORMS } from "../../../cli/runner/helpers/index.ts";
 import type { Command } from "../../../cli/runner/types.ts";
 import type { GuardResult, LogToolInput } from "../types.ts";
 import { NO_PROMPT, TERMINAL_ONLY } from "../types.ts";
+
+/**
+ * The tool's call as a command line, the platform first (rule 63): a Facebook-only tool runs `facebook <name> …`;
+ * the warm-up's `args` start with its platform, which moves in front of the name. Pure.
+ */
+export function commandLine(command: Command, args: string[]): string[] {
+  if (command.platform === "facebook") return [PLATFORMS[0], command.name, ...args];
+  if (command.platform === "byArgument" && isPlatform(args[0])) return [args[0], command.name, ...args.slice(1)];
+  return [command.name, ...args];
+}
 
 /** Whether a tool call may run, and the argv it runs with. Pure. */
 export function guardCall(name: string, input: LogToolInput | undefined, commands: Command[]): GuardResult {
@@ -17,5 +28,6 @@ export function guardCall(name: string, input: LogToolInput | undefined, command
     return { ok: false, message: `log ${name} --bypass runs outside the account's local waking hours (rule 18). Only when matt asked for it, and pass confirmBypass: true (AGENTS.md rule 20). The proxy gate, self-check and launch budget still apply.` };
   }
   const noPrompt = NO_PROMPT[name];
-  return { ok: true, argv: noPrompt && !args.includes(noPrompt) ? [name, ...args, noPrompt] : [name, ...args] };
+  const withFlag = noPrompt && !args.includes(noPrompt) ? [...args, noPrompt] : args;
+  return { ok: true, argv: commandLine(commands.find((command) => command.name === name)!, withFlag) };
 }

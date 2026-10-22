@@ -162,7 +162,7 @@ describe('launch budget (rule 24)', () => {
     expect(listLaunches('phillyOne', { runs: root, publish: join(root, 'none') }).map((d) => d.toISOString())).toEqual(['2026-10-19T09:00:00.000Z'])
   })
 
-  test('a reset (log account resetOpens) makes earlier launches stop counting, for that account only, keeping the recordings', () => {
+  test('a reset (log facebook account resetOpens) makes earlier launches stop counting, for that account only, keeping the recordings', () => {
     const root = mkdtempSync(join(tmpdir(), 'logBudget'))
     const resets = join(root, 'launchResets.jsonl')
     launchAt(root, 'connect', '2026-10-19T09:00:00.000Z')

@@ -1,5 +1,5 @@
 /**
- * `log watch` — start the listing monitor (an XState machine) for one account
+ * `log facebook watch` — start the listing monitor (an XState machine) for one account
  * and watch it run. Every event and state change is printed as it happens,
  * through XState's inspect API (`observability/trace`).
  *
@@ -27,7 +27,7 @@ import { renderMonitorOutput, summarizeMonitor, toCheckOutcome } from "./helpers
 
 export * from "./helpers/index.ts";
 
-export const WATCH_USAGE = "Usage: log watch --account <accountName> [--checks <n>] [--interval <minutes>] [--json] [--bypass]";
+export const WATCH_USAGE = "Usage: log facebook watch --account <accountName> [--checks <n>] [--interval <minutes>] [--json] [--bypass]";
 
 /** Seam for tests: how Ctrl+C reaches the running actor. */
 export const watchDeps = {
@@ -45,13 +45,13 @@ export const watchCommand: Command = {
   args: "--account <name> [--checks <n>] [--interval <min>] [--json] [--bypass]",
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["json", "bypass"], valued: ["account", "checks", "interval"] });
-    if (!parsed.ok) return { code: 1, stderr: `log watch: ${parsed.error}\n${WATCH_USAGE}` };
+    if (!parsed.ok) return { code: 1, stderr: `log facebook watch: ${parsed.error}\n${WATCH_USAGE}` };
     const bypassHours = Boolean(parsed.flags["bypass"]);
-    if (parsed.positionals.length > 0) return { code: 1, stderr: `log watch: unexpected argument "${parsed.positionals[0]}"\n${WATCH_USAGE}` };
+    if (parsed.positionals.length > 0) return { code: 1, stderr: `log facebook watch: unexpected argument "${parsed.positionals[0]}"\n${WATCH_USAGE}` };
     const checks = parsed.flags["checks"] === undefined ? 1 : Number(parsed.flags["checks"]);
     const interval = parsed.flags["interval"] === undefined ? undefined : Number(parsed.flags["interval"]);
-    if (!Number.isInteger(checks) || checks < 0) return { code: 1, stderr: `log watch: --checks must be 0 (forever) or more` };
-    if (interval !== undefined && !(interval > 0)) return { code: 1, stderr: `log watch: --interval must be minutes above 0` };
+    if (!Number.isInteger(checks) || checks < 0) return { code: 1, stderr: `log facebook watch: --checks must be 0 (forever) or more` };
+    if (interval !== undefined && !(interval > 0)) return { code: 1, stderr: `log facebook watch: --interval must be minutes above 0` };
 
     // The account check runs before anything opens (rule 12); the proxy gate runs at launch.
     const opened = await openAccount(context, "watch", WATCH_USAGE, parsed.flags["account"], "run", bypassHours);

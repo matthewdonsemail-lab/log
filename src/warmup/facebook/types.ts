@@ -1,8 +1,8 @@
 /**
- * The warm-up, by platform (rule 49): `log warmup <platform> <activity>`.
+ * The warm-up, by platform (rule 49): `log <platform> warmup <activity>`.
  * A warm-up is a process across many activities; each activity is a unit of
  * its own, defined here for its platform: its steps, what each step must
- * achieve, and what its recordings showed. `log warmup facebook reel` starts
+ * achieve, and what its recordings showed. `log facebook warmup reel` starts
  * the account's browser (a `log inspect` session, rule 29) primed with the
  * activity, runs its steps as a flow of events (each recorded, rule 22),
  * checks every step against what it should have done, and writes the outline:

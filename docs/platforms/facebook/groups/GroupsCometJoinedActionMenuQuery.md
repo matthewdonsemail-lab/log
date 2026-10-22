@@ -1,6 +1,6 @@
 # GroupsCometJoinedActionMenuQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -27,7 +27,7 @@ The Joined button's menu (`GroupsCometJoinedActionMenu.react`): by `groupID` it 
 
 ## What our machine does with it
 
-No machine waits for it. `viewer_join_state` is what a membership check could read (a member sees Joined, a non-member Join, which is `log join group`), but nothing reads it yet. The flow [`groupHeaderMenus`](../flows/groupHeaderMenus.md) opens the menu and closes it with Escape; no item is picked (rule 8).
+No machine waits for it. `viewer_join_state` is what a membership check could read (a member sees Joined, a non-member Join, which is `log facebook join group`), but nothing reads it yet. The flow [`groupHeaderMenus`](../flows/groupHeaderMenus.md) opens the menu and closes it with Escape; no item is picked (rule 8).
 
 ## What can go wrong
 

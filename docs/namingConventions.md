@@ -27,8 +27,8 @@ Read it as **library, then domain, then role**:
 | `marketplace/listing` | Facebook Marketplace listings: types, the listing machine, the data client |
 | `marketplace/account` | The Facebook accounts the listings are published from |
 | `cli/runner` | Command registry, dispatcher, shared CLI helpers (args, tables, usage) |
-| `cli/listing` | `log listings` and `log listing <id>` |
-| `cli/account` | `log accounts` |
+| `cli/listing` | `log facebook listings` and `log facebook listing <id>` |
+| `cli/account` | `log facebook accounts` |
 | `cli/launch` | `log launch`, the Clack guided menu |
 
 ## Rules the gate enforces

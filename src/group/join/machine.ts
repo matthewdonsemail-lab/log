@@ -1,5 +1,5 @@
 /**
- * The group join machine (`log join group`, rule 45): one group, one account,
+ * The group join machine (`log facebook join group`, rule 45): one group, one account,
  * in the account's open browser. Its only side effect is `step`, one command
  * to the open inspect session (goto, clickRole, snapshot), which the caller
  * provides; tests script the replies.

@@ -9,9 +9,9 @@ async function run(argv: string[], twenty = marketplaceFixture()) {
   return { code, out: out.join("\n"), err: err.join("\n") };
 }
 
-describe("log lifecycle", () => {
+describe("log facebook lifecycle", () => {
   test("every account: its status, the machine's state, and what onboarding has left", async () => {
-    const result = await run(["lifecycle"]);
+    const result = await run(["facebook", "lifecycle"]);
     expect(result.code).toBe(0);
     expect(result.out).toMatch(/galwayOne\s+active\s+onboarding\.opening\.launch\.run\s+profile, location, warm-up \(a day\)/);
     expect(result.out).toMatch(/banned\s+banned\s+banned\s+-/);
@@ -19,7 +19,7 @@ describe("log lifecycle", () => {
   });
 
   test("the state tree comes from the machine itself", async () => {
-    const result = await run(["lifecycle", "states"]);
+    const result = await run(["facebook", "lifecycle", "states"]);
     expect(result.out).toContain("- **warming**");
     expect(result.out).toContain("runs `warmupActivity`");
     expect(result.out).toContain("ACT → host.acting");

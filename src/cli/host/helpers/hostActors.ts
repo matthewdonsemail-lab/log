@@ -112,13 +112,13 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
 
     /** The day's one open: every gate, the device, the self-check, the HAR (rules 11-12, 15-18, 22, 24). */
     openBrowser: fromPromise<StepOutcome, LifecycleActorInputs["openBrowser"]>(async () => {
-      let opened = await openAccount(context, "host", "log host start --account <a>", account.accountName, "connect", options.bypassHours, true);
+      let opened = await openAccount(context, "host", "log facebook host start --account <a>", account.accountName, "connect", options.bypassHours, true);
       // Too soon after the last launch (rule 24): wait the gap out, then open; a host doesn't give up on a clock.
       if (!("run" in opened) && /launchTooSoon/.test(opened.stderr ?? "")) {
         const minutes = Number((opened.stderr ?? "").match(/wait (\d+) min/)?.[1] ?? 10);
         log(`host ${account.accountName}: the last launch was under 10 minutes ago (rule 24): opening in ${minutes} min`);
         await new Promise((r) => setTimeout(r, (minutes * 60 + 15) * 1000));
-        opened = await openAccount(context, "host", "log host start --account <a>", account.accountName, "connect", options.bypassHours, true);
+        opened = await openAccount(context, "host", "log facebook host start --account <a>", account.accountName, "connect", options.bypassHours, true);
       }
       if (!("run" in opened)) return error((opened.stderr ?? "").match(/: (\w+):/)?.[1] ?? "openRefused", opened.stderr);
       browser.run = opened.run;
@@ -148,7 +148,7 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
         const notes = [await keepNewDevice(context, account, run), await keepSession(context, account, run)].filter(Boolean) as string[];
         const failed = notes.some((n) => n.startsWith("Could not save"));
         for (const n of notes) log(`host ${account.accountName}: ${n}`);
-        if (failed) log(`host ${account.accountName}: kept the device and session at ${run.keep()} (log account resave)`);
+        if (failed) log(`host ${account.accountName}: kept the device and session at ${run.keep()} (log facebook account resave)`);
         if (run.captureDir) settleInBackground(run.captureDir);
         run.cleanup();
       }
@@ -272,7 +272,7 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
     /**
      * The host's check: is the day over, is the account still fine where it sells, then the firehose:
      * each group the account is in that is due (`--groupMinutes`, default 60) is read in this same
-     * browser, and its new posts and comments go to Twenty (`log read group`'s read, #27). Nothing is
+     * browser, and its new posts and comments go to Twenty (`log facebook read group`'s read, #27). Nothing is
      * clicked (rule 8). A checkpoint or a sign-out on a group page is the account's issue.
      */
     watchCheck: fromPromise<StepOutcome, LifecycleActorInputs["watchCheck"]>(async () => {

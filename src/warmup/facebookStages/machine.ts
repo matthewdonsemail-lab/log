@@ -7,7 +7,7 @@
  *                 └── a step failed ─▶ stopped (the activity and step are in the stage log)
  *   STOP (anywhere) ─▶ stopped
  *
- * `runActivity` is the one side effect, provided by the caller: `log warmup facebook stages run`
+ * `runActivity` is the one side effect, provided by the caller: `log facebook warmup stages run`
  * runs the activity's flow in its inspect session; tests script it. The same
  * activities are the lifecycle machine's `warmupActivity` (onboarding.warming).
  */

@@ -1,5 +1,5 @@
 /**
- * Joining a Facebook group as one account (`log join group`, rule 45). Groups
+ * Joining a Facebook group as one account (`log facebook join group`, rule 45). Groups
  * are their own library, nothing to do with Marketplace.
  *
  * The lifecycle is the hackathon's `facebookCommunity` machine
@@ -192,7 +192,7 @@ export type JoinPath = (typeof JOIN_PATHS)[number]
  * The join options: what this group asks of the account after Join, from what
  * Facebook answered in the click's HAR (`readJoinOptions`). The schema the
  * join submission keeps (`joinSubmission.options`) and the Clack stepper is
- * built from (`log join group --answer`).
+ * built from (`log facebook join group --answer`).
  */
 export interface JoinOptions {
   path: JoinPath
@@ -276,7 +276,7 @@ export interface JoinDialog {
  * hackathon's `StoredCommunityJoin` form half and its `reportCommunityForm`
  * body (`phase, questions, questionsHash, draftAnswers`), camelCase, with the
  * join options (the schema) and the stepper's draft. Patched after every step
- * of a run (`patchSubmission`) and by the stepper, read back by `log join group`.
+ * of a run (`patchSubmission`) and by the stepper, read back by `log facebook join group`.
  */
 export interface GroupJoinSubmission {
   formPhase: FormPhase
@@ -292,9 +292,9 @@ export interface GroupJoinSubmission {
   options: JoinOptions | null
   /** What was inferred from them (the ambiguous state, settled or not). */
   inference: JoinInference | null
-  /** The Clack stepper's answers (`log join group --answer`), keyed on question ids. */
+  /** The Clack stepper's answers (`log facebook join group --answer`), keyed on question ids. */
   draft: JoinDraft | null
-  /** Where the application stands: drafted, ready, filling, filled, submitted (`log join group --fill`). */
+  /** Where the application stands: drafted, ready, filling, filled, submitted (`log facebook join group --fill`). */
   application: Application | null
   /** `hashQuestionSet(questions)`: answers carry over only while it matches. */
   questionsHash: string | null

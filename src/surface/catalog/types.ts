@@ -22,8 +22,10 @@ export interface CommandEntry {
   longRunning: boolean;
   /** The AGENTS.md rules it falls under, its own first. */
   rules: number[];
-  /** Which platform it acts on (`Command.platform`, rule 60). */
+  /** Which platform it acts on (`Command.platform`, rules 60, 63). */
   platform: "facebook" | "any" | "byArgument";
+  /** How it is written, the platform first: `facebook connect`, `<platform> warmup`, `inspect` (rule 63). */
+  words: string;
   /** Which browser it runs on (`commandBrowser`, src/browser/run): the account's through the driver, Camoufox only (not on the driver yet), or none. */
   browser: "accountBrowser" | "camoufoxOnly" | "none";
   /** The tool-call hooks that fire on it: run from a shell (Bash, PowerShell, Monitor), or as its MCP tool. */

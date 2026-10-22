@@ -73,13 +73,13 @@ export interface FacebookAccount {
   activeHoursEnd: number | null
   /** localStorage per origin from the last run (Playwright storage_state origins). Never printed. */
   storageOrigins: unknown
-  /** The name `log profile setup` gives the profile (rule 28). */
+  /** The name `log facebook profile setup` gives the profile (rule 28). */
   profileName: string | null
-  /** The profile picture `log profile setup` uploads: a URL or a local path (rule 28). */
+  /** The profile picture `log facebook profile setup` uploads: a URL or a local path (rule 28). */
   profilePhoto: string | null
   /** The cover (background) photo it uploads. */
   coverPhoto: string | null
-  /** When `log profile setup --live` last saved both. */
+  /** When `log facebook profile setup --live` last saved both. */
   profileSetAt: string | null
   /** Rule 35, the lifecycle: where its machine has it, and the onboarding steps it has done. */
   lifecycleState: string | null

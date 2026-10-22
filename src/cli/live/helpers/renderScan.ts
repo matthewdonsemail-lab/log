@@ -33,7 +33,7 @@ export function renderLoss(loss: LossReport): string {
         : `  "${r.old.title}" → no replacement: ${r.detail}`,
     );
   }
-  if (loss.replacements.some((r) => r.next)) lines.push("Publish them with `log campaign run --campaign <id>` (dry run unless --live).");
+  if (loss.replacements.some((r) => r.next)) lines.push("Publish them with `log facebook campaign run --campaign <id>` (dry run unless --live).");
   return lines.join("\n");
 }
 

@@ -1,4 +1,4 @@
-"""log-cli's profile session (`log profile setup`, rule 28): one Camoufox browser on the account's own profile.
+"""log-cli's profile session (`log facebook profile setup`, rule 28): one Camoufox browser on the account's own profile.
 
 `src/marketplace/profile/machine.ts` decides; this file only acts. Same
 protocol as publishSession.py: one JSON request per line on stdin,
@@ -13,7 +13,7 @@ argv[1] is the session config: {"accountId", "storageStatePath", "proxyPath",
 headed, humanized, cursor shown (rule 11), only through the account's proxy
 from its country (rule 12), as its one device in its pinned locale (rules
 15-16), after the launch self-check (rule 17), recording a raw HAR into
-`captureDir` (rules 19, 22). It needs a saved session: `log connect` first.
+`captureDir` (rules 19, 22). It needs a saved session: `log facebook connect` first.
 
 The controls below are a first reading of Facebook's profile page, not yet
 checked against it. `read` writes every button, link and file input the page

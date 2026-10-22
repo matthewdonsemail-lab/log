@@ -8,6 +8,7 @@
 //   every flag a command parses (parseArgs)            is in its usage, and every flag in its usage is parsed
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { isPlatform } from "../../src/cli/runner/helpers/index.ts";
 import { COMMANDS } from "../../src/cli/runner/index.ts";
 import { savedFlows } from "../../src/mcp/server/index.ts";
 import { catalog, flagsOf, flowEntries, GLOBAL_FLAGS } from "../../src/surface/catalog/index.ts";
@@ -111,14 +112,20 @@ for (const heading of prose.match(/^#{1,3} .*$/gm) ?? []) {
   if (BROWSER_NAME.test(heading) && !/setup/i.test(heading)) problems.push(`README heading "${heading}" names one browser: log-cli is browser-agnostic, its browsers are in the generated Browsers section (rules 46, 57)`);
 }
 
-// 6. Platform scope (rule 60): a command scoped by argument names the platform in every usage line, so no form
-//    of it skips the platform (`log warmup plan` beside `log warmup <platform> <activity>` did).
-const PLATFORMS = ["facebook"];
-for (const e of entries.filter((x) => x.platform === "byArgument")) {
+// 6. The platform comes first (rule 63): every usage line of a command that acts on one platform reads
+//    `log <platform> <command> …`, so no form of it skips the platform or puts it after the command; a command
+//    that works on any platform never takes one.
+for (const e of entries) {
   for (const line of e.usage) {
-    if (!line.startsWith(`log ${e.name} `)) continue;
-    const first = line.slice(`log ${e.name} `.length).split(/\s+/)[0];
-    if (first !== "<platform>" && !PLATFORMS.includes(first)) problems.push(`log ${e.name} is scoped by platform, but "${line.slice(0, 80)}" doesn't name one: every form is log ${e.name} <platform> … (rule 60)`);
+    const words = /^log\s+(\S+)(?:\s+(\S+))?/.exec(line);
+    if (!words) continue;
+    const [, first, second] = words;
+    const named = first === e.name ? null : second === e.name ? first : undefined;
+    if (named === undefined) continue;
+    if (e.platform === "any" && named !== null) problems.push(`log ${e.name} works on any platform, but "${line.slice(0, 80)}" puts ${named} in front of it (rule 63)`);
+    if (e.platform !== "any" && named === null) problems.push(`log ${e.name} acts on one platform, but "${line.slice(0, 80)}" doesn't start with it: every form is log ${e.platform === "facebook" ? "facebook" : "<platform>"} ${e.name} … (rule 63)`);
+    if (e.platform === "facebook" && named !== null && named !== "facebook") problems.push(`log ${e.name} is Facebook's, but "${line.slice(0, 80)}" starts with ${named} (rule 63)`);
+    if (e.platform === "byArgument" && named !== null && named !== "<platform>" && !isPlatform(named)) problems.push(`log ${e.name}: "${line.slice(0, 80)}" starts with ${named}, which isn't a platform (rule 63)`);
   }
 }
 

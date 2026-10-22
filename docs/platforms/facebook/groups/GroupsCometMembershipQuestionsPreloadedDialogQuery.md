@@ -1,6 +1,6 @@
 # GroupsCometMembershipQuestionsPreloadedDialogQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -27,7 +27,7 @@ Loads the membership questions dialog for a group (`group_id`): whether the view
 
 ## What our machine does with it
 
-`readJoinOptions` (`src/group/join/helpers/joinOptions.ts`) reads it from the Join click's HAR: each question's id, type and options, `viewer_must_answer_membership_question_to_submit`, `is_rules_agreement_enabled`, the group rules, `has_email_verification_question` and the dialog's own words. `groupJoin`'s `checking` state infers from it whether posting asks for questions, a rules agreement or nothing (`inferJoinState`), and `log join group --answer` and the answer machine (`planFill`) build the stepper and the fill from those questions.
+`readJoinOptions` (`src/group/join/helpers/joinOptions.ts`) reads it from the Join click's HAR: each question's id, type and options, `viewer_must_answer_membership_question_to_submit`, `is_rules_agreement_enabled`, the group rules, `has_email_verification_question` and the dialog's own words. `groupJoin`'s `checking` state infers from it whether posting asks for questions, a rules agreement or nothing (`inferJoinState`), and `log facebook join group --answer` and the answer machine (`planFill`) build the stepper and the fill from those questions.
 
 ## What can go wrong
 

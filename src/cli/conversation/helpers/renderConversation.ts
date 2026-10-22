@@ -21,7 +21,7 @@ export function renderConversation(c: Conversation, messages: Message[]): string
   const lines = [
     `${c.buyerName ?? "?"} · ${c.listingTitle ?? "?"}`,
     `  lead: ${c.leadStatus ?? "new"}   messages: ${c.messageCount}   unread: ${c.unreadCount}   first replied: ${when(c.respondedAt)}`,
-    `  account: ${c.socialAccountId ?? "-"}   listing: ${c.agencyListingId ?? "not matched (log conversation link <id> --listing <agencyListingId>)"}`,
+    `  account: ${c.socialAccountId ?? "-"}   listing: ${c.agencyListingId ?? "not matched (log facebook conversation link <id> --listing <agencyListingId>)"}`,
     `  Facebook thread: ${c.facebookThreadId ?? "-"}${c.facebookListingId ? `   item: ${c.facebookListingId}` : ""}`,
   ];
   if (c.buyerPhone || c.buyerEmail) lines.push(`  buyer gave: ${[c.buyerPhone, c.buyerEmail].filter(Boolean).join(", ")}`);

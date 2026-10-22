@@ -1,5 +1,5 @@
 /**
- * The group read machine (`log read group`, #27): one group, one account, in the account's
+ * The group read machine (`log facebook read group`, #27): one group, one account, in the account's
  * open browser (rule 35). Its only side effect is `step`, one command to the open inspect
  * session, which the caller provides with the step's own HAR read (rule 22); tests script
  * the replies. Every post and comment is read from what the page itself loaded: log-cli never

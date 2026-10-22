@@ -19,7 +19,10 @@ const cell = (text: string) => text.replace(/\|/g, "\\|").replace(/\n/g, " ");
 
 const BROWSER_TEXT: Record<CommandEntry["browser"], string> = { accountBrowser: "the account's", camoufoxOnly: "Camoufox only", none: "none" };
 
-const PLATFORM_TEXT: Record<CommandEntry["platform"], string> = { facebook: "Facebook only (today)", any: "any", byArgument: "by argument: `<platform>`" };
+const PLATFORM_TEXT: Record<CommandEntry["platform"], string> = { facebook: "`facebook` first", any: "any (none)", byArgument: "`<platform>` first" };
+
+/** GitHub's anchor for a `#### log <words>` heading. Pure. */
+const anchorOf = (words: string) => `log-${words}`.toLowerCase().replace(/[^a-z0-9 -]/g, "").replace(/ /g, "-");
 
 const flagText = (f: Flag) => `\`--${f.name}${f.value ? ` <${f.value}>` : ""}\``;
 
@@ -41,8 +44,8 @@ export function renderSurface(entries: readonly CommandEntry[], flows: readonly 
     "## Commands, MCP tools and hooks",
     "",
     "log-cli is browser-agnostic: each account's browser is a driver (AdsPower first, Camoufox kept, more browser providers to come), and every driver opens through the same gates.",
-    "It is platform-agnostic too: Facebook (Marketplace and groups) is the first platform. Each command says which platform it acts on (the Platform column): Facebook only today, any, or by argument (`log warmup <platform> <activity>`), and where it is scoped by platform every form of it names the platform (rule 60).",
-    "Every command is a CLI command (`bun bin/log.ts <command>`) and, unless it only works in a terminal, an MCP tool of the same name on the `log` server.",
+    "It is platform-agnostic too: Facebook (Marketplace and groups) is the first platform. A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook connect`, `log facebook warmup reel`), in every form; one that works on any platform takes none (the Platform column, rule 63).",
+    "Every command is a CLI command (`bun bin/log.ts [<platform>] <command>`) and, unless it only works in a terminal, an MCP tool named for the command on the `log` server (a Facebook tool runs `log facebook <command>`).",
     "The same hooks fire whether it runs from a shell or over MCP, and both write the same live log, `~/.logCli/mcp/<day>.log`.",
     "This section and `docs/diagrams/*.mmd` are generated from the code (`COMMANDS`, `AGENT_HOOKS`, `PAGE_STATES`, the saved flows) by `bun run docs:build`.",
     "`bun run check:docs` (lefthook pre-commit and pre-push) refuses a commit where they differ (rule 56).",
@@ -75,7 +78,7 @@ export function renderSurface(entries: readonly CommandEntry[], flows: readonly 
   for (const e of entries) {
     const tool = e.tool ? `\`${e.tool}\`` : `terminal only: ${cell(e.terminalOnly ?? "")}`;
     const hooksText = `${e.hooks.cli.join(", ") || "none"} · ${e.tool ? e.hooks.mcp.join(", ") || "none" : "n/a"}`;
-    out.push(`| [\`log ${e.name}\`](#log-${e.name.toLowerCase()}) | ${cell(e.summary)} | ${PLATFORM_TEXT[e.platform]} | ${e.flags.map(flagText).join(" ") || "none"} | ${BROWSER_TEXT[e.browser]} | ${tool} | ${hooksText} | ${e.longRunning ? "yes: watch it" : "no"} | ${e.rules.join(", ")} |`);
+    out.push(`| [\`log ${e.words}\`](#${anchorOf(e.words)}) | ${cell(e.summary)} | ${PLATFORM_TEXT[e.platform]} | ${e.flags.map(flagText).join(" ") || "none"} | ${BROWSER_TEXT[e.browser]} | ${tool} | ${hooksText} | ${e.longRunning ? "yes: watch it" : "no"} | ${e.rules.join(", ")} |`);
   }
   out.push("");
 
@@ -106,7 +109,7 @@ export function renderSurface(entries: readonly CommandEntry[], flows: readonly 
 
   out.push("### Each command's usage", "");
   for (const e of entries) {
-    out.push(`#### log ${e.name}`, "", e.summary + (e.tool ? ` MCP tool: \`${e.tool}\` (\`args\` takes the same arguments).` : ` Terminal only: ${e.terminalOnly}`), "", "```text", ...e.usage, "```", "");
+    out.push(`#### log ${e.words}`, "", e.summary + (e.tool ? ` MCP tool: \`${e.tool}\` (\`args\` takes the same arguments).` : ` Terminal only: ${e.terminalOnly}`), "", "```text", ...e.usage, "```", "");
   }
   out.push(SURFACE_END);
   return out.join("\n");

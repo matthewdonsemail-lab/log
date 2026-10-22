@@ -4,7 +4,7 @@
 
 ## Summary
 
-Only `log connect` saves cookies. `scan`, `status`, `watch` and `publish` load
+Only `log facebook connect` saves cookies. `scan`, `status`, `watch` and `publish` load
 the cookies from the last sign-in into an empty browser, and never write
 anything back. localStorage, IndexedDB and cache are thrown away on every run.
 Each run therefore comes back with old cookies, no site storage, and (until
@@ -70,10 +70,10 @@ behave like that (R4 M4).
 
 ## How to re-test
 
-1. Run `log scan --account <name>`, then read the account in Twenty. **Pass:**
+1. Run `log facebook scan --account <name>`, then read the account in Twenty. **Pass:**
    the cookie set's update time is after the run, and `xs`/`fr` values match
    what the browser held at the end.
-2. Run `log scan` twice. In the second run, read
+2. Run `log facebook scan` twice. In the second run, read
    `Object.keys(localStorage)` on facebook.com. **Pass:** the keys from the
    first run are still there.
 3. Unit test: the run client writes non-empty `origins` when Twenty holds them.

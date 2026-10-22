@@ -1,7 +1,7 @@
 /**
- * `log accounts` — the FACEBOOK socialAccounts in Twenty, and whether each may run.
- * `log account show <name>` — one account in full (never its password or cookies).
- * `log account status <name> <STATUS>` — set its status in Twenty. Restricted,
+ * `log facebook accounts` — the FACEBOOK socialAccounts in Twenty, and whether each may run.
+ * `log facebook account show <name>` — one account in full (never its password or cookies).
+ * `log facebook account status <name> <STATUS>` — set its status in Twenty. Restricted,
  * banned or dead also moves its live listings to ACCOUNT_LOST and replaces the
  * campaign ones with accounts in the same country. Nothing is ever deleted.
  */
@@ -15,12 +15,12 @@ import type { Command } from "../runner/types.ts";
 import { renderAccountDetail, renderAccountsTable, resaveKeptRun, resetAccountOpens, safeAccount } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
-export const ACCOUNTS_USAGE = "Usage: log accounts [--json]";
+export const ACCOUNTS_USAGE = "Usage: log facebook accounts [--json]";
 export const ACCOUNT_USAGE = [
-  "Usage: log account show <accountName> [--json]",
-  "       log account resave <accountName> --from <folder>   (a run's device and session Twenty didn't take: ~/.logCli/runs/unsaved/...)",
-  "       log account resetOpens <accountName|all> [--reason <text>]   (today's launches and host opens count from now; nothing is deleted)",
-  `       log account status <accountName> <${ACCOUNT_STATUSES.map((s) => s.replace(/([A-Z])/g, "_$1").toUpperCase()).join("|")}> [--reason <code>] [--detail <text>]`,
+  "Usage: log facebook account show <accountName> [--json]",
+  "       log facebook account resave <accountName> --from <folder>   (a run's device and session Twenty didn't take: ~/.logCli/runs/unsaved/...)",
+  "       log facebook account resetOpens <accountName|all> [--reason <text>]   (today's launches and host opens count from now; nothing is deleted)",
+  `       log facebook account status <accountName> <${ACCOUNT_STATUSES.map((s) => s.replace(/([A-Z])/g, "_$1").toUpperCase()).join("|")}> [--reason <code>] [--detail <text>]`,
 ].join("\n");
 
 export const accountsCommand: Command = {
@@ -31,8 +31,8 @@ export const accountsCommand: Command = {
   args: "[--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["json"] });
-    if (!parsed.ok) return { code: 1, stderr: `log accounts: ${parsed.error}\n${ACCOUNTS_USAGE}` };
-    if (parsed.positionals.length > 0) return { code: 1, stderr: `log accounts: unexpected argument "${parsed.positionals[0]}"\n${ACCOUNTS_USAGE}` };
+    if (!parsed.ok) return { code: 1, stderr: `log facebook accounts: ${parsed.error}\n${ACCOUNTS_USAGE}` };
+    if (parsed.positionals.length > 0) return { code: 1, stderr: `log facebook accounts: unexpected argument "${parsed.positionals[0]}"\n${ACCOUNTS_USAGE}` };
     try {
       const accounts = await listFacebookAccounts(context.twenty);
       if (parsed.flags["json"]) {
@@ -54,9 +54,9 @@ export const accountCommand: Command = {
   args: "<show|status|resave|resetOpens> <name> [STATUS] [--reason <code>]",
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["json"], valued: ["reason", "detail", "from"] });
-    if (!parsed.ok) return { code: 1, stderr: `log account: ${parsed.error}\n${ACCOUNT_USAGE}` };
+    if (!parsed.ok) return { code: 1, stderr: `log facebook account: ${parsed.error}\n${ACCOUNT_USAGE}` };
     const [action, ref, value, extra] = parsed.positionals;
-    if (!ref || extra !== undefined || !["show", "status", "resave", "resetOpens"].includes(action ?? "")) return { code: 1, stderr: `log account: pick show, status, resave or resetOpens\n${ACCOUNT_USAGE}` };
+    if (!ref || extra !== undefined || !["show", "status", "resave", "resetOpens"].includes(action ?? "")) return { code: 1, stderr: `log facebook account: pick show, status, resave or resetOpens\n${ACCOUNT_USAGE}` };
     try {
       if (action === "resetOpens") {
         const reason = typeof parsed.flags["reason"] === "string" ? parsed.flags["reason"] : "reset by matt";
@@ -65,7 +65,7 @@ export const accountCommand: Command = {
       }
       const account = await findAccount(context.twenty, ref);
       if (action === "resave") {
-        if (typeof parsed.flags["from"] !== "string") return { code: 1, stderr: `log account resave: give --from <folder>\n${ACCOUNT_USAGE}` };
+        if (typeof parsed.flags["from"] !== "string") return { code: 1, stderr: `log facebook account resave: give --from <folder>\n${ACCOUNT_USAGE}` };
         const saved = await resaveKeptRun(context.twenty, account, parsed.flags["from"]);
         return { code: saved.ok ? 0 : 1, stdout: saved.lines.join("\n") };
       }
@@ -76,9 +76,9 @@ export const accountCommand: Command = {
         return { code: 0, stdout: renderAccountDetail(account) };
       }
       const status = value ? fromTwentyEnum(value) : "";
-      if (!(ACCOUNT_STATUSES as readonly string[]).includes(status)) return { code: 1, stderr: `log account status: give a status\n${ACCOUNT_USAGE}` };
+      if (!(ACCOUNT_STATUSES as readonly string[]).includes(status)) return { code: 1, stderr: `log facebook account status: give a status\n${ACCOUNT_USAGE}` };
       const reason = typeof parsed.flags["reason"] === "string" ? parsed.flags["reason"] : "setByHand";
-      if (reason !== "setByHand" && !isErrorCode(reason)) return { code: 1, stderr: `log account status: --reason must be an error code (log errors --layer account)` };
+      if (reason !== "setByHand" && !isErrorCode(reason)) return { code: 1, stderr: `log facebook account status: --reason must be an error code (log errors --layer account)` };
       const detail = typeof parsed.flags["detail"] === "string" ? parsed.flags["detail"] : null;
       const loss = await setStatusAndReplace(context.twenty, account, status as AccountStatus, reason, detail);
       return { code: 0, stdout: renderLoss(loss) };

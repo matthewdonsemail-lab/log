@@ -1,6 +1,6 @@
 import { parseArgs } from "../../runner/helpers/index.ts";
 
-/** What `log join` can join. Only Facebook groups for now. */
+/** What `log facebook join` can join. Only Facebook groups for now. */
 export const JOIN_TARGETS = ["group"] as const;
 export type JoinTarget = (typeof JOIN_TARGETS)[number];
 

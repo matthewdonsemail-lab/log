@@ -16,7 +16,7 @@ export function evidenceIdOf(stdout: string): string | null {
 
 /** rea's own input limit for one capture (`maximum_capture_bytes`). A bigger HAR is read per step only. */
 export const REA_MAX_CAPTURE_BYTES = 33_554_432;
-/** One request's slice (`log capture --docs`) reads in seconds; 3 minutes is the ceiling. */
+/** One request's slice (`log facebook capture --docs`) reads in seconds; 3 minutes is the ceiling. */
 const SCRIPTS_TIMEOUT_MS = 180_000;
 
 export async function defaultReaRunner(args: string[], cwd: string): Promise<ReaRunResult> {
@@ -61,8 +61,8 @@ export async function inspectCapture(dir: string, scripts: CapturedScript[], run
     network = `REA network exit ${read.code}`;
   }
   // Never the whole bundle: rea timed out after 10 minutes on it (2026-10-19). The scripts stay
-  // in `scripts/`, and `log capture --docs` hands rea one request's modules at a time.
-  return `${network}, ${scripts.length} scripts saved (read per request by \`log capture --docs\`)`;
+  // in `scripts/`, and `log facebook capture --docs` hands rea one request's modules at a time.
+  return `${network}, ${scripts.length} scripts saved (read per request by \`log facebook capture --docs\`)`;
 }
 
 /**
@@ -138,7 +138,7 @@ const LOG_BIN = fileURLToPath(new URL("../../../bin/log.ts", import.meta.url));
 
 /**
  * Rule 22 without the wait: rea reading a run's capture takes minutes on a big
- * HAR, so it runs in its own process (`log capture --settle <dir>`) and
+ * HAR, so it runs in its own process (`log facebook capture --settle <dir>`) and
  * the command returns as soon as the run ends. The result lands in
  * `<dir>/settle.json`, rea's own output in `<dir>/settle.log`. Nothing to read
  * (no `session.har`): null, nothing starts.

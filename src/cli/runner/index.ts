@@ -26,12 +26,13 @@ import { flowCommand } from "../flow/index.ts";
 import { hostCommand } from "../host/index.ts";
 import { inspectCommand } from "../inspect/index.ts";
 import { joinCommand } from "../join/index.ts";
+import { pollCommand } from "../poll/index.ts";
 import { proxyCommand } from "../proxy/index.ts";
 import { readCommand } from "../read/index.ts";
 import { publishCommand } from "../publish/index.ts";
 import { warmupCommand } from "../warmup/index.ts";
 import { watchCommand } from "../watch/index.ts";
-import { renderUsage } from "./helpers/index.ts";
+import { renderUsage, resolvePlatformForm } from "./helpers/index.ts";
 import type { Command, CommandContext } from "./types.ts";
 
 export * from "./helpers/index.ts";
@@ -54,6 +55,7 @@ export const COMMANDS: Command[] = [
   warmupCommand,
   joinCommand,
   readCommand,
+  pollCommand,
   scanCommand,
   statusCommand,
   watchCommand,
@@ -150,14 +152,20 @@ async function dispatch(ctx: CommandContext, argv: string[]): Promise<number> {
     return 0;
   }
 
-  const command = COMMANDS.find((c) => c.name === requested);
-  if (!command) {
+  // `log <platform> <command> …` (rule 63): the platform first, every form; an old form is refused with its new one.
+  const form = resolvePlatformForm([requested, ...rest], (name) => COMMANDS.find((c) => c.name === (ALIASES[name] ?? name)));
+  if (!form.ok) {
+    ctx.err(form.error);
+    return 1;
+  }
+  if (!form.command) {
     ctx.err(`Unknown command: ${first}\n`);
     ctx.err(renderUsage(COMMANDS));
     return 2;
   }
+  const command = form.command;
 
-  const result = await command.run(ctx, rest);
+  const result = await command.run(ctx, form.argv);
   if (result.stdout) ctx.out(result.stdout);
   if (result.stderr) ctx.err(result.stderr);
   return result.code;

@@ -2,7 +2,7 @@ import type { JoinAnswer, JoinDraft, JoinOptions } from '../types'
 import { hashQuestionSet } from './submission'
 
 /**
- * One step of the Clack stepper (`log join group --answer`), built from the
+ * One step of the Clack stepper (`log facebook join group --answer`), built from the
  * join options, never from page text. Each Facebook question type has its
  * prompt: PARAGRAPH → text, CHECKBOXES → multiselect over its options. The
  * rules are shown, then agreed with a confirm. A type no recording has shown

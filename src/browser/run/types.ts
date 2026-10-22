@@ -41,7 +41,7 @@ export interface PreparedRun {
    * A save to Twenty failed: the device and session must not be lost with the
    * folder (Harrisburg, 2026-10-19). Deletes login.json at once (rule 21), moves
    * the rest to `~/.logCli/runs/unsaved/<time>_<account>/` (or `LOG_UNSAVED_DIR`)
-   * for `log account resave`, and returns that path. `cleanup` then does nothing.
+   * for `log facebook account resave`, and returns that path. `cleanup` then does nothing.
    */
   keep(): string
 }

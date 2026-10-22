@@ -1,5 +1,5 @@
 /**
- * The group answer machine (`log join group --fill`, rule 45): the stepper's
+ * The group answer machine (`log facebook join group --fill`, rule 45): the stepper's
  * draft filled into the group's own dialog, one fill step per stepper step,
  * in the account's open browser. Its only side effect is `step`, one command
  * to the open inspect session (goto, click, type, snapshot); tests script it.

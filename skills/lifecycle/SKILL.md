@@ -13,7 +13,7 @@ description: The account lifecycle (rule 35): one XState machine per Facebook ac
    browser of its own.
 2. **The machine is the spec.** Change the lifecycle in
    `src/marketplace/lifecycle/machine.ts` and its tests, then regenerate the
-   doc: `log lifecycle states --write`. Never hand-edit the generated tree.
+   doc: `log facebook lifecycle states --write`. Never hand-edit the generated tree.
 3. **Final is final.** Restricted, banned, lost: the record stays in Twenty
    (rule 13); nothing resumes them.
 4. **Live only with matt's go.** Warm-up likes, publish and replies need
@@ -22,9 +22,9 @@ description: The account lifecycle (rule 35): one XState machine per Facebook ac
 ## The routine
 
 ```bash
-log lifecycle                       # where every account is, and what it has left
-log lifecycle --account <name>      # one, with its standing
-log lifecycle states                # the state tree from the machine itself
+log facebook lifecycle                       # where every account is, and what it has left
+log facebook lifecycle --account <name>      # one, with its standing
+log facebook lifecycle states                # the state tree from the machine itself
 ```
 
 A field the lifecycle reads is added through `scripts/twenty/twentySetup.mjs` and the

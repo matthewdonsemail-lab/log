@@ -62,6 +62,10 @@ flowchart TB
   cli --> c_read
   mcp --> c_read
   c_read --> live
+  c_poll["poll"]
+  cli --> c_poll
+  mcp --> c_poll
+  c_poll --> live
   c_scan["scan"]
   cli --> c_scan
   mcp --> c_scan

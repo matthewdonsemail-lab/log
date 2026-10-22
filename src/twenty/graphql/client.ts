@@ -172,7 +172,7 @@ export const AGENCY_GROUP_FIELDS = {
   createdAt: true
 } satisfies AgencyGroupGenqlSelection
 
-/** #27: a post in a group row, as `log read group` read it. */
+/** #27: a post in a group row, as `log facebook read group` read it. */
 export const AGENCY_GROUP_POST_FIELDS = {
   id: true,
   name: true,

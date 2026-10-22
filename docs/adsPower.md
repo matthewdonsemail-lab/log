@@ -47,7 +47,7 @@ Twenty's saved session is carried in once, only into a profile with no Facebook 
 ## Opening an account on AdsPower
 
 1. Set `socialAccounts.browserDriver` to `adsPower` for the account. Its profile must be linked (`log adsPower sync --apply`).
-2. `log inspect start --account <a>`, `log flow run`, `log warmup facebook stages run` and `log host start` then open its AdsPower profile through `python/browser/browserDriver.py`. The gate, self-check, session HAR, human mouse and scroll are the same as on Camoufox.
+2. `log inspect start --account <a>`, `log flow run`, `log facebook warmup stages run` and `log facebook host start` then open its AdsPower profile through `python/browser/browserDriver.py`. The gate, self-check, session HAR, human mouse and scroll are the same as on Camoufox.
 
 ## Not built yet
 

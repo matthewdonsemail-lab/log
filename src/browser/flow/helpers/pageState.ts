@@ -39,7 +39,7 @@ export const PAGE_STATES: readonly StateRule[] = [
   { id: 'automatedBehaviour', text: /suspect automated behaviou?r|we suspect automated/i, what: '"We suspect automated behaviour"', resolve: 'dismiss it, as Listaro did (rule 23): the Dismiss/Continue control, then go on', person: false },
   { id: 'rememberPassword', text: /remember password/i, what: 'the "Remember password" prompt', resolve: 'click "Not now" (`clickRole button "Not now"`)', person: false },
   { id: 'twoStepCode', url: /two_step_verification|two_factor|\/checkpoint/i, text: /enter (the )?(6-digit )?code|authentication code|login code/i, what: 'two-step: the code field', resolve: '`log inspect do code --live --account <a>` (the TOTP from Twenty, rule 21)', person: false },
-  { id: 'loginForm', url: /\/login|login\.php/i, what: 'the login form', resolve: '`log inspect do signIn --live --account <a>` (rule 21), or `log connect --account <a>`', person: false },
+  { id: 'loginForm', url: /\/login|login\.php/i, what: 'the login form', resolve: '`log inspect do signIn --live --account <a>` (rule 21), or `log facebook connect --account <a>`', person: false },
   { id: 'checkpoint', url: /\/checkpoint/i, what: 'a Facebook checkpoint not mapped yet', resolve: 'take a snapshot, read the page, press its Continue/next control to see the next state (matt: never stop at a checkpoint), and add the state here', person: false }
 ]
 

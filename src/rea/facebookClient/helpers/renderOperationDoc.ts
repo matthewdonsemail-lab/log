@@ -1,7 +1,7 @@
 import { REPORT_LINE } from '../../capture/helpers/splitHarBySteps'
 import type { ClientOperation, OperationSighting } from '../types'
 
-export const FACTS_START = '<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->'
+export const FACTS_START = '<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->'
 export const FACTS_END = '<!-- facts:end -->'
 /** Left in a reasoning section until someone writes it. `scripts/checks/checkFacebookClientDocs.mjs` refuses a push while any remain. */
 export const TO_WRITE = '<!-- toWrite -->'

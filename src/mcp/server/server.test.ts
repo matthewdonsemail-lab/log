@@ -36,19 +36,19 @@ describe("guardCall", () => {
   test("--live needs confirmLive", () => {
     expect(guardCall("publish", { args: ["--listing", "a", "--live"] }, COMMANDS).ok).toBe(false);
     expect(guardCall("campaign", { args: ["run", "--campaign", "c", "--live=true"] }, COMMANDS).ok).toBe(false);
-    expect(guardCall("publish", { args: ["--listing", "a", "--live"], confirmLive: true }, COMMANDS)).toEqual({ ok: true, argv: ["publish", "--listing", "a", "--live"] });
+    expect(guardCall("publish", { args: ["--listing", "a", "--live"], confirmLive: true }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "publish", "--listing", "a", "--live"] });
   });
 
   test("connect always runs --noPrompt, so it never reads the MCP channel", () => {
-    expect(guardCall("connect", { args: ["--account", "x"] }, COMMANDS)).toEqual({ ok: true, argv: ["connect", "--account", "x", "--noPrompt"] });
-    expect(guardCall("connect", { args: ["--account", "x", "--noPrompt"] }, COMMANDS)).toEqual({ ok: true, argv: ["connect", "--account", "x", "--noPrompt"] });
+    expect(guardCall("connect", { args: ["--account", "x"] }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "connect", "--account", "x", "--noPrompt"] });
+    expect(guardCall("connect", { args: ["--account", "x", "--noPrompt"] }, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "connect", "--account", "x", "--noPrompt"] });
   });
 
   test("terminal-only, unknown and malformed calls are refused", () => {
     expect(guardCall("launch", {}, COMMANDS).ok).toBe(false);
     expect(guardCall("bogus", {}, COMMANDS).ok).toBe(false);
     expect(guardCall("listings", { args: [1 as unknown as string] }, COMMANDS).ok).toBe(false);
-    expect(guardCall("listings", undefined, COMMANDS)).toEqual({ ok: true, argv: ["listings"] });
+    expect(guardCall("listings", undefined, COMMANDS)).toEqual({ ok: true, argv: ["facebook", "listings"] });
   });
 });
 
@@ -101,7 +101,7 @@ describe("live logs", () => {
     const result = await runToolCall("doctor", { args: ["--json"] }, { twenty: marketplaceFixture(), worker }, (tool, stream, line) => seen.push(`${tool} ${stream} ${line}`));
     const text = (result.content as { text: string }[])[0].text;
     expect(text).toContain("log:\nOpening Camoufox through the proxy\nAuto-login: typed the email and password (try 1).");
-    expect(seen[0]).toBe("doctor out ▶ log doctor --json");
+    expect(seen[0]).toBe("doctor out ▶ log facebook doctor --json");
     expect(seen).toContain("doctor worker Auto-login: typed the email and password (try 1).");
     expect(seen.at(-1)).toBe("doctor out ■ exit 0");
   });

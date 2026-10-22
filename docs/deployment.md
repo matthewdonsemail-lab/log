@@ -36,7 +36,7 @@ Exposing port 50325 or the CDP ports to the internet is not an option:
                 │  AdsPower  --headless=true --api-key=<key> --api-port=50325   (systemd, as Listaro)                                │
                 │     ▲ Local API http://127.0.0.1:50325 (Bearer key)        ▲ CDP ws://127.0.0.1:<port> per open profile             │
                 │     │                                                      │                                                        │
-                │  log-cli: `log host start --account <a>` per account, the Python sessions, proxyGate, rea; run folders + HARs here  │
+                │  log-cli: `log facebook host start --account <a>` per account, the Python sessions, proxyGate, rea; run folders + HARs here  │
                 └─────┼─────────────────┬────────────────────────────┬──────────────────────────────┬───────────────────────────────┘
                       │ HTTPS (API key) │ HTTP(S)/SOCKS5 outbound     │ HTTPS outbound               │ HTTPS outbound
                       ▼                 ▼                             ▼                              ▼
@@ -135,7 +135,7 @@ LOG_MCP_TOKEN=<a long random token> bun bin/logMcp.ts --http --host <tailscale i
 
 1. **Prod settings:**
    - `ADSPOWER_HOST` from the `local_api` file when present;
-   - `log doctor` checks the AdsPower Local API and that `ADSPOWER_API_KEY` is set;
+   - `log facebook doctor` checks the AdsPower Local API and that `ADSPOWER_API_KEY` is set;
    - a `docs/serverSetup.md` port of Listaro's `setup-adspower.sh`: Xvfb, AdsPower
      headless with `--api-key`, Bun and Python for log-cli, systemd units, and VNC on
      the private network only.

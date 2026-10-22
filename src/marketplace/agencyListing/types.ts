@@ -19,7 +19,7 @@ export const LISTING_STATUSES = [
   'removed',
   'accountLost',
   'replaced',
-  // dashboard health (facebook-camofox-client sync and log scan)
+  // dashboard health (facebook-camofox-client sync and log facebook scan)
   'active',
   'underReview',
   'duplicateTakedown',

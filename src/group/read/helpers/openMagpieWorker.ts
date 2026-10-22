@@ -10,12 +10,10 @@
  * A record is its `NewFacebookPostPayload.from_record` shape: `external_id`, `group_id`, `content`,
  * `url`, `author { name, id, url }`, `occurred_at`, `metrics { likes, comments, shares }`,
  * `matched_terms`. Its snake_case names are OpenMagpie's, kept as they are at the boundary only.
- * `account_id`, `cookies` and `proxy` are never used: the answer comes from Twenty, which the host
- * fills from each account's own browser (rules 12, 13, 35). Pure.
+ * `account_id`, `cookies` and `proxy` are never used: `log facebook poll` reads in the account's own open
+ * browser, its session, proxy and device from Twenty (rules 12, 13, 35). Pure.
  */
-import type { TwentyObjects } from "../../../twenty/graphql/index.ts";
-
-type PostRow = TwentyObjects["agencyGroupPosts"]["row"];
+import type { GroupPost } from "../types.ts";
 
 export interface WorkerRequest {
   groupIds: string[];
@@ -71,47 +69,39 @@ export function termsIn(text: string, terms: string[]): string[] | null {
   return found.length ? found : null;
 }
 
-/** A saved post → OpenMagpie's record, or null when it matches none of the terms. Likes and shares aren't read: null. Pure. */
-export function recordOf(post: PostRow, groupId: string, terms: string[]): WorkerRecord | null {
-  const matched = termsIn(post.text ?? "", terms);
-  if (!matched || !post.facebookPostId) return null;
+/** A post the read saw → OpenMagpie's record, or null when it matches none of the terms. Likes and shares aren't read: null. Pure. */
+export function recordOf(post: GroupPost, terms: string[]): WorkerRecord | null {
+  const matched = termsIn(post.text, terms);
+  if (!matched) return null;
   return {
-    record_id: post.facebookPostId,
-    external_id: post.facebookPostId,
-    group_id: groupId,
-    content: post.text ?? "",
-    url: post.permalink || `https://www.facebook.com/groups/${groupId}/posts/${post.facebookPostId}/`,
-    author: { name: post.authorName ?? "", id: post.authorFacebookId ?? "", url: post.authorUrl ?? "" },
-    occurred_at: post.postedAt ?? "",
-    metrics: { likes: null, comments: typeof post.commentCount === "number" ? post.commentCount : null, shares: null },
+    record_id: post.postId,
+    external_id: post.postId,
+    group_id: post.groupId,
+    content: post.text,
+    url: post.permalink || `https://www.facebook.com/groups/${post.groupId}/posts/${post.postId}/`,
+    author: { name: post.author.name, id: post.author.id, url: post.author.url },
+    occurred_at: post.createdAt,
+    metrics: { likes: null, comments: post.commentCount, shares: null },
     matched_terms: matched,
   };
 }
 
-/** The group's newest saved posts as records, newest first, at most `limit`. Pure. */
-export function recordsOf(posts: PostRow[], groupId: string, terms: string[], limit: number): WorkerRecord[] {
+/** The posts a poll's read saw as records, newest first, at most `limit`, those matching a term. OpenMagpie dedups repeats. Pure. */
+export function recordsOf(posts: GroupPost[], terms: string[], limit: number): WorkerRecord[] {
   return [...posts]
-    .sort((a, b) => String(b.postedAt ?? "").localeCompare(String(a.postedAt ?? "")))
-    .map((p) => recordOf(p, groupId, terms))
+    .sort((a, b) => b.createdTime - a.createdTime)
+    .map((p) => recordOf(p, terms))
     .filter((r): r is WorkerRecord => r !== null)
     .slice(0, limit);
 }
 
-/** A group's posts across its rows (the same group on two accounts), each once: the later reading wins. Pure. */
-export function uniquePosts(posts: PostRow[]): PostRow[] {
-  const byId = new Map<string, PostRow>();
-  for (const post of posts) if (post.facebookPostId) byId.set(post.facebookPostId, post);
-  return [...byId.values()];
+/**
+ * A log-cli code → the code OpenMagpie's `map_worker_error` acts on: a checkpoint, a login wall or a video
+ * selfie is `auth_required` (not retried); the rest keep log-cli's own code (retried with backoff). Pure.
+ */
+export function workerCodeOf(code: string): string {
+  return ["checkpointed", "loginWall", "videoSelfieRequired", "sessionExpired", "neverConnected"].includes(code) ? "auth_required" : code;
 }
 
-/** No host has read a group in this long: the answer says so, beside the posts it has. */
-export const STALE_AFTER_MS = 3 * 60 * 60_000;
-
-/** Whether the group's posts are current: never read by any account, or not for STALE_AFTER_MS; null when they are. Pure. */
-export function readFreshness(lastReadAts: (string | null)[], now: Date): { code: "groupNotReadYet" | "groupReadStale"; detail: string } | null {
-  const times = lastReadAts.filter((t): t is string => Boolean(t)).map((t) => Date.parse(t)).filter(Number.isFinite);
-  if (!times.length) return { code: "groupNotReadYet", detail: "no host has read it yet (log host start --account <a>, an account in it)" };
-  const last = Math.max(...times);
-  if (now.getTime() - last > STALE_AFTER_MS) return { code: "groupReadStale", detail: `last read ${new Date(last).toISOString().slice(0, 16)}Z; is its account's host running?` };
-  return null;
-}
+/** Feed scrolls for a poll asking `limit` posts: about three posts a scroll (run 20261022T054544: 16 over the page and 6 scrolls). Pure. */
+export const scrollsFor = (limit: number): number => Math.max(1, Math.min(6, Math.ceil(limit / 3)));

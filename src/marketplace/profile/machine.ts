@@ -1,5 +1,5 @@
 /**
- * `log profile setup` as an XState machine (rule 28), so every step is traced
+ * `log facebook profile setup` as an XState machine (rule 28), so every step is traced
  * (`observability/trace`) and the run says which step ended it.
  *
  *   checking ─▶ preparing ─▶ opening ─▶ reading ┬─ not signed in ─────────────────────────▶ stopping (sessionExpired)
@@ -166,7 +166,7 @@ export const profileMachine = setup({
                 const { ok: _ok, ...page } = event.output as Extract<ProfileReadOutput, { ok: true }>
                 return { page }
               }),
-              { type: 'recordFailure', params: ({ event }) => ({ state: 'reading', code: 'sessionExpired' as const, detail: `the profile shows ${(event.output as { kind?: string }).kind} at ${(event.output as { path?: string }).path}: run log connect first` }) }
+              { type: 'recordFailure', params: ({ event }) => ({ state: 'reading', code: 'sessionExpired' as const, detail: `the profile shows ${(event.output as { kind?: string }).kind} at ${(event.output as { path?: string }).path}: run log facebook connect first` }) }
             ]
           }
         ],

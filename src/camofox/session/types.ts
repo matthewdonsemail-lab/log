@@ -84,12 +84,12 @@ export interface ConnectSession {
 /** Starts a connect session. Injectable so tests never launch a browser. */
 export type ConnectSessionFactory = (config: ConnectSessionConfig) => ConnectSession
 
-/** `python/session/profileSession.py`'s steps (`log profile setup`, rule 28). */
+/** `python/session/profileSession.py`'s steps (`log facebook profile setup`, rule 28). */
 export type ProfileStep = 'open' | 'read' | 'readName' | 'uploadProfilePhoto' | 'uploadCoverPhoto' | 'close'
 
 export interface ProfileSessionConfig {
   accountId: string
-  /** The saved session. Required: the profile is only reachable signed in (`log connect` first). */
+  /** The saved session. Required: the profile is only reachable signed in (`log facebook connect` first). */
   storageStatePath: string
   /** The account's proxy file. No browser opens without it (rule 12). */
   proxyPath: string

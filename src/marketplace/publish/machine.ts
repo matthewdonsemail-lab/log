@@ -1,5 +1,5 @@
 /**
- * Publishing one listing as an XState machine, so `log publish` can print
+ * Publishing one listing as an XState machine, so `log facebook publish` can print
  * every step (`observability/trace`).
  *
  *   preparingPhotos ─▶ openingForm ─ready─▶ choosingCategory ─▶ uploadingPhotos

@@ -1,6 +1,6 @@
 # FBUnifiedVideoEntityDialogImplQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -42,4 +42,4 @@ Nothing. The Reels warm-up (`src/warmup/facebook`) checks each step against the 
 
 ## What can go wrong
 
-None seen: 12 calls, all 200 in 485-2642 ms. If the step fails anyway, `checkStep` reports it as an issue: `log warmup facebook reel record` goes on and outlines it, a `run` stops there, and a checkpoint or login page ends it as `blocked`.
+None seen: 12 calls, all 200 in 485-2642 ms. If the step fails anyway, `checkStep` reports it as an issue: `log facebook warmup reel record` goes on and outlines it, a `run` stops there, and a checkpoint or login page ends it as `blocked`.

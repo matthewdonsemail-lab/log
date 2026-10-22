@@ -1,13 +1,13 @@
 /**
- * `log host` (rule 35): the runner above the lifecycle machine. One process per
+ * `log facebook host` (rule 35): the runner above the lifecycle machine. One process per
  * account opens ONE browser for the account's day and runs every lifecycle step
  * in it (sign-in, account check, profile, location, the warm-up, watching),
  * saving its progress on every change so a restart carries on where it left.
  *
- *   log host start --account <a> [--live] [--bypass] [--gapMinutes <n>] [--watchMinutes <n>] [--groupMinutes <n>]
+ *   log facebook host start --account <a> [--live] [--bypass] [--gapMinutes <n>] [--watchMinutes <n>] [--groupMinutes <n>]
  *       every watch check also reads each group the account is in that is due (the firehose, #27)
- *   log host send --account <a> <PERSON_DONE|PAUSE|RESUME|SHUTDOWN|LOST>
- *   log host status [--account <a>]
+ *   log facebook host send --account <a> <PERSON_DONE|PAUSE|RESUME|SHUTDOWN|LOST>
+ *   log facebook host status [--account <a>]
  */
 import { readdirSync } from "node:fs";
 import { dirname } from "node:path";
@@ -24,10 +24,10 @@ import type { HostBrowser } from "./helpers/index.ts";
 export * from "./helpers/index.ts";
 
 export const HOST_USAGE = [
-  "Usage: log host start --account <accountName> [--live] [--likes] [--bypass] [--gapMinutes <n>] [--watchMinutes <n>] [--groupMinutes <n>]   (--live: profile, name, location; --likes: the warm-up's likes)",
+  "Usage: log facebook host start --account <accountName> [--live] [--likes] [--bypass] [--gapMinutes <n>] [--watchMinutes <n>] [--groupMinutes <n>]   (--live: profile, name, location; --likes: the warm-up's likes)",
   "       --groupMinutes: each group the account is in is read at most this often, in its open browser, and its new posts and comments go to Twenty (default 60; 0 reads none)",
-  "       log host send --account <accountName> <PERSON_DONE|PAUSE|RESUME|SHUTDOWN|LOST>",
-  "       log host status [--account <accountName>]",
+  "       log facebook host send --account <accountName> <PERSON_DONE|PAUSE|RESUME|SHUTDOWN|LOST>",
+  "       log facebook host status [--account <accountName>]",
 ].join("\n");
 
 const EVENTS: HostControl["type"][] = ["PERSON_DONE", "PAUSE", "RESUME", "SHUTDOWN", "LOST"];
@@ -40,7 +40,7 @@ export const hostCommand: Command = {
   args: "<start|send|status> --account <name> [--live] [--bypass]",
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["live", "likes", "bypass"], valued: ["account", "gapMinutes", "watchMinutes", "groupMinutes"] });
-    if (!parsed.ok) return { code: 1, stderr: `log host: ${parsed.error}\n${HOST_USAGE}` };
+    if (!parsed.ok) return { code: 1, stderr: `log facebook host: ${parsed.error}\n${HOST_USAGE}` };
     const [sub, event] = parsed.positionals;
     const flags = parsed.flags;
 
@@ -56,7 +56,7 @@ export const hostCommand: Command = {
       return { code: 0, stdout: lines.join("\n") || "No host has run yet." };
     }
 
-    if (typeof flags["account"] !== "string") return { code: 1, stderr: `log host: --account is required\n${HOST_USAGE}` };
+    if (typeof flags["account"] !== "string") return { code: 1, stderr: `log facebook host: --account is required\n${HOST_USAGE}` };
     let account;
     try {
       account = await findAccount(context.twenty, flags["account"]);
@@ -65,17 +65,17 @@ export const hostCommand: Command = {
     }
 
     if (sub === "send") {
-      if (!EVENTS.includes(event as HostControl["type"])) return { code: 1, stderr: `log host send: one of ${EVENTS.join(", ")}\n${HOST_USAGE}` };
+      if (!EVENTS.includes(event as HostControl["type"])) return { code: 1, stderr: `log facebook host send: one of ${EVENTS.join(", ")}\n${HOST_USAGE}` };
       sendControl(account.accountName, { type: event } as HostControl);
       return { code: 0, stdout: `Sent ${event} to ${account.accountName}'s host.` };
     }
 
-    if (sub !== "start") return { code: 1, stderr: `log host: pick start, send or status\n${HOST_USAGE}` };
+    if (sub !== "start") return { code: 1, stderr: `log facebook host: pick start, send or status\n${HOST_USAGE}` };
     const minutes = (flag: string, fallback: number) => (flags[flag] === undefined ? fallback : Number(flags[flag]));
     const gap = minutes("gapMinutes", 150);
     const watch = minutes("watchMinutes", 12);
     const groupMinutes = minutes("groupMinutes", DEFAULT_GROUP_MINUTES);
-    if (![gap, watch, groupMinutes].every((n) => Number.isFinite(n) && n >= 0 && n <= 600)) return { code: 1, stderr: "log host: --gapMinutes, --watchMinutes and --groupMinutes are 0 to 600" };
+    if (![gap, watch, groupMinutes].every((n) => Number.isFinite(n) && n >= 0 && n <= 600)) return { code: 1, stderr: "log facebook host: --gapMinutes, --watchMinutes and --groupMinutes are 0 to 600" };
 
     const browser: HostBrowser = { run: null, session: null };
     const log = (line: string) => context.err(line);
@@ -104,7 +104,7 @@ export const hostCommand: Command = {
     ];
     if (result.context.issue) lines.push(`  account issue: ${result.context.issue.code}${result.context.issue.detail ? ` (${result.context.issue.detail})` : ""}`);
     if (result.context.lastError) lines.push(`  last error: ${result.context.lastError.code}${result.context.lastError.detail ? ` (${result.context.lastError.detail})` : ""}`);
-    lines.push(`  progress: ${hostDir(account.accountName)}/progress.json (log host status); restart carries on from it.`);
+    lines.push(`  progress: ${hostDir(account.accountName)}/progress.json (log facebook host status); restart carries on from it.`);
     return { code: ["stopped", "host.overnight.rest"].includes(result.state) ? 0 : 1, stdout: lines.join("\n") };
   },
 };

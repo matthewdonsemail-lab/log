@@ -11,10 +11,10 @@ import type { Application, ApplicationStatus } from './types'
 
 /** What the draft makes of the application before any fill: notStarted, drafting or ready. Pure. */
 export function applicationFromDraft(options: JoinOptions | null, draft: JoinDraft | null, now: Date): Application {
-  if (!options || !draft) return { status: 'notStarted', filled: [], submittedAt: null, updatedAt: now.toISOString(), detail: 'no draft: run the stepper (log join group --answer)' }
+  if (!options || !draft) return { status: 'notStarted', filled: [], submittedAt: null, updatedAt: now.toISOString(), detail: 'no draft: run the stepper (log facebook join group --answer)' }
   const complete = draftComplete(options, draft)
   return complete.complete
-    ? { status: 'ready', filled: [], submittedAt: null, updatedAt: now.toISOString(), detail: 'every answer given and the rules agreed: log join group --fill --live' }
+    ? { status: 'ready', filled: [], submittedAt: null, updatedAt: now.toISOString(), detail: 'every answer given and the rules agreed: log facebook join group --fill --live' }
     : { status: 'drafting', filled: [], submittedAt: null, updatedAt: now.toISOString(), detail: `missing: ${complete.missing.join('; ')}` }
 }
 

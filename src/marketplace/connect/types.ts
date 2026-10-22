@@ -1,5 +1,5 @@
 /**
- * Signing one Facebook account in (`log connect`), as an XState machine.
+ * Signing one Facebook account in (`log facebook connect`), as an XState machine.
  *
  * Facebook's sign-in is not one page: after the password it can show the
  * two-step code page, an "approve on another device" screen, a "trust this

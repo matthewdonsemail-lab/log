@@ -1,5 +1,5 @@
 /**
- * Setting one account's profile picture and cover photo (`log profile setup`,
+ * Setting one account's profile picture and cover photo (`log facebook profile setup`,
  * rule 28), as an XState machine. Listaro's own warm-up guide does this on
  * days 1-2 of an account (Listaro_backup content/blog/
  * how-to-post-without-getting-banned.md): a real-looking profile photo and a

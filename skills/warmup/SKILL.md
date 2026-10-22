@@ -1,15 +1,15 @@
 ---
 name: warmup
-description: Record and run the account warm-up (rule 36) - Listaro's five activities (feed, Marketplace browse, create-page check, Selling, Messages), each recorded once with log inspect in a headed session, turned into a flow and an XState machine, then run in one open browser with a stage log: `log warmup facebook stages` (rule 60). Use when matt says warm up, warm-up, record the warm-up, or wants to watch it.
+description: Record and run the account warm-up (rule 36) - Listaro's five activities (feed, Marketplace browse, create-page check, Selling, Messages), each recorded once with log inspect in a headed session, turned into a flow and an XState machine, then run in one open browser with a stage log: `log facebook warmup stages` (rule 60). Use when matt says warm up, warm-up, record the warm-up, or wants to watch it.
 ---
 
 # warmup
 
 ## Hard boundaries
 
-1. **Recorded, never written blind** (rule 29). `log warmup facebook stages record` drives the
+1. **Recorded, never written blind** (rule 29). `log facebook warmup stages record` drives the
    inspect session headed, every step saved (snapshot, screenshot, HAR, rea),
-   and builds each flow from that recording. `log warmup facebook stages run` refuses an
+   and builds each flow from that recording. `log facebook warmup stages run` refuses an
    activity whose flow isn't recorded (`flowNotRecorded`).
 2. **One browser** (rule 35). Record and run both open one session and do every
    activity inside it.
@@ -28,17 +28,17 @@ description: Record and run the account warm-up (rule 36) - Listaro's five activ
 ## The routine
 
 ```bash
-log warmup facebook stages plan                                        # the five scripts, recorded or not
-log warmup facebook stages record --account <a> --now                  # one headed session: each script, then each flow
-log warmup facebook stages run --account <a> --gapMinutes 2 --now      # watched run: the machine runs each flow in turn
-log warmup facebook stages log --account <a> --follow                 # the stage log, live
+log facebook warmup stages plan                                        # the five scripts, recorded or not
+log facebook warmup stages record --account <a> --now                  # one headed session: each script, then each flow
+log facebook warmup stages run --account <a> --gapMinutes 2 --now      # watched run: the machine runs each flow in turn
+log facebook warmup stages log --account <a> --follow                 # the stage log, live
 ```
 
 `--gapMinutes` defaults to 150 (five activities across the account's day);
 use 1-5 when matt is watching. `--only feedBrowse,sellingVisit` limits it.
 
 After recording, read each activity's steps with rea (rule 25) and rebuild the
-request docs (`log capture --docs`, rule 27) before pushing.
+request docs (`log facebook capture --docs`, rule 27) before pushing.
 
 Doc: `docs/lifecycle.md` (the warm-up section); scripts:
 `src/marketplace/warmup/helpers/scripts.ts`.
@@ -48,9 +48,9 @@ Doc: `docs/lifecycle.md` (the warm-up section); scripts:
 ```bash
 bun scripts/datasets/buildReelViewers.ts                        # once: 980 real viewers from KuaiRand-1K (~/.logCli/datasets)
 bun scripts/datasets/buildInterestEffect.ts                     # once: the interest effect, from KuaiRand-Pure's random log
-log warmup facebook persona --account <a>              # the persona, its real viewer and its pack (every dataset a trait)
+log facebook warmup persona --account <a>              # the persona, its real viewer and its pack (every dataset a trait)
 log proxy balance                                      # 2Captcha traffic left, before a run
-log warmup facebook reel run --account <a> --persona --live [--likes] [--trafficMb 1024]
+log facebook warmup reel run --account <a> --persona --live [--likes] [--trafficMb 1024]
 ```
 
 - Each reel, the moment it lands, is read by SubQ from its frame (theirs or

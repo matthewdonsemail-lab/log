@@ -34,7 +34,7 @@ export function feedSoFar(labels: FeedLabel[]): string {
 }
 
 /**
- * `log warmup facebook feed run --persona` (rule 50): the account's home feed
+ * `log facebook warmup feed run --persona` (rule 50): the account's home feed
  * read as its persona would, in its open browser (`feedPersonaMachine`). Each
  * post comes into view by the wheel, SubQ reads it, and the orderer plans a
  * glance or a read and a like; the time counts from when the post came into
@@ -52,16 +52,16 @@ export async function runFeedSession(
   options: { posts: number; seed: number; live: boolean; likes: boolean; trafficMb?: number; proxy?: string | null },
 ): Promise<CommandResult> {
   const current = readCurrentInspect(undefined, account);
-  if (!current) return { code: 1, stderr: `log warmup: no open browser for ${account}` };
+  if (!current) return { code: 1, stderr: `log facebook warmup: no open browser for ${account}` };
   const meter = context.trafficMeter ?? meterForProxy(options.proxy);
   const budget = trafficBudget(readTrafficLedger(), account, context.now?.() ?? new Date(), options.trafficMb ?? DEFAULT_TRAFFIC_BUDGET_MB);
-  if (meter && budget.leftMb <= 0) return { code: 1, stderr: `log warmup: trafficBudgetSpent: ${account} used ${budget.usedMb} MB of its ${budget.budgetMb} MB proxy traffic in the last 24 hours (~/.logCli/proxyTraffic.jsonl).` };
+  if (meter && budget.leftMb <= 0) return { code: 1, stderr: `log facebook warmup: trafficBudgetSpent: ${account} used ${budget.usedMb} MB of its ${budget.budgetMb} MB proxy traffic in the last 24 hours (~/.logCli/proxyTraffic.jsonl).` };
   let startMb = 0;
   if (meter) {
     try {
       startMb = await meter();
     } catch (error) {
-      return { code: 1, stderr: `log warmup: trafficUnmeasured: ${(error as Error).message}` };
+      return { code: 1, stderr: `log facebook warmup: trafficUnmeasured: ${(error as Error).message}` };
     }
     context.err(`Proxy traffic: ${budget.usedMb} MB used in the last 24 hours, ${budget.leftMb} MB left of ${budget.budgetMb} MB.`);
   } else context.err("Proxy traffic: a static IP (its traffic is in its price), not metered.");
@@ -147,7 +147,7 @@ export async function runFeedSession(
   const theirs = read.filter((l) => l.plan!.match);
   const issues = output.outcomes.filter((o) => !o.ok);
   const lines = [
-    `log warmup facebook feed run --persona: ${output.blocked ? `blocked: ${output.blocked.code}` : output.ok ? "the session ran to its end" : `stopped: ${output.problem}`}.`,
+    `log facebook warmup feed run --persona: ${output.blocked ? `blocked: ${output.blocked.code}` : output.ok ? "the session ran to its end" : `stopped: ${output.problem}`}.`,
     `  ${read.length} posts read for ${pack.personaId} (into ${pack.interests.join(", ") || "nothing named"}); ${theirs.length} theirs, ${read.filter((l) => l.plan!.like).length} liked; SubQ read ${calls}, ${tokens} input tokens.`,
     `  Steps: ${output.outcomes.length}, ${issues.length} didn't do what they should${issues.length ? `: ${issues.map((o) => `${o.id} (${o.issue ?? o.error})`).join("; ")}` : ""}.`,
     meter ? `  Proxy traffic: ${runMb} MB this run.` : "  Proxy traffic: a static IP, not metered.",

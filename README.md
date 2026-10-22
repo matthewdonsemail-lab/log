@@ -43,8 +43,8 @@ How proxies load and are checked: `docs/proxies.md`. Where accounts are bought:
 ## Commands, MCP tools and hooks
 
 log-cli is browser-agnostic: each account's browser is a driver (AdsPower first, Camoufox kept, more browser providers to come), and every driver opens through the same gates.
-It is platform-agnostic too: Facebook (Marketplace and groups) is the first platform. Each command says which platform it acts on (the Platform column): Facebook only today, any, or by argument (`log warmup <platform> <activity>`), and where it is scoped by platform every form of it names the platform (rule 60).
-Every command is a CLI command (`bun bin/log.ts <command>`) and, unless it only works in a terminal, an MCP tool of the same name on the `log` server.
+It is platform-agnostic too: Facebook (Marketplace and groups) is the first platform. A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook connect`, `log facebook warmup reel`), in every form; one that works on any platform takes none (the Platform column, rule 63).
+Every command is a CLI command (`bun bin/log.ts [<platform>] <command>`) and, unless it only works in a terminal, an MCP tool named for the command on the `log` server (a Facebook tool runs `log facebook <command>`).
 The same hooks fire whether it runs from a shell or over MCP, and both write the same live log, `~/.logCli/mcp/<day>.log`.
 This section and `docs/diagrams/*.mmd` are generated from the code (`COMMANDS`, `AGENT_HOOKS`, `PAGE_STATES`, the saved flows) by `bun run docs:build`.
 `bun run check:docs` (lefthook pre-commit and pre-push) refuses a commit where they differ (rule 56).
@@ -66,7 +66,7 @@ flowchart LR
   d_adsPower --> gates
   more["Next browser provider: one more driver (src/browser/name), rule 44"] -.-> gates
   gates --> session
-  account["On the account's browser: host, inspect, flow, warmup, join, read"]
+  account["On the account's browser: host, inspect, flow, warmup, join, read, poll"]
   camoufox["Camoufox only, not on the driver yet: doctor, connect, profile, scan, status, watch, publish, campaign"]
   session --> account
   camoufox -.->|"launches Camoufox itself"| d_camoufox
@@ -74,7 +74,7 @@ flowchart LR
 
 Source: [`docs/diagrams/browsers.mmd`](docs/diagrams/browsers.mmd).
 
-- **The account's browser, through the driver:** `host`, `inspect`, `flow`, `warmup`, `join`, `read`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
+- **The account's browser, through the driver:** `host`, `inspect`, `flow`, `warmup`, `join`, `read`, `poll`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
 - **Camoufox only, not on the driver yet:** `doctor`, `connect`, `profile`, `scan`, `status`, `watch`, `publish`, `campaign`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
 - **No browser:** `launch`, `listings`, `listing`, `accounts`, `account`, `adsPower`, `lifecycle`, `proxy`, `conversations`, `conversation`, `errors`, `graph`, `capture`, `login`, `logout`, `whoami`.
 
@@ -89,9 +89,9 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 28 command tools + saved flows"]
+  mcp["MCP server log: 29 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 30 commands (COMMANDS)"]
+  runCli["runCli: 31 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   browser["The account's browser (one per day, rule 35)"]
   agent --> shell
@@ -120,36 +120,37 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 
 | Command | What it does | Platform | Flags | Browser | MCP tool | Hooks: shell · MCP | Live log | Rules |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| [`log launch`](#log-launch) | Guided Clack menu over the listings, accounts and live commands | any | `--json` | none | terminal only: prompts in a terminal (Clack). Call the commands it wraps directly. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
-| [`log listings`](#log-listings) | List the Twenty listings, by status, account or campaign | Facebook only (today) | `--status <STATUS>` `--account <accountName>` `--campaign <campaignId>` `--json` | none | `listings` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
-| [`log listing`](#log-listing) | Show one Twenty listing, or create one for an account from a JSON file | Facebook only (today) | `--json` `--account <accountName>` `--file <listing.json>` | none | `listing` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
-| [`log accounts`](#log-accounts) | List the FACEBOOK accounts in Twenty: status, home, proxy, and whether each may run | Facebook only (today) | `--json` | none | `accounts` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
-| [`log account`](#log-account) | Show one account, or set its status (banned/dead/restricted replace its campaign listings) | Facebook only (today) | `--json` `--from <folder>` `--reason <text>` `--detail <text>` | none | `account` | PreToolUse, PostToolUse · PostToolUse | no | 13, 37, 30, 38, 39, 40, 41 |
-| [`log adsPower`](#log-adspower) | AdsPower: Local API status, its profiles, and one profile per Twenty account (sync) | any | `--json` `--apply` `--account <accountName>` | none | `adsPower` | PreToolUse, PostToolUse · PostToolUse | no | 42, 44, 30, 38, 39, 40, 41 |
-| [`log lifecycle`](#log-lifecycle) | Each account's place in its lifecycle (rule 35): status, state, what onboarding has left; `states` prints the machine | Facebook only (today) | `--account <name>` `--json` `--write` | none | `lifecycle` | PreToolUse, PostToolUse · PostToolUse | no | 35, 30, 38, 39, 40, 41 |
-| [`log doctor`](#log-doctor) | Check python, facebook-camofox-client, Camoufox, Twenty, and which accounts may run | Facebook only (today) | `--json` | Camoufox only | `doctor` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 30, 38, 39, 40, 41 |
-| [`log connect`](#log-connect) | Sign a Facebook account in through its proxy (the connect machine), save its cookies to Twenty | Facebook only (today) | `--account <accountName>` `--noPrompt` `--wait <seconds>` `--bypass` `--now` | Camoufox only | `connect` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 18, 21, 23, 24, 30, 38, 39, 40, 41 |
-| [`log profile`](#log-profile) | Set an account's profile picture and cover photo from Twenty (dry run unless --live, rule 28) | Facebook only (today) | `--account <accountName>` `--live` `--bypass` `--json` | Camoufox only | `profile` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 28, 30, 38, 39, 40, 41 |
-| [`log host`](#log-host) | Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); send it events; read its progress | Facebook only (today) | `--account <accountName>` `--live` `--likes` `--bypass` `--gapMinutes <n>` `--watchMinutes <n>` `--groupMinutes <n>` | the account's | `host` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 18, 35, 61, 62, 30, 38, 39, 40, 41 |
-| [`log inspect`](#log-inspect) | Drive the account's browser, gated and headed, a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29) | any | `--account <accountName>` `--url <https://www.facebook.com/...>` `--bypass` `--now` `--noIdleMouse` `--detach` `--all` `--live` `--timeout <s>` `--json` | the account's | `inspect` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 30, 38, 39, 40, 41 |
-| [`log flow`](#log-flow) | Recorded inspect runs as flows: docs, an XState machine per flow, run on any account (rule 31) | any | `--name <name>` `--summary <text>` `--rename` `--account <accountName>` `--set <param>` `--live` `--bypass` `--now` `--json` | the account's | `flow` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 29, 31, 30, 38, 39, 40, 41 |
-| [`log warmup`](#log-warmup) | The warm-up, by platform and activity: `log warmup facebook reel\|feed\|stages` (the account's browser primed with the activity, each step checked, the outline written; rules 49, 60) | by argument: `<platform>` | `--account <a>` `--live` `--likes` `--bypass` `--now` `--json` `--newPersona` `--seed <n>` `--reels` `--watch` `--skip` `--comments` `--profile` `--persona` `--trafficMb` `--posts` `--only` `--gapMinutes <n>` `--lines <n>` `--follow` `--seconds <n>` | the account's | `warmup` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 18, 20, 25, 26, 29, 32, 35, 36, 49, 50, 51, 54, 55, 60, 30, 38, 39, 40, 41 |
-| [`log join`](#log-join) | Join a Facebook group as one account, in its open browser: read the gate, --live presses Join; every step patches agencyGroups.joinSubmission (rule 45) | Facebook only (today) | `--account <accountName>` `--group <group url, id or name>` `--live` `--json` `--show` `--answer` `--set <n>` `--agree` `--fill` `--submit` `--bypass` | the account's | `join` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 10, 18, 20, 25, 26, 29, 35, 45, 30, 38, 39, 40, 41 |
-| [`log read`](#log-read) | Read a Facebook group's new posts and their comments as one account, in its open browser; saved to agencyGroupPosts and agencyGroupComments, then the cursor moves (#27) | Facebook only (today) | `--account <accountName>` `--group <group url or id>` `--scrolls <n>` `--commentPosts <n>` `--live` `--bypass` `--json` `--show` `--worker <request json>` | the account's | `read` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 13, 18, 20, 22, 25, 26, 29, 35, 45, 61, 62, 30, 38, 39, 40, 41 |
-| [`log scan`](#log-scan) | Read Marketplace > Selling live for one account and update its listings in Twenty | Facebook only (today) | `--account <accountName>` `--json` `--bypass` | Camoufox only | `scan` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 18, 22, 30, 38, 39, 40, 41 |
-| [`log status`](#log-status) | Open one Marketplace item page live and classify its status | Facebook only (today) | `--account <accountName>` `--json` `--bypass` | Camoufox only | `status` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 18, 22, 30, 38, 39, 40, 41 |
-| [`log watch`](#log-watch) | Run the listing monitor (XState) for one account and print every step | Facebook only (today) | `--account <accountName>` `--checks <n>` `--interval <minutes>` `--json` `--bypass` | Camoufox only | `watch` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 6, 18, 30, 38, 39, 40, 41 |
-| [`log proxy`](#log-proxy) | Check an account's proxy, give it one from a provider (2Captcha, Byteful) in its home city, or see providers' traffic | any | `--account <accountName>` `--json` `--missing` `--vendor` `--city <city>` `--region <state>` `--anyCity` `--minutes <1-120>` `--socks5` | none | `proxy` | PreToolUse, PostToolUse · PostToolUse | no | 12, 33, 41, 43, 51, 52, 30, 38, 39, 40, 41 |
-| [`log publish`](#log-publish) | Post one Twenty listing (dry run unless --live), printing every machine step | Facebook only (today) | `--listing <agencyListingId>` `--live` `--json` `--formUrl <url>` `--bypass` `--now` | Camoufox only | `publish` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 10, 12, 18, 22, 24, 30, 38, 39, 40, 41 |
-| [`log campaign`](#log-campaign) | Put one ad on N accounts in one place, replace lost accounts, publish the campaign | Facebook only (today) | `--campaign <agencyCampaignId>` `--from <agencyListingId>` `--accounts <n>` `--live` `--bypass` `--json` | Camoufox only | `campaign` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 13, 18, 30, 38, 39, 40, 41 |
-| [`log conversations`](#log-conversations) | List buyers' Marketplace conversations in Twenty, newest first, by account or listing | Facebook only (today) | `--account <name>` `--listing <agencyListingId>` `--json` | none | `conversations` | PreToolUse, PostToolUse · PostToolUse | no | 34, 30, 38, 39, 40, 41 |
-| [`log conversation`](#log-conversation) | One conversation: show its messages, mark read, set its lead status, link its listing, or store a scanned thread | Facebook only (today) | `--json` `--listing <agencyListingId>` `--account <name>` `--file <threads.json>` | none | `conversation` | PreToolUse, PostToolUse · PostToolUse | no | 34, 30, 38, 39, 40, 41 |
-| [`log errors`](#log-errors) | List every error code: meaning, retryable, where each machine ends up | any | `--layer <account|listing|photo|form|captcha|runtime|twenty|proxyVendor|auth|profile>` `--code <code>` `--json` `--markdown` | none | `errors` | PreToolUse, PostToolUse · PostToolUse | no | 25, 30, 38, 39, 40, 41 |
-| [`log graph`](#log-graph) | Print a machine's states and transitions as a Mermaid diagram | any | none | none | `graph` | PreToolUse, PostToolUse · PostToolUse | no | 6, 25, 30, 38, 39, 40, 41 |
-| [`log capture`](#log-capture) | Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds the Facebook client docs. No browser. | Facebook only (today) | `--har <path>` `--out <dir>` `--noRea` `--json` `--settle <runCaptureDir>` `--docs` | none | `capture` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 19, 22, 26, 27, 46, 48, 30, 38, 39, 40, 41 |
-| [`log login`](#log-login) | Sign in with Twenty through blaster's web app (OAuth), like `blaster login` | any | `--webUrl <url>` `--apiUrl <url>` `--token <accessToken>` `--json` | none | terminal only: opens a browser for Twenty OAuth and waits for it. Run `bun bin/log.ts login` in a terminal. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
-| [`log logout`](#log-logout) | Forget the stored Twenty session | any | `--apiUrl <url>` `--json` | none | `logout` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
-| [`log whoami`](#log-whoami) | Show who is signed in, refreshing the session if it expired | any | `--apiUrl <url>` `--json` | none | `whoami` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
+| [`log launch`](#log-launch) | Guided Clack menu over the listings, accounts and live commands | any (none) | `--json` | none | terminal only: prompts in a terminal (Clack). Call the commands it wraps directly. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
+| [`log facebook listings`](#log-facebook-listings) | List the Twenty listings, by status, account or campaign | `facebook` first | `--status <STATUS>` `--account <accountName>` `--campaign <campaignId>` `--json` | none | `listings` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
+| [`log facebook listing`](#log-facebook-listing) | Show one Twenty listing, or create one for an account from a JSON file | `facebook` first | `--json` `--account <accountName>` `--file <listing.json>` | none | `listing` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
+| [`log facebook accounts`](#log-facebook-accounts) | List the FACEBOOK accounts in Twenty: status, home, proxy, and whether each may run | `facebook` first | `--json` | none | `accounts` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
+| [`log facebook account`](#log-facebook-account) | Show one account, or set its status (banned/dead/restricted replace its campaign listings) | `facebook` first | `--json` `--from <folder>` `--reason <text>` `--detail <text>` | none | `account` | PreToolUse, PostToolUse · PostToolUse | no | 13, 37, 30, 38, 39, 40, 41 |
+| [`log adsPower`](#log-adspower) | AdsPower: Local API status, its profiles, and one profile per Twenty account (sync) | any (none) | `--json` `--apply` `--account <accountName>` | none | `adsPower` | PreToolUse, PostToolUse · PostToolUse | no | 42, 44, 30, 38, 39, 40, 41 |
+| [`log facebook lifecycle`](#log-facebook-lifecycle) | Each account's place in its lifecycle (rule 35): status, state, what onboarding has left; `states` prints the machine | `facebook` first | `--account <name>` `--json` `--write` | none | `lifecycle` | PreToolUse, PostToolUse · PostToolUse | no | 35, 30, 38, 39, 40, 41 |
+| [`log facebook doctor`](#log-facebook-doctor) | Check python, facebook-camofox-client, Camoufox, Twenty, and which accounts may run | `facebook` first | `--json` | Camoufox only | `doctor` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 30, 38, 39, 40, 41 |
+| [`log facebook connect`](#log-facebook-connect) | Sign a Facebook account in through its proxy (the connect machine), save its cookies to Twenty | `facebook` first | `--account <accountName>` `--noPrompt` `--wait <seconds>` `--bypass` `--now` | Camoufox only | `connect` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 18, 21, 23, 24, 30, 38, 39, 40, 41 |
+| [`log facebook profile`](#log-facebook-profile) | Set an account's profile picture and cover photo from Twenty (dry run unless --live, rule 28) | `facebook` first | `--account <accountName>` `--live` `--bypass` `--json` | Camoufox only | `profile` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 28, 30, 38, 39, 40, 41 |
+| [`log facebook host`](#log-facebook-host) | Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); send it events; read its progress | `facebook` first | `--account <accountName>` `--live` `--likes` `--bypass` `--gapMinutes <n>` `--watchMinutes <n>` `--groupMinutes <n>` | the account's | `host` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 18, 35, 61, 62, 30, 38, 39, 40, 41 |
+| [`log inspect`](#log-inspect) | Drive the account's browser, gated and headed, a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29) | any (none) | `--account <accountName>` `--url <https://www.facebook.com/...>` `--bypass` `--now` `--noIdleMouse` `--detach` `--all` `--live` `--timeout <s>` `--json` | the account's | `inspect` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 30, 38, 39, 40, 41 |
+| [`log flow`](#log-flow) | Recorded inspect runs as flows: docs, an XState machine per flow, run on any account (rule 31) | any (none) | `--name <name>` `--summary <text>` `--rename` `--account <accountName>` `--set <param>` `--live` `--bypass` `--now` `--json` | the account's | `flow` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 29, 31, 30, 38, 39, 40, 41 |
+| [`log <platform> warmup`](#log-platform-warmup) | The warm-up, by platform and activity: `log facebook warmup reel\|feed\|stages` (the account's browser primed with the activity, each step checked, the outline written; rules 49, 60) | `<platform>` first | `--account <a>` `--live` `--likes` `--bypass` `--now` `--json` `--newPersona` `--seed <n>` `--reels` `--watch` `--skip` `--comments` `--profile` `--persona` `--trafficMb` `--posts` `--only` `--gapMinutes <n>` `--lines <n>` `--follow` `--seconds <n>` | the account's | `warmup` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 18, 20, 25, 26, 29, 32, 35, 36, 49, 50, 51, 54, 55, 60, 30, 38, 39, 40, 41 |
+| [`log facebook join`](#log-facebook-join) | Join a Facebook group as one account, in its open browser: read the gate, --live presses Join; every step patches agencyGroups.joinSubmission (rule 45) | `facebook` first | `--account <accountName>` `--group <group url, id or name>` `--live` `--json` `--show` `--answer` `--set <n>` `--agree` `--fill` `--submit` `--bypass` | the account's | `join` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 10, 18, 20, 25, 26, 29, 35, 45, 30, 38, 39, 40, 41 |
+| [`log facebook read`](#log-facebook-read) | Read a Facebook group's new posts and their comments as one account, in its open browser; saved to agencyGroupPosts and agencyGroupComments, then the cursor moves (#27) | `facebook` first | `--account <accountName>` `--group <group url or id>` `--scrolls <n>` `--commentPosts <n>` `--live` `--bypass` `--json` `--show` `--worker` | the account's | `read` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 13, 18, 20, 22, 25, 26, 29, 35, 45, 61, 62, 63, 30, 38, 39, 40, 41 |
+| [`log facebook poll`](#log-facebook-poll) | Poll a Facebook group from one account, in its open browser, for a time or once: each poll's posts as one JSON line, OpenMagpie's records; --request answers OpenMagpie's facebook_group worker (#27, rule 63) | `facebook` first | `--bypass` `--request <request json>` | the account's | `poll` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 13, 18, 22, 26, 35, 45, 61, 62, 63, 30, 38, 39, 40, 41 |
+| [`log facebook scan`](#log-facebook-scan) | Read Marketplace > Selling live for one account and update its listings in Twenty | `facebook` first | `--account <accountName>` `--json` `--bypass` | Camoufox only | `scan` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 18, 22, 30, 38, 39, 40, 41 |
+| [`log facebook status`](#log-facebook-status) | Open one Marketplace item page live and classify its status | `facebook` first | `--account <accountName>` `--json` `--bypass` | Camoufox only | `status` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 18, 22, 30, 38, 39, 40, 41 |
+| [`log facebook watch`](#log-facebook-watch) | Run the listing monitor (XState) for one account and print every step | `facebook` first | `--account <accountName>` `--checks <n>` `--interval <minutes>` `--json` `--bypass` | Camoufox only | `watch` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 6, 18, 30, 38, 39, 40, 41 |
+| [`log proxy`](#log-proxy) | Check an account's proxy, give it one from a provider (2Captcha, Byteful) in its home city, or see providers' traffic | any (none) | `--account <accountName>` `--json` `--missing` `--vendor` `--city <city>` `--region <state>` `--anyCity` `--minutes <1-120>` `--socks5` | none | `proxy` | PreToolUse, PostToolUse · PostToolUse | no | 12, 33, 41, 43, 51, 52, 30, 38, 39, 40, 41 |
+| [`log facebook publish`](#log-facebook-publish) | Post one Twenty listing (dry run unless --live), printing every machine step | `facebook` first | `--listing <agencyListingId>` `--live` `--json` `--formUrl <url>` `--bypass` `--now` | Camoufox only | `publish` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 10, 12, 18, 22, 24, 30, 38, 39, 40, 41 |
+| [`log facebook campaign`](#log-facebook-campaign) | Put one ad on N accounts in one place, replace lost accounts, publish the campaign | `facebook` first | `--campaign <agencyCampaignId>` `--from <agencyListingId>` `--accounts <n>` `--live` `--bypass` `--json` | Camoufox only | `campaign` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 13, 18, 30, 38, 39, 40, 41 |
+| [`log facebook conversations`](#log-facebook-conversations) | List buyers' Marketplace conversations in Twenty, newest first, by account or listing | `facebook` first | `--account <name>` `--listing <agencyListingId>` `--json` | none | `conversations` | PreToolUse, PostToolUse · PostToolUse | no | 34, 30, 38, 39, 40, 41 |
+| [`log facebook conversation`](#log-facebook-conversation) | One conversation: show its messages, mark read, set its lead status, link its listing, or store a scanned thread | `facebook` first | `--json` `--listing <agencyListingId>` `--account <name>` `--file <threads.json>` | none | `conversation` | PreToolUse, PostToolUse · PostToolUse | no | 34, 30, 38, 39, 40, 41 |
+| [`log errors`](#log-errors) | List every error code: meaning, retryable, where each machine ends up | any (none) | `--layer <account|listing|photo|form|captcha|runtime|twenty|proxyVendor|auth|profile>` `--code <code>` `--json` `--markdown` | none | `errors` | PreToolUse, PostToolUse · PostToolUse | no | 25, 30, 38, 39, 40, 41 |
+| [`log graph`](#log-graph) | Print a machine's states and transitions as a Mermaid diagram | any (none) | none | none | `graph` | PreToolUse, PostToolUse · PostToolUse | no | 6, 25, 30, 38, 39, 40, 41 |
+| [`log facebook capture`](#log-facebook-capture) | Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds the Facebook client docs. No browser. | `facebook` first | `--har <path>` `--out <dir>` `--noRea` `--json` `--settle <runCaptureDir>` `--docs` | none | `capture` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 19, 22, 26, 27, 46, 48, 30, 38, 39, 40, 41 |
+| [`log login`](#log-login) | Sign in with Twenty through blaster's web app (OAuth), like `blaster login` | any (none) | `--webUrl <url>` `--apiUrl <url>` `--token <accessToken>` `--json` | none | terminal only: opens a browser for Twenty OAuth and waits for it. Run `bun bin/log.ts login` in a terminal. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
+| [`log logout`](#log-logout) | Forget the stored Twenty session | any (none) | `--apiUrl <url>` `--json` | none | `logout` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
+| [`log whoami`](#log-whoami) | Show who is signed in, refreshing the session if it expired | any (none) | `--apiUrl <url>` `--json` | none | `whoami` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
 
 ### Saved flows: MCP tools of their own (rule 31)
 
@@ -232,6 +233,10 @@ flowchart TB
   cli --> c_read
   mcp --> c_read
   c_read --> live
+  c_poll["poll"]
+  cli --> c_poll
+  mcp --> c_poll
+  c_poll --> live
   c_scan["scan"]
   cli --> c_scan
   mcp --> c_scan
@@ -412,41 +417,41 @@ Guided Clack menu over the listings, accounts and live commands Terminal only: p
 log launch [--json]
 ```
 
-#### log listings
+#### log facebook listings
 
 List the Twenty listings, by status, account or campaign MCP tool: `listings` (`args` takes the same arguments).
 
 ```text
-log listings [--status <STATUS>] [--account <accountName>] [--campaign <campaignId>] [--json]
+log facebook listings [--status <STATUS>] [--account <accountName>] [--campaign <campaignId>] [--json]
 ```
 
-#### log listing
+#### log facebook listing
 
 Show one Twenty listing, or create one for an account from a JSON file MCP tool: `listing` (`args` takes the same arguments).
 
 ```text
-log listing <agencyListingId> [--json]
-log listing create --account <accountName> --file <listing.json> [--json]
+log facebook listing <agencyListingId> [--json]
+log facebook listing create --account <accountName> --file <listing.json> [--json]
 The file: title, description, price, priceCurrency, category, condition (new|usedLikeNew|usedGood|usedFair), photos (paths or URLs), locationQuery, locationCity, locationCountry, locationPostalCode (the zip: Facebook finds a US city by it).
 ```
 
-#### log accounts
+#### log facebook accounts
 
 List the FACEBOOK accounts in Twenty: status, home, proxy, and whether each may run MCP tool: `accounts` (`args` takes the same arguments).
 
 ```text
-log accounts [--json]
+log facebook accounts [--json]
 ```
 
-#### log account
+#### log facebook account
 
 Show one account, or set its status (banned/dead/restricted replace its campaign listings) MCP tool: `account` (`args` takes the same arguments).
 
 ```text
-log account show <accountName> [--json]
-log account resave <accountName> --from <folder>   (a run's device and session Twenty didn't take: ~/.logCli/runs/unsaved/...)
-log account resetOpens <accountName|all> [--reason <text>]   (today's launches and host opens count from now; nothing is deleted)
-log account status <accountName> <ACTIVE|WARMING|LIMITED|PAUSED|NEEDS_LOGIN|CHECKPOINT|RESTRICTED|BANNED|DEAD> [--reason <code>] [--detail <text>]
+log facebook account show <accountName> [--json]
+log facebook account resave <accountName> --from <folder>   (a run's device and session Twenty didn't take: ~/.logCli/runs/unsaved/...)
+log facebook account resetOpens <accountName|all> [--reason <text>]   (today's launches and host opens count from now; nothing is deleted)
+log facebook account status <accountName> <ACTIVE|WARMING|LIMITED|PAUSED|NEEDS_LOGIN|CHECKPOINT|RESTRICTED|BANNED|DEAD> [--reason <code>] [--detail <text>]
 ```
 
 #### log adsPower
@@ -459,48 +464,48 @@ log adsPower profiles [--json]
 log adsPower sync [--apply] [--account <accountName>] [--json]   (dry run unless --apply)
 ```
 
-#### log lifecycle
+#### log facebook lifecycle
 
 Each account's place in its lifecycle (rule 35): status, state, what onboarding has left; `states` prints the machine MCP tool: `lifecycle` (`args` takes the same arguments).
 
 ```text
-log lifecycle [--account <name>] [--json]
-log lifecycle states [--write]   (the machine's state tree; --write regenerates docs/lifecycle.md)
+log facebook lifecycle [--account <name>] [--json]
+log facebook lifecycle states [--write]   (the machine's state tree; --write regenerates docs/lifecycle.md)
 ```
 
-#### log doctor
+#### log facebook doctor
 
 Check python, facebook-camofox-client, Camoufox, Twenty, and which accounts may run MCP tool: `doctor` (`args` takes the same arguments).
 
 ```text
-log doctor [--json]
+log facebook doctor [--json]
 ```
 
-#### log connect
+#### log facebook connect
 
 Sign a Facebook account in through its proxy (the connect machine), save its cookies to Twenty MCP tool: `connect` (`args` takes the same arguments).
 
 ```text
-log connect --account <accountName> [--noPrompt] [--wait <seconds>] [--bypass] [--now]
+log facebook connect --account <accountName> [--noPrompt] [--wait <seconds>] [--bypass] [--now]
 ```
 
-#### log profile
+#### log facebook profile
 
 Set an account's profile picture and cover photo from Twenty (dry run unless --live, rule 28) MCP tool: `profile` (`args` takes the same arguments).
 
 ```text
-log profile setup --account <accountName> [--live] [--bypass] [--json]
+log facebook profile setup --account <accountName> [--live] [--bypass] [--json]
 ```
 
-#### log host
+#### log facebook host
 
 Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); send it events; read its progress MCP tool: `host` (`args` takes the same arguments).
 
 ```text
-log host start --account <accountName> [--live] [--likes] [--bypass] [--gapMinutes <n>] [--watchMinutes <n>] [--groupMinutes <n>]   (--live: profile, name, location; --likes: the warm-up's likes)
+log facebook host start --account <accountName> [--live] [--likes] [--bypass] [--gapMinutes <n>] [--watchMinutes <n>] [--groupMinutes <n>]   (--live: profile, name, location; --likes: the warm-up's likes)
 --groupMinutes: each group the account is in is read at most this often, in its open browser, and its new posts and comments go to Twenty (default 60; 0 reads none)
-log host send --account <accountName> <PERSON_DONE|PAUSE|RESUME|SHUTDOWN|LOST>
-log host status [--account <accountName>]
+log facebook host send --account <accountName> <PERSON_DONE|PAUSE|RESUME|SHUTDOWN|LOST>
+log facebook host status [--account <accountName>]
 ```
 
 #### log inspect
@@ -524,75 +529,87 @@ log flow docs <name> | list | show <name>
 log flow run <name> --account <accountName> [--set <param>=<value>]... [--live] [--bypass] [--now] [--json]
 ```
 
-#### log warmup
+#### log <platform> warmup
 
-The warm-up, by platform and activity: `log warmup facebook reel|feed|stages` (the account's browser primed with the activity, each step checked, the outline written; rules 49, 60) MCP tool: `warmup` (`args` takes the same arguments).
+The warm-up, by platform and activity: `log facebook warmup reel|feed|stages` (the account's browser primed with the activity, each step checked, the outline written; rules 49, 60) MCP tool: `warmup` (`args` takes the same arguments).
 
 ```text
-log warmup <platform> <activity> [--account <a>] [--live] [--likes] [--bypass] [--now]   (record: the account's browser opened primed with the activity, each step checked, the outline written)
-log warmup <platform> <activity> plan [--json]   (the activity's steps and what each must do)
-log warmup <platform> persona --account <a> [--newPersona] [--seed <n>]   (the account's behaviour profile and real viewer, from the datasets; no browser, no SubQ)
-log warmup facebook reel plan [--reels 8-20] [--watch 4-25] [--skip 0.6] [--comments 0.3] [--profile 0.15] [--likes] [--seed <n>] [--json]   (a drawn Reels session)
-log warmup facebook reel run --account <a> [reel plan flags] [--live] [--likes] [--bypass]   (a drawn session, stopped at the first step that doesn't do what it should)
-log warmup facebook reel run --account <a> --persona [--newPersona] [--reels 8-20] [--trafficMb 1024] [--live] [--likes] [--bypass]   (the persona's For you feed: SubQ reads each reel, the orderer plans it from the pack and real viewer, rule 50)
-log warmup facebook feed run --account <a> --persona [--posts 8-15] [--trafficMb 1024] [--live] [--likes] [--bypass]   (the home feed post by post: SubQ reads each post, a glance or a read and a like where the persona would, then Marketplace and listings)
+log <platform> warmup <activity> [--account <a>] [--live] [--likes] [--bypass] [--now]   (record: the account's browser opened primed with the activity, each step checked, the outline written)
+log <platform> warmup <activity> plan [--json]   (the activity's steps and what each must do)
+log <platform> warmup persona --account <a> [--newPersona] [--seed <n>]   (the account's behaviour profile and real viewer, from the datasets; no browser, no SubQ)
+log facebook warmup reel plan [--reels 8-20] [--watch 4-25] [--skip 0.6] [--comments 0.3] [--profile 0.15] [--likes] [--seed <n>] [--json]   (a drawn Reels session)
+log facebook warmup reel run --account <a> [reel plan flags] [--live] [--likes] [--bypass]   (a drawn session, stopped at the first step that doesn't do what it should)
+log facebook warmup reel run --account <a> --persona [--newPersona] [--reels 8-20] [--trafficMb 1024] [--live] [--likes] [--bypass]   (the persona's For you feed: SubQ reads each reel, the orderer plans it from the pack and real viewer, rule 50)
+log facebook warmup feed run --account <a> --persona [--posts 8-15] [--trafficMb 1024] [--live] [--likes] [--bypass]   (the home feed post by post: SubQ reads each post, a glance or a read and a like where the persona would, then Marketplace and listings)
 Platforms: facebook. Facebook activities: reel, feed, stages.
-log warmup facebook stages plan
-log warmup facebook stages record --account <accountName> [--only feedBrowse,marketplaceBrowse] [--likes] [--bypass] [--now]
-log warmup facebook stages run --account <accountName> [--only …] [--likes] [--gapMinutes <n>] [--bypass] [--now]
-log warmup facebook stages log [--account <accountName>] [--lines <n>] [--follow [--seconds <n>]]
+log facebook warmup stages plan
+log facebook warmup stages record --account <accountName> [--only feedBrowse,marketplaceBrowse] [--likes] [--bypass] [--now]
+log facebook warmup stages run --account <accountName> [--only …] [--likes] [--gapMinutes <n>] [--bypass] [--now]
+log facebook warmup stages log [--account <accountName>] [--lines <n>] [--follow [--seconds <n>]]
 ```
 
-#### log join
+#### log facebook join
 
 Join a Facebook group as one account, in its open browser: read the gate, --live presses Join; every step patches agencyGroups.joinSubmission (rule 45) MCP tool: `join` (`args` takes the same arguments).
 
 ```text
-log join group --account <accountName> --group <group url, id or name> [--live] [--json]
-log join group --account <accountName> --group <g> --show
-log join group --account <accountName> --group <g> --answer [--set <n>=<value>]... [--agree]   (Clack steps over the group's questions, or the same answers given here; saved to Twenty, never sent)
-log join group --account <accountName> --group <g> --fill [--live [--submit]]   (the draft into the group's dialog, step by step)
+log facebook join group --account <accountName> --group <group url, id or name> [--live] [--json]
+log facebook join group --account <accountName> --group <g> --show
+log facebook join group --account <accountName> --group <g> --answer [--set <n>=<value>]... [--agree]   (Clack steps over the group's questions, or the same answers given here; saved to Twenty, never sent)
+log facebook join group --account <accountName> --group <g> --fill [--live [--submit]]   (the draft into the group's dialog, step by step)
 Every step in the browser runs inside the account's local hours (rule 18); --bypass skips that for one run, only when matt asked (rule 20).
-The account's browser must be open (log inspect start --account <a>, or log host start): a join is a step in it (rule 35).
+The account's browser must be open (log inspect start --account <a>, or log facebook host start): a join is a step in it (rule 35).
 ```
 
-#### log read
+#### log facebook read
 
 Read a Facebook group's new posts and their comments as one account, in its open browser; saved to agencyGroupPosts and agencyGroupComments, then the cursor moves (#27) MCP tool: `read` (`args` takes the same arguments).
 
 ```text
-log read group --account <accountName> --group <group url or id> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json]
-log read group --account <accountName> --group <g> --show [--json]
-log read group --worker <request json>   (OpenMagpie's facebook_group worker: groups.search in, the posts Twenty holds out as one JSON line, no browser; python/openMagpie/facebookWorker.py calls it)
+log facebook read group --account <accountName> --group <group url or id> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json]
+log facebook read group --account <accountName> --group <g> --show [--json]
 Reads the group's new posts (since its cursor in Twenty) and the comments of the posts whose comments grew, in the account's open browser.
 --scrolls: feed scrolls at most (default 6). --commentPosts: posts whose comments are read at most (default 5; 0 reads none).
+--worker (OpenMagpie's call) is refused here: it became its own command, log facebook poll (its usage).
 --live: each post's comments are switched to Newest first (two clicks, rule 8); without it nothing is clicked and the page's Most relevant comments are read.
 Every step in the browser runs inside the account's local hours (rule 18); --bypass skips that for one run, only when matt asked (rule 20).
-The account's browser must be open (log inspect start --account <a>, or log host start): a read is a step in it (rule 35).
+The account's browser must be open (log inspect start --account <a>, or log facebook host start): a read is a step in it (rule 35).
 ```
 
-#### log scan
+#### log facebook poll
+
+Poll a Facebook group from one account, in its open browser, for a time or once: each poll's posts as one JSON line, OpenMagpie's records; --request answers OpenMagpie's facebook_group worker (#27, rule 63) MCP tool: `poll` (`args` takes the same arguments).
+
+```text
+log facebook poll <group url or id> <accountName> [<how long to poll: 30m, 2h>] [--bypass]
+log facebook poll --request <request json>   (OpenMagpie's facebook_group worker: groups.search in, post records out as one JSON line; python/openMagpie/facebookWorker.py calls it)
+One poll reads the group once in the account's open browser, posts only, nothing clicked, and prints one JSON line: the posts it saw, as OpenMagpie's records. With a time it polls every 5 minutes until the time is up, a line each.
+Every poll runs inside the account's local hours (rule 18); --bypass skips that, only when matt asked (rule 20). --request never skips it.
+The account's browser must be open (log inspect start for that account, or log facebook host start): a poll is a step in it (rule 35).
+```
+
+#### log facebook scan
 
 Read Marketplace > Selling live for one account and update its listings in Twenty MCP tool: `scan` (`args` takes the same arguments).
 
 ```text
-log scan --account <accountName> [--json] [--bypass]
+log facebook scan --account <accountName> [--json] [--bypass]
 ```
 
-#### log status
+#### log facebook status
 
 Open one Marketplace item page live and classify its status MCP tool: `status` (`args` takes the same arguments).
 
 ```text
-log status <listingId> --account <accountName> [--json] [--bypass]
+log facebook status <listingId> --account <accountName> [--json] [--bypass]
 ```
 
-#### log watch
+#### log facebook watch
 
 Run the listing monitor (XState) for one account and print every step MCP tool: `watch` (`args` takes the same arguments).
 
 ```text
-log watch --account <accountName> [--checks <n>] [--interval <minutes>] [--json] [--bypass]
+log facebook watch --account <accountName> [--checks <n>] [--interval <minutes>] [--json] [--bypass]
 ```
 
 #### log proxy
@@ -607,47 +624,47 @@ log proxy static  [--json]   (Byteful's static ISP IPs on the account, where eac
 The proxy is the socialAccount's `proxy` field in Twenty (scheme://user:pass@host:port), its country `homeCountry`.
 ```
 
-#### log publish
+#### log facebook publish
 
 Post one Twenty listing (dry run unless --live), printing every machine step MCP tool: `publish` (`args` takes the same arguments).
 
 ```text
-log publish --listing <agencyListingId> [--live] [--json] [--formUrl <url>] [--bypass] [--now]
+log facebook publish --listing <agencyListingId> [--live] [--json] [--formUrl <url>] [--bypass] [--now]
 Dry run unless --live: fills and checks everything, never clicks Publish.
 The listing, its account and the account's proxy all come from Twenty.
 --bypass skips only the account's waking hours (rule 18); every other gate still runs.
 --now skips only the 10-minute launch gap (rule 24); the 8 launches a day still hold.
 ```
 
-#### log campaign
+#### log facebook campaign
 
 Put one ad on N accounts in one place, replace lost accounts, publish the campaign MCP tool: `campaign` (`args` takes the same arguments).
 
 ```text
-log campaign fill --campaign <agencyCampaignId> --from <agencyListingId> --accounts <n>
-log campaign heal --campaign <agencyCampaignId>
-log campaign run  --campaign <agencyCampaignId> [--live] [--bypass]
-log campaign show --campaign <agencyCampaignId> [--json]
+log facebook campaign fill --campaign <agencyCampaignId> --from <agencyListingId> --accounts <n>
+log facebook campaign heal --campaign <agencyCampaignId>
+log facebook campaign run  --campaign <agencyCampaignId> [--live] [--bypass]
+log facebook campaign show --campaign <agencyCampaignId> [--json]
 ```
 
-#### log conversations
+#### log facebook conversations
 
 List buyers' Marketplace conversations in Twenty, newest first, by account or listing MCP tool: `conversations` (`args` takes the same arguments).
 
 ```text
-log conversations [--account <name>] [--listing <agencyListingId>] [--json]
+log facebook conversations [--account <name>] [--listing <agencyListingId>] [--json]
 ```
 
-#### log conversation
+#### log facebook conversation
 
 One conversation: show its messages, mark read, set its lead status, link its listing, or store a scanned thread MCP tool: `conversation` (`args` takes the same arguments).
 
 ```text
-log conversation show <id> [--json]
-log conversation read <id>
-log conversation lead <id> <NEW|CONTACTED|QUALIFIED|BOOKED|LOST|SPAM>
-log conversation link <id> --listing <agencyListingId>
-log conversation record --account <name> --file <threads.json>
+log facebook conversation show <id> [--json]
+log facebook conversation read <id>
+log facebook conversation lead <id> <NEW|CONTACTED|QUALIFIED|BOOKED|LOST|SPAM>
+log facebook conversation link <id> --listing <agencyListingId>
+log facebook conversation record --account <name> --file <threads.json>
 ```
 
 #### log errors
@@ -666,14 +683,14 @@ Print a machine's states and transitions as a Mermaid diagram MCP tool: `graph` 
 log graph <publish|monitor>
 ```
 
-#### log capture
+#### log facebook capture
 
 Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds the Facebook client docs. No browser. MCP tool: `capture` (`args` takes the same arguments).
 
 ```text
-log capture --har <path> [--out <dir>] [--noRea] [--json]
-log capture --settle <runCaptureDir>  (what each run starts in the background: rea reads its capture, split per step)
-log capture --docs [--noRea]  (every run's requests → docs/platforms/facebook/, one doc per request, rea reading each one's slice)
+log facebook capture --har <path> [--out <dir>] [--noRea] [--json]
+log facebook capture --settle <runCaptureDir>  (what each run starts in the background: rea reads its capture, split per step)
+log facebook capture --docs [--noRea]  (every run's requests → docs/platforms/facebook/, one doc per request, rea reading each one's slice)
 The HAR is the one Playwright writes from Camoufox. It is copied raw, and rea reads it. No browser opens.
 ```
 

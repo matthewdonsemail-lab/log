@@ -9,7 +9,7 @@ answer from stdout:
     out  {"ok": true, "result": {"results": [record, ...], "errors": [...]}, "new_cookies": []}
          {"ok": false, "code": ..., "error": ...}
 
-It only passes `action` and `params` on to `log read group --worker`. The cookies, proxy and account
+It only passes `action` and `params` on to `log facebook poll --request`. The cookies, proxy and account
 OpenMagpie sends are dropped here: in log-cli the account, its session and its proxy come from Twenty,
 and a read is a step in the account's open browser (rules 12, 13, 35). The run's lines go to stderr,
 and to log-cli's live log (rule 26). Standard library only: OpenMagpie's Python runs it.
@@ -51,12 +51,12 @@ def main() -> int:
     request = forwarded(sys.stdin.read())
     if request is None:
         return answer({"ok": False, "code": "bad_request", "error": "the request is not a JSON object"})
-    command = [os.environ.get("LOG_BUN", "bun"), os.environ.get("LOG_WORKER_ENTRY", "bin/log.ts"), "read", "group", "--worker", json.dumps(request)]
+    command = [os.environ.get("LOG_BUN", "bun"), os.environ.get("LOG_WORKER_ENTRY", "bin/log.ts"), "facebook", "poll", "--request", json.dumps(request)]
     try:
         # From log-cli's root, so Bun loads its .env.local (Twenty, LOG_PYTHON).
         proc = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, encoding="utf8", timeout=TIMEOUT_S)
     except subprocess.TimeoutExpired:
-        return answer({"ok": False, "code": "worker_timeout", "error": f"log read group --worker took over {TIMEOUT_S} s"})
+        return answer({"ok": False, "code": "worker_timeout", "error": f"log facebook poll --request took over {TIMEOUT_S} s"})
     except OSError as error:
         return answer({"ok": False, "code": "worker_spawn_failed", "error": f"could not run {command[0]}: {error} (set LOG_BUN)"})
     sys.stderr.write(proc.stderr)
@@ -68,7 +68,7 @@ def main() -> int:
             continue
         if isinstance(value, dict) and "ok" in value:
             return answer(value)
-    return answer({"ok": False, "code": "worker_bad_output", "error": f"log read group --worker exited {proc.returncode} without an answer: {(proc.stderr or proc.stdout)[-500:]}"})
+    return answer({"ok": False, "code": "worker_bad_output", "error": f"log facebook poll --request exited {proc.returncode} without an answer: {(proc.stderr or proc.stdout)[-500:]}"})
 
 
 if __name__ == "__main__":

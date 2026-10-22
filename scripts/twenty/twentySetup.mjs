@@ -3,7 +3,7 @@
 // agencyListing.status, and the Marketplace side of agencyConversation and
 // agencyMessage (rule 34: a buyer's conversation about a listing), and the
 // agencyGroup object with its relation to socialAccount, and a group's posts and
-// comments (agencyGroupPost, agencyGroupComment: `log read group`, #27). Additive only. It never renames, retypes or deletes a
+// comments (agencyGroupPost, agencyGroupComment: `log facebook read group`, #27). Additive only. It never renames, retypes or deletes a
 // field, and existing SELECT options keep their ids, so the twitter-controller
 // and the facebook-camofox-client sync keep working.
 //
@@ -82,10 +82,10 @@ const SOCIAL_ACCOUNT_FIELDS = [
     type: 'RAW_JSON',
     description: "log-cli: the browser's localStorage per origin after the last run (Playwright storage_state origins). A credential: never print it"
   },
-  { name: 'profilePhoto', label: 'Profile photo', type: 'TEXT', description: 'log-cli: the profile picture `log profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28)' },
-  { name: 'coverPhoto', label: 'Cover photo', type: 'TEXT', description: 'log-cli: the cover (background) photo `log profile setup` uploads (a URL or a local path)' },
-  { name: 'profileName', label: 'Profile name', type: 'TEXT', description: 'log-cli: the name `log profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days' },
-  { name: 'profileSetAt', label: 'Profile set', type: 'DATE_TIME', description: 'log-cli: when `log profile setup --live` last saved the profile and cover photo' },
+  { name: 'profilePhoto', label: 'Profile photo', type: 'TEXT', description: 'log-cli: the profile picture `log facebook profile setup` uploads (a URL or a local path). Real-looking, not a logo (rule 28)' },
+  { name: 'coverPhoto', label: 'Cover photo', type: 'TEXT', description: 'log-cli: the cover (background) photo `log facebook profile setup` uploads (a URL or a local path)' },
+  { name: 'profileName', label: 'Profile name', type: 'TEXT', description: 'log-cli: the name `log facebook profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days' },
+  { name: 'profileSetAt', label: 'Profile set', type: 'DATE_TIME', description: 'log-cli: when `log facebook profile setup --live` last saved the profile and cover photo' },
   // rule 35: the account lifecycle (src/marketplace/lifecycle).
   { name: 'lifecycleState', label: 'Lifecycle state', type: 'TEXT', description: 'log-cli: where the lifecycle machine has the account, e.g. onboarding.warming or host.watching (rule 35)' },
   { name: 'profileNamedAt', label: 'Profile named', type: 'DATE_TIME', description: 'log-cli: when the profile was renamed to profileName' },
@@ -228,7 +228,7 @@ const AGENCY_MESSAGE_FIELDS = [
 const NEW_OBJECTS = [
   { nameSingular: 'agencyGroup', namePlural: 'agencyGroups', labelSingular: 'Agency group', labelPlural: 'Agency groups', description: 'log-cli: a Facebook group, on one socialAccount', icon: 'IconUsersGroup' },
   // #27, matt 2026-10-22: Facebook group posts and comments get objects of their own.
-  { nameSingular: 'agencyGroupPost', namePlural: 'agencyGroupPosts', labelSingular: 'Agency group post', labelPlural: 'Agency group posts', description: 'log-cli: a post in a Facebook group, as log read group read it', icon: 'IconNews' },
+  { nameSingular: 'agencyGroupPost', namePlural: 'agencyGroupPosts', labelSingular: 'Agency group post', labelPlural: 'Agency group posts', description: 'log-cli: a post in a Facebook group, as log facebook read group read it', icon: 'IconNews' },
   { nameSingular: 'agencyGroupComment', namePlural: 'agencyGroupComments', labelSingular: 'Agency group comment', labelPlural: 'Agency group comments', description: 'log-cli: a comment or reply on a Facebook group post', icon: 'IconMessageCircle' }
 ]
 
@@ -236,7 +236,7 @@ const NEW_OBJECTS = [
 const AGENCY_GROUP_FIELDS = [
   { name: 'facebookGroupId', label: 'Facebook group id', type: 'TEXT', description: 'log-cli: the id in facebook.com/groups/<id>. With the account, the group key' },
   { name: 'groupUrl', label: 'Group URL', type: 'TEXT', description: 'logCli' },
-  // rule 45: where the account stands with the group, as `log join group` last read it on the group page.
+  // rule 45: where the account stands with the group, as `log facebook join group` last read it on the group page.
   {
     name: 'joinStatus',
     label: 'Join status',
@@ -246,14 +246,14 @@ const AGENCY_GROUP_FIELDS = [
   },
   { name: 'joinStatusReason', label: 'Join status reason', type: 'TEXT', description: 'log-cli: what the page showed, and the run folder it was read in' },
   { name: 'membersLabel', label: 'Members', type: 'TEXT', description: 'log-cli: the member count as the group page shows it (17.3K members)' },
-  { name: 'joinRequestedAt', label: 'Join requested at', type: 'DATE_TIME', description: 'log-cli: when log join group --live pressed Join' },
+  { name: 'joinRequestedAt', label: 'Join requested at', type: 'DATE_TIME', description: 'log-cli: when log facebook join group --live pressed Join' },
   { name: 'lastCheckedAt', label: 'Last checked at', type: 'DATE_TIME', description: 'log-cli: when a run last read the group page' },
   // The hackathon's join submission (listeningkit-hackathon communities/types.ts StoredCommunityJoin and the
-  // reportCommunityForm webhook), as one JSON patched after every step of a run and read back by `log join group`.
+  // reportCommunityForm webhook), as one JSON patched after every step of a run and read back by `log facebook join group`.
   { name: 'joinSubmission', label: 'Join submission', type: 'RAW_JSON', description: 'log-cli: { formPhase, questions, questionsHash, questionsScrapedAt, draftAnswers, answers, answersComplete, submittedAt, lastActivityAt, history[] }' },
-  // #27: `log read group` keeps only what is new since the last read (facebook-camofox-client's cursor).
+  // #27: `log facebook read group` keeps only what is new since the last read (facebook-camofox-client's cursor).
   { name: 'readCursor', label: 'Read cursor', type: 'RAW_JSON', description: 'log-cli: { lastPostId, watermark (unix s), idsAtWatermark[] }: the newest post read. It moves only after the posts are saved' },
-  { name: 'lastReadAt', label: 'Last read at', type: 'DATE_TIME', description: 'log-cli: when log read group last read the group' },
+  { name: 'lastReadAt', label: 'Last read at', type: 'DATE_TIME', description: 'log-cli: when log facebook read group last read the group' },
   { name: 'lastReadReason', label: 'Last read', type: 'TEXT', description: 'log-cli: what the last read found, and its run folder' }
 ]
 

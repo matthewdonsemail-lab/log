@@ -41,10 +41,10 @@ git, not chat).
 | `name` | The profile's display name |
 | `email` / `password` / `emailPassword` / `phoneNumber` | As delivered by the vendor |
 | `profileUrl` | `https://www.facebook.com/<id>` |
-| `cookies` | The delivered cookies as JSON (a list of `{ name, value, domain, path }` or a `name: value` object). `log connect` refreshes them |
+| `cookies` | The delivered cookies as JSON (a list of `{ name, value, domain, path }` or a `name: value` object). `log facebook connect` refreshes them |
 | `homeCity` / `homeCountry` | Where the account is registered and must appear from, e.g. `Galway` / `IE`. Take the country from the vendor listing, not a guess |
 | `proxy` | A proxy **in `homeCountry`**, as `http://user:pass@host:port`. Bought separately: vendors sell the account, not its IP. `log proxy assign --account <name>` makes a 2Captcha one in the account's home city and saves it once it checks out |
-| `accountStatus` | `WARMING` for a fresh account, `NEEDS_LOGIN` until `log connect` has run |
+| `accountStatus` | `WARMING` for a fresh account, `NEEDS_LOGIN` until `log facebook connect` has run |
 | `totpSecret` | The 2FA (TOTP) secret the vendor delivered. A credential: never print it |
 | `vendor` | Who sold it, named as in these files (e.g. `NPPR Team Shop`) |
 | `vendorOrderId` | The vendor order or invoice id |
@@ -56,6 +56,6 @@ Before an account does anything:
 1. `log proxy check --account <accountName>`: the proxy's exit IP must be in
    `homeCountry`. No log-cli run opens a browser until it is
    (AGENTS.md rule 12, `docs/proxies.md`).
-2. `log connect --account <accountName>`: sign in once through the proxy and save
+2. `log facebook connect --account <accountName>`: sign in once through the proxy and save
    fresh cookies to Twenty.
 3. Set `accountStatus` to `ACTIVE` when it's ready to post.

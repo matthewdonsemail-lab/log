@@ -4,7 +4,7 @@
 
 ## Summary
 
-`log connect` opens the proxied browser and hands it to a person. The browser
+`log facebook connect` opens the proxied browser and hands it to a person. The browser
 hides the machine. The person can still give it away:
 
 - an Asian input method (IME) shows up in keyboard events;
@@ -46,7 +46,7 @@ The prompt warns about none of these (R4 M7; R2 §16).
 
 - `python/session/logWorker.py` `login` (`:130-155`): the prompt and the open window.
 - Any future flow that hands the window to a person (rule 10 challenges in
-  `log publish`).
+  `log facebook publish`).
 - `src/cli/live/index.ts` (`connect`).
 
 ## Mitigation
@@ -68,7 +68,7 @@ The prompt warns about none of these (R4 M7; R2 §16).
 
 ## How to re-test
 
-1. Run `log connect` with a Japanese IME on, and type into the email field.
+1. Run `log facebook connect` with a Japanese IME on, and type into the email field.
    **Pass:** a stderr warning appears.
 2. Type `+84 912 345 678` into a phone field on a test page. **Pass:** a stderr
    warning appears.

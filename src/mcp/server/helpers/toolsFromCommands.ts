@@ -4,7 +4,11 @@ import { TERMINAL_ONLY, TOOL_RESULT_SCHEMA } from "../types.ts";
 import { rulesLine } from "./agentRules.ts";
 
 /** The tools whose calls run long (a browser, Facebook, rea): their calls are watched with a Monitor (rule 26). */
-export const LONG_RUNNING = new Set(["inspect", "join", "read", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign"]);
+export const LONG_RUNNING = new Set(["inspect", "join", "read", "poll", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign"]);
+
+/** How the command is written, the platform first (rule 63): `facebook connect`, `<platform> warmup`, `inspect`. Pure. */
+export const commandWords = (command: Command): string =>
+  command.platform === "facebook" ? `facebook ${command.name}` : command.platform === "byArgument" ? `<platform> ${command.name}` : command.name;
 
 /** One tool per CLI command, minus the terminal-only ones. Pure. */
 export function toolsFromCommands(commands: Command[]): LogTool[] {
@@ -13,7 +17,7 @@ export function toolsFromCommands(commands: Command[]): LogTool[] {
     .map((command) => ({
       name: command.name,
       description: [
-        `log ${command.name}${command.args ? ` ${command.args}` : ""}`,
+        `log ${commandWords(command)}${command.args ? ` ${command.args}` : ""}`,
         command.summary,
         // Every subcommand and flag, the same text the terminal shows and the README lists (rule 56).
         command.usage,
@@ -36,7 +40,7 @@ export function toolsFromCommands(commands: Command[]): LogTool[] {
       inputSchema: {
         type: "object",
         properties: {
-          args: { type: "array", items: { type: "string" }, description: `Arguments for \`log ${command.name}\`` },
+          args: { type: "array", items: { type: "string" }, description: command.platform === "byArgument" ? `Arguments for \`log <platform> ${command.name}\`, the platform first (e.g. ["facebook", "reel"])` : `Arguments for \`log ${commandWords(command)}\`` },
           confirmLive: { type: "boolean", description: "Set true only when matt asked for this live run (posts on Facebook)" },
           confirmBypass: { type: "boolean", description: "Set true only when matt asked for a run outside the account's local waking hours (--bypass, rule 20)" },
         },

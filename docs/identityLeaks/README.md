@@ -187,7 +187,7 @@ pin and proxy username masking landed in the same series (`3c2a3e0`,
 
 ## Re-testing
 
-**The scripts below are disposable.** They sit outside git in `.scratch`, may be gone, and are not supported tools. `python/leakProbe.py` and `log proxy probe` don't exist yet. The 2026-10-18 re-test at `2de5ff5` used throwaway scripts too. Until a durable probe exists, the repeatable route is a `log publish` dry run against `python/fixtures/createItem.html` plus the page-side probes in each file.
+**The scripts below are disposable.** They sit outside git in `.scratch`, may be gone, and are not supported tools. `python/leakProbe.py` and `log proxy probe` don't exist yet. The 2026-10-18 re-test at `2de5ff5` used throwaway scripts too. Until a durable probe exists, the repeatable route is a `log facebook publish` dry run against `python/fixtures/createItem.html` plus the page-side probes in each file.
 
 Each file has a "How to re-test" section. The scripts the reports used are in
 `C:\Users\0\.buzz\.scratch\camoufox_probe\` (R2) and

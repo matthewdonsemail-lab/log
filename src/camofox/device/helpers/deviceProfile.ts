@@ -28,7 +28,7 @@ export function hasStoredDevice(raw: unknown): boolean {
   return !(isObject(raw) && Object.keys(raw).length === 0)
 }
 
-/** A one-line, secret-free description for `log account show`. Pure. */
+/** A one-line, secret-free description for `log facebook account show`. Pure. */
 export function deviceSummary(profile: DeviceProfile | null): string {
   if (!profile) return 'none yet (made on the first launch)'
   const c = profile.config

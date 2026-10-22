@@ -1,6 +1,6 @@
 import { parseArgs } from "../../runner/helpers/index.ts";
 
-/** What `log read` can read. Only Facebook groups for now. */
+/** What `log facebook read` can read. Only Facebook groups for now. */
 export const READ_TARGETS = ["group"] as const;
 export type ReadTarget = (typeof READ_TARGETS)[number];
 
@@ -9,16 +9,16 @@ export const DEFAULT_SCROLLS = 6;
 export const DEFAULT_COMMENT_POSTS = 5;
 
 export type ParseReadArgsResult =
-  | { ok: true; target: ReadTarget; account: string | null; group: string | null; scrolls: number; commentPosts: number; live: boolean; show: boolean; bypass: boolean; json: boolean; worker: string | null }
+  | { ok: true; target: ReadTarget; account: string | null; group: string | null; scrolls: number; commentPosts: number; live: boolean; show: boolean; bypass: boolean; json: boolean }
   | { ok: false; error: string };
 
-/** `group [--account <a>] [--group <g>] [--scrolls <n>] [--commentPosts <n>] [--live] [--show] [--bypass] [--json] | group --worker <request>`. Pure. */
+/** `group [--account <a>] [--group <g>] [--scrolls <n>] [--commentPosts <n>] [--live] [--show] [--bypass] [--json] `. Pure. */
 export function parseReadArgs(argv: string[]): ParseReadArgsResult {
-  const parsed = parseArgs(argv, { boolean: ["json", "live", "show", "bypass"], valued: ["account", "group", "scrolls", "commentPosts", "worker"] });
+  // OpenMagpie's worker moved to its own command (rule 63).
+  if (argv.some((a) => a === "--worker" || a.startsWith("--worker="))) return { ok: false, error: "--worker became its own command: log facebook poll --request <request json>" };
+  const parsed = parseArgs(argv, { boolean: ["json", "live", "show", "bypass"], valued: ["account", "group", "scrolls", "commentPosts"] });
   if (!parsed.ok) return parsed;
   if (parsed.flags.live && parsed.flags.show) return { ok: false, error: "--show only reads Twenty: it takes no --live" };
-  // OpenMagpie's request alone: the accounts come from Twenty, it never clicks (rule 8) and never skips the hours (rule 18).
-  if (typeof parsed.flags.worker === "string" && (parsed.flags.live || parsed.flags.bypass || parsed.flags.show || parsed.flags.account || parsed.flags.group)) return { ok: false, error: "--worker takes OpenMagpie's request alone: no --account, --group, --show, --live or --bypass" };
   const [target, extra] = parsed.positionals;
   if (target === undefined) return { ok: false, error: `what to read? (${READ_TARGETS.join(", ")})` };
   if (!(READ_TARGETS as readonly string[]).includes(target)) return { ok: false, error: `unexpected argument "${target}" (pick ${READ_TARGETS.join(" or ")})` };
@@ -34,5 +34,5 @@ export function parseReadArgs(argv: string[]): ParseReadArgsResult {
   if (typeof scrolls === "string") return { ok: false, error: scrolls };
   const commentPosts = count("commentPosts", DEFAULT_COMMENT_POSTS, 50);
   if (typeof commentPosts === "string") return { ok: false, error: commentPosts };
-  return { ok: true, target: target as ReadTarget, account: value("account"), group: value("group"), scrolls, commentPosts, live: parsed.flags.live === true, show: parsed.flags.show === true, bypass: parsed.flags.bypass === true, json: parsed.flags.json === true, worker: value("worker") };
+  return { ok: true, target: target as ReadTarget, account: value("account"), group: value("group"), scrolls, commentPosts, live: parsed.flags.live === true, show: parsed.flags.show === true, bypass: parsed.flags.bypass === true, json: parsed.flags.json === true };
 }

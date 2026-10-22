@@ -1,6 +1,6 @@
 /**
  * The listing monitor as an XState machine, so each step can be watched
- * (`log watch` prints every event and state through XState's inspect API).
+ * (`log facebook watch` prints every event and state through XState's inspect API).
  *
  *   checking ──ok──────────▶ evaluating ──▶ waiting ──after poll──▶ checking
  *      │                         └── checks done ──▶ done

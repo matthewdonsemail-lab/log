@@ -6,7 +6,7 @@ import type { FacebookAccount } from "../../../marketplace/socialAccount/index.t
  * matt, 2026-10-19: "close, then reset every single one of the opens". Today's
  * launches (rule 24) and the host's opens (rule 35) count from now again. The
  * recordings are kept; only a dated reset line is written. Close the browsers
- * first (`log host send ... SHUTDOWN`): this doesn't close anything itself.
+ * first (`log facebook host send ... SHUTDOWN`): this doesn't close anything itself.
  */
 export function resetAccountOpens(account: FacebookAccount, reason: string, at: Date = new Date()): string {
   recordLaunchReset(account.accountName, reason, at);

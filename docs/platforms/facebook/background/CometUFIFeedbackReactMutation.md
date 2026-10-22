@@ -1,6 +1,6 @@
 # CometUFIFeedbackReactMutation
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -38,4 +38,4 @@ The Reels warm-up's `like` step (`src/warmup/facebook/helpers/reel.ts`) clicks `
 
 ## What can go wrong
 
-None seen: all five answered 200 in 872-1424 ms. If the like did not take, the snapshot would still show `button "Like"` and `checkStep` reports `no button "Remove Like" after it`. If the step fails anyway, `checkStep` reports it as an issue: `log warmup facebook reel record` goes on and outlines it, a `run` stops there, and a checkpoint or login page ends it as `blocked`.
+None seen: all five answered 200 in 872-1424 ms. If the like did not take, the snapshot would still show `button "Like"` and `checkStep` reports `no button "Remove Like" after it`. If the step fails anyway, `checkStep` reports it as an issue: `log facebook warmup reel record` goes on and outlines it, a `run` stops there, and a checkpoint or login page ends it as `blocked`.

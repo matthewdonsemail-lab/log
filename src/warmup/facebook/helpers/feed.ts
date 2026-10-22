@@ -8,7 +8,7 @@ const INSPECT = 'inspect 20261020T103913_61594131334566 (Reading, by hand, timed
  * (`Listaro_backup/src/lib/account-warmup.ts` runStage1, lines 92-130, day
  * 1-2): open the feed, read down it, like 2-3 posts, then a short look at
  * Marketplace. The next warm-up stage after Reels (matt, 2026-10-20). Each
- * step says what it must achieve, and `log warmup facebook feed record` checks
+ * step says what it must achieve, and `log facebook warmup feed record` checks
  * it after every step and lists what didn't happen (rule 49).
  *
  * What the first recording showed (Reading, 2026-10-20, every step as expected):
@@ -22,7 +22,7 @@ const INSPECT = 'inspect 20261020T103913_61594131334566 (Reading, by hand, timed
  *     3 posts on screen after them, mostly suggested groups
  *   Marketplace: 248 requests to load, one scroll of 783 px
  *
- * With --persona (`log warmup facebook feed run --persona`) the feed is read
+ * With --persona (`log facebook warmup feed run --persona`) the feed is read
  * post by post as the persona would (`feedPersonaMachine`, `planPost`): each
  * post SubQ reads, a glance or a read, a like where they would; then
  * Marketplace and a few listings.

@@ -92,7 +92,7 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
       code: 2,
       stderr:
         `log launch: guided mode needs an interactive terminal.\n` +
-        `Use the scriptable commands instead: log listings, log listing <id>, log accounts.\n` +
+        `Use the scriptable commands instead: log facebook listings, log facebook listing <id>, log facebook accounts.\n` +
         LAUNCH_USAGE,
     };
   }
@@ -106,18 +106,18 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
     const action = await pick({
       message: "What do you want to look at?",
       options: [
-        { value: "browse", label: "Browse listings", hint: "log listing <id>" },
-        { value: "status", label: "Listings by status", hint: "log listings --status" },
-        { value: "account", label: "Listings by account", hint: "log listings --account" },
-        { value: "accounts", label: "Facebook accounts", hint: "log accounts" },
-        { value: "scan", label: "Check listings live (opens Camoufox)", hint: "log scan --account" },
-        { value: "watch", label: "Run the listing monitor and watch each step", hint: "log watch --account" },
-        { value: "connect", label: "Connect a Facebook account (opens Camoufox)", hint: "log connect --account" },
-        { value: "join", label: "Join a Facebook group (in the account's open browser; dry run)", hint: "log join group --account --group" },
-        { value: "answer", label: "Answer a group's questions, step by step (saved to Twenty, not sent)", hint: "log join group --answer" },
-        { value: "fill", label: "Fill a group's dialog from its answers (in the open browser; dry run)", hint: "log join group --fill" },
-        { value: "reels", label: "Warm up: Facebook Reels, as a person watches them", hint: "log warmup facebook reel" },
-        { value: "doctor", label: "Check the live setup", hint: "log doctor" },
+        { value: "browse", label: "Browse listings", hint: "log facebook listing <id>" },
+        { value: "status", label: "Listings by status", hint: "log facebook listings --status" },
+        { value: "account", label: "Listings by account", hint: "log facebook listings --account" },
+        { value: "accounts", label: "Facebook accounts", hint: "log facebook accounts" },
+        { value: "scan", label: "Check listings live (opens Camoufox)", hint: "log facebook scan --account" },
+        { value: "watch", label: "Run the listing monitor and watch each step", hint: "log facebook watch --account" },
+        { value: "connect", label: "Connect a Facebook account (opens Camoufox)", hint: "log facebook connect --account" },
+        { value: "join", label: "Join a Facebook group (in the account's open browser; dry run)", hint: "log facebook join group --account --group" },
+        { value: "answer", label: "Answer a group's questions, step by step (saved to Twenty, not sent)", hint: "log facebook join group --answer" },
+        { value: "fill", label: "Fill a group's dialog from its answers (in the open browser; dry run)", hint: "log facebook join group --fill" },
+        { value: "reels", label: "Warm up: Facebook Reels, as a person watches them", hint: "log facebook warmup reel" },
+        { value: "doctor", label: "Check the live setup", hint: "log facebook doctor" },
       ],
     });
     if (action === null) return { code: 1 };
@@ -159,7 +159,7 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
     } else if (action === "scan" || action === "watch" || action === "connect") {
       const purpose = action === "connect" ? "connect" : "run";
       if (!accounts.some((account) => checkRunnable(account, purpose).ok)) {
-        return { code: 1, stderr: "log launch: no FACEBOOK account may run: each needs a usable status, a proxy and a home country in Twenty. See `log accounts`." };
+        return { code: 1, stderr: "log launch: no FACEBOOK account may run: each needs a usable status, a proxy and a home country in Twenty. See `log facebook accounts`." };
       }
       const accountId = await pick({
         message: action === "connect" ? "Which account to connect?" : "Which account's listings?",
@@ -174,7 +174,7 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
     } else if (action === "join") {
       // Only accounts that pass the account check; the join itself needs the account's browser open (rule 35).
       const runnable = accounts.filter((account) => checkRunnable(account, "run").ok);
-      if (!runnable.length) return { code: 1, stderr: "log launch: no FACEBOOK account may run: each needs a usable status, a proxy and a home country in Twenty. See `log accounts`." };
+      if (!runnable.length) return { code: 1, stderr: "log launch: no FACEBOOK account may run: each needs a usable status, a proxy and a home country in Twenty. See `log facebook accounts`." };
       const accountId = await pick({
         message: "Which account joins?",
         options: runnable.map((account) => ({ value: account.accountName, label: account.accountName, hint: `${account.homeCity ?? "?"}, ${account.homeCountry}` })),
@@ -196,7 +196,7 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
           if (options && (options.questions.length || options.rulesAgreementRequired)) withQuestions.push({ account: account.accountName, group });
         }
       }
-      if (!withQuestions.length) return { code: 1, stderr: "log launch: no group has questions saved yet: they come from a --live join (log join group --account <a> --group <g> --live)" };
+      if (!withQuestions.length) return { code: 1, stderr: "log launch: no group has questions saved yet: they come from a --live join (log facebook join group --account <a> --group <g> --live)" };
       const picked = await pick({
         message: "Which group's questions?",
         options: withQuestions.map(({ account, group }, i) => ({

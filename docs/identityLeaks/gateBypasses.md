@@ -29,8 +29,8 @@ An ungated launch shows Facebook whatever the route defaults to:
 
 | Launch path | Through `proxyGate.apply()`? | Timezone forced? |
 |---|---|---|
-| `log connect`, `scan`, `watch`, `status` → `python/session/logWorker.py` → facebook-camofox-client `acquire()` → `camoufox.async_api.AsyncCamoufox` (patched) | yes (`logWorker.py:266`, `:270`) | yes |
-| `log publish` → `python/session/publishSession.py:172` `Camoufox(**launch_kwargs({}))` | yes | yes |
+| `log facebook connect`, `scan`, `watch`, `status` → `python/session/logWorker.py` → facebook-camofox-client `acquire()` → `camoufox.async_api.AsyncCamoufox` (patched) | yes (`logWorker.py:266`, `:270`) | yes |
+| `log facebook publish` → `python/session/publishSession.py:172` `Camoufox(**launch_kwargs({}))` | yes | yes |
 | `log proxy check`, `assign`, `doctor` | no browser (`public_ip` through the proxy) | n/a |
 
 - R3 T12 confirmed both paths live. In a gated process, `launch_kwargs` raises
@@ -140,12 +140,12 @@ All in `python/browser/proxyGate.py` and `python/browser/visibleBrowser.py` (R4 
    - the exit IP seen in the browser.
 
    It fails with `proxyCountryMismatch` or a new `leakDetected` if any value
-   points at VN or differs from the gate's IP. Run it in `log doctor --account`
+   points at VN or differs from the gate's IP. Run it in `log facebook doctor --account`
    and before the first `publish --live` of the day.
 
 ## How to re-test
 
-> **Disposable scripts.** Any script named below under `.scratch` sits outside git, was a throwaway, may be gone, and is not a supported tool. `python/leakProbe.py` and `log proxy probe` don't exist yet. Until they do, the repeatable check at `2de5ff5` is a `log publish` dry run against `python/fixtures/createItem.html`, with the page-side probes in this file (`docs/proxies.md`, "Checked").
+> **Disposable scripts.** Any script named below under `.scratch` sits outside git, was a throwaway, may be gone, and is not a supported tool. `python/leakProbe.py` and `log proxy probe` don't exist yet. Until they do, the repeatable check at `2de5ff5` is a `log facebook publish` dry run against `python/fixtures/createItem.html`, with the page-side probes in this file (`docs/proxies.md`, "Checked").
 
 1. Static scan of every launcher:
    ```bash

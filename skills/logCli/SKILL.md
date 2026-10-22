@@ -10,12 +10,12 @@ none of them prompt unless you run `log launch` in a terminal.
 
 ## Hard boundaries
 
-1. **Read-only on Facebook, except `log publish --live`.** `scan`, `status` and
+1. **Read-only on Facebook, except `log facebook publish --live`.** `scan`, `status` and
    `watch` only read. `connect` only saves cookies. `publish` is a dry run
    unless `--live` (AGENTS.md rule 10). Nothing is edited or deleted on Facebook.
 2. **Twenty is the source (rule 13).** Accounts are `socialAccounts` (FACEBOOK),
    listings are `agencyListings`. Never delete either: banned or dead accounts
-   keep their record (`log account status`). Never print cookies, proxies,
+   keep their record (`log facebook account status`). Never print cookies, proxies,
    passwords or 2FA secrets; `log` never selects password, email or totpSecret,
    except `connect --noPrompt`'s auto-login (rule 21).
 3. **Marketplace only.** No X, Reddit, keywords or communities.
@@ -51,12 +51,12 @@ none of them prompt unless you run `log launch` in a terminal.
 bun run launch                                          # Clack menu over everything below
 
 # Twenty data
-bun bin/log.ts accounts                                  # FACEBOOK accounts, and whether each may run
-bun bin/log.ts account show galwayOne
-bun bin/log.ts account status galwayOne BANNED --reason accountDisabled   # kept; campaign listings replaced
-bun bin/log.ts listings [--status READY] [--account galwayOne] [--campaign <id>]
-bun bin/log.ts listing <agencyListingId>
-bun bin/log.ts listing create --account galwayOne --file ad.json   # a READY row, checked like publish checks it
+bun bin/log.ts facebook accounts                                  # FACEBOOK accounts, and whether each may run
+bun bin/log.ts facebook account show galwayOne
+bun bin/log.ts facebook account status galwayOne BANNED --reason accountDisabled   # kept; campaign listings replaced
+bun bin/log.ts facebook listings [--status READY] [--account galwayOne] [--campaign <id>]
+bun bin/log.ts facebook listing <agencyListingId>
+bun bin/log.ts facebook listing create --account galwayOne --file ad.json   # a READY row, checked like publish checks it
 
 # sign in to log itself (Twenty OAuth through blaster's web app, same as `blaster login`)
 bun bin/log.ts login | whoami | logout
@@ -69,25 +69,25 @@ bun bin/log.ts proxy assign --account lancasterOne --region pennsylvania   # pin
 bun bin/log.ts proxy balance                             # 2Captcha traffic left
 
 # live (launches Camoufox through the proxy)
-bun bin/log.ts doctor                                    # setup check, which accounts may run
-bun bin/log.ts connect --account galwayOne               # the connect machine; a person signs in in the window, cookies saved to Twenty
-bun bin/log.ts connect --account galwayOne --noPrompt    # the same, auto-login typing Twenty's details (rule 21), up to --wait 600 s
-bun bin/log.ts scan --account galwayOne                  # Marketplace > Selling, written back to the listings
-bun bin/log.ts status <facebookListingId> --account galwayOne
+bun bin/log.ts facebook doctor                                    # setup check, which accounts may run
+bun bin/log.ts facebook connect --account galwayOne               # the connect machine; a person signs in in the window, cookies saved to Twenty
+bun bin/log.ts facebook connect --account galwayOne --noPrompt    # the same, auto-login typing Twenty's details (rule 21), up to --wait 600 s
+bun bin/log.ts facebook scan --account galwayOne                  # Marketplace > Selling, written back to the listings
+bun bin/log.ts facebook status <facebookListingId> --account galwayOne
 
 # the monitor (XState), every step printed live
-bun bin/log.ts watch --account galwayOne [--checks 0 --interval 240] [--json]
+bun bin/log.ts facebook watch --account galwayOne [--checks 0 --interval 240] [--json]
 
 # publish one Twenty listing (XState), every step printed live. Dry run unless --live
-bun bin/log.ts publish --listing <agencyListingId>
-bun bin/log.ts publish --listing <agencyListingId> --live
+bun bin/log.ts facebook publish --listing <agencyListingId>
+bun bin/log.ts facebook publish --listing <agencyListingId> --live
 # against the local copy of the create form (no Facebook)
-bun bin/log.ts publish --listing <id> --formUrl file:///$PWD/python/fixtures/createItem.html
+bun bin/log.ts facebook publish --listing <id> --formUrl file:///$PWD/python/fixtures/createItem.html
 
 # campaigns: one ad on N accounts in one place (docs/accountsAndListings.md)
-bun bin/log.ts campaign fill --campaign <id> --from <agencyListingId> --accounts 10
-bun bin/log.ts campaign run --campaign <id> [--live]
-bun bin/log.ts campaign heal --campaign <id>
+bun bin/log.ts facebook campaign fill --campaign <id> --from <agencyListingId> --accounts 10
+bun bin/log.ts facebook campaign run --campaign <id> [--live]
+bun bin/log.ts facebook campaign heal --campaign <id>
 ```
 
 ## As an MCP server
@@ -132,10 +132,10 @@ explains one (meaning, retryable, where each machine ends, what to do), and
 
 | You see | Means | Do |
 | --- | --- | --- |
-| `neverConnected` | No saved session for that account | `log connect --account <accountId>` |
-| `loginWall` / `sessionExpired` | Facebook wants a fresh login | `log connect` again |
+| `neverConnected` | No saved session for that account | `log facebook connect --account <accountId>` |
+| `loginWall` / `sessionExpired` | Facebook wants a fresh login | `log facebook connect` again |
 | `checkpointed`, `suspended` | Account problem; the monitor stops at `blocked` | Tell matt, don't retry |
-| `wrongPassword` | connect: Facebook said Twenty's password is wrong | Fix it in Twenty, then `log connect` |
+| `wrongPassword` | connect: Facebook said Twenty's password is wrong | Fix it in Twenty, then `log facebook connect` |
 | `signInNotFinished` | connect: `--wait` ran out; the output names the last page | Finish that page in the window, or a longer `--wait` |
 | `tripped` | Same error 3 times in a row | Read the trace, fix the cause, run again |
 | Repost `yes (#n)` | A takedown that's within the repost budget | Decision only; nothing was posted |

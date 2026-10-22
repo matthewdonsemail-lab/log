@@ -49,7 +49,7 @@ export interface TwentyObjects {
   agencyMessages: { row: AgencyMessage; filter: AgencyMessageFilterInput; create: AgencyMessageCreateInput; update: AgencyMessageUpdateInput }
   /** A Facebook group on one account (rule 45): where the account stands with it. */
   agencyGroups: { row: AgencyGroup; filter: AgencyGroupFilterInput; create: AgencyGroupCreateInput; update: AgencyGroupUpdateInput }
-  /** A post in a group row, and its comments (`log read group`, #27). */
+  /** A post in a group row, and its comments (`log facebook read group`, #27). */
   agencyGroupPosts: { row: AgencyGroupPost; filter: AgencyGroupPostFilterInput; create: AgencyGroupPostCreateInput; update: AgencyGroupPostUpdateInput }
   agencyGroupComments: { row: AgencyGroupComment; filter: AgencyGroupCommentFilterInput; create: AgencyGroupCommentCreateInput; update: AgencyGroupCommentUpdateInput }
 }
@@ -63,7 +63,7 @@ export interface TwentyClient {
   create<K extends TwentyObject>(object: K, data: TwentyObjects[K]['create']): Promise<TwentyObjects[K]['row']>
   update<K extends TwentyObject>(object: K, id: string, data: TwentyObjects[K]['update']): Promise<TwentyObjects[K]['row']>
   /**
-   * The account's sign-in details, for `log connect`'s auto-login only. The
+   * The account's sign-in details, for `log facebook connect`'s auto-login only. The
    * one read of these fields: they go to the run's private temp folder for
    * the worker, never into a row, an output or a log.
    */

@@ -164,7 +164,7 @@ What log-cli must do:
    repeats.
 5. **Only the network part moves.** When the exit IP changes, update
    `webrtc:ipv4`, `geolocation:*` and `timezone`. Keep everything else.
-6. **Refuse a run without a persona.** Only `log connect` may create one.
+6. **Refuse a run without a persona.** Only `log facebook connect` may create one.
 7. **Viewport:** make it part of the persona, or pass `no_viewport=True`.
    Check with the probe.
 8. **Persistent profile (later):** `persistent_context=True` with a
@@ -174,7 +174,7 @@ What log-cli must do:
 
 ## How to re-test
 
-> **Disposable scripts.** Any script named below under `.scratch` sits outside git, was a throwaway, may be gone, and is not a supported tool. `python/leakProbe.py` and `log proxy probe` don't exist yet. Until they do, the repeatable check at `2de5ff5` is a `log publish` dry run against `python/fixtures/createItem.html`, with the page-side probes in this file (`docs/proxies.md`, "Checked").
+> **Disposable scripts.** Any script named below under `.scratch` sits outside git, was a throwaway, may be gone, and is not a supported tool. `python/leakProbe.py` and `log proxy probe` don't exist yet. Until they do, the repeatable check at `2de5ff5` is a `log facebook publish` dry run against `python/fixtures/createItem.html`, with the page-side probes in this file (`docs/proxies.md`, "Checked").
 
 1. Launch the same account twice through the production path, with the same
    proxy session id:

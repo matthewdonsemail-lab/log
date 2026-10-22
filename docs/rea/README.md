@@ -20,7 +20,7 @@ The job is to compare three things we already have:
 - what the client actually does, once REA can read a saved copy of it
 
 The programmatic path stays the one we already run: a headed Camoufox window,
-the account's proxy, one device, the pinned locale, and `log publish`. REA
+the account's proxy, one device, the pinned locale, and `log facebook publish`. REA
 does not open Facebook, and it does not replace that path.
 
 ## Read these first

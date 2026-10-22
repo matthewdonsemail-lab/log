@@ -99,7 +99,7 @@ export const DWELL_OVERHEAD_MS = 400;
 const LANDS = new Set(["openReels", "unmute", "swipe"]);
 
 /**
- * `log warmup facebook reel run --persona` (rule 50): a Reels session run by
+ * `log facebook warmup reel run --persona` (rule 50): a Reels session run by
  * the action orderer for the account's persona pack and its real viewer
  * (KuaiRand-1K), in its open browser: its For you feed built by engaging
  * with what it would. Each reel is read by SubQ from its frame the moment it
@@ -119,18 +119,18 @@ export async function runPersonaSession(
   options: { reels: number; seed: number; live: boolean; likes: boolean; trafficMb?: number; proxy?: string | null },
 ): Promise<CommandResult> {
   const current = readCurrentInspect(undefined, account);
-  if (!current) return { code: 1, stderr: `log warmup: no open browser for ${account}` };
+  if (!current) return { code: 1, stderr: `log facebook warmup: no open browser for ${account}` };
   // Proxy traffic (matt, 2026-10-20): the account's budget for 24 hours, measured on its provider's counter before and
   // after (rule 51). A static IP's traffic is in its price, so it has no meter and no budget.
   const meter = context.trafficMeter ?? meterForProxy(options.proxy);
   const budget = trafficBudget(readTrafficLedger(), account, context.now?.() ?? new Date(), options.trafficMb ?? DEFAULT_TRAFFIC_BUDGET_MB);
-  if (meter && budget.leftMb <= 0) return { code: 1, stderr: `log warmup: trafficBudgetSpent: ${account} used ${budget.usedMb} MB of its ${budget.budgetMb} MB proxy traffic in the last 24 hours (~/.logCli/proxyTraffic.jsonl).` };
+  if (meter && budget.leftMb <= 0) return { code: 1, stderr: `log facebook warmup: trafficBudgetSpent: ${account} used ${budget.usedMb} MB of its ${budget.budgetMb} MB proxy traffic in the last 24 hours (~/.logCli/proxyTraffic.jsonl).` };
   let startMb = 0;
   if (meter) {
     try {
       startMb = await meter();
     } catch (error) {
-      return { code: 1, stderr: `log warmup: trafficUnmeasured: ${(error as Error).message}` };
+      return { code: 1, stderr: `log facebook warmup: trafficUnmeasured: ${(error as Error).message}` };
     }
     context.err(`Proxy traffic: ${budget.usedMb} MB used in the last 24 hours, ${budget.leftMb} MB left of ${budget.budgetMb} MB; checked every 5 reels.`);
   } else context.err("Proxy traffic: a static IP (its traffic is in its price), not metered.");
@@ -252,7 +252,7 @@ export async function runPersonaSession(
   const theirs = output.labels.filter((l) => l.plan.match);
   const medOf = (ls: ReelLabel[]) => med(ls.map((l) => l.plan.watchMs).sort((a, b) => a - b));
   const lines = [
-    `log warmup facebook reel run --persona: ${output.blocked ? `blocked: ${output.blocked.code}` : output.ok ? "the session ran to its end" : `stopped: ${output.problem}`}.`,
+    `log facebook warmup reel run --persona: ${output.blocked ? `blocked: ${output.blocked.code}` : output.ok ? "the session ran to its end" : `stopped: ${output.problem}`}.`,
     `  ${output.labels.length} reels for ${pack.personaId} (${pack.segment}, into ${pack.interests.join(", ") || "nothing named"}); SubQ read ${calls}, ${tokens} input tokens.`,
     `  Theirs: ${theirs.length} (watch median ${medOf(theirs)} s); not theirs: ${output.labels.length - theirs.length} (median ${medOf(output.labels.filter((l) => !l.plan.match))} s).`,
     `  Watch planned: median ${med(planned)} s; on screen (swipe to swipe): median ${med(shown)} s over ${shown.length} reel(s).`,
