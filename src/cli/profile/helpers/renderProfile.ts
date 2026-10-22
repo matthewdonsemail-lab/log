@@ -1,6 +1,5 @@
 import type { ProfileContext, ProfileOutput, ProfilePlanStep } from "../../../marketplace/profile/index.ts";
 
-/** What the trace line shows for each step of the profile machine. */
 export function summarizeProfile(context: unknown): Record<string, unknown> {
   const c = context as ProfileContext | undefined;
   if (!c) return {};
@@ -24,7 +23,6 @@ const ACTION_TEXT: Record<ProfilePlanStep["action"], string> = {
 
 const ITEM_TEXT: Record<ProfilePlanStep["item"], string> = { profilePhoto: "Profile photo", coverPhoto: "Cover photo", name: "Name" };
 
-/** The run in plain lines: each photo, and what ended it. */
 export function renderProfile(accountName: string, output: ProfileOutput, runDir: string | null): string {
   const lines = [`Profile setup for ${accountName}: ${output.result}${output.live ? "" : " (dry run: nothing changed on Facebook)"}`];
   for (const step of output.plan) {

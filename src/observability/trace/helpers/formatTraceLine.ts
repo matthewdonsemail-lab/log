@@ -1,6 +1,5 @@
 import type { TraceLine } from "../types.ts";
 
-/** Human form: `05:13:09  relist  state  checking`. Pure. */
 export function formatTraceLine(line: TraceLine): string {
   const time = line.at.slice(11, 19);
   const what = line.kind === "event" ? line.event : line.kind === "state" ? line.state : "started";

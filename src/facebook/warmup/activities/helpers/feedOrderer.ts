@@ -6,43 +6,17 @@ import type { ReelRead } from './reelDecision'
 import { segmentWeight, TIE_EPS } from './reelOrderer'
 import { seeded } from './reelSession'
 
-/**
- * The feed, post by post, for a persona (rule 50, matt 2026-10-20: "use the
- * platform like it would"). Each post the feed brings into view is read by
- * SubQ (its screenshot, heading, text and Facebook's image descriptions):
- * what it is, whether it is this persona's kind, whether they'd like it. Then
- * it is planned here, deterministic from the seed:
- *
- *   time on it  not theirs: a glance around 2.5 s, Facebook's own figure for
- *               a piece of feed content on desktop (facebook.com/business,
- *               "Capturing attention in feed": 2.5 s desktop, 1.7 s mobile);
- *               theirs: its text at 238 words a minute plus one 2.5 s look,
- *               longer by the interest effect measured on real viewers
- *               (KuaiRand, `InterestEffect.watchIn`), capped by the attention
- *               span. Found with TinyFish, rule 53.
- *   one action  a like or the comments opened, each p(action | pack) ×
- *               interest effect × segment weight, drawn; a like's cooldown;
- *               a close draw settled by SubQ's pick; clicks only with --live,
- *               a like only with --likes too (rule 8). A post that is theirs
- *               and cut short gets "See more" first.
- */
-
-/** Facebook: people spend 2.5 s on average with a piece of feed content on desktop. */
 export const FEED_GLANCE_MS = 2500
-/** A common adult silent-reading rate, words per minute (as the persona pack's comment time). */
 export const FEED_READING_WPM = 238
 
 export interface PostPlanInput {
   pack: PersonaPack
   effect: InterestEffect
   read: ReelRead | null
-  /** `truncated`: the post's text ends in "See more". */
   post: { words: number; liked: boolean; truncated?: boolean }
-  /** 1-based. */
   index: number
   seed: number
   allowLike: boolean
-  /** Clicks on the page are allowed (--live): See more and the comments. */
   allowClicks?: boolean
   lastLikeIndex: number | null
 }
@@ -52,21 +26,16 @@ export type PostAction = 'like' | 'openComments'
 export interface PostPlan {
   match: boolean
   dwellMs: number
-  /** How the time was made: `glance`, or `read 42 words`. */
   from: string
-  /** Their kind and cut short: its full text first ("See more"). */
   seeMore: boolean
-  /** The one action on it (one per post), or none. */
   action: PostAction | null
   like: boolean
   likeScore: number
   commentScore: number
-  /** The persona's comment time (the pack's), when the comments are opened. */
   commentMs: number
   closeCall: boolean
 }
 
-/** One post's plan. Pure, given its inputs. */
 export function planPost(input: PostPlanInput): PostPlan {
   const { pack, effect, read, post } = input
   const rng = seeded(input.seed + input.index * 104729)
@@ -87,7 +56,6 @@ export function planPost(input: PostPlanInput): PostPlan {
   const round = (x: number) => Math.round(x * 10_000) / 10_000
   const likeScore = input.allowLike && !cooling && !post.liked ? round(pack.traits.likeP * (match ? effect.likeIn : effect.likeOut) * segmentWeight(pack.segment, 'like')) : 0
   const commentScore = clicks ? round(pack.traits.commentP * (match ? effect.commentIn : effect.commentOut) * segmentWeight(pack.segment, 'openComments')) : 0
-  // One action per post, drawn from the two scores; a draw within eps of a boundary is settled by SubQ's pick.
   const r = rng()
   const order: [PostAction, number][] = (
     [
@@ -111,7 +79,6 @@ export function planPost(input: PostPlanInput): PostPlan {
   return { match, dwellMs, from, seeMore: match && clicks && post.truncated === true, action, like: action === 'like', likeScore, commentScore, commentMs: pack.traits.commentMs, closeCall }
 }
 
-/** The read for one post: its frame as the image, its heading, text and image descriptions, the persona. Pure. */
 export function postReadRequest(
   pack: PersonaPack,
   persona: Record<string, string>,

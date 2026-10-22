@@ -1,11 +1,3 @@
-// AST summary of a change: parse each TypeScript file before and after with
-// the TypeScript compiler, and report which top-level declarations (functions,
-// classes, interfaces, types, enums, consts, re-exports) and which tests were
-// added, removed or changed. Nothing here is written by hand, so the log.md
-// entry says what the code really did, not what the agent remembers.
-//
-//   node scripts/commitLog/astSummary.mjs            # staged changes vs HEAD
-//   node scripts/commitLog/astSummary.mjs <commit>   # that commit vs its parent
 import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -15,7 +7,6 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const git = (...args) =>
   execFileSync('git', args, { cwd: root, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, stdio: ['ignore', 'pipe', 'pipe'] });
 
-/** `git show <rev>:<path>`, or null when the file doesn't exist there. */
 function readAt(rev, path) {
   try {
     return git('show', `${rev}:${path}`);
@@ -35,7 +26,6 @@ function declarationName(node) {
   return null;
 }
 
-/** Top-level declarations and test titles in one source, name -> normalized text. */
 export function collectDeclarations(source, fileName = 'file.ts') {
   const out = new Map();
   if (source === null) return out;
@@ -63,7 +53,6 @@ export function collectDeclarations(source, fileName = 'file.ts') {
   return out;
 }
 
-// Python: the same idea through Python's own ast module (top-level def/class/assign).
 const PY_AST = `
 import ast, json, sys
 out = {}
@@ -83,7 +72,6 @@ for side, src in json.load(sys.stdin).items():
 print(json.dumps(out))
 `;
 
-/** Python declarations before/after, or null when python can't parse them. */
 export function collectPython(before, after) {
   try {
     const raw = execFileSync(process.env.LOG_PYTHON || 'python', ['-c', PY_AST], {
@@ -97,7 +85,6 @@ export function collectPython(before, after) {
   }
 }
 
-/** Added / removed / changed declaration names between two sources. Pure. */
 export function diffDeclarations(before, after) {
   const added = [...after.keys()].filter((key) => !before.has(key));
   const removed = [...before.keys()].filter((key) => !after.has(key));
@@ -105,7 +92,6 @@ export function diffDeclarations(before, after) {
   return { added, removed, changed };
 }
 
-/** One line per file: "- `path`: added a, b · changed c · removed d". */
 export function renderSummary(files) {
   const lines = [];
   for (const { path, status, diff } of files) {
@@ -124,14 +110,12 @@ export function renderSummary(files) {
   return lines;
 }
 
-/** Summary lines for the staged change (no commit) or for one commit vs its parent. */
 export function summarize(commit) {
   const range = commit ? ['diff', '--name-status', '--no-renames', `${commit}^`, commit] : ['diff', '--cached', '--name-status', '--no-renames'];
   let raw;
   try {
     raw = git(...range);
   } catch {
-    // A root commit has no parent: everything in it is new.
     raw = git('show', '--name-status', '--no-renames', '--format=', commit);
   }
   const before = commit ? `${commit}^` : 'HEAD';

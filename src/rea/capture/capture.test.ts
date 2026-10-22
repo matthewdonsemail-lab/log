@@ -7,7 +7,6 @@ import { parseSteps, settleInBackground, settleRunCapture, splitHarBySteps, step
 import { runCapture } from "../../cli/capture/index.ts";
 import type { ReaRunner } from "./index";
 
-
 const entry = (url: string, at: string) => ({ startedDateTime: at, request: { method: "GET", url }, response: { status: 200, content: { mimeType: "text/html", text: "" } } });
 const HAR = {
   log: {
@@ -35,7 +34,6 @@ describe("splitHarBySteps", () => {
       ["03_autoLoginSubmittingEnter", 2],
       ["04_autoLoginTypingTheAuthenticator", 1],
     ]);
-    // Entries are copied as they are (rule 19), the rest of the HAR kept.
     expect((parts[1].har as typeof HAR).log.version).toBe("1.2");
     expect((parts[1].har as typeof HAR).log.entries[0]).toEqual(HAR.log.entries[1]);
   });
@@ -142,7 +140,6 @@ describe("settleInBackground", () => {
     const dir = mkdtempSync(join(tmpdir(), "logSettle"));
     try {
       expect(settleInBackground(dir)).toBeNull();
-      // What the background process runs: it leaves settle.json for the run.
       const result = await runCapture(["--settle", dir], async () => ({ code: 0, stdout: "", stderr: "" }));
       expect(result.code).toBe(0);
       expect(JSON.parse(readFileSync(join(dir, "settle.json"), "utf8"))).toMatchObject({ note: null });

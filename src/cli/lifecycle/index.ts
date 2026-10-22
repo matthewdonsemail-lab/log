@@ -1,9 +1,3 @@
-/**
- * `log facebook lifecycle` — every account's place in its lifecycle (rule 35): its
- * status, the state the lifecycle machine puts it in, and what onboarding has
- * left. `log facebook lifecycle states [--write]` — the machine's own state tree, and
- * `docs/lifecycle.md` generated from it. Reads Twenty only: nothing opens.
- */
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { lifecycleMachine, standingOf, stepsLeft, whereNow } from "../../marketplace/lifecycle/index.ts";

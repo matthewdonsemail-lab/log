@@ -1,9 +1,3 @@
-/**
- * Spawns `python/session/publishSession.py` (or `connectSession.py`, `profileSession.py`) and talks to it one step at a time.
- * Same interpreter as the worker (`LOG_PYTHON`, default `python`); it needs
- * camoufox, captchakraken and 2captcha-python installed. Every reply's codes
- * are checked against the error catalog here (`normalizeResult`).
- */
 import { spawn } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import type { ErrorCode } from '../../errors/catalog/index'
@@ -23,8 +17,6 @@ export const startProfileSession: ProfileSessionFactory = (config: ProfileSessio
 
 function spawnSession<TStep extends string>(script: string, config: object): { call<T>(step: TStep, params?: Record<string, unknown>): Promise<T>; close(): Promise<void> } {
   const python = process.env.LOG_PYTHON || 'python'
-  // stderr goes through processLog: live on the terminal, and into the MCP
-  // tool result and log file when run as a tool.
   const proc = spawn(python, [script, JSON.stringify(config)], { stdio: ['pipe', 'pipe', 'pipe'] })
   pipeProcessLog(proc.stderr, 'session')
   let buffer = ''
@@ -66,7 +58,6 @@ function spawnSession<TStep extends string>(script: string, config: object): { c
       const id = nextId++
       proc.stdin.write(`${JSON.stringify({ id, step: 'close' })}\n`)
       proc.stdin.end()
-      // The browser can take a few seconds to shut; don't hang forever on it.
       await Promise.race([closed, new Promise((r) => setTimeout(r, 15_000))])
       if (!exited) proc.kill()
     }

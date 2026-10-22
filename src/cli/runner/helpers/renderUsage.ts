@@ -1,4 +1,3 @@
-/** Usage text, generated from the command registry so it cannot drift. */
 import type { Command } from "../types.ts";
 
 const NOTES = [

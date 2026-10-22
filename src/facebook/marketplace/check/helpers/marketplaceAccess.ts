@@ -1,7 +1,6 @@
 import type { MarketplaceAccess } from '../types.ts'
 import { graphqlResponses, responseTexts } from './graphqlResponses.ts'
 
-/** The JSON object that follows `"key":` in `text`, read to its closing brace (strings respected), or null. Pure. */
 export function objectAfter(text: string, key: string): Record<string, unknown> | null {
   const at = text.indexOf(`"${key}":{`)
   if (at < 0) return null
@@ -26,13 +25,6 @@ export function objectAfter(text: string, key: string): Record<string, unknown> 
   return null
 }
 
-/**
- * The account's Marketplace access. Recorded on Bethlehem 2026-10-22 (inspect 20261022T113536): reached from the
- * inbox, the status page sends `CometMarketplaceStatusContentContainerQuery` (step 2); opened directly, the same
- * data comes inside the page, with `marketplace_feature_access_status` beside it (step 6). Either way:
- * `access_state_title` "You have full access to Marketplace", `is_marketplace_access_banned` false,
- * `profile_status` GOOD, `sell_on_marketplace` ELIGIBLE. Null when neither was in the step. Pure.
- */
 export function marketplaceAccessOf(har: unknown): MarketplaceAccess | null {
   let model: Record<string, unknown> | null = null
   for (const body of graphqlResponses(har, 'CometMarketplaceStatusContentContainerQuery')) {
@@ -56,7 +48,6 @@ export function marketplaceAccessOf(har: unknown): MarketplaceAccess | null {
   }
 }
 
-/** Why the account can't sell, in the page's own words, or null when it can. Pure. */
 export function accessProblem(access: MarketplaceAccess): string | null {
   const said = `${access.title ?? ''} ${access.body ?? ''}`.trim()
   if (access.banned) return `Marketplace access banned: ${said}`

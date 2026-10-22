@@ -3,7 +3,6 @@ import { createTwentyClient } from './client'
 
 const ENV = { TWENTY_BASE_URL: 'https://twenty.test', TWENTY_API_KEY: 'k' }
 
-/** A fetch that drops the socket `drops` times, then answers `data`. Counts calls. */
 function flaky(drops: number, data: unknown) {
   let calls = 0
   const fetchImpl = (async () => {
@@ -28,8 +27,6 @@ describe('createTwentyClient', () => {
     expect(net.calls()).toBe(1)
   })
 
-  // Harrisburg, 2026-10-19: the save after its first sign-in got this, was read as a bad key, and the
-  // cookies and the new device were lost. It is a rate limit: wait the window out and try again.
   const LIMITED = { errors: [{ message: 'Limit reached (100 tokens per 60000 ms)' }] }
   function limited(times: number, data: unknown) {
     let calls = 0

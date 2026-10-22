@@ -1,33 +1,3 @@
-/**
- * Signing one Facebook account in as an XState machine, so `log facebook connect` can
- * print every step (`observability/trace`) and says which page ended it.
- *
- *   opening ─▶ signingIn ┬─ reading ─▶ routing ─ loggedIn ──────────────────▶ saving ─▶ done (connected)
- *                        │      ▲          ├─ loginForm ──▶ submittingCredentials ─┐
- *                        │      │          ├─ twoStepMethod ▶ choosingMethod ──────┤
- *                        │      │          ├─ twoStepCode ─▶ submittingCode ───────┤ (back to reading)
- *                        │      │          │        └ code used this window ▶ waitingForCode
- *                        │      │          ├─ trustDevice / saveLogin / continueAs / cookieBanner /
- *                        │      │          │  automatedBehaviour / findAccount (once) ▶ dismissing
- *                        │      │          ├─ captcha ▶ routingCaptcha ▶ solvingCaptcha (CaptchaKraken → 2Captcha)
- *                        │      │          ├─ checkpoint / no solver / out of tries ▶ awaitingPerson ─(poll)
- *                        │      │          ├─ unknown ▶ waiting ─(poll)
- *                        │      └──────────┘
- *                        ├─ wrongPassword, findAccount again ─▶ stopping (wrongPassword)
- *                        ├─ disabled ──────▶ stopping (accountDisabled)
- *                        └─ deadline ──────▶ stopping (checkpointed if the last page was
- *                                                       Facebook's checkpoint, else signInNotFinished)
- *
- * Facebook's sign-in is three outcomes, not two: signed in, the two-step code
- * (typed from Twenty's totpSecret), or Facebook's own checkpoint. Each page
- * takes Listaro's path (rule 23, Listaro_backup src/lib/auto-login,
- * src/lib/fb-login-helper.ts): automated behaviour is dismissed, captchas are
- * solved, and an identity, photo, video or SMS checkpoint goes to a person and,
- * still up at the deadline, ends the run `checkpointed`.
- * Every auto action has a budget (`ConnectLimits`); past it the page waits for a
- * person in the visible window (rule 11) until the deadline (`--wait`).
- * The only side effects are the actors, which the caller provides.
- */
 import { assign, fromPromise, setup } from 'xstate'
 import { DEFAULT_CAPTCHA_POLICY, planNextSolver } from '../../captcha/router/index'
 import type { CaptchaPlan } from '../../captcha/router/index'
@@ -48,7 +18,6 @@ import type {
   SolveOutput
 } from './types'
 
-/** Placeholder actor: the caller must provide the real one with `machine.provide`. */
 function missing<TOutput, TInput>(name: string) {
   return fromPromise<TOutput, TInput>(async () => {
     throw new Error('connectMachine: provide a `' + name + '` actor')
@@ -57,7 +26,6 @@ function missing<TOutput, TInput>(name: string) {
 
 const isFailure = (output: { ok?: boolean }): output is CodedFailure => output.ok === false
 
-/** The session itself is gone (it exited, never started): nothing more can be read. */
 const sessionGone = (output: { ok?: boolean; code?: string }) =>
   isFailure(output) && ERROR_CATALOG[output.code].layer === 'runtime' && output.code !== 'crashed'
 
@@ -67,7 +35,6 @@ const codeWindow = (context: ConnectContext) => Math.floor(Date.now() / context.
 
 const pageIs = (context: ConnectContext, ...kinds: ConnectPage['kind'][]) => context.page != null && kinds.includes(context.page.kind)
 
-/** How the run ends for its failure code. */
 const RESULT_FOR_CODE: Partial<Record<ConnectFailure['code'], ConnectResultKind>> = {
   checkpointed: 'checkpointed',
   accountDisabled: 'disabled',
@@ -76,7 +43,6 @@ const RESULT_FOR_CODE: Partial<Record<ConnectFailure['code'], ConnectResultKind>
   videoSelfieRequired: 'videoSelfie'
 }
 
-/** An auto action that went wrong goes back to reading; one that killed the session stops. */
 const actDone = (state: string) => [
   {
     guard: { type: 'sessionGone' as const, params: ({ event }: { event: { output: ActOutput } }) => event.output },
@@ -108,7 +74,6 @@ export const connectMachine = setup({
   },
   delays: {
     poll: ({ context }) => context.timing.pollMs,
-    /** What is left of `--wait`, so re-entering signingIn never restarts the clock. */
     deadline: ({ context }) => Math.max(0, context.startedAt + context.timing.deadlineMs - Date.now()),
     nextCodeWindow: ({ context }) => context.timing.codeWindowMs - (Date.now() % context.timing.codeWindowMs)
   },
@@ -133,7 +98,6 @@ export const connectMachine = setup({
       context.dismissTries < context.limits.dismissTries,
     captcha: ({ context }) => pageIs(context, 'captcha') && context.page?.captcha != null,
     hasSolver: ({ context }) => context.plan?.solver != null,
-    /** Anything a person has to do: Facebook's checkpoint, a captcha, or a step auto-login can't (or no longer may) take. */
     needsPerson: ({ context }) => !pageIs(context, 'unknown'),
     lastWasCheckpoint: ({ context }) => pageIs(context, 'checkpoint'),
     savedLoggedIn: (_, output: SaveOutput) => output.ok === true && output.loggedIn
@@ -142,7 +106,6 @@ export const connectMachine = setup({
     recordFailure: assign((_, failure: ConnectFailure) => ({ failure })),
     recordPage: assign(({ context }, page: ConnectPage) => ({
       page,
-      // The page is the judge of the last solve: moved past the captcha or not.
       captchaAttempts: markLast(context, page.kind !== 'captcha'),
       pages: context.pages.at(-1) === page.kind ? context.pages : [...context.pages, page.kind],
       checkpoint: page.kind === 'checkpoint' ? (page.heading ?? 'checkpoint') : context.checkpoint
@@ -237,7 +200,6 @@ export const connectMachine = setup({
               actions: { type: 'recordFailure', params: ({ context }) => ({ state: 'routing', code: 'accountDisabled', detail: context.page?.heading }) }
             },
             {
-              // No waiting out --wait: a selfie is never done by the machine, nor in the next minutes.
               guard: 'videoSelfie',
               target: '#connect.stopping',
               actions: { type: 'recordFailure', params: ({ context }) => ({ state: 'routing', code: 'videoSelfieRequired', detail: context.page?.heading || context.page?.path }) }
@@ -284,9 +246,7 @@ export const connectMachine = setup({
             onError: actError('submittingCode')
           }
         },
-        /** One code per TOTP window: a second on the same window is the same code. */
         waitingForCode: { after: { nextCodeWindow: 'reading' } },
-        /** Listaro solved every login captcha (captcha-solver.ts); here through the router's order. */
         routingCaptcha: {
           entry: assign(({ context }) => ({
             plan: planNextSolver(context.page!.captcha!, context.captchaAttempts, context.availability, context.policy, context.arkoseToday) as CaptchaPlan
@@ -297,7 +257,6 @@ export const connectMachine = setup({
           invoke: {
             src: 'solveCaptcha',
             input: ({ context }) => ({ solver: context.plan!.solver!, detection: context.page!.captcha! }),
-            // Solved or not, the page is read again: it is the judge.
             onDone: {
               target: 'reading',
               actions: assign(({ context, event }) => ({
@@ -333,9 +292,7 @@ export const connectMachine = setup({
             onError: actError('dismissing')
           }
         },
-        /** A person finishes it in the visible window; the page is read again until it moves. */
         awaitingPerson: { after: { poll: 'reading' } },
-        /** Loading, or a page nothing matched. */
         waiting: { after: { poll: 'reading' } }
       }
     },
@@ -353,7 +310,6 @@ export const connectMachine = setup({
             target: 'stopping',
             actions: { type: 'recordFailure', params: ({ event }) => ({ state: 'saving', ...(event.output as CodedFailure) }) }
           },
-          // Signed out again on the reload: wait a poll, read again, inside the same deadline.
           { target: '#connect.signingIn.waiting' }
         ],
         onError: { target: 'stopping', actions: { type: 'recordFailure', params: ({ event }) => crash('saving', event.error) } }
@@ -382,7 +338,6 @@ export const connectMachine = setup({
   })
 })
 
-/** The last solve attempt, marked accepted or not once the page is read again. */
 function markLast(context: ConnectContext, accepted: boolean) {
   const last = context.captchaAttempts.at(-1)
   if (!last || last.accepted !== null) return context.captchaAttempts

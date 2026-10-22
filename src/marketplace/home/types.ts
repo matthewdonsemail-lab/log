@@ -1,25 +1,11 @@
-/**
- * Where an account lives, as the browser and the clock must show it: the one
- * table of country → browser locale, Facebook UI locale and timezone, and the
- * waking hours a run may happen in (AGENTS.md rules 16 and 18).
- *
- * The browser locale is pinned per country at launch (never Camoufox's random
- * pick from the country's languages: 28% of Irish launches came out ga-IE or
- * fr-IE). Countries with more than one timezone need the home city in
- * `CITY_TIMEZONES`; a city that isn't there is refused rather than guessed.
- */
 import type { ErrorCode } from '../../errors/catalog/index'
 
 export interface HomeCountry {
-  /** BCP 47, what navigator.language, Accept-Language and Intl show. */
   locale: string
-  /** Facebook's own UI locale for the create form URL (`?locale=`). */
   facebookLocale: string
-  /** IANA zone for a one-zone country; null when it depends on the city. */
   timezone: string | null
 }
 
-/** Every country an account may live in. Add a row before giving an account a new homeCountry. */
 export const HOME_COUNTRIES: Readonly<Record<string, HomeCountry>> = {
   IE: { locale: 'en-IE', facebookLocale: 'en_GB', timezone: 'Europe/Dublin' },
   GB: { locale: 'en-GB', facebookLocale: 'en_GB', timezone: 'Europe/London' },
@@ -29,7 +15,6 @@ export const HOME_COUNTRIES: Readonly<Record<string, HomeCountry>> = {
   NZ: { locale: 'en-NZ', facebookLocale: 'en_GB', timezone: 'Pacific/Auckland' }
 }
 
-/** Home cities in countries with more than one zone, keyed `COUNTRY:city` (city lower case). */
 export const CITY_TIMEZONES: Readonly<Record<string, string>> = {
   'US:new york': 'America/New_York',
   'US:boston': 'America/New_York',
@@ -74,12 +59,6 @@ export const CITY_TIMEZONES: Readonly<Record<string, string>> = {
   'AU:hobart': 'Australia/Hobart'
 }
 
-/**
- * Home city centres, keyed `COUNTRY:city` (city lower case). The device's
- * geolocation is pinned near one of these (python/device/deviceProfile.py); a city not
- * here falls back to the exit IP's location from Camoufox's GeoIP database.
- * Camoufox's own database has no city names since 0.5.8 (GeoIP AIO).
- */
 export const CITY_COORDINATES: Readonly<Record<string, readonly [number, number]>> = {
   'IE:galway': [53.2707, -9.0568],
   'IE:dublin': [53.3498, -6.2603],
@@ -145,34 +124,26 @@ export const CITY_COORDINATES: Readonly<Record<string, readonly [number, number]
   'NZ:christchurch': [-43.5321, 172.6362]
 }
 
-/** Local waking hours when the account has none set: 08:00 to 22:00 in its home timezone. */
 export const DEFAULT_ACTIVE_HOURS = { start: 8, end: 22 } as const
 
-/** A window in local hours, `start` inclusive, `end` exclusive. `start > end` wraps past midnight. */
 export interface ActiveWindow {
   start: number
   end: number
 }
 
-/** Everything a launch pins from the account's home. */
 export interface Home {
   country: string
   city: string | null
   locale: string
   facebookLocale: string
   timezone: string
-  /** The home city's centre from CITY_COORDINATES, or null (Python then uses the exit IP's). */
   coordinates: { latitude: number; longitude: number } | null
 }
 
 export type HomeResult = { ok: true; home: Home } | { ok: false; code: ErrorCode; detail: string }
 
-/** The wall clock in a timezone. */
 export interface LocalClock {
-  /** `YYYY-MM-DD` in that zone. */
   date: string
-  /** Hours since local midnight, e.g. 8.5 for 08:30. */
   hour: number
-  /** `HH:MM`. */
   label: string
 }

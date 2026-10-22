@@ -1,25 +1,3 @@
-/**
- * `log facebook read group --account <a> --group <g>` — read a Facebook group's new posts and
- * their comments as one account (#27), through the group read machine (`facebook/group/read`).
- *
- *   log facebook read group --account <a> --group <url|id> [--scrolls <n>] [--commentPosts <n>] [--live] [--json]
- *       in the account's OPEN browser (rule 35: `log inspect start` or `log facebook host start`
- *       opened it; a read never launches its own): opens the group, scrolls its feed
- *       until the last read's posts show (or --scrolls, default 6), and keeps only the
- *       posts newer than the group's cursor. Then it opens each new post that has comments
- *       (at most --commentPosts, default 5) and reads them (kept for #188's step 5). Every post and
- *       comment comes from what the page loaded, read from each step's own HAR (rule 22).
- *       Nothing is clicked without --live; --live switches each post's comments to
- *       Newest (two clicks, rule 8), which shows every comment, where the page's own
- *       "Most relevant" shows some.
- *   log facebook read group --account <a> --group <g> --show
- *       where the reads of the group have got to (its cursor in Twenty), and nothing opened.
- *   OpenMagpie's worker is `log facebook poll` (`src/cli/poll`), which reads through the same machine.
- *
- * Nothing but the group's cursor goes to Twenty (rule 65, obris-dev/openmagpie#188): the posts
- * are printed here and go to OpenMagpie through `poll`, which keeps every one and sends its matches
- * to `socialListening` (`facebook/group/read/client.ts`). Every step prints a line as it happens (rule 26).
- */
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
@@ -52,7 +30,6 @@ export const READ_USAGE = [
   "The account's browser must be open (log inspect start --account <a>, or log facebook host start): a read is a step in it (rule 35).",
 ].join("\n");
 
-/** Where the reads of the group have got to, from its Twenty row, as `--show` prints it (rule 65: posts aren't kept there). */
 async function renderSaved(twenty: TwentyClient, groupRowId: string, name: string): Promise<{ text: string; json: unknown }> {
   const row = await twenty.get("agencyGroups", groupRowId);
   const cursor = cursorOf(row?.readCursor);
@@ -67,7 +44,6 @@ async function renderSaved(twenty: TwentyClient, groupRowId: string, name: strin
   return { text: lines.join("\n"), json: { lastReadAt: row?.lastReadAt ?? null, lastReadReason: row?.lastReadReason ?? null, cursor } };
 }
 
-/** The run's end as one line for `agencyGroups.lastReadReason`. Pure. */
 export function readReason(output: GroupReadOutput, runDir: string): string {
   const head = output.problem ? `stopped, ${output.problem.code}: ${output.problem.detail}` : "read";
   const comments = output.commentReads.length ? `, comments of ${output.commentReads.length} post(s): ${output.comments.length}` : "";
@@ -88,20 +64,14 @@ function renderRun(output: GroupReadOutput, saved: SavedRead, live: boolean): st
   return lines.join("\n");
 }
 
-/** What one read in an account's open browser gave, or why it didn't run (a gate, no open browser). */
 export type ReadInBrowser = { ok: true; output: GroupReadOutput; saved: SavedRead } | { ok: false; code: ErrorCode; detail: string };
 
-/** How much one read covers. */
 export interface ReadOptions {
   scrolls: number;
   commentPosts: number;
   live: boolean;
 }
 
-/**
- * One read of one group in a session that is already open, with no gates of its own: the machine,
- * then the cursor in Twenty (rule 65). `log facebook read group` and `log facebook poll` read through it after their gates.
- */
 export async function readGroupOnce(context: CommandContext, current: CurrentInspect, account: FacebookAccount, group: Group, ref: GroupRef, options: ReadOptions): Promise<{ output: GroupReadOutput; saved: SavedRead }> {
   const state = await readStateOf(context.twenty, group.id);
   context.err(
@@ -114,7 +84,6 @@ export async function readGroupOnce(context: CommandContext, current: CurrentIns
         context.err(`  → ${input.action} ${input.args.join(" ")}`);
         const reply = await context.sendInspect(current, input.action, input.args, 120_000);
         if (!reply) return { ok: false, error: `no reply from the open browser in 120 s (${current.runDir})` };
-        // The posts and comments are read from the step's own recording (rule 22).
         const harPath = reply.folder ? join(reply.folder, "network.har") : null;
         let har: ReadStepReply["har"];
         try {
@@ -154,7 +123,6 @@ export async function readGroupOnce(context: CommandContext, current: CurrentIns
   return { output, saved };
 }
 
-/** The gates of a read (the account's hours, rule 18; its open browser, rule 35), then the read: `read` and `poll` both. */
 export async function readInBrowser(context: CommandContext, account: FacebookAccount, group: Group, ref: GroupRef, options: ReadOptions & { bypass: boolean }): Promise<ReadInBrowser> {
   const home = homeOf(account);
   if (!home.ok) return { ok: false, code: home.code, detail: home.detail };

@@ -25,7 +25,6 @@ describe("countryOfLocation", () => {
     expect(countryOfLocation("Salthill, Galway, Ireland")).toBe("IE");
     expect(countryOfLocation("Manchester, UK")).toBe("GB");
     expect(countryOfLocation("Austin, TX, United States")).toBe("US");
-    // Facebook's own US form: "City, ST".
     expect(countryOfLocation("Philadelphia, PA")).toBe("US");
     expect(countryOfLocation("Washington, DC")).toBe("US");
     expect(countryOfLocation("Galway")).toBeNull();
@@ -105,7 +104,6 @@ describe("log proxy assign (2Captcha, fetch stubbed)", () => {
       expect(code).toBe(0);
       expect(out).toContain("in Ireland (galway, connacht, Ireland). Saved to Twenty.");
       expect(out).not.toContain("testPass");
-      // The username's account part is the 2Captcha password: never printed either.
       expect(out).not.toContain("u7etest");
       expect(out).toContain("***-zone-custom-region-ie");
       expect(proxyFiles[0]).toMatchObject({ server: "http://eu.proxy.2captcha.com:2334", password: "testPass", country: "IE" });

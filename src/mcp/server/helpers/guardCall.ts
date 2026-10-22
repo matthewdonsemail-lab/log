@@ -3,17 +3,12 @@ import type { Command } from "../../../cli/runner/types.ts";
 import type { GuardResult, LogToolInput } from "../types.ts";
 import { NO_PROMPT, TERMINAL_ONLY } from "../types.ts";
 
-/**
- * The tool's call as a command line, the platform first (rule 63): a Facebook-only tool runs `facebook <name> …`;
- * the warm-up's `args` start with its platform, which moves in front of the name. Pure.
- */
 export function commandLine(command: Command, args: string[]): string[] {
   if (command.platform === "facebook") return [PLATFORMS[0], command.name, ...args];
   if (command.platform === "byArgument" && isPlatform(args[0])) return [args[0], command.name, ...args.slice(1)];
   return [command.name, ...args];
 }
 
-/** Whether a tool call may run, and the argv it runs with. Pure. */
 export function guardCall(name: string, input: LogToolInput | undefined, commands: Command[]): GuardResult {
   if (name in TERMINAL_ONLY) return { ok: false, message: `log ${name} is not a tool: it ${TERMINAL_ONLY[name]}` };
   if (!commands.some((command) => command.name === name)) return { ok: false, message: `Unknown tool: ${name}` };

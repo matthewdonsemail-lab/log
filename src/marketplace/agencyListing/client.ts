@@ -1,8 +1,3 @@
-/**
- * Marketplace listings in Twenty's `agencyListings`. Rows are never deleted:
- * a listing whose account is lost becomes `accountLost`, and a replacement is
- * a new row pointing back at it (`replacesId`).
- */
 import type { TwentyClient, TwentyObjects } from '../../twenty/graphql/index'
 import type { PublishOutput } from '../publish/types'
 import { fromTwentyEnum, toTwentyEnum } from '../socialAccount/helpers/index'
@@ -78,10 +73,6 @@ export async function setListingStatus(
   await twenty.update(AGENCY_LISTINGS, id, { status: toTwentyEnum(status) as ListingUpdate['status'], ...extra })
 }
 
-/**
- * Copies the ad to a new READY row on `accountId`: a campaign slot, or a
- * replacement when `replaces` is set (generation + 1, `replacesId` → old row).
- */
 export async function createSlot(
   twenty: TwentyClient,
   ad: AgencyListing,
@@ -120,10 +111,6 @@ const RESULT_STATUS: Record<RunResult, AgencyListingStatus | null> = {
   failed: 'failed'
 }
 
-/**
- * Writes one publish run back to its row. A dry run only records the run; a
- * live run also moves the status and, when published, the Facebook id.
- */
 export async function recordRun(
   twenty: TwentyClient,
   listing: AgencyListing,
@@ -141,7 +128,6 @@ export async function recordRun(
   }
   if (output.photoHashes.length) update.photoHashes = output.photoHashes as unknown as ListingUpdate['photoHashes']
   if (receipt) update.screenshotUrl = receipt
-  // Published but held for review (a new account's listing): UNDER_REVIEW, not ACTIVE, until a scan sees it clear.
   const status = dryRun
     ? result === 'blocked' || result === 'needsPerson' ? 'blocked' : null
     : result === 'published' && output.review ? 'underReview' : RESULT_STATUS[result]
@@ -156,16 +142,8 @@ export async function recordRun(
   return result
 }
 
-/** Rows a dashboard scan may move: what is (or might be) live on Facebook. */
 export const SYNCABLE: readonly AgencyListingStatus[] = ['publishing', 'unconfirmed', 'active', 'underReview', 'duplicateTakedown', 'unknown']
 
-/**
- * One account's Marketplace > Selling, as scanned → its agencyListing rows.
- * A row matches by Facebook listing id, or, for an unconfirmed publish, by its
- * exact title (which also records the id it never got). Health badges are
- * Twenty status values already (ACTIVE, UNDER_REVIEW, DUPLICATE_TAKEDOWN...).
- * Returns how many rows changed.
- */
 export async function syncDashboard(
   twenty: TwentyClient,
   accountId: string,

@@ -5,10 +5,8 @@ import { seeded } from '../../facebook/warmup/activities/helpers/reelSession'
 import type { InterestEffect } from './helpers/interestEffect'
 import type { ReelViewer, ViewerFile } from './types'
 
-/** `~/.logCli/datasets/reelViewers/kuaiRand1k.json`, built by `scripts/datasets/buildReelViewers.ts`. */
 export const viewersPath = (dir = datasetsDir()) => join(dir, 'reelViewers', 'kuaiRand1k.json')
 
-/** `~/.logCli/datasets/reelViewers/interestEffect.json`, built by `scripts/datasets/buildInterestEffect.ts`. */
 export const interestEffectPath = (dir = datasetsDir()) => join(dir, 'reelViewers', 'interestEffect.json')
 
 export function readInterestEffect(path = interestEffectPath()): InterestEffect {
@@ -21,14 +19,8 @@ export function readViewers(path = viewersPath()): ViewerFile {
   return JSON.parse(readFileSync(path, 'utf8')) as ViewerFile
 }
 
-/** Viewers with at least this many swipes, so their fifths of plays have plays enough in each. */
 export const MIN_VIEWER_SWIPES = 100
 
-/**
- * The viewers that fit the persona's scroll speed (the social behaviour
- * dataset's Fast, Medium or Slow): the quickest, middle or slowest third by
- * median play, among those with `MIN_VIEWER_SWIPES`. Pure.
- */
 export function viewersForSpeed(viewers: ReelViewer[], scrollSpeed: string | undefined): ReelViewer[] {
   const rich = viewers.filter((v) => v.stats.swipes >= MIN_VIEWER_SWIPES)
   const pool = (rich.length ? rich : viewers).slice().sort((a, b) => a.stats.playMs[2] - b.stats.playMs[2])
@@ -37,11 +29,6 @@ export function viewersForSpeed(viewers: ReelViewer[], scrollSpeed: string | und
   return at === undefined ? pool : pool.slice(at * third, (at + 1) * third)
 }
 
-/**
- * The account's viewer: the one kept with its persona (`<account>.viewer.json`
- * beside it), else one drawn with the account's seed from the viewers that
- * fit the persona's scroll speed, and kept. `fresh` draws another.
- */
 export function viewerFor(personaPath: string, seed: number, options: { fresh?: boolean; file?: ViewerFile; scrollSpeed?: string } = {}): { viewer: ReelViewer; drawn: boolean } {
   const keptPath = personaPath.replace(/\.json$/, '.viewer.json')
   const file = options.file ?? readViewers()

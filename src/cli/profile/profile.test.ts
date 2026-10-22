@@ -7,7 +7,6 @@ import type { ProfileSessionConfig } from "../../camofox/session/index.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { runCli } from "../runner/index.ts";
 
-/** A profile session that answers from a script: no python, no browser. */
 function scriptedProfile(kind = "loggedIn") {
   const steps: string[] = [];
   const configs: ProfileSessionConfig[] = [];
@@ -44,7 +43,6 @@ describe("log facebook profile setup", () => {
     expect(result.out).toContain("dry run: nothing changed on Facebook");
     expect(result.out).toContain("Profile photo: no photo set in Twenty");
     expect(result.out).toContain("profileFound.txt");
-    // Every state is printed live (rules 6, 26), and the run records its HAR folder (rule 22).
     expect(result.err).toContain("reading");
     expect(result.session.configs[0].captureDir.replaceAll("\\", "/")).toMatch(/\/profile\/\d{8}T\d{6}_galwayOne\/camoufox$/);
   });

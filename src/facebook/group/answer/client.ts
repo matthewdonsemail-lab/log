@@ -1,15 +1,9 @@
-/**
- * The application in Twenty (rule 45): `joinSubmission.application` on the
- * account's agencyGroup row, patched after every fill step with a history
- * line naming the stepper step it did. Nothing here touches Facebook.
- */
 import type { TwentyClient, TwentyObjects } from '../../../twenty/graphql/index'
 import { AGENCY_GROUPS, toGroup } from '../join/client'
 import { draftComplete, patchSubmission } from '../join/helpers/index'
 import type { Group, JoinDraft, JoinOptions } from '../join/types'
 import type { Application, ApplicationStatus } from './types'
 
-/** What the draft makes of the application before any fill: notStarted, drafting or ready. Pure. */
 export function applicationFromDraft(options: JoinOptions | null, draft: JoinDraft | null, now: Date): Application {
   if (!options || !draft) return { status: 'notStarted', filled: [], submittedAt: null, updatedAt: now.toISOString(), detail: 'no draft: run the stepper (log facebook join group --answer)' }
   const complete = draftComplete(options, draft)
@@ -18,7 +12,6 @@ export function applicationFromDraft(options: JoinOptions | null, draft: JoinDra
     : { status: 'drafting', filled: [], submittedAt: null, updatedAt: now.toISOString(), detail: `missing: ${complete.missing.join('; ')}` }
 }
 
-/** One fill step's outcome on the row: the application's status, what is filled, and a history line. */
 export async function patchApplication(
   twenty: TwentyClient,
   group: Group,

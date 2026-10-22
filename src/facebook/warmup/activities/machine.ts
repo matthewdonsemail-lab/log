@@ -1,16 +1,3 @@
-/**
- * The warm-up activity machine (rule 49): one activity's steps run in the
- * account's open browser, each checked against what it must achieve
- * (`checkStep`). Its only side effect is `act`, one step sent to the open
- * inspect session, which the caller provides; tests script it.
- *
- *   next ─ a step left ─▶ acting (act, then check)
- *                            ├── as expected ─▶ next
- *                            ├── a checkpoint or a login ─▶ blocked (the account's issue: stop)
- *                            └── an issue ─▶ next (record: every step outlined) | stopped (run)
- *        └── none left ─▶ done
- *   a step it may not take (a like without --likes, a click without --live) is skipped and said so.
- */
 import { assign, fromPromise, setup } from 'xstate'
 import { pageProblem } from '../../../browser/flow/index'
 import { checkStep } from './helpers/checkStep'
@@ -29,18 +16,14 @@ import type { ActivityStep, StepOutcome } from './types'
 export interface ActivityInput {
   account: string
   steps: ActivityStep[]
-  /** Clicks allowed (rule 8's click gate). */
   live: boolean
-  /** Likes allowed (rule 8). */
   likes: boolean
-  /** Record: go on past an issue so every step is outlined. Run: stop at the first one. */
   continueOnIssue: boolean
 }
 
 export interface ActivityContext extends ActivityInput {
   index: number
   url: string | null
-  /** The URL each step started from, by its id: `{urlBefore:openProfile}` in a later step's args is the reel's own URL. */
   urlBefore: Record<string, string>
   outcomes: StepOutcome[]
   blocked: { code: string; detail: string } | null
@@ -51,11 +34,9 @@ export interface ActivityOutput {
   outcomes: StepOutcome[]
   issues: StepOutcome[]
   blocked: ActivityContext['blocked']
-  /** Every step taken was as expected. */
   ok: boolean
 }
 
-/** A step with `{urlBefore:<id>}` in its args filled from the URLs recorded so far. Pure. */
 export function resolveStep(step: ActivityStep, urlBefore: Record<string, string>): ActivityStep {
   if (!step.args.some((a) => a.includes('{urlBefore:'))) return step
   return { ...step, args: step.args.map((a) => a.replace(/\{urlBefore:(\w+)\}/g, (_, id: string) => urlBefore[id] ?? '')) }
@@ -135,26 +116,9 @@ export const warmupActivityMachine = setup({
   }
 })
 
-/**
- * A Reels session for a persona pack and its real viewer (rule 50): the
- * persona's For you feed built by engaging with what it would engage with.
- * Each reel, the moment it lands, is read by SubQ from its frame (what it
- * is, whether it is this persona's kind, the one action they'd pick); the
- * action orderer (`planReel`, deterministic from the seed) then plans the
- * watch, longer on their kind and shorter outside it as measured on real
- * viewers, and at most one action. SubQ's answer time is the glance: the
- * watch counts from when the reel landed. Its side effects are `act` (a step
- * in the open browser) and `read` (one SubQ request per reel), which the
- * caller provides; tests script both.
- *
- *   acting (openReels, unmute) ─▶ reading (SubQ, the frame it landed on) ─▶ the plan's steps:
- *     watch, one action, Next card ─▶ reading …
- *   a checkpoint or a login ─▶ blocked; a step that didn't do what it should ─▶ stopped
- */
 export interface ReelLabel {
   reel: number
   url: string | null
-  /** SubQ's read; null when it couldn't answer (the reel then taken as not theirs). */
   read: ReelRead | null
   plan: ReelPlan
 }
@@ -165,7 +129,6 @@ export interface PersonaSessionInput {
   seed: number
   live: boolean
   likes: boolean
-  /** The steps by id, from the activity's definition (`REEL`). */
   steps: Record<string, ActivityStep>
   viewer: ReelViewer
   pack: PersonaPack
@@ -178,7 +141,6 @@ interface PersonaSessionContext extends PersonaSessionInput {
   queue: QueueItem[]
   reel: number
   url: string | null
-  /** The step folder whose screenshot is this reel as it landed, and whether it said Sponsored. */
   frame: string | null
   sponsored: boolean
   lastLikeReel: number | null
@@ -197,15 +159,12 @@ export interface PersonaSessionOutput {
   ok: boolean
 }
 
-/** What the run allows a reel beyond watching and swiping: clicks need --live, a like --likes too (rule 8). Pure. */
 export const allowedActions = (input: Pick<PersonaSessionInput, 'live' | 'likes'>): AllowedActions => ({ comments: input.live, profile: input.live, like: input.live && input.likes })
 
-/** Steps that land on a reel: their screenshot is the reel as it landed. */
 const LANDS = new Set(['openReels', 'unmute', 'swipe'])
 
 const dwell = (step: ActivityStep, id: string, ms: number, why: string): ActivityStep => ({ ...step, id, action: 'dwell', args: [(ms / 1000).toFixed(2)], why, expect: undefined, clicks: undefined })
 
-/** The steps for one reel's plan: the watch (from when it landed), its action, then Next card. Pure. */
 export function stepsForPlan(plan: ReelPlan, input: Pick<PersonaSessionInput, 'steps' | 'pack'>, lastReel: boolean, reelUrl: string | null): ActivityStep[] {
   const s = input.steps
   const t = input.pack.traits
@@ -220,7 +179,6 @@ export function stepsForPlan(plan: ReelPlan, input: Pick<PersonaSessionInput, 's
 
 const SPONSORED = /\bSponsored\b/
 
-/** The reel's plan from SubQ's read (or none), and its steps queued ahead of the rest. */
 const planned = (context: PersonaSessionContext, read: ReelRead | null) => {
   const plan = planReel({ pack: context.pack, viewer: context.viewer, effect: context.effect, read, reel: context.reel, seed: context.seed, allowed: allowedActions(context), lastLikeReel: context.lastLikeReel, sponsored: context.sponsored })
   const queue = stepsForPlan(plan, context, context.reel >= context.reels, context.url)
@@ -241,7 +199,6 @@ export const reelPersonaMachine = setup({
     halted: ({ context }) => context.blocked !== null || context.problem !== null,
     empty: ({ context }) => context.queue.length === 0,
     deciding: ({ context }) => context.queue[0]?.id === 'decide',
-    // Likes and clicks it may not take are skipped, as in the activity machine (rule 8).
     skip: ({ context }) => {
       const step = context.queue[0] as ActivityStep
       return (step.likes === true && !context.likes) || (step.clicks === true && !context.live)
@@ -251,7 +208,6 @@ export const reelPersonaMachine = setup({
   id: 'reelPersona',
   context: ({ input }) => ({
     ...input,
-    // Reels and the sound once; then each reel read and planned the moment it lands.
     queue: [input.steps.openReels, input.steps.unmute, { id: 'decide' }],
     reel: 1,
     url: null,
@@ -317,7 +273,6 @@ export const reelPersonaMachine = setup({
         src: 'read',
         input: ({ context }) => ({ account: context.account, reel: context.reel, frame: context.frame, labels: context.labels, allowed: allowedActions(context) }),
         onDone: { target: 'next', actions: assign(({ context, event }) => planned(context, event.output as ReelRead)) },
-        // SubQ down: the reel is planned as not theirs and the run goes on, said so in its label (read: null).
         onError: { target: 'next', actions: assign(({ context }) => planned(context, null)) }
       }
     },
@@ -334,20 +289,6 @@ export const reelPersonaMachine = setup({
   })
 })
 
-/**
- * The home feed for a persona pack (rule 50; matt 2026-10-20: use the
- * platform as the persona would, not a scroll and away). Each post is brought
- * into view by the wheel (`nextPost`), read by SubQ from its screen, heading,
- * text and image descriptions (`read`), and planned (`planPost`): a glance or a
- * read, timed from when it came into view, and a like where they would (only
- * with --live and --likes, rule 8). Then Marketplace, a look and a scroll, and
- * a few listings opened. Its side effects are `act` and `read`, provided by the
- * caller; tests script both.
- *
- *   openFeed, settle ─▶ per post: nextPost ─▶ reading (SubQ) ─▶ the time on it [, likePost] ─▶ …
- *     ─▶ openMarketplace, lookMarketplace, scrollMarketplace, openListings
- *   a checkpoint or a login ─▶ blocked; a step that didn't do what it should ─▶ stopped
- */
 export interface FeedLabel {
   index: number
   post: { heading: string; words: number; images: number } | null
@@ -390,19 +331,12 @@ export interface FeedSessionOutput {
   ok: boolean
 }
 
-/** The feed session's queue: the feed opened, each post found and read, then Marketplace. Pure. */
 export function feedQueue(steps: Record<string, ActivityStep>, posts: number): FeedQueueItem[] {
   const perPost: FeedQueueItem[] = []
   for (let i = 0; i < posts; i++) perPost.push(steps.nextPost, { id: 'readPost' })
   return [steps.openFeed, steps.dismissPrompt, steps.settle, ...perPost, steps.openMarketplace, steps.lookMarketplace, steps.scrollMarketplace, steps.openListings]
 }
 
-/**
- * The steps for one post's plan: its full text first when it is theirs and cut
- * short, the time on it (from when it came into view), then its one action: a
- * like, or its comments opened, read down for the persona's comment time and
- * closed. Pure.
- */
 export function stepsForPost(plan: PostPlan, steps: Record<string, ActivityStep>): ActivityStep[] {
   const queue: ActivityStep[] = []
   if (plan.seeMore) queue.push(steps.seeMore)
@@ -435,7 +369,6 @@ export const feedPersonaMachine = setup({
   guards: {
     halted: ({ context }) => context.blocked !== null || context.problem !== null,
     empty: ({ context }) => context.queue.length === 0,
-    // No post came into view (none left on the page, it scrolled for more): nothing to read.
     nothingToRead: ({ context }) => context.queue[0]?.id === 'readPost' && context.post === null,
     reading: ({ context }) => context.queue[0]?.id === 'readPost',
     skip: ({ context }) => {
@@ -498,7 +431,6 @@ export const feedPersonaMachine = setup({
         src: 'read',
         input: ({ context }) => ({ account: context.account, index: context.index, frame: context.frame, post: context.post!, labels: context.labels }),
         onDone: { target: 'next', actions: assign(({ context, event }) => plannedPost(context, event.output as ReelRead)) },
-        // SubQ down: the post is planned as not theirs and the session goes on.
         onError: { target: 'next', actions: assign(({ context }) => plannedPost(context, null)) }
       }
     },

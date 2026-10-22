@@ -1,9 +1,3 @@
-// Scores the device-isolation options with SubQ's Decisions API.
-// Usage: SUBQ_API_KEY=... node docs/deviceIsolation/runSubqMatrix.mjs
-// Reads the evidence files below into one `state`, then runs:
-//   pass A: 16 `choice` questions (which option is best on each criterion), 3 repeats
-//   pass B: per option, 16 `score` questions (0 very poor .. 4 very good), 2 repeats
-// Writes subqResults.json next to this file.
 import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";

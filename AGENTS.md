@@ -732,10 +732,20 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     session records a yes or no when it opens, never the PIN). "Enter your
     PIN" (`messengerPinEnter`) is mapped the same way: the PIN is typed from
     Twenty and each step recorded until it is a flow.
+70. 2026-10-22 · matt: no code comments, because they cause context rot in
+    the system designs. Code carries no comments and no docstrings: TS, JS
+    and Python, line, block, JSDoc, `#` and docstrings alike. What a thing
+    does is said by its name, its types, its tests, its skill and its docs,
+    never by a comment beside it. lefthook's `noComments` (`bun run
+    check:noComments`, pre-commit and pre-push,
+    `scripts/checks/checkNoComments.ts`, Python through
+    `python/checks/comments.py`) refuses any tracked code file that has one;
+    `--strip` removes them. Generated code is exempt. `lefthook.yml` itself
+    carries none.
 
 ## Checks
 
-- Run `bun run check` before pushing: naming gate, `tsc --noEmit`, `bun test`.
+- Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.
 - Naming: `docs/namingConventions.md`. camelCase everywhere, never kebab-case,
   `{library}/{domain}/` with `index.ts`, `types.ts`, `client.ts`, `machine.ts`,
   `helpers/`.

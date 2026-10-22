@@ -69,7 +69,6 @@ describe("runCli", () => {
       expect(refused.code).toBe(1);
       expect(refused.err).toContain("price must be 1 or more");
       expect((await run(["facebook", "listing", "create", "--file", good])).code).toBe(1);
-      // The same country check publish runs (rule 12): a row that can never post is never written.
       const abroad = join(dir, "abroad.json");
       writeFileSync(abroad, JSON.stringify({ title: "Junk removal", description: "We haul it", price: 99, priceCurrency: "USD", category: "Miscellaneous", condition: "new", photos: ["a.jpg"], locationQuery: "Philadelphia, PA", locationCity: "philadelphia", locationCountry: "US" }));
       const before = twenty.rows.agencyListings.length;

@@ -7,7 +7,6 @@ import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { AGENTS_MD, AGENTS_URI, citedRules, COMMAND_RULES, createLogMcpServer, RULES_REVIEWED_THROUGH, SERVER_INSTRUCTIONS, TERMINAL_ONLY } from "./index.ts";
 
 const agents = readFileSync(AGENTS_MD, "utf8");
-/** The numbered hard rules in AGENTS.md (`30. 2026-10-19 · …`). */
 const rules = [...agents.matchAll(/^(\d+)\. 20\d\d-\d\d-\d\d/gm)].map((m) => Number(m[1]));
 
 async function connected() {

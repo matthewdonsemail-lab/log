@@ -14,7 +14,6 @@ interface Edge {
   guard?: string | { type?: unknown } | ((...args: unknown[]) => unknown);
 }
 
-/** `xstate.done.actor.0.publish.openingForm` -> `done`. Pure. */
 function eventLabel(eventType: string): string {
   if (eventType === "") return "always";
   if (eventType.startsWith("xstate.done.actor")) return "done";
@@ -31,11 +30,6 @@ function guardLabel(guard: Edge["guard"]): string {
   return typeof guard.type === "string" ? guard.type : "guarded";
 }
 
-/**
- * A machine's top-level states and every transition between them, as a
- * Mermaid `stateDiagram-v2`, read from the machine definition itself so it
- * can't drift from the code. Edge labels are `event [guard]`. Pure.
- */
 export function toMermaid(machine: AnyStateMachine): string {
   const root = machine.root as unknown as Node;
   const states = root.states ?? {};

@@ -1,9 +1,3 @@
-/**
- * `log <platform> warmup <activity>` (rules 49, 60): the warm-up is by platform,
- * then activity, every form of it. Facebook's activities: `reel`, `feed`, and
- * `stages` (Listaro's five, `helpers/stages.ts`). A form without the platform
- * is refused with the one it became, so no agent learns an old shape.
- */
 import { parseArgs } from "../runner/helpers/index.ts";
 import type { Command } from "../runner/types.ts";
 import { WARMUP_PLATFORMS } from "../../facebook/warmup/activities/index.ts";
@@ -11,7 +5,6 @@ import { PLATFORM_USAGE, runPlatformActivity, runStages, STAGES_USAGE } from "./
 
 export const WARMUP_USAGE = [PLATFORM_USAGE.replace(/^ {7}/, "Usage: "), STAGES_USAGE].join("\n");
 
-/** The forms that had no platform, and the one each became. */
 const MOVED: Record<string, string> = {
   plan: "log facebook warmup stages plan",
   record: "log facebook warmup stages record",

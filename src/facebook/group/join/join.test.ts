@@ -7,7 +7,6 @@ import recordedJoins from './fixtures/recordedJoins.json'
 
 const GROUP_URL = 'https://www.facebook.com/groups/4191018610937243/'
 
-/** The group page as recorded on Bethlehem, 2026-10-19 (steps/07_clickE2606). */
 export const recordedGroupPage = (button = 'Join Group', extra: string[] = []): GroupStepReply => ({
   ok: true,
   url: GROUP_URL,
@@ -23,11 +22,6 @@ export const recordedGroupPage = (button = 'Join Group', extra: string[] = []): 
   ]
 })
 
-/**
- * After Join on Bethlehem in AdsPower, 2026-10-20 (steps/05_snapshot/snapshot.yml, cut): the
- * button reads Joined, the feed's comment box appeared (its value redacted), and the group's
- * "Participant questions" dialog asks to agree to its rules before the account may post.
- */
 export const recordedAfterJoin = [
   '            - button [ref=e969] [cursor=pointer]:',
   '              - generic [ref=e970]:',
@@ -102,7 +96,6 @@ describe('readGroupPage', () => {
   })
 
   test("AdsPower's page: an unnamed button takes its own text, and the click goes to its ref", async () => {
-    // steps/01_gotoHttpsWwwFacebook/snapshot.yml, Bethlehem in AdsPower, 2026-10-20.
     const snapshot = [
       '                    - link [ref=e144] [cursor=pointer]:',
       '                      - /url: /groups/4191018610937243/members/',
@@ -163,7 +156,6 @@ describe('the join submission (the hackathon reportCommunityForm shape)', () => 
   })
 })
 
-/** Each recorded group's click-step answers (fixtures/recordedJoins.json) as the HAR shape readJoinOptions reads. */
 export function recordedJoinHar(group: keyof typeof recordedJoins.groups) {
   return {
     log: {

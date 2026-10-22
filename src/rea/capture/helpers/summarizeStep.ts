@@ -1,19 +1,8 @@
-/**
- * What one step of a run did on the network, from its HAR: Facebook's
- * GraphQL operations by name (`x-fb-friendly-name`, or the body's
- * `fb_api_req_friendly_name`), the pages it loaded, uploads and failures.
- * Names, paths and statuses only: never cookies, tokens or bodies (the HAR
- * keeps those, rule 19; the findings file is meant to be read and shared).
- */
-
 export interface StepSummary {
   requests: number
-  /** GraphQL operation → times, in first-seen order. */
   graphql: Record<string, number>
-  /** HTML pages loaded (paths). */
   pages: string[]
   uploads: number
-  /** `status host/path` → times, for 4xx/5xx and aborted (status ≤ 0). */
   failed: Record<string, number>
 }
 
@@ -30,7 +19,6 @@ const operation = (entry: HarEntry): string | null => {
   return match ? decodeURIComponent(match[1]) : null
 }
 
-/** One step's HAR → its summary. Pure. */
 export function summarizeStep(har: { log?: { entries?: HarEntry[] } }): StepSummary {
   const summary: StepSummary = { requests: 0, graphql: {}, pages: [], uploads: 0, failed: {} }
   for (const entry of har.log?.entries ?? []) {
@@ -56,7 +44,6 @@ export function summarizeStep(har: { log?: { entries?: HarEntry[] } }): StepSumm
   return summary
 }
 
-/** One step as a markdown section. Pure. */
 export function renderStepSummary(index: number, step: string, summary: StepSummary, evidenceId: string | null): string {
   const lines = [`### ${index}. ${step}`, '', `${summary.requests} requests${evidenceId ? ` · rea \`${evidenceId}\`` : ''}`]
   const ops = Object.entries(summary.graphql)

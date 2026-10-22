@@ -1,9 +1,3 @@
-/**
- * Command registry and dispatcher.
- *
- * Commands are declared once here; usage text is generated from the same list,
- * so a new command cannot ship without documentation.
- */
 import { runInspectSession, sendInspectCommand } from "../../browser/inspect/index.ts";
 import { startConnectSession, startProfileSession, startSession } from "../../camofox/session/index.ts";
 import { runWorker } from "../../camofox/worker/index.ts";
@@ -79,7 +73,6 @@ export const COMMANDS: Command[] = [
 ];
 
 const ALIASES: Record<string, string> = {
-  // rule 46: the old browser-named command, for a settle already running in the background and older MCP clients.
   firefoxCapture: "capture",
   "--help": "help",
   "-h": "help",
@@ -104,16 +97,6 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
   };
 }
 
-/**
- * Run one CLI invocation and return its exit code.
- *
- * Never throws for an unknown command: it reports and returns a non-zero code
- * so the binary can stay a thin wrapper.
- */
-/**
- * `--proxyMs <ms>` on any command (rule 33): this run's limit for the proxy's speed to Facebook
- * (default 2500 ms), set as LOG_PROXY_MAX_MS for the run and its Python, then restored.
- */
 export function takeProxyMs(argv: string[]): { argv: string[]; proxyMs: number | null; error: string | null } {
   const rest: string[] = [];
   let proxyMs: number | null = null;
@@ -158,7 +141,6 @@ async function dispatch(ctx: CommandContext, argv: string[]): Promise<number> {
     return 0;
   }
 
-  // `log <platform> <command> …` (rule 63): the platform first, every form; an old form is refused with its new one.
   const form = resolvePlatformForm([requested, ...rest], (name) => COMMANDS.find((c) => c.name === (ALIASES[name] ?? name)));
   if (!form.ok) {
     ctx.err(form.error);

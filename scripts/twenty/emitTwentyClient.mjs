@@ -1,19 +1,3 @@
-// Emits the generated Twenty GraphQL client into src/twenty/graphql/generated,
-// the same way blaster (`pnpm twenty:client`, packages/core) and the dialer
-// (`bun run api:client`, packages/shared → @dialer/shared/api) do: introspect
-// the live workspace and let twenty-client-sdk write a typed genql client. The
-// workspace is the schema, so socialAccounts, agencyListings and every field
-// scripts/twenty/twentySetup.mjs added arrive with exact types.
-//
-// Differences from blaster's emitter, both for log-cli's conventions:
-//   - relative specifiers end in .ts (log-cli runs from source with Bun);
-//   - every file is stamped `@generated`, which the naming gate skips.
-//
-// Usage:
-//   bun run twenty:client            regenerate from the live workspace
-//   bun run twenty:client:check      fail when the committed client is stale
-//   ... --schema path/to/schema.graphql   work offline from saved SDL
-// TWENTY_BASE_URL / TWENTY_API_KEY come from the env or log-cli/.env.local.
 import { existsSync, readFileSync } from 'node:fs'
 import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -44,7 +28,6 @@ function loadEnv() {
 
 const isSource = (name) => name.endsWith('.ts')
 
-/** Relative imports point at .ts files: log-cli runs from source and never emits JS. */
 const toTypeScriptSpecifiers = (content) => content.replace(/(from\s+['"]\.[^'"]*)\.js(['"])/g, '$1.ts$2')
 
 const withoutOwnTsNocheck = (content) => content.replace(/^\/\/ @ts-nocheck\r?\n/, '')

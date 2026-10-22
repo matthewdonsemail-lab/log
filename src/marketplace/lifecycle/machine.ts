@@ -1,27 +1,3 @@
-/**
- * The account lifecycle (rule 35): one machine per account, the browser opened
- * once per local day and kept open, every action a step inside it.
- *
- *   onboarding:  proxying ─▶ opening ─▶ next ─┬─▶ signingIn ─────┐
- *                                    ▲         ├─▶ checkingAccount│
- *                                    │         ├─▶ settingProfile │  each ok ─▶ next
- *                                    │         ├─▶ settingName    │
- *                                    │         ├─▶ settingLocation│
- *                                    │         ├─▶ warming (Listaro's five activities, a day)
- *                                    │         └─▶ attached ─▶ host
- *                                    └── overnight (close: endOfActiveHours, wait, reopen)
- *   host:        opening ─▶ watching ⇄ checking (Selling, inbox, notifications)
- *                              ⇅ ACT ─▶ acting (publish, reply: a tab, never a launch)
- *                              └─ end of day ─▶ overnight ─▶ opening
- *   any step:    issue ─▶ needsLogin: signingIn (same browser) | checkpoint: needsPerson ─PERSON_DONE─▶ checkingAccount
- *                         limited: cooling ─▶ opening | restricted/banned: closed, final (kept in Twenty)
- *                error ─▶ retried once ─▶ stuck (needs a person)
- *   anywhere:    PAUSE ─▶ paused ─RESUME─▶ opening | SHUTDOWN ─▶ stopped | LOST ─▶ lost
- *
- * The router `onboarding.next` picks the first step not done yet from the
- * context, so an interruption (a person, a sign-in, the night) comes back to
- * exactly where it left, and an account loaded from Twenty starts where it is.
- */
 import { assign, fromPromise, setup } from 'xstate'
 import { statusForIssue } from '../socialAccount/helpers/index'
 import { clock } from './helpers/clock'
@@ -41,17 +17,12 @@ const ok = (_: unknown, o: StepOutcome) => o.kind === 'ok'
 const isIssue = (_: unknown, o: StepOutcome) => o.kind === 'issue'
 const canRetry = ({ context }: Ctx, o: StepOutcome) => o.kind === 'error' && o.retryable && !context.retried
 
-/**
- * One step that touches Facebook: run it; ok ─▶ `next` (with `onOk`); an account
- * issue ─▶ the issue router; a retryable error ─▶ once more after `retry`; else stuck.
- */
 function step<K extends keyof LifecycleActorInputs>(
   src: K,
   input: (args: Ctx) => LifecycleActorInputs[K],
   next: string,
   onOk: (args: Done) => Partial<LifecycleContext> = () => ({})
 ) {
-  // Steps sit inside a lane; a bare target names a state of the onboarding lane.
   const target = next.startsWith('#') ? next : `#lifecycle.onboarding.${next}`
   return {
     initial: 'run',
@@ -84,11 +55,9 @@ function step<K extends keyof LifecycleActorInputs>(
       },
       waitRetry: { entry: assign({ retried: true }), after: { retry: 'run' } }
     }
-    // Built outside `setup`, so XState can't infer it here; the machine around it stays typed (as createFlowMachine).
   } as never
 }
 
-/** Close the browser for a reason (rule 35: never a silent close), then go on. */
 function closing(reason: CloseReason, then: string) {
   return {
     invoke: {
@@ -136,7 +105,6 @@ export const lifecycleMachine = setup({
     warmupOver: ({ context }) => warmupComplete(context, clock.now())
   },
   actions: {
-    // Both read the step's outcome from its done event, so transitions name them plainly.
     recordIssue: assign(({ event }) => {
       const o = (event as { output?: StepOutcome }).output
       return o?.kind === 'issue' ? { issue: { code: o.issue, detail: o.detail } } : {}
@@ -164,7 +132,6 @@ export const lifecycleMachine = setup({
     watchInterval: ({ context }) => context.timing.watchIntervalMs,
     limitedRest: ({ context }) => context.timing.limitedRestMs,
     warmupLeft: ({ context }) => Math.max(0, (context.warmup.startedAt ?? clock.now()) + context.timing.warmupMs - clock.now()),
-    // Waiting out the warm-up day: the next look is the watch interval, or the day's end if sooner.
     untilNextLook: ({ context }) =>
       Math.min(context.timing.watchIntervalMs, Math.max(0, (context.warmup.startedAt ?? clock.now()) + context.timing.warmupMs - clock.now()))
   }
@@ -177,7 +144,6 @@ export const lifecycleMachine = setup({
       liveActions: input.liveActions,
       timing: { ...DEFAULT_LIFECYCLE_TIMING, ...input.timing },
       standing: s,
-      // A resumed host (`input.resume`): what it had done, never its browser (that one is gone; a fresh one opens).
       browser: { open: false, opensToday: input.resume?.opensToday ?? 0, closes: [] },
       warmup: {
         startedAt: input.resume?.warmupStartedAt ?? (s.warmupStartedAt ? Date.parse(s.warmupStartedAt) : null),
@@ -201,7 +167,6 @@ export const lifecycleMachine = setup({
     LOST: { target: '.losing' }
   },
   states: {
-    /** Where a loaded account starts: the record decides (rule 13 keeps the final ones final). */
     routing: {
       always: [
         { guard: ({ context }) => context.standing.status === 'banned', target: 'banned' },
@@ -217,7 +182,6 @@ export const lifecycleMachine = setup({
       initial: 'next',
       states: {
         proxying: step('checkProxy', ({ context }) => ({ accountId: context.accountId }), 'opening', ({ context }) => ({ standing: { ...context.standing, hasProxy: true } })),
-        /** The day's one open (or the crash reopen): gate, device, locale, self-check, HAR (rules 11-12, 15-17, 22). */
         opening: {
           initial: 'gate',
           states: {
@@ -236,7 +200,6 @@ export const lifecycleMachine = setup({
             )
           }
         },
-        /** The router: the first onboarding step not done yet, or the host. */
         next: {
           always: [
             { guard: 'browserClosed', target: 'opening' },
@@ -249,7 +212,6 @@ export const lifecycleMachine = setup({
             { target: 'attached' }
           ]
         },
-        // Counted, so a sign-in that keeps failing goes to a person instead of round again (Harrisburg, 2026-10-19).
         signingIn: Object.assign(
           { entry: 'countSignIn' },
           step('signIn', ({ context }) => ({ accountId: context.accountId }), 'next', ({ context }) => ({
@@ -272,7 +234,6 @@ export const lifecycleMachine = setup({
         settingLocation: step('setLocation', ({ context }) => ({ accountId: context.accountId, live: context.liveActions }), 'next', ({ context }) => ({
           standing: { ...context.standing, locationSet: true }
         })),
-        /** A day of Listaro's five warm-up activities in the open browser, spaced through the day. */
         warming: {
           entry: assign(({ context }) => (context.warmup.startedAt ? {} : { warmup: { ...context.warmup, startedAt: clock.now() } })),
           initial: 'pick',
@@ -310,10 +271,7 @@ export const lifecycleMachine = setup({
               }
             },
             gap: { after: { activityGap: 'pick' } },
-            /** Every activity ran: the browser stays open until the warm-up day is over. */
             waitingOutDay: {
-              // The browser stays open for the rest of the warm-up day, but never past the account's day (rule 18):
-              // it is looked at every watch interval, and the end of the day sends it overnight.
               after: { untilNextLook: 'dayCheck' }
             },
             dayCheck: {
@@ -332,7 +290,6 @@ export const lifecycleMachine = setup({
             }
           }
         },
-        /** The night during onboarding: close for the reason, wait for the morning, open again, carry on. */
         overnight: {
           initial: 'close',
           states: {
@@ -382,7 +339,6 @@ export const lifecycleMachine = setup({
           on: { ACT: { target: 'acting', actions: assign(({ context, event }) => ({ pending: event.action, trail: [...context.trail, `act:${event.action.kind}`] })) } },
           after: { watchInterval: 'checking' }
         },
-        /** One check in the open browser: Selling (review, health), the inbox (rule 34), notifications. */
         checking: {
           initial: 'run',
           states: {
@@ -396,7 +352,6 @@ export const lifecycleMachine = setup({
                   { guard: { type: 'ok', params: ({ event }) => event.output }, target: '#lifecycle.host.watching', actions: assign({ retried: false }) },
                   { guard: { type: 'isIssue', params: ({ event }) => event.output }, target: '#lifecycle.issue', actions: 'recordIssue' },
                   {
-                    // The window went away (crash, closed by hand): reopen once, within today's opens.
                     guard: ({ event }) => event.output.kind === 'error' && event.output.code === 'browserGone',
                     target: '#lifecycle.host.crashed',
                     actions: 'recordError'
@@ -410,7 +365,6 @@ export const lifecycleMachine = setup({
             waitRetry: { entry: assign({ retried: true }), after: { retry: 'run' } }
           }
         },
-        /** An action is a tab in the open browser, never a launch (rule 35). */
         acting: {
           invoke: {
             src: 'act',
@@ -450,11 +404,9 @@ export const lifecycleMachine = setup({
       }
     },
 
-    /** An account problem, routed by the status it puts the account in (`statusForIssue`, one status per issue). */
     issue: {
       entry: assign(({ context }) => ({ trail: [...context.trail, `issue:${context.issue?.code}`] })),
       always: [
-        // Signed out again after two sign-ins in a row: a person looks, it doesn't go round again.
         {
           guard: ({ context }) => context.signInTries >= 2 && context.issue != null && statusForIssue(context.issue.code) === 'needsLogin',
           target: 'stuck',
@@ -465,15 +417,12 @@ export const lifecycleMachine = setup({
         { guard: { type: 'issueStatus', params: 'limited' }, target: 'cooling' },
         { guard: { type: 'issueStatus', params: 'restricted' }, target: 'restricting' },
         { guard: { type: 'issueStatus', params: 'banned' }, target: 'banning' },
-        // A captcha nobody took, a form problem: a person looks, in the same window.
         { target: 'needsPerson' }
       ]
     },
-    /** Facebook's own checkpoint or a captcha: the window stays open for a person (rules 10, 23). */
     needsPerson: {
       on: { PERSON_DONE: { target: 'onboarding.checkingAccount', actions: assign({ retried: false, checked: false }) } }
     },
-    /** Rate limited: closed for the day, rested, then opened again. */
     cooling: {
       initial: 'close',
       states: {
@@ -485,9 +434,7 @@ export const lifecycleMachine = setup({
     banning: closing('restricted', 'banned'),
     losing: closing('accountLost', 'lost'),
     stopping: closing('shutdown', 'stopped'),
-    /** Paused by hand: closed, and nothing runs until RESUME. */
     paused: { on: { RESUME: { target: 'onboarding.opening' } } },
-    /** A step failed twice, or today's opens are spent: a person decides. */
     stuck: { on: { PERSON_DONE: { target: 'onboarding.opening', actions: assign({ retried: false, lastError: null }) } } },
     restricted: { type: 'final' },
     banned: { type: 'final' },

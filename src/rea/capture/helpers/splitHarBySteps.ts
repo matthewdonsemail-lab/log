@@ -1,28 +1,18 @@
-/** One action of a run, as the Python wrote it to `steps.jsonl`. */
 export interface RunStep {
   at: string
   step: string
 }
 
-/** The HAR entries that started during one step, as their own HAR. */
 export interface StepHar {
-  /** 1-based, in run order. */
   index: number
   step: string
-  /** `03_typingTheEmail`: the file stem, camelCase (rule 1). */
   name: string
   entries: number
   har: Record<string, unknown>
 }
 
-/**
- * A step's own report, written after its action: where the page landed, each request it saw, the mouse,
- * rea's reading, the element count. Not an action, so not a step: the requests during it are still the
- * step's (the page keeps loading), and a doc never names one as "Our step" (run 20261020T143506).
- */
 export const REPORT_LINE = /^\s*(?:now on |rea read |page has |mouse: |(?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS) \d{3} )/
 
-/** `steps.jsonl` → steps in time order; unreadable lines and a step's report lines are skipped. Pure. */
 export function parseSteps(text: string): RunStep[] {
   const steps: RunStep[] = []
   for (const line of text.split(/\r?\n/)) {
@@ -31,13 +21,11 @@ export function parseSteps(text: string): RunStep[] {
       const value = JSON.parse(line) as Partial<RunStep>
       if (typeof value.at === 'string' && typeof value.step === 'string' && !Number.isNaN(Date.parse(value.at)) && !REPORT_LINE.test(value.step)) steps.push({ at: value.at, step: value.step })
     } catch {
-      // a half-written last line from a killed run
     }
   }
   return steps.sort((a, b) => Date.parse(a.at) - Date.parse(b.at))
 }
 
-/** `Auto-login: typing the email (try 1).` → `autoLoginTypingTheEmail`. Pure. */
 export function stepSlug(step: string): string {
   const words = step
     .replace(/^\[\d+s\]\s*/, '')
@@ -48,12 +36,6 @@ export function stepSlug(step: string): string {
   return slug || 'step'
 }
 
-/**
- * Cuts a raw HAR into one HAR per step: each entry goes to the last step that
- * started at or before it (entries before the first step go to the first).
- * Steps with no traffic are left out. Entries are copied as they are (rule
- * 19). Pure.
- */
 export function splitHarBySteps(har: unknown, steps: RunStep[]): StepHar[] {
   if (!steps.length || !isRecord(har) || !isRecord(har.log) || !Array.isArray(har.log.entries)) return []
   const log = har.log

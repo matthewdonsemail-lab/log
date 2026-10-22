@@ -1,7 +1,6 @@
 import type { MonitorContext, MonitorOutput } from "../../../marketplace/monitor/index.ts";
 import { renderTable } from "../../runner/helpers/index.ts";
 
-/** The context fields worth showing on each state line of the trace. Pure. */
 export function summarizeMonitor(context: unknown): Record<string, unknown> {
   const c = context as MonitorContext | undefined;
   if (!c) return {};

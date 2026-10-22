@@ -5,7 +5,6 @@ const GROUP = "4191018610937243";
 const POST = "29139998268945932";
 const relay = (commentId: string) => Buffer.from(`comment:${POST}_${commentId}`).toString("base64");
 
-/** A Comment node in the recorded shape (run 20261020T151100), invented values. */
 function comment(commentId: string, created: number | undefined, options: { group?: string | null; parent?: string; depth?: number; text?: string; replies?: unknown[]; anonymous?: boolean } = {}) {
   const { group = GROUP, parent, depth = parent ? 1 : 0, text = "I can do it, sent you a message", replies = [], anonymous = false } = options;
   return {
@@ -22,14 +21,12 @@ function comment(commentId: string, created: number | undefined, options: { grou
       id: `fb${commentId}`,
       url: `https://www.facebook.com/groups/${GROUP}/posts/${POST}/?comment_id=${parent ?? commentId}${parent ? `&reply_comment_id=${commentId}` : ""}`,
       replies_fields: { count: replies.length, total_count: replies.length },
-      // A reply's parent appears again as a stub: a Comment with no legacy_fbid, never a comment of its own.
       parent_object_ent: { __typename: "Comment", id: relay(commentId), feedback: { id: `fb${commentId}` } },
       replies_connection: { edges: replies.map((node) => ({ node })), page_info: { end_cursor: null, has_next_page: false } },
     },
   };
 }
 
-/** A comment answer: the list under `comment_rendering_instance_for_feed_location.comments`, with its page_info. */
 function answer(nodes: unknown[], endCursor: string | null = "NEXT", hasNextPage = true): string {
   const data = { node: { comment_rendering_instance_for_feed_location: { comments: { edges: nodes.map((node) => ({ node })), page_info: { end_cursor: endCursor, has_next_page: hasNextPage } } } } };
   return `for (;;);${JSON.stringify({ data, extensions: {} })}`;
@@ -61,7 +58,6 @@ describe("group read: comments", () => {
     });
     expect(page.comments[0]).toMatchObject({ parentCommentId: null, depth: 0, replyCount: 1 });
     expect(page.comments[2]?.author.anonymous).toBe(true);
-    // The top-level list's paging, not the reply thread's.
     expect(page).toMatchObject({ endCursor: "NEXT", hasNextPage: true, rejected: {} });
   });
 

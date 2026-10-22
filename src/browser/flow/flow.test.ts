@@ -5,7 +5,6 @@ import { confirmingRequest, createFlowMachine, fillStep, flowFromRecording, rend
 import type { FlowActInput, FlowRunOutput, FlowStepResult } from './index'
 import type { RecordedCommand } from './helpers/index'
 
-// The Lancaster profile recording (2026-10-19), cut down: the snapshots each step acted on.
 const PROFILE = `- main [ref=e33]:\n  - button "Profile picture actions" [ref=e141] [cursor=pointer]:\n  - button "Add Cover Photo" [ref=e119] [cursor=pointer]:`
 const MENU = `${PROFILE}\n- menu "Profile picture options" [ref=e1089]:\n  - menuitem "Choose profile picture" [ref=e1096] [cursor=pointer]:`
 const DIALOG = `- dialog "Choose profile picture" [ref=e1168]:\n  - button "Upload Photo" [ref=e1180] [cursor=pointer]:`
@@ -40,7 +39,6 @@ describe('pageProblem: where a step really landed', () => {
     expect(pageProblem(goto('https://www.facebook.com/messages/'), { url: 'https://www.facebook.com/marketplace/' })).toMatchObject({ code: 'pageNotReached' })
     expect(pageProblem(goto('https://www.facebook.com/marketplace/'), { url: 'https://www.facebook.com/marketplace/113668691977096/' })).toBeNull()
     expect(pageProblem(goto('https://www.facebook.com/'), { url: 'https://www.facebook.com/' })).toBeNull()
-    // /me is the account's own profile, under whatever path Facebook gives it; a checkpoint is still a checkpoint.
     expect(pageProblem(goto('https://www.facebook.com/me'), { url: 'https://www.facebook.com/profile.php?id=61594417970255' })).toBeNull()
     expect(pageProblem(goto('https://www.facebook.com/me'), { url: 'https://www.facebook.com/harrisburg.trash' })).toBeNull()
     expect(pageProblem(goto('https://www.facebook.com/me'), { url: 'https://www.facebook.com/checkpoint/1501092823525282/' })).toMatchObject({ code: 'checkpointed' })

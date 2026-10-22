@@ -1,13 +1,3 @@
-/**
- * `log facebook profile setup --account <name> [--live]` (rule 28): the account's
- * profile picture and cover photo, from Twenty's socialAccounts.profilePhoto
- * and coverPhoto, through the profile machine (`marketplace/profile`).
- *
- * A dry run (the default) opens the profile, lists every control it has in
- * the run folder's profileFound.txt and says what it would upload; nothing
- * on Facebook changes (rule 8). `--live` uploads both in the one run. Every
- * gate a run passes applies (rules 11-12, 15-18, 22, 24): it is one launch.
- */
 import { dirname, join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
 import type { ProfileSession, ProfileStep } from "../../camofox/session/index.ts";
@@ -52,7 +42,6 @@ export const profileCommand: Command = {
         })).call<T>(step, params);
       const machine = profileMachine.provide({
         actors: {
-          // Fetched through the account's proxy, never from this machine, and varied so each file is new (`media/photo`).
           preparePhotos: fromPromise<ProfilePhotosOutput, ProfileActorInputs["preparePhotos"]>(async () => {
             const sources = [account.profilePhoto, account.coverPhoto].filter((s): s is string => Boolean(s));
             const result = await preparePhotos(sources, { dir: join(runDir ?? ".", "photos"), proxy: fetchProxyUrl(account.proxy) });

@@ -3,30 +3,6 @@ import type { PlatformActivity } from '../types'
 const RUN = 'run 20261020T102133_61594131334566 (Reading, AdsPower, Byteful)'
 const INSPECT = 'inspect 20261020T103913_61594131334566 (Reading, by hand, timed)'
 
-/**
- * The Facebook home feed as a warm-up activity: Listaro's stage 1
- * (`Listaro_backup/src/lib/account-warmup.ts` runStage1, lines 92-130, day
- * 1-2): open the feed, read down it, like 2-3 posts, then a short look at
- * Marketplace. The next warm-up stage after Reels (matt, 2026-10-20). Each
- * step says what it must achieve, and `log facebook warmup feed record` checks
- * it after every step and lists what didn't happen (rule 49).
- *
- * What the first recording showed (Reading, 2026-10-20, every step as expected):
- *   the feed is `heading "Feed posts"`; each post has a level-4 heading (its
- *     author or group, "… Join" for a suggested group), Facebook's own image
- *     description ("May be an image of road and nature"), `button "Like"`,
- *     `button "React"`, and its count as a separate `button "Like: 311 people"`
- *     (`^Like$` never matches the count)
- *   the wheel moves the feed (Listaro used `window.scrollBy`): 4 scrolls of
- *     378-501 px, 9-12 wheel steps each, 86 requests as more posts loaded;
- *     3 posts on screen after them, mostly suggested groups
- *   Marketplace: 248 requests to load, one scroll of 783 px
- *
- * With --persona (`log facebook warmup feed run --persona`) the feed is read
- * post by post as the persona would (`feedPersonaMachine`, `planPost`): each
- * post SubQ reads, a glance or a read, a like where they would; then
- * Marketplace and a few listings.
- */
 export const FEED: PlatformActivity = {
   platform: 'facebook',
   activity: 'feed',

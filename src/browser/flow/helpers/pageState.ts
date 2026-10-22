@@ -1,41 +1,22 @@
-/**
- * The known page states and what resolves each (matt, 2026-10-20: "we already
- * know this exists, so solve it"). A page an inspect step landed on is matched
- * from its URL and accessibility snapshot, the same signals as
- * `python/login/autoLogin.py` `classify` (the connect machine's pages), and recorded
- * on Reading's checkpoint (inspect 20261020T105346 steps 38-44). The Claude Code
- * hook (`scripts/hooks/pageState.ts`, rule 54) puts the state and its resolver
- * into the agent's context after every tool call, so a known state is never a
- * reason to stop.
- */
 export interface PageState {
   id: string
-  /** What the page is, in plain words. */
   what: string
-  /** What resolves it: the exact step, or who (a person) when nothing in log-cli can. */
   resolve: string
-  /** Only a person can clear it (rules 10, 23): the run stops and says so. */
   person: boolean
 }
 
 interface StateRule extends PageState {
   url?: RegExp
   text?: RegExp
-  /**
-   * Messenger's PIN states (rule 67): with the account's PIN in Twenty, log-cli resolves them itself
-   * (`resolve`); without it they are matt's, said this way.
-   */
   withoutPin?: string
 }
 
-/** What the page's account has, as the session recorded it when it opened: a yes or no, never a secret. */
 export interface StateContext {
   messengerPin?: boolean
 }
 
 const PIN_FROM_MATT = 'matt gives the account\'s 6-digit PIN once: `log facebook messenger pin --account <a>` in his terminal (a Clack prompt, kept in Twenty, never printed). Then reopen the browser so the session has it'
 
-/** First match wins, most final first (as `classify`). */
 export const PAGE_STATES: readonly StateRule[] = [
   { id: 'disabled', url: /checkpoint\/disabled|account\/disabled/i, what: 'the account is disabled', resolve: 'a person: the account is lost or appealed (rule 13: keep its record)', person: true },
   { id: 'videoSelfie', text: /video selfie|record a video|upload a video|take a video|verify with video|video verification/i, what: "Facebook's video selfie check", resolve: 'a person on camera (rules 10, 23): stop the account, tell matt', person: true },
@@ -79,7 +60,6 @@ export const PAGE_STATES: readonly StateRule[] = [
   { id: 'checkpoint', url: /\/checkpoint/i, what: 'a Facebook checkpoint not mapped yet', resolve: 'take a snapshot, read the page, press its Continue/next control to see the next state (matt: never stop at a checkpoint), and add the state here', person: false }
 ]
 
-/** The known state of a page from its URL and snapshot text, or null when it isn't one. Pure. */
 export function pageStateOf(url: string, text: string, context: StateContext = {}): PageState | null {
   for (const s of PAGE_STATES) {
     if (s.url && !s.url.test(url)) continue

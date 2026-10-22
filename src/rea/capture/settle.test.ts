@@ -6,7 +6,6 @@ import { captureFromHar, settleCapture } from "./index";
 import { exportScripts, renderStepSummary, summarizeStep } from "./helpers/index";
 import type { ReaRunner } from "./types";
 
-
 const HAR = {
   log: {
     entries: [
@@ -93,7 +92,6 @@ describe("settleCapture", () => {
     expect(readFileSync(join(dir, "session.har"), "utf8")).toBe(written);
     expect(readFileSync(join(dir, "scripts", "script0.js"), "utf8")).toContain("var loaded");
     expect(calls[0].slice(0, 1).concat(calls[0].slice(2))).toEqual(["inspect-web-network-capture", "har", "--format", "json"]);
-    // The bundle is never read whole (it timed out); `--docs` reads per request.
     expect(calls).toHaveLength(1);
     expect(note).toContain("1 scripts saved");
     expect(existsSync(join(dir, "scripts", "manifest.json"))).toBe(false);

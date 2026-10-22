@@ -1,29 +1,16 @@
-/**
- * How much more a real viewer watches and engages when a video is their kind
- * of content: measured on KuaiRand-Pure (real). Each user's favourite
- * categories (`tag`) come from their normal swipe feed (`log_standard`, tab 1:
- * play ratio, likes and comments per category); the effect from the videos
- * they were shown at random (`log_random`, unbiased exposure), in their top
- * categories against outside them. Every ratio is against all random plays,
- * so a real viewer's own play (their overall behaviour) is scaled by it.
- */
 export interface InterestEffect {
-  /** Play time at the 25th, 50th, 75th and 90th percentile, in-interest over all and outside over all. */
   watchIn: [number, number, number, number]
   watchOut: [number, number, number, number]
   likeIn: number
   likeOut: number
   commentIn: number
   commentOut: number
-  /** Share swiped within 2 s. */
   skipIn: number
   skipOut: number
-  /** The random plays measured, in their categories and outside. */
   plays: { in: number; out: number }
   source: string
 }
 
-/** One play: user, video, play ms, liked, comments opened, the swipe feed or not. */
 export interface TaggedPlay {
   user: string
   video: string
@@ -40,7 +27,6 @@ const quantiles = (xs: number[]) => {
 }
 const round = (x: number) => Math.round(x * 1000) / 1000
 
-/** The effect from the standard feed (interests) and the random log (exposure). Pure. */
 export function measureInterestEffect(standard: TaggedPlay[], random: TaggedPlay[], tagOf: (video: string) => string | undefined, topN = 3): InterestEffect {
   const score = new Map<string, Map<string, number>>()
   for (const p of standard) {
@@ -78,7 +64,6 @@ export function measureInterestEffect(standard: TaggedPlay[], random: TaggedPlay
   }
 }
 
-/** The watch ratio for a play at quantile `q` of the viewer's own plays, in or outside their interests. Pure. */
 export function watchRatio(effect: InterestEffect, q: number, inInterest: boolean): number {
   const r = inInterest ? effect.watchIn : effect.watchOut
   const at = q <= 0.25 ? 0 : q <= 0.5 ? 1 : q <= 0.75 ? 2 : 3

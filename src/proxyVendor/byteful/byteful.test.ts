@@ -6,7 +6,6 @@ import type { BytefulCity } from './index'
 
 const creds = { publicKey: 'pub', privateKey: 'priv' }
 
-/** A fetch that answers one path with one body, and records what it was asked. */
 function fakeFetch(body: unknown, seen: { url?: string; headers?: Record<string, string>; method?: string; sent?: string }[] = []): typeof fetch {
   return (async (url: string, init: RequestInit = {}) => {
     seen.push({ url: String(url), headers: init.headers as Record<string, string>, method: init.method, sent: init.body as string | undefined })

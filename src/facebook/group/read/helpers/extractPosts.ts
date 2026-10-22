@@ -1,19 +1,15 @@
 import type { FeedPage, GroupPost, ReadCursor, RejectReason } from "../types.ts";
 import { at, chunksOf, embeddedResults, type Json, obj, responsesOf, str } from "./json.ts";
 
-/** The feed query, by the name Facebook's client sends it under (`fb_api_req_friendly_name`). */
 export const FEED_QUERY = "GroupsCometFeedRegularStoriesPaginationQuery";
 
-/** Where a feed unit carries the post's comment count (run 20261020T143506). */
 const COMMENT_COUNT_PATH = ["comet_sections", "feedback", "story", "story_ufi_container", "story", "feedback_context", "feedback_target_with_context", "comment_rendering_instance", "comments", "total_count"] as const;
 
-/** The comment count the feed showed for a unit, or null when it had none. Pure. */
 export function commentCountOf(unit: unknown): number | null {
   const count = at(unit, ...COMMENT_COUNT_PATH);
   return typeof count === "number" && Number.isFinite(count) ? count : null;
 }
 
-/** One feed unit → a post, or why not (facebook-camofox-client's `validate_identity`: rejected, never filled in). Pure. */
 export function postOf(unit: unknown, expectedGroupId: string): GroupPost | RejectReason {
   const story = at(unit, "comet_sections", "content", "story");
   const postId = str(at(unit, "post_id")) || str(at(story, "post_id"));
@@ -37,13 +33,6 @@ export function postOf(unit: unknown, expectedGroupId: string): GroupPost | Reje
   };
 }
 
-/**
- * The posts in a run of feed chunks. Facebook streams the feed: the first chunk holds the first unit
- * under `group_feed.edges`, each `$stream` chunk one more at `data.node`, and the last `$defer` chunk
- * `data.page_info` (recorded 2026-10-20). The feed sits under `data.node` in the query's answer and under
- * `data.group` in the group page's HTML; a unit that isn't a `Story` (the "New posts" `GroupsSectionHeaderUnit`
- * the page starts with, run 20261020T143506) is not a post: counted in `skipped`, never rejected. Pure.
- */
 function pageOf(chunks: Json[], expectedGroupId: string): FeedPage {
   const page: FeedPage = { posts: [], rejected: {}, skipped: {}, endCursor: null, hasNextPage: null };
   const seen = new Set<string>();
@@ -76,35 +65,21 @@ function pageOf(chunks: Json[], expectedGroupId: string): FeedPage {
   return page;
 }
 
-/** Every post in one feed response, each kept once, and the page's cursor. Pure. */
 export function postsFromFeedResponse(text: string, expectedGroupId: string): FeedPage {
   return pageOf(chunksOf(text), expectedGroupId);
 }
 
-/**
- * The first posts, which the group page carries in its own HTML before any feed query: its JSON script
- * blocks hold `__bbox.result`s in the query's chunk shapes (the first unit under `data.group.group_feed`,
- * `$stream` chunks, the `$defer` page_info), recorded 2026-10-20 (run 20261020T143506). Pure.
- */
 export function postsFromGroupPage(html: string, expectedGroupId: string): FeedPage {
   const chunks = embeddedResults(html).filter((r) => at(r, "data", "group", "group_feed") || str(r.label).includes("group_feed"));
   return pageOf(chunks, expectedGroupId);
 }
 
-/** The feed responses a recorded step holds, in the order they came (a HAR's entries). Pure. */
 export function feedResponses(har: { log?: { entries?: unknown[] } }): string[] {
   return responsesOf(har, [FEED_QUERY]);
 }
 
-/** How many post ids the cursor keeps: far more than one read sees (16 posts over 6 scrolls, run 20261022T054544). */
 export const SEEN_IDS_KEPT = 500;
 
-/**
- * Whether the cursor has already seen a post. By its id when the cursor keeps ids (`seenIds`): a post that
- * shows up late with an earlier time is still new. A cursor written before it kept ids falls back once to
- * the time rule (facebook-camofox-client's `listen.py`: older than the watermark, or one of the ids at its
- * second). Pure.
- */
 export function seenBy(cursor: ReadCursor): (post: GroupPost) => boolean {
   const atMark = new Set(cursor.idsAtWatermark ?? (cursor.lastPostId ? [cursor.lastPostId] : []));
   if (cursor.seenIds) {
@@ -116,10 +91,6 @@ export function seenBy(cursor: ReadCursor): (post: GroupPost) => boolean {
     (cursor.watermark !== null && (post.createdTime < cursor.watermark || (post.createdTime === cursor.watermark && atMark.has(post.postId))));
 }
 
-/**
- * The posts the cursor hasn't seen, newest first, and the cursor after this read: every id the read saw first,
- * then the ones it kept from before, at most SEEN_IDS_KEPT; the watermark only moves forward. Pure.
- */
 export function newPosts(posts: GroupPost[], cursor: ReadCursor): { posts: GroupPost[]; cursor: ReadCursor } {
   const seen = seenBy(cursor);
   const byTime = [...posts].sort((a, b) => b.createdTime - a.createdTime);

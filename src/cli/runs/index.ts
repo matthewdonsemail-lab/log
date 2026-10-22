@@ -1,10 +1,3 @@
-/**
- * `log runs`: the recorded runs on this machine, and pruning the analysed ones
- * (matt, 2026-10-22). A run goes only once rea settled it and the request docs
- * hold its requests; it leaves its findings.md, steps.jsonl and settle.json in
- * `~/.logCli/runs/kept/<action>/<run>/` and a line in `runs/pruned.jsonl`
- * with its requests by docs domain (`src/browser/runStore`).
- */
 import { diskFree, listRuns, pruneRuns, runsBytes, storageVerdict } from "../../browser/runStore/index.ts";
 import type { RunEntry } from "../../browser/runStore/index.ts";
 import { parseArgs } from "../runner/helpers/index.ts";

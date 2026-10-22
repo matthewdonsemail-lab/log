@@ -1,8 +1,3 @@
-/**
- * `log facebook check --account <a>` (matt, 2026-10-22): the host's Marketplace check, once, by hand, in the
- * account's open browser (rule 35): may it still sell, each listing's state on Selling into Twenty, and the
- * seller inbox's chats. Read from each step's own recording; nothing is clicked (rule 8).
- */
 import { readCurrentInspect } from "../../browser/inspect/index.ts";
 import * as marketplaceCheck from "../../facebook/marketplace/check/index.ts";
 import { homeOf, outsideActiveHours } from "../../marketplace/home/index.ts";

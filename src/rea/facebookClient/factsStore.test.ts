@@ -32,7 +32,6 @@ describe('the request docs keep what pruned runs showed (rule 66)', () => {
     writeOperationDocs([op([sight('r1', 'step 1: goto /', 400), sight('r2', 'step 4: goto /marketplace/', 350)])], dir, 2, join(dir, 'first.json'))
     const doc = readFileSync(join(dir, 'background', 'FBYRPTimeLimitsEnforcementQuery.md'), 'utf8')
     expect(factsFromDoc(doc)).toMatchObject({ seen: 2, legacyRuns: 2, reads: ['viewer.x'], reaEvidenceId: 'ev_ab' })
-    // r1 and r2 are pruned; a new run sees it again, and the build has no store yet.
     writeOperationDocs([op([sight('r3', 'step 25: goto /messages/', 380)], [])], dir, 1, store)
     const after = readFileSync(join(dir, 'background', 'FBYRPTimeLimitsEnforcementQuery.md'), 'utf8')
     expect(after).toContain('Seen 3 time(s) in 3 run(s).')
@@ -40,7 +39,6 @@ describe('the request docs keep what pruned runs showed (rule 66)', () => {
     expect(after).toContain('step 25: goto /messages/')
     expect(after).toContain('`viewer.x`')
     expect(after).toContain('`ev_ab`')
-    // The same build again counts nothing twice.
     writeOperationDocs([op([sight('r3', 'step 25: goto /messages/', 380)], [])], dir, 1, store)
     expect(readFileSync(join(dir, 'background', 'FBYRPTimeLimitsEnforcementQuery.md'), 'utf8')).toContain('Seen 3 time(s) in 3 run(s).')
   })

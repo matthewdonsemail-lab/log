@@ -1,25 +1,7 @@
 import type { PlatformActivity } from '../types'
 
 const RUN = 'run 20261020T050610_61594063207669 (Bethlehem, AdsPower)'
-// Every step passed together first in run 20261020T052708 (10/10), after three runs fixed from their outlines.
 
-/**
- * Facebook Reels as a warm-up activity, from its first recording (2026-10-20,
- * Bethlehem). Each step says what it must achieve; `log facebook warmup reel
- * record` checks it after every step and lists what didn't happen.
- *
- * What the recording showed:
- *   the wheel scrolls the page, not the reel (+691 px, the URL unchanged):
- *     desktop Reels moves on with `button "Next card"` (URL to the next reel,
- *     Facebook answers FBUnifiedVideoSeenStateMutation)
- *   `button "Comment"` toggles the comments: a side panel on the right with
- *     `heading "Comments"`, closed by the same button (no Close)
- *   three reels are on the page at once (the one watched, this one, the next
- *     preloaded): each has its own Like and Comment
- *   Reels start muted (`button "Unmute"`): the sound goes on first
- *   a person doesn't watch every reel: most get a glance and a skip, often a
- *     few in a row, and only some are watched (matt, 2026-10-20)
- */
 export const REEL: PlatformActivity = {
   platform: 'facebook',
   activity: 'reel',

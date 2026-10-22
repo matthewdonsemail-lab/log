@@ -1,13 +1,3 @@
-/**
- * `log facebook host` (rule 35): the runner above the lifecycle machine. One process per
- * account opens ONE browser for the account's day and runs every lifecycle step
- * in it (sign-in, account check, profile, location, the warm-up, watching),
- * saving its progress on every change so a restart carries on where it left.
- *
- *   log facebook host start --account <a> [--live] [--bypass] [--gapMinutes <n>] [--watchMinutes <n>]
- *   log facebook host send --account <a> <PERSON_DONE|PAUSE|RESUME|SHUTDOWN|LOST>
- *   log facebook host status [--account <a>]
- */
 import { readdirSync } from "node:fs";
 import { dirname } from "node:path";
 import { hostDir, readProgress, runHost, sendControl } from "../../marketplace/host/index.ts";
@@ -87,7 +77,6 @@ export const hostCommand: Command = {
       onLine: log,
       inspect: createInspector((line) => context.err(formatTraceLine(line))),
     });
-    // Ctrl+C is a shutdown with its reason, so the browser closes and the session is saved (rule 35).
     const onSignal = () => host.send({ type: "SHUTDOWN" });
     process.once("SIGINT", onSignal);
     process.once("SIGTERM", onSignal);

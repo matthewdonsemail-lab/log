@@ -1,12 +1,3 @@
-/**
- * A flow definition → an XState machine: one state per recorded step, in
- * order, each invoking the `act` actor (the open inspect session does the
- * step and waits for its confirming request). A step that fails ends the run
- * in `failed`; nothing is retried on Facebook.
- *
- *   s01_goto… ─▶ s02_click… ─▶ … ─▶ done
- *        └──────────┴─── any step fails ──▶ failed
- */
 import { assign, fromPromise, setup } from 'xstate'
 import type { FlowActInput, FlowDefinition, FlowRunOutput, FlowStepResult } from './types'
 
@@ -16,10 +7,8 @@ interface FlowContext {
   failedAt: string | null
 }
 
-/** The machine for one flow. Its only side effect is `act`, which the caller provides. */
 export function createFlowMachine(definition: FlowDefinition) {
   const ids = definition.steps.map((s) => s.id)
-  // The states are built from the definition at run time, so they are typed loosely here.
   type Args = { context: FlowContext; event: { output?: FlowStepResult; error?: unknown } }
   const record = (failedAt: string | null) =>
     assign(({ context, event }: { context: FlowContext; event: unknown }) => {

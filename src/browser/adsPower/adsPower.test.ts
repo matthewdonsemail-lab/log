@@ -8,7 +8,6 @@ import { AdsPowerError, createAdsPowerClient } from './index'
 import type { AdsPowerClient, AdsPowerProfile } from './index'
 import { planSync, profileRequest, remarkAccountId, syncProfiles, twentyRemark } from './index'
 
-/** A Local API that answers from a script, recording every call. */
 function fakeFetch(answers: Record<string, unknown[]>) {
   const calls: { path: string; body: unknown; auth: string | null }[] = []
   const impl = async (url: string, init?: RequestInit) => {
@@ -21,7 +20,6 @@ function fakeFetch(answers: Record<string, unknown[]>) {
   return { impl, calls }
 }
 
-/** An in-memory AdsPower, for sync and driver tests. */
 function memoryAdsPower(profiles: AdsPowerProfile[] = []) {
   const log: string[] = []
   const client: AdsPowerClient = {

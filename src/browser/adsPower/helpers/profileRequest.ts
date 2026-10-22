@@ -2,17 +2,9 @@ import { HOME_COUNTRIES } from '../../../marketplace/home/index'
 import type { FacebookAccount } from '../../../marketplace/socialAccount/index'
 import type { CreateProfileBody } from '../types'
 
-/** The remark that ties a profile back to its Twenty record, so a lost link can be found again. */
 export const twentyRemark = (accountId: string) => `log-cli twenty:${accountId}`
 export const remarkAccountId = (remark: string | null): string | null => remark?.match(/twenty:(\S+)/)?.[1] ?? null
 
-/**
- * The create body for an account's profile. A Windows Chrome profile (the engine most
- * Facebook users run, SubQ's `commonEngine`), the language pinned from the home country
- * (rule 16, HOME_COUNTRIES), timezone and geolocation from the exit IP, and AdsPower's
- * per-profile canvas, WebGL image, audio, client-rects and media-device noise (the
- * `renderUniqueness` issue). No proxy: the gate sets it at open (rule 12). Pure.
- */
 export function profileRequest(account: FacebookAccount, groupId: string): CreateProfileBody | null {
   const home = HOME_COUNTRIES[account.homeCountry ?? '']
   if (!home) return null

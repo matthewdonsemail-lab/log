@@ -1,19 +1,9 @@
-// Gate: enforces the {library}/{domain}/ convention in docs/namingConventions.md.
-//
-// For src/ and bin/:
-// 1. Every directory and every .ts file name is camelCase (never kebab-case).
-// 2. Every domain (src/{library}/{domain}) has an index.ts entrypoint.
-// 3. Every helpers/ directory has an index.ts barrel.
-// 4. No helper imports its parent domain's barrel (../index).
-// 5. No kebab-case string literal in src/, bin/, scripts/, python/, and no
-//    kebab-case file or folder name in skills/, python/, scripts/.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const CAMEL = /^[a-z][a-zA-Z0-9]*$/;
-// `.test` is a role suffix, not part of the name: `filterListings.test.ts`.
 const TS_FILE = /^([a-z][a-zA-Z0-9]*)(\.test)?\.ts$/;
 const violations = [];
 const rel = (path) => relative(root, path).split(sep).join('/');
@@ -59,17 +49,8 @@ function checkDomains(src) {
   }
 }
 
-// Names we can't rename (other systems' spellings). Everything else is camelCase.
 const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)+$/;
-// zone-custom: 2Captcha proxy username token (src/proxyVendor/twoCaptcha).
-// 2-digit: Intl.DateTimeFormat option value (src/marketplace/home).
-// set-cookie, proxy-authorization: HTTP header names (src/rea/capture).
-// mcp-session-id: the MCP spec's Streamable HTTP session header (src/mcp/server).
-// inspect-web-network-capture, analyze-javascript-application: rea-agents commands (src/rea/capture).
-// wilkes-barre: the real city name in Pennsylvania (src/marketplace/home).
-// Numbers joined by dashes (`3-5`, `300-600`: the warm-up's draws, rule 36; a date, `2026-10-19`) are quantities, not names: rule 1 doesn't apply.
 const ALLOWED_KEBAB = [/^\d+(?:-\d+)+$/, /^2-digit$/, /^rev-parse$/, /^ls-files$/, /^xdg-open$/, /^zone-custom$/, /^set-cookie$/, /^content-type$/, /^proxy-authorization$/, /^mcp-session-id$/, /^x-fb-friendly-name$/, /^inspect-web-network-capture$/, /^analyze-javascript-application$/, /^photo-\d+-[0-9a-f]+$/, /^x{8}-x{4}-4x{3}-yx{3}-x{12}$/, /^wilkes-barre$/, /^aria-[a-z]+$/, /^subq-snap-preview$/, /^[a-z]{2}-[a-z0-9]{1,3}$/];
-// A single- or double-quoted string on one line.
 const LITERAL = /(['"])((?:(?!\1)[^\\\n])*)\1/g;
 
 function checkLiterals(dir) {
@@ -98,7 +79,6 @@ function checkNames(dir) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     if (entry.name === '__pycache__' || entry.name.startsWith('.')) continue;
     const base = entry.name.replace(/\.[^.]+$/, '');
-    // SKILL.md is the skill format's fixed file name.
     if (entry.name !== 'SKILL.md' && KEBAB.test(base)) {
       violations.push(`${rel(join(dir, entry.name))}: name must be camelCase, never kebab-case.`);
     }

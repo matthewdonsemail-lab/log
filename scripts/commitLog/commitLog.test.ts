@@ -1,7 +1,5 @@
 import { describe, expect, test } from "bun:test";
-// @ts-expect-error plain .mjs script, no types
 import { collectDeclarations, diffDeclarations, renderSummary } from "./astSummary.mjs";
-// @ts-expect-error plain .mjs script, no types
 import { AST_HEADING, addedLines, astBlock, checkAdded, renderEntry, replaceLastAstBlock } from "./commitLog.mjs";
 
 describe("astSummary", () => {

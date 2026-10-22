@@ -1,10 +1,8 @@
 import { parseArgs } from "../../runner/helpers/index.ts";
 
-/** What `log facebook read` can read. Only Facebook groups for now. */
 export const READ_TARGETS = ["group"] as const;
 export type ReadTarget = (typeof READ_TARGETS)[number];
 
-/** Scrolls down the feed at most, and posts whose comments are read at most, when not given. */
 export const DEFAULT_SCROLLS = 6;
 export const DEFAULT_COMMENT_POSTS = 5;
 
@@ -12,9 +10,7 @@ export type ParseReadArgsResult =
   | { ok: true; target: ReadTarget; account: string | null; group: string | null; scrolls: number; commentPosts: number; live: boolean; show: boolean; bypass: boolean; json: boolean }
   | { ok: false; error: string };
 
-/** `group [--account <a>] [--group <g>] [--scrolls <n>] [--commentPosts <n>] [--live] [--show] [--bypass] [--json] `. Pure. */
 export function parseReadArgs(argv: string[]): ParseReadArgsResult {
-  // OpenMagpie's worker moved to its own command (rule 63).
   if (argv.some((a) => a === "--worker" || a.startsWith("--worker="))) return { ok: false, error: "--worker became its own command: log facebook poll --request <request json>" };
   const parsed = parseArgs(argv, { boolean: ["json", "live", "show", "bypass"], valued: ["account", "group", "scrolls", "commentPosts"] });
   if (!parsed.ok) return parsed;

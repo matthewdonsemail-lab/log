@@ -10,7 +10,6 @@ describe('parseInspectAction', () => {
     expect(parseInspectAction(['type', 'e12', 'Allentown', 'Trash'])).toEqual({ ok: true, action: 'type', args: ['e12', 'Allentown', 'Trash'] })
     expect(parseInspectAction(['click'])).toMatchObject({ ok: false })
     expect(parseInspectAction(['hover'])).toMatchObject({ ok: false })
-    // Warm-up actions (rule 35): ranges are optional for scroll and dwell.
     expect(parseInspectAction(['scroll'])).toEqual({ ok: true, action: 'scroll', args: [] })
     expect(parseInspectAction(['scroll', '4-7', '300-600'])).toEqual({ ok: true, action: 'scroll', args: ['4-7', '300-600'] })
     expect(parseInspectAction(['openAny', '/marketplace/item/', '2-4'])).toMatchObject({ ok: true, action: 'openAny' })

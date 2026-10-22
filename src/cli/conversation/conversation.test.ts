@@ -70,7 +70,6 @@ describe("log facebook conversation", () => {
     expect((await run(["facebook", "conversation", "lead", id, "SPAM"], twenty)).out).toBe("Lead is now spam.");
     expect((await run(["facebook", "conversation", "lead", id, "WHATEVER"], twenty)).code).toBe(1);
 
-    // A listing on another account is refused; the account's own is linked.
     expect((await run(["facebook", "conversation", "link", id, "--listing", "liveTwo"], twenty)).err).toContain("on another account");
     expect((await run(["facebook", "conversation", "link", id, "--listing", "readyOne"], twenty)).out).toContain("Linked to listing readyOne");
     expect((await run(["facebook", "conversations", "--listing", "readyOne", "--json"], twenty)).out).toContain('"leadStatus": "spam"');

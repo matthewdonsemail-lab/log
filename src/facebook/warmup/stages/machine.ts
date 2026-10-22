@@ -1,16 +1,3 @@
-/**
- * The warm-up machine (rule 35): runs the recorded activity flows one after
- * another in the one open browser, spaced by `gapMs`.
- *
- *   picking ─▶ running (runActivity) ─ok─▶ resting ─after gap─▶ picking ─ none left ─▶ done
- *                 ├── the page went to a checkpoint or a login ─▶ blocked (the account's issue)
- *                 └── a step failed ─▶ stopped (the activity and step are in the stage log)
- *   STOP (anywhere) ─▶ stopped
- *
- * `runActivity` is the one side effect, provided by the caller: `log facebook warmup stages run`
- * runs the activity's flow in its inspect session; tests script it. The same
- * activities are the lifecycle machine's `warmupActivity` (onboarding.warming).
- */
 import { assign, fromPromise, setup } from 'xstate'
 import type { ActivityOutcome, WarmupActivity, WarmupContext, WarmupInput } from './types'
 
@@ -29,7 +16,6 @@ export const warmupMachine = setup({
   guards: {
     activityLeft: ({ context }) => context.activities.some((a) => !context.done.includes(a)),
     ok: (_, outcome: ActivityOutcome) => outcome.ok,
-    // The account itself, not the step: the warm-up can't go on in this browser (the lifecycle's issue route).
     accountIssue: (_, outcome: ActivityOutcome) => !outcome.ok && (outcome.issue === 'checkpointed' || outcome.issue === 'loginWall' || outcome.issue === 'restrictedPolicy')
   },
   delays: {
@@ -88,7 +74,6 @@ export const warmupMachine = setup({
       after: { gap: 'picking' }
     },
     done: { type: 'final' },
-    /** A checkpoint, a sign-out or a restriction: the account goes to the lifecycle's issue route, not the next activity. */
     blocked: { type: 'final' },
     stopped: { type: 'final' }
   },

@@ -3,7 +3,6 @@ import type { ClientOperation, OperationSighting } from '../types'
 
 export const FACTS_START = '<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->'
 export const FACTS_END = '<!-- facts:end -->'
-/** Left in a reasoning section until someone writes it. `scripts/checks/checkFacebookClientDocs.mjs` refuses a push while any remain. */
 export const TO_WRITE = '<!-- toWrite -->'
 
 const REASONING = [
@@ -12,11 +11,6 @@ const REASONING = [
   ['What can go wrong', 'The errors and statuses it can return, what each means for the run, and the end or retry our machine takes.']
 ] as const
 
-/**
- * A step line made safe to commit: the docs are shared, the captures are
- * not (rule 19). Exit IPs, account ids and full URLs are removed; what the
- * step was doing stays. Pure.
- */
 export function stepLabel(step: string): string {
   return step
     .replace(/\b\d{1,3}(?:\.\d{1,3}){3}\b/g, '<ip>')
@@ -28,7 +22,6 @@ export function stepLabel(step: string): string {
       }
     })
     .replace(/\b\d{6,}\b/g, '<id>')
-    // The page's text starts with the account's display name ("says: Yuli We suspect…").
     .replace(/says:\s+[A-Z][\w'-]*/g, 'says: <name>')
     .trim()
     .replace(/"[^"]*"/g, '"…"')
@@ -41,11 +34,9 @@ const range = (values: number[]): string => {
   return min === max ? `${min} ms` : `${min}–${max} ms`
 }
 
-/** Sightings grouped by action and step: how often, how fast, and what came back. Pure. */
 export function renderSightings(sightings: OperationSighting[]): string {
   const groups = new Map<string, OperationSighting[]>()
   for (const s of sightings) {
-    // A sighting kept from a run split before report lines stopped being steps: its step is unknown, never the report.
     const step = REPORT_LINE.test(s.step) ? 'a step (older run, split by its report lines)' : stepLabel(s.step)
     const key = `${s.action}\u0000${step}`
     groups.set(key, [...(groups.get(key) ?? []), s])
@@ -68,7 +59,6 @@ export function renderSightings(sightings: OperationSighting[]): string {
 
 const code = (values: string[]): string => (values.length ? values.map((v) => `\`${v}\``).join(', ') : '—')
 
-/** The generated part of one operation's doc; `sightings` is the table when the facts store gives it (rule 66). Pure. */
 export function renderFacts(operation: ClientOperation, sightings = renderSightings(operation.sightings)): string {
   return [
     FACTS_START,
@@ -90,11 +80,6 @@ export function renderFacts(operation: ClientOperation, sightings = renderSighti
   ].join('\n')
 }
 
-/**
- * The whole doc: the title, the facts block (replaced every build), and the
- * reasoning sections. Reasoning someone wrote is kept exactly as it is; a
- * new doc gets each section with `TO_WRITE` and a one-line prompt. Pure.
- */
 export function renderOperationDoc(operation: ClientOperation, existing: string | null, sightings?: string): string {
   const facts = renderFacts(operation, sightings)
   if (existing && existing.includes(FACTS_START) && existing.includes(FACTS_END)) {

@@ -6,21 +6,17 @@ interface HarEntry {
   response: { status: number; content?: { text?: string } }
 }
 
-/** The calls that answer a Join, as recorded on Bethlehem's groups, 2026-10-20. */
 const JOIN_MUTATIONS = ['GroupCometJoinForumMutation', 'useGroupRequestToJoinMutation']
 const PARTICIPATION_QUERY = 'GroupsCometRequestToParticipateOnJoinDialogQuery'
 const MEMBERSHIP_QUERY = 'GroupsCometMembershipQuestionsPreloadedDialogQuery'
-/** The answers' Submit (Complainers of Bethlehem, 2026-10-20). */
 const ANSWERS_MUTATION = 'useGroupMembershipAnswersSaveMutation'
 
 const fieldIn = (text: string, name: string) => new RegExp(`"${name}":"([A-Z_]+)"`).exec(text)?.[1] ?? null
 
-/** A GraphQL call's friendly name, from its form body (`fb_api_req_friendly_name=…`). */
 function operationOf(body: string): string | null {
   return /(?:^|&)fb_api_req_friendly_name=([A-Za-z0-9_]+)/.exec(body)?.[1] ?? null
 }
 
-/** The response's `data.group` (Facebook may stream several documents, one per line; a `for (;;);` prediction has none). */
 function groupOf(text: string): Record<string, unknown> | null {
   for (const line of text.split(/\r?\n/)) {
     if (!line.startsWith('{')) continue
@@ -28,7 +24,6 @@ function groupOf(text: string): Record<string, unknown> | null {
       const group = (JSON.parse(line) as { data?: { group?: Record<string, unknown> } }).data?.group
       if (group) return group
     } catch {
-      // not this line
     }
   }
   return null
@@ -37,13 +32,11 @@ function groupOf(text: string): Record<string, unknown> | null {
 const str = (v: unknown) => (typeof v === 'string' && v ? v : null)
 const bool = (v: unknown) => (typeof v === 'boolean' ? v : null)
 
-/** `PARAGRAPH` → paragraph; a type no recording has shown is notRecorded. Pure. */
 function typeOf(raw: string): JoinQuestion['type'] {
   const camel = raw.toLowerCase().replace(/_([a-z])/g, (_, c: string) => c.toUpperCase())
   return (JOIN_QUESTION_TYPES as readonly string[]).includes(camel) ? (camel as JoinQuestion['type']) : 'notRecorded'
 }
 
-/** `if_viewer_can_see_*_questions.questions[]`: id, question, question_type, question_options[{id, question_option}]. */
 function questionsFrom(block: unknown, stage: JoinQuestion['stage']): JoinQuestion[] {
   const list = (block as { questions?: Record<string, unknown>[] } | null)?.questions ?? []
   return list.map((q) => ({
@@ -61,14 +54,6 @@ function rulesFrom(group: Record<string, unknown>): JoinRule[] {
   return nodes.map((n) => ({ id: String(n.id ?? ''), title: String(n.rule_title ?? ''), description: String((n.description_with_entities as { text?: string } | undefined)?.text ?? '') }))
 }
 
-/**
- * The join options, from the click step's HAR (rule 25): which mutation
- * joined and its `viewer_join_state`, then the questions query that followed,
- * participation (public groups, before posting) or membership (private ones,
- * before the request is reviewed), with each question's id, type and options,
- * the rules and whether they must be agreed. Calls not in the HAR stay null:
- * nothing is guessed. Pure.
- */
 export function readJoinOptions(har: { log: { entries: HarEntry[] } }): JoinOptions {
   const options: JoinOptions = {
     path: 'unknown',
@@ -89,7 +74,6 @@ export function readJoinOptions(har: { log: { entries: HarEntry[] } }): JoinOpti
   for (const entry of har.log.entries) {
     const operation = operationOf(entry.request.postData?.text ?? '')
     const text = entry.response.content?.text ?? ''
-    // The group page's own HTML states the membership on every load (step 20: REQUESTED, NO_ANSWER).
     if (!operation && entry.request.method === 'GET' && /\/groups\/[^/?#]+\/?$/.test((entry.request.url ?? '').split('?')[0])) {
       const state = fieldIn(text, 'viewer_join_state')
       if (state && !options.joinOperation) {
@@ -124,7 +108,6 @@ export function readJoinOptions(har: { log: { entries: HarEntry[] } }): JoinOpti
     options.questionsQueried = true
     const membership = questionsFrom(group.if_viewer_can_see_membership_questions, 'membership')
     const participation = questionsFrom(group.if_viewer_can_see_participation_questions, 'participation')
-    // The same query is answered twice (preloaded, then opened): the last full answer stands.
     options.questions = [...membership, ...participation]
     options.forumJoinState = str(group.viewer_forum_join_state) ?? options.forumJoinState
     options.mustAnswerToSubmit = bool(group.viewer_must_answer_membership_question_to_submit) ?? options.mustAnswerToSubmit
@@ -144,7 +127,6 @@ export function readJoinOptions(har: { log: { entries: HarEntry[] } }): JoinOpti
   return options
 }
 
-/** The path the answers show (`JOIN_PATHS`). Pure. */
 export function pathOf(options: Pick<JoinOptions, 'viewerJoinState' | 'questions' | 'rulesAgreementRequired' | 'questionsQueried'>): JoinPath {
   if (options.viewerJoinState === 'REQUESTED') return 'request'
   if (options.viewerJoinState !== 'MEMBER') return 'unknown'
@@ -153,23 +135,8 @@ export function pathOf(options: Pick<JoinOptions, 'viewerJoinState' | 'questions
   return 'instant'
 }
 
-/**
- * The `viewer_join_state` values a recording has shown, and what each means
- * (Bethlehem's groups, 2026-10-20). Any other value is kept raw, read as
- * unknown and marked ambiguous until a recording names it (rule 29).
- */
 const JOIN_STATES: Record<string, GroupJoinStatus> = { MEMBER: 'member', REQUESTED: 'requested' }
 
-/**
- * Where the account stands after Join, inferred from what Facebook answered
- * first and the page second, saying which decided (rule 25). After a Join a
- * group may ask nothing (a member at once), ask for the rules or questions
- * before posting, or take a request with questions for its admins. Pure.
- *
- *   status    viewer_join_state, else the page's Joined / Join button
- *   posting   open: nothing asked; rulesAgreement; questions; unknown
- *   ambiguous true when the membership came from the page alone, or from a value not recorded yet
- */
 export function inferJoinState(options: JoinOptions | null, page: GroupPage | null, dialog: JoinDialog | null): JoinInference {
   const from: string[] = []
   let status: GroupJoinStatus = 'unknown'
@@ -187,7 +154,6 @@ export function inferJoinState(options: JoinOptions | null, page: GroupPage | nu
     posting = options.questions.length ? 'questions' : options.rulesAgreementRequired ? 'rulesAgreement' : 'open'
     from.push(`${options.questions.length} question(s), rules agreement ${options.rulesAgreementRequired}`)
   } else if (options?.viewerJoinState === 'MEMBER' && !dialog) {
-    // Bethlehem, PA Neighborhood: MEMBER and no questions query at all. Open, inferred from what did not come.
     posting = 'open'
     from.push('no questions query after Join, no dialog')
   } else if (dialog) {

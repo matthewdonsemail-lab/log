@@ -1,13 +1,3 @@
-/**
- * Groups in Twenty (rule 45): `agencyGroups`, one row per group per account,
- * keyed on the account and Facebook's group id (or its slug until the page
- * gives the id), never on the group's name. Rows are never deleted (rule 13).
- * Nothing here touches Facebook: a run hands these what it saw.
- *
- *   ensureGroup        the account's row for the group, made on the first run
- *   patchGroupStep     after every step: the join submission (`joinSubmission`) patched with what it saw
- *   recordGroupRead    at the end: joinStatus, its reason, the name and members, lastCheckedAt
- */
 import type { TwentyClient, TwentyObjects } from '../../../twenty/graphql/index'
 import { applicationFromDraft } from '../answer/client'
 import { emptySubmission, patchSubmission, readSubmission } from './helpers/index'
@@ -19,7 +9,6 @@ export const AGENCY_GROUPS = 'agencyGroups' as const
 type GroupRow = TwentyObjects['agencyGroups']['row']
 type GroupUpdate = TwentyObjects['agencyGroups']['update']
 
-/** `notMember` ↔ Twenty's `NOT_MEMBER`. Pure. */
 export const toJoinStatusEnum = (status: GroupJoinStatus) => status.replace(/[A-Z]/g, (c) => `_${c}`).toUpperCase() as NonNullable<GroupRow['joinStatus']>
 
 export function fromJoinStatusEnum(raw: unknown): GroupJoinStatus | null {
@@ -44,7 +33,6 @@ export function toGroup(row: GroupRow): Group {
   }
 }
 
-/** The account's row for a group: by Facebook's id, or by the slug the run was given. */
 export async function findGroup(twenty: TwentyClient, socialAccountId: string, keys: string[]): Promise<Group | null> {
   const wanted = [...new Set(keys.filter(Boolean))]
   if (!wanted.length) return null
@@ -52,12 +40,10 @@ export async function findGroup(twenty: TwentyClient, socialAccountId: string, k
   return rows[0] ? toGroup(rows[0]) : null
 }
 
-/** Every group row of one account. */
 export async function listGroups(twenty: TwentyClient, socialAccountId: string): Promise<Group[]> {
   return (await twenty.list(AGENCY_GROUPS, { socialAccountId: { eq: socialAccountId } })).map(toGroup)
 }
 
-/** The row, made with an empty submission when the account has none for this group yet. */
 export async function ensureGroup(twenty: TwentyClient, socialAccountId: string, group: GroupRef): Promise<Group> {
   const existing = await findGroup(twenty, socialAccountId, [group.key])
   if (existing) return existing
@@ -71,15 +57,8 @@ export async function ensureGroup(twenty: TwentyClient, socialAccountId: string,
   return toGroup(row)
 }
 
-/**
- * After one step: the submission patched with the form as the run now sees
- * it (phase, questions, submittedAt) and one history entry for the step.
- * Returns the row as Twenty now holds it.
- */
 export async function patchGroupStep(twenty: TwentyClient, group: Group, context: Pick<GroupJoinContext, 'formPhase' | 'dialog' | 'options' | 'inference' | 'questions' | 'submittedAt'>, step: { step: string; detail: string; folder: string | null }, now: Date): Promise<Group> {
-  // A step that saw no form leaves the phase as the last one that did (a reload hides the dialog).
   const patch: Partial<Omit<GroupJoinSubmission, 'history'>> = context.formPhase === 'idle' ? {} : { formPhase: context.formPhase }
-  // The dialog as this step read it replaces the last one whole: its questions, agreements, rules, Submit.
   if (context.dialog) {
     Object.assign(patch, {
       dialogTitle: context.dialog.title,
@@ -93,7 +72,6 @@ export async function patchGroupStep(twenty: TwentyClient, group: Group, context
   if (context.submittedAt) patch.submittedAt = context.submittedAt
   if (context.options) {
     patch.options = context.options
-    // Facebook's own questions win over the page's reading; a question's option boxes (Yes / No) are not rules to agree.
     if (context.options.questions.length) patch.questions = context.options.questions.map((q) => q.prompt)
     const optionLabels = new Set(context.options.questions.flatMap((q) => q.options.map((o) => o.label)))
     if (patch.agreements) patch.agreements = patch.agreements.filter((a) => !optionLabels.has(a))
@@ -105,17 +83,6 @@ export async function patchGroupStep(twenty: TwentyClient, group: Group, context
   return toGroup(row)
 }
 
-/**
- * The run's end on the row: where the account stands, why (with the run
- * folder), the group's name and members. The key becomes Facebook's numeric
- * id as soon as the page shows it. A run that never read the page writes
- * only its reason.
- */
-/**
- * The Clack stepper's answers, saved to `joinSubmission.draft` with the phase
- * `incomplete` (the hackathon's "drafts saved, not sent") and a history line.
- * Nothing is sent to Facebook: the answers wait in Twenty.
- */
 export async function saveDraft(twenty: TwentyClient, group: Group, draft: JoinDraft, complete: { complete: boolean; missing: string[] }, now: Date): Promise<Group> {
   const joinSubmission = patchSubmission(
     group.joinSubmission,

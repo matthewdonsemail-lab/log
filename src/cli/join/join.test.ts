@@ -73,7 +73,6 @@ describe("log facebook join group", () => {
 
   test("--live as on Bethlehem: a member, the Participant questions dialog kept in joinSubmission and read back by --show", async () => {
     openBrowser();
-    // The step folder the session wrote, with its snapshot.yml (the CLI reads it whole).
     const folder = mkdtempSync(join(tmpdir(), "logJoinStep"));
     writeFileSync(join(folder, "snapshot.yml"), recordedAfterJoin);
     const asked = { ok: true, url: GROUP, interactive: [], folder } as InspectStepResult;
@@ -128,14 +127,12 @@ describe("log facebook join group", () => {
   });
 
   test("--answer: the Clack stepper over a private group's recorded questions, saved to Twenty as the draft, nothing sent", async () => {
-    // The --live join first, as Complainers of Bethlehem answered it (its click HAR, cut).
     openBrowser();
     const folder = mkdtempSync(join(tmpdir(), "logJoinClick"));
     const click = { ok: true, url: GROUP, folder } as InspectStepResult;
     const twenty = marketplaceFixture();
     const joined = await run(["facebook", "join", "group", "--account", "galwayOne", "--group", GROUP, "--live"], [recordedGroupPage() as InspectStepResult, click, { ok: true, url: GROUP } as InspectStepResult], twenty);
     expect(joined.code).toBe(0);
-    // The click HAR is read by the CLI from the step folder: write the recorded one there and patch it in as a run would.
     const row = twenty.rows.agencyGroups[0] as unknown as { joinSubmission: Record<string, unknown> };
     row.joinSubmission = { ...row.joinSubmission, options: readJoinOptions(recordedJoinHar("complainersOfBethlehem")) };
 
@@ -188,7 +185,6 @@ describe("log facebook join group", () => {
     const twenty = marketplaceFixture();
     const row = twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")!;
     Object.assign(row, { activeHoursStart: 8, activeHoursEnd: 22 });
-    // 23:30 in Galway (IE, UTC+1 in October): outside 08:00-22:00.
     const late = () => new Date("2026-10-20T22:30:00Z");
     const refused = await runCli(["facebook", "join", "group", "--account", "galwayOne", "--group", GROUP], { twenty, now: late, sendInspect: async () => null, out: () => {}, err: () => {} });
     expect(refused).toBe(1);
@@ -204,7 +200,6 @@ describe("log facebook join group", () => {
     expect(code).toBe(0);
     expect(sent).toEqual(["goto"]);
     expect(err.join("\n")).toContain("--bypass: the waking-hours gate is skipped for this run only");
-    // --show only reads Twenty: never gated.
     expect(await runCli(["facebook", "join", "group", "--account", "galwayOne", "--group", GROUP, "--show"], { twenty, now: late, out: () => {}, err: () => {} })).toBe(0);
   });
 

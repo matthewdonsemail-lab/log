@@ -1,8 +1,3 @@
-/**
- * `log errors` — the error catalog: every code, what it means, whether it
- * clears by itself, and where each machine ends up. `log graph` — a machine's
- * states and transitions as Mermaid, read from the machine itself.
- */
 import { ERROR_CATALOG, isErrorCode } from "../../errors/catalog/index.ts";
 import type { ErrorLayer } from "../../errors/catalog/index.ts";
 import { toMermaid } from "../../observability/graph/index.ts";
@@ -39,7 +34,6 @@ export const errorsCommand: Command = {
     }
     if (parsed.flags["markdown"]) return { code: 0, stdout: renderCatalogMarkdown() };
     if (parsed.flags["json"]) {
-      // Also the export Python reads (python/errors/errorCatalog.json), so keep it the whole catalog when unfiltered.
       const entries = Object.fromEntries(catalogEntries(layer as ErrorLayer | undefined));
       return { code: 0, stdout: JSON.stringify(entries, null, 2) };
     }

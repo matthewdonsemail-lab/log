@@ -3,12 +3,6 @@ import type { ActivityScript, WarmupActivity } from '../types'
 
 const FB = 'https://www.facebook.com'
 
-/**
- * How each activity is recorded: the inspect commands, in order, from Listaro's
- * stage functions (`account-warmup.ts`), with its ranges. Listaro scrolled with
- * `window.scrollBy` jumps and opened the first N listings in page order; here
- * `scroll` is real wheel ticks and `openAny` picks at random each run.
- */
 export const ACTIVITY_SCRIPTS: Record<WarmupActivity, ActivityScript> = {
   feedBrowse: {
     activity: 'feedBrowse',
@@ -75,10 +69,8 @@ export const ACTIVITY_SCRIPTS: Record<WarmupActivity, ActivityScript> = {
   }
 }
 
-/** The activities in Listaro's stage order, with their scripts. */
 export const SCRIPTS_IN_ORDER: ActivityScript[] = WARMUP_ACTIVITIES.map((a) => ACTIVITY_SCRIPTS[a])
 
-/** `feedBrowse,sellingVisit` → those activities, in stage order; anything unknown is named. Pure. */
 export function pickActivities(only: string | undefined): { ok: true; activities: WarmupActivity[] } | { ok: false; error: string } {
   if (!only) return { ok: true, activities: [...WARMUP_ACTIVITIES] }
   const asked = only.split(',').map((a) => a.trim()).filter(Boolean)

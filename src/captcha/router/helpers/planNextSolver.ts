@@ -1,17 +1,6 @@
 import { SOLVER_DEAD_CODES } from '../types'
 import type { CaptchaAttempt, CaptchaDetection, CaptchaPlan, CaptchaPolicy, CaptchaSolverName, SolverAvailability } from '../types'
 
-/**
- * Pick the next solver for the captcha on screen. Pure.
- *
- * - reCAPTCHA: CaptchaKraken (solves in our own browser, on our own IP), then
- *   a 2Captcha token.
- * - Arkose: 2Captcha only, capped per account per day.
- * - Facebook's own challenge, or anything unrecognised: a person.
- *
- * `attempts` are this run's attempts, oldest first. `arkoseToday` counts this
- * account's 2Captcha Arkose attempts today (from the ledger).
- */
 export function planNextSolver(
   detection: CaptchaDetection,
   attempts: CaptchaAttempt[],
@@ -35,7 +24,6 @@ export function planNextSolver(
     availability[solver] && !attempts.some((a) => a.solver === solver && a.code && SOLVER_DEAD_CODES.has(a.code))
 
   if (detection.kind === 'recaptcha' || detection.kind === 'textImage') {
-    // A text image goes the same way: CaptchaKraken reads it on the page, 2Captcha's image solver after.
     const label = detection.kind === 'recaptcha' ? 'reCAPTCHA' : 'text image'
     if (usable('captchaKraken') && tries('captchaKraken') < policy.krakenAttempts) {
       return { solver: 'captchaKraken', reason: `${label}, CaptchaKraken try ${tries('captchaKraken') + 1}/${policy.krakenAttempts}` }
@@ -44,7 +32,6 @@ export function planNextSolver(
       return { solver: 'twoCaptcha', reason: detection.kind === 'recaptcha' ? 'reCAPTCHA, 2Captcha token fallback' : 'text image, 2Captcha image fallback' }
     }
   } else {
-    // arkose
     if (!availability.twoCaptcha) {
       return { solver: null, reason: 'noSolverConfigured', detail: 'Arkose needs 2Captcha (2CAPTCHA_API_KEY); CaptchaKraken does not support it' }
     }

@@ -37,7 +37,6 @@ describe("toCheckOutcome", () => {
       detail: "TimeoutError: nav",
       retryable: true,
     });
-    // Retryable comes from the catalog, not from parsing the message.
     expect(toCheckOutcome({ ok: false, code: "badRequest", detail: "params.listingId is required" })).toMatchObject({
       kind: "error",
       retryable: false,
@@ -52,11 +51,9 @@ describe("log facebook watch", () => {
     expect(code).toBe(0);
     expect(err).toContain("checking");
     expect(err).toContain("done");
-    // 111 (liveOne) is live in Twenty but missing from this scan: DELETED_BY_FB, repost approved.
     expect(out).toContain("111");
     expect(out).toContain("DELETED_BY_FB");
     expect(out).toContain("Nothing was posted.");
-    // Only this account's rows are synced: card 222 belongs to galwayTwo, so its row is untouched.
     expect(twenty.rows.agencyListings.find((r) => r.id === "liveTwo")!.clicksCount).toBeUndefined();
   });
 
@@ -95,7 +92,6 @@ describe("log facebook watch keeps to the account's local hours (rule 18)", () =
       started++;
       return SCAN;
     }) as unknown as WorkerClient;
-    // 21:59 in Galway when the watch starts, 22:30 by the second check.
     const clock = [new Date("2026-10-18T20:59:00Z"), new Date("2026-10-18T20:59:30Z"), new Date("2026-10-18T21:30:00Z")];
     const now = () => clock.shift() ?? new Date("2026-10-18T21:30:00Z");
     const out: string[] = [];

@@ -1,12 +1,3 @@
-// Ranks ways to point REA at the Camoufox session.
-// Usage: SUBQ_API_KEY=... node docs/rea/matrix/runMatrix.mjs [--dry-run]
-// State: docs/rea/spec.md, the three Parallel reports, visibleBrowser.py,
-// and the identity-leak status table. Decisions API as documented at
-// https://docs.subq.ai/markdown/endpoints/decisions-api.md
-// (1-16 questions, model subq-snap-preview, 384K-token state).
-//   pass A: one choice question per criterion, 2 repeats
-//   pass B: one score pass per option, 1 run
-//   pass C: the true/false claims, 2 repeats
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";

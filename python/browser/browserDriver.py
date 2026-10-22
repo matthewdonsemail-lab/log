@@ -1,22 +1,3 @@
-"""One opener for every browser log-cli drives (rule 44): the session gets a Playwright context either way.
-
-Camoufox and AdsPower differ only in how the browser starts. Everything after is the same
-Playwright async API: HumanMouse (rule 32), scrollMotion, the flows, the warm-up, the inspect
-steps and the Recorder. So a session never asks which browser it is in.
-
-  camoufox  AsyncCamoufox(**launch_kwargs(...)), then browser.new_context(): the proxy gate's
-            launch and context guards run the gate, the device, the locale, the self-check and
-            Playwright's own session HAR (rules 11-12, 15-17, 22).
-  adsPower  proxyGate.gate_attached() (the same checks, before anything starts), the proxy put on
-            the profile, the profile started headed through the Local API, Playwright attached with
-            connect_over_cdp, the profile's own context (its cookies and fingerprint live there),
-            harRecorder.SessionHar for the session HAR, proxyGate.check_attached() (the same
-            self-check), then the session. At the end, the profile is stopped and its proxy cleared,
-            so the proxy is in AdsPower only while the browser is open (rule 42).
-
-A new browser is one more opener here, one more driver in src/browser/<name>, and a row in
-docs/browsers.md. scripts/checkBrowserParity.mjs refuses a commit that leaves one out.
-"""
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
@@ -38,7 +19,6 @@ class Opened:
 
 
 def driver_of(config: dict[str, Any]) -> tuple[str, str | None]:
-    """The session's browser from its config (`browser: {driver, profileId}`); no entry keeps Camoufox. Pure."""
     browser = config.get("browser") or {}
     driver = str(browser.get("driver") or "camoufox")
     if driver not in BROWSERS:
@@ -79,7 +59,6 @@ async def open_ads_power(config: dict[str, Any], own_trajectory: bool) -> AsyncI
             har = SessionHar(proxyGate.har_path(str(proxyGate._armed["captureDir"])))
             har.attach(context)
             try:
-                # Inside the try, so a refused self-check still leaves its HAR to read (rule 25).
                 await proxyGate.check_attached(context)
                 await carry_session_once(context, Path(config["storageStatePath"]))
                 yield Opened(browser, context, "adsPower")
@@ -87,7 +66,6 @@ async def open_ads_power(config: dict[str, Any], own_trajectory: bool) -> AsyncI
                 written = await har.write()
                 proxyGate.log(f"Session HAR: {written} request(s) to {har.path.name}")
     finally:
-        # Cleanup never hides what went wrong: a stop or proxy-clear failure is logged, the first error stands.
         if started:
             try:
                 adsPowerBrowser.stop(profile_id)
@@ -102,9 +80,6 @@ async def open_ads_power(config: dict[str, Any], own_trajectory: bool) -> AsyncI
 
 
 async def carry_session_once(context: Any, state: Path) -> None:
-    """A new AdsPower profile has no Facebook login: Twenty's saved cookies go in once, so the account
-    carries on signed in instead of signing in fresh on a new device. A profile that already holds a
-    c_user keeps its own cookies (Listaro's rule: AdsPower manages the profile's session)."""
     import json
 
     have = {c["name"] for c in await context.cookies("https://www.facebook.com")}
@@ -124,6 +99,5 @@ OPENERS = {"camoufox": open_camoufox, "adsPower": open_ads_power}
 
 
 def open_browser(config: dict[str, Any], own_trajectory: bool = True):
-    """The session's browser, gated and self-checked, as an async context manager of `Opened`."""
     driver, _profile = driver_of(config)
     return OPENERS[driver](config, own_trajectory)

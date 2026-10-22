@@ -1,10 +1,3 @@
-/**
- * `log facebook conversations` — the buyers' Marketplace conversations in Twenty (rule 34).
- * `log facebook conversation show|read|lead|link|record` — one conversation: its
- * messages, mark it read, set its lead status, tie it to a listing, or store
- * a scanned thread. Twenty only: nothing here opens a browser or writes to
- * Facebook (rule 8).
- */
 import { readFileSync } from "node:fs";
 import {
   getConversation,

@@ -1,9 +1,7 @@
 import { parseArgs } from "../../runner/helpers/index.ts";
 
-/** What `log facebook poll` can poll. Only groups for now. */
 export const POLL_TARGETS = ["group"] as const;
 
-/** How long a poll may keep polling, at most (an account's day). */
 export const MAX_POLL_MS = 24 * 3_600_000;
 
 export type ParsePollArgsResult =
@@ -11,7 +9,6 @@ export type ParsePollArgsResult =
   | { ok: true; mode: "request"; request: string }
   | { ok: false; error: string };
 
-/** `30s`, `45m`, `2h` → ms; anything else is null. Pure. */
 export function durationMs(text: string): number | null {
   const match = /^(\d+)(s|m|h)$/.exec(text.trim());
   if (!match) return null;
@@ -19,10 +16,6 @@ export function durationMs(text: string): number | null {
   return ms > 0 && ms <= MAX_POLL_MS ? ms : null;
 }
 
-/**
- * `<group> <account> [<how long to poll>] [--bypass]` (matt's words, rule 63), or `--request <json>` (OpenMagpie's
- * worker, one poll, nothing else beside it). Pure.
- */
 export function parsePollArgs(argv: string[]): ParsePollArgsResult {
   const parsed = parseArgs(argv, { boolean: ["bypass"], valued: ["request"] });
   if (!parsed.ok) return parsed;

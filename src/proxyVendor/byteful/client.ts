@@ -1,16 +1,9 @@
-/**
- * The Byteful calls log-cli makes. Read-only, except that a residential list
- * only generates proxy strings on the plan we already have: nothing here buys,
- * cancels or changes a service (a checkout is only quoted). The keys go in
- * headers; they are never printed or put in an error.
- */
 import { BytefulError } from './types'
 import type { BytefulCity, BytefulCredentials, BytefulQuote, BytefulResidentialRequest, BytefulResidentialSummary, BytefulStaticProxy } from './types'
 
 const API = 'https://api.byteful.com/1.0'
 const TIMEOUT_MS = 20_000
 
-/** `BYTEFUL_PUBLIC_KEY` and `BYTEFUL_PRIVATE_KEY`, or which one is missing. */
 export function bytefulCredentials(env: Record<string, string | undefined> = process.env): BytefulCredentials | { missing: string } {
   const publicKey = (env.BYTEFUL_PUBLIC_KEY ?? '').trim()
   const privateKey = (env.BYTEFUL_PRIVATE_KEY ?? '').trim()
@@ -38,7 +31,6 @@ async function call(creds: BytefulCredentials, path: string, what: string, fetch
 
 const num = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) ? v : typeof v === 'string' && v.trim() !== '' && Number.isFinite(Number(v)) ? Number(v) : null)
 
-/** `GET /residential/summary`: the residential plan's traffic and proxy users. */
 export async function getResidentialSummary(creds: BytefulCredentials, fetchImpl: typeof fetch = fetch): Promise<BytefulResidentialSummary> {
   const data = ((await call(creds, '/public/user/residential/summary', 'residential summary', fetchImpl)).data ?? {}) as Record<string, unknown>
   return {
@@ -49,16 +41,13 @@ export async function getResidentialSummary(creds: BytefulCredentials, fetchImpl
   }
 }
 
-/** `GET /customer/retrieve`: the account's credit balance, in cents (checkouts through the API are paid from it). */
 export async function getCreditCents(creds: BytefulCredentials, fetchImpl: typeof fetch = fetch): Promise<number> {
   const data = ((await call(creds, '/public/user/customer/retrieve', 'customer', fetchImpl)).data ?? {}) as Record<string, unknown>
   return num(data.credit_balance) ?? 0
 }
 
-/** `bethlehem` → `Bethlehem`, `wilkes-barre` → `Wilkes-Barre`: Byteful's city search is case-sensitive (2026-10-20). */
 export const cityTitle = (name: string) => name.trim().toLowerCase().replace(/(^|[\s-])([a-z])/g, (_, sep: string, ch: string) => sep + ch.toUpperCase())
 
-/** Byteful's cities of that name, anywhere, each with its coordinates and device count (`/city/search`). */
 export async function searchCities(creds: BytefulCredentials, cityName: string, fetchImpl: typeof fetch = fetch): Promise<BytefulCity[]> {
   const q = new URLSearchParams({ city_name: cityTitle(cityName), per_page: '100' })
   const data = (await call(creds, `/public/user/city/search?${q}`, 'city search', fetchImpl)).data
@@ -75,7 +64,6 @@ export async function searchCities(creds: BytefulCredentials, cityName: string, 
     .filter((c) => c.cityId && c.cityName)
 }
 
-/** One sticky residential proxy URL, from `GET /residential/list` (count 1). */
 export async function residentialProxyUrl(creds: BytefulCredentials, request: BytefulResidentialRequest, fetchImpl: typeof fetch = fetch): Promise<string> {
   const q = new URLSearchParams({ list_count: '1', list_format: request.protocol, list_session_type: 'sticky', list_session_ttl: request.ttl, proxy_user_id: request.proxyUserId, country_id: request.country.toLowerCase() })
   if (request.cityId) q.set('city_id', String(request.cityId))
@@ -86,7 +74,6 @@ export async function residentialProxyUrl(creds: BytefulCredentials, request: By
   return url as string
 }
 
-/** The static IPs (ISP, datacenter) Byteful issued to the account, each with where it is. */
 export async function staticProxies(creds: BytefulCredentials, fetchImpl: typeof fetch = fetch): Promise<BytefulStaticProxy[]> {
   const data = (await call(creds, '/public/user/proxy/search?per_page=1000', 'proxy search', fetchImpl)).data
   const rows = Array.isArray(data) ? (data as Record<string, unknown>[]) : []
@@ -105,7 +92,6 @@ export async function staticProxies(creds: BytefulCredentials, fetchImpl: typeof
   }))
 }
 
-/** `POST /checkout/quote` for static ISP IPs in a country, monthly: the price only, nothing is bought. */
 export async function quoteIsp(creds: BytefulCredentials, country: string, quantity: number, fetchImpl: typeof fetch = fetch): Promise<BytefulQuote> {
   const body = { product_type: 'isp', product_protocol: 'ipv4', country_id: country.toLowerCase(), cycle_interval: 'month', cycle_interval_count: 1, quantity }
   const data = ((await call(creds, '/public/user/checkout/quote', 'checkout quote', fetchImpl, { method: 'POST', body })).data ?? {}) as Record<string, unknown>

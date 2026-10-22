@@ -6,7 +6,6 @@ import { DOCS_INDEX, mergeOperations, operationNamesByDocId, writeOperationDocs 
 import { domainOf, formFields, importersOf, indexModules, readGraphqlDefinition, renderOperationDoc, requestsInStep, responseErrors, sliceFor, stepLabel, TO_WRITE } from "./helpers/index";
 import type { ClientOperation, FacebookModule } from "./types";
 
-// Cut down from the create page's bundle (2026-10-19), minified as Facebook serves it.
 const BUNDLE = [
   ";/*FB_PKG_DELIM*/",
   '__d("useMarketplaceComposerAttributesQuery_facebookRelayOperation",[],(function(t,n,r,o,a,i){a.exports="24482075174793922"}),null);',
@@ -127,7 +126,6 @@ describe("the docs index is cumulative", () => {
   test("a request missing from today's recordings keeps its entry and doc; one seen again keeps its larger count", () => {
     const dir = mkdtempSync(join(tmpdir(), "logDocs"));
     writeOperationDocs([op("oldMutation", 5), op("bothMutation", 4)], dir, 47);
-    // A later build that only saw two runs (the older HARs were gone).
     writeOperationDocs([op("bothMutation", 1), op("newMutation", 1)], dir, 4);
     const index = JSON.parse(readFileSync(join(dir, DOCS_INDEX), "utf8")) as { operations: { name: string; seen: number }[] };
     expect(index.operations.map((o) => [o.name, o.seen])).toEqual([["bothMutation", 4], ["newMutation", 1], ["oldMutation", 5]]);

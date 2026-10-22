@@ -1,4 +1,3 @@
-/** Human renderers for Twenty agencyListings. Pure. */
 import type { AgencyListing } from "../../../marketplace/agencyListing/index.ts";
 import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
 import { renderTable } from "../../runner/helpers/index.ts";

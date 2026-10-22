@@ -7,7 +7,6 @@ import type { GroupPost, GroupReadInput, GroupReadOutput, ReadStepInput, ReadSte
 const GROUP = "4191018610937243";
 const T = 1_792_500_000;
 
-/** A feed unit in the recorded shape (run 20261020T143506), invented values. */
 export function unit(postId: string, created: number, comments: number | null = 0) {
   return {
     __typename: "Story",
@@ -29,7 +28,6 @@ export function unit(postId: string, created: number, comments: number | null = 
   };
 }
 
-/** A comment node in the recorded shape (run 20261020T151100), invented values. */
 export function comment(postId: string, commentId: string, created: number) {
   return {
     __typename: "Comment",
@@ -48,17 +46,13 @@ const html = (data: unknown) => `<html><script type="application/json">${JSON.st
 const documentEntry = (text: string) => ({ request: { method: "GET", url: "https://www.facebook.com/" }, response: { content: { mimeType: "text/html; charset=utf-8", text } } });
 const queryEntry = (name: string, text: string) => ({ request: { postData: { params: [{ name: "fb_api_req_friendly_name", value: name }] } }, response: { content: { text } } });
 
-/** The group page: the first post in its HTML. */
 export const groupPage = (units: unknown[]) => ({ ok: true, url: `https://www.facebook.com/groups/${GROUP}/`, har: { log: { entries: [documentEntry(html({ group: { id: GROUP, group_feed: { edges: units.map((node) => ({ node })) } } }))] } } });
-/** A scroll: one feed answer, its units under edges and page_info deferred last. */
 export const feedScroll = (units: unknown[], hasNextPage: boolean) => ({
   ok: true,
   url: `https://www.facebook.com/groups/${GROUP}/`,
   har: { log: { entries: [queryEntry(FEED_QUERY, [JSON.stringify({ data: { node: { group_feed: { edges: units.map((node) => ({ node })) } } } }), JSON.stringify({ data: { page_info: { end_cursor: "C", has_next_page: hasNextPage } } })].join("\n"))] } },
 });
-/** A post's page: its first comments in its HTML. */
 export const postPage = (nodes: unknown[]) => ({ ok: true, url: `https://www.facebook.com/groups/${GROUP}/permalink/x/`, har: { log: { entries: [documentEntry(html({ node: { comments: { edges: nodes.map((node) => ({ node })), page_info: { has_next_page: true } } } }))] } } });
-/** A comment query's answer. */
 export const commentAnswer = (nodes: unknown[], hasNextPage: boolean) => ({ ok: true, url: `https://www.facebook.com/groups/${GROUP}/permalink/x/`, har: { log: { entries: [queryEntry(COMMENT_QUERIES[2], JSON.stringify({ data: { node: { comments: { edges: nodes.map((node) => ({ node })), page_info: { has_next_page: hasNextPage } } } } }))] } } });
 
 const input = (over: Partial<GroupReadInput> = {}): GroupReadInput => ({
@@ -72,7 +66,6 @@ const input = (over: Partial<GroupReadInput> = {}): GroupReadInput => ({
   ...over,
 });
 
-/** Runs the machine with scripted replies, one per step, in order; returns the output and the steps it sent. */
 async function run(replies: ReadStepReply[], over: Partial<GroupReadInput> = {}): Promise<{ output: GroupReadOutput; sent: ReadStepInput[] }> {
   const sent: ReadStepInput[] = [];
   const machine = groupReadMachine.provide({
@@ -108,7 +101,6 @@ describe("group read machine", () => {
     expect(output.commentReads).toEqual([{ postId: "3", commentCount: 2, comments: 2, problem: null }]);
     expect(output.cursor).toEqual({ lastPostId: "4", watermark: T + 40, idsAtWatermark: ["4"], seenIds: ["4", "3", "2", "1"] });
     expect(output.feedDone).toBe(true);
-    // Nothing clicked without --live (rule 8).
     expect(sent.some((s) => s.action === "clickRole")).toBe(false);
   });
 

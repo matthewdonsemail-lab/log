@@ -1,16 +1,3 @@
-// Adds what log-cli needs to Twenty: new fields on socialAccount and
-// agencyListing, the relations between them, the lifecycle values on
-// agencyListing.status, and the Marketplace side of agencyConversation and
-// agencyMessage (rule 34: a buyer's conversation about a listing), and the
-// agencyGroup object with its relation to socialAccount, and a group's posts and
-// comments (agencyGroupPost, agencyGroupComment: `log facebook read group`, #27). Additive only. It never renames, retypes or deletes a
-// field, and existing SELECT options keep their ids, so the twitter-controller
-// and the facebook-camofox-client sync keep working.
-//
-//   node scripts/twenty/twentySetup.mjs           print the plan and what's missing
-//   node scripts/twenty/twentySetup.mjs --apply   create what's missing (idempotent)
-//
-// Reads TWENTY_BASE_URL and TWENTY_API_KEY from the env or .env.local.
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -32,7 +19,6 @@ function loadEnv() {
 
 const option = (value, label, color, position) => ({ value, label, color, position })
 
-/** Fields added to socialAccount. All nullable: other platforms never set them. */
 const SOCIAL_ACCOUNT_FIELDS = [
   { name: 'homeCity', label: 'Home city', type: 'TEXT', description: 'log-cli: where the account lives, e.g. Galway' },
   { name: 'homeCountry', label: 'Home country', type: 'TEXT', description: 'log-cli: ISO 3166 alpha-2 (IE). The proxy exit and every listing must be in this country' },
@@ -87,18 +73,15 @@ const SOCIAL_ACCOUNT_FIELDS = [
   { name: 'coverPhoto', label: 'Cover photo', type: 'TEXT', description: 'log-cli: the cover (background) photo `log facebook profile setup` uploads (a URL or a local path)' },
   { name: 'profileName', label: 'Profile name', type: 'TEXT', description: 'log-cli: the name `log facebook profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days' },
   { name: 'profileSetAt', label: 'Profile set', type: 'DATE_TIME', description: 'log-cli: when `log facebook profile setup --live` last saved the profile and cover photo' },
-  // rule 35: the account lifecycle (src/marketplace/lifecycle).
   { name: 'lifecycleState', label: 'Lifecycle state', type: 'TEXT', description: 'log-cli: where the lifecycle machine has the account, e.g. onboarding.warming or host.watching (rule 35)' },
   { name: 'profileNamedAt', label: 'Profile named', type: 'DATE_TIME', description: 'log-cli: when the profile was renamed to profileName' },
   { name: 'marketplaceLocationAt', label: 'Marketplace location set', type: 'DATE_TIME', description: "log-cli: when the account's Marketplace location was confirmed in its home city" },
   { name: 'warmupStartedAt', label: 'Warm-up started', type: 'DATE_TIME', description: "log-cli: when the account's day of warm-up began (rule 35)" },
   { name: 'warmedAt', label: 'Warmed', type: 'DATE_TIME', description: 'log-cli: when the warm-up ended and the account was attached to its host (rule 35)' },
-  // rule 42: the browser is a driver (src/browser/driver); AdsPower profiles are linked here (src/adsPower/profile).
   { name: 'adsPowerProfileId', label: 'AdsPower profile', type: 'TEXT', description: "log-cli: the account's AdsPower profile id (`log adsPower sync`). The profile holds no proxy, password or cookies: those stay in Twenty" },
   { name: 'browserDriver', label: 'Browser driver', type: 'TEXT', description: 'log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42)' }
 ]
 
-/** Fields added to agencyListing. The sync fields it already has stay as they are. */
 const AGENCY_LISTING_FIELDS = [
   { name: 'description', label: 'Description', type: 'TEXT', description: 'logCli' },
   { name: 'priceCurrency', label: 'Currency', type: 'TEXT', description: 'log-cli: e.g. EUR' },
@@ -148,15 +131,6 @@ const AGENCY_LISTING_FIELDS = [
 
 const CHANNEL = [option('SMS', 'SMS', 'blue', 0), option('FACEBOOK_MARKETPLACE', 'Facebook Marketplace', 'purple', 1)]
 
-/**
- * Fields added to agencyConversation (rule 34). The object is blaster's SMS
- * thread record (peerPhone, blasterNumber, pairKey, latest*, messageCount,
- * status); those fields stay as they are and Marketplace rows reuse the
- * generic ones: pairKey = facebookMarketplace:<socialAccountId>:<facebookThreadId>,
- * latestDirection inbound|outbound, latestPreview, latestMessageAt,
- * latestMessageId, messageCount. Listaro's thread shape (its leads table),
- * keyed on Facebook's own ids instead of a hash of the buyer's name.
- */
 const AGENCY_CONVERSATION_FIELDS = [
   { name: 'channel', label: 'Channel', type: 'SELECT', description: 'log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS', options: CHANNEL },
   { name: 'facebookThreadId', label: 'Facebook thread id', type: 'TEXT', description: 'log-cli: the thread id in facebook.com/messages/t/<id> (Marketplace inbox). With the account, the conversation key' },
@@ -189,11 +163,6 @@ const AGENCY_CONVERSATION_FIELDS = [
   { name: 'aiTookOver', label: 'AI took over', type: 'BOOLEAN', description: 'log-cli: replies in this thread are drafted by AI' }
 ]
 
-/**
- * Fields added to agencyMessage (rule 34). blaster's direction, status, body,
- * errorCode and errorMessage are reused: direction inbound|outbound, status
- * received|queued|sent|delivered|failed (blaster's order: it only moves up).
- */
 const AGENCY_MESSAGE_FIELDS = [
   { name: 'channel', label: 'Channel', type: 'SELECT', description: 'log-cli: SMS (blaster) or FACEBOOK_MARKETPLACE. Empty on rows written before it: SMS', options: CHANNEL },
   { name: 'sentAt', label: 'Sent', type: 'DATE_TIME', description: 'log-cli: when the message was sent, as the thread shows it' },
@@ -225,19 +194,15 @@ const AGENCY_MESSAGE_FIELDS = [
   { name: 'media', label: 'Media', type: 'RAW_JSON', description: 'log-cli: photos or files in the message: [{ url, kind }]' }
 ]
 
-/** Objects log-cli creates when they're missing. The rest are blaster's and the sync's. */
 const NEW_OBJECTS = [
   { nameSingular: 'agencyGroup', namePlural: 'agencyGroups', labelSingular: 'Agency group', labelPlural: 'Agency groups', description: 'log-cli: a Facebook group, on one socialAccount', icon: 'IconUsersGroup' },
-  // #27, matt 2026-10-22: Facebook group posts and comments get objects of their own.
   { nameSingular: 'agencyGroupPost', namePlural: 'agencyGroupPosts', labelSingular: 'Agency group post', labelPlural: 'Agency group posts', description: 'log-cli: a post in a Facebook group, as log facebook read group read it', icon: 'IconNews' },
   { nameSingular: 'agencyGroupComment', namePlural: 'agencyGroupComments', labelSingular: 'Agency group comment', labelPlural: 'Agency group comments', description: 'log-cli: a comment or reply on a Facebook group post', icon: 'IconMessageCircle' }
 ]
 
-/** Fields added to agencyGroup. Its name is Twenty's own name field. */
 const AGENCY_GROUP_FIELDS = [
   { name: 'facebookGroupId', label: 'Facebook group id', type: 'TEXT', description: 'log-cli: the id in facebook.com/groups/<id>. With the account, the group key' },
   { name: 'groupUrl', label: 'Group URL', type: 'TEXT', description: 'logCli' },
-  // rule 45: where the account stands with the group, as `log facebook join group` last read it on the group page.
   {
     name: 'joinStatus',
     label: 'Join status',
@@ -249,16 +214,12 @@ const AGENCY_GROUP_FIELDS = [
   { name: 'membersLabel', label: 'Members', type: 'TEXT', description: 'log-cli: the member count as the group page shows it (17.3K members)' },
   { name: 'joinRequestedAt', label: 'Join requested at', type: 'DATE_TIME', description: 'log-cli: when log facebook join group --live pressed Join' },
   { name: 'lastCheckedAt', label: 'Last checked at', type: 'DATE_TIME', description: 'log-cli: when a run last read the group page' },
-  // The hackathon's join submission (listeningkit-hackathon communities/types.ts StoredCommunityJoin and the
-  // reportCommunityForm webhook), as one JSON patched after every step of a run and read back by `log facebook join group`.
   { name: 'joinSubmission', label: 'Join submission', type: 'RAW_JSON', description: 'log-cli: { formPhase, questions, questionsHash, questionsScrapedAt, draftAnswers, answers, answersComplete, submittedAt, lastActivityAt, history[] }' },
-  // #27: `log facebook read group` keeps only what is new since the last read (facebook-camofox-client's cursor).
   { name: 'readCursor', label: 'Read cursor', type: 'RAW_JSON', description: 'log-cli: { lastPostId, watermark (unix s), idsAtWatermark[] }: the newest post read. It moves only after the posts are saved' },
   { name: 'lastReadAt', label: 'Last read at', type: 'DATE_TIME', description: 'log-cli: when log facebook read group last read the group' },
   { name: 'lastReadReason', label: 'Last read', type: 'TEXT', description: 'log-cli: what the last read found, and its run folder' }
 ]
 
-/** Fields of agencyGroupPost. Its name is Twenty's own name field (the text's start). Keyed on the group row and facebookPostId. */
 const AGENCY_GROUP_POST_FIELDS = [
   { name: 'facebookPostId', label: 'Facebook post id', type: 'TEXT', description: 'log-cli: post_id. With the group row, the post key' },
   { name: 'facebookGroupId', label: 'Facebook group id', type: 'TEXT', description: 'logCli' },
@@ -274,7 +235,6 @@ const AGENCY_GROUP_POST_FIELDS = [
   { name: 'commentsReadCount', label: 'Comments at last read', type: 'NUMBER', description: 'log-cli: commentCount when its comments were last read: a read opens the post again only when it grew' }
 ]
 
-/** Fields of agencyGroupComment. Keyed on its post row and facebookCommentId. */
 const AGENCY_GROUP_COMMENT_FIELDS = [
   { name: 'facebookCommentId', label: 'Facebook comment id', type: 'TEXT', description: 'log-cli: legacy_fbid. With the post row, the comment key' },
   { name: 'facebookPostId', label: 'Facebook post id', type: 'TEXT', description: 'logCli' },
@@ -291,23 +251,18 @@ const AGENCY_GROUP_COMMENT_FIELDS = [
   { name: 'replyCount', label: 'Replies', type: 'NUMBER', description: 'logCli' }
 ]
 
-/** Relations: [object, field, label, target object, inverse label, join column]. */
 const RELATIONS = [
   { object: 'agencyListing', name: 'socialAccount', label: 'Social account', target: 'socialAccount', targetFieldLabel: 'Agency Listings', icon: 'IconBrandFacebook' },
   { object: 'agencyListing', name: 'campaign', label: 'Campaign', target: 'agencyCampaign', targetFieldLabel: 'Agency Listings', icon: 'IconSpeakerphone' },
   { object: 'agencyListing', name: 'replaces', label: 'Replaces', target: 'agencyListing', targetFieldLabel: 'Replaced by', icon: 'IconReplace' },
-  // rule 34: a buyer's conversation is about one listing, on one account; its messages belong to it.
   { object: 'agencyConversation', name: 'agencyListing', label: 'Agency listing', target: 'agencyListing', targetFieldLabel: 'Agency Conversations', icon: 'IconMessages' },
   { object: 'agencyConversation', name: 'socialAccount', label: 'Social account', target: 'socialAccount', targetFieldLabel: 'Agency Conversations', icon: 'IconBrandFacebook' },
   { object: 'agencyMessage', name: 'agencyConversation', label: 'Conversation', target: 'agencyConversation', targetFieldLabel: 'Agency Messages', icon: 'IconMessage' },
-  // A group row is one group on one account: the same group on two accounts is two rows.
   { object: 'agencyGroup', name: 'socialAccount', label: 'Social account', target: 'socialAccount', targetFieldLabel: 'Agency Groups', icon: 'IconBrandFacebook' },
-  // #27: a post is in one group row (so on one account); a comment is on one post.
   { object: 'agencyGroupPost', name: 'agencyGroup', label: 'Group', target: 'agencyGroup', targetFieldLabel: 'Posts', icon: 'IconUsersGroup' },
   { object: 'agencyGroupComment', name: 'agencyGroupPost', label: 'Post', target: 'agencyGroupPost', targetFieldLabel: 'Comments', icon: 'IconNews' }
 ]
 
-/** Lifecycle values added to agencyListing.status, next to the sync's health values. */
 const STATUS_ADDITIONS = [
   option('DRAFT', 'Draft', 'gray', 10),
   option('READY', 'Ready', 'blue', 11),

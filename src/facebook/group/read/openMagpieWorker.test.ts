@@ -7,7 +7,6 @@ import type { GroupPost } from "./index.ts";
 
 const GROUP = "4191018610937243";
 
-/** A post as a read saw it, invented values. */
 const post = (id: string, createdAt: string, text: string, commentCount: number | null = 0): GroupPost => ({
   postId: id,
   groupId: GROUP,
@@ -61,7 +60,6 @@ describe("OpenMagpie's facebook_group worker contract", () => {
 });
 
 describe("python/openMagpie/facebookWorker.py", () => {
-  // A stand-in for bin/log.ts that answers with the arguments it was given, so nothing reaches Twenty or a browser.
   const entry = join(mkdtempSync(join(tmpdir(), "logWorkerEntry")), "fakeLog.ts");
   writeFileSync(entry, 'console.error("a progress line"); console.log(JSON.stringify({ ok: true, result: { results: [], errors: [], args: process.argv.slice(2) }, new_cookies: [] }));\n');
   const python = process.env.LOG_PYTHON || "python";

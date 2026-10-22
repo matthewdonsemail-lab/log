@@ -1,25 +1,3 @@
-/**
- * The group answer machine (`log facebook join group --fill`, rule 45): the stepper's
- * draft filled into the group's own dialog, one fill step per stepper step,
- * in the account's open browser. Its only side effect is `step`, one command
- * to the open inspect session (goto, click, type, snapshot); tests script it.
- *
- *   opening (goto the group)
- *     ├── the dialog is already open ───────────────▶ reading
- *     ├── `button "Answer questions"`, dry run ─────▶ planned (nothing clicked, rule 8)
- *     ├── `button "Answer questions"`, --live ─▶ reopening (click it) ─▶ reading
- *     │      └── no dialog yet: settling (wait, a fresh snapshot) ─▶ reopening once more
- *     │          (Complainers of Bethlehem, 2026-10-20: the first click loaded Facebook's code and
- *     │          the page moved under the cursor; opening the dialog changes nothing on Facebook)
- *     └── no way back into the questions ───────────▶ stopped (groupQuestionsNotReopened)
- *   reading (snapshot the dialog, plan every step onto its elements)
- *     ├── a step has no element ─▶ stopped (groupFillIncomplete), nothing typed
- *     └── filling: each fill step in turn (click / type) ─▶ filled
- *           └── --submit ─▶ submitting (click Submit) ─▶ checking (snapshot)
- *                 ├── the dialog went ─▶ submitted
- *                 └── it stayed ───────▶ stopped (groupSubmitNotConfirmed), not pressed again
- *   a checkpoint, a login or another page, after any step ─▶ stopped
- */
 import { assign, fromPromise, setup } from 'xstate'
 import { pageProblem } from '../../../browser/flow/index'
 import type { ErrorCode } from '../../../errors/catalog/index'
@@ -37,7 +15,6 @@ type Done = { output: GroupStepReply }
 type Problem = { code: ErrorCode; detail: string }
 
 const hasDialog = (reply: GroupStepReply | null) => /^\s*-\s+dialog\b/m.test(reply?.snapshot ?? '')
-/** The recorded way back in: `button "Answer questions"` (Complainers of Bethlehem, step 20). */
 const answerButton = (reply: GroupStepReply | null) => (reply ? snapshotElements(reply).find((e) => e.role === 'button' && /^Answer questions$/i.test(e.name))?.ref ?? null : null)
 
 function problemOf(step: AnswerStepInput, reply: GroupStepReply, failed: ErrorCode): Problem | null {
@@ -138,7 +115,6 @@ export const groupAnswerMachine = setup({
       always: [
         { guard: 'stopped', target: 'stopped' },
         { guard: ({ context }) => hasDialog(context.dialog), target: 'planning' },
-        // No dialog after the first click, the button still there: once more, after the page settles.
         { guard: ({ context }) => context.reopenTries < 2 && answerButton(context.dialog) !== null, target: 'settling' },
         { target: 'planning' }
       ]
@@ -151,7 +127,6 @@ export const groupAnswerMachine = setup({
           target: 'reopening',
           actions: assign(({ context, event }) => {
             const reply = (event as Done).output
-            // The wait's own snapshot gives the button's ref and place as the page now has them.
             return { steps: noted(context, 'settling', reply, 'no dialog yet: waited 4 s for the page to settle'), page: reply.snapshot ? reply : context.dialog }
           })
         },
@@ -162,7 +137,6 @@ export const groupAnswerMachine = setup({
       entry: assign(({ context }) => {
         if (context.problem) return {}
         const plan = planFill(context.options, context.draft, context.dialog?.snapshot ?? '')
-        // Every step needs its element before anything is typed: a half-filled form is never left behind.
         if (plan.missing.length) return { plan, problem: { code: 'groupFillIncomplete' as const, detail: `no element for: ${plan.missing.join('; ')}` } }
         return { plan, application: context.live ? ('filling' as const) : context.application }
       }),
@@ -231,7 +205,6 @@ export const groupAnswerMachine = setup({
     },
     answered: {
       always: [
-        // Facebook's own answer first: useGroupMembershipAnswersSaveMutation's QUESTIONNAIRE_COMPLETED; the dialog closing otherwise.
         { guard: ({ context }) => context.answerState === 'QUESTIONNAIRE_COMPLETED', target: 'submitted', actions: assign({ application: 'submitted' as const }) },
         { guard: 'dialogGone', target: 'submitted', actions: assign({ application: 'submitted' as const }) },
         { target: 'stopped', actions: assign({ application: 'filled' as const, problem: { code: 'groupSubmitNotConfirmed' as const, detail: 'Submit was pressed and the dialog stayed open' } }) }

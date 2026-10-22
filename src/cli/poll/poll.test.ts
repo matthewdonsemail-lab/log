@@ -20,7 +20,6 @@ const GROUP_ID = "4191018610937243";
 const GROUP = `https://www.facebook.com/groups/${GROUP_ID}/`;
 const T = 1_792_500_000;
 
-/** A step as the open session answers it: its folder holds the step's network.har. */
 function step(reply: { ok: boolean; url?: string; har?: unknown }): InspectStepResult {
   const folder = mkdtempSync(join(tmpdir(), "logPollStep"));
   if (reply.har) writeFileSync(join(folder, "network.har"), JSON.stringify(reply.har));
@@ -102,7 +101,6 @@ describe("log facebook poll", () => {
     const request = JSON.stringify({ action: "groups.search", params: { group_ids: [GROUP_ID, "123"], terms: ["post 2"], limit: 3 } });
     const { code, out, sent } = await run(["facebook", "poll", "--request", request], [step(groupPage([unit("2", T + 20), unit("1", T + 10)])), step(feedScroll([], false))], twenty);
     expect(code).toBe(0);
-    // limit 3 → one scroll; no post is opened for its comments.
     expect(sent.map((s) => s.action)).toEqual(["goto", "scroll"]);
     const answer = JSON.parse(out[0]!);
     expect(answer.result.results.map((r: { external_id: string; matched_terms: string[] }) => [r.external_id, r.matched_terms])).toEqual([["2", ["post 2"]]]);

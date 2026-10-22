@@ -3,14 +3,11 @@ import type { LogTool } from "../types.ts";
 import { TERMINAL_ONLY, TOOL_RESULT_SCHEMA } from "../types.ts";
 import { rulesLine } from "./agentRules.ts";
 
-/** The tools whose calls run long (a browser, Facebook, rea): their calls are watched with a Monitor (rule 26). */
 export const LONG_RUNNING = new Set(["inspect", "join", "read", "poll", "check", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign"]);
 
-/** How the command is written, the platform first (rule 63): `facebook connect`, `<platform> warmup`, `inspect`. Pure. */
 export const commandWords = (command: Command): string =>
   command.platform === "facebook" ? `facebook ${command.name}` : command.platform === "byArgument" ? `<platform> ${command.name}` : command.name;
 
-/** One tool per CLI command, minus the terminal-only ones. Pure. */
 export function toolsFromCommands(commands: Command[]): LogTool[] {
   return commands
     .filter((command) => !(command.name in TERMINAL_ONLY))
@@ -19,7 +16,6 @@ export function toolsFromCommands(commands: Command[]): LogTool[] {
       description: [
         `log ${commandWords(command)}${command.args ? ` ${command.args}` : ""}`,
         command.summary,
-        // Every subcommand and flag, the same text the terminal shows and the README lists (rule 56).
         command.usage,
         ...(command.name === "connect" ? ["Runs --noPrompt: saved cookies that work end it at once; otherwise it signs in by itself from Twenty's email, password and 2FA secret (rule 21), and anything it can't handle waits for matt in the visible window (up to --wait seconds, default 600). Progress streams to ~/.logCli/mcp/<day>.log."] : []),
         ...(command.name === "inspect" ? ["Open the account's browser from here with `start --account <a> --detach`: it runs as its own process and returns once the gate and self-check passed (plain `start` stays running: a terminal only). The browser stays open until `do stop` (or 30 idle minutes). `do <action>` sends one step to that open session and returns its snapshot (element refs), requests and rea reading. click/type/press act on Facebook: --live, only when matt asked."] : []),

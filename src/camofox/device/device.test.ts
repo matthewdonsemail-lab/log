@@ -1,9 +1,3 @@
-/**
- * Rules 15-17: one device per account, the pinned locale, the launch
- * self-check. The TypeScript half is tested directly; the Python half
- * (python/device/deviceProfile.py, python/browser/proxyGate.py) through its pure functions,
- * run in `LOG_PYTHON` with no browser and no network.
- */
 import { describe, expect, test } from "bun:test";
 import { spawnSync } from "node:child_process";
 import { join } from "node:path";
@@ -11,7 +5,6 @@ import { deviceSummary, hasStoredDevice, toDeviceProfile } from "./index.ts";
 
 const pythonDir = join(import.meta.dir, "..", "..", "..", "python");
 
-/** Runs `code` with python/ on sys.path; it must print one JSON value. */
 function py(code: string): unknown {
   const script = `import sys, json\nsys.path.insert(0, ${JSON.stringify(pythonDir)})\n${code}`;
   const run = spawnSync(process.env.LOG_PYTHON || "python", ["-I", "-c", script], { encoding: "utf8" });

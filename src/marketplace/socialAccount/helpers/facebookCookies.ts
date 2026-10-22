@@ -1,4 +1,3 @@
-/** A Playwright cookie, as a storage_state file holds it. */
 export interface PlaywrightCookie {
   name: string
   value: string
@@ -10,12 +9,6 @@ export interface PlaywrightCookie {
   sameSite?: 'Strict' | 'Lax' | 'None'
 }
 
-/**
- * socialAccounts.cookies, in whatever shape it was stored (a Playwright list,
- * a browser-export list, a `{ name: value }` object, a JSON string or a
- * `a=b; c=d` header) → Playwright cookies on .facebook.com. Values are never
- * logged. Pure.
- */
 export function toFacebookCookies(raw: unknown): PlaywrightCookie[] {
   let value = raw
   if (typeof value === 'string') {
@@ -62,7 +55,6 @@ export function toFacebookCookies(raw: unknown): PlaywrightCookie[] {
   return []
 }
 
-/** The Facebook session cookie is there (`c_user` = the logged-in user id). Pure. */
 export function hasFacebookSession(cookies: PlaywrightCookie[]): boolean {
   return cookies.some((c) => c.name === 'c_user' && c.value) && cookies.some((c) => c.name === 'xs' && c.value)
 }

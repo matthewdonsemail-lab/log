@@ -67,9 +67,7 @@ describe("page state hook", () => {
     const blocked = hookReply("Stop", [captcha], empty);
     expect(blocked.output).toMatchObject({ decision: "block" });
     expect(String(blocked.output?.reason)).toContain("log inspect do solve");
-    // Sent back once and nothing moved: the turn may end.
     expect(hookReply("Stop", [captcha], blocked.memory, true).output).toBeNull();
-    // Something moved (a new step on the same state): blocked again.
     expect(hookReply("Stop", [{ ...captcha, step: "43_solve" }], blocked.memory, true).output).toMatchObject({ decision: "block" });
     expect(hookReply("Stop", [selfie], empty).output).toBeNull();
     expect(hookReply("Stop", [at()], empty).output).toBeNull();
@@ -95,7 +93,6 @@ describe("live logs hook", () => {
     expect(buffersOutput("bun bin/log.ts facebook capture --docs | Select-Object -Last 5")).toBe(true);
     expect(buffersOutput("bun bin/log.ts facebook capture --docs 2>&1 | tee run.log")).toBe(false);
     expect(buffersOutput("tail -f ~/.logCli/mcp/2026-10-20.log | grep warmup")).toBe(false);
-    // A tail on a later command of the line isn't the log run's.
     expect(buffersOutput("bun bin/log.ts errors >/dev/null 2>&1; grep cli ~/.logCli/mcp/x.log | tail -3")).toBe(false);
     expect(buffersOutput("cd repo && bun bin/log.ts facebook capture --docs | tail -3")).toBe(true);
   });

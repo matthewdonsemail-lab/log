@@ -9,7 +9,6 @@ import { recordedJoinHar } from '../join/join.test'
 import { applicationFromDraft, describePlan, groupAnswerMachine, patchApplication, planFill } from './index'
 import type { AnswerStepInput } from './index'
 
-/** Complainers of Bethlehem, recorded in AdsPower 2026-10-20: the dialog after Join (step 16) and the page after a reload (step 20). */
 const fixture = (name: string) => readFileSync(fileURLToPath(new URL(`./fixtures/${name}`, import.meta.url)), 'utf8')
 const DIALOG = fixture('complainersDialog.yml')
 const PENDING = fixture('complainersPending.yml')
@@ -87,7 +86,6 @@ describe('groupAnswerMachine', () => {
   test("Facebook's answer to Submit confirms it (useGroupMembershipAnswersSaveMutation: QUESTIONNAIRE_COMPLETED)", async () => {
     const ok = { ok: true, url: GROUP_URL }
     const answered = { ...ok, options: { ...OPTIONS, answerState: 'QUESTIONNAIRE_COMPLETED', seen: ['useGroupMembershipAnswersSaveMutation 200: answers QUESTIONNAIRE_COMPLETED, viewer_join_state REQUESTED'] } }
-    // The dialog still in the snapshot: Facebook's own answer settles it.
     const { output } = await run(true, true, [{ ...ok, snapshot: PENDING }, ok, { ...ok, snapshot: DIALOG }, ok, ok, ok, ok, answered, { ...ok, snapshot: DIALOG }])
     expect(output).toMatchObject({ result: 'submitted', application: 'submitted', answerState: 'QUESTIONNAIRE_COMPLETED' })
   })

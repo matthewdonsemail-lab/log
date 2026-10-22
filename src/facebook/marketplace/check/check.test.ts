@@ -5,14 +5,11 @@ import { join } from 'node:path'
 import { marketplaceFixture } from '../../../twenty/graphql/index.ts'
 import { accessProblem, keepCheck, marketplaceAccessOf, sellerInboxOf, sellingListingsOf } from './index.ts'
 
-/** A HAR holding one GraphQL response, the way the step recordings do. */
 const graphql = (name: string, body: unknown) => ({
   log: { entries: [{ request: { postData: { text: `av=1&fb_api_req_friendly_name=${name}&variables=%7B%7D` } }, response: { content: { text: JSON.stringify(body) } } }] }
 })
-/** A HAR holding a page whose data is preloaded into it (the Selling page). */
 const page = (text: string) => ({ log: { entries: [{ request: {}, response: { content: { text } } }] } })
 
-// The shapes recorded on Bethlehem 2026-10-22 (inspect 20261022T113536, 20261022T110738), values made up.
 const status = (over: Record<string, unknown> = {}) =>
   graphql('CometMarketplaceStatusContentContainerQuery', {
     data: { viewer: { marketplaceViolationTransparencyViewModel: { profile_name: 'Test', enforcement_instance_id: null, access_state_title: 'You have full access to Marketplace', access_state_body: 'You can sell items and message sellers on Marketplace.', is_marketplace_access_banned: false, csat_survey: { profile_status: 'GOOD' }, ...over } } }

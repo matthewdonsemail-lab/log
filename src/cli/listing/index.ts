@@ -1,9 +1,3 @@
-/**
- * `log facebook listings` and `log facebook listing <id>` — the Marketplace listings in Twenty
- * (agencyListings): what each posts, from which account, and its last run.
- * `log facebook listing create` adds one READY row for an account (Twenty only, nothing
- * on Facebook until `log facebook publish`).
- */
 import { readFileSync } from "node:fs";
 import { fromTwentyEnum, listFacebookAccounts, findAccount, toTwentyEnum } from "../../marketplace/socialAccount/index.ts";
 import { countryMismatch, createSlot, getListing, LISTING_STATUSES, listListingsWhere } from "../../marketplace/agencyListing/index.ts";
@@ -78,7 +72,6 @@ export const listingCommand: Command = {
       if (!checked.ok) return { code: 1, stderr: `log facebook listing create: ${file} can't be published:\n${checked.problems.map((p) => `  - ${p}`).join("\n")}` };
       try {
         const owner = await findAccount(context.twenty, account);
-        // The same country check publish runs (rule 12), so a row that can never post isn't written.
         const mismatch = owner.homeCountry ? countryMismatch(checked.ad as unknown as AgencyListing, owner.homeCountry) : "the account has no home country";
         if (mismatch) return refuse("listing", "listingCountryMismatch", mismatch);
         const created = await createSlot(context.twenty, checked.ad, owner.id, { campaignId: null });

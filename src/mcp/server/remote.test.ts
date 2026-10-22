@@ -9,7 +9,6 @@ const stops: (() => void)[] = [];
 afterEach(() => stops.splice(0).forEach((stop) => stop()));
 
 function serve(token: string | null) {
-  // Port 0: a free one. The in-memory Twenty: no network beyond loopback.
   const served = serveLogMcpHttp({ port: 0, token, context: { twenty: marketplaceFixture() }, server: { logDir: null, watchFlows: false } });
   stops.push(served.stop);
   return served;

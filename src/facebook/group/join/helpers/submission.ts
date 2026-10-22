@@ -25,7 +25,6 @@ export function emptySubmission(): GroupJoinSubmission {
   }
 }
 
-/** The hackathon's `hashQuestionSet` (communities/transition.ts): djb2 over the set, 8 hex. Pure. */
 export function hashQuestionSet(questions: string[]): string {
   let hash = 5381
   const text = questions.join('\u0000')
@@ -33,13 +32,11 @@ export function hashQuestionSet(questions: string[]): string {
   return hash.toString(16).padStart(8, '0')
 }
 
-/** The hackathon's `answersCompleteness` (facebook/assertions.ts). Pure. */
 export function answersComplete(questions: string[], answers: string[]): boolean {
   if (questions.length === 0) return true
   return answers.length === questions.length && answers.every((a) => a.trim() !== '')
 }
 
-/** Whatever Twenty holds → a whole submission (missing or bad parts are the empty ones). Pure. */
 export function readSubmission(raw: unknown): GroupJoinSubmission {
   const base = emptySubmission()
   if (!raw || typeof raw !== 'object') return base
@@ -71,20 +68,11 @@ export function readSubmission(raw: unknown): GroupJoinSubmission {
 
 const indent = (line: string) => /^(\s*)/.exec(line)![1].length
 const quoted = (line: string) => /^\s*-\s+\w+\s+"([^"]*)"/.exec(line)?.[1] ?? null
-/** `- generic [ref=e1094]: You're now a member…` or `- text: …` → the text; never a redacted field value. */
 const textOf = (line: string) => {
   const t = /^\s*-\s+(?:generic|text)(?:\s+\[[^\]]*\])*:\s*(.+)$/.exec(line)?.[1]?.trim().replace(/^"(.*)"$/, '$1') ?? null
   return t && t !== '<redacted>' ? t : null
 }
 
-/**
- * The dialog the page shows, read from inside its own subtree of the step's
- * snapshot only (the feed's comment box appeared at the same moment on
- * Bethlehem and is not a question). Its title, its lines, its named
- * textboxes (questions), its checkboxes (agreements), its numbered rules,
- * and whether Submit is enabled. Facebook's own dialogs (the push
- * notification prompt is an `alertdialog`) are not join dialogs. Pure.
- */
 export function readJoinDialog(reply: GroupStepReply): JoinDialog | null {
   const lines = (reply.snapshot ?? '').split(/\r?\n/)
   const start = lines.findIndex((l) => /^\s*-\s+dialog\b/.test(l))
@@ -115,7 +103,6 @@ export function readJoinDialog(reply: GroupStepReply): JoinDialog | null {
     }
     const text = textOf(line)
     if (!text || seen.has(text)) return
-    // A rule is numbered: `generic: "1"` then its title on the next text line.
     if (/^\d+$/.test(text)) {
       const title = body.slice(i + 1).map(textOf).find(Boolean)
       if (title) {
@@ -132,11 +119,6 @@ export function readJoinDialog(reply: GroupStepReply): JoinDialog | null {
   return dialog
 }
 
-/**
- * One patch: the fields it sets, the entry it appends. A new question set
- * (another hash) drops drafts keyed to the old one, as the hackathon's form
- * webhook does. Pure.
- */
 export function patchSubmission(
   current: GroupJoinSubmission,
   patch: Partial<Omit<GroupJoinSubmission, 'history'>>,

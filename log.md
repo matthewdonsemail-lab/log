@@ -4551,3 +4551,397 @@ Checked: built from Bethlehem's recordings (inspect 20261022T113536, 20261022T11
 - **Live:** `log facebook check --account 61594063207669 --bypass` printed "You have full access to Marketplace (profile GOOD)", the listing active, and "the seller inbox has no chats". The first live run found the status page preloaded, not requested, which is now read too.
 - **Gates:** `bun test` 797 pass, including the check's 6 tests; `tsc` clean; every gate passes; the docs gate reports 207 requests.
 - **Not done:** the host's own day hasn't run with the new check; a chat's fields (who wrote, what, about which listing) aren't mapped, because no buyer has written yet; the Selling data has no doc of its own, as it is preloaded in the page and `capture --docs` documents requests.
+
+## 2026-10-22 13:46Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `bin/log.ts`: no declaration changed (comments, formatting or line endings)
+- `bin/logMcp.ts`: no declaration changed (comments, formatting or line endings)
+- `docs/deviceIsolation/runSubqMatrix.mjs`: no declaration changed (comments, formatting or line endings)
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/providerResearch/writePrompts.mjs`: no declaration changed (comments, formatting or line endings)
+- `docs/rea/matrix/runMatrix.mjs`: no declaration changed (comments, formatting or line endings)
+- `docs/scaleArchitecture/runSubqScaleMatrix.mjs`: no declaration changed (comments, formatting or line endings)
+- `lefthook.yml`: edited
+- `package.json`: edited
+- `python/browser/__init__.py`: no declaration changed (comments, formatting or line endings)
+- `python/browser/adsPowerBrowser.py`: changed def user_proxy_config, def start
+- `python/browser/browserDriver.py`: changed def driver_of, def carry_session_once, def open_browser
+- `python/browser/harRecorder.py`: changed class Recorder, class SessionHar
+- `python/browser/proxyGate.py`: changed def note_step, class GateError, def proxy_url, def loaded_proxy, def twocaptcha_proxy, def locate_ip, def exit_location, def check, def slow_ms, def facebook_ms, def apply, def gate_attached, def check_attached, def pinned, def _require_gate, def _force_context, def har_path, def _force_capture, def compare, def _self_check, def recheck_exit
+- `python/browser/visibleBrowser.py`: changed def launch_kwargs, def force_visible
+- `python/checks/__init__.py`: new file, no top-level declarations
+- `python/checks/comments.py`: added def comment_spans, def strip, def main
+- `python/device/__init__.py`: no declaration changed (comments, formatting or line endings)
+- `python/device/deviceProfile.py`: changed class ProfileError, def decode_env_config, def locale_config, def refresh_version, def pinned_geolocation, def screen_bounds, def new_profile, def launch_config, def launch_prefs, def build_launch
+- `python/errors/__init__.py`: no declaration changed (comments, formatting or line endings)
+- `python/errors/errorCodes.py`: changed def checked, def failure
+- `python/human/__init__.py`: no declaration changed (comments, formatting or line endings)
+- `python/human/humanMouse.py`: changed def min_jerk, class Gesture, def duration_for, def reach, def loops, def ellipse, def rest_for, def look_for, class MouseBase, class HumanMouse, class SyncHumanMouse, def human_scroll_into_view, def human_scroll_by, def human_click
+- `python/human/recordMouse.py`: no declaration changed (comments, formatting or line endings)
+- `python/human/scrollMotion.py`: changed class ScrollStep, def _bell_phase, def human_scroll_trajectory, def _viewport, def scroll_by, def scroll_into_view
+- `python/login/__init__.py`: no declaration changed (comments, formatting or line endings)
+- `python/login/autoLogin.py`: changed def totp, def classify, def _scope, def _pick, def _type, def heading, def frames_text, def login_markers, def read, def choose_auth_app
+- `python/openMagpie/__init__.py`: no declaration changed (comments, formatting or line endings)
+- `python/openMagpie/facebookWorker.py`: changed def forwarded
+- `python/session/__init__.py`: no declaration changed (comments, formatting or line endings)
+- `python/session/connectSession.py`: changed def read_login, def captcha_on, def session_cookies, def step_open_in_session, def step_save
+- `python/session/inspectSession.py`: changed def request_names, def notable, def rea_copy, def run_rea, def read_login, def typing_ms, def full_place, def pick_suggestion, def draw, class Inspector
+- `python/session/logWorker.py`: changed def body_sample, def keep_state_on_release, def scan, def status
+- `python/session/profileSession.py`: changed def session_cookies, def save_text, def opener, def step_read, def step_read_name, def choose_file
+- `python/session/publishSession.py`: changed def create_url, def location_field, def listed_in, def visible_inputs, def in_place, def norm, class Session, def set_marketplace_location, def read_sell_location, def sell_location_mismatch, def recaptcha_cookies, def solve_text_image, def listing_review
+- `scripts/checks/checkAgentHooks.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/checks/checkBrowserParity.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/checks/checkFacebookClientDocs.mjs`: no declaration changed (comments, formatting or line endings)
+- `scripts/checks/checkLayout.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/checks/checkNamingConventions.mjs`: changed function checkNames
+- `scripts/checks/checkNoComments.test.ts`: added test "finds every comment and nothing inside strings, regexes or templates", test "strips them and leaves the code as it was"
+- `scripts/checks/checkNoComments.ts`: added const root, const CODE, const PYTHON, const SKIPPED, interface CommentRange, function commentRanges, function stripComments, function trackedFiles, function python, function pythonComments, function main
+- `scripts/commitLog/astSummary.d.mts`: added function collectDeclarations, function collectPython, function diffDeclarations, function renderSummary, function summarize
+- `scripts/commitLog/astSummary.mjs`: changed function summarize
+- `scripts/commitLog/commitLog.d.mts`: added const PLACEHOLDER, const AST_HEADING, function renderEntry, function addedLines, function astBlock, function checkAdded, function replaceLastAstBlock
+- `scripts/commitLog/commitLog.mjs`: changed function checkAdded
+- `scripts/commitLog/commitLog.test.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/datasets/buildInterestEffect.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/datasets/buildReelViewers.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/docs/buildDocs.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/hooks/liveLogs.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/hooks/pageState.ts`: changed function lastReply
+- `scripts/hooks/storage.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/tests/preload.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/twenty/emitTwentyClient.mjs`: no declaration changed (comments, formatting or line endings)
+- `scripts/twenty/importVendorAccounts.mjs`: no declaration changed (comments, formatting or line endings)
+- `scripts/twenty/twentySetup.mjs`: changed const SOCIAL_ACCOUNT_FIELDS, const NEW_OBJECTS, const AGENCY_GROUP_FIELDS, const RELATIONS
+- `src/agentHooks/agentHooks.test.ts`: changed test "Stop blocks on what log-cli resolves, never on a person's state, and never loops", test "tail/head buffer; tail -f and tee don't"
+- `src/agentHooks/liveLog/index.ts`: changed interface LiveLogVerdict
+- `src/agentHooks/pageState/index.ts`: changed function hookReply
+- `src/agentHooks/pageState/types.ts`: changed interface BrowserAt, interface Finding, interface HookReply
+- `src/agentHooks/registry/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/agentHooks/registry/types.ts`: changed interface AgentHook
+- `src/auth/exchange/client.ts`: changed const CORS
+- `src/auth/exchange/types.ts`: changed interface ExchangeServer
+- `src/auth/session/client.ts`: changed function readJsonFile, function refreshSessionToken
+- `src/auth/session/helpers/pkce.ts`: no declaration changed (comments, formatting or line endings)
+- `src/auth/session/helpers/urls.ts`: no declaration changed (comments, formatting or line endings)
+- `src/auth/session/types.ts`: changed interface SessionRecord, interface SessionHome
+- `src/browser/adsPower/adsPower.test.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/adsPower/client.ts`: changed function createAdsPowerClient, interface AdsPowerDriverDeps, function adsPowerDriver
+- `src/browser/adsPower/helpers/planSync.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/adsPower/helpers/profileRequest.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/adsPower/types.ts`: changed interface StartedBrowser, interface AdsPowerClient, type ProfileSyncAction, interface ProfileSyncEntry
+- `src/browser/camoufox/camoufox.test.ts`: changed test "an account's browser comes from Twenty, Camoufox when empty or unknown"
+- `src/browser/camoufox/client.ts`: changed interface CamoufoxDriverDeps, function camoufoxDriver
+- `src/browser/camoufox/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/driver/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/driver/machine.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/driver/types.ts`: changed interface BrowserEndpoint, interface BrowserDriver, interface BrowserSessionContext
+- `src/browser/flow/client.ts`: changed function laterEvidence, function readRecordedCommands
+- `src/browser/flow/flow.test.ts`: changed test "Erie's lock, a sign-out and a wrong page stop the step; Marketplace settling on its city page doesn't"
+- `src/browser/flow/helpers/flowFromRecording.ts`: changed interface RecordedCommand, function flowFromRecording
+- `src/browser/flow/helpers/pageCheck.ts`: changed function pageProblem
+- `src/browser/flow/helpers/pageState.ts`: changed interface PageState, interface StateRule
+- `src/browser/flow/helpers/renderFlowDoc.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/flow/machine.ts`: changed function createFlowMachine
+- `src/browser/flow/types.ts`: changed type FlowAction, interface FlowStep, interface FlowStepResult
+- `src/browser/inspect/client.ts`: changed function openInspects, function findReply
+- `src/browser/inspect/helpers/parseInspectAction.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/inspect/helpers/renderInspectStep.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/inspect/inspect.test.ts`: changed test "knows each action and its arguments"
+- `src/browser/inspect/types.ts`: changed type InspectAction, interface InspectSessionConfig, interface CurrentInspect, interface InspectCommand, interface InspectStepOptions, interface InspectStepResult
+- `src/browser/proxy/helpers/countryOfLocation.ts`: changed const CODE_BY_NAME
+- `src/browser/proxy/types.ts`: changed interface ProxyCheck
+- `src/browser/run/client.ts`: changed function prepareRun
+- `src/browser/run/helpers/launchBudget.ts`: changed interface LaunchLimits, function lastLaunchReset, function listLaunches
+- `src/browser/run/run.test.ts`: changed test "outside the local window nothing is written and nothing opens, connect included", test "too soon after the last launch, then too many in the local day"
+- `src/browser/run/types.ts`: changed interface PreparedRun, interface PrepareRunOptions
+- `src/browser/runStore/client.ts`: changed function newestChange
+- `src/browser/runStore/helpers/domainsInHar.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/runStore/helpers/storageVerdict.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/runStore/types.ts`: changed interface RunEntry, interface PrunedRun
+- `src/camofox/device/device.test.ts`: no declaration changed (comments, formatting or line endings)
+- `src/camofox/device/helpers/deviceProfile.ts`: no declaration changed (comments, formatting or line endings)
+- `src/camofox/device/types.ts`: changed interface DeviceGeolocation, interface DeviceProfile, interface DeviceRunFile
+- `src/camofox/session/client.ts`: changed function spawnSession
+- `src/camofox/session/helpers/normalizeResult.ts`: no declaration changed (comments, formatting or line endings)
+- `src/camofox/session/helpers/splitReplies.ts`: changed function splitReplies
+- `src/camofox/session/types.ts`: changed type SessionStep, interface SessionConfig, interface ConnectSessionConfig, interface ProfileSessionConfig
+- `src/camofox/session/visible.test.ts`: changed test "visibleBrowser.py forces headed, humanize and the cursor, through the gate", test "there is no exception: not for signing in, not for a dry run", test "Playwright's launch, persistent launch and new_context are all guarded"
+- `src/camofox/worker/client.ts`: changed const runWorker
+- `src/camofox/worker/helpers/fromCamofoxStatus.ts`: no declaration changed (comments, formatting or line endings)
+- `src/camofox/worker/helpers/parseWorkerOutput.ts`: changed function parseWorkerOutput
+- `src/camofox/worker/helpers/toListingStatus.ts`: no declaration changed (comments, formatting or line endings)
+- `src/camofox/worker/types.ts`: changed interface WorkerRequest, type ScanResult, interface WorkerRunOptions
+- `src/captcha/router/client.ts`: changed function readAttempts, function solverAvailability
+- `src/captcha/router/helpers/countArkoseToday.ts`: no declaration changed (comments, formatting or line endings)
+- `src/captcha/router/helpers/planNextSolver.ts`: changed function planNextSolver
+- `src/captcha/router/types.ts`: changed type CaptchaKind, interface CaptchaDetection, interface CaptchaAttempt, interface CaptchaPolicy
+- `src/cli/account/helpers/renderAccounts.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/account/helpers/resave.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/account/helpers/resetOpens.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/account/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/adsPower/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/auth/auth.test.ts`: changed test "browser login: the web app posts tokens to the loopback, the session is validated and stored"
+- `src/cli/auth/index.ts`: changed function browserSignIn
+- `src/cli/campaign/campaign.test.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/campaign/index.ts`: changed const campaignCommand
+- `src/cli/capture/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/check/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/conversation/conversation.test.ts`: changed test "show, read, lead and link"
+- `src/cli/conversation/helpers/renderConversation.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/conversation/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/errors/helpers/renderCatalog.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/errors/index.ts`: changed const errorsCommand
+- `src/cli/flow/helpers/flowSession.ts`: changed interface OpenSession, function openInspectSession, function runFlowInSession
+- `src/cli/flow/index.ts`: changed function runFlow
+- `src/cli/host/helpers/hostActors.ts`: changed function hostActors
+- `src/cli/host/index.ts`: changed const hostCommand
+- `src/cli/inspect/index.ts`: changed function startDetached, const inspectCommand
+- `src/cli/inspect/inspect.test.ts`: changed test "starts the session as its own process and returns once its browser is ready"
+- `src/cli/join/helpers/parseJoinArgs.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/join/index.ts`: changed function fillGroup, function runJoin
+- `src/cli/join/join.test.ts`: changed test "--live as on Bethlehem: a member, the Participant questions dialog kept in joinSubmission and read back by --show", test "--answer: the Clack stepper over a private group's recorded questions, saved to Twenty as the draft, nothing sent", test "outside the account's hours a step in the browser is refused, even with the browser open (rule 18); --bypass runs it (rule 20)"
+- `src/cli/launch/helpers/parseLaunchArgs.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/launch/helpers/shouldPrompt.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/launch/index.ts`: changed function runLaunch
+- `src/cli/launch/launch.test.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/lifecycle/helpers/renderLifecycle.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/lifecycle/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/listing/helpers/listingFromJson.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/listing/helpers/renderListing.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/listing/index.ts`: changed const listingCommand
+- `src/cli/live/helpers/renderConnect.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/live/helpers/renderScan.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/live/index.ts`: changed function withRun, const connectCommand, function connectEnded
+- `src/cli/live/live.test.ts`: changed function run, test "scan hands the worker file paths only, and the files carry the proxy and cookies from Twenty", test "a ban seen on the page makes the account RESTRICTED and replaces its campaign listings", test "connect runs the connect machine through the proxy and saves the cookies to Twenty", test "connect --noPrompt types Twenty's details from a private file, deleted after the run, through two-step", test "auto-login reads each sign-in page as its kind", test "the first launch's device is saved to Twenty once and never printed", test "scan saves the cookies and localStorage the browser left, and the next run starts from them"
+- `src/cli/messenger/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/poll/helpers/parsePollArgs.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/poll/index.ts`: changed function pollRequest, function runPoll
+- `src/cli/poll/poll.test.ts`: changed test "--request answers OpenMagpie's groups.search from an account in the group with its browser open"
+- `src/cli/profile/helpers/renderProfile.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/profile/index.ts`: changed const profileCommand
+- `src/cli/profile/profile.test.ts`: changed test "a dry run reads the profile through the gates and changes nothing"
+- `src/cli/proxy/index.ts`: changed function saveFirstGood, function assignByteful, function assignOne, const proxyCommand
+- `src/cli/proxy/proxy.test.ts`: changed test "reads the last part, and refuses to guess", test "builds a Galway proxy, checks it exits in Ireland, then saves it to Twenty"
+- `src/cli/publish/helpers/summarizePublish.ts`: changed function summarizePublish
+- `src/cli/publish/index.ts`: changed function refuseListing, function checkPublishable, const publishCommand
+- `src/cli/publish/publish.test.ts`: changed test "dry run by default: fills, reviews, never clicks Publish, records the run in Twenty", test "Facebook disabling the account mid-run makes it BANNED and replaces its campaign listings", test "--live stops at the account's daily cap", test "an exit that left the country before Publish blocks the run; Publish isn't retried"
+- `src/cli/read/helpers/parseReadArgs.ts`: changed function parseReadArgs
+- `src/cli/read/index.ts`: changed function readGroupOnce
+- `src/cli/read/read.test.ts`: changed test "reads the new posts and comments in the open browser, keeps only the cursor in Twenty, and a second read finds nothing new"
+- `src/cli/runner/cli.test.ts`: changed test "listing create adds a READY row for the account from a JSON file, and refuses one that can't post"
+- `src/cli/runner/helpers/parseArgs.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/runner/helpers/platforms.ts`: changed function resolvePlatformForm
+- `src/cli/runner/helpers/refuse.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/runner/helpers/renderTable.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/runner/helpers/renderUsage.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/runner/index.ts`: changed const ALIASES, function dispatch
+- `src/cli/runner/types.ts`: changed interface CommandContext, interface Command
+- `src/cli/runs/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/warmup/helpers/feedRun.ts`: changed function runFeedSession
+- `src/cli/warmup/helpers/personaRun.ts`: changed function runPersonaSession
+- `src/cli/warmup/helpers/platformActivity.ts`: changed function runPlatformActivity
+- `src/cli/warmup/helpers/stages.ts`: changed function record, function runWarmup, function showStageLog
+- `src/cli/warmup/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/warmup/warmup.test.ts`: changed test "record runs every step in the open browser, checks each, and writes the outline"
+- `src/cli/watch/helpers/summarizeMonitor.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/watch/helpers/toCheckOutcome.ts`: changed function toCheckOutcome
+- `src/cli/watch/index.ts`: changed const watchCommand
+- `src/cli/watch/watch.test.ts`: changed test "classifies worker results", test "runs one check against the account's Twenty listings, prints the trace and the decisions", test "a check that falls outside the window stops the watch without opening a browser"
+- `src/errors/catalog/catalog.test.ts`: changed test "every literal code in the Python is in the catalog", test "a runtime failure after Publish is crashedAfterPublish, never failed"
+- `src/errors/catalog/helpers/knownCode.ts`: no declaration changed (comments, formatting or line endings)
+- `src/errors/catalog/types.ts`: changed type ErrorLayer, type MonitorEnd, type CaptchaEnd, interface ErrorEntry, const ERROR_CATALOG
+- `src/facebook/group/answer/answer.test.ts`: changed test "Facebook's answer to Submit confirms it (useGroupMembershipAnswersSaveMutation: QUESTIONNAIRE_COMPLETED)"
+- `src/facebook/group/answer/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/facebook/group/answer/helpers/fillPlan.ts`: changed function planFill
+- `src/facebook/group/answer/machine.ts`: changed const groupAnswerMachine
+- `src/facebook/group/answer/types.ts`: changed interface Application, interface FillStep, interface FillPlan, interface GroupAnswerInput, interface GroupAnswerContext
+- `src/facebook/group/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/facebook/group/join/client.ts`: changed function patchGroupStep
+- `src/facebook/group/join/helpers/joinOptions.ts`: changed function groupOf, function readJoinOptions, function inferJoinState
+- `src/facebook/group/join/helpers/parseGroupRef.ts`: no declaration changed (comments, formatting or line endings)
+- `src/facebook/group/join/helpers/readGroupPage.ts`: changed interface SnapshotElement, const GATES
+- `src/facebook/group/join/helpers/stepper.ts`: changed function stepsFor
+- `src/facebook/group/join/helpers/submission.ts`: changed function readJoinDialog
+- `src/facebook/group/join/join.test.ts`: changed test "AdsPower's page: an unnamed button takes its own text, and the click goes to its ref"
+- `src/facebook/group/join/machine.ts`: changed const groupJoinMachine
+- `src/facebook/group/join/types.ts`: changed interface GroupRef, interface GroupPage, interface GroupStepReply, interface GroupJoinInput, interface GroupJoinContext, interface GroupJoinOutput, interface SubmissionEntry, interface JoinQuestionOption, interface JoinQuestion, interface JoinOptions, interface JoinDraft, interface JoinInference, interface JoinDialog, interface GroupJoinSubmission
+- `src/facebook/group/read/client.ts`: changed function cursorOf
+- `src/facebook/group/read/comments.test.ts`: changed function comment, test "every comment and reply of an answer, each with its post, parent, author, text and link, and the list's paging"
+- `src/facebook/group/read/helpers/extractComments.ts`: changed function commentPageOf
+- `src/facebook/group/read/helpers/extractPosts.ts`: no declaration changed (comments, formatting or line endings)
+- `src/facebook/group/read/helpers/json.ts`: changed function chunksOf, function embeddedResults
+- `src/facebook/group/read/helpers/openMagpieWorker.ts`: no declaration changed (comments, formatting or line endings)
+- `src/facebook/group/read/helpers/readPlan.ts`: no declaration changed (comments, formatting or line endings)
+- `src/facebook/group/read/machine.ts`: changed const groupReadMachine
+- `src/facebook/group/read/openMagpieWorker.test.ts`: no declaration changed (comments, formatting or line endings)
+- `src/facebook/group/read/read.test.ts`: changed test "a post that shows up later with an earlier time is still new: its id was never seen"
+- `src/facebook/group/read/readMachine.test.ts`: changed test "a first read: the page's posts, scrolls to the feed's end, then the comments of the post that has some"
+- `src/facebook/group/read/types.ts`: changed interface GroupPost, interface FeedPage, interface GroupComment, interface CommentPage, interface ReadCursor, interface GroupReadInput, interface CommentRead, interface GroupReadContext, interface GroupReadOutput
+- `src/facebook/marketplace/check/check.test.ts`: no declaration changed (comments, formatting or line endings)
+- `src/facebook/marketplace/check/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/facebook/marketplace/check/helpers/graphqlResponses.ts`: changed function graphqlResponses
+- `src/facebook/marketplace/check/helpers/marketplaceAccess.ts`: no declaration changed (comments, formatting or line endings)
+- `src/facebook/marketplace/check/helpers/sellerInbox.ts`: no declaration changed (comments, formatting or line endings)
+- `src/facebook/marketplace/check/helpers/sellingListings.ts`: no declaration changed (comments, formatting or line endings)
+- `src/facebook/marketplace/check/types.ts`: changed interface MarketplaceAccess, interface SellingListing, interface SellerInbox, interface CheckReport
+- `src/facebook/marketplace/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/facebook/warmup/activities/helpers/checkStep.ts`: changed interface StepReply, function checkStep
+- `src/facebook/warmup/activities/helpers/feed.ts`: no declaration changed (comments, formatting or line endings)
+- `src/facebook/warmup/activities/helpers/feedOrderer.ts`: changed interface PostPlanInput, interface PostPlan, function planPost
+- `src/facebook/warmup/activities/helpers/reel.ts`: no declaration changed (comments, formatting or line endings)
+- `src/facebook/warmup/activities/helpers/reelDecision.ts`: changed interface ReelRead
+- `src/facebook/warmup/activities/helpers/reelOrderer.ts`: changed interface ReelPlanInput, interface ReelPlan, function planReel
+- `src/facebook/warmup/activities/helpers/reelSession.ts`: changed interface ReelSessionOptions, function planSession
+- `src/facebook/warmup/activities/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/facebook/warmup/activities/machine.ts`: changed interface ActivityInput, interface ActivityContext, interface ActivityOutput, interface ReelLabel, interface PersonaSessionInput, interface PersonaSessionContext, const reelPersonaMachine, const feedPersonaMachine
+- `src/facebook/warmup/activities/types.ts`: changed interface StepExpect, interface ActivityStep, interface PlatformActivity, interface StepOutcome
+- `src/facebook/warmup/activities/warmup.test.ts`: changed test "is Facebook's, and moves on with Next card, not the wheel (the wheel scrolled the page, the URL stayed)", test "most reels get a glance and a skip, often several in a row; only watched reels get comments, a profile or a like"
+- `src/facebook/warmup/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/facebook/warmup/stages/helpers/scripts.ts`: no declaration changed (comments, formatting or line endings)
+- `src/facebook/warmup/stages/helpers/stageLog.ts`: changed function readStageLog
+- `src/facebook/warmup/stages/machine.ts`: changed const warmupMachine
+- `src/facebook/warmup/stages/types.ts`: changed interface ScriptStep, interface ActivityScript, interface StageLogLine, interface WarmupInput
+- `src/facebook/warmup/stages/warmup.test.ts`: changed test "follow Listaro's stages, and only the likes act on Facebook (rule 8)"
+- `src/marketplace/account/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/account/helpers/accountLabel.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/account/helpers/classifySignal.ts`: changed const RULES
+- `src/marketplace/account/helpers/writeBlocking.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/account/types.ts`: changed interface RawSignal, interface ConnectionRecord
+- `src/marketplace/agencyListing/client.ts`: changed function recordRun
+- `src/marketplace/agencyListing/helpers/toPublishListing.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/agencyListing/types.ts`: changed const LISTING_STATUSES, interface AgencyListing
+- `src/marketplace/connect/machine.test.ts`: changed function runConnect
+- `src/marketplace/connect/machine.ts`: changed const connectMachine
+- `src/marketplace/connect/types.ts`: changed type ConnectPageKind, interface ConnectPage, interface ConnectActorInputs, interface ConnectTiming, interface ConnectLimits, interface ConnectInput, type ConnectResultKind, interface ConnectContext
+- `src/marketplace/conversation/client.ts`: changed function recordThread
+- `src/marketplace/conversation/conversation.test.ts`: changed test "our reply and a phone number move the lead; the summary only moves forward", test "marking read clears the unread count; a lead status can be set by hand", test "Facebook's listing id first, then a title only when exactly one listing has it"
+- `src/marketplace/conversation/helpers/conversationRules.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/conversation/types.ts`: changed interface Conversation, interface ScannedMessage
+- `src/marketplace/home/helpers/activeHours.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/home/helpers/distanceKm.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/home/helpers/homeOf.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/home/home.test.ts`: changed test "pins the locale, Facebook UI locale and timezone per country", test "Galway is UTC+1 in summer and UTC+0 in winter; the date is the local one", test "08:00-22:00 local by default"
+- `src/marketplace/home/types.ts`: changed interface HomeCountry, interface Home, interface LocalClock
+- `src/marketplace/host/client.ts`: changed interface RunHostOptions, function runHost
+- `src/marketplace/host/helpers/progress.ts`: changed function readControl
+- `src/marketplace/host/host.test.ts`: changed test "a host stopped in the warm-up resumes at the next activity, in a fresh browser, with the day’s opens counted"
+- `src/marketplace/host/types.ts`: changed interface HostProgress
+- `src/marketplace/lifecycle/helpers/clock.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/lifecycle/helpers/onboardingStep.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/lifecycle/helpers/standing.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/lifecycle/lifecycle.test.ts`: changed test "a fresh account goes through onboarding and a day of warm-up in ONE open browser, then to its host", test "a checkpoint in the warm-up waits for a person, then resumes at the same activity, in the same browser", test "waiting out the warm-up day, the end of the account's day sends it overnight (rule 18), and the morning resumes it", test "the lane order: sign in, check, profile, name, location, warm-up, attached"
+- `src/marketplace/lifecycle/machine.ts`: changed function step, const lifecycleMachine
+- `src/marketplace/lifecycle/types.ts`: changed type StepOutcome, const WARMUP_ACTIVITIES, interface BrowserLog, interface LifecycleTiming, const DEFAULT_LIFECYCLE_TIMING, interface AccountStanding, interface LifecycleInput, interface LifecycleContext, interface LifecycleActorInputs
+- `src/marketplace/listing/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/listing/helpers/findListing.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/listing/helpers/sellerActions.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/listing/helpers/uuid.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/listing/machine.ts`: changed interface ListingTransitionContext, function allowedTransition, function validateContext, function listingActions
+- `src/marketplace/listing/types.ts`: changed interface ListingRecord, interface ListingDraft
+- `src/marketplace/monitor/helpers/detectHealth.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/monitor/helpers/evaluateRelist.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/monitor/machine.test.ts`: changed test "maps Listaro signals onto one account issue each"
+- `src/marketplace/monitor/machine.ts`: changed const monitorMachine
+- `src/marketplace/monitor/types.ts`: changed interface RelistPolicy, interface MonitorTiming, interface WatchedListing, interface RelistDecision, type CheckOutcome, interface MonitorInput, interface MonitorContext
+- `src/marketplace/profile/machine.test.ts`: changed function run
+- `src/marketplace/profile/machine.ts`: changed const profileMachine
+- `src/marketplace/profile/types.ts`: changed interface ProfilePage, interface ProfileNamePage, interface ProfileInput, interface ProfilePlanStep
+- `src/marketplace/publish/helpers/publishEnd.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/publish/helpers/validateListing.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/publish/machine.test.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/publish/machine.ts`: changed const publishMachine
+- `src/marketplace/publish/types.ts`: changed interface PublishListing, interface PublishInput, type PublishResultKind, interface PublishContext
+- `src/marketplace/replacement/client.ts`: changed function replaceOne
+- `src/marketplace/replacement/helpers/pickAccount.ts`: changed interface PickContext, function ineligibleReason
+- `src/marketplace/replacement/replacement.test.ts`: changed test "banned: kept with its reason, live listings ACCOUNT_LOST, campaign ones replaced in the same country", test "never posts from another country: with no Irish account left it stays ACCOUNT_LOST and says why", test "a status that is not a loss replaces nothing; terminal statuses are never overwritten", test "one ad on N accounts in its country, one per account, same city first", test "a listing posted late in the evening locally counts for that local day, not the UTC one"
+- `src/marketplace/replacement/types.ts`: changed interface Replacement, interface LossReport, interface FillReport
+- `src/marketplace/socialAccount/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/socialAccount/helpers/checkRunnable.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/socialAccount/helpers/facebookCookies.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/socialAccount/helpers/statusForIssue.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/socialAccount/helpers/twentyEnum.ts`: no declaration changed (comments, formatting or line endings)
+- `src/marketplace/socialAccount/socialAccount.test.ts`: changed test "refuses everything that may not open a browser, with its catalog code"
+- `src/marketplace/socialAccount/types.ts`: changed interface FacebookAccount
+- `src/mcp/server/agentRules.test.ts`: no declaration changed (comments, formatting or line endings)
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `src/mcp/server/helpers/formatLogLine.ts`: no declaration changed (comments, formatting or line endings)
+- `src/mcp/server/helpers/guardCall.ts`: no declaration changed (comments, formatting or line endings)
+- `src/mcp/server/helpers/parseEnvText.ts`: no declaration changed (comments, formatting or line endings)
+- `src/mcp/server/helpers/toolsFromCommands.ts`: changed function toolsFromCommands
+- `src/mcp/server/helpers/toolsFromFlows.ts`: no declaration changed (comments, formatting or line endings)
+- `src/mcp/server/index.ts`: changed function runToolCall, interface LogMcpOptions, function createLogMcpServer, interface LogMcpHttpOptions
+- `src/mcp/server/remote.test.ts`: changed function serve
+- `src/mcp/server/types.ts`: changed interface LogToolInput, interface LogTool
+- `src/media/photo/client.ts`: changed interface PrepareOptions, function loadBytes, function varyPhoto
+- `src/media/photo/helpers/photoSource.ts`: no declaration changed (comments, formatting or line endings)
+- `src/media/photo/helpers/variationParams.ts`: no declaration changed (comments, formatting or line endings)
+- `src/media/photo/photo.test.ts`: changed test "downloads URLs only through the account's proxy, never from this machine"
+- `src/media/photo/types.ts`: changed interface VariationParams, interface PreparedPhoto
+- `src/observability/graph/helpers/toMermaid.ts`: no declaration changed (comments, formatting or line endings)
+- `src/observability/liveLog/index.ts`: changed function appendLiveLine
+- `src/observability/liveLog/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/observability/processLog/helpers/splitLines.ts`: no declaration changed (comments, formatting or line endings)
+- `src/observability/processLog/index.ts`: changed function emitLog
+- `src/observability/processLog/types.ts`: changed interface LogLine
+- `src/observability/trace/helpers/createInspector.ts`: no declaration changed (comments, formatting or line endings)
+- `src/observability/trace/helpers/formatTraceLine.ts`: no declaration changed (comments, formatting or line endings)
+- `src/observability/trace/helpers/stateToPath.ts`: no declaration changed (comments, formatting or line endings)
+- `src/observability/trace/types.ts`: changed interface TraceLine
+- `src/proxyVendor/byteful/byteful.test.ts`: no declaration changed (comments, formatting or line endings)
+- `src/proxyVendor/byteful/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/proxyVendor/byteful/helpers/pickCity.ts`: no declaration changed (comments, formatting or line endings)
+- `src/proxyVendor/byteful/types.ts`: changed interface BytefulCity, interface BytefulResidentialRequest
+- `src/proxyVendor/traffic/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/proxyVendor/traffic/helpers/budget.ts`: no declaration changed (comments, formatting or line endings)
+- `src/proxyVendor/traffic/types.ts`: changed interface TrafficEntry, interface TrafficBudget
+- `src/proxyVendor/twoCaptcha/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/proxyVendor/twoCaptcha/helpers/buildProxyUrl.ts`: changed function sessionFor
+- `src/proxyVendor/twoCaptcha/helpers/pickPlace.ts`: no declaration changed (comments, formatting or line endings)
+- `src/proxyVendor/twoCaptcha/types.ts`: changed interface TwoCaptchaPlace, interface ProxyRequest
+- `src/proxyVendor/vendor/helpers/vendorOfProxy.ts`: no declaration changed (comments, formatting or line endings)
+- `src/proxyVendor/vendor/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/rea/capture/capture.test.ts`: changed test "each request goes to the step it happened in; quiet steps are left out", test "a run returns without waiting on rea; with nothing captured nothing starts"
+- `src/rea/capture/client.ts`: changed function defaultReaRunner, function inspectCapture, function settleRunCapture, function settleInBackground
+- `src/rea/capture/helpers/exportScripts.ts`: no declaration changed (comments, formatting or line endings)
+- `src/rea/capture/helpers/splitHarBySteps.ts`: changed interface StepHar, function parseSteps
+- `src/rea/capture/helpers/summarizeStep.ts`: changed interface StepSummary
+- `src/rea/capture/settle.test.ts`: changed test "leaves the session HAR as written and records the rea commands"
+- `src/rea/capture/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/rea/facebookClient/client.ts`: changed interface RunCapture, interface BuildClientMapOptions, function requestsInRun, function stepEvidence, function readSlices, function writeOperationDocs
+- `src/rea/facebookClient/facebookClient.test.ts`: changed test "a request missing from today's recordings keeps its entry and doc; one seen again keeps its larger count"
+- `src/rea/facebookClient/factsStore.test.ts`: changed test "a committed doc is read back as the start, and a rebuild after its runs are pruned only adds"
+- `src/rea/facebookClient/helpers/domainOf.ts`: changed const DOMAIN_PATTERNS
+- `src/rea/facebookClient/helpers/factsStore.ts`: changed interface StoredFacts, function foldOperation
+- `src/rea/facebookClient/helpers/indexModules.ts`: no declaration changed (comments, formatting or line endings)
+- `src/rea/facebookClient/helpers/operationsInHar.ts`: changed interface RequestSeen
+- `src/rea/facebookClient/helpers/renderOperationDoc.ts`: changed function stepLabel, function renderSightings
+- `src/rea/facebookClient/types.ts`: changed interface FacebookModule, interface OperationSighting, interface GraphqlDefinition, interface ClientOperation
+- `src/rea/inspectMap/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/rea/inspectMap/helpers/buildFlow.ts`: changed function buildFlow, function toMachineConfig
+- `src/rea/inspectMap/helpers/readScreen.ts`: no declaration changed (comments, formatting or line endings)
+- `src/rea/inspectMap/types.ts`: changed interface FlowState, interface FlowTransition
+- `src/subq/decisions/client.ts`: changed function createDecisionsClient
+- `src/subq/decisions/types.ts`: changed interface DecisionRequest
+- `src/surface/catalog/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/surface/catalog/types.ts`: changed interface Flag, interface CommandEntry
+- `src/surface/diagrams/index.ts`: changed function label
+- `src/surface/readme/index.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/client.test.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/client.ts`: changed function toTwentyError, function createTwentyClient
+- `src/twenty/graphql/helpers/marketplaceFixture.ts`: changed function marketplaceFixture
+- `src/twenty/graphql/helpers/memoryTwenty.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/types.ts`: changed interface TwentyObjects, interface TwentyClient, interface LoginSecrets
+- `src/warmup/persona/helpers/drawPersona.ts`: changed function parseTable, function readDatasets
+- `src/warmup/persona/helpers/personaPack.ts`: changed interface PackDatasets, function buildPersonaPack
+- `src/warmup/persona/persona.test.ts`: changed test "the watch is the real viewer's next play, scaled by the interest effect: longer on their kind", test "the session: the feed, each post into view then read, then Marketplace and listings; without --likes no like"
+- `src/warmup/persona/types.ts`: changed interface DatasetRow, interface BehaviourProfile, interface PersonaPack
+- `src/warmup/viewer/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/warmup/viewer/helpers/buildViewers.ts`: no declaration changed (comments, formatting or line endings)
+- `src/warmup/viewer/helpers/describeViewer.ts`: no declaration changed (comments, formatting or line endings)
+- `src/warmup/viewer/helpers/interestEffect.ts`: changed interface InterestEffect
+- `src/warmup/viewer/types.ts`: changed interface ViewerStats, interface ReelViewer
+
+What changed: every code comment and docstring in the repo is gone (TS, JS and Python; 380 files, about 5,900 lines), and lefthook's new `noComments` gate (pre-commit and pre-push, `bun run check:noComments`, `scripts/checks/checkNoComments.ts` with `python/checks/comments.py` for Python) refuses any tracked code file that has one; `--strip` removes them. Comments are found from each file's syntax tree, so `//` inside strings, regexes and templates is left alone; Python docstrings go too, with `pass` where a body would be left empty. The two `@ts-expect-error` lines in the commitLog test became `.d.mts` declarations. `lefthook.yml` carries no comments. Generated code is exempt. Rule 70 in AGENTS.md, and the MCP instructions carry it (`RULES_REVIEWED_THROUGH` 70).
+Why: matt asked for all code comments to be found and removed and for lefthook to forbid them, "as I think it's causing context rot in our system designs".
+Checked: `check:noComments` passes on 506 code files and fails on a throwaway TS and Python file with one comment each; `checkNoComments.test.ts` covers strings, regexes, templates and inline block comments; `bun run check` (naming, layout, browsers, agentHooks, docs, tsc) is clean, 799 tests pass, Python compiles and imports, and `check:facebookClientDocs` passes after `capture --docs` (67 requests, none unread).

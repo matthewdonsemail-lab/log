@@ -1,18 +1,12 @@
 import { CITY_COORDINATES, CITY_TIMEZONES, HOME_COUNTRIES } from '../types'
 import type { HomeResult } from '../types'
 
-/** What `homeOf` reads off an account. */
 export interface HomeFields {
   accountName: string
   homeCountry: string | null
   homeCity: string | null
 }
 
-/**
- * The account's pinned locale and home timezone, from `HOME_COUNTRIES` and
- * `CITY_TIMEZONES`. A country or multi-zone city that isn't in the tables is
- * refused (`noHomeLocale`, `noHomeTimezone`), never guessed. Pure.
- */
 export function homeOf(account: HomeFields): HomeResult {
   const country = account.homeCountry?.trim().toUpperCase() ?? ''
   const entry = HOME_COUNTRIES[country]

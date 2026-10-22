@@ -6,15 +6,9 @@ import type { ActOutput, ConnectActorInputs, ConnectInput, ConnectOutput, Connec
 const FAST = { deadlineMs: 200, pollMs: 1, codeWindowMs: 1 }
 const page = (kind: ConnectPageKind, heading?: string): ReadOutput => ({ ok: true, kind, path: '/x', heading })
 
-/**
- * Runs the machine against scripted pages. Each `read` takes the next page;
- * the last one repeats (a page that doesn't move). Returns the output, the
- * states visited and every action the actors were asked for.
- */
 async function runConnect(pages: ReadOutput[], input: Partial<ConnectInput> = {}, acts: Partial<Record<string, ActOutput>> = {}, save: SaveOutput = { ok: true, loggedIn: true }) {
   const calls: string[] = []
   const act = (name: string) =>
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- one stub for every input shape
     fromPromise<ActOutput, any>(async () => {
       calls.push(name)
       return acts[name] ?? { ok: true }

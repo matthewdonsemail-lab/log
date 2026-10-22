@@ -1,11 +1,3 @@
-/**
- * Load each photo and write a varied JPEG to disk. The only I/O in media/photo.
- *
- * Pipeline per photo (Listaro's sharp variation, plus EXIF orientation first
- * so phone photos don't post sideways once the EXIF is gone):
- * rotate(EXIF) → crop each edge → small rotate (white) → modulate →
- * contrast → blur | sharpen → resize → grain → JPEG (mozjpeg, no metadata).
- */
 import { createHash } from 'node:crypto'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
@@ -16,16 +8,10 @@ import { MAX_PHOTOS } from './types'
 import type { PreparedPhoto, PrepareResult, VariationParams } from './types'
 
 export interface PrepareOptions {
-  /** Where the varied files go. Default `~/.logCli/media/<runId>`. */
   dir?: string
   runId?: string
   rng?: () => number
   fetchFn?: typeof fetch
-  /**
-   * The account's own HTTP proxy (`fetchProxyUrl`). URL photos are only ever
-   * fetched through it, so the photo host sees the account's exit, never this
-   * machine. No proxy and a URL photo means `photoNeedsProxy`.
-   */
   proxy?: string | null
 }
 
@@ -41,11 +27,9 @@ async function loadBytes(source: string, fetchFn: typeof fetch, proxy: string): 
     return bytes
   }
   if (kind === 'url') {
-    // Listaro retried 3× with backoff; same here.
     let last: unknown
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
-        // Bun's fetch takes `proxy`; nothing else in the request says where it came from.
         const res = await fetchFn(source, { proxy } as RequestInit)
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return new Uint8Array(await res.arrayBuffer())
@@ -59,7 +43,6 @@ async function loadBytes(source: string, fetchFn: typeof fetch, proxy: string): 
   return new Uint8Array(readFileSync(source))
 }
 
-/** Apply one variation. Exported for tests. */
 export async function varyPhoto(input: Uint8Array, params: VariationParams, rng: () => number = Math.random) {
   const upright = await sharp(input).rotate().toBuffer()
   const meta = await sharp(upright).metadata()
@@ -80,10 +63,8 @@ export async function varyPhoto(input: Uint8Array, params: VariationParams, rng:
     .modulate({ brightness: params.brightness, saturation: params.saturation, hue: params.hue })
     .linear(params.contrast, 128 * (1 - params.contrast))
   pipeline = params.blur !== null ? pipeline.blur(params.blur) : pipeline.sharpen({ sigma: params.sharpen ?? 0.8 })
-  // Rotating grows the canvas; resize back to a fixed box so the white corners are cropped away.
   const shaped = await pipeline.resize(outWidth, outHeight, { fit: 'cover' }).removeAlpha().raw().toBuffer({ resolveWithObject: true })
 
-  // Grain: a grey noise layer blended over at low opacity, so every file's pixels differ.
   const { info } = shaped
   const grain = Buffer.alloc(info.width * info.height * 4)
   for (let i = 0; i < grain.length; i += 4) {

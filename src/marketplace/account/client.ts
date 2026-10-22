@@ -1,13 +1,5 @@
-/**
- * The account data boundary. Today it serves the three Facebook rows of the
- * dashboard's connections seed (listeningkit-hackathon
- * apps/web/src/lib/connections/mock.ts `MOCK_CONNECTIONS`), with the same ids
- * and issues. When the live facebook-camofox-client lands, point these reads
- * at it; the shapes stay the same.
- */
 import type { ConnectionRecord } from './types'
 
-/** The Facebook accounts the Marketplace feed is published from. */
 const FACEBOOK_ACCOUNTS: ConnectionRecord[] = [
   {
     id: 'fbGalwayRubbish',
@@ -35,7 +27,6 @@ const FACEBOOK_ACCOUNTS: ConnectionRecord[] = [
   },
 ]
 
-/** Every Facebook account, as fresh copies so callers can't mutate the source rows. */
 export function listAccounts(): ConnectionRecord[] {
   return FACEBOOK_ACCOUNTS.map((row) => ({ ...row }))
 }

@@ -7,15 +7,6 @@ const refOf = (line: string) => /\[ref=(e\d+)\]/.exec(line)?.[1] ?? null
 const nameOf = (line: string) => /^\s*-\s+\w+\s+"([^"]*)"/.exec(line)?.[1] ?? null
 const textOf = (line: string) => /^\s*-\s+(?:generic|text)(?:\s+\[[^\]]*\])*:\s*(.+)$/.exec(line)?.[1]?.trim().replace(/^"(.*)"$/, '$1') ?? null
 
-/**
- * The fill plan: each stepper step's answer mapped onto the dialog's own
- * element, read from the snapshot of the open dialog (this session's refs).
- * A question's elements are the ones after its text and before the next
- * question's: its `checkbox "<option>"`s (two questions may both offer Yes)
- * or its `textbox`. Then `checkbox "I agree to the group rules"` and
- * `button "Submit"`. A step with no element is listed as missing, never
- * guessed (rule 29). Recorded: Complainers of Bethlehem, step 16. Pure.
- */
 export function planFill(options: JoinOptions, draft: JoinDraft, snapshot: string): FillPlan {
   const lines = snapshot.split(/\r?\n/)
   const start = lines.findIndex((l) => /^\s*-\s+dialog\b/.test(l))
@@ -28,7 +19,6 @@ export function planFill(options: JoinOptions, draft: JoinDraft, snapshot: strin
   const body: string[] = []
   for (let i = start + 1; i < lines.length && indent(lines[i]) > depth; i++) body.push(lines[i])
 
-  // Each question's span of lines: from its text to the next question's text.
   const prompts = options.questions.map((q) => squash(q.prompt))
   const owner: (number | null)[] = []
   let current: number | null = null
@@ -50,7 +40,6 @@ export function planFill(options: JoinOptions, draft: JoinDraft, snapshot: strin
         plan.missing.push(q.prompt)
         return
       }
-      // A person clicks into the box, then types (the session's `type` only presses keys).
       plan.steps.push({ stepperStep: `question:${q.id}`, label: `click into "${squash(q.prompt).slice(0, 60)}"`, action: 'click', ref })
       plan.steps.push({ stepperStep: `question:${q.id}`, label: `type the answer to "${squash(q.prompt).slice(0, 60)}"`, action: 'type', ref, text: answer.trim() })
       return
@@ -88,7 +77,6 @@ export function planFill(options: JoinOptions, draft: JoinDraft, snapshot: strin
   return plan
 }
 
-/** The plan's steps as the stepper's steps they come from, for the dry run and the history. Pure. */
 export function describePlan(plan: FillPlan): string[] {
   return [...plan.steps.map((s: FillStep, i) => `${i + 1}. [${s.stepperStep}] ${s.label} (${s.action} ${s.ref})`), ...(plan.submit ? [`${plan.steps.length + 1}. [submit] press Submit (click ${plan.submit.ref}), only with --submit`] : []), ...plan.missing.map((m) => `   missing: ${m}`)]
 }

@@ -3,7 +3,6 @@ import type { FacebookAccount } from '../../socialAccount/types'
 import { lifecycleMachine } from '../machine'
 import type { AccountStanding, StepOutcome } from '../types'
 
-/** What Twenty says about an account, as the lifecycle needs it. Pure. */
 export function standingOf(account: FacebookAccount): AccountStanding {
   const cookies = Array.isArray(account.cookies) ? account.cookies : []
   return {
@@ -20,7 +19,6 @@ export function standingOf(account: FacebookAccount): AccountStanding {
   }
 }
 
-/** A state value as a dotted path: `{ onboarding: { opening: 'launch' } }` → `onboarding.opening.launch`. Pure. */
 export function statePath(value: unknown): string {
   if (typeof value === 'string') return value
   if (value && typeof value === 'object') {
@@ -30,11 +28,6 @@ export function statePath(value: unknown): string {
   return ''
 }
 
-/**
- * Where the lifecycle machine puts this account right now: the machine itself
- * is started with actors that never resolve, so the state it settles in is the
- * first step it would take. Nothing is opened or called.
- */
 export function whereNow(standing: AccountStanding): { state: string; firstStep: string | null } {
   const idle = fromPromise<StepOutcome, unknown>(() => new Promise<StepOutcome>(() => {}))
   const names = ['checkProxy', 'openBrowser', 'closeBrowser', 'signIn', 'checkAccount', 'setProfile', 'setName', 'setLocation', 'warmupActivity', 'watchCheck', 'act', 'waitForActiveHours']
@@ -47,10 +40,6 @@ export function whereNow(standing: AccountStanding): { state: string; firstStep:
   return { state: statePath(snapshot.value), firstStep: snapshot.context.trail.at(-1) ?? null }
 }
 
-/**
- * What the account still has to do before its host, in the lane's order, from
- * the record alone (the browser opening and the account check are every run's). Pure.
- */
 export function stepsLeft(s: AccountStanding): string[] {
   if (['banned', 'dead', 'restricted'].includes(String(s.status))) return []
   const left: string[] = []

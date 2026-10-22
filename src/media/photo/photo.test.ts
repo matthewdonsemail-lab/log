@@ -5,7 +5,6 @@ import { join } from 'node:path'
 import sharp from 'sharp'
 import { decodeDataUrl, photoSourceKind, preparePhotos, sniffImageType, variationParams } from './index'
 
-/** Deterministic rng so the variation ranges can be checked. */
 function seeded(seed = 1) {
   let s = seed
   return () => {
@@ -92,7 +91,6 @@ describe('preparePhotos', () => {
     const result = await preparePhotos(['https://example.test/a.png'], { dir, fetchFn, rng: seeded(5), proxy })
     expect(result).toMatchObject({ ok: true })
     expect(calls).toEqual([{ url: 'https://example.test/a.png', proxy }])
-    // The files are still named photoN.jpg: nothing from the source reaches Facebook.
     expect(result.ok && result.photos[0].path.endsWith('photo1.jpg')).toBe(true)
   })
 

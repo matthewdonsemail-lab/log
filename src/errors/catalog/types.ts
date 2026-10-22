@@ -1,80 +1,38 @@
-/**
- * The error catalog: every code log-cli, `python/session/logWorker.py` and
- * `python/session/publishSession.py` can produce, once, with what it means, whether it
- * clears by itself, where it is raised and where each machine ends up.
- *
- * This is the only place a code is defined. The TypeScript unions
- * (`ErrorCode`, `AccountIssue`, the captcha plan reasons) are derived from it,
- * `SOLVER_DEAD_CODES` is read from it, and the Python reads the same list from
- * `python/errors/errorCatalog.json` (`bun run errors:export`). Tests fail when a code
- * is used anywhere that isn't here (`catalog.test.ts`).
- *
- * `AccountIssue` started as listeningkit-hackathon's snake_case vocabulary
- * (apps/web/src/lib/account-issues/types.ts). log-cli spells it in camelCase
- * (AGENTS.md rule 1); the hackathon API boundary converts it.
- */
-
 export type ErrorLayer =
-  /** Something about the Facebook account: session, checkpoint, ban, limit, proxy. */
   | 'account'
-  /** Turning the listing's photos into upload-ready JPEGs (`media/photo`). */
   | 'photo'
-  /** A step on Facebook's create form that couldn't do or confirm its write. */
   | 'form'
-  /** Picking a captcha solver, or the solver's own refusal. */
   | 'captcha'
-  /** The Python processes and the pipes to them, not Facebook. */
   | 'runtime'
-  /** `log login`'s browser exchange with blaster. */
   | 'auth'
-  /** A Twenty agencyListing row that can't be run as it is. */
   | 'listing'
-  /** Twenty's REST API, where accounts and listings live. */
   | 'twenty'
-  /** A proxy seller's API (2Captcha), used to give accounts proxies. */
   | 'proxyVendor'
-  /** A change on the account's own profile page (`log facebook profile setup`, rule 28). */
   | 'profile'
-  /** A browser session for any driver (`browser/driver`, rule 42). */
   | 'browser'
-  /** AdsPower's Local API and its profiles (`adsPower/*`). */
   | 'adsPower'
-  /** A Facebook group on one account (`group/*`, rule 45). */
   | 'group'
-  /** A warm-up activity on its platform (`warmup/<platform>`, rule 49). */
   | 'warmup'
 
-/** How a publish run ends when this code is raised (`marketplace/publish`). */
 export type PublishEnd = 'failed' | 'blocked' | 'needsPerson' | 'unconfirmedId'
 
-/** The monitor state a check with this code moves to (`marketplace/monitor`). */
 export type MonitorEnd =
-  /** Account problem: final, a person has to act. */
   | 'blocked'
-  /** Rate limited: rests (24h), then checks again. */
   | 'resting'
-  /** Failed check: one quick retry if retryable, the circuit breaker after 3 in a row. */
   | 'failed'
 
-/** What the captcha router does with a solver that returned this code (`captcha/router`). */
 export type CaptchaEnd =
-  /** The solver may be tried again, within the policy's attempts. */
   | 'retry'
-  /** The solver can't work right now: skipped for the rest of the run. */
   | 'skipSolver'
 
 export interface ErrorEntry {
   layer: ErrorLayer
-  /** What happened, in plain words. */
   meaning: string
-  /** True when it can clear by itself (a retry or the passage of time), with no person. */
   retryable: boolean
-  /** Where it is raised: `<machine>.<state>`, or the module that returns it. */
   raisedIn: readonly string[]
   publish?: PublishEnd
   monitor?: MonitorEnd
   captcha?: CaptchaEnd
-  /** What a person does about it. */
   action: string
 }
 
@@ -82,7 +40,6 @@ const reconnect = 'Run `log facebook connect --account <id>` and log in by hand.
 const tellMatt = "Tell matt. Don't retry the account until it's looked at."
 
 export const ERROR_CATALOG = {
-  // ── account ────────────────────────────────────────────────────────────
   neverConnected: {
     layer: 'account',
     meaning: 'No saved Facebook session for this account.',
@@ -525,7 +482,6 @@ export const ERROR_CATALOG = {
     action: 'Look at the raw signal and add a code for it here.'
   },
 
-  // ── photo ──────────────────────────────────────────────────────────────
   noPhotos: {
     layer: 'photo',
     meaning: 'The listing has no photos. Facebook keeps Next disabled with 0.',
@@ -575,7 +531,6 @@ export const ERROR_CATALOG = {
     action: 'Open the photo by hand; it is probably corrupt.'
   },
 
-  // ── form ───────────────────────────────────────────────────────────────
   pageNotReached: {
     layer: 'form',
     meaning: 'A flow or warm-up step went to a page and Facebook put the browser somewhere else.',
@@ -712,7 +667,6 @@ export const ERROR_CATALOG = {
     action: 'Check Marketplace > Selling by hand. Never re-publish: it would duplicate.'
   },
 
-  // ── captcha: what the router decides ───────────────────────────────────
   noSolverForKind: {
     layer: 'captcha',
     meaning: "Facebook's own challenge, or a captcha no solver recognises.",
@@ -754,7 +708,6 @@ export const ERROR_CATALOG = {
     action: 'Clear it by hand. Facebook kept serving captchas: the account may be flagged.'
   },
 
-  // ── captcha: a solver's own refusal ────────────────────────────────────
   captchaNoProxy: {
     layer: 'captcha',
     meaning: "2Captcha would have solved from its own IP: the account's proxy couldn't be passed to it. Refused rather than mixing a foreign IP into the session.",
@@ -940,7 +893,6 @@ export const ERROR_CATALOG = {
     action: 'Read the detail. If it repeats, give it a code here.'
   },
 
-  // ── runtime ────────────────────────────────────────────────────────────
   workerNotStarted: {
     layer: 'runtime',
     meaning: 'The Python interpreter could not be started.',
@@ -1086,7 +1038,6 @@ export const ERROR_CATALOG = {
     action: 'Add the code to src/errors/catalog/types.ts, then `bun run errors:export`.'
   },
 
-  // ── listing ────────────────────────────────────────────────────────────
   listingNotFound: {
     layer: 'listing',
     meaning: 'No agencyListing with that id in Twenty.',
@@ -1123,7 +1074,6 @@ export const ERROR_CATALOG = {
     action: 'Add or activate an account in that country (with a proxy there), then run log facebook campaign heal.'
   },
 
-  // ── twenty ─────────────────────────────────────────────────────────────
   twentyNotConfigured: {
     layer: 'twenty',
     meaning: 'TWENTY_BASE_URL or TWENTY_API_KEY is not set.',
@@ -1167,7 +1117,6 @@ export const ERROR_CATALOG = {
     action: 'log facebook accounts lists the Facebook accounts.'
   },
 
-  // ── proxyVendor ────────────────────────────────────────────────────────
   twoCaptchaNotConfigured: {
     layer: 'proxyVendor',
     meaning: "The 2Captcha proxy API key or proxy password isn't set.",
@@ -1218,7 +1167,6 @@ export const ERROR_CATALOG = {
     action: 'Run `log proxy assign` again, or pick a nearby city it has (--city, --region).'
   },
 
-  // ── auth ───────────────────────────────────────────────────────────────
   timedOut: {
     layer: 'auth',
     meaning: '`log login` waited and the browser never finished signing in.',
@@ -1254,7 +1202,6 @@ export const ERROR_CATALOG = {
     raisedIn: ['profile.uploadingProfilePhoto', 'profile.uploadingCoverPhoto'],
     action: "Read the run's capture and its saved page text; run once more after the launch gap (rule 24)."
   },
-  // rule 42: the browser as a driver (browser/driver) and AdsPower's Local API (adsPower/*).
   browserDriverFailed: {
     layer: 'browser',
     meaning: 'A browser driver step threw something without a catalog code, or a session was started without its driver steps.',
@@ -1297,7 +1244,6 @@ export const ERROR_CATALOG = {
     raisedIn: ['browser/adsPower', 'python/browserDriver'],
     action: 'Run `log adsPower sync --apply` (it makes the profile and links it).'
   },
-  // rule 45: groups (`facebook/group/join`, `log facebook join group`).
   groupRefInvalid: {
     layer: 'group',
     meaning: '--group names no Facebook group (a facebook.com/groups/<id or name>/ URL, the id, or the name in the URL).',
@@ -1354,7 +1300,6 @@ export const ERROR_CATALOG = {
     raisedIn: ['facebook/group/join.joining', 'facebook/group/join.checking'],
     action: "Read the joining and checking steps' recordings (rule 25) before another --live run."
   },
-  // #27: reading a group (`facebook/group/read`, `log facebook read group`).
   groupIdUnknown: {
     layer: 'group',
     meaning: "The group page never gave the group's numeric id (the read keeps a post only with its group's id).",
@@ -1380,17 +1325,14 @@ export const ERROR_CATALOG = {
 
 export type ErrorCode = keyof typeof ERROR_CATALOG
 
-/** The codes of one layer, as a union. */
 export type CodeOfLayer<L extends ErrorLayer> = {
   [C in ErrorCode]: (typeof ERROR_CATALOG)[C]['layer'] extends L ? C : never
 }[ErrorCode]
 
-/** Why the captcha router hands a captcha to a person: the codes that end a publish in `needsPerson`. */
 export type CaptchaStopReason = {
   [C in ErrorCode]: (typeof ERROR_CATALOG)[C] extends { publish: 'needsPerson' } ? C : never
 }[ErrorCode]
 
-/** A failed step or worker call, as every boundary returns it. */
 export interface CodedFailure {
   ok: false
   code: ErrorCode

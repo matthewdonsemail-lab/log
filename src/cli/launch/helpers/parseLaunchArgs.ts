@@ -1,6 +1,5 @@
 export type ParseLaunchArgsResult = { ok: true; json: boolean } | { ok: false; error: string };
 
-/** Only `--json` is accepted; anything else is a usage error. Pure. */
 export function parseLaunchArgs(argv: string[]): ParseLaunchArgsResult {
   for (const token of argv) {
     if (token === "--json") continue;

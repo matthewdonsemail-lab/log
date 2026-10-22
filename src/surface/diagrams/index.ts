@@ -1,16 +1,9 @@
-/**
- * The Mermaid diagrams of log-cli's surface (rule 56), generated from the
- * catalog, the hook registry and the page states, so they change when the
- * code does. Each is written to `docs/diagrams/<name>.mmd` and shown in the
- * README. Pure.
- */
 import { AGENT_HOOKS } from "../../agentHooks/registry/index.ts";
 import type { AgentHook } from "../../agentHooks/registry/index.ts";
 import { BROWSER_DRIVERS } from "../../browser/driver/types.ts";
 import { PAGE_STATES } from "../../browser/flow/helpers/pageState.ts";
 import type { CommandEntry, FlowEntry } from "../catalog/index.ts";
 
-/** One diagram: its file name under `docs/diagrams/`, a title, what it shows, and its Mermaid source. */
 export interface Diagram {
   name: string;
   title: string;
@@ -18,19 +11,12 @@ export interface Diagram {
   mermaid: string;
 }
 
-/**
- * Text Mermaid can hold in a label, a note or a message: quotes and angle
- * brackets as entities, and `;`, which ends a statement in Mermaid (a note
- * holding one broke the hooks diagram on GitHub), as `#59;`. Pure.
- */
 export function label(text: string): string {
-  // `;` first: the entities written after it end in `;` themselves.
   return text.replace(/;/g, "#59;").replace(/"/g, "#quot;").replace(/[<>]/g, (c) => (c === "<" ? "#lt;" : "#gt;"));
 }
 
 const scriptName = (hook: AgentHook) => hook.script.split("/").pop() ?? hook.script;
 
-/** How a call reaches log-cli, from a shell or over MCP, and where the hooks and the live log sit. Pure. */
 export function surfaceDiagram(entries: readonly CommandEntry[], hooks: readonly AgentHook[] = AGENT_HOOKS): Diagram {
   const pre = hooks.filter((h) => h.event === "PreToolUse");
   const post = hooks.filter((h) => h.event === "PostToolUse");
@@ -64,7 +50,6 @@ export function surfaceDiagram(entries: readonly CommandEntry[], hooks: readonly
   return { name: "surface", title: "How a call reaches log-cli", about: "From a shell or over MCP, both run the same commands through `runCli`, write the same live log, and pass through the same hooks.", mermaid: lines.join("\n") };
 }
 
-/** One agent turn and where each hook fires, with what it does. Pure. */
 export function hooksDiagram(hooks: readonly AgentHook[] = AGENT_HOOKS): Diagram {
   const by = (event: string) => hooks.filter((h) => h.event === event);
   const note = (event: string) => by(event).map((h) => `  Note over Hook: ${label(h.why)}`);
@@ -102,14 +87,12 @@ export function hooksDiagram(hooks: readonly AgentHook[] = AGENT_HOOKS): Diagram
   return { name: "hooks", title: "The hooks in one turn", about: "Written from `AGENT_HOOKS` (`src/agentHooks/registry`); the same list gives Claude Code's `.claude/settings.json` and Codex's `.codex/hooks.json`.", mermaid: lines.join("\n") };
 }
 
-/** A resolver's step, short enough for an edge: up to its first explanation (` (`, `: `, `, then`). Pure. */
 export function resolverStep(resolve: string): string {
   const plain = resolve.replace(/`/g, "");
   const cut = [" (", ": ", ", then"].map((s) => plain.indexOf(s)).filter((i) => i > 0);
   return cut.length ? plain.slice(0, Math.min(...cut)) : plain;
 }
 
-/** Every known page state and what clears it: log-cli itself, or a person. Pure. */
 export function pageStatesDiagram(): Diagram {
   const lines = ["flowchart LR", `  page["A step lands on a page"]`, `  person["Stop the account, tell matt"]`];
   for (const s of PAGE_STATES) {
@@ -121,7 +104,6 @@ export function pageStatesDiagram(): Diagram {
   return { name: "pageStates", title: "Known page states (rule 54)", about: "From `PAGE_STATES` (`src/browser/flow/helpers/pageState.ts`), first match wins. The hooks report each with its resolver; only a person's state stops the account.", mermaid: lines.join("\n") };
 }
 
-/** Every command by how it is reached: an MCP tool, watched on the live log, or terminal-only; and the saved flows. Pure. */
 export function commandsDiagram(entries: readonly CommandEntry[], flows: readonly FlowEntry[]): Diagram {
   const lines = ["flowchart TB", `  cli["log (CLI)"]`, `  mcp["MCP server log"]`, `  live[("live log")]`, `  terminal["terminal only"]`];
   for (const e of entries) {
@@ -138,13 +120,6 @@ export function commandsDiagram(entries: readonly CommandEntry[], flows: readonl
   return { name: "commands", title: "Every command, CLI and MCP", about: "Each command is a CLI command and, unless terminal-only, an MCP tool of the same name; the long-running ones write the live log. Saved flows are MCP tools that run `log flow run`.", mermaid: lines.join("\n") };
 }
 
-/**
- * The browser layer: an account's driver is picked from Twenty, every driver
- * opens through the same gates, and each command runs on the account's
- * browser, on Camoufox only, or on none. Drawn from `BROWSER_DRIVERS` and
- * `commandBrowser`, so a new browser provider or a command moved onto the
- * driver shows here. Pure.
- */
 export function browsersDiagram(entries: readonly CommandEntry[]): Diagram {
   const on = (kind: CommandEntry["browser"]) => entries.filter((e) => e.browser === kind).map((e) => e.name).join(", ");
   const lines = [
@@ -166,7 +141,6 @@ export function browsersDiagram(entries: readonly CommandEntry[]): Diagram {
   return { name: "browsers", title: "The browser layer", about: "log-cli is browser-agnostic: each account's browser is a driver picked from Twenty, AdsPower first, and every driver opens through the same gates. From `BROWSER_DRIVERS` (`src/browser/driver`) and `commandBrowser` (`src/browser/run`).", mermaid: lines.join("\n") };
 }
 
-/** Every diagram, in the README's order. Pure. */
 export function diagrams(entries: readonly CommandEntry[], flows: readonly FlowEntry[]): Diagram[] {
   return [browsersDiagram(entries), surfaceDiagram(entries), commandsDiagram(entries, flows), hooksDiagram(), pageStatesDiagram()];
 }

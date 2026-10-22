@@ -15,7 +15,6 @@ const SIGNED_IN: ProfileReadOutput = {
 
 function run(input: Partial<ProfileInput>, script: { read?: ProfileReadOutput; name?: ProfileNameOutput; photos?: ProfilePhotosOutput; profile?: ProfileActOutput; cover?: ProfileActOutput } = {}) {
   const calls: string[] = []
-  // Scripted actors: typed loosely, as the real ones take each step's own input.
   const act = <T>(name: string, result: T) =>
     fromPromise<T, unknown>(async ({ input: given }) => {
       calls.push(given && typeof given === 'object' && 'path' in given ? `${name} ${(given as { path: string }).path}` : name)

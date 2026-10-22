@@ -1,18 +1,3 @@
-/**
- * `log flow` (rule 31): a recorded `log inspect` run → a flow definition →
- * its documentation → an XState machine that runs it on any account → an
- * MCP tool of its own.
- *
- *   log flow fromInspect <runDir> --name <n> [--summary <s>] [--rename text1=firstName]...
- *   log flow docs <name>          docs/platforms/facebook/flows/<name>.md from the definition
- *   log flow list | show <name>
- *   log flow run <name> --account <a> [--set firstName=…]... [--live] [--bypass] [--now]
- *
- * A run without --live prints the steps with their values and opens nothing.
- * With --live it opens one gated, headed Camoufox (the inspect session, so
- * every step is recorded with its snapshot, screenshot, HAR and rea reading),
- * runs the machine, and maps the new recording.
- */
 import { existsSync, readFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
@@ -36,7 +21,6 @@ export const FLOW_USAGE = [
   "       log flow run <name> --account <accountName> [--set <param>=<value>]... [--live] [--bypass] [--now] [--json]",
 ].join("\n");
 
-/** `--set a=b --set c=d` and `--rename x=y`, repeated: taken out before parseArgs, which keeps one value per flag. */
 export function takePairs(argv: string[], flag: string): { pairs: Record<string, string>; rest: string[] } {
   const pairs: Record<string, string> = {};
   const rest: string[] = [];
@@ -71,7 +55,6 @@ async function runFlow(context: Parameters<Command["run"]>[0], flow: FlowDefinit
   const missing = flow.params.filter((p) => !(p.name in values)).map((p) => p.name);
   if (missing.length) return { code: 1, stderr: `log flow: ${flow.name} needs ${missing.map((m) => `--set ${m}=…`).join(" ")}` };
   const uid = typeof flags["account"] === "string" ? flags["account"] : "";
-  // `{uid}` and `{profileName}` are the account's own: never a --set, filled from the account itself.
   const filled: Record<string, string> = { ...values, uid, profileName: "<the account's profile name>" };
   if (!flags["live"]) {
     const lines = [`Flow ${flow.name} (dry run: nothing opens). With --live it runs:`];
@@ -83,7 +66,6 @@ async function runFlow(context: Parameters<Command["run"]>[0], flow: FlowDefinit
   const { account, run } = opened;
   const runDir = dirname(run.captureDir!);
   return withRun(context, "flow", account, run, async () => {
-    // File params are varied and fetched through the account's proxy, never from this machine (`media/photo`).
     const fileParams = flow.params.filter((p) => p.kind === "file");
     if (fileParams.length) {
       const prepared = await preparePhotos(fileParams.map((p) => values[p.name]), { dir: join(runDir, "photos"), proxy: fetchProxyUrl(account.proxy) });
@@ -105,7 +87,6 @@ async function runFlow(context: Parameters<Command["run"]>[0], flow: FlowDefinit
     try {
       mapInspectRun(runDir);
     } catch {
-      // the map is a reading aid; the run's own result stands
     }
     if (flags["json"]) return { code: output.result === "done" ? 0 : 1, stdout: JSON.stringify(output, null, 2) };
     return { code: output.result === "done" ? 0 : 1, stdout: renderRun(flow, output, runDir) };

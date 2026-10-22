@@ -27,7 +27,6 @@ export const PLATFORM_USAGE = [
   `  Platforms: ${WARMUP_PLATFORMS.join(", ")}. Facebook activities: ${[...Object.keys(FACEBOOK_ACTIVITIES), "stages"].join(", ")}.`,
 ].join("\n");
 
-/** The plan flags → session options, or why not. Pure. */
 export function sessionOptions(flags: Record<string, string | true>): { ok: true; options: ReelSessionOptions } | { ok: false; error: string } {
   const options: ReelSessionOptions = { ...DEFAULT_SESSION, likes: flags.likes === true };
   for (const [flag, key, top] of [["reels", "reels", 60], ["watch", "watchSeconds", 300]] as const) {
@@ -45,7 +44,6 @@ export function sessionOptions(flags: Record<string, string | true>): { ok: true
   return { ok: true, options };
 }
 
-/** One step sent to the open session, with the snapshot its folder kept (the check reads it). */
 function actor(context: CommandContext, current: NonNullable<ReturnType<typeof readCurrentInspect>>) {
   return fromPromise<StepReply, { account: string; step: ActivityStep }>(async ({ input }) => {
     const { step } = input;
@@ -57,15 +55,8 @@ function actor(context: CommandContext, current: NonNullable<ReturnType<typeof r
   });
 }
 
-/**
- * `log <platform> warmup <activity> [plan|record|run]` (rule 49): an activity
- * of the warm-up, defined for its platform, run in the account's browser
- * (opened primed with it when it isn't open, `inspect start --detach`), every
- * step checked against what it must do, the outline written beside the run.
- */
 export async function runPlatformActivity(context: CommandContext, positionals: string[], flags: Record<string, string | true>): Promise<CommandResult> {
   const [platform, activityName, sub = "record"] = positionals;
-  // The account's persona (rule 50): kept per account, drawn once from the datasets.
   if (activityName === "persona") {
     if (typeof flags.account !== "string") return { code: 1, stderr: `log facebook warmup: --account is required\n${PLATFORM_USAGE}` };
     try {
@@ -84,8 +75,6 @@ export async function runPlatformActivity(context: CommandContext, positionals: 
 
   const built = sessionOptions(flags);
   if (!built.ok) return { code: 1, stderr: `log facebook warmup: ${built.error}` };
-  // Reels has a drawn session (glances, streaks, watches); every other activity is its steps in order, each
-  // step's ranges drawn as it runs.
   const drawnSession = activity.activity === "reel";
   if (sub === "plan" && !drawnSession) {
     if (flags.json) return { code: 0, stdout: JSON.stringify({ platform, activity: activity.activity, steps: activity.steps, knownIssues: activity.knownIssues }, null, 2) };
@@ -114,13 +103,11 @@ export async function runPlatformActivity(context: CommandContext, positionals: 
     const account = await findAccount(context.twenty, flags.account);
     const check = checkRunnable(account, "run");
     if (!check.ok) return refuse("warmup", check.code, check.detail);
-    // Rule 18 for every step in the browser, also when it is already open; --bypass for one run (rule 20).
     const home = homeOf(account);
     if (!home.ok) return refuse("warmup", home.code, home.detail);
     const outside = flags.bypass ? null : outsideActiveHours(account, home.home.timezone, context.now?.() ?? new Date());
     if (outside) return refuse("warmup", "outsideActiveHours", outside);
 
-    // The account's one browser (rule 35): the open one, else opened now as its own process, primed with this activity.
     let current = readCurrentInspect(undefined, account.accountName);
     if (!current) {
       context.err(`Opening ${account.accountName}'s browser for the warm-up (${platform} ${activity.activity}), as its own process…`);
@@ -137,7 +124,6 @@ export async function runPlatformActivity(context: CommandContext, positionals: 
       const { pack } = packFor(account.accountName, persona, viewer, { fresh: flags.newPersona === true });
       context.err([`${drawn ? "Drew" : "Using"} ${account.accountName}'s persona:`, ...describePack(pack)].join("\n"));
       const seed = Math.floor((context.now?.() ?? new Date()).getTime() % 2 ** 31);
-      // How many posts: --posts (a range, drawn), else the pack's session length (doomscrolling and the real viewer).
       const range = typeof flags.posts === "string" ? parseRange(flags.posts) : null;
       if (typeof flags.posts === "string" && !range) return { code: 1, stderr: "log facebook warmup: --posts is a number or a range, 8-15" };
       const posts = range ? range.min + Math.floor(seeded(seed)() * (range.max - range.min + 1)) : pack.traits.sessionReels;
@@ -151,7 +137,6 @@ export async function runPlatformActivity(context: CommandContext, positionals: 
       const { pack } = packFor(account.accountName, persona, viewer, { fresh: flags.newPersona === true });
       context.err([`${drawn ? "Drew" : "Using"} ${account.accountName}'s persona:`, ...describePersona(persona), ...describeViewerLines(viewer), ...describePack(pack)].join("\n"));
       const seed = Math.floor((context.now?.() ?? new Date()).getTime() % 2 ** 31);
-      // The session's length is the pack's (doomscrolling and the real viewer's sessions), unless --reels says.
       const range = built.options.reels;
       const reels = typeof flags.reels === "string" ? range.min + Math.floor(seeded(seed)() * (range.max - range.min + 1)) : pack.traits.sessionReels;
       context.err(`Warm-up facebook reel, each reel read by SubQ and planned by the orderer for this pack: ${reels} reels, in ${account.accountName}'s open browser (${current.runDir}).`);

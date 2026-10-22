@@ -4,7 +4,6 @@ import { fileURLToPath } from 'node:url'
 import type { DecisionRequest, DecisionResponse, DecisionsClient } from './types'
 import { SUBQ_DECISIONS_MODEL, SUBQ_DECISIONS_URL } from './types'
 
-/** The key: SUBQ_API_KEY from the environment, else log-cli's or the workspace's `.env.local`. Never printed. */
 export function subqKey(env: Record<string, string | undefined> = process.env): string | null {
   if (env.SUBQ_API_KEY) return env.SUBQ_API_KEY
   const repo = resolve(fileURLToPath(new URL('../../..', import.meta.url)))
@@ -16,11 +15,6 @@ export function subqKey(env: Record<string, string | undefined> = process.env): 
   return null
 }
 
-/**
- * The live client. 429 and 5xx are retried with backoff (1 s, 3 s), as the
- * docs say; a 400 or 422 is the request's own fault and is not retried. The
- * error names the status and SubQ's own `detail.message`, never the key.
- */
 export function createDecisionsClient(key: string | null = subqKey()): DecisionsClient {
   return async (request: DecisionRequest): Promise<DecisionResponse> => {
     if (!key) throw Object.assign(new Error('SUBQ_API_KEY is not set (.env.local)'), { code: 'subqKeyMissing' })
@@ -36,7 +30,6 @@ export function createDecisionsClient(key: string | null = subqKey()): Decisions
         try {
           message = (JSON.parse(text) as { detail?: { message?: string } }).detail?.message ?? message
         } catch {
-          // not JSON: the text itself
         }
         throw Object.assign(new Error(`SubQ ${response.status}: ${message}`), { code: 'subqRequestFailed' })
       }

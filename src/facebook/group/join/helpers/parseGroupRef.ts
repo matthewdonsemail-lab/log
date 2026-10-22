@@ -2,11 +2,6 @@ import type { GroupRef } from '../types'
 
 const SLUG = /^[A-Za-z0-9.\-_]{3,}$/
 
-/**
- * `--group` → the group: `https://www.facebook.com/groups/4191018610937243/`
- * (any facebook.com host, any path after it), `groups/<key>`, the numeric
- * id, or the vanity slug. Anything else is refused, never guessed. Pure.
- */
 export function parseGroupRef(raw: string): { ok: true; group: GroupRef } | { ok: false; error: string } {
   const text = raw.trim()
   let key: string | null = null

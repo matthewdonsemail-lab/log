@@ -1,10 +1,3 @@
-/**
- * `log facebook accounts` — the FACEBOOK socialAccounts in Twenty, and whether each may run.
- * `log facebook account show <name>` — one account in full (never its password or cookies).
- * `log facebook account status <name> <STATUS>` — set its status in Twenty. Restricted,
- * banned or dead also moves its live listings to ACCOUNT_LOST and replaces the
- * campaign ones with accounts in the same country. Nothing is ever deleted.
- */
 import { ACCOUNT_STATUSES, findAccount, fromTwentyEnum, listFacebookAccounts } from "../../marketplace/socialAccount/index.ts";
 import type { AccountStatus } from "../../marketplace/socialAccount/index.ts";
 import { setStatusAndReplace } from "../../marketplace/replacement/index.ts";

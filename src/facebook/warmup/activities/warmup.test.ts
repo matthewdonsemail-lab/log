@@ -14,7 +14,6 @@ describe('the reel activity, as its first recording showed it (Bethlehem, 2026-1
     expect(step('closeComments').expect).toEqual({ hides: { role: 'heading', name: 'Comments' } })
     expect(step('like')).toMatchObject({ likes: true, clicks: true })
     expect(REEL.knownIssues.length).toBeGreaterThan(0)
-    // The sound goes on before anything is watched (matt: you can't watch a video with the audio off).
     expect(REEL.steps.slice(0, 3).map((s) => s.id)).toEqual(['openReels', 'unmute', 'watch'])
     expect(step('unmute')).toMatchObject({ action: 'clickRole', args: ['button', 'Unmute'], expect: { hides: { role: 'button', name: 'Unmute' } } })
   })
@@ -58,7 +57,6 @@ describe('skipping as a thumb does (matt, 2026-10-20)', () => {
           glances++
           run++
           if (run === 2) streaks++
-          // a glanced reel gets nothing else
           expect(ids.filter((id) => !['openReels', 'unmute', 'glance', 'swipe'].includes(id))).toEqual([])
         } else {
           watched++

@@ -84,7 +84,6 @@ describe("log facebook warmup reel (rule 49)", () => {
       const out: string[] = [];
       const code = await runCli(["facebook", "warmup", "reel", "--account", "galwayOne", "--live"], {
         twenty: marketplaceFixture(),
-        // The URL never changes: as the wheel did on the first recording.
         sendInspect: async (_c, action) => (sent.push(action), { ok: true, url: "https://www.facebook.com/reel/1" }),
         out: (l) => out.push(l),
         err: () => {},

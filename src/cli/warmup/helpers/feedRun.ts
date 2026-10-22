@@ -16,7 +16,6 @@ import type { InterestEffect } from "../../../warmup/viewer/index.ts";
 import type { CommandContext, CommandResult } from "../../runner/types.ts";
 import { DWELL_OVERHEAD_MS, frameOf } from "./personaRun.ts";
 
-/** How long each feed step waits for the page, by step (none for a dwell): what the inspect timings showed. */
 const SETTLE: Record<string, { quietMs: number; settleMaxMs: number }> = {
   goto: { quietMs: 500, settleMaxMs: 4000 },
   click: { quietMs: 300, settleMaxMs: 1500 },
@@ -26,23 +25,12 @@ const SETTLE: Record<string, { quietMs: number; settleMaxMs: number }> = {
   openListings: { quietMs: 300, settleMaxMs: 1500 },
 };
 
-/** The session so far, for SubQ: the last 12 posts, whether theirs, the time and a like. Pure. */
 export function feedSoFar(labels: FeedLabel[]): string {
   const read = labels.filter((l) => l.plan);
   if (!read.length) return "The first post of the session.";
   return `${read.length} post(s) so far: ${read.slice(-12).map((l) => `post ${l.index} ${l.read?.label ?? "unread"}${l.plan!.match ? " (theirs)" : ""}: ${(l.plan!.dwellMs / 1000).toFixed(1)} s${l.plan!.like ? ", liked" : ""}`).join("; ")}.`;
 }
 
-/**
- * `log facebook warmup feed run --persona` (rule 50): the account's home feed
- * read as its persona would, in its open browser (`feedPersonaMachine`). Each
- * post comes into view by the wheel, SubQ reads it, and the orderer plans a
- * glance or a read and a like; the time counts from when the post came into
- * view. Then Marketplace and a few listings. Every step is recorded (rules 22,
- * 29); each post's read and plan go to the run's `feedLabels.jsonl` and
- * `~/.logCli/datasets/feedLabels/<account>.jsonl`. The proxy's traffic is
- * metered by its provider (rule 51).
- */
 export async function runFeedSession(
   context: CommandContext & { decisions?: DecisionsClient; trafficMeter?: TrafficMeter },
   account: string,
@@ -82,7 +70,6 @@ export async function runFeedSession(
         const { step } = input;
         let args = step.args;
         if (step.id === "onPost") {
-          // The time on a post counts from when it came into view: SubQ's read and the step's own cost come off it.
           const target = Number(step.args[0]) * 1000;
           const remaining = target - (Date.now() - landedAt) - DWELL_OVERHEAD_MS;
           if (remaining < 100) {
@@ -92,16 +79,10 @@ export async function runFeedSession(
           args = [(remaining / 1000).toFixed(2)];
         }
         context.err(`  → ${step.id}: ${step.action} ${args.join(" ")}  (${step.why})`);
-        // A post step doesn't wait for the network to go quiet (the feed's images and videos keep it busy, and
-        // the wait made each post crawl, run 20261020T103516); rea still reads every step, without holding it up.
-        // Settled on what each step needs, never on the network going quiet (Facebook's never does): measured by
-        // hand on Reading (inspect 20261020T103913), a page open waited 18-20 s for quiet, a click 6-9 s, a
-        // scroll 9 s, where the page itself was ready in seconds.
         const quick = SETTLE[step.id] ?? (step.action === "goto" ? SETTLE.goto : step.action === "dwell" ? undefined : SETTLE.click);
         const sent = Date.now();
         const reply = await context.sendInspect(current, step.action as InspectAction, args, 180_000, undefined, { reaLater: true, ...quick, ...(step.optional ? { findMs: 1500 } : {}) });
         if (!reply) return { ok: false, error: `no reply from the open browser in 180 s (${current.runDir})` };
-        // Every step timed, live (matt: "time everything"): its own time in the browser, and the round trip.
         context.err(`    ${reply.ok === false ? "✗" : "✓"} ${step.id} ${reply.ms ?? "?"} ms in the browser, ${Date.now() - sent} ms round trip${reply.error ? `: ${reply.error}` : ""}`);
         const snapshotPath = reply.folder ? join(reply.folder, "snapshot.yml") : null;
         if (step.id === "nextPost") landedAt = Date.now();
@@ -122,7 +103,6 @@ export async function runFeedSession(
   const run = createActor(machine, { input: { account, posts: options.posts, seed: options.seed, live: options.live, likes: options.likes, steps, pack, effect }, inspect: createInspector((line) => context.err(formatTraceLine(line))) });
   let written = 0;
   run.subscribe((snapshot) => {
-    // Each post's read and plan as it is made (rule 26).
     for (const label of snapshot.context.labels.slice(written)) {
       const line = `${JSON.stringify({ at: new Date().toISOString(), account, personaId: pack.personaId, ...label })}\n`;
       appendFileSync(labelsPath, line);

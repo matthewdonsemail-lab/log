@@ -1,10 +1,3 @@
-// Scores remote, scalable environment options with SubQ's Decisions API.
-// Usage: SUBQ_API_KEY=... node docs/scaleArchitecture/runSubqScaleMatrix.mjs [--dry-run]
-// Reads matt's brief plus every evidence file below into one `state`, then runs:
-//   pass A: 16 `choice` questions (best option per criterion), 2 repeats
-//   pass B: per option, 16 `score` questions (0 very poor .. 4 very good), 1 run
-//   pass C: 16 `noul` claims (true/false against the evidence), 2 repeats
-// Writes subqResults.json next to this file.
 import { readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -141,8 +134,6 @@ const claimQuestions = Object.fromEntries(
   ]),
 );
 
-// --prior: re-check the claims of the earlier deviceIsolation recommendation against this state.
-// Writes priorCheck.json and skips passes A-C.
 if (process.argv.includes("--prior")) {
   const prior = JSON.parse(readFileSync(join(here, "priorClaims.json"), "utf8"));
   const questions = Object.fromEntries(

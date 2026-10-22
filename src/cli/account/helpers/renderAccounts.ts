@@ -1,11 +1,9 @@
-/** Human renderers for Facebook accounts. Pure. Never prints a proxy password or cookies. */
 import { checkRunnable, maskProxyUrl, toFacebookCookies } from "../../../marketplace/socialAccount/index.ts";
 import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
 import { deviceSummary, toDeviceProfile } from "../../../camofox/device/index.ts";
 import { activeWindow, hourLabel } from "../../../marketplace/home/index.ts";
 import { renderTable } from "../../runner/helpers/index.ts";
 
-/** An account for --json output: no cookies, browser storage, proxy or device, only whether they are there. */
 export function safeAccount(a: FacebookAccount): Record<string, unknown> {
   const { cookies: _cookies, storageOrigins: _storage, proxy, deviceProfile, ...rest } = a;
   return { ...rest, hasProxy: Boolean(proxy), hasDevice: toDeviceProfile(deviceProfile) !== null };

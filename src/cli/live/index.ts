@@ -1,12 +1,3 @@
-/**
- * The live commands: `log facebook doctor`, `log facebook connect`, `log facebook scan`, `log facebook status`.
- *
- * Accounts come from Twenty (socialAccounts, platform FACEBOOK). Every one of
- * these that opens Camoufox first passes `prepareRun` (the account is
- * Facebook, usable, has a proxy and a home country) and then
- * python/browser/proxyGate.py (the proxy's exit IP is in that country). There is no
- * way around either, signing in included (AGENTS.md rule 12).
- */
 import { createActor, fromPromise, toPromise } from "xstate";
 import { appendAttempt, countArkoseToday, readAttempts, solverAvailability } from "../../captcha/router/index.ts";
 import type { ConnectSession, ConnectStep } from "../../camofox/session/index.ts";
@@ -34,12 +25,10 @@ export * from "./helpers/index.ts";
 export const DOCTOR_USAGE = "Usage: log facebook doctor [--json]";
 export const CONNECT_USAGE = "Usage: log facebook connect --account <accountName> [--noPrompt] [--wait <seconds>] [--bypass] [--now]";
 
-/** How long `connect` reads the window for a login, a person's part included. */
 export const CONNECT_WAIT_SECONDS = 600;
 export const SCAN_USAGE = "Usage: log facebook scan --account <accountName> [--json] [--bypass]";
 export const STATUS_USAGE = "Usage: log facebook status <listingId> --account <accountName> [--json] [--bypass]";
 
-/** `--account` → the Twenty account and its prepared run, or the refusal. Nothing opens on a refusal. */
 export async function openAccount(
   context: CommandContext,
   name: string,
@@ -70,11 +59,6 @@ export async function openAccount(
   return { account, run: prepared.run, login };
 }
 
-/**
- * The device Python made on this account's first launch → Twenty, so every
- * later launch is the same computer (rule 15). Saved whether the run worked or
- * not, and only once. Returns a line for the output, never the device itself.
- */
 export async function keepNewDevice(context: CommandContext, account: FacebookAccount, run: PreparedRun): Promise<string | null> {
   const profile = run.newDeviceProfile();
   if (!profile) return null;
@@ -85,11 +69,6 @@ export async function keepNewDevice(context: CommandContext, account: FacebookAc
   }
 }
 
-/**
- * The session as the browser left it (cookies and localStorage) → Twenty, so
- * the next run carries on from it. Only a jar that still holds a Facebook
- * session; never printed.
- */
 export async function keepSession(context: CommandContext, account: FacebookAccount, run: PreparedRun): Promise<string | null> {
   const state = run.readStorageState();
   try {
@@ -101,17 +80,12 @@ export async function keepSession(context: CommandContext, account: FacebookAcco
   }
 }
 
-/** Adds a line to a result's stderr, so --json stdout stays one JSON document. */
 export function withNote(result: CommandResult, note: string | null): CommandResult {
   if (!note) return result;
   return { ...result, stderr: result.stderr ? `${result.stderr}
 ${note}` : note };
 }
 
-/**
- * Runs `body` with the account's prepared run, then keeps a newly made device
- * and always deletes the run's private files.
- */
 export async function withRun(
   context: CommandContext,
   name: string,
@@ -127,11 +101,8 @@ export async function withRun(
   }
   try {
     const device = await keepNewDevice(context, account, run);
-    // Rule 22: every action's raw HAR, split per step and read by rea.
     const capture = run.captureDir ? settleInBackground(run.captureDir) : null;
-    // connect saves its own cookies (it signed in); every other run continues the session.
     const session = name === "connect" ? null : await keepSession(context, account, run);
-    // A save that failed must not lose the device or the session with the run's folder.
     const unsaved = [device, session].some((n) => n?.startsWith("Could not save")) || /twenty(RateLimited|AuthFailed|Unreachable|RequestFailed)/.test(result.stderr ?? "");
     const kept = unsaved ? `Twenty didn't take everything: kept this run's device and session (login removed) at ${run.keep()}. Save them later: log facebook account resave ${account.accountName} --from <that folder>` : null;
     return withNote(withNote(withNote(withNote(result, device), session), capture), kept);
@@ -140,11 +111,6 @@ export async function withRun(
   }
 }
 
-/**
- * A worker failure → Twenty and the terminal. An account code (a ban, a
- * checkpoint, a login wall) updates the account's status, which may replace
- * its campaign listings.
- */
 export async function workerFailed(context: CommandContext, name: string, account: FacebookAccount, failure: WorkerFailure): Promise<CommandResult> {
   let code = failure.code;
   if (code === "loginWall") code = classifySignal({ url: String(failure.url ?? ""), text: String(failure.bodySample ?? "") }) ?? "sessionExpired";
@@ -205,8 +171,6 @@ export const connectCommand: Command = {
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["noPrompt", "bypass", "now"], valued: ["account", "wait"] });
     if (!parsed.ok) return { code: 1, stderr: `log facebook connect: ${parsed.error}\n${CONNECT_USAGE}` };
-    // --noPrompt (always over MCP): auto-login types Twenty's details (rule 21). Without it a
-    // person signs in in the window. Either way the connect machine reads every page until signed in.
     const noPrompt = Boolean(parsed.flags["noPrompt"]);
     const waitSeconds = parsed.flags["wait"] === undefined ? CONNECT_WAIT_SECONDS : Number(parsed.flags["wait"]);
     if (!Number.isInteger(waitSeconds) || waitSeconds < 10 || waitSeconds > 1800) return { code: 1, stderr: `log facebook connect: --wait must be 10 to 1800 seconds\n${CONNECT_USAGE}` };
@@ -255,14 +219,12 @@ export const connectCommand: Command = {
       } finally {
         if (session) await (session as ConnectSession).close();
       }
-      // Every solve goes to the same ledger as publish, with whether the page accepted it.
       for (const attempt of output.captchaAttempts) appendAttempt(attempt);
       return await connectEnded(context, account, run, output);
     });
   },
 };
 
-/** The connect machine's end → Twenty (cookies, the account's status) and the terminal. */
 async function connectEnded(context: CommandContext, account: FacebookAccount, run: PreparedRun, output: ConnectOutput): Promise<CommandResult> {
   const lines = [renderConnect(account.accountName, output)];
   if (output.result === "connected") {
@@ -270,8 +232,6 @@ async function connectEnded(context: CommandContext, account: FacebookAccount, r
     if (cookies.length === 0) return refuse("connect", "neverConnected", "the browser saved no cookies");
     await saveCookies(context.twenty, account.id, cookies);
     lines.push(`Saved ${cookies.length} Facebook cookies for ${account.accountName} to Twenty.`);
-    // Listaro's post-login Marketplace check (facebook-auto-login.ts:717-823): signed in but
-    // unable to buy or sell is an account issue, recorded with the cookies kept.
     const issue = classifySignal({ url: output.page?.path ?? "", text: output.bodySample ?? "" });
     if (issue && issue !== "loginWall" && issue !== "sessionExpired" && issue !== "readOnlyLimited") {
       const loss = await recordAccountIssue(context.twenty, account, issue, "seen on Marketplace right after signing in");

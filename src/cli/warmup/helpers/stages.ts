@@ -1,17 +1,3 @@
-/**
- * `log facebook warmup stages` (rules 36, 60): Listaro's five Facebook warm-up
- * activities (feedBrowse, marketplaceBrowse, createAccessCheck, sellingVisit,
- * messagesVisit), recorded once in a headed inspect session, turned into flows,
- * and run in one browser that stays open, every step in the stage log.
- *
- *   log facebook warmup stages plan        each activity: its script, its flow, recorded or not
- *   log facebook warmup stages record --account <a> [--only a,b] [--likes] [--bypass] [--now]
- *   log facebook warmup stages run --account <a> [--only a,b] [--likes] [--gapMinutes <n>] [--bypass] [--now]
- *   log facebook warmup stages log [--account <a>] [--lines <n>] [--follow [--seconds <n>]]
- *
- * The likes (`clickAny button ^Like$`) act on Facebook: they are skipped unless
- * --likes (rule 8). Everything else only reads.
- */
 import { createActor, fromPromise, toPromise } from "xstate";
 import { FLOWS_DIR, flowFromRecording, loadFlow, pageProblem, readRecordedCommands, saveFlow, writeFlowDoc } from "../../../browser/flow/index.ts";
 import type { ErrorCode } from "../../../errors/catalog/index.ts";
@@ -24,7 +10,6 @@ import { openInspectSession, runFlowInSession } from "../../flow/helpers/index.t
 import { openAccount, withRun } from "../../live/index.ts";
 import type { CommandContext, CommandResult } from "../../runner/types.ts";
 
-/** Where the stages' flows are read from: tests point it at a scratch folder (the five are recorded since 2026-10-22). */
 export const stagesDeps = { flowsDir: FLOWS_DIR };
 
 export const STAGES_USAGE = [
@@ -34,7 +19,6 @@ export const STAGES_USAGE = [
   "       log facebook warmup stages log [--account <accountName>] [--lines <n>] [--follow [--seconds <n>]]",
 ].join("\n");
 
-/** The run's own name in the stage log: its folder. */
 const runName = (dir: string) => dir.split(/[\\/]/).filter(Boolean).pop() ?? dir;
 
 function stage(context: CommandContext, line: Omit<StageLogLine, "at">): void {
@@ -43,7 +27,6 @@ function stage(context: CommandContext, line: Omit<StageLogLine, "at">): void {
   context.err(`stage ${renderStageLogLine(full)}`);
 }
 
-/** `log facebook warmup stages <sub>`: plan, record, run or log. */
 export async function runStages(context: CommandContext, sub: string | undefined, flags: Record<string, string | true>): Promise<CommandResult> {
   if (sub === "plan") {
     const lines = ["The warm-up: Listaro's five activities, in its stage order (account-warmup.ts). Record once with `log facebook warmup stages record`, run with `log facebook warmup stages run`."];
@@ -91,11 +74,6 @@ export async function runStages(context: CommandContext, sub: string | undefined
   });
 }
 
-/**
- * Sends each activity's script to the open session, then turns each activity's recorded steps into its flow. A
- * failed step ends the recording there: the activities that finished before it still become their flows, the one
- * that broke never does (a flow is only made from a whole, clean recording).
- */
 async function record(
   context: CommandContext,
   current: Parameters<CommandContext["sendInspect"]>[0],
@@ -117,7 +95,6 @@ async function record(
       }
       const reply = await context.sendInspect(current, step.action, step.args, 300_000);
       sent++;
-      // Where the page really is, after every step: never record a lock page as the feed (Erie, 2026-10-19).
       const problem = reply ? pageProblem({ action: step.action, url: step.action === "goto" ? step.args[0] : undefined }, reply) : null;
       const ok = Boolean(reply && reply.ok !== false && !problem);
       stage(context, { ...base, event: "step", activity, step: `${step.action} ${step.args.join(" ")}`, ok, detail: ok ? step.why : problem ? `${problem.code}: ${problem.detail}` : (reply?.error ?? "no reply") });
@@ -140,7 +117,6 @@ async function record(
   return { code: 0, stdout: lines.join("\n") };
 }
 
-/** Each finished activity's span of the recording → its flow and its doc. Returns a line per flow saved. */
 function saveFlows(current: Parameters<CommandContext["sendInspect"]>[0], spans: { activity: WarmupActivity; from: number; to: number }[], base: { account: string; run: string }): string[] {
   const commands = readRecordedCommands(current.runDir);
   return spans.map((span) => {
@@ -154,7 +130,6 @@ function saveFlows(current: Parameters<CommandContext["sendInspect"]>[0], spans:
   });
 }
 
-/** The warm-up machine over the recorded flows, in the open session. */
 async function runWarmup(
   context: CommandContext,
   current: Parameters<CommandContext["sendInspect"]>[0],
@@ -171,7 +146,6 @@ async function runWarmup(
         const flow = loadFlow(ACTIVITY_SCRIPTS[input.activity].flow, stagesDeps.flowsDir)!;
         stage(context, { ...base, event: "activity", activity: input.activity, detail: `${flow.steps.length} steps` });
         const output = await runFlowInSession(context, current, flow, { uid: base.account }, {
-          // The likes act on Facebook: only with --likes (rule 8).
           skip: (step) => step.action === "clickAny" && !likes,
           onStep: (step, result) => stage(context, { ...base, event: "step", activity: input.activity, step: step.id, ok: result.ok, detail: result.ok ? (step.args ?? [step.url ?? ""]).join(" ") : result.error }),
         });
@@ -194,7 +168,6 @@ async function runWarmup(
   return { code: failure ? 1 : 0, stdout: lines.join("\n") };
 }
 
-/** The page showed an account problem: it goes to Twenty (the status `statusForIssue` gives) and to the stage log. */
 async function accountIssue(context: CommandContext, account: FacebookAccount, code: ErrorCode, detail: string, base: { account: string; run: string }, activity: WarmupActivity): Promise<void> {
   stage(context, { ...base, event: "stopped", activity, ok: false, detail: `${code}: ${detail}` });
   if (code === "pageNotReached") return;
@@ -210,7 +183,6 @@ async function showStageLog(context: CommandContext, flags: Record<string, strin
   const count = flags["lines"] === undefined ? 40 : Number(flags["lines"]);
   const lines = readStageLog({ account, count });
   if (!flags["follow"]) return { code: 0, stdout: lines.length ? lines.map(renderStageLogLine).join("\n") : "The stage log is empty." };
-  // --follow: the stage log as it grows, line by line (rule 26), for --seconds or until stopped.
   for (const line of lines) context.out(renderStageLogLine(line));
   let seen = readStageLog({ account, count: 100_000 }).length;
   const until = flags["seconds"] === undefined ? Infinity : Date.now() + Number(flags["seconds"]) * 1000;

@@ -1,8 +1,3 @@
-/**
- * The catalog is only worth having if it is true. These tests hold it to the
- * code: every code's stated end is what the machines actually do, the Python
- * only sends catalog codes, and the exported JSON matches.
- */
 import { describe, expect, test } from 'bun:test'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -23,7 +18,6 @@ const root = join(import.meta.dir, '..', '..', '..')
 const entries = Object.entries(ERROR_CATALOG) as [ErrorCode, ErrorEntry][]
 const CAMEL = /^[a-z][a-zA-Z0-9]*$/
 
-/** Publish steps whose actor reports `{ ok: false, code }`, by state. */
 const STEP_ACTORS = {
   preparingPhotos: 'preparePhotos',
   choosingCategory: 'setCategory',
@@ -35,10 +29,6 @@ const STEP_ACTORS = {
 
 const listing = { title: 'Sofa', price: 50, category: 'Furniture', photos: ['a.jpg'] }
 
-/**
- * Runs a live publish where `state` fails with `code`. `thrown` makes the
- * state's actor throw instead of returning a failure.
- */
 async function publishFailing(state: string, code: ErrorCode, thrown = false, input: Partial<PublishInput> = {}) {
   const fail = { ok: false, code, detail: 'scripted' }
   const at = (name: string, value: unknown) =>
@@ -146,11 +136,9 @@ describe('the Python sends only catalog codes', () => {
     ]
     for (const { text } of files) {
       for (const pattern of patterns) for (const match of text.matchAll(pattern)) found.add(match[1])
-      // The mapping tables: KRAKEN_CODES / TWOCAPTCHA_CODES / NOT_SET_CODES values.
       for (const table of text.matchAll(/^[A-Z_]+_CODES = [({]([\s\S]*?)^[)}]/gm)) {
         for (const match of table[1].matchAll(/(?::|,) "([a-z][A-Za-z]+)"/g)) found.add(match[1])
       }
-      // The fallbacks inside the mappers.
       for (const match of text.matchAll(/return "([a-z][A-Za-z]+)"\n/g)) found.add(match[1])
     }
     expect(found.size).toBeGreaterThan(40)
@@ -174,14 +162,11 @@ describe("every code's publish end is what the machine does", () => {
       .map((where) => [code, entry, where.slice('publish.'.length)] as const)
   )
 
-  // The router's reasons and the solve actor are reached through a captcha: tested below.
   for (const [code, entry, state] of stepCodes.filter(([, , st]) => st !== 'routingCaptcha' && st !== 'solvingCaptcha')) {
     test(`${code} in ${state}`, async () => {
-      // crashedAfterPublish is never sent: a throw after the click becomes it.
       const thrown = code === 'crashedAfterPublish'
       const output = await publishFailing(state, thrown ? 'crashed' : code, thrown)
       if (!entry.publish) {
-        // noConfirmation: no end of its own, the run goes on to look for the listing.
         expect(output.result).toBe('published')
         return
       }
@@ -212,7 +197,6 @@ describe("every code's publish end is what the machine does", () => {
       expect(output.result, code).toBe('unconfirmedId')
       expect(output.failure, code).toMatchObject({ code: 'crashedAfterPublish', detail: `${code}: scripted` })
     }
-    // A form code after the click is certain: Publish was never clicked.
     expect((await publishFailing('publishing', 'publishNotFound')).result).toBe('failed')
   })
 
@@ -265,15 +249,12 @@ describe("every solver code does what the catalog says", () => {
     test(`${code}: ${entry.captcha}`, () => {
       const failed: CaptchaAttempt = { at: 't', accountId: 'a', kind: 'recaptcha', solver: 'captchaKraken', solved: false, accepted: false, code }
       const next = planNextSolver({ kind: 'recaptcha' }, [failed], both, DEFAULT_CAPTCHA_POLICY)
-      // skipSolver: straight to 2Captcha. retry: CaptchaKraken gets its 2nd try.
       expect(next.solver).toBe(entry.captcha === 'skipSolver' ? 'twoCaptcha' : 'captchaKraken')
     })
   }
 })
 
 describe("every code's monitor end is what the monitor does", () => {
-  /** One check that returns `outcome`, then an ok one. `failed` and `resting` are passed through
-   * in a single step, so they are read from the output and the states that settle. */
   async function monitorOnce(outcome: CheckOutcome) {
     const outcomes = [outcome, { kind: 'ok', seen: [], needsAttention: [], issue: null } as CheckOutcome]
     const machine = monitorMachine.provide({
@@ -298,7 +279,6 @@ describe("every code's monitor end is what the monitor does", () => {
       } else if (entry.monitor === 'resting') {
         expect(output.stopReason).toBe('rate limited')
       } else {
-        // failed: a retryable code gets its quick retry (and the next check is ok); the rest stop.
         expect(states.has('retrying')).toBe(entry.retryable)
         expect(output.stopReason).toBe(entry.retryable ? 'checks done' : 'check failed')
       }

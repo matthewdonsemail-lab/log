@@ -1,15 +1,8 @@
 import type { CommentPage, CommentRejectReason, GroupComment } from "../types.ts";
 import { at, chunksOf, embeddedResults, type Json, obj, responsesOf, str } from "./json.ts";
 
-/**
- * The requests that answer with a post's comments (run 20261020T151100): opening the post
- * (`CometSinglePostDialogContentQuery`), picking a sort (`CommentListComponentsRootQuery`), and
- * scrolling for more (`CommentsListComponentsPaginationQuery`). A post opened by its link carries
- * the first ones in its HTML instead (`commentsFromPostPage`).
- */
 export const COMMENT_QUERIES = ["CometSinglePostDialogContentQuery", "CommentListComponentsRootQuery", "CommentsListComponentsPaginationQuery"] as const;
 
-/** `Y29tbWVudDo…` → `comment:<postId>_<commentId>` → its two ids. Pure. */
 export function commentIdsOf(relayId: string): { postId: string; commentId: string } | null {
   let decoded: string;
   try {
@@ -21,7 +14,6 @@ export function commentIdsOf(relayId: string): { postId: string; commentId: stri
   return match ? { postId: match[1]!, commentId: match[2]! } : null;
 }
 
-/** One `Comment` node → a comment, or why not. A stub (a reply's `parent_object_ent`, no `legacy_fbid`) isn't one. Pure. */
 export function commentOf(node: unknown, expectedGroupId: string): GroupComment | CommentRejectReason {
   const commentId = str(at(node, "legacy_fbid"));
   if (!commentId) return "missingCommentId";
@@ -55,14 +47,12 @@ export function commentOf(node: unknown, expectedGroupId: string): GroupComment 
   };
 }
 
-/** Every comment and reply under some answers, each kept once, and the top-level list's page_info. Pure. */
 function commentPageOf(roots: Json[], expectedGroupId: string): CommentPage {
   const page: CommentPage = { comments: [], rejected: {}, endCursor: null, hasNextPage: null };
   const seen = new Set<string>();
   const walk = (v: unknown, key: string): void => {
     if (!v || typeof v !== "object") return;
     const node = obj(v);
-    // The top-level list's paging (`…comments.page_info`), not a reply thread's (`replies_connection`).
     if (key === "comments" && node && obj(node.page_info)) {
       const info = obj(node.page_info)!;
       if (str(info.end_cursor)) page.endCursor = str(info.end_cursor);
@@ -82,17 +72,14 @@ function commentPageOf(roots: Json[], expectedGroupId: string): CommentPage {
   return page;
 }
 
-/** The comments in one answer of a comment query. Pure. */
 export function commentsFromResponse(text: string, expectedGroupId: string): CommentPage {
   return commentPageOf(chunksOf(text), expectedGroupId);
 }
 
-/** The first comments a post's own page (`/groups/<id>/permalink/<post>/`) carries in its HTML. Pure. */
 export function commentsFromPostPage(html: string, expectedGroupId: string): CommentPage {
   return commentPageOf(embeddedResults(html), expectedGroupId);
 }
 
-/** The comment answers a recorded step holds, in the order they came. Pure. */
 export function commentResponses(har: { log?: { entries?: unknown[] } }): string[] {
   return responsesOf(har, COMMENT_QUERIES);
 }

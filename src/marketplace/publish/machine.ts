@@ -1,28 +1,3 @@
-/**
- * Publishing one listing as an XState machine, so `log facebook publish` can print
- * every step (`observability/trace`).
- *
- *   preparingPhotos ─▶ openingForm ─ready─▶ choosingCategory ─▶ uploadingPhotos
- *                        │  ▲                ─▶ fillingFields ─▶ reviewing ─dryRun─▶ done
- *                 captcha│  │re-check                              │
- *                        ▼  │                                      ▼
- *                 routingCaptcha ─▶ solvingCaptcha     publishing ─▶ confirming
- *                                                                       │
- *                                                       capturingId ─▶ done
- *
- *   any failure ─▶ stopping ─▶ blocked | needsPerson | unconfirmedId | failed
- *
- * Every failure carries an error-catalog code (`src/errors/catalog/types.ts`)
- * and goes through `stopping`, which reads the code's `publish` end from the
- * catalog (`helpers/publishEnd.ts`). No state decides its own ending, so the
- * catalog is the one place that says what each code does.
- *
- * Rules (docs/listingPublish/stateMachine.md §4):
- * - every write is read back by the actor; a step that can't confirm fails
- * - photos are gated on FB's own `N/10` counter, never a sleep
- * - once Publish is clicked nothing is retried (Listaro's retry made duplicates)
- * - captchas are routed by kind: CaptchaKraken → 2Captcha → a person
- */
 import { assign, fromPromise, setup } from 'xstate'
 import { DEFAULT_CAPTCHA_POLICY, planNextSolver } from '../../captcha/router/index'
 import type { CaptchaPlan } from '../../captcha/router/index'
@@ -49,7 +24,6 @@ import type {
   UploadOutput
 } from './types'
 
-/** Placeholder actor: the caller must provide the real one with `machine.provide`. */
 function missing<TOutput, TInput>(name: string) {
   return fromPromise<TOutput, TInput>(async () => {
     throw new Error('publishMachine: provide a `' + name + '` actor')
@@ -58,16 +32,13 @@ function missing<TOutput, TInput>(name: string) {
 
 const isFailure = (output: { ok?: boolean }): output is StepFailure => output.ok === false
 
-/** What the form can meet that a sign-in clears (rule 24). */
 const SIGN_IN_ISSUES: readonly string[] = ['sessionExpired', 'loginWall', 'checkpointed']
 
-/** A step's `{ ok: false }` output as the failure for `state`. */
 const stepFailure = (state: string, output: unknown): PublishFailure => {
   const out = output as StepFailure
   return { state, code: out.code, detail: out.detail }
 }
 
-/** A thrown actor. Runtime, so after Publish `stopping` turns it into `crashedAfterPublish`. */
 const crash = (state: string, error: unknown): PublishFailure => ({ state, code: 'crashed', detail: String(error) })
 
 export const publishMachine = setup({
@@ -87,7 +58,6 @@ export const publishMachine = setup({
     publish: missing<PublishClickOutput, PublishActorInputs['publish']>('publish'),
     confirm: missing<ConfirmOutput, PublishActorInputs['confirm']>('confirm'),
     captureId: missing<CaptureOutput, PublishActorInputs['captureId']>('captureId'),
-    // The connect machine as a child: the caller provides its actors over this same browser.
     signIn: connectMachine
   },
   guards: {
@@ -97,7 +67,6 @@ export const publishMachine = setup({
     formReady: (_, outcome: FormOutcome) => outcome.kind === 'ready',
     formCaptcha: (_, outcome: FormOutcome) => outcome.kind === 'captcha',
     formIssue: (_, outcome: FormOutcome) => outcome.kind === 'issue',
-    /** A login wall or checkpoint, and this run may still sign in once in its own browser (rule 24). */
     canSignIn: ({ context }, outcome: FormOutcome) =>
       outcome.kind === 'issue' && SIGN_IN_ISSUES.includes(outcome.issue) && context.signInConfig != null && !context.signInTried,
     signedIn: (_, output: ConnectOutput) => output.result === 'connected',
@@ -170,7 +139,6 @@ export const publishMachine = setup({
           recheck: context.formOpened,
           location: context.listing.location,
           postalCode: context.listing.postalCode,
-          // Only a live run may change the account's Marketplace location (rule 8).
           setLocation: !context.dryRun
         }),
         onDone: [
@@ -180,7 +148,6 @@ export const publishMachine = setup({
             actions: assign(({ context }) => ({
               formOpened: true,
               captcha: null,
-              // The page moved past the captcha: the last solve was accepted.
               captchaAttempts: markLast(context, true)
             }))
           },
@@ -222,7 +189,6 @@ export const publishMachine = setup({
         onError: { target: 'stopping', actions: { type: 'recordFailure', params: ({ event }) => crash('openingForm', event.error) } }
       }
     },
-    /** The connect machine, once, in this browser; then the form is opened again. */
     signingIn: {
       entry: assign({ signInTried: true }),
       invoke: {
@@ -286,7 +252,6 @@ export const publishMachine = setup({
           solver: context.plan!.solver!,
           detection: context.captcha!
         }),
-        // Solved or not, look at the page again: the page is the judge.
         onDone: {
           target: 'openingForm',
           actions: assign(({ context, event }) => ({
@@ -406,13 +371,11 @@ export const publishMachine = setup({
         src: 'confirm',
         input: () => ({}),
         onDone: [
-          // FB's "Oops / Something went wrong" dialog: rejected, nothing listed.
           {
             guard: { type: 'rejected', params: ({ event }) => event.output },
             target: 'stopping',
             actions: { type: 'recordFailure', params: ({ event }) => stepFailure('confirming', event.output) }
           },
-          // No toast seen (`noConfirmation`): it may still have gone out, so look for it rather than retry.
           { target: 'capturingId' }
         ],
         onError: { target: 'capturingId' }
@@ -441,7 +404,6 @@ export const publishMachine = setup({
         onError: { target: 'stopping', actions: { type: 'recordFailure', params: ({ event }) => crash('capturingId', event.error) } }
       }
     },
-    /** Reads the failure's end from the error catalog. Never waits, never retries. */
     stopping: {
       entry: assign(({ context }) => ({ failure: publishEnd(context.failure!, context.publishClicked).failure })),
       always: [
@@ -475,7 +437,6 @@ export const publishMachine = setup({
   })
 })
 
-/** Settle the newest captcha attempt's `accepted`, if it is still open. */
 function markLast(context: PublishContext, accepted: boolean) {
   const attempts = context.captchaAttempts
   const last = attempts.at(-1)

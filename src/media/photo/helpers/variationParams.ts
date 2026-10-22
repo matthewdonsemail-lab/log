@@ -3,12 +3,6 @@ import type { VariationParams } from '../types'
 const between = (rng: () => number, min: number, max: number) => min + (max - min) * rng()
 const round = (n: number, places = 3) => Math.round(n * 10 ** places) / 10 ** places
 
-/**
- * Draw one set of variation params. Pure given `rng`.
- * Ranges follow Listaro's sharp pipeline (crop 2–5 %, rotate ±1–3°,
- * brightness 0.90–1.10, saturation 0.95–1.05, hue ±8°, contrast 0.90–1.10,
- * blur or sharpen, resize ×0.95–1.05, JPEG 80–95).
- */
 export function variationParams(rng: () => number = Math.random): VariationParams {
   const sign = () => (rng() < 0.5 ? -1 : 1)
   const blurInstead = rng() < 0.5

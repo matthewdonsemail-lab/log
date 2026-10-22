@@ -1,20 +1,3 @@
-/**
- * `log facebook poll <group> <account> [<how long to poll>]` (matt, rule 63): poll a Facebook group from one
- * account, in that account's open browser (rule 35). One poll is one read of the group through the group read
- * machine (`facebook/group/read`), posts only, nothing clicked (rule 8), and its answer is one JSON line: the posts the
- * read saw, in OpenMagpie's record shape (`facebook/group/read/helpers/openMagpieWorker.ts`). With a time, it polls
- * again every 5 minutes (OpenMagpie's own default feed interval) until the time is up, a line per poll as it
- * happens (rule 26).
- *
- *   log facebook poll <group url|id> <account> [30m|2h] [--bypass]
- *   log facebook poll --request <json>
- *       OpenMagpie's `facebook_group` worker (obris-dev/openmagpie#178, #188), called by
- *       `python/openMagpie/facebookWorker.py`: `groups.search` with its group ids, terms and limit. Each group
- *       is read by an account in it (its `agencyGroups` row, a member first) that may run, is inside its
- *       hours and has its browser open; one poll, one JSON answer.
- *
- * Which posts are new is the group's cursor in Twenty (`readCursor`, by post id); OpenMagpie dedups repeats.
- */
 import { readCurrentInspect } from "../../browser/inspect/index.ts";
 import { ensureGroup, parseGroupRef } from "../../facebook/group/join/index.ts";
 import type { GroupRef } from "../../facebook/group/join/index.ts";
@@ -31,7 +14,6 @@ import { parsePollArgs } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
 
-/** Between polls when it polls for a time: OpenMagpie's default feed interval (`poll_interval_seconds` 300). */
 export const POLL_EVERY_MS = 5 * 60_000;
 
 export const POLL_USAGE = [
@@ -42,12 +24,10 @@ export const POLL_USAGE = [
   "The account's browser must be open (log inspect start for that account, or log facebook host start): a poll is a step in it (rule 35).",
 ].join("\n");
 
-/** The seams tests replace: the wait between polls. */
 export const pollDeps = { sleep: (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms)) };
 
 type GroupError = { group_id: string; code: string; error: string };
 
-/** One poll of one group by one account: its records, or why there are none. A checkpoint or sign-out is `auth_required`. */
 async function pollOnce(context: CommandContext, account: FacebookAccount, group: Group, ref: GroupRef, limit: number, terms: string[], bypass: boolean): Promise<{ records: WorkerRecord[]; error: GroupError | null }> {
   const groupId = group.facebookGroupId ?? ref.key;
   const read = await readInBrowser(context, account, group, ref, { scrolls: scrollsFor(limit), commentPosts: 0, live: false, bypass });
@@ -58,7 +38,6 @@ async function pollOnce(context: CommandContext, account: FacebookAccount, group
   return { records, error: problem ? { group_id: groupId, code: workerCodeOf(problem.code), error: problem.detail } : null };
 }
 
-/** `--request`: OpenMagpie's call, one poll of each group it names. Always one JSON answer. */
 async function pollRequest(context: CommandContext, text: string): Promise<CommandResult> {
   const answer = (value: WorkerAnswer): CommandResult => ({ code: value.ok ? 0 : 1, stdout: JSON.stringify(value) });
   const request = parseWorkerRequest(text);
@@ -77,7 +56,6 @@ async function pollRequest(context: CommandContext, text: string): Promise<Comma
         failed("groupNoAccount", `no account in Twenty is in group ${groupId}: join it first (log facebook join group)`);
         continue;
       }
-      // A member's row first; then the first one whose account may run and has its browser open.
       const ordered = [...rows].sort((a, b) => Number(b.joinStatus === "MEMBER") - Number(a.joinStatus === "MEMBER"));
       let account: FacebookAccount | null = null;
       for (const row of ordered) {
@@ -132,10 +110,8 @@ export async function runPoll(context: CommandContext, argv: string[]): Promise<
       const answer: WorkerAnswer =
         !polled.records.length && polled.error ? { ok: false, code: polled.error.code, error: polled.error.error } : { ok: true, result: { results: polled.records, errors: polled.error ? [polled.error] : [] }, new_cookies: [] };
       lastCode = answer.ok ? 0 : 1;
-      // A line per poll as it happens (rule 26); one poll returns its line as the command's output.
       if (until === null) return { code: lastCode, stdout: JSON.stringify(answer) };
       context.out(JSON.stringify(answer));
-      // A checkpoint or a sign-out ends the polling: the account needs its issue cleared first.
       if (polled.error?.code === "auth_required") return { code: 1, stderr: `log facebook poll: stopped after poll ${polls}: ${polled.error.error}` };
       if (now() + POLL_EVERY_MS > until) break;
       await pollDeps.sleep(POLL_EVERY_MS);

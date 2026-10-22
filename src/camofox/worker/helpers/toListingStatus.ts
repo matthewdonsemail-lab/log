@@ -1,11 +1,6 @@
 import type { ListingStatus, RemovalProvenance } from "../../../marketplace/listing/index.ts";
 import type { DashboardHealth } from "../types.ts";
 
-/**
- * Map a seller-dashboard badge onto the listing status vocabulary. Facebook
- * takedowns land in `removed` with `platform` provenance, so the listing
- * machine refuses a seller relist. Unknown stays unknown.
- */
 export function toListingStatus(health: DashboardHealth): { status: ListingStatus; removedBy?: RemovalProvenance } {
   switch (health) {
     case "ACTIVE":

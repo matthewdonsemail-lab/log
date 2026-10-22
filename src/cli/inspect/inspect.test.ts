@@ -87,7 +87,6 @@ describe("log inspect start --detach (how an MCP agent opens the account's brows
     const runDir = mkdtempSync(join(tmpdir(), "logDetachRun"));
     inspectDetachDeps.start = (argv) => {
       started.push(argv);
-      // What the real session writes once its gate and self-check passed.
       writeCurrentInspect({ account: "galwayOne", runDir, commandsPath: join(runDir, "commands.jsonl"), repliesPath: join(runDir, "replies.jsonl"), startedAt: "2026-10-20T00:00:00.000Z" });
       writeFileSync(join(runDir, "replies.jsonl"), '{"id": "ready", "result": {"ok": true}}\n');
       return { exited: () => null };

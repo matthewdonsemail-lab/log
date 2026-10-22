@@ -2,7 +2,6 @@ import { REPORT_LINE } from '../../capture/helpers/splitHarBySteps'
 import type { ClientOperation, OperationKind, OperationSighting } from '../types'
 import { FACTS_END, FACTS_START, stepLabel } from './renderOperationDoc'
 
-/** One row of a doc's sightings table: every sighting of a request in one action's step, folded together. */
 export interface FactsRow {
   action: string
   step: string
@@ -13,15 +12,7 @@ export interface FactsRow {
   errors: string[]
 }
 
-/**
- * What the docs know about one request, kept across builds (rule 66): its
- * fields, its sightings folded into rows, and which runs are already counted.
- * A run's sightings are counted once, so a rebuild never counts twice, and a
- * pruned run's rows stay. `legacyRuns` are runs counted before the store
- * existed, read back from the committed doc.
- */
 export interface StoredFacts {
-  /** query, mutation, subscription or endpoint, as the bundle's definition said it. */
   kind: OperationKind
   sends: string[]
   reads: string[]
@@ -36,7 +27,6 @@ export interface StoredFacts {
 const label = (s: OperationSighting) => (REPORT_LINE.test(s.step) ? 'a step (older run, split by its report lines)' : stepLabel(s.step))
 const key = (r: { action: string; step: string }) => `${r.action}\u0000${r.step}`
 
-/** Rows folded into `rows` (same action and step: summed, ranges widened). Pure. */
 export function mergeRows(rows: FactsRow[], more: FactsRow[]): FactsRow[] {
   const out = new Map(rows.map((r) => [key(r), { ...r, statuses: [...r.statuses], errors: [...r.errors] }]))
   for (const r of more) {
@@ -54,7 +44,6 @@ export function mergeRows(rows: FactsRow[], more: FactsRow[]): FactsRow[] {
   return [...out.values()]
 }
 
-/** Sightings as rows. Pure. */
 export function rowsOf(sightings: OperationSighting[]): FactsRow[] {
   return mergeRows(
     [],
@@ -68,7 +57,6 @@ const rangeOf = (cell: string): [number, number] => {
   return [a, Number.isFinite(b) ? b : a]
 }
 
-/** What a committed doc's facts block says, as stored facts: the start for a request the store doesn't hold yet. Pure. */
 export function factsFromDoc(doc: string): StoredFacts | null {
   if (!doc.includes(FACTS_START) || !doc.includes(FACTS_END)) return null
   const facts = doc.slice(doc.indexOf(FACTS_START), doc.indexOf(FACTS_END))
@@ -84,17 +72,11 @@ export function factsFromDoc(doc: string): StoredFacts | null {
   return { kind: field('Kind').trim() as OperationKind, sends: listOf(field('Sends')), reads: listOf(field('Reads')), calledFrom: listOf(field('Called from')), reaEvidenceId: rea, rows, seen: Number(seen?.[1] ?? 0), runs: [], legacyRuns: Number(seen?.[2] ?? 0) }
 }
 
-/**
- * This build's operation folded into what was stored: sightings from runs not
- * counted yet are added, fields Facebook's bundle gave this time replace the
- * stored ones, and an empty one keeps what was known. Pure.
- */
 export function foldOperation(stored: StoredFacts | null, operation: ClientOperation): StoredFacts {
   const base: StoredFacts = stored ?? { kind: operation.kind, sends: [], reads: [], calledFrom: [], reaEvidenceId: null, rows: [], seen: 0, runs: [], legacyRuns: 0 }
   const counted = new Set(base.runs)
   const fresh = operation.sightings.filter((s) => !counted.has(s.run))
   const pick = (now: string[], was: string[]) => (now.length ? now : was)
-  // Without the bundle's definition this build guessed the kind; what an earlier one read stays.
   const readDefinition = operation.reads.length > 0 || operation.calledFrom.length > 0
   return {
     kind: readDefinition || !stored ? operation.kind : base.kind,
@@ -111,7 +93,6 @@ export function foldOperation(stored: StoredFacts | null, operation: ClientOpera
 
 const range = ([min, max]: [number, number]) => (min === max ? `${min} ms` : `${min}–${max} ms`)
 
-/** The sightings part of a doc from stored facts. Pure. */
 export function renderStoredSightings(facts: StoredFacts): string {
   const rows = facts.rows.map((r) => `| ${r.action} | ${r.step.replace(/\|/g, '/')} | ${r.times} | ${r.statuses.join(', ')} | ${range(r.ms)} | ${range(r.afterStepMs)} | ${(r.errors.join('; ') || '—').replace(/\|/g, '/')} |`)
   return [

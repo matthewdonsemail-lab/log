@@ -6,7 +6,6 @@ import type { ConnectSessionConfig } from "../../camofox/session/index.ts";
 import { FIXTURE_COOKIES, marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { runCli } from "../runner/index.ts";
 
-/** Runs the CLI against an in-memory Twenty and a fake worker: no network, no python, no browser. */
 async function run(argv: string[], reply: (request: WorkerRequest) => unknown, twenty = marketplaceFixture()) {
   const out: string[] = [];
   const err: string[] = [];
@@ -14,7 +13,6 @@ async function run(argv: string[], reply: (request: WorkerRequest) => unknown, t
   const files: { proxy?: unknown; state?: unknown } = {};
   const worker = (async (request: WorkerRequest) => {
     requests.push(request);
-    // What the Python would read: the run's private files exist while it runs.
     if (request.proxy_path) files.proxy = JSON.parse(readFileSync(request.proxy_path, "utf8"));
     if (request.storage_state_path && existsSync(request.storage_state_path)) files.state = JSON.parse(readFileSync(request.storage_state_path, "utf8"));
     return reply(request);
@@ -78,7 +76,6 @@ describe("live commands", () => {
     expect(JSON.stringify(requests[0])).not.toContain("secretPass");
     expect(files.proxy).toEqual({ server: "http://203.0.113.7:8080", username: "user", password: "secretPass", country: "IE" });
     expect((files.state as { cookies: unknown }).cookies).toEqual(FIXTURE_COOKIES);
-    // The private run folder is gone afterwards.
     expect(existsSync(requests[0].proxy_path!)).toBe(false);
   });
 
@@ -96,7 +93,6 @@ describe("live commands", () => {
     expect(out).toContain("galwayOne is now RESTRICTED");
     const account = twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")!;
     expect(account).toMatchObject({ accountStatus: "RESTRICTED", statusReason: "suspended" });
-    // Kept, never deleted.
     expect(twenty.rows.socialAccounts.some((r) => r.id === "galwayOne")).toBe(true);
     expect(twenty.rows.agencyListings.find((r) => r.id === "readyOne")!.status).toBe("REPLACED");
   });
@@ -116,7 +112,6 @@ describe("live commands", () => {
     expect(out).toContain("Live status active");
   });
 
-  /** A connect session that shows `pages` in turn (the last repeats) and records every step. */
   function scriptedConnect(pages: string[], cookies = [{ name: "c_user", value: "2", domain: ".facebook.com", path: "/" }], bodySample = "Your listings") {
     const steps: string[] = [];
     const configs: ConnectSessionConfig[] = [];
@@ -132,7 +127,6 @@ describe("live commands", () => {
           if (step === "read") current = pages.length > 1 ? pages.shift()! : pages[0];
           if (step === "read") return { ok: true, kind: current, path: "/x", heading: current === "checkpoint" ? "Confirm your identity" : "" } as T;
           if (step === "save") {
-            // The browser leaves its storage_state where it was told to.
             require("node:fs").writeFileSync(config.storageStatePath, JSON.stringify({ cookies, origins: [] }));
             return { ok: true, loggedIn: current === "loggedIn", bodySample } as T;
           }
@@ -160,7 +154,6 @@ describe("live commands", () => {
     expect(out.join("\n")).toContain("needsLogin is ACTIVE again");
     expect(session.steps).toEqual(["open", "read", "save"]);
     expect(session.closed()).toBe(1);
-    // Every state is printed (rule 6), and rule 22's HAR folder comes with the run.
     expect(err.join("\n")).toContain("signingIn.reading");
     expect(session.configs[0].captureDir.replaceAll("\\", "/")).toMatch(/\/connect\/\d{8}T\d{6}_needsLogin\/camoufox$/);
     expect(await runCli(["facebook", "connect", "--account", "needsLogin", "--wait", "5"], { connectSession: session.factory, twenty, out: () => {}, err: () => {} })).toBe(1);
@@ -179,7 +172,6 @@ describe("live commands", () => {
     expect(out.join("\n")).toContain("Pages: loginForm → twoStepMethod → twoStepCode → trustDevice → loggedIn");
     expect(out.join("\n")).not.toContain("fixturePass");
 
-    // A hand sign-in (no --noPrompt) never reads them, and types nothing.
     const plain = scriptedConnect(["loginForm", "loggedIn"]);
     await runCli(["facebook", "connect", "--account", "needsLogin"], { connectSession: plain.factory, connectTiming: FAST_CONNECT, twenty, out: () => {}, err: () => {} });
     expect(plain.configs[0].loginPath).toBeNull();
@@ -234,7 +226,6 @@ describe("live commands", () => {
       ["https://www.facebook.com/", "", "Allow the use of cookies", { cookie_banner: true }, "cookieBanner"],
       ["https://www.facebook.com/marketplace/you/selling", "Marketplace", "Your listings", { login_markers: false, session_cookies: false }, "unknown"],
       ["https://www.facebook.com/checkpoint/828281030927956/", "Confirm your identity", "Upload a photo of yourself", {}, "checkpoint"],
-      // The 2026-10-19 page after the text captcha.
       ["https://www.facebook.com/checkpoint/1501092823525282/", "Confirm your identity", "Confirm that you're a real person with a video selfie We need more info to make sure that you're human. Start video selfie", {}, "videoSelfie"],
       ["https://www.facebook.com/checkpoint/x/", "Enter the code we sent to +353", "Try another way", { code_field: true }, "twoStepMethod"],
       ["https://www.facebook.com/checkpoint/x/", "Add your phone number", "", {}, "checkpoint"],
@@ -273,7 +264,7 @@ print(json.dumps([a.classify(u, h, t, **{"password_field": False, "code_field": 
 });
 
 describe("rules 15 and 18: the device and the local hours", () => {
-  const NIGHT = () => new Date("2026-10-18T02:00:00Z"); // 03:00 in Galway
+  const NIGHT = () => new Date("2026-10-18T02:00:00Z");
   const DAY = () => new Date("2026-10-18T10:00:00Z");
   const DEVICE = {
     version: 1,
@@ -323,7 +314,6 @@ describe("rules 15 and 18: the device and the local hours", () => {
     const worker = (async (request: WorkerRequest) => {
       const file = JSON.parse(readFileSync(request.device_path!, "utf8"));
       expect(file).toMatchObject({ locale: "en-IE", languages: ["en-IE", "en"], homeTimezone: "Europe/Dublin", profile: null });
-      // What python/browser/proxyGate.py does on a first launch.
       require("node:fs").writeFileSync(request.device_path!, JSON.stringify({ ...file, profile: DEVICE, created: true }));
       return SCAN;
     }) as WorkerClient;
@@ -332,7 +322,6 @@ describe("rules 15 and 18: the device and the local hours", () => {
     expect(result.err).toContain("Pinned a new device for galwayOne");
     expect(result.out + result.err).not.toContain("canvas:seed");
     expect(result.twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")!.deviceProfile).toEqual(DEVICE);
-    // --json stdout is still one JSON document.
     expect(() => JSON.parse(result.out)).not.toThrow();
   });
 
@@ -383,7 +372,6 @@ describe("the session continues from run to run", () => {
     expect(err.join("\n")).toContain("Saved galwayOne's browser session (2 cookies, 1 origin(s))");
     expect(err.join("\n")).not.toContain("rotated");
 
-    // The next run's state file carries both.
     let seen: unknown = null;
     const next = (async (request: WorkerRequest) => {
       seen = JSON.parse(readFileSync(request.storage_state_path!, "utf8"));

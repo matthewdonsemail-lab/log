@@ -105,7 +105,6 @@ describe('recordThread', () => {
         ...thread().messages,
         { direction: 'outbound', body: 'Yes, Friday works.', sentAt: '2026-10-19T14:10:00.000Z', senderName: 'Galway One' },
         { direction: 'inbound', body: 'Great, my number is 087 123 4567', sentAt: '2026-10-19T14:12:00.000Z', senderName: 'Sam Buyer' },
-        // An older message seen late: stored, but the summary stays on the newest.
         { direction: 'inbound', body: 'hello?', sentAt: '2026-10-19T13:00:00.000Z', senderName: 'Sam Buyer' }
       ]
     })
@@ -140,7 +139,6 @@ describe('recordThread', () => {
     expect(read).toMatchObject({ unreadCount: 0, lastReadAt: NOW.toISOString() })
     expect((await messagesOf(twenty, conversation.id)).every((m) => m.isRead)).toBe(true)
     expect((await setLeadStatus(twenty, conversation.id, 'booked')).leadStatus).toBe('booked')
-    // A later scan never moves a person's call.
     const later = await recordThread(twenty, 'galwayOne', thread({ messages: [{ direction: 'inbound', body: '087 765 4321', sentAt: '2026-10-19T16:00:00.000Z', senderName: 'Sam Buyer' }] }), NOW)
     expect(later.conversation.leadStatus).toBe('booked')
   })
@@ -160,7 +158,6 @@ describe('matchListing', () => {
     const listings = [listing('a', 'Rubbish Removal Galway', '111'), listing('b', 'Garden Clearance'), listing('c', 'Garden clearance!')]
     expect(matchListing(listings, { facebookListingId: '111', listingTitle: 'whatever' })).toMatchObject({ by: 'facebookListingId' })
     expect(matchListing(listings, { facebookListingId: null, listingTitle: 'rubbish removal galway' })).toMatchObject({ by: 'title' })
-    // Two listings share the title: left unmatched rather than guessed.
     expect(matchListing(listings, { facebookListingId: null, listingTitle: 'Garden Clearance' })).toEqual({ listing: null, by: 'none' })
   })
 })

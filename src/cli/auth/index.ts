@@ -1,16 +1,3 @@
-/**
- * `log login` / `log logout` / `log whoami` — operator sign-in, the same flow
- * as `blaster login` (blaster `packages/blaster-cli/src/cli/login.ts`).
- *
- * Identity is Twenty's: Twenty is the OAuth provider, and blaster's hosted web
- * app runs the sign-in page. `log login` generates a state nonce and a PKCE
- * challenge, starts a one-shot loopback server on 127.0.0.1, and opens
- * `<webUrl>/login?state=…&code_challenge=…&exchange=…`. Once the operator signs in to
- * Twenty, the web app POSTs the tokens back to the loopback. log-cli only
- * accepts them if state and challenge match this run, then checks them
- * through blaster's API (`/api/auth/me`) and stores them in
- * `~/.logCli/auth/`. `--token` is the paste path for headless terminals.
- */
 import { execFileSync } from "node:child_process";
 import { runExchangeServer } from "../../auth/exchange/index.ts";
 import type { ExchangeServer } from "../../auth/exchange/index.ts";
@@ -39,7 +26,6 @@ export const LOGIN_USAGE = "Usage: log login [--webUrl <url>] [--apiUrl <url>] [
 export const LOGOUT_USAGE = "Usage: log logout [--apiUrl <url>] [--json]";
 export const WHOAMI_USAGE = "Usage: log whoami [--apiUrl <url>] [--json]";
 
-/** Seams for tests: no browser, no network, no real store. */
 export const authDeps: {
   fetch: typeof fetch;
   openBrowser: (url: string) => boolean;
@@ -61,7 +47,6 @@ export const authDeps: {
   dir: undefined,
 };
 
-/** Confirm the web URL really serves blaster's sign-in page before sending anyone there. */
 async function checkHandoff(webUrl: string): Promise<string | null> {
   try {
     const response = await authDeps.fetch(`${webUrl.replace(/\/+$/, "")}/login`, { redirect: "manual" });
@@ -73,7 +58,6 @@ async function checkHandoff(webUrl: string): Promise<string | null> {
 }
 
 async function browserSignIn(context: CommandContext, webUrl: string): Promise<SessionRecord | string> {
-  // The verifier never leaves this process; the challenge commits to it.
   const challenge = await codeChallengeForVerifier(generateCodeVerifier());
   const state = generateState();
   const exchange = authDeps.startExchange({ state, challenge });
@@ -141,7 +125,6 @@ export const loginCommand: Command = {
   },
 };
 
-/** The session a command means: --apiUrl, or the only one stored. */
 function pickSession(name: string, usage: string, apiUrl: string | undefined): SessionRecord | CommandResult {
   const home = loadSessionHome(authDeps.dir);
   const stored = Object.values(home.sessions);

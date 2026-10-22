@@ -1,13 +1,6 @@
 import type { JoinAnswer, JoinDraft, JoinOptions } from '../types'
 import { hashQuestionSet } from './submission'
 
-/**
- * One step of the Clack stepper (`log facebook join group --answer`), built from the
- * join options, never from page text. Each Facebook question type has its
- * prompt: PARAGRAPH → text, CHECKBOXES → multiselect over its options. The
- * rules are shown, then agreed with a confirm. A type no recording has shown
- * is listed and skipped, not guessed (rule 29).
- */
 export type StepperStep =
   | { kind: 'intro'; message: string }
   | { kind: 'text'; questionId: string; message: string; initial: string }
@@ -16,9 +9,7 @@ export type StepperStep =
   | { kind: 'agree'; message: string; initial: boolean }
   | { kind: 'skipped'; questionId: string; message: string }
 
-/** The steps for a group's join options, with a saved draft's answers as the starting values. Pure. */
 export function stepsFor(options: JoinOptions, draft: JoinDraft | null): StepperStep[] {
-  // A draft for another question set starts from blanks (the hackathon's re-ask on a changed hash).
   const answers = draft && draft.questionsHash === questionsHashOf(options) ? draft.answers : {}
   const steps: StepperStep[] = []
   const words = [options.dialog?.title, options.dialog?.headline, options.dialog?.body ?? options.dialog?.explanation].filter(Boolean)
@@ -37,17 +28,14 @@ export function stepsFor(options: JoinOptions, draft: JoinDraft | null): Stepper
   return steps
 }
 
-/** The question set's hash, by Facebook's question ids. Pure. */
 export function questionsHashOf(options: JoinOptions): string {
   return hashQuestionSet(options.questions.map((q) => `${q.id}:${q.prompt}`))
 }
 
-/** The stepper's answers → the draft kept in joinSubmission.draft. Pure. */
 export function draftFrom(options: JoinOptions, answers: Record<string, JoinAnswer>, rulesAgreed: boolean, at: Date): JoinDraft {
   return { answers, rulesAgreed, questionsHash: questionsHashOf(options), savedAt: at.toISOString() }
 }
 
-/** Every question answered (text not blank, at least one box ticked) and the rules agreed when asked. Pure. */
 export function draftComplete(options: JoinOptions, draft: JoinDraft | null): { complete: boolean; missing: string[] } {
   if (!draft || draft.questionsHash !== questionsHashOf(options)) return { complete: false, missing: options.questions.map((q) => q.prompt) }
   const missing = options.questions

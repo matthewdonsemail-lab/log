@@ -3,7 +3,6 @@ import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import type { StageLogLine } from '../types'
 
-/** `~/.logCli/runs/warmup/stageLog.jsonl`, or `LOG_WARMUP_STAGE_LOG`: every account's warm-up, one line per step. */
 export function stageLogPath(env: Record<string, string | undefined> = process.env): string {
   return env.LOG_WARMUP_STAGE_LOG || join(homedir(), '.logCli', 'runs', 'warmup', 'stageLog.jsonl')
 }
@@ -13,7 +12,6 @@ export function appendStageLog(line: StageLogLine, path = stageLogPath()): void 
   appendFileSync(path, `${JSON.stringify(line)}\n`)
 }
 
-/** The last `count` lines, for one account or all. */
 export function readStageLog(options: { account?: string; count?: number } = {}, path = stageLogPath()): StageLogLine[] {
   if (!existsSync(path)) return []
   const lines: StageLogLine[] = []
@@ -23,13 +21,11 @@ export function readStageLog(options: { account?: string; count?: number } = {},
       const line = JSON.parse(raw) as StageLogLine
       if (!options.account || line.account === options.account) lines.push(line)
     } catch {
-      // a line still being written
     }
   }
   return lines.slice(-(options.count ?? 40))
 }
 
-/** One feed line as a person reads it. Pure. */
 export function renderStageLogLine(line: StageLogLine): string {
   const time = line.at.replace('T', ' ').slice(11, 19)
   const mark = line.ok === false ? '✗' : line.ok ? '✓' : '·'

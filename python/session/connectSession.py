@@ -1,23 +1,3 @@
-"""log-cli's connect session: one Camoufox browser, signed in step by step.
-
-`src/marketplace/connect/machine.ts` (XState) decides; this file only acts.
-Same protocol as publishSession.py: one JSON request per line on stdin,
-
-    {"id": 1, "step": "read"}
-
-and one JSON line back on stdout, {"id": 1, "result": {...}}. Steps: open,
-read, submitCredentials, chooseAuthApp, submitCode, dismiss, solveCaptcha,
-save, close.
-
-argv[1] is the session config: {"accountId", "storageStatePath", "proxyPath",
-"devicePath", "captureDir", "loginPath"}. The browser is publishSession.py's
-Session: headed, humanized, cursor shown (rule 11), only through the account's
-proxy from its country (rule 12), as its one device in its pinned locale
-(rules 15-16), after the launch self-check (rule 17), recording a raw HAR into
-`captureDir` (rules 19, 22). It may start without saved cookies: connect is
-what makes them. `loginPath` (auto-login, rule 21) holds the email, password
-and totpSecret; they are read once and never printed or logged.
-"""
 from __future__ import annotations
 
 import json
@@ -28,7 +8,6 @@ from typing import Any
 import sys as _sys
 from pathlib import Path as _Path
 
-# python/ holds the domain packages (browser, human, session, ...): on the path when run directly.
 _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
 from login import autoLogin
 from browser import proxyGate
@@ -37,7 +16,6 @@ from session.publishSession import SELLING_URL, Session, log, step_solve_captcha
 
 
 def read_login(path: str | None) -> dict[str, Any]:
-    """The run's login.json, or {} (a person signs in). Never logged."""
     if not path or not Path(path).is_file():
         return {}
     try:
@@ -48,13 +26,11 @@ def read_login(path: str | None) -> dict[str, Any]:
 
 
 def captcha_on(s: Session) -> dict[str, Any] | None:
-    """A solvable captcha's detection (Arkose, reCAPTCHA, FB's text image), or None."""
     detection = s.detect_captcha()
     return detection if detection and detection.get("kind") in ("arkose", "recaptcha", "textImage") else None
 
 
 def session_cookies(s: Session) -> bool:
-    """c_user and xs both set: Listaro's proof of a login (facebook-auto-login.ts:723-735)."""
     try:
         names = {c["name"] for c in s.context.cookies() if c.get("value")}
     except Exception:
@@ -76,7 +52,6 @@ def step_open(s: Session, _: dict[str, Any]) -> dict[str, Any]:
 
 
 def step_open_in_session(s: Session, _: dict[str, Any]) -> dict[str, Any]:
-    """The connect machine's `open` inside a browser that is already up (publish's)."""
     log("Signing in in this browser: opening Marketplace > Selling.")
     try:
         s.page.goto(SELLING_URL, wait_until="domcontentloaded")
@@ -90,7 +65,6 @@ def step_read(s: Session, _: dict[str, Any]) -> dict[str, Any]:
     page = autoLogin.read(s.page, captcha_on(s), session_cookies(s))
     log(f"Page: {page['kind']} {page['path']}" + (f" \"{page['heading']}\"" if page.get("heading") else ""))
     if page.get("text") is not None or page.get("buttons"):
-        # Which checkpoint it is, in its own words: once per page, not every poll.
         seen = f"{page['kind']}|{page['path']}"
         if s.__dict__.get("lastDescribed") != seen:
             s.lastDescribed = seen
@@ -99,7 +73,6 @@ def step_read(s: Session, _: dict[str, Any]) -> dict[str, Any]:
 
 
 def acted(done: bool, what: str) -> dict[str, Any]:
-    # Not a failure the machine stops on: it reads the page again.
     return {"ok": True} if done else failure("crashed", f"{what}: nothing to act on")
 
 
@@ -120,7 +93,6 @@ def step_dismiss(s: Session, params: dict[str, Any]) -> dict[str, Any]:
 
 
 def step_save(s: Session, _: dict[str, Any]) -> dict[str, Any]:
-    """Reload, check it is still signed in, and write the session for log-cli to save."""
     try:
         s.page.reload(wait_until="domcontentloaded")
         s.page.wait_for_timeout(2500)
@@ -144,7 +116,6 @@ STEPS = {
     "chooseAuthApp": step_choose_auth_app,
     "submitCode": step_submit_code,
     "dismiss": step_dismiss,
-    # The same solvers as publish (rule 10): CaptchaKraken, then 2Captcha. The machine picks.
     "solveCaptcha": step_solve_captcha,
     "save": step_save,
 }
@@ -160,7 +131,6 @@ def main() -> int:
     reply_out, sys.stdout = sys.stdout, sys.stderr
     capture = config.get("captureDir")
     proxyGate.arm(config.get("proxyPath"), config.get("devicePath"), capture)
-    # Session.start records the HAR at <receiptDir>/camoufox/session.har: the capture folder.
     session = Session({**config, "allowFresh": True, "receiptDir": str(Path(capture).parent) if capture else None})
     session.secrets = read_login(config.get("loginPath"))
 
@@ -195,9 +165,8 @@ def main() -> int:
             except proxyGate.GateError as exc:
                 result = failure(exc.code, exc.detail)
             except Exception as exc:
-                result = failure("crashed", f"{type(exc).__name__}"[:400])  # never the message: it can echo typed text
+                result = failure("crashed", f"{type(exc).__name__}"[:400])
             if result.get("ok") is False:
-                # Why a step failed, on the trace at once (the run's output comes after the capture settles).
                 log(f"{step} failed: {result.get('code')} {result.get('detail', '')}".rstrip())
             reply(request.get("id"), result)
     finally:

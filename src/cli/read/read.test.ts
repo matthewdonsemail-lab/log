@@ -16,7 +16,6 @@ const GROUP_ID = "4191018610937243";
 const GROUP = `https://www.facebook.com/groups/${GROUP_ID}/`;
 const T = 1_792_500_000;
 
-/** A step as the open session answers it: its folder holds the step's network.har, which the command reads. */
 function step(reply: { ok: boolean; url?: string; har?: unknown }): InspectStepResult {
   const folder = mkdtempSync(join(tmpdir(), "logReadStep"));
   if (reply.har) writeFileSync(join(folder, "network.har"), JSON.stringify(reply.har));
@@ -67,7 +66,6 @@ describe("log facebook read group", () => {
     expect(twenty.rows.agencyGroupPosts).toBeUndefined();
     expect(twenty.rows.agencyGroups![0]).toMatchObject({ facebookGroupId: GROUP_ID, readCursor: { lastPostId: "2", watermark: T + 20 } });
 
-    // The same feed again: the cursor is reached on the page itself, nothing is new, so no post is opened for its comments.
     const second = await run(["facebook", "read", "group", "--account", "galwayOne", "--group", GROUP], [step(groupPage([unit("2", T + 20, 1), unit("1", T + 10)]))], twenty);
     expect(second.code).toBe(0);
     expect(second.sent.map((s) => s.action)).toEqual(["goto"]);

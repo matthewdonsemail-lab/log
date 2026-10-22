@@ -1,12 +1,3 @@
-/**
- * `log facebook messenger pin --account <a>`: Messenger's PIN for the account's
- * encrypted chats. Messenger stops at "Create a PIN to access your chats on any
- * device" until one is set (Bethlehem, warm-up 20261022T092119 steps 25-27), so
- * the inbox and its conversations can't be reached without it. matt types it in
- * a Clack prompt (masked, twice); it is kept in Twenty's `socialAccounts.messengerPin`
- * with the account's other secrets and is never printed. `log inspect do pin --live`
- * types it into the page from the run's private login.json (rule 21).
- */
 import { cancel, intro, isCancel, outro, password } from "@clack/prompts";
 import { findAccount } from "../../marketplace/socialAccount/index.ts";
 import { shouldPrompt } from "../launch/helpers/index.ts";
@@ -25,13 +16,11 @@ interface MessengerPrompts {
   password(option: Parameters<typeof password>[0]): Promise<unknown>;
 }
 
-/** Transport seam for tests. Production uses Clack and the real terminal. */
 export const messengerDeps: { prompts: MessengerPrompts; tty: () => LaunchTTY } = {
   prompts: { intro, outro, cancel, password: password as MessengerPrompts["password"] },
   tty: () => ({ stdinTTY: process.stdin?.isTTY, stdoutTTY: process.stdout?.isTTY }),
 };
 
-/** A Messenger PIN: six digits. Pure. */
 export function isMessengerPin(value: unknown): value is string {
   return typeof value === "string" && /^\d{6}$/.test(value);
 }

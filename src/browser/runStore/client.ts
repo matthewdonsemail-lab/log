@@ -1,13 +1,3 @@
-/**
- * The recorded runs on this machine (`~/.logCli/runs/<action>/<run>`, rule 22)
- * and pruning them (matt, 2026-10-22: the raw captures filled the disk and
- * AdsPower refused to start). A run may go only once it is analysed: rea read
- * every step (`settle.json`, rule 25) and its requests are in the request
- * docs (`log facebook capture --docs`, rule 27, which keeps a request's doc
- * when its runs are gone). A pruned run leaves its findings.md, steps.jsonl
- * and settle.json in `runs/kept/<action>/<run>/` and one line in
- * `runs/pruned.jsonl` with its requests counted by docs domain.
- */
 import { appendFileSync, copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statfsSync, statSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
@@ -16,7 +6,6 @@ import { openInspects } from '../inspect/index.ts'
 import { domainsInHar } from './helpers/domainsInHar.ts'
 import type { PrunedRun, RunEntry } from './types.ts'
 
-/** `~/.logCli`, or `LOG_CAPTURES_ROOT` (the docs gate's override). */
 export function logCliRoot(): string {
   return process.env.LOG_CAPTURES_ROOT || join(homedir(), '.logCli')
 }
@@ -24,7 +13,6 @@ export function logCliRoot(): string {
 const RUN_FOLDER = /^(\d{4})(\d{2})(\d{2})T\d{6}_(.+)$/
 const CAPTURE_FOLDERS = ['adsPower', 'camoufox', 'firefox']
 const KEPT_FILES = ['findings.md', 'steps.jsonl', 'settle.json']
-/** A run touched this recently is still being written. */
 const BUSY_MS = 10 * 60_000
 
 function sizeOf(path: string): number {
@@ -46,11 +34,9 @@ function newestChange(path: string): number {
     return 0
   }
   if (!stat.isDirectory()) return stat.mtimeMs
-  // A folder's own time moves whenever something is added or removed in it; a run is being written when its files are.
   return readdirSync(path).reduce((n, name) => Math.max(n, newestChange(join(path, name))), 0)
 }
 
-/** When the request docs were last built, from their index; 0 without one. */
 export function docsBuiltAt(repoRoot = fileURLToPath(new URL('../../../', import.meta.url))): number {
   const index = join(repoRoot, 'docs', 'platforms', 'facebook', 'operations.json')
   try {
@@ -60,7 +46,6 @@ export function docsBuiltAt(repoRoot = fileURLToPath(new URL('../../../', import
   }
 }
 
-/** Every run folder under `runs/<action>/`, measured and judged. `now` and `builtAt` are injected in tests. */
 export function listRuns(options: { root?: string; builtAt?: number; now?: number; open?: string[] } = {}): RunEntry[] {
   const runs = join(options.root ?? logCliRoot(), 'runs')
   const builtAt = options.builtAt ?? docsBuiltAt()
@@ -86,7 +71,6 @@ export function listRuns(options: { root?: string; builtAt?: number; now?: numbe
   return entries.sort((a, b) => a.run.localeCompare(b.run))
 }
 
-/** Prunes each run that may go (only those started before `before`, a `YYYY-MM-DD`, when given). A dry run unless `apply`. */
 export async function pruneRuns(entries: RunEntry[], options: { apply: boolean; before?: string; root?: string; log?: (line: string) => void }): Promise<PrunedRun[]> {
   const runs = join(options.root ?? logCliRoot(), 'runs')
   const done: PrunedRun[] = []
@@ -111,7 +95,6 @@ export async function pruneRuns(entries: RunEntry[], options: { apply: boolean; 
   return done
 }
 
-/** The free bytes on the disk that holds `path`, or null when it can't be read. */
 export function diskFree(path = logCliRoot()): number | null {
   try {
     const stats = statfsSync(path)
@@ -121,7 +104,6 @@ export function diskFree(path = logCliRoot()): number | null {
   }
 }
 
-/** The size of `runs/`, measured at most every 15 minutes (cached in `runs/.size.json`): walking it takes seconds. */
 export function runsBytes(root = logCliRoot(), now = Date.now()): number {
   const runs = join(root, 'runs')
   const cache = join(runs, '.size.json')

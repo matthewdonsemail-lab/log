@@ -1,9 +1,3 @@
-/**
- * One Marketplace check of an account, in the browser its host holds (rule 35): the status page (may it still
- * sell), Selling (each listing's state, into Twenty), and the seller inbox (are there chats). Each page is a
- * step of the open session, and what it found is read from that step's own recording (rule 22), never from the
- * page's text. Recorded on Bethlehem 2026-10-22 (inspect 20261022T113536). Nothing is clicked (rule 8).
- */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { InspectAction, InspectStepResult } from '../../../browser/inspect/index.ts'
@@ -15,7 +9,6 @@ import type { CheckReport, MarketplaceCheck } from './types.ts'
 
 const FB = 'https://www.facebook.com'
 
-/** The three pages a check opens, in order. */
 export const CHECK_PAGES = {
   status: `${FB}/marketplace/status`,
   selling: `${FB}/marketplace/you/selling`,
@@ -33,7 +26,6 @@ function harOf(reply: InspectStepResult | null): unknown {
   }
 }
 
-/** Opens the three pages in the open browser and reads each from its step's recording. */
 export async function readMarketplace(send: Send, log: (line: string) => void = () => {}): Promise<MarketplaceCheck> {
   log('  check: Marketplace status')
   const access = marketplaceAccessOf(harOf(await send('goto', [CHECK_PAGES.status])))
@@ -44,12 +36,6 @@ export async function readMarketplace(send: Send, log: (line: string) => void = 
   return { access, listings: listings ? sellingListingsOf(listings) : null, inbox }
 }
 
-/**
- * What a check found, kept: each listing of the account whose state moved gets its status and `lastCheckedAt`
- * in Twenty (only rows a check may move, `SYNCABLE`); chats the inbox holds are saved as Facebook sent them in
- * `keepDir` until a recording maps a thread's fields (rule 29). Returns a line per finding and the account
- * issue, if Marketplace access is gone.
- */
 export async function keepCheck(twenty: TwentyClient, accountId: string, accountName: string, check: MarketplaceCheck, keepDir: string, now = new Date()): Promise<CheckReport> {
   const lines: string[] = []
   let issue: CheckReport['issue'] = null

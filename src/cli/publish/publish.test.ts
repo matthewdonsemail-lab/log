@@ -24,7 +24,6 @@ beforeAll(async () => {
     saved[k] = process.env[k];
     process.env[k] = v;
   }
-  // The `2CAPTCHA_API_KEY` alias must not leak a real key into these tests either.
   saved["2CAPTCHA_API_KEY"] = process.env["2CAPTCHA_API_KEY"];
   process.env["2CAPTCHA_API_KEY"] = "";
   mkdirSync(root, { recursive: true });
@@ -38,7 +37,6 @@ afterAll(() => {
   }
 });
 
-/** A fake browser session: scripted replies per step, records every call and what its run files held. */
 function fakeSession(script: Partial<Record<SessionStep, Array<Record<string, unknown>>>> = {}) {
   const calls: Array<{ step: SessionStep; params: Record<string, unknown> }> = [];
   const configs: SessionConfig[] = [];
@@ -89,7 +87,6 @@ describe("log facebook publish", () => {
     const steps = session.calls.map((c) => c.step);
     expect(steps).toEqual(["open", "setCategory", "uploadPhotos", "fillFields", "review"]);
     expect(session.closedCount()).toBe(1);
-    // The proxy came from the account in Twenty, as a file, and the file is gone afterwards.
     expect(session.proxyFiles[0]).toEqual({ server: "http://203.0.113.7:8080", username: "user", password: "secretPass", country: "IE" });
     expect(existsSync(session.configs[0].proxyPath)).toBe(false);
     const listing = row(twenty, "agencyListings", "readyOne");
@@ -165,7 +162,6 @@ describe("log facebook publish", () => {
     expect(code).toBe(1);
     expect(out).toContain("galwayOne is now BANNED");
     expect(row(twenty, "socialAccounts", "galwayOne")).toMatchObject({ accountStatus: "BANNED", statusReason: "accountDisabled" });
-    // Its campaign listings are kept and each gets a new row on another Irish account.
     expect(row(twenty, "agencyListings", "liveOne").status).toBe("REPLACED");
     const replacements = twenty.rows.agencyListings.filter((r) => r.replacesId === "liveOne");
     expect(replacements).toHaveLength(1);
@@ -216,7 +212,6 @@ describe("log facebook publish refuses before any browser opens", () => {
     const live = await run(["facebook", "publish", "--listing", "readyOne", "--live"], fakeSession(), twenty);
     expect(live.code).toBe(1);
     expect(live.err).toContain("dailyCapReached");
-    // A dry run doesn't post, so it isn't capped.
     expect((await run(["facebook", "publish", "--listing", "readyOne"], fakeSession(), twenty)).code).toBe(0);
   });
 });
@@ -264,7 +259,6 @@ describe("log facebook publish: device, exit IP and local hours (rules 12, 15, 1
     expect(code).toBe(1);
     expect(session.calls.filter((c) => c.step === "publish")).toHaveLength(1);
     expect(row(twenty, "agencyListings", "readyOne")).toMatchObject({ lastRunResult: "BLOCKED", lastErrorCode: "proxyCountryChanged" });
-    // Not an account problem: the status stays.
     expect(row(twenty, "socialAccounts", "galwayOne").accountStatus).toBe("ACTIVE");
   });
 

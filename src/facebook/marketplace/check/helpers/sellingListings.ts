@@ -2,22 +2,18 @@ import type { AgencyListingStatus } from '../../../../marketplace/agencyListing/
 import type { SellingListing } from '../types.ts'
 import { responseTexts } from './graphqlResponses.ts'
 
-/** A listing in the Selling data: its id, then its title (`"id":"…","marketplace_listing_title":"…"`). */
 const LISTING = /"id":"(\d{10,})","marketplace_listing_title":"((?:[^"\\]|\\.)*)"/g
 
-/** One field's raw JSON value in `window`: an object, a string, null or a boolean. Pure. */
 function field(window: string, name: string): string | null {
   const match = new RegExp(`"${name}":((?:\\{[^{}]*\\})|"(?:[^"\\\\]|\\\\.)*"|null|true|false)`).exec(window)
   return match ? match[1] : null
 }
 
-/** The same field nearest the end of `window`: the one just before a listing's id, never an earlier listing's. Pure. */
 function lastField(window: string, name: string): string | null {
   const at = window.lastIndexOf(`"${name}":`)
   return at < 0 ? null : field(window.slice(at), name)
 }
 
-/** The notice Selling shows on a listing ("This listing is being reviewed."), or null. Pure. */
 function noticeOf(window: string): string | null {
   for (const name of ['integrity_status_indicator', 'listing_status_indicator']) {
     const content = /"content":"((?:[^"\\]|\\.)*)"/.exec(lastField(window, name) ?? '')?.[1]
@@ -26,7 +22,6 @@ function noticeOf(window: string): string | null {
   return null
 }
 
-/** What Twenty keeps for a listing as Selling shows it. Pure. */
 export function statusOfListing(l: Omit<SellingListing, 'status'>): AgencyListingStatus {
   if (l.sold) return 'sold'
   if (l.rejected) return 'policyViolation'
@@ -36,14 +31,6 @@ export function statusOfListing(l: Omit<SellingListing, 'status'>): AgencyListin
   return 'unknown'
 }
 
-/**
- * The account's listings from the Selling page's data, which arrives inside the page itself
- * (preloaded by the page, not a request of its own: `capture --docs` documents requests). Recorded on Bethlehem 2026-10-22: listing
- * 1425935622848350 carried `integrity_status_indicator` "This listing is being reviewed." at 11:19 (inspect
- * 20261022T110738 step 26), and null with `is_on_marketplace` true at 11:37 (20261022T113536 step 4). A
- * listing's fields sit just before its id (the review flags) and after its title (the rest). Each listing
- * once, by its id. Pure.
- */
 export function sellingListingsOf(har: unknown): SellingListing[] {
   const found = new Map<string, SellingListing>()
   for (const text of responseTexts(har)) {

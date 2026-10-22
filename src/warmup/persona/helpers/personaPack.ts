@@ -5,11 +5,6 @@ import type { ReelViewer } from '../../viewer/types'
 import type { BehaviourProfile, PersonaPack, PersonaSegment } from '../types'
 import { datasetsDir, parseTable } from './drawPersona'
 
-/**
- * The extra datasets a persona pack draws from (the persona-conditioned Reels
- * handoff matt collated, 2026-10-20), installed under `~/.logCli/datasets/`
- * (`SOURCES.md` there). Only the columns the pack uses are kept.
- */
 export interface PackDatasets {
   brainRot: Record<string, string>[]
   global2026: Record<string, string>[]
@@ -18,13 +13,11 @@ export interface PackDatasets {
   customerPersonality: Record<string, string>[]
   instagramComments: string[]
   movieLens: { id: string; age: number; gender: string; occupation: string }[]
-  /** KuaiRand-Pure's swipe feed: the comment times (ms) of plays whose comments were opened. */
   kuaiRandPureCommentMs: number[]
 }
 
 const keep = (rows: Record<string, string>[], cols: string[]) => rows.map((r) => Object.fromEntries(cols.map((c) => [c, r[c] ?? ''])))
 
-/** The pack's datasets from their folder; a missing one says which. */
 export function readPackDatasets(dir = datasetsDir()): PackDatasets {
   const text = (path: string) => {
     const full = join(dir, path)
@@ -71,7 +64,6 @@ const median = (xs: number[]) => {
 }
 const genderLetter = (g: string) => (/^f/i.test(g) ? 'F' : /^m/i.test(g) ? 'M' : '')
 
-/** The rows nearest the persona: same gender where the dataset has it, age within `span` (widening until some match). Pure. */
 function nearest<T>(rows: T[], ageOf: (r: T) => number, genderOf: (r: T) => string, age: number, gender: string, extra: (r: T) => boolean = () => true): T[] {
   for (const span of [2, 5, 10, 100]) {
     const found = rows.filter((r) => Math.abs(ageOf(r) - age) <= span && (!gender || !genderOf(r) || genderLetter(genderOf(r)) === gender) && extra(r))
@@ -80,13 +72,11 @@ function nearest<T>(rows: T[], ageOf: (r: T) => number, genderOf: (r: T) => stri
   return rows
 }
 
-/** An age band like the FB conversions data's ("30-34"): its middle. */
 const bandMiddle = (band: string) => {
   const [lo, hi] = band.split('-').map(Number)
   return Number.isFinite(hi) ? (lo + hi) / 2 : num(band)
 }
 
-/** The datasets' content preferences and motivations as the reel labels; formats (Photos, Stories, Text Post…) say nothing of content. */
 const INTEREST_OF: Record<string, string> = {
   Educational: 'educational',
   Memes: 'memes',
@@ -101,17 +91,8 @@ const INTEREST_OF: Record<string, string> = {
   'Podcast/Audio': 'educational'
 }
 
-/** Reading speed for comments: a common adult silent-reading rate, words per minute. */
 const READING_WPM = 238
 
-/**
- * The persona pack: the persona and its real viewer turned into the numbers
- * the action orderer runs on, each from the dataset named in `provenance`
- * (real or synthetic said there). The anchor is the persona's doomscrolling
- * row (age, gender, country); every other dataset gives its nearest row,
- * drawn with the persona's seed. Rates per reel come from rates per day over
- * the reels a day of sessions holds. Pure, given its datasets.
- */
 export function buildPersonaPack(persona: BehaviourProfile, viewer: ReelViewer, data: PackDatasets): PersonaPack {
   const rng = seeded(persona.seed ^ 0x5eed)
   const pick = <T>(rows: T[]) => rows[Math.floor(rng() * rows.length)]
@@ -121,37 +102,28 @@ export function buildPersonaPack(persona: BehaviourProfile, viewer: ReelViewer, 
   const gender = genderLetter(doom.gender ?? '')
   const t = viewer.stats
 
-  // Real viewer (KuaiRand-1K): the watch times, in their sessions' own order, and their rates.
   const meanReelS = mean(viewer.sessions.flat().map((w) => w[0])) / 1000 + 1
-  // Session length (doomscrolling, synthetic): minutes per session over the viewer's own reel time, with their real sessions.
   const doomReels = (num(doom.avg_session_length_minutes) * 60) / Math.max(meanReelS, 1)
   const fatigue = { 'Almost Daily': 1.3, Often: 1.15, Sometimes: 1, Rarely: 0.75 }[doom.doomscrolling_frequency ?? ''] ?? 1
   const sessionReels = Math.round(clamp(mean([doomReels, t.sessionSwipes].filter((x) => x > 0)) * fatigue, 6, 60))
   const sessionsPerDay = num(social.sessions_per_day) || num(doom.daily_scroll_sessions_count) || 5
   const reelsPerDay = Math.max(sessionsPerDay * sessionReels, 1)
 
-  // Brain-rot (synthetic): the attention cap on one watch, and how much of a reel they finish.
   const brain = pick(nearest(data.brainRot, (r) => num(r.age), (r) => r.gender, age, gender, (r) => /Reels|TikTok/.test(r.primary_platform)))
-  // Global 2026 (synthetic): likes and comments a day, engagement rate, ad clicks; nearest in the persona's country.
   const country = doom.country ?? 'United States'
   const global = pick(nearest(data.global2026, (r) => num(r.age), (r) => r.gender, age, gender, (r) => r.country === country && /Facebook|Instagram/.test(r.primary_platform)))
-  // Ad engagement (synthetic), FB conversions (real, by age band and gender), customer personality (real, by birth year): click-through.
   const ad = pick(nearest(data.adEngagement, (r) => num(r.age), (r) => r.gender, age, gender))
   const fb = pick(nearest(data.fbConversions, (r) => bandMiddle(r.age), (r) => r.gender, age, gender))
   const shopper = pick(nearest(data.customerPersonality, (r) => 2014 - num(r.Year_Birth), () => '', age, ''))
-  // MovieLens 100K (real): a demographic shell, no ID join: one real person's age, gender and occupation.
   const shell = pick(nearest(data.movieLens, (r) => r.age, (r) => r.gender, age, gender))
 
   const likeP = clamp(mean([t.likeRate, num(social.likes_given_per_day) / reelsPerDay, num(global.likes_per_day) / reelsPerDay, num(global.engagement_rate_pct) / 100]), 0, 0.5)
   const commentP = clamp(mean([t.commentRate, num(social.comments_per_day) / reelsPerDay, num(global.comments_per_day) / reelsPerDay]), 0, 0.4)
-  // Click-through: the real rates (the viewer's, FB conversions', the shopper's web visits a session) and the
-  // social set's ad click rate as the base; the synthetic ad set (median CTR about 0.5) only as a relative nudge.
   const ctr = (r: Record<string, string>) => (num(r.impressions) ? num(r.clicks) / num(r.impressions) : 0)
   const adMedian = median(data.adEngagement.map(ctr)) || 1
   const adNudge = clamp(ctr(ad) / adMedian, 0.5, 1.5)
   const fbClick = num(fb.Impressions) ? num(fb.Clicks) / num(fb.Impressions) : 0
   const profileP = clamp(mean([t.profileRate, num(social.ad_click_rate), fbClick, num(shopper.NumWebVisitsMonth) / 30 / sessionsPerDay]) * adNudge, 0, 0.3)
-  // Comment reading time: the viewer's own, else KuaiRand-Pure's swipe feed, with the Instagram comments' length as the floor.
   const words = median(data.instagramComments.map((c) => c.split(/\s+/).filter(Boolean).length).filter((n) => n > 0)) || 8
   const readMs = Math.round((words / READING_WPM) * 60_000 * 3)
   const commentMs = Math.max(t.commentMs || median(data.kuaiRandPureCommentMs), readMs)
@@ -169,11 +141,9 @@ export function buildPersonaPack(persona: BehaviourProfile, viewer: ReelViewer, 
     commentMs,
     profileMs: t.profileMs || 6000,
     sessionReels,
-    // The trust score runs 0-100.
     adSkipP: Math.round(clamp(doom.content_algorithm_trust_score ? 1 - trust / 100 : 0.5, 0, 1) * 100) / 100,
     likeCooldownReels: 3
   }
-  // Interests: social behaviour's preferred content, doomscrolling's motivation, global 2026's preferred content.
   const interests = [...new Set([social.preferred_content_type, doom.primary_motivation, global.preferred_content_type].map((v) => INTEREST_OF[v ?? '']).filter((v): v is string => Boolean(v)))]
   return {
     personaId: `${viewer.source.replace(' ', '_')}_${persona.seed}`,
@@ -193,7 +163,6 @@ export function buildPersonaPack(persona: BehaviourProfile, viewer: ReelViewer, 
   }
 }
 
-/** The pack's segment (the handoff's four), from its traits. Pure. */
 export function segmentOf(traits: Pick<PersonaPack['traits'], 'skipP' | 'likeP' | 'commentP' | 'profileP'>): PersonaSegment {
   if (traits.likeP + traits.commentP >= 0.12) return 'social'
   if (traits.profileP >= 0.08) return 'commerce'

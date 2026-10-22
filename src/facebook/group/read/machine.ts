@@ -1,24 +1,3 @@
-/**
- * The group read machine (`log facebook read group`, #27): one group, one account, in the account's
- * open browser (rule 35). Its only side effect is `step`, one command to the open inspect
- * session, which the caller provides with the step's own HAR read (rule 22); tests script
- * the replies. Every post and comment is read from what the page itself loaded: log-cli never
- * calls Facebook's GraphQL (`docs/groupRead.md`).
- *
- *   opening (goto the group) ─▶ the first posts, from the page's HTML
- *   scrolling (scroll 2 700) ─▶ each feed answer's posts ─┐
- *      ▲───── until the last read's posts show, the feed ends, or maxScrolls ─┘
- *   settled ─▶ the new posts and the cursor after them; the new posts that have comments (rule 65: no counts kept)
- *   for each of those (at most maxCommentPosts):
- *      openingPost (goto its page) ─▶ the first comments, from its HTML
- *        ├── --live: sorting ("Most relevant") ─▶ newest ("Newest", rule 8)
- *      scrollingComments (scrollIn its dialog) ─▶ more, while Facebook says there are
- *   done
- *   a checkpoint or a login, after any step ─▶ stopped
- *
- * Nothing is typed, reacted to or sent. A post whose comments fail is noted and the read
- * goes on to the next one; a step that fails on the group's own feed stops the read.
- */
 import { assign, fromPromise, setup } from "xstate";
 import { pageProblem } from "../../../browser/flow/index.ts";
 import type { ErrorCode } from "../../../errors/catalog/index.ts";
@@ -29,24 +8,20 @@ import type { GroupReadContext, GroupReadInput, GroupReadOutput, ReadStepInput, 
 type Done = { output: ReadStepReply };
 type Problem = { code: ErrorCode; detail: string };
 
-/** Scrolls of one post's comment dialog, at most. */
 const MAX_COMMENT_SCROLLS = 4;
 
-/** The step's reply → its problem, if any: the page went somewhere else, or the step failed. Pure. */
 function problemOf(step: ReadStepInput, reply: ReadStepReply, failed: ErrorCode): Problem | null {
   const landed = pageProblem({ action: step.action, url: step.action === "goto" ? step.args[0] : undefined }, reply);
   if (landed) return landed;
   return reply.ok === false ? { code: failed, detail: reply.error ?? `${step.action} failed` } : null;
 }
 
-/** A checkpoint or a login stops the whole read; anything else on a post only ends that post. Pure. */
 const stopsRead = (problem: Problem) => problem.code === "checkpointed" || problem.code === "loginWall";
 
 const noted = (context: GroupReadContext, step: string, reply: ReadStepReply, detail?: string) => [...context.steps, { step, ok: reply.ok !== false, folder: reply.folder, detail: detail ?? reply.error }];
 
 const scrollStep: ReadStepInput = { action: "scroll", args: ["2", "700"] };
 
-/** The feed pages a step loaded, folded into the context. */
 function readFeed(context: GroupReadContext, reply: ReadStepReply, name: string): Partial<GroupReadContext> {
   const groupId = context.groupId ?? groupIdFromStep(reply.har);
   if (!groupId) return { steps: noted(context, name, reply, "no group id on the page"), problem: { code: "groupIdUnknown", detail: `the page never gave ${context.group.key}'s numeric id` } };
@@ -72,7 +47,6 @@ function readFeed(context: GroupReadContext, reply: ReadStepReply, name: string)
   };
 }
 
-/** The comment pages a step loaded, folded into the post being read. */
 function readComments(context: GroupReadContext, reply: ReadStepReply, name: string): Partial<GroupReadContext> {
   const before = context.pageComments.length;
   let { pageComments, commentHasNext } = context;
@@ -83,7 +57,6 @@ function readComments(context: GroupReadContext, reply: ReadStepReply, name: str
   return { pageComments, commentHasNext, steps: noted(context, name, reply, `${pageComments.length - before} new comment(s), ${pageComments.length} on the post${commentHasNext ? ", more to load" : ""}`) };
 }
 
-/** A failed step on a post: the read stops on a checkpoint or a login, else only this post's comments end. */
 function postFailed(context: GroupReadContext, reply: ReadStepReply, name: string, problem: Problem): Partial<GroupReadContext> {
   return stopsRead(problem) ? { steps: noted(context, name, reply, problem.detail), problem } : { steps: noted(context, name, reply, problem.detail), postProblem: `${name}: ${problem.detail}` };
 }
@@ -109,7 +82,6 @@ export const groupReadMachine = setup({
     moreComments: ({ context }) => context.commentHasNext === true && context.commentScrolls < MAX_COMMENT_SCROLLS,
   },
   actions: {
-    // The post's comments kept, and the next post up.
     finishPost: assign(({ context }) => {
       const post = current(context);
       return {
@@ -181,7 +153,6 @@ export const groupReadMachine = setup({
         onError: { target: "stopped", actions: assign({ problem: ({ event }) => ({ code: "groupReadStepFailed" as const, detail: String(event.error) }) }) },
       },
     },
-    // The feed is read for this run: what is new, the cursor after it, and the posts whose comments grew.
     settled: {
       always: {
         target: "nextPost",
@@ -222,7 +193,6 @@ export const groupReadMachine = setup({
         { target: "scrollingComments" },
       ],
     },
-    // --live: the sort switched to Newest, which shows every comment but potential spam (run 20261020T151100).
     sorting: {
       invoke: {
         src: "step",
@@ -279,7 +249,6 @@ export const groupReadMachine = setup({
       always: [
         { guard: "stopped", target: "stopped" },
         { guard: "postFailed", target: "postDone" },
-        // The first scroll always runs (the page's HTML says nothing of more); then only while Facebook says there is more.
         { guard: ({ context }) => context.commentScrolls === 0, target: "scrollingComments" },
         { guard: "moreComments", target: "scrollingComments" },
         { target: "postDone" },
@@ -292,7 +261,6 @@ export const groupReadMachine = setup({
     stopped: { type: "final" },
   },
   output: ({ context }) => {
-    // A read stopped while on a post keeps the comments it got from that post.
     const inPost = context.problem && context.feedDone && context.index < context.targets.length && context.pageComments.length;
     return {
       account: context.account,

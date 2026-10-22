@@ -11,38 +11,27 @@ import type { StoredFacts } from "./helpers/index";
 import type { RequestSeen } from "./helpers/index";
 import type { ClientDomain, ClientOperation, FacebookModule } from "./types";
 
-/** One run folder that recorded a capture (rule 22). */
 export interface RunCapture {
-  /** The `firefox/` folder: `session.har`, `steps.jsonl`, `scripts/`. */
   dir: string;
-  /** The run folder's path under the captures root, e.g. `runs/connect/20261019T091935_6159...`. */
   run: string;
   action: string;
 }
 
 export interface BuildClientMapOptions {
-  /** `~/.logCli`: where `runs/` and `publish/` keep every capture. */
   capturesRoot: string;
-  /** `~/.logCli/rea/facebookClient`: slices, rea's cache and `clientMap.json`. Never committed. */
   outDir: string;
-  /** `docs/platforms/facebook` in the repo: one doc per request, committed. */
   docsDir: string;
-  /** null: build the map and docs without rea (`--noRea`). */
   runner: ReaRunner | null;
-  /** Each stage reports here as it goes. The settle that ran silently for 10 minutes is the reason. */
   log: (line: string) => void;
-  /** rea calls at once. Each slice takes about 10 s. */
   concurrency?: number;
 }
 
 export const DOCS_INDEX = "operations.json";
 
-/** `~/.logCli`, or `LOG_CAPTURES_ROOT`. */
 export function capturesRoot(env: Record<string, string | undefined> = process.env): string {
   return env.LOG_CAPTURES_ROOT || join(homedir(), ".logCli");
 }
 
-/** Every capture folder (`adsPower/`, `camoufox/`, or `firefox/` for older runs) holding a `session.har` under `runs/` and `publish/`, newest first. */
 export function findRunCaptures(root: string): RunCapture[] {
   const found: RunCapture[] = [];
   const walk = (dir: string, depth: number): void => {
@@ -65,19 +54,16 @@ export function findRunCaptures(root: string): RunCapture[] {
   return found.sort((a, b) => statSync(join(b.dir, "session.har")).mtimeMs - statSync(join(a.dir, "session.har")).mtimeMs);
 }
 
-/** Every request a run made, by step (the same split `settleRunCapture` writes to `steps/`). */
 export function requestsInRun(capture: RunCapture): RequestSeen[] {
   const har = JSON.parse(readFileSync(join(capture.dir, "session.har"), "utf8")) as { log?: { entries?: { startedDateTime?: string }[] } };
   const stepsFile = join(capture.dir, "steps.jsonl");
   let steps = existsSync(stepsFile) ? parseSteps(readFileSync(stepsFile, "utf8")) : [];
-  // A run from before steps.jsonl existed is read as one step.
   if (!steps.length) steps = [{ at: har.log?.entries?.[0]?.startedDateTime ?? new Date(0).toISOString(), step: "Whole run (no steps.jsonl)" }];
   return splitHarBySteps(har, steps).flatMap((part) =>
     requestsInStep(part.har as never, { run: capture.run, action: capture.action, step: part.step, stepAt: steps[part.index - 1].at }),
   );
 }
 
-/** rea's Evidence for each step HAR the settle already read (`steps/index.json`), by step text. */
 function stepEvidence(capture: RunCapture): Map<string, string> {
   const evidence = new Map<string, string>();
   try {
@@ -88,12 +74,10 @@ function stepEvidence(capture: RunCapture): Map<string, string> {
       if (id) evidence.set(step.step, id);
     }
   } catch {
-    // not settled yet: endpoints from this run get no Evidence until it is
   }
   return evidence;
 }
 
-/** Every Facebook module in the runs' saved scripts, newest run first; a bundle seen twice is parsed once. */
 export function indexRunModules(captures: RunCapture[], log: (line: string) => void): Map<string, FacebookModule> {
   const modules = new Map<string, FacebookModule>();
   const parsed = new Set<string>();
@@ -114,11 +98,6 @@ export function indexRunModules(captures: RunCapture[], log: (line: string) => v
   return modules;
 }
 
-/**
- * `doc_id` → operation name, from every `<Name>_facebookRelayOperation`
- * module (`a.exports="24482075174793922"`). Some requests (the photo
- * upload's) carry a doc_id but no friendly name; this names them.
- */
 export function operationNamesByDocId(modules: Map<string, FacebookModule>): Map<string, string> {
   const names = new Map<string, string>();
   for (const [name, module] of modules) {
@@ -129,7 +108,6 @@ export function operationNamesByDocId(modules: Map<string, FacebookModule>): Map
   return names;
 }
 
-/** Sightings merged per request, joined to its definition in Facebook's bundles. */
 export function mergeOperations(seen: RequestSeen[], modules: Map<string, FacebookModule>): ClientOperation[] {
   const importers = importersOf(modules.values());
   const byDocId = operationNamesByDocId(modules);
@@ -172,19 +150,12 @@ async function eachLimited<T>(items: T[], limit: number, work: (item: T, index: 
   }));
 }
 
-/**
- * rea reads each GraphQL operation's slice (its definition, its doc_id and
- * the modules that fire it: a few KB, about 10 s), never the 50 MB of
- * bundles it timed out on. A slice rea already read is not read again: its
- * Evidence is cached by the slice's sha256.
- */
 export async function readSlices(operations: ClientOperation[], modules: Map<string, FacebookModule>, outDir: string, runner: ReaRunner, log: (line: string) => void, concurrency = 3): Promise<void> {
   const cachePath = join(outDir, "reaCache.json");
   let cache: Record<string, string> = {};
   try {
     cache = JSON.parse(readFileSync(cachePath, "utf8")) as Record<string, string>;
   } catch {
-    // first build
   }
   const importers = importersOf(modules.values());
   const todo: { operation: ClientOperation; dir: string; sha: string }[] = [];
@@ -219,7 +190,6 @@ export async function readSlices(operations: ClientOperation[], modules: Map<str
   });
 }
 
-/** Where an operation's doc already is, in any domain folder (a request can move domain when the table changes). */
 function existingDoc(docsDir: string, name: string): string | null {
   if (!existsSync(docsDir)) return null;
   for (const domain of readdirSync(docsDir)) {
@@ -229,22 +199,16 @@ function existingDoc(docsDir: string, name: string): string | null {
   return null;
 }
 
-/**
- * The facts store (rule 66): every request's fields and sightings across builds, so a doc keeps what pruned
- * runs showed. Local, like the captures: it holds run ids, which carry account ids (rule 19).
- */
 export function clientFactsPath(): string {
   return join(process.env.LOG_CAPTURES_ROOT || join(homedir(), ".logCli"), "rea", "clientFacts.json");
 }
 
-/** Writes each operation's doc (facts folded into the store, reasoning kept) and the index the push gate reads. */
 export function writeOperationDocs(operations: ClientOperation[], docsDir: string, runs: number, storePath = clientFactsPath()): { written: number; toWrite: number } {
   let toWrite = 0;
   let store: Record<string, StoredFacts> = {};
   try {
     store = JSON.parse(readFileSync(storePath, "utf8")) as Record<string, StoredFacts>;
   } catch {
-    // first build with a store: each request starts from its committed doc
   }
   const seenBy = new Map<string, number>();
   const kindBy = new Map<string, ClientOperation["kind"]>();
@@ -263,15 +227,11 @@ export function writeOperationDocs(operations: ClientOperation[], docsDir: strin
     if (old && resolve(old) !== resolve(path)) rmSync(old);
     if (doc.includes("<!-- toWrite -->")) toWrite++;
   }
-  // Cumulative: a request documented by an earlier build but missing from today's recordings keeps its
-  // entry and its doc as they were (2026-10-19: every HAR older than 15:56 New York was removed outside
-  // log-cli, and a rebuild from the four left would have dropped 54 of the 90 documented requests).
   type Entry = { name: string; domain: string; kind: string; docId: string | null; doc: string; reaEvidenceId: string | null; seen: number };
   let previous: Entry[] = [];
   try {
     previous = (JSON.parse(readFileSync(join(docsDir, DOCS_INDEX), "utf8")) as { operations?: Entry[] }).operations ?? [];
   } catch {
-    // first build
   }
   const before = new Map(previous.map((e) => [e.name, e]));
   const current: Entry[] = operations.map((o) => ({
@@ -292,11 +252,6 @@ export function writeOperationDocs(operations: ClientOperation[], docsDir: strin
   return { written: operations.length, toWrite };
 }
 
-/**
- * `log facebook capture --docs`: every run's recording → the Facebook client
- * map (`clientMap.json`, local) and `docs/platforms/facebook/` (committed).
- * Timeline first (seconds), rea's reading last (AGENTS.md outline step 5).
- */
 export async function buildClientMap(options: BuildClientMapOptions): Promise<string> {
   const { log } = options;
   const captures = findRunCaptures(options.capturesRoot);

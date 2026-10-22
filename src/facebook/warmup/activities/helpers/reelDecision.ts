@@ -2,13 +2,6 @@ import type { DecisionAnswer, DecisionImage, DecisionRequest, DecisionResponse }
 import type { PersonaPack } from '../../../../warmup/persona/types'
 import type { ReelAction } from './reelOrderer'
 
-/**
- * The reel's label: the content categories of the datasets the persona comes
- * from (rule 50). The social behaviour dataset's content types that say what
- * a reel is about (Educational, Entertainment, Memes, News; its others,
- * Photos, Stories, Videos, Reels/Shorts, are formats), and the doomscrolling
- * dataset's motivations that are content (Social Connection, Work/Research).
- */
 export const REEL_LABELS: Record<string, string | null> = {
   educational: 'Teaches or explains something (Educational)',
   entertainment: 'Made to entertain: comedy, stunts, music, drama, scenery (Entertainment)',
@@ -19,7 +12,6 @@ export const REEL_LABELS: Record<string, string | null> = {
   other: null
 }
 
-/** What this run lets a reel do beyond watching and swiping (rule 8: clicks need --live, a like --likes too). */
 export interface AllowedActions {
   comments: boolean
   profile: boolean
@@ -32,25 +24,15 @@ const ACTION_TEXT: Record<ReelAction, string> = {
   openProfile: "Open the creator's profile"
 }
 
-/** SubQ's read of one reel, from its frame: what it is, whether it is this persona's, and the one action they'd pick. */
 export interface ReelRead {
   label: string
   labelConfidence: number
-  /** The chance this is the persona's kind of content. */
   interest: number
-  /** If they did one thing on it, which (or none); settles the orderer's close calls only. */
   pick: ReelAction | 'none'
   pickProbabilities: Record<string, number>
   inputTokens: number
 }
 
-/**
- * The read for one reel (rule 50): the reel's frame as it landed as the image
- * (SubQ reads what the reel is from it), the caption the page shows as text,
- * the persona (its pack, interests and profile) and the session so far as
- * state. Asked: the label, whether it is this persona's kind of content, and
- * which one action they'd take, only among those the run allows. Pure.
- */
 export function reelReadRequest(
   pack: PersonaPack,
   persona: Record<string, string>,
@@ -85,7 +67,6 @@ export function reelReadRequest(
 
 const noul = (a: DecisionAnswer | undefined) => (a?.type === 'noul' ? a.noul : 0)
 
-/** SubQ's answers → the read; a missing answer reads as not theirs, nothing picked. Pure. */
 export function readReelRead(response: DecisionResponse): ReelRead {
   const label = response.answers.label as DecisionAnswer | undefined
   const pick = response.answers.pick as DecisionAnswer | undefined
@@ -100,7 +81,6 @@ export function readReelRead(response: DecisionResponse): ReelRead {
   }
 }
 
-/** The current reel's creator and caption, from the snapshot the reel landed on (one "see owner profile" heading, then its text). Pure. */
 export function reelCaption(snapshot: string): { creator: string; caption: string } {
   const lines = snapshot.split('\n')
   const at = lines.findIndex((l) => /heading ".*, see owner profile"/.test(l))

@@ -1,11 +1,3 @@
-/**
- * `log facebook capture --har <path> [--out <dir>]` — a run's recording, read offline.
- *
- * Browser-agnostic (rule 44, rule 46): reads a HAR that Playwright recorded
- * from any driver (Camoufox's Firefox, AdsPower's Chromium), copies it
- * unchanged (rule 19), writes its scripts beside it, and runs `rea` on the
- * files. No browser starts. `--noRea` stops after the files are written.
- */
 import { writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -22,7 +14,6 @@ export const CAPTURE_USAGE = [
   "The HAR is the one Playwright writes from Camoufox. It is copied raw, and rea reads it. No browser opens.",
 ].join("\n");
 
-/** `docs/platforms/facebook` in this repo: Facebook's requests, one doc each, by domain (a new platform: `docs/platforms/<platform>`). */
 export const FACEBOOK_CLIENT_DOCS = fileURLToPath(new URL("../../../docs/platforms/facebook", import.meta.url));
 
 export async function runCapture(argv: string[], runner?: ReaRunner, log: (line: string) => void = () => {}): Promise<CommandResult> {

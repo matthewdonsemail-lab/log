@@ -1,12 +1,10 @@
 import type { OperationSighting } from '../types'
 
-/** A request as it appears in one step's HAR: what it is and when, never its values. */
 export interface RequestSeen extends OperationSighting {
   name: string
   docId: string | null
   path: string
   graphql: boolean
-  /** Variable names the request sent: used when Facebook's bundle for its `.graphql` module wasn't captured. */
   variables: string[]
 }
 
@@ -17,11 +15,6 @@ interface HarEntry {
   response?: { status?: number; content?: { text?: string; encoding?: string } }
 }
 
-/**
- * A request body's form fields. Most GraphQL calls are urlencoded; the ones
- * the photo step makes are `multipart/form-data` (`name="doc_id"\r\n\r\n…`),
- * which `URLSearchParams` can't read. Pure.
- */
 export function formFields(body: string): URLSearchParams {
   if (!body.startsWith('--')) return new URLSearchParams(body)
   const fields = new URLSearchParams()
@@ -29,20 +22,13 @@ export function formFields(body: string): URLSearchParams {
   return fields
 }
 
-/** Facebook's own hosts. Static files (`static.xx.fbcdn.net`, `rsrc.php`) are scripts, not requests to document. */
 const isFacebook = (host: string): boolean => host === 'facebook.com' || host.endsWith('.facebook.com')
 
-/** `/ajax/bulk-route-definitions/` → `ajaxBulkRouteDefinitions`: Facebook's kebab-case converted once, here (rule 1). Pure. */
 export function endpointName(path: string): string {
   const words = path.split(/[^A-Za-z0-9]+/).filter(Boolean)
   return words.map((word, i) => (i === 0 ? word.toLowerCase() : word[0].toUpperCase() + word.slice(1).toLowerCase())).join('') || 'root'
 }
 
-/**
- * The errors a response reports, by message: GraphQL's `errors[]`, and the
- * `for (;;);{"error":1357004,"errorSummary":...}` of Facebook's ajax
- * endpoints (`"error":false` is not an error). Pure.
- */
 export function responseErrors(text: string | undefined): string[] {
   if (!text) return []
   const errors: string[] = []
@@ -67,11 +53,6 @@ export function responseErrors(text: string | undefined): string[] {
   return [...new Set(errors.map((error) => error.slice(0, 160)))]
 }
 
-/**
- * Every request one step made to Facebook, named the way Facebook names it:
- * GraphQL by `fb_api_req_friendly_name` (with its `doc_id` and variable
- * names), any other POST by its path. Pure.
- */
 export function requestsInStep(har: { log?: { entries?: HarEntry[] } }, context: { run: string; action: string; step: string; stepAt: string }): RequestSeen[] {
   const stepStart = Date.parse(context.stepAt)
   const seen: RequestSeen[] = []
@@ -108,7 +89,6 @@ export function requestsInStep(har: { log?: { entries?: HarEntry[] } }, context:
   return seen
 }
 
-/** The variable names a GraphQL request sent (`variables={"categoryID":...}` → `categoryID`), never the values. Pure. */
 export function variableNames(form: URLSearchParams): string[] {
   try {
     const value = JSON.parse(form.get('variables') ?? '{}') as unknown

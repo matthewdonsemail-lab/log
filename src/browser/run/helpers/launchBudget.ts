@@ -3,16 +3,8 @@ import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { CAPTURE_FOLDERS } from '../../driver/types'
 
-/**
- * Rule 24: how often one account's browser may open on Facebook. On
- * 2026-10-19 the account opened 14 times in 90 minutes (dry runs included)
- * went automated behaviour → text captcha → video selfie; the one opened 3
- * times stayed clean (RESEARCH/LOG_CLI_RUN_CAPTURES_2026_10_19.md).
- */
 export interface LaunchLimits {
-  /** Minutes between two launches of one account. */
   minGapMinutes: number
-  /** Launches per account per local day, dry runs counted. */
   perDay: number
 }
 
@@ -20,14 +12,8 @@ export const LAUNCH_LIMITS: LaunchLimits = { minGapMinutes: 10, perDay: 8 }
 
 const SELF_CHECK = 'Self-check passed'
 
-/** `~/.logCli/launchResets.jsonl` (or `LOG_LAUNCH_RESETS`): one line per reset matt asked for. */
 export const launchResetsPath = (env: Record<string, string | undefined> = process.env) => env.LOG_LAUNCH_RESETS || join(homedir(), '.logCli', 'launchResets.jsonl')
 
-/**
- * When this account's opens were last reset (`log facebook account resetOpens`, matt
- * 2026-10-19): launches before it no longer count against rule 24. Nothing
- * is deleted; the recordings stay. Null when never reset.
- */
 export function lastLaunchReset(accountName: string, path: string = launchResetsPath()): Date | null {
   if (!existsSync(path)) return null
   let last: Date | null = null
@@ -38,7 +24,6 @@ export function lastLaunchReset(accountName: string, path: string = launchResets
       const at = new Date(entry.at)
       if (entry.account === accountName && !Number.isNaN(at.getTime()) && (!last || at > last)) last = at
     } catch {
-      // a half-written line
     }
   }
   return last
@@ -49,17 +34,11 @@ export function recordLaunchReset(accountName: string, reason: string, at: Date 
   appendFileSync(path, `${JSON.stringify({ account: accountName, at: at.toISOString(), reason })}\n`)
 }
 
-/**
- * When this account's browser reached Facebook, from every run folder's
- * `steps.jsonl` ("Self-check passed": the launch passed the gate and opened).
- * Runs refused before a launch (no proxy, too slow) don't count.
- */
 export function listLaunches(accountName: string, roots: { runs?: string; publish?: string; resets?: string } = {}): Date[] {
   const key = accountName.replace(/\W/g, '')
   const runsRoot = roots.runs ?? (process.env.LOG_RUNS_DIR || join(homedir(), '.logCli', 'runs'))
   const publishRoot = roots.publish ?? (process.env.LOG_PUBLISH_DIR || join(homedir(), '.logCli', 'publish'))
   const files: string[] = []
-  // runs/<action>/<time>_<account>/<browser>[/check<N>]/steps.jsonl: adsPower, camoufox, or firefox for older runs
   for (const action of dirNames(runsRoot)) {
     for (const run of dirNames(join(runsRoot, action)).filter((name) => name.endsWith(`_${key}`))) {
       for (const folder of CAPTURE_FOLDERS) {
@@ -68,7 +47,6 @@ export function listLaunches(accountName: string, roots: { runs?: string; publis
       }
     }
   }
-  // publish/<iso><account>/<browser>/steps.jsonl
   for (const run of dirNames(publishRoot).filter((name) => name.endsWith(key))) files.push(...CAPTURE_FOLDERS.map((folder) => join(publishRoot, run, folder, 'steps.jsonl')))
   const launches: Date[] = []
   for (const file of files) {
@@ -79,7 +57,6 @@ export function listLaunches(accountName: string, roots: { runs?: string; publis
         const at = new Date((JSON.parse(line) as { at: string }).at)
         if (!Number.isNaN(at.getTime())) launches.push(at)
       } catch {
-        // a half-written line from a killed run
       }
     }
   }
@@ -97,11 +74,6 @@ function dirNames(path: string): string[] {
 
 const dayIn = (at: Date, timezone: string) => new Intl.DateTimeFormat('en-CA', { timeZone: timezone }).format(at)
 
-/**
- * Why another launch now would break rule 24, or null. Too soon after the
- * last one (`launchTooSoon`), or the account's local day already has its
- * launches (`launchBudgetSpent`). Pure.
- */
 export function overLaunchBudget(
   launches: Date[],
   now: Date,

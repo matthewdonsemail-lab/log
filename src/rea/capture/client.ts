@@ -5,7 +5,6 @@ import { fileURLToPath } from "node:url";
 import { exportScripts, manifestFor, parseSteps, renderStepSummary, splitHarBySteps, summarizeStep } from "./helpers/index";
 import type { BrowserCapture, CapturedScript, ReaRunResult, ReaRunner } from "./types";
 
-/** rea's `evidence_id` from its JSON stdout, or null. */
 export function evidenceIdOf(stdout: string): string | null {
   try {
     return (JSON.parse(stdout) as { evidence_id?: string }).evidence_id ?? null;
@@ -14,14 +13,11 @@ export function evidenceIdOf(stdout: string): string | null {
   }
 }
 
-/** rea's own input limit for one capture (`maximum_capture_bytes`). A bigger HAR is read per step only. */
 export const REA_MAX_CAPTURE_BYTES = 33_554_432;
-/** One request's slice (`log facebook capture --docs`) reads in seconds; 3 minutes is the ceiling. */
 const SCRIPTS_TIMEOUT_MS = 180_000;
 
 export async function defaultReaRunner(args: string[], cwd: string): Promise<ReaRunResult> {
   try {
-    // windowsHide: the background settle has no console, so each rea call would open a cmd window.
     const proc = Bun.spawn(["rea", ...args], { cwd, stdout: "pipe", stderr: "pipe", windowsHide: true });
     const timer = setTimeout(() => proc.kill(), args[0] === "analyze-javascript-application" ? SCRIPTS_TIMEOUT_MS : 60_000);
     const stdout = await new Response(proc.stdout).text();
@@ -34,10 +30,6 @@ export async function defaultReaRunner(args: string[], cwd: string): Promise<Rea
   }
 }
 
-/**
- * Write the script files and their manifest next to the HAR. The manifest
- * sits outside `scripts/` so rea analyzes only the scripts.
- */
 export function writeCaptureScripts(dir: string, capture: BrowserCapture): void {
   mkdirSync(join(dir, "scripts"), { recursive: true });
   for (const script of capture.scripts) {
@@ -46,11 +38,7 @@ export function writeCaptureScripts(dir: string, capture: BrowserCapture): void 
   writeFileSync(join(dir, "scriptsManifest.json"), `${JSON.stringify(manifestFor(capture.scripts), null, 2)}\n`, { mode: 0o600 });
 }
 
-/**
- * Ask the installed `rea` to read the raw HAR offline. No browser launches.
- */
 export async function inspectCapture(dir: string, scripts: CapturedScript[], runner: ReaRunner = defaultReaRunner): Promise<string> {
-  // Over rea's input limit the whole HAR is refused anyway: the per-step HARs are read instead.
   const size = statSync(join(dir, "session.har")).size;
   let network: string;
   if (size > REA_MAX_CAPTURE_BYTES) {
@@ -60,17 +48,9 @@ export async function inspectCapture(dir: string, scripts: CapturedScript[], run
     writeFileSync(join(dir, "reaNetwork.json"), JSON.stringify({ code: read.code, stdout: read.stdout, stderr: read.stderr }), { mode: 0o600 });
     network = `REA network exit ${read.code}`;
   }
-  // Never the whole bundle: rea timed out after 10 minutes on it (2026-10-19). The scripts stay
-  // in `scripts/`, and `log facebook capture --docs` hands rea one request's modules at a time.
   return `${network}, ${scripts.length} scripts saved (read per request by \`log facebook capture --docs\`)`;
 }
 
-/**
- * The publish session writes `session.har` here and closes the context,
- * which flushes it. The HAR is left exactly as written (rule 19). A missing
- * file means the browser never opened. A file that is not JSON is kept for
- * a person to look at, and rea is not run on it.
- */
 export async function settleCapture(dir: string, runner: ReaRunner = defaultReaRunner): Promise<string | null> {
   let raw: string;
   try {
@@ -90,7 +70,6 @@ export async function settleCapture(dir: string, runner: ReaRunner = defaultReaR
   return `Capture: ${capture.entries} requests, ${capture.scripts.length} scripts, raw HAR kept. ${rea}. ${dir}`;
 }
 
-/** Offline entry: a HAR from anywhere is copied unchanged to `outDir`, then read by `rea`. */
 export async function captureFromHar(harPath: string, outDir: string, runner?: ReaRunner | null): Promise<string> {
   const capture = exportScripts(JSON.parse(readFileSync(harPath, "utf8")) as unknown);
   mkdirSync(outDir, { recursive: true });
@@ -101,12 +80,6 @@ export async function captureFromHar(harPath: string, outDir: string, runner?: R
   return `Capture: ${capture.entries} requests, ${capture.scripts.length} scripts. ${rea}.`;
 }
 
-/**
- * Every action's capture (rule 22): the whole session as `settleCapture`
- * reads it, then one HAR per step from `steps.jsonl` in `steps/`, each read by
- * rea (`NN_<step>.har` and `NN_<step>.rea.json`), with `steps/index.json`
- * listing them in run order. Nothing when the browser never opened.
- */
 export async function settleRunCapture(dir: string, runner: ReaRunner = defaultReaRunner): Promise<string | null> {
   const whole = await settleCapture(dir, runner);
   if (whole === null || !existsSync(join(dir, "steps.jsonl"))) return whole;
@@ -129,25 +102,16 @@ export async function settleRunCapture(dir: string, runner: ReaRunner = defaultR
     findings.push(renderStepSummary(part.index, part.step, summarizeStep(part.har as never), evidenceIdOf(read.stdout)));
   }
   writeFileSync(join(stepsDir, "index.json"), `${JSON.stringify({ steps: index }, null, 2)}\n`, { mode: 0o600 });
-  // reaCapture step 3: what each step did on the network, with rea's Evidence IDs. Names and counts only.
   writeFileSync(join(dir, "findings.md"), `# Findings: ${dir}\n\nWhat each step of the run sent to Facebook, from its HAR. rea read each step; its Evidence ID is on the step.\n\n${findings.join("\n\n")}\n`);
   return `${whole} ${parts.length} step HARs read by rea in ${stepsDir}; findings.md written.`;
 }
 
 const LOG_BIN = fileURLToPath(new URL("../../../bin/log.ts", import.meta.url));
 
-/**
- * Rule 22 without the wait: rea reading a run's capture takes minutes on a big
- * HAR, so it runs in its own process (`log facebook capture --settle <dir>`) and
- * the command returns as soon as the run ends. The result lands in
- * `<dir>/settle.json`, rea's own output in `<dir>/settle.log`. Nothing to read
- * (no `session.har`): null, nothing starts.
- */
 export function settleInBackground(dir: string): string | null {
   if (!existsSync(join(dir, "session.har"))) return null;
   const out = openSync(join(dir, "settle.log"), "a");
   try {
-    // The platform first (rule 63): the old `capture --settle` is refused.
     const child = spawn(process.execPath, [LOG_BIN, "facebook", "capture", "--settle", dir], { detached: true, stdio: ["ignore", out, out], windowsHide: true });
     child.unref();
   } finally {

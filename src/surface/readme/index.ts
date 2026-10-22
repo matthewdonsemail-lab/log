@@ -1,10 +1,3 @@
-/**
- * The README's generated section (rule 56): every command with its flags, its
- * MCP tool and the hooks that fire on it, the saved flows, the hooks, and the
- * diagrams, between `<!-- surface:start -->` and `<!-- surface:end -->`.
- * `bun run docs:build` writes it; `bun run check:docs` refuses a README that
- * differs from it. Pure.
- */
 import { AGENT_HOOKS } from "../../agentHooks/registry/index.ts";
 import type { AgentHook } from "../../agentHooks/registry/index.ts";
 import { GLOBAL_FLAGS, sessionHooks } from "../catalog/index.ts";
@@ -14,19 +7,16 @@ import type { Diagram } from "../diagrams/index.ts";
 export const SURFACE_START = "<!-- surface:start · written by `bun run docs:build` from the code. Not edited by hand. -->";
 export const SURFACE_END = "<!-- surface:end -->";
 
-/** Text safe in a Markdown table cell. Pure. */
 const cell = (text: string) => text.replace(/\|/g, "\\|").replace(/\n/g, " ");
 
 const BROWSER_TEXT: Record<CommandEntry["browser"], string> = { accountBrowser: "the account's", camoufoxOnly: "Camoufox only", none: "none" };
 
 const PLATFORM_TEXT: Record<CommandEntry["platform"], string> = { facebook: "`facebook` first", any: "any (none)", byArgument: "`<platform>` first" };
 
-/** GitHub's anchor for a `#### log <words>` heading. Pure. */
 const anchorOf = (words: string) => `log-${words}`.toLowerCase().replace(/[^a-z0-9 -]/g, "").replace(/ /g, "-");
 
 const flagText = (f: Flag) => `\`--${f.name}${f.value ? ` <${f.value}>` : ""}\``;
 
-/** The diagram in the README and where its source lives. Pure. */
 function diagramBlock(d: Diagram): string[] {
   return [`### ${d.title}`, "", d.about, "", "```mermaid", d.mermaid, "```", "", `Source: [\`docs/diagrams/${d.name}.mmd\`](docs/diagrams/${d.name}.mmd).`, ""];
 }
@@ -35,7 +25,6 @@ function hookRow(h: AgentHook): string {
   return `| ${h.event} | ${h.matcher ? `\`${cell(h.matcher)}\`` : "every turn"} | [\`${h.script}\`](${h.script}) | ${cell(h.why)} |`;
 }
 
-/** The generated section, markers included. Pure. */
 export function renderSurface(entries: readonly CommandEntry[], flows: readonly FlowEntry[], diagrams: readonly Diagram[], hooks: readonly AgentHook[] = AGENT_HOOKS): string {
   const byName = new Map(diagrams.map((d) => [d.name, d]));
   const pick = (name: string) => byName.get(name);
@@ -115,7 +104,6 @@ export function renderSurface(entries: readonly CommandEntry[], flows: readonly 
   return out.join("\n");
 }
 
-/** `readme` with its generated section replaced, or inserted before `## Twenty` the first time. Pure. */
 export function withSurface(readme: string, section: string): string {
   const start = readme.indexOf("<!-- surface:start");
   const end = readme.indexOf(SURFACE_END);

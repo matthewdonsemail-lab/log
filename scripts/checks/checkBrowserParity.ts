@@ -1,21 +1,9 @@
-// Rule 44: every browser log-cli drives has the same pieces, in the same places.
-// Usage: bun scripts/checks/checkBrowserParity.ts           (pre-commit and pre-push: refuses a missing piece)
-//        bun scripts/checks/checkBrowserParity.ts --write   (regenerates the table in docs/browsers.md)
-//
-// For each name in BROWSER_DRIVERS (src/browser/driver/types.ts):
-//   src/browser/<name>/index.ts       exports <name>Capabilities (every capability) and <name>Driver
-//   src/browser/<name>/<name>.test.ts its tests
-//   python/browser/browserDriver.py           the name in BROWSERS and an opener in OPENERS
-//   docs/browsers.md                  its column, the table generated from the rows
-// and no folder in src/browser/ other than a listed browser or a domain every browser shares (SHARED_DOMAINS).
-// Not too strict: a capability may be `notBuilt`; those are listed on every commit, never refused.
 import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { BROWSER_CAPABILITIES, BROWSER_DRIVERS } from "../../src/browser/driver/types.ts";
 import type { BrowserCapabilities } from "../../src/browser/driver/types.ts";
 
 const root = join(import.meta.dir, "..", "..");
-/** The domains every browser shares, beside the browsers themselves (rule 57): the driver, each run's files and launch budget, the proxy, inspect and flows. */
 const SHARED_DOMAINS = ["driver", "run", "proxy", "inspect", "flow", "runStore"];
 const problems: string[] = [];
 const rows = new Map<string, BrowserCapabilities>();

@@ -31,7 +31,6 @@ describe('browser parity (rule 44)', () => {
     expect(browserFor({ browserDriver: 'adsPower', adsPowerProfileId: 'k1' })).toEqual({ driver: 'adsPower', profileId: 'k1' })
     expect(browserFor({ browserDriver: null, adsPowerProfileId: null })).toEqual({ driver: 'camoufox', profileId: null })
     expect(browserFor({ browserDriver: 'netscape' })).toEqual({ driver: 'camoufox', profileId: null })
-    // Prefer AdsPower (matt, 2026-10-20): a linked profile with no browserDriver set runs on AdsPower; an explicit camoufox keeps Camoufox.
     expect(browserFor({ browserDriver: null, adsPowerProfileId: 'k9' })).toEqual({ driver: 'adsPower', profileId: 'k9' })
     expect(browserFor({ browserDriver: 'camoufox', adsPowerProfileId: 'k9' })).toEqual({ driver: 'camoufox', profileId: 'k9' })
   })

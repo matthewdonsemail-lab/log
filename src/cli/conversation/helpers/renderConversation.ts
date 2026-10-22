@@ -2,7 +2,6 @@ import type { Conversation, Message, RecordThreadResult, ScannedThread } from ".
 
 const when = (iso: string | null) => (iso ? iso.replace("T", " ").slice(0, 16) : "-");
 
-/** One line per conversation, newest first. */
 export function renderConversations(conversations: Conversation[]): string {
   if (!conversations.length) return "No Marketplace conversations in Twenty yet.";
   const lines = [`${conversations.length} conversation(s):`];
@@ -15,7 +14,6 @@ export function renderConversations(conversations: Conversation[]): string {
   return lines.join("\n");
 }
 
-/** The conversation and every message, oldest first. */
 export function renderConversation(c: Conversation, messages: Message[]): string {
   if (c.channel === "sms") return `${c.id} is one of blaster's SMS threads (${c.messageCount} message(s)); its history lives in blaster, not here.`;
   const lines = [
@@ -42,7 +40,6 @@ export function renderRecorded(results: RecordThreadResult[]): string {
     .join("\n");
 }
 
-/** A scan file's threads, or why not: one thread or a list, each with a thread id and messages. Pure. */
 export function parseThreads(raw: unknown): { ok: true; threads: ScannedThread[] } | { ok: false; error: string } {
   const list = Array.isArray(raw) ? raw : raw && typeof raw === "object" && Array.isArray((raw as { threads?: unknown }).threads) ? (raw as { threads: unknown[] }).threads : [raw];
   for (const [i, t] of list.entries()) {

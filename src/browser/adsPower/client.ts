@@ -1,9 +1,3 @@
-/**
- * The AdsPower Local API client, ported from Listaro_backup/src/lib/adspower-client.ts
- * (list, create, start, stop over the Local API, then Playwright over CDP) onto the v2
- * endpoints the docs mark latest. Every call sends the key as `Authorization: Bearer`,
- * retries "Too many request" twice (Listaro's 2 s, 4 s), and throws `AdsPowerError`.
- */
 import { AdsPowerError, DEFAULT_LOCAL_API_URL } from './types'
 import type { AdsPowerClient, AdsPowerProfile, CreateProfileBody, LocalApiConfig, LocalApiReply, StartedBrowser } from './types'
 import { listFacebookAccounts, saveAdsPowerProfileId } from '../../marketplace/socialAccount/index'
@@ -99,7 +93,6 @@ export function createAdsPowerClient(
       await call('POST', '/api/v2/browser-profile/update', { profile_id: profileId, ...fields })
     },
     async startBrowser(profileId, options = {}) {
-      // Headed always (rule 11's intent for every browser), no IP-check tab, no restored tabs: the host opens its own.
       const data = await call<{ ws?: { puppeteer?: string }; debug_port?: string }>('POST', '/api/v2/browser-profile/start', {
         profile_id: profileId,
         headless: '0',
@@ -120,11 +113,6 @@ export function createAdsPowerClient(
   }
 }
 
-/**
- * `log adsPower sync`: every Facebook account in Twenty gets its AdsPower profile, and
- * Twenty keeps the link (`adsPowerProfileId`). A dry run unless `apply`. Nothing is ever
- * deleted on either side (rule 13). One line per account is reported as it is done.
- */
 export async function syncProfiles(
   twenty: TwentyClient,
   adsPower: AdsPowerClient,
@@ -165,20 +153,9 @@ export async function syncProfiles(
   return { applied: true, entries: done }
 }
 
-/**
- * AdsPower as a `BrowserDriver` for the session machine (rule 44), the same shape as Camoufox's.
- * The browser itself is opened by python/browser/browserDriver.py (open_ads_power): the gate, the proxy
- * put on the profile, the start, the CDP attach and the self-check, all on the machine AdsPower
- * runs on (docs/deployment.md). This driver only adds what is AdsPower's own: the account must
- * have its profile linked in Twenty. Gate, open and close are given by the caller; one not given
- * refuses with a catalog code.
- */
 export interface AdsPowerDriverDeps {
-  /** The account the session is for (read from Twenty by the caller). */
   account: (accountId: string) => Promise<FacebookAccount>
-  /** The account check before anything opens (proxy, home, hours, launch budget). */
   gate?: (account: FacebookAccount) => Promise<GateResult>
-  /** Opens the Python session on the account's AdsPower profile; resolves once its gate and self-check passed. */
   open?: (account: FacebookAccount) => Promise<BrowserEndpoint>
   close?: (endpoint: BrowserEndpoint) => Promise<void>
 }
@@ -202,7 +179,6 @@ export function adsPowerDriver(deps: AdsPowerDriverDeps): BrowserDriver {
       if (!deps.open) throw missing('open')
       return deps.open(await deps.account(input.accountId))
     },
-    // The Python session only reports ready after proxyGate.check_attached passed (rule 17).
     async selfCheck() {
       return { ok: true, failure: null }
     },

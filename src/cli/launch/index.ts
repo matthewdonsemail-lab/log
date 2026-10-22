@@ -1,11 +1,3 @@
-/**
- * `log launch` — guided entrypoint over the existing commands.
- *
- * Thin interactive wrapper only, ported from `rank launch`: it prompts (Clack)
- * for what to look at, then delegates to the same `listings` / `listing` /
- * `accounts` commands the CLI already exposes. Non-interactive use (`--json`,
- * piped output, missing TTY) never prompts and stays deterministic.
- */
 import { cancel, intro, isCancel, outro, select, text } from "@clack/prompts";
 import { LISTING_STATUSES, listListingsWhere } from "../../marketplace/agencyListing/index.ts";
 import { checkRunnable, listFacebookAccounts, toTwentyEnum } from "../../marketplace/socialAccount/index.ts";
@@ -37,7 +29,6 @@ interface LaunchPrompts {
   text(option: Parameters<typeof text>[0]): Promise<unknown>;
 }
 
-/** Transport seam for tests. Production uses Clack + the real commands. */
 export const launchDeps: {
   prompts: LaunchPrompts;
   tty: () => LaunchTTY;
@@ -48,7 +39,6 @@ export const launchDeps: {
   run: (command, context, argv) => command.run(context, argv),
 };
 
-/** Delegate to a command and print its output the way the dispatcher would. */
 async function delegate(command: Command, context: CommandContext, argv: string[]): Promise<{ code: number }> {
   const result = await launchDeps.run(command, context, argv);
   if (result.stdout) context.out(result.stdout);
@@ -56,7 +46,6 @@ async function delegate(command: Command, context: CommandContext, argv: string[
   return { code: result.code };
 }
 
-/** Returns the picked value, or null when the user cancelled. */
 async function pick(options: PromptSelectOptions): Promise<string | null> {
   const value = await launchDeps.prompts.select(options);
   if (isCancel(value) || typeof value !== "string") {
@@ -70,7 +59,6 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
   const parsed = parseLaunchArgs(argv);
   if (!parsed.ok) return { code: 1, stderr: `log launch: ${parsed.error}\n${LAUNCH_USAGE}` };
 
-  // Deterministic machine form: the guided actions, never a prompt.
   if (parsed.json) {
     return {
       code: 0,
@@ -100,7 +88,6 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
   const prompts = launchDeps.prompts;
   try {
     prompts.intro("log launch — Facebook Marketplace");
-    // Everything comes from Twenty (socialAccounts, agencyListings).
     const [accounts, listings] = await Promise.all([listFacebookAccounts(context.twenty), listListingsWhere(context.twenty)]);
 
     const action = await pick({
@@ -163,7 +150,6 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
       }
       const accountId = await pick({
         message: action === "connect" ? "Which account to connect?" : "Which account's listings?",
-        // Only accounts that pass the account check (FACEBOOK, usable, proxy, home country) are offered.
         options: accounts
           .filter((account) => checkRunnable(account, purpose).ok)
           .map((account) => ({ value: account.accountName, label: account.accountName, hint: `${account.homeCity ?? "?"}, ${account.homeCountry}` })),
@@ -172,7 +158,6 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
       const command = action === "scan" ? scanCommand : action === "watch" ? watchCommand : connectCommand;
       result = await delegate(command, context, ["--account", accountId]);
     } else if (action === "join") {
-      // Only accounts that pass the account check; the join itself needs the account's browser open (rule 35).
       const runnable = accounts.filter((account) => checkRunnable(account, "run").ok);
       if (!runnable.length) return { code: 1, stderr: "log launch: no FACEBOOK account may run: each needs a usable status, a proxy and a home country in Twenty. See `log facebook accounts`." };
       const accountId = await pick({
@@ -185,10 +170,8 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
         prompts.cancel("Launch cancelled.");
         return { code: 1 };
       }
-      // A dry run: it reads the group's gate. Pressing Join stays with matt on the command line (--live, rule 8).
       result = await delegate(joinCommand, context, ["group", "--account", accountId, "--group", group.trim()]);
     } else if (action === "answer") {
-      // The groups whose join options ask something (questions or the rules), from Twenty; the stepper is join's own.
       const withQuestions: { account: string; group: Group }[] = [];
       for (const account of accounts) {
         for (const group of await listGroups(context.twenty, account.id)) {
@@ -209,7 +192,6 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
       const { account, group } = withQuestions[Number(picked)];
       result = await delegate(joinCommand, context, ["group", "--account", account, "--group", group.facebookGroupId ?? "", "--answer"]);
     } else if (action === "fill") {
-      // The groups whose application is ready (every answer given, the rules agreed), from Twenty.
       const ready: { account: string; group: Group }[] = [];
       for (const account of accounts) {
         for (const group of await listGroups(context.twenty, account.id)) {
@@ -223,10 +205,8 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
       });
       if (picked === null) return { code: 1 };
       const { account, group } = ready[Number(picked)];
-      // A dry run: it finds the way into the dialog. Typing, ticking and Submit stay with matt on the command line (--live, --submit, rule 8).
       result = await delegate(joinCommand, context, ["group", "--account", account, "--group", group.facebookGroupId ?? "", "--fill"]);
     } else if (action === "reels") {
-      // The session's shape, step by step; likes act on Facebook, so they default to no (rule 8).
       const reels = await pick({
         message: "How many reels in a session?",
         options: [
@@ -262,7 +242,6 @@ export async function runLaunch(context: CommandContext, argv: string[]): Promis
       if (likes === null) return { code: 1 };
       const argv = ["facebook", "reel", "plan", "--reels", reels, "--watch", watch, "--skip", skip, "--comments", comments, "--profile", profile, ...(likes === "yes" ? ["--likes"] : [])];
       result = await delegate(warmupCmd, context, argv);
-      // Recording comes next (rule 29), in an account's open browser, read-only.
       const runnable = accounts.filter((account) => checkRunnable(account, "run").ok);
       const then = await pick({
         message: "Record it now (the account's browser primed with the reel activity, each step checked)?",

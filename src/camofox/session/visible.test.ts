@@ -1,17 +1,8 @@
-/**
- * AGENTS.md rule 11: Camoufox is never headless, humanize is on, and the
- * cursor is shown. Rules 12 and 15-17: every launch goes through the proxy
- * gate, as the account's one device, in its pinned locale, after the
- * self-check. Both Python processes launch through visibleBrowser.py; these
- * tests fail if anything starts a browser another way. The behaviour itself
- * is tested in identity.test.ts (pure Python functions) and live (docs/proxies.md).
- */
 import { describe, expect, test } from "bun:test";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 const python = join(import.meta.dir, "..", "..", "..", "python");
-/** Every Python file under python/, by its own name (each sits in its domain package). */
 const pyFiles = (readdirSync(python, { recursive: true }) as string[]).filter((f) => f.endsWith(".py"));
 const read = (name: string) => readFileSync(join(python, pyFiles.find((f) => f.split(/[\\/]/).pop() === name) ?? name), "utf8");
 
@@ -20,10 +11,8 @@ describe("Camoufox always launches visible", () => {
     const text = read("visibleBrowser.py");
     expect(text).toContain('VISIBLE_LAUNCH: dict[str, Any] = {"headless": False, "humanize": HUMANIZE_MAX_SECONDS, "showcursor": True}');
     expect(text).toContain("return proxyGate.apply(kwargs, visible)");
-    // humanMouse-driven sessions keep humanize on with a 20 ms per-hop cap (rule 32); nothing turns it off.
     expect(text).toContain("HUMANIZE_HOP_SECONDS = 0.02");
     expect(text).not.toContain('"humanize": False');
-    // No ungated helper is left to call.
     expect(text).not.toContain("def visible_kwargs");
   });
 
@@ -58,7 +47,6 @@ describe("Camoufox always launches visible", () => {
 
 describe("no browser without the account's proxy (rule 12)", () => {
   test("there is no exception: not for signing in, not for a dry run", () => {
-    // ...and every context they open records its HAR (rule 22).
     expect(read("logWorker.py")).toContain('proxyGate.arm(request.get("proxy_path"), request.get("device_path"), request.get("capture_dir"))');
     expect(read("publishSession.py")).toContain('proxyGate.arm(config.get("proxyPath"), config.get("devicePath"), str(Path(receipt) / "camoufox") if receipt else None)');
     for (const name of ["logWorker.py", "publishSession.py", "proxyGate.py"]) expect(read(name)).not.toMatch(/allow_no_proxy|allowNoProxy/);
@@ -79,7 +67,6 @@ describe("no browser without the account's proxy (rule 12)", () => {
     expect(gate).toContain("BrowserType.launch = launch");
     expect(gate).toContain("BrowserType.launch_persistent_context = launch_persistent_context");
     expect(gate).toContain("Browser.new_context = new_context");
-    // Persistent contexts get the timezone and the self-check too.
     expect(gate).toMatch(/async def launch_persistent_context[\s\S]*?_force_context\(kwargs\)[\s\S]*?await _checked\(context, None\)/);
   });
 

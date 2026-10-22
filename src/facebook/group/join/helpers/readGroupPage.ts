@@ -1,10 +1,8 @@
 import type { GroupPage, GroupStepReply } from '../types'
 
-/** One element of a step's accessibility snapshot: its role, its name, its ref, how deep it sits. */
 export interface SnapshotElement {
   role: string
   name: string
-  /** True when the snapshot gave the name itself; false when it came from the element's own text below it. */
   named: boolean
   ref: string | null
   depth: number
@@ -13,14 +11,6 @@ export interface SnapshotElement {
 const ELEMENT = /^(\s*)-\s+([a-z]+)(?:\s+"([^"]*)")?([^:]*?)(?::\s*(.*))?$/
 const TEXT = /^(\s*)-\s+(?:generic|text|heading)(?:\s+\[[^\]]*\])*:\s*(.+)$/
 
-/**
- * The snapshot's elements, each named. A button the snapshot leaves unnamed
- * takes the first text inside it: AdsPower's Chromium shows the group's Join
- * as `button [ref=e148]` with `generic [ref=e157]: Join Group` below it
- * (Bethlehem, 2026-10-20), where Camoufox showed `button "Join Group"`. Reads
- * the full `snapshot.yml` when the reply has it, else the reply's flat
- * `interactive` lines. Pure.
- */
 export function snapshotElements(reply: GroupStepReply): SnapshotElement[] {
   const lines = (reply.snapshot ?? (reply.interactive ?? []).join('\n')).split(/\r?\n/)
   const out: SnapshotElement[] = []
@@ -43,16 +33,8 @@ export function snapshotElements(reply: GroupStepReply): SnapshotElement[] {
   return out
 }
 
-/**
- * The gate, from the buttons the page showed. `Join Group` is the one
- * recorded (Bethlehem: Camoufox 2026-10-19, AdsPower 2026-10-20); "joined" and
- * "member" are what Listaro's group-outreach.ts reads as already in. Any other
- * page is `unknown`: the run stops there and the page's buttons stay in its
- * recording, to be read before a new name is added here (rule 29).
- */
 const GATES: { gate: GroupPage['gate']; name: RegExp }[] = [
   { gate: 'joined', name: /^(Joined|Member)$/i },
-  // A request already sent: Complainers of Bethlehem after Join (step 20), with "Your membership is pending".
   { gate: 'pending', name: /^Cancel Request$/i },
   { gate: 'join', name: /^Join group$/i }
 ]

@@ -7,14 +7,12 @@ import { renderTable } from "../../runner/helpers/index.ts";
 
 export const LAYERS: ErrorLayer[] = ["account", "listing", "photo", "form", "captcha", "runtime", "twenty", "proxyVendor", "auth", "profile"];
 
-/** The machines `log graph` draws. */
 export const MACHINES = { publish: publishMachine, monitor: monitorMachine } as const;
 
 export function catalogEntries(layer?: ErrorLayer): [ErrorCode, ErrorEntry][] {
   return (Object.entries(ERROR_CATALOG) as [ErrorCode, ErrorEntry][]).filter(([, entry]) => !layer || entry.layer === layer);
 }
 
-/** Where a code ends up, in one cell: `publish→blocked, monitor→resting`. Pure. */
 export function endsText(entry: ErrorEntry): string {
   const ends = [
     entry.publish && `publish→${entry.publish}`,
@@ -24,13 +22,11 @@ export function endsText(entry: ErrorEntry): string {
   return ends.length ? ends.join(", ") : "command exits";
 }
 
-/** Terminal table of the catalog (or one layer). Pure. */
 export function renderCatalogTable(layer?: ErrorLayer): string {
   const rows = catalogEntries(layer).map(([code, entry]) => [code, entry.layer, entry.retryable ? "yes" : "no", endsText(entry), entry.meaning]);
   return renderTable(["Code", "Layer", "Retry", "Ends in", "Meaning"], rows);
 }
 
-/** One code in full. Pure. */
 export function renderCatalogEntry(code: ErrorCode): string {
   const entry = ERROR_CATALOG[code] as ErrorEntry;
   return [
@@ -46,10 +42,6 @@ export function renderCatalogEntry(code: ErrorCode): string {
 
 const cell = (text: string) => text.replace(/\|/g, "\\|");
 
-/**
- * `docs/errorCatalog.md`: the machines as Mermaid, then every code by layer.
- * Generated (`bun run errors:export`), and a test fails when it's stale. Pure.
- */
 export function renderCatalogMarkdown(): string {
   const lines = [
     "# Error catalog",

@@ -1,18 +1,3 @@
-/**
- * OpenMagpie's `facebook_group` worker contract (obris-dev/openmagpie#178, #188), at the boundary:
- * its connector (`apps/core/sources/connectors/facebook/client.py`) runs the script at
- * `FACEBOOK_WORKER_PATH` with one JSON request on stdin and reads one JSON answer on stdout.
- *
- *   in   { action: "groups.search", params: { group_ids, terms, limit }, account_id, cookies, proxy }
- *   out  { ok: true, result: { results: [record…] }, new_cookies }
- *        { ok: false, code, error }
- *
- * A record is its `NewFacebookPostPayload.from_record` shape: `external_id`, `group_id`, `content`,
- * `url`, `author { name, id, url }`, `occurred_at`, `metrics { likes, comments, shares }`,
- * `matched_terms`. Its snake_case names are OpenMagpie's, kept as they are at the boundary only.
- * `account_id`, `cookies` and `proxy` are never used: `log facebook poll` reads in the account's own open
- * browser, its session, proxy and device from Twenty (rules 12, 13, 35). Pure.
- */
 import type { GroupPost } from "../types.ts";
 
 export interface WorkerRequest {
@@ -37,11 +22,9 @@ export type WorkerAnswer =
   | { ok: true; result: { results: WorkerRecord[]; errors: { group_id: string; code: string; error: string }[] }; new_cookies: [] }
   | { ok: false; code: string; error: string };
 
-/** OpenMagpie's default `count`, and the most a request may ask for. */
 export const WORKER_DEFAULT_LIMIT = 20;
 export const WORKER_MAX_LIMIT = 100;
 
-/** The request's JSON → what log-cli reads, or why not. Only `groups.search` is answered. Pure. */
 export function parseWorkerRequest(text: string): WorkerRequest | { code: string; error: string } {
   let raw: unknown;
   try {
@@ -61,7 +44,6 @@ export function parseWorkerRequest(text: string): WorkerRequest | { code: string
   return { groupIds: [...new Set(groupIds)], terms, limit };
 }
 
-/** The terms a text contains, case-insensitively; with no terms, every text matches with none. Pure. */
 export function termsIn(text: string, terms: string[]): string[] | null {
   if (!terms.length) return [];
   const lower = text.toLowerCase();
@@ -69,7 +51,6 @@ export function termsIn(text: string, terms: string[]): string[] | null {
   return found.length ? found : null;
 }
 
-/** A post the read saw → OpenMagpie's record, or null when it matches none of the terms. Likes and shares aren't read: null. Pure. */
 export function recordOf(post: GroupPost, terms: string[]): WorkerRecord | null {
   const matched = termsIn(post.text, terms);
   if (!matched) return null;
@@ -86,7 +67,6 @@ export function recordOf(post: GroupPost, terms: string[]): WorkerRecord | null 
   };
 }
 
-/** The posts a poll's read saw as records, newest first, at most `limit`, those matching a term. OpenMagpie dedups repeats. Pure. */
 export function recordsOf(posts: GroupPost[], terms: string[], limit: number): WorkerRecord[] {
   return [...posts]
     .sort((a, b) => b.createdTime - a.createdTime)
@@ -95,13 +75,8 @@ export function recordsOf(posts: GroupPost[], terms: string[], limit: number): W
     .slice(0, limit);
 }
 
-/**
- * A log-cli code → the code OpenMagpie's `map_worker_error` acts on: a checkpoint, a login wall or a video
- * selfie is `auth_required` (not retried); the rest keep log-cli's own code (retried with backoff). Pure.
- */
 export function workerCodeOf(code: string): string {
   return ["checkpointed", "loginWall", "videoSelfieRequired", "sessionExpired", "neverConnected"].includes(code) ? "auth_required" : code;
 }
 
-/** Feed scrolls for a poll asking `limit` posts: about three posts a scroll (run 20261022T054544: 16 over the page and 6 scrolls). Pure. */
 export const scrollsFor = (limit: number): number => Math.max(1, Math.min(6, Math.ceil(limit / 3)));

@@ -1,11 +1,9 @@
 import type { InspectStepResult } from '../types'
 
-/** A field's typed value is never shown (rule 21), even if a session wrote one. Pure. */
 export function redactFieldValue(line: string): string {
   return line.replace(/^(\s*-?\s*(?:textbox|searchbox|combobox|spinbutton)\b.*?):\s+\S.*$/, '$1: <redacted>')
 }
 
-/** One step's reply as plain lines: where the page is, what Facebook was asked, what rea read, what can be clicked. Pure. */
 export function renderInspectStep(result: InspectStepResult, showElements = 40): string {
   if (result.stopped) return `Inspect session stopped after ${result.steps ?? 0} step(s).`
   if (result.code && !result.step) return `Failed: ${result.code}${result.detail ? ` (${result.detail})` : ''}`

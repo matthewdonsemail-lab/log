@@ -4,12 +4,6 @@ import type { LogTool } from "../types.ts";
 import { TOOL_RESULT_SCHEMA } from "../types.ts";
 import { rulesLine } from "./agentRules.ts";
 
-/**
- * Every saved flow as an MCP tool of its own (rule 31): `flowProfileSetup`
- * takes the account and the flow's params by name and runs
- * `log flow run profileSetup` with them. `live` acts on Facebook and, like
- * every tool's --live, needs confirmLive. Pure.
- */
 export function toolsFromFlows(flows: FlowDefinition[]): LogTool[] {
   return flows.map((flow) => {
     const properties: Record<string, unknown> = {
@@ -37,7 +31,6 @@ export function toolsFromFlows(flows: FlowDefinition[]): LogTool[] {
   });
 }
 
-/** A flow tool's input → `log flow run` argv, or why not. Pure. */
 export function flowArgv(flow: FlowDefinition, input: Record<string, unknown> | undefined): { ok: true; argv: string[]; live: boolean } | { ok: false; message: string } {
   const account = input?.account;
   if (typeof account !== "string" || !account) return { ok: false, message: `${toolName(flow.name)} needs account` };

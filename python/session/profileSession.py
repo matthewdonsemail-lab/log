@@ -1,25 +1,3 @@
-"""log-cli's profile session (`log facebook profile setup`, rule 28): one Camoufox browser on the account's own profile.
-
-`src/marketplace/profile/machine.ts` decides; this file only acts. Same
-protocol as publishSession.py: one JSON request per line on stdin,
-
-    {"id": 1, "step": "read"}
-
-and one JSON line back on stdout, {"id": 1, "result": {...}}. Steps: open,
-read, readName, uploadProfilePhoto, uploadCoverPhoto, close.
-
-argv[1] is the session config: {"accountId", "storageStatePath", "proxyPath",
-"devicePath", "captureDir"}. The browser is publishSession.py's Session:
-headed, humanized, cursor shown (rule 11), only through the account's proxy
-from its country (rule 12), as its one device in its pinned locale (rules
-15-16), after the launch self-check (rule 17), recording a raw HAR into
-`captureDir` (rules 19, 22). It needs a saved session: `log facebook connect` first.
-
-The controls below are a first reading of Facebook's profile page, not yet
-checked against it. `read` writes every button, link and file input the page
-has to `profileFound.txt` beside the capture, so the dry run checks them
-against the live page before any `--live` run uses them (rule 25).
-"""
 from __future__ import annotations
 
 import json
@@ -31,7 +9,6 @@ from typing import Any
 import sys as _sys
 from pathlib import Path as _Path
 
-# python/ holds the domain packages (browser, human, session, ...): on the path when run directly.
 _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
 from login import autoLogin
 from browser import proxyGate
@@ -40,13 +17,10 @@ from human.humanMouse import human_click
 from session.publishSession import Session, log
 
 PROFILE_URL = "https://www.facebook.com/me"
-# Where Facebook changes a profile's name now: Accounts Center, per profile id (c_user).
 NAME_URL = "https://accountscenter.facebook.com/profiles/{id}/name"
 
-# The opener on the profile picture, and on the cover (its label says whether a cover exists).
 PROFILE_PICTURE = re.compile(r"update profile picture|profile picture actions|add (?:a )?profile picture|choose profile picture", re.I)
 COVER = re.compile(r"(?:add|edit|update) cover photo", re.I)
-# Inside the menu or dialog the opener shows.
 UPLOAD = re.compile(r"^\s*upload (?:a )?photo", re.I)
 SAVE = re.compile(r"^\s*save(?: changes)?\s*$", re.I)
 
@@ -74,7 +48,6 @@ NAME_FIELDS_JS = """() => [...document.querySelectorAll('input')].filter(i => {
 
 
 def session_cookies(s: Session) -> bool:
-    """c_user and xs both set: signed in (as connectSession.py)."""
     try:
         names = {c["name"] for c in s.context.cookies() if c.get("value")}
     except Exception:
@@ -88,7 +61,6 @@ def run_dir(s: Session) -> Path | None:
 
 
 def save_text(s: Session, name: str, lines: list[str]) -> None:
-    """A page's own words next to the capture, for reading the run back (rule 25). Local only, never committed."""
     folder = run_dir(s)
     if folder is None:
         return
@@ -99,7 +71,6 @@ def save_text(s: Session, name: str, lines: list[str]) -> None:
 
 
 def opener(s: Session, pattern: re.Pattern):
-    """The first visible element named by `pattern` (a button, a link, or an aria-label on an image), or None."""
     for role in ("button", "link"):
         found = s.page.get_by_role(role, name=pattern)
         for i in range(found.count()):
@@ -109,7 +80,6 @@ def opener(s: Session, pattern: re.Pattern):
                     return item
             except Exception:
                 continue
-    # The profile picture is often an image with only an aria-label: get_by_label matches that too.
     labelled = s.page.get_by_label(pattern)
     for i in range(min(labelled.count(), 20)):
         item = labelled.nth(i)
@@ -142,7 +112,6 @@ def step_open(s: Session, _: dict[str, Any]) -> dict[str, Any]:
 
 
 def step_read(s: Session, _: dict[str, Any]) -> dict[str, Any]:
-    """Signed in? Which profile controls are there? Never clicks. Writes profileFound.txt."""
     page = autoLogin.read(s.page, None, session_cookies(s))
     log(f"Page: {page['kind']} {page['path']}")
     try:
@@ -167,7 +136,6 @@ def step_read(s: Session, _: dict[str, Any]) -> dict[str, Any]:
 
 
 def step_read_name(s: Session, _: dict[str, Any]) -> dict[str, Any]:
-    """The name settings page, read only: its fields and current values, every control to nameFound.txt. Never clicks."""
     try:
         uid = next((c["value"] for c in s.context.cookies() if c.get("name") == "c_user" and c.get("value")), None)
     except Exception:
@@ -197,7 +165,6 @@ def step_read_name(s: Session, _: dict[str, Any]) -> dict[str, Any]:
 
 
 def choose_file(s: Session, path: str) -> bool:
-    """After the opener: "Upload photo" opens the file chooser; failing that, the dialog's own file input."""
     items = [s.page.get_by_role(role, name=UPLOAD) for role in ("menuitem", "button")]
     for found in items:
         for i in range(found.count()):
@@ -236,7 +203,6 @@ def upload(s: Session, what: str, pattern: re.Pattern, path: str) -> dict[str, A
     if not choose_file(s, path):
         save_text(s, f"{what}Failed.txt", s.page.evaluate(CONTROLS_JS))
         return failure("profileControlNotFound", f"{what}: no Upload photo item or file input after the opener")
-    # Facebook shows the crop/preview while it uploads; Save stays disabled until it's done.
     log(f"{what}: waiting for Save.")
     if not s.click_when_enabled(SAVE, 45_000):
         save_text(s, f"{what}Failed.txt", [s.body(3000)])
@@ -276,7 +242,6 @@ def main() -> int:
     reply_out, sys.stdout = sys.stdout, sys.stderr
     capture = config.get("captureDir")
     proxyGate.arm(config.get("proxyPath"), config.get("devicePath"), capture)
-    # Session.start records the HAR at <receiptDir>/camoufox/session.har: the capture folder.
     session = Session({**config, "receiptDir": str(Path(capture).parent) if capture else None})
 
     def reply(request_id: Any, result: dict[str, Any]) -> None:

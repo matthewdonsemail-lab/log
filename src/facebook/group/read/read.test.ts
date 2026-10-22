@@ -3,7 +3,6 @@ import { FEED_QUERY, feedResponses, newPosts, postOf, postsFromFeedResponse, pos
 
 const GROUP = "4191018610937243";
 
-/** A feed unit in the recorded shape (run 20261020T134155), invented values. */
 function unit(postId: string, created: number | undefined, group: string | null = GROUP, text = "Anyone know a good junk removal company?") {
   return {
     __typename: "Story",
@@ -24,7 +23,6 @@ function unit(postId: string, created: number | undefined, group: string | null 
   };
 }
 
-/** A streamed response: the first unit under edges, the rest as $stream chunks, page_info deferred last. */
 function response(units: unknown[], endCursor = "CURSOR2", hasNextPage = true): string {
   const [first, ...rest] = units;
   const lines = [
@@ -100,7 +98,6 @@ describe("group read: the cursor (what the reads have already seen, by post id)"
 
   test("a post that shows up later with an earlier time is still new: its id was never seen", () => {
     const first = newPosts(posts, { lastPostId: null, watermark: null });
-    // 399 went live after the first read, stamped earlier than everything the first read saw.
     const late = postsFromFeedResponse(response([unit("401", 300), unit("399", 50), unit("402", 200)]), GROUP).posts;
     const later = newPosts(late, first.cursor);
     expect(later.posts.map((p) => p.postId)).toEqual(["399"]);

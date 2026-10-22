@@ -1,14 +1,7 @@
-// Rule 58: no loose files. python/ and scripts/ hold domain folders only, as src/ holds {library}/{domain}/.
-// Usage: bun scripts/checks/checkLayout.ts   (lefthook pre-commit and pre-push)
-//
-// Checked, over every tracked file and every new one git doesn't ignore:
-//   python/<file>, scripts/<file>     refused: a file goes in its domain folder (python/browser/, scripts/checks/, ...)
-//   python/<domain>/                  a Python domain is a package: it has its __init__.py
 import { execFileSync } from "node:child_process";
 import { join } from "node:path";
 
 const root = join(import.meta.dir, "..", "..");
-/** The folders whose files must sit in a domain folder, and what goes where, for the refusal. */
 const DOMAIN_ROOTS: Record<string, string> = {
   python: "browser, human, session, login, device, errors, fixtures",
   scripts: "checks, commitLog, datasets, docs, hooks, twenty",
@@ -16,7 +9,6 @@ const DOMAIN_ROOTS: Record<string, string> = {
 
 const git = (...args: string[]) => execFileSync("git", args, { cwd: root, encoding: "utf8" }).split("\n").filter(Boolean);
 const files = [...new Set([...git("ls-files"), ...git("ls-files", "--others", "--exclude-standard")])].map((f) => f.replace(/\\/g, "/"));
-// A file moved with git mv still lists its old path until staged: only what is on disk counts.
 const onDisk = new Set(git("ls-files", "--deleted"));
 const present = files.filter((f) => !onDisk.has(f));
 

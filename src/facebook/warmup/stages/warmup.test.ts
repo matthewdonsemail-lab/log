@@ -63,7 +63,6 @@ describe('the recording scripts', () => {
     const live = SCRIPTS_IN_ORDER.flatMap((s) => s.steps.filter((x) => x.live).map((x) => `${s.activity}:${x.action} ${x.args.join(' ')}`))
     expect(live).toEqual(['feedBrowse:clickAny button ^Like$ 2-3'])
     expect(ACTIVITY_SCRIPTS.marketplaceBrowse.steps.find((s) => s.action === 'openAny')?.args).toEqual(['/marketplace/item/', '2-4'])
-    // Every step only goes to Facebook.
     for (const s of SCRIPTS_IN_ORDER) for (const step of s.steps) if (step.action === 'goto') expect(step.args[0]).toMatch(/^https:\/\/www\.facebook\.com\//)
   })
 

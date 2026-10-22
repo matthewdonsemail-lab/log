@@ -1,40 +1,3 @@
-"""The cursor as a person moves it (rule 32), fitted to matt's own hand.
-
-python/human/recordMouse.py recorded matt's mouse for 60 s on a Facebook page
-(2026-10-19, ~/.logCli/mouse/20261019T192448.json). What it showed, and what
-this file does with it:
-
-- A move is ONE continuous velocity profile, never a chain of small moves. A
-  reach of 400-800 px takes 0.42-0.45 s: speed ramps to its peak
-  (5000-6600 px/s) within the first tenth, then settles in a long slow tail.
-  A short move (60-80 px) is slow and deliberate, 0.5-1 s. So `reach()`
-  draws a cubic Bezier from here to the target (control points pulled
-  sideways by 8-25 % of the distance, so the path curves) and walks it with a
-  minimum-jerk profile time-warped to put the peak early, emitting a point
-  every 1/60 s clocked against real time.
-- About half of matt's reaches overshoot by 10-60 px and come back. The
-  overshoot is the same curve carried past the target, then an ease-out
-  return of 0.15-0.35 s, still one gesture.
-- Looking at something, his hand keeps moving: loose loops of 80-350 px at
-  0.15-0.7 Hz, 100-1500 px/s, mostly 1-6 s, a few of 6-9 s (`loops()`), with
-  pauses of 0.1-1.5 s and, now and then, a still moment of 1.5-4 s. He was
-  still 25 % of the time.
-- Camoufox's humanize stays on (rule 11) but, measured 2026-10-19, its own
-  per-hop curve cost 100 ms for 5 px and 530 ms for 100 px, so the sessions
-  that draw their trajectory here launch with `own_trajectory=True`
-  (python/browser/visibleBrowser.py): the per-hop cap is 20 ms and this profile owns
-  the clock.
-
-Two drivers share the maths: `HumanMouse` for the async sessions (inspect,
-flow), with an idle loop that flicks to a visible element, loops around it,
-pauses, next, and is preempted by any step; `SyncHumanMouse` for the sync
-sessions (publish, connect, profile, through `human_click()` and
-`Session.mouse.look()`), which looks at the page before each step and clicks
-the way the async one does. Every step's emitted samples go to
-`mouseSamples.json` in recordMouse.py's format, so
-`python/human/recordMouse.py --analyze` measures ours exactly as it measured matt's.
-Nothing is injected into Facebook's page.
-"""
 from __future__ import annotations
 
 import asyncio
@@ -50,7 +13,6 @@ EMIT_HZ = 60
 
 
 def min_jerk(t: float) -> float:
-    """Position 0..1 along a move with the smoothest possible velocity (peak speed at t=0.5)."""
     return 10 * t**3 - 15 * t**4 + 6 * t**5
 
 
@@ -60,7 +22,6 @@ def bezier(p0, p1, p2, p3, t: float) -> tuple[float, float]:
             u**3 * p0[1] + 3 * u * u * t * p1[1] + 3 * u * t * t * p2[1] + t**3 * p3[1])
 
 
-# The elements a person's eye and cursor go to, with their boxes and a short label (isolated world).
 TARGETS_JS = """() => {
   const vw = innerWidth, vh = innerHeight, out = [];
   const pick = 'a[href],button,[role=button],[role=link],[role=menuitem],[role=tab],h1,h2,h3,input,textarea,[role=textbox],img';
@@ -78,14 +39,8 @@ TARGETS_JS = """() => {
 }"""
 
 
-# -- the maths: gestures over real time ---------------------------------------
-
-# Whether the point is on the element (or inside it): the last look before a press.
 HIT_JS = "([x, y]) => { const hit = document.elementFromPoint(x, y); return { on: !!hit, hit: hit ? (hit.getAttribute('aria-label') || hit.textContent || hit.tagName).trim().slice(0, 60) : '' } }"
 ON_TARGET_JS = "(el, [x, y]) => { const hit = document.elementFromPoint(x, y); return !!hit && (el === hit || el.contains(hit)) }"
-# A point of the element that is the element on screen, nearest its middle first: a neighbour can cover
-# the middle (2026-10-20, run 20261020T153648: a sibling <i> icon over Facebook's "React" button, three
-# times, in a post dialog and the photo viewer). null when no part of it shows.
 VISIBLE_POINT_JS = """(el) => {
   const r = el.getBoundingClientRect(), points = [];
   for (const fx of [0.5, 0.3, 0.7, 0.15, 0.85]) for (const fy of [0.5, 0.3, 0.7, 0.15, 0.85]) points.push([r.left + r.width * fx, r.top + r.height * fy]);
@@ -96,8 +51,6 @@ VISIBLE_POINT_JS = """(el) => {
   }
   return null;
 }"""
-# Re-aims before a press: Complainers of Bethlehem, 2026-10-20, the "Related groups" panel opened while the
-# cursor travelled and pushed "Answer questions" 45 px down; the press landed on empty space above it.
 MAX_AIMS = 3
 
 
@@ -105,7 +58,6 @@ def inside_box(box: dict, x: float, y: float) -> bool:
     return box["x"] <= x <= box["x"] + box["width"] and box["y"] <= y <= box["y"] + box["height"]
 
 class Gesture:
-    """A trajectory: `at(t)` is the position t seconds in, for 0 <= t <= seconds."""
 
     def __init__(self, kind: str, seconds: float, at: Callable[[float], tuple[float, float]], note: dict[str, Any] | None = None) -> None:
         self.kind = kind
@@ -115,7 +67,6 @@ class Gesture:
 
 
 def duration_for(rng: random.Random, chord: float) -> float:
-    """How long matt's hand took for a move of this length."""
     if chord >= 300:
         return rng.uniform(0.40, 0.52)
     if chord >= 120:
@@ -124,7 +75,6 @@ def duration_for(rng: random.Random, chord: float) -> float:
 
 
 def reach(rng: random.Random, sx: float, sy: float, tx: float, ty: float, overshoot: float | None = None) -> list[Gesture]:
-    """One human move: curved path, early speed peak, long settle; maybe carried past the target and eased back."""
     chord = math.hypot(tx - sx, ty - sy)
     if chord < 1.5:
         return []
@@ -137,7 +87,7 @@ def reach(rng: random.Random, sx: float, sy: float, tx: float, ty: float, oversh
     p0, p3 = (sx, sy), (ex, ey)
     p1 = (sx + ux * chord * 0.30 + nx * lateral, sy + uy * chord * 0.30 + ny * lateral)
     p2 = (ex - ux * chord * 0.25 + nx * lateral * 0.4, ey - uy * chord * 0.25 + ny * lateral * 0.4)
-    warp = rng.uniform(0.50, 0.70)  # t**warp pulls the speed peak to ~0.3 and stretches the tail
+    warp = rng.uniform(0.50, 0.70)
     gestures = [Gesture("reach", duration, lambda t: bezier(p0, p1, p2, p3, min_jerk(min(1.0, t / duration) ** warp)),
                         {"from": [round(sx), round(sy)], "to": [round(tx), round(ty)], "overshootPx": round(over), "curvePx": round(abs(lateral))})]
     if over:
@@ -151,8 +101,6 @@ def reach(rng: random.Random, sx: float, sy: float, tx: float, ty: float, oversh
 
 
 def loops(rng: random.Random, cx: float, cy: float, seconds: float, resting: bool = False) -> Gesture:
-    """Looking at something: loose continuous loops around here, drifting, starting from here (no jump).
-    Resting (a hand on a button it keeps pressing, Next card reel after reel): a few pixels' tremor."""
     r1, r2 = (rng.uniform(2, 6), rng.uniform(1, 4)) if resting else (rng.uniform(80, 350), rng.uniform(50, 200))
     f1, f2 = rng.uniform(0.15, 0.7), rng.uniform(0.15, 0.5)
     ph1, ph2 = rng.uniform(0, 2 * math.pi), rng.uniform(0, 2 * math.pi)
@@ -163,7 +111,6 @@ def loops(rng: random.Random, cx: float, cy: float, seconds: float, resting: boo
 
 
 def ellipse(rng: random.Random, box: dict[str, float], sx: float, sy: float) -> Gesture:
-    """A highlight: one continuous ellipse around the element, eased in and out, from the cursor's own angle."""
     cx, cy = box["x"] + box["width"] / 2, box["y"] + box["height"] / 2
     rx = max(25.0, min(90.0, box["width"] * 0.45))
     ry = max(14.0, min(50.0, box["height"] * 0.7))
@@ -176,17 +123,14 @@ def ellipse(rng: random.Random, box: dict[str, float], sx: float, sy: float) -> 
 
 
 def rest_for(rng: random.Random) -> float:
-    """matt's pauses: ~0.2 s mostly, 0.3-1.5 s often, a still moment of 1.5-4 s now and then (25 % still overall)."""
     r = rng.random()
     return rng.uniform(1.5, 4.0) if r < 0.15 else rng.uniform(0.3, 1.5) if r < 0.55 else rng.uniform(0.1, 0.3)
 
 
 def look_for(rng: random.Random) -> float:
-    """matt's looking-moves: median ~1.3 s, a few of 5-9 s."""
     return rng.uniform(0.8, 6.0) if rng.random() < 0.8 else rng.uniform(6.0, 9.0)
 
 
-# -- what both drivers share ---------------------------------------------------
 class MouseBase:
     def __init__(self, page: Any, log) -> None:
         self.page = page
@@ -201,9 +145,6 @@ class MouseBase:
         self.idle_moves = 0
         self.last_target: str | None = None
         self.fresh_page = True
-        # The window's size as the page measures it, when Playwright has no viewport (rule 44: AdsPower is
-        # attached over CDP and reports none; the 1280x800 fallback kept the cursor above y=796 while the
-        # window was 917 px tall, so "Answer questions" at y=824 could never be reached, 2026-10-20).
         self.measured: dict[str, int] | None = None
         self._stop = False
         self._seen_errors: set[str] = set()
@@ -219,7 +160,6 @@ class MouseBase:
         return self.clamp(box["x"] + box["width"] * self.rng.uniform(x0, x1), box["y"] + box["height"] * self.rng.uniform(y0, y1))
 
     def choose(self, found: list[dict[str, Any]]) -> dict[str, Any] | None:
-        """The eight nearest, down the page preferred, never the one just read; the main heading after a navigation."""
         if not found:
             return None
         if self.fresh_page:
@@ -262,7 +202,6 @@ class MouseBase:
         self.legs.append({"kind": kind, **({"target": target} if target else {}), **gesture.note, "ms": round((time.monotonic() - started) * 1000)})
 
     def take(self) -> dict[str, Any]:
-        """This step's trajectory: legs for mouse.json, samples (recordMouse.py's format) for mouseSamples.json."""
         samples = self.samples
         t_start = samples[0][0] if samples else 0.0
         recording = {"hz": EMIT_HZ, "seconds": round((samples[-1][0] - t_start) if samples else 0.0, 3), "columns": ["t", "x", "y", "left", "right"],
@@ -272,7 +211,6 @@ class MouseBase:
         return out
 
 
-# -- the async driver (inspect, flow) ----------------------------------------------
 class HumanMouse(MouseBase):
     def __init__(self, page: Any, log, busy: Callable[[], bool] = lambda: False) -> None:
         super().__init__(page, log)
@@ -304,7 +242,6 @@ class HumanMouse(MouseBase):
         return True
 
     async def _run(self, gesture: Gesture, kind: str, target: str = "", interruptible: bool = False) -> bool:
-        """Walk a gesture against real time, a point every 1/EMIT_HZ s."""
         started = time.monotonic()
         while not self._stop:
             t = time.monotonic() - started
@@ -358,7 +295,6 @@ class HumanMouse(MouseBase):
             return []
 
     async def _idle_loop(self) -> None:
-        """Between steps: flick to a visible element, loop around it, pause, next. A step preempts it at once."""
         vp = self.viewport()
         if self.x is None:
             await self._emit(vp["width"] * 0.5, vp["height"] * 0.45)
@@ -367,12 +303,10 @@ class HumanMouse(MouseBase):
                 if self.navigating or self.lock.locked():
                     await asyncio.sleep(0.1)
                     continue
-                # Still while a page is loading, for the first 2.5 s after a navigation only.
                 if self.busy() and time.monotonic() - self.nav_at < 2.5:
                     await asyncio.sleep(0.1)
                     continue
                 await self.measure()
-                # Resting on a button it keeps pressing: no flick away, only the tremor of a hand at rest.
                 target = None if getattr(self, "resting", False) else self.choose(await self.targets())
                 async with self.lock:
                     if self.preempt:
@@ -397,7 +331,6 @@ class HumanMouse(MouseBase):
                 await asyncio.sleep(0.3)
 
     async def measure(self) -> None:
-        """The real window size, read from the page when Playwright has no viewport (an attached browser)."""
         if self.page.viewport_size:
             return
         try:
@@ -409,7 +342,6 @@ class HumanMouse(MouseBase):
 
     async def approach(self, locator: Any, circle: bool | None = None) -> tuple[float, float]:
         await self.measure()
-        # One trajectory scroll (the Robotic VSL's scroll_to_ref), never scroll_into_view_if_needed's jump.
         await scrollMotion.scroll_into_view(locator, self, self.log)
         box = await locator.bounding_box()
         if not box:
@@ -422,8 +354,6 @@ class HumanMouse(MouseBase):
         return tx, ty
 
     async def aim(self, locator: Any) -> None:
-        """After the approach, the eye checks again: the element's box as it is now, a correction glide
-        if it moved from under the cursor (a person re-aims), then the point must hit it before a press."""
         for attempt in range(MAX_AIMS):
             await self.measure()
             box = await locator.bounding_box()
@@ -435,7 +365,6 @@ class HumanMouse(MouseBase):
             self.log(f"  mouse: the target moved from under the cursor ({round(x)},{round(y)} not on it, box {round(box['x'])},{round(box['y'])} {round(box['width'])}x{round(box['height'])}): re-aiming ({attempt + 1}/{MAX_AIMS})")
             await scrollMotion.scroll_into_view(locator, self, self.log)
             box = await locator.bounding_box() or box
-            # Where the element shows, not a random middle point a neighbour may cover.
             shown = await locator.evaluate(VISIBLE_POINT_JS)
             tx, ty = (shown["x"], shown["y"]) if shown else self.inside(box, 0.3, 0.7, 0.35, 0.65)
             await self.glide(tx, ty, "correct")
@@ -444,8 +373,6 @@ class HumanMouse(MouseBase):
         raise RuntimeError(f"the element kept moving under the cursor: the point is on {hit.get('hit') or 'nothing'}, not the target; nothing pressed")
 
     async def click(self, locator: Any, circle: bool | None = None) -> None:
-        """Approach, re-aim if the element moved, then press and release where the cursor is (Playwright's click would jump to the centre).
-        A cursor already resting on it (Next card, clicked reel after reel) presses where it is, as a hand does."""
         box = await locator.bounding_box()
         x, y = self.x, self.y
         if not (box and x is not None and y is not None and inside_box(box, x, y) and await locator.evaluate(ON_TARGET_JS, [x, y])):
@@ -461,13 +388,10 @@ class HumanMouse(MouseBase):
         self.fresh_page = True
 
 
-# -- the sync driver (publish, connect, profile) ----------------------------------
 SYNC_MICE: dict[int, "SyncHumanMouse"] = {}
 
 
 class SyncHumanMouse(MouseBase):
-    """The same gestures on a sync Playwright page. No background loop (sync pages are single-threaded):
-    `look()` before each step is the wait in between, the way a hand moves while the eye reads."""
 
     def __init__(self, page: Any, log) -> None:
         super().__init__(page, log)
@@ -520,7 +444,6 @@ class SyncHumanMouse(MouseBase):
             return []
 
     def look(self, low: float = 0.4, high: float = 1.6) -> None:
-        """Before a step acts: flick to something visible nearby and look around it for low-high s, then a short pause."""
         if self._stop:
             return
         try:
@@ -566,7 +489,6 @@ class SyncHumanMouse(MouseBase):
         return tx, ty
 
     def aim(self, locator: Any) -> None:
-        """The same last look as the async driver: re-aim if the element moved, press only on it."""
         for attempt in range(MAX_AIMS):
             self.measure()
             box = locator.bounding_box()
@@ -599,19 +521,16 @@ class SyncHumanMouse(MouseBase):
 
 
 def human_scroll_into_view(locator: Any) -> None:
-    """Bring an element into view in a sync session by one trajectory scroll (scrollMotion), never a jump."""
     mouse = SYNC_MICE.get(id(locator.page))
     scrollMotion.scroll_into_view_sync(locator, mouse if mouse is not None and not mouse._stop else None, mouse.log if mouse else (lambda _l: None))
 
 
 def human_scroll_by(page: Any, distance: float) -> None:
-    """One trajectory scroll of the page in a sync session (scrollMotion), the cursor gliding onto it first."""
     mouse = SYNC_MICE.get(id(page))
     scrollMotion.scroll_by_sync(page, distance, mouse if mouse is not None and not mouse._stop else None, mouse.log if mouse else (lambda _l: None))
 
 
 def human_click(locator: Any, circle: bool | None = None, timeout: int = 8000) -> None:
-    """A click in a sync session goes through the page's SyncHumanMouse (rule 32); without one, Playwright's own."""
     mouse = SYNC_MICE.get(id(locator.page))
     if mouse is None or mouse._stop:
         locator.click(timeout=timeout)

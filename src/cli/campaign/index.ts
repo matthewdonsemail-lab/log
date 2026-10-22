@@ -1,19 +1,3 @@
-/**
- * `log facebook campaign` — one ad on many accounts in one place, through Twenty.
- *
- *   fill  --campaign <id> --from <listingId> --accounts <n>
- *         puts the ad on n accounts in its country: new READY listings, one
- *         per account (same city first, least recently used next)
- *   heal  --campaign <id>
- *         gives every ACCOUNT_LOST listing in it a replacement account
- *   run   --campaign <id> [--live]
- *         publishes its READY listings one by one (dry run unless --live);
- *         each goes through the account check and the proxy gate (rule 12)
- *   show  --campaign <id>
- *
- * Accounts and listings are never deleted. Replaced listings stay as
- * REPLACED, pointing at their replacement.
- */
 import { getListing, listListingsWhere, toPublishListing } from "../../marketplace/agencyListing/index.ts";
 import { fillCampaign, healCampaign } from "../../marketplace/replacement/index.ts";
 import { listFacebookAccounts } from "../../marketplace/socialAccount/index.ts";
@@ -77,7 +61,6 @@ export const campaignCommand: Command = {
         return { code: replacements.every((r) => r.next) ? 0 : 1, stdout: lines.join("\n") };
       }
 
-      // run: every READY listing, one at a time, each through the full publish checks.
       const ready = (await listListingsWhere(context.twenty, { campaignId: { eq: campaignId } })).filter((l) => l.status === "ready");
       if (ready.length === 0) return { code: 0, stdout: "No READY listings in this campaign." };
       const summary: string[] = [];

@@ -1,27 +1,7 @@
-/**
- * AGENTS.md in the MCP server: the core principles any agent using these
- * tools works by, distilled, each with its rule number, and the rules each
- * tool falls under. The full file is the resource `log://agents`, read from
- * the repo on every request, so it is never older than the file. A test
- * checks every rule number cited here exists in AGENTS.md (no drift).
- */
+export const RULES_REVIEWED_THROUGH = 70;
 
-/**
- * The last AGENTS.md rule this summary was reviewed against. A rule added
- * after it fails the test until the instructions and the table below are
- * checked against it (and this number raised), so the MCP never falls behind
- * the file.
- */
-export const RULES_REVIEWED_THROUGH = 69;
-
-/** The resource that serves AGENTS.md itself. */
 export const AGENTS_URI = "log://agents";
 
-/**
- * The server's `instructions` (MCP initialize): what a host puts in the
- * model's context before any tool is called. matt's rules, distilled; the
- * file wins where they differ, and its newest rules are at the bottom.
- */
 export const SERVER_INSTRUCTIONS = [
   "The `log` tools run log-cli: Facebook accounts (Twenty socialAccounts) and what they do on Facebook (Marketplace listings, groups).",
   `Its rules are matt's, in AGENTS.md (read the resource ${AGENTS_URI}; the newest rules are at the bottom and win). The core of them:`,
@@ -38,10 +18,10 @@ export const SERVER_INSTRUCTIONS = [
   "11. Names are camelCase (rule 1) and say what a thing does, never which browser runs it (rule 46). Groups are their own library (rule 45). The warm-up is by platform and activity (`facebook warmup reel`): each activity's steps say what they must do, and every run outlines the ones that didn't (rule 49). The Reels warm-up with --persona builds the persona's For you feed: SubQ reads each reel from its frame (theirs or not), and the action orderer plans it from the persona pack (every dataset a trait) and its real KuaiRand-1K viewer, longer and more engaged on their kind as measured on real viewers, one action per reel, only what the run allows (rule 50). Proxy traffic is money: each account has a 24-hour traffic budget (1 GB), checked before and during a warm-up and written to ~/.logCli/proxyTraffic.jsonl (rule 51). Proxies are provider-agnostic: Twenty keeps one proxy URL per account from any provider (2Captcha, Byteful); `proxy assign --vendor byteful` checks before it saves, and log-cli never buys (rule 52). Anything that has to be found (a group, a provider, a fact) comes from an external search, TinyFish through treg, never memory; a suggestion names its source (rule 53). A known page state (a checkpoint's first page, a text captcha, a prompt, the login form) is resolved, never a reason to stop: press its Continue, solve the captcha; only a video selfie, ID or disabled account goes to matt (rule 54). The agent's hooks (Claude Code and Codex, one list) say where every open browser is after each call and keep the turn going while one sits on a state log-cli resolves; the terminal CLI writes the same live log as these tools (rule 55). Every tool's description carries its command's full usage, the same the README lists (rule 56). What every browser uses is under src/browser, never named for one browser (rules 46, 57). No loose files: python/ and scripts/ hold domain folders only (rule 58). log-cli is browser-agnostic, AdsPower first: a command runs on the account's browser through the driver, or on Camoufox only while it isn't on the driver yet (rule 59). It is platform-agnostic too: Facebook is the first platform, every command declares its platform, and what is scoped by platform names it in every form (`warmup facebook reel|feed|stages`, never `warmup run`) (rule 60).",
   "12. Facebook group listening is obris-dev/openmagpie#188's triage job: an account joins (`facebook join group`), OpenMagpie polls with `facebook poll --request` (a read in the account's open browser), keeps every post, triages them with its watch, and sends only the matches to Twenty's socialListening. log-cli writes only the group's cursor to Twenty; `facebook read group` reads by hand and saves nothing else (rule 65).",
   "13. The platform comes first in every command that acts on one: `log <platform> <command> …` (`log facebook connect`, `log facebook warmup reel`, `log facebook poll <group> <account> <how long to poll>`); there is no form without it, and an old form is refused with the one it became. A tool runs its command that way: its `args` are what follows the command (the warm-up's start with its platform) (rule 63). The code is laid out the same way, `src/<platform>/<area>/<domain>`: `src/facebook/group/…`, `src/facebook/warmup/…`; what any platform uses stays shared (rule 64).",
+  "14. Code carries no comments and no docstrings: names, types, tests, skills and docs say what it does; `check:noComments` refuses a commit or push with one (rule 70).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
-/** The AGENTS.md rules each command falls under, besides the ones every tool does (1, 30, 38-41). */
 export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   join: [8, 10, 18, 20, 25, 26, 29, 35, 45, 64],
   read: [8, 13, 18, 20, 22, 25, 26, 29, 35, 45, 63, 64, 65],
@@ -73,21 +53,17 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   conversations: [34],
   errors: [25],
   graph: [6, 25],
-  // Sign-in to blaster only: the rules every tool falls under.
   logout: [],
   whoami: [],
 };
 
-/** The rules every tool falls under. */
 export const EVERY_TOOL_RULES = [30, 38, 39, 40, 41];
 
-/** A tool description's last line: its AGENTS.md rules, and where to read them. Pure. */
 export function rulesLine(command: string): string {
   const own = COMMAND_RULES[command] ?? [];
   return `AGENTS.md (${AGENTS_URI}): rules ${[...own, ...EVERY_TOOL_RULES].join(", ")}. When matt says to do something, do it completely (rule 30).`;
 }
 
-/** Every rule number cited here, for the drift test. Pure. */
 export function citedRules(): number[] {
   const fromText = [...SERVER_INSTRUCTIONS.matchAll(/rules? ([\d, -]+)/g)].flatMap((m) =>
     m[1].split(/[, ]+/).flatMap((part) => {

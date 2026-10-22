@@ -16,7 +16,6 @@ beforeAll(async () => {
   writeFileSync(photo, await sharp({ create: { width: 160, height: 120, channels: 3, background: "#37a" } }).png().toBuffer());
 });
 
-/** Every step answers ok; records which accounts' runs opened. */
 function okSession() {
   const opened: string[] = [];
   const replies: Partial<Record<SessionStep, Record<string, unknown>>> = {
