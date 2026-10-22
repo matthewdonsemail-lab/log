@@ -8,6 +8,8 @@ import type { BrowserDriverName } from '../driver/types'
  */
 
 export type InspectAction = 'goto' | 'snapshot' | 'click' | 'type' | 'press' | 'solve' | 'upload' | 'signIn' | 'code' | 'back' | 'wait' | 'stop'
+  /** Messenger's PIN from Twenty (`log facebook messenger pin`) typed into the page's PIN field: never in a command or a log. */
+  | 'pin'
   /** Flow steps (`log flow run`): an element by role and accessible name, not a one-session ref. */
   | 'clickRole' | 'fillRole' | 'uploadRole' | 'waitRole'
   /** The cursor circles an element (the Robotic VSL engine's highlight, rule 32): movement only, no click. */

@@ -13,10 +13,14 @@
 | Called from | `CometNotificationsDropdown.react` |
 | rea | `ev_ab1965911932cb7fcf25b222bf92e0487c624ad5aa06bc6a0e5e7860bc09d85a` |
 
-Seen 61 time(s) in 15 run(s).
+Seen 65 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | openAny: read /marketplace/item/<id>/ | 1 | 200 | 1931 ms | 21207 ms | — |
+| warmup | step 11: goto /marketplace/ | 1 | 200 | 1057 ms | 28562 ms | — |
+| warmup | scroll: +564px in 14 wheel steps, 781 ms | 1 | 200 | 1919 ms | 62273 ms | — |
+| warmup | step 7: goto /marketplace/ | 1 | 200 | 918 ms | 18068 ms | — |
 | inspect | scroll: +700px in 16 wheel steps, 859 ms | 1 | 200 | 1251 ms | 11271 ms | — |
 | inspect | scroll: +800px in 18 wheel steps, 781 ms | 1 | 200 | 2025 ms | 303920 ms | — |
 | inspect | step 1: goto /profile.php | 1 | 200 | 1222 ms | 7446 ms | — |

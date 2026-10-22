@@ -13,10 +13,11 @@
 | Called from | `CometHovercardQueryRenderer.react` |
 | rea | `ev_95529720f6ba751fe065571b8fd81d09f67f7e4539594c0761343470652ec320` |
 
-Seen 178 time(s) in 12 run(s).
+Seen 183 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | step 1: goto / | 5 | 200 | 544–2325 ms | 11959–22899 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 27 | 200 | 497–1173 ms | 6069–23128 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 656 ms | 2 | 200 | 664–745 ms | 7745–11384 ms | — |
 | inspect | scroll: +700px in 16 wheel steps, 859 ms | 1 | 200 | 680 ms | 3065 ms | — |

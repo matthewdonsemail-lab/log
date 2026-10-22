@@ -17,7 +17,7 @@ Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| host | step 12: goto /me | 1 | -1 | -1 ms | 349 ms | — |
+| warmup | step 21: goto /marketplace/ | 1 | 200 | 439 ms | 47 ms | — |
 
 <!-- facts:end -->
 

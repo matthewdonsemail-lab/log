@@ -13,10 +13,11 @@
 | Called from | `useInstreamAdsHaloFetcher` |
 | rea | `ev_bc80c702731406ede85a4bf0d106132ad8d196bcbbe7bed37ed3b4a3a542a982` |
 
-Seen 66 time(s) in 8 run(s).
+Seen 67 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | scroll: +513px in 12 wheel steps, 579 ms | 1 | 200 | 533 ms | 151 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 1125 ms | 1 | 200 | 422 ms | 258 ms | — |
 | inspect | step 7: scroll 2 x 700px | 1 | 200 | 576 ms | 640 ms | — |
 | inspect | step 4: nextPost | 3 | 200 | 569–631 ms | 841–2001 ms | — |

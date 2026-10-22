@@ -11,12 +11,38 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_32e057eb2fbaa50e870470f0b5a26630228ed0d01cc18147f59a34aba3157338` |
+| rea | `ev_2bf6699551383f9ce8dbe17a0840942f44b115a3011e91a42cac57a9ed275ac6` |
 
-Seen 333 time(s) in 16 run(s).
+Seen 497 time(s) in 18 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | step 1: goto / | 13 | 200 | 343–2020 ms | 9724–43969 ms | — |
+| warmup | step 3: scroll 4-7 x 300-600px | 1 | 200 | 374 ms | 1068 ms | — |
+| warmup | scroll: +388px in 10 wheel steps, 1109 ms | 1 | 200 | 372 ms | 2791 ms | — |
+| warmup | step 4: goto /marketplace/ | 9 | 200 | 353–539 ms | 4232–20973 ms | — |
+| warmup | step 5: dwell 3-5s | 7 | 200 | 354–1712 ms | 3943–7110 ms | — |
+| warmup | step 6: scroll 1 x 400-800px | 1 | 200 | 384 ms | 206 ms | — |
+| warmup | scroll: +582px in 13 wheel steps, 547 ms | 2 | 200 | 364–1332 ms | 1775–21597 ms | — |
+| warmup | step 7: goto /marketplace/ | 18 | 200 | 336–546 ms | 3619–17789 ms | — |
+| warmup | step 9: scroll 3-5 x 400-700px | 2 | 200 | 367–389 ms | 256–559 ms | — |
+| warmup | scroll: +449px in 12 wheel steps, 609 ms | 1 | 200 | 376 ms | 50 ms | — |
+| warmup | step 11: goto /marketplace/ | 10 | 200 | 361–482 ms | 2956–17286 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 7 | 200 | 341–478 ms | 5083–22100 ms | — |
+| warmup | step 15: goto /marketplace/ | 16 | 200 | 336–768 ms | 2612–19125 ms | — |
+| warmup | step 16: scroll 1 x 300-600px | 2 | 200 | 343–380 ms | 279–287 ms | — |
+| warmup | scroll: +564px in 14 wheel steps, 781 ms | 3 | 200 | 1375–1531 ms | 31173–61924 ms | — |
+| warmup | step 17: goto /marketplace/ | 16 | 200 | 334–667 ms | 5611–22389 ms | — |
+| warmup | step 19: goto /marketplace/you/selling | 12 | 200 | 341–501 ms | 2750–20442 ms | — |
+| warmup | step 20: dwell 2-4s | 2 | 200 | 349–373 ms | 10960–11141 ms | — |
+| warmup | step 21: goto /marketplace/ | 21 | 200 | 349–1173 ms | 4189–20057 ms | — |
+| warmup | step 22: scroll 4-7 x 300-600px | 1 | 200 | 377 ms | 346 ms | — |
+| warmup | step 23: goto /marketplace/you/selling | 12 | 200 | 350–676 ms | 2653–14521 ms | — |
+| warmup | scroll: +558px in 13 wheel steps, 672 ms | 1 | 200 | 408 ms | 29 ms | — |
+| warmup | scroll: +723px in 17 wheel steps, 1047 ms | 1 | 200 | 355 ms | 5666 ms | — |
+| warmup | openAny: read /marketplace/item/<id>/ | 2 | 200 | 376–399 ms | 3570–5123 ms | — |
+| warmup | scroll: +414px in 11 wheel steps, 656 ms | 1 | 200 | 615 ms | 3470 ms | — |
+| warmup | step 24: dwell 2-4s | 2 | 200 | 1179–1318 ms | 4043–4384 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 29 | 200 | 329–2023 ms | 6733–23922 ms | — |
 | inspect | step 4: scroll 2 x 700px | 1 | 200 | 563 ms | 635 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 969 ms | 1 | 200 | 392 ms | 2995 ms | — |

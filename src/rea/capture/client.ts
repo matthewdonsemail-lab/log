@@ -147,7 +147,8 @@ export function settleInBackground(dir: string): string | null {
   if (!existsSync(join(dir, "session.har"))) return null;
   const out = openSync(join(dir, "settle.log"), "a");
   try {
-    const child = spawn(process.execPath, [LOG_BIN, "capture", "--settle", dir], { detached: true, stdio: ["ignore", out, out], windowsHide: true });
+    // The platform first (rule 63): the old `capture --settle` is refused.
+    const child = spawn(process.execPath, [LOG_BIN, "facebook", "capture", "--settle", dir], { detached: true, stdio: ["ignore", out, out], windowsHide: true });
     child.unref();
   } finally {
     closeSync(out);

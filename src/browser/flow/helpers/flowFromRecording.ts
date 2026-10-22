@@ -29,7 +29,7 @@ export function confirmingRequest(lines: string[]): string | null {
   return null
 }
 
-const ACTED: Record<string, FlowAction> = { click: 'click', clickRole: 'click', type: 'fill', upload: 'upload', uploadRole: 'upload', signIn: 'signIn', code: 'code', solve: 'solve', goto: 'goto', scroll: 'scroll', openAny: 'openAny', clickAny: 'clickAny', dwell: 'dwell', press: 'press', scrollIn: 'scrollIn' }
+const ACTED: Record<string, FlowAction> = { click: 'click', clickRole: 'click', type: 'fill', upload: 'upload', uploadRole: 'upload', signIn: 'signIn', code: 'code', pin: 'pin', solve: 'solve', goto: 'goto', scroll: 'scroll', openAny: 'openAny', clickAny: 'clickAny', dwell: 'dwell', press: 'press', scrollIn: 'scrollIn' }
 
 const camel = (text: string): string =>
   text
@@ -117,7 +117,7 @@ export function flowFromRecording(
       steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_upload${camel(name)[0]?.toUpperCase() ?? ''}${camel(name).slice(1)}`, action: 'upload', role, name: named(name), value: param('file', `uploaded through ${role} "${name}"`), ...(expect ? { expect } : {}), recorded })
       return
     }
-    if (action === 'signIn' || action === 'code' || action === 'solve') {
+    if (action === 'signIn' || action === 'code' || action === 'pin' || action === 'solve') {
       steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_${action}`, action, expect, recorded })
       return
     }

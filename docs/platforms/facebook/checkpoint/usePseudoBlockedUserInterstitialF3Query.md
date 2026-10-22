@@ -13,10 +13,26 @@
 | Called from | `usePseudoBlockedUserInterstitial` |
 | rea | `ev_4f0f59bc7d5ff4c02ef9f2aba85fc9de893084a7a8fbdf3f1627ce6c1c3456fe` |
 
-Seen 44 time(s) in 15 run(s).
+Seen 71 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | step 1: goto / | 2 | 200 | 341–381 ms | 7275–20768 ms | — |
+| warmup | step 4: goto /marketplace/ | 2 | 200 | 366–487 ms | 4024–5358 ms | — |
+| warmup | step 7: goto /marketplace/ | 2 | 200 | 364–456 ms | 3153–5551 ms | — |
+| warmup | scroll: +127px in 4 wheel steps, 125 ms | 1 | 200 | 345 ms | 4532 ms | — |
+| warmup | scroll: -605px in 14 wheel steps, 687 ms | 1 | 200 | 353 ms | 2407 ms | — |
+| warmup | step 11: goto /marketplace/ | 2 | 200 | 415–505 ms | 3059–15128 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 2 | 200 | 354–392 ms | 3039–10375 ms | — |
+| warmup | step 15: goto /marketplace/ | 2 | 200 | 355–359 ms | 2857–3123 ms | — |
+| warmup | step 17: goto /marketplace/ | 2 | 200 | 342–395 ms | 2343–3720 ms | — |
+| warmup | step 19: goto /marketplace/you/selling | 2 | 200 | 357–369 ms | 2519–8339 ms | — |
+| warmup | step 21: goto /marketplace/ | 2 | 200 | 405–551 ms | 3814–4635 ms | — |
+| warmup | step 23: goto /marketplace/you/selling | 2 | 200 | 396–485 ms | 2319–2457 ms | — |
+| warmup | step 25: goto /messages/ | 2 | 200 | 397–541 ms | 2638–3630 ms | — |
+| warmup | scroll: +459px in 11 wheel steps, 500 ms | 1 | 200 | 356 ms | 1136 ms | — |
+| warmup | openAny: read /marketplace/item/<id>/ | 1 | 200 | 376 ms | 4237 ms | — |
+| warmup | scroll: -756px in 16 wheel steps, 656 ms | 1 | 200 | 371 ms | 1778 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 7 | 200 | 347–464 ms | 3118–6294 ms | — |
 | inspect | step 6: scroll 2 x 700px | 1 | 200 | 435 ms | 710 ms | — |
 | inspect | step 7: scroll 2 x 700px | 1 | 200 | 427 ms | 427 ms | — |

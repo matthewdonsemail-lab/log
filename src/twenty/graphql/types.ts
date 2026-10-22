@@ -75,6 +75,8 @@ export interface LoginSecrets {
   email: string | null
   password: string | null
   totpSecret: string | null
+  /** Messenger's PIN for the encrypted chats (`log facebook messenger pin`). */
+  messengerPin: string | null
 }
 
 /** A Twenty call that failed, with its catalog code. */

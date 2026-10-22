@@ -486,6 +486,18 @@ class Inspector:
         log("  code: typed the current authenticator code; submitting with Enter")
         await field.press("Enter")
 
+    async def enter_pin(self) -> None:
+        """Messenger's PIN from Twenty (login.json's messengerPin) into the page's PIN field. Never logged."""
+        pin = str(self.secrets.get("messengerPin") or "")
+        if not re.fullmatch(r"\d{6}", pin):
+            raise RuntimeError("no 6-digit messengerPin in Twenty: matt sets it with log facebook messenger pin --account <a>")
+        field = await self.first_visible('input[autocomplete="one-time-code"], input[inputmode="numeric"], input[type="password"], input[type="tel"], input[type="text"]')
+        if field is not None:
+            await self.mouse.click(field, circle=False)
+        # One box or six that move on by themselves: typing on the keyboard fills either.
+        await self.page.keyboard.type(pin, delay=140)
+        log("  pin: typed the account's Messenger PIN")
+
     async def by_role(self, role: str, name: str, timeout_ms: int = 15_000):
         """The element a flow step names: role and accessible name, as the snapshot shows them (a ref
         only lives for one session). The one a person can click wins: on screen and not covered (its
@@ -783,6 +795,8 @@ class Inspector:
             return await self.step("signIn", "", self.sign_in)
         if action == "code":
             return await self.step("code", "", self.enter_code)
+        if action == "pin":
+            return await self.step("pin", "", self.enter_pin)
         if action == "solve":
             return await self.step("solve", "textCaptcha", self.solve_text_captcha)
         if action == "press" and args:

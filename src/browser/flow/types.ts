@@ -8,7 +8,7 @@
  * step sent to Facebook (rea read every step's HAR).
  */
 
-export type FlowAction = 'goto' | 'click' | 'fill' | 'upload' | 'signIn' | 'code' | 'solve'
+export type FlowAction = 'goto' | 'click' | 'fill' | 'upload' | 'signIn' | 'code' | 'pin' | 'solve'
   /** Warm-up steps (rule 35): their ranges are drawn on every run, so the flow never repeats itself exactly. */
   | 'scroll' | 'openAny' | 'clickAny' | 'dwell'
   /** A key (`Escape` closes a menu or dialog) and the wheel over one element (`scrollIn dialog "<name>"`): their recorded arguments. */

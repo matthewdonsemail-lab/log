@@ -64,7 +64,7 @@ export function createMemoryTwenty(seed: Partial<Record<TwentyObject, Row[]>> = 
       const row = table('socialAccounts').find((r) => r.id === accountId)
       if (!row) return null
       const text = (value: unknown) => (typeof value === 'string' && value ? value : null)
-      return { email: text(row.email), password: text(row.password), totpSecret: text(row.totpSecret) }
+      return { email: text(row.email), password: text(row.password), totpSecret: text(row.totpSecret), messengerPin: text(row.messengerPin) }
     }
   }
 }

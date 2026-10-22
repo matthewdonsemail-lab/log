@@ -11,12 +11,15 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_b729fb073f5f399667aca1fb2c44a55ec8d72950c49bf9a6d1e84950433046bd` |
+| rea | `ev_65fd97c211aa021a0baa4acbf28a21563c74f299d7c49a15653437eb50de6bef` |
 
-Seen 126 time(s) in 11 run(s).
+Seen 129 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | scroll: +388px in 10 wheel steps, 1109 ms | 1 | 200 | 376 ms | 2762 ms | — |
+| warmup | scroll: +536px in 13 wheel steps, 1140 ms | 1 | 200 | 433 ms | 2582 ms | — |
+| warmup | scroll: +454px in 10 wheel steps, 563 ms | 1 | 200 | 442 ms | 3389 ms | — |
 | inspect | step 5: scroll 2 x 700px | 1 | 200 | 381 ms | 920 ms | — |
 | inspect | step 6: scroll 2 x 700px | 1 | 200 | 348 ms | 921 ms | — |
 | inspect | step 7: scroll 2 x 700px | 1 | 200 | 349 ms | 330 ms | — |

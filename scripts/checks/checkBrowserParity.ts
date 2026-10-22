@@ -16,7 +16,7 @@ import type { BrowserCapabilities } from "../../src/browser/driver/types.ts";
 
 const root = join(import.meta.dir, "..", "..");
 /** The domains every browser shares, beside the browsers themselves (rule 57): the driver, each run's files and launch budget, the proxy, inspect and flows. */
-const SHARED_DOMAINS = ["driver", "run", "proxy", "inspect", "flow"];
+const SHARED_DOMAINS = ["driver", "run", "proxy", "inspect", "flow", "runStore"];
 const problems: string[] = [];
 const rows = new Map<string, BrowserCapabilities>();
 const capabilities = Object.keys(BROWSER_CAPABILITIES) as (keyof typeof BROWSER_CAPABILITIES)[];

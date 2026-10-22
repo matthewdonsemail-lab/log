@@ -11,12 +11,23 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_32e057eb2fbaa50e870470f0b5a26630228ed0d01cc18147f59a34aba3157338` |
+| rea | `ev_2bf6699551383f9ce8dbe17a0840942f44b115a3011e91a42cac57a9ed275ac6` |
 
-Seen 39 time(s) in 18 run(s).
+Seen 61 time(s) in 20 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | step 1: goto / | 2 | 200 | 403–887 ms | 1709–15140 ms | — |
+| warmup | step 4: goto /marketplace/ | 2 | 200 | 409–5839 ms | 1202–6461 ms | — |
+| warmup | step 7: goto /marketplace/ | 2 | 200 | 423–424 ms | 813–1995 ms | — |
+| warmup | step 11: goto /marketplace/ | 2 | 200 | 383–417 ms | 768–11799 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 2 | 200 | 443–554 ms | 1059–1694 ms | — |
+| warmup | step 15: goto /marketplace/ | 2 | 200 | 447–529 ms | 783–807 ms | — |
+| warmup | step 17: goto /marketplace/ | 2 | 200 | 442–487 ms | 686–776 ms | — |
+| warmup | step 19: goto /marketplace/you/selling | 2 | 200 | 588–2810 ms | 1303–6561 ms | — |
+| warmup | step 21: goto /marketplace/ | 2 | 200 | 465–487 ms | 789–947 ms | — |
+| warmup | step 23: goto /marketplace/you/selling | 2 | 200 | 460–831 ms | 752–820 ms | — |
+| warmup | step 25: goto /messages/ | 2 | 200 | 506–598 ms | 677–769 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 5 | 200 | 414–8934 ms | 1640–10709 ms | — |
 | inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 503 ms | 747 ms | — |
 | inspect | step 1: goto /profile.php | 1 | 200 | 468 ms | 2145 ms | — |

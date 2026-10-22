@@ -4144,3 +4144,129 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `docs/status.md`, a map of the 53 commands and steps: 21 proven live (with the date of the latest live run), 16 built but never run live, 8 failed live or only partly built, and 8 not built (the Marketplace inbox and messages, sending a reply, the host acting, acting on OpenMagpie's matches, the profile rename, settingName, the browser lock, save/follow/share). It gives the five-step inspect-first path for every gap and fills in steps 1 and 2 for the first ones. It lists the 11 docs that say more than the code, and the housekeeping found (tests writing `galwayOne` run folders into the real `~/.logCli/runs/profile`, recordings from 2026-10-19 gone, no unit tests for `hostActors.ts` or `src/warmup/viewer`).
 Why: matt, 2026-10-22: the docs must be clear about what is fully implemented and what isn't (the conversations and messages aren't built), so it's defined what's done and what has to be built and tested, the normal way (`log inspect` first).
 Checked: four read-only audits of the code, the tests, `log.md`'s Checked lines and the real run folders (`~/.logCli/runs`, `~/.logCli/mcp/*.log`); the counts were taken from the doc's own tables. Not checked: the docs it lists aren't fixed yet.
+
+## 2026-10-22 10:02Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `.claude/settings.json`: edited
+- `.codex/hooks.json`: edited
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `bunfig.toml`: new file
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/hooks.mmd`: edited
+- `docs/diagrams/pageStates.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceNUXUpdateStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceRecordPDPDwellTimeMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSetProductItemSeenStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNewsFeedPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/FeedComposerCometRootQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MWQuickPromotionThreadlistBannerQuery.md`: new file
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPC2CMediaViewerWithImagesQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPRightColumnAdsQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useCIXLogMutation.md`: edited
+- `docs/platforms/facebook/background/useInstreamAdsHaloFetcherQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEBAutoEBLogHighFrictionUpsellOnVisibleMutation.md`: new file
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/flows/warmupCreateAccessCheck.md`: new file
+- `docs/platforms/facebook/flows/warmupFeedBrowse.md`: new file
+- `docs/platforms/facebook/flows/warmupMarketplaceBrowse.md`: new file
+- `docs/platforms/facebook/flows/warmupMessagesVisit.md`: new file
+- `docs/platforms/facebook/flows/warmupSellingVisit.md`: new file
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerAttributesQuery.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/profile/ProfileCometTimelineFeedRefetchQuery.md`: edited
+- `docs/status.md`: edited
+- `python/session/inspectSession.py`: changed class Inspector
+- `scripts/checks/checkBrowserParity.ts`: changed const SHARED_DOMAINS
+- `scripts/hooks/storage.ts`: added const raw, const event, const verdict
+- `scripts/tests/preload.ts`: added const scratch
+- `scripts/twenty/twentySetup.mjs`: changed const SOCIAL_ACCOUNT_FIELDS
+- `skills.md`: edited
+- `skills/runs/SKILL.md`: new file
+- `skills/warmup/SKILL.md`: edited
+- `src/agentHooks/registry/index.ts`: added const STORAGE · changed const AGENT_HOOKS
+- `src/browser/flow/definitions/warmupCreateAccessCheck.json`: new file
+- `src/browser/flow/definitions/warmupFeedBrowse.json`: new file
+- `src/browser/flow/definitions/warmupMarketplaceBrowse.json`: new file
+- `src/browser/flow/definitions/warmupMessagesVisit.json`: new file
+- `src/browser/flow/definitions/warmupSellingVisit.json`: new file
+- `src/browser/flow/helpers/flowFromRecording.ts`: changed const ACTED, function flowFromRecording
+- `src/browser/flow/helpers/pageState.ts`: changed const PAGE_STATES
+- `src/browser/flow/pageState.test.ts`: added test ""Create a PIN" is a state matt resolves with his PIN"
+- `src/browser/flow/types.ts`: changed type FlowAction
+- `src/browser/inspect/helpers/parseInspectAction.ts`: changed const ARITY, const LIVE_ACTIONS
+- `src/browser/inspect/inspect.test.ts`: added test "click, type, press, solve, signIn, code and pin are the actions that act on Facebook (rule 8)" · removed test "click, type, press, solve, signIn and code are the actions that act on Facebook (rule 8)"
+- `src/browser/inspect/types.ts`: changed type InspectAction
+- `src/browser/run/run.test.ts`: changed test "login.json goes at once; the rest moves out of the temp folder, and cleanup leaves it"
+- `src/browser/runStore/client.ts`: added function logCliRoot, const RUN_FOLDER, const CAPTURE_FOLDERS, const KEPT_FILES, const BUSY_MS, function sizeOf, function newestChange, function docsBuiltAt, function listRuns, function pruneRuns, function diskFree, function runsBytes
+- `src/browser/runStore/helpers/domainsInHar.ts`: added const NAME, const OVERLAP, function countDomains, function domainsInHar
+- `src/browser/runStore/helpers/index.ts`: added export from "./domainsInHar.ts", export from "./storageVerdict.ts"
+- `src/browser/runStore/helpers/storageVerdict.ts`: added const RUNS_WARN_BYTES, const DISK_WARN_BYTES, const gb, function storageVerdict
+- `src/browser/runStore/index.ts`: added export from "./client.ts", export from "./helpers/index.ts", export from "./types.ts"
+- `src/browser/runStore/runStore.test.ts`: added const NOW, const BUILT, function run, const HAR, test "a run rea settled and the docs hold may go; one not settled, not documented or still written is kept", test "pruning keeps findings, steps and domains, and deletes the rest; a dry run deletes nothing", test "--before keeps the runs from that day on", test "domains are counted once each, across chunk ends too", test "the storage hook speaks over 2 GB of runs or under 5 GB free, and is silent otherwise"
+- `src/browser/runStore/types.ts`: added interface RunEntry, interface PrunedRun
+- `src/cli/inspect/index.ts`: changed const INSPECT_USAGE
+- `src/cli/live/live.test.ts`: changed test "connect --noPrompt types Twenty's details from a private file, deleted after the run, through two-step"
+- `src/cli/messenger/index.ts`: added const MESSENGER_USAGE, interface MessengerPrompts, const messengerDeps, function isMessengerPin, const messengerCommand
+- `src/cli/messenger/messenger.test.ts`: added const real, function prompted, function run, test "a PIN is six digits", test "the PIN typed twice is kept in Twenty and never printed", test "two different PINs save nothing", test "without a terminal it asks for one and never takes the PIN as a flag"
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/cli/runs/index.ts`: added const RUNS_USAGE, const mb, const gb, const yn, function table, const runsCommand
+- `src/cli/warmup/helpers/stages.ts`: added const stagesDeps, function saveFlows · changed function runStages, function record, function runWarmup
+- `src/cli/warmup/warmup.test.ts`: changed test "run refuses an activity whose flow hasn't been recorded, before any browser opens"
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const COMMAND_RULES
+- `src/mcp/server/types.ts`: changed const TERMINAL_ONLY
+- `src/rea/capture/client.ts`: changed function settleInBackground
+- `src/twenty/graphql/client.ts`: changed function createTwentyClient
+- `src/twenty/graphql/generated/schema.ts`: changed interface SocialAccount, interface SocialAccountConnection, interface SocialAccountGroupByConnection, interface SocialAccountGenqlSelection, interface SocialAccountConnectionGenqlSelection, interface SocialAccountGroupByConnectionGenqlSelection, interface SocialAccountCreateInput, interface SocialAccountUpdateInput, interface SocialAccountFilterInput, interface SocialAccountOrderByInput, interface SocialAccountOrderByWithGroupByInput, interface SocialAccountOrderByWithGroupByAggregateInput, interface SocialAccountGroupByInput
+- `src/twenty/graphql/generated/types.ts`: no declaration changed (comments, formatting or line endings)
+- `src/twenty/graphql/helpers/memoryTwenty.ts`: changed function createMemoryTwenty
+- `src/twenty/graphql/types.ts`: changed interface LoginSecrets
+
+What changed: three things from one session on Bethlehem.
+- **The five warm-up stages are flows.** `stages record` saved `warmupFeedBrowse`, `warmupMarketplaceBrowse`, `warmupCreateAccessCheck`, `warmupSellingVisit` and `warmupMessagesVisit` with their docs. A record that fails part-way now keeps the activities that finished before it (`saveFlows`). The flows folder is a seam (`stagesDeps.flowsDir`), so the "not recorded" test no longer depends on the repo's flows. The background settle spawns `log facebook capture --settle` (rule 63 had refused the old form).
+- **Messenger's PIN (rule 67).** A new page state, `messengerPinCreate`, that only matt clears. `log facebook messenger pin --account <a>` asks for the 6-digit PIN twice in a masked Clack prompt, is terminal-only, and keeps the PIN in Twenty's new `socialAccounts.messengerPin` (added by `twentySetup.mjs`, client regenerated). `loginSecrets` reads it into the run's private login.json. `log inspect do pin --live` types it (`enter_pin`), and `pin` is a flow action.
+- **Runs are pruned once analysed (rule 66).** `src/browser/runStore` with `log runs [list|prune|space]`. A run may go once rea settled it and the request docs hold it. Pruning keeps findings.md, steps.jsonl and settle.json in `runs/kept`, plus a line in `runs/pruned.jsonl` with the run's requests by docs domain. A storage hook (`scripts/hooks/storage.ts`, SessionStart and UserPromptSubmit) speaks when the runs pass 2 GB or the disk has under 5 GB free. `bunfig.toml` preloads `scripts/tests/preload.ts`, so tests write runs into a scratch folder.
+- **Docs and rules.** The two new Messenger requests' reasoning is written. `docs/status.md`, `skills/runs`, `skills/warmup` and rules 66-67 are updated, with the MCP reviewed through 67.
+Why: matt asked:
+- to commit and go through all the warm-up stages with `--bypass`;
+- for Messenger's "Create a PIN" to be flagged, asked in a Clack prompt and passed, because the inbox is behind it;
+- for the runs that filled the disk to be mapped to their domains and deleted once analysed, with a hook that warns before it happens again ("every time we do this, this keeps happening").
+AdsPower had refused to start Bethlehem with "running out of disk space": C: had 2 GB free.
+Checked: live on Bethlehem, and every gate.
+- **Warm-up stages:** `stages run` live on Bethlehem, 27/27 steps across the five flows, closed with its reason logged. The background settle then read 39 step HARs with the new form.
+- **Messenger PIN:** saved for Bethlehem and read back as `<set>` (never printed).
+- **Runs:** `log runs prune --apply` pruned 116 analysed runs, 12.5 GB, and kept each one's findings, steps and domains. The disk went from 2 GB to 15 GB free.
+- **Gates:** `bun test` 781 pass, 0 fail; `tsc --noEmit` clean; `check:docs`, `check:agentHooks`, `check:browsers`, `check:layout`, `check:naming` and `check:facebookClientDocs` all pass.
+- **Not run live yet:** the Create PIN screens and `inspect do pin`, because AdsPower refused to start before the disk was cleared.

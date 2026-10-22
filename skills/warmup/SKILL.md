@@ -40,8 +40,13 @@ use 1-5 when matt is watching. `--only feedBrowse,sellingVisit` limits it.
 After recording, read each activity's steps with rea (rule 25) and rebuild the
 request docs (`log facebook capture --docs`, rule 27) before pushing.
 
+All five are flows since 2026-10-22 (Bethlehem: recorded, then run 27/27 steps):
+`src/browser/flow/definitions/warmup*.json`, docs in
+`docs/platforms/facebook/flows/warmup*.md`. A record that fails part-way still
+saves the activities that finished before it.
+
 Doc: `docs/lifecycle.md` (the warm-up section); scripts:
-`src/marketplace/warmup/helpers/scripts.ts`.
+`src/facebook/warmup/stages/helpers/scripts.ts`.
 
 ## By platform: Facebook Reels, for a persona (rules 49-51)
 

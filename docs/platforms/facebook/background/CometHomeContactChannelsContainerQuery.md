@@ -13,10 +13,15 @@
 | Called from | `CometHomeContactChannelsContainer.react` |
 | rea | `ev_27664f28e3f3d309d196308b9c43966f0ed688c1846687da50769bd0e941bfe3` |
 
-Seen 4 time(s) in 2 run(s).
+Seen 9 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | step 7: goto /marketplace/ | 1 | 200 | 580 ms | 13569 ms | — |
+| warmup | step 15: goto /marketplace/ | 1 | 200 | 669 ms | 12038 ms | — |
+| warmup | step 4: goto /marketplace/ | 1 | 200 | 748 ms | 7057 ms | — |
+| warmup | step 11: goto /marketplace/ | 1 | 200 | 531 ms | 8610 ms | — |
+| warmup | step 17: goto /marketplace/ | 1 | 200 | 550 ms | 12047 ms | — |
 | inspect | step 24: clickRole button "…" | 1 | 200 | 494 ms | 1258006 ms | — |
 | inspect | step 3: clickRole button "…" | 1 | 200 | 381 ms | 5482 ms | — |
 | inspect | step 71: dwell 1s | 1 | 200 | 400 ms | 8256 ms | — |

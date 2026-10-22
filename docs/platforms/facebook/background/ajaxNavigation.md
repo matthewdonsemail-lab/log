@@ -11,12 +11,17 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_a0e5b20534b8dab39f1ccb5cc0284da6cf94d77fbffeddfc239a11ee937bdc3c` |
+| rea | `ev_3dadb38e63c2fc5bdf4d5434cee7ddf70e1560f29ce47dfb3e670c1bcb4403aa` |
 
-Seen 20 time(s) in 5 run(s).
+Seen 25 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | scroll: +127px in 4 wheel steps, 125 ms | 1 | 200 | 1326 ms | 2303 ms | — |
+| warmup | scroll: -605px in 14 wheel steps, 687 ms | 1 | 200 | 382 ms | 1893 ms | — |
+| warmup | step 10: openAny 2-4 x /marketplace/item/ | 1 | 200 | 1358 ms | 2348 ms | — |
+| warmup | openAny: read /marketplace/item/<id>/ | 1 | 200 | 412 ms | 3499 ms | — |
+| warmup | scroll: -756px in 16 wheel steps, 656 ms | 1 | 200 | 477 ms | 869 ms | — |
 | inspect | step 3: clickRole tab "…" | 1 | 200 | 2729 ms | 1900 ms | — |
 | inspect | step 4: clickRole tab "…" | 1 | 200 | 1531 ms | 1255 ms | — |
 | inspect | step 6: clickRole tab "…" | 1 | 200 | 664 ms | 2248 ms | — |

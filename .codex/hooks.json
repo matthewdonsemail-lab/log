@@ -11,6 +11,16 @@
             "timeout": 20
           }
         ]
+      },
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/storage.ts\"",
+            "timeout": 30
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -20,6 +30,15 @@
             "type": "command",
             "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/pageState.ts\"",
             "timeout": 20
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun \"$(git rev-parse --show-toplevel)/scripts/hooks/storage.ts\"",
+            "timeout": 30
           }
         ]
       }

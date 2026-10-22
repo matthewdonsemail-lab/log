@@ -13,10 +13,11 @@
 | Called from | — |
 | rea | `ev_4d3e40fb2b5d6cbd0d56a8559a8e796fd90692d43dc2b4f22243bd303c32c303` |
 
-Seen 16 time(s) in 5 run(s).
+Seen 17 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | step 11: goto /marketplace/ | 1 | 200 | 1806 ms | 9634 ms | — |
 | inspect | step 2: clickRole button "…" | 1 | 200 | 678 ms | 11786 ms | — |
 | inspect | step 22: dwell 21.38s | 1 | 200 | 477 ms | 19087 ms | — |
 | inspect | step 8: dwell 23.53s | 1 | 200 | 542 ms | 15207 ms | — |

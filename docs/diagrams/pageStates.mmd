@@ -18,6 +18,9 @@ flowchart LR
   automatedBehaviour["automatedBehaviour: #quot;We suspect automated behaviour#quot;"]
   page --> automatedBehaviour
   automatedBehaviour -->|"dismiss it, as Listaro did"| nextautomatedBehaviour(["next state"])
+  messengerPinCreate["messengerPinCreate: Messenger's #quot;Create a PIN to access your chats on any device#quot;: the inbox stays behind it (Bethlehem, warm-up 20261022T092119 steps 25-27)"]
+  page --> messengerPinCreate
+  messengerPinCreate --> person
   rememberPassword["rememberPassword: the #quot;Remember password#quot; prompt"]
   page --> rememberPassword
   rememberPassword -->|"click #quot;Not now#quot;"| nextrememberPassword(["next state"])

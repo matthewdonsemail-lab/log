@@ -173,7 +173,7 @@ describe("live commands", () => {
     const out: string[] = [];
     const code = await runCli(["facebook", "connect", "--account", "needsLogin", "--noPrompt"], { connectSession: session.factory, connectTiming: FAST_CONNECT, twenty, out: (l) => out.push(l), err: (l) => out.push(l) });
     expect(code).toBe(0);
-    expect(session.handed()).toEqual({ email: "fixture@example.com", password: "fixturePass", totpSecret: "GEZDGNBVGY3TQOJQ" });
+    expect(session.handed()).toEqual({ email: "fixture@example.com", password: "fixturePass", totpSecret: "GEZDGNBVGY3TQOJQ", messengerPin: null });
     expect(require("node:fs").existsSync(session.configs[0].loginPath!)).toBe(false);
     expect(session.steps.filter((s) => s !== "read")).toEqual(["open", "submitCredentials", "chooseAuthApp", "submitCode", "dismiss", "save"]);
     expect(out.join("\n")).toContain("Pages: loginForm → twoStepMethod → twoStepCode → trustDevice → loggedIn");

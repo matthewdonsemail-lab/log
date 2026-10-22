@@ -12,7 +12,7 @@
  * checked against it (and this number raised), so the MCP never falls behind
  * the file.
  */
-export const RULES_REVIEWED_THROUGH = 65;
+export const RULES_REVIEWED_THROUGH = 67;
 
 /** The resource that serves AGENTS.md itself. */
 export const AGENTS_URI = "log://agents";
@@ -67,6 +67,8 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   listings: [13],
   campaign: [13, 18],
   conversation: [34],
+  messenger: [8, 21, 29, 54, 63, 67],
+  runs: [19, 22, 25, 27, 66],
   conversations: [34],
   errors: [25],
   graph: [6, 25],

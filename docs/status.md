@@ -35,6 +35,7 @@ Accounts in the runs: Bethlehem 61594063207669, Reading 61594131334566, Lancaste
 | `log facebook watch` | 🔴 2026-10-18 | Stopped at `never_connected` / `session_expired`. Never checked a real listing. |
 | `log proxy check` / `assign` / `balance` | ✅ 2026-10-22 | Byteful for Bethlehem and Lancaster |
 | `log proxy static` | 🟡 | Never run live |
+| `log facebook messenger pin` | 🟡 2026-10-22 | Bethlehem's PIN is in Twenty (`--show`: set). The Clack prompt ran in a terminal; the PIN given in chat was saved through the same Twenty update. `log inspect do pin --live` and the Create PIN screens haven't run: AdsPower refused to start (disk full) before the recording. |
 | `log adsPower sync` / `status` | ✅ 2026-10-19 | Made 10 profiles. Two capabilities are marked not built: `syncSessions` (publish, connect and profile still launch Camoufox) and `oneMachineAtATime` (the per-account browser lock). |
 
 ## 3. The host and the account's lifecycle (rule 35)
@@ -72,7 +73,7 @@ Accounts in the runs: Bethlehem 61594063207669, Reading 61594131334566, Lancaste
 | `log facebook warmup feed` (record, run `--persona`) | ✅ 2026-10-20 | Reading: 33 steps, none failing, 13 posts, a like |
 | `log facebook warmup reel` (record, run) | 🔴 2026-10-20 | Bethlehem: swipe and `openProfile` failed in some runs |
 | `log facebook warmup reel run --persona` | 🔴 2026-10-20 | The latest run failed at Unmute, 0 reels. The fixes (Unmute, the profile opening in a new tab) are in the code but haven't run live. The comments-panel scroll was never recorded. |
-| `log facebook warmup stages` (Listaro's five) | 🔴 | feedBrowse ran once (Erie, 10-19). marketplaceBrowse was started and never finished. createAccessCheck, sellingVisit and messagesVisit are scripts only, never run. No stage was saved as a flow, so `stages run` refuses all five. |
+| `log facebook warmup stages` (Listaro's five) | ✅ 2026-10-22 | Bethlehem, `--bypass`: `stages record` recorded all five in one browser (27 steps) and saved each as a flow (`warmupFeedBrowse`, `warmupMarketplaceBrowse`, `warmupCreateAccessCheck`, `warmupSellingVisit`, `warmupMessagesVisit`); `stages run` then ran the five flows in one browser, 27/27 steps, and closed with its reason logged. |
 | save, follow, share | ⬜ | Not built (rule 50) |
 
 ## 6. Facebook groups (#27, #188)
@@ -93,7 +94,8 @@ Accounts in the runs: Bethlehem 61594063207669, Reading 61594131334566, Lancaste
 | `log flow fromInspect` / `docs` | ✅ 2026-10-20 | 8 flows made from recordings |
 | `log flow run profileSetup` | ✅ 2026-10-19 | Bethlehem and another account: done |
 | `log flow run` for the other 8 flows | 🟡 | Never run as flows: groupTabs, groupHeaderMenus, groupPostComments, groupPostDialog, and the four that write (profilePost, profilePhotoPost, postComment, deletePost). They were only recorded. |
-| `log facebook capture --settle` / `--docs` | ✅ 2026-10-22 | 188 requests documented |
+| `log facebook capture --settle` / `--docs` | ✅ 2026-10-22 | 190 requests documented |
+| `log runs` / `runs prune` | ✅ 2026-10-22 | Pruned 116 analysed runs, 12.5 GB, each one's findings, steps and domains kept (rule 66) |
 | `log facebook capture --har` | 🟡 | Never run live |
 | `log errors` | ✅ 2026-10-22 | |
 | `log graph`, `log launch` | 🟡 | Never run live |
@@ -104,9 +106,9 @@ Accounts in the runs: Bethlehem 61594063207669, Reading 61594131334566, Lancaste
 
 | | ✅ live | 🟡 untested live | 🔴 failed or partial | ⬜ not built |
 |---|---|---|---|---|
-| The 53 commands and steps above | 21 | 16 | 8 | 8 |
+| The 55 commands and steps above | 23 | 17 | 7 | 8 |
 
-Under half of what's built has been proven live. Most of what's proven is Twenty, inspect, joining and reading a group, and one publish. Almost everything that acts on its own (the host's day, connect/scan/watch on AdsPower, campaigns, the stages) hasn't been. Group reading counts as ✅ for its first version, though the current version hasn't run live.
+Under half of what's built has been proven live. Most of what's proven is Twenty, inspect, joining and reading a group, and one publish. Almost everything that acts on its own (the host's day, connect/scan/watch on AdsPower, campaigns) hasn't been. The five warm-up stages have, on 2026-10-22. Group reading counts as ✅ for its first version, though the current version hasn't run live.
 
 ## What's missing that the next work needs
 
@@ -119,8 +121,10 @@ These are the ⬜ rows, and the 🔴 rows that block something.
 5. **The per-account browser lock** (`oneMachineAtATime`): two callers acting in one browser.
 6. **Acting on `socialListening` matches** (#188 step 5).
 7. **The profile rename**, and `settingName` in the host.
-8. **Listaro's five warm-up stages as flows.**
-9. **The Reels persona run** passing live again.
+8. **The Reels persona run** passing live again.
+9. **Messenger's Create PIN screens** recorded and made a flow (rule 67): the inbox is behind them.
+
+Done 2026-10-22: Listaro's five warm-up stages as flows (recorded, saved, run).
 
 ## How each gap gets done: our normal path
 
@@ -154,12 +158,11 @@ The same five steps every time (rules 25, 29, 31). Nothing is coded before step 
 | `skills/flow/SKILL.md` | Lists only profileSetup as a saved flow | There are 9 |
 | `skills/logCli/SKILL.md` | "Read-only on Facebook, except publish --live" | Join, fill, submit, the `--live` flows and `read --live` also act |
 | `docs/accountsAndListings.md`, `skills/logCli` | Campaigns as a working flow, `--live` publishes them | Never run on real accounts |
-| `skills/warmup/SKILL.md`, rule 36 | The five stages are recorded and wrapped, with the old subcommand names | No stage is a flow yet |
 | `src/facebook/warmup/activities/helpers/feed.ts` | `nextPost`, `likePost` and `openListings` "not recorded yet" | They ran live on 2026-10-20 |
 | `docs/groupListening.md:16` | `log join group` | `log facebook join group` |
 
 ## Housekeeping found on the way
 
-- **The tests write into the real run folder:** about 70 `~/.logCli/runs/profile/*_galwayOne` folders, where `galwayOne` is the test account. They clutter the live evidence.
+- **The tests wrote into the real run folder** (about 76 `galwayOne` folders): fixed 2026-10-22, `bun test` now writes runs to a scratch folder (`scripts/tests/preload.ts`), and the old ones were pruned.
 - **Recordings that are gone:** the 2026-10-19 host and connect capture folders, and `runs/flow`. Only their `.log` files remain, so those runs can't be re-read with rea (rule 25).
 - **Missing unit tests:** `src/cli/host/helpers/hostActors.ts` and `src/warmup/viewer` have none.

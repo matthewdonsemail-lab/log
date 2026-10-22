@@ -13,10 +13,21 @@
 | Called from | `fetchMWChatVideoAutoplaySetting` |
 | rea | `ev_cec3d0049369021eb11311f83bae206c05ab77298da76206b6788d2cdc5c8ee1` |
 
-Seen 33 time(s) in 15 run(s).
+Seen 55 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | step 1: goto / | 2 | 200 | 376–408 ms | 2751–20772 ms | — |
+| warmup | step 4: goto /marketplace/ | 2 | 200 | 440–444 ms | 1900–4010 ms | — |
+| warmup | step 7: goto /marketplace/ | 2 | 200 | 394–545 ms | 1788–2979 ms | — |
+| warmup | step 11: goto /marketplace/ | 2 | 200 | 371–397 ms | 1405–12778 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 2 | 200 | 345–467 ms | 1859–4643 ms | — |
+| warmup | step 15: goto /marketplace/ | 2 | 200 | 350–441 ms | 1630–1781 ms | — |
+| warmup | step 17: goto /marketplace/ | 2 | 200 | 363–416 ms | 1531–1697 ms | — |
+| warmup | step 19: goto /marketplace/you/selling | 2 | 200 | 377–391 ms | 2162–7524 ms | — |
+| warmup | step 21: goto /marketplace/ | 2 | 200 | 555–560 ms | 1720–1732 ms | — |
+| warmup | step 23: goto /marketplace/you/selling | 2 | 200 | 389–506 ms | 1828–1891 ms | — |
+| warmup | step 25: goto /messages/ | 2 | 200 | 432–491 ms | 1826–3145 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 5 | 200 | 424–689 ms | 3028–5503 ms | — |
 | inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 353 ms | 4971 ms | — |
 | inspect | step 1: goto /profile.php | 1 | 200 | 426 ms | 7458 ms | — |

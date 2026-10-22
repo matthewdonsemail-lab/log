@@ -61,6 +61,7 @@ const SOCIAL_ACCOUNT_FIELDS = [
   { name: 'proxyExitCountry', label: 'Proxy exit country', type: 'TEXT', description: 'log-cli: country of that exit IP. Must equal homeCountry' },
   { name: 'dailyListingCap', label: 'Daily listing cap', type: 'NUMBER', description: 'log-cli: listings per day (3 when empty)' },
   { name: 'totpSecret', label: '2FA secret', type: 'TEXT', description: 'log-cli: the TOTP (authenticator) secret the vendor delivered. A credential: never print it' },
+  { name: 'messengerPin', label: 'Messenger PIN', type: 'TEXT', description: "log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it" },
   { name: 'accessToken', label: 'Access token', type: 'TEXT', description: 'log-cli: the Facebook access token the vendor delivered. A credential: never print it' },
   { name: 'vendorUserAgent', label: 'Vendor user agent', type: 'TEXT', description: 'log-cli: the browser the vendor used. Reference only: launches use deviceProfile (rule 15)' },
   { name: 'vendor', label: 'Vendor', type: 'TEXT', description: 'log-cli: who sold the account, as named in docs/vendors (e.g. NPPR Team Shop)' },

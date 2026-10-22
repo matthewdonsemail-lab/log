@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { runCli } from "../runner/index.ts";
+import { stagesDeps } from "./helpers/index.ts";
 
 process.env.LOG_WARMUP_STAGE_LOG = join(mkdtempSync(join(tmpdir(), "logWarmupFeed")), "feed.jsonl");
 
@@ -25,7 +26,9 @@ describe("log facebook warmup", () => {
 
   test("run refuses an activity whose flow hasn't been recorded, before any browser opens", async () => {
     let opened = false;
-    const result = await run(["facebook", "warmup", "stages", "run", "--account", "galwayOne", "--only", "messagesVisit"], { inspectSession: async () => ((opened = true), 0) });
+    const recorded = stagesDeps.flowsDir;
+    stagesDeps.flowsDir = mkdtempSync(join(tmpdir(), "logNoFlows"));
+    const result = await run(["facebook", "warmup", "stages", "run", "--account", "galwayOne", "--only", "messagesVisit"], { inspectSession: async () => ((opened = true), 0) }).finally(() => (stagesDeps.flowsDir = recorded));
     expect(result.code).toBe(1);
     expect(result.err).toContain("flowNotRecorded");
     expect(result.err).toContain("log facebook warmup stages record --account <a> --only messagesVisit");

@@ -13,10 +13,15 @@
 | Called from | `CometRightSideHeaderCards.react` |
 | rea | `ev_0ca298c8c568c93036a5e8e8d989f3baf2a29fa5ca4d1fd7a8070819f4515962` |
 
-Seen 4 time(s) in 2 run(s).
+Seen 9 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | step 7: goto /marketplace/ | 1 | 200 | 626 ms | 13568 ms | — |
+| warmup | step 15: goto /marketplace/ | 1 | 200 | 671 ms | 12036 ms | — |
+| warmup | step 4: goto /marketplace/ | 1 | 200 | 990 ms | 7055 ms | — |
+| warmup | step 11: goto /marketplace/ | 1 | 200 | 561 ms | 8608 ms | — |
+| warmup | step 17: goto /marketplace/ | 1 | 200 | 599 ms | 12045 ms | — |
 | inspect | step 24: clickRole button "…" | 1 | 200 | 722 ms | 1258021 ms | — |
 | inspect | step 3: clickRole button "…" | 1 | 200 | 430 ms | 5495 ms | — |
 | inspect | step 71: dwell 1s | 1 | 200 | 441 ms | 8268 ms | — |

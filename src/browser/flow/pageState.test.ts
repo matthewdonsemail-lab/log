@@ -18,3 +18,12 @@ describe('pageStateOf: the known page states and what resolves each (rule 54)', 
     expect(pageStateOf('https://www.facebook.com/marketplace/', '- heading "Marketplace"')).toBeNull()
   })
 })
+
+describe('Messenger PIN', () => {
+  test("\"Create a PIN\" is a state matt resolves with his PIN", () => {
+    const state = pageStateOf('https://www.facebook.com/messages/', 'heading "Create a PIN to access your chats on any device" [level=2]\nbutton "Create PIN"')
+    expect(state?.id).toBe('messengerPinCreate')
+    expect(state?.person).toBe(true)
+    expect(state?.resolve).toContain('log facebook messenger pin')
+  })
+})

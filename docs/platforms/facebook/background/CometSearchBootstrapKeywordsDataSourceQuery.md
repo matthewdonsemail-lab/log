@@ -9,14 +9,25 @@
 | doc_id | `27797631676573850` |
 | Path | `/api/graphql/` |
 | Sends | `first` |
-| Reads | — |
-| Called from | — |
-| rea | not read yet |
+| Reads | `viewer.bootstrap_keywords` |
+| Called from | `CometSearchBootstrapKeywordsDataSource.query` |
+| rea | `ev_5cb62e3a7cd21788732d77960d11bcea0adc8730aaaa23e6a78c097c1c44c7a6` |
 
-Seen 32 time(s) in 14 run(s).
+Seen 54 time(s) in 16 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | step 1: goto / | 2 | 200 | 428–1023 ms | 6735–21288 ms | — |
+| warmup | step 4: goto /marketplace/ | 2 | 200 | 382–508 ms | 4021–5355 ms | — |
+| warmup | step 7: goto /marketplace/ | 2 | 200 | 496–508 ms | 2920–5509 ms | — |
+| warmup | step 11: goto /marketplace/ | 2 | 200 | 389–540 ms | 3056–14934 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 2 | 200 | 382–394 ms | 3037–9723 ms | — |
+| warmup | step 15: goto /marketplace/ | 2 | 200 | 367–368 ms | 2855–3120 ms | — |
+| warmup | step 17: goto /marketplace/ | 2 | 200 | 348–403 ms | 2227–3719 ms | — |
+| warmup | step 19: goto /marketplace/you/selling | 2 | 200 | 413–504 ms | 2324–7811 ms | — |
+| warmup | step 21: goto /marketplace/ | 2 | 200 | 398–411 ms | 3743–4633 ms | — |
+| warmup | step 23: goto /marketplace/you/selling | 2 | 200 | 584–586 ms | 1987–2184 ms | — |
+| warmup | step 25: goto /messages/ | 2 | 200 | 406–568 ms | 2160–3426 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 4 | 200 | 371–428 ms | 3759–7185 ms | — |
 | inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 465 ms | 7031 ms | — |
 | inspect | step 1: goto /profile.php | 1 | 200 | 425 ms | 7450 ms | — |

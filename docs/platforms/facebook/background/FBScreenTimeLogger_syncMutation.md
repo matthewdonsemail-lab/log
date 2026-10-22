@@ -13,10 +13,14 @@
 | Called from | `FBScreenTimeLogger.react` |
 | rea | `ev_9c20c08fbf4c14d62fa5b772be9b8dc2f4b32b06aa445a78cfb8f8ea86ba73c3` |
 
-Seen 36 time(s) in 11 run(s).
+Seen 40 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | scroll: +388px in 10 wheel steps, 1109 ms | 1 | 200 | 496 ms | 145 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 1 | 200 | 503 ms | 6848 ms | — |
+| warmup | step 23: goto /marketplace/you/selling | 1 | 200 | 631 ms | 16495 ms | — |
+| warmup | scroll: +531px in 14 wheel steps, 765 ms | 1 | 200 | 514 ms | 8077 ms | — |
 | inspect | scroll: +800px in 18 wheel steps, 781 ms | 6 | 200 | 421–2294 ms | 151337–1651976 ms | — |
 | inspect | step 13: wait 8s | 1 | 200 | 542 ms | 26897 ms | — |
 | inspect | step 23: press Escape | 1 | 200 | 633 ms | 5741 ms | — |

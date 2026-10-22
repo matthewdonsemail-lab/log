@@ -13,10 +13,21 @@
 | Called from | `MAWVerifyThreadCutover` |
 | rea | `ev_2ef4fcf81840e4c44dfd19b7c86b9e3e65429109c06595cfc96262bcea9f2bc2` |
 
-Seen 32 time(s) in 14 run(s).
+Seen 54 time(s) in 16 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | step 1: goto / | 2 | 200 | 349–584 ms | 7315–20961 ms | — |
+| warmup | step 4: goto /marketplace/ | 2 | 200 | 398 ms | 4115–5425 ms | — |
+| warmup | step 7: goto /marketplace/ | 2 | 200 | 356–390 ms | 3640–5793 ms | — |
+| warmup | step 11: goto /marketplace/ | 2 | 200 | 394–416 ms | 3172–15231 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 2 | 200 | 350–368 ms | 3066–10443 ms | — |
+| warmup | step 15: goto /marketplace/ | 2 | 200 | 357–368 ms | 2911–3209 ms | — |
+| warmup | step 17: goto /marketplace/ | 2 | 200 | 344–432 ms | 2462–3835 ms | — |
+| warmup | step 19: goto /marketplace/you/selling | 2 | 200 | 358–382 ms | 2530–8438 ms | — |
+| warmup | step 21: goto /marketplace/ | 2 | 200 | 433–517 ms | 3863–4750 ms | — |
+| warmup | step 23: goto /marketplace/you/selling | 2 | 200 | 371–771 ms | 2336–2482 ms | — |
+| warmup | step 25: goto /messages/ | 2 | 200 | 388–435 ms | 2757–3737 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 5 | 200 | 361–412 ms | 3689–6555 ms | — |
 | inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 377 ms | 6895 ms | — |
 | inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 363 ms | 6445 ms | — |

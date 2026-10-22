@@ -95,6 +95,9 @@ flowchart TB
   c_conversation["conversation"]
   cli --> c_conversation
   mcp --> c_conversation
+  c_messenger["messenger"]
+  cli --> c_messenger
+  c_messenger -.- terminal
   c_errors["errors"]
   cli --> c_errors
   mcp --> c_errors
@@ -105,6 +108,9 @@ flowchart TB
   cli --> c_capture
   mcp --> c_capture
   c_capture --> live
+  c_runs["runs"]
+  cli --> c_runs
+  mcp --> c_runs
   c_login["login"]
   cli --> c_login
   c_login -.- terminal
@@ -141,3 +147,18 @@ flowchart TB
   f_profileSetup["flowProfileSetup: flow run profileSetup"]
   mcp --> f_profileSetup
   f_profileSetup --> c_flow
+  f_warmupCreateAccessCheck["flowWarmupCreateAccessCheck: flow run warmupCreateAccessCheck"]
+  mcp --> f_warmupCreateAccessCheck
+  f_warmupCreateAccessCheck --> c_flow
+  f_warmupFeedBrowse["flowWarmupFeedBrowse: flow run warmupFeedBrowse"]
+  mcp --> f_warmupFeedBrowse
+  f_warmupFeedBrowse --> c_flow
+  f_warmupMarketplaceBrowse["flowWarmupMarketplaceBrowse: flow run warmupMarketplaceBrowse"]
+  mcp --> f_warmupMarketplaceBrowse
+  f_warmupMarketplaceBrowse --> c_flow
+  f_warmupMessagesVisit["flowWarmupMessagesVisit: flow run warmupMessagesVisit"]
+  mcp --> f_warmupMessagesVisit
+  f_warmupMessagesVisit --> c_flow
+  f_warmupSellingVisit["flowWarmupSellingVisit: flow run warmupSellingVisit"]
+  mcp --> f_warmupSellingVisit
+  f_warmupSellingVisit --> c_flow

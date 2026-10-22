@@ -58,6 +58,7 @@ export interface ToolResult {
 export const TERMINAL_ONLY: Readonly<Record<string, string>> = {
   launch: "prompts in a terminal (Clack). Call the commands it wraps directly.",
   login: "opens a browser for Twenty OAuth and waits for it. Run `bun bin/log.ts login` in a terminal.",
+  messenger: "asks matt for the Messenger PIN in a Clack prompt (masked). He runs `bun bin/log.ts facebook messenger pin --account <a>` in a terminal.",
 };
 
 /** Flags added to a command's args so it never reads stdin. */

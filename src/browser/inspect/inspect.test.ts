@@ -24,8 +24,8 @@ describe('parseInspectAction', () => {
     expect(parseInspectAction(['goto', 'https://evil.example/facebook.com'])).toMatchObject({ ok: false })
   })
 
-  test('click, type, press, solve, signIn and code are the actions that act on Facebook (rule 8)', () => {
-    expect([...LIVE_ACTIONS].sort()).toEqual(['click', 'clickAny', 'clickRole', 'code', 'fillRole', 'likePost', 'postButton', 'press', 'setLocation', 'signIn', 'solve', 'type', 'upload', 'uploadRole'])
+  test('click, type, press, solve, signIn, code and pin are the actions that act on Facebook (rule 8)', () => {
+    expect([...LIVE_ACTIONS].sort()).toEqual(['click', 'clickAny', 'clickRole', 'code', 'fillRole', 'likePost', 'pin', 'postButton', 'press', 'setLocation', 'signIn', 'solve', 'type', 'upload', 'uploadRole'])
   })
 })
 

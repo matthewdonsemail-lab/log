@@ -13,7 +13,7 @@
  * --likes (rule 8). Everything else only reads.
  */
 import { createActor, fromPromise, toPromise } from "xstate";
-import { flowFromRecording, loadFlow, pageProblem, readRecordedCommands, saveFlow, writeFlowDoc } from "../../../browser/flow/index.ts";
+import { FLOWS_DIR, flowFromRecording, loadFlow, pageProblem, readRecordedCommands, saveFlow, writeFlowDoc } from "../../../browser/flow/index.ts";
 import type { ErrorCode } from "../../../errors/catalog/index.ts";
 import { recordAccountIssue } from "../../../marketplace/replacement/index.ts";
 import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
@@ -23,6 +23,9 @@ import { createInspector, formatTraceLine } from "../../../observability/trace/i
 import { openInspectSession, runFlowInSession } from "../../flow/helpers/index.ts";
 import { openAccount, withRun } from "../../live/index.ts";
 import type { CommandContext, CommandResult } from "../../runner/types.ts";
+
+/** Where the stages' flows are read from: tests point it at a scratch folder (the five are recorded since 2026-10-22). */
+export const stagesDeps = { flowsDir: FLOWS_DIR };
 
 export const STAGES_USAGE = [
   "       log facebook warmup stages plan",
@@ -45,7 +48,7 @@ export async function runStages(context: CommandContext, sub: string | undefined
   if (sub === "plan") {
     const lines = ["The warm-up: Listaro's five activities, in its stage order (account-warmup.ts). Record once with `log facebook warmup stages record`, run with `log facebook warmup stages run`."];
     for (const script of SCRIPTS_IN_ORDER) {
-      const flow = loadFlow(script.flow);
+      const flow = loadFlow(script.flow, stagesDeps.flowsDir);
       lines.push(`\n${script.activity} → flow ${script.flow}: ${flow ? `recorded (${flow.steps.length} steps)` : "NOT RECORDED"}  [${script.source}]`);
       script.steps.forEach((s, i) => lines.push(`  ${i + 1}. ${s.action} ${s.args.join(" ")}${s.live ? "  (live: only with --likes)" : ""}  — ${s.why}`));
     }
@@ -58,7 +61,7 @@ export async function runStages(context: CommandContext, sub: string | undefined
   const picked = pickActivities(typeof flags["only"] === "string" ? flags["only"] : undefined);
   if (!picked.ok) return { code: 1, stderr: `log facebook warmup: ${picked.error}` };
   if (sub === "run") {
-    const missing = picked.activities.filter((a) => !loadFlow(ACTIVITY_SCRIPTS[a].flow));
+    const missing = picked.activities.filter((a) => !loadFlow(ACTIVITY_SCRIPTS[a].flow, stagesDeps.flowsDir));
     if (missing.length) {
       return { code: 1, stderr: `log facebook warmup: flowNotRecorded: ${missing.map((a) => ACTIVITY_SCRIPTS[a].flow).join(", ")} not recorded yet. Record them first, headed: log facebook warmup stages record --account <a> --only ${missing.join(",")}` };
     }
@@ -88,7 +91,11 @@ export async function runStages(context: CommandContext, sub: string | undefined
   });
 }
 
-/** Sends each activity's script to the open session, then turns each activity's recorded steps into its flow. */
+/**
+ * Sends each activity's script to the open session, then turns each activity's recorded steps into its flow. A
+ * failed step ends the recording there: the activities that finished before it still become their flows, the one
+ * that broke never does (a flow is only made from a whole, clean recording).
+ */
 async function record(
   context: CommandContext,
   current: Parameters<CommandContext["sendInspect"]>[0],
@@ -116,29 +123,35 @@ async function record(
       stage(context, { ...base, event: "step", activity, step: `${step.action} ${step.args.join(" ")}`, ok, detail: ok ? step.why : problem ? `${problem.code}: ${problem.detail}` : (reply?.error ?? "no reply") });
       if (problem) {
         await accountIssue(context, account, problem.code, problem.detail, base, activity);
-        return { code: 1, stderr: `log facebook warmup record: ${problem.code}: ${problem.detail} (${current.runDir}). Nothing was turned into a flow.` };
+        const kept = saveFlows(current, spans, base);
+        return { code: 1, stderr: `log facebook warmup record: ${problem.code}: ${problem.detail} (${current.runDir}). ${activity} isn't a flow${kept.length ? `; the activities before it are: ${kept.join("; ")}` : "; nothing before it was."}` };
       }
       if (!ok) {
-        stage(context, { ...base, event: "stopped", activity, ok: false, detail: "a step failed: nothing is turned into a flow from a broken recording" });
-        return { code: 1, stderr: `log facebook warmup record: ${activity} failed at ${step.action} ${step.args.join(" ")}: ${reply?.error ?? "no reply"} (${current.runDir})` };
+        stage(context, { ...base, event: "stopped", activity, ok: false, detail: "a step failed: this activity isn't turned into a flow from a broken recording" });
+        const kept = saveFlows(current, spans, base);
+        return { code: 1, stderr: `log facebook warmup record: ${activity} failed at ${step.action} ${step.args.join(" ")}: ${reply?.error ?? "no reply"} (${current.runDir})${kept.length ? `. The activities before it are flows: ${kept.join("; ")}` : ""}` };
       }
     }
     spans.push({ activity, from, to: sent });
   }
+  const lines = [`Recorded ${activities.length} activit${activities.length === 1 ? "y" : "ies"} in one browser (${current.runDir}):`, ...saveFlows(current, spans, base).map((l) => `  ${l}`)];
+  stage(context, { ...base, event: "done", detail: `recorded ${spans.map((s) => s.activity).join(", ")}` });
+  lines.push("Run them: log facebook warmup stages run --account <a> [--likes] [--gapMinutes <n>]");
+  return { code: 0, stdout: lines.join("\n") };
+}
+
+/** Each finished activity's span of the recording → its flow and its doc. Returns a line per flow saved. */
+function saveFlows(current: Parameters<CommandContext["sendInspect"]>[0], spans: { activity: WarmupActivity; from: number; to: number }[], base: { account: string; run: string }): string[] {
   const commands = readRecordedCommands(current.runDir);
-  const lines = [`Recorded ${activities.length} activit${activities.length === 1 ? "y" : "ies"} in one browser (${current.runDir}):`];
-  for (const span of spans) {
+  return spans.map((span) => {
     const script = ACTIVITY_SCRIPTS[span.activity];
     const flow = flowFromRecording(script.flow, `Warm-up ${span.activity}: Listaro's ${script.source}, recorded on ${base.account} ${new Date().toISOString().slice(0, 10)} (rule 35).`, commands.slice(span.from, span.to), {
       runDir: current.runDir,
       account: base.account,
     });
-    const files = [saveFlow(flow), writeFlowDoc(flow)];
-    lines.push(`  ${span.activity} → ${flow.name}: ${flow.steps.length} steps (${files.join(", ")})`);
-  }
-  stage(context, { ...base, event: "done", detail: `recorded ${spans.map((s) => s.activity).join(", ")}` });
-  lines.push("Run them: log facebook warmup stages run --account <a> [--likes] [--gapMinutes <n>]");
-  return { code: 0, stdout: lines.join("\n") };
+    const files = [saveFlow(flow, stagesDeps.flowsDir), writeFlowDoc(flow)];
+    return `${span.activity} → ${flow.name}: ${flow.steps.length} steps (${files.join(", ")})`;
+  });
 }
 
 /** The warm-up machine over the recorded flows, in the open session. */
@@ -155,7 +168,7 @@ async function runWarmup(
   const machine = warmupMachine.provide({
     actors: {
       runActivity: fromPromise<ActivityOutcome, { accountId: string; activity: WarmupActivity }>(async ({ input }) => {
-        const flow = loadFlow(ACTIVITY_SCRIPTS[input.activity].flow)!;
+        const flow = loadFlow(ACTIVITY_SCRIPTS[input.activity].flow, stagesDeps.flowsDir)!;
         stage(context, { ...base, event: "activity", activity: input.activity, detail: `${flow.steps.length} steps` });
         const output = await runFlowInSession(context, current, flow, { uid: base.account }, {
           // The likes act on Facebook: only with --likes (rule 8).

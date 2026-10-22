@@ -76,7 +76,7 @@ Source: [`docs/diagrams/browsers.mmd`](docs/diagrams/browsers.mmd).
 
 - **The account's browser, through the driver:** `host`, `inspect`, `flow`, `warmup`, `join`, `read`, `poll`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
 - **Camoufox only, not on the driver yet:** `doctor`, `connect`, `profile`, `scan`, `status`, `watch`, `publish`, `campaign`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `listings`, `listing`, `accounts`, `account`, `adsPower`, `lifecycle`, `proxy`, `conversations`, `conversation`, `errors`, `graph`, `capture`, `login`, `logout`, `whoami`.
+- **No browser:** `launch`, `listings`, `listing`, `accounts`, `account`, `adsPower`, `lifecycle`, `proxy`, `conversations`, `conversation`, `messenger`, `errors`, `graph`, `capture`, `runs`, `login`, `logout`, `whoami`.
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](docs/browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](docs/adsPower.md).
 
@@ -89,9 +89,9 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 29 command tools + saved flows"]
+  mcp["MCP server log: 30 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 31 commands (COMMANDS)"]
+  runCli["runCli: 33 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   browser["The account's browser (one per day, rule 35)"]
   agent --> shell
@@ -108,7 +108,9 @@ flowchart LR
   post0{{"PostToolUse: pageState.ts"}} -.->|after| agent
   turn0{{"SessionStart: pageState.ts"}} -.-> agent
   turn1{{"UserPromptSubmit: pageState.ts"}} -.-> agent
-  turn2{{"Stop: pageState.ts"}} -.-> agent
+  turn2{{"SessionStart: storage.ts"}} -.-> agent
+  turn3{{"UserPromptSubmit: storage.ts"}} -.-> agent
+  turn4{{"Stop: pageState.ts"}} -.-> agent
   browser -.->|each step's snapshot| post0
 ```
 
@@ -145,9 +147,11 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log facebook campaign`](#log-facebook-campaign) | Put one ad on N accounts in one place, replace lost accounts, publish the campaign | `facebook` first | `--campaign <agencyCampaignId>` `--from <agencyListingId>` `--accounts <n>` `--live` `--bypass` `--json` | Camoufox only | `campaign` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 13, 18, 30, 38, 39, 40, 41 |
 | [`log facebook conversations`](#log-facebook-conversations) | List buyers' Marketplace conversations in Twenty, newest first, by account or listing | `facebook` first | `--account <name>` `--listing <agencyListingId>` `--json` | none | `conversations` | PreToolUse, PostToolUse · PostToolUse | no | 34, 30, 38, 39, 40, 41 |
 | [`log facebook conversation`](#log-facebook-conversation) | One conversation: show its messages, mark read, set its lead status, link its listing, or store a scanned thread | `facebook` first | `--json` `--listing <agencyListingId>` `--account <name>` `--file <threads.json>` | none | `conversation` | PreToolUse, PostToolUse · PostToolUse | no | 34, 30, 38, 39, 40, 41 |
+| [`log facebook messenger`](#log-facebook-messenger) | Messenger's PIN for the account's encrypted chats: asked in a Clack prompt, kept in Twenty, never printed | `facebook` first | `--account <accountName>` `--show` | none | terminal only: asks matt for the Messenger PIN in a Clack prompt (masked). He runs `bun bin/log.ts facebook messenger pin --account <a>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 8, 21, 29, 54, 63, 67, 30, 38, 39, 40, 41 |
 | [`log errors`](#log-errors) | List every error code: meaning, retryable, where each machine ends up | any (none) | `--layer <account|listing|photo|form|captcha|runtime|twenty|proxyVendor|auth|profile>` `--code <code>` `--json` `--markdown` | none | `errors` | PreToolUse, PostToolUse · PostToolUse | no | 25, 30, 38, 39, 40, 41 |
 | [`log graph`](#log-graph) | Print a machine's states and transitions as a Mermaid diagram | any (none) | none | none | `graph` | PreToolUse, PostToolUse · PostToolUse | no | 6, 25, 30, 38, 39, 40, 41 |
 | [`log facebook capture`](#log-facebook-capture) | Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds the Facebook client docs. No browser. | `facebook` first | `--har <path>` `--out <dir>` `--noRea` `--json` `--settle <runCaptureDir>` `--docs` | none | `capture` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 19, 22, 26, 27, 46, 48, 30, 38, 39, 40, 41 |
+| [`log runs`](#log-runs) | The recorded runs on this machine, and pruning the ones rea settled and the request docs hold, keeping each one's findings and domains | any (none) | `--json` `--before <YYYY-MM-DD>` `--apply` | none | `runs` | PreToolUse, PostToolUse · PostToolUse | no | 19, 22, 25, 27, 66, 30, 38, 39, 40, 41 |
 | [`log login`](#log-login) | Sign in with Twenty through blaster's web app (OAuth), like `blaster login` | any (none) | `--webUrl <url>` `--apiUrl <url>` `--token <accessToken>` `--json` | none | terminal only: opens a browser for Twenty OAuth and waits for it. Run `bun bin/log.ts login` in a terminal. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
 | [`log logout`](#log-logout) | Forget the stored Twenty session | any (none) | `--apiUrl <url>` `--json` | none | `logout` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
 | [`log whoami`](#log-whoami) | Show who is signed in, refreshing the session if it expired | any (none) | `--apiUrl <url>` `--json` | none | `whoami` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
@@ -165,6 +169,11 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | `flowProfilePhotoPost` | `log flow run profilePhotoPost` | Post a photo on the account's own profile: Photo/video hands the file to the chooser, the upload finishes, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live). | `photo` | gotoprofilePhp → uploadPhotoVideo → clickPost |
 | `flowProfilePost` | `log flow run profilePost` | Post text on the account's own profile: open the composer, type the text, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live). | `text` | gotoprofilePhp → clickWhatSOnYour → fillWhatSOnYour → clickPost |
 | `flowProfileSetup` | `log flow run profileSetup` | Give an account its profile picture, cover photo and name, as recorded on Lancaster 2026-10-19 (rule 28): profile picture menu, Choose profile picture, Upload Photo, Save; Add Cover Photo, Upload photo, Save changes; Accounts Center name, Review change, Done. | `profilePhoto`, `coverPhoto`, `firstName`, `lastName` | gotome → clickProfilePictureActions → clickChooseProfilePicture → uploadUploadPhoto → clickSave → clickAddCoverPhoto → uploadUploadPhoto → clickSaveChanges → gotoprofilesName → fillFirstName → fillSurname → clickReviewChange → clickDone |
+| `flowWarmupCreateAccessCheck` | `log flow run warmupCreateAccessCheck` | Warm-up createAccessCheck: Listaro's runStage3, account-warmup.ts:181-209, recorded on 61594063207669 2026-10-22 (rule 35). | none | gotomarketplace → dwell → gotomarketplaceCreateItem → dwell → gotomarketplace → scroll |
+| `flowWarmupFeedBrowse` | `log flow run warmupFeedBrowse` | Warm-up feedBrowse: Listaro's runStage1, account-warmup.ts:92-130, recorded on 61594063207669 2026-10-22 (rule 35). | none | goto → dwell → scroll → gotomarketplace → dwell → scroll |
+| `flowWarmupMarketplaceBrowse` | `log flow run warmupMarketplaceBrowse` | Warm-up marketplaceBrowse: Listaro's runStage2, account-warmup.ts:135-174, recorded on 61594063207669 2026-10-22 (rule 35). | none | gotomarketplace → dwell → scroll → openAny |
+| `flowWarmupMessagesVisit` | `log flow run warmupMessagesVisit` | Warm-up messagesVisit: Listaro's runStage4or5 (stage 5), account-warmup.ts:214-246, recorded on 61594063207669 2026-10-22 (rule 35). | none | gotomarketplace → scroll → gotomarketplaceYouSelling → dwell → gotomessages → dwell → scroll |
+| `flowWarmupSellingVisit` | `log flow run warmupSellingVisit` | Warm-up sellingVisit: Listaro's runStage4or5 (stage 4), account-warmup.ts:214-246, recorded on 61594063207669 2026-10-22 (rule 35). | none | gotomarketplace → scroll → gotomarketplaceYouSelling → dwell |
 
 ### Every command, CLI and MCP
 
@@ -266,6 +275,9 @@ flowchart TB
   c_conversation["conversation"]
   cli --> c_conversation
   mcp --> c_conversation
+  c_messenger["messenger"]
+  cli --> c_messenger
+  c_messenger -.- terminal
   c_errors["errors"]
   cli --> c_errors
   mcp --> c_errors
@@ -276,6 +288,9 @@ flowchart TB
   cli --> c_capture
   mcp --> c_capture
   c_capture --> live
+  c_runs["runs"]
+  cli --> c_runs
+  mcp --> c_runs
   c_login["login"]
   cli --> c_login
   c_login -.- terminal
@@ -312,6 +327,21 @@ flowchart TB
   f_profileSetup["flowProfileSetup: flow run profileSetup"]
   mcp --> f_profileSetup
   f_profileSetup --> c_flow
+  f_warmupCreateAccessCheck["flowWarmupCreateAccessCheck: flow run warmupCreateAccessCheck"]
+  mcp --> f_warmupCreateAccessCheck
+  f_warmupCreateAccessCheck --> c_flow
+  f_warmupFeedBrowse["flowWarmupFeedBrowse: flow run warmupFeedBrowse"]
+  mcp --> f_warmupFeedBrowse
+  f_warmupFeedBrowse --> c_flow
+  f_warmupMarketplaceBrowse["flowWarmupMarketplaceBrowse: flow run warmupMarketplaceBrowse"]
+  mcp --> f_warmupMarketplaceBrowse
+  f_warmupMarketplaceBrowse --> c_flow
+  f_warmupMessagesVisit["flowWarmupMessagesVisit: flow run warmupMessagesVisit"]
+  mcp --> f_warmupMessagesVisit
+  f_warmupMessagesVisit --> c_flow
+  f_warmupSellingVisit["flowWarmupSellingVisit: flow run warmupSellingVisit"]
+  mcp --> f_warmupSellingVisit
+  f_warmupSellingVisit --> c_flow
 ```
 
 Source: [`docs/diagrams/commands.mmd`](docs/diagrams/commands.mmd).
@@ -324,11 +354,13 @@ One list (`src/agentHooks/registry`) writes Claude Code's `.claude/settings.json
 | --- | --- | --- | --- |
 | SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/pageState.ts`](scripts/hooks/pageState.ts) | where every open browser is, the moment a session starts or comes back from compaction |
 | UserPromptSubmit | every turn | [`scripts/hooks/pageState.ts`](scripts/hooks/pageState.ts) | where every open browser is, with each of matt's prompts |
+| SessionStart | `startup\|resume\|clear\|compact` | [`scripts/hooks/storage.ts`](scripts/hooks/storage.ts) | ~/.logCli/runs over 2 GB or the disk nearly full: said with `log runs prune` before AdsPower refuses to start |
+| UserPromptSubmit | every turn | [`scripts/hooks/storage.ts`](scripts/hooks/storage.ts) | the same storage check with each of matt's prompts (measured at most every 15 minutes) |
 | PreToolUse | `Bash\|PowerShell\|Monitor` | [`scripts/hooks/liveLogs.ts`](scripts/hooks/liveLogs.ts) | a log-cli run that would hide its lines (piped through tail or head) is refused before it starts; a long one off a Monitor is told to start one (rule 26) |
 | PostToolUse | `Bash\|PowerShell\|Monitor\|mcp__log__.*` | [`scripts/hooks/pageState.ts`](scripts/hooks/pageState.ts) | a browser landed on a known state (checkpoint, captcha, prompt) or a step failed: its resolver, at once |
 | Stop | every turn | [`scripts/hooks/pageState.ts`](scripts/hooks/pageState.ts) | the turn does not end while a browser sits on a state log-cli can resolve (rule 54) |
 
-Around every turn, whatever is called: SessionStart, UserPromptSubmit, Stop.
+Around every turn, whatever is called: SessionStart, UserPromptSubmit, SessionStart, UserPromptSubmit, Stop.
 
 ### The hooks in one turn
 
@@ -342,9 +374,11 @@ sequenceDiagram
   participant Tool as Bash / PowerShell / Monitor / mcp__log__*
   Agent->>Hook: SessionStart
   Note over Hook: where every open browser is, the moment a session starts or comes back from compaction
+  Note over Hook: ~/.logCli/runs over 2 GB or the disk nearly full: said with `log runs prune` before AdsPower refuses to start
   matt->>Agent: a prompt
   Agent->>Hook: UserPromptSubmit
   Note over Hook: where every open browser is, with each of matt's prompts
+  Note over Hook: the same storage check with each of matt's prompts (measured at most every 15 minutes)
   loop each tool call
     Agent->>Hook: PreToolUse
     Note over Hook: a log-cli run that would hide its lines (piped through tail or head) is refused before it starts#59; a long one off a Monitor is told to start one (rule 26)
@@ -391,6 +425,9 @@ flowchart LR
   automatedBehaviour["automatedBehaviour: #quot;We suspect automated behaviour#quot;"]
   page --> automatedBehaviour
   automatedBehaviour -->|"dismiss it, as Listaro did"| nextautomatedBehaviour(["next state"])
+  messengerPinCreate["messengerPinCreate: Messenger's #quot;Create a PIN to access your chats on any device#quot;: the inbox stays behind it (Bethlehem, warm-up 20261022T092119 steps 25-27)"]
+  page --> messengerPinCreate
+  messengerPinCreate --> person
   rememberPassword["rememberPassword: the #quot;Remember password#quot; prompt"]
   page --> rememberPassword
   rememberPassword -->|"click #quot;Not now#quot;"| nextrememberPassword(["next state"])
@@ -514,7 +551,7 @@ Drive the account's browser, gated and headed, a step at a time: each step's sna
 ```text
 log inspect start --account <accountName> [--url <https://www.facebook.com/...>] [--bypass] [--now] [--noIdleMouse] [--detach]   (one session per account: two accounts can be open at once; --detach runs it as its own process and returns once it is open)
 log inspect map [<runDir>] [--all]  (the recorded steps as states and transitions: flow.md, machine.json; default the latest run; --all collates every run)
-log inspect do <goto <url>|snapshot|back|wait [s]|click <ref>|type <ref> <text>|press <key>|upload <ref> <file>|highlight <role> <name>|solve|signIn|code|stop> [--live] [--timeout <s>] [--json] [--account <accountName>]   (--account picks the session when more than one is open)
+log inspect do <goto <url>|snapshot|back|wait [s]|click <ref>|type <ref> <text>|press <key>|upload <ref> <file>|highlight <role> <name>|solve|signIn|code|pin|stop> [--live] [--timeout <s>] [--json] [--account <accountName>]   (--account picks the session when more than one is open)
 log inspect sessions   (the open sessions)
 ```
 
@@ -666,6 +703,14 @@ log facebook conversation link <id> --listing <agencyListingId>
 log facebook conversation record --account <name> --file <threads.json>
 ```
 
+#### log facebook messenger
+
+Messenger's PIN for the account's encrypted chats: asked in a Clack prompt, kept in Twenty, never printed Terminal only: asks matt for the Messenger PIN in a Clack prompt (masked). He runs `bun bin/log.ts facebook messenger pin --account <a>` in a terminal.
+
+```text
+log facebook messenger pin --account <accountName> [--show]   (a Clack prompt asks for the 6-digit PIN twice, masked, and keeps it in Twenty; --show says only whether one is set)
+```
+
 #### log errors
 
 List every error code: meaning, retryable, where each machine ends up MCP tool: `errors` (`args` takes the same arguments).
@@ -691,6 +736,16 @@ log facebook capture --har <path> [--out <dir>] [--noRea] [--json]
 log facebook capture --settle <runCaptureDir>  (what each run starts in the background: rea reads its capture, split per step)
 log facebook capture --docs [--noRea]  (every run's requests → docs/platforms/facebook/, one doc per request, rea reading each one's slice)
 The HAR is the one Playwright writes from Camoufox. It is copied raw, and rea reads it. No browser opens.
+```
+
+#### log runs
+
+The recorded runs on this machine, and pruning the ones rea settled and the request docs hold, keeping each one's findings and domains MCP tool: `runs` (`args` takes the same arguments).
+
+```text
+log runs [list] [--json]   (every recorded run: its size, settled by rea, in the request docs, and why it is kept or that it may go)
+log runs prune [--before <YYYY-MM-DD>] [--apply]   (deletes each analysed run, started before the day when given, keeping its findings.md, steps.jsonl, settle.json and its requests by domain; a dry run unless --apply)
+log runs space   (the size of ~/.logCli/runs and the disk's free space, as the storage hook says them)
 ```
 
 #### log login

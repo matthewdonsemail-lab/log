@@ -6,21 +6,20 @@
 | --- | --- |
 | Domain | background |
 | Kind | query |
-| doc_id | `28542656938761266` |
+| doc_id | `27655263074150438` |
 | Path | `/api/graphql/` |
-| Sends | `buyLocation`, `count`, `cursor`, `imageWidth`, `includePDPRelevantListings`, `mediaType`, `pdpListingId`, `radius`, `refinement`, `scale`, `sizing`, `useSDFPath`, `__relay_internal__pv__CometMarketplaceShouldShowTopPicksStrikethroughrelayprovider`, `__relay_internal__pv__GHLShouldChangeMarketplaceSponsoredDataFieldNamerelayprovider`, `__relay_internal__pv__MarketplaceCometAdmodulerelayprovider`, `__relay_internal__pv__CometMarketplaceShouldShowFeedShippingIconrelayprovider` |
+| Sends | `buyLocation`, `count`, `cursor`, `imageWidth`, `includePDPRelevantListings`, `mediaType`, `pdpListingId`, `radius`, `refinement`, `scale`, `sizing`, `useSDFPath`, `__relay_internal__pv__MarketplacePDPShouldShowLowerPriceItemsrelayprovider`, `__relay_internal__pv__CometMarketplaceShouldShowTopPicksStrikethroughrelayprovider`, `__relay_internal__pv__GHLShouldChangeMarketplaceSponsoredDataFieldNamerelayprovider`, `__relay_internal__pv__MarketplaceCometAdmodulerelayprovider`, `__relay_internal__pv__CometMarketplaceShouldShowFeedShippingIconrelayprovider` |
 | Reads | `...MarketplaceCometBrowseFeedLight_dataConnection` |
 | Called from | `MarketplaceCometBrowseFeedLight_dataConnection.graphql` |
-| rea | `ev_c9c7de1b79d034e7f938f30016315a3198c4572df25c449a968387bf049afa7d` |
+| rea | `ev_39467785ac779ed1db987a1df7fe6a2b6ac26588c33f988211911bebe2503a6a` |
 
-Seen 10 time(s) in 7 run(s).
+Seen 3 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /marketplace/ | 4 | 200 | 2082–2951 ms | 6416–7692 ms | — |
-| inspect | a step (older run, split by its report lines) | 2 | 200 | 4323–4349 ms | 2864–8120 ms | — |
-| inspect | step 2: waitRole link "…" | 2 | 200 | 3828–4805 ms | 3804–8264 ms | — |
-| inspect | a step (older run, split by its report lines) | 2 | 200 | 2562–9527 ms | 397–3665 ms | — |
+| warmup | scroll: +476px in 12 wheel steps, 562 ms | 1 | 200 | 2448 ms | 2885 ms | — |
+| warmup | scroll: +301px in 7 wheel steps, 282 ms | 1 | 200 | 4779 ms | 3624 ms | — |
+| warmup | scroll: +408px in 11 wheel steps, 547 ms | 1 | 200 | 2702 ms | 3572 ms | — |
 
 <!-- facts:end -->
 

@@ -13,10 +13,21 @@
 | Called from | `RTWebCallBlockSettingHooks` |
 | rea | `ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6` |
 
-Seen 33 time(s) in 15 run(s).
+Seen 55 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | step 1: goto / | 2 | 200 | 371–1016 ms | 7478–21291 ms | — |
+| warmup | step 4: goto /marketplace/ | 2 | 200 | 405–477 ms | 4027–5361 ms | — |
+| warmup | step 7: goto /marketplace/ | 2 | 200 | 363–515 ms | 3058–5555 ms | — |
+| warmup | step 11: goto /marketplace/ | 2 | 200 | 415–505 ms | 3061–15132 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 2 | 200 | 352–391 ms | 3042–10379 ms | — |
+| warmup | step 15: goto /marketplace/ | 2 | 200 | 350–354 ms | 2861–3126 ms | — |
+| warmup | step 17: goto /marketplace/ | 2 | 200 | 340–388 ms | 2346–3722 ms | — |
+| warmup | step 19: goto /marketplace/you/selling | 2 | 200 | 358–432 ms | 2327–8384 ms | — |
+| warmup | step 21: goto /marketplace/ | 2 | 200 | 399–568 ms | 3818–4638 ms | — |
+| warmup | step 23: goto /marketplace/you/selling | 2 | 200 | 449–552 ms | 2022–2187 ms | — |
+| warmup | step 25: goto /messages/ | 2 | 200 | 363–463 ms | 2249–3857 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 5 | 200 | 356–421 ms | 3751–7188 ms | — |
 | inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 391 ms | 6548 ms | — |
 | inspect | step 1: goto /profile.php | 1 | 200 | 410 ms | 7644 ms | — |

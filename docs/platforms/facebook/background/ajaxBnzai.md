@@ -11,12 +11,37 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_179c84fc4c83fdbe32e50f3c4d9ca6bce8d97cc16598070ac0d2646331e25e96` |
+| rea | `ev_2bf6699551383f9ce8dbe17a0840942f44b115a3011e91a42cac57a9ed275ac6` |
 
-Seen 340 time(s) in 18 run(s).
+Seen 394 time(s) in 20 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | step 1: goto / | 7 | 200 | 368–765 ms | 8512–51453 ms | — |
+| warmup | step 3: scroll 4-7 x 300-600px | 1 | 200 | 410 ms | 831 ms | — |
+| warmup | scroll: +388px in 10 wheel steps, 1109 ms | 1 | 200 | 341 ms | 1819 ms | — |
+| warmup | step 4: goto /marketplace/ | 1 | 200 | 372 ms | 330 ms | — |
+| warmup | scroll: +582px in 13 wheel steps, 547 ms | 1 | 200 | 345 ms | 3004 ms | — |
+| warmup | step 7: goto /marketplace/ | 1 | 200 | 902 ms | 6227 ms | — |
+| warmup | step 9: scroll 3-5 x 400-700px | 1 | 200 | 335 ms | 532 ms | — |
+| warmup | scroll: +490px in 11 wheel steps, 469 ms | 1 | 200 | 338 ms | 2347 ms | — |
+| warmup | openAny: read /marketplace/item/<id>/ | 4 | 200 | 345–369 ms | 1442–39023 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 9 | 200 | 336–1329 ms | 54–13255 ms | — |
+| warmup | step 15: goto /marketplace/ | 3 | 200 | 339–657 ms | 50–4974 ms | — |
+| warmup | scroll: +564px in 14 wheel steps, 781 ms | 1 | 200 | 350 ms | 7975 ms | — |
+| warmup | step 17: goto /marketplace/ | 4 | 200 | 365–844 ms | 39–4650 ms | — |
+| warmup | scroll: +371px in 9 wheel steps, 328 ms | 1 | 200 | 1371 ms | 941 ms | — |
+| warmup | step 19: goto /marketplace/you/selling | 4 | 200 | 349–796 ms | 13–12224 ms | — |
+| warmup | step 20: dwell 2-4s | 1 | 200 | 379 ms | 16920 ms | — |
+| warmup | step 21: goto /marketplace/ | 2 | 200 | 360–735 ms | 44–5330 ms | — |
+| warmup | scroll: +437px in 10 wheel steps, 437 ms | 1 | 200 | 387 ms | 2468 ms | — |
+| warmup | step 23: goto /marketplace/you/selling | 3 | 200 | 336–858 ms | 27–4678 ms | — |
+| warmup | step 25: goto /messages/ | 2 | 200 | 333–429 ms | 42–45 ms | — |
+| warmup | scroll: +558px in 13 wheel steps, 672 ms | 1 | 200 | 412 ms | 2960 ms | — |
+| warmup | scroll: +723px in 17 wheel steps, 1047 ms | 1 | 200 | 351 ms | 1376 ms | — |
+| warmup | scroll: +620px in 14 wheel steps, 781 ms | 1 | 200 | 384 ms | 2278 ms | — |
+| warmup | scroll: +352px in 8 wheel steps, 282 ms | 1 | 200 | 338 ms | 2263 ms | — |
+| warmup | scroll: +538px in 12 wheel steps, 453 ms | 1 | 200 | 336 ms | 1345 ms | — |
 | inspect | scroll: +700px in 16 wheel steps, 796 ms | 1 | 200 | 451 ms | 1101 ms | — |
 | inspect | scroll: +700px in 16 wheel steps, 1266 ms | 1 | 200 | 361 ms | 3017 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 1125 ms | 1 | 200 | 376 ms | 3100 ms | — |

@@ -33549,6 +33549,9 @@ export default {
             "browserDriver": [
                 1
             ],
+            "messengerPin": [
+                1
+            ],
             "timelineActivities": [
                 539,
                 {
@@ -34672,6 +34675,21 @@ export default {
             "percentageNotEmptyBrowserDriver": [
                 84
             ],
+            "countUniqueValuesMessengerPin": [
+                76
+            ],
+            "countEmptyMessengerPin": [
+                76
+            ],
+            "countNotEmptyMessengerPin": [
+                76
+            ],
+            "percentageEmptyMessengerPin": [
+                84
+            ],
+            "percentageNotEmptyMessengerPin": [
+                84
+            ],
             "edges": [
                 386
             ],
@@ -35574,6 +35592,21 @@ export default {
             "percentageNotEmptyBrowserDriver": [
                 84
             ],
+            "countUniqueValuesMessengerPin": [
+                76
+            ],
+            "countEmptyMessengerPin": [
+                76
+            ],
+            "countNotEmptyMessengerPin": [
+                76
+            ],
+            "percentageEmptyMessengerPin": [
+                84
+            ],
+            "percentageNotEmptyMessengerPin": [
+                84
+            ],
             "edges": [
                 386
             ],
@@ -35774,6 +35807,9 @@ export default {
             "browserDriver": [
                 1
             ],
+            "messengerPin": [
+                1
+            ],
             "__typename": [
                 1
             ]
@@ -35935,6 +35971,9 @@ export default {
             "browserDriver": [
                 1
             ],
+            "messengerPin": [
+                1
+            ],
             "__typename": [
                 1
             ]
@@ -36094,6 +36133,9 @@ export default {
                 7
             ],
             "browserDriver": [
+                7
+            ],
+            "messengerPin": [
                 7
             ],
             "and": [
@@ -36336,6 +36378,9 @@ export default {
             "browserDriver": [
                 11
             ],
+            "messengerPin": [
+                11
+            ],
             "__typename": [
                 1
             ]
@@ -36498,6 +36543,9 @@ export default {
                 11
             ],
             "browserDriver": [
+                11
+            ],
+            "messengerPin": [
                 11
             ],
             "__typename": [
@@ -37396,6 +37444,21 @@ export default {
             "percentageNotEmptyBrowserDriver": [
                 11
             ],
+            "countUniqueValuesMessengerPin": [
+                11
+            ],
+            "countEmptyMessengerPin": [
+                11
+            ],
+            "countNotEmptyMessengerPin": [
+                11
+            ],
+            "percentageEmptyMessengerPin": [
+                11
+            ],
+            "percentageNotEmptyMessengerPin": [
+                11
+            ],
             "__typename": [
                 1
             ]
@@ -37528,6 +37591,9 @@ export default {
                 13
             ],
             "browserDriver": [
+                13
+            ],
+            "messengerPin": [
                 13
             ],
             "__typename": [

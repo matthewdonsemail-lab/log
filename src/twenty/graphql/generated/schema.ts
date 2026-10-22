@@ -10310,6 +10310,8 @@ export interface SocialAccount {
     adsPowerProfileId?: Scalars['String']
     /** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
     browserDriver?: Scalars['String']
+    /** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
+    messengerPin?: Scalars['String']
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: TimelineActivityConnection
     /** SocialAccounts tied to the Task Target */
@@ -10934,6 +10936,16 @@ export interface SocialAccountConnection {
     percentageEmptyBrowserDriver?: Scalars['Float']
     /** Percentage of non-empty values for browserDriver */
     percentageNotEmptyBrowserDriver?: Scalars['Float']
+    /** Number of unique values for messengerPin */
+    countUniqueValuesMessengerPin?: Scalars['Int']
+    /** Number of empty values for messengerPin */
+    countEmptyMessengerPin?: Scalars['Int']
+    /** Number of non-empty values for messengerPin */
+    countNotEmptyMessengerPin?: Scalars['Int']
+    /** Percentage of empty values for messengerPin */
+    percentageEmptyMessengerPin?: Scalars['Float']
+    /** Percentage of non-empty values for messengerPin */
+    percentageNotEmptyMessengerPin?: Scalars['Float']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     __typename: 'SocialAccountConnection'
@@ -11536,6 +11548,16 @@ export interface SocialAccountGroupByConnection {
     percentageEmptyBrowserDriver?: Scalars['Float']
     /** Percentage of non-empty values for browserDriver */
     percentageNotEmptyBrowserDriver?: Scalars['Float']
+    /** Number of unique values for messengerPin */
+    countUniqueValuesMessengerPin?: Scalars['Int']
+    /** Number of empty values for messengerPin */
+    countEmptyMessengerPin?: Scalars['Int']
+    /** Number of non-empty values for messengerPin */
+    countNotEmptyMessengerPin?: Scalars['Int']
+    /** Percentage of empty values for messengerPin */
+    percentageEmptyMessengerPin?: Scalars['Float']
+    /** Percentage of non-empty values for messengerPin */
+    percentageNotEmptyMessengerPin?: Scalars['Float']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -65289,6 +65311,8 @@ export interface SocialAccountGenqlSelection{
     adsPowerProfileId?: boolean | number
     /** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
     browserDriver?: boolean | number
+    /** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
+    messengerPin?: boolean | number
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
     /** SocialAccounts tied to the Task Target */
@@ -65915,6 +65939,16 @@ export interface SocialAccountConnectionGenqlSelection{
     percentageEmptyBrowserDriver?: boolean | number
     /** Percentage of non-empty values for browserDriver */
     percentageNotEmptyBrowserDriver?: boolean | number
+    /** Number of unique values for messengerPin */
+    countUniqueValuesMessengerPin?: boolean | number
+    /** Number of empty values for messengerPin */
+    countEmptyMessengerPin?: boolean | number
+    /** Number of non-empty values for messengerPin */
+    countNotEmptyMessengerPin?: boolean | number
+    /** Percentage of empty values for messengerPin */
+    percentageEmptyMessengerPin?: boolean | number
+    /** Percentage of non-empty values for messengerPin */
+    percentageNotEmptyMessengerPin?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -66518,6 +66552,16 @@ export interface SocialAccountGroupByConnectionGenqlSelection{
     percentageEmptyBrowserDriver?: boolean | number
     /** Percentage of non-empty values for browserDriver */
     percentageNotEmptyBrowserDriver?: boolean | number
+    /** Number of unique values for messengerPin */
+    countUniqueValuesMessengerPin?: boolean | number
+    /** Number of empty values for messengerPin */
+    countEmptyMessengerPin?: boolean | number
+    /** Number of non-empty values for messengerPin */
+    countNotEmptyMessengerPin?: boolean | number
+    /** Percentage of empty values for messengerPin */
+    percentageEmptyMessengerPin?: boolean | number
+    /** Percentage of non-empty values for messengerPin */
+    percentageNotEmptyMessengerPin?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -66631,7 +66675,9 @@ warmedAt?: (Scalars['DateTime'] | null),
 /** log-cli: the account's AdsPower profile id (`log adsPower sync`). The profile holds no proxy, password or cookies: those stay in Twenty */
 adsPowerProfileId?: (Scalars['String'] | null),
 /** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
-browserDriver?: (Scalars['String'] | null)}
+browserDriver?: (Scalars['String'] | null),
+/** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
+messengerPin?: (Scalars['String'] | null)}
 
 
 /** Social media accounts */
@@ -66723,7 +66769,9 @@ warmedAt?: (Scalars['DateTime'] | null),
 /** log-cli: the account's AdsPower profile id (`log adsPower sync`). The profile holds no proxy, password or cookies: those stay in Twenty */
 adsPowerProfileId?: (Scalars['String'] | null),
 /** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
-browserDriver?: (Scalars['String'] | null)}
+browserDriver?: (Scalars['String'] | null),
+/** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
+messengerPin?: (Scalars['String'] | null)}
 
 
 /** Social media accounts */
@@ -66815,7 +66863,9 @@ warmedAt?: (DateTimeFilter | null),
 /** log-cli: the account's AdsPower profile id (`log adsPower sync`). The profile holds no proxy, password or cookies: those stay in Twenty */
 adsPowerProfileId?: (StringFilter | null),
 /** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
-browserDriver?: (StringFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
+browserDriver?: (StringFilter | null),
+/** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
+messengerPin?: (StringFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
 
 export interface SocialAccountPlatformEnumFilter {eq?: (SocialAccountPlatformEnum | null),neq?: (SocialAccountPlatformEnum | null),in?: ((SocialAccountPlatformEnum | null)[] | null),containsAny?: ((SocialAccountPlatformEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (SocialAccountPlatformEnum | null),gte?: (SocialAccountPlatformEnum | null),lt?: (SocialAccountPlatformEnum | null),lte?: (SocialAccountPlatformEnum | null)}
 
@@ -66911,7 +66961,9 @@ warmedAt?: (OrderByDirection | null),
 /** log-cli: the account's AdsPower profile id (`log adsPower sync`). The profile holds no proxy, password or cookies: those stay in Twenty */
 adsPowerProfileId?: (OrderByDirection | null),
 /** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
-browserDriver?: (OrderByDirection | null)}
+browserDriver?: (OrderByDirection | null),
+/** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
+messengerPin?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
@@ -67005,7 +67057,9 @@ warmedAt?: (OrderByDateGranularityInput | null),
 /** log-cli: the account's AdsPower profile id (`log adsPower sync`). The profile holds no proxy, password or cookies: those stay in Twenty */
 adsPowerProfileId?: (OrderByDirection | null),
 /** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
-browserDriver?: (OrderByDirection | null)}
+browserDriver?: (OrderByDirection | null),
+/** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
+messengerPin?: (OrderByDirection | null)}
 
 
 /** Aggregate-based ordering */
@@ -67603,7 +67657,17 @@ countNotEmptyBrowserDriver?: (OrderByDirection | null),
 /** Percentage of empty values for browserDriver */
 percentageEmptyBrowserDriver?: (OrderByDirection | null),
 /** Percentage of non-empty values for browserDriver */
-percentageNotEmptyBrowserDriver?: (OrderByDirection | null)}
+percentageNotEmptyBrowserDriver?: (OrderByDirection | null),
+/** Number of unique values for messengerPin */
+countUniqueValuesMessengerPin?: (OrderByDirection | null),
+/** Number of empty values for messengerPin */
+countEmptyMessengerPin?: (OrderByDirection | null),
+/** Number of non-empty values for messengerPin */
+countNotEmptyMessengerPin?: (OrderByDirection | null),
+/** Percentage of empty values for messengerPin */
+percentageEmptyMessengerPin?: (OrderByDirection | null),
+/** Percentage of non-empty values for messengerPin */
+percentageNotEmptyMessengerPin?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
@@ -67677,7 +67741,9 @@ warmedAt?: (GroupByDateGranularityInput | null),
 /** log-cli: the account's AdsPower profile id (`log adsPower sync`). The profile holds no proxy, password or cookies: those stay in Twenty */
 adsPowerProfileId?: (Scalars['Boolean'] | null),
 /** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
-browserDriver?: (Scalars['Boolean'] | null)}
+browserDriver?: (Scalars['Boolean'] | null),
+/** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
+messengerPin?: (Scalars['Boolean'] | null)}
 
 
 /** Calendar events */
