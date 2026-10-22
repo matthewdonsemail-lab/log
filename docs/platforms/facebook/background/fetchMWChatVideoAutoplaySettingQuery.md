@@ -13,7 +13,7 @@
 | Called from | `fetchMWChatVideoAutoplaySetting` |
 | rea | `ev_cec3d0049369021eb11311f83bae206c05ab77298da76206b6788d2cdc5c8ee1` |
 
-Seen 55 time(s) in 17 run(s).
+Seen 56 time(s) in 18 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -51,6 +51,7 @@ Seen 55 time(s) in 17 run(s).
 | inspect | step 22: goto /reel/ | 1 | 200 | 486 ms | 1736 ms | — |
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 622 ms | 4066 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 332 ms | 4888 ms | — |
+| inspect | step 1: goto /messages/ | 1 | 200 | 348 ms | 2610 ms | — |
 
 <!-- facts:end -->
 

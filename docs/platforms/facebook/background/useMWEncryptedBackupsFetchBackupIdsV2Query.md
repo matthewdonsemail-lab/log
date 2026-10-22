@@ -13,7 +13,7 @@
 | Called from | `useMWEncryptedBackupsFetchBackupIdsV2` |
 | rea | `ev_16df7daca80a72c8f44b7a489690336b7def96e564429f0639a122f48023372a` |
 
-Seen 55 time(s) in 17 run(s).
+Seen 56 time(s) in 18 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -51,6 +51,7 @@ Seen 55 time(s) in 17 run(s).
 | inspect | step 22: goto /reel/ | 1 | 200 | 2263 ms | 2912 ms | — |
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 2016 ms | 5683 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 359 ms | 5571 ms | — |
+| inspect | step 1: goto /messages/ | 1 | 200 | 357 ms | 3208 ms | — |
 
 <!-- facts:end -->
 

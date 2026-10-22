@@ -13,7 +13,7 @@
 | Called from | `CometSearchBootstrapKeywordsDataSource.query` |
 | rea | `ev_5cb62e3a7cd21788732d77960d11bcea0adc8730aaaa23e6a78c097c1c44c7a6` |
 
-Seen 54 time(s) in 16 run(s).
+Seen 55 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -51,6 +51,7 @@ Seen 54 time(s) in 16 run(s).
 | inspect | step 22: goto /reel/ | 1 | 200 | 2547 ms | 2568 ms | — |
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 696 ms | 4939 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 370 ms | 5585 ms | — |
+| inspect | step 1: goto /messages/ | 1 | 200 | 373 ms | 2958 ms | — |
 
 <!-- facts:end -->
 

@@ -688,8 +688,9 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     OpenMagpie watches. Spec: `docs/groupListening.md`.
 66. 2026-10-22 · matt: the runs never fill the disk again. A run is deleted
     once it is analysed: rea settled it (`settle.json`) and the request docs
-    hold its requests (`log facebook capture --docs`, cumulative, so a doc
-    stays when its runs are gone). `log runs` lists them, `log runs prune
+    hold its requests (`log facebook capture --docs`). The docs build folds
+    each request's facts into `~/.logCli/rea/clientFacts.json`, so a doc keeps
+    every row its pruned runs gave and only adds. `log runs` lists them, `log runs prune
     --apply` deletes them and keeps each one's findings.md, steps.jsonl,
     settle.json and requests by domain (`~/.logCli/runs/kept`,
     `runs/pruned.jsonl`). An agent hook (`scripts/hooks/storage.ts`) says so
@@ -703,8 +704,9 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     masked, twice), kept in Twenty's `socialAccounts.messengerPin` with the
     account's other secrets and never printed. `log inspect do pin --live`
     types it from the run's private login.json (rule 21). The Create PIN
-    screens are recorded with `log inspect` before any code clicks them (rule
-    29), then made a flow.
+    screens were recorded with `log inspect` on Bethlehem (rule 29) and made
+    the flow `messengerPinCreate` (`log flow run messengerPinCreate --account
+    <a> --live`).
 
 ## Checks
 

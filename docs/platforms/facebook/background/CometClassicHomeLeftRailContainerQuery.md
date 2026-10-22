@@ -13,7 +13,7 @@
 | Called from | `CometClassicHomeLeftRailContainer.react` |
 | rea | `ev_344ab74ba79925e4c65e7d7e1baed54ed21b8b5516428816c330a8a229cfc2b5` |
 
-Seen 9 time(s) in 4 run(s).
+Seen 11 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -26,6 +26,8 @@ Seen 9 time(s) in 4 run(s).
 | inspect | step 3: clickRole button "…" | 1 | 200 | 669 ms | 5491 ms | — |
 | inspect | step 71: dwell 1s | 1 | 200 | 585 ms | 8264 ms | — |
 | inspect | step 96: clickRole button "…" | 1 | 200 | 539 ms | 1305467 ms | — |
+| inspect | step 4: snapshot | 1 | 200 | 718 ms | 340 ms | — |
+| inspect | pin: typed the account's Messenger PIN | 1 | 200 | 801 ms | 556 ms | — |
 
 <!-- facts:end -->
 

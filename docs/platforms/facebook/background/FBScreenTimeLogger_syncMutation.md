@@ -13,7 +13,7 @@
 | Called from | `FBScreenTimeLogger.react` |
 | rea | `ev_9c20c08fbf4c14d62fa5b772be9b8dc2f4b32b06aa445a78cfb8f8ea86ba73c3` |
 
-Seen 40 time(s) in 13 run(s).
+Seen 41 time(s) in 14 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -39,6 +39,7 @@ Seen 40 time(s) in 13 run(s).
 | inspect | step 44: dwell 18s | 1 | 200 | 474 ms | 790 ms | — |
 | inspect | step 82: dwell 1s | 1 | 200 | 425 ms | 5069 ms | — |
 | inspect | step 96: clickRole button "…" | 6 | 200 | 386–1201 ms | 184115–1686233 ms | — |
+| inspect | step 1: goto /messages/ | 1 | 200 | 662 ms | 7270 ms | — |
 
 <!-- facts:end -->
 

@@ -13,11 +13,12 @@
 | Called from | `useMWEBAutoEBLogHighFrictionUpsellOnVisibleMutation` |
 | rea | `ev_698131f96ef00c75e52d40f021e3ab9fac9385e20bd3b94a6386aa30c6efd891` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | step 25: goto /messages/ | 2 | 200 | 390–498 ms | 2688–3681 ms | — |
+| inspect | step 1: goto /messages/ | 1 | 200 | 357 ms | 3318 ms | — |
 
 <!-- facts:end -->
 

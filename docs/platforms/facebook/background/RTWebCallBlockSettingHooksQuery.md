@@ -13,7 +13,7 @@
 | Called from | `RTWebCallBlockSettingHooks` |
 | rea | `ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6` |
 
-Seen 55 time(s) in 17 run(s).
+Seen 56 time(s) in 18 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -51,6 +51,7 @@ Seen 55 time(s) in 17 run(s).
 | inspect | step 22: goto /reel/ | 1 | 200 | 3699 ms | 2945 ms | — |
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 1921 ms | 5713 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 337 ms | 5594 ms | — |
+| inspect | step 1: goto /messages/ | 1 | 200 | 341 ms | 2996 ms | — |
 
 <!-- facts:end -->
 

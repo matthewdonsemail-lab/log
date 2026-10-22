@@ -13,7 +13,7 @@
 | Called from | `CometFeedInlineComposer.react` |
 | rea | `ev_3e02863ff58798e0b4e157f2227e5ceed62786408d21a22ae2d4cce84f7332b8` |
 
-Seen 9 time(s) in 4 run(s).
+Seen 11 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -26,6 +26,8 @@ Seen 9 time(s) in 4 run(s).
 | inspect | step 3: clickRole button "…" | 1 | 200 | 358 ms | 5476 ms | — |
 | inspect | step 71: dwell 1s | 1 | 200 | 405 ms | 8251 ms | — |
 | inspect | step 96: clickRole button "…" | 1 | 200 | 365 ms | 1305441 ms | — |
+| inspect | step 4: snapshot | 1 | 200 | 512 ms | 330 ms | — |
+| inspect | pin: typed the account's Messenger PIN | 1 | 200 | 411 ms | 538 ms | — |
 
 <!-- facts:end -->
 

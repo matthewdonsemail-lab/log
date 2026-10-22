@@ -13,7 +13,7 @@
 | Called from | `MAWVerifyThreadCutover` |
 | rea | `ev_2ef4fcf81840e4c44dfd19b7c86b9e3e65429109c06595cfc96262bcea9f2bc2` |
 
-Seen 54 time(s) in 16 run(s).
+Seen 55 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -50,6 +50,7 @@ Seen 54 time(s) in 16 run(s).
 | inspect | step 22: goto /reel/ | 1 | 200 | 3661 ms | 2982 ms | — |
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 2065 ms | 5570 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 381 ms | 5835 ms | — |
+| inspect | step 1: goto /messages/ | 1 | 200 | 360 ms | 3368 ms | — |
 
 <!-- facts:end -->
 

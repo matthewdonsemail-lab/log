@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_2bf6699551383f9ce8dbe17a0840942f44b115a3011e91a42cac57a9ed275ac6` |
+| rea | `ev_7b14255ffae0983107be9a29f3f73cb98d3df8e8098d67231359f8bf9ec36f64` |
 
-Seen 61 time(s) in 20 run(s).
+Seen 62 time(s) in 21 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -51,6 +51,7 @@ Seen 61 time(s) in 20 run(s).
 | inspect | step 20: goto /reel/<id> | 1 | 200 | 494 ms | 1118 ms | — |
 | inspect | step 22: goto /reel/ | 2 | 200 | 348–611 ms | 30–694 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 468 ms | 1021 ms | — |
+| inspect | step 1: goto /messages/ | 1 | 200 | 424 ms | 1696 ms | — |
 
 <!-- facts:end -->
 

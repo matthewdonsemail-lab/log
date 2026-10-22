@@ -13,7 +13,7 @@
 | Called from | `CometRightSideHeaderCards.react` |
 | rea | `ev_0ca298c8c568c93036a5e8e8d989f3baf2a29fa5ca4d1fd7a8070819f4515962` |
 
-Seen 9 time(s) in 4 run(s).
+Seen 11 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -26,6 +26,8 @@ Seen 9 time(s) in 4 run(s).
 | inspect | step 3: clickRole button "…" | 1 | 200 | 430 ms | 5495 ms | — |
 | inspect | step 71: dwell 1s | 1 | 200 | 441 ms | 8268 ms | — |
 | inspect | step 96: clickRole button "…" | 1 | 200 | 580 ms | 1305471 ms | — |
+| inspect | step 4: snapshot | 1 | 200 | 714 ms | 344 ms | — |
+| inspect | pin: typed the account's Messenger PIN | 1 | 200 | 627 ms | 558 ms | — |
 
 <!-- facts:end -->
 

@@ -11,9 +11,9 @@
 | Sends | `numContactsToFetch`, `scale` |
 | Reads | — |
 | Called from | `CometHomeContactsContainer.react` |
-| rea | `ev_e995d66efcc3f1441f66a4a1830248686b9e9528015dfffb1ae7ad809a2f133c` |
+| rea | `ev_1382c6aaad8caec306d87c00b9b241ef1e74ac91f09082d75f7694f794713881` |
 
-Seen 9 time(s) in 4 run(s).
+Seen 11 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -26,6 +26,8 @@ Seen 9 time(s) in 4 run(s).
 | inspect | step 3: clickRole button "…" | 1 | 200 | 623 ms | 5487 ms | — |
 | inspect | step 71: dwell 1s | 1 | 200 | 417 ms | 8261 ms | A server error field_exception occured. Check server logs for details. |
 | inspect | step 96: clickRole button "…" | 1 | 200 | 389 ms | 1305463 ms | A server error field_exception occured. Check server logs for details. |
+| inspect | step 4: snapshot | 1 | 200 | 715 ms | 351 ms | A server error field_exception occured. Check server logs for details. |
+| inspect | pin: typed the account's Messenger PIN | 1 | 200 | 757 ms | 566 ms | A server error field_exception occured. Check server logs for details. |
 
 <!-- facts:end -->
 

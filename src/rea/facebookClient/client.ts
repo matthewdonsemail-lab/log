@@ -1,12 +1,13 @@
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { basename, join, relative, resolve, sep } from "node:path";
+import { basename, dirname, join, relative, resolve, sep } from "node:path";
 import { defaultReaRunner, evidenceIdOf } from "../capture/client";
 import { parseSteps, splitHarBySteps } from "../capture/helpers/index";
 import type { ReaRunner } from "../capture/types";
 import { CAPTURE_FOLDERS } from "../../browser/driver/types";
-import { domainOf, importersOf, indexModules, readGraphqlDefinition, renderOperationDoc, requestsInStep, sliceFor } from "./helpers/index";
+import { domainOf, factsFromDoc, foldOperation, importersOf, indexModules, readGraphqlDefinition, renderOperationDoc, renderStoredSightings, requestsInStep, sliceFor } from "./helpers/index";
+import type { StoredFacts } from "./helpers/index";
 import type { RequestSeen } from "./helpers/index";
 import type { ClientDomain, ClientOperation, FacebookModule } from "./types";
 
@@ -228,13 +229,35 @@ function existingDoc(docsDir: string, name: string): string | null {
   return null;
 }
 
-/** Writes each operation's doc (facts replaced, reasoning kept) and the index the push gate reads. */
-export function writeOperationDocs(operations: ClientOperation[], docsDir: string, runs: number): { written: number; toWrite: number } {
+/**
+ * The facts store (rule 66): every request's fields and sightings across builds, so a doc keeps what pruned
+ * runs showed. Local, like the captures: it holds run ids, which carry account ids (rule 19).
+ */
+export function clientFactsPath(): string {
+  return join(process.env.LOG_CAPTURES_ROOT || join(homedir(), ".logCli"), "rea", "clientFacts.json");
+}
+
+/** Writes each operation's doc (facts folded into the store, reasoning kept) and the index the push gate reads. */
+export function writeOperationDocs(operations: ClientOperation[], docsDir: string, runs: number, storePath = clientFactsPath()): { written: number; toWrite: number } {
   let toWrite = 0;
+  let store: Record<string, StoredFacts> = {};
+  try {
+    store = JSON.parse(readFileSync(storePath, "utf8")) as Record<string, StoredFacts>;
+  } catch {
+    // first build with a store: each request starts from its committed doc
+  }
+  const seenBy = new Map<string, number>();
+  const kindBy = new Map<string, ClientOperation["kind"]>();
   for (const operation of operations) {
     const path = join(docsDir, operation.domain, `${operation.name}.md`);
     const old = existingDoc(docsDir, operation.name);
-    const doc = renderOperationDoc(operation, old ? readFileSync(old, "utf8") : null);
+    const oldText = old ? readFileSync(old, "utf8") : null;
+    const facts = foldOperation(store[operation.name] ?? (oldText ? factsFromDoc(oldText) : null), operation);
+    store[operation.name] = facts;
+    seenBy.set(operation.name, facts.seen);
+    kindBy.set(operation.name, facts.kind);
+    const known = { ...operation, kind: facts.kind, sends: facts.sends, reads: facts.reads, calledFrom: facts.calledFrom, reaEvidenceId: facts.reaEvidenceId };
+    const doc = renderOperationDoc(known, oldText, renderStoredSightings(facts));
     mkdirSync(join(docsDir, operation.domain), { recursive: true });
     writeFileSync(path, doc);
     if (old && resolve(old) !== resolve(path)) rmSync(old);
@@ -254,16 +277,18 @@ export function writeOperationDocs(operations: ClientOperation[], docsDir: strin
   const current: Entry[] = operations.map((o) => ({
     name: o.name,
     domain: o.domain,
-    kind: o.kind,
+    kind: kindBy.get(o.name) ?? o.kind,
     docId: o.docId,
     doc: `${o.domain}/${o.name}.md`,
     reaEvidenceId: o.reaEvidenceId ?? before.get(o.name)?.reaEvidenceId ?? null,
-    seen: Math.max(o.sightings.length, before.get(o.name)?.seen ?? 0),
+    seen: seenBy.get(o.name) ?? o.sightings.length,
   }));
   const seenNow = new Set(current.map((e) => e.name));
   const kept = previous.filter((e) => !seenNow.has(e.name) && existsSync(join(docsDir, e.doc)));
   const index = { builtAt: new Date().toISOString(), runs, operations: [...current, ...kept].sort((x, y) => x.name.localeCompare(y.name)) };
   writeFileSync(join(docsDir, DOCS_INDEX), `${JSON.stringify(index, null, 2)}\n`);
+  mkdirSync(dirname(storePath), { recursive: true });
+  writeFileSync(storePath, `${JSON.stringify(store)}\n`);
   return { written: operations.length, toWrite };
 }
 

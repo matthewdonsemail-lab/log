@@ -4270,3 +4270,70 @@ Checked: live on Bethlehem, and every gate.
 - **Runs:** `log runs prune --apply` pruned 116 analysed runs, 12.5 GB, and kept each one's findings, steps and domains. The disk went from 2 GB to 15 GB free.
 - **Gates:** `bun test` 781 pass, 0 fail; `tsc --noEmit` clean; `check:docs`, `check:agentHooks`, `check:browsers`, `check:layout`, `check:naming` and `check:facebookClientDocs` all pass.
 - **Not run live yet:** the Create PIN screens and `inspect do pin`, because AdsPower refused to start before the disk was cleared.
+
+## 2026-10-22 10:14Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/EBFetchBackupIdsSharedFragmentQuery.md`: new file
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MWQuickPromotionThreadlistBannerQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/VestaServerGraphQLRegisterProviderBeginRegisterMutation.md`: new file
+- `docs/platforms/facebook/background/VestaServerGraphQLRegisterProviderFinishRegisterMutation.md`: new file
+- `docs/platforms/facebook/background/VestaServerGraphQLRegisterProviderInitQuery.md`: new file
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEBAutoEBLogHighFrictionUpsellOnVisibleMutation.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/flows/messengerPinCreate.md`: new file
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/status.md`: edited
+- `scripts/tests/preload.ts`: no declaration changed (comments, formatting or line endings)
+- `skills/runs/SKILL.md`: edited
+- `src/browser/flow/definitions/messengerPinCreate.json`: new file
+- `src/browser/flow/helpers/pageState.ts`: changed const PAGE_STATES
+- `src/rea/facebookClient/client.ts`: added function clientFactsPath · changed function writeOperationDocs
+- `src/rea/facebookClient/factsStore.test.ts`: added const sight, const op, test "a run is counted once, however many builds read it", test "a build that couldn't read the bundle keeps the fields an earlier one did", test "a committed doc is read back as the start, and a rebuild after its runs are pruned only adds", test "the table renders as the docs always did"
+- `src/rea/facebookClient/helpers/factsStore.ts`: added interface FactsRow, interface StoredFacts, const label, const key, function mergeRows, function rowsOf, const listOf, const rangeOf, function factsFromDoc, function foldOperation, const range, function renderStoredSightings
+- `src/rea/facebookClient/helpers/index.ts`: added export from "./factsStore"
+- `src/rea/facebookClient/helpers/renderOperationDoc.ts`: changed function renderFacts, function renderOperationDoc
+
+What changed: Messenger's Create PIN is recorded and is a flow, and the request docs keep what pruned runs showed.
+- **The flow:** `messengerPinCreate` (`src/browser/flow/definitions/messengerPinCreate.json`, its doc, MCP tool `flowMessengerPinCreate`). It goes to /messages/, clicks "Create PIN", then runs `pin` and `pin` again, confirmed by `VestaServerGraphQLRegisterProviderBeginRegisterMutation`. The `messengerPinCreate` page state's resolver now points at it.
+- **The facts store** (`src/rea/facebookClient/helpers/factsStore.ts`) gives the docs build every request's fields and sightings across builds, in `~/.logCli/rea/clientFacts.json`, which stays local.
+  - Each run's sightings are counted once (`foldOperation`).
+  - A field this build couldn't read, kind included, keeps what an earlier build read.
+  - A request missing from the store starts from its committed doc (`factsFromDoc`).
+  - `writeOperationDocs` renders from the store (`renderStoredSightings`), and `renderFacts` and `renderOperationDoc` take the sightings table.
+  - The test preload points `LOG_CAPTURES_ROOT` at scratch.
+- **Docs:** the 4 new PIN requests have their reasoning written. `docs/status.md` marks the PIN ✅. Rule 66, rule 67 and `skills/runs` are updated.
+Why: two reasons.
+- matt asked for Messenger's PIN to be passed and recorded so the conversations can be reached; he gave Bethlehem's PIN.
+- The first docs rebuild after the prune had cut 23 docs down to only today's run (FBYRPTimeLimitsEnforcementQuery went from 17 runs to 1, losing its Reads, Called from and rea), which broke rule 66's promise that pruned runs stay documented.
+Checked: on Bethlehem (inspect 20261022T100521, `--bypass`), the dialog was flagged as `messengerPinCreate`.
+- **Live:** Create PIN was clicked, the PIN typed from Twenty and typed again to confirm, and the PIN never appeared in any output. Facebook answered Init, Begin and Finish register with 200, then the inbox showed (Chats, All, Unread, Groups). rea settled 11 step HARs.
+- **Docs rebuild:** from the restored committed docs it only adds: FBYRP 55 → 56 sightings in 18 runs, every old row kept. Kind and Reads are kept when the bundle wasn't read.
+- **Gates:** `bun test` 785 pass; `tsc` clean; the docs gate reports 194 requests documented.
+- **Not checked:** the flow run as a flow (Bethlehem's PIN is set now), and the "Enter your PIN" screen a new device would show.

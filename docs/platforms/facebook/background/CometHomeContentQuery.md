@@ -13,7 +13,7 @@
 | Called from | `CometHomeContent.react` |
 | rea | `ev_cf23e67c25aa3ceb49db2a20048e8ce344dfa1f57457ba9df343170946991f9b` |
 
-Seen 9 time(s) in 4 run(s).
+Seen 11 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -26,6 +26,8 @@ Seen 9 time(s) in 4 run(s).
 | inspect | step 3: clickRole button "…" | 1 | 200 | 396 ms | 5489 ms | — |
 | inspect | step 71: dwell 1s | 1 | 200 | 412 ms | 8263 ms | — |
 | inspect | step 96: clickRole button "…" | 1 | 200 | 493 ms | 1305465 ms | — |
+| inspect | step 4: snapshot | 1 | 200 | 483 ms | 339 ms | — |
+| inspect | pin: typed the account's Messenger PIN | 1 | 200 | 580 ms | 554 ms | — |
 
 <!-- facts:end -->
 

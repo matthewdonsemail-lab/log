@@ -13,7 +13,7 @@
 | Called from | `OhaiWebPublicKeyConfig` |
 | rea | `ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013` |
 
-Seen 55 time(s) in 17 run(s).
+Seen 56 time(s) in 18 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -51,6 +51,7 @@ Seen 55 time(s) in 17 run(s).
 | inspect | step 22: goto /reel/ | 1 | 200 | 2420 ms | 2624 ms | — |
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 1307 ms | 5461 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 340 ms | 5471 ms | — |
+| inspect | step 1: goto /messages/ | 1 | 200 | 352 ms | 2825 ms | — |
 
 <!-- facts:end -->
 

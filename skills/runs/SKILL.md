@@ -26,8 +26,14 @@ an inspect run up to 1.4 GB. On 2026-10-22 they reached 12.5 GB, the disk had
    - one line in `~/.logCli/runs/pruned.jsonl`: size, settled, documented, and
      its requests counted by docs domain (`groups`, `reels`, `checkpoint`…).
 
-   A request's doc stays when its runs are gone: the docs build is cumulative
-   (`src/rea/facebookClient/client.ts`).
+   A request's doc keeps what its pruned runs showed. The docs build folds
+   every request's fields and sightings into `~/.logCli/rea/clientFacts.json`
+   (local: run ids carry account ids). Each run is counted once, a request
+   seen again only adds its new rows, and a field a later build couldn't read
+   (the bundle wasn't captured) keeps what was known. Without the store, a
+   request starts from its committed doc (`factsFromDoc`). First seen
+   2026-10-22: a rebuild after the prune had cut FBYRPTimeLimitsEnforcementQuery
+   from 17 runs to 1.
 
 ## The hook
 

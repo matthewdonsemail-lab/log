@@ -11,3 +11,5 @@ import { join } from 'node:path'
 const scratch = mkdtempSync(join(tmpdir(), 'logCliTestRuns'))
 process.env.LOG_RUNS_DIR ??= join(scratch, 'runs')
 process.env.LOG_UNSAVED_DIR ??= join(scratch, 'runs', 'unsaved')
+// The request docs' facts store (`~/.logCli/rea/clientFacts.json`, rule 66) and `log runs` read this root.
+process.env.LOG_CAPTURES_ROOT ??= scratch

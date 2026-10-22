@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_2bf6699551383f9ce8dbe17a0840942f44b115a3011e91a42cac57a9ed275ac6` |
+| rea | `ev_7b14255ffae0983107be9a29f3f73cb98d3df8e8098d67231359f8bf9ec36f64` |
 
-Seen 708 time(s) in 17 run(s).
+Seen 712 time(s) in 18 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -249,6 +249,7 @@ Seen 708 time(s) in 17 run(s).
 | inspect | step 88: clickRole button "…" | 1 | 200 | 692 ms | 2175 ms | — |
 | inspect | step 92: clickRole button "…" | 1 | 200 | 751 ms | 1219 ms | — |
 | inspect | step 96: clickRole button "…" | 1 | 200 | 1454 ms | 1586 ms | — |
+| inspect | step 1: goto /messages/ | 4 | 200 | 375–500 ms | 2447–3354 ms | — |
 
 <!-- facts:end -->
 

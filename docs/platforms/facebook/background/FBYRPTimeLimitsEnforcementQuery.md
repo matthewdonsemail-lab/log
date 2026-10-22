@@ -13,7 +13,7 @@
 | Called from | `FBYRPTimeLimitsEnforcement.react` |
 | rea | `ev_ed1a3cfe4b9656a9ad3ddf8f3e05b4767495c0d780a6a027450c86c6d19c34c6` |
 
-Seen 55 time(s) in 17 run(s).
+Seen 56 time(s) in 18 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -51,6 +51,7 @@ Seen 55 time(s) in 17 run(s).
 | inspect | step 22: goto /reel/ | 1 | 200 | 327 ms | 1438 ms | — |
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 465 ms | 4009 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 333 ms | 4910 ms | — |
+| inspect | step 1: goto /messages/ | 1 | 200 | 362 ms | 2291 ms | — |
 
 <!-- facts:end -->
 

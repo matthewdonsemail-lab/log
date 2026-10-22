@@ -165,6 +165,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | `flowGroupPostComments` | `log flow run groupPostComments` | On a group's Open questions tab, open a post's comments, switch the sort to All comments and scroll them; read-only | `groupId` | gotogroupsQuestions → clickLeaveAComment → clickMostRelevant → clickAllCommentsShowAll → scroll |
 | `flowGroupPostDialog` | `log flow run groupPostDialog` | On a group's Discussion feed, open a post in its dialog with Leave a comment (the comment box takes focus, nothing is typed) and close it | `groupId` | gotogroups → clickLeaveAComment → clickClose |
 | `flowGroupTabs` | `log flow run groupTabs` | Open each tab of a group the account is in (Featured, Open questions, People, Events, Media, Files, About) and come back to Discussion; read-only | `groupId` | gotogroups → clickFeatured → clickOpenQuestions → clickPeople → clickEvents → clickMedia → clickFiles → clickAbout → clickDiscussion |
+| `flowMessengerPinCreate` | `log flow run messengerPinCreate` | Messenger's Create a PIN: open /messages/, press Create PIN, type the account's PIN from Twenty, then again to confirm (rule 67). Recorded on Bethlehem 2026-10-22. | none | gotomessages → clickCreatePin → pin → pin |
 | `flowPostComment` | `log flow run postComment` | Comment on the newest post on the account's own profile: type in its Write a comment box, Post comment (useCometUFICreateCommentMutation). Writes on Facebook (--live). | `comment` | gotoprofilePhp → fillWriteAComment → clickPostComment |
 | `flowProfilePhotoPost` | `log flow run profilePhotoPost` | Post a photo on the account's own profile: Photo/video hands the file to the chooser, the upload finishes, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live). | `photo` | gotoprofilePhp → uploadPhotoVideo → clickPost |
 | `flowProfilePost` | `log flow run profilePost` | Post text on the account's own profile: open the composer, type the text, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live). | `text` | gotoprofilePhp → clickWhatSOnYour → fillWhatSOnYour → clickPost |
@@ -315,6 +316,9 @@ flowchart TB
   f_groupTabs["flowGroupTabs: flow run groupTabs"]
   mcp --> f_groupTabs
   f_groupTabs --> c_flow
+  f_messengerPinCreate["flowMessengerPinCreate: flow run messengerPinCreate"]
+  mcp --> f_messengerPinCreate
+  f_messengerPinCreate --> c_flow
   f_postComment["flowPostComment: flow run postComment"]
   mcp --> f_postComment
   f_postComment --> c_flow

@@ -13,7 +13,7 @@
 | Called from | `StoriesTrayRectangularRoot.react` |
 | rea | `ev_c974048d5563e87d75f5e8ddd458fdc3829a195d00e0a636a969922c24e6ae81` |
 
-Seen 8 time(s) in 4 run(s).
+Seen 9 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -25,6 +25,7 @@ Seen 8 time(s) in 4 run(s).
 | inspect | step 24: clickRole button "…" | 1 | 200 | 862 ms | 1258023 ms | — |
 | inspect | step 3: clickRole button "…" | 1 | 200 | 575 ms | 5497 ms | — |
 | inspect | step 71: dwell 1s | 1 | 200 | 625 ms | 8271 ms | — |
+| inspect | step 4: snapshot | 1 | 200 | 902 ms | 354 ms | — |
 
 <!-- facts:end -->
 

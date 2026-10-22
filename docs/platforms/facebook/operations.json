@@ -1,6 +1,6 @@
 {
-  "builtAt": "2026-10-22T09:45:02.013Z",
-  "runs": 25,
+  "builtAt": "2026-10-22T10:13:30.087Z",
+  "runs": 2,
   "operations": [
     {
       "name": "ajaxBnzai",
@@ -8,8 +8,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxBnzai.md",
-      "reaEvidenceId": "ev_2bf6699551383f9ce8dbe17a0840942f44b115a3011e91a42cac57a9ed275ac6",
-      "seen": 394
+      "reaEvidenceId": "ev_f3bc89d5bef63f03a9d17d58e03841af64b81c2a932164a358fd4c737372a9e2",
+      "seen": 399
     },
     {
       "name": "ajaxBulkRouteDefinitions",
@@ -17,8 +17,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxBulkRouteDefinitions.md",
-      "reaEvidenceId": "ev_2bf6699551383f9ce8dbe17a0840942f44b115a3011e91a42cac57a9ed275ac6",
-      "seen": 708
+      "reaEvidenceId": "ev_7b14255ffae0983107be9a29f3f73cb98d3df8e8098d67231359f8bf9ec36f64",
+      "seen": 712
     },
     {
       "name": "ajaxBz",
@@ -44,8 +44,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxQm.md",
-      "reaEvidenceId": "ev_2bf6699551383f9ce8dbe17a0840942f44b115a3011e91a42cac57a9ed275ac6",
-      "seen": 95
+      "reaEvidenceId": "ev_7b14255ffae0983107be9a29f3f73cb98d3df8e8098d67231359f8bf9ec36f64",
+      "seen": 62
     },
     {
       "name": "ajaxReactComposerAttachmentsPhotoUpload",
@@ -62,8 +62,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxRelayEf.md",
-      "reaEvidenceId": "ev_2bf6699551383f9ce8dbe17a0840942f44b115a3011e91a42cac57a9ed275ac6",
-      "seen": 497
+      "reaEvidenceId": "ev_577e32ac6e9521c6cf80f206bb4e4d92a857963852b54684c9947bfab6930c7e",
+      "seen": 502
     },
     {
       "name": "ajaxRouteDefinition",
@@ -108,7 +108,7 @@
       "docId": "37551561817767907",
       "doc": "background/CometClassicHomeLeftRailContainerQuery.md",
       "reaEvidenceId": "ev_344ab74ba79925e4c65e7d7e1baed54ed21b8b5516428816c330a8a229cfc2b5",
-      "seen": 9
+      "seen": 11
     },
     {
       "name": "CometFacebookIXTNextMutation",
@@ -126,7 +126,7 @@
       "docId": "38525622117053498",
       "doc": "background/CometFeedInlineComposerQuery.md",
       "reaEvidenceId": "ev_3e02863ff58798e0b4e157f2227e5ceed62786408d21a22ae2d4cce84f7332b8",
-      "seen": 9
+      "seen": 11
     },
     {
       "name": "CometFeedStoryMenuQuery",
@@ -188,8 +188,8 @@
       "kind": "query",
       "docId": "9934887189887478",
       "doc": "background/CometHomeContactChannelsContainerQuery.md",
-      "reaEvidenceId": "ev_27664f28e3f3d309d196308b9c43966f0ed688c1846687da50769bd0e941bfe3",
-      "seen": 9
+      "reaEvidenceId": "ev_2b20cf591a095f7b9165ab97b7e2f350cb7e8c5253fad588365b692a046465d8",
+      "seen": 11
     },
     {
       "name": "CometHomeContactCommunityChatsContainerQuery",
@@ -197,8 +197,8 @@
       "kind": "query",
       "docId": "26941462065448526",
       "doc": "background/CometHomeContactCommunityChatsContainerQuery.md",
-      "reaEvidenceId": "ev_ff39c007f8bb69c80d97054de98908b54ee980822a6e89a6dbd0fbf56d559bf9",
-      "seen": 9
+      "reaEvidenceId": "ev_38a62071407b1d580cabfa2361b5d2c8ad31a9bb9fb9fefb54b7b887fa2b16aa",
+      "seen": 11
     },
     {
       "name": "CometHomeContactGroupsContainerQuery",
@@ -206,8 +206,8 @@
       "kind": "query",
       "docId": "25945115421852941",
       "doc": "background/CometHomeContactGroupsContainerQuery.md",
-      "reaEvidenceId": "ev_1d05a014baf2cd336fd869d4a53a30ef7d6ab76df49c9ced2a1e73b1a60e03dd",
-      "seen": 9
+      "reaEvidenceId": "ev_afbb77778bb0832d0311179d99af4e1015fdbeadac3bded27db6e5939b581138",
+      "seen": 11
     },
     {
       "name": "CometHomeContactsContainerQuery",
@@ -215,8 +215,8 @@
       "kind": "query",
       "docId": "28451034771148738",
       "doc": "background/CometHomeContactsContainerQuery.md",
-      "reaEvidenceId": "ev_e995d66efcc3f1441f66a4a1830248686b9e9528015dfffb1ae7ad809a2f133c",
-      "seen": 9
+      "reaEvidenceId": "ev_1382c6aaad8caec306d87c00b9b241ef1e74ac91f09082d75f7694f794713881",
+      "seen": 11
     },
     {
       "name": "CometHomeContentQuery",
@@ -225,7 +225,7 @@
       "docId": "28262615193401316",
       "doc": "background/CometHomeContentQuery.md",
       "reaEvidenceId": "ev_cf23e67c25aa3ceb49db2a20048e8ce344dfa1f57457ba9df343170946991f9b",
-      "seen": 9
+      "seen": 11
     },
     {
       "name": "CometHomeCreateMenuContentQuery",
@@ -360,7 +360,7 @@
       "docId": "28541893478753857",
       "doc": "background/CometMegaphoneRootQuery.md",
       "reaEvidenceId": "ev_a2e1e82b09a10f9f97361e424dc787adb4a3a8c0a7bb15f7feb91de015e7d2fa",
-      "seen": 8
+      "seen": 9
     },
     {
       "name": "CometModernHomeFeedQuery",
@@ -369,7 +369,7 @@
       "docId": "28879564961664795",
       "doc": "background/CometModernHomeFeedQuery.md",
       "reaEvidenceId": "ev_4ec8830d6ef6271498b3372408c4bf6f0e0db14c6da5786e3a458e2f191f2b3d",
-      "seen": 8
+      "seen": 9
     },
     {
       "name": "CometNewsFeedPaginationQuery",
@@ -432,7 +432,7 @@
       "docId": "29755211854079266",
       "doc": "background/CometRightSideHeaderCardsQuery.md",
       "reaEvidenceId": "ev_0ca298c8c568c93036a5e8e8d989f3baf2a29fa5ca4d1fd7a8070819f4515962",
-      "seen": 9
+      "seen": 11
     },
     {
       "name": "CometSearchBootstrapKeywordsDataSourceQuery",
@@ -441,7 +441,7 @@
       "docId": "27797631676573850",
       "doc": "background/CometSearchBootstrapKeywordsDataSourceQuery.md",
       "reaEvidenceId": "ev_5cb62e3a7cd21788732d77960d11bcea0adc8730aaaa23e6a78c097c1c44c7a6",
-      "seen": 54
+      "seen": 55
     },
     {
       "name": "CometSearchKeywordDataSourceQuery",
@@ -588,6 +588,15 @@
       "seen": 1
     },
     {
+      "name": "EBFetchBackupIdsSharedFragmentQuery",
+      "domain": "background",
+      "kind": "query",
+      "docId": "25164225499885252",
+      "doc": "background/EBFetchBackupIdsSharedFragmentQuery.md",
+      "reaEvidenceId": "ev_e9b67921b83e1e4b1e1e87836c9b6acfe8abcfcc56deb5844bbdff1bb58749b7",
+      "seen": 6
+    },
+    {
       "name": "EntPhotoCollageItemContainerQuery",
       "domain": "photos",
       "kind": "query",
@@ -630,7 +639,7 @@
       "docId": "28969188822673160",
       "doc": "background/FBScreenTimeLogger_syncMutation.md",
       "reaEvidenceId": "ev_9c20c08fbf4c14d62fa5b772be9b8dc2f4b32b06aa445a78cfb8f8ea86ba73c3",
-      "seen": 40
+      "seen": 41
     },
     {
       "name": "FBUnifiedVideoContainerQuery",
@@ -693,7 +702,7 @@
       "docId": "28750953961225359",
       "doc": "background/FBYRPTimeLimitsEnforcementQuery.md",
       "reaEvidenceId": "ev_ed1a3cfe4b9656a9ad3ddf8f3e05b4767495c0d780a6a027450c86c6d19c34c6",
-      "seen": 55
+      "seen": 56
     },
     {
       "name": "FeedComposerCometRootQuery",
@@ -711,7 +720,7 @@
       "docId": "9713919638685405",
       "doc": "background/fetchMWChatVideoAutoplaySettingQuery.md",
       "reaEvidenceId": "ev_cec3d0049369021eb11311f83bae206c05ab77298da76206b6788d2cdc5c8ee1",
-      "seen": 55
+      "seen": 56
     },
     {
       "name": "FriendingCometMutualFriendsSocialContextTooltipContentQuery",
@@ -1116,7 +1125,7 @@
       "docId": "9948369021930229",
       "doc": "background/MAWVerifyThreadCutover_ContactCapabilities2Query.md",
       "reaEvidenceId": "ev_2ef4fcf81840e4c44dfd19b7c86b9e3e65429109c06595cfc96262bcea9f2bc2",
-      "seen": 54
+      "seen": 55
     },
     {
       "name": "MWQuickPromotionThreadlistBannerQuery",
@@ -1125,7 +1134,7 @@
       "docId": "27805253425807021",
       "doc": "background/MWQuickPromotionThreadlistBannerQuery.md",
       "reaEvidenceId": "ev_53d322ba1b4a1e349ff941bf53186d5d9121e16f87cd8d7e1191528918759b00",
-      "seen": 2
+      "seen": 3
     },
     {
       "name": "OhaiWebPublicKeyConfigQuery",
@@ -1134,7 +1143,7 @@
       "docId": "26996952523264441",
       "doc": "background/OhaiWebPublicKeyConfigQuery.md",
       "reaEvidenceId": "ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013",
-      "seen": 55
+      "seen": 56
     },
     {
       "name": "ProfileCometAboutAppSectionQuery",
@@ -1287,7 +1296,7 @@
       "docId": "9989124061109700",
       "doc": "background/RTWebCallBlockSettingHooksQuery.md",
       "reaEvidenceId": "ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6",
-      "seen": 55
+      "seen": 56
     },
     {
       "name": "SearchCometResultsInitialResultsParallelFetchQuery",
@@ -1332,7 +1341,7 @@
       "docId": "27831542276468324",
       "doc": "background/StoriesTrayRectangularRootQuery.md",
       "reaEvidenceId": "ev_c974048d5563e87d75f5e8ddd458fdc3829a195d00e0a636a969922c24e6ae81",
-      "seen": 8
+      "seen": 9
     },
     {
       "name": "triggerGroupsCometHeaderInviteWithEmailExposureQuery",
@@ -1647,7 +1656,7 @@
       "docId": "25406806015621469",
       "doc": "background/useMWEBAutoEBLogHighFrictionUpsellOnVisibleMutation.md",
       "reaEvidenceId": "ev_698131f96ef00c75e52d40f021e3ab9fac9385e20bd3b94a6386aa30c6efd891",
-      "seen": 2
+      "seen": 3
     },
     {
       "name": "useMWEncryptedBackupsFetchBackupIdsV2Query",
@@ -1656,7 +1665,7 @@
       "docId": "25220416984279164",
       "doc": "background/useMWEncryptedBackupsFetchBackupIdsV2Query.md",
       "reaEvidenceId": "ev_16df7daca80a72c8f44b7a489690336b7def96e564429f0639a122f48023372a",
-      "seen": 55
+      "seen": 56
     },
     {
       "name": "usePseudoBlockedUserInterstitialF3Query",
@@ -1665,7 +1674,7 @@
       "docId": "27255340990751033",
       "doc": "checkpoint/usePseudoBlockedUserInterstitialF3Query.md",
       "reaEvidenceId": "ev_4f0f59bc7d5ff4c02ef9f2aba85fc9de893084a7a8fbdf3f1627ce6c1c3456fe",
-      "seen": 71
+      "seen": 72
     },
     {
       "name": "useSearchCometTypeaheadBootstrapValidationQuery",
@@ -1693,6 +1702,33 @@
       "doc": "checkpoint/useUFACSubmitActionMutation.md",
       "reaEvidenceId": "ev_e4f13bdff7b9aeebfd4f4bc936b4cade3eba5b723439cf5aa62ef31b4e9a43ef",
       "seen": 4
+    },
+    {
+      "name": "VestaServerGraphQLRegisterProviderBeginRegisterMutation",
+      "domain": "background",
+      "kind": "mutation",
+      "docId": "28946945608223566",
+      "doc": "background/VestaServerGraphQLRegisterProviderBeginRegisterMutation.md",
+      "reaEvidenceId": "ev_2924f9b4596476d72ddd0d7eac49dd047b84ab0e69b53c1d37f2db0fb25414e6",
+      "seen": 3
+    },
+    {
+      "name": "VestaServerGraphQLRegisterProviderFinishRegisterMutation",
+      "domain": "background",
+      "kind": "mutation",
+      "docId": "39510870261845795",
+      "doc": "background/VestaServerGraphQLRegisterProviderFinishRegisterMutation.md",
+      "reaEvidenceId": "ev_0ab5183bd10aac3cce52a56ca59b5b4aaad0be331c0f278051ebc1a761677bbf",
+      "seen": 3
+    },
+    {
+      "name": "VestaServerGraphQLRegisterProviderInitQuery",
+      "domain": "background",
+      "kind": "query",
+      "docId": "28155079630814325",
+      "doc": "background/VestaServerGraphQLRegisterProviderInitQuery.md",
+      "reaEvidenceId": "ev_f8d7dbbc5caa47e5c59be1766812ea2ff24bdda79e0e3f8b75a43428469f543a",
+      "seen": 3
     },
     {
       "name": "videoUnifiedCvc",

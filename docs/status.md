@@ -35,7 +35,7 @@ Accounts in the runs: Bethlehem 61594063207669, Reading 61594131334566, Lancaste
 | `log facebook watch` | 🔴 2026-10-18 | Stopped at `never_connected` / `session_expired`. Never checked a real listing. |
 | `log proxy check` / `assign` / `balance` | ✅ 2026-10-22 | Byteful for Bethlehem and Lancaster |
 | `log proxy static` | 🟡 | Never run live |
-| `log facebook messenger pin` | 🟡 2026-10-22 | Bethlehem's PIN is in Twenty (`--show`: set). The Clack prompt ran in a terminal; the PIN given in chat was saved through the same Twenty update. `log inspect do pin --live` and the Create PIN screens haven't run: AdsPower refused to start (disk full) before the recording. |
+| `log facebook messenger pin` + the `messengerPinCreate` flow | ✅ 2026-10-22 | Bethlehem: the PIN is in Twenty (`--show`: set). Recorded with `log inspect` (20261022T100521): Create PIN, `pin`, `pin` again; Facebook registered it (`VestaServerGraphQLRegisterProvider…`, 200) and the inbox opened. Made the flow `messengerPinCreate`, which hasn't run as a flow yet (Bethlehem's PIN is set now). The "Enter your PIN" screen a new device would show isn't recorded. |
 | `log adsPower sync` / `status` | ✅ 2026-10-19 | Made 10 profiles. Two capabilities are marked not built: `syncSessions` (publish, connect and profile still launch Camoufox) and `oneMachineAtATime` (the per-account browser lock). |
 
 ## 3. The host and the account's lifecycle (rule 35)
@@ -106,7 +106,7 @@ Accounts in the runs: Bethlehem 61594063207669, Reading 61594131334566, Lancaste
 
 | | ✅ live | 🟡 untested live | 🔴 failed or partial | ⬜ not built |
 |---|---|---|---|---|
-| The 55 commands and steps above | 23 | 17 | 7 | 8 |
+| The 55 commands and steps above | 24 | 16 | 7 | 8 |
 
 Under half of what's built has been proven live. Most of what's proven is Twenty, inspect, joining and reading a group, and one publish. Almost everything that acts on its own (the host's day, connect/scan/watch on AdsPower, campaigns) hasn't been. The five warm-up stages have, on 2026-10-22. Group reading counts as ✅ for its first version, though the current version hasn't run live.
 
@@ -122,7 +122,7 @@ These are the ⬜ rows, and the 🔴 rows that block something.
 6. **Acting on `socialListening` matches** (#188 step 5).
 7. **The profile rename**, and `settingName` in the host.
 8. **The Reels persona run** passing live again.
-9. **Messenger's Create PIN screens** recorded and made a flow (rule 67): the inbox is behind them.
+9. **Messenger's "Enter your PIN"**, when an account with a PIN meets Messenger on a new device (not seen yet). The Create PIN screens are recorded and a flow since 2026-10-22.
 
 Done 2026-10-22: Listaro's five warm-up stages as flows (recorded, saved, run).
 

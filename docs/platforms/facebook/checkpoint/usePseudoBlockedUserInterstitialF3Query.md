@@ -13,7 +13,7 @@
 | Called from | `usePseudoBlockedUserInterstitial` |
 | rea | `ev_4f0f59bc7d5ff4c02ef9f2aba85fc9de893084a7a8fbdf3f1627ce6c1c3456fe` |
 
-Seen 71 time(s) in 17 run(s).
+Seen 72 time(s) in 18 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -64,6 +64,7 @@ Seen 71 time(s) in 17 run(s).
 | inspect | step 22: goto /reel/ | 1 | 200 | 3020 ms | 2940 ms | — |
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 1315 ms | 5511 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 334 ms | 5589 ms | — |
+| inspect | step 1: goto /messages/ | 1 | 200 | 344 ms | 3256 ms | — |
 
 <!-- facts:end -->
 

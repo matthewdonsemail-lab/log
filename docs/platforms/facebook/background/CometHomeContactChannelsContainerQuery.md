@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | `viewer....CometHomeContactChannels_viewer` |
 | Called from | `CometHomeContactChannelsContainer.react` |
-| rea | `ev_27664f28e3f3d309d196308b9c43966f0ed688c1846687da50769bd0e941bfe3` |
+| rea | `ev_2b20cf591a095f7b9165ab97b7e2f350cb7e8c5253fad588365b692a046465d8` |
 
-Seen 9 time(s) in 4 run(s).
+Seen 11 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -26,6 +26,8 @@ Seen 9 time(s) in 4 run(s).
 | inspect | step 3: clickRole button "…" | 1 | 200 | 381 ms | 5482 ms | — |
 | inspect | step 71: dwell 1s | 1 | 200 | 400 ms | 8256 ms | — |
 | inspect | step 96: clickRole button "…" | 1 | 200 | 370 ms | 1305455 ms | — |
+| inspect | step 4: snapshot | 1 | 200 | 714 ms | 346 ms | — |
+| inspect | pin: typed the account's Messenger PIN | 1 | 200 | 617 ms | 560 ms | — |
 
 <!-- facts:end -->
 

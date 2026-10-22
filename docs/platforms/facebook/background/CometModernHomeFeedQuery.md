@@ -13,7 +13,7 @@
 | Called from | `CometModernHomeFeed.react` |
 | rea | `ev_4ec8830d6ef6271498b3372408c4bf6f0e0db14c6da5786e3a458e2f191f2b3d` |
 
-Seen 8 time(s) in 4 run(s).
+Seen 9 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -25,6 +25,7 @@ Seen 8 time(s) in 4 run(s).
 | inspect | step 24: clickRole button "…" | 1 | 200 | 2948 ms | 1258004 ms | — |
 | inspect | step 3: clickRole button "…" | 1 | 200 | 2988 ms | 5480 ms | — |
 | inspect | step 71: dwell 1s | 1 | 200 | 3485 ms | 8254 ms | — |
+| inspect | step 4: snapshot | 1 | 200 | 3390 ms | 335 ms | — |
 
 <!-- facts:end -->
 

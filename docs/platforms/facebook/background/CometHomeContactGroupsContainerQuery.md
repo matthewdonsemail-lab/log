@@ -11,9 +11,9 @@
 | Sends | `excludeBroadcastChannelThreads`, `excludeCmThreads`, `__relay_internal__pv__WebPixelRatiorelayprovider` |
 | Reads | `viewer....CometHomeContactGroups_viewer` |
 | Called from | `CometHomeContactGroupsContainer.react` |
-| rea | `ev_1d05a014baf2cd336fd869d4a53a30ef7d6ab76df49c9ced2a1e73b1a60e03dd` |
+| rea | `ev_afbb77778bb0832d0311179d99af4e1015fdbeadac3bded27db6e5939b581138` |
 
-Seen 9 time(s) in 4 run(s).
+Seen 11 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -26,6 +26,8 @@ Seen 9 time(s) in 4 run(s).
 | inspect | step 3: clickRole button "…" | 1 | 200 | 584 ms | 5485 ms | — |
 | inspect | step 71: dwell 1s | 1 | 200 | 640 ms | 8259 ms | — |
 | inspect | step 96: clickRole button "…" | 1 | 200 | 573 ms | 1305460 ms | — |
+| inspect | step 4: snapshot | 1 | 200 | 880 ms | 349 ms | — |
+| inspect | pin: typed the account's Messenger PIN | 1 | 200 | 803 ms | 564 ms | — |
 
 <!-- facts:end -->
 

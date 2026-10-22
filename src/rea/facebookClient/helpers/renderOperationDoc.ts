@@ -68,8 +68,8 @@ export function renderSightings(sightings: OperationSighting[]): string {
 
 const code = (values: string[]): string => (values.length ? values.map((v) => `\`${v}\``).join(', ') : '—')
 
-/** The generated part of one operation's doc. Pure. */
-export function renderFacts(operation: ClientOperation): string {
+/** The generated part of one operation's doc; `sightings` is the table when the facts store gives it (rule 66). Pure. */
+export function renderFacts(operation: ClientOperation, sightings = renderSightings(operation.sightings)): string {
   return [
     FACTS_START,
     '',
@@ -84,7 +84,7 @@ export function renderFacts(operation: ClientOperation): string {
     `| Called from | ${code(operation.calledFrom.slice(0, 8))} |`,
     `| rea | ${operation.reaEvidenceId ? `\`${operation.reaEvidenceId}\`` : 'not read yet'} |`,
     '',
-    renderSightings(operation.sightings),
+    sightings,
     '',
     FACTS_END
   ].join('\n')
@@ -95,8 +95,8 @@ export function renderFacts(operation: ClientOperation): string {
  * reasoning sections. Reasoning someone wrote is kept exactly as it is; a
  * new doc gets each section with `TO_WRITE` and a one-line prompt. Pure.
  */
-export function renderOperationDoc(operation: ClientOperation, existing: string | null): string {
-  const facts = renderFacts(operation)
+export function renderOperationDoc(operation: ClientOperation, existing: string | null, sightings?: string): string {
+  const facts = renderFacts(operation, sightings)
   if (existing && existing.includes(FACTS_START) && existing.includes(FACTS_END)) {
     const before = existing.slice(0, existing.indexOf(FACTS_START))
     const after = existing.slice(existing.indexOf(FACTS_END) + FACTS_END.length)

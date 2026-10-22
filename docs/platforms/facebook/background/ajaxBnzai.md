@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_2bf6699551383f9ce8dbe17a0840942f44b115a3011e91a42cac57a9ed275ac6` |
+| rea | `ev_f3bc89d5bef63f03a9d17d58e03841af64b81c2a932164a358fd4c737372a9e2` |
 
-Seen 394 time(s) in 20 run(s).
+Seen 399 time(s) in 21 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -48,7 +48,7 @@ Seen 394 time(s) in 20 run(s).
 | inspect | scroll: +700px in 16 wheel steps, 985 ms | 2 | 200 | 362–585 ms | 1607–2609 ms | — |
 | inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 354 ms | 54 ms | — |
 | inspect | scroll: +800px in 18 wheel steps, 781 ms | 22 | 200 | 337–1538 ms | 2912–1778687 ms | — |
-| inspect | step 2: snapshot | 3 | 200 | 336–385 ms | 6316–16662 ms | — |
+| inspect | step 2: snapshot | 4 | 200 | 336–1333 ms | 6316–16662 ms | — |
 | inspect | step 4: type e1681 | 1 | 200 | 1400 ms | 1138 ms | — |
 | inspect | step 6: wait 6s | 1 | 200 | 365 ms | 21607 ms | — |
 | inspect | step 8: clickRole button "…" | 1 | 200 | 363 ms | 10817 ms | — |
@@ -166,6 +166,9 @@ Seen 394 time(s) in 20 run(s).
 | inspect | step 87: clickRole button "…" | 1 | 200 | 631 ms | 3276 ms | — |
 | inspect | step 92: clickRole button "…" | 1 | 200 | 876 ms | 3859 ms | — |
 | inspect | step 96: clickRole button "…" | 4 | 200 | 305–1234 ms | 86235–866774 ms | — |
+| inspect | step 4: snapshot | 1 | 200 | 1365 ms | 19392 ms | — |
+| inspect | pin: typed the account's Messenger PIN | 2 | 200 | 347–367 ms | 13918–14335 ms | — |
+| inspect | step 7: wait 5s | 1 | 200 | 348 ms | 10989 ms | — |
 
 <!-- facts:end -->
 

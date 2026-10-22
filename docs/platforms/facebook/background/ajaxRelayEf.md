@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_2bf6699551383f9ce8dbe17a0840942f44b115a3011e91a42cac57a9ed275ac6` |
+| rea | `ev_577e32ac6e9521c6cf80f206bb4e4d92a857963852b54684c9947bfab6930c7e` |
 
-Seen 497 time(s) in 18 run(s).
+Seen 502 time(s) in 19 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -171,6 +171,9 @@ Seen 497 time(s) in 18 run(s).
 | inspect | step 54: clickRole button "…" | 1 | 200 | 320 ms | 15 ms | — |
 | inspect | step 62: clickRole button "…" | 1 | 200 | 372 ms | 1584 ms | — |
 | inspect | step 67: dwell 1s | 6 | 200 | 315–708 ms | 3777–11798 ms | — |
+| inspect | step 4: snapshot | 1 | 200 | 382 ms | 198 ms | — |
+| inspect | pin: typed the account's Messenger PIN | 1 | 200 | 352 ms | 13950 ms | — |
+| inspect | step 7: wait 5s | 3 | 200 | 357–368 ms | 5426–10812 ms | — |
 
 <!-- facts:end -->
 

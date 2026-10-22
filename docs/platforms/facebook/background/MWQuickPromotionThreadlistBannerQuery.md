@@ -13,11 +13,12 @@
 | Called from | `MWQuickPromotionThreadlistBanner.react` |
 | rea | `ev_53d322ba1b4a1e349ff941bf53186d5d9121e16f87cd8d7e1191528918759b00` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | step 25: goto /messages/ | 2 | 200 | 361–379 ms | 3052–4257 ms | — |
+| inspect | step 1: goto /messages/ | 1 | 200 | 356 ms | 3595 ms | — |
 
 <!-- facts:end -->
 

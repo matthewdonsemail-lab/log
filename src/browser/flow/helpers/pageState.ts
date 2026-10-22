@@ -41,7 +41,7 @@ export const PAGE_STATES: readonly StateRule[] = [
     id: 'messengerPinCreate',
     text: /create a pin to access your chats/i,
     what: 'Messenger\'s "Create a PIN to access your chats on any device": the inbox stays behind it (Bethlehem, warm-up 20261022T092119 steps 25-27)',
-    resolve: 'matt types the account\'s PIN once in a Clack prompt: `log facebook messenger pin --account <a>` in his terminal (kept in Twenty, never printed); then click "Create PIN" and `log inspect do pin --live`, each screen recorded (rule 29)',
+    resolve: 'with the account\'s PIN in Twenty (`log facebook messenger pin --account <a> --show`; if empty, matt types it once in a Clack prompt in his terminal, never printed), the recorded flow passes it: `log flow run messengerPinCreate --account <a> --live` (Create PIN, the PIN, the PIN again; Bethlehem 20261022T100521)',
     person: true
   },
   { id: 'rememberPassword', text: /remember password/i, what: 'the "Remember password" prompt', resolve: 'click "Not now" (`clickRole button "Not now"`)', person: false },
