@@ -27,7 +27,7 @@ The People tab (`GroupsCometMembersRoot.react`, `/groups/<id>/members`): by `gro
 
 ## What our machine does with it
 
-No machine waits for it or reads it. The group read (`src/group/read`) stays on the Discussion tab and never opens this one. The flow [`groupTabs`](../flows/groupTabs.md) clicks the tab and waits for no request: a page-load query isn't a confirming request, only a mutation is (`confirmingRequest`). The tab's Follow buttons and member actions are writes and were not pressed.
+No machine waits for it or reads it. The group read (`src/facebook/group/read`) stays on the Discussion tab and never opens this one. The flow [`groupTabs`](../flows/groupTabs.md) clicks the tab and waits for no request: a page-load query isn't a confirming request, only a mutation is (`confirmingRequest`). The tab's Follow buttons and member actions are writes and were not pressed.
 
 ## What can go wrong
 

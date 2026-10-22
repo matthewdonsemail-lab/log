@@ -67,7 +67,7 @@ describe("python/openMagpie/facebookWorker.py", () => {
   const python = process.env.LOG_PYTHON || "python";
 
   function worker(stdin: string) {
-    const proc = Bun.spawnSync([python, join(import.meta.dir, "..", "..", "..", "python", "openMagpie", "facebookWorker.py")], { stdin: Buffer.from(stdin), env: { ...process.env, LOG_BUN: process.execPath, LOG_WORKER_ENTRY: entry } });
+    const proc = Bun.spawnSync([python, join(import.meta.dir, "..", "..", "..", "..", "python", "openMagpie", "facebookWorker.py")], { stdin: Buffer.from(stdin), env: { ...process.env, LOG_BUN: process.execPath, LOG_WORKER_ENTRY: entry } });
     return { code: proc.exitCode, out: JSON.parse(proc.stdout.toString().trim()), err: proc.stderr.toString() };
   }
 

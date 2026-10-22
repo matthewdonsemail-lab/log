@@ -27,7 +27,7 @@ The Featured tab (`CometGroupAnnouncementsRoot.react`, `/groups/<id>/announcemen
 
 ## What our machine does with it
 
-No machine waits for it or reads it. The group read (`src/group/read`) stays on the Discussion tab and never opens this one. The flow [`groupTabs`](../flows/groupTabs.md) clicks the tab and waits for no request: a page-load query isn't a confirming request, only a mutation is (`confirmingRequest`). A step that clicks this tab should wait for the response: at 4.3 s it outlasts the step's settle time.
+No machine waits for it or reads it. The group read (`src/facebook/group/read`) stays on the Discussion tab and never opens this one. The flow [`groupTabs`](../flows/groupTabs.md) clicks the tab and waits for no request: a page-load query isn't a confirming request, only a mutation is (`confirmingRequest`). A step that clicks this tab should wait for the response: at 4.3 s it outlasts the step's settle time.
 
 ## What can go wrong
 

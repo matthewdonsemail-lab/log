@@ -2,7 +2,7 @@
 
 The `groups` domain of Facebook's client (rule 48): the requests a group page
 makes, one doc each, built by `log facebook capture --docs` from the runs' recordings.
-The code that works on groups is its own library, `src/group/<domain>/`
+The code that works on groups is its own library, `src/facebook/group/<domain>/`
 (rule 45): `join` (request to join), `answer` (the membership questions),
 `read` (the posts, issue #27, `docs/groupRead.md`).
 
@@ -76,7 +76,7 @@ unnamed (24 refs): it isn't clickable.
 | Control | What it does | Writes | Request |
 | --- | --- | --- | --- |
 | button "sort group feed by New posts" | The sort switcher (the read keeps New posts: `CHRONOLOGICAL`) | no | not recorded; the choice is the feed query's sort |
-| (scrolling) | Loads three more posts | no | [`GroupsCometFeedRegularStoriesPaginationQuery`](GroupsCometFeedRegularStoriesPaginationQuery.md): what `src/group/read` reads |
+| (scrolling) | Loads three more posts | no | [`GroupsCometFeedRegularStoriesPaginationQuery`](GroupsCometFeedRegularStoriesPaginationQuery.md): what `src/facebook/group/read` reads |
 
 ### Each post
 
@@ -123,7 +123,7 @@ unnamed (24 refs): it isn't clickable.
 
 The group read touches none of these: it scrolls, and reads the posts from
 what the page already sent, the group page's HTML and the feed query (rule 22,
-`src/group/read`). Comments are read too (matt, 2026-10-20): from the post's
+`src/facebook/group/read`). Comments are read too (matt, 2026-10-20): from the post's
 dialog or its own page, sorted Newest, scrolled until the list ends
 (`commentsFromResponse`, `commentsFromPostPage`, recorded on run
 20261020T151100). Every control marked "not recorded" is one `log inspect` step

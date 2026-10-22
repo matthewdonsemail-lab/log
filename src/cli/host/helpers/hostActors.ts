@@ -17,13 +17,13 @@ import { fetchProxyUrl, saveSession } from "../../../marketplace/socialAccount/i
 import { preparePhotos } from "../../../media/photo/index.ts";
 import { join } from "node:path";
 import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
-import { ACTIVITY_SCRIPTS } from "../../../warmup/facebookStages/index.ts";
+import { ACTIVITY_SCRIPTS } from "../../../facebook/warmup/stages/index.ts";
 import { runFlowInSession, openInspectSession } from "../../flow/helpers/index.ts";
 import type { OpenSession } from "../../flow/helpers/index.ts";
 import { keepNewDevice, keepSession, openAccount } from "../../live/index.ts";
 import { settleInBackground } from "../../../rea/capture/client.ts";
 import type { CommandContext } from "../../runner/types.ts";
-import { parseGroupRef, toGroup } from "../../../group/join/index.ts";
+import { parseGroupRef, toGroup } from "../../../facebook/group/join/index.ts";
 import { readGroupOnce } from "../../read/index.ts";
 
 const FB = "https://www.facebook.com";

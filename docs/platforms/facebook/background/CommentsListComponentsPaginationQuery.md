@@ -27,7 +27,7 @@ Loads the next page of a post's top-level comments (`useCometUFITopLevelCommentL
 
 ## What our machine does with it
 
-The group read (`src/group/read`, `commentsFromResponse`) reads its comments the same way as `CommentListComponentsRootQuery`'s and scrolls the dialog again while `has_next_page` is true: the list is read through when it is false. On the run, the two pages gave 15 distinct comments of the 16 Facebook counts (the one left is filtered as potential spam, which only "All comments" shows).
+The group read (`src/facebook/group/read`, `commentsFromResponse`) reads its comments the same way as `CommentListComponentsRootQuery`'s and scrolls the dialog again while `has_next_page` is true: the list is read through when it is false. On the run, the two pages gave 15 distinct comments of the 16 Facebook counts (the one left is filtered as potential spam, which only "All comments" shows).
 
 ## What can go wrong
 

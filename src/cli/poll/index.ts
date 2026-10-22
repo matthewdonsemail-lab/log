@@ -1,8 +1,8 @@
 /**
  * `log facebook poll <group> <account> [<how long to poll>]` (matt, rule 63): poll a Facebook group from one
  * account, in that account's open browser (rule 35). One poll is one read of the group through the group read
- * machine (`group/read`), posts only, nothing clicked (rule 8), and its answer is one JSON line: the posts the
- * read saw, in OpenMagpie's record shape (`group/read/helpers/openMagpieWorker.ts`). With a time, it polls
+ * machine (`facebook/group/read`), posts only, nothing clicked (rule 8), and its answer is one JSON line: the posts the
+ * read saw, in OpenMagpie's record shape (`facebook/group/read/helpers/openMagpieWorker.ts`). With a time, it polls
  * again every 5 minutes (OpenMagpie's own default feed interval) until the time is up, a line per poll as it
  * happens (rule 26).
  *
@@ -16,11 +16,11 @@
  * Which posts are new is the group's cursor in Twenty (`readCursor`, by post id); OpenMagpie dedups repeats.
  */
 import { readCurrentInspect } from "../../browser/inspect/index.ts";
-import { ensureGroup, parseGroupRef } from "../../group/join/index.ts";
-import type { GroupRef } from "../../group/join/index.ts";
-import type { Group } from "../../group/join/index.ts";
-import { parseWorkerRequest, recordsOf, scrollsFor, WORKER_DEFAULT_LIMIT, workerCodeOf } from "../../group/read/index.ts";
-import type { WorkerAnswer, WorkerRecord } from "../../group/read/index.ts";
+import { ensureGroup, parseGroupRef } from "../../facebook/group/join/index.ts";
+import type { GroupRef } from "../../facebook/group/join/index.ts";
+import type { Group } from "../../facebook/group/join/index.ts";
+import { parseWorkerRequest, recordsOf, scrollsFor, WORKER_DEFAULT_LIMIT, workerCodeOf } from "../../facebook/group/read/index.ts";
+import type { WorkerAnswer, WorkerRecord } from "../../facebook/group/read/index.ts";
 import { checkRunnable, findAccount } from "../../marketplace/socialAccount/index.ts";
 import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
 import { TwentyError } from "../../twenty/graphql/index.ts";

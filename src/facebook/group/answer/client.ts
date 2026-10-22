@@ -3,7 +3,7 @@
  * account's agencyGroup row, patched after every fill step with a history
  * line naming the stepper step it did. Nothing here touches Facebook.
  */
-import type { TwentyClient, TwentyObjects } from '../../twenty/graphql/index'
+import type { TwentyClient, TwentyObjects } from '../../../twenty/graphql/index'
 import { AGENCY_GROUPS, toGroup } from '../join/client'
 import { draftComplete, patchSubmission } from '../join/helpers/index'
 import type { Group, JoinDraft, JoinOptions } from '../join/types'

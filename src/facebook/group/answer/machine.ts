@@ -21,8 +21,8 @@
  *   a checkpoint, a login or another page, after any step ─▶ stopped
  */
 import { assign, fromPromise, setup } from 'xstate'
-import { pageProblem } from '../../browser/flow/index'
-import type { ErrorCode } from '../../errors/catalog/index'
+import { pageProblem } from '../../../browser/flow/index'
+import type { ErrorCode } from '../../../errors/catalog/index'
 import { readGroupPage, snapshotElements } from '../join/helpers/index'
 import type { GroupStepReply } from '../join/types'
 import { planFill } from './helpers/index'

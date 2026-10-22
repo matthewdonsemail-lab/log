@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { datasetsDir } from '../persona/helpers/drawPersona'
-import { seeded } from '../facebook/helpers/reelSession'
+import { seeded } from '../../facebook/warmup/activities/helpers/reelSession'
 import type { InterestEffect } from './helpers/interestEffect'
 import type { ReelViewer, ViewerFile } from './types'
 

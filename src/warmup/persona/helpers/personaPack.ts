@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { seeded } from '../../facebook/helpers/reelSession'
+import { seeded } from '../../../facebook/warmup/activities/helpers/reelSession'
 import type { ReelViewer } from '../../viewer/types'
 import type { BehaviourProfile, PersonaPack, PersonaSegment } from '../types'
 import { datasetsDir, parseTable } from './drawPersona'

@@ -31,7 +31,7 @@ The Reels viewer's root (`FBUnifiedVideoRootWithEntrypoint.react`): with `root_v
 
 ## What our machine does with it
 
-No machine waits for it or reads it. The Reels warm-up (`src/warmup/facebook`) checks each step on the page: a reel's URL (`/reel/\d+`) after openReels and each swipe, the Unmute button gone after unmute (`checkStep`).
+No machine waits for it or reads it. The Reels warm-up (`src/facebook/warmup/activities`) checks each step on the page: a reel's URL (`/reel/\d+`) after openReels and each swipe, the Unmute button gone after unmute (`checkStep`).
 
 ## What can go wrong
 

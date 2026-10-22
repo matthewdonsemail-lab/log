@@ -7,7 +7,7 @@
  *   readStateOf    before a read: the row's cursor, and each saved post's comment count at its last comment read
  *   saveRead       after it: the new posts, the counts of the ones seen again, the comments, then the cursor
  */
-import type { TwentyClient, TwentyObjects } from "../../twenty/graphql/index.ts";
+import type { TwentyClient, TwentyObjects } from "../../../twenty/graphql/index.ts";
 import type { GroupComment, GroupPost, GroupReadOutput, ReadCursor } from "./types.ts";
 
 export const AGENCY_GROUP_POSTS = "agencyGroupPosts" as const;

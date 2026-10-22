@@ -8,8 +8,8 @@ import { DEFAULT_TRAFFIC_BUDGET_MB, meterForProxy, readTrafficLedger, recordTraf
 import type { TrafficMeter } from "../../../proxyVendor/traffic/index.ts";
 import { createDecisionsClient } from "../../../subq/decisions/index.ts";
 import type { DecisionsClient } from "../../../subq/decisions/index.ts";
-import { FEED, feedPersonaMachine, postReadRequest, readReelRead } from "../../../warmup/facebook/index.ts";
-import type { ActivityStep, FeedLabel, ReelRead, StepReply } from "../../../warmup/facebook/index.ts";
+import { FEED, feedPersonaMachine, postReadRequest, readReelRead } from "../../../facebook/warmup/activities/index.ts";
+import type { ActivityStep, FeedLabel, ReelRead, StepReply } from "../../../facebook/warmup/activities/index.ts";
 import { datasetsDir } from "../../../warmup/persona/index.ts";
 import type { BehaviourProfile, PersonaPack } from "../../../warmup/persona/index.ts";
 import type { InterestEffect } from "../../../warmup/viewer/index.ts";

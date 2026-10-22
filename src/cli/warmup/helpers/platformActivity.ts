@@ -6,15 +6,15 @@ import type { InspectAction } from "../../../browser/inspect/index.ts";
 import { homeOf, outsideActiveHours } from "../../../marketplace/home/index.ts";
 import { checkRunnable, findAccount } from "../../../marketplace/socialAccount/index.ts";
 import { createInspector, formatTraceLine } from "../../../observability/trace/index.ts";
-import { DEFAULT_SESSION, describeSession, FACEBOOK_ACTIVITIES, parseRange, planSession, WARMUP_PLATFORMS, warmupActivityMachine } from "../../../warmup/facebook/index.ts";
-import type { ActivityStep, PlatformActivity, ReelSessionOptions, StepReply } from "../../../warmup/facebook/index.ts";
+import { DEFAULT_SESSION, describeSession, FACEBOOK_ACTIVITIES, parseRange, planSession, WARMUP_PLATFORMS, warmupActivityMachine } from "../../../facebook/warmup/activities/index.ts";
+import type { ActivityStep, PlatformActivity, ReelSessionOptions, StepReply } from "../../../facebook/warmup/activities/index.ts";
 import { inspectCommand } from "../../inspect/index.ts";
 import { refuse, refuseError } from "../../runner/helpers/index.ts";
 import type { CommandContext, CommandResult } from "../../runner/types.ts";
 import { describePack, describePersona, describeViewerLines, packFor, personaFor, personaPath, runPersonaSession } from "./personaRun.ts";
 import { runFeedSession } from "./feedRun.ts";
 import { readInterestEffect, viewerFor } from "../../../warmup/viewer/index.ts";
-import { seeded } from "../../../warmup/facebook/index.ts";
+import { seeded } from "../../../facebook/warmup/activities/index.ts";
 
 export const PLATFORM_USAGE = [
   "       log <platform> warmup <activity> [--account <a>] [--live] [--likes] [--bypass] [--now]   (record: the account's browser opened primed with the activity, each step checked, the outline written)",

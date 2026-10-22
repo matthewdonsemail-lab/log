@@ -6,7 +6,7 @@
  */
 import { parseArgs } from "../runner/helpers/index.ts";
 import type { Command } from "../runner/types.ts";
-import { WARMUP_PLATFORMS } from "../../warmup/facebook/index.ts";
+import { WARMUP_PLATFORMS } from "../../facebook/warmup/activities/index.ts";
 import { PLATFORM_USAGE, runPlatformActivity, runStages, STAGES_USAGE } from "./helpers/index.ts";
 
 export const WARMUP_USAGE = [PLATFORM_USAGE.replace(/^ {7}/, "Usage: "), STAGES_USAGE].join("\n");

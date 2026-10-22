@@ -19,13 +19,13 @@ Status: **verified live**, **built, not verified** (run, never ended clean), **b
 | Scan selling | `log facebook scan --account <a>` / MCP `scan` | Read Marketplace > Selling | read | `src/camofox/worker/`, `src/cli/live/index.ts` | none in `~/.logCli` | built, never run live (here) |
 | Listing status | `log facebook status <listingId> --account <a>` / MCP `status` | Read one item page | read | `src/camofox/worker/helpers/toListingStatus.ts` | none | built, never run live |
 | Listing monitor | `log facebook watch --account <a> [--checks n]` / MCP `watch` | Repeated status checks | read | `src/marketplace/monitor/machine.ts` | none | built, never run live |
-| Reels warm-up | `log facebook warmup reel run --account <a> [--persona] [--live] [--likes]` / MCP `warmup` | Watch, Next card, comments, like | read; like needs `--live --likes` | `src/warmup/facebook/machine.ts`, `helpers/reel.ts`, `reelOrderer.ts` | inspect `20261020T050610` (record), `052708` (persona, 5 likes), `080734`, `082836` (orderer) | verified live |
-| Feed warm-up | `log facebook warmup feed run --account <a> --persona [--live] [--likes]` | Posts, See more, like | read; like `--live --likes` | `src/warmup/facebook/helpers/feed.ts`, `feedOrderer.ts`, `src/cli/warmup/helpers/feedRun.ts` | inspect `20261020T103516`-`105346`; `runs/join/feedPersonaRun4.log`: 11 posts, 1 liked, 0 failed steps | verified live |
-| Listaro stages | `log facebook warmup stages record\|run --account <a> [--likes]` | Listaro's 5 activities | read; likes `--live` | `src/warmup/facebookStages/machine.ts`, `helpers/scripts.ts` | `runs/warmup/erieRecord.log`: feedBrowse done, stopped in marketplaceBrowse; no saved flow | built, partly recorded |
-| Join a group | `log facebook join group --account <a> --group <g> [--live]` / MCP `join` | Read the gate, press Join | write, `--live` | `src/group/join/machine.ts`, `helpers/readGroupPage.ts` | inspect `20261019T224900` (`runs/join/joinLive_20261020.log`) | verified live |
-| Answer group questions | `log facebook join group … --answer [--set n=v] [--agree]`, then `--fill [--live [--submit]]` | Fill, submit questions | write, `--live --submit` | `src/group/answer/machine.ts`, `helpers/fillPlan.ts` | inspect `20261019T234232` (`fillLiveSubmit4_20261020.log`: submitted) | verified live |
-| Read a group's posts | none (extractor only); recorded with `log inspect` | `GroupsCometFeedRegularStoriesPaginationQuery` + HTML | read | `src/group/read/helpers/extractPosts.ts`, `docs/groupRead.md` | inspect `20261020T134155`, `143506` (13 posts, 0 rejected) | recorded only (+ extractor) |
-| Read a post's comments | none; recorded with `log inspect` | Post dialog, Newest, scroll | read (sort click was `--live`) | `src/group/read/helpers/extractComments.ts` | inspect `20261020T151100` (`readComments.log`: 15 comments) | recorded only (+ extractor) |
+| Reels warm-up | `log facebook warmup reel run --account <a> [--persona] [--live] [--likes]` / MCP `warmup` | Watch, Next card, comments, like | read; like needs `--live --likes` | `src/facebook/warmup/activities/machine.ts`, `helpers/reel.ts`, `reelOrderer.ts` | inspect `20261020T050610` (record), `052708` (persona, 5 likes), `080734`, `082836` (orderer) | verified live |
+| Feed warm-up | `log facebook warmup feed run --account <a> --persona [--live] [--likes]` | Posts, See more, like | read; like `--live --likes` | `src/facebook/warmup/activities/helpers/feed.ts`, `feedOrderer.ts`, `src/cli/warmup/helpers/feedRun.ts` | inspect `20261020T103516`-`105346`; `runs/join/feedPersonaRun4.log`: 11 posts, 1 liked, 0 failed steps | verified live |
+| Listaro stages | `log facebook warmup stages record\|run --account <a> [--likes]` | Listaro's 5 activities | read; likes `--live` | `src/facebook/warmup/stages/machine.ts`, `helpers/scripts.ts` | `runs/warmup/erieRecord.log`: feedBrowse done, stopped in marketplaceBrowse; no saved flow | built, partly recorded |
+| Join a group | `log facebook join group --account <a> --group <g> [--live]` / MCP `join` | Read the gate, press Join | write, `--live` | `src/facebook/group/join/machine.ts`, `helpers/readGroupPage.ts` | inspect `20261019T224900` (`runs/join/joinLive_20261020.log`) | verified live |
+| Answer group questions | `log facebook join group … --answer [--set n=v] [--agree]`, then `--fill [--live [--submit]]` | Fill, submit questions | write, `--live --submit` | `src/facebook/group/answer/machine.ts`, `helpers/fillPlan.ts` | inspect `20261019T234232` (`fillLiveSubmit4_20261020.log`: submitted) | verified live |
+| Read a group's posts | none (extractor only); recorded with `log inspect` | `GroupsCometFeedRegularStoriesPaginationQuery` + HTML | read | `src/facebook/group/read/helpers/extractPosts.ts`, `docs/groupRead.md` | inspect `20261020T134155`, `143506` (13 posts, 0 rejected) | recorded only (+ extractor) |
+| Read a post's comments | none; recorded with `log inspect` | Post dialog, Newest, scroll | read (sort click was `--live`) | `src/facebook/group/read/helpers/extractComments.ts` | inspect `20261020T151100` (`readComments.log`: 15 comments) | recorded only (+ extractor) |
 | Search groups | none; `log inspect do goto https://www.facebook.com/search/groups/…` | Search results page | read | none (`docs/platforms/facebook/background/SearchComet*.md`) | `runs/join/searchGroups_20261020.log` | recorded only |
 | Conversations (Twenty) | `log facebook conversations`, `log facebook conversation show\|read\|lead\|link\|record --file` | Nothing: Twenty only | n/a | `src/marketplace/conversation/`, `docs/conversations.md` | n/a | built (no Facebook side) |
 | Free inspect | `log inspect start --account <a> [--detach]`, `log inspect do <action> [--live]` | Any step below | per action | `src/cli/inspect/index.ts` | 22 runs, 2026-10-20 | verified live |
@@ -68,14 +68,14 @@ Live set: `LIVE_ACTIONS` in `src/browser/inspect/helpers/parseInspectAction.ts`;
 
 ## 3. Gaps
 
-### Groups (`src/group/`, rule 45)
-- **Read posts:** missing flow (`src/browser/flow/definitions/groupRead.json`), machine (`src/group/read/machine.ts`, `client.ts`), Twenty cursor fields (`scripts/twenty/twentySetup.mjs`), command (`src/cli/read/index.ts`, `log facebook read group` is a proposal in `docs/groupRead.md`), MCP tool. Steps 4-7 of `docs/groupRead.md`.
+### Groups (`src/facebook/group/`, rule 45)
+- **Read posts:** missing flow (`src/browser/flow/definitions/groupRead.json`), machine (`src/facebook/group/read/machine.ts`, `client.ts`), Twenty cursor fields (`scripts/twenty/twentySetup.mjs`), command (`src/cli/read/index.ts`, `log facebook read group` is a proposal in `docs/groupRead.md`), MCP tool. Steps 4-7 of `docs/groupRead.md`.
 - **Read comments:** extractor done; missing the same machine and command. Its queries are documented under `background/` (`CommentListComponentsRootQuery.md`), not `groups/`.
 - **Reply threads:** `comment_direct_parent` is parsed (`extractComments.ts`); "View replies" expansion is not recorded.
-- **Write a comment / reply:** not recorded, no flow, machine, command or MCP tool (`src/group/comment/`). Needs `--live` (rule 8).
-- **React:** only feed-post Like exists (`likePost`, `CometUFIFeedbackReactMutation.md`); no group-post react, no reaction picker (`src/group/react/`).
-- **Post to a group:** not recorded (`src/group/post/`).
-- **Search groups:** recorded only; no extractor, machine or command (`src/group/search/`).
+- **Write a comment / reply:** not recorded, no flow, machine, command or MCP tool (`src/facebook/group/comment/`). Needs `--live` (rule 8).
+- **React:** only feed-post Like exists (`likePost`, `CometUFIFeedbackReactMutation.md`); no group-post react, no reaction picker (`src/facebook/group/react/`).
+- **Post to a group:** not recorded (`src/facebook/group/post/`).
+- **Search groups:** recorded only; no extractor, machine or command (`src/facebook/group/search/`).
 
 ### Marketplace
 - **Publish:** the live run ended `noListingId`; the id capture needs fixing from that run's recording (`src/marketplace/publish/machine.ts`). Not on the driver (`OPENER_ACTIONS`, `src/browser/run`), and still a launch per action (rule 35).

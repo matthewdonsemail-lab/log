@@ -12,7 +12,7 @@
  *   `checkbox "I agree to the group rules"`, and `button "Submit" [disabled]`
  *   until it is filled (steps 16, 20).
  */
-import type { ErrorCode } from '../../errors/catalog/index'
+import type { ErrorCode } from '../../../errors/catalog/index'
 import type { GroupRef, GroupStepReply, JoinDraft, JoinOptions } from '../join/types'
 
 /**

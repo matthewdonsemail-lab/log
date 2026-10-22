@@ -1,5 +1,5 @@
-import type { DecisionAnswer, DecisionImage, DecisionRequest, DecisionResponse } from '../../../subq/decisions/types'
-import type { PersonaPack } from '../../persona/types'
+import type { DecisionAnswer, DecisionImage, DecisionRequest, DecisionResponse } from '../../../../subq/decisions/types'
+import type { PersonaPack } from '../../../../warmup/persona/types'
 import type { ReelAction } from './reelOrderer'
 
 /**

@@ -8,7 +8,7 @@
  *   patchGroupStep     after every step: the join submission (`joinSubmission`) patched with what it saw
  *   recordGroupRead    at the end: joinStatus, its reason, the name and members, lastCheckedAt
  */
-import type { TwentyClient, TwentyObjects } from '../../twenty/graphql/index'
+import type { TwentyClient, TwentyObjects } from '../../../twenty/graphql/index'
 import { applicationFromDraft } from '../answer/client'
 import { emptySubmission, patchSubmission, readSubmission } from './helpers/index'
 import type { Group, GroupJoinContext, GroupJoinOutput, GroupJoinStatus, GroupRef, GroupJoinSubmission, JoinDraft } from './types'

@@ -1,6 +1,6 @@
 /**
  * `log facebook join group --account <a> --group <g>` — join a Facebook group as one
- * account (rule 45), through the group join machine (`group/join`).
+ * account (rule 45), through the group join machine (`facebook/group/join`).
  *
  *   log facebook join group --account <a> --group <url|id|name> [--live] [--json]
  *       in the account's OPEN browser (rule 35: `log inspect start` or
@@ -19,7 +19,7 @@
  *       Twenty. Nothing opens and nothing is sent to Facebook.
  *   log facebook join group --account <a> --group <g> --fill [--live [--submit]]
  *       the draft into the group's own dialog, in the account's open browser
- *       (group/answer): each Clack step becomes its fill step on the dialog's
+ *       (facebook/group/answer): each Clack step becomes its fill step on the dialog's
  *       element (tick a box, click into a box and type), every step recorded.
  *       A dry run finds the way in ("Answer questions") and stops. --live
  *       opens the dialog and fills it, and stops before Submit; --submit also
@@ -34,10 +34,10 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
 import { readCurrentInspect } from "../../browser/inspect/index.ts";
-import { draftComplete, draftFrom, ensureGroup, findGroup, groupJoinMachine, parseGroupRef, patchGroupStep, readJoinOptions, recordGroupRead, saveDraft, stepsFor } from "../../group/join/index.ts";
-import type { Group, GroupJoinOutput, GroupRef, GroupStepInput, GroupStepReply, JoinAnswer, JoinOptions } from "../../group/join/index.ts";
-import { describePlan, groupAnswerMachine, patchApplication } from "../../group/answer/index.ts";
-import type { AnswerStepInput, GroupAnswerOutput } from "../../group/answer/index.ts";
+import { draftComplete, draftFrom, ensureGroup, findGroup, groupJoinMachine, parseGroupRef, patchGroupStep, readJoinOptions, recordGroupRead, saveDraft, stepsFor } from "../../facebook/group/join/index.ts";
+import type { Group, GroupJoinOutput, GroupRef, GroupStepInput, GroupStepReply, JoinAnswer, JoinOptions } from "../../facebook/group/join/index.ts";
+import { describePlan, groupAnswerMachine, patchApplication } from "../../facebook/group/answer/index.ts";
+import type { AnswerStepInput, GroupAnswerOutput } from "../../facebook/group/answer/index.ts";
 import { homeOf, outsideActiveHours } from "../../marketplace/home/index.ts";
 import { checkRunnable, findAccount, listFacebookAccounts } from "../../marketplace/socialAccount/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";

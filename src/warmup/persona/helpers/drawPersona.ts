@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
-import { seeded } from '../../facebook/helpers/reelSession'
+import { seeded } from '../../../facebook/warmup/activities/helpers/reelSession'
 import type { BehaviourProfile, DatasetRow } from '../types'
 
 /** `~/.logCli/datasets`, or LOG_DATASETS_DIR. */

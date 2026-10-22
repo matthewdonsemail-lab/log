@@ -1297,12 +1297,12 @@ export const ERROR_CATALOG = {
     raisedIn: ['browser/adsPower', 'python/browserDriver'],
     action: 'Run `log adsPower sync --apply` (it makes the profile and links it).'
   },
-  // rule 45: groups (`group/join`, `log facebook join group`).
+  // rule 45: groups (`facebook/group/join`, `log facebook join group`).
   groupRefInvalid: {
     layer: 'group',
     meaning: '--group names no Facebook group (a facebook.com/groups/<id or name>/ URL, the id, or the name in the URL).',
     retryable: false,
-    raisedIn: ['group/join'],
+    raisedIn: ['facebook/group/join'],
     action: "Copy the group's URL from the browser and pass it as --group."
   },
   groupBrowserNotOpen: {
@@ -1316,50 +1316,50 @@ export const ERROR_CATALOG = {
     layer: 'group',
     meaning: "The group page did not open in the account's browser.",
     retryable: true,
-    raisedIn: ['group/join.opening'],
+    raisedIn: ['facebook/group/join.opening'],
     action: "Read the run's step folder (rule 25): its screenshot and HAR show where the page went."
   },
   groupGateUnknown: {
     layer: 'group',
     meaning: 'The group page showed neither a Join nor a Joined button: a page not recorded yet.',
     retryable: false,
-    raisedIn: ['group/join.reading'],
-    action: "Read the step's snapshot.yml and screenshot: name the page's button in group/join/helpers/readGroupPage.ts from that recording (rule 29)."
+    raisedIn: ['facebook/group/join.reading'],
+    action: "Read the step's snapshot.yml and screenshot: name the page's button in facebook/group/join/helpers/readGroupPage.ts from that recording (rule 29)."
   },
   groupQuestionsNotReopened: {
     layer: 'group',
     meaning: 'The group page shows no way back into its questions: no "Answer questions" button and no open dialog.',
     retryable: false,
-    raisedIn: ['group/answer.choosing', 'group/answer.reopening'],
+    raisedIn: ['facebook/group/answer.choosing', 'facebook/group/answer.reopening'],
     action: "Read the opening step's snapshot (rule 25): a public group's participation questions have no recorded way back in yet. Record one with log inspect before filling it (rule 29)."
   },
   groupFillIncomplete: {
     layer: 'group',
     meaning: "A fill step had no element in the dialog, or one failed: the draft and the dialog don't match.",
     retryable: false,
-    raisedIn: ['group/answer.planning', 'group/answer.filling'],
+    raisedIn: ['facebook/group/answer.planning', 'facebook/group/answer.filling'],
     action: "Read the reading step's snapshot.yml: the questions may have changed (run the stepper again: log facebook join group --answer), or a type isn't recorded yet."
   },
   groupSubmitNotConfirmed: {
     layer: 'group',
     meaning: 'Submit was pressed and the dialog stayed open, or the click failed. It is not pressed again.',
     retryable: false,
-    raisedIn: ['group/answer.submitting', 'group/answer.checking'],
+    raisedIn: ['facebook/group/answer.submitting', 'facebook/group/answer.checking'],
     action: "Read the submitting and checking steps' recordings (rule 25) before another --submit."
   },
   groupJoinNotConfirmed: {
     layer: 'group',
     meaning: 'Join was pressed and the page did not change, or the click failed. It is not pressed again.',
     retryable: false,
-    raisedIn: ['group/join.joining', 'group/join.checking'],
+    raisedIn: ['facebook/group/join.joining', 'facebook/group/join.checking'],
     action: "Read the joining and checking steps' recordings (rule 25) before another --live run."
   },
-  // #27: reading a group (`group/read`, `log facebook read group`).
+  // #27: reading a group (`facebook/group/read`, `log facebook read group`).
   groupIdUnknown: {
     layer: 'group',
     meaning: "The group page never gave the group's numeric id (the read keeps a post only with its group's id).",
     retryable: true,
-    raisedIn: ['group/read.opening'],
+    raisedIn: ['facebook/group/read.opening'],
     action: "Read the opening step's recording (rule 25), or pass the group's numeric id as --group."
   },
   groupNoAccount: {
@@ -1373,7 +1373,7 @@ export const ERROR_CATALOG = {
     layer: 'group',
     meaning: "A step of the group read failed in the account's browser (a scroll, a post page, its comments).",
     retryable: true,
-    raisedIn: ['group/read.scrolling', 'group/read.openingPost', 'group/read.scrollingComments'],
+    raisedIn: ['facebook/group/read.scrolling', 'facebook/group/read.openingPost', 'facebook/group/read.scrollingComments'],
     action: "Read the step's recording (rule 25): its screenshot and HAR show where the page was."
   },
 } as const satisfies Record<string, ErrorEntry>

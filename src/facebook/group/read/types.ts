@@ -4,7 +4,7 @@
  * (docs/platforms/facebook/groups/), as each step's HAR recorded it: log-cli never
  * calls Facebook's GraphQL itself.
  */
-import type { ErrorCode } from "../../errors/catalog/index.ts";
+import type { ErrorCode } from "../../../errors/catalog/index.ts";
 
 /** One post, as the feed answered it (recorded 2026-10-20, run 20261020T134155). */
 export interface GroupPost {

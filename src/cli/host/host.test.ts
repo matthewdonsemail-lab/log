@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createActor, toPromise } from "xstate";
 import type { InspectAction, InspectStepResult } from "../../browser/inspect/index.ts";
-import { feedScroll, groupPage, unit } from "../../group/read/readMachine.test.ts";
+import { feedScroll, groupPage, unit } from "../../facebook/group/read/readMachine.test.ts";
 import { findAccount } from "../../marketplace/socialAccount/index.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { createContext } from "../runner/index.ts";

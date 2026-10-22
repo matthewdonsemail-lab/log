@@ -27,7 +27,7 @@ Creates a comment on a post: the text and the post's feedback id go in `input`, 
 
 ## What our machine does with it
 
-The `postComment` flow waits for it after "Post comment" (`expect`); typing broadcasts around it are never what confirms the step (`NOT_CONFIRMING`, `LiveTyping`). The new comment is the same shape `src/group/read` reads (`commentOf`), so a comment we post can be read back by the comment reader. A write on Facebook: `--live` only (rule 8).
+The `postComment` flow waits for it after "Post comment" (`expect`); typing broadcasts around it are never what confirms the step (`NOT_CONFIRMING`, `LiveTyping`). The new comment is the same shape `src/facebook/group/read` reads (`commentOf`), so a comment we post can be read back by the comment reader. A write on Facebook: `--live` only (rule 8).
 
 ## What can go wrong
 

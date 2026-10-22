@@ -3,7 +3,7 @@ import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createActor, fromPromise, toPromise } from 'xstate'
-import { WARMUP_ACTIVITIES } from '../../marketplace/lifecycle/types'
+import { WARMUP_ACTIVITIES } from '../../../marketplace/lifecycle/types'
 import { ACTIVITY_SCRIPTS, appendStageLog, pickActivities, readStageLog, renderStageLogLine, SCRIPTS_IN_ORDER, warmupMachine } from './index'
 import type { ActivityOutcome, WarmupActivity } from './index'
 

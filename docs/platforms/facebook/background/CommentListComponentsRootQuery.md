@@ -29,7 +29,7 @@ Loads a post's top-level comment list in the sort the viewer picked (`useCometUF
 
 ## What our machine does with it
 
-It is how the group read (`src/group/read`, `commentsFromResponse`) gets every comment of a post: the dialog and the post's own page show "Most relevant" first, which hides some (10 of 16 on the run); Newest shows all but potential spam. A comment is kept only with its `legacy_fbid`, its post (the relay id decodes to `comment:<postId>_<commentId>`), its group (`group_comment_info.group.id`) and `created_time`; replies come in each comment's `replies_connection`, linked by `comment_direct_parent`. When `has_next_page` is true, the read scrolls the dialog for `CommentsListComponentsPaginationQuery`.
+It is how the group read (`src/facebook/group/read`, `commentsFromResponse`) gets every comment of a post: the dialog and the post's own page show "Most relevant" first, which hides some (10 of 16 on the run); Newest shows all but potential spam. A comment is kept only with its `legacy_fbid`, its post (the relay id decodes to `comment:<postId>_<commentId>`), its group (`group_comment_info.group.id`) and `created_time`; replies come in each comment's `replies_connection`, linked by `comment_direct_parent`. When `has_next_page` is true, the read scrolls the dialog for `CommentsListComponentsPaginationQuery`.
 
 ## What can go wrong
 

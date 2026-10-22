@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { clearCurrentInspect, writeCurrentInspect } from "../../browser/inspect/index.ts";
 import type { InspectAction, InspectStepResult } from "../../browser/inspect/index.ts";
-import { feedScroll, groupPage, unit } from "../../group/read/readMachine.test.ts";
+import { feedScroll, groupPage, unit } from "../../facebook/group/read/readMachine.test.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { runCli } from "../runner/index.ts";
 import { durationMs, parsePollArgs, POLL_EVERY_MS, pollDeps } from "./index.ts";

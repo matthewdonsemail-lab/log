@@ -27,7 +27,7 @@ Records how long the viewer stayed on a Marketplace listing's page (PDP, product
 
 ## What our machine does with it
 
-The feed warm-up's `openListings` step (`src/warmup/facebook/helpers/feed.ts`, `openAny /marketplace/item/ 1-3`) opens the listing that makes Facebook's client send it; the dwell between opening and coming back is ours (`openAny`'s reading pause). The machine never waits for it or reads it: the step passes on the listing's URL. It matters because it is Facebook's own measure of how long each listing was looked at, so the reading pauses in `openAny` are what it reports.
+The feed warm-up's `openListings` step (`src/facebook/warmup/activities/helpers/feed.ts`, `openAny /marketplace/item/ 1-3`) opens the listing that makes Facebook's client send it; the dwell between opening and coming back is ours (`openAny`'s reading pause). The machine never waits for it or reads it: the step passes on the listing's URL. It matters because it is Facebook's own measure of how long each listing was looked at, so the reading pauses in `openAny` are what it reports.
 
 ## What can go wrong
 

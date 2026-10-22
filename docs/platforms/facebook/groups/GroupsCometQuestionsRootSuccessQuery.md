@@ -27,7 +27,7 @@ The Open questions tab (`GroupsCometQuestionsRootSuccess.react`, `/groups/<id>/q
 
 ## What our machine does with it
 
-No machine waits for it or reads it. The group read (`src/group/read`) stays on the Discussion tab and never opens this one. The flow [`groupTabs`](../flows/groupTabs.md) clicks the tab and waits for no request: a page-load query isn't a confirming request, only a mutation is (`confirmingRequest`). The flow [`groupPostComments`](../flows/groupPostComments.md) starts on this tab: there "Leave a comment" opens the comments inline under the post, not in a dialog, and needs no request of its own.
+No machine waits for it or reads it. The group read (`src/facebook/group/read`) stays on the Discussion tab and never opens this one. The flow [`groupTabs`](../flows/groupTabs.md) clicks the tab and waits for no request: a page-load query isn't a confirming request, only a mutation is (`confirmingRequest`). The flow [`groupPostComments`](../flows/groupPostComments.md) starts on this tab: there "Leave a comment" opens the comments inline under the post, not in a dialog, and needs no request of its own.
 
 ## What can go wrong
 

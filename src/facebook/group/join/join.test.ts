@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'bun:test'
 import { createActor, fromPromise, toPromise } from 'xstate'
-import { marketplaceFixture } from '../../twenty/graphql/index'
+import { marketplaceFixture } from '../../../twenty/graphql/index'
 import { draftComplete, draftFrom, emptySubmission, ensureGroup, groupJoinMachine, hashQuestionSet, inferJoinState, stepsFor, parseGroupRef, patchGroupStep, patchSubmission, readGroupPage, readJoinDialog, readJoinOptions, readSubmission, recordGroupRead } from './index'
 import type { GroupStepInput, GroupStepReply } from './index'
 import recordedJoins from './fixtures/recordedJoins.json'

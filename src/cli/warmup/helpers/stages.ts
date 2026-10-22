@@ -17,8 +17,8 @@ import { flowFromRecording, loadFlow, pageProblem, readRecordedCommands, saveFlo
 import type { ErrorCode } from "../../../errors/catalog/index.ts";
 import { recordAccountIssue } from "../../../marketplace/replacement/index.ts";
 import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
-import { ACTIVITY_SCRIPTS, appendStageLog, pickActivities, readStageLog, renderStageLogLine, SCRIPTS_IN_ORDER, stageLogPath, warmupMachine } from "../../../warmup/facebookStages/index.ts";
-import type { ActivityOutcome, StageLogLine, WarmupActivity } from "../../../warmup/facebookStages/index.ts";
+import { ACTIVITY_SCRIPTS, appendStageLog, pickActivities, readStageLog, renderStageLogLine, SCRIPTS_IN_ORDER, stageLogPath, warmupMachine } from "../../../facebook/warmup/stages/index.ts";
+import type { ActivityOutcome, StageLogLine, WarmupActivity } from "../../../facebook/warmup/stages/index.ts";
 import { createInspector, formatTraceLine } from "../../../observability/trace/index.ts";
 import { openInspectSession, runFlowInSession } from "../../flow/helpers/index.ts";
 import { openAccount, withRun } from "../../live/index.ts";

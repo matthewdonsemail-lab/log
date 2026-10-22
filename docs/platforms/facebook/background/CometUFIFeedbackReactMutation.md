@@ -34,7 +34,7 @@ Sets a reaction on a post or reel: it sends `input` and reads back `feedback_rea
 
 ## What our machine does with it
 
-The Reels warm-up's `like` step (`src/warmup/facebook/helpers/reel.ts`) clicks `button "Like"` and is what sends it. The machine does not read this response: the step passes when the snapshot shows `button "Remove Like"` (`checkStep`). The step only runs with `--live` and `--likes` (rule 8, `allowedActions`), and `planReel` keeps a like cooldown between reels.
+The Reels warm-up's `like` step (`src/facebook/warmup/activities/helpers/reel.ts`) clicks `button "Like"` and is what sends it. The machine does not read this response: the step passes when the snapshot shows `button "Remove Like"` (`checkStep`). The step only runs with `--live` and `--likes` (rule 8, `allowedActions`), and `planReel` keeps a like cooldown between reels.
 
 ## What can go wrong
 

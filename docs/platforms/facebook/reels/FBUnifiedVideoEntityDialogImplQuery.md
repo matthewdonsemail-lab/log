@@ -38,7 +38,7 @@ Loads the data for the video player's entity dialog by `entityId` (`FBUnifiedVid
 
 ## What our machine does with it
 
-Nothing. The Reels warm-up (`src/warmup/facebook`) checks each step against the page's URL and snapshot (`checkStep`), never against this response, and no code refers to it.
+Nothing. The Reels warm-up (`src/facebook/warmup/activities`) checks each step against the page's URL and snapshot (`checkStep`), never against this response, and no code refers to it.
 
 ## What can go wrong
 

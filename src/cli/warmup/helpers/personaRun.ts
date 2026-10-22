@@ -7,8 +7,8 @@ import type { InspectAction, InspectStepOptions } from "../../../browser/inspect
 import { createInspector, formatTraceLine } from "../../../observability/trace/index.ts";
 import { createDecisionsClient } from "../../../subq/decisions/index.ts";
 import type { DecisionImage, DecisionsClient } from "../../../subq/decisions/index.ts";
-import { readReelRead, REEL, reelCaption, reelPersonaMachine, reelReadRequest } from "../../../warmup/facebook/index.ts";
-import type { ActivityStep, AllowedActions, ReelLabel, ReelRead, StepReply } from "../../../warmup/facebook/index.ts";
+import { readReelRead, REEL, reelCaption, reelPersonaMachine, reelReadRequest } from "../../../facebook/warmup/activities/index.ts";
+import type { ActivityStep, AllowedActions, ReelLabel, ReelRead, StepReply } from "../../../facebook/warmup/activities/index.ts";
 import type { InterestEffect } from "../../../warmup/viewer/index.ts";
 import { DEFAULT_TRAFFIC_BUDGET_MB, meterForProxy, readTrafficLedger, recordTraffic, trafficBudget } from "../../../proxyVendor/traffic/index.ts";
 import type { TrafficMeter } from "../../../proxyVendor/traffic/index.ts";

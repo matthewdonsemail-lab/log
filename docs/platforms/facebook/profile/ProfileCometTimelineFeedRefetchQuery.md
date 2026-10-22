@@ -27,7 +27,7 @@ Reloads the posts on a profile's timeline (`ProfileCometTimelineFeed_user`), by 
 
 ## What our machine does with it
 
-It is the profile's equivalent of the group feed query: the posts our flows make (and the comments on them) appear in it, so reading an account's own posts back after `profilePost` would read this answer, as `src/group/read` reads the group feed's.
+It is the profile's equivalent of the group feed query: the posts our flows make (and the comments on them) appear in it, so reading an account's own posts back after `profilePost` would read this answer, as `src/facebook/group/read` reads the group feed's.
 
 ## What can go wrong
 

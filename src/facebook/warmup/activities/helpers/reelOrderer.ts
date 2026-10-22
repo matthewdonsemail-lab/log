@@ -1,7 +1,7 @@
-import type { PersonaPack, PersonaSegment } from '../../persona/types'
-import { watchRatio } from '../../viewer/helpers/interestEffect'
-import type { InterestEffect } from '../../viewer/helpers/interestEffect'
-import type { ReelViewer } from '../../viewer/types'
+import type { PersonaPack, PersonaSegment } from '../../../../warmup/persona/types'
+import { watchRatio } from '../../../../warmup/viewer/helpers/interestEffect'
+import type { InterestEffect } from '../../../../warmup/viewer/helpers/interestEffect'
+import type { ReelViewer } from '../../../../warmup/viewer/types'
 import type { ReelRead } from './reelDecision'
 import { seeded } from './reelSession'
 

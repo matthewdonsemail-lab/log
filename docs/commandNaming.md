@@ -72,5 +72,5 @@ matt's words: `log facebook poll <group> <account> <how long to poll>`.
 
 Still open for matt:
 
-5. **Code folders:** the warm-up lives in `src/warmup/<platform>` (rule 49), but groups are `src/group/…` (rule 45) with Facebook-only code inside. Should they become `src/group/facebook/…`?
+5. **Code folders** (decided, matt: "src/facebook/group src/facebook/warmup because each has different approaches", rule 64): `src/<platform>/<area>/<domain>`, e.g. `src/facebook/group/read` and `src/facebook/warmup/stages`.
 6. **Saved flows** (`groupTabs`, `profileSetup`…) are Facebook-only too. Should their names carry the platform (`log facebook flow run groupTabs`, which would make `flow` take the platform)?

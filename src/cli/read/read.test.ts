@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { clearCurrentInspect, writeCurrentInspect } from "../../browser/inspect/index.ts";
 import type { InspectAction, InspectStepResult } from "../../browser/inspect/index.ts";
-import { comment, commentAnswer, feedScroll, groupPage, postPage, unit } from "../../group/read/readMachine.test.ts";
+import { comment, commentAnswer, feedScroll, groupPage, postPage, unit } from "../../facebook/group/read/readMachine.test.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { runCli } from "../runner/index.ts";
 import { DEFAULT_COMMENT_POSTS, DEFAULT_SCROLLS, parseReadArgs } from "./index.ts";

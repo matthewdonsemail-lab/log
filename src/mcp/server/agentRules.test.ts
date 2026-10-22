@@ -46,7 +46,7 @@ describe("AGENTS.md in the MCP server", () => {
     const client = await connected();
     const { tools } = await client.listTools();
     for (const tool of tools) expect((tool.description ?? "").split("\n").at(-1)).toMatch(/^AGENTS\.md \(log:\/\/agents\): rules [\d, ]+\. When matt says to do something, do it completely \(rule 30\)\.$/);
-    expect(tools.find((t) => t.name === "join")?.description).toContain("rules 8, 10, 18, 20, 25, 26, 29, 35, 45, 30, 38, 39, 40, 41");
+    expect(tools.find((t) => t.name === "join")?.description).toContain("rules 8, 10, 18, 20, 25, 26, 29, 35, 45, 64, 30, 38, 39, 40, 41");
     await client.close();
   });
 

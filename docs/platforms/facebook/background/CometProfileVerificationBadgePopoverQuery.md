@@ -25,11 +25,11 @@ Seen 4 time(s) in 2 run(s).
 
 ## What it does
 
-Loads the popover for a profile's verification badge, by `profileID`; it reads back only `node.id` and `node.__typename`. In our Reels recordings it fired after step 21 (a clickRole button step) and twice when the page settled on /reel/<id>, with no step of ours clicking a badge (`src/warmup/facebook/helpers/reel.ts` has none).
+Loads the popover for a profile's verification badge, by `profileID`; it reads back only `node.id` and `node.__typename`. In our Reels recordings it fired after step 21 (a clickRole button step) and twice when the page settled on /reel/<id>, with no step of ours clicking a badge (`src/facebook/warmup/activities/helpers/reel.ts` has none).
 
 ## What our machine does with it
 
-Nothing. The Reels warm-up (`src/warmup/facebook`) checks each step against the page's URL and snapshot (`checkStep`), never against this response, and no code refers to it.
+Nothing. The Reels warm-up (`src/facebook/warmup/activities`) checks each step against the page's URL and snapshot (`checkStep`), never against this response, and no code refers to it.
 
 ## What can go wrong
 

@@ -20,8 +20,8 @@
  * goes on to the next one; a step that fails on the group's own feed stops the read.
  */
 import { assign, fromPromise, setup } from "xstate";
-import { pageProblem } from "../../browser/flow/index.ts";
-import type { ErrorCode } from "../../errors/catalog/index.ts";
+import { pageProblem } from "../../../browser/flow/index.ts";
+import type { ErrorCode } from "../../../errors/catalog/index.ts";
 import { addCounts, commentPagesOf, commentTargets, feedPagesOf, groupIdFromStep, mergeComments, mergePosts, NEWEST_COMMENTS, postDialogOf, postPageOf, reachedCursor } from "./helpers/index.ts";
 import { newPosts } from "./helpers/extractPosts.ts";
 import type { GroupReadContext, GroupReadInput, GroupReadOutput, ReadStepInput, ReadStepReply } from "./types.ts";

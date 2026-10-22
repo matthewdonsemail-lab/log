@@ -11,7 +11,7 @@
  * instead of matched by text (rule 29): `button "Join Group"` on
  * /groups/4191018610937243/, Bethlehem 2026-10-19.
  */
-import type { ErrorCode } from '../../errors/catalog/index'
+import type { ErrorCode } from '../../../errors/catalog/index'
 import type { Application } from '../answer/types'
 
 /** Where the account stands with one group, as Twenty keeps it (`agencyGroups.joinStatus`). */

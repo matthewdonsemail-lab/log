@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { createActor, fromPromise, toPromise } from "xstate";
-import { createMemoryTwenty } from "../../twenty/graphql/helpers/memoryTwenty.ts";
+import { createMemoryTwenty } from "../../../twenty/graphql/helpers/memoryTwenty.ts";
 import { commentTargets, COMMENT_QUERIES, FEED_QUERY, groupReadMachine, NEWEST_COMMENTS, readStateOf, saveRead } from "./index.ts";
 import type { GroupPost, GroupReadInput, GroupReadOutput, ReadStepInput, ReadStepReply } from "./index.ts";
 

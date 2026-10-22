@@ -46,7 +46,7 @@ Loads the next page of the home feed (`viewer....CometNewsFeed_viewerConnection`
 
 ## What our machine does with it
 
-The feed warm-up's `readFeed` and `nextPost` steps scroll the home feed (`src/warmup/facebook/helpers/feed.ts`); `nextPost` reads posts from the page (`FEED_POSTS_JS`) and does not wait for this request. When the next post isn't on the page yet, the next scroll brings it in once this request has answered. It matters for speed: its 1.0-4.2 s is the wait behind a `nextPost` that finds no new post at once.
+The feed warm-up's `readFeed` and `nextPost` steps scroll the home feed (`src/facebook/warmup/activities/helpers/feed.ts`); `nextPost` reads posts from the page (`FEED_POSTS_JS`) and does not wait for this request. When the next post isn't on the page yet, the next scroll brings it in once this request has answered. It matters for speed: its 1.0-4.2 s is the wait behind a `nextPost` that finds no new post at once.
 
 ## What can go wrong
 

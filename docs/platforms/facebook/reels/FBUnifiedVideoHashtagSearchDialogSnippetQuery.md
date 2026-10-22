@@ -29,7 +29,7 @@ Loads the header snippet of a hashtag's dialog in the video player (`video_home_
 
 ## What our machine does with it
 
-Nothing. No step of the Reels warm-up opens a hashtag (`src/warmup/facebook/helpers/reel.ts`). The Reels warm-up (`src/warmup/facebook`) checks each step against the page's URL and snapshot (`checkStep`), never against this response, and no code refers to it.
+Nothing. No step of the Reels warm-up opens a hashtag (`src/facebook/warmup/activities/helpers/reel.ts`). The Reels warm-up (`src/facebook/warmup/activities`) checks each step against the page's URL and snapshot (`checkStep`), never against this response, and no code refers to it.
 
 ## What can go wrong
 

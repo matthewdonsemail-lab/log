@@ -14,6 +14,11 @@ was broken across the CLI.
   the warm-up.
 - **A command that works on any platform** (`inspect`, `flow`, `proxy`,
   `errors`, `login`…) takes none.
+- **The code is laid out the same way:** `src/<platform>/<area>/<domain>`,
+  because each platform has its own approach: `src/facebook/group/join`,
+  `src/facebook/group/read`, `src/facebook/warmup/activities`,
+  `src/facebook/warmup/stages`. What any platform uses stays shared
+  (`src/warmup/persona`, `src/warmup/viewer`). Rule 64.
 
 The full table, every command old and new: `docs/commandNaming.md`. Rule 63.
 
@@ -660,6 +665,14 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     a read in the account's open browser. `bun run check:docs` refuses a
     usage line without the platform first. Top of this file; the table is
     `docs/commandNaming.md`.
+64. 2026-10-22 · matt: the code is by platform first, as the commands are,
+    "because each has different approaches": `src/<platform>/<area>/<domain>`.
+    Facebook's groups are `src/facebook/group/{join,read,answer}` (were
+    `src/group/…`, rule 45) and its warm-up `src/facebook/warmup/activities`
+    and `src/facebook/warmup/stages` (were `src/warmup/facebook` and
+    `src/warmup/facebookStages`, rule 49). What every platform's warm-up
+    draws from stays shared: `src/warmup/persona`, `src/warmup/viewer`. Each
+    area has an `index.ts` (`check:naming`). Top of this file.
 
 ## Checks
 

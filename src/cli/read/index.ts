@@ -1,6 +1,6 @@
 /**
  * `log facebook read group --account <a> --group <g>` — read a Facebook group's new posts and
- * their comments as one account (#27), through the group read machine (`group/read`).
+ * their comments as one account (#27), through the group read machine (`facebook/group/read`).
  *
  *   log facebook read group --account <a> --group <url|id> [--scrolls <n>] [--commentPosts <n>] [--live] [--json]
  *       in the account's OPEN browser (rule 35: `log inspect start` or `log facebook host start`
@@ -17,7 +17,7 @@
  *   OpenMagpie's worker is `log facebook poll` (`src/cli/poll`), which reads through the same machine.
  *
  * The posts go to `agencyGroupPosts`, their comments to `agencyGroupComments`, and only
- * then does the group's `readCursor` move (`group/read/client.ts`). Every step prints a
+ * then does the group's `readCursor` move (`facebook/group/read/client.ts`). Every step prints a
  * line as it happens (rule 26).
  */
 import { existsSync, readFileSync } from "node:fs";
@@ -25,10 +25,10 @@ import { join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
 import { readCurrentInspect } from "../../browser/inspect/index.ts";
 import type { CurrentInspect } from "../../browser/inspect/index.ts";
-import { ensureGroup, parseGroupRef } from "../../group/join/index.ts";
-import type { Group, GroupRef } from "../../group/join/index.ts";
-import { AGENCY_GROUP_COMMENTS, AGENCY_GROUP_POSTS, groupReadMachine, readStateOf, saveRead } from "../../group/read/index.ts";
-import type { GroupReadOutput, ReadStepInput, ReadStepReply, SavedRead } from "../../group/read/index.ts";
+import { ensureGroup, parseGroupRef } from "../../facebook/group/join/index.ts";
+import type { Group, GroupRef } from "../../facebook/group/join/index.ts";
+import { AGENCY_GROUP_COMMENTS, AGENCY_GROUP_POSTS, groupReadMachine, readStateOf, saveRead } from "../../facebook/group/read/index.ts";
+import type { GroupReadOutput, ReadStepInput, ReadStepReply, SavedRead } from "../../facebook/group/read/index.ts";
 import type { ErrorCode } from "../../errors/catalog/index.ts";
 import { homeOf, outsideActiveHours } from "../../marketplace/home/index.ts";
 import { checkRunnable, findAccount } from "../../marketplace/socialAccount/index.ts";

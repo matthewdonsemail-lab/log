@@ -5,7 +5,7 @@
  * and run in order, in ONE browser that stays open, by the warm-up machine.
  * Every step is written to the stage log as it happens (rule 26).
  */
-import type { WarmupActivity } from '../../marketplace/lifecycle/types'
+import type { WarmupActivity } from '../../../marketplace/lifecycle/types'
 
 export type { WarmupActivity }
 
