@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { FEED_QUERY, feedResponses, newPosts, postOf, postsFromFeedResponse, postsFromGroupPage } from "./index.ts";
+import { FEED_QUERY, feedResponses, newPosts, postOf, postsFromFeedResponse, postsFromGroupPage, reachedCursor } from "./index.ts";
 
 const GROUP = "4191018610937243";
 
@@ -88,25 +88,49 @@ describe("group read: posts from the feed query", () => {
   });
 });
 
-describe("group read: the cursor (facebook-camofox-client's listen.py)", () => {
+describe("group read: the cursor (what the reads have already seen, by post id)", () => {
   const posts = postsFromFeedResponse(response([unit("401", 300), unit("402", 200), unit("403", 100)]), GROUP).posts;
 
-  test("a first read keeps everything, newest first, and the cursor moves to the newest", () => {
-    expect(newPosts(posts, { lastPostId: null, watermark: null })).toEqual({ posts: [posts[0], posts[1], posts[2]], cursor: { lastPostId: "401", watermark: 300, idsAtWatermark: ["401"] } });
+  test("a first read keeps everything, newest first, and the cursor keeps every id it saw", () => {
+    expect(newPosts(posts, { lastPostId: null, watermark: null })).toEqual({
+      posts: [posts[0], posts[1], posts[2]],
+      cursor: { lastPostId: "401", watermark: 300, idsAtWatermark: ["401"], seenIds: ["401", "402", "403"] },
+    });
   });
 
-  test("posts that share the watermark's second are each read once, never lost", () => {
+  test("a post that shows up later with an earlier time is still new: its id was never seen", () => {
+    const first = newPosts(posts, { lastPostId: null, watermark: null });
+    // 399 went live after the first read, stamped earlier than everything the first read saw.
+    const late = postsFromFeedResponse(response([unit("401", 300), unit("399", 50), unit("402", 200)]), GROUP).posts;
+    const later = newPosts(late, first.cursor);
+    expect(later.posts.map((p) => p.postId)).toEqual(["399"]);
+    expect(later.cursor.seenIds).toEqual(["401", "402", "399", "403"]);
+    expect(later.cursor.watermark).toBe(300);
+    expect(newPosts(late, later.cursor).posts).toEqual([]);
+  });
+
+  test("posts that share a second are each read once, never lost", () => {
     const same = postsFromFeedResponse(response([unit("601", 500), unit("602", 500), unit("603", 400)]), GROUP).posts;
     const first = newPosts(same.filter((p) => p.postId !== "602"), { lastPostId: null, watermark: null });
-    expect(first.cursor).toEqual({ lastPostId: "601", watermark: 500, idsAtWatermark: ["601"] });
     const later = newPosts(same, first.cursor);
     expect(later.posts.map((p) => p.postId)).toEqual(["602"]);
-    expect(later.cursor.idsAtWatermark).toEqual(["601", "602"]);
     expect(newPosts(same, later.cursor).posts).toEqual([]);
   });
 
-  test("a later read keeps only what is newer; with nothing new the cursor stays", () => {
-    expect(newPosts(posts, { lastPostId: "402", watermark: 200 }).posts.map((p) => p.postId)).toEqual(["401"]);
-    expect(newPosts(posts, { lastPostId: "401", watermark: 300 })).toEqual({ posts: [], cursor: { lastPostId: "401", watermark: 300 } });
+  test("a cursor written before it kept ids is read by time once, then keeps ids", () => {
+    const legacy = { lastPostId: "402", watermark: 200, idsAtWatermark: ["402"] };
+    const read = newPosts(posts, legacy);
+    expect(read.posts.map((p) => p.postId)).toEqual(["401"]);
+    expect(read.cursor.seenIds).toEqual(["401", "402", "403"]);
+  });
+
+  test("the feed has reached what was read once it shows three seen posts, or all the cursor knows", () => {
+    const cursor = newPosts(posts, { lastPostId: null, watermark: null }).cursor;
+    const page = (ids: [string, number][]) => postsFromFeedResponse(response(ids.map(([id, t]) => unit(id, t))), GROUP).posts;
+    expect(reachedCursor(page([["404", 400], ["401", 300]]), cursor)).toBe(false);
+    expect(reachedCursor(page([["404", 400], ["401", 300], ["402", 200], ["403", 100]]), cursor)).toBe(true);
+    expect(reachedCursor(page([["404", 400], ["401", 300]]), { lastPostId: "401", watermark: 300, idsAtWatermark: ["401"], seenIds: ["401"] })).toBe(true);
+    expect(reachedCursor(page([["404", 400]]), { lastPostId: "401", watermark: 300, idsAtWatermark: ["401"] })).toBe(false);
+    expect(reachedCursor(page([["404", 400], ["402", 200]]), { lastPostId: "401", watermark: 300, idsAtWatermark: ["401"] })).toBe(true);
   });
 });

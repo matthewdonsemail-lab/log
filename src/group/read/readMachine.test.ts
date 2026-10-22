@@ -106,7 +106,7 @@ describe("group read machine", () => {
     expect(output.posts.map((p) => p.postId)).toEqual(["4", "3", "2", "1"]);
     expect(output.comments.map((c) => c.commentId)).toEqual(["31", "32"]);
     expect(output.commentReads).toEqual([{ postId: "3", commentCount: 2, comments: 2, problem: null }]);
-    expect(output.cursor).toEqual({ lastPostId: "4", watermark: T + 40, idsAtWatermark: ["4"] });
+    expect(output.cursor).toEqual({ lastPostId: "4", watermark: T + 40, idsAtWatermark: ["4"], seenIds: ["4", "3", "2", "1"] });
     expect(output.feedDone).toBe(true);
     // Nothing clicked without --live (rule 8).
     expect(sent.some((s) => s.action === "clickRole")).toBe(false);
@@ -181,10 +181,10 @@ describe("group read in Twenty", () => {
       ["4", "g1", 1],
     ]);
     expect(twenty.rows.agencyGroupComments!.map((r) => [r.facebookCommentId, r.agencyGroupPostId])).toEqual([["41", twenty.rows.agencyGroupPosts![1]!.id]]);
-    expect(twenty.rows.agencyGroups![0]!.readCursor).toEqual({ lastPostId: "4", watermark: T + 40, idsAtWatermark: ["4"] });
+    expect(twenty.rows.agencyGroups![0]!.readCursor).toEqual({ lastPostId: "4", watermark: T + 40, idsAtWatermark: ["4"], seenIds: ["4", "3"] });
 
     const state = await readStateOf(twenty, "g1");
-    expect(state).toEqual({ cursor: { lastPostId: "4", watermark: T + 40, idsAtWatermark: ["4"] }, commentsRead: { "4": 1 } });
+    expect(state).toEqual({ cursor: { lastPostId: "4", watermark: T + 40, idsAtWatermark: ["4"], seenIds: ["4", "3"] }, commentsRead: { "4": 1 } });
     expect(await saveRead(twenty, "g1", output, "read", now)).toEqual({ postsAdded: 0, postsUpdated: 0, commentsAdded: 0, commentsUpdated: 0, cursorMoved: true });
   });
 

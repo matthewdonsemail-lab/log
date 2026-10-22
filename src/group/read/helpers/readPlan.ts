@@ -1,6 +1,6 @@
 import type { CommentPage, FeedPage, GroupComment, GroupPost, ReadCursor } from "../types.ts";
 import { commentResponses, commentsFromPostPage, commentsFromResponse } from "./extractComments.ts";
-import { feedResponses, postsFromFeedResponse, postsFromGroupPage } from "./extractPosts.ts";
+import { feedResponses, postsFromFeedResponse, postsFromGroupPage, seenBy } from "./extractPosts.ts";
 import { documentsOf, groupIdFromPage } from "./json.ts";
 
 type Har = { log?: { entries?: unknown[] } };
@@ -58,11 +58,20 @@ export function addCounts<K extends string>(into: Partial<Record<K, number>>, mo
   return out;
 }
 
-/** The feed showed a post the last read already had: older than its watermark, or one of the posts at it. Pure. */
+/** Already-seen posts the feed must show before the read stops scrolling: about one scroll's worth. */
+export const STOP_AFTER_SEEN = 3;
+
+/**
+ * The feed has reached what the reads already have: it showed STOP_AFTER_SEEN posts the cursor has seen (by id,
+ * `seenBy`), or as many as the cursor knows when that's fewer. A new post between seen ones is still caught by
+ * its id; only scrolling stops. A cursor without ids stops at its first seen post (the time rule). Pure.
+ */
 export function reachedCursor(posts: GroupPost[], cursor: ReadCursor): boolean {
-  if (cursor.watermark === null) return cursor.lastPostId !== null && posts.some((p) => p.postId === cursor.lastPostId);
-  const atMark = new Set(cursor.idsAtWatermark ?? (cursor.lastPostId ? [cursor.lastPostId] : []));
-  return posts.some((p) => p.createdTime < cursor.watermark! || (p.createdTime === cursor.watermark && atMark.has(p.postId)));
+  const seen = seenBy(cursor);
+  const count = posts.filter(seen).length;
+  if (!cursor.seenIds) return count > 0;
+  const known = new Set([...cursor.seenIds, ...(cursor.idsAtWatermark ?? []), ...(cursor.lastPostId ? [cursor.lastPostId] : [])]).size;
+  return count > 0 && count >= Math.min(STOP_AFTER_SEEN, known);
 }
 
 /**

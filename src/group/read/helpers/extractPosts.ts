@@ -96,21 +96,40 @@ export function feedResponses(har: { log?: { entries?: unknown[] } }): string[] 
   return responsesOf(har, [FEED_QUERY]);
 }
 
+/** How many post ids the cursor keeps: far more than one read sees (16 posts over 6 scrolls, run 20261022T054544). */
+export const SEEN_IDS_KEPT = 500;
+
 /**
- * Only the posts newer than the cursor (facebook-camofox-client's `listen.py`: the last post id
- * and the time watermark), newest first, and the cursor after them. Posts can share a second (run
- * 20261020T143506 had five in 30 s), so one at the watermark's second is new unless the cursor already
- * holds its id. The cursor only moves forward. Pure.
+ * Whether the cursor has already seen a post. By its id when the cursor keeps ids (`seenIds`): a post that
+ * shows up late with an earlier time is still new. A cursor written before it kept ids falls back once to
+ * the time rule (facebook-camofox-client's `listen.py`: older than the watermark, or one of the ids at its
+ * second). Pure.
+ */
+export function seenBy(cursor: ReadCursor): (post: GroupPost) => boolean {
+  const atMark = new Set(cursor.idsAtWatermark ?? (cursor.lastPostId ? [cursor.lastPostId] : []));
+  if (cursor.seenIds) {
+    const known = new Set([...cursor.seenIds, ...atMark]);
+    return (post) => known.has(post.postId);
+  }
+  return (post) =>
+    post.postId === cursor.lastPostId ||
+    (cursor.watermark !== null && (post.createdTime < cursor.watermark || (post.createdTime === cursor.watermark && atMark.has(post.postId))));
+}
+
+/**
+ * The posts the cursor hasn't seen, newest first, and the cursor after this read: every id the read saw first,
+ * then the ones it kept from before, at most SEEN_IDS_KEPT; the watermark only moves forward. Pure.
  */
 export function newPosts(posts: GroupPost[], cursor: ReadCursor): { posts: GroupPost[]; cursor: ReadCursor } {
-  const atMark = new Set(cursor.idsAtWatermark ?? (cursor.lastPostId ? [cursor.lastPostId] : []));
-  const fresh = posts
-    .filter((p) => cursor.watermark === null || p.createdTime > cursor.watermark || (p.createdTime === cursor.watermark && !atMark.has(p.postId)))
-    .filter((p) => cursor.watermark !== null || p.postId !== cursor.lastPostId)
-    .sort((a, b) => b.createdTime - a.createdTime);
-  const newest = fresh[0];
-  if (!newest) return { posts: [], cursor };
-  const sameSecond = fresh.filter((p) => p.createdTime === newest.createdTime).map((p) => p.postId);
-  const ids = newest.createdTime === cursor.watermark ? [...atMark, ...sameSecond] : sameSecond;
-  return { posts: fresh, cursor: { lastPostId: newest.postId, watermark: newest.createdTime, idsAtWatermark: ids } };
+  const seen = seenBy(cursor);
+  const byTime = [...posts].sort((a, b) => b.createdTime - a.createdTime);
+  const fresh = byTime.filter((p) => !seen(p));
+  const read = byTime.map((p) => p.postId);
+  const before = cursor.seenIds ?? [...(cursor.idsAtWatermark ?? []), ...(cursor.lastPostId ? [cursor.lastPostId] : [])];
+  const seenIds = [...new Set([...read, ...before])].slice(0, SEEN_IDS_KEPT);
+  const newest = byTime[0];
+  if (!newest || (cursor.watermark !== null && newest.createdTime < cursor.watermark)) return { posts: fresh, cursor: { ...cursor, seenIds } };
+  const sameSecond = byTime.filter((p) => p.createdTime === newest.createdTime).map((p) => p.postId);
+  const atMark = newest.createdTime === cursor.watermark ? [...new Set([...(cursor.idsAtWatermark ?? []), ...sameSecond])] : sameSecond;
+  return { posts: fresh, cursor: { lastPostId: newest.postId, watermark: newest.createdTime, idsAtWatermark: atMark, seenIds } };
 }

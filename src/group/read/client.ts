@@ -25,6 +25,8 @@ export function cursorOf(raw: unknown): ReadCursor {
     lastPostId: typeof value.lastPostId === "string" ? value.lastPostId : null,
     watermark: typeof value.watermark === "number" ? value.watermark : null,
     idsAtWatermark: Array.isArray(value.idsAtWatermark) ? value.idsAtWatermark.filter((id): id is string => typeof id === "string") : [],
+    // Kept only when the row has them: a cursor written before reads by the time rule once (`seenBy`).
+    ...(Array.isArray(value.seenIds) ? { seenIds: value.seenIds.filter((id): id is string => typeof id === "string") } : {}),
   };
 }
 

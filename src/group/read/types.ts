@@ -89,13 +89,19 @@ export interface CommentPage {
   hasNextPage: boolean | null;
 }
 
-/** The read cursor kept per group (on its `agencyGroup`): the newest post read so far. */
+/** The read cursor kept per group (on its `agencyGroup`): what the reads have already seen. */
 export interface ReadCursor {
   lastPostId: string | null;
   /** The newest `creationTime` read, unix seconds. */
   watermark: number | null;
   /** Every post id read at the watermark's second: posts can share one, and none of them is read twice or lost. */
   idsAtWatermark?: string[];
+  /**
+   * The ids of the posts the latest reads saw, newest first, at most SEEN_IDS_KEPT. A post is new when its id
+   * isn't here, whatever its time (matt, 2026-10-22: never judged by time alone). A cursor without them (written
+   * before) is read by the time rule once, then gets them.
+   */
+  seenIds?: string[];
 }
 
 /** A step the read sends to the account's open browser (`log inspect`'s actions; none of them clicks unless `live`). */
