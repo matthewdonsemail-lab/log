@@ -65,6 +65,14 @@ export const PAGE_STATES: readonly StateRule[] = [
     withoutPin: PIN_FROM_MATT,
     person: false
   },
+  {
+    id: 'marketplacePartnerListings',
+    url: /\/marketplace\/partner_listing/i,
+    text: /discover more when you shop/i,
+    what: 'Marketplace\'s "Discover more when you shop" (partner shops, shown where the Marketplace location is in Europe; Bethlehem was sent to Granada by a bare zip, 20261022T110738 step 2)',
+    resolve: 'press its Update by ref (`log inspect do click <ref of "Update"> --live`), then set the location back with `log inspect do setLocation "City, State" --live`',
+    person: false
+  },
   { id: 'rememberPassword', text: /remember password/i, what: 'the "Remember password" prompt', resolve: 'click "Not now" (`clickRole button "Not now"`)', person: false },
   { id: 'twoStepCode', url: /two_step_verification|two_factor|\/checkpoint/i, text: /enter (the )?(6-digit )?code|authentication code|login code/i, what: 'two-step: the code field', resolve: '`log inspect do code --live --account <a>` (the TOTP from Twenty, rule 21)', person: false },
   { id: 'loginForm', url: /\/login|login\.php/i, what: 'the login form', resolve: '`log inspect do signIn --live --account <a>` (rule 21), or `log facebook connect --account <a>`', person: false },

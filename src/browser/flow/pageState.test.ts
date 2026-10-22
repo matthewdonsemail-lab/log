@@ -46,3 +46,11 @@ describe('Messenger PIN', () => {
     expect(pageStateOf('https://www.facebook.com/messages/', 'heading "Confirm your PIN to avoid losing chat history"\ntextbox "Confirm your PIN"', { messengerPin: true })).toBeNull()
   })
 })
+
+describe('Marketplace partner listings', () => {
+  test('"Discover more when you shop" is pressed through with its Update', () => {
+    const state = pageStateOf('https://www.facebook.com/marketplace/partner_listing/', 'generic: Discover more when you shop\nbutton "Update"')
+    expect(state).toMatchObject({ id: 'marketplacePartnerListings', person: false })
+    expect(state?.resolve).toContain('setLocation')
+  })
+})

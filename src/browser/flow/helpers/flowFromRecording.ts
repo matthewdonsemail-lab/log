@@ -29,7 +29,7 @@ export function confirmingRequest(lines: string[]): string | null {
   return null
 }
 
-const ACTED: Record<string, FlowAction> = { click: 'click', clickRole: 'click', type: 'fill', upload: 'upload', uploadRole: 'upload', signIn: 'signIn', code: 'code', pin: 'pin', solve: 'solve', goto: 'goto', scroll: 'scroll', openAny: 'openAny', clickAny: 'clickAny', dwell: 'dwell', press: 'press', scrollIn: 'scrollIn' }
+const ACTED: Record<string, FlowAction> = { click: 'click', clickRole: 'click', type: 'fill', upload: 'upload', uploadRole: 'upload', signIn: 'signIn', code: 'code', pin: 'pin', setLocation: 'setLocation', solve: 'solve', goto: 'goto', scroll: 'scroll', openAny: 'openAny', clickAny: 'clickAny', dwell: 'dwell', press: 'press', scrollIn: 'scrollIn' }
 
 const camel = (text: string): string =>
   text
@@ -115,6 +115,11 @@ export function flowFromRecording(
     if (command.action === 'uploadRole') {
       const [role, name] = command.args
       steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_upload${camel(name)[0]?.toUpperCase() ?? ''}${camel(name).slice(1)}`, action: 'upload', role, name: named(name), value: param('file', `uploaded through ${role} "${name}"`), ...(expect ? { expect } : {}), recorded })
+      return
+    }
+    if (action === 'setLocation') {
+      steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_setLocation`, action, value: `{${rename.location ?? 'location'}}`, ...(expect ? { expect } : {}), recorded })
+      if (!params.some((p) => p.name === (rename.location ?? 'location'))) params.push({ name: rename.location ?? 'location', kind: 'text', description: 'the Marketplace location, "City, State" with the state written out ("Bethlehem, Pennsylvania")' })
       return
     }
     if (action === 'signIn' || action === 'code' || action === 'pin' || action === 'solve') {

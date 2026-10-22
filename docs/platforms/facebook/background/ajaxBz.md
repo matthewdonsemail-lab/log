@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_3ac696d9ca5b73b85be25c3eb0a04d8e07223fff4eb281ffe30fb79f8510e011` |
+| rea | `ev_b36ef6c88118bebbbcd874ce9d69777980f6638e6228ca98f73a5d4b0ee215a3` |
 
-Seen 53 time(s) in 3 run(s).
+Seen 54 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -34,6 +34,7 @@ Seen 53 time(s) in 3 run(s).
 | connect | Page: loginForm /marketplace/selling/ "…" | 1 | -1 | -1 ms | 573 ms | — |
 | connect | submitCredentials failed: crashed Error | 1 | -1 | -1 ms | 1666 ms | — |
 | connect | Auto-login: submitting (Enter). | 2 | -1 | -1 ms | 26–102 ms | — |
+| inspect | step 27: click e1541 | 1 | 200 | 1489 ms | 37737 ms | — |
 
 <!-- facts:end -->
 

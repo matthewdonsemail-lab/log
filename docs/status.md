@@ -57,6 +57,7 @@ Accounts in the runs: Bethlehem 61594063207669, Reading 61594131334566, Lancaste
 
 | Command | State | Evidence |
 |---|---|---|
+| `marketplaceListingPublish` flow (AdsPower) | ✅ 2026-10-22 | Bethlehem: listing 1425935622848350 published from the open AdsPower browser, step by step with `log inspect`, then made the flow (15 steps). Facebook holds it for review ("This listing is being reviewed", Active, Listed on Marketplace); Twenty has it UNDER_REVIEW. The flow hasn't run as a flow yet. The page said the account had "reached your daily limit as a new Facebook account", and still created the listing. |
 | `log facebook publish --live` | ✅ 2026-10-19, Camoufox | Reading posted listing 4095105027293522, held UNDER_REVIEW, after two live tries failed on the location. The zip-location fix has never run live. It still launches its own browser, against rule 35. |
 | `log facebook campaign fill` / `heal` / `run` / `show` | 🟡 | Never run on real accounts. `run --live` has never run on Facebook. |
 | `log facebook profile setup` | 🔴 2026-10-19 | One real dry run, Allentown: `sessionExpired` (checkpoint page). `--live` never ran through this command. The photos and names that are set were done through `log flow run profileSetup`. |
@@ -106,7 +107,7 @@ Accounts in the runs: Bethlehem 61594063207669, Reading 61594131334566, Lancaste
 
 | | ✅ live | 🟡 untested live | 🔴 failed or partial | ⬜ not built |
 |---|---|---|---|---|
-| The 55 commands and steps above | 24 | 16 | 7 | 8 |
+| The 56 commands and steps above | 25 | 16 | 7 | 8 |
 
 Under half of what's built has been proven live. Most of what's proven is Twenty, inspect, joining and reading a group, and one publish. Almost everything that acts on its own (the host's day, connect/scan/watch on AdsPower, campaigns) hasn't been. The five warm-up stages have, on 2026-10-22. Group reading counts as ✅ for its first version, though the current version hasn't run live.
 

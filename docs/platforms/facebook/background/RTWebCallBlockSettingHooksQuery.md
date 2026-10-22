@@ -13,7 +13,7 @@
 | Called from | `RTWebCallBlockSettingHooks` |
 | rea | `ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6` |
 
-Seen 56 time(s) in 18 run(s).
+Seen 64 time(s) in 20 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -52,6 +52,14 @@ Seen 56 time(s) in 18 run(s).
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 1921 ms | 5713 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 337 ms | 5594 ms | — |
 | inspect | step 1: goto /messages/ | 1 | 200 | 341 ms | 2996 ms | — |
+| inspect | step 1: goto /marketplace/ | 1 | 200 | 763 ms | 10177 ms | — |
+| inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 402 ms | 3238 ms | — |
+| inspect | step 5: setLocation Bethlehem, Pennsylvania | 1 | 200 | 819 ms | 3816 ms | — |
+| inspect | step 11: goto /marketplace/create/item | 1 | 200 | 818 ms | 2830 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 1 | 200 | 484 ms | 10111 ms | — |
+| inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 695 ms | 5339 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 391 ms | 2910 ms | — |
+| inspect | step 13: setLocation 18015 | 1 | 200 | 377 ms | 4502 ms | — |
 
 <!-- facts:end -->
 

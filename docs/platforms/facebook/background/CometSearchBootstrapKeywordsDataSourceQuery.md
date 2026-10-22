@@ -13,7 +13,7 @@
 | Called from | `CometSearchBootstrapKeywordsDataSource.query` |
 | rea | `ev_5cb62e3a7cd21788732d77960d11bcea0adc8730aaaa23e6a78c097c1c44c7a6` |
 
-Seen 55 time(s) in 17 run(s).
+Seen 63 time(s) in 19 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -52,6 +52,14 @@ Seen 55 time(s) in 17 run(s).
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 696 ms | 4939 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 370 ms | 5585 ms | — |
 | inspect | step 1: goto /messages/ | 1 | 200 | 373 ms | 2958 ms | — |
+| inspect | step 1: goto /marketplace/ | 1 | 200 | 643 ms | 8895 ms | — |
+| inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 433 ms | 3235 ms | — |
+| inspect | step 5: setLocation Bethlehem, Pennsylvania | 1 | 200 | 864 ms | 3766 ms | — |
+| inspect | step 11: goto /marketplace/create/item | 1 | 200 | 653 ms | 2827 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 1 | 200 | 696 ms | 9548 ms | — |
+| inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 711 ms | 5357 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 391 ms | 2666 ms | — |
+| inspect | step 13: setLocation 18015 | 1 | 200 | 393 ms | 4315 ms | — |
 
 <!-- facts:end -->
 

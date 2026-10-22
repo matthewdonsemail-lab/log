@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_577e32ac6e9521c6cf80f206bb4e4d92a857963852b54684c9947bfab6930c7e` |
+| rea | `ev_4b8876070c04830f1f9c0c6f13352822f96e3d646a31526bf6846cf0bb5d1c84` |
 
-Seen 502 time(s) in 19 run(s).
+Seen 545 time(s) in 21 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -50,7 +50,7 @@ Seen 502 time(s) in 19 run(s).
 | inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 535 ms | 20609 ms | — |
 | inspect | scroll: +800px in 18 wheel steps, 781 ms | 5 | 200 | 347–548 ms | 30593–267118 ms | — |
 | inspect | step 1: goto /profile.php | 3 | 200 | 354–455 ms | 7766–20765 ms | — |
-| inspect | step 2: snapshot | 6 | 200 | 356–1507 ms | 7961–14754 ms | — |
+| inspect | step 2: snapshot | 8 | 200 | 356–1507 ms | 944–14754 ms | — |
 | inspect | step 3: clickRole button "…" | 6 | 200 | 307–405 ms | 301–5352 ms | — |
 | inspect | step 5: clickRole button "…" | 1 | 200 | 365 ms | 9345 ms | — |
 | inspect | step 6: wait 6s | 1 | 200 | 365 ms | 55301 ms | — |
@@ -174,6 +174,17 @@ Seen 502 time(s) in 19 run(s).
 | inspect | step 4: snapshot | 1 | 200 | 382 ms | 198 ms | — |
 | inspect | pin: typed the account's Messenger PIN | 1 | 200 | 352 ms | 13950 ms | — |
 | inspect | step 7: wait 5s | 3 | 200 | 357–368 ms | 5426–10812 ms | — |
+| inspect | step 4: click e191 | 2 | 200 | 520–1431 ms | 6629–9300 ms | — |
+| inspect | step 5: setLocation Bethlehem, Pennsylvania | 2 | 200 | 450–455 ms | 4598–5729 ms | — |
+| inspect | step 10: click e1174 | 10 | 200 | 370–939 ms | 1882–26565 ms | — |
+| inspect | step 11: goto /marketplace/create/item | 2 | 200 | 380–549 ms | 3376–15444 ms | — |
+| inspect | step 14: snapshot | 2 | 200 | 385–452 ms | 1314–1401 ms | — |
+| inspect | step 25: click e1241 | 1 | 200 | 564 ms | 12297 ms | — |
+| inspect | step 27: click e1541 | 6 | 200 | 374–1124 ms | 5988–18197 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 2 | 200 | 530–1293 ms | 14447–23010 ms | — |
+| inspect | step 4: setLocation Bethlehem, PA | 4 | 200 | 599–1029 ms | 6379–17764 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 3 | 200 | 370–616 ms | 6722–7941 ms | — |
+| inspect | step 13: setLocation 18015 | 7 | 200 | 370–1945 ms | 5174–128596 ms | — |
 
 <!-- facts:end -->
 

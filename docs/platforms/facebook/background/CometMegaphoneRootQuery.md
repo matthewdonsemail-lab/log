@@ -13,7 +13,7 @@
 | Called from | `CometMegaphoneRoot.react` |
 | rea | `ev_a2e1e82b09a10f9f97361e424dc787adb4a3a8c0a7bb15f7feb91de015e7d2fa` |
 
-Seen 9 time(s) in 5 run(s).
+Seen 10 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -26,6 +26,7 @@ Seen 9 time(s) in 5 run(s).
 | inspect | step 3: clickRole button "…" | 1 | 200 | 613 ms | 5493 ms | — |
 | inspect | step 71: dwell 1s | 1 | 200 | 518 ms | 8266 ms | — |
 | inspect | step 4: snapshot | 1 | 200 | 587 ms | 342 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 743 ms | 6675 ms | — |
 
 <!-- facts:end -->
 

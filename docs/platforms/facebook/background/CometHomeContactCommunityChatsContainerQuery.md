@@ -13,7 +13,7 @@
 | Called from | `CometHomeContactCommunityChatsContainer.react` |
 | rea | `ev_38a62071407b1d580cabfa2361b5d2c8ad31a9bb9fb9fefb54b7b887fa2b16aa` |
 
-Seen 11 time(s) in 5 run(s).
+Seen 12 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -28,6 +28,7 @@ Seen 11 time(s) in 5 run(s).
 | inspect | step 96: clickRole button "…" | 1 | 200 | 389 ms | 1305458 ms | — |
 | inspect | step 4: snapshot | 1 | 200 | 726 ms | 348 ms | — |
 | inspect | pin: typed the account's Messenger PIN | 1 | 200 | 611 ms | 561 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 621 ms | 6681 ms | — |
 
 <!-- facts:end -->
 

@@ -13,7 +13,7 @@
 | Called from | `MAWVerifyThreadCutover` |
 | rea | `ev_2ef4fcf81840e4c44dfd19b7c86b9e3e65429109c06595cfc96262bcea9f2bc2` |
 
-Seen 55 time(s) in 17 run(s).
+Seen 63 time(s) in 19 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -51,6 +51,14 @@ Seen 55 time(s) in 17 run(s).
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 2065 ms | 5570 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 381 ms | 5835 ms | — |
 | inspect | step 1: goto /messages/ | 1 | 200 | 360 ms | 3368 ms | — |
+| inspect | step 1: goto /marketplace/ | 1 | 200 | 419 ms | 10033 ms | — |
+| inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 845 ms | 3734 ms | — |
+| inspect | step 5: setLocation Bethlehem, Pennsylvania | 1 | 200 | 787 ms | 3872 ms | — |
+| inspect | step 11: goto /marketplace/create/item | 1 | 200 | 868 ms | 2851 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 1 | 200 | 464 ms | 10151 ms | — |
+| inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 599 ms | 5546 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 392 ms | 2940 ms | — |
+| inspect | step 13: setLocation 18015 | 1 | 200 | 387 ms | 4587 ms | — |
 
 <!-- facts:end -->
 

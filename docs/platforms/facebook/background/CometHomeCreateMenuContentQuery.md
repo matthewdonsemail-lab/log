@@ -13,7 +13,7 @@
 | Called from | `CometHomeCreateMenuContent.react` |
 | rea | `ev_ce3a3e0411d4d96c98fb842dce351a191c4e1062c311b30b7ceaf8d2c63e104c` |
 
-Seen 6 time(s) in 6 run(s).
+Seen 8 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -23,6 +23,8 @@ Seen 6 time(s) in 6 run(s).
 | inspect | clickRole failed: RuntimeError: no visible button "…" | 1 | 200 | 327 ms | 15180 ms | — |
 | inspect | step 24: clickRole button "…" | 1 | 200 | 401 ms | 745295 ms | — |
 | inspect | step 67: dwell 1s | 1 | 200 | 706 ms | 50 ms | — |
+| inspect | setLocation failed: TimeoutError: Locator.wait_for: Timeout 30000ms exceeded. | 1 | 200 | 1685 ms | 456 ms | — |
+| inspect | step 16: type e232 | 1 | 200 | 377 ms | 9063 ms | — |
 
 <!-- facts:end -->
 

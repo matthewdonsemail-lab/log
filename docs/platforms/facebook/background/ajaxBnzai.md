@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_f3bc89d5bef63f03a9d17d58e03841af64b81c2a932164a358fd4c737372a9e2` |
+| rea | `ev_b8c5621c64d1534e9f0750cc287f6105122c13fda1f5cb2bb55884b437398a54` |
 
-Seen 399 time(s) in 21 run(s).
+Seen 436 time(s) in 23 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -48,7 +48,7 @@ Seen 399 time(s) in 21 run(s).
 | inspect | scroll: +700px in 16 wheel steps, 985 ms | 2 | 200 | 362–585 ms | 1607–2609 ms | — |
 | inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 354 ms | 54 ms | — |
 | inspect | scroll: +800px in 18 wheel steps, 781 ms | 22 | 200 | 337–1538 ms | 2912–1778687 ms | — |
-| inspect | step 2: snapshot | 4 | 200 | 336–1333 ms | 6316–16662 ms | — |
+| inspect | step 2: snapshot | 5 | 200 | 336–1333 ms | 6316–16662 ms | — |
 | inspect | step 4: type e1681 | 1 | 200 | 1400 ms | 1138 ms | — |
 | inspect | step 6: wait 6s | 1 | 200 | 365 ms | 21607 ms | — |
 | inspect | step 8: clickRole button "…" | 1 | 200 | 363 ms | 10817 ms | — |
@@ -169,6 +169,32 @@ Seen 399 time(s) in 21 run(s).
 | inspect | step 4: snapshot | 1 | 200 | 1365 ms | 19392 ms | — |
 | inspect | pin: typed the account's Messenger PIN | 2 | 200 | 347–367 ms | 13918–14335 ms | — |
 | inspect | step 7: wait 5s | 1 | 200 | 348 ms | 10989 ms | — |
+| inspect | step 1: goto /marketplace/ | 1 | 200 | 692 ms | 12246 ms | — |
+| inspect | step 2: setLocation Bethlehem, Pennsylvania | 2 | 200 | 661–1263 ms | 111–6652 ms | — |
+| inspect | setLocation failed: TimeoutError: Locator.wait_for: Timeout 30000ms exceeded. | 2 | 200 | 390–940 ms | 1256–31265 ms | — |
+| inspect | step 3: click e | 1 | 200 | 1026 ms | 24831 ms | — |
+| inspect | click failed: TimeoutError: Locator.bounding_box: Timeout 30000ms exceeded. | 1 | 200 | 503 ms | 8078 ms | — |
+| inspect | step 4: click e191 | 1 | 200 | 1206 ms | 11374 ms | — |
+| inspect | step 5: setLocation Bethlehem, Pennsylvania | 2 | 200 | 383–819 ms | 7531–8663 ms | — |
+| inspect | step 9: click e1267 | 2 | 200 | 687–1432 ms | 14146–14892 ms | — |
+| inspect | step 10: click e1174 | 1 | 200 | 405 ms | 13612 ms | — |
+| inspect | step 11: goto /marketplace/create/item | 1 | 200 | 1153 ms | 5493 ms | — |
+| inspect | step 12: sellLocation | 1 | 200 | 1417 ms | 11466 ms | — |
+| inspect | step 15: upload e460 | 1 | 200 | 345 ms | 77 ms | — |
+| inspect | step 17: type e241 | 1 | 200 | 341 ms | 1408 ms | — |
+| inspect | scroll: container +87px in 3 steps | 1 | 200 | 364 ms | 9727 ms | — |
+| inspect | step 22: fillRole textbox "…" | 1 | 200 | 351 ms | 12445 ms | — |
+| inspect | step 25: click e1241 | 1 | 200 | 1466 ms | 1736 ms | — |
+| inspect | step 26: wait 8s | 1 | 200 | 349 ms | 1039 ms | — |
+| inspect | step 27: click e1541 | 2 | 200 | 362–1438 ms | 105422–127143 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 1 | 200 | 957 ms | 12971 ms | — |
+| inspect | step 4: setLocation Bethlehem, PA | 2 | 200 | 1596–1694 ms | 10733–36259 ms | — |
+| inspect | step 6: sellLocation | 1 | 200 | 1435 ms | 9751 ms | — |
+| inspect | upload: before.png handed to the file chooser | 1 | 200 | 582 ms | 5971 ms | — |
+| inspect | step 10: type e232 | 2 | 200 | 383–1380 ms | 2213–3217 ms | — |
+| inspect | step 12: type e281 | 1 | 200 | 356 ms | 27279 ms | — |
+| inspect | type failed: TimeoutError: Locator.press_sequentially: Timeout 30000ms exceeded. | 1 | 200 | 442 ms | 50819 ms | — |
+| inspect | step 13: setLocation 18015 | 4 | 200 | 363–1764 ms | 10384–127906 ms | — |
 
 <!-- facts:end -->
 

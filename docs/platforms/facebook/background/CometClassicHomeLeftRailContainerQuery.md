@@ -13,7 +13,7 @@
 | Called from | `CometClassicHomeLeftRailContainer.react` |
 | rea | `ev_344ab74ba79925e4c65e7d7e1baed54ed21b8b5516428816c330a8a229cfc2b5` |
 
-Seen 11 time(s) in 5 run(s).
+Seen 12 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -28,6 +28,7 @@ Seen 11 time(s) in 5 run(s).
 | inspect | step 96: clickRole button "…" | 1 | 200 | 539 ms | 1305467 ms | — |
 | inspect | step 4: snapshot | 1 | 200 | 718 ms | 340 ms | — |
 | inspect | pin: typed the account's Messenger PIN | 1 | 200 | 801 ms | 556 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 691 ms | 6674 ms | — |
 
 <!-- facts:end -->
 

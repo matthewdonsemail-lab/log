@@ -13,7 +13,7 @@
 | Called from | `useMWEncryptedBackupsFetchBackupIdsV2` |
 | rea | `ev_16df7daca80a72c8f44b7a489690336b7def96e564429f0639a122f48023372a` |
 
-Seen 56 time(s) in 18 run(s).
+Seen 64 time(s) in 20 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -52,6 +52,14 @@ Seen 56 time(s) in 18 run(s).
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 2016 ms | 5683 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 359 ms | 5571 ms | — |
 | inspect | step 1: goto /messages/ | 1 | 200 | 357 ms | 3208 ms | — |
+| inspect | step 1: goto /marketplace/ | 1 | 200 | 785 ms | 10160 ms | — |
+| inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 900 ms | 3682 ms | — |
+| inspect | step 5: setLocation Bethlehem, Pennsylvania | 1 | 200 | 811 ms | 3780 ms | — |
+| inspect | step 11: goto /marketplace/create/item | 1 | 200 | 725 ms | 2821 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 1 | 200 | 514 ms | 10092 ms | — |
+| inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 630 ms | 5319 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 440 ms | 2865 ms | — |
+| inspect | step 13: setLocation 18015 | 1 | 200 | 380 ms | 4469 ms | — |
 
 <!-- facts:end -->
 

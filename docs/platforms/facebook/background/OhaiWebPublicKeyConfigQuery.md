@@ -13,7 +13,7 @@
 | Called from | `OhaiWebPublicKeyConfig` |
 | rea | `ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013` |
 
-Seen 56 time(s) in 18 run(s).
+Seen 64 time(s) in 20 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -52,6 +52,14 @@ Seen 56 time(s) in 18 run(s).
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 1307 ms | 5461 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 340 ms | 5471 ms | — |
 | inspect | step 1: goto /messages/ | 1 | 200 | 352 ms | 2825 ms | — |
+| inspect | step 1: goto /marketplace/ | 1 | 200 | 809 ms | 10119 ms | — |
+| inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 445 ms | 3174 ms | — |
+| inspect | step 5: setLocation Bethlehem, Pennsylvania | 1 | 200 | 939 ms | 3650 ms | — |
+| inspect | step 11: goto /marketplace/create/item | 1 | 200 | 582 ms | 2597 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 1 | 200 | 468 ms | 9934 ms | — |
+| inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 682 ms | 5262 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 373 ms | 2784 ms | — |
+| inspect | step 13: setLocation 18015 | 1 | 200 | 380 ms | 4434 ms | — |
 
 <!-- facts:end -->
 

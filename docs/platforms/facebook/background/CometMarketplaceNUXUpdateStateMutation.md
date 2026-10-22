@@ -13,11 +13,12 @@
 | Called from | `CometMarketplaceNUXUpdateStateMutation` |
 | rea | `ev_9ecefa2a0620b4c94f8bf3f4a7190a2f64f6cb5b3a8dfa2dc1c6ebd3cedfea74` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | step 21: goto /marketplace/ | 1 | 200 | 439 ms | 47 ms | — |
+| inspect | step 27: click e1541 | 1 | 200 | 455 ms | 918 ms | — |
 
 <!-- facts:end -->
 

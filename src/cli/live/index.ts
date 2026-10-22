@@ -133,7 +133,7 @@ export async function withRun(
     const session = name === "connect" ? null : await keepSession(context, account, run);
     // A save that failed must not lose the device or the session with the run's folder.
     const unsaved = [device, session].some((n) => n?.startsWith("Could not save")) || /twenty(RateLimited|AuthFailed|Unreachable|RequestFailed)/.test(result.stderr ?? "");
-    const kept = unsaved ? `Twenty didn't take everything: kept this run's device and session (login removed) at ${run.keep()}. Save them later: log facebook account resave --account ${account.accountName} --from <that folder>` : null;
+    const kept = unsaved ? `Twenty didn't take everything: kept this run's device and session (login removed) at ${run.keep()}. Save them later: log facebook account resave ${account.accountName} --from <that folder>` : null;
     return withNote(withNote(withNote(withNote(result, device), session), capture), kept);
   } finally {
     run.cleanup();

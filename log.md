@@ -4368,3 +4368,102 @@ Checked: with the PIN, both PIN states are log-cli's (the Stop hook keeps the tu
 - **The flag:** `hasMessengerPin` is true only for a 6-digit PIN.
 - **Gates:** `bun test` 790 pass; `tsc` clean; `check:agentHooks` finds 11 page states, each resolvable by real commands.
 - **Not seen live:** the "Enter your PIN" screen has not shown up yet.
+
+## 2026-10-22 11:27Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/pageStates.mmd`: edited
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuShortcutsQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceLeftRailNavigationContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceNUXUpdateStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceNotificationsListContainerQuery.md`: new file
+- `docs/platforms/facebook/background/CometMarketplacePartnerSelectorContainerQuery.md`: new file
+- `docs/platforms/facebook/background/CometMarketplaceRootQuery.md`: new file
+- `docs/platforms/facebook/background/CometMarketplaceSetBrowseRadiusMutation.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MWQuickPromotionThreadlistBannerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceBannerContainerQuery.md`: new file
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometPartnerListingDialogContentMutation.md`: new file
+- `docs/platforms/facebook/background/MarketplaceCometPartnerListingDialogContentQuery.md`: new file
+- `docs/platforms/facebook/background/MarketplaceSearchAddressDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYouSellingUpsellCardQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxBz.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/ajaxRouteDefinition.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/flows/marketplaceListingPublish.md`: new file
+- `docs/platforms/facebook/listingForm/MarketplaceComposerAIPricingDialogImplSimilarListingsQuery.md`: new file
+- `docs/platforms/facebook/listingForm/useListingShippableEligibilityCheckQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerAttributesQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerBISNumberEligibilityRefetchQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerPricePredictionQuery.md`: edited
+- `docs/platforms/facebook/location/CometMarketplaceSetBuyLocationMutation.md`: edited
+- `docs/platforms/facebook/location/MarketplaceBuyLocationDialogLocationUrlQuery.md`: edited
+- `docs/platforms/facebook/location/MarketplaceBuyLocationDialogQuery.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/photos/ajaxReactComposerAttachmentsPhotoUpload.md`: edited
+- `docs/platforms/facebook/photos/useSherlockPhotoPredictionMutation.md`: edited
+- `docs/platforms/facebook/publishing/CometMarketplaceBoostListingPostPublishNuxDialogQuery.md`: new file
+- `docs/platforms/facebook/publishing/useCometMarketplaceListingCreateMutation.md`: edited
+- `docs/status.md`: edited
+- `python/session/inspectSession.py`: added const US_STATES, def typing_ms, def full_place, def pick_suggestion · changed class Inspector
+- `src/browser/flow/definitions/marketplaceListingPublish.json`: new file
+- `src/browser/flow/helpers/flowFromRecording.ts`: changed const ACTED, function flowFromRecording
+- `src/browser/flow/helpers/pageState.ts`: changed const PAGE_STATES
+- `src/browser/flow/pageState.test.ts`: added test ""Discover more when you shop" is pressed through with its Update"
+- `src/browser/flow/types.ts`: changed type FlowAction
+- `src/cli/flow/helpers/flowSession.ts`: changed function commandFor
+- `src/cli/live/index.ts`: changed function withRun
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const COMMAND_RULES
+- `src/rea/inspectMap/helpers/readScreen.ts`: changed const INTERACTIVE
+
+What changed: a listing is published from the account's open AdsPower browser by a recorded flow, and the Marketplace location is set by "City, State" with the state written out (rule 68).
+- **`setLocation`** (`python/session/inspectSession.py`) works like this now:
+  - `full_place` turns a US state code into its name ("Bethlehem, PA" becomes "Bethlehem, Pennsylvania").
+  - It reads Facebook's own suggestions from `MarketplaceSearchAddressDataSourceQuery`, and `pick_suggestion` takes the one that is the place typed. For a bare zip, prefix matching is off.
+  - It clicks that suggestion's option, reopening the list with the last key when it has closed (as recorded). It sets nothing, and says what was offered, when no suggestion matches.
+- **Typing timeout:** `typing_ms` scales the time allowed for `type` and `fillRole` with the text's length (a description ran past the fixed 30 s).
+- **The flow:** `marketplaceListingPublish` (15 steps, params location, photo1, photo2, title, price, description) is made from Bethlehem's recording 20261022T110738 without its failed tries and hand-done location steps. Publish is confirmed by `useCometMarketplaceListingCreateMutation`, and Boost is only ever closed.
+  - `setLocation` is now a flow action (`FlowAction`, `commandFor`, `flowFromRecording`).
+  - `readScreen` counts `option` as clickable.
+- **Page state `marketplacePartnerListings`:** "Discover more when you shop" is pressed through with Update.
+- **`resave` hint:** the hint after an unsaved run names the account as an argument; it had `--account`, which the command refuses.
+- **Docs:** 8 new request docs with their reasoning; `docs/status.md` (the flow ✅, listing under review); rule 68, with the MCP reviewed through 68.
+Why: matt asked for Bethlehem's listing to be created in Twenty and published live with `--bypass`, recorded in AdsPower (his choice over a Camoufox publish), then confirmed on the Selling page and turned into a flow ("that listing has been done… it took tries… this is the correct way").
+- **The location:** typing "Bethlehem, PA" was read as the West Bank (₪ prices), and a bare zip as Granada, Spain. matt: "it has to write out the full state name."
+Checked: on Bethlehem (inspect 20261022T110738, `--bypass`, after `log proxy assign --vendor byteful` and `--proxyMs 4000`), the location was sent as 40.6262, −75.3757 and Marketplace read "Bethlehem, Pennsylvania, Within 40 mi".
+- **The form:** the price showed $99. Two photos, the title, Miscellaneous, New and the full description went in, then Next and Publish.
+- **Facebook's answer:** `useCometMarketplaceListingCreateMutation` 200 created listing 1425935622848350. Selling shows it Active, Listed on Marketplace, "This listing is being reviewed".
+- **Twenty:** the listing is UNDER_REVIEW with its id and URL (`recordRun`).
+- **Gates:** `bun test` 791 pass; `tsc` clean; every gate passes; the docs gate reports 202 requests.
+- **Not checked:** the flow run as a flow; the new `setLocation` end to end in one step (its option click is what was done by hand); the listing clearing review.

@@ -13,7 +13,7 @@
 | Called from | `usePseudoBlockedUserInterstitial` |
 | rea | `ev_4f0f59bc7d5ff4c02ef9f2aba85fc9de893084a7a8fbdf3f1627ce6c1c3456fe` |
 
-Seen 72 time(s) in 18 run(s).
+Seen 80 time(s) in 20 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -65,6 +65,14 @@ Seen 72 time(s) in 18 run(s).
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 1315 ms | 5511 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 334 ms | 5589 ms | — |
 | inspect | step 1: goto /messages/ | 1 | 200 | 344 ms | 3256 ms | — |
+| inspect | step 1: goto /marketplace/ | 1 | 200 | 380 ms | 10003 ms | — |
+| inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 882 ms | 3697 ms | — |
+| inspect | step 5: setLocation Bethlehem, Pennsylvania | 1 | 200 | 823 ms | 3811 ms | — |
+| inspect | step 11: goto /marketplace/create/item | 1 | 200 | 594 ms | 2814 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 1 | 200 | 586 ms | 9996 ms | — |
+| inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 602 ms | 5300 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 383 ms | 2906 ms | — |
+| inspect | step 13: setLocation 18015 | 1 | 200 | 394 ms | 4498 ms | — |
 
 <!-- facts:end -->
 

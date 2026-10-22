@@ -13,7 +13,7 @@
 | Called from | `CometHomeContactsContainer.react` |
 | rea | `ev_1382c6aaad8caec306d87c00b9b241ef1e74ac91f09082d75f7694f794713881` |
 
-Seen 11 time(s) in 5 run(s).
+Seen 12 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -28,6 +28,7 @@ Seen 11 time(s) in 5 run(s).
 | inspect | step 96: clickRole button "…" | 1 | 200 | 389 ms | 1305463 ms | A server error field_exception occured. Check server logs for details. |
 | inspect | step 4: snapshot | 1 | 200 | 715 ms | 351 ms | A server error field_exception occured. Check server logs for details. |
 | inspect | pin: typed the account's Messenger PIN | 1 | 200 | 757 ms | 566 ms | A server error field_exception occured. Check server logs for details. |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 929 ms | 6691 ms | A server error field_exception occured. Check server logs for details. |
 
 <!-- facts:end -->
 

@@ -1,6 +1,7 @@
 import type { ScreenElement } from '../types'
 
-const INTERACTIVE = /^(button|link|textbox|checkbox|radio|combobox|menuitem|tab)$/
+// option: a dropdown's choices (a listing's Condition "New", a location suggestion), clicked like a button (Bethlehem 20261022T110738).
+const INTERACTIVE = /^(button|link|textbox|checkbox|radio|combobox|menuitem|tab|option)$/
 
 interface Line {
   indent: number

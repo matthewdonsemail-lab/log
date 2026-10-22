@@ -706,7 +706,19 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     types it from the run's private login.json (rule 21). The Create PIN
     screens were recorded with `log inspect` on Bethlehem (rule 29) and made
     the flow `messengerPinCreate` (`log flow run messengerPinCreate --account
-    <a> --live`). The page-state hook resolves it with that flow when the
+    <a> --live`).
+68. 2026-10-22 · matt: the Marketplace location is typed as "City, State"
+    with the state written out in full ("Bethlehem, Pennsylvania", never
+    "PA"): "Bethlehem, PA" was offered only as the West Bank, and a bare zip
+    offered Granada, Spain first (Bethlehem, inspect 20261022T105341 and
+    20261022T110738). `setLocation` writes a US state code out, picks the
+    option Facebook's own answer names as the place typed, clicks it, and
+    sets nothing when none matches. A listing is published from the account's
+    open AdsPower browser by the recorded flow `marketplaceListingPublish`
+    (location, Create, photos, title, price, category, condition,
+    description, Next, Publish; never Boost, rule 41), not by a second
+    browser. "Discover more when you shop" (partner listings, a European
+    location) is a known page state, pressed through with Update. The page-state hook resolves it with that flow when the
     account's PIN is in Twenty, and flags it to matt only when it isn't (the
     session records a yes or no when it opens, never the PIN). "Enter your
     PIN" (`messengerPinEnter`) is mapped the same way: the PIN is typed from

@@ -9,6 +9,8 @@
  */
 
 export type FlowAction = 'goto' | 'click' | 'fill' | 'upload' | 'signIn' | 'code' | 'pin' | 'solve'
+  /** The Marketplace location, `{location}` as "City, State" with the state written out (rule 67's sibling, matt 2026-10-22). */
+  | 'setLocation'
   /** Warm-up steps (rule 35): their ranges are drawn on every run, so the flow never repeats itself exactly. */
   | 'scroll' | 'openAny' | 'clickAny' | 'dwell'
   /** A key (`Escape` closes a menu or dialog) and the wheel over one element (`scrollIn dialog "<name>"`): their recorded arguments. */

@@ -13,7 +13,7 @@
 | Called from | `fetchMWChatVideoAutoplaySetting` |
 | rea | `ev_cec3d0049369021eb11311f83bae206c05ab77298da76206b6788d2cdc5c8ee1` |
 
-Seen 56 time(s) in 18 run(s).
+Seen 64 time(s) in 20 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -52,6 +52,14 @@ Seen 56 time(s) in 18 run(s).
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 622 ms | 4066 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 332 ms | 4888 ms | — |
 | inspect | step 1: goto /messages/ | 1 | 200 | 348 ms | 2610 ms | — |
+| inspect | step 1: goto /marketplace/ | 1 | 200 | 761 ms | 8779 ms | — |
+| inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 367 ms | 2805 ms | — |
+| inspect | step 5: setLocation Bethlehem, Pennsylvania | 1 | 200 | 441 ms | 2242 ms | — |
+| inspect | step 11: goto /marketplace/create/item | 1 | 200 | 454 ms | 1901 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 1 | 200 | 551 ms | 9157 ms | — |
+| inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 546 ms | 4882 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 451 ms | 1902 ms | — |
+| inspect | step 13: setLocation 18015 | 1 | 200 | 381 ms | 2945 ms | — |
 
 <!-- facts:end -->
 

@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_4d3e40fb2b5d6cbd0d56a8559a8e796fd90692d43dc2b4f22243bd303c32c303` |
+| rea | `ev_a2b243a57cde179209f991c459d5a7b92dbf5a73e6194b9b80a82413ca7b3c98` |
 
-Seen 17 time(s) in 6 run(s).
+Seen 21 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -30,6 +30,10 @@ Seen 17 time(s) in 6 run(s).
 | inspect | clickAny: 1 link /see owner profile$/ | 4 | 200 | 328–496 ms | 15782–425825 ms | — |
 | inspect | step 71: dwell 1s | 1 | 200 | 387 ms | 4544 ms | — |
 | inspect | step 96: clickRole button "…" | 2 | 200 | 348–351 ms | 39352–1289363 ms | — |
+| inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 889 ms | 13271 ms | — |
+| inspect | step 3: click e | 1 | 200 | 629 ms | 13511 ms | — |
+| inspect | step 26: wait 8s | 1 | 200 | 400 ms | 8699 ms | — |
+| inspect | step 27: click e1541 | 1 | 200 | 457 ms | 8217 ms | — |
 
 <!-- facts:end -->
 

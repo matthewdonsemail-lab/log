@@ -184,6 +184,51 @@ SELL_LOCATION = re.compile(r'"sell_location":\{"latitude":(-?[\d.]+),"longitude"
 # An element a person can click: its middle is inside the window and the element on top there is it (or
 # inside it), not a card stacked over it. Reels, 2026-10-20: the next reel's Like and Comment sit under
 # this reel's caption.
+# matt, 2026-10-22: the Marketplace location is typed with the state written out in full. "Bethlehem, PA"
+# was read as Palestine: Facebook offered only "Bethlehem, West Bank" (Bethlehem, inspect 20261022T105341
+# step 4), and a zip alone offered Granada, Spain first (step 13).
+US_STATES = {
+    "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas", "CA": "California", "CO": "Colorado",
+    "CT": "Connecticut", "DE": "Delaware", "DC": "District of Columbia", "FL": "Florida", "GA": "Georgia",
+    "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois", "IN": "Indiana", "IA": "Iowa", "KS": "Kansas",
+    "KY": "Kentucky", "LA": "Louisiana", "ME": "Maine", "MD": "Maryland", "MA": "Massachusetts",
+    "MI": "Michigan", "MN": "Minnesota", "MS": "Mississippi", "MO": "Missouri", "MT": "Montana",
+    "NE": "Nebraska", "NV": "Nevada", "NH": "New Hampshire", "NJ": "New Jersey", "NM": "New Mexico",
+    "NY": "New York", "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio", "OK": "Oklahoma",
+    "OR": "Oregon", "PA": "Pennsylvania", "RI": "Rhode Island", "SC": "South Carolina", "SD": "South Dakota",
+    "TN": "Tennessee", "TX": "Texas", "UT": "Utah", "VT": "Vermont", "VA": "Virginia", "WA": "Washington",
+    "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming",
+}
+
+
+def typing_ms(text: str) -> int:
+    """How long typing `text` at a person's pace may take: 90 ms a key and its jitter, never under 30 s. A listing's
+    description ran past the fixed 30 s (Bethlehem 20261022T110738 step 22)."""
+    return max(30_000, len(text) * 250)
+
+
+def full_place(query: str) -> str:
+    """'Bethlehem, PA' -> 'Bethlehem, Pennsylvania': a US state code at the end is written out in full."""
+    match = re.fullmatch(r"\s*(.+?),\s*([A-Za-z]{2})\s*", query)
+    if match and match.group(2).upper() in US_STATES:
+        return f"{match.group(1)}, {US_STATES[match.group(2).upper()]}"
+    return query.strip()
+
+
+def pick_suggestion(place: str, addresses: list[str]) -> int | None:
+    """The suggestion that is the place typed (case and spacing aside), else, for a "City, State", one that starts
+    with it; None when none is. A bare zip never matches by its start: "18015 Granada, Spain" starts with it."""
+    want = re.sub(r"\s+", " ", place).strip().lower()
+    names = [re.sub(r"\s+", " ", a).strip().lower() for a in addresses]
+    for i, name in enumerate(names):
+        if name == want:
+            return i
+    for i, name in enumerate(names):
+        if "," in want and name.startswith(want):
+            return i
+    return None
+
+
 HITTABLE_JS = """(el) => {
   const r = el.getBoundingClientRect();
   if (r.width < 2 || r.height < 2) return false;
@@ -558,7 +603,8 @@ class Inspector:
                 field = await self.by_role(args[0], args[1])
                 await self.mouse.click(field, circle=False)
                 await page.keyboard.press("Control+a")
-                await field.press_sequentially(" ".join(args[2:]), delay=90)
+                text = " ".join(args[2:])
+                await field.press_sequentially(text, delay=90, timeout=typing_ms(text))
             return await self.step("fillRole", f'{args[0]} "{args[1]}"', fill_role, expect, expect_ms)
         if action == "uploadRole" and len(args) >= 3:
             path = " ".join(args[2:])
@@ -730,12 +776,26 @@ class Inspector:
                     self.extra = {"sellLocation": None}
             return await self.step("sellLocation", "", sell_location)
         if action == "setLocation" and args:
-            postal = args[0]
+            place = full_place(" ".join(args))
 
             async def set_location() -> None:
                 # Recorded on Reading 2026-10-19 (inspect run 20261019T131409, steps 3-15): Location button,
-                # Change location, clear the box, the zip, the first suggestion (not in the accessibility tree:
-                # ArrowDown, Enter), Apply, which sends CometMarketplaceSetBuyLocationMutation.
+                # Change location, clear the box, the place, a suggestion (not in the accessibility tree:
+                # ArrowDown, Enter), Apply, which sends CometMarketplaceSetBuyLocationMutation. The suggestion is
+                # the one Facebook's own answer (MarketplaceSearchAddressDataSourceQuery) names as the place typed,
+                # never just the first (Bethlehem 20261022T105341: the first was the West Bank, then Granada).
+                answers: list[list[str]] = []
+
+                async def on_response(response: Any) -> None:
+                    try:
+                        if "MarketplaceSearchAddressDataSourceQuery" not in (response.request.post_data or ""):
+                            return
+                        text = await response.text()
+                        answers.append([json.loads(f'"{a}"') for a in re.findall(r'"single_line_address":"((?:[^"\\]|\\.)*)"', text)])
+                    except Exception:
+                        pass
+
+                page.on("response", on_response)
                 await page.goto("https://www.facebook.com/marketplace/", wait_until="domcontentloaded")
                 button = page.get_by_role("button", name=re.compile(r"^Location: "))
                 await button.first.wait_for(state="visible", timeout=30_000)
@@ -746,20 +806,34 @@ class Inspector:
                 await self.mouse.click(box, circle=False)
                 await page.keyboard.press("Control+a")
                 await page.keyboard.press("Backspace")
-                await page.keyboard.type(postal, delay=90)
+                await page.keyboard.type(place, delay=90)
                 await asyncio.sleep(2.5)
-                await page.keyboard.press("ArrowDown")
-                await page.keyboard.press("Enter")
+                page.remove_listener("response", on_response)
+                offered = answers[-1] if answers else []
+                index = pick_suggestion(place, offered)
+                if index is None:
+                    await page.keyboard.press("Escape")
+                    raise RuntimeError(f"no suggestion is {place!r} (Facebook offered {offered[:6]}); nothing was set")
+                log(f"  setLocation: {place!r} is suggestion {index + 1} of {len(offered)}")
+                # The list is a listbox of options named "<place> City" (Bethlehem 20261022T110738 step 9). It can close
+                # before it is used: the last key typed again opens it, as recorded (steps 6-7).
+                option = page.get_by_role("option", name=re.compile(r"^" + re.escape(offered[index]) + r"(\s|$)", re.I))
+                if not await option.count() or not await option.first.is_visible():
+                    await page.keyboard.press("Backspace")
+                    await page.keyboard.type(place[-1], delay=90)
+                    await asyncio.sleep(2.5)
+                await option.first.wait_for(state="visible", timeout=15_000)
+                await self.mouse.click(option.first)
                 await asyncio.sleep(1.2)
                 apply = dialog.get_by_role("button", name="Apply")
                 if await apply.is_disabled():
-                    raise RuntimeError(f"no suggestion was picked for {postal}")
+                    raise RuntimeError(f"no suggestion was picked for {place}")
                 async with page.expect_response(lambda r: "CometMarketplaceSetBuyLocationMutation" in (r.request.post_data or ""), timeout=20_000) as saved:
                     await self.mouse.click(apply)
                 if (await saved.value).status != 200:
                     raise RuntimeError("CometMarketplaceSetBuyLocationMutation was not accepted")
                 await asyncio.sleep(2.5)
-            return await self.step("setLocation", postal, set_location)
+            return await self.step("setLocation", place, set_location)
         if action == "snapshot":
             return await self.step("snapshot", "", lambda: asyncio.sleep(0))
         if action == "back":
@@ -778,7 +852,7 @@ class Inspector:
             return await self.step("highlight", f'{args[0]} "{args[1]}"', highlight)
         if action == "type" and len(args) >= 2:
             text = " ".join(args[1:])
-            return await self.step("type", args[0], lambda: page.locator(f"aria-ref={args[0]}").press_sequentially(text, delay=90))
+            return await self.step("type", args[0], lambda: page.locator(f"aria-ref={args[0]}").press_sequentially(text, delay=90, timeout=typing_ms(text)))
         if action == "upload" and len(args) >= 2:
             path = " ".join(args[1:])
 

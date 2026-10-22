@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_3dadb38e63c2fc5bdf4d5434cee7ddf70e1560f29ce47dfb3e670c1bcb4403aa` |
+| rea | `ev_4b8876070c04830f1f9c0c6f13352822f96e3d646a31526bf6846cf0bb5d1c84` |
 
-Seen 25 time(s) in 7 run(s).
+Seen 31 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -42,6 +42,12 @@ Seen 25 time(s) in 7 run(s).
 | inspect | step 21: clickAny 1 x link /see owner profile$/ | 1 | 200 | 508 ms | 1984 ms | — |
 | inspect | step 8: clickAny 1 x link /see owner profile$/ | 1 | 200 | 544 ms | 2125 ms | — |
 | inspect | step 19: clickAny 1 x link /see owner profile$/ | 1 | 200 | 533 ms | 2388 ms | — |
+| inspect | step 4: click e191 | 1 | 200 | 606 ms | 2277 ms | — |
+| inspect | step 10: click e1174 | 1 | 200 | 439 ms | 2558 ms | — |
+| inspect | step 24: click e367 | 1 | 200 | 455 ms | 1472 ms | — |
+| inspect | step 25: click e1241 | 1 | 200 | 605 ms | 8407 ms | — |
+| inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 569 ms | 18835 ms | — |
+| inspect | step 13: setLocation 18015 | 1 | 200 | 412 ms | 15969 ms | — |
 
 <!-- facts:end -->
 

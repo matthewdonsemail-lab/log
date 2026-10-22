@@ -13,12 +13,15 @@
 | Called from | `useMarketplaceComposerPricePrediction` |
 | rea | `ev_e0d48b4c63f6347e0b108720f3b175a44c57110e43d648bf8fbb7d94c4d2e334` |
 
-Seen 11 time(s) in 11 run(s).
+Seen 14 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | publish | Uploading 5 photo(s) | 9 | 200 | 303–577 ms | 5443–9787 ms | — |
 | publish | Uploading 2 photo(s) | 2 | 200 | 311–312 ms | 6545–8172 ms | — |
+| inspect | step 16: type e232 | 1 | 200 | 370 ms | 7263 ms | — |
+| inspect | scroll: container +87px in 3 steps | 1 | 200 | 1663 ms | 1091 ms | — |
+| inspect | step 10: type e232 | 1 | 200 | 380 ms | 6953 ms | — |
 
 <!-- facts:end -->
 

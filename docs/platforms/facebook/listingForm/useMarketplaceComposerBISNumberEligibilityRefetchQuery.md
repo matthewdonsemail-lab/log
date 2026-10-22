@@ -13,11 +13,12 @@
 | Called from | `useMarketplaceComposerBISNumberEligibility_query.graphql` |
 | rea | `ev_fec186f3a53375a91c81f711b409c16734353c11d8cc3768dff99a3a16802b2a` |
 
-Seen 11 time(s) in 11 run(s).
+Seen 12 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | publish | Category: Miscellaneous | 11 | 200 | 301–381 ms | 4384–6081 ms | — |
+| inspect | scroll: container +87px in 3 steps | 1 | 200 | 1465 ms | 1094 ms | — |
 
 <!-- facts:end -->
 

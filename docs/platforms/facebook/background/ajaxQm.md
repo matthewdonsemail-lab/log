@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_7b14255ffae0983107be9a29f3f73cb98d3df8e8098d67231359f8bf9ec36f64` |
+| rea | `ev_b8c5621c64d1534e9f0750cc287f6105122c13fda1f5cb2bb55884b437398a54` |
 
-Seen 62 time(s) in 21 run(s).
+Seen 70 time(s) in 23 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -52,6 +52,14 @@ Seen 62 time(s) in 21 run(s).
 | inspect | step 22: goto /reel/ | 2 | 200 | 348–611 ms | 30–694 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 468 ms | 1021 ms | — |
 | inspect | step 1: goto /messages/ | 1 | 200 | 424 ms | 1696 ms | — |
+| inspect | step 1: goto /marketplace/ | 1 | 200 | 717 ms | 3010 ms | — |
+| inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 345 ms | 2228 ms | — |
+| inspect | step 5: setLocation Bethlehem, Pennsylvania | 1 | 200 | 979 ms | 923 ms | — |
+| inspect | step 11: goto /marketplace/create/item | 1 | 200 | 495 ms | 1017 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 1 | 200 | 474 ms | 2550 ms | — |
+| inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 505 ms | 851 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 569 ms | 994 ms | — |
+| inspect | step 13: setLocation 18015 | 1 | 200 | 483 ms | 1912 ms | — |
 
 <!-- facts:end -->
 

@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_7b14255ffae0983107be9a29f3f73cb98d3df8e8098d67231359f8bf9ec36f64` |
+| rea | `ev_b8c5621c64d1534e9f0750cc287f6105122c13fda1f5cb2bb55884b437398a54` |
 
-Seen 712 time(s) in 18 run(s).
+Seen 766 time(s) in 20 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -250,6 +250,21 @@ Seen 712 time(s) in 18 run(s).
 | inspect | step 92: clickRole button "…" | 1 | 200 | 751 ms | 1219 ms | — |
 | inspect | step 96: clickRole button "…" | 1 | 200 | 1454 ms | 1586 ms | — |
 | inspect | step 1: goto /messages/ | 4 | 200 | 375–500 ms | 2447–3354 ms | — |
+| inspect | step 1: goto /marketplace/ | 2 | 200 | 481–600 ms | 8563–8568 ms | — |
+| inspect | step 2: setLocation Bethlehem, Pennsylvania | 2 | 200 | 440–482 ms | 2930–2973 ms | — |
+| inspect | setLocation failed: TimeoutError: Locator.wait_for: Timeout 30000ms exceeded. | 1 | 200 | 484 ms | 32682 ms | — |
+| inspect | step 4: click e191 | 3 | 200 | 686–881 ms | 5900–5902 ms | — |
+| inspect | step 5: setLocation Bethlehem, Pennsylvania | 6 | 200 | 488–1128 ms | 1594–2656 ms | — |
+| inspect | step 10: click e1174 | 4 | 200 | 427–875 ms | 1584–3930 ms | — |
+| inspect | step 11: goto /marketplace/create/item | 4 | 200 | 430–557 ms | 1740–3316 ms | — |
+| inspect | step 16: type e232 | 2 | 200 | 421–428 ms | 9784–9845 ms | — |
+| inspect | scroll: container +87px in 3 steps | 1 | 200 | 1532 ms | 1198 ms | — |
+| inspect | step 25: click e1241 | 4 | 200 | 356–537 ms | 9135–16023 ms | — |
+| inspect | step 27: click e1541 | 1 | 200 | 434 ms | 91925 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 2 | 200 | 535–748 ms | 7110–10322 ms | — |
+| inspect | step 4: setLocation Bethlehem, PA | 9 | 200 | 505–866 ms | 4551–19780 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 4 | 200 | 429–465 ms | 1665–3103 ms | — |
+| inspect | step 13: setLocation 18015 | 9 | 200 | 390–548 ms | 2470–17931 ms | — |
 
 <!-- facts:end -->
 

@@ -11,7 +11,7 @@
 | Sends | — |
 | Reads | `viewer.eligible_promotions` |
 | Called from | `MWQuickPromotionThreadlistBanner.react` |
-| rea | `ev_53d322ba1b4a1e349ff941bf53186d5d9121e16f87cd8d7e1191528918759b00` |
+| rea | `ev_02409c15c4b121aaad55f1d4e5f805ab90c21a37abd6b11190448c8fa0d209e1` |
 
 Seen 3 time(s) in 3 run(s).
 

@@ -6,18 +6,19 @@
 | --- | --- |
 | Domain | background |
 | Kind | query |
-| doc_id | `28602662802759552` |
+| doc_id | `29127585736873863` |
 | Path | `/api/graphql/` |
-| Sends | `buyLocation`, `count`, `cursor`, `imageWidth`, `includePDPRelevantListings`, `mediaType`, `pdpListingId`, `radius`, `scale`, `sizing`, `useSDFPath`, `__relay_internal__pv__CometMarketplaceShouldShowTopPicksStrikethroughrelayprovider`, `__relay_internal__pv__GHLShouldChangeMarketplaceSponsoredDataFieldNamerelayprovider`, `__relay_internal__pv__MarketplaceCometAdmodulerelayprovider`, `__relay_internal__pv__CometMarketplaceShouldShowFeedShippingIconrelayprovider` |
+| Sends | `buyLocation`, `count`, `cursor`, `imageWidth`, `includePDPRelevantListings`, `mediaType`, `pdpListingId`, `radius`, `scale`, `sizing`, `useSDFPath`, `__relay_internal__pv__MarketplacePDPShouldShowLowerPriceItemsrelayprovider`, `__relay_internal__pv__CometMarketplaceShouldShowTopPicksStrikethroughrelayprovider`, `__relay_internal__pv__GHLShouldChangeMarketplaceSponsoredDataFieldNamerelayprovider`, `__relay_internal__pv__MarketplaceCometAdmodulerelayprovider`, `__relay_internal__pv__CometMarketplaceShouldShowFeedShippingIconrelayprovider` |
 | Reads | `...MarketplaceCometBrowseFeedLight_dataConnection` |
 | Called from | `MarketplaceCometBrowseFeedLightContainer.react` |
-| rea | `ev_83c413e59250868ebd601b09b7d587209f5e7d646d60ded20f7458f27abc10c5` |
+| rea | `ev_833ae1c60db6dcbd74033f7180994292a0c9bffafd296ffe20bae271da5648da` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 15: click e1354 | 1 | 200 | 4374 ms | 2366 ms | — |
+| inspect | step 4: click e191 | 1 | 200 | 4827 ms | 2965 ms | — |
 
 <!-- facts:end -->
 

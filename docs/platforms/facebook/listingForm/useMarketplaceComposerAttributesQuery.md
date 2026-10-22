@@ -10,14 +10,18 @@
 | Path | `/api/graphql/` |
 | Sends | `categoryID` |
 | Reads | `viewer.definitions` |
-| Called from | `MarketplacePDPC2CAttributesComponent.react`, `useMarketplaceComposerAttributes` |
-| rea | `ev_f009b64fbfa7218333e3de67fd6c9202ff2861e6898f0ead125036b3506659fa` |
+| Called from | `MarketplacePDPC2CAttributesComponent.react` |
+| rea | `ev_21e43e81aa6057b9a240ea2900a82f225ac87b416488c759b4bf471aa286a3a3` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 6 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | step 13: goto /marketplace/create/item | 2 | 200 | 350–375 ms | 2490–9489 ms | — |
+| inspect | step 11: goto /marketplace/create/item | 1 | 200 | 369 ms | 2287 ms | — |
+| inspect | scroll: container +87px in 3 steps | 1 | 200 | 1709 ms | 1077 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 1 | 200 | 545 ms | 8980 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 382 ms | 2487 ms | — |
 
 <!-- facts:end -->
 

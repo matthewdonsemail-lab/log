@@ -13,7 +13,7 @@
 | Called from | `CometNotificationsDropdown.react` |
 | rea | `ev_ab1965911932cb7fcf25b222bf92e0487c624ad5aa06bc6a0e5e7860bc09d85a` |
 
-Seen 65 time(s) in 17 run(s).
+Seen 70 time(s) in 18 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -46,6 +46,10 @@ Seen 65 time(s) in 17 run(s).
 | inspect | step 22: goto /reel/ | 1 | 200 | 843 ms | 1783 ms | — |
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 1954 ms | 4811 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 1385 ms | 4961 ms | — |
+| inspect | setLocation failed: TimeoutError: Locator.wait_for: Timeout 30000ms exceeded. | 1 | 200 | 1112 ms | 30049 ms | — |
+| inspect | upload: before.png handed to the file chooser | 2 | 200 | 704–998 ms | 3415–5994 ms | — |
+| inspect | step 16: type e232 | 1 | 200 | 1021 ms | 8955 ms | — |
+| inspect | step 27: click e1541 | 1 | 200 | 761 ms | 91066 ms | — |
 
 <!-- facts:end -->
 

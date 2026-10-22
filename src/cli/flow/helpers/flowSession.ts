@@ -20,6 +20,8 @@ export function commandFor(step: FlowStep): { action: InspectAction; args: strin
       return { action: "fillRole", args: [step.role!, step.name!, step.value!] };
     case "upload":
       return { action: "uploadRole", args: [step.role!, step.name!, step.value!] };
+    case "setLocation":
+      return { action: "setLocation", args: [step.value!] };
     case "scroll":
     case "openAny":
     case "clickAny":

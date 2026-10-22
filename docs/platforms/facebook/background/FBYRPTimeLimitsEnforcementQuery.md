@@ -13,7 +13,7 @@
 | Called from | `FBYRPTimeLimitsEnforcement.react` |
 | rea | `ev_ed1a3cfe4b9656a9ad3ddf8f3e05b4767495c0d780a6a027450c86c6d19c34c6` |
 
-Seen 56 time(s) in 18 run(s).
+Seen 64 time(s) in 20 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -52,6 +52,14 @@ Seen 56 time(s) in 18 run(s).
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 465 ms | 4009 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 333 ms | 4910 ms | — |
 | inspect | step 1: goto /messages/ | 1 | 200 | 362 ms | 2291 ms | — |
+| inspect | step 1: goto /marketplace/ | 1 | 200 | 409 ms | 8471 ms | — |
+| inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 382 ms | 2827 ms | — |
+| inspect | step 5: setLocation Bethlehem, Pennsylvania | 1 | 200 | 419 ms | 2193 ms | — |
+| inspect | step 11: goto /marketplace/create/item | 1 | 200 | 380 ms | 1565 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 1 | 200 | 800 ms | 7064 ms | — |
+| inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 556 ms | 4820 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 474 ms | 1630 ms | — |
+| inspect | step 13: setLocation 18015 | 1 | 200 | 383 ms | 2782 ms | — |
 
 <!-- facts:end -->
 
