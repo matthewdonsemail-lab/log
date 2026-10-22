@@ -3503,3 +3503,47 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the group firehose. The host (`log host start`) now reads, in every watch check after its Selling check, each group its account is a member of that is due (`dueGroups`: Facebook's numeric id known, not read in `--groupMinutes`, default 60, 0 reads none, longest-unread first). The read runs in the browser the host already holds, through `readGroupOnce` (split out of `log read group`: the machine, then posts, comments and the cursor to Twenty, with no gates of its own; `log read group` keeps its gates in `readInBrowser`). A checkpoint or sign-out on a group page goes back to the lifecycle as the account's issue; any other failure is logged and that group is tried at the next check. `log read group --worker` (OpenMagpie) now answers from Twenty at once and opens no browser. It merges the posts of every account in the group (`uniquePosts`), and `errors` says when no host has read a group yet or not for 3 hours (`readFreshness`: `groupNotReadYet`, `groupReadStale`). `scrollsFor` and `workerCodeOf` are gone with the worker's browser read. Rule 62 is in AGENTS.md and the MCP instructions (host and read cite it). The host skill and `docs/groupRead.md` (with a diagram) say how it runs.
 Why: matt, 2026-10-22, asked how log-cli can run independently instead of only when OpenMagpie asks, and chose "a firehose!": log-cli reads on its own and pours into Twenty, and whatever wants the posts reads Twenty.
 Checked: `bun run check`: every gate passes and 763 tests pass. New: `src/cli/host/host.test.ts` (which groups are due; a watch check reading a due group in the host's own browser and saving 2 posts while a group read lately waits; a checkpoint on a group page is the account's issue). The worker tests now answer from Twenty with no step sent, including `groupNotReadYet`. The groupRead.md diagram parses with the repo's Mermaid. Not checked live: a host reading groups (it is 02:xx in Bethlehem; a host runs only in the account's hours unless matt asks for --bypass).
+
+## 2026-10-22 06:36Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometFeedStoryMenuQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNewsFeedPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometSinglePostDialogContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometUFICommentReactionIconTooltipContentQuery.md`: new file
+- `docs/platforms/facebook/background/ComposerStoryCreateMutation.md`: edited
+- `docs/platforms/facebook/background/FBReelsEntityDialogImplQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/FeedComposerCometRootQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPContainerQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useInstreamAdsHaloFetcherQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/groups/CometGroupAnnouncementsRootFeedQuery.md`: edited
+- `docs/platforms/facebook/groups/CometGroupDiscussionRootSuccessQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometFeedRegularStoriesPaginationQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometQuestionsRootSuccessQuery.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometVisitMutation.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/photos/CometPhotoRootContentQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometFeedComposerRootQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoRootWithEntrypointQuery.md`: edited
+
+What changed: `log capture --docs` rebuilt the Facebook request docs (`docs/platforms/facebook/`) from every run, including this morning's live group read on Bethlehem (run 20261022T054544): the request tables now count that run's calls. One new request is documented: `CometUFICommentReactionIconTooltipContentQuery`, the tooltip of a comment's reaction icons, fired 11 times as the cursor passed over the comments while the read scrolled the dialog. Our machine ignores it. rea read all 15 slices that changed.
+Why: the push of the group firehose was refused by the pre-push docs gate (rule 27): the run was newer than the docs.
+Checked: `node scripts/checks/checkFacebookClientDocs.mjs`: 188 requests documented, rea read every GraphQL slice.

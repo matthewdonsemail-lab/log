@@ -13,11 +13,11 @@
 | Called from | `useGroupsCometVisitMutation` |
 | rea | `ev_2c88e3ef14f464196a06b0ac6105cdffb275c24ee965feffc7bee400f8fa9337` |
 
-Seen 6 time(s) in 4 run(s).
+Seen 7 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /groups/<id>/ | 3 | 200 | 541–697 ms | 3115–4384 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 4 | 200 | 541–697 ms | 3115–6334 ms | — |
 | inspect | step 11: clickRole tab "…" | 1 | 200 | 726 ms | 2952 ms | — |
 | inspect | step 42: clickRole tab "…" | 1 | 200 | 1155 ms | 5132 ms | — |
 | inspect | step 1: goto /groups/<id> | 1 | 200 | 726 ms | 5607 ms | — |

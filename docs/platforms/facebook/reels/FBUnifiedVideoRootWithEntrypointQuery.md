@@ -13,10 +13,11 @@
 | Called from | `FBUnifiedVideoRootWithEntrypoint.react` |
 | rea | `ev_efecfaf4b1626f5631a80618b3ce7481212611829b7bb70ce4f0f9e5177f6dc8` |
 
-Seen 6 time(s) in 4 run(s).
+Seen 7 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | scroll: +700px in 15 wheel steps, 969 ms | 1 | 200 | 2050 ms | 3152 ms | — |
 | inspect | scroll: +799px in 19 wheel steps, 1313 ms | 1 | 200 | 2173 ms | 9154 ms | — |
 | inspect | post: "…", 103 words, 0 image(s), scrolled 58 px | 2 | 200 | 2277–2370 ms | 7233–9536 ms | — |
 | inspect | scroll: +700px in 16 wheel steps, 1140 ms | 2 | 200 | 2874–4099 ms | 14677–20546 ms | — |

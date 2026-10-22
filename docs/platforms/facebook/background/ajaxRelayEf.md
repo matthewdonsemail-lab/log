@@ -11,12 +11,18 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_c207e65dcc79de7bf8b8a06c71ff6b2dcc267b603e1104f677cb52baee8dd97b` |
+| rea | `ev_32e057eb2fbaa50e870470f0b5a26630228ed0d01cc18147f59a34aba3157338` |
 
-Seen 314 time(s) in 15 run(s).
+Seen 333 time(s) in 16 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /groups/<id>/ | 29 | 200 | 329–2023 ms | 6733–23922 ms | — |
+| inspect | step 4: scroll 2 x 700px | 1 | 200 | 563 ms | 635 ms | — |
+| inspect | scroll: +700px in 15 wheel steps, 969 ms | 1 | 200 | 392 ms | 2995 ms | — |
+| inspect | scroll: +700px in 16 wheel steps, 859 ms | 3 | 200 | 368–677 ms | 4824–5319 ms | — |
+| inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 535 ms | 20609 ms | — |
+| inspect | scroll: +800px in 18 wheel steps, 781 ms | 5 | 200 | 347–548 ms | 30593–267118 ms | — |
 | inspect | step 1: goto /profile.php | 3 | 200 | 354–455 ms | 7766–20765 ms | — |
 | inspect | step 2: snapshot | 6 | 200 | 356–1507 ms | 7961–14754 ms | — |
 | inspect | step 3: clickRole button "…" | 6 | 200 | 307–405 ms | 301–5352 ms | — |
@@ -29,7 +35,6 @@ Seen 314 time(s) in 15 run(s).
 | inspect | step 18: wait 4s | 2 | 200 | 359–378 ms | 6222–7921 ms | — |
 | inspect | step 19: clickRole button "…" | 1 | 200 | 1050 ms | 45652 ms | — |
 | inspect | step 3: click e97 | 1 | 200 | 1562 ms | 875 ms | — |
-| inspect | step 1: goto /groups/<id>/ | 21 | 200 | 329–2023 ms | 6733–19936 ms | — |
 | inspect | step 3: clickRole tab "…" | 4 | 200 | 457–677 ms | 5426–9746 ms | — |
 | inspect | step 4: clickRole tab "…" | 3 | 200 | 497–627 ms | 517–6804 ms | — |
 | inspect | clickRole failed: RuntimeError: the element kept moving under the cursor: the point is on  | 1 | 200 | 391 ms | 5120 ms | — |

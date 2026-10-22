@@ -11,12 +11,22 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_c207e65dcc79de7bf8b8a06c71ff6b2dcc267b603e1104f677cb52baee8dd97b` |
+| rea | `ev_32e057eb2fbaa50e870470f0b5a26630228ed0d01cc18147f59a34aba3157338` |
 
-Seen 521 time(s) in 14 run(s).
+Seen 567 time(s) in 15 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /groups/<id>/ | 49 | 200 | 355–621 ms | 2065–32871 ms | — |
+| inspect | scroll: +700px in 16 wheel steps, 796 ms | 4 | 200 | 381–600 ms | 767–3547 ms | — |
+| inspect | scroll: +700px in 16 wheel steps, 1266 ms | 2 | 200 | 411–630 ms | 1010–1011 ms | — |
+| inspect | scroll: +700px in 15 wheel steps, 672 ms | 1 | 200 | 415 ms | 1113 ms | — |
+| inspect | step 6: scroll 2 x 700px | 2 | 200 | 490–648 ms | 928–929 ms | — |
+| inspect | scroll: +700px in 15 wheel steps, 969 ms | 1 | 200 | 368 ms | 5288 ms | — |
+| inspect | scroll: +700px in 16 wheel steps, 985 ms | 3 | 200 | 389–539 ms | 797–2915 ms | — |
+| inspect | scroll: +700px in 16 wheel steps, 859 ms | 1 | 200 | 435 ms | 3781 ms | — |
+| inspect | step 8: goto /groups/<id>/permalink/<id>/ | 11 | 200 | 377–542 ms | 5185–21551 ms | — |
+| inspect | scroll: +800px in 18 wheel steps, 781 ms | 6 | 200 | 415–1571 ms | 28725–1081179 ms | — |
 | inspect | step 1: goto /profile.php | 7 | 200 | 354–630 ms | 5815–8764 ms | — |
 | inspect | step 5: clickRole button "…" | 4 | 200 | 346–553 ms | 490–5414 ms | — |
 | inspect | step 6: wait 6s | 1 | 200 | 437 ms | 43001 ms | — |
@@ -24,7 +34,6 @@ Seen 521 time(s) in 14 run(s).
 | inspect | step 12: clickRole button "…" | 2 | 200 | 416–531 ms | 572–6606 ms | — |
 | inspect | step 13: wait 8s | 1 | 200 | 410 ms | 10710 ms | — |
 | inspect | step 19: clickRole button "…" | 5 | 200 | 330–1617 ms | 593–46085 ms | — |
-| inspect | step 1: goto /groups/<id>/ | 34 | 200 | 356–621 ms | 2065–24212 ms | — |
 | inspect | step 3: clickRole tab "…" | 4 | 200 | 873–1022 ms | 9768–9774 ms | — |
 | inspect | step 4: clickRole tab "…" | 4 | 200 | 617–787 ms | 5274–7693 ms | — |
 | inspect | clickRole failed: RuntimeError: the element kept moving under the cursor: the point is on  | 2 | 200 | 419–568 ms | 1771–9124 ms | — |

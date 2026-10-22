@@ -11,7 +11,7 @@
 | Sends | — |
 | Reads | `viewer.actor`, `viewer.account_user`, `viewer.can_create_page`, `viewer.can_create_nonprofit_fundraiser`, `viewer.marketplace_nav_tab_visible`, `viewer.marketplace_feature_access_status`, `lwi.should_direct_to_lwi` |
 | Called from | `CometHomeCreateMenuContent.react` |
-| rea | `ev_3fc31279229a8a77c780fdc3d85b3e4a969f9714a54952d71db8fff6a6ab0305` |
+| rea | `ev_ce3a3e0411d4d96c98fb842dce351a191c4e1062c311b30b7ceaf8d2c63e104c` |
 
 Seen 6 time(s) in 6 run(s).
 

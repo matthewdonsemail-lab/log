@@ -11,12 +11,18 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_9dba9514d791f3d9298ecfd9b88406e17e9d90cc1b7c9a80f4bad67aa2fb5a98` |
+| rea | `ev_179c84fc4c83fdbe32e50f3c4d9ca6bce8d97cc16598070ac0d2646331e25e96` |
 
-Seen 312 time(s) in 17 run(s).
+Seen 340 time(s) in 18 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | scroll: +700px in 16 wheel steps, 796 ms | 1 | 200 | 451 ms | 1101 ms | — |
+| inspect | scroll: +700px in 16 wheel steps, 1266 ms | 1 | 200 | 361 ms | 3017 ms | — |
+| inspect | scroll: +700px in 15 wheel steps, 1125 ms | 1 | 200 | 376 ms | 3100 ms | — |
+| inspect | scroll: +700px in 16 wheel steps, 985 ms | 2 | 200 | 362–585 ms | 1607–2609 ms | — |
+| inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 354 ms | 54 ms | — |
+| inspect | scroll: +800px in 18 wheel steps, 781 ms | 22 | 200 | 337–1538 ms | 2912–1778687 ms | — |
 | inspect | step 2: snapshot | 3 | 200 | 336–385 ms | 6316–16662 ms | — |
 | inspect | step 4: type e1681 | 1 | 200 | 1400 ms | 1138 ms | — |
 | inspect | step 6: wait 6s | 1 | 200 | 365 ms | 21607 ms | — |

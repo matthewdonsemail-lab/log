@@ -13,10 +13,11 @@
 | Called from | `FBScreenTimeLogger.react` |
 | rea | `ev_9c20c08fbf4c14d62fa5b772be9b8dc2f4b32b06aa445a78cfb8f8ea86ba73c3` |
 
-Seen 30 time(s) in 10 run(s).
+Seen 36 time(s) in 11 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | scroll: +800px in 18 wheel steps, 781 ms | 6 | 200 | 421–2294 ms | 151337–1651976 ms | — |
 | inspect | step 13: wait 8s | 1 | 200 | 542 ms | 26897 ms | — |
 | inspect | step 23: press Escape | 1 | 200 | 633 ms | 5741 ms | — |
 | inspect | step 39: snapshot | 1 | 200 | 2124 ms | 4241 ms | — |

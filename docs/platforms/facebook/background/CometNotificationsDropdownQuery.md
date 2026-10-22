@@ -13,10 +13,12 @@
 | Called from | `CometNotificationsDropdown.react` |
 | rea | `ev_ab1965911932cb7fcf25b222bf92e0487c624ad5aa06bc6a0e5e7860bc09d85a` |
 
-Seen 59 time(s) in 14 run(s).
+Seen 61 time(s) in 15 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | scroll: +700px in 16 wheel steps, 859 ms | 1 | 200 | 1251 ms | 11271 ms | — |
+| inspect | scroll: +800px in 18 wheel steps, 781 ms | 1 | 200 | 2025 ms | 303920 ms | — |
 | inspect | step 1: goto /profile.php | 1 | 200 | 1222 ms | 7446 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 4 | 200 | 930–2133 ms | 4061–6412 ms | — |
 | inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 1075 ms | 4614 ms | — |

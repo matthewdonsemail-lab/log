@@ -13,15 +13,19 @@
 | Called from | `CometHovercardQueryRenderer.react` |
 | rea | `ev_95529720f6ba751fe065571b8fd81d09f67f7e4539594c0761343470652ec320` |
 
-Seen 156 time(s) in 11 run(s).
+Seen 178 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /groups/<id>/ | 27 | 200 | 497–1173 ms | 6069–23128 ms | — |
+| inspect | scroll: +700px in 15 wheel steps, 656 ms | 2 | 200 | 664–745 ms | 7745–11384 ms | — |
+| inspect | scroll: +700px in 16 wheel steps, 859 ms | 1 | 200 | 680 ms | 3065 ms | — |
+| inspect | step 8: goto /groups/<id>/permalink/<id>/ | 2 | 200 | 889–1013 ms | 20562–22832 ms | — |
+| inspect | scroll: +800px in 18 wheel steps, 781 ms | 6 | 200 | 1444–1982 ms | 2375–900961 ms | — |
 | inspect | step 2: snapshot | 6 | 200 | 627–814 ms | 373–11488 ms | — |
 | inspect | step 5: clickRole button "…" | 1 | 200 | 445 ms | 6889 ms | — |
 | inspect | step 6: wait 6s | 2 | 200 | 1626–1861 ms | 41727–95250 ms | — |
 | inspect | step 8: clickRole button "…" | 1 | 200 | 474 ms | 7700 ms | — |
-| inspect | step 1: goto /groups/<id>/ | 15 | 200 | 503–822 ms | 6679–17970 ms | — |
 | inspect | step 3: clickRole tab "…" | 1 | 200 | 1001 ms | 5545 ms | — |
 | inspect | step 4: clickRole tab "…" | 3 | 200 | 868–1514 ms | 1475–6750 ms | — |
 | inspect | clickRole failed: RuntimeError: the element kept moving under the cursor: the point is on  | 1 | 200 | 1043 ms | 3662 ms | — |
@@ -55,7 +59,6 @@ Seen 156 time(s) in 11 run(s).
 | inspect | scroll: +800px in 17 wheel steps, 641 ms | 1 | 200 | 748 ms | 2575 ms | — |
 | inspect | scroll: +800px in 17 wheel steps, 672 ms | 1 | 200 | 665 ms | 13224 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 1000 ms | 2 | 200 | 799–803 ms | 8515–10668 ms | — |
-| inspect | scroll: +700px in 15 wheel steps, 656 ms | 1 | 200 | 745 ms | 11384 ms | — |
 | inspect | step 1: goto /groups/<id> | 13 | 200 | 506–1400 ms | 12991–160409 ms | — |
 | inspect | scroll: +654px in 15 wheel steps, 1219 ms | 1 | 200 | 844 ms | 3277 ms | — |
 | inspect | step 12: nextPost | 1 | 200 | 895 ms | 107 ms | — |

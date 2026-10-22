@@ -13,12 +13,15 @@
 | Called from | `usePseudoBlockedUserInterstitial` |
 | rea | `ev_4f0f59bc7d5ff4c02ef9f2aba85fc9de893084a7a8fbdf3f1627ce6c1c3456fe` |
 
-Seen 40 time(s) in 14 run(s).
+Seen 44 time(s) in 15 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /groups/<id>/ | 7 | 200 | 347–464 ms | 3118–6294 ms | — |
+| inspect | step 6: scroll 2 x 700px | 1 | 200 | 435 ms | 710 ms | — |
+| inspect | step 7: scroll 2 x 700px | 1 | 200 | 427 ms | 427 ms | — |
+| inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 394 ms | 6544 ms | — |
 | inspect | step 1: goto /profile.php | 1 | 200 | 428 ms | 7454 ms | — |
-| inspect | step 1: goto /groups/<id>/ | 6 | 200 | 347–464 ms | 3118–5866 ms | — |
 | inspect | step 7: clickRole tab "…" | 1 | 200 | 559 ms | 2247 ms | — |
 | inspect | step 11: clickRole tab "…" | 1 | 200 | 382 ms | 2960 ms | — |
 | inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 354 ms | 5734 ms | — |

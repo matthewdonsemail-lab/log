@@ -11,7 +11,7 @@
 | Sends | `callerName`, `customPartnerParams`, `hasStory`, `isBizWeb`, `isLinksInPostEnabled`, `privacySelectorRenderLocation`, `privacyWriteID`, `profileID`, `scale`, `serviceNames`, `storyID`, `__relay_internal__pv__ShouldEnableSimplifiedComposerIconsrelayprovider`, `__relay_internal__pv__CometUnifiedVideoCreation_showPrivacyMergerelayprovider`, `__relay_internal__pv__CometUGCPublicCreation_showComposerPublicAwarenessTooltiprelayprovider`, `__relay_internal__pv__FeedComposerCometRoot_shouldFetchCrosspostMetadatarelayprovider` |
 | Reads | `viewer.actor`, `viewer.feed_comet_composer`, `viewer....FeedComposerComet_viewer` |
 | Called from | `FeedComposerCometRoot.react` |
-| rea | `ev_74df5fe04dcbed1ebf7e87e31af1f3fdfc75be3825828c415b2e908697f06b2b` |
+| rea | `ev_236fae6100a4c7886ef90923fd6c2781c4c1767eb702a15d36cf60a038a21fa1` |
 
 Seen 3 time(s) in 3 run(s).
 

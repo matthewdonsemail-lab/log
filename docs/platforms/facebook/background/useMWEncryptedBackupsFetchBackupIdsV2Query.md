@@ -13,12 +13,13 @@
 | Called from | `useMWEncryptedBackupsFetchBackupIdsV2` |
 | rea | `ev_16df7daca80a72c8f44b7a489690336b7def96e564429f0639a122f48023372a` |
 
-Seen 31 time(s) in 14 run(s).
+Seen 33 time(s) in 15 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /groups/<id>/ | 5 | 200 | 341–435 ms | 3700–7157 ms | — |
+| inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 372 ms | 6413 ms | — |
 | inspect | step 1: goto /profile.php | 1 | 200 | 444 ms | 7432 ms | — |
-| inspect | step 1: goto /groups/<id>/ | 4 | 200 | 341–435 ms | 3700–5840 ms | — |
 | inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 384 ms | 6521 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 352 ms | 5801 ms | — |
 | inspect | step 1: goto /groups/<id> | 1 | 200 | 352 ms | 7118 ms | — |

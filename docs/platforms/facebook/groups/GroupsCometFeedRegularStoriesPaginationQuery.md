@@ -6,17 +6,22 @@
 | --- | --- |
 | Domain | groups |
 | Kind | query |
-| doc_id | `28956948070566246` |
+| doc_id | `39852225757724348` |
 | Path | `/api/graphql/` |
 | Sends | `count`, `cursor`, `feedLocation`, `feedType`, `feedbackSource`, `filterTopicId`, `focusCommentID`, `id`, `privacySelectorRenderLocation`, `referringStoryRenderLocation`, `renderLocation`, `scale`, `sortingSetting`, `stream_initial_count`, `useDefaultActor`, `youthIntegrityHostID`, `__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider`, `__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider`, `__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider`, `__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider`, `__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider`, `__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider`, `__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider`, `__relay_internal__pv__IsWorkUserrelayprovider`, `__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider`, `__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider`, `__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider`, `__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider`, `__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider`, `__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider`, `__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider`, `__relay_internal__pv__IsMergQAPollsrelayprovider`, `__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider`, `__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider`, `__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider`, `__relay_internal__pv__CometUFIShareActionMigrationrelayprovider`, `__relay_internal__pv__CometUFISingleLineUFIrelayprovider`, `__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider`, `__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider`, `__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider`, `__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider`, `__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider`, `__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider` |
 | Reads | `node....GroupsCometFeedRegularStories_paginationGroup` |
 | Called from | `GroupsCometFeedRegularStories_paginationGroup.graphql` |
-| rea | `ev_f792b6f23388f17a7eb603f72f37e195afb43b871879be102f5697f32505edb6` |
+| rea | `ev_1cee7d22d2b7ab4c747006eb28c7c434b538da0f8ff727b0036a4b435670f996` |
 
-Seen 13 time(s) in 4 run(s).
+Seen 18 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 2: scroll 2 x 700px | 1 | 200 | 1113 ms | 959 ms | — |
+| inspect | scroll: +700px in 16 wheel steps, 796 ms | 1 | 200 | 1174 ms | 703 ms | — |
+| inspect | step 4: scroll 2 x 700px | 1 | 200 | 1303 ms | 605 ms | — |
+| inspect | scroll: +700px in 16 wheel steps, 984 ms | 1 | 200 | 1945 ms | 3398 ms | — |
+| inspect | step 7: scroll 2 x 700px | 1 | 200 | 1180 ms | 268 ms | — |
 | inspect | step 13: press Escape | 1 | 200 | 1422 ms | 75 ms | — |
 | inspect | step 24: scroll 2 x 500-700px | 1 | 200 | 1198 ms | 1467 ms | — |
 | inspect | step 43: clickRole link "…" | 1 | 200 | 2996 ms | 1023 ms | — |

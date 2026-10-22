@@ -6,19 +6,20 @@
 | --- | --- |
 | Domain | background |
 | Kind | query |
-| doc_id | `28566509569671415` |
+| doc_id | `28750953961225359` |
 | Path | `/api/graphql/` |
 | Sends | — |
 | Reads | `xfb_youth_regulatory_config_platform.query_configs_by_handler` |
 | Called from | `FBYRPTimeLimitsEnforcement.react` |
 | rea | `ev_ed1a3cfe4b9656a9ad3ddf8f3e05b4767495c0d780a6a027450c86c6d19c34c6` |
 
-Seen 31 time(s) in 14 run(s).
+Seen 33 time(s) in 15 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 1: goto /groups/<id>/ | 5 | 200 | 361–528 ms | 2885–5452 ms | — |
+| inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 351 ms | 4095 ms | — |
 | inspect | step 1: goto /profile.php | 1 | 200 | 536 ms | 6095 ms | — |
-| inspect | step 1: goto /groups/<id>/ | 4 | 200 | 361–528 ms | 2885–5196 ms | — |
 | inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 361 ms | 4598 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 356 ms | 4731 ms | — |
 | inspect | step 1: goto /groups/<id> | 1 | 200 | 468 ms | 5401 ms | — |
