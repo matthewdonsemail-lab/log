@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { parseWorkerRequest, recordsOf, scrollsFor, workerCodeOf } from "./index.ts";
+import { parseWorkerRequest, readFreshness, recordsOf, uniquePosts } from "./index.ts";
 
 const GROUP = "4191018610937243";
 
@@ -40,13 +40,19 @@ describe("OpenMagpie's facebook_group worker contract", () => {
     expect(recordsOf(posts, GROUP, [], 1).map((r) => r.external_id)).toEqual(["2"]);
   });
 
-  test("a checkpoint, a login wall or a lost session is auth_required (OpenMagpie doesn't retry it); the rest keep log-cli's code", () => {
-    expect(["checkpointed", "loginWall", "videoSelfieRequired"].map(workerCodeOf)).toEqual(["auth_required", "auth_required", "auth_required"]);
-    expect(workerCodeOf("groupBrowserNotOpen")).toBe("groupBrowserNotOpen");
+  test("the same group on two accounts answers each post once", () => {
+    const posts = [row("1", "2026-10-21T21:05:00.000Z", "a", 1), row("1", "2026-10-21T21:05:00.000Z", "a", 3), row("2", "2026-10-21T21:06:00.000Z", "b")];
+    expect(uniquePosts(posts).map((p) => [(p as { facebookPostId: string }).facebookPostId, (p as { commentCount: number }).commentCount])).toEqual([
+      ["1", 3],
+      ["2", 0],
+    ]);
   });
 
-  test("about three posts a scroll, from 1 to 6", () => {
-    expect([1, 3, 4, 20, 100].map(scrollsFor)).toEqual([1, 1, 2, 6, 6]);
+  test("says when no host has read the group, or not for three hours", () => {
+    const now = new Date("2026-10-22T12:00:00.000Z");
+    expect(readFreshness([null], now)).toMatchObject({ code: "groupNotReadYet" });
+    expect(readFreshness(["2026-10-22T08:30:00.000Z"], now)).toMatchObject({ code: "groupReadStale" });
+    expect(readFreshness([null, "2026-10-22T08:30:00.000Z", "2026-10-22T11:00:00.000Z"], now)).toBeNull();
   });
 });
 

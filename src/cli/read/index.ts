@@ -15,9 +15,10 @@
  *   log read group --account <a> --group <g> --show
  *       the group's saved posts and comments from Twenty, and nothing opened.
  *   log read group --worker <request json>
- *       OpenMagpie's `facebook_group` worker (obris-dev/openmagpie#178, #188): each group is read by
- *       an account in it whose browser is open (posts only), and the newest saved posts answer as
- *       one JSON object on stdout (`group/read/helpers/openMagpieWorker.ts`).
+ *       OpenMagpie's `facebook_group` worker (obris-dev/openmagpie#178, #188): the group's newest
+ *       posts in Twenty answer as one JSON object on stdout, at once, with no browser. Twenty is
+ *       kept full by the host, which reads every group its account is in on its own clock
+ *       (`log host start --groupMinutes <n>`, the firehose).
  *
  * The posts go to `agencyGroupPosts`, their comments to `agencyGroupComments`, and only
  * then does the group's `readCursor` move (`group/read/client.ts`). Every step prints a
@@ -27,9 +28,10 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
 import { readCurrentInspect } from "../../browser/inspect/index.ts";
+import type { CurrentInspect } from "../../browser/inspect/index.ts";
 import { ensureGroup, parseGroupRef } from "../../group/join/index.ts";
 import type { Group, GroupRef } from "../../group/join/index.ts";
-import { AGENCY_GROUP_COMMENTS, AGENCY_GROUP_POSTS, groupReadMachine, parseWorkerRequest, readStateOf, recordsOf, saveRead, scrollsFor, workerCodeOf } from "../../group/read/index.ts";
+import { AGENCY_GROUP_COMMENTS, AGENCY_GROUP_POSTS, groupReadMachine, parseWorkerRequest, readFreshness, readStateOf, recordsOf, saveRead, uniquePosts } from "../../group/read/index.ts";
 import type { GroupReadOutput, ReadStepInput, ReadStepReply, SavedRead, WorkerAnswer, WorkerRecord } from "../../group/read/index.ts";
 import type { ErrorCode } from "../../errors/catalog/index.ts";
 import { homeOf, outsideActiveHours } from "../../marketplace/home/index.ts";
@@ -47,7 +49,7 @@ export * from "./helpers/index.ts";
 export const READ_USAGE = [
   "Usage: log read group --account <accountName> --group <group url or id> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json]",
   "       log read group --account <accountName> --group <g> --show [--json]",
-  "       log read group --worker <request json>   (OpenMagpie's facebook_group worker: groups.search in, post records out as one JSON line; python/openMagpie/facebookWorker.py calls it)",
+  "       log read group --worker <request json>   (OpenMagpie's facebook_group worker: groups.search in, the posts Twenty holds out as one JSON line, no browser; python/openMagpie/facebookWorker.py calls it)",
   "Reads the group's new posts (since its cursor in Twenty) and the comments of the posts whose comments grew, in the account's open browser.",
   "--scrolls: feed scrolls at most (default 6). --commentPosts: posts whose comments are read at most (default 5; 0 reads none).",
   "--live: each post's comments are switched to Newest first (two clicks, rule 8); without it nothing is clicked and the page's Most relevant comments are read.",
@@ -93,21 +95,19 @@ function renderRun(output: GroupReadOutput, saved: SavedRead, live: boolean): st
 /** What one read in an account's open browser gave, or why it didn't run (a gate, no open browser). */
 type ReadInBrowser = { ok: true; output: GroupReadOutput; saved: SavedRead } | { ok: false; code: ErrorCode; detail: string };
 
+/** How much one read covers. */
+export interface ReadOptions {
+  scrolls: number;
+  commentPosts: number;
+  live: boolean;
+}
+
 /**
- * One read of one group, in the account's open browser: the gates (its hours, rule 18; its open
- * browser, rule 35), the machine, then Twenty (posts, comments, then the cursor). `log read group`
- * and OpenMagpie's worker both read through here.
+ * One read of one group in a session that is already open, with no gates of its own: the machine,
+ * then Twenty (posts, comments, then the cursor). `log read group` reads through it after its gates;
+ * the host (`log host start`, rule 35) through it in the browser it holds, inside its hours.
  */
-async function readInBrowser(context: CommandContext, account: FacebookAccount, group: Group, ref: GroupRef, options: { scrolls: number; commentPosts: number; live: boolean; bypass: boolean }): Promise<ReadInBrowser> {
-  const home = homeOf(account);
-  if (!home.ok) return { ok: false, code: home.code, detail: home.detail };
-  const outside = options.bypass ? null : outsideActiveHours(account, home.home.timezone, context.now?.() ?? new Date());
-  if (outside) return { ok: false, code: "outsideActiveHours", detail: outside };
-  if (options.bypass) context.err("--bypass: the waking-hours gate is skipped for this run only (rule 20).");
-
-  const current = readCurrentInspect(undefined, account.accountName);
-  if (!current) return { ok: false, code: "groupBrowserNotOpen", detail: `no open browser for ${account.accountName}` };
-
+export async function readGroupOnce(context: CommandContext, current: CurrentInspect, account: FacebookAccount, group: Group, ref: GroupRef, options: ReadOptions): Promise<{ output: GroupReadOutput; saved: SavedRead }> {
   const state = await readStateOf(context.twenty, group.id);
   context.err(
     `Reading ${group.name ?? ref.key} in ${account.accountName}'s open browser (${current.runDir}): ${state.cursor.watermark === null ? "a first read" : `new since ${new Date(state.cursor.watermark * 1000).toISOString().slice(0, 16)}`}, up to ${options.scrolls} scroll(s), comments of up to ${options.commentPosts} post(s)${options.live ? ", --live: comments switched to Newest" : ", nothing clicked"}.`,
@@ -156,27 +156,42 @@ async function readInBrowser(context: CommandContext, account: FacebookAccount, 
 
   context.err("Saving to Twenty: posts first, then comments, then the cursor.");
   const saved = await saveRead(context.twenty, group.id, output, readReason(output, current.runDir), context.now?.() ?? new Date(), (line) => context.err(line));
-  return { ok: true, output, saved };
+  return { output, saved };
+}
+
+/** `log read group`'s gates (the account's hours, rule 18; its open browser, rule 35), then the read. */
+async function readInBrowser(context: CommandContext, account: FacebookAccount, group: Group, ref: GroupRef, options: ReadOptions & { bypass: boolean }): Promise<ReadInBrowser> {
+  const home = homeOf(account);
+  if (!home.ok) return { ok: false, code: home.code, detail: home.detail };
+  const outside = options.bypass ? null : outsideActiveHours(account, home.home.timezone, context.now?.() ?? new Date());
+  if (outside) return { ok: false, code: "outsideActiveHours", detail: outside };
+  if (options.bypass) context.err("--bypass: the waking-hours gate is skipped for this run only (rule 20).");
+  const current = readCurrentInspect(undefined, account.accountName);
+  if (!current) return { ok: false, code: "groupBrowserNotOpen", detail: `no open browser for ${account.accountName}` };
+  return { ok: true, ...(await readGroupOnce(context, current, account, group, ref, options)) };
 }
 
 /**
  * `--worker <request>`: OpenMagpie's `facebook_group` worker (obris-dev/openmagpie#178, #188), called
- * through `python/openMagpie/facebookWorker.py`. Each group is read by an account that is in it
- * (its `agencyGroups` row) and has its browser open, posts only (comments stay with `log read group`,
- * so a cycle fits OpenMagpie's 300 s), then the group's newest saved posts answer, matched to the
- * terms. OpenMagpie's watermark and its external_id dedup drop what it already has. The answer is
- * always one JSON object on stdout; every line of the run goes to stderr and the live log (rule 26).
+ * through `python/openMagpie/facebookWorker.py`. It answers from Twenty at once and opens nothing:
+ * the reading is the host's (`log host start`), which reads each group its account is in on its
+ * own clock and pours the posts into Twenty (the firehose, matt 2026-10-22). Each group's posts are
+ * those of every account in it, newest first, matched to the terms; OpenMagpie's watermark and its
+ * external_id dedup drop what it already has. A group no host has read lately is said in `errors`.
+ * The answer is always one JSON object on stdout.
  */
 async function runWorker(context: CommandContext, text: string): Promise<CommandResult> {
   const answer = (value: WorkerAnswer): CommandResult => ({ code: value.ok ? 0 : 1, stdout: JSON.stringify(value) });
   const request = parseWorkerRequest(text);
   if ("code" in request) return answer({ ok: false, code: request.code, error: request.error });
   context.err(`OpenMagpie asks for ${request.groupIds.length} group(s), up to ${request.limit} post(s) each${request.terms.length ? `, matching ${request.terms.join(", ")}` : ""}.`);
+  const now = context.now?.() ?? new Date();
   const results: WorkerRecord[] = [];
   const errors: { group_id: string; code: string; error: string }[] = [];
+  let known = 0;
   for (const groupId of request.groupIds) {
     const failed = (code: string, error: string) => {
-      errors.push({ group_id: groupId, code: workerCodeOf(code), error });
+      errors.push({ group_id: groupId, code, error });
       context.err(`  ✗ group ${groupId}: ${code}: ${error}`);
     };
     try {
@@ -185,40 +200,18 @@ async function runWorker(context: CommandContext, text: string): Promise<Command
         failed("groupNoAccount", `no account in Twenty is in group ${groupId}: join it first (log join group)`);
         continue;
       }
-      // A member's row first; then the first one whose account may run and has its browser open.
-      const ordered = [...rows].sort((a, b) => Number(b.joinStatus === "MEMBER") - Number(a.joinStatus === "MEMBER"));
-      let picked: { account: FacebookAccount; row: (typeof rows)[number] } | null = null;
-      for (const row of ordered) {
-        if (!row.socialAccountId) continue;
-        const account = await findAccount(context.twenty, row.socialAccountId);
-        if (checkRunnable(account, "run").ok && readCurrentInspect(undefined, account.accountName)) {
-          picked = { account, row };
-          break;
-        }
-      }
-      if (!picked) {
-        failed("groupBrowserNotOpen", `no account in group ${groupId} has its browser open (log inspect start --account <a> --detach)`);
-        continue;
-      }
-      const ref = parseGroupRef(groupId);
-      if (!ref.ok) {
-        failed("groupRefInvalid", ref.error);
-        continue;
-      }
-      const group = await ensureGroup(context.twenty, picked.account.id, ref.group);
-      const read = await readInBrowser(context, picked.account, group, ref.group, { scrolls: scrollsFor(request.limit), commentPosts: 0, live: false, bypass: false });
-      if (!read.ok) failed(read.code, read.detail);
-      else if (read.output.problem) failed(read.output.problem.code, read.output.problem.detail);
-      // What Twenty holds answers, even after a stopped read: the posts it saved before it stopped are there.
-      const posts = await context.twenty.list(AGENCY_GROUP_POSTS, { agencyGroupId: { eq: group.id } });
-      const records = recordsOf(posts, groupId, request.terms, request.limit);
+      known++;
+      const freshness = readFreshness(rows.map((r) => r.lastReadAt ?? null), now);
+      if (freshness) failed(freshness.code, `group ${groupId}: ${freshness.detail}`);
+      const posts = (await Promise.all(rows.map((r) => context.twenty.list(AGENCY_GROUP_POSTS, { agencyGroupId: { eq: r.id } })))).flat();
+      const records = recordsOf(uniquePosts(posts), groupId, request.terms, request.limit);
       results.push(...records);
-      context.err(`  ✓ group ${groupId}: ${records.length} post(s) for OpenMagpie from Twenty${read.ok && !read.output.problem ? `, after ${picked.account.accountName}'s read` : ", saved by earlier reads"}`);
+      context.err(`  ✓ group ${groupId}: ${records.length} post(s) from Twenty`);
     } catch (error) {
       failed(error instanceof TwentyError ? error.code : "crashed", error instanceof Error ? error.message : String(error));
     }
   }
-  if (!results.length && errors.length === request.groupIds.length) return answer({ ok: false, code: errors[0]!.code, error: errors.map((e) => `${e.group_id}: ${e.error}`).join("; ") });
+  if (!known) return answer({ ok: false, code: errors[0]!.code, error: errors.map((e) => e.error).join("; ") });
   return answer({ ok: true, result: { results, errors }, new_cookies: [] });
 }
 

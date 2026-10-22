@@ -623,6 +623,16 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     grew, and the cursor moves only after the posts and comments are saved
     (`src/group/read`, `docs/groupRead.md`). Nothing is clicked unless
     `--live`, which switches each post's comments to Newest (rule 8).
+62. 2026-10-22 · matt: "a firehose!" log-cli reads the groups on its own
+    and pours what it finds into Twenty; nothing has to ask it. The host
+    (`log host start`, rule 35) reads, in every watch check, each group its
+    account is a member of that is due (`--groupMinutes`, default 60, 0 reads
+    none), in the browser it holds, inside the account's hours, nothing
+    clicked (rule 8). A checkpoint or a sign-out on a group page is the
+    account's issue. Whatever wants the posts reads Twenty: OpenMagpie's
+    worker (`log read group --worker`, obris-dev/openmagpie#178) answers from
+    Twenty at once and opens no browser, saying which groups no host has read
+    lately (`groupNotReadYet`, `groupReadStale`).
 
 ## Checks
 

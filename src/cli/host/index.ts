@@ -4,7 +4,8 @@
  * in it (sign-in, account check, profile, location, the warm-up, watching),
  * saving its progress on every change so a restart carries on where it left.
  *
- *   log host start --account <a> [--live] [--bypass] [--gapMinutes <n>] [--watchMinutes <n>]
+ *   log host start --account <a> [--live] [--bypass] [--gapMinutes <n>] [--watchMinutes <n>] [--groupMinutes <n>]
+ *       every watch check also reads each group the account is in that is due (the firehose, #27)
  *   log host send --account <a> <PERSON_DONE|PAUSE|RESUME|SHUTDOWN|LOST>
  *   log host status [--account <a>]
  */
@@ -17,13 +18,14 @@ import { findAccount } from "../../marketplace/socialAccount/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import { parseArgs, refuseError } from "../runner/helpers/index.ts";
 import type { Command } from "../runner/types.ts";
-import { dayOf, hostActors } from "./helpers/index.ts";
+import { dayOf, DEFAULT_GROUP_MINUTES, hostActors } from "./helpers/index.ts";
 import type { HostBrowser } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
 
 export const HOST_USAGE = [
-  "Usage: log host start --account <accountName> [--live] [--likes] [--bypass] [--gapMinutes <n>] [--watchMinutes <n>]   (--live: profile, name, location; --likes: the warm-up's likes)",
+  "Usage: log host start --account <accountName> [--live] [--likes] [--bypass] [--gapMinutes <n>] [--watchMinutes <n>] [--groupMinutes <n>]   (--live: profile, name, location; --likes: the warm-up's likes)",
+  "       --groupMinutes: each group the account is in is read at most this often, in its open browser, and its new posts and comments go to Twenty (default 60; 0 reads none)",
   "       log host send --account <accountName> <PERSON_DONE|PAUSE|RESUME|SHUTDOWN|LOST>",
   "       log host status [--account <accountName>]",
 ].join("\n");
@@ -37,7 +39,7 @@ export const hostCommand: Command = {
   summary: "Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); send it events; read its progress",
   args: "<start|send|status> --account <name> [--live] [--bypass]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["live", "likes", "bypass"], valued: ["account", "gapMinutes", "watchMinutes"] });
+    const parsed = parseArgs(argv, { boolean: ["live", "likes", "bypass"], valued: ["account", "gapMinutes", "watchMinutes", "groupMinutes"] });
     if (!parsed.ok) return { code: 1, stderr: `log host: ${parsed.error}\n${HOST_USAGE}` };
     const [sub, event] = parsed.positionals;
     const flags = parsed.flags;
@@ -72,7 +74,8 @@ export const hostCommand: Command = {
     const minutes = (flag: string, fallback: number) => (flags[flag] === undefined ? fallback : Number(flags[flag]));
     const gap = minutes("gapMinutes", 150);
     const watch = minutes("watchMinutes", 12);
-    if (![gap, watch].every((n) => Number.isFinite(n) && n >= 0 && n <= 600)) return { code: 1, stderr: "log host: --gapMinutes and --watchMinutes are 0 to 600" };
+    const groupMinutes = minutes("groupMinutes", DEFAULT_GROUP_MINUTES);
+    if (![gap, watch, groupMinutes].every((n) => Number.isFinite(n) && n >= 0 && n <= 600)) return { code: 1, stderr: "log host: --gapMinutes, --watchMinutes and --groupMinutes are 0 to 600" };
 
     const browser: HostBrowser = { run: null, session: null };
     const log = (line: string) => context.err(line);
@@ -80,7 +83,7 @@ export const hostCommand: Command = {
       account: account.accountName,
       standing: standingOf(account),
       liveActions: Boolean(flags["live"]),
-      actors: hostActors(context, account, browser, { bypassHours: Boolean(flags["bypass"]), likes: Boolean(flags["likes"]), log }) as never,
+      actors: hostActors(context, account, browser, { bypassHours: Boolean(flags["bypass"]), likes: Boolean(flags["likes"]), groupMinutes, log }) as never,
       saveFields: async (fields: Partial<Record<MilestoneField, string>>) => void (await context.twenty.update("socialAccounts", account.id, fields)),
       today: dayOf(account).today,
       timing: { activityGapMs: gap * 60_000, watchIntervalMs: watch * 60_000 },

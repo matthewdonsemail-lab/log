@@ -10,8 +10,8 @@
  * A record is its `NewFacebookPostPayload.from_record` shape: `external_id`, `group_id`, `content`,
  * `url`, `author { name, id, url }`, `occurred_at`, `metrics { likes, comments, shares }`,
  * `matched_terms`. Its snake_case names are OpenMagpie's, kept as they are at the boundary only.
- * `account_id`, `cookies` and `proxy` are never used: the account, its session and its proxy come
- * from Twenty and the account's open browser (rules 12, 13, 35). Pure.
+ * `account_id`, `cookies` and `proxy` are never used: the answer comes from Twenty, which the host
+ * fills from each account's own browser (rules 12, 13, 35). Pure.
  */
 import type { TwentyObjects } from "../../../twenty/graphql/index.ts";
 
@@ -97,14 +97,21 @@ export function recordsOf(posts: PostRow[], groupId: string, terms: string[], li
     .slice(0, limit);
 }
 
-/**
- * A log-cli code → the code OpenMagpie's `map_worker_error` acts on: a checkpoint, a login wall or a
- * session that needs signing in is `auth_required` (not retried); the rest keep log-cli's own code
- * (retried with backoff). Pure.
- */
-export function workerCodeOf(code: string): string {
-  return ["checkpointed", "loginWall", "videoSelfieRequired", "sessionExpired", "neverConnected"].includes(code) ? "auth_required" : code;
+/** A group's posts across its rows (the same group on two accounts), each once: the later reading wins. Pure. */
+export function uniquePosts(posts: PostRow[]): PostRow[] {
+  const byId = new Map<string, PostRow>();
+  for (const post of posts) if (post.facebookPostId) byId.set(post.facebookPostId, post);
+  return [...byId.values()];
 }
 
-/** Feed scrolls for a request: about three posts a scroll (run 20261022T054544: 16 posts over the page and 6 scrolls). Pure. */
-export const scrollsFor = (limit: number): number => Math.max(1, Math.min(6, Math.ceil(limit / 3)));
+/** No host has read a group in this long: the answer says so, beside the posts it has. */
+export const STALE_AFTER_MS = 3 * 60 * 60_000;
+
+/** Whether the group's posts are current: never read by any account, or not for STALE_AFTER_MS; null when they are. Pure. */
+export function readFreshness(lastReadAts: (string | null)[], now: Date): { code: "groupNotReadYet" | "groupReadStale"; detail: string } | null {
+  const times = lastReadAts.filter((t): t is string => Boolean(t)).map((t) => Date.parse(t)).filter(Number.isFinite);
+  if (!times.length) return { code: "groupNotReadYet", detail: "no host has read it yet (log host start --account <a>, an account in it)" };
+  const last = Math.max(...times);
+  if (now.getTime() - last > STALE_AFTER_MS) return { code: "groupReadStale", detail: `last read ${new Date(last).toISOString().slice(0, 16)}Z; is its account's host running?` };
+  return null;
+}
