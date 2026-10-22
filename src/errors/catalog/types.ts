@@ -355,6 +355,15 @@ export const ERROR_CATALOG = {
     monitor: 'blocked',
     action: 'Run it inside the window in the detail, or change activeHoursStart/activeHoursEnd on the socialAccount in Twenty.'
   },
+  accountBusy: {
+    layer: 'account',
+    meaning: "A job over MCP already holds this account (one browser per account, rule 35). Nothing started.",
+    retryable: true,
+    raisedIn: ['mcp/jobs'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Follow the job in the detail with jobStatus until it ends, or stop it with jobCancel, then call again.'
+  },
   launchTooSoon: {
     layer: 'account',
     meaning: "The account's browser opened on Facebook less than 10 minutes ago (rule 24). Nothing opened.",

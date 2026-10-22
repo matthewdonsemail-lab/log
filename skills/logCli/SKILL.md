@@ -119,6 +119,16 @@ stderr and exit code, through `runCli`, so every gate above still applies.
   Codex, by its `clientInfo` name) is told to Monitor the live log for long
   runs; any other client is told to read `progress` and `browsers`. The client's
   name is written to the live log when it connects.
+- A long tool (`LONG_RUNNING`, and every flow) runs as a job
+  (`src/mcp/jobs`, `~/.logCli/mcp/jobs/<id>.json` and `.jsonl`): the call
+  waits `waitMs` (default 20 s, at most 50 s) and returns the result if the run
+  ended, or the job (`exit` -1, `job.id`, the lines so far). `jobStatus`
+  (`log job status <id> --afterLine <n>`) waits for new lines and returns the
+  result once it ends; `jobCancel` stops it before its next browser step
+  (`sendInspect`), never once Publish is clicked (rule 10); `jobList` lists
+  them. One job holds an account at a time (`accountBusy`). Jobs live on disk,
+  so any server or the terminal can follow them; a job whose server stopped
+  is `lost`.
 - Every tool carries a `title` and MCP annotations from its command's
   `effect` (`read`, `write`, `delete`, `browser`, on the command and its
   forms): reads are read-only and idempotent, a browser on Facebook is

@@ -39,7 +39,7 @@ describe("toolsFromCommands", () => {
     const tools = toolsFromCommands(COMMANDS);
     const start = tools.find((t) => t.name === "inspectStart")!;
     expect(start.inputSchema.required).toEqual(["account"]);
-    expect(Object.keys(start.inputSchema.properties)).toEqual(["account", "url", "bypass", "now", "noIdleMouse", "detach", "proxyMs", "confirmBypass"]);
+    expect(Object.keys(start.inputSchema.properties)).toEqual(["account", "url", "bypass", "now", "noIdleMouse", "detach", "proxyMs", "confirmBypass", "waitMs"]);
     const step = tools.find((t) => t.name === "inspectDo")!;
     expect((step.inputSchema.properties.action as { enum: string[] }).enum).toContain("setLocation");
     expect((step.inputSchema.properties.values as { type: string }).type).toBe("array");
@@ -196,7 +196,7 @@ describe("live logs", () => {
     const result = await runToolCall("doctor", { args: ["--json"] }, { twenty: marketplaceFixture(), worker }, (tool, stream, line) => seen.push(`${tool} ${stream} ${line}`));
     const text = (result.content as { text: string }[])[0].text;
     expect(text).toContain("log:\nOpening Camoufox through the proxy\nAuto-login: typed the email and password (try 1).");
-    expect(seen[0]).toBe("doctor out ▶ log facebook doctor --json");
+    expect(seen[0]).toMatch(/^doctor out ▶ log facebook doctor --json  \(job job\w+\)$/);
     expect(seen).toContain("doctor worker Auto-login: typed the email and password (try 1).");
     expect(seen.at(-1)).toBe("doctor out ■ exit 0");
   });

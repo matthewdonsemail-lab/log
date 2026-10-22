@@ -4,7 +4,7 @@ import type { LogTool } from "../types.ts";
 import { TOOL_RESULT_SCHEMA } from "../types.ts";
 import { rulesLine } from "./agentRules.ts";
 import { annotationsOf, LIVE_SUFFIX, titleOf } from "./toolAnnotations.ts";
-import { longRunLine } from "./toolsFromCommands.ts";
+import { longRunLine, WAIT_MS } from "./toolsFromCommands.ts";
 import type { ToolOptions } from "./toolsFromCommands.ts";
 
 function flowTool(flow: FlowDefinition, live: boolean, options: ToolOptions): LogTool {
@@ -17,6 +17,7 @@ function flowTool(flow: FlowDefinition, live: boolean, options: ToolOptions): Lo
   properties.proxyMs = { type: "integer", description: "This run's proxy speed limit to Facebook, in ms (default 2500, rule 33)" };
   if (live) properties.confirmLive = { type: "boolean", description: "Set true only when matt asked for this live run" };
   properties.confirmBypass = { type: "boolean", description: "Set true with bypass, only when matt asked for a run outside the account's hours (rule 20)" };
+  properties.waitMs = WAIT_MS;
   const title = titleOf(flow.summary, live);
   return {
     name: `${toolName(flow.name)}${live ? LIVE_SUFFIX : ""}`,

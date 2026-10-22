@@ -27,6 +27,7 @@ import { proxyCommand } from "../proxy/index.ts";
 import { readCommand } from "../read/index.ts";
 import { runsCommand } from "../runs/index.ts";
 import { browsersCommand } from "../browsers/index.ts";
+import { jobCommand } from "../job/index.ts";
 import { publishCommand } from "../publish/index.ts";
 import { warmupCommand } from "../warmup/index.ts";
 import { watchCommand } from "../watch/index.ts";
@@ -69,6 +70,7 @@ export const COMMANDS: Command[] = [
   captureCommand,
   runsCommand,
   browsersCommand,
+  jobCommand,
   loginCommand,
   logoutCommand,
   whoamiCommand,
@@ -90,7 +92,7 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     connectSession: overrides.connectSession ?? startConnectSession,
     profileSession: overrides.profileSession ?? startProfileSession,
     inspectSession: overrides.inspectSession ?? runInspectSession,
-    sendInspect: overrides.sendInspect ?? ((current, action, args, timeoutMs, expect, options) => sendInspectCommand(current, action, args, timeoutMs, 50, expect, options)),
+    sendInspect: overrides.sendInspect ?? defaultSendInspect,
     adsPower: overrides.adsPower,
     connectTiming: overrides.connectTiming,
     out: overrides.out ?? ((line) => console.log(line)),
@@ -115,6 +117,8 @@ export function takeProxyMs(argv: string[]): { argv: string[]; proxyMs: number |
   }
   return { argv: rest, proxyMs, error: null };
 }
+
+export const defaultSendInspect: CommandContext["sendInspect"] = (current, action, args, timeoutMs, expect, options) => sendInspectCommand(current, action, args, timeoutMs, 50, expect, options);
 
 export async function runCli(argv: string[], context?: Partial<CommandContext>): Promise<number> {
   const ctx = createContext(context);

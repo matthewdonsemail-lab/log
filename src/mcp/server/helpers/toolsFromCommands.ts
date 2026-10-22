@@ -58,9 +58,11 @@ export function hasShell(clientName: string | undefined): boolean {
 
 export function longRunLine(options: ToolOptions, minutes = "seconds to minutes"): string {
   return options.shell === false
-    ? `Runs for ${minutes}: every line it streams comes back in the result's \`progress\` (with its time), and the result says where every open browser is (\`browsers\`, \`next\`, \`needsMatt\`) (rules 26, 54).`
-    : `Runs for ${minutes}: start a Monitor on \`tail -f ~/.logCli/mcp/<day>.log\` before calling, so matt watches it live (rule 26).`;
+    ? `Runs for ${minutes}: every line it streams comes back in the result's \`progress\` (with its time), and the result says where every open browser is (\`browsers\`, \`next\`, \`needsMatt\`) (rules 26, 54). A run that outlasts the call's wait (\`waitMs\`, default 20 s, at most 50 s) comes back as a job (\`exit\` -1, \`job.id\`): follow it with \`jobStatus\` { jobId, afterLine }, stop it at its next browser step with \`jobCancel\`.`
+    : `Runs for ${minutes}: start a Monitor on \`tail -f ~/.logCli/mcp/<day>.log\` before calling, so matt watches it live (rule 26). A run that outlasts the call's wait (\`waitMs\`, default 20 s, at most 50 s) comes back as a job (\`exit\` -1, \`job.id\`): follow it with \`jobStatus\` { jobId, afterLine }, stop it at its next browser step with \`jobCancel\`.`;
 }
+
+export const WAIT_MS = { type: "integer", description: "How long this call waits for the run, in ms (default 20000, at most 50000). A run still going then comes back as a job: follow it with jobStatus" };
 
 const CONFIRM_LIVE = { type: "boolean", description: "Set true only when matt asked for this live run (it acts on Facebook)" };
 const CONFIRM_BYPASS = { type: "boolean", description: "Set true only when matt asked for a run outside the account's local waking hours (rule 20)" };
@@ -112,7 +114,7 @@ function typedTool(entry: CommandTool, form: InputForm, options: ToolOptions): L
     annotations: annotationsOf(entry.effect, entry.live, title),
     inputSchema: {
       type: "object",
-      properties: { ...properties, ...(entry.live ? { confirmLive: CONFIRM_LIVE } : {}), ...(bypass ? { confirmBypass: CONFIRM_BYPASS } : {}) },
+      properties: { ...properties, ...(entry.live ? { confirmLive: CONFIRM_LIVE } : {}), ...(bypass ? { confirmBypass: CONFIRM_BYPASS } : {}), ...(LONG_RUNNING.has(command.name) ? { waitMs: WAIT_MS } : {}) },
       ...(required.length || entry.live ? { required: [...required, ...(entry.live ? ["confirmLive"] : [])] } : {}),
       additionalProperties: false,
     },
@@ -146,6 +148,7 @@ function argsTool(entry: CommandTool, options: ToolOptions): LogTool {
         args: { type: "array", items: { type: "string" }, description: command.platform === "byArgument" ? `Arguments for \`log <platform> ${command.name}\`, the platform first (e.g. ["facebook", "reel"])` : `Arguments for \`log ${commandWords(command)}\`` },
         ...(entry.live ? { confirmLive: CONFIRM_LIVE } : {}),
         confirmBypass: CONFIRM_BYPASS,
+        ...(LONG_RUNNING.has(command.name) ? { waitMs: WAIT_MS } : {}),
       },
       ...(entry.live ? { required: ["args", "confirmLive"] } : {}),
       additionalProperties: false,

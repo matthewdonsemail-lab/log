@@ -7,7 +7,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { CallToolRequestSchema, ListResourcesRequestSchema, ListToolsRequestSchema, ReadResourceRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import type { CallToolResult } from "@modelcontextprotocol/sdk/types.js";
-import { COMMANDS, runCli } from "../../cli/runner/index.ts";
+import { COMMANDS, defaultSendInspect, runCli } from "../../cli/runner/index.ts";
 import type { CommandContext } from "../../cli/runner/types.ts";
 import { setLogSink } from "../../observability/processLog/index.ts";
 import type { LogLine } from "../../observability/processLog/index.ts";
@@ -16,7 +16,9 @@ import { browserViews } from "../../browser/inspect/index.ts";
 import type { BrowserView } from "../../browser/inspect/index.ts";
 import type { FlowDefinition } from "../../browser/flow/index.ts";
 import { appendLiveLine, liveLogDir } from "../../observability/liveLog/index.ts";
-import { AGENTS_URI, flowArgv, flowOfTool, guardCall, hasShell, parseEnvText, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
+import { accountOfArgv, appendProgress, busyJob, cancelRequested, DEFAULT_WAIT_MS, finishJob, MAX_WAIT_MS, startJob } from "../jobs/index.ts";
+import type { JobRecord } from "../jobs/index.ts";
+import { AGENTS_URI, commandTools, flowArgv, flowOfTool, guardCall, hasShell, LONG_RUNNING, parseEnvText, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
 import type { LogToolInput, ProgressLine, ToolResult } from "./types.ts";
 
@@ -76,38 +78,49 @@ export function savedFlows(): FlowDefinition[] {
   });
 }
 
-export async function runToolCall(
-  name: string,
-  input: LogToolInput | undefined,
-  context: Partial<CommandContext> = {},
-  onLine: OnLogLine = () => {},
-  readBrowsers: ReadBrowsers = browserViews,
-): Promise<CallToolResult> {
-  const flowCall = flowOfTool(savedFlows(), name);
-  if (flowCall) {
-    const built = flowArgv(flowCall.flow, input as Record<string, unknown> | undefined, flowCall.live);
-    if (!built.ok) return refused(built.message, readBrowsers);
-    return runToolCall(flowCall.live ? "flowLive" : "flow", { args: built.argv.slice(1), confirmLive: input?.confirmLive, confirmBypass: (input as { confirmBypass?: boolean } | undefined)?.confirmBypass }, context, onLine, readBrowsers);
+export class JobCancelled extends Error {
+  constructor(id: string) {
+    super(`jobCancelled: job ${id} was stopped at its next browser step (jobCancel)`);
   }
-  const guard = guardCall(name, input, COMMANDS);
-  if (!guard.ok) return refused(guard.message, readBrowsers);
+}
+
+interface Ran {
+  base: Omit<ToolResult, "browsers" | "next" | "needsMatt">;
+  text: string;
+  cancelled: boolean;
+}
+
+async function runGuarded(name: string, argv: string[], context: Partial<CommandContext>, onLine: OnLogLine, progress: ProgressLine[], job: JobRecord | null): Promise<Ran> {
   const out: string[] = [];
   const err: string[] = [];
   const processLog: string[] = [];
-  const progress: ProgressLine[] = [];
-  const note = (source: string, line: string) => progress.push({ at: new Date().toISOString(), source, line });
+  const note = (source: string, line: string) => {
+    const entry = { at: new Date().toISOString(), source, line };
+    progress.push(entry);
+    if (job) appendProgress(job.id, entry);
+  };
   const fromProcess = (entry: LogLine) => {
     processLog.push(entry.line);
     note(entry.source, entry.line);
     onLine(name, entry.source, entry.line);
   };
+  const send = context.sendInspect ?? defaultSendInspect;
   setLogSink((entry) => inFlight.forEach((listener) => listener(entry)));
   inFlight.add(fromProcess);
-  onLine(name, "out", `▶ log ${guard.argv.join(" ")}`);
+  onLine(name, "out", `▶ log ${argv.join(" ")}${job ? `  (job ${job.id})` : ""}`);
   let code: number;
+  let cancelled = false;
   try {
-    code = await runCli(guard.argv, {
+    code = await runCli(argv, {
       ...context,
+      ...(job
+        ? {
+            sendInspect: (current, action, args, timeoutMs, expect, options) => {
+              if (action !== "stop" && cancelRequested(job.id)) throw new JobCancelled(job.id);
+              return send(current, action, args, timeoutMs, expect, options);
+            },
+          }
+        : {}),
       out: (line) => {
         out.push(line);
         note("out", line);
@@ -120,24 +133,69 @@ export async function runToolCall(
       },
     });
   } catch (error) {
+    cancelled = error instanceof JobCancelled;
     err.push(error instanceof Error ? error.message : String(error));
     code = 1;
   } finally {
     inFlight.delete(fromProcess);
     if (inFlight.size === 0) setLogSink(null);
   }
+  if (job && !cancelled && code !== 0 && cancelRequested(job.id)) cancelled = true;
   onLine(name, "out", `■ exit ${code}`);
-  const text = [
-    out.join("\n"),
-    processLog.length ? `log:\n${processLog.join("\n")}` : "",
-    err.length ? `stderr:\n${err.join("\n")}` : "",
-    `exit ${code}`,
-  ]
-    .filter(Boolean)
-    .join("\n\n");
+  const text = [out.join("\n"), processLog.length ? `log:\n${processLog.join("\n")}` : "", err.length ? `stderr:\n${err.join("\n")}` : "", `exit ${code}`].filter(Boolean).join("\n\n");
   const stdout = out.join("\n");
   const json = jsonOf(stdout);
-  return withBrowsers({ exit: code, ok: code === 0, stdout, stderr: err.join("\n"), log: processLog, progress, ...(json === undefined ? {} : { json }) }, text, code !== 0, readBrowsers);
+  return { base: { exit: code, ok: code === 0, stdout, stderr: err.join("\n"), log: processLog, progress, ...(json === undefined ? {} : { json }) }, text, cancelled };
+}
+
+function commandOfTool(name: string) {
+  return commandTools(COMMANDS).find((t) => t.tool === name) ?? null;
+}
+
+export function waitOf(input: LogToolInput | undefined): number {
+  const asked = input?.waitMs;
+  return typeof asked === "number" && Number.isFinite(asked) ? Math.min(Math.max(0, asked), MAX_WAIT_MS) : DEFAULT_WAIT_MS;
+}
+
+export async function runToolCall(
+  name: string,
+  input: LogToolInput | undefined,
+  context: Partial<CommandContext> = {},
+  onLine: OnLogLine = () => {},
+  readBrowsers: ReadBrowsers = browserViews,
+): Promise<CallToolResult> {
+  const { waitMs, ...fields } = input ?? {};
+  const flowCall = flowOfTool(savedFlows(), name);
+  if (flowCall) {
+    const built = flowArgv(flowCall.flow, fields as Record<string, unknown>, flowCall.live);
+    if (!built.ok) return refused(built.message, readBrowsers);
+    return runToolCall(flowCall.live ? "flowLive" : "flow", { args: built.argv.slice(1), confirmLive: fields.confirmLive, confirmBypass: fields.confirmBypass, ...(waitMs === undefined ? {} : { waitMs }) }, context, onLine, readBrowsers);
+  }
+  const guard = guardCall(name, input === undefined ? undefined : fields, COMMANDS);
+  if (!guard.ok) return refused(guard.message, readBrowsers);
+  const entry = commandOfTool(name);
+  const progress: ProgressLine[] = [];
+  if (!entry || !LONG_RUNNING.has(entry.command.name)) {
+    const ran = await runGuarded(name, guard.argv, context, onLine, progress, null);
+    return withBrowsers(ran.base, ran.text, ran.base.exit !== 0, readBrowsers);
+  }
+  const account = accountOfArgv(guard.argv);
+  const holder = busyJob(account);
+  if (holder) return refused(`accountBusy: job ${holder.id} (${holder.tool}) holds ${account}, started ${holder.startedAt}. Follow it with jobStatus { jobId: "${holder.id}" }, or stop it with jobCancel (rule 35).`, readBrowsers);
+  const job = startJob({ tool: name, argv: guard.argv, account, live: entry.live });
+  const run = runGuarded(name, guard.argv, context, onLine, progress, job).then((ran) => {
+    const status = ran.cancelled ? "cancelled" : ran.base.exit === 0 ? "completed" : "failed";
+    const done = withBrowsers({ ...ran.base, job: { id: job.id, status, afterLine: progress.length } }, ran.text, ran.base.exit !== 0, readBrowsers);
+    finishJob(job.id, status, done.structuredContent as Record<string, unknown>, (done.content as { text: string }[])[0].text);
+    return done;
+  });
+  const wait = waitOf(input);
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const finished = await Promise.race([run, new Promise<null>((resolve) => (timer = setTimeout(() => resolve(null), wait)))]);
+  clearTimeout(timer);
+  if (finished) return finished;
+  const running = `Still running as job ${job.id} (${name}). Follow it with jobStatus { jobId: "${job.id}", afterLine: ${progress.length} } (it waits for new lines), stop it at its next browser step with jobCancel { jobId: "${job.id}" }. Lines so far:\n${progress.map((p) => `${p.at.slice(11, 19)}  ${p.line}`).join("\n") || "(none yet)"}`;
+  return withBrowsers({ exit: -1, ok: false, stdout: "", stderr: "", log: [], progress: [...progress], job: { id: job.id, status: "running", afterLine: progress.length } }, running, false, readBrowsers);
 }
 
 export interface LogMcpOptions {

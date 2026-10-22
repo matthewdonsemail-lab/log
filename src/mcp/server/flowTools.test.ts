@@ -8,10 +8,10 @@ describe("flows as MCP tools (rule 31)", () => {
   test("profileSetup is a dry tool flowProfileSetup and a live one flowProfileSetupLive, with its params by name", () => {
     const [dry, live] = toolsFromFlows([flow]);
     expect(dry.name).toBe("flowProfileSetup");
-    expect(Object.keys(dry.inputSchema.properties)).toEqual(["account", "profilePhoto", "coverPhoto", "firstName", "lastName", "bypass", "now", "proxyMs", "confirmBypass"]);
+    expect(Object.keys(dry.inputSchema.properties)).toEqual(["account", "profilePhoto", "coverPhoto", "firstName", "lastName", "bypass", "now", "proxyMs", "confirmBypass", "waitMs"]);
     expect(dry.annotations).toMatchObject({ readOnlyHint: true, destructiveHint: false });
     expect(live.name).toBe("flowProfileSetupLive");
-    expect(Object.keys(live.inputSchema.properties)).toEqual(["account", "profilePhoto", "coverPhoto", "firstName", "lastName", "bypass", "now", "proxyMs", "confirmLive", "confirmBypass"]);
+    expect(Object.keys(live.inputSchema.properties)).toEqual(["account", "profilePhoto", "coverPhoto", "firstName", "lastName", "bypass", "now", "proxyMs", "confirmLive", "confirmBypass", "waitMs"]);
     expect(live.inputSchema.required).toContain("confirmLive");
     expect(live.annotations).toMatchObject({ readOnlyHint: false, destructiveHint: true, openWorldHint: true });
     expect(flowOfTool([flow], "flowProfileSetupLive")).toEqual({ flow, live: true });
