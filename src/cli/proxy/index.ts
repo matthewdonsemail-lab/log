@@ -150,6 +150,7 @@ export const proxyCommand: Command = {
   usage: PROXY_USAGE,
   platform: "any",
   name: "proxy",
+  effect: "write",
   summary: "Check an account's proxy, give it one from a provider (2Captcha, Byteful) in its home city, or see providers' traffic",
   args: "<check|assign|balance|static> [--account <name>] [--vendor twoCaptcha|byteful] [...]",
   async run(context, argv) {

@@ -23,7 +23,7 @@ matt says so.
    the cookies don't hold, matt signs in in that window during step 3.
 4. **`checkpointed` or `suspended`: stop.** Tell matt and don't retry.
 5. **Dry run only.** `publish` without `--live` stops before the Publish
-   button. `--live` needs `confirmLive: true` and matt's go (rule 10).
+   button. Live is its own tool, `publishLive`, with `confirmLive: true` and matt's go (rule 10).
 
 ## The steps
 
@@ -154,7 +154,7 @@ own answer to Publish (`useCometMarketplaceListingCreateMutation`), says
 2026-10-19, was held this way.
 
 ```text
-mcp__log__publish   { listing: "<listingId>", live: true, confirmLive: true }
+mcp__log__publishLive   { listing: "<listingId>", confirmLive: true }
 mcp__log__scan      args ["--account", "<a>"]
 ```
 

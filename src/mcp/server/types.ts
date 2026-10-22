@@ -5,9 +5,19 @@ export interface LogToolInput {
   [field: string]: unknown;
 }
 
+export interface LogToolAnnotations {
+  title: string;
+  readOnlyHint: boolean;
+  destructiveHint: boolean;
+  idempotentHint: boolean;
+  openWorldHint: boolean;
+}
+
 export interface LogTool {
   name: string;
+  title: string;
   description: string;
+  annotations: LogToolAnnotations;
   inputSchema: {
     type: "object";
     properties: Record<string, unknown>;

@@ -30,6 +30,7 @@ export const errorsCommand: Command = {
   usage: ERRORS_USAGE,
   platform: "any",
   name: "errors",
+  effect: "read",
   input: ERRORS_INPUT,
   summary: "List every error code: meaning, retryable, where each machine ends up",
   args: "[--layer <layer>] [--code <code>] [--json] [--markdown]",
@@ -62,6 +63,7 @@ export const graphCommand: Command = {
   usage: GRAPH_USAGE,
   platform: "any",
   name: "graph",
+  effect: "read",
   summary: "Print a machine's states and transitions as a Mermaid diagram",
   args: `<${Object.keys(MACHINES).join("|")}>`,
   run(_context, argv) {

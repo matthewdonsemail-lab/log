@@ -42,6 +42,7 @@ export const conversationsCommand: Command = {
   usage: CONVERSATIONS_USAGE,
   platform: "facebook",
   name: "conversations",
+  effect: "read",
   input: CONVERSATIONS_INPUT,
   summary: "List buyers' Marketplace conversations in Twenty, newest first, by account or listing",
   args: "[--account <name>] [--listing <id>] [--json]",
@@ -65,7 +66,7 @@ const CONVERSATION_ID = { name: "id", kind: "string", required: true, descriptio
 
 export const CONVERSATION_INPUT: CommandInput = {
   forms: [
-    { words: ["show"], summary: "A conversation and its messages", positionals: [CONVERSATION_ID], flags: [JSON_FLAG] },
+    { words: ["show"], effect: "read", summary: "A conversation and its messages", positionals: [CONVERSATION_ID], flags: [JSON_FLAG] },
     { words: ["read"], summary: "Mark its messages read", positionals: [CONVERSATION_ID], flags: [] },
     { words: ["lead"], summary: "Set its lead status", positionals: [CONVERSATION_ID, { name: "status", kind: "enum", required: true, values: LEAD_STATUSES.map((s) => s.toUpperCase()), description: "The lead status" }], flags: [] },
     { words: ["link"], summary: "Link it to its listing", positionals: [CONVERSATION_ID], flags: [{ name: "listing", kind: "string", required: true, description: "The agencyListing id" }] },
@@ -82,6 +83,7 @@ export const conversationCommand: Command = {
   usage: CONVERSATION_USAGE,
   platform: "facebook",
   name: "conversation",
+  effect: "write",
   input: CONVERSATION_INPUT,
   summary: "One conversation: show its messages, mark read, set its lead status, link its listing, or store a scanned thread",
   args: "<show|read|lead|link|record> [id] [STATUS] [--listing <id>] [--account <name> --file <json>]",

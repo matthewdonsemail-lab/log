@@ -85,6 +85,7 @@ export const loginCommand: Command = {
   usage: LOGIN_USAGE,
   platform: "any",
   name: "login",
+  effect: "write",
   summary: "Sign in with Twenty through blaster's web app (OAuth), like `blaster login`",
   args: "[--webUrl <url>] [--apiUrl <url>] [--token <t>] [--json]",
   async run(context, argv): Promise<CommandResult> {
@@ -138,6 +139,7 @@ export const logoutCommand: Command = {
   usage: LOGOUT_USAGE,
   platform: "any",
   name: "logout",
+  effect: "write",
   summary: "Forget the stored Twenty session",
   args: "[--apiUrl <url>] [--json]",
   run(_context, argv) {
@@ -155,6 +157,7 @@ export const whoamiCommand: Command = {
   usage: WHOAMI_USAGE,
   platform: "any",
   name: "whoami",
+  effect: "read",
   summary: "Show who is signed in, refreshing the session if it expired",
   args: "[--apiUrl <url>] [--json]",
   async run(_context, argv) {

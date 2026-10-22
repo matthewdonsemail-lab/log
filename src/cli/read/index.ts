@@ -166,6 +166,7 @@ export const readCommand: Command = {
   usage: READ_USAGE,
   platform: "facebook",
   name: "read",
+  effect: "browser",
   summary: "Read a Facebook group's new posts and their comments as one account, in its open browser, by hand; only the group's cursor is saved to Twenty (#27, rule 65)",
   args: "group --account <a> --group <g> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json] | --show",
   run: runRead,

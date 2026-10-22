@@ -21,6 +21,7 @@ export const lifecycleCommand: Command = {
   usage: LIFECYCLE_USAGE,
   platform: "facebook",
   name: "lifecycle",
+  effect: "read",
   summary: "Each account's place in its lifecycle (rule 35): status, state, what onboarding has left; `states` prints the machine",
   args: "[states [--write]] [--account <name>] [--json]",
   async run(context, argv) {

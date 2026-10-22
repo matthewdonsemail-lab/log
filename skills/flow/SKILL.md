@@ -13,7 +13,7 @@ command → MCP tool.
 1. **Built from a recording, never by hand** (rules 25, 29). Each step's
    element is the role and accessible name the recorded snapshot gave it;
    each step's confirming request is the mutation the recorded step sent.
-2. **Dry run unless `--live`** (rule 8); over MCP, `live` needs confirmLive.
+2. **Dry run unless `--live`** (rule 8); over MCP, live is its own tool, `flow<Name>Live`, with confirmLive.
 3. **Every gate** (rules 11-12, 15-18, 22, 24): a run is one launch through
    the inspect session, so every step is recorded again (snapshot,
    screenshot, HAR, rea) and mapped.
@@ -40,7 +40,7 @@ bun bin/log.ts flow run profileSetup --account <a> ... --live --bypass --now
 ```
 
 Over MCP the same run is the tool `flowProfileSetup` with `account`, the
-params by name, `live: true` and `confirmLive: true`.
+params by name; its live twin `flow<Name>Live` runs it on Facebook with `confirmLive: true`.
 
 A failed step ends the run (`failedAt`): read that step's folder in the new
 recording (rule 25), re-record the changed part with inspect, rebuild the flow.

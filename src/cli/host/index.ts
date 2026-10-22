@@ -37,12 +37,12 @@ export const HOST_INPUT: CommandInput = {
       ],
     },
     {
-      words: ["send"],
+      words: ["send"], effect: "write",
       summary: "Send an event to the account's running host",
       positionals: [{ name: "event", kind: "enum", required: true, values: EVENTS, description: "The event" }],
       flags: [{ name: "account", kind: "string", required: true, description: "The account" }],
     },
-    { words: ["status"], summary: "Where each host is", positionals: [], flags: [{ name: "account", kind: "string", description: "Only this account's host" }] },
+    { words: ["status"], effect: "read", summary: "Where each host is", positionals: [], flags: [{ name: "account", kind: "string", description: "Only this account's host" }] },
   ],
 };
 
@@ -50,6 +50,7 @@ export const hostCommand: Command = {
   usage: HOST_USAGE,
   platform: "facebook",
   name: "host",
+  effect: "browser",
   input: HOST_INPUT,
   summary: "Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); send it events; read its progress",
   args: "<start|send|status> --account <name> [--live] [--bypass]",

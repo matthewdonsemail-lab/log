@@ -73,7 +73,7 @@ export function renderSurface(entries: readonly CommandEntry[], flows: readonly 
 
   if (flows.length) {
     out.push("### Saved flows: MCP tools of their own (rule 31)", "", "| MCP tool | Runs | What it does | Params | Steps |", "| --- | --- | --- | --- | --- |");
-    for (const f of flows) out.push(`| \`${f.tool}\` | \`log flow run ${f.name}\` | ${cell(f.summary)} | ${f.params.map((p) => `\`${p}\``).join(", ") || "none"} | ${cell(f.steps.join(" → "))} |`);
+    for (const f of flows) out.push(`| \`${f.tool}\`, \`${f.tool}Live\` | \`log flow run ${f.name}\` | ${cell(f.summary)} | ${f.params.map((p) => `\`${p}\``).join(", ") || "none"} | ${cell(f.steps.join(" → "))} |`);
     out.push("");
   }
   const commands = pick("commands");

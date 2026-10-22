@@ -97,6 +97,7 @@ export const flowCommand: Command = {
   usage: FLOW_USAGE,
   platform: "any",
   name: "flow",
+  effect: "browser",
   summary: "Recorded inspect runs as flows: docs, an XState machine per flow, run on any account (rule 31)",
   args: "fromInspect <runDir> --name <n> | docs <n> | list | show <n> | run <n> --account <a> [--set k=v]... [--live]",
   async run(context, argv) {

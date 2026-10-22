@@ -126,6 +126,7 @@ export const pollCommand: Command = {
   usage: POLL_USAGE,
   platform: "facebook",
   name: "poll",
+  effect: "browser",
   summary: "Poll a Facebook group from one account, in its open browser, for a time or once: each poll's posts as one JSON line, OpenMagpie's records; --request answers OpenMagpie's facebook_group worker (#27, rule 63)",
   args: "<group> <account> [<how long to poll>] [--bypass] | --request <json>",
   run: runPoll,

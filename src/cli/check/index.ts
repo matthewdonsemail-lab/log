@@ -28,6 +28,7 @@ export const checkCommand: Command = {
   usage: CHECK_USAGE,
   platform: "facebook",
   name: "check",
+  effect: "browser",
   input: CHECK_INPUT,
   summary: "Check one account in its open browser: may it still sell, each listing's state on Selling (into Twenty), and its seller inbox's chats",
   args: "--account <a> [--bypass] [--json]",

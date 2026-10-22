@@ -36,6 +36,7 @@ export const listingsCommand: Command = {
   usage: LISTINGS_USAGE,
   platform: "facebook",
   name: "listings",
+  effect: "read",
   input: LISTINGS_INPUT,
   summary: "List the Twenty listings, by status, account or campaign",
   args: "[--status <s>] [--account <name>] [--campaign <id>] [--json]",
@@ -69,7 +70,7 @@ export const LISTING_INPUT: CommandInput = {
   forms: [
     { words: [], summary: "One listing in full", positionals: [{ name: "id", kind: "string", required: true, description: "The agencyListing id" }], flags: [JSON_FLAG] },
     {
-      words: ["create"],
+      words: ["create"], effect: "write",
       summary: "Create a listing in Twenty from a listing.json",
       positionals: [],
       flags: [
@@ -85,6 +86,7 @@ export const listingCommand: Command = {
   usage: LISTING_USAGE,
   platform: "facebook",
   name: "listing",
+  effect: "read",
   input: LISTING_INPUT,
   summary: "Show one Twenty listing, or create one for an account from a JSON file",
   args: "<id> | create --account <name> --file <listing.json> [--json]",

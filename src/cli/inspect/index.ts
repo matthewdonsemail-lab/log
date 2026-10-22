@@ -98,8 +98,8 @@ export const INSPECT_INPUT: CommandInput = {
         JSON_FLAG,
       ],
     },
-    { words: ["map"], summary: "The recorded steps as states and transitions (flow.md, machine.json)", positionals: [{ name: "runDir", kind: "string", description: "The run folder (default the latest run)" }], flags: [{ name: "all", kind: "boolean", description: "Collate every run" }] },
-    { words: ["sessions"], summary: "The open sessions", positionals: [], flags: [] },
+    { words: ["map"], effect: "write", summary: "The recorded steps as states and transitions (flow.md, machine.json)", positionals: [{ name: "runDir", kind: "string", description: "The run folder (default the latest run)" }], flags: [{ name: "all", kind: "boolean", description: "Collate every run" }] },
+    { words: ["sessions"], effect: "read", summary: "The open sessions", positionals: [], flags: [] },
   ],
 };
 
@@ -107,6 +107,7 @@ export const inspectCommand: Command = {
   usage: INSPECT_USAGE,
   platform: "any",
   name: "inspect",
+  effect: "browser",
   input: INSPECT_INPUT,
   summary: "Drive the account's browser, gated and headed, a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29)",
   args: "start --account <name> [--url <u>] [--bypass] | do <action> [args] [--live]",

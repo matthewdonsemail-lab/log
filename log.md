@@ -4985,3 +4985,56 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: a command can declare its input once (`Command.input`: forms, each with its words, positionals and flags, their kinds, enum values and what is required), and that one spec is its parser (`parserSpecOf`), its MCP schema (`inputSchemaOf`) and the argv a typed call becomes (`argvOfInput`, `--flag=value`, each value whole). Such a command is one MCP tool per form with named fields (`inspectStart`, `inspectDo`, `accountShow`, `listingCreate`, `hostSend`, `runsPrune`…); `guardCall` checks the fields (missing, unknown, wrong kind or value) before anything runs, and `live` and `bypass` still need confirmLive and confirmBypass. Duet's commands come first: accounts, account, check, inspect, listings, listing, publish, conversations, conversation, host, errors, runs. The rest still take `args`. Inspect's actions are a runtime list (`INSPECT_ACTIONS`) the type comes from, so the schema's enum is the real one. `check:docs` refuses a form with no usage line and an input flag its usage doesn't name; the README lists each command's tools; the server instructions and the skills use the typed tools.
 Why: matt asked to start step 1 of the Duet plan (`PLANS/LOG_MCP_DUET_READY_PLAN.md`): typed inputs from one flag spec per command, Duet's commands first, so a client with no terminal habits fills named fields instead of building flags from usage text.
 Checked: `commandInput.test.ts` fills every form of every typed command in full and parses the argv back through the command's own parser to the same words, values and flags; the MCP tests cover the schemas, a multi-line text with quotes and `=` reaching argv whole, refusals for missing, unknown and wrong fields, and live and bypass gates; `bun run check` (no comments, naming, layout, browsers, agentHooks with 62 MCP tools, docs, tsc) passes with 808 tests, and `check:facebookClientDocs` passes.
+
+## 2026-10-22 14:25Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `skills/accountToDryRun/SKILL.md`: edited
+- `skills/flow/SKILL.md`: edited
+- `skills/inspect/SKILL.md`: edited
+- `skills/logCli/SKILL.md`: edited
+- `skills/profileSetup/SKILL.md`: edited
+- `src/cli/account/index.ts`: changed const accountsCommand, const ACCOUNT_INPUT, const accountCommand
+- `src/cli/adsPower/index.ts`: changed const adsPowerCommand
+- `src/cli/auth/index.ts`: changed const loginCommand, const logoutCommand, const whoamiCommand
+- `src/cli/campaign/index.ts`: changed const campaignCommand
+- `src/cli/capture/index.ts`: changed const captureCommand
+- `src/cli/check/index.ts`: changed const checkCommand
+- `src/cli/conversation/index.ts`: changed const conversationsCommand, const CONVERSATION_INPUT, const conversationCommand
+- `src/cli/errors/index.ts`: changed const errorsCommand, const graphCommand
+- `src/cli/flow/index.ts`: changed const flowCommand
+- `src/cli/host/index.ts`: changed const HOST_INPUT, const hostCommand
+- `src/cli/inspect/index.ts`: changed const INSPECT_INPUT, const inspectCommand
+- `src/cli/join/index.ts`: changed const joinCommand
+- `src/cli/launch/index.ts`: changed const launchCommand
+- `src/cli/lifecycle/index.ts`: changed const lifecycleCommand
+- `src/cli/listing/index.ts`: changed const listingsCommand, const LISTING_INPUT, const listingCommand
+- `src/cli/live/index.ts`: changed const doctorCommand, const connectCommand, const scanCommand, const statusCommand
+- `src/cli/messenger/index.ts`: changed const messengerCommand
+- `src/cli/poll/index.ts`: changed const pollCommand
+- `src/cli/profile/index.ts`: changed const profileCommand
+- `src/cli/proxy/index.ts`: changed const proxyCommand
+- `src/cli/publish/index.ts`: changed const publishCommand
+- `src/cli/read/index.ts`: changed const readCommand
+- `src/cli/runner/types.ts`: added type ToolEffect · changed interface InputForm, interface Command
+- `src/cli/runs/index.ts`: changed const RUNS_INPUT, const runsCommand
+- `src/cli/warmup/index.ts`: changed const warmupCommand
+- `src/cli/watch/index.ts`: changed const watchCommand
+- `src/mcp/server/flowTools.test.ts`: added test "profileSetup is a dry tool flowProfileSetup and a live one flowProfileSetupLive, with its params by name", test "a call becomes log flow run with --set per param, and --live only from the live tool", test "the live tool without confirmLive never runs; the dry one lists the steps and opens nothing" · removed test "profileSetup is the tool flowProfileSetup, with its params by name", test "a call becomes log flow run with --set per param", test "live without confirmLive never runs; without live it lists the steps and opens nothing"
+- `src/mcp/server/helpers/agentRules.ts`: changed const SERVER_INSTRUCTIONS
+- `src/mcp/server/helpers/guardCall.ts`: added const flagName · changed const LIVE_REFUSAL, function guardCall
+- `src/mcp/server/helpers/index.ts`: added export from "./toolAnnotations.ts" · changed export from "./toolsFromFlows.ts"
+- `src/mcp/server/helpers/toolAnnotations.ts`: added const LIVE_SUFFIX, function annotationsOf, function titleOf
+- `src/mcp/server/helpers/toolsFromCommands.ts`: added const ARGS_LIVE_FLAGS, function argsLiveFlags, function formTools, const LIVE_LINE · changed interface CommandTool, function commandTools, const NOTES, function typedTool, function argsTool, function toolsFromCommands
+- `src/mcp/server/helpers/toolsFromFlows.ts`: added function flowTool, function flowOfTool · changed function toolsFromFlows, function flowArgv
+- `src/mcp/server/index.ts`: changed function runToolCall
+- `src/mcp/server/remote.test.ts`: added test "--live is only the live tool, and it still needs confirmLive over HTTP (rule 10)" · removed test "--live still needs confirmLive over HTTP (rule 10)"
+- `src/mcp/server/server.test.ts`: added test "every tool has a short title and all four hints", test "every live tool is destructive, open-world and needs confirmLive; no other tool takes live or confirmLive", test "reads are read-only, a browser on Facebook is open-world, a prune is destructive" · changed test "every command has a tool except the terminal-only ones, one per form when it declares its input", test "a typed tool's schema has its fields, their kinds and what is required, and no args", test "live needs confirmLive, on typed and args tools alike", test "a typed call becomes the argv the terminal would run, each value whole", test "a live publish without confirmLive never reaches the command"
+- `src/mcp/server/types.ts`: added interface LogToolAnnotations · changed interface LogTool
+- `src/surface/readme/index.ts`: changed function renderSurface
+
+What changed: every command declares its effect (`Command.effect`, required, and `InputForm.effect` where a form differs): `read`, `write`, `delete` or `browser`. Every MCP tool now carries a `title` and the four annotations from it (`toolAnnotations.ts`): reads are read-only and idempotent, a browser on Facebook is open-world, a prune is destructive. What acts on Facebook moved to its own tool, `<tool>Live`, annotated destructive and open-world, with confirmLive required: `publishLive`, `inspectDoLive` and `hostStartLive` for the typed forms (a single live flag is implied; host keeps `live` and `likes` as fields), `profileLive`, `flowLive`, `warmupLive`, `joinLive`, `readLive` and `campaignLive` for the args commands (`--live` or `--likes` in args), and `flow<Name>Live` beside each recorded flow's dry tool. Every other tool refuses live and names its live twin. 87 tools. The server instructions, the README's flows table and the skills (logCli, accountToDryRun, flow, inspect, profileSetup) say so.
+Why: matt asked to start step 2 of the Duet plan (`PLANS/LOG_MCP_DUET_READY_PLAN.md`): tool annotations and separate live tools, so a client's per-tool permissions (Always allow for reads, Needs approval for what acts on Facebook) can tell a dry run from a live one.
+Checked: new tests: every tool has a title and all four hints; every live tool is destructive, open-world, requires confirmLive and has a plain twin, and no other tool takes live or confirmLive; reads, browser tools and the prune carry the right hints; plain tools refuse live (typed and args), live tools refuse without confirmLive or without a live flag, and their argv adds the implied flag. A fresh stdio server sent the titles and annotations to an MCP client and refused `publish { live }` and an unconfirmed `publishLive`. `bun run check` passes with 811 tests (agentHooks: 87 MCP tools hooked), and `check:facebookClientDocs` passes.

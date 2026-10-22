@@ -16,6 +16,7 @@ export const warmupCommand: Command = {
   usage: WARMUP_USAGE,
   platform: "byArgument",
   name: "warmup",
+  effect: "browser",
   summary: "The warm-up, by platform and activity: `log facebook warmup reel|feed|stages` (the account's browser primed with the activity, each step checked, the outline written; rules 49, 60)",
   args: "<platform> <activity> [plan|record|run|log|persona] [--account <a>] [--live] [--likes] [--bypass]",
   async run(context, argv) {

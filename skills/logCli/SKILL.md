@@ -105,9 +105,19 @@ drift (`check:docs`). A command without one is still one tool taking `args`
 (what goes after `log <command>`). Every tool returns the command's stdout,
 stderr and exit code, through `runCli`, so every gate above still applies.
 
-- `live` (`--live`) is refused unless the call also has `confirmLive: true`,
-  and `bypass` unless `confirmBypass: true`. Set them only when matt asked
-  (rules 10, 20).
+- What acts on Facebook is a tool of its own, named `<tool>Live`
+  (`publishLive`, `inspectDoLive`, `hostStartLive`, `joinLive`, `warmupLive`,
+  `flow<Name>Live`): a form's single live flag is implied (`publishLive` runs
+  `--live`), several stay fields (`hostStartLive`: `live`, `likes`), and an
+  args tool takes them in `args`. Every live tool needs `confirmLive: true`;
+  every other tool refuses live and names its live twin. `bypass` needs
+  `confirmBypass: true`. Set them only when matt asked (rules 8, 10, 20).
+- Every tool carries a `title` and MCP annotations from its command's
+  `effect` (`read`, `write`, `delete`, `browser`, on the command and its
+  forms): reads are read-only and idempotent, a browser on Facebook is
+  open-world, a prune is destructive, and every live tool is destructive and
+  open-world, so a client can ask before each live call
+  (`src/mcp/server/helpers/toolAnnotations.ts`).
 - `connect` always runs `--noPrompt` as a tool. It is the connect machine
   (`marketplace/connect/machine.ts`): every page is read as a kind (loggedIn,
   loginForm, twoStepCode, twoStepMethod, trustDevice, automatedBehaviour,

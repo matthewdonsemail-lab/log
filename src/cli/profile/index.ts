@@ -19,6 +19,7 @@ export const profileCommand: Command = {
   usage: PROFILE_USAGE,
   platform: "facebook",
   name: "profile",
+  effect: "browser",
   summary: "Set an account's profile picture and cover photo from Twenty (dry run unless --live, rule 28)",
   args: "setup --account <name> [--live] [--bypass] [--json]",
   async run(context, argv) {

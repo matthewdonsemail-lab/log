@@ -11,10 +11,10 @@ import { COMMANDS, runCli } from "../../cli/runner/index.ts";
 import type { CommandContext } from "../../cli/runner/types.ts";
 import { setLogSink } from "../../observability/processLog/index.ts";
 import type { LogLine } from "../../observability/processLog/index.ts";
-import { FLOWS_DIR, listFlows, loadFlow, toolName } from "../../browser/flow/index.ts";
+import { FLOWS_DIR, listFlows, loadFlow } from "../../browser/flow/index.ts";
 import type { FlowDefinition } from "../../browser/flow/index.ts";
 import { appendLiveLine, liveLogDir } from "../../observability/liveLog/index.ts";
-import { AGENTS_URI, flowArgv, guardCall, parseEnvText, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
+import { AGENTS_URI, flowArgv, flowOfTool, guardCall, parseEnvText, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
 import type { LogToolInput, ToolResult } from "./types.ts";
 
@@ -56,11 +56,11 @@ export async function runToolCall(
   context: Partial<CommandContext> = {},
   onLine: OnLogLine = () => {},
 ): Promise<CallToolResult> {
-  const flow = savedFlows().find((f) => toolName(f.name) === name);
-  if (flow) {
-    const built = flowArgv(flow, input as Record<string, unknown> | undefined);
+  const flowCall = flowOfTool(savedFlows(), name);
+  if (flowCall) {
+    const built = flowArgv(flowCall.flow, input as Record<string, unknown> | undefined, flowCall.live);
     if (!built.ok) return refused(built.message);
-    return runToolCall("flow", { args: built.argv.slice(1), confirmLive: input?.confirmLive, confirmBypass: (input as { confirmBypass?: boolean } | undefined)?.confirmBypass }, context, onLine);
+    return runToolCall(flowCall.live ? "flowLive" : "flow", { args: built.argv.slice(1), confirmLive: input?.confirmLive, confirmBypass: (input as { confirmBypass?: boolean } | undefined)?.confirmBypass }, context, onLine);
   }
   const guard = guardCall(name, input, COMMANDS);
   if (!guard.ok) return refused(guard.message);

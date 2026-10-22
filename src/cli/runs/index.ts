@@ -24,7 +24,7 @@ export const RUNS_INPUT: CommandInput = {
   forms: [
     { words: ["list"], summary: "Every recorded run: its size, settled by rea, in the request docs, and whether it may go", positionals: [], flags: [JSON_FLAG] },
     {
-      words: ["prune"],
+      words: ["prune"], effect: "delete",
       summary: "Delete each analysed run, keeping its findings; a dry run unless apply",
       positionals: [],
       flags: [{ name: "before", kind: "string", description: "Only runs started before this day, YYYY-MM-DD" }, { name: "apply", kind: "boolean", description: "Delete them (without it, it only lists what would go)" }],
@@ -37,6 +37,7 @@ export const runsCommand: Command = {
   usage: RUNS_USAGE,
   platform: "any",
   name: "runs",
+  effect: "read",
   input: RUNS_INPUT,
   summary: "The recorded runs on this machine, and pruning the ones rea settled and the request docs hold, keeping each one's findings and domains",
   args: "[list|prune|space] [--before <day>] [--apply]",

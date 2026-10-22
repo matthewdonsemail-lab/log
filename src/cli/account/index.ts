@@ -24,6 +24,7 @@ export const accountsCommand: Command = {
   usage: ACCOUNTS_USAGE,
   platform: "facebook",
   name: "accounts",
+  effect: "read",
   input: ACCOUNTS_INPUT,
   summary: "List the FACEBOOK accounts in Twenty: status, home, proxy, and whether each may run",
   args: "[--json]",
@@ -49,10 +50,10 @@ const ACCOUNT_NAME = { name: "account", kind: "string", required: true, descript
 export const ACCOUNT_INPUT: CommandInput = {
   forms: [
     { words: ["show"], summary: "One account's record", positionals: [ACCOUNT_NAME], flags: [JSON_FLAG] },
-    { words: ["resave"], summary: "Save a run's device and session that Twenty didn't take", positionals: [ACCOUNT_NAME], flags: [{ name: "from", kind: "string", required: true, description: "The kept run folder (~/.logCli/runs/unsaved/...)" }] },
-    { words: ["resetOpens"], summary: "Restart today's count of launches and host opens, only when matt asks (rule 37)", positionals: [{ ...ACCOUNT_NAME, description: "The account, or all" }], flags: [{ name: "reason", kind: "string", description: "Why, written to the reset log" }] },
+    { words: ["resave"], effect: "write", summary: "Save a run's device and session that Twenty didn't take", positionals: [ACCOUNT_NAME], flags: [{ name: "from", kind: "string", required: true, description: "The kept run folder (~/.logCli/runs/unsaved/...)" }] },
+    { words: ["resetOpens"], effect: "write", summary: "Restart today's count of launches and host opens, only when matt asks (rule 37)", positionals: [{ ...ACCOUNT_NAME, description: "The account, or all" }], flags: [{ name: "reason", kind: "string", description: "Why, written to the reset log" }] },
     {
-      words: ["status"],
+      words: ["status"], effect: "write",
       summary: "Set an account's status (a lost account gets its listings replaced)",
       positionals: [ACCOUNT_NAME, { name: "status", kind: "enum", required: true, values: ACCOUNT_STATUSES.map(toTwentyEnum), description: "The new status" }],
       flags: [{ name: "reason", kind: "string", description: "An error catalog code" }, { name: "detail", kind: "string", description: "What happened, in words" }],
@@ -64,6 +65,7 @@ export const accountCommand: Command = {
   usage: ACCOUNT_USAGE,
   platform: "facebook",
   name: "account",
+  effect: "read",
   input: ACCOUNT_INPUT,
   summary: "Show one account, or set its status (banned/dead/restricted replace its campaign listings)",
   args: "<show|status|resave|resetOpens> <name> [STATUS] [--reason <code>]",

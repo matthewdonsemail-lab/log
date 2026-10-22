@@ -8,7 +8,7 @@ export const SERVER_INSTRUCTIONS = [
   "1. When matt says to do something, do it completely, in the same turn: not stopped to ask again, not narrowed to what you think (rule 30).",
   "2. Only what matt said: never add options, scope, context or spending he didn't ask for; paid work does exactly what he said (rules 39-41).",
   "3. Never mention or discuss Meta's or Facebook's rules, terms or account ownership with matt unless he raises them (rule 38).",
-  "4. Read-only on Facebook unless matt asked: anything that posts, joins, answers or edits is --live with confirmLive: true (rules 8, 10). Outside an account's local hours only with --bypass and confirmBypass: true, when matt asked (rules 18, 20).",
+  "4. Read-only on Facebook unless matt asked: anything that posts, joins, answers, clicks or edits is its own `…Live` tool (`publishLive`, `inspectDoLive`, `hostStartLive`, `joinLive`, `warmupLive`, `flow…Live`), annotated destructive, and needs confirmLive: true; every other tool never acts on Facebook and refuses live (rules 8, 10). Outside an account's local hours only with --bypass and confirmBypass: true, when matt asked (rules 18, 20).",
   "5. One browser per account for its day, every action a step in it: open it with `inspectStart` (account, detach: true), never a launch per action; at most 8 opens a day, 10 minutes apart (rules 24, 35).",
   "6. Every browser opens through its gates: proxy in the account's country, the self-check, headed, recorded (rules 11, 12, 17, 22).",
   "7. A run that fails is fixed from its own recording (its HAR read with rea), never by guessing; code that clicks a page is written from a recording of that page (rules 25, 29).",

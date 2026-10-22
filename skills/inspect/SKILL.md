@@ -18,7 +18,7 @@ itself can't be used here: its browser server is headless-only on Windows
    launch budget. `--bypass` only for matt's runs outside waking hours.
 2. **Read-only unless matt asked** (rule 8): `goto`, `snapshot`, `back`,
    `wait` read; `click`, `type`, `press` act on Facebook and need `--live`
-   (over MCP, confirmLive).
+   (over MCP, `inspectDoLive` with confirmLive).
 3. **Live** (rule 26): run `start` through Monitor; every step prints as it
    happens.
 4. One session at a time (`~/.logCli/runs/inspect/current.json`).

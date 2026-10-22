@@ -45,11 +45,15 @@ describe("the log MCP server over Streamable HTTP (remote)", () => {
     expect(() => serveLogMcpHttp({ host: "0.0.0.0", port: 0, token: null })).toThrow("needs a token");
   });
 
-  test("--live still needs confirmLive over HTTP (rule 10)", async () => {
+  test("--live is only the live tool, and it still needs confirmLive over HTTP (rule 10)", async () => {
     const client = await clientOf(serve(null).url, null);
-    const result = await client.callTool({ name: "join", arguments: { args: ["group", "--account", "galwayOne", "--group", "123", "--live"] } });
-    expect(result.isError).toBe(true);
-    expect((result.structuredContent as { stderr: string }).stderr).toContain("confirmLive");
+    const args = ["group", "--account", "galwayOne", "--group", "123", "--live"];
+    const plain = await client.callTool({ name: "join", arguments: { args } });
+    expect(plain.isError).toBe(true);
+    expect((plain.structuredContent as { stderr: string }).stderr).toContain("joinLive");
+    const unconfirmed = await client.callTool({ name: "joinLive", arguments: { args } });
+    expect(unconfirmed.isError).toBe(true);
+    expect((unconfirmed.structuredContent as { stderr: string }).stderr).toContain("confirmLive");
   });
 });
 

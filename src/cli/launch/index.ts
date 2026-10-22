@@ -266,6 +266,7 @@ export const launchCommand: Command = {
   usage: LAUNCH_USAGE,
   platform: "any",
   name: "launch",
+  effect: "write",
   summary: "Guided Clack menu over the listings, accounts and live commands",
   args: "[--json]",
   run: runLaunch,

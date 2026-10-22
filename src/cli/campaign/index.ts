@@ -17,6 +17,7 @@ export const campaignCommand: Command = {
   usage: CAMPAIGN_USAGE,
   platform: "facebook",
   name: "campaign",
+  effect: "browser",
   summary: "Put one ad on N accounts in one place, replace lost accounts, publish the campaign",
   args: "<fill|heal|run|show> --campaign <id> [...]",
   async run(context, argv) {

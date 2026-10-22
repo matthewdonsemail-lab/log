@@ -13,6 +13,7 @@ export const adsPowerCommand: Command = {
   usage: ADS_POWER_USAGE,
   platform: "any",
   name: "adsPower",
+  effect: "write",
   summary: "AdsPower: Local API status, its profiles, and one profile per Twenty account (sync)",
   args: "<status|profiles|sync> [--apply] [--account <a>] [--json]",
   async run(context, argv) {

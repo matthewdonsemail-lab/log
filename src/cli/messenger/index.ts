@@ -29,6 +29,7 @@ export const messengerCommand: Command = {
   usage: MESSENGER_USAGE,
   platform: "facebook",
   name: "messenger",
+  effect: "write",
   summary: "Messenger's PIN for the account's encrypted chats: asked in a Clack prompt, kept in Twenty, never printed",
   args: "pin --account <name> [--show]",
   async run(context, argv) {

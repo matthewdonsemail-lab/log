@@ -89,7 +89,7 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 46 command tools + saved flows"]
+  mcp["MCP server log: 55 command tools + saved flows"]
   bin["bin/log.ts"]
   runCli["runCli: 34 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
@@ -131,21 +131,21 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log facebook lifecycle`](#log-facebook-lifecycle) | Each account's place in its lifecycle (rule 35): status, state, what onboarding has left; `states` prints the machine | `facebook` first | `--account <name>` `--json` `--write` | none | `lifecycle` | PreToolUse, PostToolUse · PostToolUse | no | 35, 30, 38, 39, 40, 41 |
 | [`log facebook doctor`](#log-facebook-doctor) | Check python, facebook-camofox-client, Camoufox, Twenty, and which accounts may run | `facebook` first | `--json` | Camoufox only | `doctor` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 30, 38, 39, 40, 41 |
 | [`log facebook connect`](#log-facebook-connect) | Sign a Facebook account in through its proxy (the connect machine), save its cookies to Twenty | `facebook` first | `--account <accountName>` `--noPrompt` `--wait <seconds>` `--bypass` `--now` | Camoufox only | `connect` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 18, 21, 23, 24, 30, 38, 39, 40, 41 |
-| [`log facebook profile`](#log-facebook-profile) | Set an account's profile picture and cover photo from Twenty (dry run unless --live, rule 28) | `facebook` first | `--account <accountName>` `--live` `--bypass` `--json` | Camoufox only | `profile` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 28, 30, 38, 39, 40, 41 |
-| [`log facebook host`](#log-facebook-host) | Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); send it events; read its progress | `facebook` first | `--account <accountName>` `--live` `--likes` `--bypass` `--gapMinutes <n>` `--watchMinutes <n>` | the account's | `hostStart`, `hostSend`, `hostStatus` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 18, 35, 30, 38, 39, 40, 41 |
-| [`log inspect`](#log-inspect) | Drive the account's browser, gated and headed, a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29) | any (none) | `--account <accountName>` `--url <https://www.facebook.com/...>` `--bypass` `--now` `--noIdleMouse` `--detach` `--all` `--live` `--timeout <s>` `--json` | the account's | `inspectStart`, `inspectDo`, `inspectMap`, `inspectSessions` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68, 30, 38, 39, 40, 41 |
-| [`log flow`](#log-flow) | Recorded inspect runs as flows: docs, an XState machine per flow, run on any account (rule 31) | any (none) | `--name <name>` `--summary <text>` `--rename` `--account <accountName>` `--set <param>` `--live` `--bypass` `--now` `--json` | the account's | `flow` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 29, 31, 68, 30, 38, 39, 40, 41 |
-| [`log <platform> warmup`](#log-platform-warmup) | The warm-up, by platform and activity: `log facebook warmup reel\|feed\|stages` (the account's browser primed with the activity, each step checked, the outline written; rules 49, 60) | `<platform>` first | `--account <a>` `--live` `--likes` `--bypass` `--now` `--json` `--newPersona` `--seed <n>` `--reels` `--watch` `--skip` `--comments` `--profile` `--persona` `--trafficMb` `--posts` `--only` `--gapMinutes <n>` `--lines <n>` `--follow` `--seconds <n>` | the account's | `warmup` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 18, 20, 25, 26, 29, 32, 35, 36, 49, 50, 51, 54, 55, 60, 64, 30, 38, 39, 40, 41 |
-| [`log facebook join`](#log-facebook-join) | Join a Facebook group as one account, in its open browser: read the gate, --live presses Join; every step patches agencyGroups.joinSubmission (rule 45) | `facebook` first | `--account <accountName>` `--group <group url, id or name>` `--live` `--json` `--show` `--answer` `--set <n>` `--agree` `--fill` `--submit` `--bypass` | the account's | `join` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 10, 18, 20, 25, 26, 29, 35, 45, 64, 30, 38, 39, 40, 41 |
-| [`log facebook read`](#log-facebook-read) | Read a Facebook group's new posts and their comments as one account, in its open browser, by hand; only the group's cursor is saved to Twenty (#27, rule 65) | `facebook` first | `--account <accountName>` `--group <group url or id>` `--scrolls <n>` `--commentPosts <n>` `--live` `--bypass` `--json` `--show` `--worker` | the account's | `read` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 13, 18, 20, 22, 25, 26, 29, 35, 45, 63, 64, 65, 30, 38, 39, 40, 41 |
+| [`log facebook profile`](#log-facebook-profile) | Set an account's profile picture and cover photo from Twenty (dry run unless --live, rule 28) | `facebook` first | `--account <accountName>` `--live` `--bypass` `--json` | Camoufox only | `profile`, `profileLive` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 28, 30, 38, 39, 40, 41 |
+| [`log facebook host`](#log-facebook-host) | Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); send it events; read its progress | `facebook` first | `--account <accountName>` `--live` `--likes` `--bypass` `--gapMinutes <n>` `--watchMinutes <n>` | the account's | `hostStart`, `hostStartLive`, `hostSend`, `hostStatus` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 18, 35, 30, 38, 39, 40, 41 |
+| [`log inspect`](#log-inspect) | Drive the account's browser, gated and headed, a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29) | any (none) | `--account <accountName>` `--url <https://www.facebook.com/...>` `--bypass` `--now` `--noIdleMouse` `--detach` `--all` `--live` `--timeout <s>` `--json` | the account's | `inspectStart`, `inspectDo`, `inspectDoLive`, `inspectMap`, `inspectSessions` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68, 30, 38, 39, 40, 41 |
+| [`log flow`](#log-flow) | Recorded inspect runs as flows: docs, an XState machine per flow, run on any account (rule 31) | any (none) | `--name <name>` `--summary <text>` `--rename` `--account <accountName>` `--set <param>` `--live` `--bypass` `--now` `--json` | the account's | `flow`, `flowLive` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 29, 31, 68, 30, 38, 39, 40, 41 |
+| [`log <platform> warmup`](#log-platform-warmup) | The warm-up, by platform and activity: `log facebook warmup reel\|feed\|stages` (the account's browser primed with the activity, each step checked, the outline written; rules 49, 60) | `<platform>` first | `--account <a>` `--live` `--likes` `--bypass` `--now` `--json` `--newPersona` `--seed <n>` `--reels` `--watch` `--skip` `--comments` `--profile` `--persona` `--trafficMb` `--posts` `--only` `--gapMinutes <n>` `--lines <n>` `--follow` `--seconds <n>` | the account's | `warmup`, `warmupLive` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 18, 20, 25, 26, 29, 32, 35, 36, 49, 50, 51, 54, 55, 60, 64, 30, 38, 39, 40, 41 |
+| [`log facebook join`](#log-facebook-join) | Join a Facebook group as one account, in its open browser: read the gate, --live presses Join; every step patches agencyGroups.joinSubmission (rule 45) | `facebook` first | `--account <accountName>` `--group <group url, id or name>` `--live` `--json` `--show` `--answer` `--set <n>` `--agree` `--fill` `--submit` `--bypass` | the account's | `join`, `joinLive` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 10, 18, 20, 25, 26, 29, 35, 45, 64, 30, 38, 39, 40, 41 |
+| [`log facebook read`](#log-facebook-read) | Read a Facebook group's new posts and their comments as one account, in its open browser, by hand; only the group's cursor is saved to Twenty (#27, rule 65) | `facebook` first | `--account <accountName>` `--group <group url or id>` `--scrolls <n>` `--commentPosts <n>` `--live` `--bypass` `--json` `--show` `--worker` | the account's | `read`, `readLive` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 13, 18, 20, 22, 25, 26, 29, 35, 45, 63, 64, 65, 30, 38, 39, 40, 41 |
 | [`log facebook poll`](#log-facebook-poll) | Poll a Facebook group from one account, in its open browser, for a time or once: each poll's posts as one JSON line, OpenMagpie's records; --request answers OpenMagpie's facebook_group worker (#27, rule 63) | `facebook` first | `--bypass` `--request <request json>` | the account's | `poll` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 13, 18, 22, 26, 35, 45, 63, 64, 65, 30, 38, 39, 40, 41 |
 | [`log facebook check`](#log-facebook-check) | Check one account in its open browser: may it still sell, each listing's state on Selling (into Twenty), and its seller inbox's chats | `facebook` first | `--account <accountName>` `--bypass` `--json` | the account's | `check` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 13, 18, 22, 29, 35, 69, 30, 38, 39, 40, 41 |
 | [`log facebook scan`](#log-facebook-scan) | Read Marketplace > Selling live for one account and update its listings in Twenty | `facebook` first | `--account <accountName>` `--json` `--bypass` | Camoufox only | `scan` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 18, 22, 30, 38, 39, 40, 41 |
 | [`log facebook status`](#log-facebook-status) | Open one Marketplace item page live and classify its status | `facebook` first | `--account <accountName>` `--json` `--bypass` | Camoufox only | `status` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 18, 22, 30, 38, 39, 40, 41 |
 | [`log facebook watch`](#log-facebook-watch) | Run the listing monitor (XState) for one account and print every step | `facebook` first | `--account <accountName>` `--checks <n>` `--interval <minutes>` `--json` `--bypass` | Camoufox only | `watch` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 6, 18, 30, 38, 39, 40, 41 |
 | [`log proxy`](#log-proxy) | Check an account's proxy, give it one from a provider (2Captcha, Byteful) in its home city, or see providers' traffic | any (none) | `--account <accountName>` `--json` `--missing` `--vendor` `--city <city>` `--region <state>` `--anyCity` `--minutes <1-120>` `--socks5` | none | `proxy` | PreToolUse, PostToolUse · PostToolUse | no | 12, 33, 41, 43, 51, 52, 30, 38, 39, 40, 41 |
-| [`log facebook publish`](#log-facebook-publish) | Post one Twenty listing (dry run unless --live), printing every machine step | `facebook` first | `--listing <agencyListingId>` `--live` `--json` `--formUrl <url>` `--bypass` `--now` | Camoufox only | `publish` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 10, 12, 18, 22, 24, 68, 30, 38, 39, 40, 41 |
-| [`log facebook campaign`](#log-facebook-campaign) | Put one ad on N accounts in one place, replace lost accounts, publish the campaign | `facebook` first | `--campaign <agencyCampaignId>` `--from <agencyListingId>` `--accounts <n>` `--live` `--bypass` `--json` | Camoufox only | `campaign` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 13, 18, 30, 38, 39, 40, 41 |
+| [`log facebook publish`](#log-facebook-publish) | Post one Twenty listing (dry run unless --live), printing every machine step | `facebook` first | `--listing <agencyListingId>` `--live` `--json` `--formUrl <url>` `--bypass` `--now` | Camoufox only | `publish`, `publishLive` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 10, 12, 18, 22, 24, 68, 30, 38, 39, 40, 41 |
+| [`log facebook campaign`](#log-facebook-campaign) | Put one ad on N accounts in one place, replace lost accounts, publish the campaign | `facebook` first | `--campaign <agencyCampaignId>` `--from <agencyListingId>` `--accounts <n>` `--live` `--bypass` `--json` | Camoufox only | `campaign`, `campaignLive` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 13, 18, 30, 38, 39, 40, 41 |
 | [`log facebook conversations`](#log-facebook-conversations) | List buyers' Marketplace conversations in Twenty, newest first, by account or listing | `facebook` first | `--account <name>` `--listing <agencyListingId>` `--json` | none | `conversations` | PreToolUse, PostToolUse · PostToolUse | no | 34, 30, 38, 39, 40, 41 |
 | [`log facebook conversation`](#log-facebook-conversation) | One conversation: show its messages, mark read, set its lead status, link its listing, or store a scanned thread | `facebook` first | `--json` `--listing <agencyListingId>` `--account <name>` `--file <threads.json>` | none | `conversationShow`, `conversationRead`, `conversationLead`, `conversationLink`, `conversationRecord` | PreToolUse, PostToolUse · PostToolUse | no | 34, 30, 38, 39, 40, 41 |
 | [`log facebook messenger`](#log-facebook-messenger) | Messenger's PIN for the account's encrypted chats: asked in a Clack prompt, kept in Twenty, never printed | `facebook` first | `--account <accountName>` `--show` | none | terminal only: asks matt for the Messenger PIN in a Clack prompt (masked). He runs `bun bin/log.ts facebook messenger pin --account <a>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 8, 21, 29, 54, 63, 67, 30, 38, 39, 40, 41 |
@@ -161,22 +161,22 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 
 | MCP tool | Runs | What it does | Params | Steps |
 | --- | --- | --- | --- | --- |
-| `flowDeletePost` | `log flow run deletePost` | Delete the newest post on the account's own profile: its Actions menu, Move to bin, Move (useCometTrashPostMutation; Facebook empties the bin after 30 days). Writes on Facebook (--live). | none | gotoprofilePhp → clickActionsForThisPost → clickMoveToBinItems → clickMove |
-| `flowGroupHeaderMenus` | `log flow run groupHeaderMenus` | Open and close the group header's search, More menu, Joined menu, Invite dialog and Share sheet; nothing inside them is picked | `groupId` | gotogroups → clickSearchWithinThisGroup → pressEscape → clickMore → pressEscape → clickJoined → pressEscape → clickInvite → pressEscape → clickShareGroup → pressEscape |
-| `flowGroupPostComments` | `log flow run groupPostComments` | On a group's Open questions tab, open a post's comments, switch the sort to All comments and scroll them; read-only | `groupId` | gotogroupsQuestions → clickLeaveAComment → clickMostRelevant → clickAllCommentsShowAll → scroll |
-| `flowGroupPostDialog` | `log flow run groupPostDialog` | On a group's Discussion feed, open a post in its dialog with Leave a comment (the comment box takes focus, nothing is typed) and close it | `groupId` | gotogroups → clickLeaveAComment → clickClose |
-| `flowGroupTabs` | `log flow run groupTabs` | Open each tab of a group the account is in (Featured, Open questions, People, Events, Media, Files, About) and come back to Discussion; read-only | `groupId` | gotogroups → clickFeatured → clickOpenQuestions → clickPeople → clickEvents → clickMedia → clickFiles → clickAbout → clickDiscussion |
-| `flowMarketplaceListingPublish` | `log flow run marketplaceListingPublish` | Publish one Marketplace listing in the account's open AdsPower browser: set the Marketplace location (City, State written out), open Create, two photos, title, price, category Miscellaneous, condition New, description, Next, Publish, close the Boost offer. Recorded on Bethlehem 2026-10-22 (listing 1425935622848350, held for review). | `location`, `photo1`, `photo2`, `title`, `price`, `description` | gotomarketplace → setLocation → gotomarketplaceCreateItem → uploadAddPhotosOrDrag → uploadAddPhoto → fillTitle → fillPrice → clickCategory → clickMiscellaneous → clickCondition → clickNew → fillDescription → clickNext → clickPublish → clickClose |
-| `flowMessengerPinCreate` | `log flow run messengerPinCreate` | Messenger's Create a PIN: open /messages/, press Create PIN, type the account's PIN from Twenty, then again to confirm (rule 67). Recorded on Bethlehem 2026-10-22. | none | gotomessages → clickCreatePin → pin → pin |
-| `flowPostComment` | `log flow run postComment` | Comment on the newest post on the account's own profile: type in its Write a comment box, Post comment (useCometUFICreateCommentMutation). Writes on Facebook (--live). | `comment` | gotoprofilePhp → fillWriteAComment → clickPostComment |
-| `flowProfilePhotoPost` | `log flow run profilePhotoPost` | Post a photo on the account's own profile: Photo/video hands the file to the chooser, the upload finishes, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live). | `photo` | gotoprofilePhp → uploadPhotoVideo → clickPost |
-| `flowProfilePost` | `log flow run profilePost` | Post text on the account's own profile: open the composer, type the text, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live). | `text` | gotoprofilePhp → clickWhatSOnYour → fillWhatSOnYour → clickPost |
-| `flowProfileSetup` | `log flow run profileSetup` | Give an account its profile picture, cover photo and name, as recorded on Lancaster 2026-10-19 (rule 28): profile picture menu, Choose profile picture, Upload Photo, Save; Add Cover Photo, Upload photo, Save changes; Accounts Center name, Review change, Done. | `profilePhoto`, `coverPhoto`, `firstName`, `lastName` | gotome → clickProfilePictureActions → clickChooseProfilePicture → uploadUploadPhoto → clickSave → clickAddCoverPhoto → uploadUploadPhoto → clickSaveChanges → gotoprofilesName → fillFirstName → fillSurname → clickReviewChange → clickDone |
-| `flowWarmupCreateAccessCheck` | `log flow run warmupCreateAccessCheck` | Warm-up createAccessCheck: Listaro's runStage3, account-warmup.ts:181-209, recorded on 61594063207669 2026-10-22 (rule 35). | none | gotomarketplace → dwell → gotomarketplaceCreateItem → dwell → gotomarketplace → scroll |
-| `flowWarmupFeedBrowse` | `log flow run warmupFeedBrowse` | Warm-up feedBrowse: Listaro's runStage1, account-warmup.ts:92-130, recorded on 61594063207669 2026-10-22 (rule 35). | none | goto → dwell → scroll → gotomarketplace → dwell → scroll |
-| `flowWarmupMarketplaceBrowse` | `log flow run warmupMarketplaceBrowse` | Warm-up marketplaceBrowse: Listaro's runStage2, account-warmup.ts:135-174, recorded on 61594063207669 2026-10-22 (rule 35). | none | gotomarketplace → dwell → scroll → openAny |
-| `flowWarmupMessagesVisit` | `log flow run warmupMessagesVisit` | Warm-up messagesVisit: Listaro's runStage4or5 (stage 5), account-warmup.ts:214-246, recorded on 61594063207669 2026-10-22 (rule 35). | none | gotomarketplace → scroll → gotomarketplaceYouSelling → dwell → gotomessages → dwell → scroll |
-| `flowWarmupSellingVisit` | `log flow run warmupSellingVisit` | Warm-up sellingVisit: Listaro's runStage4or5 (stage 4), account-warmup.ts:214-246, recorded on 61594063207669 2026-10-22 (rule 35). | none | gotomarketplace → scroll → gotomarketplaceYouSelling → dwell |
+| `flowDeletePost`, `flowDeletePostLive` | `log flow run deletePost` | Delete the newest post on the account's own profile: its Actions menu, Move to bin, Move (useCometTrashPostMutation; Facebook empties the bin after 30 days). Writes on Facebook (--live). | none | gotoprofilePhp → clickActionsForThisPost → clickMoveToBinItems → clickMove |
+| `flowGroupHeaderMenus`, `flowGroupHeaderMenusLive` | `log flow run groupHeaderMenus` | Open and close the group header's search, More menu, Joined menu, Invite dialog and Share sheet; nothing inside them is picked | `groupId` | gotogroups → clickSearchWithinThisGroup → pressEscape → clickMore → pressEscape → clickJoined → pressEscape → clickInvite → pressEscape → clickShareGroup → pressEscape |
+| `flowGroupPostComments`, `flowGroupPostCommentsLive` | `log flow run groupPostComments` | On a group's Open questions tab, open a post's comments, switch the sort to All comments and scroll them; read-only | `groupId` | gotogroupsQuestions → clickLeaveAComment → clickMostRelevant → clickAllCommentsShowAll → scroll |
+| `flowGroupPostDialog`, `flowGroupPostDialogLive` | `log flow run groupPostDialog` | On a group's Discussion feed, open a post in its dialog with Leave a comment (the comment box takes focus, nothing is typed) and close it | `groupId` | gotogroups → clickLeaveAComment → clickClose |
+| `flowGroupTabs`, `flowGroupTabsLive` | `log flow run groupTabs` | Open each tab of a group the account is in (Featured, Open questions, People, Events, Media, Files, About) and come back to Discussion; read-only | `groupId` | gotogroups → clickFeatured → clickOpenQuestions → clickPeople → clickEvents → clickMedia → clickFiles → clickAbout → clickDiscussion |
+| `flowMarketplaceListingPublish`, `flowMarketplaceListingPublishLive` | `log flow run marketplaceListingPublish` | Publish one Marketplace listing in the account's open AdsPower browser: set the Marketplace location (City, State written out), open Create, two photos, title, price, category Miscellaneous, condition New, description, Next, Publish, close the Boost offer. Recorded on Bethlehem 2026-10-22 (listing 1425935622848350, held for review). | `location`, `photo1`, `photo2`, `title`, `price`, `description` | gotomarketplace → setLocation → gotomarketplaceCreateItem → uploadAddPhotosOrDrag → uploadAddPhoto → fillTitle → fillPrice → clickCategory → clickMiscellaneous → clickCondition → clickNew → fillDescription → clickNext → clickPublish → clickClose |
+| `flowMessengerPinCreate`, `flowMessengerPinCreateLive` | `log flow run messengerPinCreate` | Messenger's Create a PIN: open /messages/, press Create PIN, type the account's PIN from Twenty, then again to confirm (rule 67). Recorded on Bethlehem 2026-10-22. | none | gotomessages → clickCreatePin → pin → pin |
+| `flowPostComment`, `flowPostCommentLive` | `log flow run postComment` | Comment on the newest post on the account's own profile: type in its Write a comment box, Post comment (useCometUFICreateCommentMutation). Writes on Facebook (--live). | `comment` | gotoprofilePhp → fillWriteAComment → clickPostComment |
+| `flowProfilePhotoPost`, `flowProfilePhotoPostLive` | `log flow run profilePhotoPost` | Post a photo on the account's own profile: Photo/video hands the file to the chooser, the upload finishes, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live). | `photo` | gotoprofilePhp → uploadPhotoVideo → clickPost |
+| `flowProfilePost`, `flowProfilePostLive` | `log flow run profilePost` | Post text on the account's own profile: open the composer, type the text, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live). | `text` | gotoprofilePhp → clickWhatSOnYour → fillWhatSOnYour → clickPost |
+| `flowProfileSetup`, `flowProfileSetupLive` | `log flow run profileSetup` | Give an account its profile picture, cover photo and name, as recorded on Lancaster 2026-10-19 (rule 28): profile picture menu, Choose profile picture, Upload Photo, Save; Add Cover Photo, Upload photo, Save changes; Accounts Center name, Review change, Done. | `profilePhoto`, `coverPhoto`, `firstName`, `lastName` | gotome → clickProfilePictureActions → clickChooseProfilePicture → uploadUploadPhoto → clickSave → clickAddCoverPhoto → uploadUploadPhoto → clickSaveChanges → gotoprofilesName → fillFirstName → fillSurname → clickReviewChange → clickDone |
+| `flowWarmupCreateAccessCheck`, `flowWarmupCreateAccessCheckLive` | `log flow run warmupCreateAccessCheck` | Warm-up createAccessCheck: Listaro's runStage3, account-warmup.ts:181-209, recorded on 61594063207669 2026-10-22 (rule 35). | none | gotomarketplace → dwell → gotomarketplaceCreateItem → dwell → gotomarketplace → scroll |
+| `flowWarmupFeedBrowse`, `flowWarmupFeedBrowseLive` | `log flow run warmupFeedBrowse` | Warm-up feedBrowse: Listaro's runStage1, account-warmup.ts:92-130, recorded on 61594063207669 2026-10-22 (rule 35). | none | goto → dwell → scroll → gotomarketplace → dwell → scroll |
+| `flowWarmupMarketplaceBrowse`, `flowWarmupMarketplaceBrowseLive` | `log flow run warmupMarketplaceBrowse` | Warm-up marketplaceBrowse: Listaro's runStage2, account-warmup.ts:135-174, recorded on 61594063207669 2026-10-22 (rule 35). | none | gotomarketplace → dwell → scroll → openAny |
+| `flowWarmupMessagesVisit`, `flowWarmupMessagesVisitLive` | `log flow run warmupMessagesVisit` | Warm-up messagesVisit: Listaro's runStage4or5 (stage 5), account-warmup.ts:214-246, recorded on 61594063207669 2026-10-22 (rule 35). | none | gotomarketplace → scroll → gotomarketplaceYouSelling → dwell → gotomessages → dwell → scroll |
+| `flowWarmupSellingVisit`, `flowWarmupSellingVisitLive` | `log flow run warmupSellingVisit` | Warm-up sellingVisit: Listaro's runStage4or5 (stage 4), account-warmup.ts:214-246, recorded on 61594063207669 2026-10-22 (rule 35). | none | gotomarketplace → scroll → gotomarketplaceYouSelling → dwell |
 
 ### Every command, CLI and MCP
 
@@ -547,7 +547,7 @@ log facebook connect --account <accountName> [--noPrompt] [--wait <seconds>] [--
 
 #### log facebook profile
 
-Set an account's profile picture and cover photo from Twenty (dry run unless --live, rule 28) MCP tool: `profile` (`args` takes the same arguments).
+Set an account's profile picture and cover photo from Twenty (dry run unless --live, rule 28) MCP tool: `profile, profileLive` (`args` takes the same arguments).
 
 ```text
 log facebook profile setup --account <accountName> [--live] [--bypass] [--json]
@@ -555,7 +555,7 @@ log facebook profile setup --account <accountName> [--live] [--bypass] [--json]
 
 #### log facebook host
 
-Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); send it events; read its progress MCP tools: `hostStart`, `hostSend`, `hostStatus`, one per form, with named fields.
+Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); send it events; read its progress MCP tools: `hostStart`, `hostStartLive`, `hostSend`, `hostStatus`, one per form, with named fields.
 
 ```text
 log facebook host start --account <accountName> [--live] [--likes] [--bypass] [--gapMinutes <n>] [--watchMinutes <n>]   (--live: profile, name, location; --likes: the warm-up's likes)
@@ -565,7 +565,7 @@ log facebook host status [--account <accountName>]
 
 #### log inspect
 
-Drive the account's browser, gated and headed, a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29) MCP tools: `inspectStart`, `inspectDo`, `inspectMap`, `inspectSessions`, one per form, with named fields.
+Drive the account's browser, gated and headed, a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29) MCP tools: `inspectStart`, `inspectDo`, `inspectDoLive`, `inspectMap`, `inspectSessions`, one per form, with named fields.
 
 ```text
 log inspect start --account <accountName> [--url <https://www.facebook.com/...>] [--bypass] [--now] [--noIdleMouse] [--detach]   (one session per account: two accounts can be open at once; --detach runs it as its own process and returns once it is open)
@@ -576,7 +576,7 @@ log inspect sessions   (the open sessions)
 
 #### log flow
 
-Recorded inspect runs as flows: docs, an XState machine per flow, run on any account (rule 31) MCP tool: `flow` (`args` takes the same arguments).
+Recorded inspect runs as flows: docs, an XState machine per flow, run on any account (rule 31) MCP tool: `flow, flowLive` (`args` takes the same arguments).
 
 ```text
 log flow fromInspect <runDir> --name <name> [--summary <text>] [--rename text1=firstName]...
@@ -586,7 +586,7 @@ log flow run <name> --account <accountName> [--set <param>=<value>]... [--live] 
 
 #### log <platform> warmup
 
-The warm-up, by platform and activity: `log facebook warmup reel|feed|stages` (the account's browser primed with the activity, each step checked, the outline written; rules 49, 60) MCP tool: `warmup` (`args` takes the same arguments).
+The warm-up, by platform and activity: `log facebook warmup reel|feed|stages` (the account's browser primed with the activity, each step checked, the outline written; rules 49, 60) MCP tool: `warmup, warmupLive` (`args` takes the same arguments).
 
 ```text
 log <platform> warmup <activity> [--account <a>] [--live] [--likes] [--bypass] [--now]   (record: the account's browser opened primed with the activity, each step checked, the outline written)
@@ -605,7 +605,7 @@ log facebook warmup stages log [--account <accountName>] [--lines <n>] [--follow
 
 #### log facebook join
 
-Join a Facebook group as one account, in its open browser: read the gate, --live presses Join; every step patches agencyGroups.joinSubmission (rule 45) MCP tool: `join` (`args` takes the same arguments).
+Join a Facebook group as one account, in its open browser: read the gate, --live presses Join; every step patches agencyGroups.joinSubmission (rule 45) MCP tool: `join, joinLive` (`args` takes the same arguments).
 
 ```text
 log facebook join group --account <accountName> --group <group url, id or name> [--live] [--json]
@@ -618,7 +618,7 @@ The account's browser must be open (log inspect start --account <a>, or log face
 
 #### log facebook read
 
-Read a Facebook group's new posts and their comments as one account, in its open browser, by hand; only the group's cursor is saved to Twenty (#27, rule 65) MCP tool: `read` (`args` takes the same arguments).
+Read a Facebook group's new posts and their comments as one account, in its open browser, by hand; only the group's cursor is saved to Twenty (#27, rule 65) MCP tool: `read, readLive` (`args` takes the same arguments).
 
 ```text
 log facebook read group --account <accountName> --group <group url or id> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json]
@@ -689,7 +689,7 @@ The proxy is the socialAccount's `proxy` field in Twenty (scheme://user:pass@hos
 
 #### log facebook publish
 
-Post one Twenty listing (dry run unless --live), printing every machine step MCP tools: `publish`, one per form, with named fields.
+Post one Twenty listing (dry run unless --live), printing every machine step MCP tools: `publish`, `publishLive`, one per form, with named fields.
 
 ```text
 log facebook publish --listing <agencyListingId> [--live] [--json] [--formUrl <url>] [--bypass] [--now]
@@ -701,7 +701,7 @@ The listing, its account and the account's proxy all come from Twenty.
 
 #### log facebook campaign
 
-Put one ad on N accounts in one place, replace lost accounts, publish the campaign MCP tool: `campaign` (`args` takes the same arguments).
+Put one ad on N accounts in one place, replace lost accounts, publish the campaign MCP tool: `campaign, campaignLive` (`args` takes the same arguments).
 
 ```text
 log facebook campaign fill --campaign <agencyCampaignId> --from <agencyListingId> --accounts <n>

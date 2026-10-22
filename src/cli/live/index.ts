@@ -131,6 +131,7 @@ export const doctorCommand: Command = {
   usage: DOCTOR_USAGE,
   platform: "facebook",
   name: "doctor",
+  effect: "browser",
   summary: "Check python, facebook-camofox-client, Camoufox, Twenty, and which accounts may run",
   args: "[--json]",
   async run(context, argv) {
@@ -166,6 +167,7 @@ export const connectCommand: Command = {
   usage: CONNECT_USAGE,
   platform: "facebook",
   name: "connect",
+  effect: "browser",
   summary: "Sign a Facebook account in through its proxy (the connect machine), save its cookies to Twenty",
   args: "--account <name> [--noPrompt] [--wait <seconds>] [--bypass] [--now]",
   async run(context, argv) {
@@ -261,6 +263,7 @@ export const scanCommand: Command = {
   usage: SCAN_USAGE,
   platform: "facebook",
   name: "scan",
+  effect: "browser",
   summary: "Read Marketplace > Selling live for one account and update its listings in Twenty",
   args: "--account <name> [--json] [--bypass]",
   async run(context, argv) {
@@ -293,6 +296,7 @@ export const statusCommand: Command = {
   usage: STATUS_USAGE,
   platform: "facebook",
   name: "status",
+  effect: "browser",
   summary: "Open one Marketplace item page live and classify its status",
   args: "<listingId> --account <name> [--json] [--bypass]",
   async run(context, argv) {

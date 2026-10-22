@@ -53,8 +53,11 @@ export interface PositionalSpec {
   required?: boolean;
 }
 
+export type ToolEffect = "read" | "write" | "delete" | "browser";
+
 export interface InputForm {
   words: readonly string[];
+  effect?: ToolEffect;
   summary: string;
   positionals: readonly PositionalSpec[];
   flags: readonly FlagSpec[];
@@ -70,6 +73,7 @@ export interface Command {
   args?: string;
   usage: string;
   platform: "facebook" | "any" | "byArgument";
+  effect: ToolEffect;
   input?: CommandInput;
   run(context: CommandContext, argv: string[]): Promise<CommandResult> | CommandResult;
 }
