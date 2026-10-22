@@ -58,6 +58,10 @@ flowchart TB
   cli --> c_join
   mcp --> c_join
   c_join --> live
+  c_read["read"]
+  cli --> c_read
+  mcp --> c_read
+  c_read --> live
   c_scan["scan"]
   cli --> c_scan
   mcp --> c_scan

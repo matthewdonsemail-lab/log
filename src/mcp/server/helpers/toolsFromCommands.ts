@@ -4,7 +4,7 @@ import { TERMINAL_ONLY, TOOL_RESULT_SCHEMA } from "../types.ts";
 import { rulesLine } from "./agentRules.ts";
 
 /** The tools whose calls run long (a browser, Facebook, rea): their calls are watched with a Monitor (rule 26). */
-export const LONG_RUNNING = new Set(["inspect", "join", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign"]);
+export const LONG_RUNNING = new Set(["inspect", "join", "read", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign"]);
 
 /** One tool per CLI command, minus the terminal-only ones. Pure. */
 export function toolsFromCommands(commands: Command[]): LogTool[] {

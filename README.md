@@ -66,7 +66,7 @@ flowchart LR
   d_adsPower --> gates
   more["Next browser provider: one more driver (src/browser/name), rule 44"] -.-> gates
   gates --> session
-  account["On the account's browser: host, inspect, flow, warmup, join"]
+  account["On the account's browser: host, inspect, flow, warmup, join, read"]
   camoufox["Camoufox only, not on the driver yet: doctor, connect, profile, scan, status, watch, publish, campaign"]
   session --> account
   camoufox -.->|"launches Camoufox itself"| d_camoufox
@@ -74,7 +74,7 @@ flowchart LR
 
 Source: [`docs/diagrams/browsers.mmd`](docs/diagrams/browsers.mmd).
 
-- **The account's browser, through the driver:** `host`, `inspect`, `flow`, `warmup`, `join`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
+- **The account's browser, through the driver:** `host`, `inspect`, `flow`, `warmup`, `join`, `read`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
 - **Camoufox only, not on the driver yet:** `doctor`, `connect`, `profile`, `scan`, `status`, `watch`, `publish`, `campaign`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
 - **No browser:** `launch`, `listings`, `listing`, `accounts`, `account`, `adsPower`, `lifecycle`, `proxy`, `conversations`, `conversation`, `errors`, `graph`, `capture`, `login`, `logout`, `whoami`.
 
@@ -89,9 +89,9 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 27 command tools + saved flows"]
+  mcp["MCP server log: 28 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 29 commands (COMMANDS)"]
+  runCli["runCli: 30 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   browser["The account's browser (one per day, rule 35)"]
   agent --> shell
@@ -135,6 +135,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log flow`](#log-flow) | Recorded inspect runs as flows: docs, an XState machine per flow, run on any account (rule 31) | any | `--name <name>` `--summary <text>` `--rename` `--account <accountName>` `--set <param>` `--live` `--bypass` `--now` `--json` | the account's | `flow` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 29, 31, 30, 38, 39, 40, 41 |
 | [`log warmup`](#log-warmup) | The warm-up, by platform and activity: `log warmup facebook reel\|feed\|stages` (the account's browser primed with the activity, each step checked, the outline written; rules 49, 60) | by argument: `<platform>` | `--account <a>` `--live` `--likes` `--bypass` `--now` `--json` `--newPersona` `--seed <n>` `--reels` `--watch` `--skip` `--comments` `--profile` `--persona` `--trafficMb` `--posts` `--only` `--gapMinutes <n>` `--lines <n>` `--follow` `--seconds <n>` | the account's | `warmup` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 18, 20, 25, 26, 29, 32, 35, 36, 49, 50, 51, 54, 55, 60, 30, 38, 39, 40, 41 |
 | [`log join`](#log-join) | Join a Facebook group as one account, in its open browser: read the gate, --live presses Join; every step patches agencyGroups.joinSubmission (rule 45) | Facebook only (today) | `--account <accountName>` `--group <group url, id or name>` `--live` `--json` `--show` `--answer` `--set <n>` `--agree` `--fill` `--submit` `--bypass` | the account's | `join` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 10, 18, 20, 25, 26, 29, 35, 45, 30, 38, 39, 40, 41 |
+| [`log read`](#log-read) | Read a Facebook group's new posts and their comments as one account, in its open browser; saved to agencyGroupPosts and agencyGroupComments, then the cursor moves (#27) | Facebook only (today) | `--account <accountName>` `--group <group url or id>` `--scrolls <n>` `--commentPosts <n>` `--live` `--bypass` `--json` `--show` | the account's | `read` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 13, 18, 20, 22, 25, 26, 29, 35, 45, 61, 30, 38, 39, 40, 41 |
 | [`log scan`](#log-scan) | Read Marketplace > Selling live for one account and update its listings in Twenty | Facebook only (today) | `--account <accountName>` `--json` `--bypass` | Camoufox only | `scan` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 18, 22, 30, 38, 39, 40, 41 |
 | [`log status`](#log-status) | Open one Marketplace item page live and classify its status | Facebook only (today) | `--account <accountName>` `--json` `--bypass` | Camoufox only | `status` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 18, 22, 30, 38, 39, 40, 41 |
 | [`log watch`](#log-watch) | Run the listing monitor (XState) for one account and print every step | Facebook only (today) | `--account <accountName>` `--checks <n>` `--interval <minutes>` `--json` `--bypass` | Camoufox only | `watch` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 6, 18, 30, 38, 39, 40, 41 |
@@ -227,6 +228,10 @@ flowchart TB
   cli --> c_join
   mcp --> c_join
   c_join --> live
+  c_read["read"]
+  cli --> c_read
+  mcp --> c_read
+  c_read --> live
   c_scan["scan"]
   cli --> c_scan
   mcp --> c_scan
@@ -548,6 +553,20 @@ log join group --account <accountName> --group <g> --answer [--set <n>=<value>].
 log join group --account <accountName> --group <g> --fill [--live [--submit]]   (the draft into the group's dialog, step by step)
 Every step in the browser runs inside the account's local hours (rule 18); --bypass skips that for one run, only when matt asked (rule 20).
 The account's browser must be open (log inspect start --account <a>, or log host start): a join is a step in it (rule 35).
+```
+
+#### log read
+
+Read a Facebook group's new posts and their comments as one account, in its open browser; saved to agencyGroupPosts and agencyGroupComments, then the cursor moves (#27) MCP tool: `read` (`args` takes the same arguments).
+
+```text
+log read group --account <accountName> --group <group url or id> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json]
+log read group --account <accountName> --group <g> --show [--json]
+Reads the group's new posts (since its cursor in Twenty) and the comments of the posts whose comments grew, in the account's open browser.
+--scrolls: feed scrolls at most (default 6). --commentPosts: posts whose comments are read at most (default 5; 0 reads none).
+--live: each post's comments are switched to Newest first (two clicks, rule 8); without it nothing is clicked and the page's Most relevant comments are read.
+Every step in the browser runs inside the account's local hours (rule 18); --bypass skips that for one run, only when matt asked (rule 20).
+The account's browser must be open (log inspect start --account <a>, or log host start): a read is a step in it (rule 35).
 ```
 
 #### log scan

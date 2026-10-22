@@ -1307,10 +1307,10 @@ export const ERROR_CATALOG = {
   },
   groupBrowserNotOpen: {
     layer: 'group',
-    meaning: "The account's browser is not open: a join is a step in it, never a launch of its own (rule 35).",
+    meaning: "The account's browser is not open: a join or a read is a step in it, never a launch of its own (rule 35).",
     retryable: false,
-    raisedIn: ['cli/join'],
-    action: 'Open it first: log inspect start --account <a> (or log host start), then run the join again.'
+    raisedIn: ['cli/join', 'cli/read'],
+    action: 'Open it first: log inspect start --account <a> (or log host start), then run the join or the read again.'
   },
   groupPageNotOpened: {
     layer: 'group',
@@ -1353,6 +1353,21 @@ export const ERROR_CATALOG = {
     retryable: false,
     raisedIn: ['group/join.joining', 'group/join.checking'],
     action: "Read the joining and checking steps' recordings (rule 25) before another --live run."
+  },
+  // #27: reading a group (`group/read`, `log read group`).
+  groupIdUnknown: {
+    layer: 'group',
+    meaning: "The group page never gave the group's numeric id (the read keeps a post only with its group's id).",
+    retryable: true,
+    raisedIn: ['group/read.opening'],
+    action: "Read the opening step's recording (rule 25), or pass the group's numeric id as --group."
+  },
+  groupReadStepFailed: {
+    layer: 'group',
+    meaning: "A step of the group read failed in the account's browser (a scroll, a post page, its comments).",
+    retryable: true,
+    raisedIn: ['group/read.scrolling', 'group/read.openingPost', 'group/read.scrollingComments'],
+    action: "Read the step's recording (rule 25): its screenshot and HAR show where the page was."
   },
 } as const satisfies Record<string, ErrorEntry>
 

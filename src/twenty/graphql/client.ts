@@ -11,7 +11,9 @@
 import { createClient, GenqlError } from './generated/index'
 import type {
   AgencyConversationGenqlSelection,
+  AgencyGroupCommentGenqlSelection,
   AgencyGroupGenqlSelection,
+  AgencyGroupPostGenqlSelection,
   AgencyListingGenqlSelection,
   AgencyMessageGenqlSelection,
   Client,
@@ -164,8 +166,52 @@ export const AGENCY_GROUP_FIELDS = {
   joinRequestedAt: true,
   lastCheckedAt: true,
   joinSubmission: true,
+  readCursor: true,
+  lastReadAt: true,
+  lastReadReason: true,
   createdAt: true
 } satisfies AgencyGroupGenqlSelection
+
+/** #27: a post in a group row, as `log read group` read it. */
+export const AGENCY_GROUP_POST_FIELDS = {
+  id: true,
+  name: true,
+  agencyGroupId: true,
+  facebookPostId: true,
+  facebookGroupId: true,
+  authorName: true,
+  authorFacebookId: true,
+  authorUrl: true,
+  text: true,
+  permalink: true,
+  feedbackId: true,
+  postedAt: true,
+  commentCount: true,
+  commentsReadAt: true,
+  commentsReadCount: true,
+  createdAt: true
+} satisfies AgencyGroupPostGenqlSelection
+
+/** #27: a comment or reply on a group post. */
+export const AGENCY_GROUP_COMMENT_FIELDS = {
+  id: true,
+  name: true,
+  agencyGroupPostId: true,
+  facebookCommentId: true,
+  facebookPostId: true,
+  parentCommentId: true,
+  depth: true,
+  authorName: true,
+  authorFacebookId: true,
+  authorUrl: true,
+  authorAnonymous: true,
+  text: true,
+  permalink: true,
+  feedbackId: true,
+  commentedAt: true,
+  replyCount: true,
+  createdAt: true
+} satisfies AgencyGroupCommentGenqlSelection
 
 const PAGE_INFO = { hasNextPage: true, endCursor: true } as const
 
@@ -246,7 +292,9 @@ export function createTwentyClient(env: Record<string, string | undefined> = pro
     agencyListings: { one: 'AgencyListing', fields: AGENCY_LISTING_FIELDS },
     agencyConversations: { one: 'AgencyConversation', fields: AGENCY_CONVERSATION_FIELDS },
     agencyMessages: { one: 'AgencyMessage', fields: AGENCY_MESSAGE_FIELDS },
-    agencyGroups: { one: 'AgencyGroup', fields: AGENCY_GROUP_FIELDS }
+    agencyGroups: { one: 'AgencyGroup', fields: AGENCY_GROUP_FIELDS },
+    agencyGroupPosts: { one: 'AgencyGroupPost', fields: AGENCY_GROUP_POST_FIELDS },
+    agencyGroupComments: { one: 'AgencyGroupComment', fields: AGENCY_GROUP_COMMENT_FIELDS }
   } as const satisfies Record<TwentyObject, { one: string; fields: Record<string, true> }>
   const untyped = () => client() as unknown as { query(q: unknown): Promise<any>; mutation(q: unknown): Promise<any> }
 

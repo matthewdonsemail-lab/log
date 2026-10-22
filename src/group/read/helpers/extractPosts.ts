@@ -4,6 +4,15 @@ import { at, chunksOf, embeddedResults, type Json, obj, responsesOf, str } from 
 /** The feed query, by the name Facebook's client sends it under (`fb_api_req_friendly_name`). */
 export const FEED_QUERY = "GroupsCometFeedRegularStoriesPaginationQuery";
 
+/** Where a feed unit carries the post's comment count (run 20261020T143506). */
+const COMMENT_COUNT_PATH = ["comet_sections", "feedback", "story", "story_ufi_container", "story", "feedback_context", "feedback_target_with_context", "comment_rendering_instance", "comments", "total_count"] as const;
+
+/** The comment count the feed showed for a unit, or null when it had none. Pure. */
+export function commentCountOf(unit: unknown): number | null {
+  const count = at(unit, ...COMMENT_COUNT_PATH);
+  return typeof count === "number" && Number.isFinite(count) ? count : null;
+}
+
 /** One feed unit → a post, or why not (facebook-camofox-client's `validate_identity`: rejected, never filled in). Pure. */
 export function postOf(unit: unknown, expectedGroupId: string): GroupPost | RejectReason {
   const story = at(unit, "comet_sections", "content", "story");
@@ -24,6 +33,7 @@ export function postOf(unit: unknown, expectedGroupId: string): GroupPost | Reje
     text: str(at(story, "message", "text")),
     permalink: str(at(story, "wwwURL")),
     feedbackId: str(at(story, "feedback", "id")),
+    commentCount: commentCountOf(unit),
   };
 }
 

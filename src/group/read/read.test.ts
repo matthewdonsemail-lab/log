@@ -48,6 +48,7 @@ describe("group read: posts from the feed query", () => {
       text: "Anyone know a good junk removal company?",
       permalink: `https://www.facebook.com/groups/${GROUP}/posts/101/`,
       feedbackId: "fb101",
+      commentCount: null,
     });
     expect(page).toMatchObject({ endCursor: "CURSOR2", hasNextPage: true, rejected: {} });
   });

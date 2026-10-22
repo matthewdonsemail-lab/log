@@ -2,7 +2,8 @@
 // agencyListing, the relations between them, the lifecycle values on
 // agencyListing.status, and the Marketplace side of agencyConversation and
 // agencyMessage (rule 34: a buyer's conversation about a listing), and the
-// agencyGroup object with its relation to socialAccount. Additive only. It never renames, retypes or deletes a
+// agencyGroup object with its relation to socialAccount, and a group's posts and
+// comments (agencyGroupPost, agencyGroupComment: `log read group`, #27). Additive only. It never renames, retypes or deletes a
 // field, and existing SELECT options keep their ids, so the twitter-controller
 // and the facebook-camofox-client sync keep working.
 //
@@ -225,7 +226,10 @@ const AGENCY_MESSAGE_FIELDS = [
 
 /** Objects log-cli creates when they're missing. The rest are blaster's and the sync's. */
 const NEW_OBJECTS = [
-  { nameSingular: 'agencyGroup', namePlural: 'agencyGroups', labelSingular: 'Agency group', labelPlural: 'Agency groups', description: 'log-cli: a Facebook group, on one socialAccount', icon: 'IconUsersGroup' }
+  { nameSingular: 'agencyGroup', namePlural: 'agencyGroups', labelSingular: 'Agency group', labelPlural: 'Agency groups', description: 'log-cli: a Facebook group, on one socialAccount', icon: 'IconUsersGroup' },
+  // #27, matt 2026-10-22: Facebook group posts and comments get objects of their own.
+  { nameSingular: 'agencyGroupPost', namePlural: 'agencyGroupPosts', labelSingular: 'Agency group post', labelPlural: 'Agency group posts', description: 'log-cli: a post in a Facebook group, as log read group read it', icon: 'IconNews' },
+  { nameSingular: 'agencyGroupComment', namePlural: 'agencyGroupComments', labelSingular: 'Agency group comment', labelPlural: 'Agency group comments', description: 'log-cli: a comment or reply on a Facebook group post', icon: 'IconMessageCircle' }
 ]
 
 /** Fields added to agencyGroup. Its name is Twenty's own name field. */
@@ -246,7 +250,44 @@ const AGENCY_GROUP_FIELDS = [
   { name: 'lastCheckedAt', label: 'Last checked at', type: 'DATE_TIME', description: 'log-cli: when a run last read the group page' },
   // The hackathon's join submission (listeningkit-hackathon communities/types.ts StoredCommunityJoin and the
   // reportCommunityForm webhook), as one JSON patched after every step of a run and read back by `log join group`.
-  { name: 'joinSubmission', label: 'Join submission', type: 'RAW_JSON', description: 'log-cli: { formPhase, questions, questionsHash, questionsScrapedAt, draftAnswers, answers, answersComplete, submittedAt, lastActivityAt, history[] }' }
+  { name: 'joinSubmission', label: 'Join submission', type: 'RAW_JSON', description: 'log-cli: { formPhase, questions, questionsHash, questionsScrapedAt, draftAnswers, answers, answersComplete, submittedAt, lastActivityAt, history[] }' },
+  // #27: `log read group` keeps only what is new since the last read (facebook-camofox-client's cursor).
+  { name: 'readCursor', label: 'Read cursor', type: 'RAW_JSON', description: 'log-cli: { lastPostId, watermark (unix s), idsAtWatermark[] }: the newest post read. It moves only after the posts are saved' },
+  { name: 'lastReadAt', label: 'Last read at', type: 'DATE_TIME', description: 'log-cli: when log read group last read the group' },
+  { name: 'lastReadReason', label: 'Last read', type: 'TEXT', description: 'log-cli: what the last read found, and its run folder' }
+]
+
+/** Fields of agencyGroupPost. Its name is Twenty's own name field (the text's start). Keyed on the group row and facebookPostId. */
+const AGENCY_GROUP_POST_FIELDS = [
+  { name: 'facebookPostId', label: 'Facebook post id', type: 'TEXT', description: 'log-cli: post_id. With the group row, the post key' },
+  { name: 'facebookGroupId', label: 'Facebook group id', type: 'TEXT', description: 'logCli' },
+  { name: 'authorName', label: 'Author', type: 'TEXT', description: 'logCli' },
+  { name: 'authorFacebookId', label: 'Author Facebook id', type: 'TEXT', description: 'logCli' },
+  { name: 'authorUrl', label: 'Author URL', type: 'TEXT', description: 'logCli' },
+  { name: 'text', label: 'Text', type: 'TEXT', description: 'log-cli: message.text; empty for a photo or a share' },
+  { name: 'permalink', label: 'Permalink', type: 'TEXT', description: 'logCli' },
+  { name: 'feedbackId', label: 'Feedback id', type: 'TEXT', description: 'log-cli: what a comment or reaction on the post is sent to' },
+  { name: 'postedAt', label: 'Posted at', type: 'DATE_TIME', description: 'log-cli: creation_time' },
+  { name: 'commentCount', label: 'Comments', type: 'NUMBER', description: 'log-cli: the count the feed showed at the last read' },
+  { name: 'commentsReadAt', label: 'Comments read at', type: 'DATE_TIME', description: 'log-cli: when its comments were last read' },
+  { name: 'commentsReadCount', label: 'Comments at last read', type: 'NUMBER', description: 'log-cli: commentCount when its comments were last read: a read opens the post again only when it grew' }
+]
+
+/** Fields of agencyGroupComment. Keyed on its post row and facebookCommentId. */
+const AGENCY_GROUP_COMMENT_FIELDS = [
+  { name: 'facebookCommentId', label: 'Facebook comment id', type: 'TEXT', description: 'log-cli: legacy_fbid. With the post row, the comment key' },
+  { name: 'facebookPostId', label: 'Facebook post id', type: 'TEXT', description: 'logCli' },
+  { name: 'parentCommentId', label: 'Parent comment id', type: 'TEXT', description: "log-cli: a reply's comment (its Facebook id); empty on a comment" },
+  { name: 'depth', label: 'Depth', type: 'NUMBER', description: 'log-cli: 0 a comment, 1 a reply' },
+  { name: 'authorName', label: 'Author', type: 'TEXT', description: 'logCli' },
+  { name: 'authorFacebookId', label: 'Author Facebook id', type: 'TEXT', description: 'logCli' },
+  { name: 'authorUrl', label: 'Author URL', type: 'TEXT', description: 'logCli' },
+  { name: 'authorAnonymous', label: 'Anonymous', type: 'BOOLEAN', description: 'log-cli: the group shows the author as an anonymous member' },
+  { name: 'text', label: 'Text', type: 'TEXT', description: 'log-cli: body.text; empty for a photo or a sticker' },
+  { name: 'permalink', label: 'Permalink', type: 'TEXT', description: 'logCli' },
+  { name: 'feedbackId', label: 'Feedback id', type: 'TEXT', description: 'log-cli: what a reply or reaction to the comment is sent to' },
+  { name: 'commentedAt', label: 'Commented at', type: 'DATE_TIME', description: 'log-cli: created_time' },
+  { name: 'replyCount', label: 'Replies', type: 'NUMBER', description: 'logCli' }
 ]
 
 /** Relations: [object, field, label, target object, inverse label, join column]. */
@@ -259,7 +300,10 @@ const RELATIONS = [
   { object: 'agencyConversation', name: 'socialAccount', label: 'Social account', target: 'socialAccount', targetFieldLabel: 'Agency Conversations', icon: 'IconBrandFacebook' },
   { object: 'agencyMessage', name: 'agencyConversation', label: 'Conversation', target: 'agencyConversation', targetFieldLabel: 'Agency Messages', icon: 'IconMessage' },
   // A group row is one group on one account: the same group on two accounts is two rows.
-  { object: 'agencyGroup', name: 'socialAccount', label: 'Social account', target: 'socialAccount', targetFieldLabel: 'Agency Groups', icon: 'IconBrandFacebook' }
+  { object: 'agencyGroup', name: 'socialAccount', label: 'Social account', target: 'socialAccount', targetFieldLabel: 'Agency Groups', icon: 'IconBrandFacebook' },
+  // #27: a post is in one group row (so on one account); a comment is on one post.
+  { object: 'agencyGroupPost', name: 'agencyGroup', label: 'Group', target: 'agencyGroup', targetFieldLabel: 'Posts', icon: 'IconUsersGroup' },
+  { object: 'agencyGroupComment', name: 'agencyGroupPost', label: 'Post', target: 'agencyGroupPost', targetFieldLabel: 'Comments', icon: 'IconNews' }
 ]
 
 /** Lifecycle values added to agencyListing.status, next to the sync's health values. */
@@ -316,7 +360,7 @@ for (const o of newObjects) {
   console.log(`ok      object ${o.nameSingular}`)
 }
 if (newObjects.length) objects = await loadObjects()
-for (const name of ['socialAccount', 'agencyListing', 'agencyCampaign', 'agencyConversation', 'agencyMessage', 'agencyGroup']) {
+for (const name of ['socialAccount', 'agencyListing', 'agencyCampaign', 'agencyConversation', 'agencyMessage', 'agencyGroup', 'agencyGroupPost', 'agencyGroupComment']) {
   if (!objects.has(name)) throw new Error(`object ${name} not found in Twenty`)
 }
 
@@ -326,7 +370,9 @@ for (const [objectName, specs] of [
   ['agencyListing', AGENCY_LISTING_FIELDS],
   ['agencyConversation', AGENCY_CONVERSATION_FIELDS],
   ['agencyMessage', AGENCY_MESSAGE_FIELDS],
-  ['agencyGroup', AGENCY_GROUP_FIELDS]
+  ['agencyGroup', AGENCY_GROUP_FIELDS],
+  ['agencyGroupPost', AGENCY_GROUP_POST_FIELDS],
+  ['agencyGroupComment', AGENCY_GROUP_COMMENT_FIELDS]
 ]) {
   const object = objects.get(objectName)
   for (const spec of specs) {

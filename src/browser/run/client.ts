@@ -50,7 +50,7 @@ export function captureDirFor(accountName: string, action: string, now: Date, ro
 export const OPENER_ACTIONS: ReadonlySet<string> = new Set(['inspect', 'flow', 'warmup', 'host'])
 
 /** The commands that act inside the account's browser already open (`inspect start --detach`), so they run on whichever browser that is. */
-export const IN_OPEN_BROWSER: ReadonlySet<string> = new Set(['join'])
+export const IN_OPEN_BROWSER: ReadonlySet<string> = new Set(['join', 'read'])
 
 /**
  * The commands that still launch Camoufox themselves (facebook-camofox-client's

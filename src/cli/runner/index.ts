@@ -27,6 +27,7 @@ import { hostCommand } from "../host/index.ts";
 import { inspectCommand } from "../inspect/index.ts";
 import { joinCommand } from "../join/index.ts";
 import { proxyCommand } from "../proxy/index.ts";
+import { readCommand } from "../read/index.ts";
 import { publishCommand } from "../publish/index.ts";
 import { warmupCommand } from "../warmup/index.ts";
 import { watchCommand } from "../watch/index.ts";
@@ -52,6 +53,7 @@ export const COMMANDS: Command[] = [
   flowCommand,
   warmupCommand,
   joinCommand,
+  readCommand,
   scanCommand,
   statusCommand,
   watchCommand,

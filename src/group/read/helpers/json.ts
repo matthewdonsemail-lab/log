@@ -53,3 +53,24 @@ export function responsesOf(har: { log?: { entries?: unknown[] } }, names: reado
   }
   return out;
 }
+
+/** The HTML pages a recorded step loaded (its documents), in the order they came. A goto's own page is among them. */
+export function documentsOf(har: { log?: { entries?: unknown[] } }): string[] {
+  const out: string[] = [];
+  for (const entry of har.log?.entries ?? []) {
+    const mime = str(at(entry, "response", "content", "mimeType"));
+    const text = str(at(entry, "response", "content", "text"));
+    if (mime.includes("text/html") && text.includes("<script")) out.push(text);
+  }
+  return out;
+}
+
+/** The group's numeric id from its page's own feed (`data.group.id` beside `group_feed`), for a group given by its name. Pure. */
+export function groupIdFromPage(html: string): string | null {
+  for (const result of embeddedResults(html)) {
+    const group = obj(at(result, "data", "group"));
+    const id = str(group?.id);
+    if (group && "group_feed" in group && /^\d+$/.test(id)) return id;
+  }
+  return null;
+}

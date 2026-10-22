@@ -612,6 +612,17 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     don't yet take the platform in their name are listed in issue #20
     (github.com/matthewdonsemail-lab/log-cli/issues/20), to be scoped as matt
     decides.
+61. 2026-10-22 · matt: a Facebook group's posts and comments are read with
+    `log read group --account <a> --group <g>` (beside `log join group`) and
+    live in Twenty in objects of their own, for Facebook groups only:
+    `agencyGroupPosts` on the group's `agencyGroups` row, `agencyGroupComments`
+    on the post (`scripts/twenty/twentySetup.mjs`, additive, rule 13). A read
+    is a step in the account's open browser (rule 35): the posts and comments
+    come from each step's own HAR (rule 22), only what is newer than the row's
+    `readCursor` is kept, a post is opened again only when its comment count
+    grew, and the cursor moves only after the posts and comments are saved
+    (`src/group/read`, `docs/groupRead.md`). Nothing is clicked unless
+    `--live`, which switches each post's comments to Newest (rule 8).
 
 ## Checks
 

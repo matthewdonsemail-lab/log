@@ -7026,6 +7026,10 @@ export interface Attachment {
     targetDialerFilterViewId?: Scalars['ID']
     /** Attachments Agency group */
     targetAgencyGroupId?: Scalars['ID']
+    /** Attachments Agency group post */
+    targetAgencyGroupPostId?: Scalars['ID']
+    /** Attachments Agency group comment */
+    targetAgencyGroupCommentId?: Scalars['ID']
     /** Attachments Agency Career */
     targetAgencyCareer?: AgencyCareer
     /** Attachments Payment */
@@ -7120,6 +7124,10 @@ export interface Attachment {
     targetDialerFilterView?: DialerFilterView
     /** Attachments Agency group */
     targetAgencyGroup?: AgencyGroup
+    /** Attachments Agency group post */
+    targetAgencyGroupPost?: AgencyGroupPost
+    /** Attachments Agency group comment */
+    targetAgencyGroupComment?: AgencyGroupComment
     __typename: 'Attachment'
 }
 
@@ -7738,6 +7746,26 @@ export interface AttachmentConnection {
     percentageEmptyTargetAgencyGroup?: Scalars['Float']
     /** Percentage of non-empty values for targetAgencyGroup */
     percentageNotEmptyTargetAgencyGroup?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroupPost */
+    countUniqueValuesTargetAgencyGroupPost?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroupPost */
+    countEmptyTargetAgencyGroupPost?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroupPost */
+    countNotEmptyTargetAgencyGroupPost?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroupPost */
+    percentageEmptyTargetAgencyGroupPost?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroupPost */
+    percentageNotEmptyTargetAgencyGroupPost?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroupComment */
+    countUniqueValuesTargetAgencyGroupComment?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroupComment */
+    countEmptyTargetAgencyGroupComment?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroupComment */
+    countNotEmptyTargetAgencyGroupComment?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroupComment */
+    percentageEmptyTargetAgencyGroupComment?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroupComment */
+    percentageNotEmptyTargetAgencyGroupComment?: Scalars['Float']
     edges: AttachmentEdge[]
     pageInfo: PageInfo
     __typename: 'AttachmentConnection'
@@ -8350,6 +8378,26 @@ export interface AttachmentGroupByConnection {
     percentageEmptyTargetAgencyGroup?: Scalars['Float']
     /** Percentage of non-empty values for targetAgencyGroup */
     percentageNotEmptyTargetAgencyGroup?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroupPost */
+    countUniqueValuesTargetAgencyGroupPost?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroupPost */
+    countEmptyTargetAgencyGroupPost?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroupPost */
+    countNotEmptyTargetAgencyGroupPost?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroupPost */
+    percentageEmptyTargetAgencyGroupPost?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroupPost */
+    percentageNotEmptyTargetAgencyGroupPost?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroupComment */
+    countUniqueValuesTargetAgencyGroupComment?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroupComment */
+    countEmptyTargetAgencyGroupComment?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroupComment */
+    countNotEmptyTargetAgencyGroupComment?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroupComment */
+    percentageEmptyTargetAgencyGroupComment?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroupComment */
+    percentageNotEmptyTargetAgencyGroupComment?: Scalars['Float']
     edges: AttachmentEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -12503,6 +12551,10 @@ export interface TaskTarget {
     targetDialerFilterViewId?: Scalars['ID']
     /** TaskTargets Agency group */
     targetAgencyGroupId?: Scalars['ID']
+    /** TaskTargets Agency group post */
+    targetAgencyGroupPostId?: Scalars['ID']
+    /** TaskTargets Agency group comment */
+    targetAgencyGroupCommentId?: Scalars['ID']
     /** TaskTargets Agency Career */
     targetAgencyCareer?: AgencyCareer
     /** TaskTargets Payment */
@@ -12591,6 +12643,10 @@ export interface TaskTarget {
     targetDialerFilterView?: DialerFilterView
     /** TaskTargets Agency group */
     targetAgencyGroup?: AgencyGroup
+    /** TaskTargets Agency group post */
+    targetAgencyGroupPost?: AgencyGroupPost
+    /** TaskTargets Agency group comment */
+    targetAgencyGroupComment?: AgencyGroupComment
     __typename: 'TaskTarget'
 }
 
@@ -13129,6 +13185,26 @@ export interface TaskTargetConnection {
     percentageEmptyTargetAgencyGroup?: Scalars['Float']
     /** Percentage of non-empty values for targetAgencyGroup */
     percentageNotEmptyTargetAgencyGroup?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroupPost */
+    countUniqueValuesTargetAgencyGroupPost?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroupPost */
+    countEmptyTargetAgencyGroupPost?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroupPost */
+    countNotEmptyTargetAgencyGroupPost?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroupPost */
+    percentageEmptyTargetAgencyGroupPost?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroupPost */
+    percentageNotEmptyTargetAgencyGroupPost?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroupComment */
+    countUniqueValuesTargetAgencyGroupComment?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroupComment */
+    countEmptyTargetAgencyGroupComment?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroupComment */
+    countNotEmptyTargetAgencyGroupComment?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroupComment */
+    percentageEmptyTargetAgencyGroupComment?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroupComment */
+    percentageNotEmptyTargetAgencyGroupComment?: Scalars['Float']
     edges: TaskTargetEdge[]
     pageInfo: PageInfo
     __typename: 'TaskTargetConnection'
@@ -13661,6 +13737,26 @@ export interface TaskTargetGroupByConnection {
     percentageEmptyTargetAgencyGroup?: Scalars['Float']
     /** Percentage of non-empty values for targetAgencyGroup */
     percentageNotEmptyTargetAgencyGroup?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroupPost */
+    countUniqueValuesTargetAgencyGroupPost?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroupPost */
+    countEmptyTargetAgencyGroupPost?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroupPost */
+    countNotEmptyTargetAgencyGroupPost?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroupPost */
+    percentageEmptyTargetAgencyGroupPost?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroupPost */
+    percentageNotEmptyTargetAgencyGroupPost?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroupComment */
+    countUniqueValuesTargetAgencyGroupComment?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroupComment */
+    countEmptyTargetAgencyGroupComment?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroupComment */
+    countNotEmptyTargetAgencyGroupComment?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroupComment */
+    percentageEmptyTargetAgencyGroupComment?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroupComment */
+    percentageNotEmptyTargetAgencyGroupComment?: Scalars['Float']
     edges: TaskTargetEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -15886,6 +15982,10 @@ export interface TimelineActivity {
     targetDialerFilterViewId?: Scalars['ID']
     /** TimelineActivities Agency group */
     targetAgencyGroupId?: Scalars['ID']
+    /** TimelineActivities Agency group post */
+    targetAgencyGroupPostId?: Scalars['ID']
+    /** TimelineActivities Agency group comment */
+    targetAgencyGroupCommentId?: Scalars['ID']
     /** TimelineActivities Pipeline Run Counter */
     targetPipelineRunCounter?: PipelineRunCounter
     /** TimelineActivities Payment */
@@ -15990,6 +16090,10 @@ export interface TimelineActivity {
     targetDialerFilterView?: DialerFilterView
     /** TimelineActivities Agency group */
     targetAgencyGroup?: AgencyGroup
+    /** TimelineActivities Agency group post */
+    targetAgencyGroupPost?: AgencyGroupPost
+    /** TimelineActivities Agency group comment */
+    targetAgencyGroupComment?: AgencyGroupComment
     __typename: 'TimelineActivity'
 }
 
@@ -16682,6 +16786,26 @@ export interface TimelineActivityConnection {
     percentageEmptyTargetAgencyGroup?: Scalars['Float']
     /** Percentage of non-empty values for targetAgencyGroup */
     percentageNotEmptyTargetAgencyGroup?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroupPost */
+    countUniqueValuesTargetAgencyGroupPost?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroupPost */
+    countEmptyTargetAgencyGroupPost?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroupPost */
+    countNotEmptyTargetAgencyGroupPost?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroupPost */
+    percentageEmptyTargetAgencyGroupPost?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroupPost */
+    percentageNotEmptyTargetAgencyGroupPost?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroupComment */
+    countUniqueValuesTargetAgencyGroupComment?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroupComment */
+    countEmptyTargetAgencyGroupComment?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroupComment */
+    countNotEmptyTargetAgencyGroupComment?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroupComment */
+    percentageEmptyTargetAgencyGroupComment?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroupComment */
+    percentageNotEmptyTargetAgencyGroupComment?: Scalars['Float']
     edges: TimelineActivityEdge[]
     pageInfo: PageInfo
     __typename: 'TimelineActivityConnection'
@@ -17368,6 +17492,26 @@ export interface TimelineActivityGroupByConnection {
     percentageEmptyTargetAgencyGroup?: Scalars['Float']
     /** Percentage of non-empty values for targetAgencyGroup */
     percentageNotEmptyTargetAgencyGroup?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroupPost */
+    countUniqueValuesTargetAgencyGroupPost?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroupPost */
+    countEmptyTargetAgencyGroupPost?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroupPost */
+    countNotEmptyTargetAgencyGroupPost?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroupPost */
+    percentageEmptyTargetAgencyGroupPost?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroupPost */
+    percentageNotEmptyTargetAgencyGroupPost?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroupComment */
+    countUniqueValuesTargetAgencyGroupComment?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroupComment */
+    countEmptyTargetAgencyGroupComment?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroupComment */
+    countNotEmptyTargetAgencyGroupComment?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroupComment */
+    percentageEmptyTargetAgencyGroupComment?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroupComment */
+    percentageNotEmptyTargetAgencyGroupComment?: Scalars['Float']
     edges: TimelineActivityEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -17496,6 +17640,10 @@ export interface NoteTarget {
     targetDialerFilterViewId?: Scalars['ID']
     /** NoteTargets Agency group */
     targetAgencyGroupId?: Scalars['ID']
+    /** NoteTargets Agency group post */
+    targetAgencyGroupPostId?: Scalars['ID']
+    /** NoteTargets Agency group comment */
+    targetAgencyGroupCommentId?: Scalars['ID']
     /** NoteTargets Agency Career */
     targetAgencyCareer?: AgencyCareer
     /** NoteTargets Payment */
@@ -17584,6 +17732,10 @@ export interface NoteTarget {
     targetDialerFilterView?: DialerFilterView
     /** NoteTargets Agency group */
     targetAgencyGroup?: AgencyGroup
+    /** NoteTargets Agency group post */
+    targetAgencyGroupPost?: AgencyGroupPost
+    /** NoteTargets Agency group comment */
+    targetAgencyGroupComment?: AgencyGroupComment
     __typename: 'NoteTarget'
 }
 
@@ -18252,6 +18404,26 @@ export interface NoteTargetConnection {
     percentageEmptyTargetAgencyGroup?: Scalars['Float']
     /** Percentage of non-empty values for targetAgencyGroup */
     percentageNotEmptyTargetAgencyGroup?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroupPost */
+    countUniqueValuesTargetAgencyGroupPost?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroupPost */
+    countEmptyTargetAgencyGroupPost?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroupPost */
+    countNotEmptyTargetAgencyGroupPost?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroupPost */
+    percentageEmptyTargetAgencyGroupPost?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroupPost */
+    percentageNotEmptyTargetAgencyGroupPost?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroupComment */
+    countUniqueValuesTargetAgencyGroupComment?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroupComment */
+    countEmptyTargetAgencyGroupComment?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroupComment */
+    countNotEmptyTargetAgencyGroupComment?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroupComment */
+    percentageEmptyTargetAgencyGroupComment?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroupComment */
+    percentageNotEmptyTargetAgencyGroupComment?: Scalars['Float']
     edges: NoteTargetEdge[]
     pageInfo: PageInfo
     __typename: 'NoteTargetConnection'
@@ -18914,6 +19086,26 @@ export interface NoteTargetGroupByConnection {
     percentageEmptyTargetAgencyGroup?: Scalars['Float']
     /** Percentage of non-empty values for targetAgencyGroup */
     percentageNotEmptyTargetAgencyGroup?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroupPost */
+    countUniqueValuesTargetAgencyGroupPost?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroupPost */
+    countEmptyTargetAgencyGroupPost?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroupPost */
+    countNotEmptyTargetAgencyGroupPost?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroupPost */
+    percentageEmptyTargetAgencyGroupPost?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroupPost */
+    percentageNotEmptyTargetAgencyGroupPost?: Scalars['Float']
+    /** Number of unique values for targetAgencyGroupComment */
+    countUniqueValuesTargetAgencyGroupComment?: Scalars['Int']
+    /** Number of empty values for targetAgencyGroupComment */
+    countEmptyTargetAgencyGroupComment?: Scalars['Int']
+    /** Number of non-empty values for targetAgencyGroupComment */
+    countNotEmptyTargetAgencyGroupComment?: Scalars['Int']
+    /** Percentage of empty values for targetAgencyGroupComment */
+    percentageEmptyTargetAgencyGroupComment?: Scalars['Float']
+    /** Percentage of non-empty values for targetAgencyGroupComment */
+    percentageNotEmptyTargetAgencyGroupComment?: Scalars['Float']
     edges: NoteTargetEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -42557,6 +42749,12 @@ export interface AgencyGroup {
     lastCheckedAt?: Scalars['DateTime']
     /** log-cli: { formPhase, questions, questionsHash, questionsScrapedAt, draftAnswers, answers, answersComplete, submittedAt, lastActivityAt, history[] } */
     joinSubmission?: Scalars['JSON']
+    /** log-cli: { lastPostId, watermark (unix s), idsAtWatermark[] }: the newest post read. It moves only after the posts are saved */
+    readCursor?: Scalars['JSON']
+    /** log-cli: when log read group last read the group */
+    lastReadAt?: Scalars['DateTime']
+    /** log-cli: what the last read found, and its run folder */
+    lastReadReason?: Scalars['String']
     /** AgencyGroups tied to the Timeline Activity */
     timelineActivities?: TimelineActivityConnection
     /** AgencyGroups tied to the Attachment */
@@ -42567,6 +42765,8 @@ export interface AgencyGroup {
     taskTargets?: TaskTargetConnection
     /** logCli */
     socialAccount?: SocialAccount
+    /** logCli */
+    posts?: AgencyGroupPostConnection
     __typename: 'AgencyGroup'
 }
 
@@ -42773,6 +42973,40 @@ export interface AgencyGroupConnection {
     percentageEmptyJoinSubmission?: Scalars['Float']
     /** Percentage of non-empty values for joinSubmission */
     percentageNotEmptyJoinSubmission?: Scalars['Float']
+    /** Number of unique values for readCursor */
+    countUniqueValuesReadCursor?: Scalars['Int']
+    /** Number of empty values for readCursor */
+    countEmptyReadCursor?: Scalars['Int']
+    /** Number of non-empty values for readCursor */
+    countNotEmptyReadCursor?: Scalars['Int']
+    /** Percentage of empty values for readCursor */
+    percentageEmptyReadCursor?: Scalars['Float']
+    /** Percentage of non-empty values for readCursor */
+    percentageNotEmptyReadCursor?: Scalars['Float']
+    /** Number of unique values for lastReadAt */
+    countUniqueValuesLastReadAt?: Scalars['Int']
+    /** Number of empty values for lastReadAt */
+    countEmptyLastReadAt?: Scalars['Int']
+    /** Number of non-empty values for lastReadAt */
+    countNotEmptyLastReadAt?: Scalars['Int']
+    /** Percentage of empty values for lastReadAt */
+    percentageEmptyLastReadAt?: Scalars['Float']
+    /** Percentage of non-empty values for lastReadAt */
+    percentageNotEmptyLastReadAt?: Scalars['Float']
+    /** Earliest date contained in the field lastReadAt */
+    minLastReadAt?: Scalars['DateTime']
+    /** Latest date contained in the field lastReadAt */
+    maxLastReadAt?: Scalars['DateTime']
+    /** Number of unique values for lastReadReason */
+    countUniqueValuesLastReadReason?: Scalars['Int']
+    /** Number of empty values for lastReadReason */
+    countEmptyLastReadReason?: Scalars['Int']
+    /** Number of non-empty values for lastReadReason */
+    countNotEmptyLastReadReason?: Scalars['Int']
+    /** Percentage of empty values for lastReadReason */
+    percentageEmptyLastReadReason?: Scalars['Float']
+    /** Percentage of non-empty values for lastReadReason */
+    percentageNotEmptyLastReadReason?: Scalars['Float']
     edges: AgencyGroupEdge[]
     pageInfo: PageInfo
     __typename: 'AgencyGroupConnection'
@@ -42973,10 +43207,1230 @@ export interface AgencyGroupGroupByConnection {
     percentageEmptyJoinSubmission?: Scalars['Float']
     /** Percentage of non-empty values for joinSubmission */
     percentageNotEmptyJoinSubmission?: Scalars['Float']
+    /** Number of unique values for readCursor */
+    countUniqueValuesReadCursor?: Scalars['Int']
+    /** Number of empty values for readCursor */
+    countEmptyReadCursor?: Scalars['Int']
+    /** Number of non-empty values for readCursor */
+    countNotEmptyReadCursor?: Scalars['Int']
+    /** Percentage of empty values for readCursor */
+    percentageEmptyReadCursor?: Scalars['Float']
+    /** Percentage of non-empty values for readCursor */
+    percentageNotEmptyReadCursor?: Scalars['Float']
+    /** Number of unique values for lastReadAt */
+    countUniqueValuesLastReadAt?: Scalars['Int']
+    /** Number of empty values for lastReadAt */
+    countEmptyLastReadAt?: Scalars['Int']
+    /** Number of non-empty values for lastReadAt */
+    countNotEmptyLastReadAt?: Scalars['Int']
+    /** Percentage of empty values for lastReadAt */
+    percentageEmptyLastReadAt?: Scalars['Float']
+    /** Percentage of non-empty values for lastReadAt */
+    percentageNotEmptyLastReadAt?: Scalars['Float']
+    /** Earliest date contained in the field lastReadAt */
+    minLastReadAt?: Scalars['DateTime']
+    /** Latest date contained in the field lastReadAt */
+    maxLastReadAt?: Scalars['DateTime']
+    /** Number of unique values for lastReadReason */
+    countUniqueValuesLastReadReason?: Scalars['Int']
+    /** Number of empty values for lastReadReason */
+    countEmptyLastReadReason?: Scalars['Int']
+    /** Number of non-empty values for lastReadReason */
+    countNotEmptyLastReadReason?: Scalars['Int']
+    /** Percentage of empty values for lastReadReason */
+    percentageEmptyLastReadReason?: Scalars['Float']
+    /** Percentage of non-empty values for lastReadReason */
+    percentageNotEmptyLastReadReason?: Scalars['Float']
     edges: AgencyGroupEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
     __typename: 'AgencyGroupGroupByConnection'
+}
+
+
+/** log-cli: a post in a Facebook group, as log read group read it */
+export interface AgencyGroupPost {
+    /** Name */
+    name?: Scalars['String']
+    /** ID */
+    id: Scalars['UUID']
+    /** Creation date */
+    createdAt: Scalars['DateTime']
+    /** The creator of the record */
+    createdBy: Actor
+    /** Deletion date */
+    deletedAt?: Scalars['DateTime']
+    /** Position */
+    position: Scalars['Position']
+    /** Last time the record was changed */
+    updatedAt: Scalars['DateTime']
+    /** The workspace member who last updated the record */
+    updatedBy: Actor
+    /** Search vector */
+    searchVector?: Scalars['TSVector']
+    /** log-cli: post_id. With the group row, the post key */
+    facebookPostId?: Scalars['String']
+    /** logCli */
+    facebookGroupId?: Scalars['String']
+    /** logCli */
+    authorName?: Scalars['String']
+    /** logCli */
+    authorFacebookId?: Scalars['String']
+    /** logCli */
+    authorUrl?: Scalars['String']
+    /** log-cli: message.text; empty for a photo or a share */
+    text?: Scalars['String']
+    /** logCli */
+    permalink?: Scalars['String']
+    /** log-cli: what a comment or reaction on the post is sent to */
+    feedbackId?: Scalars['String']
+    /** log-cli: creation_time */
+    postedAt?: Scalars['DateTime']
+    /** log-cli: the count the feed showed at the last read */
+    commentCount?: Scalars['Float']
+    /** log-cli: when its comments were last read */
+    commentsReadAt?: Scalars['DateTime']
+    /** log-cli: commentCount when its comments were last read: a read opens the post again only when it grew */
+    commentsReadCount?: Scalars['Float']
+    /** logCli */
+    agencyGroupId?: Scalars['ID']
+    /** AgencyGroupPosts tied to the Timeline Activity */
+    timelineActivities?: TimelineActivityConnection
+    /** AgencyGroupPosts tied to the Attachment */
+    attachments?: AttachmentConnection
+    /** AgencyGroupPosts tied to the Note Target */
+    noteTargets?: NoteTargetConnection
+    /** AgencyGroupPosts tied to the Task Target */
+    taskTargets?: TaskTargetConnection
+    /** logCli */
+    comments?: AgencyGroupCommentConnection
+    /** logCli */
+    agencyGroup?: AgencyGroup
+    __typename: 'AgencyGroupPost'
+}
+
+
+/** log-cli: a post in a Facebook group, as log read group read it */
+export interface AgencyGroupPostEdge {
+    node: AgencyGroupPost
+    cursor: Scalars['Cursor']
+    __typename: 'AgencyGroupPostEdge'
+}
+
+
+/** log-cli: a post in a Facebook group, as log read group read it */
+export interface AgencyGroupPostConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for facebookPostId */
+    countUniqueValuesFacebookPostId?: Scalars['Int']
+    /** Number of empty values for facebookPostId */
+    countEmptyFacebookPostId?: Scalars['Int']
+    /** Number of non-empty values for facebookPostId */
+    countNotEmptyFacebookPostId?: Scalars['Int']
+    /** Percentage of empty values for facebookPostId */
+    percentageEmptyFacebookPostId?: Scalars['Float']
+    /** Percentage of non-empty values for facebookPostId */
+    percentageNotEmptyFacebookPostId?: Scalars['Float']
+    /** Number of unique values for facebookGroupId */
+    countUniqueValuesFacebookGroupId?: Scalars['Int']
+    /** Number of empty values for facebookGroupId */
+    countEmptyFacebookGroupId?: Scalars['Int']
+    /** Number of non-empty values for facebookGroupId */
+    countNotEmptyFacebookGroupId?: Scalars['Int']
+    /** Percentage of empty values for facebookGroupId */
+    percentageEmptyFacebookGroupId?: Scalars['Float']
+    /** Percentage of non-empty values for facebookGroupId */
+    percentageNotEmptyFacebookGroupId?: Scalars['Float']
+    /** Number of unique values for authorName */
+    countUniqueValuesAuthorName?: Scalars['Int']
+    /** Number of empty values for authorName */
+    countEmptyAuthorName?: Scalars['Int']
+    /** Number of non-empty values for authorName */
+    countNotEmptyAuthorName?: Scalars['Int']
+    /** Percentage of empty values for authorName */
+    percentageEmptyAuthorName?: Scalars['Float']
+    /** Percentage of non-empty values for authorName */
+    percentageNotEmptyAuthorName?: Scalars['Float']
+    /** Number of unique values for authorFacebookId */
+    countUniqueValuesAuthorFacebookId?: Scalars['Int']
+    /** Number of empty values for authorFacebookId */
+    countEmptyAuthorFacebookId?: Scalars['Int']
+    /** Number of non-empty values for authorFacebookId */
+    countNotEmptyAuthorFacebookId?: Scalars['Int']
+    /** Percentage of empty values for authorFacebookId */
+    percentageEmptyAuthorFacebookId?: Scalars['Float']
+    /** Percentage of non-empty values for authorFacebookId */
+    percentageNotEmptyAuthorFacebookId?: Scalars['Float']
+    /** Number of unique values for authorUrl */
+    countUniqueValuesAuthorUrl?: Scalars['Int']
+    /** Number of empty values for authorUrl */
+    countEmptyAuthorUrl?: Scalars['Int']
+    /** Number of non-empty values for authorUrl */
+    countNotEmptyAuthorUrl?: Scalars['Int']
+    /** Percentage of empty values for authorUrl */
+    percentageEmptyAuthorUrl?: Scalars['Float']
+    /** Percentage of non-empty values for authorUrl */
+    percentageNotEmptyAuthorUrl?: Scalars['Float']
+    /** Number of unique values for text */
+    countUniqueValuesText?: Scalars['Int']
+    /** Number of empty values for text */
+    countEmptyText?: Scalars['Int']
+    /** Number of non-empty values for text */
+    countNotEmptyText?: Scalars['Int']
+    /** Percentage of empty values for text */
+    percentageEmptyText?: Scalars['Float']
+    /** Percentage of non-empty values for text */
+    percentageNotEmptyText?: Scalars['Float']
+    /** Number of unique values for permalink */
+    countUniqueValuesPermalink?: Scalars['Int']
+    /** Number of empty values for permalink */
+    countEmptyPermalink?: Scalars['Int']
+    /** Number of non-empty values for permalink */
+    countNotEmptyPermalink?: Scalars['Int']
+    /** Percentage of empty values for permalink */
+    percentageEmptyPermalink?: Scalars['Float']
+    /** Percentage of non-empty values for permalink */
+    percentageNotEmptyPermalink?: Scalars['Float']
+    /** Number of unique values for feedbackId */
+    countUniqueValuesFeedbackId?: Scalars['Int']
+    /** Number of empty values for feedbackId */
+    countEmptyFeedbackId?: Scalars['Int']
+    /** Number of non-empty values for feedbackId */
+    countNotEmptyFeedbackId?: Scalars['Int']
+    /** Percentage of empty values for feedbackId */
+    percentageEmptyFeedbackId?: Scalars['Float']
+    /** Percentage of non-empty values for feedbackId */
+    percentageNotEmptyFeedbackId?: Scalars['Float']
+    /** Number of unique values for postedAt */
+    countUniqueValuesPostedAt?: Scalars['Int']
+    /** Number of empty values for postedAt */
+    countEmptyPostedAt?: Scalars['Int']
+    /** Number of non-empty values for postedAt */
+    countNotEmptyPostedAt?: Scalars['Int']
+    /** Percentage of empty values for postedAt */
+    percentageEmptyPostedAt?: Scalars['Float']
+    /** Percentage of non-empty values for postedAt */
+    percentageNotEmptyPostedAt?: Scalars['Float']
+    /** Earliest date contained in the field postedAt */
+    minPostedAt?: Scalars['DateTime']
+    /** Latest date contained in the field postedAt */
+    maxPostedAt?: Scalars['DateTime']
+    /** Number of unique values for commentCount */
+    countUniqueValuesCommentCount?: Scalars['Int']
+    /** Number of empty values for commentCount */
+    countEmptyCommentCount?: Scalars['Int']
+    /** Number of non-empty values for commentCount */
+    countNotEmptyCommentCount?: Scalars['Int']
+    /** Percentage of empty values for commentCount */
+    percentageEmptyCommentCount?: Scalars['Float']
+    /** Percentage of non-empty values for commentCount */
+    percentageNotEmptyCommentCount?: Scalars['Float']
+    /** Minimum amount contained in the field commentCount */
+    minCommentCount?: Scalars['Float']
+    /** Maximum amount contained in the field commentCount */
+    maxCommentCount?: Scalars['Float']
+    /** Average amount contained in the field commentCount */
+    avgCommentCount?: Scalars['Float']
+    /** Sum of amounts contained in the field commentCount */
+    sumCommentCount?: Scalars['Float']
+    /** Number of unique values for commentsReadAt */
+    countUniqueValuesCommentsReadAt?: Scalars['Int']
+    /** Number of empty values for commentsReadAt */
+    countEmptyCommentsReadAt?: Scalars['Int']
+    /** Number of non-empty values for commentsReadAt */
+    countNotEmptyCommentsReadAt?: Scalars['Int']
+    /** Percentage of empty values for commentsReadAt */
+    percentageEmptyCommentsReadAt?: Scalars['Float']
+    /** Percentage of non-empty values for commentsReadAt */
+    percentageNotEmptyCommentsReadAt?: Scalars['Float']
+    /** Earliest date contained in the field commentsReadAt */
+    minCommentsReadAt?: Scalars['DateTime']
+    /** Latest date contained in the field commentsReadAt */
+    maxCommentsReadAt?: Scalars['DateTime']
+    /** Number of unique values for commentsReadCount */
+    countUniqueValuesCommentsReadCount?: Scalars['Int']
+    /** Number of empty values for commentsReadCount */
+    countEmptyCommentsReadCount?: Scalars['Int']
+    /** Number of non-empty values for commentsReadCount */
+    countNotEmptyCommentsReadCount?: Scalars['Int']
+    /** Percentage of empty values for commentsReadCount */
+    percentageEmptyCommentsReadCount?: Scalars['Float']
+    /** Percentage of non-empty values for commentsReadCount */
+    percentageNotEmptyCommentsReadCount?: Scalars['Float']
+    /** Minimum amount contained in the field commentsReadCount */
+    minCommentsReadCount?: Scalars['Float']
+    /** Maximum amount contained in the field commentsReadCount */
+    maxCommentsReadCount?: Scalars['Float']
+    /** Average amount contained in the field commentsReadCount */
+    avgCommentsReadCount?: Scalars['Float']
+    /** Sum of amounts contained in the field commentsReadCount */
+    sumCommentsReadCount?: Scalars['Float']
+    edges: AgencyGroupPostEdge[]
+    pageInfo: PageInfo
+    __typename: 'AgencyGroupPostConnection'
+}
+
+
+/** log-cli: a post in a Facebook group, as log read group read it */
+export interface AgencyGroupPostGroupByConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for facebookPostId */
+    countUniqueValuesFacebookPostId?: Scalars['Int']
+    /** Number of empty values for facebookPostId */
+    countEmptyFacebookPostId?: Scalars['Int']
+    /** Number of non-empty values for facebookPostId */
+    countNotEmptyFacebookPostId?: Scalars['Int']
+    /** Percentage of empty values for facebookPostId */
+    percentageEmptyFacebookPostId?: Scalars['Float']
+    /** Percentage of non-empty values for facebookPostId */
+    percentageNotEmptyFacebookPostId?: Scalars['Float']
+    /** Number of unique values for facebookGroupId */
+    countUniqueValuesFacebookGroupId?: Scalars['Int']
+    /** Number of empty values for facebookGroupId */
+    countEmptyFacebookGroupId?: Scalars['Int']
+    /** Number of non-empty values for facebookGroupId */
+    countNotEmptyFacebookGroupId?: Scalars['Int']
+    /** Percentage of empty values for facebookGroupId */
+    percentageEmptyFacebookGroupId?: Scalars['Float']
+    /** Percentage of non-empty values for facebookGroupId */
+    percentageNotEmptyFacebookGroupId?: Scalars['Float']
+    /** Number of unique values for authorName */
+    countUniqueValuesAuthorName?: Scalars['Int']
+    /** Number of empty values for authorName */
+    countEmptyAuthorName?: Scalars['Int']
+    /** Number of non-empty values for authorName */
+    countNotEmptyAuthorName?: Scalars['Int']
+    /** Percentage of empty values for authorName */
+    percentageEmptyAuthorName?: Scalars['Float']
+    /** Percentage of non-empty values for authorName */
+    percentageNotEmptyAuthorName?: Scalars['Float']
+    /** Number of unique values for authorFacebookId */
+    countUniqueValuesAuthorFacebookId?: Scalars['Int']
+    /** Number of empty values for authorFacebookId */
+    countEmptyAuthorFacebookId?: Scalars['Int']
+    /** Number of non-empty values for authorFacebookId */
+    countNotEmptyAuthorFacebookId?: Scalars['Int']
+    /** Percentage of empty values for authorFacebookId */
+    percentageEmptyAuthorFacebookId?: Scalars['Float']
+    /** Percentage of non-empty values for authorFacebookId */
+    percentageNotEmptyAuthorFacebookId?: Scalars['Float']
+    /** Number of unique values for authorUrl */
+    countUniqueValuesAuthorUrl?: Scalars['Int']
+    /** Number of empty values for authorUrl */
+    countEmptyAuthorUrl?: Scalars['Int']
+    /** Number of non-empty values for authorUrl */
+    countNotEmptyAuthorUrl?: Scalars['Int']
+    /** Percentage of empty values for authorUrl */
+    percentageEmptyAuthorUrl?: Scalars['Float']
+    /** Percentage of non-empty values for authorUrl */
+    percentageNotEmptyAuthorUrl?: Scalars['Float']
+    /** Number of unique values for text */
+    countUniqueValuesText?: Scalars['Int']
+    /** Number of empty values for text */
+    countEmptyText?: Scalars['Int']
+    /** Number of non-empty values for text */
+    countNotEmptyText?: Scalars['Int']
+    /** Percentage of empty values for text */
+    percentageEmptyText?: Scalars['Float']
+    /** Percentage of non-empty values for text */
+    percentageNotEmptyText?: Scalars['Float']
+    /** Number of unique values for permalink */
+    countUniqueValuesPermalink?: Scalars['Int']
+    /** Number of empty values for permalink */
+    countEmptyPermalink?: Scalars['Int']
+    /** Number of non-empty values for permalink */
+    countNotEmptyPermalink?: Scalars['Int']
+    /** Percentage of empty values for permalink */
+    percentageEmptyPermalink?: Scalars['Float']
+    /** Percentage of non-empty values for permalink */
+    percentageNotEmptyPermalink?: Scalars['Float']
+    /** Number of unique values for feedbackId */
+    countUniqueValuesFeedbackId?: Scalars['Int']
+    /** Number of empty values for feedbackId */
+    countEmptyFeedbackId?: Scalars['Int']
+    /** Number of non-empty values for feedbackId */
+    countNotEmptyFeedbackId?: Scalars['Int']
+    /** Percentage of empty values for feedbackId */
+    percentageEmptyFeedbackId?: Scalars['Float']
+    /** Percentage of non-empty values for feedbackId */
+    percentageNotEmptyFeedbackId?: Scalars['Float']
+    /** Number of unique values for postedAt */
+    countUniqueValuesPostedAt?: Scalars['Int']
+    /** Number of empty values for postedAt */
+    countEmptyPostedAt?: Scalars['Int']
+    /** Number of non-empty values for postedAt */
+    countNotEmptyPostedAt?: Scalars['Int']
+    /** Percentage of empty values for postedAt */
+    percentageEmptyPostedAt?: Scalars['Float']
+    /** Percentage of non-empty values for postedAt */
+    percentageNotEmptyPostedAt?: Scalars['Float']
+    /** Earliest date contained in the field postedAt */
+    minPostedAt?: Scalars['DateTime']
+    /** Latest date contained in the field postedAt */
+    maxPostedAt?: Scalars['DateTime']
+    /** Number of unique values for commentCount */
+    countUniqueValuesCommentCount?: Scalars['Int']
+    /** Number of empty values for commentCount */
+    countEmptyCommentCount?: Scalars['Int']
+    /** Number of non-empty values for commentCount */
+    countNotEmptyCommentCount?: Scalars['Int']
+    /** Percentage of empty values for commentCount */
+    percentageEmptyCommentCount?: Scalars['Float']
+    /** Percentage of non-empty values for commentCount */
+    percentageNotEmptyCommentCount?: Scalars['Float']
+    /** Minimum amount contained in the field commentCount */
+    minCommentCount?: Scalars['Float']
+    /** Maximum amount contained in the field commentCount */
+    maxCommentCount?: Scalars['Float']
+    /** Average amount contained in the field commentCount */
+    avgCommentCount?: Scalars['Float']
+    /** Sum of amounts contained in the field commentCount */
+    sumCommentCount?: Scalars['Float']
+    /** Number of unique values for commentsReadAt */
+    countUniqueValuesCommentsReadAt?: Scalars['Int']
+    /** Number of empty values for commentsReadAt */
+    countEmptyCommentsReadAt?: Scalars['Int']
+    /** Number of non-empty values for commentsReadAt */
+    countNotEmptyCommentsReadAt?: Scalars['Int']
+    /** Percentage of empty values for commentsReadAt */
+    percentageEmptyCommentsReadAt?: Scalars['Float']
+    /** Percentage of non-empty values for commentsReadAt */
+    percentageNotEmptyCommentsReadAt?: Scalars['Float']
+    /** Earliest date contained in the field commentsReadAt */
+    minCommentsReadAt?: Scalars['DateTime']
+    /** Latest date contained in the field commentsReadAt */
+    maxCommentsReadAt?: Scalars['DateTime']
+    /** Number of unique values for commentsReadCount */
+    countUniqueValuesCommentsReadCount?: Scalars['Int']
+    /** Number of empty values for commentsReadCount */
+    countEmptyCommentsReadCount?: Scalars['Int']
+    /** Number of non-empty values for commentsReadCount */
+    countNotEmptyCommentsReadCount?: Scalars['Int']
+    /** Percentage of empty values for commentsReadCount */
+    percentageEmptyCommentsReadCount?: Scalars['Float']
+    /** Percentage of non-empty values for commentsReadCount */
+    percentageNotEmptyCommentsReadCount?: Scalars['Float']
+    /** Minimum amount contained in the field commentsReadCount */
+    minCommentsReadCount?: Scalars['Float']
+    /** Maximum amount contained in the field commentsReadCount */
+    maxCommentsReadCount?: Scalars['Float']
+    /** Average amount contained in the field commentsReadCount */
+    avgCommentsReadCount?: Scalars['Float']
+    /** Sum of amounts contained in the field commentsReadCount */
+    sumCommentsReadCount?: Scalars['Float']
+    edges: AgencyGroupPostEdge[]
+    pageInfo: PageInfo
+    groupByDimensionValues: Scalars['JSON']
+    __typename: 'AgencyGroupPostGroupByConnection'
+}
+
+
+/** log-cli: a comment or reply on a Facebook group post */
+export interface AgencyGroupComment {
+    /** logCli */
+    authorUrl?: Scalars['String']
+    /** ID */
+    id: Scalars['UUID']
+    /** logCli */
+    authorName?: Scalars['String']
+    /** Name */
+    name?: Scalars['String']
+    /** Creation date */
+    createdAt: Scalars['DateTime']
+    /** The creator of the record */
+    createdBy: Actor
+    /** Deletion date */
+    deletedAt?: Scalars['DateTime']
+    /** Position */
+    position: Scalars['Position']
+    /** Last time the record was changed */
+    updatedAt: Scalars['DateTime']
+    /** The workspace member who last updated the record */
+    updatedBy: Actor
+    /** Search vector */
+    searchVector?: Scalars['TSVector']
+    /** logCli */
+    facebookPostId?: Scalars['String']
+    /** log-cli: legacy_fbid. With the post row, the comment key */
+    facebookCommentId?: Scalars['String']
+    /** logCli */
+    agencyGroupPostId?: Scalars['ID']
+    /** log-cli: a reply's comment (its Facebook id); empty on a comment */
+    parentCommentId?: Scalars['String']
+    /** log-cli: what a reply or reaction to the comment is sent to */
+    feedbackId?: Scalars['String']
+    /** log-cli: 0 a comment, 1 a reply */
+    depth?: Scalars['Float']
+    /** logCli */
+    replyCount?: Scalars['Float']
+    /** logCli */
+    authorFacebookId?: Scalars['String']
+    /** log-cli: created_time */
+    commentedAt?: Scalars['DateTime']
+    /** log-cli: the group shows the author as an anonymous member */
+    authorAnonymous?: Scalars['Boolean']
+    /** log-cli: body.text; empty for a photo or a sticker */
+    text?: Scalars['String']
+    /** logCli */
+    permalink?: Scalars['String']
+    /** AgencyGroupComments tied to the Timeline Activity */
+    timelineActivities?: TimelineActivityConnection
+    /** AgencyGroupComments tied to the Attachment */
+    attachments?: AttachmentConnection
+    /** AgencyGroupComments tied to the Note Target */
+    noteTargets?: NoteTargetConnection
+    /** AgencyGroupComments tied to the Task Target */
+    taskTargets?: TaskTargetConnection
+    /** logCli */
+    agencyGroupPost?: AgencyGroupPost
+    __typename: 'AgencyGroupComment'
+}
+
+
+/** log-cli: a comment or reply on a Facebook group post */
+export interface AgencyGroupCommentEdge {
+    node: AgencyGroupComment
+    cursor: Scalars['Cursor']
+    __typename: 'AgencyGroupCommentEdge'
+}
+
+
+/** log-cli: a comment or reply on a Facebook group post */
+export interface AgencyGroupCommentConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for authorUrl */
+    countUniqueValuesAuthorUrl?: Scalars['Int']
+    /** Number of empty values for authorUrl */
+    countEmptyAuthorUrl?: Scalars['Int']
+    /** Number of non-empty values for authorUrl */
+    countNotEmptyAuthorUrl?: Scalars['Int']
+    /** Percentage of empty values for authorUrl */
+    percentageEmptyAuthorUrl?: Scalars['Float']
+    /** Percentage of non-empty values for authorUrl */
+    percentageNotEmptyAuthorUrl?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for authorName */
+    countUniqueValuesAuthorName?: Scalars['Int']
+    /** Number of empty values for authorName */
+    countEmptyAuthorName?: Scalars['Int']
+    /** Number of non-empty values for authorName */
+    countNotEmptyAuthorName?: Scalars['Int']
+    /** Percentage of empty values for authorName */
+    percentageEmptyAuthorName?: Scalars['Float']
+    /** Percentage of non-empty values for authorName */
+    percentageNotEmptyAuthorName?: Scalars['Float']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for facebookPostId */
+    countUniqueValuesFacebookPostId?: Scalars['Int']
+    /** Number of empty values for facebookPostId */
+    countEmptyFacebookPostId?: Scalars['Int']
+    /** Number of non-empty values for facebookPostId */
+    countNotEmptyFacebookPostId?: Scalars['Int']
+    /** Percentage of empty values for facebookPostId */
+    percentageEmptyFacebookPostId?: Scalars['Float']
+    /** Percentage of non-empty values for facebookPostId */
+    percentageNotEmptyFacebookPostId?: Scalars['Float']
+    /** Number of unique values for facebookCommentId */
+    countUniqueValuesFacebookCommentId?: Scalars['Int']
+    /** Number of empty values for facebookCommentId */
+    countEmptyFacebookCommentId?: Scalars['Int']
+    /** Number of non-empty values for facebookCommentId */
+    countNotEmptyFacebookCommentId?: Scalars['Int']
+    /** Percentage of empty values for facebookCommentId */
+    percentageEmptyFacebookCommentId?: Scalars['Float']
+    /** Percentage of non-empty values for facebookCommentId */
+    percentageNotEmptyFacebookCommentId?: Scalars['Float']
+    /** Number of unique values for parentCommentId */
+    countUniqueValuesParentCommentId?: Scalars['Int']
+    /** Number of empty values for parentCommentId */
+    countEmptyParentCommentId?: Scalars['Int']
+    /** Number of non-empty values for parentCommentId */
+    countNotEmptyParentCommentId?: Scalars['Int']
+    /** Percentage of empty values for parentCommentId */
+    percentageEmptyParentCommentId?: Scalars['Float']
+    /** Percentage of non-empty values for parentCommentId */
+    percentageNotEmptyParentCommentId?: Scalars['Float']
+    /** Number of unique values for feedbackId */
+    countUniqueValuesFeedbackId?: Scalars['Int']
+    /** Number of empty values for feedbackId */
+    countEmptyFeedbackId?: Scalars['Int']
+    /** Number of non-empty values for feedbackId */
+    countNotEmptyFeedbackId?: Scalars['Int']
+    /** Percentage of empty values for feedbackId */
+    percentageEmptyFeedbackId?: Scalars['Float']
+    /** Percentage of non-empty values for feedbackId */
+    percentageNotEmptyFeedbackId?: Scalars['Float']
+    /** Number of unique values for depth */
+    countUniqueValuesDepth?: Scalars['Int']
+    /** Number of empty values for depth */
+    countEmptyDepth?: Scalars['Int']
+    /** Number of non-empty values for depth */
+    countNotEmptyDepth?: Scalars['Int']
+    /** Percentage of empty values for depth */
+    percentageEmptyDepth?: Scalars['Float']
+    /** Percentage of non-empty values for depth */
+    percentageNotEmptyDepth?: Scalars['Float']
+    /** Minimum amount contained in the field depth */
+    minDepth?: Scalars['Float']
+    /** Maximum amount contained in the field depth */
+    maxDepth?: Scalars['Float']
+    /** Average amount contained in the field depth */
+    avgDepth?: Scalars['Float']
+    /** Sum of amounts contained in the field depth */
+    sumDepth?: Scalars['Float']
+    /** Number of unique values for replyCount */
+    countUniqueValuesReplyCount?: Scalars['Int']
+    /** Number of empty values for replyCount */
+    countEmptyReplyCount?: Scalars['Int']
+    /** Number of non-empty values for replyCount */
+    countNotEmptyReplyCount?: Scalars['Int']
+    /** Percentage of empty values for replyCount */
+    percentageEmptyReplyCount?: Scalars['Float']
+    /** Percentage of non-empty values for replyCount */
+    percentageNotEmptyReplyCount?: Scalars['Float']
+    /** Minimum amount contained in the field replyCount */
+    minReplyCount?: Scalars['Float']
+    /** Maximum amount contained in the field replyCount */
+    maxReplyCount?: Scalars['Float']
+    /** Average amount contained in the field replyCount */
+    avgReplyCount?: Scalars['Float']
+    /** Sum of amounts contained in the field replyCount */
+    sumReplyCount?: Scalars['Float']
+    /** Number of unique values for authorFacebookId */
+    countUniqueValuesAuthorFacebookId?: Scalars['Int']
+    /** Number of empty values for authorFacebookId */
+    countEmptyAuthorFacebookId?: Scalars['Int']
+    /** Number of non-empty values for authorFacebookId */
+    countNotEmptyAuthorFacebookId?: Scalars['Int']
+    /** Percentage of empty values for authorFacebookId */
+    percentageEmptyAuthorFacebookId?: Scalars['Float']
+    /** Percentage of non-empty values for authorFacebookId */
+    percentageNotEmptyAuthorFacebookId?: Scalars['Float']
+    /** Number of unique values for commentedAt */
+    countUniqueValuesCommentedAt?: Scalars['Int']
+    /** Number of empty values for commentedAt */
+    countEmptyCommentedAt?: Scalars['Int']
+    /** Number of non-empty values for commentedAt */
+    countNotEmptyCommentedAt?: Scalars['Int']
+    /** Percentage of empty values for commentedAt */
+    percentageEmptyCommentedAt?: Scalars['Float']
+    /** Percentage of non-empty values for commentedAt */
+    percentageNotEmptyCommentedAt?: Scalars['Float']
+    /** Earliest date contained in the field commentedAt */
+    minCommentedAt?: Scalars['DateTime']
+    /** Latest date contained in the field commentedAt */
+    maxCommentedAt?: Scalars['DateTime']
+    /** Number of unique values for authorAnonymous */
+    countUniqueValuesAuthorAnonymous?: Scalars['Int']
+    /** Number of empty values for authorAnonymous */
+    countEmptyAuthorAnonymous?: Scalars['Int']
+    /** Number of non-empty values for authorAnonymous */
+    countNotEmptyAuthorAnonymous?: Scalars['Int']
+    /** Percentage of empty values for authorAnonymous */
+    percentageEmptyAuthorAnonymous?: Scalars['Float']
+    /** Percentage of non-empty values for authorAnonymous */
+    percentageNotEmptyAuthorAnonymous?: Scalars['Float']
+    /** Count of true values in the field authorAnonymous */
+    countTrueAuthorAnonymous?: Scalars['Int']
+    /** Count of false values in the field authorAnonymous */
+    countFalseAuthorAnonymous?: Scalars['Int']
+    /** Number of unique values for text */
+    countUniqueValuesText?: Scalars['Int']
+    /** Number of empty values for text */
+    countEmptyText?: Scalars['Int']
+    /** Number of non-empty values for text */
+    countNotEmptyText?: Scalars['Int']
+    /** Percentage of empty values for text */
+    percentageEmptyText?: Scalars['Float']
+    /** Percentage of non-empty values for text */
+    percentageNotEmptyText?: Scalars['Float']
+    /** Number of unique values for permalink */
+    countUniqueValuesPermalink?: Scalars['Int']
+    /** Number of empty values for permalink */
+    countEmptyPermalink?: Scalars['Int']
+    /** Number of non-empty values for permalink */
+    countNotEmptyPermalink?: Scalars['Int']
+    /** Percentage of empty values for permalink */
+    percentageEmptyPermalink?: Scalars['Float']
+    /** Percentage of non-empty values for permalink */
+    percentageNotEmptyPermalink?: Scalars['Float']
+    edges: AgencyGroupCommentEdge[]
+    pageInfo: PageInfo
+    __typename: 'AgencyGroupCommentConnection'
+}
+
+
+/** log-cli: a comment or reply on a Facebook group post */
+export interface AgencyGroupCommentGroupByConnection {
+    /** Total number of records in the connection */
+    totalCount?: Scalars['Int']
+    /** Number of unique values for authorUrl */
+    countUniqueValuesAuthorUrl?: Scalars['Int']
+    /** Number of empty values for authorUrl */
+    countEmptyAuthorUrl?: Scalars['Int']
+    /** Number of non-empty values for authorUrl */
+    countNotEmptyAuthorUrl?: Scalars['Int']
+    /** Percentage of empty values for authorUrl */
+    percentageEmptyAuthorUrl?: Scalars['Float']
+    /** Percentage of non-empty values for authorUrl */
+    percentageNotEmptyAuthorUrl?: Scalars['Float']
+    /** Number of unique values for id */
+    countUniqueValuesId?: Scalars['Int']
+    /** Number of empty values for id */
+    countEmptyId?: Scalars['Int']
+    /** Number of non-empty values for id */
+    countNotEmptyId?: Scalars['Int']
+    /** Percentage of empty values for id */
+    percentageEmptyId?: Scalars['Float']
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: Scalars['Float']
+    /** Number of unique values for authorName */
+    countUniqueValuesAuthorName?: Scalars['Int']
+    /** Number of empty values for authorName */
+    countEmptyAuthorName?: Scalars['Int']
+    /** Number of non-empty values for authorName */
+    countNotEmptyAuthorName?: Scalars['Int']
+    /** Percentage of empty values for authorName */
+    percentageEmptyAuthorName?: Scalars['Float']
+    /** Percentage of non-empty values for authorName */
+    percentageNotEmptyAuthorName?: Scalars['Float']
+    /** Number of unique values for name */
+    countUniqueValuesName?: Scalars['Int']
+    /** Number of empty values for name */
+    countEmptyName?: Scalars['Int']
+    /** Number of non-empty values for name */
+    countNotEmptyName?: Scalars['Int']
+    /** Percentage of empty values for name */
+    percentageEmptyName?: Scalars['Float']
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: Scalars['Float']
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: Scalars['Int']
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: Scalars['Int']
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: Scalars['Int']
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: Scalars['Float']
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: Scalars['DateTime']
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: Scalars['Int']
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: Scalars['Int']
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: Scalars['Int']
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: Scalars['Float']
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: Scalars['Int']
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: Scalars['Int']
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: Scalars['Int']
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: Scalars['Float']
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: Scalars['Float']
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: Scalars['DateTime']
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: Scalars['DateTime']
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: Scalars['Int']
+    /** Number of empty values for position */
+    countEmptyPosition?: Scalars['Int']
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: Scalars['Int']
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: Scalars['Float']
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: Scalars['Float']
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: Scalars['Int']
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: Scalars['Int']
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: Scalars['Int']
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: Scalars['Float']
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: Scalars['Float']
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: Scalars['DateTime']
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: Scalars['DateTime']
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: Scalars['Int']
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: Scalars['Int']
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: Scalars['Int']
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: Scalars['Float']
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: Scalars['Float']
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: Scalars['Int']
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: Scalars['Int']
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: Scalars['Int']
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: Scalars['Float']
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: Scalars['Float']
+    /** Number of unique values for facebookPostId */
+    countUniqueValuesFacebookPostId?: Scalars['Int']
+    /** Number of empty values for facebookPostId */
+    countEmptyFacebookPostId?: Scalars['Int']
+    /** Number of non-empty values for facebookPostId */
+    countNotEmptyFacebookPostId?: Scalars['Int']
+    /** Percentage of empty values for facebookPostId */
+    percentageEmptyFacebookPostId?: Scalars['Float']
+    /** Percentage of non-empty values for facebookPostId */
+    percentageNotEmptyFacebookPostId?: Scalars['Float']
+    /** Number of unique values for facebookCommentId */
+    countUniqueValuesFacebookCommentId?: Scalars['Int']
+    /** Number of empty values for facebookCommentId */
+    countEmptyFacebookCommentId?: Scalars['Int']
+    /** Number of non-empty values for facebookCommentId */
+    countNotEmptyFacebookCommentId?: Scalars['Int']
+    /** Percentage of empty values for facebookCommentId */
+    percentageEmptyFacebookCommentId?: Scalars['Float']
+    /** Percentage of non-empty values for facebookCommentId */
+    percentageNotEmptyFacebookCommentId?: Scalars['Float']
+    /** Number of unique values for parentCommentId */
+    countUniqueValuesParentCommentId?: Scalars['Int']
+    /** Number of empty values for parentCommentId */
+    countEmptyParentCommentId?: Scalars['Int']
+    /** Number of non-empty values for parentCommentId */
+    countNotEmptyParentCommentId?: Scalars['Int']
+    /** Percentage of empty values for parentCommentId */
+    percentageEmptyParentCommentId?: Scalars['Float']
+    /** Percentage of non-empty values for parentCommentId */
+    percentageNotEmptyParentCommentId?: Scalars['Float']
+    /** Number of unique values for feedbackId */
+    countUniqueValuesFeedbackId?: Scalars['Int']
+    /** Number of empty values for feedbackId */
+    countEmptyFeedbackId?: Scalars['Int']
+    /** Number of non-empty values for feedbackId */
+    countNotEmptyFeedbackId?: Scalars['Int']
+    /** Percentage of empty values for feedbackId */
+    percentageEmptyFeedbackId?: Scalars['Float']
+    /** Percentage of non-empty values for feedbackId */
+    percentageNotEmptyFeedbackId?: Scalars['Float']
+    /** Number of unique values for depth */
+    countUniqueValuesDepth?: Scalars['Int']
+    /** Number of empty values for depth */
+    countEmptyDepth?: Scalars['Int']
+    /** Number of non-empty values for depth */
+    countNotEmptyDepth?: Scalars['Int']
+    /** Percentage of empty values for depth */
+    percentageEmptyDepth?: Scalars['Float']
+    /** Percentage of non-empty values for depth */
+    percentageNotEmptyDepth?: Scalars['Float']
+    /** Minimum amount contained in the field depth */
+    minDepth?: Scalars['Float']
+    /** Maximum amount contained in the field depth */
+    maxDepth?: Scalars['Float']
+    /** Average amount contained in the field depth */
+    avgDepth?: Scalars['Float']
+    /** Sum of amounts contained in the field depth */
+    sumDepth?: Scalars['Float']
+    /** Number of unique values for replyCount */
+    countUniqueValuesReplyCount?: Scalars['Int']
+    /** Number of empty values for replyCount */
+    countEmptyReplyCount?: Scalars['Int']
+    /** Number of non-empty values for replyCount */
+    countNotEmptyReplyCount?: Scalars['Int']
+    /** Percentage of empty values for replyCount */
+    percentageEmptyReplyCount?: Scalars['Float']
+    /** Percentage of non-empty values for replyCount */
+    percentageNotEmptyReplyCount?: Scalars['Float']
+    /** Minimum amount contained in the field replyCount */
+    minReplyCount?: Scalars['Float']
+    /** Maximum amount contained in the field replyCount */
+    maxReplyCount?: Scalars['Float']
+    /** Average amount contained in the field replyCount */
+    avgReplyCount?: Scalars['Float']
+    /** Sum of amounts contained in the field replyCount */
+    sumReplyCount?: Scalars['Float']
+    /** Number of unique values for authorFacebookId */
+    countUniqueValuesAuthorFacebookId?: Scalars['Int']
+    /** Number of empty values for authorFacebookId */
+    countEmptyAuthorFacebookId?: Scalars['Int']
+    /** Number of non-empty values for authorFacebookId */
+    countNotEmptyAuthorFacebookId?: Scalars['Int']
+    /** Percentage of empty values for authorFacebookId */
+    percentageEmptyAuthorFacebookId?: Scalars['Float']
+    /** Percentage of non-empty values for authorFacebookId */
+    percentageNotEmptyAuthorFacebookId?: Scalars['Float']
+    /** Number of unique values for commentedAt */
+    countUniqueValuesCommentedAt?: Scalars['Int']
+    /** Number of empty values for commentedAt */
+    countEmptyCommentedAt?: Scalars['Int']
+    /** Number of non-empty values for commentedAt */
+    countNotEmptyCommentedAt?: Scalars['Int']
+    /** Percentage of empty values for commentedAt */
+    percentageEmptyCommentedAt?: Scalars['Float']
+    /** Percentage of non-empty values for commentedAt */
+    percentageNotEmptyCommentedAt?: Scalars['Float']
+    /** Earliest date contained in the field commentedAt */
+    minCommentedAt?: Scalars['DateTime']
+    /** Latest date contained in the field commentedAt */
+    maxCommentedAt?: Scalars['DateTime']
+    /** Number of unique values for authorAnonymous */
+    countUniqueValuesAuthorAnonymous?: Scalars['Int']
+    /** Number of empty values for authorAnonymous */
+    countEmptyAuthorAnonymous?: Scalars['Int']
+    /** Number of non-empty values for authorAnonymous */
+    countNotEmptyAuthorAnonymous?: Scalars['Int']
+    /** Percentage of empty values for authorAnonymous */
+    percentageEmptyAuthorAnonymous?: Scalars['Float']
+    /** Percentage of non-empty values for authorAnonymous */
+    percentageNotEmptyAuthorAnonymous?: Scalars['Float']
+    /** Count of true values in the field authorAnonymous */
+    countTrueAuthorAnonymous?: Scalars['Int']
+    /** Count of false values in the field authorAnonymous */
+    countFalseAuthorAnonymous?: Scalars['Int']
+    /** Number of unique values for text */
+    countUniqueValuesText?: Scalars['Int']
+    /** Number of empty values for text */
+    countEmptyText?: Scalars['Int']
+    /** Number of non-empty values for text */
+    countNotEmptyText?: Scalars['Int']
+    /** Percentage of empty values for text */
+    percentageEmptyText?: Scalars['Float']
+    /** Percentage of non-empty values for text */
+    percentageNotEmptyText?: Scalars['Float']
+    /** Number of unique values for permalink */
+    countUniqueValuesPermalink?: Scalars['Int']
+    /** Number of empty values for permalink */
+    countEmptyPermalink?: Scalars['Int']
+    /** Number of non-empty values for permalink */
+    countNotEmptyPermalink?: Scalars['Int']
+    /** Percentage of empty values for permalink */
+    percentageEmptyPermalink?: Scalars['Float']
+    /** Percentage of non-empty values for permalink */
+    percentageNotEmptyPermalink?: Scalars['Float']
+    edges: AgencyGroupCommentEdge[]
+    pageInfo: PageInfo
+    groupByDimensionValues: Scalars['JSON']
+    __typename: 'AgencyGroupCommentGroupByConnection'
 }
 
 export interface Query {
@@ -43195,6 +44649,12 @@ export interface Query {
     agencyGroups?: AgencyGroupConnection
     agencyGroup?: AgencyGroup
     agencyGroupsGroupBy?: AgencyGroupGroupByConnection[]
+    agencyGroupPosts?: AgencyGroupPostConnection
+    agencyGroupPost?: AgencyGroupPost
+    agencyGroupPostsGroupBy?: AgencyGroupPostGroupByConnection[]
+    agencyGroupComments?: AgencyGroupCommentConnection
+    agencyGroupComment?: AgencyGroupComment
+    agencyGroupCommentsGroupBy?: AgencyGroupCommentGroupByConnection[]
     __typename: 'Query'
 }
 
@@ -43911,6 +45371,26 @@ export interface Mutation {
     destroyAgencyGroups?: AgencyGroup[]
     restoreAgencyGroup?: AgencyGroup
     restoreAgencyGroups?: AgencyGroup[]
+    createAgencyGroupPosts?: AgencyGroupPost[]
+    createAgencyGroupPost?: AgencyGroupPost
+    updateAgencyGroupPost?: AgencyGroupPost
+    deleteAgencyGroupPost?: AgencyGroupPost
+    updateAgencyGroupPosts?: AgencyGroupPost[]
+    deleteAgencyGroupPosts?: AgencyGroupPost[]
+    destroyAgencyGroupPost?: AgencyGroupPost
+    destroyAgencyGroupPosts?: AgencyGroupPost[]
+    restoreAgencyGroupPost?: AgencyGroupPost
+    restoreAgencyGroupPosts?: AgencyGroupPost[]
+    createAgencyGroupComments?: AgencyGroupComment[]
+    createAgencyGroupComment?: AgencyGroupComment
+    updateAgencyGroupComment?: AgencyGroupComment
+    deleteAgencyGroupComment?: AgencyGroupComment
+    updateAgencyGroupComments?: AgencyGroupComment[]
+    deleteAgencyGroupComments?: AgencyGroupComment[]
+    destroyAgencyGroupComment?: AgencyGroupComment
+    destroyAgencyGroupComments?: AgencyGroupComment[]
+    restoreAgencyGroupComment?: AgencyGroupComment
+    restoreAgencyGroupComments?: AgencyGroupComment[]
     __typename: 'Mutation'
 }
 
@@ -57249,6 +58729,10 @@ export interface AttachmentGenqlSelection{
     targetDialerFilterViewId?: boolean | number
     /** Attachments Agency group */
     targetAgencyGroupId?: boolean | number
+    /** Attachments Agency group post */
+    targetAgencyGroupPostId?: boolean | number
+    /** Attachments Agency group comment */
+    targetAgencyGroupCommentId?: boolean | number
     /** Attachments Agency Career */
     targetAgencyCareer?: AgencyCareerGenqlSelection
     /** Attachments Payment */
@@ -57343,6 +58827,10 @@ export interface AttachmentGenqlSelection{
     targetDialerFilterView?: DialerFilterViewGenqlSelection
     /** Attachments Agency group */
     targetAgencyGroup?: AgencyGroupGenqlSelection
+    /** Attachments Agency group post */
+    targetAgencyGroupPost?: AgencyGroupPostGenqlSelection
+    /** Attachments Agency group comment */
+    targetAgencyGroupComment?: AgencyGroupCommentGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -57963,6 +59451,26 @@ export interface AttachmentConnectionGenqlSelection{
     percentageEmptyTargetAgencyGroup?: boolean | number
     /** Percentage of non-empty values for targetAgencyGroup */
     percentageNotEmptyTargetAgencyGroup?: boolean | number
+    /** Number of unique values for targetAgencyGroupPost */
+    countUniqueValuesTargetAgencyGroupPost?: boolean | number
+    /** Number of empty values for targetAgencyGroupPost */
+    countEmptyTargetAgencyGroupPost?: boolean | number
+    /** Number of non-empty values for targetAgencyGroupPost */
+    countNotEmptyTargetAgencyGroupPost?: boolean | number
+    /** Percentage of empty values for targetAgencyGroupPost */
+    percentageEmptyTargetAgencyGroupPost?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroupPost */
+    percentageNotEmptyTargetAgencyGroupPost?: boolean | number
+    /** Number of unique values for targetAgencyGroupComment */
+    countUniqueValuesTargetAgencyGroupComment?: boolean | number
+    /** Number of empty values for targetAgencyGroupComment */
+    countEmptyTargetAgencyGroupComment?: boolean | number
+    /** Number of non-empty values for targetAgencyGroupComment */
+    countNotEmptyTargetAgencyGroupComment?: boolean | number
+    /** Percentage of empty values for targetAgencyGroupComment */
+    percentageEmptyTargetAgencyGroupComment?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroupComment */
+    percentageNotEmptyTargetAgencyGroupComment?: boolean | number
     edges?: AttachmentEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -58576,6 +60084,26 @@ export interface AttachmentGroupByConnectionGenqlSelection{
     percentageEmptyTargetAgencyGroup?: boolean | number
     /** Percentage of non-empty values for targetAgencyGroup */
     percentageNotEmptyTargetAgencyGroup?: boolean | number
+    /** Number of unique values for targetAgencyGroupPost */
+    countUniqueValuesTargetAgencyGroupPost?: boolean | number
+    /** Number of empty values for targetAgencyGroupPost */
+    countEmptyTargetAgencyGroupPost?: boolean | number
+    /** Number of non-empty values for targetAgencyGroupPost */
+    countNotEmptyTargetAgencyGroupPost?: boolean | number
+    /** Percentage of empty values for targetAgencyGroupPost */
+    percentageEmptyTargetAgencyGroupPost?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroupPost */
+    percentageNotEmptyTargetAgencyGroupPost?: boolean | number
+    /** Number of unique values for targetAgencyGroupComment */
+    countUniqueValuesTargetAgencyGroupComment?: boolean | number
+    /** Number of empty values for targetAgencyGroupComment */
+    countEmptyTargetAgencyGroupComment?: boolean | number
+    /** Number of non-empty values for targetAgencyGroupComment */
+    countNotEmptyTargetAgencyGroupComment?: boolean | number
+    /** Percentage of empty values for targetAgencyGroupComment */
+    percentageEmptyTargetAgencyGroupComment?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroupComment */
+    percentageNotEmptyTargetAgencyGroupComment?: boolean | number
     edges?: AttachmentEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -58813,7 +60341,15 @@ targetDialerFilterView?: (DialerFilterViewRelationInput | null),
 /** Attachments Agency group */
 targetAgencyGroupId?: (Scalars['ID'] | null),
 /** Attachments Agency group */
-targetAgencyGroup?: (AgencyGroupRelationInput | null)}
+targetAgencyGroup?: (AgencyGroupRelationInput | null),
+/** Attachments Agency group post */
+targetAgencyGroupPostId?: (Scalars['ID'] | null),
+/** Attachments Agency group post */
+targetAgencyGroupPost?: (AgencyGroupPostRelationInput | null),
+/** Attachments Agency group comment */
+targetAgencyGroupCommentId?: (Scalars['ID'] | null),
+/** Attachments Agency group comment */
+targetAgencyGroupComment?: (AgencyGroupCommentRelationInput | null)}
 
 
 /** An attachment */
@@ -59029,7 +60565,15 @@ targetDialerFilterView?: (DialerFilterViewRelationInput | null),
 /** Attachments Agency group */
 targetAgencyGroupId?: (Scalars['ID'] | null),
 /** Attachments Agency group */
-targetAgencyGroup?: (AgencyGroupRelationInput | null)}
+targetAgencyGroup?: (AgencyGroupRelationInput | null),
+/** Attachments Agency group post */
+targetAgencyGroupPostId?: (Scalars['ID'] | null),
+/** Attachments Agency group post */
+targetAgencyGroupPost?: (AgencyGroupPostRelationInput | null),
+/** Attachments Agency group comment */
+targetAgencyGroupCommentId?: (Scalars['ID'] | null),
+/** Attachments Agency group comment */
+targetAgencyGroupComment?: (AgencyGroupCommentRelationInput | null)}
 
 
 /** An attachment */
@@ -59245,7 +60789,15 @@ targetDialerFilterView?: (DialerFilterViewFilterInput | null),
 /** Attachments Agency group */
 targetAgencyGroupId?: (UUIDFilter | null),
 /** Filter on fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupFilterInput | null),and?: ((AttachmentFilterInput | null)[] | null),or?: ((AttachmentFilterInput | null)[] | null),not?: (AttachmentFilterInput | null)}
+targetAgencyGroup?: (AgencyGroupFilterInput | null),
+/** Attachments Agency group post */
+targetAgencyGroupPostId?: (UUIDFilter | null),
+/** Filter on fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostFilterInput | null),
+/** Attachments Agency group comment */
+targetAgencyGroupCommentId?: (UUIDFilter | null),
+/** Filter on fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentFilterInput | null),and?: ((AttachmentFilterInput | null)[] | null),or?: ((AttachmentFilterInput | null)[] | null),not?: (AttachmentFilterInput | null)}
 
 export interface AttachmentFileCategoryEnumFilter {eq?: (AttachmentFileCategoryEnum | null),neq?: (AttachmentFileCategoryEnum | null),in?: ((AttachmentFileCategoryEnum | null)[] | null),containsAny?: ((AttachmentFileCategoryEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AttachmentFileCategoryEnum | null),gte?: (AttachmentFileCategoryEnum | null),lt?: (AttachmentFileCategoryEnum | null),lte?: (AttachmentFileCategoryEnum | null)}
 
@@ -59463,7 +61015,15 @@ targetDialerFilterView?: (DialerFilterViewOrderByInput | null),
 /** Attachments Agency group */
 targetAgencyGroupId?: (OrderByDirection | null),
 /** Order by fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupOrderByInput | null)}
+targetAgencyGroup?: (AgencyGroupOrderByInput | null),
+/** Attachments Agency group post */
+targetAgencyGroupPostId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostOrderByInput | null),
+/** Attachments Agency group comment */
+targetAgencyGroupCommentId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentOrderByInput | null)}
 
 
 /** An attachment */
@@ -59681,7 +61241,15 @@ targetDialerFilterView?: (DialerFilterViewOrderByWithGroupByInput | null),
 /** Attachments Agency group */
 targetAgencyGroupId?: (OrderByDirection | null),
 /** Order by fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupOrderByWithGroupByInput | null)}
+targetAgencyGroup?: (AgencyGroupOrderByWithGroupByInput | null),
+/** Attachments Agency group post */
+targetAgencyGroupPostId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostOrderByWithGroupByInput | null),
+/** Attachments Agency group comment */
+targetAgencyGroupCommentId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentOrderByWithGroupByInput | null)}
 
 
 /** Aggregate-based ordering */
@@ -60007,7 +61575,15 @@ targetDialerFilterView?: (DialerFilterViewOrderByInput | null),
 /** Attachments Agency group */
 targetAgencyGroupId?: (OrderByDirection | null),
 /** Order by fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupOrderByInput | null)}
+targetAgencyGroup?: (AgencyGroupOrderByInput | null),
+/** Attachments Agency group post */
+targetAgencyGroupPostId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostOrderByInput | null),
+/** Attachments Agency group comment */
+targetAgencyGroupCommentId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentOrderByInput | null)}
 
 
 /** An attachment */
@@ -60111,7 +61687,11 @@ targetDialerAudioSession?: (DialerAudioSessionGroupByInput | null),
 /** Group by fields of the related dialerFilterView */
 targetDialerFilterView?: (DialerFilterViewGroupByInput | null),
 /** Group by fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupGroupByInput | null)}
+targetAgencyGroup?: (AgencyGroupGroupByInput | null),
+/** Group by fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostGroupByInput | null),
+/** Group by fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentGroupByInput | null)}
 
 
 /** A note */
@@ -68020,6 +69600,10 @@ export interface TaskTargetGenqlSelection{
     targetDialerFilterViewId?: boolean | number
     /** TaskTargets Agency group */
     targetAgencyGroupId?: boolean | number
+    /** TaskTargets Agency group post */
+    targetAgencyGroupPostId?: boolean | number
+    /** TaskTargets Agency group comment */
+    targetAgencyGroupCommentId?: boolean | number
     /** TaskTargets Agency Career */
     targetAgencyCareer?: AgencyCareerGenqlSelection
     /** TaskTargets Payment */
@@ -68108,6 +69692,10 @@ export interface TaskTargetGenqlSelection{
     targetDialerFilterView?: DialerFilterViewGenqlSelection
     /** TaskTargets Agency group */
     targetAgencyGroup?: AgencyGroupGenqlSelection
+    /** TaskTargets Agency group post */
+    targetAgencyGroupPost?: AgencyGroupPostGenqlSelection
+    /** TaskTargets Agency group comment */
+    targetAgencyGroupComment?: AgencyGroupCommentGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -68648,6 +70236,26 @@ export interface TaskTargetConnectionGenqlSelection{
     percentageEmptyTargetAgencyGroup?: boolean | number
     /** Percentage of non-empty values for targetAgencyGroup */
     percentageNotEmptyTargetAgencyGroup?: boolean | number
+    /** Number of unique values for targetAgencyGroupPost */
+    countUniqueValuesTargetAgencyGroupPost?: boolean | number
+    /** Number of empty values for targetAgencyGroupPost */
+    countEmptyTargetAgencyGroupPost?: boolean | number
+    /** Number of non-empty values for targetAgencyGroupPost */
+    countNotEmptyTargetAgencyGroupPost?: boolean | number
+    /** Percentage of empty values for targetAgencyGroupPost */
+    percentageEmptyTargetAgencyGroupPost?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroupPost */
+    percentageNotEmptyTargetAgencyGroupPost?: boolean | number
+    /** Number of unique values for targetAgencyGroupComment */
+    countUniqueValuesTargetAgencyGroupComment?: boolean | number
+    /** Number of empty values for targetAgencyGroupComment */
+    countEmptyTargetAgencyGroupComment?: boolean | number
+    /** Number of non-empty values for targetAgencyGroupComment */
+    countNotEmptyTargetAgencyGroupComment?: boolean | number
+    /** Percentage of empty values for targetAgencyGroupComment */
+    percentageEmptyTargetAgencyGroupComment?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroupComment */
+    percentageNotEmptyTargetAgencyGroupComment?: boolean | number
     edges?: TaskTargetEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -69181,6 +70789,26 @@ export interface TaskTargetGroupByConnectionGenqlSelection{
     percentageEmptyTargetAgencyGroup?: boolean | number
     /** Percentage of non-empty values for targetAgencyGroup */
     percentageNotEmptyTargetAgencyGroup?: boolean | number
+    /** Number of unique values for targetAgencyGroupPost */
+    countUniqueValuesTargetAgencyGroupPost?: boolean | number
+    /** Number of empty values for targetAgencyGroupPost */
+    countEmptyTargetAgencyGroupPost?: boolean | number
+    /** Number of non-empty values for targetAgencyGroupPost */
+    countNotEmptyTargetAgencyGroupPost?: boolean | number
+    /** Percentage of empty values for targetAgencyGroupPost */
+    percentageEmptyTargetAgencyGroupPost?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroupPost */
+    percentageNotEmptyTargetAgencyGroupPost?: boolean | number
+    /** Number of unique values for targetAgencyGroupComment */
+    countUniqueValuesTargetAgencyGroupComment?: boolean | number
+    /** Number of empty values for targetAgencyGroupComment */
+    countEmptyTargetAgencyGroupComment?: boolean | number
+    /** Number of non-empty values for targetAgencyGroupComment */
+    countNotEmptyTargetAgencyGroupComment?: boolean | number
+    /** Percentage of empty values for targetAgencyGroupComment */
+    percentageEmptyTargetAgencyGroupComment?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroupComment */
+    percentageNotEmptyTargetAgencyGroupComment?: boolean | number
     edges?: TaskTargetEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -69406,7 +71034,15 @@ targetDialerFilterView?: (DialerFilterViewRelationInput | null),
 /** TaskTargets Agency group */
 targetAgencyGroupId?: (Scalars['ID'] | null),
 /** TaskTargets Agency group */
-targetAgencyGroup?: (AgencyGroupRelationInput | null)}
+targetAgencyGroup?: (AgencyGroupRelationInput | null),
+/** TaskTargets Agency group post */
+targetAgencyGroupPostId?: (Scalars['ID'] | null),
+/** TaskTargets Agency group post */
+targetAgencyGroupPost?: (AgencyGroupPostRelationInput | null),
+/** TaskTargets Agency group comment */
+targetAgencyGroupCommentId?: (Scalars['ID'] | null),
+/** TaskTargets Agency group comment */
+targetAgencyGroupComment?: (AgencyGroupCommentRelationInput | null)}
 
 
 /** A task target */
@@ -69602,7 +71238,15 @@ targetDialerFilterView?: (DialerFilterViewRelationInput | null),
 /** TaskTargets Agency group */
 targetAgencyGroupId?: (Scalars['ID'] | null),
 /** TaskTargets Agency group */
-targetAgencyGroup?: (AgencyGroupRelationInput | null)}
+targetAgencyGroup?: (AgencyGroupRelationInput | null),
+/** TaskTargets Agency group post */
+targetAgencyGroupPostId?: (Scalars['ID'] | null),
+/** TaskTargets Agency group post */
+targetAgencyGroupPost?: (AgencyGroupPostRelationInput | null),
+/** TaskTargets Agency group comment */
+targetAgencyGroupCommentId?: (Scalars['ID'] | null),
+/** TaskTargets Agency group comment */
+targetAgencyGroupComment?: (AgencyGroupCommentRelationInput | null)}
 
 
 /** A task target */
@@ -69798,7 +71442,15 @@ targetDialerFilterView?: (DialerFilterViewFilterInput | null),
 /** TaskTargets Agency group */
 targetAgencyGroupId?: (UUIDFilter | null),
 /** Filter on fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupFilterInput | null),and?: ((TaskTargetFilterInput | null)[] | null),or?: ((TaskTargetFilterInput | null)[] | null),not?: (TaskTargetFilterInput | null)}
+targetAgencyGroup?: (AgencyGroupFilterInput | null),
+/** TaskTargets Agency group post */
+targetAgencyGroupPostId?: (UUIDFilter | null),
+/** Filter on fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostFilterInput | null),
+/** TaskTargets Agency group comment */
+targetAgencyGroupCommentId?: (UUIDFilter | null),
+/** Filter on fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentFilterInput | null),and?: ((TaskTargetFilterInput | null)[] | null),or?: ((TaskTargetFilterInput | null)[] | null),not?: (TaskTargetFilterInput | null)}
 
 
 /** A task target */
@@ -69994,7 +71646,15 @@ targetDialerFilterView?: (DialerFilterViewOrderByInput | null),
 /** TaskTargets Agency group */
 targetAgencyGroupId?: (OrderByDirection | null),
 /** Order by fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupOrderByInput | null)}
+targetAgencyGroup?: (AgencyGroupOrderByInput | null),
+/** TaskTargets Agency group post */
+targetAgencyGroupPostId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostOrderByInput | null),
+/** TaskTargets Agency group comment */
+targetAgencyGroupCommentId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentOrderByInput | null)}
 
 
 /** A task target */
@@ -70192,7 +71852,15 @@ targetDialerFilterView?: (DialerFilterViewOrderByWithGroupByInput | null),
 /** TaskTargets Agency group */
 targetAgencyGroupId?: (OrderByDirection | null),
 /** Order by fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupOrderByWithGroupByInput | null)}
+targetAgencyGroup?: (AgencyGroupOrderByWithGroupByInput | null),
+/** TaskTargets Agency group post */
+targetAgencyGroupPostId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostOrderByWithGroupByInput | null),
+/** TaskTargets Agency group comment */
+targetAgencyGroupCommentId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentOrderByWithGroupByInput | null)}
 
 
 /** Aggregate-based ordering */
@@ -70466,7 +72134,15 @@ targetDialerFilterView?: (DialerFilterViewOrderByInput | null),
 /** TaskTargets Agency group */
 targetAgencyGroupId?: (OrderByDirection | null),
 /** Order by fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupOrderByInput | null)}
+targetAgencyGroup?: (AgencyGroupOrderByInput | null),
+/** TaskTargets Agency group post */
+targetAgencyGroupPostId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostOrderByInput | null),
+/** TaskTargets Agency group comment */
+targetAgencyGroupCommentId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentOrderByInput | null)}
 
 
 /** A task target */
@@ -70562,7 +72238,11 @@ targetDialerAudioSession?: (DialerAudioSessionGroupByInput | null),
 /** Group by fields of the related dialerFilterView */
 targetDialerFilterView?: (DialerFilterViewGroupByInput | null),
 /** Group by fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupGroupByInput | null)}
+targetAgencyGroup?: (AgencyGroupGroupByInput | null),
+/** Group by fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostGroupByInput | null),
+/** Group by fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentGroupByInput | null)}
 
 
 /** A recording of a meeting */
@@ -74985,6 +76665,10 @@ export interface TimelineActivityGenqlSelection{
     targetDialerFilterViewId?: boolean | number
     /** TimelineActivities Agency group */
     targetAgencyGroupId?: boolean | number
+    /** TimelineActivities Agency group post */
+    targetAgencyGroupPostId?: boolean | number
+    /** TimelineActivities Agency group comment */
+    targetAgencyGroupCommentId?: boolean | number
     /** TimelineActivities Pipeline Run Counter */
     targetPipelineRunCounter?: PipelineRunCounterGenqlSelection
     /** TimelineActivities Payment */
@@ -75089,6 +76773,10 @@ export interface TimelineActivityGenqlSelection{
     targetDialerFilterView?: DialerFilterViewGenqlSelection
     /** TimelineActivities Agency group */
     targetAgencyGroup?: AgencyGroupGenqlSelection
+    /** TimelineActivities Agency group post */
+    targetAgencyGroupPost?: AgencyGroupPostGenqlSelection
+    /** TimelineActivities Agency group comment */
+    targetAgencyGroupComment?: AgencyGroupCommentGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -75783,6 +77471,26 @@ export interface TimelineActivityConnectionGenqlSelection{
     percentageEmptyTargetAgencyGroup?: boolean | number
     /** Percentage of non-empty values for targetAgencyGroup */
     percentageNotEmptyTargetAgencyGroup?: boolean | number
+    /** Number of unique values for targetAgencyGroupPost */
+    countUniqueValuesTargetAgencyGroupPost?: boolean | number
+    /** Number of empty values for targetAgencyGroupPost */
+    countEmptyTargetAgencyGroupPost?: boolean | number
+    /** Number of non-empty values for targetAgencyGroupPost */
+    countNotEmptyTargetAgencyGroupPost?: boolean | number
+    /** Percentage of empty values for targetAgencyGroupPost */
+    percentageEmptyTargetAgencyGroupPost?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroupPost */
+    percentageNotEmptyTargetAgencyGroupPost?: boolean | number
+    /** Number of unique values for targetAgencyGroupComment */
+    countUniqueValuesTargetAgencyGroupComment?: boolean | number
+    /** Number of empty values for targetAgencyGroupComment */
+    countEmptyTargetAgencyGroupComment?: boolean | number
+    /** Number of non-empty values for targetAgencyGroupComment */
+    countNotEmptyTargetAgencyGroupComment?: boolean | number
+    /** Percentage of empty values for targetAgencyGroupComment */
+    percentageEmptyTargetAgencyGroupComment?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroupComment */
+    percentageNotEmptyTargetAgencyGroupComment?: boolean | number
     edges?: TimelineActivityEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -76470,6 +78178,26 @@ export interface TimelineActivityGroupByConnectionGenqlSelection{
     percentageEmptyTargetAgencyGroup?: boolean | number
     /** Percentage of non-empty values for targetAgencyGroup */
     percentageNotEmptyTargetAgencyGroup?: boolean | number
+    /** Number of unique values for targetAgencyGroupPost */
+    countUniqueValuesTargetAgencyGroupPost?: boolean | number
+    /** Number of empty values for targetAgencyGroupPost */
+    countEmptyTargetAgencyGroupPost?: boolean | number
+    /** Number of non-empty values for targetAgencyGroupPost */
+    countNotEmptyTargetAgencyGroupPost?: boolean | number
+    /** Percentage of empty values for targetAgencyGroupPost */
+    percentageEmptyTargetAgencyGroupPost?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroupPost */
+    percentageNotEmptyTargetAgencyGroupPost?: boolean | number
+    /** Number of unique values for targetAgencyGroupComment */
+    countUniqueValuesTargetAgencyGroupComment?: boolean | number
+    /** Number of empty values for targetAgencyGroupComment */
+    countEmptyTargetAgencyGroupComment?: boolean | number
+    /** Number of non-empty values for targetAgencyGroupComment */
+    countNotEmptyTargetAgencyGroupComment?: boolean | number
+    /** Percentage of empty values for targetAgencyGroupComment */
+    percentageEmptyTargetAgencyGroupComment?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroupComment */
+    percentageNotEmptyTargetAgencyGroupComment?: boolean | number
     edges?: TimelineActivityEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -76733,7 +78461,15 @@ targetDialerFilterView?: (DialerFilterViewRelationInput | null),
 /** TimelineActivities Agency group */
 targetAgencyGroupId?: (Scalars['ID'] | null),
 /** TimelineActivities Agency group */
-targetAgencyGroup?: (AgencyGroupRelationInput | null)}
+targetAgencyGroup?: (AgencyGroupRelationInput | null),
+/** TimelineActivities Agency group post */
+targetAgencyGroupPostId?: (Scalars['ID'] | null),
+/** TimelineActivities Agency group post */
+targetAgencyGroupPost?: (AgencyGroupPostRelationInput | null),
+/** TimelineActivities Agency group comment */
+targetAgencyGroupCommentId?: (Scalars['ID'] | null),
+/** TimelineActivities Agency group comment */
+targetAgencyGroupComment?: (AgencyGroupCommentRelationInput | null)}
 
 
 /** Aggregated / filtered event to be displayed on the timeline */
@@ -76975,7 +78711,15 @@ targetDialerFilterView?: (DialerFilterViewRelationInput | null),
 /** TimelineActivities Agency group */
 targetAgencyGroupId?: (Scalars['ID'] | null),
 /** TimelineActivities Agency group */
-targetAgencyGroup?: (AgencyGroupRelationInput | null)}
+targetAgencyGroup?: (AgencyGroupRelationInput | null),
+/** TimelineActivities Agency group post */
+targetAgencyGroupPostId?: (Scalars['ID'] | null),
+/** TimelineActivities Agency group post */
+targetAgencyGroupPost?: (AgencyGroupPostRelationInput | null),
+/** TimelineActivities Agency group comment */
+targetAgencyGroupCommentId?: (Scalars['ID'] | null),
+/** TimelineActivities Agency group comment */
+targetAgencyGroupComment?: (AgencyGroupCommentRelationInput | null)}
 
 
 /** Aggregated / filtered event to be displayed on the timeline */
@@ -77217,7 +78961,15 @@ targetDialerFilterView?: (DialerFilterViewFilterInput | null),
 /** TimelineActivities Agency group */
 targetAgencyGroupId?: (UUIDFilter | null),
 /** Filter on fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupFilterInput | null),and?: ((TimelineActivityFilterInput | null)[] | null),or?: ((TimelineActivityFilterInput | null)[] | null),not?: (TimelineActivityFilterInput | null)}
+targetAgencyGroup?: (AgencyGroupFilterInput | null),
+/** TimelineActivities Agency group post */
+targetAgencyGroupPostId?: (UUIDFilter | null),
+/** Filter on fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostFilterInput | null),
+/** TimelineActivities Agency group comment */
+targetAgencyGroupCommentId?: (UUIDFilter | null),
+/** Filter on fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentFilterInput | null),and?: ((TimelineActivityFilterInput | null)[] | null),or?: ((TimelineActivityFilterInput | null)[] | null),not?: (TimelineActivityFilterInput | null)}
 
 
 /** Aggregated / filtered event to be displayed on the timeline */
@@ -77459,7 +79211,15 @@ targetDialerFilterView?: (DialerFilterViewOrderByInput | null),
 /** TimelineActivities Agency group */
 targetAgencyGroupId?: (OrderByDirection | null),
 /** Order by fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupOrderByInput | null)}
+targetAgencyGroup?: (AgencyGroupOrderByInput | null),
+/** TimelineActivities Agency group post */
+targetAgencyGroupPostId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostOrderByInput | null),
+/** TimelineActivities Agency group comment */
+targetAgencyGroupCommentId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentOrderByInput | null)}
 
 
 /** Aggregated / filtered event to be displayed on the timeline */
@@ -77703,7 +79463,15 @@ targetDialerFilterView?: (DialerFilterViewOrderByWithGroupByInput | null),
 /** TimelineActivities Agency group */
 targetAgencyGroupId?: (OrderByDirection | null),
 /** Order by fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupOrderByWithGroupByInput | null)}
+targetAgencyGroup?: (AgencyGroupOrderByWithGroupByInput | null),
+/** TimelineActivities Agency group post */
+targetAgencyGroupPostId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostOrderByWithGroupByInput | null),
+/** TimelineActivities Agency group comment */
+targetAgencyGroupCommentId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentOrderByWithGroupByInput | null)}
 
 
 /** Aggregate-based ordering */
@@ -78083,7 +79851,15 @@ targetDialerFilterView?: (DialerFilterViewOrderByInput | null),
 /** TimelineActivities Agency group */
 targetAgencyGroupId?: (OrderByDirection | null),
 /** Order by fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupOrderByInput | null)}
+targetAgencyGroup?: (AgencyGroupOrderByInput | null),
+/** TimelineActivities Agency group post */
+targetAgencyGroupPostId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostOrderByInput | null),
+/** TimelineActivities Agency group comment */
+targetAgencyGroupCommentId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentOrderByInput | null)}
 
 
 /** Aggregated / filtered event to be displayed on the timeline */
@@ -78197,7 +79973,11 @@ targetDialerAudioSession?: (DialerAudioSessionGroupByInput | null),
 /** Group by fields of the related dialerFilterView */
 targetDialerFilterView?: (DialerFilterViewGroupByInput | null),
 /** Group by fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupGroupByInput | null)}
+targetAgencyGroup?: (AgencyGroupGroupByInput | null),
+/** Group by fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostGroupByInput | null),
+/** Group by fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentGroupByInput | null)}
 
 
 /** A note target */
@@ -78317,6 +80097,10 @@ export interface NoteTargetGenqlSelection{
     targetDialerFilterViewId?: boolean | number
     /** NoteTargets Agency group */
     targetAgencyGroupId?: boolean | number
+    /** NoteTargets Agency group post */
+    targetAgencyGroupPostId?: boolean | number
+    /** NoteTargets Agency group comment */
+    targetAgencyGroupCommentId?: boolean | number
     /** NoteTargets Agency Career */
     targetAgencyCareer?: AgencyCareerGenqlSelection
     /** NoteTargets Payment */
@@ -78405,6 +80189,10 @@ export interface NoteTargetGenqlSelection{
     targetDialerFilterView?: DialerFilterViewGenqlSelection
     /** NoteTargets Agency group */
     targetAgencyGroup?: AgencyGroupGenqlSelection
+    /** NoteTargets Agency group post */
+    targetAgencyGroupPost?: AgencyGroupPostGenqlSelection
+    /** NoteTargets Agency group comment */
+    targetAgencyGroupComment?: AgencyGroupCommentGenqlSelection
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -79075,6 +80863,26 @@ export interface NoteTargetConnectionGenqlSelection{
     percentageEmptyTargetAgencyGroup?: boolean | number
     /** Percentage of non-empty values for targetAgencyGroup */
     percentageNotEmptyTargetAgencyGroup?: boolean | number
+    /** Number of unique values for targetAgencyGroupPost */
+    countUniqueValuesTargetAgencyGroupPost?: boolean | number
+    /** Number of empty values for targetAgencyGroupPost */
+    countEmptyTargetAgencyGroupPost?: boolean | number
+    /** Number of non-empty values for targetAgencyGroupPost */
+    countNotEmptyTargetAgencyGroupPost?: boolean | number
+    /** Percentage of empty values for targetAgencyGroupPost */
+    percentageEmptyTargetAgencyGroupPost?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroupPost */
+    percentageNotEmptyTargetAgencyGroupPost?: boolean | number
+    /** Number of unique values for targetAgencyGroupComment */
+    countUniqueValuesTargetAgencyGroupComment?: boolean | number
+    /** Number of empty values for targetAgencyGroupComment */
+    countEmptyTargetAgencyGroupComment?: boolean | number
+    /** Number of non-empty values for targetAgencyGroupComment */
+    countNotEmptyTargetAgencyGroupComment?: boolean | number
+    /** Percentage of empty values for targetAgencyGroupComment */
+    percentageEmptyTargetAgencyGroupComment?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroupComment */
+    percentageNotEmptyTargetAgencyGroupComment?: boolean | number
     edges?: NoteTargetEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -79738,6 +81546,26 @@ export interface NoteTargetGroupByConnectionGenqlSelection{
     percentageEmptyTargetAgencyGroup?: boolean | number
     /** Percentage of non-empty values for targetAgencyGroup */
     percentageNotEmptyTargetAgencyGroup?: boolean | number
+    /** Number of unique values for targetAgencyGroupPost */
+    countUniqueValuesTargetAgencyGroupPost?: boolean | number
+    /** Number of empty values for targetAgencyGroupPost */
+    countEmptyTargetAgencyGroupPost?: boolean | number
+    /** Number of non-empty values for targetAgencyGroupPost */
+    countNotEmptyTargetAgencyGroupPost?: boolean | number
+    /** Percentage of empty values for targetAgencyGroupPost */
+    percentageEmptyTargetAgencyGroupPost?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroupPost */
+    percentageNotEmptyTargetAgencyGroupPost?: boolean | number
+    /** Number of unique values for targetAgencyGroupComment */
+    countUniqueValuesTargetAgencyGroupComment?: boolean | number
+    /** Number of empty values for targetAgencyGroupComment */
+    countEmptyTargetAgencyGroupComment?: boolean | number
+    /** Number of non-empty values for targetAgencyGroupComment */
+    countNotEmptyTargetAgencyGroupComment?: boolean | number
+    /** Percentage of empty values for targetAgencyGroupComment */
+    percentageEmptyTargetAgencyGroupComment?: boolean | number
+    /** Percentage of non-empty values for targetAgencyGroupComment */
+    percentageNotEmptyTargetAgencyGroupComment?: boolean | number
     edges?: NoteTargetEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -79963,7 +81791,15 @@ targetDialerFilterView?: (DialerFilterViewRelationInput | null),
 /** NoteTargets Agency group */
 targetAgencyGroupId?: (Scalars['ID'] | null),
 /** NoteTargets Agency group */
-targetAgencyGroup?: (AgencyGroupRelationInput | null)}
+targetAgencyGroup?: (AgencyGroupRelationInput | null),
+/** NoteTargets Agency group post */
+targetAgencyGroupPostId?: (Scalars['ID'] | null),
+/** NoteTargets Agency group post */
+targetAgencyGroupPost?: (AgencyGroupPostRelationInput | null),
+/** NoteTargets Agency group comment */
+targetAgencyGroupCommentId?: (Scalars['ID'] | null),
+/** NoteTargets Agency group comment */
+targetAgencyGroupComment?: (AgencyGroupCommentRelationInput | null)}
 
 
 /** A note target */
@@ -80159,7 +81995,15 @@ targetDialerFilterView?: (DialerFilterViewRelationInput | null),
 /** NoteTargets Agency group */
 targetAgencyGroupId?: (Scalars['ID'] | null),
 /** NoteTargets Agency group */
-targetAgencyGroup?: (AgencyGroupRelationInput | null)}
+targetAgencyGroup?: (AgencyGroupRelationInput | null),
+/** NoteTargets Agency group post */
+targetAgencyGroupPostId?: (Scalars['ID'] | null),
+/** NoteTargets Agency group post */
+targetAgencyGroupPost?: (AgencyGroupPostRelationInput | null),
+/** NoteTargets Agency group comment */
+targetAgencyGroupCommentId?: (Scalars['ID'] | null),
+/** NoteTargets Agency group comment */
+targetAgencyGroupComment?: (AgencyGroupCommentRelationInput | null)}
 
 
 /** A note target */
@@ -80355,7 +82199,15 @@ targetDialerFilterView?: (DialerFilterViewFilterInput | null),
 /** NoteTargets Agency group */
 targetAgencyGroupId?: (UUIDFilter | null),
 /** Filter on fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupFilterInput | null),and?: ((NoteTargetFilterInput | null)[] | null),or?: ((NoteTargetFilterInput | null)[] | null),not?: (NoteTargetFilterInput | null)}
+targetAgencyGroup?: (AgencyGroupFilterInput | null),
+/** NoteTargets Agency group post */
+targetAgencyGroupPostId?: (UUIDFilter | null),
+/** Filter on fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostFilterInput | null),
+/** NoteTargets Agency group comment */
+targetAgencyGroupCommentId?: (UUIDFilter | null),
+/** Filter on fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentFilterInput | null),and?: ((NoteTargetFilterInput | null)[] | null),or?: ((NoteTargetFilterInput | null)[] | null),not?: (NoteTargetFilterInput | null)}
 
 export interface NoteTargetOutcomeEnumFilter {eq?: (NoteTargetOutcomeEnum | null),neq?: (NoteTargetOutcomeEnum | null),in?: ((NoteTargetOutcomeEnum | null)[] | null),containsAny?: ((NoteTargetOutcomeEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (NoteTargetOutcomeEnum | null),gte?: (NoteTargetOutcomeEnum | null),lt?: (NoteTargetOutcomeEnum | null),lte?: (NoteTargetOutcomeEnum | null)}
 
@@ -80555,7 +82407,15 @@ targetDialerFilterView?: (DialerFilterViewOrderByInput | null),
 /** NoteTargets Agency group */
 targetAgencyGroupId?: (OrderByDirection | null),
 /** Order by fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupOrderByInput | null)}
+targetAgencyGroup?: (AgencyGroupOrderByInput | null),
+/** NoteTargets Agency group post */
+targetAgencyGroupPostId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostOrderByInput | null),
+/** NoteTargets Agency group comment */
+targetAgencyGroupCommentId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentOrderByInput | null)}
 
 
 /** A note target */
@@ -80753,7 +82613,15 @@ targetDialerFilterView?: (DialerFilterViewOrderByWithGroupByInput | null),
 /** NoteTargets Agency group */
 targetAgencyGroupId?: (OrderByDirection | null),
 /** Order by fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupOrderByWithGroupByInput | null)}
+targetAgencyGroup?: (AgencyGroupOrderByWithGroupByInput | null),
+/** NoteTargets Agency group post */
+targetAgencyGroupPostId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostOrderByWithGroupByInput | null),
+/** NoteTargets Agency group comment */
+targetAgencyGroupCommentId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentOrderByWithGroupByInput | null)}
 
 
 /** Aggregate-based ordering */
@@ -81157,7 +83025,15 @@ targetDialerFilterView?: (DialerFilterViewOrderByInput | null),
 /** NoteTargets Agency group */
 targetAgencyGroupId?: (OrderByDirection | null),
 /** Order by fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupOrderByInput | null)}
+targetAgencyGroup?: (AgencyGroupOrderByInput | null),
+/** NoteTargets Agency group post */
+targetAgencyGroupPostId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostOrderByInput | null),
+/** NoteTargets Agency group comment */
+targetAgencyGroupCommentId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentOrderByInput | null)}
 
 
 /** A note target */
@@ -81253,7 +83129,11 @@ targetDialerAudioSession?: (DialerAudioSessionGroupByInput | null),
 /** Group by fields of the related dialerFilterView */
 targetDialerFilterView?: (DialerFilterViewGroupByInput | null),
 /** Group by fields of the related agencyGroup */
-targetAgencyGroup?: (AgencyGroupGroupByInput | null)}
+targetAgencyGroup?: (AgencyGroupGroupByInput | null),
+/** Group by fields of the related agencyGroupPost */
+targetAgencyGroupPost?: (AgencyGroupPostGroupByInput | null),
+/** Group by fields of the related agencyGroupComment */
+targetAgencyGroupComment?: (AgencyGroupCommentGroupByInput | null)}
 
 
 /** Outbound prospects — AI-utilising companies for InferenceSaver outreach */
@@ -125996,6 +127876,12 @@ export interface AgencyGroupGenqlSelection{
     lastCheckedAt?: boolean | number
     /** log-cli: { formPhase, questions, questionsHash, questionsScrapedAt, draftAnswers, answers, answersComplete, submittedAt, lastActivityAt, history[] } */
     joinSubmission?: boolean | number
+    /** log-cli: { lastPostId, watermark (unix s), idsAtWatermark[] }: the newest post read. It moves only after the posts are saved */
+    readCursor?: boolean | number
+    /** log-cli: when log read group last read the group */
+    lastReadAt?: boolean | number
+    /** log-cli: what the last read found, and its run folder */
+    lastReadReason?: boolean | number
     /** AgencyGroups tied to the Timeline Activity */
     timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
     /** AgencyGroups tied to the Attachment */
@@ -126006,6 +127892,8 @@ export interface AgencyGroupGenqlSelection{
     taskTargets?: (TaskTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TaskTargetFilterInput | null), orderBy?: ((TaskTargetOrderByInput | null)[] | null)} })
     /** logCli */
     socialAccount?: SocialAccountGenqlSelection
+    /** logCli */
+    posts?: (AgencyGroupPostConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgencyGroupPostFilterInput | null), orderBy?: ((AgencyGroupPostOrderByInput | null)[] | null)} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -126214,6 +128102,40 @@ export interface AgencyGroupConnectionGenqlSelection{
     percentageEmptyJoinSubmission?: boolean | number
     /** Percentage of non-empty values for joinSubmission */
     percentageNotEmptyJoinSubmission?: boolean | number
+    /** Number of unique values for readCursor */
+    countUniqueValuesReadCursor?: boolean | number
+    /** Number of empty values for readCursor */
+    countEmptyReadCursor?: boolean | number
+    /** Number of non-empty values for readCursor */
+    countNotEmptyReadCursor?: boolean | number
+    /** Percentage of empty values for readCursor */
+    percentageEmptyReadCursor?: boolean | number
+    /** Percentage of non-empty values for readCursor */
+    percentageNotEmptyReadCursor?: boolean | number
+    /** Number of unique values for lastReadAt */
+    countUniqueValuesLastReadAt?: boolean | number
+    /** Number of empty values for lastReadAt */
+    countEmptyLastReadAt?: boolean | number
+    /** Number of non-empty values for lastReadAt */
+    countNotEmptyLastReadAt?: boolean | number
+    /** Percentage of empty values for lastReadAt */
+    percentageEmptyLastReadAt?: boolean | number
+    /** Percentage of non-empty values for lastReadAt */
+    percentageNotEmptyLastReadAt?: boolean | number
+    /** Earliest date contained in the field lastReadAt */
+    minLastReadAt?: boolean | number
+    /** Latest date contained in the field lastReadAt */
+    maxLastReadAt?: boolean | number
+    /** Number of unique values for lastReadReason */
+    countUniqueValuesLastReadReason?: boolean | number
+    /** Number of empty values for lastReadReason */
+    countEmptyLastReadReason?: boolean | number
+    /** Number of non-empty values for lastReadReason */
+    countNotEmptyLastReadReason?: boolean | number
+    /** Percentage of empty values for lastReadReason */
+    percentageEmptyLastReadReason?: boolean | number
+    /** Percentage of non-empty values for lastReadReason */
+    percentageNotEmptyLastReadReason?: boolean | number
     edges?: AgencyGroupEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -126415,6 +128337,40 @@ export interface AgencyGroupGroupByConnectionGenqlSelection{
     percentageEmptyJoinSubmission?: boolean | number
     /** Percentage of non-empty values for joinSubmission */
     percentageNotEmptyJoinSubmission?: boolean | number
+    /** Number of unique values for readCursor */
+    countUniqueValuesReadCursor?: boolean | number
+    /** Number of empty values for readCursor */
+    countEmptyReadCursor?: boolean | number
+    /** Number of non-empty values for readCursor */
+    countNotEmptyReadCursor?: boolean | number
+    /** Percentage of empty values for readCursor */
+    percentageEmptyReadCursor?: boolean | number
+    /** Percentage of non-empty values for readCursor */
+    percentageNotEmptyReadCursor?: boolean | number
+    /** Number of unique values for lastReadAt */
+    countUniqueValuesLastReadAt?: boolean | number
+    /** Number of empty values for lastReadAt */
+    countEmptyLastReadAt?: boolean | number
+    /** Number of non-empty values for lastReadAt */
+    countNotEmptyLastReadAt?: boolean | number
+    /** Percentage of empty values for lastReadAt */
+    percentageEmptyLastReadAt?: boolean | number
+    /** Percentage of non-empty values for lastReadAt */
+    percentageNotEmptyLastReadAt?: boolean | number
+    /** Earliest date contained in the field lastReadAt */
+    minLastReadAt?: boolean | number
+    /** Latest date contained in the field lastReadAt */
+    maxLastReadAt?: boolean | number
+    /** Number of unique values for lastReadReason */
+    countUniqueValuesLastReadReason?: boolean | number
+    /** Number of empty values for lastReadReason */
+    countEmptyLastReadReason?: boolean | number
+    /** Number of non-empty values for lastReadReason */
+    countNotEmptyLastReadReason?: boolean | number
+    /** Percentage of empty values for lastReadReason */
+    percentageEmptyLastReadReason?: boolean | number
+    /** Percentage of non-empty values for lastReadReason */
+    percentageNotEmptyLastReadReason?: boolean | number
     edges?: AgencyGroupEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -126478,7 +128434,13 @@ joinRequestedAt?: (Scalars['DateTime'] | null),
 /** log-cli: when a run last read the group page */
 lastCheckedAt?: (Scalars['DateTime'] | null),
 /** log-cli: { formPhase, questions, questionsHash, questionsScrapedAt, draftAnswers, answers, answersComplete, submittedAt, lastActivityAt, history[] } */
-joinSubmission?: (Scalars['JSON'] | null)}
+joinSubmission?: (Scalars['JSON'] | null),
+/** log-cli: { lastPostId, watermark (unix s), idsAtWatermark[] }: the newest post read. It moves only after the posts are saved */
+readCursor?: (Scalars['JSON'] | null),
+/** log-cli: when log read group last read the group */
+lastReadAt?: (Scalars['DateTime'] | null),
+/** log-cli: what the last read found, and its run folder */
+lastReadReason?: (Scalars['String'] | null)}
 
 
 /** log-cli: a Facebook group, on one socialAccount */
@@ -126520,7 +128482,13 @@ joinRequestedAt?: (Scalars['DateTime'] | null),
 /** log-cli: when a run last read the group page */
 lastCheckedAt?: (Scalars['DateTime'] | null),
 /** log-cli: { formPhase, questions, questionsHash, questionsScrapedAt, draftAnswers, answers, answersComplete, submittedAt, lastActivityAt, history[] } */
-joinSubmission?: (Scalars['JSON'] | null)}
+joinSubmission?: (Scalars['JSON'] | null),
+/** log-cli: { lastPostId, watermark (unix s), idsAtWatermark[] }: the newest post read. It moves only after the posts are saved */
+readCursor?: (Scalars['JSON'] | null),
+/** log-cli: when log read group last read the group */
+lastReadAt?: (Scalars['DateTime'] | null),
+/** log-cli: what the last read found, and its run folder */
+lastReadReason?: (Scalars['String'] | null)}
 
 
 /** log-cli: a Facebook group, on one socialAccount */
@@ -126562,7 +128530,13 @@ joinRequestedAt?: (DateTimeFilter | null),
 /** log-cli: when a run last read the group page */
 lastCheckedAt?: (DateTimeFilter | null),
 /** log-cli: { formPhase, questions, questionsHash, questionsScrapedAt, draftAnswers, answers, answersComplete, submittedAt, lastActivityAt, history[] } */
-joinSubmission?: (RawJsonFilter | null),and?: ((AgencyGroupFilterInput | null)[] | null),or?: ((AgencyGroupFilterInput | null)[] | null),not?: (AgencyGroupFilterInput | null)}
+joinSubmission?: (RawJsonFilter | null),
+/** log-cli: { lastPostId, watermark (unix s), idsAtWatermark[] }: the newest post read. It moves only after the posts are saved */
+readCursor?: (RawJsonFilter | null),
+/** log-cli: when log read group last read the group */
+lastReadAt?: (DateTimeFilter | null),
+/** log-cli: what the last read found, and its run folder */
+lastReadReason?: (StringFilter | null),and?: ((AgencyGroupFilterInput | null)[] | null),or?: ((AgencyGroupFilterInput | null)[] | null),not?: (AgencyGroupFilterInput | null)}
 
 export interface AgencyGroupJoinStatusEnumFilter {eq?: (AgencyGroupJoinStatusEnum | null),neq?: (AgencyGroupJoinStatusEnum | null),in?: ((AgencyGroupJoinStatusEnum | null)[] | null),containsAny?: ((AgencyGroupJoinStatusEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AgencyGroupJoinStatusEnum | null),gte?: (AgencyGroupJoinStatusEnum | null),lt?: (AgencyGroupJoinStatusEnum | null),lte?: (AgencyGroupJoinStatusEnum | null)}
 
@@ -126606,7 +128580,13 @@ joinRequestedAt?: (OrderByDirection | null),
 /** log-cli: when a run last read the group page */
 lastCheckedAt?: (OrderByDirection | null),
 /** log-cli: { formPhase, questions, questionsHash, questionsScrapedAt, draftAnswers, answers, answersComplete, submittedAt, lastActivityAt, history[] } */
-joinSubmission?: (OrderByDirection | null)}
+joinSubmission?: (OrderByDirection | null),
+/** log-cli: { lastPostId, watermark (unix s), idsAtWatermark[] }: the newest post read. It moves only after the posts are saved */
+readCursor?: (OrderByDirection | null),
+/** log-cli: when log read group last read the group */
+lastReadAt?: (OrderByDirection | null),
+/** log-cli: what the last read found, and its run folder */
+lastReadReason?: (OrderByDirection | null)}
 
 
 /** log-cli: a Facebook group, on one socialAccount */
@@ -126650,7 +128630,13 @@ joinRequestedAt?: (OrderByDateGranularityInput | null),
 /** log-cli: when a run last read the group page */
 lastCheckedAt?: (OrderByDateGranularityInput | null),
 /** log-cli: { formPhase, questions, questionsHash, questionsScrapedAt, draftAnswers, answers, answersComplete, submittedAt, lastActivityAt, history[] } */
-joinSubmission?: (OrderByDirection | null)}
+joinSubmission?: (OrderByDirection | null),
+/** log-cli: { lastPostId, watermark (unix s), idsAtWatermark[] }: the newest post read. It moves only after the posts are saved */
+readCursor?: (OrderByDirection | null),
+/** log-cli: when log read group last read the group */
+lastReadAt?: (OrderByDateGranularityInput | null),
+/** log-cli: what the last read found, and its run folder */
+lastReadReason?: (OrderByDirection | null)}
 
 
 /** Aggregate-based ordering */
@@ -126850,7 +128836,41 @@ countNotEmptyJoinSubmission?: (OrderByDirection | null),
 /** Percentage of empty values for joinSubmission */
 percentageEmptyJoinSubmission?: (OrderByDirection | null),
 /** Percentage of non-empty values for joinSubmission */
-percentageNotEmptyJoinSubmission?: (OrderByDirection | null)}
+percentageNotEmptyJoinSubmission?: (OrderByDirection | null),
+/** Number of unique values for readCursor */
+countUniqueValuesReadCursor?: (OrderByDirection | null),
+/** Number of empty values for readCursor */
+countEmptyReadCursor?: (OrderByDirection | null),
+/** Number of non-empty values for readCursor */
+countNotEmptyReadCursor?: (OrderByDirection | null),
+/** Percentage of empty values for readCursor */
+percentageEmptyReadCursor?: (OrderByDirection | null),
+/** Percentage of non-empty values for readCursor */
+percentageNotEmptyReadCursor?: (OrderByDirection | null),
+/** Number of unique values for lastReadAt */
+countUniqueValuesLastReadAt?: (OrderByDirection | null),
+/** Number of empty values for lastReadAt */
+countEmptyLastReadAt?: (OrderByDirection | null),
+/** Number of non-empty values for lastReadAt */
+countNotEmptyLastReadAt?: (OrderByDirection | null),
+/** Percentage of empty values for lastReadAt */
+percentageEmptyLastReadAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for lastReadAt */
+percentageNotEmptyLastReadAt?: (OrderByDirection | null),
+/** Earliest date contained in the field lastReadAt */
+minLastReadAt?: (OrderByDirection | null),
+/** Latest date contained in the field lastReadAt */
+maxLastReadAt?: (OrderByDirection | null),
+/** Number of unique values for lastReadReason */
+countUniqueValuesLastReadReason?: (OrderByDirection | null),
+/** Number of empty values for lastReadReason */
+countEmptyLastReadReason?: (OrderByDirection | null),
+/** Number of non-empty values for lastReadReason */
+countNotEmptyLastReadReason?: (OrderByDirection | null),
+/** Percentage of empty values for lastReadReason */
+percentageEmptyLastReadReason?: (OrderByDirection | null),
+/** Percentage of non-empty values for lastReadReason */
+percentageNotEmptyLastReadReason?: (OrderByDirection | null)}
 
 
 /** log-cli: a Facebook group, on one socialAccount */
@@ -126876,7 +128896,2347 @@ membersLabel?: (Scalars['Boolean'] | null),
 /** log-cli: when log join group --live pressed Join */
 joinRequestedAt?: (GroupByDateGranularityInput | null),
 /** log-cli: when a run last read the group page */
-lastCheckedAt?: (GroupByDateGranularityInput | null)}
+lastCheckedAt?: (GroupByDateGranularityInput | null),
+/** log-cli: when log read group last read the group */
+lastReadAt?: (GroupByDateGranularityInput | null),
+/** log-cli: what the last read found, and its run folder */
+lastReadReason?: (Scalars['Boolean'] | null)}
+
+
+/** log-cli: a post in a Facebook group, as log read group read it */
+export interface AgencyGroupPostGenqlSelection{
+    /** Name */
+    name?: boolean | number
+    /** ID */
+    id?: boolean | number
+    /** Creation date */
+    createdAt?: boolean | number
+    /** The creator of the record */
+    createdBy?: ActorGenqlSelection
+    /** Deletion date */
+    deletedAt?: boolean | number
+    /** Position */
+    position?: boolean | number
+    /** Last time the record was changed */
+    updatedAt?: boolean | number
+    /** The workspace member who last updated the record */
+    updatedBy?: ActorGenqlSelection
+    /** Search vector */
+    searchVector?: boolean | number
+    /** log-cli: post_id. With the group row, the post key */
+    facebookPostId?: boolean | number
+    /** logCli */
+    facebookGroupId?: boolean | number
+    /** logCli */
+    authorName?: boolean | number
+    /** logCli */
+    authorFacebookId?: boolean | number
+    /** logCli */
+    authorUrl?: boolean | number
+    /** log-cli: message.text; empty for a photo or a share */
+    text?: boolean | number
+    /** logCli */
+    permalink?: boolean | number
+    /** log-cli: what a comment or reaction on the post is sent to */
+    feedbackId?: boolean | number
+    /** log-cli: creation_time */
+    postedAt?: boolean | number
+    /** log-cli: the count the feed showed at the last read */
+    commentCount?: boolean | number
+    /** log-cli: when its comments were last read */
+    commentsReadAt?: boolean | number
+    /** log-cli: commentCount when its comments were last read: a read opens the post again only when it grew */
+    commentsReadCount?: boolean | number
+    /** logCli */
+    agencyGroupId?: boolean | number
+    /** AgencyGroupPosts tied to the Timeline Activity */
+    timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
+    /** AgencyGroupPosts tied to the Attachment */
+    attachments?: (AttachmentConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AttachmentFilterInput | null), orderBy?: ((AttachmentOrderByInput | null)[] | null)} })
+    /** AgencyGroupPosts tied to the Note Target */
+    noteTargets?: (NoteTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (NoteTargetFilterInput | null), orderBy?: ((NoteTargetOrderByInput | null)[] | null)} })
+    /** AgencyGroupPosts tied to the Task Target */
+    taskTargets?: (TaskTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TaskTargetFilterInput | null), orderBy?: ((TaskTargetOrderByInput | null)[] | null)} })
+    /** logCli */
+    comments?: (AgencyGroupCommentConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgencyGroupCommentFilterInput | null), orderBy?: ((AgencyGroupCommentOrderByInput | null)[] | null)} })
+    /** logCli */
+    agencyGroup?: AgencyGroupGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** log-cli: a post in a Facebook group, as log read group read it */
+export interface AgencyGroupPostEdgeGenqlSelection{
+    node?: AgencyGroupPostGenqlSelection
+    cursor?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** log-cli: a post in a Facebook group, as log read group read it */
+export interface AgencyGroupPostConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for facebookPostId */
+    countUniqueValuesFacebookPostId?: boolean | number
+    /** Number of empty values for facebookPostId */
+    countEmptyFacebookPostId?: boolean | number
+    /** Number of non-empty values for facebookPostId */
+    countNotEmptyFacebookPostId?: boolean | number
+    /** Percentage of empty values for facebookPostId */
+    percentageEmptyFacebookPostId?: boolean | number
+    /** Percentage of non-empty values for facebookPostId */
+    percentageNotEmptyFacebookPostId?: boolean | number
+    /** Number of unique values for facebookGroupId */
+    countUniqueValuesFacebookGroupId?: boolean | number
+    /** Number of empty values for facebookGroupId */
+    countEmptyFacebookGroupId?: boolean | number
+    /** Number of non-empty values for facebookGroupId */
+    countNotEmptyFacebookGroupId?: boolean | number
+    /** Percentage of empty values for facebookGroupId */
+    percentageEmptyFacebookGroupId?: boolean | number
+    /** Percentage of non-empty values for facebookGroupId */
+    percentageNotEmptyFacebookGroupId?: boolean | number
+    /** Number of unique values for authorName */
+    countUniqueValuesAuthorName?: boolean | number
+    /** Number of empty values for authorName */
+    countEmptyAuthorName?: boolean | number
+    /** Number of non-empty values for authorName */
+    countNotEmptyAuthorName?: boolean | number
+    /** Percentage of empty values for authorName */
+    percentageEmptyAuthorName?: boolean | number
+    /** Percentage of non-empty values for authorName */
+    percentageNotEmptyAuthorName?: boolean | number
+    /** Number of unique values for authorFacebookId */
+    countUniqueValuesAuthorFacebookId?: boolean | number
+    /** Number of empty values for authorFacebookId */
+    countEmptyAuthorFacebookId?: boolean | number
+    /** Number of non-empty values for authorFacebookId */
+    countNotEmptyAuthorFacebookId?: boolean | number
+    /** Percentage of empty values for authorFacebookId */
+    percentageEmptyAuthorFacebookId?: boolean | number
+    /** Percentage of non-empty values for authorFacebookId */
+    percentageNotEmptyAuthorFacebookId?: boolean | number
+    /** Number of unique values for authorUrl */
+    countUniqueValuesAuthorUrl?: boolean | number
+    /** Number of empty values for authorUrl */
+    countEmptyAuthorUrl?: boolean | number
+    /** Number of non-empty values for authorUrl */
+    countNotEmptyAuthorUrl?: boolean | number
+    /** Percentage of empty values for authorUrl */
+    percentageEmptyAuthorUrl?: boolean | number
+    /** Percentage of non-empty values for authorUrl */
+    percentageNotEmptyAuthorUrl?: boolean | number
+    /** Number of unique values for text */
+    countUniqueValuesText?: boolean | number
+    /** Number of empty values for text */
+    countEmptyText?: boolean | number
+    /** Number of non-empty values for text */
+    countNotEmptyText?: boolean | number
+    /** Percentage of empty values for text */
+    percentageEmptyText?: boolean | number
+    /** Percentage of non-empty values for text */
+    percentageNotEmptyText?: boolean | number
+    /** Number of unique values for permalink */
+    countUniqueValuesPermalink?: boolean | number
+    /** Number of empty values for permalink */
+    countEmptyPermalink?: boolean | number
+    /** Number of non-empty values for permalink */
+    countNotEmptyPermalink?: boolean | number
+    /** Percentage of empty values for permalink */
+    percentageEmptyPermalink?: boolean | number
+    /** Percentage of non-empty values for permalink */
+    percentageNotEmptyPermalink?: boolean | number
+    /** Number of unique values for feedbackId */
+    countUniqueValuesFeedbackId?: boolean | number
+    /** Number of empty values for feedbackId */
+    countEmptyFeedbackId?: boolean | number
+    /** Number of non-empty values for feedbackId */
+    countNotEmptyFeedbackId?: boolean | number
+    /** Percentage of empty values for feedbackId */
+    percentageEmptyFeedbackId?: boolean | number
+    /** Percentage of non-empty values for feedbackId */
+    percentageNotEmptyFeedbackId?: boolean | number
+    /** Number of unique values for postedAt */
+    countUniqueValuesPostedAt?: boolean | number
+    /** Number of empty values for postedAt */
+    countEmptyPostedAt?: boolean | number
+    /** Number of non-empty values for postedAt */
+    countNotEmptyPostedAt?: boolean | number
+    /** Percentage of empty values for postedAt */
+    percentageEmptyPostedAt?: boolean | number
+    /** Percentage of non-empty values for postedAt */
+    percentageNotEmptyPostedAt?: boolean | number
+    /** Earliest date contained in the field postedAt */
+    minPostedAt?: boolean | number
+    /** Latest date contained in the field postedAt */
+    maxPostedAt?: boolean | number
+    /** Number of unique values for commentCount */
+    countUniqueValuesCommentCount?: boolean | number
+    /** Number of empty values for commentCount */
+    countEmptyCommentCount?: boolean | number
+    /** Number of non-empty values for commentCount */
+    countNotEmptyCommentCount?: boolean | number
+    /** Percentage of empty values for commentCount */
+    percentageEmptyCommentCount?: boolean | number
+    /** Percentage of non-empty values for commentCount */
+    percentageNotEmptyCommentCount?: boolean | number
+    /** Minimum amount contained in the field commentCount */
+    minCommentCount?: boolean | number
+    /** Maximum amount contained in the field commentCount */
+    maxCommentCount?: boolean | number
+    /** Average amount contained in the field commentCount */
+    avgCommentCount?: boolean | number
+    /** Sum of amounts contained in the field commentCount */
+    sumCommentCount?: boolean | number
+    /** Number of unique values for commentsReadAt */
+    countUniqueValuesCommentsReadAt?: boolean | number
+    /** Number of empty values for commentsReadAt */
+    countEmptyCommentsReadAt?: boolean | number
+    /** Number of non-empty values for commentsReadAt */
+    countNotEmptyCommentsReadAt?: boolean | number
+    /** Percentage of empty values for commentsReadAt */
+    percentageEmptyCommentsReadAt?: boolean | number
+    /** Percentage of non-empty values for commentsReadAt */
+    percentageNotEmptyCommentsReadAt?: boolean | number
+    /** Earliest date contained in the field commentsReadAt */
+    minCommentsReadAt?: boolean | number
+    /** Latest date contained in the field commentsReadAt */
+    maxCommentsReadAt?: boolean | number
+    /** Number of unique values for commentsReadCount */
+    countUniqueValuesCommentsReadCount?: boolean | number
+    /** Number of empty values for commentsReadCount */
+    countEmptyCommentsReadCount?: boolean | number
+    /** Number of non-empty values for commentsReadCount */
+    countNotEmptyCommentsReadCount?: boolean | number
+    /** Percentage of empty values for commentsReadCount */
+    percentageEmptyCommentsReadCount?: boolean | number
+    /** Percentage of non-empty values for commentsReadCount */
+    percentageNotEmptyCommentsReadCount?: boolean | number
+    /** Minimum amount contained in the field commentsReadCount */
+    minCommentsReadCount?: boolean | number
+    /** Maximum amount contained in the field commentsReadCount */
+    maxCommentsReadCount?: boolean | number
+    /** Average amount contained in the field commentsReadCount */
+    avgCommentsReadCount?: boolean | number
+    /** Sum of amounts contained in the field commentsReadCount */
+    sumCommentsReadCount?: boolean | number
+    edges?: AgencyGroupPostEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** log-cli: a post in a Facebook group, as log read group read it */
+export interface AgencyGroupPostGroupByConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for facebookPostId */
+    countUniqueValuesFacebookPostId?: boolean | number
+    /** Number of empty values for facebookPostId */
+    countEmptyFacebookPostId?: boolean | number
+    /** Number of non-empty values for facebookPostId */
+    countNotEmptyFacebookPostId?: boolean | number
+    /** Percentage of empty values for facebookPostId */
+    percentageEmptyFacebookPostId?: boolean | number
+    /** Percentage of non-empty values for facebookPostId */
+    percentageNotEmptyFacebookPostId?: boolean | number
+    /** Number of unique values for facebookGroupId */
+    countUniqueValuesFacebookGroupId?: boolean | number
+    /** Number of empty values for facebookGroupId */
+    countEmptyFacebookGroupId?: boolean | number
+    /** Number of non-empty values for facebookGroupId */
+    countNotEmptyFacebookGroupId?: boolean | number
+    /** Percentage of empty values for facebookGroupId */
+    percentageEmptyFacebookGroupId?: boolean | number
+    /** Percentage of non-empty values for facebookGroupId */
+    percentageNotEmptyFacebookGroupId?: boolean | number
+    /** Number of unique values for authorName */
+    countUniqueValuesAuthorName?: boolean | number
+    /** Number of empty values for authorName */
+    countEmptyAuthorName?: boolean | number
+    /** Number of non-empty values for authorName */
+    countNotEmptyAuthorName?: boolean | number
+    /** Percentage of empty values for authorName */
+    percentageEmptyAuthorName?: boolean | number
+    /** Percentage of non-empty values for authorName */
+    percentageNotEmptyAuthorName?: boolean | number
+    /** Number of unique values for authorFacebookId */
+    countUniqueValuesAuthorFacebookId?: boolean | number
+    /** Number of empty values for authorFacebookId */
+    countEmptyAuthorFacebookId?: boolean | number
+    /** Number of non-empty values for authorFacebookId */
+    countNotEmptyAuthorFacebookId?: boolean | number
+    /** Percentage of empty values for authorFacebookId */
+    percentageEmptyAuthorFacebookId?: boolean | number
+    /** Percentage of non-empty values for authorFacebookId */
+    percentageNotEmptyAuthorFacebookId?: boolean | number
+    /** Number of unique values for authorUrl */
+    countUniqueValuesAuthorUrl?: boolean | number
+    /** Number of empty values for authorUrl */
+    countEmptyAuthorUrl?: boolean | number
+    /** Number of non-empty values for authorUrl */
+    countNotEmptyAuthorUrl?: boolean | number
+    /** Percentage of empty values for authorUrl */
+    percentageEmptyAuthorUrl?: boolean | number
+    /** Percentage of non-empty values for authorUrl */
+    percentageNotEmptyAuthorUrl?: boolean | number
+    /** Number of unique values for text */
+    countUniqueValuesText?: boolean | number
+    /** Number of empty values for text */
+    countEmptyText?: boolean | number
+    /** Number of non-empty values for text */
+    countNotEmptyText?: boolean | number
+    /** Percentage of empty values for text */
+    percentageEmptyText?: boolean | number
+    /** Percentage of non-empty values for text */
+    percentageNotEmptyText?: boolean | number
+    /** Number of unique values for permalink */
+    countUniqueValuesPermalink?: boolean | number
+    /** Number of empty values for permalink */
+    countEmptyPermalink?: boolean | number
+    /** Number of non-empty values for permalink */
+    countNotEmptyPermalink?: boolean | number
+    /** Percentage of empty values for permalink */
+    percentageEmptyPermalink?: boolean | number
+    /** Percentage of non-empty values for permalink */
+    percentageNotEmptyPermalink?: boolean | number
+    /** Number of unique values for feedbackId */
+    countUniqueValuesFeedbackId?: boolean | number
+    /** Number of empty values for feedbackId */
+    countEmptyFeedbackId?: boolean | number
+    /** Number of non-empty values for feedbackId */
+    countNotEmptyFeedbackId?: boolean | number
+    /** Percentage of empty values for feedbackId */
+    percentageEmptyFeedbackId?: boolean | number
+    /** Percentage of non-empty values for feedbackId */
+    percentageNotEmptyFeedbackId?: boolean | number
+    /** Number of unique values for postedAt */
+    countUniqueValuesPostedAt?: boolean | number
+    /** Number of empty values for postedAt */
+    countEmptyPostedAt?: boolean | number
+    /** Number of non-empty values for postedAt */
+    countNotEmptyPostedAt?: boolean | number
+    /** Percentage of empty values for postedAt */
+    percentageEmptyPostedAt?: boolean | number
+    /** Percentage of non-empty values for postedAt */
+    percentageNotEmptyPostedAt?: boolean | number
+    /** Earliest date contained in the field postedAt */
+    minPostedAt?: boolean | number
+    /** Latest date contained in the field postedAt */
+    maxPostedAt?: boolean | number
+    /** Number of unique values for commentCount */
+    countUniqueValuesCommentCount?: boolean | number
+    /** Number of empty values for commentCount */
+    countEmptyCommentCount?: boolean | number
+    /** Number of non-empty values for commentCount */
+    countNotEmptyCommentCount?: boolean | number
+    /** Percentage of empty values for commentCount */
+    percentageEmptyCommentCount?: boolean | number
+    /** Percentage of non-empty values for commentCount */
+    percentageNotEmptyCommentCount?: boolean | number
+    /** Minimum amount contained in the field commentCount */
+    minCommentCount?: boolean | number
+    /** Maximum amount contained in the field commentCount */
+    maxCommentCount?: boolean | number
+    /** Average amount contained in the field commentCount */
+    avgCommentCount?: boolean | number
+    /** Sum of amounts contained in the field commentCount */
+    sumCommentCount?: boolean | number
+    /** Number of unique values for commentsReadAt */
+    countUniqueValuesCommentsReadAt?: boolean | number
+    /** Number of empty values for commentsReadAt */
+    countEmptyCommentsReadAt?: boolean | number
+    /** Number of non-empty values for commentsReadAt */
+    countNotEmptyCommentsReadAt?: boolean | number
+    /** Percentage of empty values for commentsReadAt */
+    percentageEmptyCommentsReadAt?: boolean | number
+    /** Percentage of non-empty values for commentsReadAt */
+    percentageNotEmptyCommentsReadAt?: boolean | number
+    /** Earliest date contained in the field commentsReadAt */
+    minCommentsReadAt?: boolean | number
+    /** Latest date contained in the field commentsReadAt */
+    maxCommentsReadAt?: boolean | number
+    /** Number of unique values for commentsReadCount */
+    countUniqueValuesCommentsReadCount?: boolean | number
+    /** Number of empty values for commentsReadCount */
+    countEmptyCommentsReadCount?: boolean | number
+    /** Number of non-empty values for commentsReadCount */
+    countNotEmptyCommentsReadCount?: boolean | number
+    /** Percentage of empty values for commentsReadCount */
+    percentageEmptyCommentsReadCount?: boolean | number
+    /** Percentage of non-empty values for commentsReadCount */
+    percentageNotEmptyCommentsReadCount?: boolean | number
+    /** Minimum amount contained in the field commentsReadCount */
+    minCommentsReadCount?: boolean | number
+    /** Maximum amount contained in the field commentsReadCount */
+    maxCommentsReadCount?: boolean | number
+    /** Average amount contained in the field commentsReadCount */
+    avgCommentsReadCount?: boolean | number
+    /** Sum of amounts contained in the field commentsReadCount */
+    sumCommentsReadCount?: boolean | number
+    edges?: AgencyGroupPostEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    groupByDimensionValues?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface AgencyGroupPostRelationInput {
+/** Connect to a agencyGroupPost record */
+connect?: (AgencyGroupPostConnectInput | null),
+/** Create and connect a agencyGroupPost record */
+create?: (AgencyGroupPostCreateInput | null),
+/** Disconnect from a agencyGroupPost record */
+disconnect?: (Scalars['Boolean'] | null)}
+
+export interface AgencyGroupPostConnectInput {
+/** Find a agencyGroupPost record based on its unique fields: id */
+where?: (AgencyGroupPostWhereUniqueInput | null)}
+
+export interface AgencyGroupPostWhereUniqueInput {
+/** Connect by ID */
+id?: (Scalars['ID'] | null)}
+
+
+/** log-cli: a post in a Facebook group, as log read group read it */
+export interface AgencyGroupPostCreateInput {
+/** Name */
+name?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorCreateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorCreateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),
+/** log-cli: post_id. With the group row, the post key */
+facebookPostId?: (Scalars['String'] | null),
+/** logCli */
+facebookGroupId?: (Scalars['String'] | null),
+/** logCli */
+authorName?: (Scalars['String'] | null),
+/** logCli */
+authorFacebookId?: (Scalars['String'] | null),
+/** logCli */
+authorUrl?: (Scalars['String'] | null),
+/** log-cli: message.text; empty for a photo or a share */
+text?: (Scalars['String'] | null),
+/** logCli */
+permalink?: (Scalars['String'] | null),
+/** log-cli: what a comment or reaction on the post is sent to */
+feedbackId?: (Scalars['String'] | null),
+/** log-cli: creation_time */
+postedAt?: (Scalars['DateTime'] | null),
+/** log-cli: the count the feed showed at the last read */
+commentCount?: (Scalars['Float'] | null),
+/** log-cli: when its comments were last read */
+commentsReadAt?: (Scalars['DateTime'] | null),
+/** log-cli: commentCount when its comments were last read: a read opens the post again only when it grew */
+commentsReadCount?: (Scalars['Float'] | null),
+/** logCli */
+agencyGroupId?: (Scalars['ID'] | null),
+/** logCli */
+agencyGroup?: (AgencyGroupRelationInput | null)}
+
+
+/** log-cli: a post in a Facebook group, as log read group read it */
+export interface AgencyGroupPostUpdateInput {
+/** Name */
+name?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorUpdateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorUpdateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),
+/** log-cli: post_id. With the group row, the post key */
+facebookPostId?: (Scalars['String'] | null),
+/** logCli */
+facebookGroupId?: (Scalars['String'] | null),
+/** logCli */
+authorName?: (Scalars['String'] | null),
+/** logCli */
+authorFacebookId?: (Scalars['String'] | null),
+/** logCli */
+authorUrl?: (Scalars['String'] | null),
+/** log-cli: message.text; empty for a photo or a share */
+text?: (Scalars['String'] | null),
+/** logCli */
+permalink?: (Scalars['String'] | null),
+/** log-cli: what a comment or reaction on the post is sent to */
+feedbackId?: (Scalars['String'] | null),
+/** log-cli: creation_time */
+postedAt?: (Scalars['DateTime'] | null),
+/** log-cli: the count the feed showed at the last read */
+commentCount?: (Scalars['Float'] | null),
+/** log-cli: when its comments were last read */
+commentsReadAt?: (Scalars['DateTime'] | null),
+/** log-cli: commentCount when its comments were last read: a read opens the post again only when it grew */
+commentsReadCount?: (Scalars['Float'] | null),
+/** logCli */
+agencyGroupId?: (Scalars['ID'] | null),
+/** logCli */
+agencyGroup?: (AgencyGroupRelationInput | null)}
+
+
+/** log-cli: a post in a Facebook group, as log read group read it */
+export interface AgencyGroupPostFilterInput {
+/** Name */
+name?: (StringFilter | null),
+/** ID */
+id?: (UUIDFilter | null),
+/** Creation date */
+createdAt?: (DateTimeFilter | null),
+/** The creator of the record */
+createdBy?: (ActorFilterInput | null),
+/** Deletion date */
+deletedAt?: (DateTimeFilter | null),
+/** Position */
+position?: (FloatFilter | null),
+/** Last time the record was changed */
+updatedAt?: (DateTimeFilter | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorFilterInput | null),
+/** Search vector */
+searchVector?: (TSVectorFilter | null),
+/** log-cli: post_id. With the group row, the post key */
+facebookPostId?: (StringFilter | null),
+/** logCli */
+facebookGroupId?: (StringFilter | null),
+/** logCli */
+authorName?: (StringFilter | null),
+/** logCli */
+authorFacebookId?: (StringFilter | null),
+/** logCli */
+authorUrl?: (StringFilter | null),
+/** log-cli: message.text; empty for a photo or a share */
+text?: (StringFilter | null),
+/** logCli */
+permalink?: (StringFilter | null),
+/** log-cli: what a comment or reaction on the post is sent to */
+feedbackId?: (StringFilter | null),
+/** log-cli: creation_time */
+postedAt?: (DateTimeFilter | null),
+/** log-cli: the count the feed showed at the last read */
+commentCount?: (FloatFilter | null),
+/** log-cli: when its comments were last read */
+commentsReadAt?: (DateTimeFilter | null),
+/** log-cli: commentCount when its comments were last read: a read opens the post again only when it grew */
+commentsReadCount?: (FloatFilter | null),
+/** logCli */
+agencyGroupId?: (UUIDFilter | null),
+/** Filter on fields of the related agencyGroup */
+agencyGroup?: (AgencyGroupFilterInput | null),and?: ((AgencyGroupPostFilterInput | null)[] | null),or?: ((AgencyGroupPostFilterInput | null)[] | null),not?: (AgencyGroupPostFilterInput | null)}
+
+
+/** log-cli: a post in a Facebook group, as log read group read it */
+export interface AgencyGroupPostOrderByInput {
+/** Name */
+name?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDirection | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDirection | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDirection | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),
+/** log-cli: post_id. With the group row, the post key */
+facebookPostId?: (OrderByDirection | null),
+/** logCli */
+facebookGroupId?: (OrderByDirection | null),
+/** logCli */
+authorName?: (OrderByDirection | null),
+/** logCli */
+authorFacebookId?: (OrderByDirection | null),
+/** logCli */
+authorUrl?: (OrderByDirection | null),
+/** log-cli: message.text; empty for a photo or a share */
+text?: (OrderByDirection | null),
+/** logCli */
+permalink?: (OrderByDirection | null),
+/** log-cli: what a comment or reaction on the post is sent to */
+feedbackId?: (OrderByDirection | null),
+/** log-cli: creation_time */
+postedAt?: (OrderByDirection | null),
+/** log-cli: the count the feed showed at the last read */
+commentCount?: (OrderByDirection | null),
+/** log-cli: when its comments were last read */
+commentsReadAt?: (OrderByDirection | null),
+/** log-cli: commentCount when its comments were last read: a read opens the post again only when it grew */
+commentsReadCount?: (OrderByDirection | null),
+/** logCli */
+agencyGroupId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroup */
+agencyGroup?: (AgencyGroupOrderByInput | null)}
+
+
+/** log-cli: a post in a Facebook group, as log read group read it */
+export interface AgencyGroupPostOrderByWithGroupByInput {
+/** Order by aggregate values */
+aggregate?: (AgencyGroupPostOrderByWithGroupByAggregateInput | null),
+/** Name */
+name?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDateGranularityInput | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDateGranularityInput | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDateGranularityInput | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),
+/** log-cli: post_id. With the group row, the post key */
+facebookPostId?: (OrderByDirection | null),
+/** logCli */
+facebookGroupId?: (OrderByDirection | null),
+/** logCli */
+authorName?: (OrderByDirection | null),
+/** logCli */
+authorFacebookId?: (OrderByDirection | null),
+/** logCli */
+authorUrl?: (OrderByDirection | null),
+/** log-cli: message.text; empty for a photo or a share */
+text?: (OrderByDirection | null),
+/** logCli */
+permalink?: (OrderByDirection | null),
+/** log-cli: what a comment or reaction on the post is sent to */
+feedbackId?: (OrderByDirection | null),
+/** log-cli: creation_time */
+postedAt?: (OrderByDateGranularityInput | null),
+/** log-cli: the count the feed showed at the last read */
+commentCount?: (OrderByDirection | null),
+/** log-cli: when its comments were last read */
+commentsReadAt?: (OrderByDateGranularityInput | null),
+/** log-cli: commentCount when its comments were last read: a read opens the post again only when it grew */
+commentsReadCount?: (OrderByDirection | null),
+/** logCli */
+agencyGroupId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroup */
+agencyGroup?: (AgencyGroupOrderByWithGroupByInput | null)}
+
+
+/** Aggregate-based ordering */
+export interface AgencyGroupPostOrderByWithGroupByAggregateInput {
+/** Total number of records in the connection */
+totalCount?: (OrderByDirection | null),
+/** Number of unique values for name */
+countUniqueValuesName?: (OrderByDirection | null),
+/** Number of empty values for name */
+countEmptyName?: (OrderByDirection | null),
+/** Number of non-empty values for name */
+countNotEmptyName?: (OrderByDirection | null),
+/** Percentage of empty values for name */
+percentageEmptyName?: (OrderByDirection | null),
+/** Percentage of non-empty values for name */
+percentageNotEmptyName?: (OrderByDirection | null),
+/** Number of unique values for id */
+countUniqueValuesId?: (OrderByDirection | null),
+/** Number of empty values for id */
+countEmptyId?: (OrderByDirection | null),
+/** Number of non-empty values for id */
+countNotEmptyId?: (OrderByDirection | null),
+/** Percentage of empty values for id */
+percentageEmptyId?: (OrderByDirection | null),
+/** Percentage of non-empty values for id */
+percentageNotEmptyId?: (OrderByDirection | null),
+/** Number of unique values for createdAt */
+countUniqueValuesCreatedAt?: (OrderByDirection | null),
+/** Number of empty values for createdAt */
+countEmptyCreatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for createdAt */
+countNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for createdAt */
+percentageEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdAt */
+percentageNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field createdAt */
+minCreatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field createdAt */
+maxCreatedAt?: (OrderByDirection | null),
+/** Number of unique values for createdBy */
+countUniqueValuesCreatedBy?: (OrderByDirection | null),
+/** Number of empty values for createdBy */
+countEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for createdBy */
+countNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for createdBy */
+percentageEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdBy */
+percentageNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of unique values for deletedAt */
+countUniqueValuesDeletedAt?: (OrderByDirection | null),
+/** Number of empty values for deletedAt */
+countEmptyDeletedAt?: (OrderByDirection | null),
+/** Number of non-empty values for deletedAt */
+countNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of empty values for deletedAt */
+percentageEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for deletedAt */
+percentageNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field deletedAt */
+minDeletedAt?: (OrderByDirection | null),
+/** Latest date contained in the field deletedAt */
+maxDeletedAt?: (OrderByDirection | null),
+/** Number of unique values for position */
+countUniqueValuesPosition?: (OrderByDirection | null),
+/** Number of empty values for position */
+countEmptyPosition?: (OrderByDirection | null),
+/** Number of non-empty values for position */
+countNotEmptyPosition?: (OrderByDirection | null),
+/** Percentage of empty values for position */
+percentageEmptyPosition?: (OrderByDirection | null),
+/** Percentage of non-empty values for position */
+percentageNotEmptyPosition?: (OrderByDirection | null),
+/** Number of unique values for updatedAt */
+countUniqueValuesUpdatedAt?: (OrderByDirection | null),
+/** Number of empty values for updatedAt */
+countEmptyUpdatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for updatedAt */
+countNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for updatedAt */
+percentageEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedAt */
+percentageNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field updatedAt */
+minUpdatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field updatedAt */
+maxUpdatedAt?: (OrderByDirection | null),
+/** Number of unique values for updatedBy */
+countUniqueValuesUpdatedBy?: (OrderByDirection | null),
+/** Number of empty values for updatedBy */
+countEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for updatedBy */
+countNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for updatedBy */
+percentageEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedBy */
+percentageNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of unique values for searchVector */
+countUniqueValuesSearchVector?: (OrderByDirection | null),
+/** Number of empty values for searchVector */
+countEmptySearchVector?: (OrderByDirection | null),
+/** Number of non-empty values for searchVector */
+countNotEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of empty values for searchVector */
+percentageEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of non-empty values for searchVector */
+percentageNotEmptySearchVector?: (OrderByDirection | null),
+/** Number of unique values for facebookPostId */
+countUniqueValuesFacebookPostId?: (OrderByDirection | null),
+/** Number of empty values for facebookPostId */
+countEmptyFacebookPostId?: (OrderByDirection | null),
+/** Number of non-empty values for facebookPostId */
+countNotEmptyFacebookPostId?: (OrderByDirection | null),
+/** Percentage of empty values for facebookPostId */
+percentageEmptyFacebookPostId?: (OrderByDirection | null),
+/** Percentage of non-empty values for facebookPostId */
+percentageNotEmptyFacebookPostId?: (OrderByDirection | null),
+/** Number of unique values for facebookGroupId */
+countUniqueValuesFacebookGroupId?: (OrderByDirection | null),
+/** Number of empty values for facebookGroupId */
+countEmptyFacebookGroupId?: (OrderByDirection | null),
+/** Number of non-empty values for facebookGroupId */
+countNotEmptyFacebookGroupId?: (OrderByDirection | null),
+/** Percentage of empty values for facebookGroupId */
+percentageEmptyFacebookGroupId?: (OrderByDirection | null),
+/** Percentage of non-empty values for facebookGroupId */
+percentageNotEmptyFacebookGroupId?: (OrderByDirection | null),
+/** Number of unique values for authorName */
+countUniqueValuesAuthorName?: (OrderByDirection | null),
+/** Number of empty values for authorName */
+countEmptyAuthorName?: (OrderByDirection | null),
+/** Number of non-empty values for authorName */
+countNotEmptyAuthorName?: (OrderByDirection | null),
+/** Percentage of empty values for authorName */
+percentageEmptyAuthorName?: (OrderByDirection | null),
+/** Percentage of non-empty values for authorName */
+percentageNotEmptyAuthorName?: (OrderByDirection | null),
+/** Number of unique values for authorFacebookId */
+countUniqueValuesAuthorFacebookId?: (OrderByDirection | null),
+/** Number of empty values for authorFacebookId */
+countEmptyAuthorFacebookId?: (OrderByDirection | null),
+/** Number of non-empty values for authorFacebookId */
+countNotEmptyAuthorFacebookId?: (OrderByDirection | null),
+/** Percentage of empty values for authorFacebookId */
+percentageEmptyAuthorFacebookId?: (OrderByDirection | null),
+/** Percentage of non-empty values for authorFacebookId */
+percentageNotEmptyAuthorFacebookId?: (OrderByDirection | null),
+/** Number of unique values for authorUrl */
+countUniqueValuesAuthorUrl?: (OrderByDirection | null),
+/** Number of empty values for authorUrl */
+countEmptyAuthorUrl?: (OrderByDirection | null),
+/** Number of non-empty values for authorUrl */
+countNotEmptyAuthorUrl?: (OrderByDirection | null),
+/** Percentage of empty values for authorUrl */
+percentageEmptyAuthorUrl?: (OrderByDirection | null),
+/** Percentage of non-empty values for authorUrl */
+percentageNotEmptyAuthorUrl?: (OrderByDirection | null),
+/** Number of unique values for text */
+countUniqueValuesText?: (OrderByDirection | null),
+/** Number of empty values for text */
+countEmptyText?: (OrderByDirection | null),
+/** Number of non-empty values for text */
+countNotEmptyText?: (OrderByDirection | null),
+/** Percentage of empty values for text */
+percentageEmptyText?: (OrderByDirection | null),
+/** Percentage of non-empty values for text */
+percentageNotEmptyText?: (OrderByDirection | null),
+/** Number of unique values for permalink */
+countUniqueValuesPermalink?: (OrderByDirection | null),
+/** Number of empty values for permalink */
+countEmptyPermalink?: (OrderByDirection | null),
+/** Number of non-empty values for permalink */
+countNotEmptyPermalink?: (OrderByDirection | null),
+/** Percentage of empty values for permalink */
+percentageEmptyPermalink?: (OrderByDirection | null),
+/** Percentage of non-empty values for permalink */
+percentageNotEmptyPermalink?: (OrderByDirection | null),
+/** Number of unique values for feedbackId */
+countUniqueValuesFeedbackId?: (OrderByDirection | null),
+/** Number of empty values for feedbackId */
+countEmptyFeedbackId?: (OrderByDirection | null),
+/** Number of non-empty values for feedbackId */
+countNotEmptyFeedbackId?: (OrderByDirection | null),
+/** Percentage of empty values for feedbackId */
+percentageEmptyFeedbackId?: (OrderByDirection | null),
+/** Percentage of non-empty values for feedbackId */
+percentageNotEmptyFeedbackId?: (OrderByDirection | null),
+/** Number of unique values for postedAt */
+countUniqueValuesPostedAt?: (OrderByDirection | null),
+/** Number of empty values for postedAt */
+countEmptyPostedAt?: (OrderByDirection | null),
+/** Number of non-empty values for postedAt */
+countNotEmptyPostedAt?: (OrderByDirection | null),
+/** Percentage of empty values for postedAt */
+percentageEmptyPostedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for postedAt */
+percentageNotEmptyPostedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field postedAt */
+minPostedAt?: (OrderByDirection | null),
+/** Latest date contained in the field postedAt */
+maxPostedAt?: (OrderByDirection | null),
+/** Number of unique values for commentCount */
+countUniqueValuesCommentCount?: (OrderByDirection | null),
+/** Number of empty values for commentCount */
+countEmptyCommentCount?: (OrderByDirection | null),
+/** Number of non-empty values for commentCount */
+countNotEmptyCommentCount?: (OrderByDirection | null),
+/** Percentage of empty values for commentCount */
+percentageEmptyCommentCount?: (OrderByDirection | null),
+/** Percentage of non-empty values for commentCount */
+percentageNotEmptyCommentCount?: (OrderByDirection | null),
+/** Minimum amount contained in the field commentCount */
+minCommentCount?: (OrderByDirection | null),
+/** Maximum amount contained in the field commentCount */
+maxCommentCount?: (OrderByDirection | null),
+/** Average amount contained in the field commentCount */
+avgCommentCount?: (OrderByDirection | null),
+/** Sum of amounts contained in the field commentCount */
+sumCommentCount?: (OrderByDirection | null),
+/** Number of unique values for commentsReadAt */
+countUniqueValuesCommentsReadAt?: (OrderByDirection | null),
+/** Number of empty values for commentsReadAt */
+countEmptyCommentsReadAt?: (OrderByDirection | null),
+/** Number of non-empty values for commentsReadAt */
+countNotEmptyCommentsReadAt?: (OrderByDirection | null),
+/** Percentage of empty values for commentsReadAt */
+percentageEmptyCommentsReadAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for commentsReadAt */
+percentageNotEmptyCommentsReadAt?: (OrderByDirection | null),
+/** Earliest date contained in the field commentsReadAt */
+minCommentsReadAt?: (OrderByDirection | null),
+/** Latest date contained in the field commentsReadAt */
+maxCommentsReadAt?: (OrderByDirection | null),
+/** Number of unique values for commentsReadCount */
+countUniqueValuesCommentsReadCount?: (OrderByDirection | null),
+/** Number of empty values for commentsReadCount */
+countEmptyCommentsReadCount?: (OrderByDirection | null),
+/** Number of non-empty values for commentsReadCount */
+countNotEmptyCommentsReadCount?: (OrderByDirection | null),
+/** Percentage of empty values for commentsReadCount */
+percentageEmptyCommentsReadCount?: (OrderByDirection | null),
+/** Percentage of non-empty values for commentsReadCount */
+percentageNotEmptyCommentsReadCount?: (OrderByDirection | null),
+/** Minimum amount contained in the field commentsReadCount */
+minCommentsReadCount?: (OrderByDirection | null),
+/** Maximum amount contained in the field commentsReadCount */
+maxCommentsReadCount?: (OrderByDirection | null),
+/** Average amount contained in the field commentsReadCount */
+avgCommentsReadCount?: (OrderByDirection | null),
+/** Sum of amounts contained in the field commentsReadCount */
+sumCommentsReadCount?: (OrderByDirection | null),
+/** logCli */
+agencyGroupId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroup */
+agencyGroup?: (AgencyGroupOrderByInput | null)}
+
+
+/** log-cli: a post in a Facebook group, as log read group read it */
+export interface AgencyGroupPostGroupByInput {
+/** Name */
+name?: (Scalars['Boolean'] | null),
+/** Creation date */
+createdAt?: (GroupByDateGranularityInput | null),
+/** Last time the record was changed */
+updatedAt?: (GroupByDateGranularityInput | null),
+/** log-cli: post_id. With the group row, the post key */
+facebookPostId?: (Scalars['Boolean'] | null),
+/** logCli */
+facebookGroupId?: (Scalars['Boolean'] | null),
+/** logCli */
+authorName?: (Scalars['Boolean'] | null),
+/** logCli */
+authorFacebookId?: (Scalars['Boolean'] | null),
+/** logCli */
+authorUrl?: (Scalars['Boolean'] | null),
+/** log-cli: message.text; empty for a photo or a share */
+text?: (Scalars['Boolean'] | null),
+/** logCli */
+permalink?: (Scalars['Boolean'] | null),
+/** log-cli: what a comment or reaction on the post is sent to */
+feedbackId?: (Scalars['Boolean'] | null),
+/** log-cli: creation_time */
+postedAt?: (GroupByDateGranularityInput | null),
+/** log-cli: the count the feed showed at the last read */
+commentCount?: (Scalars['Boolean'] | null),
+/** log-cli: when its comments were last read */
+commentsReadAt?: (GroupByDateGranularityInput | null),
+/** log-cli: commentCount when its comments were last read: a read opens the post again only when it grew */
+commentsReadCount?: (Scalars['Boolean'] | null),
+/** Group by fields of the related agencyGroup */
+agencyGroup?: (AgencyGroupGroupByInput | null)}
+
+
+/** log-cli: a comment or reply on a Facebook group post */
+export interface AgencyGroupCommentGenqlSelection{
+    /** logCli */
+    authorUrl?: boolean | number
+    /** ID */
+    id?: boolean | number
+    /** logCli */
+    authorName?: boolean | number
+    /** Name */
+    name?: boolean | number
+    /** Creation date */
+    createdAt?: boolean | number
+    /** The creator of the record */
+    createdBy?: ActorGenqlSelection
+    /** Deletion date */
+    deletedAt?: boolean | number
+    /** Position */
+    position?: boolean | number
+    /** Last time the record was changed */
+    updatedAt?: boolean | number
+    /** The workspace member who last updated the record */
+    updatedBy?: ActorGenqlSelection
+    /** Search vector */
+    searchVector?: boolean | number
+    /** logCli */
+    facebookPostId?: boolean | number
+    /** log-cli: legacy_fbid. With the post row, the comment key */
+    facebookCommentId?: boolean | number
+    /** logCli */
+    agencyGroupPostId?: boolean | number
+    /** log-cli: a reply's comment (its Facebook id); empty on a comment */
+    parentCommentId?: boolean | number
+    /** log-cli: what a reply or reaction to the comment is sent to */
+    feedbackId?: boolean | number
+    /** log-cli: 0 a comment, 1 a reply */
+    depth?: boolean | number
+    /** logCli */
+    replyCount?: boolean | number
+    /** logCli */
+    authorFacebookId?: boolean | number
+    /** log-cli: created_time */
+    commentedAt?: boolean | number
+    /** log-cli: the group shows the author as an anonymous member */
+    authorAnonymous?: boolean | number
+    /** log-cli: body.text; empty for a photo or a sticker */
+    text?: boolean | number
+    /** logCli */
+    permalink?: boolean | number
+    /** AgencyGroupComments tied to the Timeline Activity */
+    timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
+    /** AgencyGroupComments tied to the Attachment */
+    attachments?: (AttachmentConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AttachmentFilterInput | null), orderBy?: ((AttachmentOrderByInput | null)[] | null)} })
+    /** AgencyGroupComments tied to the Note Target */
+    noteTargets?: (NoteTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (NoteTargetFilterInput | null), orderBy?: ((NoteTargetOrderByInput | null)[] | null)} })
+    /** AgencyGroupComments tied to the Task Target */
+    taskTargets?: (TaskTargetConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TaskTargetFilterInput | null), orderBy?: ((TaskTargetOrderByInput | null)[] | null)} })
+    /** logCli */
+    agencyGroupPost?: AgencyGroupPostGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** log-cli: a comment or reply on a Facebook group post */
+export interface AgencyGroupCommentEdgeGenqlSelection{
+    node?: AgencyGroupCommentGenqlSelection
+    cursor?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** log-cli: a comment or reply on a Facebook group post */
+export interface AgencyGroupCommentConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for authorUrl */
+    countUniqueValuesAuthorUrl?: boolean | number
+    /** Number of empty values for authorUrl */
+    countEmptyAuthorUrl?: boolean | number
+    /** Number of non-empty values for authorUrl */
+    countNotEmptyAuthorUrl?: boolean | number
+    /** Percentage of empty values for authorUrl */
+    percentageEmptyAuthorUrl?: boolean | number
+    /** Percentage of non-empty values for authorUrl */
+    percentageNotEmptyAuthorUrl?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for authorName */
+    countUniqueValuesAuthorName?: boolean | number
+    /** Number of empty values for authorName */
+    countEmptyAuthorName?: boolean | number
+    /** Number of non-empty values for authorName */
+    countNotEmptyAuthorName?: boolean | number
+    /** Percentage of empty values for authorName */
+    percentageEmptyAuthorName?: boolean | number
+    /** Percentage of non-empty values for authorName */
+    percentageNotEmptyAuthorName?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for facebookPostId */
+    countUniqueValuesFacebookPostId?: boolean | number
+    /** Number of empty values for facebookPostId */
+    countEmptyFacebookPostId?: boolean | number
+    /** Number of non-empty values for facebookPostId */
+    countNotEmptyFacebookPostId?: boolean | number
+    /** Percentage of empty values for facebookPostId */
+    percentageEmptyFacebookPostId?: boolean | number
+    /** Percentage of non-empty values for facebookPostId */
+    percentageNotEmptyFacebookPostId?: boolean | number
+    /** Number of unique values for facebookCommentId */
+    countUniqueValuesFacebookCommentId?: boolean | number
+    /** Number of empty values for facebookCommentId */
+    countEmptyFacebookCommentId?: boolean | number
+    /** Number of non-empty values for facebookCommentId */
+    countNotEmptyFacebookCommentId?: boolean | number
+    /** Percentage of empty values for facebookCommentId */
+    percentageEmptyFacebookCommentId?: boolean | number
+    /** Percentage of non-empty values for facebookCommentId */
+    percentageNotEmptyFacebookCommentId?: boolean | number
+    /** Number of unique values for parentCommentId */
+    countUniqueValuesParentCommentId?: boolean | number
+    /** Number of empty values for parentCommentId */
+    countEmptyParentCommentId?: boolean | number
+    /** Number of non-empty values for parentCommentId */
+    countNotEmptyParentCommentId?: boolean | number
+    /** Percentage of empty values for parentCommentId */
+    percentageEmptyParentCommentId?: boolean | number
+    /** Percentage of non-empty values for parentCommentId */
+    percentageNotEmptyParentCommentId?: boolean | number
+    /** Number of unique values for feedbackId */
+    countUniqueValuesFeedbackId?: boolean | number
+    /** Number of empty values for feedbackId */
+    countEmptyFeedbackId?: boolean | number
+    /** Number of non-empty values for feedbackId */
+    countNotEmptyFeedbackId?: boolean | number
+    /** Percentage of empty values for feedbackId */
+    percentageEmptyFeedbackId?: boolean | number
+    /** Percentage of non-empty values for feedbackId */
+    percentageNotEmptyFeedbackId?: boolean | number
+    /** Number of unique values for depth */
+    countUniqueValuesDepth?: boolean | number
+    /** Number of empty values for depth */
+    countEmptyDepth?: boolean | number
+    /** Number of non-empty values for depth */
+    countNotEmptyDepth?: boolean | number
+    /** Percentage of empty values for depth */
+    percentageEmptyDepth?: boolean | number
+    /** Percentage of non-empty values for depth */
+    percentageNotEmptyDepth?: boolean | number
+    /** Minimum amount contained in the field depth */
+    minDepth?: boolean | number
+    /** Maximum amount contained in the field depth */
+    maxDepth?: boolean | number
+    /** Average amount contained in the field depth */
+    avgDepth?: boolean | number
+    /** Sum of amounts contained in the field depth */
+    sumDepth?: boolean | number
+    /** Number of unique values for replyCount */
+    countUniqueValuesReplyCount?: boolean | number
+    /** Number of empty values for replyCount */
+    countEmptyReplyCount?: boolean | number
+    /** Number of non-empty values for replyCount */
+    countNotEmptyReplyCount?: boolean | number
+    /** Percentage of empty values for replyCount */
+    percentageEmptyReplyCount?: boolean | number
+    /** Percentage of non-empty values for replyCount */
+    percentageNotEmptyReplyCount?: boolean | number
+    /** Minimum amount contained in the field replyCount */
+    minReplyCount?: boolean | number
+    /** Maximum amount contained in the field replyCount */
+    maxReplyCount?: boolean | number
+    /** Average amount contained in the field replyCount */
+    avgReplyCount?: boolean | number
+    /** Sum of amounts contained in the field replyCount */
+    sumReplyCount?: boolean | number
+    /** Number of unique values for authorFacebookId */
+    countUniqueValuesAuthorFacebookId?: boolean | number
+    /** Number of empty values for authorFacebookId */
+    countEmptyAuthorFacebookId?: boolean | number
+    /** Number of non-empty values for authorFacebookId */
+    countNotEmptyAuthorFacebookId?: boolean | number
+    /** Percentage of empty values for authorFacebookId */
+    percentageEmptyAuthorFacebookId?: boolean | number
+    /** Percentage of non-empty values for authorFacebookId */
+    percentageNotEmptyAuthorFacebookId?: boolean | number
+    /** Number of unique values for commentedAt */
+    countUniqueValuesCommentedAt?: boolean | number
+    /** Number of empty values for commentedAt */
+    countEmptyCommentedAt?: boolean | number
+    /** Number of non-empty values for commentedAt */
+    countNotEmptyCommentedAt?: boolean | number
+    /** Percentage of empty values for commentedAt */
+    percentageEmptyCommentedAt?: boolean | number
+    /** Percentage of non-empty values for commentedAt */
+    percentageNotEmptyCommentedAt?: boolean | number
+    /** Earliest date contained in the field commentedAt */
+    minCommentedAt?: boolean | number
+    /** Latest date contained in the field commentedAt */
+    maxCommentedAt?: boolean | number
+    /** Number of unique values for authorAnonymous */
+    countUniqueValuesAuthorAnonymous?: boolean | number
+    /** Number of empty values for authorAnonymous */
+    countEmptyAuthorAnonymous?: boolean | number
+    /** Number of non-empty values for authorAnonymous */
+    countNotEmptyAuthorAnonymous?: boolean | number
+    /** Percentage of empty values for authorAnonymous */
+    percentageEmptyAuthorAnonymous?: boolean | number
+    /** Percentage of non-empty values for authorAnonymous */
+    percentageNotEmptyAuthorAnonymous?: boolean | number
+    /** Count of true values in the field authorAnonymous */
+    countTrueAuthorAnonymous?: boolean | number
+    /** Count of false values in the field authorAnonymous */
+    countFalseAuthorAnonymous?: boolean | number
+    /** Number of unique values for text */
+    countUniqueValuesText?: boolean | number
+    /** Number of empty values for text */
+    countEmptyText?: boolean | number
+    /** Number of non-empty values for text */
+    countNotEmptyText?: boolean | number
+    /** Percentage of empty values for text */
+    percentageEmptyText?: boolean | number
+    /** Percentage of non-empty values for text */
+    percentageNotEmptyText?: boolean | number
+    /** Number of unique values for permalink */
+    countUniqueValuesPermalink?: boolean | number
+    /** Number of empty values for permalink */
+    countEmptyPermalink?: boolean | number
+    /** Number of non-empty values for permalink */
+    countNotEmptyPermalink?: boolean | number
+    /** Percentage of empty values for permalink */
+    percentageEmptyPermalink?: boolean | number
+    /** Percentage of non-empty values for permalink */
+    percentageNotEmptyPermalink?: boolean | number
+    edges?: AgencyGroupCommentEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+
+/** log-cli: a comment or reply on a Facebook group post */
+export interface AgencyGroupCommentGroupByConnectionGenqlSelection{
+    /** Total number of records in the connection */
+    totalCount?: boolean | number
+    /** Number of unique values for authorUrl */
+    countUniqueValuesAuthorUrl?: boolean | number
+    /** Number of empty values for authorUrl */
+    countEmptyAuthorUrl?: boolean | number
+    /** Number of non-empty values for authorUrl */
+    countNotEmptyAuthorUrl?: boolean | number
+    /** Percentage of empty values for authorUrl */
+    percentageEmptyAuthorUrl?: boolean | number
+    /** Percentage of non-empty values for authorUrl */
+    percentageNotEmptyAuthorUrl?: boolean | number
+    /** Number of unique values for id */
+    countUniqueValuesId?: boolean | number
+    /** Number of empty values for id */
+    countEmptyId?: boolean | number
+    /** Number of non-empty values for id */
+    countNotEmptyId?: boolean | number
+    /** Percentage of empty values for id */
+    percentageEmptyId?: boolean | number
+    /** Percentage of non-empty values for id */
+    percentageNotEmptyId?: boolean | number
+    /** Number of unique values for authorName */
+    countUniqueValuesAuthorName?: boolean | number
+    /** Number of empty values for authorName */
+    countEmptyAuthorName?: boolean | number
+    /** Number of non-empty values for authorName */
+    countNotEmptyAuthorName?: boolean | number
+    /** Percentage of empty values for authorName */
+    percentageEmptyAuthorName?: boolean | number
+    /** Percentage of non-empty values for authorName */
+    percentageNotEmptyAuthorName?: boolean | number
+    /** Number of unique values for name */
+    countUniqueValuesName?: boolean | number
+    /** Number of empty values for name */
+    countEmptyName?: boolean | number
+    /** Number of non-empty values for name */
+    countNotEmptyName?: boolean | number
+    /** Percentage of empty values for name */
+    percentageEmptyName?: boolean | number
+    /** Percentage of non-empty values for name */
+    percentageNotEmptyName?: boolean | number
+    /** Number of unique values for createdAt */
+    countUniqueValuesCreatedAt?: boolean | number
+    /** Number of empty values for createdAt */
+    countEmptyCreatedAt?: boolean | number
+    /** Number of non-empty values for createdAt */
+    countNotEmptyCreatedAt?: boolean | number
+    /** Percentage of empty values for createdAt */
+    percentageEmptyCreatedAt?: boolean | number
+    /** Percentage of non-empty values for createdAt */
+    percentageNotEmptyCreatedAt?: boolean | number
+    /** Earliest date contained in the field createdAt */
+    minCreatedAt?: boolean | number
+    /** Latest date contained in the field createdAt */
+    maxCreatedAt?: boolean | number
+    /** Number of unique values for createdBy */
+    countUniqueValuesCreatedBy?: boolean | number
+    /** Number of empty values for createdBy */
+    countEmptyCreatedBy?: boolean | number
+    /** Number of non-empty values for createdBy */
+    countNotEmptyCreatedBy?: boolean | number
+    /** Percentage of empty values for createdBy */
+    percentageEmptyCreatedBy?: boolean | number
+    /** Percentage of non-empty values for createdBy */
+    percentageNotEmptyCreatedBy?: boolean | number
+    /** Number of unique values for deletedAt */
+    countUniqueValuesDeletedAt?: boolean | number
+    /** Number of empty values for deletedAt */
+    countEmptyDeletedAt?: boolean | number
+    /** Number of non-empty values for deletedAt */
+    countNotEmptyDeletedAt?: boolean | number
+    /** Percentage of empty values for deletedAt */
+    percentageEmptyDeletedAt?: boolean | number
+    /** Percentage of non-empty values for deletedAt */
+    percentageNotEmptyDeletedAt?: boolean | number
+    /** Earliest date contained in the field deletedAt */
+    minDeletedAt?: boolean | number
+    /** Latest date contained in the field deletedAt */
+    maxDeletedAt?: boolean | number
+    /** Number of unique values for position */
+    countUniqueValuesPosition?: boolean | number
+    /** Number of empty values for position */
+    countEmptyPosition?: boolean | number
+    /** Number of non-empty values for position */
+    countNotEmptyPosition?: boolean | number
+    /** Percentage of empty values for position */
+    percentageEmptyPosition?: boolean | number
+    /** Percentage of non-empty values for position */
+    percentageNotEmptyPosition?: boolean | number
+    /** Number of unique values for updatedAt */
+    countUniqueValuesUpdatedAt?: boolean | number
+    /** Number of empty values for updatedAt */
+    countEmptyUpdatedAt?: boolean | number
+    /** Number of non-empty values for updatedAt */
+    countNotEmptyUpdatedAt?: boolean | number
+    /** Percentage of empty values for updatedAt */
+    percentageEmptyUpdatedAt?: boolean | number
+    /** Percentage of non-empty values for updatedAt */
+    percentageNotEmptyUpdatedAt?: boolean | number
+    /** Earliest date contained in the field updatedAt */
+    minUpdatedAt?: boolean | number
+    /** Latest date contained in the field updatedAt */
+    maxUpdatedAt?: boolean | number
+    /** Number of unique values for updatedBy */
+    countUniqueValuesUpdatedBy?: boolean | number
+    /** Number of empty values for updatedBy */
+    countEmptyUpdatedBy?: boolean | number
+    /** Number of non-empty values for updatedBy */
+    countNotEmptyUpdatedBy?: boolean | number
+    /** Percentage of empty values for updatedBy */
+    percentageEmptyUpdatedBy?: boolean | number
+    /** Percentage of non-empty values for updatedBy */
+    percentageNotEmptyUpdatedBy?: boolean | number
+    /** Number of unique values for searchVector */
+    countUniqueValuesSearchVector?: boolean | number
+    /** Number of empty values for searchVector */
+    countEmptySearchVector?: boolean | number
+    /** Number of non-empty values for searchVector */
+    countNotEmptySearchVector?: boolean | number
+    /** Percentage of empty values for searchVector */
+    percentageEmptySearchVector?: boolean | number
+    /** Percentage of non-empty values for searchVector */
+    percentageNotEmptySearchVector?: boolean | number
+    /** Number of unique values for facebookPostId */
+    countUniqueValuesFacebookPostId?: boolean | number
+    /** Number of empty values for facebookPostId */
+    countEmptyFacebookPostId?: boolean | number
+    /** Number of non-empty values for facebookPostId */
+    countNotEmptyFacebookPostId?: boolean | number
+    /** Percentage of empty values for facebookPostId */
+    percentageEmptyFacebookPostId?: boolean | number
+    /** Percentage of non-empty values for facebookPostId */
+    percentageNotEmptyFacebookPostId?: boolean | number
+    /** Number of unique values for facebookCommentId */
+    countUniqueValuesFacebookCommentId?: boolean | number
+    /** Number of empty values for facebookCommentId */
+    countEmptyFacebookCommentId?: boolean | number
+    /** Number of non-empty values for facebookCommentId */
+    countNotEmptyFacebookCommentId?: boolean | number
+    /** Percentage of empty values for facebookCommentId */
+    percentageEmptyFacebookCommentId?: boolean | number
+    /** Percentage of non-empty values for facebookCommentId */
+    percentageNotEmptyFacebookCommentId?: boolean | number
+    /** Number of unique values for parentCommentId */
+    countUniqueValuesParentCommentId?: boolean | number
+    /** Number of empty values for parentCommentId */
+    countEmptyParentCommentId?: boolean | number
+    /** Number of non-empty values for parentCommentId */
+    countNotEmptyParentCommentId?: boolean | number
+    /** Percentage of empty values for parentCommentId */
+    percentageEmptyParentCommentId?: boolean | number
+    /** Percentage of non-empty values for parentCommentId */
+    percentageNotEmptyParentCommentId?: boolean | number
+    /** Number of unique values for feedbackId */
+    countUniqueValuesFeedbackId?: boolean | number
+    /** Number of empty values for feedbackId */
+    countEmptyFeedbackId?: boolean | number
+    /** Number of non-empty values for feedbackId */
+    countNotEmptyFeedbackId?: boolean | number
+    /** Percentage of empty values for feedbackId */
+    percentageEmptyFeedbackId?: boolean | number
+    /** Percentage of non-empty values for feedbackId */
+    percentageNotEmptyFeedbackId?: boolean | number
+    /** Number of unique values for depth */
+    countUniqueValuesDepth?: boolean | number
+    /** Number of empty values for depth */
+    countEmptyDepth?: boolean | number
+    /** Number of non-empty values for depth */
+    countNotEmptyDepth?: boolean | number
+    /** Percentage of empty values for depth */
+    percentageEmptyDepth?: boolean | number
+    /** Percentage of non-empty values for depth */
+    percentageNotEmptyDepth?: boolean | number
+    /** Minimum amount contained in the field depth */
+    minDepth?: boolean | number
+    /** Maximum amount contained in the field depth */
+    maxDepth?: boolean | number
+    /** Average amount contained in the field depth */
+    avgDepth?: boolean | number
+    /** Sum of amounts contained in the field depth */
+    sumDepth?: boolean | number
+    /** Number of unique values for replyCount */
+    countUniqueValuesReplyCount?: boolean | number
+    /** Number of empty values for replyCount */
+    countEmptyReplyCount?: boolean | number
+    /** Number of non-empty values for replyCount */
+    countNotEmptyReplyCount?: boolean | number
+    /** Percentage of empty values for replyCount */
+    percentageEmptyReplyCount?: boolean | number
+    /** Percentage of non-empty values for replyCount */
+    percentageNotEmptyReplyCount?: boolean | number
+    /** Minimum amount contained in the field replyCount */
+    minReplyCount?: boolean | number
+    /** Maximum amount contained in the field replyCount */
+    maxReplyCount?: boolean | number
+    /** Average amount contained in the field replyCount */
+    avgReplyCount?: boolean | number
+    /** Sum of amounts contained in the field replyCount */
+    sumReplyCount?: boolean | number
+    /** Number of unique values for authorFacebookId */
+    countUniqueValuesAuthorFacebookId?: boolean | number
+    /** Number of empty values for authorFacebookId */
+    countEmptyAuthorFacebookId?: boolean | number
+    /** Number of non-empty values for authorFacebookId */
+    countNotEmptyAuthorFacebookId?: boolean | number
+    /** Percentage of empty values for authorFacebookId */
+    percentageEmptyAuthorFacebookId?: boolean | number
+    /** Percentage of non-empty values for authorFacebookId */
+    percentageNotEmptyAuthorFacebookId?: boolean | number
+    /** Number of unique values for commentedAt */
+    countUniqueValuesCommentedAt?: boolean | number
+    /** Number of empty values for commentedAt */
+    countEmptyCommentedAt?: boolean | number
+    /** Number of non-empty values for commentedAt */
+    countNotEmptyCommentedAt?: boolean | number
+    /** Percentage of empty values for commentedAt */
+    percentageEmptyCommentedAt?: boolean | number
+    /** Percentage of non-empty values for commentedAt */
+    percentageNotEmptyCommentedAt?: boolean | number
+    /** Earliest date contained in the field commentedAt */
+    minCommentedAt?: boolean | number
+    /** Latest date contained in the field commentedAt */
+    maxCommentedAt?: boolean | number
+    /** Number of unique values for authorAnonymous */
+    countUniqueValuesAuthorAnonymous?: boolean | number
+    /** Number of empty values for authorAnonymous */
+    countEmptyAuthorAnonymous?: boolean | number
+    /** Number of non-empty values for authorAnonymous */
+    countNotEmptyAuthorAnonymous?: boolean | number
+    /** Percentage of empty values for authorAnonymous */
+    percentageEmptyAuthorAnonymous?: boolean | number
+    /** Percentage of non-empty values for authorAnonymous */
+    percentageNotEmptyAuthorAnonymous?: boolean | number
+    /** Count of true values in the field authorAnonymous */
+    countTrueAuthorAnonymous?: boolean | number
+    /** Count of false values in the field authorAnonymous */
+    countFalseAuthorAnonymous?: boolean | number
+    /** Number of unique values for text */
+    countUniqueValuesText?: boolean | number
+    /** Number of empty values for text */
+    countEmptyText?: boolean | number
+    /** Number of non-empty values for text */
+    countNotEmptyText?: boolean | number
+    /** Percentage of empty values for text */
+    percentageEmptyText?: boolean | number
+    /** Percentage of non-empty values for text */
+    percentageNotEmptyText?: boolean | number
+    /** Number of unique values for permalink */
+    countUniqueValuesPermalink?: boolean | number
+    /** Number of empty values for permalink */
+    countEmptyPermalink?: boolean | number
+    /** Number of non-empty values for permalink */
+    countNotEmptyPermalink?: boolean | number
+    /** Percentage of empty values for permalink */
+    percentageEmptyPermalink?: boolean | number
+    /** Percentage of non-empty values for permalink */
+    percentageNotEmptyPermalink?: boolean | number
+    edges?: AgencyGroupCommentEdgeGenqlSelection
+    pageInfo?: PageInfoGenqlSelection
+    groupByDimensionValues?: boolean | number
+    __typename?: boolean | number
+    __scalar?: boolean | number
+}
+
+export interface AgencyGroupCommentRelationInput {
+/** Connect to a agencyGroupComment record */
+connect?: (AgencyGroupCommentConnectInput | null),
+/** Create and connect a agencyGroupComment record */
+create?: (AgencyGroupCommentCreateInput | null),
+/** Disconnect from a agencyGroupComment record */
+disconnect?: (Scalars['Boolean'] | null)}
+
+export interface AgencyGroupCommentConnectInput {
+/** Find a agencyGroupComment record based on its unique fields: id */
+where?: (AgencyGroupCommentWhereUniqueInput | null)}
+
+export interface AgencyGroupCommentWhereUniqueInput {
+/** Connect by ID */
+id?: (Scalars['ID'] | null)}
+
+
+/** log-cli: a comment or reply on a Facebook group post */
+export interface AgencyGroupCommentCreateInput {
+/** logCli */
+authorUrl?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** logCli */
+authorName?: (Scalars['String'] | null),
+/** Name */
+name?: (Scalars['String'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorCreateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorCreateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),
+/** logCli */
+facebookPostId?: (Scalars['String'] | null),
+/** log-cli: legacy_fbid. With the post row, the comment key */
+facebookCommentId?: (Scalars['String'] | null),
+/** logCli */
+agencyGroupPostId?: (Scalars['ID'] | null),
+/** logCli */
+agencyGroupPost?: (AgencyGroupPostRelationInput | null),
+/** log-cli: a reply's comment (its Facebook id); empty on a comment */
+parentCommentId?: (Scalars['String'] | null),
+/** log-cli: what a reply or reaction to the comment is sent to */
+feedbackId?: (Scalars['String'] | null),
+/** log-cli: 0 a comment, 1 a reply */
+depth?: (Scalars['Float'] | null),
+/** logCli */
+replyCount?: (Scalars['Float'] | null),
+/** logCli */
+authorFacebookId?: (Scalars['String'] | null),
+/** log-cli: created_time */
+commentedAt?: (Scalars['DateTime'] | null),
+/** log-cli: the group shows the author as an anonymous member */
+authorAnonymous?: (Scalars['Boolean'] | null),
+/** log-cli: body.text; empty for a photo or a sticker */
+text?: (Scalars['String'] | null),
+/** logCli */
+permalink?: (Scalars['String'] | null)}
+
+
+/** log-cli: a comment or reply on a Facebook group post */
+export interface AgencyGroupCommentUpdateInput {
+/** logCli */
+authorUrl?: (Scalars['String'] | null),
+/** ID */
+id?: (Scalars['ID'] | null),
+/** logCli */
+authorName?: (Scalars['String'] | null),
+/** Name */
+name?: (Scalars['String'] | null),
+/** Creation date */
+createdAt?: (Scalars['DateTime'] | null),
+/** The creator of the record */
+createdBy?: (ActorUpdateInput | null),
+/** Deletion date */
+deletedAt?: (Scalars['DateTime'] | null),
+/** Position */
+position?: (Scalars['Position'] | null),
+/** Last time the record was changed */
+updatedAt?: (Scalars['DateTime'] | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorUpdateInput | null),
+/** Search vector */
+searchVector?: (Scalars['TSVector'] | null),
+/** logCli */
+facebookPostId?: (Scalars['String'] | null),
+/** log-cli: legacy_fbid. With the post row, the comment key */
+facebookCommentId?: (Scalars['String'] | null),
+/** logCli */
+agencyGroupPostId?: (Scalars['ID'] | null),
+/** logCli */
+agencyGroupPost?: (AgencyGroupPostRelationInput | null),
+/** log-cli: a reply's comment (its Facebook id); empty on a comment */
+parentCommentId?: (Scalars['String'] | null),
+/** log-cli: what a reply or reaction to the comment is sent to */
+feedbackId?: (Scalars['String'] | null),
+/** log-cli: 0 a comment, 1 a reply */
+depth?: (Scalars['Float'] | null),
+/** logCli */
+replyCount?: (Scalars['Float'] | null),
+/** logCli */
+authorFacebookId?: (Scalars['String'] | null),
+/** log-cli: created_time */
+commentedAt?: (Scalars['DateTime'] | null),
+/** log-cli: the group shows the author as an anonymous member */
+authorAnonymous?: (Scalars['Boolean'] | null),
+/** log-cli: body.text; empty for a photo or a sticker */
+text?: (Scalars['String'] | null),
+/** logCli */
+permalink?: (Scalars['String'] | null)}
+
+
+/** log-cli: a comment or reply on a Facebook group post */
+export interface AgencyGroupCommentFilterInput {
+/** logCli */
+authorUrl?: (StringFilter | null),
+/** ID */
+id?: (UUIDFilter | null),
+/** logCli */
+authorName?: (StringFilter | null),
+/** Name */
+name?: (StringFilter | null),
+/** Creation date */
+createdAt?: (DateTimeFilter | null),
+/** The creator of the record */
+createdBy?: (ActorFilterInput | null),
+/** Deletion date */
+deletedAt?: (DateTimeFilter | null),
+/** Position */
+position?: (FloatFilter | null),
+/** Last time the record was changed */
+updatedAt?: (DateTimeFilter | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorFilterInput | null),
+/** Search vector */
+searchVector?: (TSVectorFilter | null),
+/** logCli */
+facebookPostId?: (StringFilter | null),
+/** log-cli: legacy_fbid. With the post row, the comment key */
+facebookCommentId?: (StringFilter | null),
+/** logCli */
+agencyGroupPostId?: (UUIDFilter | null),
+/** Filter on fields of the related agencyGroupPost */
+agencyGroupPost?: (AgencyGroupPostFilterInput | null),
+/** log-cli: a reply's comment (its Facebook id); empty on a comment */
+parentCommentId?: (StringFilter | null),
+/** log-cli: what a reply or reaction to the comment is sent to */
+feedbackId?: (StringFilter | null),
+/** log-cli: 0 a comment, 1 a reply */
+depth?: (FloatFilter | null),
+/** logCli */
+replyCount?: (FloatFilter | null),
+/** logCli */
+authorFacebookId?: (StringFilter | null),
+/** log-cli: created_time */
+commentedAt?: (DateTimeFilter | null),
+/** log-cli: the group shows the author as an anonymous member */
+authorAnonymous?: (BooleanFilter | null),
+/** log-cli: body.text; empty for a photo or a sticker */
+text?: (StringFilter | null),
+/** logCli */
+permalink?: (StringFilter | null),and?: ((AgencyGroupCommentFilterInput | null)[] | null),or?: ((AgencyGroupCommentFilterInput | null)[] | null),not?: (AgencyGroupCommentFilterInput | null)}
+
+
+/** log-cli: a comment or reply on a Facebook group post */
+export interface AgencyGroupCommentOrderByInput {
+/** logCli */
+authorUrl?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** logCli */
+authorName?: (OrderByDirection | null),
+/** Name */
+name?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDirection | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDirection | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDirection | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),
+/** logCli */
+facebookPostId?: (OrderByDirection | null),
+/** log-cli: legacy_fbid. With the post row, the comment key */
+facebookCommentId?: (OrderByDirection | null),
+/** logCli */
+agencyGroupPostId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupPost */
+agencyGroupPost?: (AgencyGroupPostOrderByInput | null),
+/** log-cli: a reply's comment (its Facebook id); empty on a comment */
+parentCommentId?: (OrderByDirection | null),
+/** log-cli: what a reply or reaction to the comment is sent to */
+feedbackId?: (OrderByDirection | null),
+/** log-cli: 0 a comment, 1 a reply */
+depth?: (OrderByDirection | null),
+/** logCli */
+replyCount?: (OrderByDirection | null),
+/** logCli */
+authorFacebookId?: (OrderByDirection | null),
+/** log-cli: created_time */
+commentedAt?: (OrderByDirection | null),
+/** log-cli: the group shows the author as an anonymous member */
+authorAnonymous?: (OrderByDirection | null),
+/** log-cli: body.text; empty for a photo or a sticker */
+text?: (OrderByDirection | null),
+/** logCli */
+permalink?: (OrderByDirection | null)}
+
+
+/** log-cli: a comment or reply on a Facebook group post */
+export interface AgencyGroupCommentOrderByWithGroupByInput {
+/** Order by aggregate values */
+aggregate?: (AgencyGroupCommentOrderByWithGroupByAggregateInput | null),
+/** logCli */
+authorUrl?: (OrderByDirection | null),
+/** ID */
+id?: (OrderByDirection | null),
+/** logCli */
+authorName?: (OrderByDirection | null),
+/** Name */
+name?: (OrderByDirection | null),
+/** Creation date */
+createdAt?: (OrderByDateGranularityInput | null),
+/** The creator of the record */
+createdBy?: (ActorOrderByInput | null),
+/** Deletion date */
+deletedAt?: (OrderByDateGranularityInput | null),
+/** Position */
+position?: (OrderByDirection | null),
+/** Last time the record was changed */
+updatedAt?: (OrderByDateGranularityInput | null),
+/** The workspace member who last updated the record */
+updatedBy?: (ActorOrderByInput | null),
+/** Search vector */
+searchVector?: (OrderByDirection | null),
+/** logCli */
+facebookPostId?: (OrderByDirection | null),
+/** log-cli: legacy_fbid. With the post row, the comment key */
+facebookCommentId?: (OrderByDirection | null),
+/** logCli */
+agencyGroupPostId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupPost */
+agencyGroupPost?: (AgencyGroupPostOrderByWithGroupByInput | null),
+/** log-cli: a reply's comment (its Facebook id); empty on a comment */
+parentCommentId?: (OrderByDirection | null),
+/** log-cli: what a reply or reaction to the comment is sent to */
+feedbackId?: (OrderByDirection | null),
+/** log-cli: 0 a comment, 1 a reply */
+depth?: (OrderByDirection | null),
+/** logCli */
+replyCount?: (OrderByDirection | null),
+/** logCli */
+authorFacebookId?: (OrderByDirection | null),
+/** log-cli: created_time */
+commentedAt?: (OrderByDateGranularityInput | null),
+/** log-cli: the group shows the author as an anonymous member */
+authorAnonymous?: (OrderByDirection | null),
+/** log-cli: body.text; empty for a photo or a sticker */
+text?: (OrderByDirection | null),
+/** logCli */
+permalink?: (OrderByDirection | null)}
+
+
+/** Aggregate-based ordering */
+export interface AgencyGroupCommentOrderByWithGroupByAggregateInput {
+/** Total number of records in the connection */
+totalCount?: (OrderByDirection | null),
+/** Number of unique values for authorUrl */
+countUniqueValuesAuthorUrl?: (OrderByDirection | null),
+/** Number of empty values for authorUrl */
+countEmptyAuthorUrl?: (OrderByDirection | null),
+/** Number of non-empty values for authorUrl */
+countNotEmptyAuthorUrl?: (OrderByDirection | null),
+/** Percentage of empty values for authorUrl */
+percentageEmptyAuthorUrl?: (OrderByDirection | null),
+/** Percentage of non-empty values for authorUrl */
+percentageNotEmptyAuthorUrl?: (OrderByDirection | null),
+/** Number of unique values for id */
+countUniqueValuesId?: (OrderByDirection | null),
+/** Number of empty values for id */
+countEmptyId?: (OrderByDirection | null),
+/** Number of non-empty values for id */
+countNotEmptyId?: (OrderByDirection | null),
+/** Percentage of empty values for id */
+percentageEmptyId?: (OrderByDirection | null),
+/** Percentage of non-empty values for id */
+percentageNotEmptyId?: (OrderByDirection | null),
+/** Number of unique values for authorName */
+countUniqueValuesAuthorName?: (OrderByDirection | null),
+/** Number of empty values for authorName */
+countEmptyAuthorName?: (OrderByDirection | null),
+/** Number of non-empty values for authorName */
+countNotEmptyAuthorName?: (OrderByDirection | null),
+/** Percentage of empty values for authorName */
+percentageEmptyAuthorName?: (OrderByDirection | null),
+/** Percentage of non-empty values for authorName */
+percentageNotEmptyAuthorName?: (OrderByDirection | null),
+/** Number of unique values for name */
+countUniqueValuesName?: (OrderByDirection | null),
+/** Number of empty values for name */
+countEmptyName?: (OrderByDirection | null),
+/** Number of non-empty values for name */
+countNotEmptyName?: (OrderByDirection | null),
+/** Percentage of empty values for name */
+percentageEmptyName?: (OrderByDirection | null),
+/** Percentage of non-empty values for name */
+percentageNotEmptyName?: (OrderByDirection | null),
+/** Number of unique values for createdAt */
+countUniqueValuesCreatedAt?: (OrderByDirection | null),
+/** Number of empty values for createdAt */
+countEmptyCreatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for createdAt */
+countNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for createdAt */
+percentageEmptyCreatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdAt */
+percentageNotEmptyCreatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field createdAt */
+minCreatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field createdAt */
+maxCreatedAt?: (OrderByDirection | null),
+/** Number of unique values for createdBy */
+countUniqueValuesCreatedBy?: (OrderByDirection | null),
+/** Number of empty values for createdBy */
+countEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for createdBy */
+countNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for createdBy */
+percentageEmptyCreatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for createdBy */
+percentageNotEmptyCreatedBy?: (OrderByDirection | null),
+/** Number of unique values for deletedAt */
+countUniqueValuesDeletedAt?: (OrderByDirection | null),
+/** Number of empty values for deletedAt */
+countEmptyDeletedAt?: (OrderByDirection | null),
+/** Number of non-empty values for deletedAt */
+countNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of empty values for deletedAt */
+percentageEmptyDeletedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for deletedAt */
+percentageNotEmptyDeletedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field deletedAt */
+minDeletedAt?: (OrderByDirection | null),
+/** Latest date contained in the field deletedAt */
+maxDeletedAt?: (OrderByDirection | null),
+/** Number of unique values for position */
+countUniqueValuesPosition?: (OrderByDirection | null),
+/** Number of empty values for position */
+countEmptyPosition?: (OrderByDirection | null),
+/** Number of non-empty values for position */
+countNotEmptyPosition?: (OrderByDirection | null),
+/** Percentage of empty values for position */
+percentageEmptyPosition?: (OrderByDirection | null),
+/** Percentage of non-empty values for position */
+percentageNotEmptyPosition?: (OrderByDirection | null),
+/** Number of unique values for updatedAt */
+countUniqueValuesUpdatedAt?: (OrderByDirection | null),
+/** Number of empty values for updatedAt */
+countEmptyUpdatedAt?: (OrderByDirection | null),
+/** Number of non-empty values for updatedAt */
+countNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of empty values for updatedAt */
+percentageEmptyUpdatedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedAt */
+percentageNotEmptyUpdatedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field updatedAt */
+minUpdatedAt?: (OrderByDirection | null),
+/** Latest date contained in the field updatedAt */
+maxUpdatedAt?: (OrderByDirection | null),
+/** Number of unique values for updatedBy */
+countUniqueValuesUpdatedBy?: (OrderByDirection | null),
+/** Number of empty values for updatedBy */
+countEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of non-empty values for updatedBy */
+countNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of empty values for updatedBy */
+percentageEmptyUpdatedBy?: (OrderByDirection | null),
+/** Percentage of non-empty values for updatedBy */
+percentageNotEmptyUpdatedBy?: (OrderByDirection | null),
+/** Number of unique values for searchVector */
+countUniqueValuesSearchVector?: (OrderByDirection | null),
+/** Number of empty values for searchVector */
+countEmptySearchVector?: (OrderByDirection | null),
+/** Number of non-empty values for searchVector */
+countNotEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of empty values for searchVector */
+percentageEmptySearchVector?: (OrderByDirection | null),
+/** Percentage of non-empty values for searchVector */
+percentageNotEmptySearchVector?: (OrderByDirection | null),
+/** Number of unique values for facebookPostId */
+countUniqueValuesFacebookPostId?: (OrderByDirection | null),
+/** Number of empty values for facebookPostId */
+countEmptyFacebookPostId?: (OrderByDirection | null),
+/** Number of non-empty values for facebookPostId */
+countNotEmptyFacebookPostId?: (OrderByDirection | null),
+/** Percentage of empty values for facebookPostId */
+percentageEmptyFacebookPostId?: (OrderByDirection | null),
+/** Percentage of non-empty values for facebookPostId */
+percentageNotEmptyFacebookPostId?: (OrderByDirection | null),
+/** Number of unique values for facebookCommentId */
+countUniqueValuesFacebookCommentId?: (OrderByDirection | null),
+/** Number of empty values for facebookCommentId */
+countEmptyFacebookCommentId?: (OrderByDirection | null),
+/** Number of non-empty values for facebookCommentId */
+countNotEmptyFacebookCommentId?: (OrderByDirection | null),
+/** Percentage of empty values for facebookCommentId */
+percentageEmptyFacebookCommentId?: (OrderByDirection | null),
+/** Percentage of non-empty values for facebookCommentId */
+percentageNotEmptyFacebookCommentId?: (OrderByDirection | null),
+/** logCli */
+agencyGroupPostId?: (OrderByDirection | null),
+/** Order by fields of the related agencyGroupPost */
+agencyGroupPost?: (AgencyGroupPostOrderByInput | null),
+/** Number of unique values for parentCommentId */
+countUniqueValuesParentCommentId?: (OrderByDirection | null),
+/** Number of empty values for parentCommentId */
+countEmptyParentCommentId?: (OrderByDirection | null),
+/** Number of non-empty values for parentCommentId */
+countNotEmptyParentCommentId?: (OrderByDirection | null),
+/** Percentage of empty values for parentCommentId */
+percentageEmptyParentCommentId?: (OrderByDirection | null),
+/** Percentage of non-empty values for parentCommentId */
+percentageNotEmptyParentCommentId?: (OrderByDirection | null),
+/** Number of unique values for feedbackId */
+countUniqueValuesFeedbackId?: (OrderByDirection | null),
+/** Number of empty values for feedbackId */
+countEmptyFeedbackId?: (OrderByDirection | null),
+/** Number of non-empty values for feedbackId */
+countNotEmptyFeedbackId?: (OrderByDirection | null),
+/** Percentage of empty values for feedbackId */
+percentageEmptyFeedbackId?: (OrderByDirection | null),
+/** Percentage of non-empty values for feedbackId */
+percentageNotEmptyFeedbackId?: (OrderByDirection | null),
+/** Number of unique values for depth */
+countUniqueValuesDepth?: (OrderByDirection | null),
+/** Number of empty values for depth */
+countEmptyDepth?: (OrderByDirection | null),
+/** Number of non-empty values for depth */
+countNotEmptyDepth?: (OrderByDirection | null),
+/** Percentage of empty values for depth */
+percentageEmptyDepth?: (OrderByDirection | null),
+/** Percentage of non-empty values for depth */
+percentageNotEmptyDepth?: (OrderByDirection | null),
+/** Minimum amount contained in the field depth */
+minDepth?: (OrderByDirection | null),
+/** Maximum amount contained in the field depth */
+maxDepth?: (OrderByDirection | null),
+/** Average amount contained in the field depth */
+avgDepth?: (OrderByDirection | null),
+/** Sum of amounts contained in the field depth */
+sumDepth?: (OrderByDirection | null),
+/** Number of unique values for replyCount */
+countUniqueValuesReplyCount?: (OrderByDirection | null),
+/** Number of empty values for replyCount */
+countEmptyReplyCount?: (OrderByDirection | null),
+/** Number of non-empty values for replyCount */
+countNotEmptyReplyCount?: (OrderByDirection | null),
+/** Percentage of empty values for replyCount */
+percentageEmptyReplyCount?: (OrderByDirection | null),
+/** Percentage of non-empty values for replyCount */
+percentageNotEmptyReplyCount?: (OrderByDirection | null),
+/** Minimum amount contained in the field replyCount */
+minReplyCount?: (OrderByDirection | null),
+/** Maximum amount contained in the field replyCount */
+maxReplyCount?: (OrderByDirection | null),
+/** Average amount contained in the field replyCount */
+avgReplyCount?: (OrderByDirection | null),
+/** Sum of amounts contained in the field replyCount */
+sumReplyCount?: (OrderByDirection | null),
+/** Number of unique values for authorFacebookId */
+countUniqueValuesAuthorFacebookId?: (OrderByDirection | null),
+/** Number of empty values for authorFacebookId */
+countEmptyAuthorFacebookId?: (OrderByDirection | null),
+/** Number of non-empty values for authorFacebookId */
+countNotEmptyAuthorFacebookId?: (OrderByDirection | null),
+/** Percentage of empty values for authorFacebookId */
+percentageEmptyAuthorFacebookId?: (OrderByDirection | null),
+/** Percentage of non-empty values for authorFacebookId */
+percentageNotEmptyAuthorFacebookId?: (OrderByDirection | null),
+/** Number of unique values for commentedAt */
+countUniqueValuesCommentedAt?: (OrderByDirection | null),
+/** Number of empty values for commentedAt */
+countEmptyCommentedAt?: (OrderByDirection | null),
+/** Number of non-empty values for commentedAt */
+countNotEmptyCommentedAt?: (OrderByDirection | null),
+/** Percentage of empty values for commentedAt */
+percentageEmptyCommentedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for commentedAt */
+percentageNotEmptyCommentedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field commentedAt */
+minCommentedAt?: (OrderByDirection | null),
+/** Latest date contained in the field commentedAt */
+maxCommentedAt?: (OrderByDirection | null),
+/** Number of unique values for authorAnonymous */
+countUniqueValuesAuthorAnonymous?: (OrderByDirection | null),
+/** Number of empty values for authorAnonymous */
+countEmptyAuthorAnonymous?: (OrderByDirection | null),
+/** Number of non-empty values for authorAnonymous */
+countNotEmptyAuthorAnonymous?: (OrderByDirection | null),
+/** Percentage of empty values for authorAnonymous */
+percentageEmptyAuthorAnonymous?: (OrderByDirection | null),
+/** Percentage of non-empty values for authorAnonymous */
+percentageNotEmptyAuthorAnonymous?: (OrderByDirection | null),
+/** Count of true values in the field authorAnonymous */
+countTrueAuthorAnonymous?: (OrderByDirection | null),
+/** Count of false values in the field authorAnonymous */
+countFalseAuthorAnonymous?: (OrderByDirection | null),
+/** Number of unique values for text */
+countUniqueValuesText?: (OrderByDirection | null),
+/** Number of empty values for text */
+countEmptyText?: (OrderByDirection | null),
+/** Number of non-empty values for text */
+countNotEmptyText?: (OrderByDirection | null),
+/** Percentage of empty values for text */
+percentageEmptyText?: (OrderByDirection | null),
+/** Percentage of non-empty values for text */
+percentageNotEmptyText?: (OrderByDirection | null),
+/** Number of unique values for permalink */
+countUniqueValuesPermalink?: (OrderByDirection | null),
+/** Number of empty values for permalink */
+countEmptyPermalink?: (OrderByDirection | null),
+/** Number of non-empty values for permalink */
+countNotEmptyPermalink?: (OrderByDirection | null),
+/** Percentage of empty values for permalink */
+percentageEmptyPermalink?: (OrderByDirection | null),
+/** Percentage of non-empty values for permalink */
+percentageNotEmptyPermalink?: (OrderByDirection | null)}
+
+
+/** log-cli: a comment or reply on a Facebook group post */
+export interface AgencyGroupCommentGroupByInput {
+/** logCli */
+authorUrl?: (Scalars['Boolean'] | null),
+/** logCli */
+authorName?: (Scalars['Boolean'] | null),
+/** Name */
+name?: (Scalars['Boolean'] | null),
+/** Creation date */
+createdAt?: (GroupByDateGranularityInput | null),
+/** Last time the record was changed */
+updatedAt?: (GroupByDateGranularityInput | null),
+/** logCli */
+facebookPostId?: (Scalars['Boolean'] | null),
+/** log-cli: legacy_fbid. With the post row, the comment key */
+facebookCommentId?: (Scalars['Boolean'] | null),
+/** Group by fields of the related agencyGroupPost */
+agencyGroupPost?: (AgencyGroupPostGroupByInput | null),
+/** log-cli: a reply's comment (its Facebook id); empty on a comment */
+parentCommentId?: (Scalars['Boolean'] | null),
+/** log-cli: what a reply or reaction to the comment is sent to */
+feedbackId?: (Scalars['Boolean'] | null),
+/** log-cli: 0 a comment, 1 a reply */
+depth?: (Scalars['Boolean'] | null),
+/** logCli */
+replyCount?: (Scalars['Boolean'] | null),
+/** logCli */
+authorFacebookId?: (Scalars['Boolean'] | null),
+/** log-cli: created_time */
+commentedAt?: (GroupByDateGranularityInput | null),
+/** log-cli: the group shows the author as an anonymous member */
+authorAnonymous?: (Scalars['Boolean'] | null),
+/** log-cli: body.text; empty for a photo or a sticker */
+text?: (Scalars['Boolean'] | null),
+/** logCli */
+permalink?: (Scalars['Boolean'] | null)}
 
 export interface QueryGenqlSelection{
     competitors?: (CompetitorConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (CompetitorFilterInput | null), orderBy?: ((CompetitorOrderByInput | null)[] | null)} })
@@ -127094,6 +131454,12 @@ export interface QueryGenqlSelection{
     agencyGroups?: (AgencyGroupConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgencyGroupFilterInput | null), orderBy?: ((AgencyGroupOrderByInput | null)[] | null)} })
     agencyGroup?: (AgencyGroupGenqlSelection & { __args: {filter: AgencyGroupFilterInput} })
     agencyGroupsGroupBy?: (AgencyGroupGroupByConnectionGenqlSelection & { __args: {groupBy: AgencyGroupGroupByInput[], filter?: (AgencyGroupFilterInput | null), orderBy?: ((AgencyGroupOrderByWithGroupByInput | null)[] | null), orderByForRecords?: ((AgencyGroupOrderByInput | null)[] | null), viewId?: (Scalars['UUID'] | null), limit?: (Scalars['Int'] | null), offsetForRecords?: (Scalars['Int'] | null)} })
+    agencyGroupPosts?: (AgencyGroupPostConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgencyGroupPostFilterInput | null), orderBy?: ((AgencyGroupPostOrderByInput | null)[] | null)} })
+    agencyGroupPost?: (AgencyGroupPostGenqlSelection & { __args: {filter: AgencyGroupPostFilterInput} })
+    agencyGroupPostsGroupBy?: (AgencyGroupPostGroupByConnectionGenqlSelection & { __args: {groupBy: AgencyGroupPostGroupByInput[], filter?: (AgencyGroupPostFilterInput | null), orderBy?: ((AgencyGroupPostOrderByWithGroupByInput | null)[] | null), orderByForRecords?: ((AgencyGroupPostOrderByInput | null)[] | null), viewId?: (Scalars['UUID'] | null), limit?: (Scalars['Int'] | null), offsetForRecords?: (Scalars['Int'] | null)} })
+    agencyGroupComments?: (AgencyGroupCommentConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (AgencyGroupCommentFilterInput | null), orderBy?: ((AgencyGroupCommentOrderByInput | null)[] | null)} })
+    agencyGroupComment?: (AgencyGroupCommentGenqlSelection & { __args: {filter: AgencyGroupCommentFilterInput} })
+    agencyGroupCommentsGroupBy?: (AgencyGroupCommentGroupByConnectionGenqlSelection & { __args: {groupBy: AgencyGroupCommentGroupByInput[], filter?: (AgencyGroupCommentFilterInput | null), orderBy?: ((AgencyGroupCommentOrderByWithGroupByInput | null)[] | null), orderByForRecords?: ((AgencyGroupCommentOrderByInput | null)[] | null), viewId?: (Scalars['UUID'] | null), limit?: (Scalars['Int'] | null), offsetForRecords?: (Scalars['Int'] | null)} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -127811,6 +132177,26 @@ export interface MutationGenqlSelection{
     destroyAgencyGroups?: (AgencyGroupGenqlSelection & { __args: {filter: AgencyGroupFilterInput} })
     restoreAgencyGroup?: (AgencyGroupGenqlSelection & { __args: {id: Scalars['UUID']} })
     restoreAgencyGroups?: (AgencyGroupGenqlSelection & { __args: {filter: AgencyGroupFilterInput} })
+    createAgencyGroupPosts?: (AgencyGroupPostGenqlSelection & { __args: {data: AgencyGroupPostCreateInput[], upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    createAgencyGroupPost?: (AgencyGroupPostGenqlSelection & { __args: {data: AgencyGroupPostCreateInput, upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    updateAgencyGroupPost?: (AgencyGroupPostGenqlSelection & { __args: {id: Scalars['UUID'], data: AgencyGroupPostUpdateInput} })
+    deleteAgencyGroupPost?: (AgencyGroupPostGenqlSelection & { __args: {id: Scalars['UUID']} })
+    updateAgencyGroupPosts?: (AgencyGroupPostGenqlSelection & { __args: {data: AgencyGroupPostUpdateInput, filter: AgencyGroupPostFilterInput} })
+    deleteAgencyGroupPosts?: (AgencyGroupPostGenqlSelection & { __args: {filter: AgencyGroupPostFilterInput} })
+    destroyAgencyGroupPost?: (AgencyGroupPostGenqlSelection & { __args: {id: Scalars['UUID']} })
+    destroyAgencyGroupPosts?: (AgencyGroupPostGenqlSelection & { __args: {filter: AgencyGroupPostFilterInput} })
+    restoreAgencyGroupPost?: (AgencyGroupPostGenqlSelection & { __args: {id: Scalars['UUID']} })
+    restoreAgencyGroupPosts?: (AgencyGroupPostGenqlSelection & { __args: {filter: AgencyGroupPostFilterInput} })
+    createAgencyGroupComments?: (AgencyGroupCommentGenqlSelection & { __args: {data: AgencyGroupCommentCreateInput[], upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    createAgencyGroupComment?: (AgencyGroupCommentGenqlSelection & { __args: {data: AgencyGroupCommentCreateInput, upsert?: (Scalars['Boolean'] | null), shareWith?: (ShareWithInput[] | null)} })
+    updateAgencyGroupComment?: (AgencyGroupCommentGenqlSelection & { __args: {id: Scalars['UUID'], data: AgencyGroupCommentUpdateInput} })
+    deleteAgencyGroupComment?: (AgencyGroupCommentGenqlSelection & { __args: {id: Scalars['UUID']} })
+    updateAgencyGroupComments?: (AgencyGroupCommentGenqlSelection & { __args: {data: AgencyGroupCommentUpdateInput, filter: AgencyGroupCommentFilterInput} })
+    deleteAgencyGroupComments?: (AgencyGroupCommentGenqlSelection & { __args: {filter: AgencyGroupCommentFilterInput} })
+    destroyAgencyGroupComment?: (AgencyGroupCommentGenqlSelection & { __args: {id: Scalars['UUID']} })
+    destroyAgencyGroupComments?: (AgencyGroupCommentGenqlSelection & { __args: {filter: AgencyGroupCommentFilterInput} })
+    restoreAgencyGroupComment?: (AgencyGroupCommentGenqlSelection & { __args: {id: Scalars['UUID']} })
+    restoreAgencyGroupComments?: (AgencyGroupCommentGenqlSelection & { __args: {filter: AgencyGroupCommentFilterInput} })
     __typename?: boolean | number
     __scalar?: boolean | number
 }
@@ -130192,6 +134578,70 @@ export interface ShareWithInput {workspaceMemberId?: (Scalars['UUID'] | null),ro
     export const isAgencyGroupGroupByConnection = (obj?: { __typename?: any } | null): obj is AgencyGroupGroupByConnection => {
       if (!obj?.__typename) throw new Error('__typename is missing in "isAgencyGroupGroupByConnection"')
       return AgencyGroupGroupByConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AgencyGroupPost_possibleTypes: string[] = ['AgencyGroupPost']
+    export const isAgencyGroupPost = (obj?: { __typename?: any } | null): obj is AgencyGroupPost => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAgencyGroupPost"')
+      return AgencyGroupPost_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AgencyGroupPostEdge_possibleTypes: string[] = ['AgencyGroupPostEdge']
+    export const isAgencyGroupPostEdge = (obj?: { __typename?: any } | null): obj is AgencyGroupPostEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAgencyGroupPostEdge"')
+      return AgencyGroupPostEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AgencyGroupPostConnection_possibleTypes: string[] = ['AgencyGroupPostConnection']
+    export const isAgencyGroupPostConnection = (obj?: { __typename?: any } | null): obj is AgencyGroupPostConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAgencyGroupPostConnection"')
+      return AgencyGroupPostConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AgencyGroupPostGroupByConnection_possibleTypes: string[] = ['AgencyGroupPostGroupByConnection']
+    export const isAgencyGroupPostGroupByConnection = (obj?: { __typename?: any } | null): obj is AgencyGroupPostGroupByConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAgencyGroupPostGroupByConnection"')
+      return AgencyGroupPostGroupByConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AgencyGroupComment_possibleTypes: string[] = ['AgencyGroupComment']
+    export const isAgencyGroupComment = (obj?: { __typename?: any } | null): obj is AgencyGroupComment => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAgencyGroupComment"')
+      return AgencyGroupComment_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AgencyGroupCommentEdge_possibleTypes: string[] = ['AgencyGroupCommentEdge']
+    export const isAgencyGroupCommentEdge = (obj?: { __typename?: any } | null): obj is AgencyGroupCommentEdge => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAgencyGroupCommentEdge"')
+      return AgencyGroupCommentEdge_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AgencyGroupCommentConnection_possibleTypes: string[] = ['AgencyGroupCommentConnection']
+    export const isAgencyGroupCommentConnection = (obj?: { __typename?: any } | null): obj is AgencyGroupCommentConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAgencyGroupCommentConnection"')
+      return AgencyGroupCommentConnection_possibleTypes.includes(obj.__typename)
+    }
+    
+
+
+    const AgencyGroupCommentGroupByConnection_possibleTypes: string[] = ['AgencyGroupCommentGroupByConnection']
+    export const isAgencyGroupCommentGroupByConnection = (obj?: { __typename?: any } | null): obj is AgencyGroupCommentGroupByConnection => {
+      if (!obj?.__typename) throw new Error('__typename is missing in "isAgencyGroupCommentGroupByConnection"')
+      return AgencyGroupCommentGroupByConnection_possibleTypes.includes(obj.__typename)
     }
     
 

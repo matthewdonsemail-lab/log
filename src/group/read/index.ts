@@ -1,2 +1,4 @@
+export * from "./client.ts";
 export * from "./helpers/index.ts";
-export type { CommentPage, CommentRejectReason, FeedPage, GroupComment, GroupPost, ReadCursor, RejectReason } from "./types.ts";
+export * from "./machine.ts";
+export type { CommentPage, CommentRead, CommentRejectReason, FeedPage, GroupComment, GroupPost, GroupReadContext, GroupReadInput, GroupReadOutput, ReadCursor, ReadStepInput, ReadStepReply, RejectReason } from "./types.ts";
