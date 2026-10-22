@@ -9,9 +9,9 @@ import { AGENTS_MD, AGENTS_URI, citedRules, COMMAND_RULES, createLogMcpServer, R
 const agents = readFileSync(AGENTS_MD, "utf8");
 const rules = [...agents.matchAll(/^(\d+)\. 20\d\d-\d\d-\d\d/gm)].map((m) => Number(m[1]));
 
-async function connected() {
+async function connected(name = "test") {
   const server = createLogMcpServer({ twenty: marketplaceFixture() }, { logDir: null, watchFlows: false });
-  const client = new Client({ name: "test", version: "0.0.0" });
+  const client = new Client({ name, version: "0.0.0" });
   const [a, b] = InMemoryTransport.createLinkedPair();
   await Promise.all([server.connect(b), client.connect(a)]);
   return client;
@@ -60,12 +60,27 @@ describe("AGENTS.md in the MCP server", () => {
 });
 
 describe("watching a long call live over MCP (rule 26)", () => {
-  test("the instructions and every long tool say to start a Monitor on the day's log first", async () => {
+  test("for a client with a shell (Claude Code, Codex), the instructions and every long tool say to start a Monitor on the day's log first", async () => {
     expect(SERVER_INSTRUCTIONS).toContain("start a Monitor on its live log, `tail -f ~/.logCli/mcp/<day>.log`");
-    const client = await connected();
+    for (const name of ["claude-code", "codex-mcp-client"]) {
+      const client = await connected(name);
+      const { tools } = await client.listTools();
+      for (const tool of ["inspectStart", "inspectDo", "join", "warmup", "publish", "capture", "flowProfileSetupLive"]) expect(tools.find((t) => t.name === tool)?.description).toContain("start a Monitor on `tail -f ~/.logCli/mcp/<day>.log`");
+      expect(tools.find((t) => t.name === "accounts")?.description).not.toContain("Monitor");
+      await client.close();
+    }
+  });
+
+  test("for a client without a shell (a claude.ai connector, Duet), long tools say to read each result's progress and browsers instead", async () => {
+    expect(SERVER_INSTRUCTIONS).toContain("A client without a shell");
+    const client = await connected("claude-ai");
     const { tools } = await client.listTools();
-    for (const name of ["inspectStart", "inspectDo", "join", "warmup", "publish", "capture"]) expect(tools.find((t) => t.name === name)?.description).toContain("start a Monitor on `tail -f ~/.logCli/mcp/<day>.log`");
-    expect(tools.find((t) => t.name === "accounts")?.description).not.toContain("Monitor");
+    for (const tool of ["inspectStart", "publish", "flowProfileSetupLive"]) {
+      const description = tools.find((t) => t.name === tool)!.description!;
+      expect(description).not.toContain("Monitor");
+      expect(description).toContain("`progress`");
+      expect(description).toContain("`browsers`, `next`, `needsMatt`");
+    }
     await client.close();
   });
 });

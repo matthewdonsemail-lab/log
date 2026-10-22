@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { AGENT_HOOKS, hooksFor, MCP_SERVER_NAME, toolIsHooked } from "../../src/agentHooks/registry/index.ts";
 import type { HookEvent, HookHost } from "../../src/agentHooks/registry/index.ts";
-import { PAGE_STATES } from "../../src/browser/flow/helpers/pageState.ts";
+import { PAGE_STATES, RESOLVE_CALLS } from "../../src/browser/flow/helpers/pageState.ts";
 import { isPlatform } from "../../src/cli/runner/helpers/index.ts";
 import { COMMANDS } from "../../src/cli/runner/index.ts";
 import { commandTools, LONG_RUNNING, toolsFromCommands } from "../../src/mcp/server/helpers/toolsFromCommands.ts";
@@ -85,6 +85,13 @@ const mcpJson = JSON.parse(readFileSync(join(root, ".mcp.json"), "utf8")) as { m
 if (!mcpJson.mcpServers?.[MCP_SERVER_NAME]) problems.push(`.mcp.json has no "${MCP_SERVER_NAME}" server: the hooks match mcp__${MCP_SERVER_NAME}__*`);
 const serverSource = readFileSync(join(root, "src/mcp/server/index.ts"), "utf8");
 if (!serverSource.includes(`name: "${MCP_SERVER_NAME}"`)) problems.push(`src/mcp/server/index.ts doesn't name its server "${MCP_SERVER_NAME}"`);
+
+for (const [id, call] of Object.entries(RESOLVE_CALLS)) {
+  if (!PAGE_STATES.some((state) => state.id === id)) problems.push(`RESOLVE_CALLS names "${id}", which isn't a page state`);
+  const sample = call({ account: "a", text: "- generic [ref=e1]: Continue\n- generic [ref=e2]: Update\n- generic [ref=e3]: Dismiss", messengerPin: true });
+  if (sample && !tools.some((t) => t.name === sample.tool)) problems.push(`page state ${id} resolves with the tool ${sample.tool}, which isn't an MCP tool`);
+}
+for (const state of PAGE_STATES) if (!(state.id in RESOLVE_CALLS)) problems.push(`page state ${state.id} has no resolver call in RESOLVE_CALLS (src/browser/flow/helpers/pageState.ts): every result's next comes from it (rule 54)`);
 
 for (const state of PAGE_STATES) {
   for (const match of state.resolve.matchAll(/`log ([a-zA-Z]+)(?: ([a-zA-Z]+))?/g)) {

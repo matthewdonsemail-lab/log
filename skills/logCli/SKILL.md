@@ -112,6 +112,13 @@ stderr and exit code, through `runCli`, so every gate above still applies.
   args tool takes them in `args`. Every live tool needs `confirmLive: true`;
   every other tool refuses live and names its live twin. `bypass` needs
   `confirmBypass: true`. Set them only when matt asked (rules 8, 10, 20).
+- Every result, refusals too, says where every open browser is: `browsers`,
+  `next` (the tool call that resolves a known page state: make it, rule 54),
+  `needsMatt` and `progress` (each streamed line with its time), and its text
+  starts with the same in a line or two. A client with a shell (Claude Code,
+  Codex, by its `clientInfo` name) is told to Monitor the live log for long
+  runs; any other client is told to read `progress` and `browsers`. The client's
+  name is written to the live log when it connects.
 - Every tool carries a `title` and MCP annotations from its command's
   `effect` (`read`, `write`, `delete`, `browser`, on the command and its
   forms): reads are read-only and idempotent, a browser on Facebook is

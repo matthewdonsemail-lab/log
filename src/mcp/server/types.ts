@@ -1,3 +1,5 @@
+import type { BrowserView } from "../../browser/inspect/types.ts";
+
 export interface LogToolInput {
   args?: string[];
   confirmLive?: boolean;
@@ -36,9 +38,27 @@ export const TOOL_RESULT_SCHEMA = {
     stderr: { type: "string", description: "Its errors and refusals, with the error catalog code" },
     log: { type: "array", items: { type: "string" }, description: "Its progress lines, in order (rule 26)" },
     json: { description: "stdout parsed, when the command printed JSON (pass --json)" },
+    progress: {
+      type: "array",
+      items: { type: "object", properties: { at: { type: "string" }, source: { type: "string" }, line: { type: "string" } }, required: ["at", "source", "line"] },
+      description: "Every line the run streamed as it happened, with its time (rule 26): what a client without a shell watches instead of the live log",
+    },
+    browsers: {
+      type: "array",
+      items: { type: "object" },
+      description: "Every open browser after the call: account, step, url, the known page state it sits on (id, what, person), the failed step, its resolver call (next) and what only matt can clear (needsMatt) (rules 54-55)",
+    },
+    next: { description: "The tool call that resolves the first open browser's known state ({ tool, input }), or null: call it, do not stop (rule 54)" },
+    needsMatt: { description: "What only matt can clear (a video selfie, an ID, a disabled account, a PIN not in Twenty), or null: stop that account and tell him" },
   },
-  required: ["exit", "ok", "stdout", "stderr", "log"],
+  required: ["exit", "ok", "stdout", "stderr", "log", "progress", "browsers", "next", "needsMatt"],
 } as const;
+
+export interface ProgressLine {
+  at: string;
+  source: string;
+  line: string;
+}
 
 export interface ToolResult {
   exit: number;
@@ -47,6 +67,10 @@ export interface ToolResult {
   stderr: string;
   log: string[];
   json?: unknown;
+  progress: ProgressLine[];
+  browsers: BrowserView[];
+  next: BrowserView["next"];
+  needsMatt: string | null;
 }
 
 export const TERMINAL_ONLY: Readonly<Record<string, string>> = {

@@ -6,3 +6,4 @@ const scratch = mkdtempSync(join(tmpdir(), 'logCliTestRuns'))
 process.env.LOG_RUNS_DIR ??= join(scratch, 'runs')
 process.env.LOG_UNSAVED_DIR ??= join(scratch, 'runs', 'unsaved')
 process.env.LOG_CAPTURES_ROOT ??= scratch
+process.env.LOG_INSPECT_CURRENT ??= join(scratch, 'inspect', 'current.json')

@@ -4,8 +4,10 @@ import type { LogTool } from "../types.ts";
 import { TOOL_RESULT_SCHEMA } from "../types.ts";
 import { rulesLine } from "./agentRules.ts";
 import { annotationsOf, LIVE_SUFFIX, titleOf } from "./toolAnnotations.ts";
+import { longRunLine } from "./toolsFromCommands.ts";
+import type { ToolOptions } from "./toolsFromCommands.ts";
 
-function flowTool(flow: FlowDefinition, live: boolean): LogTool {
+function flowTool(flow: FlowDefinition, live: boolean, options: ToolOptions): LogTool {
   const properties: Record<string, unknown> = {
     account: { type: "string", description: "The account (`log facebook accounts` lists them)" },
   };
@@ -26,7 +28,7 @@ function flowTool(flow: FlowDefinition, live: boolean): LogTool {
         : [`A dry run: lists the steps and opens nothing. What runs them on Facebook is \`${toolName(flow.name)}${LIVE_SUFFIX}\`.`]),
       flow.summary,
       `Steps: ${flow.steps.map((s) => s.id.replace(/^s\d+_/, "")).join(" → ")}. Every step is recorded (snapshot, screenshot, HAR, rea).`,
-      ...(live ? ["Runs for minutes in the account's browser: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26)."] : []),
+      ...(live ? [longRunLine(options, "minutes in the account's browser")] : []),
       rulesLine("flow"),
     ].join("\n"),
     annotations: annotationsOf("read", live, title),
@@ -35,8 +37,8 @@ function flowTool(flow: FlowDefinition, live: boolean): LogTool {
   };
 }
 
-export function toolsFromFlows(flows: FlowDefinition[]): LogTool[] {
-  return flows.flatMap((flow) => [flowTool(flow, false), flowTool(flow, true)]);
+export function toolsFromFlows(flows: FlowDefinition[], options: ToolOptions = {}): LogTool[] {
+  return flows.flatMap((flow) => [flowTool(flow, false, options), flowTool(flow, true, options)]);
 }
 
 export function flowOfTool(flows: FlowDefinition[], name: string): { flow: FlowDefinition; live: boolean } | null {

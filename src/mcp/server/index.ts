@@ -12,19 +12,45 @@ import type { CommandContext } from "../../cli/runner/types.ts";
 import { setLogSink } from "../../observability/processLog/index.ts";
 import type { LogLine } from "../../observability/processLog/index.ts";
 import { FLOWS_DIR, listFlows, loadFlow } from "../../browser/flow/index.ts";
+import { browserViews } from "../../browser/inspect/index.ts";
+import type { BrowserView } from "../../browser/inspect/index.ts";
 import type { FlowDefinition } from "../../browser/flow/index.ts";
 import { appendLiveLine, liveLogDir } from "../../observability/liveLog/index.ts";
-import { AGENTS_URI, flowArgv, flowOfTool, guardCall, parseEnvText, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
+import { AGENTS_URI, flowArgv, flowOfTool, guardCall, hasShell, parseEnvText, SERVER_INSTRUCTIONS, toolsFromCommands, toolsFromFlows } from "./helpers/index.ts";
 import type { LogStream } from "./helpers/index.ts";
-import type { LogToolInput, ToolResult } from "./types.ts";
+import type { LogToolInput, ProgressLine, ToolResult } from "./types.ts";
 
 export * from "./helpers/index.ts";
 export type { GuardResult, LogTool, LogToolInput } from "./types.ts";
 export { NO_PROMPT, TERMINAL_ONLY, TOOL_RESULT_SCHEMA } from "./types.ts";
 
-function refused(message: string): CallToolResult {
-  const result: ToolResult = { exit: 1, ok: false, stdout: "", stderr: message, log: [] };
-  return { isError: true, content: [{ type: "text", text: message }], structuredContent: result as unknown as Record<string, unknown> };
+export type ReadBrowsers = () => BrowserView[];
+
+function safeViews(read: ReadBrowsers): BrowserView[] {
+  try {
+    return read();
+  } catch {
+    return [];
+  }
+}
+
+export function browserLines(views: BrowserView[]): string[] {
+  const where = views.length
+    ? `Browsers: ${views.map((v) => `${v.account} on ${v.url || "a page"} (step ${v.step})${v.state ? `, page state ${v.state.id}: ${v.state.what}` : v.failed ? ", its last step failed" : ", no known blocking state"}`).join("; ")}.`
+    : "Browsers: none open.";
+  const matt = views.find((v) => v.needsMatt)?.needsMatt;
+  const next = views.find((v) => v.next)?.next;
+  return [where, ...(matt ? [`Needs matt: ${matt}`] : []), ...(next ? [`Next: call \`${next.tool}\` ${JSON.stringify(next.input)} (rule 54: a known state is resolved, never a reason to stop).`] : [])];
+}
+
+function withBrowsers(base: Omit<ToolResult, "browsers" | "next" | "needsMatt">, body: string, isError: boolean, read: ReadBrowsers): CallToolResult {
+  const views = safeViews(read);
+  const result: ToolResult = { ...base, browsers: views, next: views.find((v) => v.next)?.next ?? null, needsMatt: views.find((v) => v.needsMatt)?.needsMatt ?? null };
+  return { isError, content: [{ type: "text", text: [...browserLines(views), "", body].join("\n") }], structuredContent: result as unknown as Record<string, unknown> };
+}
+
+function refused(message: string, read: ReadBrowsers): CallToolResult {
+  return withBrowsers({ exit: 1, ok: false, stdout: "", stderr: message, log: [], progress: [] }, message, true, read);
 }
 
 function jsonOf(stdout: string): unknown {
@@ -55,20 +81,24 @@ export async function runToolCall(
   input: LogToolInput | undefined,
   context: Partial<CommandContext> = {},
   onLine: OnLogLine = () => {},
+  readBrowsers: ReadBrowsers = browserViews,
 ): Promise<CallToolResult> {
   const flowCall = flowOfTool(savedFlows(), name);
   if (flowCall) {
     const built = flowArgv(flowCall.flow, input as Record<string, unknown> | undefined, flowCall.live);
-    if (!built.ok) return refused(built.message);
-    return runToolCall(flowCall.live ? "flowLive" : "flow", { args: built.argv.slice(1), confirmLive: input?.confirmLive, confirmBypass: (input as { confirmBypass?: boolean } | undefined)?.confirmBypass }, context, onLine);
+    if (!built.ok) return refused(built.message, readBrowsers);
+    return runToolCall(flowCall.live ? "flowLive" : "flow", { args: built.argv.slice(1), confirmLive: input?.confirmLive, confirmBypass: (input as { confirmBypass?: boolean } | undefined)?.confirmBypass }, context, onLine, readBrowsers);
   }
   const guard = guardCall(name, input, COMMANDS);
-  if (!guard.ok) return refused(guard.message);
+  if (!guard.ok) return refused(guard.message, readBrowsers);
   const out: string[] = [];
   const err: string[] = [];
   const processLog: string[] = [];
+  const progress: ProgressLine[] = [];
+  const note = (source: string, line: string) => progress.push({ at: new Date().toISOString(), source, line });
   const fromProcess = (entry: LogLine) => {
     processLog.push(entry.line);
+    note(entry.source, entry.line);
     onLine(name, entry.source, entry.line);
   };
   setLogSink((entry) => inFlight.forEach((listener) => listener(entry)));
@@ -80,10 +110,12 @@ export async function runToolCall(
       ...context,
       out: (line) => {
         out.push(line);
+        note("out", line);
         onLine(name, "out", line);
       },
       err: (line) => {
         err.push(line);
+        note("err", line);
         onLine(name, "err", line);
       },
     });
@@ -105,13 +137,13 @@ export async function runToolCall(
     .join("\n\n");
   const stdout = out.join("\n");
   const json = jsonOf(stdout);
-  const result: ToolResult = { exit: code, ok: code === 0, stdout, stderr: err.join("\n"), log: processLog, ...(json === undefined ? {} : { json }) };
-  return { isError: code !== 0, content: [{ type: "text", text }], structuredContent: result as unknown as Record<string, unknown> };
+  return withBrowsers({ exit: code, ok: code === 0, stdout, stderr: err.join("\n"), log: processLog, progress, ...(json === undefined ? {} : { json }) }, text, code !== 0, readBrowsers);
 }
 
 export interface LogMcpOptions {
   logDir?: string | null;
   watchFlows?: boolean;
+  readBrowsers?: ReadBrowsers;
 }
 
 export function createLogMcpServer(context: Partial<CommandContext> = {}, options: LogMcpOptions = {}): Server {
@@ -124,7 +156,14 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
     if (logDir) appendLiveLine(logDir, tool, stream, line);
     server.sendLoggingMessage({ level: stream === "err" ? "warning" : "info", logger: `log.${tool}.${stream}`, data: line }).catch(() => {});
   };
-  server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: [...toolsFromCommands(COMMANDS), ...toolsFromFlows(savedFlows())] }));
+  server.oninitialized = () => {
+    const client = server.getClientVersion();
+    onLine("mcp", "out", `client ${client?.name ?? "unknown"} ${client?.version ?? ""}: ${hasShell(client?.name) ? "has a shell, so long tools say to Monitor the live log" : "no shell, so long tools say to read each result's progress and browsers"}`);
+  };
+  server.setRequestHandler(ListToolsRequestSchema, async () => {
+    const shell = hasShell(server.getClientVersion()?.name);
+    return { tools: [...toolsFromCommands(COMMANDS, { shell }), ...toolsFromFlows(savedFlows(), { shell })] };
+  });
   server.setRequestHandler(ListResourcesRequestSchema, async () => ({
     resources: [{ uri: AGENTS_URI, name: "AGENTS.md", description: "matt's rules for log-cli, every one numbered and dated, the newest at the bottom. Every tool's description cites the ones it falls under.", mimeType: "text/markdown" }],
   }));
@@ -133,7 +172,7 @@ export function createLogMcpServer(context: Partial<CommandContext> = {}, option
     return { contents: [{ uri: AGENTS_URI, mimeType: "text/markdown", text: readFileSync(AGENTS_MD, "utf8") }] };
   });
   server.setRequestHandler(CallToolRequestSchema, async (request) =>
-    runToolCall(request.params.name, request.params.arguments as LogToolInput | undefined, context, onLine),
+    runToolCall(request.params.name, request.params.arguments as LogToolInput | undefined, context, onLine, options.readBrowsers ?? browserViews),
   );
   if (options.watchFlows !== false && existsSync(FLOWS_DIR)) {
     let pending: ReturnType<typeof setTimeout> | null = null;

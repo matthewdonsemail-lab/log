@@ -23,7 +23,18 @@ learn.chatgpt.com/docs/hooks): `hookSpecificOutput.additionalContext`,
 What each hook decides is pure and tested: `src/agentHooks/pageState` (`hookReply`),
 `src/agentHooks/liveLog` (`liveLogVerdict`), `src/agentHooks/agentHooks.test.ts`.
 The known states and their resolvers are `PAGE_STATES` in
-`src/browser/flow/helpers/pageState.ts`.
+`src/browser/flow/helpers/pageState.ts`, and each one's resolver as a ready
+tool call is `RESOLVE_CALLS` (`{ tool, input }`, a click's ref read from the
+step's snapshot; none for a person's state).
+
+The hooks and the MCP read the open browsers the same way:
+`readOpenBrowsers` and `browserView` (`src/browser/inspect/helpers/browserStates.ts`).
+So a client without hooks (a claude.ai connector, Duet) gets the same thing in
+every tool result: `browsers` (each open browser's step, page and known state),
+`next` (the call that resolves it: make it, do not stop, rule 54), `needsMatt`
+(what only matt clears) and `progress` (every streamed line, timed), with the
+first lines of its text saying the same. `log browsers` (tool `browsers`) reads
+them on demand.
 
 ## The live log
 
@@ -47,8 +58,9 @@ never through `tail`/`head` (the PreToolUse hook refuses it).
 - **A CLI command:** it becomes an MCP tool automatically (`toolsFromCommands`);
   if it can't be one, add it to `TERMINAL_ONLY` with why. If it runs long, add it
   to `LONG_RUNNING` (its description then points at the live log).
-- **A page state:** add it to `PAGE_STATES`; a resolver that names a command
-  (`` `log inspect do solve` ``) must name a real one.
+- **A page state:** add it to `PAGE_STATES` and its call to `RESOLVE_CALLS`; a
+  resolver that names a command (`` `log inspect do solve` ``) must name a real
+  one, and a call must name a real MCP tool.
 - **A new MCP server name:** change `MCP_SERVER_NAME` with `.mcp.json`.
 
 ## The check
@@ -59,5 +71,6 @@ prints non-JSON, or the live-logs hook lets a buffered run through; a command is
 neither an MCP tool nor terminal-only; an MCP tool (commands and saved flows)
 isn't matched by PostToolUse; a long-running tool doesn't point at the live log;
 `.mcp.json` or the server's name differ from `MCP_SERVER_NAME`; a resolver names
-a command that doesn't exist. Hook scripts run against a scratch memory
+a command that doesn't exist; a page state has no resolver call, or a call names
+a tool that doesn't exist. Hook scripts run against a scratch memory
 (`LOG_HOOK_MEMORY`), so the check never changes what the real hook remembers.

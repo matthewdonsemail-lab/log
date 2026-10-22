@@ -89,3 +89,22 @@ export interface InspectStepResult {
 }
 
 export type InspectSessionRunner = (config: InspectSessionConfig) => Promise<number>
+
+export interface BrowserAt {
+  account: string
+  step: string
+  url: string
+  text: string
+  failed: string | null
+  messengerPin?: boolean
+}
+
+export interface BrowserView {
+  account: string
+  step: string
+  url: string
+  failed: string | null
+  state: { id: string; what: string; person: boolean } | null
+  next: { tool: string; input: Record<string, unknown> } | null
+  needsMatt: string | null
+}

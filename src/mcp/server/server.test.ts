@@ -161,7 +161,9 @@ describe("log MCP server", () => {
     const client = await connected();
     const result = await client.callTool({ name: "listings", arguments: { json: true } });
     expect(result.isError).toBe(false);
-    expect(JSON.parse(textOf(result).split("\n\nexit 0")[0]).listings).toHaveLength(8);
+    expect((result.structuredContent as { json: { listings: unknown[] } }).json.listings).toHaveLength(8);
+    expect(textOf(result).startsWith("Browsers: none open.\n")).toBe(true);
+    expect(result.structuredContent).toMatchObject({ browsers: [], next: null, needsMatt: null });
   });
 
   test("a failing command is an error result with its stderr", async () => {

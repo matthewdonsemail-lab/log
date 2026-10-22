@@ -1,6 +1,7 @@
 export { guardCall } from "./guardCall.ts";
 export { parseEnvText } from "./parseEnvText.ts";
-export { argsLiveFlags, commandTools, toolsFromCommands } from "./toolsFromCommands.ts";
+export { argsLiveFlags, commandTools, hasShell, longRunLine, SHELL_CLIENTS, toolsFromCommands } from "./toolsFromCommands.ts";
+export type { ToolOptions } from "./toolsFromCommands.ts";
 export type { CommandTool } from "./toolsFromCommands.ts";
 export { flowArgv, flowOfTool, toolsFromFlows } from "./toolsFromFlows.ts";
 export { annotationsOf, LIVE_SUFFIX, titleOf } from "./toolAnnotations.ts";

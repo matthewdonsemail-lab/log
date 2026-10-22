@@ -70,3 +70,59 @@ export function pageStateOf(url: string, text: string, context: StateContext = {
   }
   return null
 }
+
+export interface ResolveCall {
+  tool: string
+  input: Record<string, unknown>
+}
+
+export interface StateAt {
+  account: string
+  text: string
+  messengerPin?: boolean
+}
+
+export function refOf(text: string, label: RegExp): string | null {
+  const lines = text.split('\n')
+  for (let i = 0; i < lines.length; i++) {
+    if (!label.test(lines[i])) continue
+    const own = /\[ref=(e\d+)\]/.exec(lines[i])?.[1]
+    if (own) return own
+    const indent = lines[i].search(/\S/)
+    for (let j = i - 1; j >= 0; j--) {
+      if (lines[j].search(/\S/) >= indent) continue
+      const parent = /\[ref=(e\d+)\]/.exec(lines[j])?.[1]
+      if (parent) return parent
+    }
+  }
+  return null
+}
+
+const liveStep = (account: string, action: string, values?: string[]): ResolveCall => ({ tool: 'inspectDoLive', input: { account, action, ...(values ? { values } : {}), confirmLive: true } })
+
+export const snapshotCall = (account: string): ResolveCall => ({ tool: 'inspectDo', input: { account, action: 'snapshot' } })
+
+const clickLabel = (label: RegExp) => (at: StateAt): ResolveCall => {
+  const ref = refOf(at.text, label)
+  return ref ? liveStep(at.account, 'click', [ref]) : snapshotCall(at.account)
+}
+
+export const RESOLVE_CALLS: Readonly<Record<string, (at: StateAt) => ResolveCall | null>> = {
+  disabled: () => null,
+  videoSelfie: () => null,
+  textCaptcha: (at) => liveStep(at.account, 'solve'),
+  checkpointStart: clickLabel(/(:\s*|")Continue"?\s*$/),
+  automatedBehaviour: clickLabel(/(:\s*|")(Dismiss|Continue)"?\s*$/),
+  messengerPinCreate: (at) => (at.messengerPin ? { tool: 'flowMessengerPinCreateLive', input: { account: at.account, confirmLive: true } } : null),
+  messengerPinEnter: (at) => (at.messengerPin ? liveStep(at.account, 'pin') : null),
+  marketplacePartnerListings: clickLabel(/(:\s*|")Update"?\s*$/),
+  rememberPassword: (at) => liveStep(at.account, 'clickRole', ['button', 'Not now']),
+  twoStepCode: (at) => liveStep(at.account, 'code'),
+  loginForm: (at) => liveStep(at.account, 'signIn'),
+  checkpoint: (at) => snapshotCall(at.account)
+}
+
+export function resolveCallOf(state: PageState, at: StateAt): ResolveCall | null {
+  if (state.person) return null
+  return RESOLVE_CALLS[state.id]?.(at) ?? snapshotCall(at.account)
+}

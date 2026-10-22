@@ -1,14 +1,9 @@
 import type { PageState } from "../../browser/flow/helpers/pageState.ts";
 import type { HookEvent } from "../registry/types.ts";
 
-export interface BrowserAt {
-  account: string;
-  step: string;
-  url: string;
-  text: string;
-  failed: string | null;
-  messengerPin?: boolean;
-}
+import type { BrowserAt } from "../../browser/inspect/types.ts";
+
+export type { BrowserAt };
 
 export interface Finding {
   account: string;

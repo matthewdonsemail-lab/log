@@ -46,6 +46,22 @@ export function commandTools(commands: readonly Command[]): CommandTool[] {
     });
 }
 
+export interface ToolOptions {
+  shell?: boolean;
+}
+
+export const SHELL_CLIENTS = /claude-code|codex/i;
+
+export function hasShell(clientName: string | undefined): boolean {
+  return clientName === undefined || SHELL_CLIENTS.test(clientName);
+}
+
+export function longRunLine(options: ToolOptions, minutes = "seconds to minutes"): string {
+  return options.shell === false
+    ? `Runs for ${minutes}: every line it streams comes back in the result's \`progress\` (with its time), and the result says where every open browser is (\`browsers\`, \`next\`, \`needsMatt\`) (rules 26, 54).`
+    : `Runs for ${minutes}: start a Monitor on \`tail -f ~/.logCli/mcp/<day>.log\` before calling, so matt watches it live (rule 26).`;
+}
+
 const CONFIRM_LIVE = { type: "boolean", description: "Set true only when matt asked for this live run (it acts on Facebook)" };
 const CONFIRM_BYPASS = { type: "boolean", description: "Set true only when matt asked for a run outside the account's local waking hours (rule 20)" };
 
@@ -75,7 +91,7 @@ const NOTES: Readonly<Record<string, string[]>> = {
 
 const LIVE_LINE = "Live on Facebook: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).";
 
-function typedTool(entry: CommandTool, form: InputForm): LogTool {
+function typedTool(entry: CommandTool, form: InputForm, options: ToolOptions): LogTool {
   const { command } = entry;
   const { properties, required } = inputSchemaOf(form);
   const bypass = form.flags.some((f) => f.bypass);
@@ -90,7 +106,7 @@ function typedTool(entry: CommandTool, form: InputForm): LogTool {
       ...formUsage(command, form),
       ...(NOTES[entry.tool] ?? []),
       `Fill the named fields; each value goes through whole.${bypass ? " `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked." : ""}${!entry.live && entry.command.input?.forms.some((f) => f.words.join() === form.words.join() && f.flags.some((flag) => flag.live)) ? ` What acts on Facebook is \`${entry.tool}${LIVE_SUFFIX}\`.` : ""}`,
-      ...(LONG_RUNNING.has(command.name) ? ["Runs for seconds to minutes: start a Monitor on `tail -f ~/.logCli/mcp/<day>.log` before calling, so matt watches it live (rule 26)."] : []),
+      ...(LONG_RUNNING.has(command.name) ? [longRunLine(options)] : []),
       rulesLine(command.name),
     ].join("\n"),
     annotations: annotationsOf(entry.effect, entry.live, title),
@@ -104,7 +120,7 @@ function typedTool(entry: CommandTool, form: InputForm): LogTool {
   };
 }
 
-function argsTool(entry: CommandTool): LogTool {
+function argsTool(entry: CommandTool, options: ToolOptions): LogTool {
   const { command } = entry;
   const liveFlags = argsLiveFlags(command).map((f) => `--${f}`).join(" or ");
   const title = titleOf(command.summary, entry.live);
@@ -120,7 +136,7 @@ function argsTool(entry: CommandTool): LogTool {
       entry.live
         ? `Pass the arguments after the command name in \`args\`, with ${liveFlags}. \`--bypass\` (outside the account's hours) needs confirmBypass: true, only when matt asked.`
         : `Pass the arguments after the command name in \`args\`, e.g. ["--json"].${liveFlags ? ` It never takes ${liveFlags}: that is \`${command.name}${LIVE_SUFFIX}\`.` : ""} \`--bypass\` (outside the account's hours) needs confirmBypass: true, only when matt asked.`,
-      ...(LONG_RUNNING.has(command.name) ? [`Runs for seconds to minutes: start a Monitor on \`tail -f ~/.logCli/mcp/<day>.log\` before calling, so matt watches it live (rule 26).`] : []),
+      ...(LONG_RUNNING.has(command.name) ? [longRunLine(options)] : []),
       rulesLine(command.name),
     ].join("\n"),
     annotations: annotationsOf(entry.effect, entry.live, title),
@@ -138,6 +154,6 @@ function argsTool(entry: CommandTool): LogTool {
   };
 }
 
-export function toolsFromCommands(commands: readonly Command[]): LogTool[] {
-  return commandTools(commands).map((entry) => (entry.form ? typedTool(entry, entry.form) : argsTool(entry)));
+export function toolsFromCommands(commands: readonly Command[], options: ToolOptions = {}): LogTool[] {
+  return commandTools(commands).map((entry) => (entry.form ? typedTool(entry, entry.form, options) : argsTool(entry, options)));
 }
