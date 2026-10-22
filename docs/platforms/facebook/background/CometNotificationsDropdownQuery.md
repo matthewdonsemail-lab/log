@@ -13,7 +13,7 @@
 | Called from | `CometNotificationsDropdown.react` |
 | rea | `ev_ab1965911932cb7fcf25b222bf92e0487c624ad5aa06bc6a0e5e7860bc09d85a` |
 
-Seen 70 time(s) in 18 run(s).
+Seen 73 time(s) in 19 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -50,6 +50,9 @@ Seen 70 time(s) in 18 run(s).
 | inspect | upload: before.png handed to the file chooser | 2 | 200 | 704–998 ms | 3415–5994 ms | — |
 | inspect | step 16: type e232 | 1 | 200 | 1021 ms | 8955 ms | — |
 | inspect | step 27: click e1541 | 1 | 200 | 761 ms | 91066 ms | — |
+| inspect | step 5: wait 5s | 1 | 200 | 826 ms | 519978 ms | — |
+| inspect | step 8: goto /marketplace/inbox | 1 | 200 | 1394 ms | 10331 ms | — |
+| inspect | step 11: goto /marketplace/inbox | 1 | 200 | 1177 ms | 7157 ms | — |
 
 <!-- facts:end -->
 

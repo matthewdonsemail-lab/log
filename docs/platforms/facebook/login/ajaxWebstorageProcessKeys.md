@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_a2b243a57cde179209f991c459d5a7b92dbf5a73e6194b9b80a82413ca7b3c98` |
+| rea | `ev_70efc081c67ed7332e21c5498e2db53c87d1066c637ab8bfc22fe41d543c7021` |
 
-Seen 21 time(s) in 7 run(s).
+Seen 25 time(s) in 8 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -34,6 +34,8 @@ Seen 21 time(s) in 7 run(s).
 | inspect | step 3: click e | 1 | 200 | 629 ms | 13511 ms | — |
 | inspect | step 26: wait 8s | 1 | 200 | 400 ms | 8699 ms | — |
 | inspect | step 27: click e1541 | 1 | 200 | 457 ms | 8217 ms | — |
+| inspect | step 5: wait 5s | 3 | 200 | 395–482 ms | 969–300966 ms | — |
+| inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1026 ms | 16771 ms | — |
 
 <!-- facts:end -->
 

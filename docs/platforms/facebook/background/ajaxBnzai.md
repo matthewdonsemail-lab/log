@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_b8c5621c64d1534e9f0750cc287f6105122c13fda1f5cb2bb55884b437398a54` |
+| rea | `ev_8827368792a2c9c4b36b9101c115368c0fbfb2186aeb70d15f1a64cd4a7fde5b` |
 
-Seen 436 time(s) in 23 run(s).
+Seen 470 time(s) in 24 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -48,7 +48,7 @@ Seen 436 time(s) in 23 run(s).
 | inspect | scroll: +700px in 16 wheel steps, 985 ms | 2 | 200 | 362–585 ms | 1607–2609 ms | — |
 | inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 354 ms | 54 ms | — |
 | inspect | scroll: +800px in 18 wheel steps, 781 ms | 22 | 200 | 337–1538 ms | 2912–1778687 ms | — |
-| inspect | step 2: snapshot | 5 | 200 | 336–1333 ms | 6316–16662 ms | — |
+| inspect | step 2: snapshot | 6 | 200 | 336–1482 ms | 6316–23691 ms | — |
 | inspect | step 4: type e1681 | 1 | 200 | 1400 ms | 1138 ms | — |
 | inspect | step 6: wait 6s | 1 | 200 | 365 ms | 21607 ms | — |
 | inspect | step 8: clickRole button "…" | 1 | 200 | 363 ms | 10817 ms | — |
@@ -195,6 +195,15 @@ Seen 436 time(s) in 23 run(s).
 | inspect | step 12: type e281 | 1 | 200 | 356 ms | 27279 ms | — |
 | inspect | type failed: TimeoutError: Locator.press_sequentially: Timeout 30000ms exceeded. | 1 | 200 | 442 ms | 50819 ms | — |
 | inspect | step 13: setLocation 18015 | 4 | 200 | 363–1764 ms | 10384–127906 ms | — |
+| inspect | step 1: goto /marketplace/inbox | 4 | 200 | 359–1645 ms | 10466–24960 ms | — |
+| inspect | step 4: goto /marketplace/you/selling | 3 | 200 | 333–817 ms | 18–11343 ms | — |
+| inspect | step 5: wait 5s | 10 | 200 | 360–2573 ms | 17515–559238 ms | — |
+| inspect | step 6: goto /marketplace/status | 1 | 200 | 875 ms | 8022 ms | — |
+| inspect | step 7: goto /marketplace/you/selling | 3 | 200 | 407–948 ms | 37–12857 ms | — |
+| inspect | step 8: goto /marketplace/inbox | 3 | 200 | 369–606 ms | 7346–65565 ms | — |
+| inspect | step 9: goto /marketplace/status | 1 | 200 | 796 ms | 6060 ms | — |
+| inspect | step 10: goto /marketplace/you/selling | 3 | 200 | 452–751 ms | 52–7795 ms | — |
+| inspect | step 11: goto /marketplace/inbox | 5 | 200 | 365–2921 ms | 4798–106788 ms | — |
 
 <!-- facts:end -->
 

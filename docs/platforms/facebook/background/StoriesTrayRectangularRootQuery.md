@@ -13,7 +13,7 @@
 | Called from | `StoriesTrayRectangularRoot.react` |
 | rea | `ev_c974048d5563e87d75f5e8ddd458fdc3829a195d00e0a636a969922c24e6ae81` |
 
-Seen 10 time(s) in 6 run(s).
+Seen 11 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -27,6 +27,7 @@ Seen 10 time(s) in 6 run(s).
 | inspect | step 71: dwell 1s | 1 | 200 | 625 ms | 8271 ms | — |
 | inspect | step 4: snapshot | 1 | 200 | 902 ms | 354 ms | — |
 | inspect | step 5: goto /marketplace/create/item | 1 | 200 | 891 ms | 6698 ms | — |
+| inspect | step 5: wait 5s | 1 | 200 | 1021 ms | 103706 ms | — |
 
 <!-- facts:end -->
 

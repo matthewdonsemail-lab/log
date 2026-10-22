@@ -13,12 +13,15 @@
 | Called from | `MarketplaceYouSellingUpsellCard.react` |
 | rea | `ev_00977e2ab70ca12a60a74cc135fd797089c7b462f9a8434a2065fcc5480f693a` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 5 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | publish | Marketplace location: Reading 19601 US | 1 | 200 | 2247 ms | 37650 ms | — |
 | inspect | step 25: click e1241 | 1 | 200 | 800 ms | 15204 ms | — |
+| inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 442 ms | 4339 ms | — |
+| inspect | step 7: goto /marketplace/you/selling | 1 | 200 | 797 ms | 1919 ms | — |
+| inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 579 ms | 1845 ms | — |
 
 <!-- facts:end -->
 

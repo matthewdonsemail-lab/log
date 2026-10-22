@@ -13,7 +13,7 @@
 | Called from | `MAWVerifyThreadCutover` |
 | rea | `ev_2ef4fcf81840e4c44dfd19b7c86b9e3e65429109c06595cfc96262bcea9f2bc2` |
 
-Seen 63 time(s) in 19 run(s).
+Seen 72 time(s) in 20 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -59,6 +59,14 @@ Seen 63 time(s) in 19 run(s).
 | inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 599 ms | 5546 ms | — |
 | inspect | step 5: goto /marketplace/create/item | 1 | 200 | 392 ms | 2940 ms | — |
 | inspect | step 13: setLocation 18015 | 1 | 200 | 387 ms | 4587 ms | — |
+| inspect | step 1: goto /marketplace/inbox | 2 | 200 | 405–414 ms | 6950–19783 ms | — |
+| inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 548 ms | 5357 ms | — |
+| inspect | step 6: goto /marketplace/status | 1 | 200 | 553 ms | 5497 ms | — |
+| inspect | step 7: goto /marketplace/you/selling | 1 | 200 | 741 ms | 2468 ms | — |
+| inspect | step 8: goto /marketplace/inbox | 1 | 200 | 694 ms | 4789 ms | — |
+| inspect | step 9: goto /marketplace/status | 1 | 200 | 511 ms | 2773 ms | — |
+| inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1234 ms | 2539 ms | — |
+| inspect | step 11: goto /marketplace/inbox | 1 | 200 | 663 ms | 2526 ms | — |
 
 <!-- facts:end -->
 

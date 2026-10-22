@@ -13,7 +13,7 @@
 | Called from | `CometFeedInlineComposer.react` |
 | rea | `ev_3e02863ff58798e0b4e157f2227e5ceed62786408d21a22ae2d4cce84f7332b8` |
 
-Seen 12 time(s) in 6 run(s).
+Seen 13 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -29,6 +29,7 @@ Seen 12 time(s) in 6 run(s).
 | inspect | step 4: snapshot | 1 | 200 | 512 ms | 330 ms | — |
 | inspect | pin: typed the account's Messenger PIN | 1 | 200 | 411 ms | 538 ms | — |
 | inspect | step 5: goto /marketplace/create/item | 1 | 200 | 423 ms | 6664 ms | — |
+| inspect | step 5: wait 5s | 1 | 200 | 595 ms | 103685 ms | — |
 
 <!-- facts:end -->
 

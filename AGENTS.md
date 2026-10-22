@@ -718,7 +718,16 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     (location, Create, photos, title, price, category, condition,
     description, Next, Publish; never Boost, rule 41), not by a second
     browser. "Discover more when you shop" (partner listings, a European
-    location) is a known page state, pressed through with Update. The page-state hook resolves it with that flow when the
+    location) is a known page state, pressed through with Update.
+69. 2026-10-22 · matt: once a listing is live, the account is checked on a
+    schedule. The host's check (every watch round, in the browser it holds)
+    reads Marketplace status (may it still sell: anything but full access is
+    the account's `suspended` issue), each listing's state on Selling into
+    Twenty (active, being reviewed, sold, rejected), and the seller inbox's
+    chats, each from its step's own recording, nothing clicked.
+    `log facebook check --account <a>` runs it once by hand. A chat's
+    fields are mapped from the first recording of a real one (rule 29); until
+    then chats are counted and kept as sent. `src/facebook/marketplace/check`. The page-state hook resolves it with that flow when the
     account's PIN is in Twenty, and flags it to matt only when it isn't (the
     session records a yes or no when it opens, never the PIN). "Enter your
     PIN" (`messengerPinEnter`) is mapped the same way: the PIN is typed from

@@ -12,7 +12,7 @@ flowchart LR
   d_adsPower --> gates
   more["Next browser provider: one more driver (src/browser/name), rule 44"] -.-> gates
   gates --> session
-  account["On the account's browser: host, inspect, flow, warmup, join, read, poll"]
+  account["On the account's browser: host, inspect, flow, warmup, join, read, poll, check"]
   camoufox["Camoufox only, not on the driver yet: doctor, connect, profile, scan, status, watch, publish, campaign"]
   session --> account
   camoufox -.->|"launches Camoufox itself"| d_camoufox

@@ -13,7 +13,7 @@
 | Called from | `useMWEncryptedBackupsFetchBackupIdsV2` |
 | rea | `ev_16df7daca80a72c8f44b7a489690336b7def96e564429f0639a122f48023372a` |
 
-Seen 64 time(s) in 20 run(s).
+Seen 73 time(s) in 21 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -60,6 +60,14 @@ Seen 64 time(s) in 20 run(s).
 | inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 630 ms | 5319 ms | — |
 | inspect | step 5: goto /marketplace/create/item | 1 | 200 | 440 ms | 2865 ms | — |
 | inspect | step 13: setLocation 18015 | 1 | 200 | 380 ms | 4469 ms | — |
+| inspect | step 1: goto /marketplace/inbox | 2 | 200 | 366–431 ms | 6766–19726 ms | — |
+| inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 461 ms | 5446 ms | — |
+| inspect | step 6: goto /marketplace/status | 1 | 200 | 428 ms | 5940 ms | — |
+| inspect | step 7: goto /marketplace/you/selling | 1 | 200 | 794 ms | 2409 ms | — |
+| inspect | step 8: goto /marketplace/inbox | 1 | 200 | 487 ms | 4607 ms | — |
+| inspect | step 9: goto /marketplace/status | 1 | 200 | 524 ms | 2726 ms | — |
+| inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1189 ms | 2487 ms | — |
+| inspect | step 11: goto /marketplace/inbox | 1 | 200 | 806 ms | 2383 ms | — |
 
 <!-- facts:end -->
 

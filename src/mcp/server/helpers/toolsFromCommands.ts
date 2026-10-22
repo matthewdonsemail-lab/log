@@ -4,7 +4,7 @@ import { TERMINAL_ONLY, TOOL_RESULT_SCHEMA } from "../types.ts";
 import { rulesLine } from "./agentRules.ts";
 
 /** The tools whose calls run long (a browser, Facebook, rea): their calls are watched with a Monitor (rule 26). */
-export const LONG_RUNNING = new Set(["inspect", "join", "read", "poll", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign"]);
+export const LONG_RUNNING = new Set(["inspect", "join", "read", "poll", "check", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign"]);
 
 /** How the command is written, the platform first (rule 63): `facebook connect`, `<platform> warmup`, `inspect`. Pure. */
 export const commandWords = (command: Command): string =>

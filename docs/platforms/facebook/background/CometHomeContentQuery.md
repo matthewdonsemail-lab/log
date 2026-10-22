@@ -13,7 +13,7 @@
 | Called from | `CometHomeContent.react` |
 | rea | `ev_cf23e67c25aa3ceb49db2a20048e8ce344dfa1f57457ba9df343170946991f9b` |
 
-Seen 12 time(s) in 6 run(s).
+Seen 13 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -29,6 +29,7 @@ Seen 12 time(s) in 6 run(s).
 | inspect | step 4: snapshot | 1 | 200 | 483 ms | 339 ms | — |
 | inspect | pin: typed the account's Messenger PIN | 1 | 200 | 580 ms | 554 ms | — |
 | inspect | step 5: goto /marketplace/create/item | 1 | 200 | 401 ms | 6674 ms | — |
+| inspect | step 5: wait 5s | 1 | 200 | 390 ms | 103682 ms | — |
 
 <!-- facts:end -->
 

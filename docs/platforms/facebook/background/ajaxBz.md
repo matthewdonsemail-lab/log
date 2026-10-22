@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_b36ef6c88118bebbbcd874ce9d69777980f6638e6228ca98f73a5d4b0ee215a3` |
+| rea | `ev_70efc081c67ed7332e21c5498e2db53c87d1066c637ab8bfc22fe41d543c7021` |
 
-Seen 54 time(s) in 4 run(s).
+Seen 55 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -35,6 +35,7 @@ Seen 54 time(s) in 4 run(s).
 | connect | submitCredentials failed: crashed Error | 1 | -1 | -1 ms | 1666 ms | — |
 | connect | Auto-login: submitting (Enter). | 2 | -1 | -1 ms | 26–102 ms | — |
 | inspect | step 27: click e1541 | 1 | 200 | 1489 ms | 37737 ms | — |
+| inspect | step 5: wait 5s | 1 | 200 | 1403 ms | 80871 ms | — |
 
 <!-- facts:end -->
 

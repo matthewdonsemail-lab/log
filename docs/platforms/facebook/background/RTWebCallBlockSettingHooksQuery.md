@@ -13,7 +13,7 @@
 | Called from | `RTWebCallBlockSettingHooks` |
 | rea | `ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6` |
 
-Seen 64 time(s) in 20 run(s).
+Seen 73 time(s) in 21 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -60,6 +60,14 @@ Seen 64 time(s) in 20 run(s).
 | inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 695 ms | 5339 ms | — |
 | inspect | step 5: goto /marketplace/create/item | 1 | 200 | 391 ms | 2910 ms | — |
 | inspect | step 13: setLocation 18015 | 1 | 200 | 377 ms | 4502 ms | — |
+| inspect | step 1: goto /marketplace/inbox | 2 | 200 | 357–400 ms | 6903–19750 ms | — |
+| inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 429 ms | 5479 ms | — |
+| inspect | step 6: goto /marketplace/status | 1 | 200 | 382 ms | 5964 ms | — |
+| inspect | step 7: goto /marketplace/you/selling | 1 | 200 | 770 ms | 2440 ms | — |
+| inspect | step 8: goto /marketplace/inbox | 1 | 200 | 722 ms | 4761 ms | — |
+| inspect | step 9: goto /marketplace/status | 1 | 200 | 895 ms | 2244 ms | — |
+| inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1285 ms | 2315 ms | — |
+| inspect | step 11: goto /marketplace/inbox | 1 | 200 | 629 ms | 2322 ms | — |
 
 <!-- facts:end -->
 

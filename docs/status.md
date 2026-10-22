@@ -48,7 +48,8 @@ Accounts in the runs: Bethlehem 61594063207669, Reading 61594131334566, Lancaste
 | settingName | ⬜ | A placeholder that returns "ok" |
 | settingLocation | 🟡 | Never run by the host (Reading's location was set by hand in inspect) |
 | warming | 🟡 | Never run by the host |
-| host lane: opening, watching, checking | 🟡 | Never reached live. `watching` only loads the Selling page; the inbox and notifications the docs mention aren't read. |
+| host lane: opening, watching, checking | 🟡 | The host itself never ran its day live. Its check is now the Marketplace check below (2026-10-22), proven by hand with `log facebook check`, not yet inside a host run. |
+| `log facebook check` (and the host's check) | ✅ 2026-10-22 | Bethlehem, in its open browser: "You have full access to Marketplace" (profile GOOD, selling ELIGIBLE), listing 1425935622848350 active on Selling (Twenty moved UNDER_REVIEW → ACTIVE), seller inbox: no chats. A chat's own fields aren't mapped yet: they are kept as sent until a recording holds one. |
 | **acting** (publish or reply as a tab) | ⬜ | Returns `actNotBuilt`; `host send` can't trigger it |
 | overnight, cooling | 🟡 | Never reached live |
 | `hostActors.ts` (every real step) | — | No unit tests of its own; the lifecycle tests use stand-ins |
@@ -107,7 +108,7 @@ Accounts in the runs: Bethlehem 61594063207669, Reading 61594131334566, Lancaste
 
 | | ✅ live | 🟡 untested live | 🔴 failed or partial | ⬜ not built |
 |---|---|---|---|---|
-| The 56 commands and steps above | 25 | 16 | 7 | 8 |
+| The 57 commands and steps above | 26 | 16 | 7 | 8 |
 
 Under half of what's built has been proven live. Most of what's proven is Twenty, inspect, joining and reading a group, and one publish. Almost everything that acts on its own (the host's day, connect/scan/watch on AdsPower, campaigns) hasn't been. The five warm-up stages have, on 2026-10-22. Group reading counts as ✅ for its first version, though the current version hasn't run live.
 
@@ -153,7 +154,7 @@ The same five steps every time (rules 25, 29, 31). Nothing is coded before step 
 |---|---|---|
 | `docs/platforms/facebook/workflows.md` | Reading a group is "extractor only", the command is "missing"; poll isn't listed | Both are built (status above) |
 | `docs/groupRead.md` (top) | "not yet run live end to end" | The first version ran live on 2026-10-22 |
-| `docs/lifecycle.md` | Acting "runs publish or a reply in a tab"; watching reads the inbox; progress at `~/.logCli/host/<a>/` | Acting isn't built, watching reads only the Selling page, and progress is at `~/.logCli/runs/host/<a>/` |
+| `docs/lifecycle.md` | Acting "runs publish or a reply in a tab"; watching reads the inbox; progress at `~/.logCli/host/<a>/` | Acting isn't built; watching reads Marketplace status, Selling and the seller inbox's count (not a thread's messages yet); progress is at `~/.logCli/runs/host/<a>/` |
 | `skills/lifecycle/SKILL.md` | Describes acting as working | Not built |
 | `skills/host/SKILL.md`, AGENTS.md | The host "signs in by the session cookie" | It types the email and password; the cookies decide whether it's signed in |
 | `skills/flow/SKILL.md` | Lists only profileSetup as a saved flow | There are 9 |

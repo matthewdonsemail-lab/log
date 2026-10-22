@@ -13,7 +13,7 @@
 | Called from | `CometModernHomeFeed.react` |
 | rea | `ev_4ec8830d6ef6271498b3372408c4bf6f0e0db14c6da5786e3a458e2f191f2b3d` |
 
-Seen 10 time(s) in 6 run(s).
+Seen 11 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -27,6 +27,7 @@ Seen 10 time(s) in 6 run(s).
 | inspect | step 71: dwell 1s | 1 | 200 | 3485 ms | 8254 ms | — |
 | inspect | step 4: snapshot | 1 | 200 | 3390 ms | 335 ms | — |
 | inspect | step 5: goto /marketplace/create/item | 1 | 200 | 3090 ms | 6667 ms | — |
+| inspect | step 5: wait 5s | 1 | 200 | 5114 ms | 103686 ms | — |
 
 <!-- facts:end -->
 

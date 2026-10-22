@@ -46,7 +46,8 @@ function newestChange(path: string): number {
     return 0
   }
   if (!stat.isDirectory()) return stat.mtimeMs
-  return readdirSync(path).reduce((n, name) => Math.max(n, newestChange(join(path, name))), stat.mtimeMs)
+  // A folder's own time moves whenever something is added or removed in it; a run is being written when its files are.
+  return readdirSync(path).reduce((n, name) => Math.max(n, newestChange(join(path, name))), 0)
 }
 
 /** When the request docs were last built, from their index; 0 without one. */

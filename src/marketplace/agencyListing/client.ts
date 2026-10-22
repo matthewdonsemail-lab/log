@@ -157,7 +157,7 @@ export async function recordRun(
 }
 
 /** Rows a dashboard scan may move: what is (or might be) live on Facebook. */
-const SYNCABLE: readonly AgencyListingStatus[] = ['publishing', 'unconfirmed', 'active', 'underReview', 'duplicateTakedown', 'unknown']
+export const SYNCABLE: readonly AgencyListingStatus[] = ['publishing', 'unconfirmed', 'active', 'underReview', 'duplicateTakedown', 'unknown']
 
 /**
  * One account's Marketplace > Selling, as scanned → its agencyListing rows.

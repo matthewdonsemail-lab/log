@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_4b8876070c04830f1f9c0c6f13352822f96e3d646a31526bf6846cf0bb5d1c84` |
+| rea | `ev_234c75aefcc329813686b684e1147f5131974c702880e6b21ab1650509b614db` |
 
-Seen 31 time(s) in 9 run(s).
+Seen 34 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -48,6 +48,8 @@ Seen 31 time(s) in 9 run(s).
 | inspect | step 25: click e1241 | 1 | 200 | 605 ms | 8407 ms | — |
 | inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 569 ms | 18835 ms | — |
 | inspect | step 13: setLocation 18015 | 1 | 200 | 412 ms | 15969 ms | — |
+| inspect | step 1: goto /marketplace/inbox | 2 | 200 | 365–878 ms | 20925–22722 ms | — |
+| inspect | step 3: click e156 | 1 | 200 | 469 ms | 884 ms | — |
 
 <!-- facts:end -->
 

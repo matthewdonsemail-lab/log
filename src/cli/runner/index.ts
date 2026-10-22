@@ -17,6 +17,7 @@ import { conversationCommand, conversationsCommand } from "../conversation/index
 import { loginCommand, logoutCommand, whoamiCommand } from "../auth/index.ts";
 import { errorsCommand, graphCommand } from "../errors/index.ts";
 import { captureCommand } from "../capture/index.ts";
+import { checkCommand } from "../check/index.ts";
 import { launchCommand } from "../launch/index.ts";
 import { lifecycleCommand } from "../lifecycle/index.ts";
 import { listingCommand, listingsCommand } from "../listing/index.ts";
@@ -58,6 +59,7 @@ export const COMMANDS: Command[] = [
   joinCommand,
   readCommand,
   pollCommand,
+  checkCommand,
   scanCommand,
   statusCommand,
   watchCommand,

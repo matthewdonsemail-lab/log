@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | `xfb_youth_regulatory_config_platform.query_configs_by_handler` |
 | Called from | `FBYRPTimeLimitsEnforcement.react` |
-| rea | `ev_ed1a3cfe4b9656a9ad3ddf8f3e05b4767495c0d780a6a027450c86c6d19c34c6` |
+| rea | `ev_6257439962be20bdb256b2c0fd4f7ed4a86b9d334bb2500d9045f2a42b81c9c9` |
 
-Seen 64 time(s) in 20 run(s).
+Seen 73 time(s) in 21 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -60,6 +60,14 @@ Seen 64 time(s) in 20 run(s).
 | inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 556 ms | 4820 ms | — |
 | inspect | step 5: goto /marketplace/create/item | 1 | 200 | 474 ms | 1630 ms | — |
 | inspect | step 13: setLocation 18015 | 1 | 200 | 383 ms | 2782 ms | — |
+| inspect | step 1: goto /marketplace/inbox | 2 | 200 | 377–427 ms | 5995–19178 ms | — |
+| inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 441 ms | 4554 ms | — |
+| inspect | step 6: goto /marketplace/status | 1 | 200 | 458 ms | 4700 ms | — |
+| inspect | step 7: goto /marketplace/you/selling | 1 | 200 | 742 ms | 1424 ms | — |
+| inspect | step 8: goto /marketplace/inbox | 1 | 200 | 433 ms | 3924 ms | — |
+| inspect | step 9: goto /marketplace/status | 1 | 200 | 408 ms | 1408 ms | — |
+| inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 904 ms | 1500 ms | — |
+| inspect | step 11: goto /marketplace/inbox | 1 | 200 | 496 ms | 1804 ms | — |
 
 <!-- facts:end -->
 

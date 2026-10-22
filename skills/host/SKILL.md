@@ -25,6 +25,7 @@ description: Run an account's whole lifecycle (rule 35) in ONE browser kept open
 
 ```bash
 log facebook host start --account <a> [--live] [--likes] --gapMinutes 2 --watchMinutes 2   # watched; default 150 / 12
+log facebook check --account <a> [--bypass]   # the host's check once, by hand, in the open browser
 log facebook host status [--account <a>]          # state, warm-up done, opens today, every close and its reason
 log facebook host send --account <a> PERSON_DONE  # after clearing a checkpoint by hand in the window
 log facebook host send --account <a> SHUTDOWN
@@ -47,3 +48,21 @@ resetOpens <a>|all --reason "<why>"` (rule 37). It deletes nothing.
 
 Code: `src/marketplace/host` (the runner), `src/cli/host` (the steps),
 `src/marketplace/lifecycle` (the machine). Doc: `docs/lifecycle.md`.
+
+## The check (every watch round, rule 69)
+
+Each round the host opens three pages in the browser it holds, reading each
+from its step's own recording, nothing clicked:
+
+1. `/marketplace/status`: may the account still sell (`access_state_title`,
+   `is_marketplace_access_banned`, `profile_status`, `sell_on_marketplace`).
+   Anything but full access is the account's `suspended` issue.
+2. `/marketplace/you/selling`: each listing's state (active, being reviewed,
+   sold, rejected) into Twenty's `agencyListings` (status, `lastCheckedAt`).
+3. `/marketplace/inbox?targetTab=SELLER`: the seller chats. None: said so. Some:
+   counted and kept as Facebook sent them in the run folder, until a recording of
+   a real chat maps a thread's fields (rule 29) and they go to Twenty's
+   conversations (rule 34).
+
+`log facebook check --account <a>` runs the same once.
+Code: `src/facebook/marketplace/check`.

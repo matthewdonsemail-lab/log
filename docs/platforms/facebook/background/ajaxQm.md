@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_b8c5621c64d1534e9f0750cc287f6105122c13fda1f5cb2bb55884b437398a54` |
+| rea | `ev_bb2ceff7d11b9f11bb577d694461204dfdca9c8b2e014eb4992f30f7824b0424` |
 
-Seen 70 time(s) in 23 run(s).
+Seen 79 time(s) in 24 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -60,6 +60,14 @@ Seen 70 time(s) in 23 run(s).
 | inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 505 ms | 851 ms | — |
 | inspect | step 5: goto /marketplace/create/item | 1 | 200 | 569 ms | 994 ms | — |
 | inspect | step 13: setLocation 18015 | 1 | 200 | 483 ms | 1912 ms | — |
+| inspect | step 1: goto /marketplace/inbox | 2 | 200 | 360–406 ms | 1928–18493 ms | — |
+| inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 432 ms | 885 ms | — |
+| inspect | step 6: goto /marketplace/status | 1 | 200 | 448 ms | 2006 ms | — |
+| inspect | step 7: goto /marketplace/you/selling | 1 | 200 | 455 ms | 808 ms | — |
+| inspect | step 8: goto /marketplace/inbox | 1 | 200 | 455 ms | 3301 ms | — |
+| inspect | step 9: goto /marketplace/status | 1 | 200 | 502 ms | 895 ms | — |
+| inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1143 ms | 991 ms | — |
+| inspect | step 11: goto /marketplace/inbox | 1 | 200 | 439 ms | 1028 ms | — |
 
 <!-- facts:end -->
 

@@ -4467,3 +4467,87 @@ Checked: on Bethlehem (inspect 20261022T110738, `--bypass`, after `log proxy ass
 - **Twenty:** the listing is UNDER_REVIEW with its id and URL (`recordRun`).
 - **Gates:** `bun test` 791 pass; `tsc` clean; every gate passes; the docs gate reports 202 requests.
 - **Not checked:** the flow run as a flow; the new `setLocation` end to end in one step (its option click is what was done by hand); the listing clearing review.
+
+## 2026-10-22 11:55Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/diagrams/browsers.mmd`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuShortcutsQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceInboxBuyerTabViewContainerQuery.md`: new file
+- `docs/platforms/facebook/background/CometMarketplaceInboxContentContainerQuery.md`: new file
+- `docs/platforms/facebook/background/CometMarketplaceInboxSellerTabThreadViewContainerQuery.md`: new file
+- `docs/platforms/facebook/background/CometMarketplaceInboxSetPreferredViewerRoleMutation.md`: new file
+- `docs/platforms/facebook/background/CometMarketplaceStatusContentContainerQuery.md`: new file
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYouSellingUpsellCardQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxBz.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/status.md`: edited
+- `skills/host/SKILL.md`: edited
+- `src/browser/run/client.ts`: changed const IN_OPEN_BROWSER
+- `src/browser/runStore/client.ts`: changed function newestChange
+- `src/cli/check/index.ts`: added const CHECK_USAGE, const checkCommand
+- `src/cli/host/helpers/hostActors.ts`: changed function hostActors
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/facebook/marketplace/check/check.test.ts`: added const graphql, const page, const status, const listing, const selling, const inbox, test "full access is fine; a ban or an enforcement is the account's problem", test "a listing being reviewed, then through it, then sold", test "each listing reads its own flags, never the one before it", test "the seller inbox: no chats, or the chats as sent", test "a listing that moved gets its status in Twenty; chats are kept as sent; a ban is an issue", test "its data inside the page is read the same, with whether the account may sell"
+- `src/facebook/marketplace/check/client.ts`: added const FB, const CHECK_PAGES, type Send, function harOf, function readMarketplace, function keepCheck
+- `src/facebook/marketplace/check/helpers/graphqlResponses.ts`: added interface HarEntry, const entriesOf, function graphqlResponses, function responseTexts
+- `src/facebook/marketplace/check/helpers/index.ts`: added export from "./graphqlResponses.ts", export from "./marketplaceAccess.ts", export from "./sellerInbox.ts", export from "./sellingListings.ts"
+- `src/facebook/marketplace/check/helpers/marketplaceAccess.ts`: added function objectAfter, function marketplaceAccessOf, function accessProblem
+- `src/facebook/marketplace/check/helpers/sellerInbox.ts`: added function sellerInboxOf
+- `src/facebook/marketplace/check/helpers/sellingListings.ts`: added const LISTING, function field, function lastField, function noticeOf, function statusOfListing, function sellingListingsOf
+- `src/facebook/marketplace/check/index.ts`: added export from "./client.ts", export from "./helpers/index.ts", export from "./types.ts"
+- `src/facebook/marketplace/check/types.ts`: added interface MarketplaceAccess, interface SellingListing, interface SellerInbox, interface MarketplaceCheck, interface CheckReport
+- `src/facebook/marketplace/index.ts`: added export from "./check/index.ts"
+- `src/marketplace/agencyListing/client.ts`: no declaration changed (comments, formatting or line endings)
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const COMMAND_RULES
+- `src/mcp/server/helpers/toolsFromCommands.ts`: changed const LONG_RUNNING
+
+What changed: the host checks each account's Marketplace every watch round, and `log facebook check` runs the same once (rule 69).
+- **The readers:** `src/facebook/marketplace/check` reads each page from its step's own recording.
+  - `marketplaceAccessOf`: Marketplace status, from `CometMarketplaceStatusContentContainerQuery` or the page's preloaded copy, with `sell_on_marketplace`. `accessProblem` turns a ban, an enforcement, a profile not GOOD or selling not ELIGIBLE into the `suspended` issue.
+  - `sellingListingsOf`: each listing from the Selling page's preloaded data. `statusOfListing` gives active, underReview, sold, policyViolation or duplicateTakedown.
+  - `sellerInboxOf`: the seller tab's threads.
+- **Keeping it:** `readMarketplace` opens the three pages through the session. `keepCheck` moves each listing's status and `lastCheckedAt` in Twenty (`SYNCABLE`, now exported) and keeps chats as sent in the run folder until a thread is mapped.
+- **The host:** `watchCheck` runs the check through the account's problem check for every page.
+- **The command:** `log facebook check` (`src/cli/check`, in `IN_OPEN_BROWSER`, long-running over MCP).
+- **runStore:** a run is busy by its files' times only (a folder's own time made fresh test folders look busy).
+- **Docs:** 5 request docs with their reasoning; rule 69, the host skill, `docs/status.md`.
+Why: matt asked for the check to be built into the host: account health, the listing's status from Selling into Twenty, and the Marketplace inbox read into Twenty's conversations, from today's recording ("the account might be hurt, you never know"; "see if there's any new messages on the account").
+Checked: built from Bethlehem's recordings (inspect 20261022T113536, 20261022T110738); the readers read them right.
+- **What they read:** full access, profile GOOD, selling ELIGIBLE; the listing underReview at 11:19 and active at 11:37; no chats.
+- **Live:** `log facebook check --account 61594063207669 --bypass` printed "You have full access to Marketplace (profile GOOD)", the listing active, and "the seller inbox has no chats". The first live run found the status page preloaded, not requested, which is now read too.
+- **Gates:** `bun test` 797 pass, including the check's 6 tests; `tsc` clean; every gate passes; the docs gate reports 207 requests.
+- **Not done:** the host's own day hasn't run with the new check; a chat's fields (who wrote, what, about which listing) aren't mapped, because no buyer has written yet; the Selling data has no doc of its own, as it is preloaded in the page and `capture --docs` documents requests.

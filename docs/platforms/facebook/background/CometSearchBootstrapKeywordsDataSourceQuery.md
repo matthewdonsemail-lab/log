@@ -13,7 +13,7 @@
 | Called from | `CometSearchBootstrapKeywordsDataSource.query` |
 | rea | `ev_5cb62e3a7cd21788732d77960d11bcea0adc8730aaaa23e6a78c097c1c44c7a6` |
 
-Seen 63 time(s) in 19 run(s).
+Seen 72 time(s) in 20 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -60,6 +60,14 @@ Seen 63 time(s) in 19 run(s).
 | inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 711 ms | 5357 ms | — |
 | inspect | step 5: goto /marketplace/create/item | 1 | 200 | 391 ms | 2666 ms | — |
 | inspect | step 13: setLocation 18015 | 1 | 200 | 393 ms | 4315 ms | — |
+| inspect | step 1: goto /marketplace/inbox | 2 | 200 | 400–429 ms | 6579–19744 ms | — |
+| inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 411 ms | 5041 ms | — |
+| inspect | step 6: goto /marketplace/status | 1 | 200 | 570 ms | 5472 ms | — |
+| inspect | step 7: goto /marketplace/you/selling | 1 | 200 | 840 ms | 2305 ms | — |
+| inspect | step 8: goto /marketplace/inbox | 1 | 200 | 772 ms | 4753 ms | — |
+| inspect | step 9: goto /marketplace/status | 1 | 200 | 961 ms | 2144 ms | — |
+| inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1443 ms | 2222 ms | — |
+| inspect | step 11: goto /marketplace/inbox | 1 | 200 | 648 ms | 2318 ms | — |
 
 <!-- facts:end -->
 

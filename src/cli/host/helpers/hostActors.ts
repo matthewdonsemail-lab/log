@@ -18,6 +18,7 @@ import { preparePhotos } from "../../../media/photo/index.ts";
 import { join } from "node:path";
 import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
 import { ACTIVITY_SCRIPTS } from "../../../facebook/warmup/stages/index.ts";
+import * as marketplaceCheck from "../../../facebook/marketplace/check/index.ts";
 import { runFlowInSession, openInspectSession } from "../../flow/helpers/index.ts";
 import type { OpenSession } from "../../flow/helpers/index.ts";
 import { keepNewDevice, keepSession, openAccount } from "../../live/index.ts";
@@ -227,12 +228,26 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
       return ok();
     }),
 
-    /** The host's check: is the day over, and is the account still fine where it sells. */
+    /**
+     * The host's check (matt, 2026-10-22): is the day over; may the account still sell (Marketplace status);
+     * each listing's state on Selling, into Twenty; and the seller inbox's chats. Every page also goes through
+     * the account's own problems (checkpoint, sign-out, restriction) first.
+     */
     watchCheck: fromPromise<StepOutcome, LifecycleActorInputs["watchCheck"]>(async () => {
       if (dayOf(account).over && !options.bypassHours) return ok("the day is over", true);
       if (!browser.session) return error("browserGone", "the window went away");
-      const page = await send("goto", [`${FB}/marketplace/you/selling`]);
-      return problemOf({ action: "goto", url: `${FB}/marketplace/you/selling` }, page) ?? ok();
+      let landed: StepOutcome | null = null;
+      const checked = async (action: InspectAction, args: string[] = []) => {
+        const reply = await send(action, args);
+        landed ??= problemOf({ action, url: args[0] }, reply);
+        return reply;
+      };
+      const found = await marketplaceCheck.readMarketplace(checked, log);
+      if (landed) return landed;
+      const report = await marketplaceCheck.keepCheck(context.twenty, account.id, account.accountName, found, browser.session.current.runDir);
+      for (const line of report.lines) log(`host ${line}`);
+      if (report.issue) return issue(report.issue.code, report.issue.detail);
+      return ok(report.threads ? `${report.threads} seller chat(s)` : undefined);
     }),
 
     act: fromPromise<StepOutcome, LifecycleActorInputs["act"]>(async ({ input }) =>
