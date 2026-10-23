@@ -12,6 +12,7 @@ skill in the same commit.
 | [`captureRule`](skills/captureRule/SKILL.md) | Turn a rule from matt into a hard line in `AGENTS.md`, plus its check |
 | [`reaCapture`](skills/reaCapture/SKILL.md) | Capture live publish runs as a raw HAR, read them with `rea`, and score client design changes with SubQ |
 | [`accountToDryRun`](skills/accountToDryRun/SKILL.md) | Take one account from NEEDSLOGIN to ACTIVE and run a full publish dry run, all through the `log` MCP tools |
+| [`listingCopy`](skills/listingCopy/SKILL.md) | Write a listing's title, description and photos by the copy rules, each with a good and a bad version, from research on high-response classified and service ads (`docs/listingMedia.md` for how photos reach Facebook) |
 | [`conversations`](skills/conversations/SKILL.md) | Buyers' Marketplace conversations in Twenty (rule 34): list, show, record a scanned thread, mark read, set the lead, link the listing |
 | [`host`](skills/host/SKILL.md) | Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35) |
 | [`lifecycle`](skills/lifecycle/SKILL.md) | The account lifecycle (rule 35): one machine per account, the browser kept open, onboarding with a day's warm-up, then its host |

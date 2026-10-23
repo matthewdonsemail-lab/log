@@ -5203,3 +5203,14 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `log facebook capture --docs` folded in the runs of 2026-10-22 and 23: 77 requests now, 10 new ones read by rea, and the reasoning written for the 9 that needed it. The Selling list query (`CometMarketplaceYouSellingFastContentContainerQuery`) now says it carries each listing's clicks in the last 14 days (`listing_insights.insights[0].count`) and that the check saves them to `clicksCount`; the others (the Selling frame, Marketplace notifications, a listing's dialog, its comments and delete check, Messenger's encrypted-backup prompts) say what they are and that nothing reads them.
 Why: rule 27: the push gate refuses runs newer than the docs and requests whose reasoning is unwritten, and two runs were new (the inbox checks of 2026-10-22 15:58 and 2026-10-23 00:07).
 Checked: `check:facebookClientDocs` passes: 216 requests documented, rea read every GraphQL slice.
+
+## 2026-10-23 01:01Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/listingMedia.md`: new file
+- `skills.md`: edited
+- `skills/listingCopy/SKILL.md`: new file
+
+What changed: `skills/listingCopy/SKILL.md` holds the copy rules for a listing's title, description and photos, each with a good and a bad version, the Bethlehem listing as the worked "before" and a rewrite by the rules (with brackets for facts matt has to confirm), and a checklist before `log facebook listing create`. `docs/listingMedia.md` says how a listing's photos go from Twenty to Facebook: `agencyListings.photos` holds paths, URLs or data URLs, not files; each run reads them (URLs through the account's proxy), varies them and drops their metadata, writes them to the run folder and uploads them, `publish` up to 10 with their hashes saved, the recorded flow exactly two. The research with its sources is the workspace's `RESEARCH/LISTING_COPY_RESEARCH.md`. `skills.md` indexes the skill.
+Why: matt said the Bethlehem listing's copy "sucks" and asked for a set of rules for the copy, with good and bad versions, from high-converting Marketplace and classified ads looked up with treg, and an outline of how uploading the media works in Twenty.
+Checked: six TinyFish searches and twelve fetched pages (rule 53); the rules cite the six guides that loaded in full. The media outline was read from the code: `photoSource.ts`, `preparePhotos` and `variationParams` in `src/media/photo`, `photo.test.ts` (no EXIF), `validateListing`, the `photoHashes` write in `agencyListing/client.ts`, and the flow's two upload steps. No code changed.
