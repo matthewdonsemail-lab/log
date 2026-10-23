@@ -16,6 +16,7 @@ const status = (over: Record<string, unknown> = {}) =>
   })
 const listing = (id: string, indicator: string | null, extra = '') =>
   `"appeal_status":"appeal_not_exist","is_duplicate":false,"listing_is_rejected":false,"integrity_status_indicator":${indicator ? `{"content":"${indicator}","style":"INFO"}` : 'null'},"listing_status_indicator":null,"id":"${id}","marketplace_listing_title":"Junk Removal","formatted_price":{"text":"$99"},"is_pending":false,"is_sold":false,"is_draft":false,"is_on_marketplace":true${extra}`
+const INSIGHTS = (count: number) => `,"__isMarketplaceListingWithInsights":"GroupCommerceProductItem","listing_insights":{"insights":[{"count":${count}}]},"is_hidden":false`
 const selling = (...listings: string[]) => page(`<script>{"marketplace_listing_sets":{"edges":[${listings.map((l) => `{"node":{"first_listing":{${l}}}}`).join(',')}]}}</script>`)
 const inbox = (edges: unknown[]) => graphql('CometMarketplaceInboxSellerTabThreadViewContainerQuery', { data: { viewer: { marketplaceInboxSellerMessageThreads: { edges, page_info: { end_cursor: null, has_next_page: false } } } } })
 
@@ -40,6 +41,11 @@ describe('the Marketplace check reads the recorded responses', () => {
     expect(found.map((l) => [l.listingId, l.status])).toEqual([['1000000000001', 'underReview'], ['1000000000002', 'active']])
   })
 
+  test("each listing's clicks in the last 14 days come from its own listing_insights, never the next listing's", () => {
+    const found = sellingListingsOf(selling(listing('1000000000001', null, INSIGHTS(15)), listing('1000000000002', null), listing('1000000000003', null, INSIGHTS(1))))
+    expect(found.map((l) => [l.listingId, l.clicks])).toEqual([['1000000000001', 15], ['1000000000002', null], ['1000000000003', 1]])
+  })
+
   test('the seller inbox: no chats, or the chats as sent', () => {
     expect(sellerInboxOf(inbox([]))).toEqual({ threads: 0, hasNextPage: false, raw: [] })
     expect(sellerInboxOf(inbox([{ node: { id: 't1' } }]))?.threads).toBe(1)
@@ -52,9 +58,11 @@ describe('keepCheck', () => {
     const account = (await twenty.list('socialAccounts')).find((a) => a.accountName === 'galwayOne')!
     const created = await twenty.create('agencyListings', { title: 'Junk Removal', socialAccountId: account.id, listingId: '1425935622848350', status: 'UNDER_REVIEW' } as never)
     const dir = mkdtempSync(join(tmpdir(), 'logCheck'))
-    const report = await keepCheck(twenty, account.id, 'galwayOne', { access: marketplaceAccessOf(status()), listings: sellingListingsOf(selling(listing('1425935622848350', null))), inbox: sellerInboxOf(inbox([{ node: { id: 't1' } }])) }, dir)
+    const report = await keepCheck(twenty, account.id, 'galwayOne', { access: marketplaceAccessOf(status()), listings: sellingListingsOf(selling(listing('1425935622848350', null, INSIGHTS(15)))), inbox: sellerInboxOf(inbox([{ node: { id: 't1' } }])) }, dir)
     expect((await twenty.list('agencyListings')).find((r) => r.id === (created as { id: string }).id)?.status).toBe('ACTIVE')
     expect(report.lines.join('\n')).toContain('underReview → active')
+    expect((await twenty.list('agencyListings')).find((r) => r.id === (created as { id: string }).id)?.clicksCount).toBe(15)
+    expect(report.lines.join('\n')).toContain('active, 15 clicks in 14 days; Twenty underReview → active; clicks empty → 15')
     expect(report.threads).toBe(1)
     expect(report.issue).toBeNull()
     const kept = report.lines.find((l) => l.includes('kept as sent'))!.split('kept as sent: ')[1]

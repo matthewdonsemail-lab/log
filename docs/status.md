@@ -49,7 +49,7 @@ Accounts in the runs: Bethlehem 61594063207669, Reading 61594131334566, Lancaste
 | settingLocation | 🟡 | Never run by the host (Reading's location was set by hand in inspect) |
 | warming | 🟡 | Never run by the host |
 | host lane: opening, watching, checking | 🟡 | The host itself never ran its day live. Its check is now the Marketplace check below (2026-10-22), proven by hand with `log facebook check`, not yet inside a host run. |
-| `log facebook check` (and the host's check) | ✅ 2026-10-22 | Bethlehem, in its open browser: "You have full access to Marketplace" (profile GOOD, selling ELIGIBLE), listing 1425935622848350 active on Selling (Twenty moved UNDER_REVIEW → ACTIVE), seller inbox: no chats. A chat's own fields aren't mapped yet: they are kept as sent until a recording holds one. |
+| `log facebook check` (and the host's check) | ✅ 2026-10-22 | Bethlehem, in its open browser: "You have full access to Marketplace" (profile GOOD, selling ELIGIBLE), listing 1425935622848350 active on Selling (Twenty moved UNDER_REVIEW → ACTIVE), seller inbox: no chats. 2026-10-23: each listing's clicks in the last 14 days (`listing_insights`, 15 for Bethlehem's) go to its `clicksCount`. A chat's own fields aren't mapped yet: they are kept as sent until a recording holds one. |
 | **acting** (publish or reply as a tab) | ⬜ | Returns `actNotBuilt`; `host send` can't trigger it |
 | overnight, cooling | 🟡 | Never reached live |
 | `hostActors.ts` (every real step) | — | No unit tests of its own; the lifecycle tests use stand-ins |

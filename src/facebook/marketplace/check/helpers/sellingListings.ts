@@ -2,6 +2,8 @@ import type { AgencyListingStatus } from '../../../../marketplace/agencyListing/
 import type { SellingListing } from '../types.ts'
 import { responseTexts } from './graphqlResponses.ts'
 
+const CLICKS = /"listing_insights":\{"insights":\[\{"count":(\d+)\}/
+
 const LISTING = /"id":"(\d{10,})","marketplace_listing_title":"((?:[^"\\]|\\.)*)"/g
 
 function field(window: string, name: string): string | null {
@@ -22,6 +24,11 @@ function noticeOf(window: string): string | null {
   return null
 }
 
+export function clicksOf(window: string): number | null {
+  const count = CLICKS.exec(window)?.[1]
+  return count === undefined ? null : Number(count)
+}
+
 export function statusOfListing(l: Omit<SellingListing, 'status'>): AgencyListingStatus {
   if (l.sold) return 'sold'
   if (l.rejected) return 'policyViolation'
@@ -35,12 +42,15 @@ export function sellingListingsOf(har: unknown): SellingListing[] {
   const found = new Map<string, SellingListing>()
   for (const text of responseTexts(har)) {
     if (!text.includes('marketplace_listing_title')) continue
-    for (const match of text.matchAll(LISTING)) {
+    const matches = [...text.matchAll(LISTING)]
+    for (const [n, match] of matches.entries()) {
       const listingId = match[1]
       if (found.has(listingId)) continue
       const at = match.index ?? 0
+      const next = matches.slice(n + 1).find((m) => m[1] !== listingId)?.index ?? text.length
       const before = text.slice(Math.max(0, at - 2000), at)
       const after = text.slice(at, at + 3000)
+      const own = text.slice(at, Math.min(next, at + 12000))
       const flag = (name: string) => field(after, name) === 'true'
       const base = {
         listingId,
@@ -52,7 +62,8 @@ export function sellingListingsOf(har: unknown): SellingListing[] {
         draft: flag('is_draft'),
         rejected: lastField(before, 'listing_is_rejected') === 'true',
         duplicate: lastField(before, 'is_duplicate') === 'true',
-        notice: noticeOf(before)
+        notice: noticeOf(before),
+        clicks: clicksOf(own)
       }
       found.set(listingId, { ...base, status: statusOfListing(base) })
     }

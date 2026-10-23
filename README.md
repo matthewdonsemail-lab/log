@@ -660,7 +660,7 @@ The account's browser must be open (log inspect start for that account, or log f
 Check one account in its open browser: may it still sell, each listing's state on Selling (into Twenty), and its seller inbox's chats MCP tools: `check`, one per form, with named fields.
 
 ```text
-log facebook check --account <accountName> [--bypass] [--json]   (in the account's open browser: Marketplace status, each listing on Selling into Twenty, the seller inbox's chats; nothing clicked)
+log facebook check --account <accountName> [--bypass] [--json]   (in the account's open browser: Marketplace status, each listing's state and clicks in the last 14 days on Selling into Twenty, the seller inbox's chats; nothing clicked)
 ```
 
 #### log facebook scan

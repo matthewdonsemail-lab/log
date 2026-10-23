@@ -50,16 +50,16 @@ export async function keepCheck(twenty: TwentyClient, accountId: string, account
     const rows = await listListingsWhere(twenty, { socialAccountId: { eq: accountId } })
     for (const listing of check.listings) {
       const row = rows.find((r) => r.listingId === listing.listingId)
-      const said = `${listing.title} (${listing.listingId}): ${listing.status}${listing.notice ? `, "${listing.notice}"` : ''}`
+      const said = `${listing.title} (${listing.listingId}): ${listing.status}${listing.notice ? `, "${listing.notice}"` : ''}${listing.clicks === null ? '' : `, ${listing.clicks} click${listing.clicks === 1 ? '' : 's'} in 14 days`}`
       if (!row) {
         lines.push(`  listing ${said}; not in Twenty`)
         continue
       }
       const moved = row.status !== listing.status
       if (!row.status || SYNCABLE.includes(row.status)) {
-        await twenty.update(AGENCY_LISTINGS, row.id, { lastCheckedAt: now.toISOString(), ...(moved ? { status: toTwentyEnum(listing.status) } : {}) } as never)
+        await twenty.update(AGENCY_LISTINGS, row.id, { lastCheckedAt: now.toISOString(), ...(moved ? { status: toTwentyEnum(listing.status) } : {}), ...(listing.clicks === null ? {} : { clicksCount: listing.clicks }) } as never)
       }
-      lines.push(`  listing ${said}${moved ? `; Twenty ${row.status ?? 'empty'} → ${listing.status}` : ''}`)
+      lines.push(`  listing ${said}${moved ? `; Twenty ${row.status ?? 'empty'} → ${listing.status}` : ''}${listing.clicks !== null && row.clicksCount !== listing.clicks ? `; clicks ${row.clicksCount ?? 'empty'} → ${listing.clicks}` : ''}`)
     }
     if (!check.listings.length) lines.push('  no listings on Selling')
   }

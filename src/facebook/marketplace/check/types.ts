@@ -20,6 +20,7 @@ export interface SellingListing {
   rejected: boolean
   duplicate: boolean
   notice: string | null
+  clicks: number | null
   status: AgencyListingStatus
 }
 
