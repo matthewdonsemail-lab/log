@@ -12,6 +12,9 @@ export function findingOf(at: BrowserAt): Finding {
     const next = state.person ? "Only a person can clear it: stop this account and tell matt." : "Known state, resolve it, do not stop:";
     return { account: at.account, kind: "state", state, mark: `${at.step}:${state.id}`, line: `${at.account}: page state **${state.id}**: ${state.what} (${where}). ${next} ${state.resolve}.`, resolvable: !state.person };
   }
+  if (at.reading && !at.reading.decided) {
+    return { account: at.account, kind: "reading", state: null, mark: `${at.step}:reading`, line: `${at.account}: ${at.reading.text.replace(/\n/g, " ")}`, resolvable: false };
+  }
   if (at.failed) {
     return {
       account: at.account,

@@ -42,6 +42,36 @@ page's elements with their refs. Everything is kept in order in
 `~/.logCli/runs/inspect/<time>_<a>/steps/NN_<action>/`: `snapshot.yml`,
 `screenshot.png`, `network.har`, `rea.json`.
 
+## Reading every step (rules 73-74)
+
+Give the session its goal when you open it, in plain words:
+
+```bash
+bun bin/log.ts inspect start --account <a> --goal "Set the Marketplace location to Bethlehem, Pennsylvania" --detach
+```
+
+Every `do` then reads its own step:
+
+- **The internal API, by code:** each call the step triggered, what was
+  sent and what came back, in seconds from the step's first request. It's
+  printed under "Internal API in this step" and kept in the step folder as
+  `exchanges.json` and `exchanges.md`. A repeated call shows only what
+  changed since its last call (the query as it was typed, letter by letter,
+  with each answer). Code loading and cross-site media are left out.
+- **A step no known page state names** goes to SubQ with everything around
+  it: the goal, the account, what we did (the mouse, how long it took),
+  every call, the page text, the screenshot and the earlier steps. SubQ
+  says what it means. The reading comes first in the result, starting with
+  `>>> UNKNOWN STATE`, and the page-state hook puts it into your context.
+  **Name that state before the flow goes on.**
+- `--goal` on one `do` overrides the session's goal for that step.
+- `bun bin/log.ts inspect read <run>/steps/NN_action --account <a> --goal "..."`
+  reads a recorded step again (over MCP: `inspectRead`).
+
+Each reading is one SubQ call ($0.04 per million input tokens; the West Bank
+step was about 49,000 tokens). `reading.json` and `readingState.json` hold
+the answers and exactly what was sent.
+
 Then write the code from it: the selectors and the order of clicks come from
 `snapshot.yml`, the waits from what `network.har` shows the page asking for.
 Rebuild the Facebook client docs after (rule 27): `capture --docs`.

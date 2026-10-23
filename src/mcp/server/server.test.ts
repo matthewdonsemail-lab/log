@@ -39,7 +39,7 @@ describe("toolsFromCommands", () => {
     const tools = toolsFromCommands(COMMANDS);
     const start = tools.find((t) => t.name === "inspectStart")!;
     expect(start.inputSchema.required).toEqual(["account"]);
-    expect(Object.keys(start.inputSchema.properties)).toEqual(["account", "url", "bypass", "now", "noIdleMouse", "detach", "proxyMs", "confirmBypass", "waitMs"]);
+    expect(Object.keys(start.inputSchema.properties)).toEqual(["account", "url", "bypass", "now", "noIdleMouse", "detach", "goal", "proxyMs", "confirmBypass", "waitMs"]);
     const step = tools.find((t) => t.name === "inspectDo")!;
     expect((step.inputSchema.properties.action as { enum: string[] }).enum).toContain("setLocation");
     expect((step.inputSchema.properties.values as { type: string }).type).toBe("array");

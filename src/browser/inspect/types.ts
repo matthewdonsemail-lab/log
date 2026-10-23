@@ -35,6 +35,7 @@ export interface CurrentInspect {
   repliesPath: string
   startedAt: string
   messengerPin?: boolean
+  goal?: string | null
 }
 
 export interface InspectCommand {
@@ -97,6 +98,7 @@ export interface BrowserAt {
   text: string
   failed: string | null
   messengerPin?: boolean
+  reading?: { decided: boolean; text: string } | null
 }
 
 export interface BrowserView {

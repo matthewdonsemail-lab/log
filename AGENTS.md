@@ -20,8 +20,11 @@ answer decides, never the screen, a timer, or the fact that a step ran.
   `/marketplace/create/item` twice. Both times its HTML said
   `sell_location: Barranco, 15063, PE`, and both times the warm-up passed.
   The prune then deleted it (#35).
-- **Not enforced yet:** every warm-up flow step has `expect: -`, and the
-  stack keeps only request names. Building the reads is #35.
+- **Status 2026-10-23:** every `log inspect` step now reads its internal
+  API calls by code, what was sent and what came back, into
+  `exchanges.json` and `exchanges.md` (rule 74). The warm-up flows and the
+  other machines don't yet: every warm-up flow step still has `expect: -`
+  (#35).
 
 Rule 73.
 
@@ -798,9 +801,29 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     and the deterministic factor of the system. Every browser step reads the
     internal API answers it triggers and the requests it sent, keeps them
     past the prune, and decides on them, never on a page loading, a timer or
-    the step having run. The MCP instructions put it first. Not enforced
-    yet: every warm-up flow step has `expect: -`, and only request names are
-    kept (#35). Top of this file.
+    the step having run. The MCP instructions put it first. Inspect steps
+    read theirs since rule 74; the warm-up flows don't yet (`expect: -`,
+    #35). Top of this file.
+74. 2026-10-23 · matt: in the inspect flow, a state we can't decide is
+    read by SubQ with everything around it, and said loudly to the agent.
+    Only `log inspect` does this, because it is where flows are made to be
+    run again and again. Every inspect step's internal API calls are taken
+    out of its recording by code, with what was sent and what came back, in
+    seconds from the step's first request (`exchanges.json`,
+    `exchanges.md`). A step no known state names (`pageStateOf`) is
+    collated into one bundle: the goal (`--goal`), the account (home,
+    platform, browser, the proxy's exit), what we did (the action, the
+    mouse, how long it took), every internal API call, the page text, the
+    screenshot and the earlier steps. SubQ's Decisions API
+    (`subq-snap-1.1`, up to 128 questions, a 384K-token context) is asked
+    what it means, not what to do next: whether the goal was met, whether
+    everything fits the account, whether something should never have come
+    up, whether the page agrees with the API, whether our action caused it,
+    and what each call says about the goal. The reading is printed first in
+    the step's result and put into the agent's context by the page-state
+    hook (`>>> UNKNOWN STATE`), so it is named before the flow goes on. The
+    same works on any platform. `log inspect read <stepFolder>` reads a
+    recorded step again. `src/subq/stepReading`.
 
 ## Checks
 

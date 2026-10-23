@@ -6,6 +6,7 @@ import type { ConnectionRecord } from "../../marketplace/account/index.ts";
 import type { ListingRecord } from "../../marketplace/listing/index.ts";
 import type { TwentyClient } from "../../twenty/graphql/index.ts";
 import type { AdsPowerClient } from "../../browser/adsPower/index.ts";
+import type { DecisionsClient } from "../../subq/decisions/index.ts";
 
 export interface CommandResult {
   code: number;
@@ -28,6 +29,7 @@ export interface CommandContext {
   inspectSession: InspectSessionRunner;
   sendInspect: (current: CurrentInspect, action: InspectAction, args: string[], timeoutMs: number, expect?: { name: string; ms?: number }, options?: InspectStepOptions) => Promise<InspectStepResult | null>;
   adsPower?: AdsPowerClient;
+  decisions?: DecisionsClient;
   connectTiming?: Partial<ConnectTiming>;
   out: (line: string) => void;
   err: (line: string) => void;

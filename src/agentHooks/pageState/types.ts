@@ -7,7 +7,7 @@ export type { BrowserAt };
 
 export interface Finding {
   account: string;
-  kind: "state" | "failed" | "clear";
+  kind: "state" | "failed" | "reading" | "clear";
   state: PageState | null;
   mark: string;
   line: string;

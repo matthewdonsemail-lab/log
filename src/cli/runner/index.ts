@@ -96,6 +96,7 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     inspectSession: overrides.inspectSession ?? runInspectSession,
     sendInspect: overrides.sendInspect ?? defaultSendInspect,
     adsPower: overrides.adsPower,
+    decisions: overrides.decisions,
     connectTiming: overrides.connectTiming,
     out: overrides.out ?? ((line) => console.log(line)),
     err: overrides.err ?? ((line) => console.error(line)),

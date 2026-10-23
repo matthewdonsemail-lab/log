@@ -10,11 +10,16 @@ import { openAccount, withRun } from "../live/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, PROXY_MS_FLAG } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 import { browserFor } from "../../browser/driver/index.ts";
+import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
+import { loudText, readStep, timelineText } from "../../subq/stepReading/index.ts";
+import type { StepReading } from "../../subq/stepReading/index.ts";
+import type { CommandContext } from "../runner/types.ts";
 
 export const INSPECT_USAGE = [
-  "Usage: log inspect start --account <accountName> [--url <https://www.facebook.com/...>] [--bypass] [--now] [--noIdleMouse] [--detach]   (one session per account: two accounts can be open at once; --detach runs it as its own process and returns once it is open)",
+  "Usage: log inspect start --account <accountName> [--goal <text>] [--url <https://www.facebook.com/...>] [--bypass] [--now] [--noIdleMouse] [--detach]   (one session per account: two accounts can be open at once; --detach runs it as its own process and returns once it is open)",
   "       log inspect map [<runDir>] [--all]  (the recorded steps as states and transitions: flow.md, machine.json; default the latest run; --all collates every run)",
-  "       log inspect do <goto <url>|snapshot|back|wait [s]|click <ref>|type <ref> <text>|press <key>|upload <ref> <file>|highlight <role> <name>|solve|signIn|code|pin|stop> [--live] [--timeout <s>] [--json] [--account <accountName>]   (--account picks the session when more than one is open)",
+  "       log inspect do <goto <url>|snapshot|back|wait [s]|click <ref>|type <ref> <text>|press <key>|upload <ref> <file>|highlight <role> <name>|solve|signIn|code|pin|stop> [--live] [--goal <text>] [--timeout <s>] [--json] [--account <accountName>]   (--account picks the session when more than one is open; every step's internal API calls are read, and a step no known state names is read by SubQ against the goal, rules 73-74)",
+  "       log inspect read <stepFolder> --account <accountName> [--goal <text>] [--json]   (read a recorded step again: its internal API calls, the page and the earlier steps, by SubQ when no known state names it)",
   "       log inspect sessions   (the open sessions)",
 ].join("\n");
 
@@ -81,6 +86,7 @@ export const INSPECT_INPUT: CommandInput = {
         { name: "now", kind: "boolean", description: "Skip the 10-minute launch gap only (rule 30)" },
         { name: "noIdleMouse", kind: "boolean", description: "No idle mouse loop between steps" },
         { name: "detach", kind: "boolean", description: "Run as its own process and return once open: set it over MCP" },
+        { name: "goal", kind: "string", description: "What this session is for, in plain words: every step is read against it (rule 74)" },
         PROXY_MS_FLAG,
       ],
     },
@@ -93,8 +99,20 @@ export const INSPECT_INPUT: CommandInput = {
       ],
       flags: [
         { name: "live", kind: "boolean", live: true, description: `Needed for ${LIVE_ACTIONS.join(", ")}: they act on Facebook, only when matt asked (rule 8)` },
+        { name: "goal", kind: "string", description: "What this step is for, if not the session's goal (rule 74)" },
         { name: "timeout", kind: "integer", description: "Seconds to wait for the step" },
         { name: "account", kind: "string", description: "Picks the session when more than one is open" },
+        JSON_FLAG,
+      ],
+    },
+    {
+      words: ["read"],
+      effect: "write",
+      summary: "Read a recorded step again: its internal API calls with the page, the account and the earlier steps, by SubQ when no known state names it (rules 73-74)",
+      positionals: [{ name: "stepFolder", kind: "string", required: true, description: "The step's folder: <run>/steps/NN_action" }],
+      flags: [
+        { name: "account", kind: "string", required: true, description: "The account the run was on" },
+        { name: "goal", kind: "string", description: "What the step was for" },
         JSON_FLAG,
       ],
     },
@@ -102,6 +120,22 @@ export const INSPECT_INPUT: CommandInput = {
     { words: ["sessions"], effect: "read", summary: "The open sessions", positionals: [], flags: [] },
   ],
 };
+
+export function stepAccountOf(account: FacebookAccount | null, name: string): { name: string; platform: string; homeCity: string | null; homeCountry: string | null; browser: string | null } {
+  if (!account) return { name, platform: "facebook", homeCity: null, homeCountry: null, browser: null };
+  return { name: account.accountName, platform: (account.platform ?? "facebook").toLowerCase(), homeCity: account.homeCity, homeCountry: account.homeCountry, browser: browserFor(account).driver };
+}
+
+export async function readInspectStep(context: CommandContext, accountName: string, folder: string | null, goal: string | null): Promise<{ reading: StepReading | null; text: string }> {
+  if (!folder || !existsSync(folder)) return { reading: null, text: ">>> No recording for this step, so nothing was read (rule 73)." };
+  const account = await findAccount(context.twenty, accountName).catch(() => null);
+  try {
+    const reading = await readStep(folder, { goal, account: stepAccountOf(account, accountName), decisions: context.decisions, now: context.now });
+    return { reading, text: [loudText(reading), timelineText(reading)].join("\n\n") };
+  } catch (error) {
+    return { reading: null, text: `>>> The step could not be read (rule 73): ${error instanceof Error ? error.message : String(error)}` };
+  }
+}
 
 export const inspectCommand: Command = {
   usage: INSPECT_USAGE,
@@ -131,7 +165,8 @@ export const inspectCommand: Command = {
       const { account, run } = opened;
       const runDir = dirname(run.captureDir!);
       const messengerPin = hasMessengerPin(run.loginPath);
-      const current = { account: account.accountName, runDir, commandsPath: join(runDir, "commands.jsonl"), repliesPath: join(runDir, "replies.jsonl"), startedAt: new Date().toISOString(), messengerPin };
+      const goal = typeof parsed.flags["goal"] === "string" ? parsed.flags["goal"] : null;
+      const current = { account: account.accountName, runDir, commandsPath: join(runDir, "commands.jsonl"), repliesPath: join(runDir, "replies.jsonl"), startedAt: new Date().toISOString(), messengerPin, goal };
       return withRun(context, "inspect", account, run, async () => {
         writeCurrentInspect(current);
         context.err(`Inspect session for ${account.accountName}: ${runDir}. Send steps from another terminal: bun bin/log.ts inspect do snapshot`);
@@ -176,8 +211,20 @@ export const inspectCommand: Command = {
       if (!Number.isFinite(timeout) || timeout < 5 || timeout > 900) return { code: 1, stderr: `log inspect: --timeout must be 5 to 900 seconds\n${INSPECT_USAGE}` };
       const reply = await context.sendInspect(current, action.action, action.args, timeout * 1000);
       if (!reply) return { code: 1, stderr: `log inspect: no reply from the session in ${timeout} s (is it still open? ${current.runDir})` };
-      if (parsed.flags["json"]) return { code: reply.ok === false ? 1 : 0, stdout: JSON.stringify(reply, null, 2) };
-      return { code: reply.ok === false ? 1 : 0, stdout: renderInspectStep(reply) };
+      const goal = typeof parsed.flags["goal"] === "string" ? parsed.flags["goal"] : current.goal ?? null;
+      const read = reply.stopped ? null : await readInspectStep(context, current.account, reply.folder ?? null, goal);
+      if (parsed.flags["json"]) return { code: reply.ok === false ? 1 : 0, stdout: JSON.stringify({ ...reply, reading: read?.reading ?? null }, null, 2) };
+      const rendered = renderInspectStep(reply);
+      return { code: reply.ok === false ? 1 : 0, stdout: read ? `${read.text}\n\n${rendered}` : rendered };
+    }
+
+    if (sub === "read") {
+      const folder = rest[0];
+      if (!folder || !existsSync(join(folder, "network.har"))) return { code: 1, stderr: `log inspect: ${folder ?? "no folder"} is not a recorded step (no network.har)\n${INSPECT_USAGE}` };
+      const goal = typeof parsed.flags["goal"] === "string" ? parsed.flags["goal"] : null;
+      const read = await readInspectStep(context, String(parsed.flags["account"]), folder, goal);
+      if (parsed.flags["json"]) return { code: read.reading ? 0 : 1, stdout: JSON.stringify(read.reading, null, 2) };
+      return { code: read.reading ? 0 : 1, stdout: read.text };
     }
 
     if (sub === "sessions") {
@@ -197,6 +244,6 @@ export const inspectCommand: Command = {
       return { code: 0, stdout: lines.join("\n") };
     }
 
-    return { code: 1, stderr: `log inspect: expected "start", "do" or "map"\n${INSPECT_USAGE}` };
+    return { code: 1, stderr: `log inspect: expected "start", "do", "read" or "map"\n${INSPECT_USAGE}` };
   },
 };

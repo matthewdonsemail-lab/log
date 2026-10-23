@@ -12,6 +12,7 @@ export interface DecisionImage {
 }
 
 export interface DecisionRequest {
+  model?: string
   state: unknown
   questions: Record<string, DecisionQuestion>
   images?: DecisionImage[]

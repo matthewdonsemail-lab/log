@@ -1,6 +1,8 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { pageStateOf, resolveCallOf, snapshotCall } from '../../flow/helpers/pageState'
+import { loudText } from '../../../subq/stepReading/helpers/loud'
+import type { StepReading } from '../../../subq/stepReading/types'
 import { openInspects } from '../client'
 import type { BrowserAt, BrowserView } from '../types'
 
@@ -23,6 +25,16 @@ function lastReply(path: string): Reply | null {
   return null
 }
 
+export function readingAt(path: string): { decided: boolean; text: string } | null {
+  if (!existsSync(path)) return null
+  try {
+    const reading = JSON.parse(readFileSync(path, 'utf8')) as StepReading
+    return { decided: reading.decision.decided, text: loudText(reading) }
+  } catch {
+    return null
+  }
+}
+
 export function readOpenBrowsers(): BrowserAt[] {
   const browsers: BrowserAt[] = []
   for (const session of openInspects()) {
@@ -33,7 +45,7 @@ export function readOpenBrowsers(): BrowserAt[] {
     if (!step) continue
     const withSnapshot = [step, ...folders.slice().reverse()].find((d) => existsSync(join(stepsDir, d, 'snapshot.yml')))
     const text = withSnapshot ? readFileSync(join(stepsDir, withSnapshot, 'snapshot.yml'), 'utf8') : ''
-    browsers.push({ account: session.account, step, url: reply?.url ?? '', text, failed: reply && reply.ok === false ? (reply.error ?? 'failed') : null, messengerPin: session.messengerPin === true })
+    browsers.push({ account: session.account, step, url: reply?.url ?? '', text, failed: reply && reply.ok === false ? (reply.error ?? 'failed') : null, messengerPin: session.messengerPin === true, reading: readingAt(join(stepsDir, step, 'reading.json')) })
   }
   return browsers
 }

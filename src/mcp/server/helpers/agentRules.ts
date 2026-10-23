@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 73;
+export const RULES_REVIEWED_THROUGH = 74;
 
 export const AGENTS_URI = "log://agents";
 
@@ -22,6 +22,7 @@ export const SERVER_INSTRUCTIONS = [
   "15. Code carries no comments and no docstrings: names, types, tests, skills and docs say what it does; `check:noComments` refuses a commit or push with one (rule 70).",
   "16. An ad on more than one listing in a city carries copy versions (`copyVersions`, written by skills/listingCopy): at least as many as its live listings there, never fewer than 3, titles differing by half their words; each copy takes the one least like what's live; `listing lint` checks them, `campaign fill` refuses too few (rule 71).",
   "17. A Marketplace location is typed by name, never abbreviated: \"City, State\" with the state written out (\"Bethlehem, Pennsylvania\") or \"City, Country\". An abbreviation (\"Bethlehem, PA\" was offered only as the West Bank), a zip or a number (a bare zip offered Granada, Spain) is refused with `locationAbbreviated` before anything is typed: in a listing's locationQuery, `inspectDo setLocation`, a flow's `location`, publish and the host (rule 72).",
+  "18. In `inspect`, every step reads its internal API calls (what was sent and what came back) into exchanges.json; a step no known state names is read by SubQ with the goal (`goal`), the account, what we did, every call, the page, the screenshot and the earlier steps, for what it means. Its reading comes first in the result (`>>> UNKNOWN STATE`): name that state before the flow goes on. `inspectRead` reads a recorded step again (rule 74).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -29,7 +30,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   join: [8, 10, 18, 20, 25, 26, 29, 35, 45, 64, 73],
   read: [8, 13, 18, 20, 22, 25, 26, 29, 35, 45, 63, 64, 65, 73],
   poll: [8, 13, 18, 22, 26, 35, 45, 63, 64, 65, 73],
-  inspect: [8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68, 72, 73],
+  inspect: [8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68, 72, 73, 74],
   connect: [12, 18, 21, 23, 24, 73],
   publish: [8, 10, 12, 18, 22, 24, 68, 72, 73],
   profile: [8, 28, 73],
