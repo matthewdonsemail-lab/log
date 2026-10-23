@@ -33471,9 +33471,6 @@ export default {
             "homeCountry": [
                 1
             ],
-            "accountStatus": [
-                384
-            ],
             "statusReason": [
                 1
             ],
@@ -33551,6 +33548,9 @@ export default {
             ],
             "messengerPin": [
                 1
+            ],
+            "accountStatus": [
+                384
             ],
             "timelineActivities": [
                 539,
@@ -34207,21 +34207,6 @@ export default {
             "percentageNotEmptyHomeCountry": [
                 84
             ],
-            "countUniqueValuesAccountStatus": [
-                76
-            ],
-            "countEmptyAccountStatus": [
-                76
-            ],
-            "countNotEmptyAccountStatus": [
-                76
-            ],
-            "percentageEmptyAccountStatus": [
-                84
-            ],
-            "percentageNotEmptyAccountStatus": [
-                84
-            ],
             "countUniqueValuesStatusReason": [
                 76
             ],
@@ -34688,6 +34673,21 @@ export default {
                 84
             ],
             "percentageNotEmptyMessengerPin": [
+                84
+            ],
+            "countUniqueValuesAccountStatus": [
+                76
+            ],
+            "countEmptyAccountStatus": [
+                76
+            ],
+            "countNotEmptyAccountStatus": [
+                76
+            ],
+            "percentageEmptyAccountStatus": [
+                84
+            ],
+            "percentageNotEmptyAccountStatus": [
                 84
             ],
             "edges": [
@@ -35124,21 +35124,6 @@ export default {
             "percentageNotEmptyHomeCountry": [
                 84
             ],
-            "countUniqueValuesAccountStatus": [
-                76
-            ],
-            "countEmptyAccountStatus": [
-                76
-            ],
-            "countNotEmptyAccountStatus": [
-                76
-            ],
-            "percentageEmptyAccountStatus": [
-                84
-            ],
-            "percentageNotEmptyAccountStatus": [
-                84
-            ],
             "countUniqueValuesStatusReason": [
                 76
             ],
@@ -35607,6 +35592,21 @@ export default {
             "percentageNotEmptyMessengerPin": [
                 84
             ],
+            "countUniqueValuesAccountStatus": [
+                76
+            ],
+            "countEmptyAccountStatus": [
+                76
+            ],
+            "countNotEmptyAccountStatus": [
+                76
+            ],
+            "percentageEmptyAccountStatus": [
+                84
+            ],
+            "percentageNotEmptyAccountStatus": [
+                84
+            ],
             "edges": [
                 386
             ],
@@ -35729,9 +35729,6 @@ export default {
             "homeCountry": [
                 1
             ],
-            "accountStatus": [
-                384
-            ],
             "statusReason": [
                 1
             ],
@@ -35809,6 +35806,9 @@ export default {
             ],
             "messengerPin": [
                 1
+            ],
+            "accountStatus": [
+                384
             ],
             "__typename": [
                 1
@@ -35893,9 +35893,6 @@ export default {
             "homeCountry": [
                 1
             ],
-            "accountStatus": [
-                384
-            ],
             "statusReason": [
                 1
             ],
@@ -35973,6 +35970,9 @@ export default {
             ],
             "messengerPin": [
                 1
+            ],
+            "accountStatus": [
+                384
             ],
             "__typename": [
                 1
@@ -36057,9 +36057,6 @@ export default {
             "homeCountry": [
                 7
             ],
-            "accountStatus": [
-                396
-            ],
             "statusReason": [
                 7
             ],
@@ -36137,6 +36134,9 @@ export default {
             ],
             "messengerPin": [
                 7
+            ],
+            "accountStatus": [
+                396
             ],
             "and": [
                 394
@@ -36300,9 +36300,6 @@ export default {
             "homeCountry": [
                 11
             ],
-            "accountStatus": [
-                11
-            ],
             "statusReason": [
                 11
             ],
@@ -36379,6 +36376,9 @@ export default {
                 11
             ],
             "messengerPin": [
+                11
+            ],
+            "accountStatus": [
                 11
             ],
             "__typename": [
@@ -36467,9 +36467,6 @@ export default {
             "homeCountry": [
                 11
             ],
-            "accountStatus": [
-                11
-            ],
             "statusReason": [
                 11
             ],
@@ -36546,6 +36543,9 @@ export default {
                 11
             ],
             "messengerPin": [
+                11
+            ],
+            "accountStatus": [
                 11
             ],
             "__typename": [
@@ -36976,21 +36976,6 @@ export default {
             "percentageNotEmptyHomeCountry": [
                 11
             ],
-            "countUniqueValuesAccountStatus": [
-                11
-            ],
-            "countEmptyAccountStatus": [
-                11
-            ],
-            "countNotEmptyAccountStatus": [
-                11
-            ],
-            "percentageEmptyAccountStatus": [
-                11
-            ],
-            "percentageNotEmptyAccountStatus": [
-                11
-            ],
             "countUniqueValuesStatusReason": [
                 11
             ],
@@ -37459,6 +37444,21 @@ export default {
             "percentageNotEmptyMessengerPin": [
                 11
             ],
+            "countUniqueValuesAccountStatus": [
+                11
+            ],
+            "countEmptyAccountStatus": [
+                11
+            ],
+            "countNotEmptyAccountStatus": [
+                11
+            ],
+            "percentageEmptyAccountStatus": [
+                11
+            ],
+            "percentageNotEmptyAccountStatus": [
+                11
+            ],
             "__typename": [
                 1
             ]
@@ -37516,9 +37516,6 @@ export default {
                 13
             ],
             "homeCountry": [
-                13
-            ],
-            "accountStatus": [
                 13
             ],
             "statusReason": [
@@ -37594,6 +37591,9 @@ export default {
                 13
             ],
             "messengerPin": [
+                13
+            ],
+            "accountStatus": [
                 13
             ],
             "__typename": [

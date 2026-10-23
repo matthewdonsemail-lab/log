@@ -30,6 +30,13 @@ The twitter-controller reads the same `socialAccounts` (only `accountName`,
 | RESTRICTED | no | `suspended` ("can't buy or sell"), `readOnlyLimited`, `restrictedPolicy` | by hand |
 | BANNED | no, terminal | `accountDisabled` ("your account has been disabled"), or by hand | never automatically |
 | DEAD | no, terminal | by hand (lost, deleted, unrecoverable) | never automatically |
+| DEACTIVATED | no, never used | by hand, when matt takes an account out of use | by hand |
+
+DEACTIVATED takes the account's proxy off in the same write (`proxy` is
+cleared), so it holds no proxy and costs no traffic. `log proxy assign
+--missing` skips it and `log proxy assign --account` refuses it, the lifecycle
+ends at once, and no run or sign-in may open it. Its listings are lost and
+replaced like a RESTRICTED account's. Its row, cookies and history stay.
 
 `log facebook account status <name> <STATUS> [--reason <code>]` sets it by hand. Runs
 set it themselves from what the page shows (`marketplace/socialAccount`
@@ -38,7 +45,7 @@ setup, not the account's fault.
 
 ## Losing an account, and its replacement
 
-When an account becomes RESTRICTED, BANNED or DEAD (from a run or by hand):
+When an account becomes RESTRICTED, BANNED, DEAD or DEACTIVATED (from a run or by hand):
 
 1. The account row is **kept**, with its status, reason and time.
 2. Its listings that were DRAFT, READY, ACTIVE, UNDER_REVIEW, BLOCKED or FAILED

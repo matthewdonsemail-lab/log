@@ -115,6 +115,24 @@ describe("log proxy assign (2Captcha, fetch stubbed)", () => {
     }
   });
 
+  test("a DEACTIVATED account gets no proxy: --missing skips it and --account refuses it", async () => {
+    stub2Captcha();
+    try {
+      const twenty = marketplaceFixture();
+      twenty.rows.socialAccounts.find((r) => r.id === "noProxy")!.accountStatus = "DEACTIVATED";
+      const missing = await run(["proxy", "assign", "--missing"], () => ({ ok: true, exitCountry: "IE", country: "IE" }), twenty);
+      expect(missing.code).toBe(0);
+      expect(missing.out).toContain("Every FACEBOOK account already has a proxy.");
+      expect(missing.requests).toHaveLength(0);
+      const one = await run(["proxy", "assign", "--account", "noProxy"], () => ({ ok: true, exitCountry: "IE", country: "IE" }), twenty);
+      expect(one.code).toBe(1);
+      expect(one.out).toContain("noProxy: accountNotUsable (DEACTIVATED: it gets no proxy)");
+      expect(twenty.rows.socialAccounts.find((r) => r.id === "noProxy")!.proxy).toBeNull();
+    } finally {
+      restore();
+    }
+  });
+
   test("an exit far from the home city is retried on a new session, and a near one saved", async () => {
     stub2Captcha();
     try {
