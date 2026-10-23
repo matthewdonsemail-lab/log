@@ -5,7 +5,9 @@ import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { pipeProcessLog } from '../../observability/processLog/index'
-import type { CurrentInspect, InspectAction, InspectSessionConfig, InspectSessionRunner, InspectStepOptions, InspectStepResult } from './types'
+import type { StepReading } from '../../subq/stepReading/types'
+import { goalProgressOf, peeMarkdown } from './helpers/goal'
+import type { CurrentInspect, GoalEvent, GoalProgress, InspectAction, InspectSessionConfig, InspectSessionRunner, InspectStepOptions, InspectStepResult } from './types'
 
 export const INSPECT_SESSION_PATH = fileURLToPath(new URL('../../../python/session/inspectSession.py', import.meta.url))
 
@@ -100,4 +102,47 @@ export async function sendInspectCommand(
     await new Promise((r) => setTimeout(r, pollMs))
   }
   return null
+}
+
+export const GOAL_EVENTS_FILE = 'goalFindings.jsonl'
+export const GOAL_FINDINGS_FILE = 'goalFindings.md'
+
+export function runReadings(runDir: string): StepReading[] {
+  const stepsDir = join(runDir, 'steps')
+  if (!existsSync(stepsDir)) return []
+  const out: StepReading[] = []
+  for (const step of readdirSync(stepsDir).sort()) {
+    const file = join(stepsDir, step, 'reading.json')
+    if (!existsSync(file)) continue
+    try {
+      out.push(JSON.parse(readFileSync(file, 'utf8')) as StepReading)
+    } catch {
+    }
+  }
+  return out
+}
+
+export function goalEvents(runDir: string): GoalEvent[] {
+  const file = join(runDir, GOAL_EVENTS_FILE)
+  if (!existsSync(file)) return []
+  const out: GoalEvent[] = []
+  for (const line of readFileSync(file, 'utf8').split('\n')) {
+    if (!line.trim()) continue
+    try {
+      out.push(JSON.parse(line) as GoalEvent)
+    } catch {
+    }
+  }
+  return out
+}
+
+export function goalProgress(session: Pick<CurrentInspect, 'runDir' | 'goal'>): GoalProgress {
+  return goalProgressOf(session.goal ?? null, runReadings(session.runDir), goalEvents(session.runDir))
+}
+
+export function addGoalEvent(session: Pick<CurrentInspect, 'runDir' | 'goal' | 'account'>, event: GoalEvent): GoalProgress {
+  appendFileSync(join(session.runDir, GOAL_EVENTS_FILE), `${JSON.stringify(event)}\n`)
+  const progress = goalProgress(session)
+  writeFileSync(join(session.runDir, GOAL_FINDINGS_FILE), peeMarkdown(progress, session.account))
+  return progress
 }

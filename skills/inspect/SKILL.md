@@ -72,6 +72,35 @@ Each reading is one SubQ call ($0.04 per million input tokens; the West Bank
 step was about 49,000 tokens). `reading.json` and `readingState.json` hold
 the answers and exactly what was sent.
 
+## Keep going until the goal is reached, and write what went wrong (rule 75)
+
+With a goal set, the turn isn't over until a step's reading says the goal
+is reached. The page-state hook holds the Stop and says what's missing:
+
+1. **A step went wrong** (its reading: wrong result, stopped by the
+   platform, unclear, or SubQ failed). Write its finding before the next
+   step, as P.E.E.:
+
+   ```bash
+   bun bin/log.ts inspect finding --account <a> --step 04_setlocationBethlehemPa \
+     --point "Typing Bethlehem, PA saved the location in the West Bank." \
+     --explain "Facebook matched PA to the West Bank, and the account was already in Lima, so the search ranked from Peru."
+   ```
+
+   - **Point:** the issue, in one sentence.
+   - **Evidence:** filled in from the step's reading (each call SubQ
+     flagged, with what was sent and what came back). `--evidence` adds
+     your own.
+   - **Explain:** why the evidence shows it, and what caused it.
+2. **The goal isn't reached yet.** Take the next inspect step towards it.
+3. **The goal is reached.** Say how each finding was fixed:
+   `bun bin/log.ts inspect finding --account <a> --fixes 1 --fix "Typed the state out in full (rule 72)."`
+
+`bun bin/log.ts inspect goal --account <a>` shows the goal, whether it's
+reached, and every finding. The run keeps them as `goalFindings.md`. What
+only a person can clear (an ID, a video selfie) never holds the turn: say it
+to matt.
+
 Then write the code from it: the selectors and the order of clicks come from
 `snapshot.yml`, the waits from what `network.har` shows the page asking for.
 Rebuild the Facebook client docs after (rule 27): `capture --docs`.

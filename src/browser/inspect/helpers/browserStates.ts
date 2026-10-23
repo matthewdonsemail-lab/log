@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { pageStateOf, resolveCallOf, snapshotCall } from '../../flow/helpers/pageState'
 import { loudText } from '../../../subq/stepReading/helpers/loud'
 import type { StepReading } from '../../../subq/stepReading/types'
-import { openInspects } from '../client'
+import { goalProgress, openInspects } from '../client'
 import type { BrowserAt, BrowserView } from '../types'
 
 interface Reply {
@@ -45,7 +45,7 @@ export function readOpenBrowsers(): BrowserAt[] {
     if (!step) continue
     const withSnapshot = [step, ...folders.slice().reverse()].find((d) => existsSync(join(stepsDir, d, 'snapshot.yml')))
     const text = withSnapshot ? readFileSync(join(stepsDir, withSnapshot, 'snapshot.yml'), 'utf8') : ''
-    browsers.push({ account: session.account, step, url: reply?.url ?? '', text, failed: reply && reply.ok === false ? (reply.error ?? 'failed') : null, messengerPin: session.messengerPin === true, reading: readingAt(join(stepsDir, step, 'reading.json')) })
+    browsers.push({ account: session.account, step, url: reply?.url ?? '', text, failed: reply && reply.ok === false ? (reply.error ?? 'failed') : null, messengerPin: session.messengerPin === true, reading: readingAt(join(stepsDir, step, 'reading.json')), goal: session.goal ? goalProgress(session) : null })
   }
   return browsers
 }

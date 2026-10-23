@@ -99,6 +99,7 @@ export interface BrowserAt {
   failed: string | null
   messengerPin?: boolean
   reading?: { decided: boolean; text: string } | null
+  goal?: GoalProgress | null
 }
 
 export interface BrowserView {
@@ -109,4 +110,32 @@ export interface BrowserView {
   state: { id: string; what: string; person: boolean } | null
   next: { tool: string; input: Record<string, unknown> } | null
   needsMatt: string | null
+}
+
+export interface GoalFinding {
+  n: number
+  at: string
+  step: string
+  point: string
+  evidence: string[]
+  explain: string
+  fix: string | null
+  fixedAt: string | null
+}
+
+export type GoalEvent =
+  | { type: 'finding'; at: string; step: string; point: string; evidence: string[]; explain: string }
+  | { type: 'fix'; at: string; n: number; fix: string }
+
+export type GoalStatus = 'none' | 'open' | 'reached'
+
+export interface GoalProgress {
+  goal: string | null
+  status: GoalStatus
+  lastStep: string | null
+  reachedAt: { step: string; goalMet: number } | null
+  needsFinding: { step: string; evidence: string[] } | null
+  personNeeded: { step: string; text: string } | null
+  unfixed: number[]
+  findings: GoalFinding[]
 }

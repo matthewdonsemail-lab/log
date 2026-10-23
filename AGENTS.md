@@ -824,6 +824,25 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     hook (`>>> UNKNOWN STATE`), so it is named before the flow goes on. The
     same works on any platform. `log inspect read <stepFolder>` reads a
     recorded step again. `src/subq/stepReading`.
+75. 2026-10-23 · matt: the loud events trigger a Claude hook, and the model
+    keeps going until the goal is done, with what went wrong written down as
+    P.E.E. An inspect session has a goal (`--goal` on `start`, or `log
+    inspect goal --set`). The goal is reached when a step's SubQ reading says
+    so (`goalMet` at least 0.5). Until then the page-state hook's Stop event
+    holds the turn ("Keep going with the next inspect step"), and puts the
+    goal into the agent's context after each tool call when it changes. A
+    step whose reading says it went wrong (wrong result, stopped by the
+    platform, unclear, or SubQ failed) needs its finding before the next step:
+    **Point**, the issue in one sentence; **Evidence**, quoted from the step's
+    reading (the calls SubQ flagged, with what was sent and what came back),
+    plus any of your own; **Explain**, why the evidence shows it and what
+    caused it (`log inspect finding --step --point --explain`). Once the goal
+    is reached, the turn is held until every finding says how it was fixed
+    (`log inspect finding --fixes <n> --fix`). They are kept in the run as
+    `goalFindings.jsonl` and `goalFindings.md`; `log inspect goal` shows them.
+    What only a person can clear never holds the turn: it is said to matt.
+    The hook holds the turn once per unchanged state, never twice on the
+    same one. `src/browser/inspect/helpers/goal.ts`.
 
 ## Checks
 
