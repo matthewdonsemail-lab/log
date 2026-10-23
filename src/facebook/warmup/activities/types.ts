@@ -3,11 +3,24 @@ export type WarmupPlatform = (typeof WARMUP_PLATFORMS)[number]
 
 export type ActivityAction = 'goto' | 'dwell' | 'wait' | 'snapshot' | 'clickRole' | 'clickAny' | 'scrollIn' | 'scroll' | 'back' | 'openAny' | 'nextPost' | 'likePost' | 'postButton'
 
+export interface AnswerCheck {
+  answer: string
+  sent?: string
+  is?: string | number | boolean | null
+}
+
+export interface AnswerExpect {
+  call: string
+  says: AnswerCheck[]
+  waitMs?: number
+}
+
 export interface StepExpect {
   urlMatches?: string
   urlChanges?: boolean
   shows?: { role: string; name: string }
   hides?: { role: string; name: string }
+  answers?: AnswerExpect[]
 }
 
 export interface ActivityStep {

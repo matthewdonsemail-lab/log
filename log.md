@@ -5632,3 +5632,35 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: a run's "still being written" check (`newestChange`) no longer counts the exchanges files log-cli takes out of its HARs (`exchanges.json`, `<step>.exchanges.json`), only the files the run itself writes.
 Why: matt: "yeah prune that". After `log runs exchanges` backfilled every run, 12 of the 15 were kept as still being written for 10 minutes, though their own files were from the day before: our backfill had touched them.
 Checked: the backfill test now checks the run may go right after it. Then `log runs prune --apply` pruned all 15 runs (6.0 GB, disk free 2.4 GB to 8.4 GB), keeping 196 inspect step exchanges, 11 readings and readingStates and 2 goalFindings in 22 MB. The run store tests pass.
+
+## 2026-10-23 06:09Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/diagrams/pageStates.mmd`: edited
+- `docs/platforms/facebook/background/CometUFIFeedbackReactMutation.md`: edited
+- `skills/agentHooks/SKILL.md`: edited
+- `skills/warmup/SKILL.md`: edited
+- `src/agentHooks/pageState/index.ts`: changed function findingOf
+- `src/browser/flow/helpers/pageState.ts`: added function answered, const mayNotPost, const partnerListings · changed interface StateRule, interface StateContext, const PAGE_STATES, function pageStateOf, interface StateAt, const RESOLVE_CALLS
+- `src/browser/flow/pageState.test.ts`: added test "Limit reached on the create page is decided by its answer: marketplace_new_seller_can_post_item false (Bethlehem, 2026-10-23), true the day before", test "partner listings on Marketplace are decided by the answer (product_details_type PARTNER_LISTING), never by the screen alone"
+- `src/browser/inspect/helpers/browserStates.ts`: changed function readOpenBrowsers, function browserView
+- `src/browser/inspect/types.ts`: changed interface BrowserAt
+- `src/cli/warmup/helpers/feedRun.ts`: changed function runFeedSession
+- `src/cli/warmup/helpers/personaRun.ts`: changed function runPersonaSession
+- `src/cli/warmup/helpers/platformActivity.ts`: changed function actor
+- `src/facebook/warmup/activities/helpers/checkStep.ts`: changed interface StepReply, function checkStep
+- `src/facebook/warmup/activities/helpers/feed.ts`: changed const FEED
+- `src/facebook/warmup/activities/helpers/index.ts`: added export from "./stepAnswers"
+- `src/facebook/warmup/activities/helpers/reel.ts`: changed const REEL
+- `src/facebook/warmup/activities/helpers/stepAnswers.ts`: added const ANSWER_WAIT_MS, const answersAt, function answerWaitOf, function valueAt, const shown, function checkOne, function answerIssue
+- `src/facebook/warmup/activities/types.ts`: added interface AnswerCheck, interface AnswerExpect · changed interface StepExpect
+- `src/facebook/warmup/activities/warmup.test.ts`: added test "the answer is read from the step's own recording when the reply carries none, and kept as exchanges.json" · changed test "its steps in Listaro order, each saying what it must achieve; the like only with --likes (rule 8)"
+- `src/subq/stepReading/client.ts`: changed function readStep
+- `src/subq/stepReading/helpers/index.ts`: added export from "./stepExchanges"
+- `src/subq/stepReading/helpers/stepExchanges.ts`: added function stepExchangesAt
+
+What changed: (1) Two page states are named and decided by Facebook's answers: `marketplaceCreateLimitReached` (the create page's HTML says `marketplace_new_seller_can_post_item: false`, a person's state: nothing to press, matt decides) and `marketplacePartnerFeed` (an answer says `product_details_type: PARTNER_LISTING`, resolved by reading `buy_location` from the Marketplace page's answer). A state can carry an `answer` test on the step's exchanges; with the answers there they decide, and its text is used only without them. The hook (`readOpenBrowsers`, `findingOf`) and SubQ's reading pass each step's exchanges in, read from or taken out of its recording by `stepExchangesAt`. (2) The warm-up likes (Reels `like`, feed `likePost`) pass on Facebook's answer, not the "Remove Like" button: `StepExpect.answers` names the call and what its answer must say; the runners wait for the call (`answerWaitOf`, 15 s), and `checkStep` passes only when `CometUFIFeedbackReactMutation` answers 2xx, no errors, with `viewer_feedback_reaction_info.id` the reaction we sent (`answerIssue`). AGENTS.md's rule-one status and rule 73's status, the warmup and agentHooks skills, the like's request doc and the README follow.
+Why: matt: "Name today's two states (Limit reached, partner listings) as known page states, then make the warm-up flows read Facebook's answers, starting with the Reels like." Rule one's step 7 says to name a state once found, and rule 73 says the answers decide, never the screen.
+Checked: the may-post flag in the kept answers was true on 20261022T105341 and 20261022T110738 and false on 20261023T045453, and step 03 of that run answered PARTNER_LISTING twice; the tests are built from those. New tests: both states from their answers, and not from the screen alone; each like passes only with the reaction we sent saved and fails with no answer, a 500 or nothing saved; the answer is read from the step's own recording. `bun run check` passes with 888 tests; the docs gate passes.

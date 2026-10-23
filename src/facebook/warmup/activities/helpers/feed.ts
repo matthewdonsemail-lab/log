@@ -39,10 +39,10 @@ export const FEED: PlatformActivity = {
       action: 'likePost',
       args: [],
       why: "like the post in view: its own Like, not the first on the page (acts on Facebook)",
-      expect: { shows: { role: 'button', name: 'Remove Like' } },
+      expect: { answers: [{ call: 'CometUFIFeedbackReactMutation', says: [{ answer: 'data.feedback_react.feedback.viewer_feedback_reaction_info.id', sent: 'variables.input.feedback_reaction_id' }] }] },
       clicks: true,
       likes: true,
-      recorded: `${RUN}: skipped without --likes; step 03's snapshot has each post's button "Like" (3) beside its count, button "Like: N people"`
+      recorded: `${RUN}: skipped without --likes; step 03's snapshot has each post's button "Like" (3) beside its count, button "Like: N people". Passes on Facebook's answer (rule 73): Bethlehem inspect 20261023T051540 steps 03 and 05, CometUFIFeedbackReactMutation answered 200 with the Like we sent saved`
     },
     {
       id: 'seeMore',

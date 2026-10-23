@@ -648,8 +648,13 @@ Sets a reaction on a post or reel: it sends `input` and reads back `feedback_rea
 
 ## What our machine does with it
 
-The Reels warm-up's `like` step (`src/facebook/warmup/activities/helpers/reel.ts`) clicks `button "Like"` and is what sends it. The machine does not read this response: the step passes when the snapshot shows `button "Remove Like"` (`checkStep`). The step only runs with `--live` and `--likes` (rule 8, `allowedActions`), and `planReel` keeps a like cooldown between reels.
+It decides the like (rule 73). The Reels warm-up's `like` step (`src/facebook/warmup/activities/helpers/reel.ts`) and the feed's `likePost` (`feed.ts`) click Like, wait for this call (`answerWaitOf`, 15 s), and pass only when it answers 2xx with no errors and `data.feedback_react.feedback.viewer_feedback_reaction_info.id` is the reaction we sent as `variables.input.feedback_reaction_id` (`answerIssue`, `checkStep`). The Like is `1635855486666999`. The "Remove Like" button is no longer what decides it. The steps only run with `--live` and `--likes` (rule 8, `allowedActions`), and `planReel` keeps a like cooldown between reels.
 
 ## What can go wrong
 
-None seen: all five answered 200 in 872-1424 ms. If the like did not take, the snapshot would still show `button "Like"` and `checkStep` reports `no button "Remove Like" after it`. If the step fails anyway, `checkStep` reports it as an issue: `log facebook warmup reel record` goes on and outlines it, a `run` stops there, and a checkpoint or login page ends it as `blocked`.
+Every like seen answered 200 in 872-2018 ms. What the step then reports, and the run stops or outlines:
+- no answer in the step: `Facebook never answered CometUFIFeedbackReactMutation in this step`;
+- a status other than 2xx, or errors in the answer: the status or the errors;
+- a saved reaction other than the one sent, or none (`viewer_feedback_reaction_info: null`): `answered data.feedback_react.feedback.viewer_feedback_reaction_info.id = …, not "1635855486666999"`.
+
+A checkpoint or login page ends the run as `blocked`, as before.

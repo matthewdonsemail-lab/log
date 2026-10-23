@@ -2,6 +2,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { pageStateOf, resolveCallOf, snapshotCall } from '../../flow/helpers/pageState'
 import { loudText } from '../../../subq/stepReading/helpers/loud'
+import { stepExchangesAt } from '../../../subq/stepReading/helpers/stepExchanges'
 import type { StepReading } from '../../../subq/stepReading/types'
 import { goalProgress, openInspects } from '../client'
 import type { BrowserAt, BrowserView } from '../types'
@@ -45,13 +46,13 @@ export function readOpenBrowsers(): BrowserAt[] {
     if (!step) continue
     const withSnapshot = [step, ...folders.slice().reverse()].find((d) => existsSync(join(stepsDir, d, 'snapshot.yml')))
     const text = withSnapshot ? readFileSync(join(stepsDir, withSnapshot, 'snapshot.yml'), 'utf8') : ''
-    browsers.push({ account: session.account, step, url: reply?.url ?? '', text, failed: reply && reply.ok === false ? (reply.error ?? 'failed') : null, messengerPin: session.messengerPin === true, reading: readingAt(join(stepsDir, step, 'reading.json')), goal: session.goal ? goalProgress(session) : null })
+    browsers.push({ account: session.account, step, url: reply?.url ?? '', text, failed: reply && reply.ok === false ? (reply.error ?? 'failed') : null, messengerPin: session.messengerPin === true, reading: readingAt(join(stepsDir, step, 'reading.json')), goal: session.goal ? goalProgress(session) : null, exchanges: stepExchangesAt(join(stepsDir, step)) })
   }
   return browsers
 }
 
 export function browserView(at: BrowserAt): BrowserView {
-  const state = pageStateOf(at.url, at.text, { messengerPin: at.messengerPin })
+  const state = pageStateOf(at.url, at.text, { messengerPin: at.messengerPin, exchanges: at.exchanges })
   const base = { account: at.account, step: at.step, url: at.url, failed: at.failed }
   if (state) {
     return {

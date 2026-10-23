@@ -60,7 +60,12 @@ never through `tail`/`head` (the PreToolUse hook refuses it).
   to `LONG_RUNNING` (its description then points at the live log).
 - **A page state:** add it to `PAGE_STATES` and its call to `RESOLVE_CALLS`; a
   resolver that names a command (`` `log inspect do solve` ``) must name a real
-  one, and a call must name a real MCP tool.
+  one, and a call must name a real MCP tool. When Facebook's answers can
+  decide it, give it an `answer` test on the step's exchanges (rule 73): with
+  the answers there they decide, and its `text` is only used without them.
+  `marketplaceCreateLimitReached` (`marketplace_new_seller_can_post_item:
+  false`) and `marketplacePartnerFeed` (`product_details_type:
+  PARTNER_LISTING`) are decided this way.
 - **A new MCP server name:** change `MCP_SERVER_NAME` with `.mcp.json`.
 
 ## The check

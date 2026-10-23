@@ -7,7 +7,7 @@ export type { BrowserAt, Finding, HookMemory, HookReply } from "./types.ts";
 const HEADER = "log-cli page state (rules 54-55, scripts/hooks/pageState.ts):";
 
 export function findingOf(at: BrowserAt): Finding {
-  const state = pageStateOf(at.url, at.text, { messengerPin: at.messengerPin });
+  const state = pageStateOf(at.url, at.text, { messengerPin: at.messengerPin, exchanges: at.exchanges });
   const where = `step ${at.step}, ${at.url || "no url yet"}`;
   if (state) {
     const next = state.person ? "Only a person can clear it: stop this account and tell matt." : "Known state, resolve it, do not stop:";

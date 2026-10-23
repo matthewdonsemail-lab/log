@@ -14,7 +14,13 @@ description: Record and run the account warm-up (rule 36) - Listaro's five activ
 2. **One browser** (rule 35). Record and run both open one session and do every
    activity inside it.
 3. **Likes act on Facebook** (rule 8): `clickAny button ^Like$` only runs with
-   `--likes`, when matt asks. Everything else reads.
+   `--likes`, when matt asks. Everything else reads. **A like passes on
+   Facebook's answer** (rule 73), not on the "Remove Like" button: the step
+   waits for `CometUFIFeedbackReactMutation` and passes only when it answers
+   2xx with the reaction we sent saved (`expect.answers`, `answerIssue`). A
+   step's answers are read from its own recording and kept as
+   `exchanges.json`. Other steps get `expect.answers` the same way, written
+   from that request's doc ("What it sent and what came back").
 4. **Live and watched** (rule 26): run through Monitor; every step goes to the
    stage log as it happens.
 5. **Stops on the wrong page.** Every step's landing page is checked

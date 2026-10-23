@@ -1,4 +1,6 @@
+import type { StepExchange } from '../../../../subq/stepReading/types'
 import type { ActivityStep, StepOutcome } from '../types'
+import { answerIssue, answersAt } from './stepAnswers'
 
 export interface StepReply {
   ok: boolean
@@ -8,6 +10,7 @@ export interface StepReply {
   folder?: string
   openedTab?: string
   post?: { heading: string; text: string; images: string[]; words: number; liked: boolean } | null
+  exchanges?: StepExchange[]
 }
 
 function shows(snapshot: string, role: string, name: string): boolean {
@@ -27,5 +30,12 @@ export function checkStep(step: ActivityStep, before: string | null, reply: Step
   const snapshot = reply.snapshot ?? ''
   if (expect.shows && !shows(snapshot, expect.shows.role, expect.shows.name)) return { ...base, ok: false, issue: `no ${expect.shows.role} "${expect.shows.name}" after it` }
   if (expect.hides && shows(snapshot, expect.hides.role, expect.hides.name)) return { ...base, ok: false, issue: `${expect.hides.role} "${expect.hides.name}" is still there` }
+  if (expect.answers?.length) {
+    const exchanges = reply.exchanges ?? (reply.folder ? answersAt(reply.folder) : [])
+    for (const answers of expect.answers) {
+      const issue = answerIssue(answers, exchanges)
+      if (issue) return { ...base, ok: false, issue }
+    }
+  }
   return { ...base, ok: true }
 }

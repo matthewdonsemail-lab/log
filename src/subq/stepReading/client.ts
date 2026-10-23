@@ -120,7 +120,7 @@ export async function readStep(folder: string, options: ReadStepOptions): Promis
     goal: options.goal,
     account: { ...options.account, exit: exitOf(runDir) },
     taken,
-    pageState: pageStateOf(taken.url, snapshot)?.id ?? null,
+    pageState: pageStateOf(taken.url, snapshot, { exchanges })?.id ?? null,
     pageText,
     exchanges,
     earlier: earlierOf(runDir, replies, step, options.since ?? null),

@@ -6,7 +6,7 @@ import type { InspectAction } from "../../../browser/inspect/index.ts";
 import { homeOf, outsideActiveHours } from "../../../marketplace/home/index.ts";
 import { checkRunnable, findAccount } from "../../../marketplace/socialAccount/index.ts";
 import { createInspector, formatTraceLine } from "../../../observability/trace/index.ts";
-import { DEFAULT_SESSION, describeSession, FACEBOOK_ACTIVITIES, parseRange, planSession, WARMUP_PLATFORMS, warmupActivityMachine } from "../../../facebook/warmup/activities/index.ts";
+import { answerWaitOf, DEFAULT_SESSION, describeSession, FACEBOOK_ACTIVITIES, parseRange, planSession, WARMUP_PLATFORMS, warmupActivityMachine } from "../../../facebook/warmup/activities/index.ts";
 import type { ActivityStep, PlatformActivity, ReelSessionOptions, StepReply } from "../../../facebook/warmup/activities/index.ts";
 import { inspectCommand } from "../../inspect/index.ts";
 import { refuse, refuseError } from "../../runner/helpers/index.ts";
@@ -48,7 +48,7 @@ function actor(context: CommandContext, current: NonNullable<ReturnType<typeof r
   return fromPromise<StepReply, { account: string; step: ActivityStep }>(async ({ input }) => {
     const { step } = input;
     context.err(`  → ${step.id}: ${step.action} ${step.args.join(" ")}  (${step.why})`);
-    const reply = await context.sendInspect(current, step.action as InspectAction, step.args, 180_000);
+    const reply = await context.sendInspect(current, step.action as InspectAction, step.args, 180_000, answerWaitOf(step));
     if (!reply) return { ok: false, error: `no reply from the open browser in 180 s (${current.runDir})` };
     const snapshotPath = reply.folder ? join(reply.folder, "snapshot.yml") : null;
     return { ok: reply.ok !== false, error: reply.error, url: reply.url, folder: reply.folder, snapshot: snapshotPath && existsSync(snapshotPath) ? readFileSync(snapshotPath, "utf8") : undefined };

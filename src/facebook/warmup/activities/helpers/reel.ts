@@ -92,10 +92,10 @@ export const REEL: PlatformActivity = {
       action: 'clickRole',
       args: ['button', 'Like'],
       why: 'like the reel (acts on Facebook)',
-      expect: { shows: { role: 'button', name: 'Remove Like' } },
+      expect: { answers: [{ call: 'CometUFIFeedbackReactMutation', says: [{ answer: 'data.feedback_react.feedback.viewer_feedback_reaction_info.id', sent: 'variables.input.feedback_reaction_id' }] }] },
       clicks: true,
       likes: true,
-      recorded: 'run 20261020T052708 step 10: Like became button "Remove Like"'
+      recorded: 'run 20261020T052708 step 10: Like became button "Remove Like"; from 2026-10-23 it passes on Facebook\'s answer instead (rule 73): CometUFIFeedbackReactMutation answered 200 with the reaction we sent saved (Bethlehem inspect 20261023T051540 steps 03 and 05)'
     }
   ],
   knownIssues: [

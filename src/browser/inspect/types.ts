@@ -1,3 +1,4 @@
+import type { StepExchange } from '../../subq/stepReading/types'
 import type { BrowserDriverName } from '../driver/types'
 
 export const INSPECT_ACTIONS = [
@@ -101,6 +102,7 @@ export interface BrowserAt {
   messengerPin?: boolean
   reading?: { decided: boolean; text: string } | null
   goal?: GoalProgress | null
+  exchanges?: StepExchange[]
 }
 
 export interface BrowserView {
