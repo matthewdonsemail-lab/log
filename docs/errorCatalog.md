@@ -153,6 +153,7 @@ stateDiagram-v2
 
 | Code | Retry | Raised in | Ends in | Meaning | Do |
 | --- | --- | --- | --- | --- | --- |
+| `locationAbbreviated` | no | `facebook/marketplace/location`, `cli/listing`, `cli/publish`, `cli/flow`, `cli/inspect`, `cli/host`, `python/session` | command exits | A Marketplace location is abbreviated ("Bethlehem, PA"), a zip or a number, or names no state or country. "Bethlehem, PA" was offered only as the West Bank and a bare zip offered Granada, Spain first, so nothing is typed. Nothing was done on Facebook. | Write it as "City, State" with the state written out ("Bethlehem, Pennsylvania"), or "City, Country" ("Galway, Ireland"), in the listing's locationQuery or the --set location value. |
 | `listingNotFound` | no | `marketplace/agencyListing` | command exits | No agencyListing with that id in Twenty. | Check the id (log facebook listings shows them). |
 | `listingNoAccount` | no | `marketplace/agencyListing` | command exits | The agencyListing has no socialAccount, so nothing knows which account posts it. | Set its Social account in Twenty, or fill the campaign with log facebook campaign fill. |
 | `listingNotPublishable` | no | `cli/publish` | command exits | The listing is not in a state that may be published (only DRAFT, READY, FAILED and BLOCKED). A live, publishing or unconfirmed listing would make a duplicate. | Check it on Facebook. An UNCONFIRMED one needs a person, never a re-publish. |

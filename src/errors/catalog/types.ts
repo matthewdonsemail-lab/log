@@ -620,6 +620,13 @@ export const ERROR_CATALOG = {
     publish: 'failed',
     action: 'Run again.'
   },
+  locationAbbreviated: {
+    layer: 'listing',
+    meaning: 'A Marketplace location is abbreviated ("Bethlehem, PA"), a zip or a number, or names no state or country. "Bethlehem, PA" was offered only as the West Bank and a bare zip offered Granada, Spain first, so nothing is typed. Nothing was done on Facebook.',
+    retryable: false,
+    raisedIn: ['facebook/marketplace/location', 'cli/listing', 'cli/publish', 'cli/flow', 'cli/inspect', 'cli/host', 'python/session'],
+    action: 'Write it as "City, State" with the state written out ("Bethlehem, Pennsylvania"), or "City, Country" ("Galway, Ireland"), in the listing\'s locationQuery or the --set location value.'
+  },
   locationNotSet: {
     layer: 'form',
     meaning: 'No Location field, no suggestion matched, or it did not keep the value.',

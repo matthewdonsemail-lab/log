@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 71;
+export const RULES_REVIEWED_THROUGH = 72;
 
 export const AGENTS_URI = "log://agents";
 
@@ -20,6 +20,7 @@ export const SERVER_INSTRUCTIONS = [
   "13. The platform comes first in every command that acts on one: `log <platform> <command> …` (`log facebook connect`, `log facebook warmup reel`, `log facebook poll <group> <account> <how long to poll>`); there is no form without it, and an old form is refused with the one it became. Most tools are one form of a command each (`inspectStart`, `inspectDo`, `accountShow`, `runsPrune`…) and take named fields, each value passed whole; the rest take `args`, what follows the command (the warm-up's start with its platform) (rule 63). The code is laid out the same way, `src/<platform>/<area>/<domain>`: `src/facebook/group/…`, `src/facebook/warmup/…`; what any platform uses stays shared (rule 64).",
   "14. Code carries no comments and no docstrings: names, types, tests, skills and docs say what it does; `check:noComments` refuses a commit or push with one (rule 70).",
   "15. An ad on more than one listing in a city carries copy versions (`copyVersions`, written by skills/listingCopy): at least as many as its live listings there, never fewer than 3, titles differing by half their words; each copy takes the one least like what's live; `listing lint` checks them, `campaign fill` refuses too few (rule 71).",
+  "16. A Marketplace location is typed by name, never abbreviated: \"City, State\" with the state written out (\"Bethlehem, Pennsylvania\") or \"City, Country\". An abbreviation (\"Bethlehem, PA\" was offered only as the West Bank), a zip or a number (a bare zip offered Granada, Spain) is refused with `locationAbbreviated` before anything is typed: in a listing's locationQuery, `inspectDo setLocation`, a flow's `location`, publish and the host (rule 72).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -27,14 +28,14 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   join: [8, 10, 18, 20, 25, 26, 29, 35, 45, 64],
   read: [8, 13, 18, 20, 22, 25, 26, 29, 35, 45, 63, 64, 65],
   poll: [8, 13, 18, 22, 26, 35, 45, 63, 64, 65],
-  inspect: [8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68],
+  inspect: [8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68, 72],
   connect: [12, 18, 21, 23, 24],
-  publish: [8, 10, 12, 18, 22, 24, 68],
+  publish: [8, 10, 12, 18, 22, 24, 68, 72],
   profile: [8, 28],
   host: [18, 35],
   lifecycle: [35],
   warmup: [8, 18, 20, 25, 26, 29, 32, 35, 36, 49, 50, 51, 54, 55, 60, 64],
-  flow: [29, 31, 68],
+  flow: [29, 31, 68, 72],
   scan: [12, 18, 22],
   status: [12, 18, 22],
   watch: [6, 18],
@@ -44,9 +45,9 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   capture: [19, 22, 26, 27, 46, 48],
   account: [13, 37],
   accounts: [13],
-  listing: [13, 71],
+  listing: [13, 71, 72],
   listings: [13],
-  campaign: [13, 18, 71],
+  campaign: [13, 18, 71, 72],
   conversation: [34],
   messenger: [8, 21, 29, 54, 63, 67],
   check: [8, 13, 18, 22, 29, 35, 69],

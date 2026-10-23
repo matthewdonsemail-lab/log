@@ -20,6 +20,7 @@ _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
 from login import autoLogin
 from human import scrollMotion
 from browser import proxyGate
+from location.placeName import pick_suggestion, place_problem
 from human.humanMouse import HumanMouse
 from errors.errorCodes import failure
 from browser.browserDriver import open_browser
@@ -135,41 +136,9 @@ def read_login(path: str | None) -> dict[str, Any]:
 
 SELL_LOCATION = re.compile(r'"sell_location":\{"latitude":(-?[\d.]+),"longitude":(-?[\d.]+),"reverse_geocode_detailed":\{"city":"([^"]*)","postal_code":"([^"]*)","country_alpha_two":"([A-Z]{2})"')
 
-US_STATES = {
-    "AL": "Alabama", "AK": "Alaska", "AZ": "Arizona", "AR": "Arkansas", "CA": "California", "CO": "Colorado",
-    "CT": "Connecticut", "DE": "Delaware", "DC": "District of Columbia", "FL": "Florida", "GA": "Georgia",
-    "HI": "Hawaii", "ID": "Idaho", "IL": "Illinois", "IN": "Indiana", "IA": "Iowa", "KS": "Kansas",
-    "KY": "Kentucky", "LA": "Louisiana", "ME": "Maine", "MD": "Maryland", "MA": "Massachusetts",
-    "MI": "Michigan", "MN": "Minnesota", "MS": "Mississippi", "MO": "Missouri", "MT": "Montana",
-    "NE": "Nebraska", "NV": "Nevada", "NH": "New Hampshire", "NJ": "New Jersey", "NM": "New Mexico",
-    "NY": "New York", "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio", "OK": "Oklahoma",
-    "OR": "Oregon", "PA": "Pennsylvania", "RI": "Rhode Island", "SC": "South Carolina", "SD": "South Dakota",
-    "TN": "Tennessee", "TX": "Texas", "UT": "Utah", "VT": "Vermont", "VA": "Virginia", "WA": "Washington",
-    "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming",
-}
-
 
 def typing_ms(text: str) -> int:
     return max(30_000, len(text) * 250)
-
-
-def full_place(query: str) -> str:
-    match = re.fullmatch(r"\s*(.+?),\s*([A-Za-z]{2})\s*", query)
-    if match and match.group(2).upper() in US_STATES:
-        return f"{match.group(1)}, {US_STATES[match.group(2).upper()]}"
-    return query.strip()
-
-
-def pick_suggestion(place: str, addresses: list[str]) -> int | None:
-    want = re.sub(r"\s+", " ", place).strip().lower()
-    names = [re.sub(r"\s+", " ", a).strip().lower() for a in addresses]
-    for i, name in enumerate(names):
-        if name == want:
-            return i
-    for i, name in enumerate(names):
-        if "," in want and name.startswith(want):
-            return i
-    return None
 
 
 HITTABLE_JS = """(el) => {
@@ -648,9 +617,12 @@ class Inspector:
                     self.extra = {"sellLocation": None}
             return await self.step("sellLocation", "", sell_location)
         if action == "setLocation" and args:
-            place = full_place(" ".join(args))
+            place = " ".join(args).strip()
+            problem = place_problem(place)
 
             async def set_location() -> None:
+                if problem:
+                    raise RuntimeError(f"locationAbbreviated: {problem}; nothing was typed")
                 answers: list[list[str]] = []
 
                 async def on_response(response: Any) -> None:

@@ -1,4 +1,6 @@
-const regionNames = new Intl.DisplayNames(["en"], { type: "region" });
+import { US_STATE_NAMES } from "../../../facebook/marketplace/location/types";
+
+const regionNames =new Intl.DisplayNames(["en"], { type: "region" });
 
 const US_STATES = "al ak az ar ca co ct de dc fl ga hi id il in ia ks ky la me md ma mi mn ms mo mt ne nv nh nj nm ny nc nd oh ok or pa ri sc sd tn tx ut vt va wa wv wi wy".split(" ");
 
@@ -15,6 +17,7 @@ const CODE_BY_NAME: Map<string, string> = (() => {
     map.set(alias, code);
   }
   for (const state of US_STATES) map.set(state, "US");
+  for (const name of Object.values(US_STATE_NAMES)) map.set(name.toLowerCase(), "US");
   return map;
 })();
 

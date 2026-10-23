@@ -16,6 +16,7 @@ from pathlib import Path as _Path
 _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
 from errors.errorCodes import checked, failure
 from browser import proxyGate
+from location.placeName import pick_suggestion, place_problem
 from human.humanMouse import SyncHumanMouse, human_click, human_scroll_by, human_scroll_into_view
 from browser.visibleBrowser import launch_kwargs
 
@@ -571,14 +572,15 @@ def step_open(s: Session, params: dict[str, Any]) -> dict[str, Any]:
             return {"kind": "error", "code": checked("formNotFound"), "detail": f"no Title field on {s.page.url}, loaded twice"}
     wrong = sell_location_mismatch(s, params.get("location"))
     if wrong:
-        postal = str(params.get("postalCode") or "").strip()
-        if not postal:
-            return {"kind": "error", "code": checked("locationNotSet"), "detail": wrong + " Give the listing a locationPostalCode and a --live run sets it."}
+        place = str(params.get("location") or "").strip()
+        problem = place_problem(place)
+        if problem:
+            return {"kind": "error", "code": checked("locationAbbreviated"), "detail": f"{wrong} {problem}"}
         if not params.get("setLocation"):
-            return {"kind": "error", "code": checked("locationNotSet"), "detail": wrong + f" A --live run sets it to {postal} first (a dry run changes nothing on Facebook)."}
-        moved = set_marketplace_location(s, postal)
+            return {"kind": "error", "code": checked("locationNotSet"), "detail": wrong + f" A --live run sets it to {place} first (a dry run changes nothing on Facebook)."}
+        moved = set_marketplace_location(s, place)
         if moved:
-            return {"kind": "error", "code": checked("locationNotSet"), "detail": f"{wrong} Setting it to {postal} failed: {moved}"}
+            return {"kind": "error", "code": checked("locationNotSet"), "detail": f"{wrong} Setting it to {place} failed: {moved}"}
         s.page.goto(create_url(), wait_until="domcontentloaded", timeout=90_000)
         s.page.wait_for_timeout(3000)
         try:
@@ -587,13 +589,16 @@ def step_open(s: Session, params: dict[str, Any]) -> dict[str, Any]:
             return {"kind": "error", "code": checked("formNotFound"), "detail": f"no Title field after setting the location, on {s.page.url}"}
         still = sell_location_mismatch(s, params.get("location"))
         if still:
-            return {"kind": "error", "code": checked("locationNotSet"), "detail": f"set the Marketplace location to {postal}, and still: {still}"}
+            return {"kind": "error", "code": checked("locationNotSet"), "detail": f"set the Marketplace location to {place}, and still: {still}"}
     return {"kind": "ready", "url": s.page.url}
 
 
-def set_marketplace_location(s: Session, postal: str) -> str | None:
+def set_marketplace_location(s: Session, place: str) -> str | None:
     page = s.page
-    log(f"Setting the Marketplace location to {postal} (the form would list elsewhere)")
+    problem = place_problem(place)
+    if problem:
+        return f"locationAbbreviated: {problem}"
+    log(f"Setting the Marketplace location to {place} (the form would list elsewhere)")
     try:
         page.goto("https://www.facebook.com/marketplace/", wait_until="domcontentloaded", timeout=90_000)
         button = page.get_by_role("button", name=re.compile(r"^Location: "))
@@ -605,20 +610,25 @@ def set_marketplace_location(s: Session, postal: str) -> str | None:
         human_click(box, circle=False)
         page.keyboard.press("ControlOrMeta+A")
         page.keyboard.press("Backspace")
-        page.keyboard.type(postal, delay=90)
+        page.keyboard.type(place, delay=90)
         page.wait_for_timeout(2500)
-        page.keyboard.press("ArrowDown")
-        page.keyboard.press("Enter")
+        options = page.get_by_role("option")
+        offered = [options.nth(i).inner_text().split("\n")[0] for i in range(options.count())]
+        index = pick_suggestion(place, offered)
+        if index is None:
+            page.keyboard.press("Escape")
+            return f"no suggestion is {place!r} (Facebook offered {offered[:6]}); nothing was set"
+        human_click(options.nth(index))
         apply = dialog.get_by_role("button", name="Apply")
         page.wait_for_timeout(1200)
         if apply.is_disabled():
-            return f"no suggestion was picked for {postal}"
+            return f"no suggestion was picked for {place}"
         with page.expect_response(lambda r: "CometMarketplaceSetBuyLocationMutation" in (r.request.post_data or ""), timeout=20_000) as saved:
             human_click(apply)
         if saved.value.status != 200:
             return f"CometMarketplaceSetBuyLocationMutation answered {saved.value.status}"
         page.wait_for_timeout(2500)
-        log(f"Marketplace location set to {postal}")
+        log(f"Marketplace location set to {place}")
         return None
     except Exception as exc:
         return f"{type(exc).__name__}: {str(exc)[:160]}"
@@ -855,6 +865,9 @@ def step_fill_fields(s: Session, params: dict[str, Any]) -> dict[str, Any]:
 
     if listing.get("location"):
         location = str(listing["location"])
+        problem = place_problem(location)
+        if problem:
+            return fail("locationAbbreviated", problem)
         city = norm(location.split(",")[0])
         country = norm(location.split(",")[-1]) if "," in location else ""
         loc = location_field(s)
@@ -875,10 +888,7 @@ def step_fill_fields(s: Session, params: dict[str, Any]) -> dict[str, Any]:
         if city and city in current and sell_location_mismatch(s, location) is None:
             filled["location"] = f"{loc.input_value()} (already set)"
             return {"ok": True, "filled": filled}
-        where = read_sell_location(s)
         queries = [location]
-        if where and where.get("postalCode") and norm(where["city"]) == city:
-            queries.append(str(where["postalCode"]))
         picked = False
         seen: list[str] = []
         options = s.page.locator('[role="listbox"] [role="option"]')

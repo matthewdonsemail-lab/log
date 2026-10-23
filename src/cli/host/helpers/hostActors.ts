@@ -12,6 +12,7 @@ import { join } from "node:path";
 import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
 import { ACTIVITY_SCRIPTS } from "../../../facebook/warmup/stages/index.ts";
 import * as marketplaceCheck from "../../../facebook/marketplace/check/index.ts";
+import { placeProblem } from "../../../facebook/marketplace/location/index.ts";
 import { runFlowInSession, openInspectSession } from "../../flow/helpers/index.ts";
 import type { OpenSession } from "../../flow/helpers/index.ts";
 import { keepNewDevice, keepSession, openAccount } from "../../live/index.ts";
@@ -173,12 +174,14 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
       const where = read?.sellLocation;
       const home = (account.homeCity ?? "").toLowerCase();
       if (where && where.city.toLowerCase() === home) return ok(`${where.city} ${where.postalCode}`);
-      const zip = await zipFor(context, account);
-      if (!zip) return error("noPostalCode", `the Marketplace location is ${where?.city ?? "unknown"}; give a listing of this account a locationPostalCode`);
-      if (!input.live) return error("needsLive", `the Marketplace location is ${where?.city ?? "unknown"}, not ${account.homeCity}: --live sets it to ${zip}`);
-      const set = await send("setLocation", [zip]);
+      const place = await placeFor(context, account);
+      if (!place) return error("noPlaceName", `the Marketplace location is ${where?.city ?? "unknown"}; give a listing of this account in ${account.homeCity ?? "its home city"} a locationQuery, "City, State" written out`);
+      const problem = placeProblem(place);
+      if (problem) return error(problem.code, problem.detail);
+      if (!input.live) return error("needsLive", `the Marketplace location is ${where?.city ?? "unknown"}, not ${account.homeCity}: --live sets it to ${place}`);
+      const set = await send("setLocation", [place]);
       if (!set || set.ok === false) return error("locationNotSet", set?.error ?? "no reply");
-      return ok(`set to ${zip}`);
+      return ok(`set to ${place}`);
     }),
 
     warmupActivity: fromPromise<StepOutcome, LifecycleActorInputs["warmupActivity"]>(async ({ input }) => {
@@ -227,13 +230,9 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
   };
 }
 
-const CITY_ZIPS: Record<string, string> = {
-  "US:reading": "19601", "US:harrisburg": "17101", "US:erie": "16501", "US:pittsburgh": "15222", "US:lancaster": "17602",
-  "US:bethlehem": "18015", "US:scranton": "18503", "US:allentown": "18101", "US:philadelphia": "19107", "US:wilkes-barre": "18701",
-};
-
-async function zipFor(context: CommandContext, account: FacebookAccount): Promise<string | null> {
+async function placeFor(context: CommandContext, account: FacebookAccount): Promise<string | null> {
   const rows = await context.twenty.list("agencyListings", { socialAccountId: { eq: account.id } });
-  const fromListing = rows.map((r) => r.locationPostalCode).find((z): z is string => Boolean(z));
-  return fromListing ?? CITY_ZIPS[`${account.homeCountry ?? ""}:${(account.homeCity ?? "").toLowerCase()}`] ?? null;
+  const home = (account.homeCity ?? "").toLowerCase();
+  const queries = rows.map((r) => r.locationQuery?.trim()).filter((q): q is string => Boolean(q));
+  return queries.find((q) => q.split(",")[0].trim().toLowerCase() === home) ?? queries[0] ?? null;
 }

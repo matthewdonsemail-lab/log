@@ -754,6 +754,20 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     version that breaks a checkable copy rule, and `campaign fill` refuses too
     few (`notEnoughCopyVersions`). `src/facebook/marketplace/copy`.
 
+72. 2026-10-23 · matt: a Marketplace location is never abbreviated. It is
+    typed as "City, State" with the state written out ("Bethlehem,
+    Pennsylvania") or "City, Country" ("Galway, Ireland"): "Bethlehem, PA"
+    was offered only as the West Bank, and a bare zip offered Granada, Spain
+    first (rule 68). A check blocks before any action: a place with an
+    acronym, a state code, a zip or any number, or no state or country is
+    refused with `locationAbbreviated` (`placeProblem`,
+    `src/facebook/marketplace/location`; `python/location/placeName.py` in the
+    sessions), in a listing's `locationQuery` (`listing create`, `lint`,
+    `publish`, `campaign fill`), `log inspect do setLocation`, a flow's
+    `location`, and the host's setLocation, which types the listing's
+    `locationQuery` and never a zip. A written-out state counts as the US for
+    the country check.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

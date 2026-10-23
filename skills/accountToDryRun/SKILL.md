@@ -123,15 +123,17 @@ ending is a code: `mcp__log__errors { code: "<code>" }`.
 Before photos go up, the open step reads the account's Marketplace location
 from the page (`sell_location`). The US form has no Location field: if that
 isn't the listing's city, it stops there with `locationNotSet` and names the
-place ("Kearney (68847, US)"), and nothing is uploaded. Give the listing a
-`locationPostalCode` (the zip: Facebook finds "Reading, PA" by 19601, while
-the name finds Reading, Jamaica): a `--live` run then sets the account's
-Marketplace location to it first (Marketplace > Location > Change location >
-the zip > Apply, `CometMarketplaceSetBuyLocationMutation`) and checks the
-form again. A dry run never changes it. When the form has a Location field
-and the city name finds nothing in the right place, the zip is typed there
-too. A login wall or checkpoint on the form is signed through in the same
-browser (rule 24).
+place ("Kearney (68847, US)"), and nothing is uploaded. The listing's
+`locationQuery` is "City, State" with the state written out ("Reading,
+Pennsylvania"): a `--live` run then sets the account's Marketplace location
+to it first (Marketplace > Location > Change location > the place > the
+suggestion Facebook names as that place > Apply,
+`CometMarketplaceSetBuyLocationMutation`) and checks the form again. A dry
+run never changes it. A zip, a number or an abbreviation ("Reading, PA") is
+never typed: it is refused with `locationAbbreviated` before the run, because
+"Bethlehem, PA" was offered only as the West Bank and a bare zip offered
+Granada, Spain (rule 72). A login wall or checkpoint on the form is signed
+through in the same browser (rule 24).
 
 **Rule 24: launches cost.** Each account opens on Facebook at most 8 times
 per local day, 10 minutes apart, dry runs counted (`launchTooSoon`,

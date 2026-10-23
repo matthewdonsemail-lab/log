@@ -1,4 +1,5 @@
 import { countryOfLocation } from '../../../browser/proxy/index'
+import { placeProblem } from '../../../facebook/marketplace/location/index'
 import { validateListing } from '../../publish/helpers/index'
 import type { PublishListing } from '../../publish/types'
 import type { AgencyListing } from '../types'
@@ -23,6 +24,10 @@ export function toPublishListing(listing: AgencyListing): { ok: true; listing: P
   }
   const problems = validateListing(publish)
   if (!listing.locationQuery) problems.push('locationQuery is empty (e.g. "Galway, Ireland")')
+  else {
+    const place = placeProblem(listing.locationQuery)
+    if (place) problems.push(`locationQuery: ${place.detail}`)
+  }
   if (!listing.locationCountry) problems.push('locationCountry is empty (ISO, e.g. IE)')
   return problems.length ? { ok: false, problems } : { ok: true, listing: publish }
 }

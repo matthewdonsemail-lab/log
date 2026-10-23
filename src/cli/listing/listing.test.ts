@@ -13,7 +13,7 @@ const base = {
   category: "Miscellaneous",
   condition: "new",
   photos: ["before.png"],
-  locationQuery: "Bethlehem, PA",
+  locationQuery: "Bethlehem, Pennsylvania",
   locationCity: "bethlehem",
   locationCountry: "US",
 };

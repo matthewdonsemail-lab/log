@@ -4,6 +4,7 @@ import { createActor, fromPromise, toPromise } from "xstate";
 import { createFlowMachine, fillStep, flowFromRecording, listFlows, loadFlow, readRecordedCommands, saveFlow, toolName, writeFlowDoc } from "../../browser/flow/index.ts";
 import type { FlowActInput, FlowDefinition, FlowRunOutput, FlowStep, FlowStepResult } from "../../browser/flow/index.ts";
 import type { InspectAction } from "../../browser/inspect/index.ts";
+import { placeProblem } from "../../facebook/marketplace/location/index.ts";
 import { preparePhotos } from "../../media/photo/index.ts";
 import { fetchProxyUrl } from "../../marketplace/socialAccount/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
@@ -56,6 +57,10 @@ async function runFlow(context: Parameters<Command["run"]>[0], flow: FlowDefinit
   if (missing.length) return { code: 1, stderr: `log flow: ${flow.name} needs ${missing.map((m) => `--set ${m}=…`).join(" ")}` };
   const uid = typeof flags["account"] === "string" ? flags["account"] : "";
   const filled: Record<string, string> = { ...values, uid, profileName: "<the account's profile name>" };
+  for (const step of flow.steps.filter((s) => s.action === "setLocation")) {
+    const place = placeProblem(fillStep(step, filled).value);
+    if (place) return { code: 1, stderr: `log flow: ${place.code} ${step.id}: ${place.detail}` };
+  }
   if (!flags["live"]) {
     const lines = [`Flow ${flow.name} (dry run: nothing opens). With --live it runs:`];
     flow.steps.forEach((step, i) => lines.push(`  ${i + 1}. ${describe(fillStep(step, filled))}${step.expect ? `  → waits for ${step.expect}` : ""}`));
