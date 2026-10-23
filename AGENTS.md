@@ -1,5 +1,30 @@
 # AGENTS.md — log-cli
 
+## Rule one: always read Facebook's internal API answers (matt, 2026-10-23)
+
+This is the number one rule of the whole stack, above every other rule in
+this file. Facebook's internal API answers are what decide what is
+relevant and when. They are the deterministic factor of the system: the
+answer decides, never the screen, a timer, or the fact that a step ran.
+
+- **Every step reads them.** Every step the stack runs in a browser (a
+  warm-up activity, a flow step, an inspect step, a publish, a check)
+  reads the internal API answers it triggers, and the request it sent. A
+  step that only loads a page and moves on is not done.
+- **Read means kept and used.** What each answer said is taken out of the
+  run's recording by code, kept past the prune, and is what the machine
+  decides on.
+- **What we sent counts as much as the answer.** Example:
+  `viewer_coordinates` placed Bethlehem's place search in Lima.
+- **Why:** on 2026-10-22, Bethlehem's warm-up loaded
+  `/marketplace/create/item` twice. Both times its HTML said
+  `sell_location: Barranco, 15063, PE`, and both times the warm-up passed.
+  The prune then deleted it (#35).
+- **Not enforced yet:** every warm-up flow step has `expect: -`, and the
+  stack keeps only request names. Building the reads is #35.
+
+Rule 73.
+
 ## The platform comes first: `log <platform> <command> …` (matt, 2026-10-22)
 
 This is the shape of every command, at the start of this file because it
@@ -767,6 +792,15 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `location`, and the host's setLocation, which types the listing's
     `locationQuery` and never a zip. A written-out state counts as the US for
     the country check.
+73. 2026-10-23 · matt: "IT MUST ALWAYS READ THEM." The number one rule of
+    the stack, above rule 30 and every other: Facebook's internal API answers
+    are the decision-making factor of what and when something is relevant,
+    and the deterministic factor of the system. Every browser step reads the
+    internal API answers it triggers and the requests it sent, keeps them
+    past the prune, and decides on them, never on a page loading, a timer or
+    the step having run. The MCP instructions put it first. Not enforced
+    yet: every warm-up flow step has `expect: -`, and only request names are
+    kept (#35). Top of this file.
 
 ## Checks
 

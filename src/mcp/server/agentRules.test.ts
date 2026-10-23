@@ -32,11 +32,14 @@ describe("AGENTS.md in the MCP server", () => {
     expect(unmapped).toEqual([]);
   });
 
-  test("the instructions reach the client at initialize, rule 30 first among the principles", async () => {
+  test("the instructions reach the client at initialize, rule 73 first and rule 30 second among the principles", async () => {
     const client = await connected();
     const instructions = client.getInstructions() ?? "";
     expect(instructions).toBe(SERVER_INSTRUCTIONS);
-    expect(instructions.split("\n").find((l) => /^\d+\./.test(l))).toContain("do it completely");
+    const principles = instructions.split("\n").filter((l) => /^\d+\./.test(l));
+    expect(principles[0]).toContain("always read Facebook's internal API answers");
+    expect(principles[0]).toContain("(rule 73)");
+    expect(principles[1]).toContain("do it completely");
     expect(instructions).toContain(AGENTS_URI);
     await client.close();
   });
@@ -45,7 +48,7 @@ describe("AGENTS.md in the MCP server", () => {
     const client = await connected();
     const { tools } = await client.listTools();
     for (const tool of tools) expect((tool.description ?? "").split("\n").at(-1)).toMatch(/^AGENTS\.md \(log:\/\/agents\): rules [\d, ]+\. When matt says to do something, do it completely \(rule 30\)\.$/);
-    expect(tools.find((t) => t.name === "join")?.description).toContain("rules 8, 10, 18, 20, 25, 26, 29, 35, 45, 64, 30, 38, 39, 40, 41");
+    expect(tools.find((t) => t.name === "join")?.description).toContain("rules 8, 10, 18, 20, 25, 26, 29, 35, 45, 64, 73, 30, 38, 39, 40, 41");
     await client.close();
   });
 
