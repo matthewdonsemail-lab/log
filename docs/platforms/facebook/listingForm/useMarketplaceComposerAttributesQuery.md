@@ -13,14 +13,14 @@
 | Called from | `MarketplacePDPC2CAttributesComponent.react` |
 | rea | `ev_23049485227d4ec91cc2c3b57b4b7da0f6322c73b1f8f951a6753ba37172d8cd` |
 
-Seen 6 time(s) in 4 run(s).
+Seen 7 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | step 13: goto /marketplace/create/item | 2 | 200 | 350–375 ms | 2490–9489 ms | — |
 | inspect | step 11: goto /marketplace/create/item | 1 | 200 | 369 ms | 2287 ms | — |
 | inspect | scroll: container +87px in 3 steps | 1 | 200 | 1709 ms | 1077 ms | — |
-| inspect | step 1: goto /marketplace/create/item | 1 | 200 | 545 ms | 8980 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 2 | 200 | 425–545 ms | 5315–8980 ms | — |
 | inspect | step 5: goto /marketplace/create/item | 1 | 200 | 382 ms | 2487 ms | — |
 
 <!-- facts:end -->

@@ -13,7 +13,7 @@
 | Called from | `OhaiWebPublicKeyConfig` |
 | rea | `ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013` |
 
-Seen 91 time(s) in 24 run(s).
+Seen 96 time(s) in 25 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -35,7 +35,7 @@ Seen 91 time(s) in 24 run(s).
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 349 ms | 5502 ms | — |
 | inspect | step 1: goto /groups/<id> | 1 | 200 | 354 ms | 6943 ms | — |
 | inspect | step 1: goto / | 5 | 200 | 467–582 ms | 6556–8723 ms | — |
-| inspect | step 7: goto / | 1 | 200 | 580 ms | 4381 ms | — |
+| inspect | step 7: goto / | 2 | 200 | 444–580 ms | 4381–4965 ms | — |
 | inspect | step 34: goto /marketplace/ | 1 | 200 | 515 ms | 5926 ms | — |
 | inspect | step 38: goto /marketplace/ | 1 | 200 | 846 ms | 7746 ms | — |
 | inspect | step 22: goto /marketplace/ | 1 | 200 | 469 ms | 6146 ms | — |
@@ -56,12 +56,12 @@ Seen 91 time(s) in 24 run(s).
 | inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 445 ms | 3174 ms | — |
 | inspect | step 5: setLocation Bethlehem, Pennsylvania | 1 | 200 | 939 ms | 3650 ms | — |
 | inspect | step 11: goto /marketplace/create/item | 1 | 200 | 582 ms | 2597 ms | — |
-| inspect | step 1: goto /marketplace/create/item | 1 | 200 | 468 ms | 9934 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 2 | 200 | 361–468 ms | 5944–9934 ms | — |
 | inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 682 ms | 5262 ms | — |
 | inspect | step 5: goto /marketplace/create/item | 1 | 200 | 373 ms | 2784 ms | — |
 | inspect | step 13: setLocation 18015 | 1 | 200 | 380 ms | 4434 ms | — |
 | inspect | step 1: goto /marketplace/inbox | 2 | 200 | 347–371 ms | 6670–19688 ms | — |
-| inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 493 ms | 5413 ms | — |
+| inspect | step 4: goto /marketplace/you/selling | 2 | 200 | 385–493 ms | 5413–6086 ms | — |
 | inspect | step 6: goto /marketplace/status | 1 | 200 | 389 ms | 5910 ms | — |
 | inspect | step 7: goto /marketplace/you/selling | 1 | 200 | 832 ms | 2369 ms | — |
 | inspect | step 8: goto /marketplace/inbox | 1 | 200 | 552 ms | 4532 ms | — |
@@ -77,6 +77,8 @@ Seen 91 time(s) in 24 run(s).
 | inspect | step 4: goto /marketplace/status | 1 | 200 | 864 ms | 4278 ms | — |
 | inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 1015 ms | 1930 ms | — |
 | inspect | step 6: goto /marketplace/inbox | 3 | 200 | 429–975 ms | 2313–1515040 ms | — |
+| inspect | step 2: goto /marketplace/ | 1 | 200 | 379 ms | 6402 ms | — |
+| inspect | step 5: goto /messages/ | 1 | 200 | 966 ms | 7668 ms | — |
 
 <!-- facts:end -->
 

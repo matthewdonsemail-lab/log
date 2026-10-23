@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_234c75aefcc329813686b684e1147f5131974c702880e6b21ab1650509b614db` |
+| rea | `ev_0bf8a25fdaa8c42b0cb6595e9da9d9070edd0f58b47c63433d09c90d4ad5c265` |
 
-Seen 43 time(s) in 11 run(s).
+Seen 45 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -51,6 +51,8 @@ Seen 43 time(s) in 11 run(s).
 | inspect | step 1: goto /marketplace/inbox | 2 | 200 | 365–878 ms | 20925–22722 ms | — |
 | inspect | step 3: click e156 | 1 | 200 | 469 ms | 884 ms | — |
 | inspect | step 3: goto /marketplace/inbox | 9 | 200 | 390–795 ms | 471777–1354663 ms | — |
+| inspect | scroll: +161px in 5 wheel steps, 250 ms | 1 | 200 | 923 ms | 2074 ms | — |
+| inspect | scroll: -161px in 5 wheel steps, 172 ms | 1 | 200 | 565 ms | 833 ms | — |
 
 <!-- facts:end -->
 

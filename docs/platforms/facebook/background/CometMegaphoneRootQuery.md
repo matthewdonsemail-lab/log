@@ -13,7 +13,7 @@
 | Called from | `CometMegaphoneRoot.react` |
 | rea | `ev_a2e1e82b09a10f9f97361e424dc787adb4a3a8c0a7bb15f7feb91de015e7d2fa` |
 
-Seen 16 time(s) in 10 run(s).
+Seen 17 time(s) in 11 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -33,6 +33,7 @@ Seen 16 time(s) in 10 run(s).
 | inspect | step 3: goto /marketplace/inbox | 1 | 200 | 1917 ms | 59459 ms | — |
 | inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 2596 ms | 11543 ms | — |
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 803 ms | 1708101 ms | — |
+| inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 883 ms | 15210 ms | — |
 
 <!-- facts:end -->
 

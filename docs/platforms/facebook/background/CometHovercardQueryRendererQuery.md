@@ -13,7 +13,7 @@
 | Called from | `CometHovercardQueryRenderer.react` |
 | rea | `ev_95529720f6ba751fe065571b8fd81d09f67f7e4539594c0761343470652ec320` |
 
-Seen 183 time(s) in 13 run(s).
+Seen 193 time(s) in 14 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -93,6 +93,7 @@ Seen 183 time(s) in 13 run(s).
 | inspect | step 17: scrollIn heading "…" 2-3 x 300-500px | 2 | 200 | 781–879 ms | 383–857 ms | — |
 | inspect | scroll: +484px in 11 wheel steps, 421 ms | 1 | 200 | 738 ms | 7207 ms | — |
 | inspect | step 49: scrollIn heading "…" 2-3 x 300-500px | 3 | 200 | 673–911 ms | 319–2152 ms | — |
+| inspect | step 7: goto / | 10 | 200 | 513–1502 ms | 5103–74798 ms | — |
 
 <!-- facts:end -->
 

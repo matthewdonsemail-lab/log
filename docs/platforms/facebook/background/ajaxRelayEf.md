@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_36a106d5c6a349aaffd95d75400fb9370c5a8d58bad30e5c86f25c40aa5bf643` |
+| rea | `ev_d330b69a13af509d9a5f8468fc4f4211499333f41ee6812cde51a998ece4ee3e` |
 
-Seen 764 time(s) in 25 run(s).
+Seen 802 time(s) in 26 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -53,7 +53,7 @@ Seen 764 time(s) in 25 run(s).
 | inspect | step 2: snapshot | 8 | 200 | 356–1507 ms | 944–14754 ms | — |
 | inspect | step 3: clickRole button "…" | 6 | 200 | 307–405 ms | 301–5352 ms | — |
 | inspect | step 5: clickRole button "…" | 1 | 200 | 365 ms | 9345 ms | — |
-| inspect | step 6: wait 6s | 1 | 200 | 365 ms | 55301 ms | — |
+| inspect | step 6: wait 6s | 5 | 200 | 339–461 ms | 23412–55301 ms | — |
 | inspect | step 7: type e2129 | 2 | 200 | 357–395 ms | 9680–10066 ms | — |
 | inspect | step 8: clickRole button "…" | 3 | 200 | 352–494 ms | 3313–10333 ms | — |
 | inspect | step 14: clickRole button "…" | 1 | 200 | 1573 ms | 22775 ms | — |
@@ -94,7 +94,7 @@ Seen 764 time(s) in 25 run(s).
 | inspect | step 4: nextPost | 4 | 200 | 580–964 ms | 1664–2924 ms | — |
 | inspect | post: "…", 46 words, 1 image(s), scrolled 1584 px | 2 | 200 | 491–514 ms | 375–607 ms | — |
 | inspect | post: "…", 48 words, 1 image(s), scrolled 753 px | 1 | 200 | 459 ms | 3380 ms | — |
-| inspect | step 7: goto / | 1 | 200 | 470 ms | 4148 ms | — |
+| inspect | step 7: goto / | 14 | 200 | 340–1174 ms | 4148–91896 ms | — |
 | inspect | scroll: +591px in 13 wheel steps, 985 ms | 1 | 200 | 487 ms | 438 ms | — |
 | inspect | step 12: nextPost | 1 | 200 | 488 ms | 797 ms | — |
 | inspect | step 14: nextPost | 1 | 200 | 503 ms | 202 ms | — |
@@ -108,7 +108,7 @@ Seen 764 time(s) in 25 run(s).
 | inspect | step 34: goto /marketplace/ | 4 | 200 | 455–551 ms | 6208–9624 ms | — |
 | inspect | step 36: scroll 1 x 400-800px | 1 | 200 | 501 ms | 183 ms | — |
 | inspect | scroll: +752px in 18 wheel steps, 1375 ms | 2 | 200 | 469–507 ms | 3649–3880 ms | — |
-| inspect | openAny: read /marketplace/item/<id>/ | 14 | 200 | 450–2208 ms | 3091–108912 ms | — |
+| inspect | openAny: read /marketplace/item/<id>/ | 19 | 200 | 355–2399 ms | 2978–108912 ms | — |
 | inspect | step 38: goto /marketplace/ | 2 | 200 | 692–699 ms | 7697–7703 ms | — |
 | inspect | step 5: nextPost | 5 | 200 | 462–559 ms | 1291–2886 ms | — |
 | inspect | post: "…", 67 words, 1 image(s), scrolled 715 px | 1 | 200 | 474 ms | 525 ms | — |
@@ -181,7 +181,7 @@ Seen 764 time(s) in 25 run(s).
 | inspect | step 14: snapshot | 2 | 200 | 385–452 ms | 1314–1401 ms | — |
 | inspect | step 25: click e1241 | 1 | 200 | 564 ms | 12297 ms | — |
 | inspect | step 27: click e1541 | 6 | 200 | 374–1124 ms | 5988–18197 ms | — |
-| inspect | step 1: goto /marketplace/create/item | 2 | 200 | 530–1293 ms | 14447–23010 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 6 | 200 | 362–1293 ms | 11650–23010 ms | — |
 | inspect | step 4: setLocation Bethlehem, PA | 4 | 200 | 599–1029 ms | 6379–17764 ms | — |
 | inspect | step 5: goto /marketplace/create/item | 3 | 200 | 370–616 ms | 6722–7941 ms | — |
 | inspect | step 13: setLocation 18015 | 7 | 200 | 370–1945 ms | 5174–128596 ms | — |
@@ -204,6 +204,9 @@ Seen 764 time(s) in 25 run(s).
 | inspect | step 4: goto /marketplace/status | 5 | 200 | 506–1887 ms | 4953–13860 ms | — |
 | inspect | step 5: goto /marketplace/you/selling | 5 | 200 | 527–884 ms | 2925–14123 ms | — |
 | inspect | step 6: goto /marketplace/inbox | 26 | 200 | 394–1519 ms | 2545–1685365 ms | — |
+| inspect | step 2: goto /marketplace/ | 7 | 200 | 356–879 ms | 6455–44933 ms | — |
+| inspect | step 4: goto /marketplace/you/selling | 4 | 200 | 352–425 ms | 5942–22597 ms | — |
+| inspect | step 5: goto /messages/ | 1 | 200 | 358 ms | 10778 ms | — |
 
 <!-- facts:end -->
 

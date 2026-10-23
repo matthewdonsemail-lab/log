@@ -13,13 +13,14 @@
 | Called from | `MWQuickPromotionThreadlistBanner.react` |
 | rea | `ev_02409c15c4b121aaad55f1d4e5f805ab90c21a37abd6b11190448c8fa0d209e1` |
 
-Seen 4 time(s) in 4 run(s).
+Seen 5 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | step 25: goto /messages/ | 2 | 200 | 361–379 ms | 3052–4257 ms | — |
 | inspect | step 1: goto /messages/ | 1 | 200 | 356 ms | 3595 ms | — |
 | inspect | step 3: goto /marketplace/inbox | 1 | 200 | 436 ms | 1355898 ms | — |
+| inspect | step 5: goto /messages/ | 1 | 200 | 399 ms | 10078 ms | — |
 
 <!-- facts:end -->
 

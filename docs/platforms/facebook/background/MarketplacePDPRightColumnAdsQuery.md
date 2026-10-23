@@ -13,7 +13,7 @@
 | Called from | `MarketplacePDPRightColumnAds.react` |
 | rea | `ev_60c1ff17945c01c64f962c11cd4de230589c6861a2a0e6b369989fa6b189d159` |
 
-Seen 8 time(s) in 4 run(s).
+Seen 10 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -25,6 +25,8 @@ Seen 8 time(s) in 4 run(s).
 | inspect | scroll: -577px in 13 wheel steps, 859 ms | 1 | 200 | 2056 ms | 2392 ms | — |
 | inspect | scroll: +978px in 22 wheel steps, 1531 ms | 1 | 200 | 1783 ms | 823 ms | — |
 | inspect | step 25: openAny 1-3 x /marketplace/item/ | 1 | 200 | 1762 ms | 1236 ms | — |
+| inspect | scroll: +161px in 5 wheel steps, 250 ms | 1 | 200 | 1918 ms | 1885 ms | — |
+| inspect | scroll: -161px in 5 wheel steps, 172 ms | 1 | 200 | 1987 ms | 702 ms | — |
 
 <!-- facts:end -->
 

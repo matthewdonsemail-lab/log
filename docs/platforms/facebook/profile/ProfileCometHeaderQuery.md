@@ -13,7 +13,7 @@
 | Called from | `ProfileCometHeader.react` |
 | rea | `ev_4cedb55954fe0c35463d9aac371107df285f48cd40a1dfe186a84c7c4647ff7d` |
 
-Seen 4 time(s) in 2 run(s).
+Seen 5 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -21,6 +21,7 @@ Seen 4 time(s) in 2 run(s).
 | inspect | step 21: clickAny 1 x link /see owner profile$/ | 1 | 200 | 717 ms | 1889 ms | — |
 | inspect | step 8: clickAny 1 x link /see owner profile$/ | 1 | 200 | 757 ms | 1915 ms | — |
 | inspect | step 19: clickAny 1 x link /see owner profile$/ | 1 | 200 | 610 ms | 2108 ms | — |
+| inspect | step 7: goto / | 1 | 200 | 994 ms | 118255 ms | — |
 
 <!-- facts:end -->
 

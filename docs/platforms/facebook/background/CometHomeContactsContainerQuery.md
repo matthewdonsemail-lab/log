@@ -13,7 +13,7 @@
 | Called from | `CometHomeContactsContainer.react` |
 | rea | `ev_1382c6aaad8caec306d87c00b9b241ef1e74ac91f09082d75f7694f794713881` |
 
-Seen 19 time(s) in 10 run(s).
+Seen 20 time(s) in 11 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -35,6 +35,7 @@ Seen 19 time(s) in 10 run(s).
 | inspect | step 3: goto /marketplace/inbox | 1 | 200 | 1670 ms | 59468 ms | A server error field_exception occured. Check server logs for details. |
 | inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 2678 ms | 11555 ms | A server error field_exception occured. Check server logs for details. |
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 950 ms | 1708112 ms | A server error field_exception occured. Check server logs for details. |
+| inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 829 ms | 15219 ms | A server error field_exception occured. Check server logs for details. |
 
 <!-- facts:end -->
 

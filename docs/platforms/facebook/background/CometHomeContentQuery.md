@@ -13,7 +13,7 @@
 | Called from | `CometHomeContent.react` |
 | rea | `ev_cf23e67c25aa3ceb49db2a20048e8ce344dfa1f57457ba9df343170946991f9b` |
 
-Seen 19 time(s) in 10 run(s).
+Seen 20 time(s) in 11 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -35,6 +35,7 @@ Seen 19 time(s) in 10 run(s).
 | inspect | step 3: goto /marketplace/inbox | 1 | 200 | 1436 ms | 59456 ms | — |
 | inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 2508 ms | 11539 ms | — |
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 712 ms | 1708097 ms | — |
+| inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 617 ms | 15207 ms | — |
 
 <!-- facts:end -->
 

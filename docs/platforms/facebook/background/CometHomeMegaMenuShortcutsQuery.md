@@ -13,7 +13,7 @@
 | Called from | `CometHomeMegaMenuShortcuts.react` |
 | rea | `ev_387da7dffb2d726280e5df4abfd25b5a3f00569b707462e4a6fe946ba8004ba8` |
 
-Seen 11 time(s) in 10 run(s).
+Seen 12 time(s) in 11 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -28,6 +28,7 @@ Seen 11 time(s) in 10 run(s).
 | inspect | step 5: wait 5s | 1 | 200 | 699 ms | 5617 ms | — |
 | inspect | step 3: goto /marketplace/inbox | 1 | 200 | 740 ms | 22256 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 1 | 200 | 1627 ms | 1630153 ms | — |
+| inspect | step 6: wait 6s | 1 | 200 | 635 ms | 36624 ms | — |
 
 <!-- facts:end -->
 

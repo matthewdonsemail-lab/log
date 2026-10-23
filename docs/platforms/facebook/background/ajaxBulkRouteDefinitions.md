@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_36a106d5c6a349aaffd95d75400fb9370c5a8d58bad30e5c86f25c40aa5bf643` |
+| rea | `ev_d330b69a13af509d9a5f8468fc4f4211499333f41ee6812cde51a998ece4ee3e` |
 
-Seen 882 time(s) in 24 run(s).
+Seen 918 time(s) in 25 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -57,7 +57,7 @@ Seen 882 time(s) in 24 run(s).
 | inspect | scroll: +800px in 18 wheel steps, 781 ms | 6 | 200 | 415–1571 ms | 28725–1081179 ms | — |
 | inspect | step 1: goto /profile.php | 7 | 200 | 354–630 ms | 5815–8764 ms | — |
 | inspect | step 5: clickRole button "…" | 4 | 200 | 346–553 ms | 490–5414 ms | — |
-| inspect | step 6: wait 6s | 1 | 200 | 437 ms | 43001 ms | — |
+| inspect | step 6: wait 6s | 3 | 200 | 437–576 ms | 37308–43001 ms | — |
 | inspect | step 8: clickRole button "…" | 2 | 200 | 370–409 ms | 1685–3942 ms | — |
 | inspect | step 12: clickRole button "…" | 2 | 200 | 416–531 ms | 572–6606 ms | — |
 | inspect | step 13: wait 8s | 1 | 200 | 410 ms | 10710 ms | — |
@@ -115,7 +115,7 @@ Seen 882 time(s) in 24 run(s).
 | inspect | post: "…", 103 words, 0 image(s), scrolled 58 px | 7 | 200 | 521–1167 ms | 260–2234 ms | — |
 | inspect | step 4: nextPost | 5 | 200 | 597–1329 ms | 1011–2496 ms | — |
 | inspect | post: "…", 48 words, 1 image(s), scrolled 753 px | 3 | 200 | 557–640 ms | 2865–3342 ms | — |
-| inspect | step 7: goto / | 8 | 200 | 512–581 ms | 1364–3803 ms | — |
+| inspect | step 7: goto / | 22 | 200 | 363–1364 ms | 1364–78125 ms | — |
 | inspect | step 10: nextPost | 1 | 200 | 784 ms | 361 ms | — |
 | inspect | step 11: nextPost | 2 | 200 | 587–723 ms | 575–576 ms | — |
 | inspect | step 12: nextPost | 3 | 200 | 554–755 ms | 685–1066 ms | — |
@@ -261,12 +261,12 @@ Seen 882 time(s) in 24 run(s).
 | inspect | scroll: container +87px in 3 steps | 1 | 200 | 1532 ms | 1198 ms | — |
 | inspect | step 25: click e1241 | 4 | 200 | 356–537 ms | 9135–16023 ms | — |
 | inspect | step 27: click e1541 | 1 | 200 | 434 ms | 91925 ms | — |
-| inspect | step 1: goto /marketplace/create/item | 2 | 200 | 535–748 ms | 7110–10322 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 6 | 200 | 388–748 ms | 6231–10322 ms | — |
 | inspect | step 4: setLocation Bethlehem, PA | 9 | 200 | 505–866 ms | 4551–19780 ms | — |
 | inspect | step 5: goto /marketplace/create/item | 4 | 200 | 429–465 ms | 1665–3103 ms | — |
 | inspect | step 13: setLocation 18015 | 9 | 200 | 390–548 ms | 2470–17931 ms | — |
 | inspect | step 1: goto /marketplace/inbox | 9 | 200 | 394–819 ms | 5601–22930 ms | — |
-| inspect | step 4: goto /marketplace/you/selling | 2 | 200 | 707–899 ms | 4966–5001 ms | — |
+| inspect | step 4: goto /marketplace/you/selling | 6 | 200 | 393–934 ms | 4966–6444 ms | — |
 | inspect | step 6: goto /marketplace/status | 3 | 200 | 676–716 ms | 5323–5338 ms | — |
 | inspect | step 7: goto /marketplace/you/selling | 5 | 200 | 510–992 ms | 1732–2783 ms | — |
 | inspect | step 8: goto /marketplace/inbox | 5 | 200 | 385–3151 ms | 3754–89812 ms | — |
@@ -282,6 +282,8 @@ Seen 882 time(s) in 24 run(s).
 | inspect | step 4: goto /marketplace/status | 3 | 200 | 748–865 ms | 4123–4187 ms | — |
 | inspect | step 5: goto /marketplace/you/selling | 3 | 200 | 494–1062 ms | 1850–2864 ms | — |
 | inspect | step 6: goto /marketplace/inbox | 14 | 200 | 507–1131 ms | 1381–1514910 ms | — |
+| inspect | step 2: goto /marketplace/ | 9 | 200 | 387–512 ms | 4947–9931 ms | — |
+| inspect | step 5: goto /messages/ | 3 | 200 | 731–972 ms | 7814–9430 ms | — |
 
 <!-- facts:end -->
 
