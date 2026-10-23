@@ -175,7 +175,7 @@ export async function readInspectStep(context: CommandContext, accountName: stri
   if (!folder || !existsSync(folder)) return { reading: null, text: ">>> No recording for this step, so nothing was read (rule 73)." };
   const account = await findAccount(context.twenty, accountName).catch(() => null);
   try {
-    const reading = await readStep(folder, { goal, account: stepAccountOf(account, accountName), decisions: context.decisions, now: context.now });
+    const reading = await readStep(folder, { goal, account: stepAccountOf(account, accountName), decisions: context.decisions, now: context.now, since });
     const goalNote = goalText(accountName, dirname(dirname(folder)), goal, since);
     return { reading, text: [loudText(reading), ...(goalNote ? [goalNote] : []), timelineText(reading)].join("\n\n") };
   } catch (error) {

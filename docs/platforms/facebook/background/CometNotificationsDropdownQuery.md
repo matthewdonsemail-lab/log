@@ -13,7 +13,7 @@
 | Called from | `CometNotificationsDropdown.react` |
 | rea | `ev_ab1965911932cb7fcf25b222bf92e0487c624ad5aa06bc6a0e5e7860bc09d85a` |
 
-Seen 118 time(s) in 23 run(s).
+Seen 121 time(s) in 24 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -62,6 +62,7 @@ Seen 118 time(s) in 23 run(s).
 | inspect | step 2: goto /marketplace/ | 1 | 200 | 905 ms | 6083 ms | — |
 | inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 1230 ms | 4876 ms | — |
 | inspect | step 5: goto /messages/ | 1 | 200 | 1302 ms | 7717 ms | — |
+| inspect | post: "…", 123 words, 0 image(s), scrolled 53 px | 3 | 200 | 1200–2222 ms | 3903–29419 ms | — |
 
 <!-- facts:end -->
 

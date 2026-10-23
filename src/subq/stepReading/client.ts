@@ -5,9 +5,9 @@ import { pageStateOf } from '../../browser/flow/helpers/pageState'
 import { redactFieldValue } from '../../browser/inspect/helpers/renderInspectStep'
 import { createDecisionsClient } from '../decisions/client'
 import type { DecisionImage, DecisionsClient } from '../decisions/types'
-import { bundleOf, decisionOf, exchangesOf, exchangeTimeline, meaningOf, questionsOf, stateOf } from './helpers/index'
+import { bundleOf, decisionOf, exchangesOf, exchangeTimeline, meaningOf, questionsOf, savedOf, stateOf } from './helpers/index'
 import { DOCUMENT_FIELDS, EXCHANGES_FILE, READING_FILE, SUBQ_STEP_MODEL } from './types'
-import type { EarlierStep, StepAccount, StepAnswer, StepReading, StepTaken } from './types'
+import type { EarlierStep, StepAccount, StepAnswer, StepExchange, StepReading, StepTaken } from './types'
 
 const REPO = resolve(fileURLToPath(new URL('../../..', import.meta.url)))
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024
@@ -30,6 +30,7 @@ export interface ReadStepOptions {
   account: Omit<StepAccount, 'exit'>
   decisions?: DecisionsClient
   now?: () => Date
+  since?: string | null
 }
 
 function readJson<T>(path: string): T | null {
@@ -83,11 +84,12 @@ function screenshotOf(folder: string): DecisionImage | null {
   return { mediaType: 'image/png', base64: readFileSync(path).toString('base64') }
 }
 
-function earlierOf(runDir: string, replies: ReplyLine[], step: string): EarlierStep[] {
+function earlierOf(runDir: string, replies: ReplyLine[], step: string, since: string | null): EarlierStep[] {
   const before = replies.filter((r) => r.step && r.step < step)
   return before.map((r) => {
     const reading = readJson<StepReading>(join(runDir, 'steps', r.step!, READING_FILE))
-    return { step: r.step!, action: r.action ?? '', args: r.args ?? [], ok: r.ok !== false, url: r.url ?? '', ms: r.ms ?? null, requests: r.notable ?? [], meaning: reading?.meaning?.[0] ?? null }
+    const exchanges = readJson<StepExchange[]>(join(runDir, 'steps', r.step!, EXCHANGES_FILE)) ?? []
+    return { step: r.step!, action: r.action ?? '', args: r.args ?? [], ok: r.ok !== false, url: r.url ?? '', ms: r.ms ?? null, requests: r.notable ?? [], meaning: reading?.meaning?.[0] ?? null, forGoal: !since || r.step! > since, saved: savedOf(exchanges) }
   })
 }
 
@@ -121,7 +123,8 @@ export async function readStep(folder: string, options: ReadStepOptions): Promis
     pageState: pageStateOf(taken.url, snapshot)?.id ?? null,
     pageText,
     exchanges,
-    earlier: earlierOf(runDir, replies, step)
+    earlier: earlierOf(runDir, replies, step, options.since ?? null),
+    since: options.since ?? null
   })
   const decision = decisionOf(bundle)
   const timeline = exchangeTimeline(exchanges)

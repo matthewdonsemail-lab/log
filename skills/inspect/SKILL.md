@@ -64,6 +64,13 @@ Every `do` then reads its own step:
   says what it means. The reading comes first in the result, starting with
   `>>> UNKNOWN STATE`, and the page-state hook puts it into your context.
   **Name that state before the flow goes on.**
+- **The goal is judged across the session, not one step.** Each earlier
+  step carries what the platform saved in it (its mutations that answered
+  OK), and `goalSoFar` counts them since the goal was set, this step
+  included. "Like 2 to 3 posts" is reached only once 2 likes are saved:
+  on Bethlehem's likes run, the first like now reads "not reached" (100%)
+  and the second "reached" (78%). A goal set with `inspect goal --set`
+  counts only the steps after it.
 - `--goal` on one `do` overrides the session's goal for that step.
 - `bun bin/log.ts inspect read <run>/steps/NN_action --account <a> --goal "..."`
   reads a recorded step again (over MCP: `inspectRead`).

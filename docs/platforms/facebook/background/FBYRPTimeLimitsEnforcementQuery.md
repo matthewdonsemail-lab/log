@@ -13,7 +13,7 @@
 | Called from | `FBYRPTimeLimitsEnforcement.react` |
 | rea | `ev_5fe8db44bc61b2d547bfce0c51e3256e80ffd1e3477b2c6b640071a0ea96e750` |
 
-Seen 97 time(s) in 25 run(s).
+Seen 98 time(s) in 26 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -34,7 +34,7 @@ Seen 97 time(s) in 25 run(s).
 | inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 361 ms | 4598 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 356 ms | 4731 ms | — |
 | inspect | step 1: goto /groups/<id> | 1 | 200 | 468 ms | 5401 ms | — |
-| inspect | step 1: goto / | 5 | 200 | 482–744 ms | 3182–6402 ms | — |
+| inspect | step 1: goto / | 6 | 200 | 388–744 ms | 3182–6402 ms | — |
 | inspect | step 7: goto / | 2 | 200 | 357–470 ms | 1729–3866 ms | — |
 | inspect | step 34: goto /marketplace/ | 1 | 200 | 492 ms | 4880 ms | — |
 | inspect | step 38: goto /marketplace/ | 1 | 200 | 479 ms | 1899 ms | — |

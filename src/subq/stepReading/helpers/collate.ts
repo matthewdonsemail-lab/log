@@ -1,6 +1,6 @@
 import { exchangeTimeline } from './exchangeLines'
 import { MAX_PAGE_TEXT_CHARS, MAX_STATE_CHARS } from '../types'
-import type { EarlierStep, StepAccount, StepBundle, StepExchange, StepTaken } from '../types'
+import type { EarlierStep, GoalSoFar, StepAccount, StepBundle, StepExchange, StepTaken } from '../types'
 
 export interface CollateInput {
   goal: string | null
@@ -10,6 +10,18 @@ export interface CollateInput {
   pageText: string
   exchanges: StepExchange[]
   earlier: EarlierStep[]
+  since?: string | null
+}
+
+export function savedOf(exchanges: StepExchange[]): string[] {
+  return exchanges.filter((e) => e.kind === 'api' && /mutation$/i.test(e.name) && e.status >= 200 && e.status < 300 && !e.errors.length).map((e) => e.name)
+}
+
+export function goalSoFarOf(earlier: EarlierStep[], exchanges: StepExchange[], since: string | null = null): GoalSoFar {
+  const steps = earlier.filter((s) => s.forGoal)
+  const saved: Record<string, number> = {}
+  for (const name of [...steps.flatMap((s) => s.saved), ...savedOf(exchanges)]) saved[name] = (saved[name] ?? 0) + 1
+  return { since, steps: steps.length + 1, saved }
 }
 
 export function bundleOf(input: CollateInput): StepBundle {
@@ -22,7 +34,8 @@ export function bundleOf(input: CollateInput): StepBundle {
     pageText: input.pageText.length > MAX_PAGE_TEXT_CHARS ? `${input.pageText.slice(0, MAX_PAGE_TEXT_CHARS)}… (${input.pageText.length} chars)` : input.pageText,
     exchanges: input.exchanges,
     newRequests,
-    earlier: input.earlier
+    earlier: input.earlier,
+    goalSoFar: goalSoFarOf(input.earlier, input.exchanges, input.since ?? null)
   }
   return fitBundle(bundle)
 }
@@ -50,7 +63,7 @@ export function fitBundle(bundle: StepBundle, limit = MAX_STATE_CHARS): StepBund
 
 export function stateOf(bundle: StepBundle): Record<string, unknown> {
   return {
-    whatThisIs: 'One step of an inspect session: an agent drives a browser on a real account a step at a time to learn how the platform works. Read the internal API calls the step triggered together with the page, the account, what we did and the earlier steps.',
+    whatThisIs: 'One step of an inspect session: an agent drives a browser on a real account a step at a time to learn how the platform works. Read the internal API calls the step triggered together with the page, the account, what we did and the earlier steps. The goal is judged across the whole session since it was set: goalSoFar counts what the platform saved (its mutations that answered OK) in this step and every earlier step for the goal.',
     goal: bundle.goal ?? '(none given)',
     account: bundle.account,
     whatWeDid: bundle.taken,
@@ -59,6 +72,7 @@ export function stateOf(bundle: StepBundle): Record<string, unknown> {
     internalApiTimeline: exchangeTimeline(bundle.exchanges, 12, 24),
     exchanges: bundle.exchanges,
     pageText: bundle.pageText,
-    earlierSteps: bundle.earlier
+    earlierSteps: bundle.earlier,
+    goalSoFar: bundle.goalSoFar
   }
 }

@@ -13,7 +13,7 @@
 | Called from | `CometHovercardQueryRenderer.react` |
 | rea | `ev_95529720f6ba751fe065571b8fd81d09f67f7e4539594c0761343470652ec320` |
 
-Seen 193 time(s) in 14 run(s).
+Seen 195 time(s) in 15 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -94,6 +94,8 @@ Seen 193 time(s) in 14 run(s).
 | inspect | scroll: +484px in 11 wheel steps, 421 ms | 1 | 200 | 738 ms | 7207 ms | — |
 | inspect | step 49: scrollIn heading "…" 2-3 x 300-500px | 3 | 200 | 673–911 ms | 319–2152 ms | — |
 | inspect | step 7: goto / | 10 | 200 | 513–1502 ms | 5103–74798 ms | — |
+| inspect | post: "…", 123 words, 0 image(s), scrolled 53 px | 1 | 200 | 18115 ms | 70717 ms | — |
+| inspect | step 5: likePost Like | 1 | 200 | 693 ms | 1320 ms | — |
 
 <!-- facts:end -->
 

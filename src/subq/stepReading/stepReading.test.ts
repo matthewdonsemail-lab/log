@@ -7,8 +7,8 @@ import { readingAt } from '../../browser/inspect/helpers/browserStates'
 import { runCli } from '../../cli/runner/index'
 import { marketplaceFixture } from '../../twenty/graphql/helpers/marketplaceFixture'
 import type { DecisionRequest, DecisionResponse } from '../decisions/types'
-import { bundleOf, decisionOf, DOCUMENT_FIELDS, documentAnswerOf, exchangesOf, exchangeTimeline, fitBundle, loudText, questionsOf, readStep, SUBQ_STEP_MODEL } from './index'
-import type { StepAccount, StepBundle, StepTaken } from './index'
+import { bundleOf, decisionOf, DOCUMENT_FIELDS, documentAnswerOf, exchangesOf, exchangeTimeline, fitBundle, goalSoFarOf, loudText, questionsOf, readStep, stateOf, SUBQ_STEP_MODEL } from './index'
+import type { EarlierStep, StepAccount, StepBundle, StepExchange, StepTaken } from './index'
 
 const T0 = Date.parse('2026-10-22T10:55:16.000Z')
 const at = (ms: number) => new Date(T0 + ms).toISOString()
@@ -146,6 +146,26 @@ const ANSWERS: DecisionResponse = {
   usage: { input_tokens: 1234, output_tokens: 0 }
 }
 
+describe('a goal judged across the session, not one step', () => {
+  const like = (status: number): StepExchange => ({ offsetMs: 7240, kind: 'api', name: 'CometUFIFeedbackReactMutation', method: 'POST', host: 'www.facebook.com', path: '/api/graphql/', status, ms: 1024, sent: {}, answer: {}, errors: [], known: true })
+  const earlier = (step: string, saved: string[], forGoal = true): EarlierStep => ({ step, action: 'likePost', args: [], ok: true, url: 'https://www.facebook.com/', ms: 5000, requests: [], meaning: null, forGoal, saved })
+
+  test('what the platform saved is counted over every step since the goal was set, this one included, and only mutations that answered OK', () => {
+    const soFar = goalSoFarOf([earlier('01_goto', ['CometUFIFeedbackReactMutation'], false), earlier('03_likepostLike', ['CometUFIFeedbackReactMutation']), earlier('04_nextpost', [])], [like(200), like(500)], '01_goto')
+    expect(soFar).toEqual({ since: '01_goto', steps: 3, saved: { CometUFIFeedbackReactMutation: 2 } })
+  })
+
+  test('SubQ is asked whether the whole goal is reached by now, with the count in its state', () => {
+    const goal = 'Like 2 to 3 posts in the home feed'
+    const bundle = bundleOf({ goal, account: ACCOUNT, taken: TAKEN, pageState: null, pageText: '', exchanges: [like(200)], earlier: [earlier('03_likepostLike', ['CometUFIFeedbackReactMutation'])] })
+    expect(bundle.goalSoFar.saved).toEqual({ CometUFIFeedbackReactMutation: 2 })
+    expect(stateOf(bundle).goalSoFar).toEqual(bundle.goalSoFar)
+    const asked = questionsOf(bundle).questions.goalMet!.instructions
+    expect(asked).toContain('every earlier step since the goal was set')
+    expect(asked).toContain('needs that many saved in total')
+  })
+})
+
 describe('reading a recorded step (log inspect read, and every inspect do)', () => {
   test('an undecided step is collated and read by SubQ, and said loudly with the data that went in and out', async () => {
     const { root, folder } = recordedStep()
@@ -159,7 +179,7 @@ describe('reading a recorded step (log inspect read, and every inspect do)', () 
       expect(state.goal).toBe(GOAL)
       expect(state.account).toMatchObject({ homeCountry: 'US', exit: 'exit 24.229.136.140 in US (America/New_York), proxy to Facebook 2218 ms' })
       expect(state.whatWeDid).toMatchObject({ action: 'setLocation', args: ['Bethlehem, PA'], ms: 28656, mouse: { moves: 1, idleMoves: 2 } })
-      expect(state.earlierSteps).toEqual([{ step: '03_selllocation', action: 'sellLocation', args: [], ok: true, url: 'https://www.facebook.com/marketplace/create/item', ms: 5484, requests: ['POST 200 /ajax/bnzai'], meaning: null }])
+      expect(state.earlierSteps).toEqual([{ step: '03_selllocation', action: 'sellLocation', args: [], ok: true, url: 'https://www.facebook.com/marketplace/create/item', ms: 5484, requests: ['POST 200 /ajax/bnzai'], meaning: null, forGoal: true, saved: [] }])
       expect(String(state.pageText)).toContain('textbox "Location": <redacted>')
       expect((state.internalApiTimeline as string[]).join('\n')).toContain('Bethlehem, West Bank')
       expect(reading.meaning[0]).toBe('meaning: wrongResult: The step ran but the result is wrong for the goal or the account (93%)')

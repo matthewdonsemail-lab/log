@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_d330b69a13af509d9a5f8468fc4f4211499333f41ee6812cde51a998ece4ee3e` |
+| rea | `ev_b28b4ec5ab6ef6507972e3934e96a7fb692ee3810ca128a7efb0150c71c52588` |
 
-Seen 636 time(s) in 28 run(s).
+Seen 650 time(s) in 29 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -214,6 +214,8 @@ Seen 636 time(s) in 28 run(s).
 | inspect | step 5: goto /marketplace/you/selling | 3 | 200 | 345–1133 ms | 22–7892 ms | — |
 | inspect | step 6: goto /marketplace/inbox | 30 | 200 | 353–2153 ms | 46–1715204 ms | — |
 | inspect | step 2: goto /marketplace/ | 1 | 200 | 484 ms | 36511 ms | — |
+| inspect | post: "…", 123 words, 0 image(s), scrolled 53 px | 12 | 200 | 1126–20726 ms | 9012–99549 ms | — |
+| inspect | step 3: likePost Like | 2 | 200 | 352–669 ms | 3775–25195 ms | — |
 
 <!-- facts:end -->
 

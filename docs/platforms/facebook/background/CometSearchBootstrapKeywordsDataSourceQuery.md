@@ -13,7 +13,7 @@
 | Called from | `CometSearchBootstrapKeywordsDataSource.query` |
 | rea | `ev_5cb62e3a7cd21788732d77960d11bcea0adc8730aaaa23e6a78c097c1c44c7a6` |
 
-Seen 95 time(s) in 24 run(s).
+Seen 96 time(s) in 25 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -34,7 +34,7 @@ Seen 95 time(s) in 24 run(s).
 | inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 414 ms | 6533 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 556 ms | 7197 ms | — |
 | inspect | step 1: goto /groups/<id> | 1 | 200 | 364 ms | 7210 ms | — |
-| inspect | step 1: goto / | 5 | 200 | 458–534 ms | 6491–8720 ms | — |
+| inspect | step 1: goto / | 6 | 200 | 458–535 ms | 4876–8720 ms | — |
 | inspect | step 7: goto / | 2 | 200 | 378–466 ms | 4918–5435 ms | — |
 | inspect | step 34: goto /marketplace/ | 1 | 200 | 495 ms | 5841 ms | — |
 | inspect | step 38: goto /marketplace/ | 1 | 200 | 813 ms | 7818 ms | — |

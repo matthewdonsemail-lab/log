@@ -13,7 +13,7 @@
 | Called from | `RTWebCallBlockSettingHooks` |
 | rea | `ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6` |
 
-Seen 96 time(s) in 25 run(s).
+Seen 97 time(s) in 26 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -34,7 +34,7 @@ Seen 96 time(s) in 25 run(s).
 | inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 380 ms | 6536 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 506 ms | 6062 ms | — |
 | inspect | step 1: goto /groups/<id> | 1 | 200 | 418 ms | 7356 ms | — |
-| inspect | step 1: goto / | 5 | 200 | 468–542 ms | 7022–9299 ms | — |
+| inspect | step 1: goto / | 6 | 200 | 468–542 ms | 6123–9299 ms | — |
 | inspect | step 7: goto / | 2 | 200 | 406–480 ms | 4926–5645 ms | — |
 | inspect | step 34: goto /marketplace/ | 1 | 200 | 583 ms | 6056 ms | — |
 | inspect | step 38: goto /marketplace/ | 1 | 200 | 799 ms | 7823 ms | — |

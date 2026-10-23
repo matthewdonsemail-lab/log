@@ -13,7 +13,7 @@
 | Called from | — |
 | rea | `ev_65fd97c211aa021a0baa4acbf28a21563c74f299d7c49a15653437eb50de6bef` |
 
-Seen 129 time(s) in 13 run(s).
+Seen 130 time(s) in 14 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -113,6 +113,7 @@ Seen 129 time(s) in 13 run(s).
 | inspect | step 88: clickRole button "…" | 1 | 200 | 688 ms | 2174 ms | — |
 | inspect | step 92: clickRole button "…" | 1 | 200 | 705 ms | 1268 ms | — |
 | inspect | step 96: clickRole button "…" | 1 | 200 | 1387 ms | 1662 ms | — |
+| inspect | step 1: goto / | 1 | 200 | 361 ms | 9079 ms | — |
 
 <!-- facts:end -->
 

@@ -5476,3 +5476,37 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the Facebook request docs were rebuilt with the 2026-10-23 Bethlehem inspect run (`log facebook capture --docs`): every request's facts gain that run's rows, rea read 5 new slices, and `FriendingCometFriendRequestsRootQuery` (the home page's friend requests panel, first seen on the home feed step) has its doc and reasoning.
 Why: the pre-push docs gate refused the push because that run was newer than the docs (rule 27).
 Checked: `bun run check:facebookClientDocs`: 217 requests documented, rea read every GraphQL slice.
+
+## 2026-10-23 05:24Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometNewsFeedPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometUFIFeedbackReactMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/FeedComposerCometRootQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `skills/inspect/SKILL.md`: edited
+- `src/cli/inspect/index.ts`: changed function readInspectStep
+- `src/subq/stepReading/client.ts`: changed interface ReadStepOptions, function earlierOf, function readStep
+- `src/subq/stepReading/helpers/collate.ts`: added function savedOf, function goalSoFarOf · changed interface CollateInput, function bundleOf, function stateOf
+- `src/subq/stepReading/helpers/questions.ts`: changed function coreQuestions
+- `src/subq/stepReading/stepReading.test.ts`: added test "what the platform saved is counted over every step since the goal was set, this one included, and only mutations that answered OK", test "SubQ is asked whether the whole goal is reached by now, with the count in its state" · changed test "an undecided step is collated and read by SubQ, and said loudly with the data that went in and out"
+- `src/subq/stepReading/types.ts`: added interface GoalSoFar · changed interface EarlierStep, interface StepBundle
+
+What changed: SubQ judges an inspect goal across the session, not one step. Each earlier step it is given now carries what the platform saved in it (`saved`: mutations that answered 2xx with no errors, `savedOf`) and whether it counts for the goal (`forGoal`, after the goal was set); the bundle and SubQ's state carry `goalSoFar` (`goalSoFarOf`: steps since the goal and each saved mutation counted, this step included); and the goal question asks whether the whole goal is reached by now, a goal for a number of things needing that many saved in total. `readStep` takes the goal's `since` from `inspect do`. The inspect skill says so, and the Facebook request docs take the likes run.
+Why: matt: "make SubQ judge a goal across the session's steps (e.g. count the saved likes so far), not one step alone." On Bethlehem's likes run (20261023T051540) the goal "Like 2 to 3 posts" was said reached at the first like (53%), because SubQ was asked whether that one step reached it.
+Checked: new tests (the count over steps since the goal, only mutations that answered OK; SubQ's question and state). Read again by SubQ on the likes run: step 03 (1 like saved) now "not reached" (100%), step 05 (2 saved) "reached" (78%). `bun run check` passes with 879 tests; the docs gate passes.

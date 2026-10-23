@@ -13,7 +13,7 @@
 | Called from | `useMWEncryptedBackupsFetchBackupIdsV2` |
 | rea | `ev_16df7daca80a72c8f44b7a489690336b7def96e564429f0639a122f48023372a` |
 
-Seen 96 time(s) in 25 run(s).
+Seen 97 time(s) in 26 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -34,7 +34,7 @@ Seen 96 time(s) in 25 run(s).
 | inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 384 ms | 6521 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 352 ms | 5801 ms | — |
 | inspect | step 1: goto /groups/<id> | 1 | 200 | 352 ms | 7118 ms | — |
-| inspect | step 1: goto / | 5 | 200 | 423–552 ms | 7000–9249 ms | — |
+| inspect | step 1: goto / | 6 | 200 | 418–552 ms | 6090–9249 ms | — |
 | inspect | step 7: goto / | 2 | 200 | 367–454 ms | 4907–5382 ms | — |
 | inspect | step 34: goto /marketplace/ | 1 | 200 | 507 ms | 6008 ms | — |
 | inspect | step 38: goto /marketplace/ | 1 | 200 | 587 ms | 7809 ms | — |

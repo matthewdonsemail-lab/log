@@ -13,7 +13,7 @@
 | Called from | `usePseudoBlockedUserInterstitial` |
 | rea | `ev_4f0f59bc7d5ff4c02ef9f2aba85fc9de893084a7a8fbdf3f1627ce6c1c3456fe` |
 
-Seen 116 time(s) in 25 run(s).
+Seen 117 time(s) in 26 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -44,7 +44,7 @@ Seen 116 time(s) in 25 run(s).
 | inspect | step 42: clickRole tab "…" | 1 | 200 | 1352 ms | 5136 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 506 ms | 6059 ms | — |
 | inspect | step 1: goto /groups/<id> | 2 | 200 | 348–386 ms | 5609–6614 ms | — |
-| inspect | step 1: goto / | 5 | 200 | 477–594 ms | 6589–8804 ms | — |
+| inspect | step 1: goto / | 6 | 200 | 477–594 ms | 5761–8804 ms | — |
 | inspect | step 7: goto / | 2 | 200 | 362–453 ms | 4922–4944 ms | — |
 | inspect | step 34: goto /marketplace/ | 1 | 200 | 471 ms | 6052 ms | — |
 | inspect | scroll: -577px in 13 wheel steps, 859 ms | 1 | 200 | 470 ms | 3584 ms | — |

@@ -13,7 +13,7 @@
 | Called from | `CometUFIFeedbackReactMutation` |
 | rea | `ev_a524d63aa67afda368f84d97715d9e407ac62c8b9888f10a4ba1af4a0c4a24ba` |
 
-Seen 8 time(s) in 3 run(s).
+Seen 10 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -25,6 +25,8 @@ Seen 8 time(s) in 3 run(s).
 | inspect | step 45: clickRole button "…" | 1 | 200 | 1424 ms | 1325 ms | — |
 | inspect | step 61: clickRole button "…" | 1 | 200 | 1009 ms | 1075 ms | — |
 | inspect | step 87: clickRole button "…" | 1 | 200 | 1210 ms | 1322 ms | — |
+| inspect | step 3: likePost Like | 1 | 200 | 1451 ms | 2203 ms | — |
+| inspect | step 5: likePost Like | 1 | 200 | 1024 ms | 1133 ms | — |
 
 <!-- facts:end -->
 

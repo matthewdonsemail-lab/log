@@ -13,7 +13,7 @@
 | Called from | `OhaiWebPublicKeyConfig` |
 | rea | `ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013` |
 
-Seen 96 time(s) in 25 run(s).
+Seen 97 time(s) in 26 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -34,7 +34,7 @@ Seen 96 time(s) in 25 run(s).
 | inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 540 ms | 5772 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 349 ms | 5502 ms | — |
 | inspect | step 1: goto /groups/<id> | 1 | 200 | 354 ms | 6943 ms | — |
-| inspect | step 1: goto / | 5 | 200 | 467–582 ms | 6556–8723 ms | — |
+| inspect | step 1: goto / | 6 | 200 | 467–582 ms | 5708–8723 ms | — |
 | inspect | step 7: goto / | 2 | 200 | 444–580 ms | 4381–4965 ms | — |
 | inspect | step 34: goto /marketplace/ | 1 | 200 | 515 ms | 5926 ms | — |
 | inspect | step 38: goto /marketplace/ | 1 | 200 | 846 ms | 7746 ms | — |

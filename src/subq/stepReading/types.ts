@@ -69,6 +69,14 @@ export interface EarlierStep {
   ms: number | null
   requests: string[]
   meaning: string | null
+  forGoal: boolean
+  saved: string[]
+}
+
+export interface GoalSoFar {
+  since: string | null
+  steps: number
+  saved: Record<string, number>
 }
 
 export interface StepBundle {
@@ -80,6 +88,7 @@ export interface StepBundle {
   exchanges: StepExchange[]
   newRequests: string[]
   earlier: EarlierStep[]
+  goalSoFar: GoalSoFar
 }
 
 export type StepDecision =

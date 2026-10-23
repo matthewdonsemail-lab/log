@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_d330b69a13af509d9a5f8468fc4f4211499333f41ee6812cde51a998ece4ee3e` |
+| rea | `ev_b28b4ec5ab6ef6507972e3934e96a7fb692ee3810ca128a7efb0150c71c52588` |
 
-Seen 802 time(s) in 26 run(s).
+Seen 812 time(s) in 27 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -89,7 +89,7 @@ Seen 802 time(s) in 26 run(s).
 | inspect | scroll: +654px in 15 wheel steps, 1219 ms | 1 | 200 | 332 ms | 3326 ms | — |
 | inspect | scroll: +799px in 19 wheel steps, 1313 ms | 2 | 200 | 346–352 ms | 7195–9905 ms | — |
 | inspect | scroll: +698px in 17 wheel steps, 984 ms | 1 | 200 | 1392 ms | 14910 ms | — |
-| inspect | step 1: goto / | 13 | 200 | 417–734 ms | 5971–18635 ms | — |
+| inspect | step 1: goto / | 18 | 200 | 356–1081 ms | 5971–22509 ms | — |
 | inspect | post: "…", 103 words, 0 image(s), scrolled 58 px | 1 | 200 | 495 ms | 6833 ms | — |
 | inspect | step 4: nextPost | 4 | 200 | 580–964 ms | 1664–2924 ms | — |
 | inspect | post: "…", 46 words, 1 image(s), scrolled 1584 px | 2 | 200 | 491–514 ms | 375–607 ms | — |
@@ -207,6 +207,8 @@ Seen 802 time(s) in 26 run(s).
 | inspect | step 2: goto /marketplace/ | 7 | 200 | 356–879 ms | 6455–44933 ms | — |
 | inspect | step 4: goto /marketplace/you/selling | 4 | 200 | 352–425 ms | 5942–22597 ms | — |
 | inspect | step 5: goto /messages/ | 1 | 200 | 358 ms | 10778 ms | — |
+| inspect | post: "…", 123 words, 0 image(s), scrolled 53 px | 4 | 200 | 340–18806 ms | 18892–80231 ms | — |
+| inspect | step 5: likePost Like | 1 | 200 | 380 ms | 1366 ms | — |
 
 <!-- facts:end -->
 

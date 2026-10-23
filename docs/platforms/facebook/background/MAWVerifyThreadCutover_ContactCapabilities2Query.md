@@ -13,7 +13,7 @@
 | Called from | `MAWVerifyThreadCutover` |
 | rea | `ev_2ef4fcf81840e4c44dfd19b7c86b9e3e65429109c06595cfc96262bcea9f2bc2` |
 
-Seen 95 time(s) in 24 run(s).
+Seen 96 time(s) in 25 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -33,7 +33,7 @@ Seen 95 time(s) in 24 run(s).
 | inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 363 ms | 6445 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 357 ms | 7132 ms | — |
 | inspect | step 1: goto /groups/<id> | 1 | 200 | 358 ms | 7157 ms | — |
-| inspect | step 1: goto / | 5 | 200 | 501–553 ms | 6626–8849 ms | — |
+| inspect | step 1: goto / | 6 | 200 | 454–553 ms | 5800–8849 ms | — |
 | inspect | step 7: goto / | 2 | 200 | 363–500 ms | 4963–5209 ms | — |
 | inspect | step 34: goto /marketplace/ | 1 | 200 | 524 ms | 6129 ms | — |
 | inspect | step 38: goto /marketplace/ | 1 | 200 | 734 ms | 7900 ms | — |
