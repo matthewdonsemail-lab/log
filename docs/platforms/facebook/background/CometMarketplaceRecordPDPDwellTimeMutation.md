@@ -13,12 +13,12 @@
 | Called from | `CometMarketplaceRecordPDPDwellTimeMutation` |
 | rea | `ev_7b946545027e3755bb8b1699090bf3da00216eac5a3c02a5026c1499fd521772` |
 
-Seen 8 time(s) in 4 run(s).
+Seen 13 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| warmup | openAny: read /marketplace/item/<id>/ | 5 | 200 | 446–686 ms | 73–93 ms | — |
-| inspect | openAny: read /marketplace/item/<id>/ | 3 | 200 | 588–893 ms | 73–112 ms | — |
+| warmup | openAny: read /marketplace/item/<id>/ | 8 | 200 | 432–686 ms | 70–93 ms | — |
+| inspect | openAny: read /marketplace/item/<id>/ | 5 | 200 | 448–893 ms | 73–112 ms | — |
 
 <!-- facts:end -->
 

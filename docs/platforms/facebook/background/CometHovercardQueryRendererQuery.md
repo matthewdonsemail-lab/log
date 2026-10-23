@@ -13,11 +13,11 @@
 | Called from | `CometHovercardQueryRenderer.react` |
 | rea | `ev_95529720f6ba751fe065571b8fd81d09f67f7e4539594c0761343470652ec320` |
 
-Seen 183 time(s) in 13 run(s).
+Seen 198 time(s) in 16 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| warmup | step 1: goto / | 5 | 200 | 544–2325 ms | 11959–22899 ms | — |
+| warmup | step 1: goto / | 6 | 200 | 544–2325 ms | 11959–22899 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 27 | 200 | 497–1173 ms | 6069–23128 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 656 ms | 2 | 200 | 664–745 ms | 7745–11384 ms | — |
 | inspect | scroll: +700px in 16 wheel steps, 859 ms | 1 | 200 | 680 ms | 3065 ms | — |
@@ -93,6 +93,11 @@ Seen 183 time(s) in 13 run(s).
 | inspect | step 17: scrollIn heading "…" 2-3 x 300-500px | 2 | 200 | 781–879 ms | 383–857 ms | — |
 | inspect | scroll: +484px in 11 wheel steps, 421 ms | 1 | 200 | 738 ms | 7207 ms | — |
 | inspect | step 49: scrollIn heading "…" 2-3 x 300-500px | 3 | 200 | 673–911 ms | 319–2152 ms | — |
+| inspect | step 7: goto / | 10 | 200 | 513–1502 ms | 5103–74798 ms | — |
+| inspect | post: "…", 123 words, 0 image(s), scrolled 53 px | 1 | 200 | 18115 ms | 70717 ms | — |
+| inspect | step 5: likePost Like | 1 | 200 | 693 ms | 1320 ms | — |
+| warmup | step 3: scroll 4-7 x 300-600px | 1 | 200 | 986 ms | 99 ms | — |
+| warmup | scroll: +535px in 12 wheel steps, 969 ms | 1 | 200 | 592 ms | 2123 ms | — |
 
 <!-- facts:end -->
 

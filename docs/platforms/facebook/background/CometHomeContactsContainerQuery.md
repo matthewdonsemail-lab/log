@@ -13,14 +13,14 @@
 | Called from | `CometHomeContactsContainer.react` |
 | rea | `ev_1382c6aaad8caec306d87c00b9b241ef1e74ac91f09082d75f7694f794713881` |
 
-Seen 19 time(s) in 10 run(s).
+Seen 22 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | step 7: goto /marketplace/ | 1 | 200 | 654 ms | 13575 ms | A server error field_exception occured. Check server logs for details. |
 | warmup | step 15: goto /marketplace/ | 1 | 200 | 682 ms | 12042 ms | A server error field_exception occured. Check server logs for details. |
 | warmup | step 4: goto /marketplace/ | 1 | 200 | 980 ms | 7074 ms | A server error field_exception occured. Check server logs for details. |
-| warmup | step 11: goto /marketplace/ | 1 | 200 | 625 ms | 8615 ms | A server error field_exception occured. Check server logs for details. |
+| warmup | step 11: goto /marketplace/ | 2 | 200 | 625–747 ms | 8615–15112 ms | A server error field_exception occured. Check server logs for details. |
 | warmup | step 17: goto /marketplace/ | 1 | 200 | 566 ms | 12051 ms | A server error field_exception occured. Check server logs for details. |
 | inspect | step 24: clickRole button "…" | 1 | 200 | 609 ms | 1258011 ms | A server error field_exception occured. Check server logs for details. |
 | inspect | step 3: clickRole button "…" | 1 | 200 | 623 ms | 5487 ms | — |
@@ -35,6 +35,8 @@ Seen 19 time(s) in 10 run(s).
 | inspect | step 3: goto /marketplace/inbox | 1 | 200 | 1670 ms | 59468 ms | A server error field_exception occured. Check server logs for details. |
 | inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 2678 ms | 11555 ms | A server error field_exception occured. Check server logs for details. |
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 950 ms | 1708112 ms | A server error field_exception occured. Check server logs for details. |
+| inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 829 ms | 15219 ms | A server error field_exception occured. Check server logs for details. |
+| warmup | step 14: goto /marketplace/ | 1 | 200 | 648 ms | 7202 ms | A server error field_exception occured. Check server logs for details. |
 
 <!-- facts:end -->
 

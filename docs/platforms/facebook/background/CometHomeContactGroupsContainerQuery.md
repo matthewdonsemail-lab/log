@@ -13,14 +13,14 @@
 | Called from | `CometHomeContactGroupsContainer.react` |
 | rea | `ev_afbb77778bb0832d0311179d99af4e1015fdbeadac3bded27db6e5939b581138` |
 
-Seen 19 time(s) in 10 run(s).
+Seen 22 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | step 7: goto /marketplace/ | 1 | 200 | 786 ms | 13574 ms | — |
 | warmup | step 15: goto /marketplace/ | 1 | 200 | 826 ms | 12041 ms | — |
 | warmup | step 4: goto /marketplace/ | 1 | 200 | 983 ms | 7073 ms | — |
-| warmup | step 11: goto /marketplace/ | 1 | 200 | 786 ms | 8614 ms | — |
+| warmup | step 11: goto /marketplace/ | 2 | 200 | 786–970 ms | 8614–15112 ms | — |
 | warmup | step 17: goto /marketplace/ | 1 | 200 | 736 ms | 12050 ms | — |
 | inspect | step 24: clickRole button "…" | 1 | 200 | 807 ms | 1258010 ms | — |
 | inspect | step 3: clickRole button "…" | 1 | 200 | 584 ms | 5485 ms | — |
@@ -35,6 +35,8 @@ Seen 19 time(s) in 10 run(s).
 | inspect | step 3: goto /marketplace/inbox | 1 | 200 | 1626 ms | 59466 ms | — |
 | inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 2664 ms | 11553 ms | — |
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 1122 ms | 1708110 ms | — |
+| inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 877 ms | 15218 ms | — |
+| warmup | step 14: goto /marketplace/ | 1 | 200 | 787 ms | 7200 ms | — |
 
 <!-- facts:end -->
 

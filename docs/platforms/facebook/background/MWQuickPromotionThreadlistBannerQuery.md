@@ -11,15 +11,17 @@
 | Sends | — |
 | Reads | `viewer.eligible_promotions` |
 | Called from | `MWQuickPromotionThreadlistBanner.react` |
-| rea | `ev_02409c15c4b121aaad55f1d4e5f805ab90c21a37abd6b11190448c8fa0d209e1` |
+| rea | `ev_53d322ba1b4a1e349ff941bf53186d5d9121e16f87cd8d7e1191528918759b00` |
 
-Seen 4 time(s) in 4 run(s).
+Seen 6 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | step 25: goto /messages/ | 2 | 200 | 361–379 ms | 3052–4257 ms | — |
 | inspect | step 1: goto /messages/ | 1 | 200 | 356 ms | 3595 ms | — |
 | inspect | step 3: goto /marketplace/inbox | 1 | 200 | 436 ms | 1355898 ms | — |
+| inspect | step 5: goto /messages/ | 1 | 200 | 399 ms | 10078 ms | — |
+| warmup | step 5: goto /messages/ | 1 | 200 | 394 ms | 6212 ms | — |
 
 <!-- facts:end -->
 

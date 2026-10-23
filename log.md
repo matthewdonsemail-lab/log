@@ -5339,3 +5339,129 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: rule 73 is the number one rule of the stack: always read Facebook's internal API answers. They decide what is relevant and when, and are the deterministic factor of the system. Every browser step reads the answers it triggers and the requests it sent, keeps them past the prune, and decides on them, never on a page loading, a timer or the step having run. It opens AGENTS.md as "Rule one", above the platform-first section, and has its dated line under the hard rules. In the MCP, `SERVER_INSTRUCTIONS` puts it first (the other principles move down one, rule 30 is now second), `RULES_REVIEWED_THROUGH` is 73, and the commands that run browser steps cite it (inspect, flow, warmup, publish, check, host, connect, read, poll, join, profile, scan, status, watch). The README's rules column is rebuilt from them. The rule says plainly that it isn't enforced yet: every warm-up flow step has `expect: -`, and only request names are kept (#35).
 Why: matt: "It just never reads them" this here needs to become a rule "IT MUST ALWAYS READ THEM", the number one rule of all of the stack, the internal decision-making factor of what and when something is relevant, the deterministic factor of the system. On 2026-10-22 Bethlehem's warm-up loaded /marketplace/create/item twice; its HTML said sell_location Barranco, 15063, PE both times, the warm-up passed, and the prune deleted it.
 Checked: the agentRules test now checks that the first principle in the instructions is rule 73 and the second is rule 30, and that join's description cites 73. `bun run docs:build` rebuilt the README, and `bun run check` passes with 860 tests. Nothing in the browser code changed; the reads are #35's work.
+
+## 2026-10-23 11:54Z · feat/listingCreativeViewer
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `python/creative/__init__.py`: new file, no top-level declarations
+- `python/creative/photosViewer.html`: new file
+- `python/creative/renderListings.py`: added const LISTINGS, const FRAME_FILES, def frame_path, def camera_roll, def render_listing, def main
+- `python/creative/renderViewer.py`: added const HTML, const VIEWPORT, const SCALE, def render, def main
+- `skills.md`: edited
+- `skills/listingCreative/SKILL.md`: new file
+
+What changed: a listing's photos can now be shown the way they look on a phone. `python/creative/photosViewer.html` is the iOS 26 Photos viewer, matched to a screenshot of matt's phone: status bar, glass back and ••• buttons, a title pill with the town on top and the date and time under it, the photo fitted to the width on black, a filmstrip with the current photo larger, and the share, heart, info, edit and trash controls. Every face is scribbled out in red like the Markup pen: three overlapping passes at different angles, an uneven oval, the odd stroke past the edge, covering the whole head. `renderViewer.py` renders one photo into it at 1179 x 2556 (a real iPhone screenshot) through the system Edge headless; `renderListings.py` renders every `~/.logCli/listings/<creative>/` folder that has a `viewer.json` (place, and per frame the time, clock, battery and head boxes) into its `viewer/` folder, with a filmstrip built from the listings' own frames. The new `listingCreative` skill writes down the routine: the scene, action, before and after rubric SubQ read from 58 winner frames, generating each frame once on reapi gemini-3-pro-image with no text, logos or phone words in the prompt, and the viewer.
+Why: matt: the first generated frames had a Photos app screen drawn into them because the prompt said iPhone, so the phone has to be "made in an HTML file that we can then overlay", it has to look "exactly like the camera roll app" (from his screenshot), every photo has to "show the location", the face scribbles red and "a bit messier", then "that there is perfect now lets commit".
+Checked: `renderListings.py` rendered all 9 frames of garageOldMan, basementWoman and sideYardPile; the basement action frame matches the one matt approved pixel for pixel by eye, and every scribble was cropped and checked to cover its head. `bun run check:noComments`, `check:layout`, `check:naming` and `check:docs` pass. Not checked: `bun test` and the typecheck (no TypeScript changed), and SubQ hasn't scored the made frames yet.
+
+## 2026-10-23 12:00Z · feat/listingCreativeViewer
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `media/listings/basementWoman/images.jsonl`: new file
+- `media/listings/basementWoman/ios/action.jpg`: new file
+- `media/listings/basementWoman/ios/after.jpg`: new file
+- `media/listings/basementWoman/ios/before.jpg`: new file
+- `media/listings/basementWoman/iosScribbled/action.jpg`: new file
+- `media/listings/basementWoman/iosScribbled/after.jpg`: new file
+- `media/listings/basementWoman/iosScribbled/before.jpg`: new file
+- `media/listings/basementWoman/raw/action.jpg`: new file
+- `media/listings/basementWoman/raw/after.jpg`: new file
+- `media/listings/basementWoman/raw/before.jpg`: new file
+- `media/listings/basementWoman/viewer.json`: new file
+- `media/listings/garageOldMan/images.jsonl`: new file
+- `media/listings/garageOldMan/ios/action.jpg`: new file
+- `media/listings/garageOldMan/ios/after.jpg`: new file
+- `media/listings/garageOldMan/ios/before.jpg`: new file
+- `media/listings/garageOldMan/iosScribbled/action.jpg`: new file
+- `media/listings/garageOldMan/iosScribbled/after.jpg`: new file
+- `media/listings/garageOldMan/iosScribbled/before.jpg`: new file
+- `media/listings/garageOldMan/raw/action.jpg`: new file
+- `media/listings/garageOldMan/raw/after.jpg`: new file
+- `media/listings/garageOldMan/raw/before.jpg`: new file
+- `media/listings/garageOldMan/viewer.json`: new file
+- `media/listings/sideYardPile/images.jsonl`: new file
+- `media/listings/sideYardPile/ios/action.jpg`: new file
+- `media/listings/sideYardPile/ios/after.jpg`: new file
+- `media/listings/sideYardPile/ios/before.jpg`: new file
+- `media/listings/sideYardPile/iosScribbled/action.jpg`: new file
+- `media/listings/sideYardPile/iosScribbled/after.jpg`: new file
+- `media/listings/sideYardPile/iosScribbled/before.jpg`: new file
+- `media/listings/sideYardPile/raw/action.jpg`: new file
+- `media/listings/sideYardPile/raw/after.jpg`: new file
+- `media/listings/sideYardPile/raw/before.jpg`: new file
+- `media/listings/sideYardPile/viewer.json`: new file
+- `python/creative/renderListings.py`: added const OUTPUTS · changed const LISTINGS, def frame_path, def render_listing, def main
+- `python/creative/renderViewer.py`: changed def render
+- `skills/listingCreative/SKILL.md`: edited
+
+What changed: listing media now lives in the repo under `media/listings/<creative>/`, in three folders: `raw/` (the generated photos as they came back), `ios/` (each one inside the iPhone Photos viewer, no scribble) and `iosScribbled/` (the same, faces scribbled out in red), beside the folder's `images.jsonl` and `viewer.json`. `renderListings.py` reads `raw/` from there and writes both viewer folders as JPEG (quality 92; `renderViewer.py` writes JPEG when the output ends in .jpg). Only the three new creatives are in: garageOldMan, basementWoman and sideYardPile (before, action, after), the ones the research and SubQ's reading back; matt's earlier Bethlehem creative stays out of the repo. The `listingCreative` skill names the three folders.
+Why: matt: inside where the media is stored, have three directories, the iOS camera roll one, the iOS camera roll one without the scribble, and the plain one; "put them in the main repo not ./logCLI", and only the new creatives, "because we have the data to confirm what's good".
+Checked: `renderListings.py` rendered all 18 viewer frames (3 listings, ios and iosScribbled). `bun run check:naming` passes, and the pre-commit layout and noComments checks pass. The copies in `~/.logCli/listings` are left in place.
+
+## 2026-10-23 12:11Z · feat/listingCreativeViewer
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceRecordPDPDwellTimeMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSetProductItemSeenStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNewsFeedPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/FeedComposerCometRootQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MWQuickPromotionThreadlistBannerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPC2CMediaViewerWithImagesQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPRightColumnAdsQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYouSellingUpsellCardQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxBz.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/ajaxRouteDefinition.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useCIXLogMutation.md`: edited
+- `docs/platforms/facebook/background/useInstreamAdsHaloFetcherQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerAttributesQuery.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/profile/ProfileCometHeaderQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTopAppSectionQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoContainerQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoEntityDialogImplQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoSeenStateMutation.md`: edited
+
+What changed: `log facebook capture --docs` rebuilt the request docs from the 7 runs recorded on 2026-10-23 (one inspect, four warm-ups, two flows on 61594063207669): 49 requests across background, checkpoint, listingForm, login, profile and reels, with their timings and exchanges updated, and one new slice, `useInstreamAdsHaloFetcherQuery`, read by rea in 24 s.
+Why: the pre-push docs gate (rule 27) refused pushing feat/listingCreativeViewer because those 7 runs were newer than the docs; matt asked to push and open the PR.
+Checked: `node scripts/checks/checkFacebookClientDocs.mjs`: 216 requests documented, rea read every GraphQL slice, 0 still need their reasoning written.
+
+## 2026-10-23 12:12Z · feat/listingCreativeViewer
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `skills.md`: edited
+- `skills/nicheCreativeResearch/SKILL.md`: new file
+
+What changed: the new `nicheCreativeResearch` skill writes down the routine behind the junk removal creatives so it runs the same for any niche, industry or offer, in eight steps with junk removal as the worked example: 1 sources (what operators say gets messages, with quotes, numbers and an A/B/C evidence grade), 2 winner listings with signs they get answers, 3 `creatives.jsonl` (every winner image as one line), 4 SubQ's definition of a winner in that niche (contact sheets, at most 4 images a call), 5 the rubric (scene, action, before, after) and spin-outs of matt's concept scored against the winners, 6 generating each frame once, 7 phone media through `listingCreative`, 8 measuring messages per listing. It is indexed in `skills.md`.
+Why: matt: outline how we're exploring different industries and niches, how we built out the creatives, the research and the rubric, so we can analyse content, define what a winner is inside the niche, and use the same logic going into different offers and industries.
+Checked: every figure in it comes from this session's files (`RESEARCH/JUNK_REMOVAL_MARKETPLACE_SOURCES.md`, `creatives.jsonl`, `subqReading.json`, the generation logs). Pre-commit checks pass. Step 8 isn't done for junk removal yet and the skill says so.

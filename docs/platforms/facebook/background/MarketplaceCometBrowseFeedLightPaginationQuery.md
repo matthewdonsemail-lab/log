@@ -6,14 +6,14 @@
 | --- | --- |
 | Domain | background |
 | Kind | query |
-| doc_id | `27655263074150438` |
+| doc_id | `28980683528217734` |
 | Path | `/api/graphql/` |
 | Sends | `buyLocation`, `count`, `cursor`, `imageWidth`, `includePDPRelevantListings`, `mediaType`, `pdpListingId`, `radius`, `refinement`, `scale`, `sizing`, `useSDFPath`, `__relay_internal__pv__MarketplacePDPShouldShowLowerPriceItemsrelayprovider`, `__relay_internal__pv__CometMarketplaceShouldShowTopPicksStrikethroughrelayprovider`, `__relay_internal__pv__GHLShouldChangeMarketplaceSponsoredDataFieldNamerelayprovider`, `__relay_internal__pv__MarketplaceCometAdmodulerelayprovider`, `__relay_internal__pv__CometMarketplaceShouldShowFeedShippingIconrelayprovider` |
 | Reads | `...MarketplaceCometBrowseFeedLight_dataConnection` |
 | Called from | `MarketplaceCometBrowseFeedLight_dataConnection.graphql` |
 | rea | `ev_0b2cc9b99182cd7370ff9ff11c8ca2ec224c407d5dd02c15b1aa55916f4eead6` |
 
-Seen 4 time(s) in 3 run(s).
+Seen 5 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -21,6 +21,7 @@ Seen 4 time(s) in 3 run(s).
 | warmup | scroll: +301px in 7 wheel steps, 282 ms | 1 | 200 | 4779 ms | 3624 ms | — |
 | warmup | scroll: +408px in 11 wheel steps, 547 ms | 1 | 200 | 2702 ms | 3572 ms | — |
 | inspect | step 3: goto /marketplace/inbox | 1 | 200 | 2545 ms | 484794 ms | — |
+| warmup | openAny: read /marketplace/item/<id>/ | 1 | 200 | 2513 ms | 135 ms | — |
 
 <!-- facts:end -->
 

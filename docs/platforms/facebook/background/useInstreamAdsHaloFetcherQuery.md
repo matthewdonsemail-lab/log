@@ -11,9 +11,9 @@
 | Sends | `hostVideoId`, `instreamVideoAdType`, `isSponsorHostVideo`, `playerFormat`, `playerSubOrigin`, `storyIdentifier`, `tracePolicy` |
 | Reads | `scrubber.instream_video_ad_breaks`, `scrubber.post_roll_ad_break` |
 | Called from | `useInstreamAdsHaloFetcher` |
-| rea | `ev_bc80c702731406ede85a4bf0d106132ad8d196bcbbe7bed37ed3b4a3a542a982` |
+| rea | `ev_e7620b6c51456bc6b623bec8542b1055bc076498c78ecf1fa117dea1dd373822` |
 
-Seen 67 time(s) in 9 run(s).
+Seen 71 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -36,9 +36,9 @@ Seen 67 time(s) in 9 run(s).
 | inspect | step 5: nextPost | 1 | 200 | 673 ms | 2647 ms | — |
 | inspect | step 7: clickRole button "…" | 1 | 200 | 665 ms | 1255 ms | — |
 | inspect | step 9: clickRole button "…" | 1 | 200 | 527 ms | 1013 ms | — |
-| inspect | step 11: clickRole button "…" | 1 | 200 | 342 ms | 1407 ms | — |
+| inspect | step 11: clickRole button "…" | 2 | 200 | 342–415 ms | 1407–1944 ms | — |
 | inspect | step 12: clickRole button "…" | 1 | 200 | 745 ms | 763 ms | — |
-| inspect | step 13: clickRole button "…" | 1 | 200 | 975 ms | 745 ms | — |
+| inspect | step 13: clickRole button "…" | 2 | 200 | 549–975 ms | 745–1486 ms | — |
 | inspect | step 14: clickRole button "…" | 1 | 200 | 1050 ms | 691 ms | — |
 | inspect | step 18: clickRole button "…" | 1 | 200 | 500 ms | 764 ms | — |
 | inspect | step 19: clickRole button "…" | 2 | 200 | 373–518 ms | 979–2705 ms | — |
@@ -72,6 +72,8 @@ Seen 67 time(s) in 9 run(s).
 | inspect | step 65: clickRole button "…" | 1 | 200 | 2292 ms | 2895 ms | — |
 | inspect | step 76: clickRole button "…" | 1 | 200 | 380 ms | 2323 ms | — |
 | inspect | step 83: clickRole button "…" | 1 | 200 | 507 ms | 3016 ms | — |
+| inspect | step 4: clickRole button "…" | 1 | 200 | 444 ms | 2031 ms | — |
+| inspect | step 8: goto /reel/<id> | 1 | 200 | 406 ms | 6929 ms | — |
 
 <!-- facts:end -->
 

@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_65fd97c211aa021a0baa4acbf28a21563c74f299d7c49a15653437eb50de6bef` |
+| rea | `ev_d7f46c8cc1f3fbd68a82bc46b70630e2eb1283ceba774729ad62ba506a833c48` |
 
-Seen 129 time(s) in 13 run(s).
+Seen 142 time(s) in 16 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -44,18 +44,18 @@ Seen 129 time(s) in 13 run(s).
 | inspect | scroll: +700px in 16 wheel steps, 1140 ms | 3 | 200 | 480–1602 ms | 14780–20000 ms | — |
 | inspect | scroll: +378px in 10 wheel steps, 875 ms | 1 | 200 | 433 ms | 3650 ms | — |
 | inspect | scroll: +386px in 9 wheel steps, 469 ms | 1 | 200 | 562 ms | 3392 ms | — |
-| inspect | step 1: goto /reel/ | 3 | 200 | 329–508 ms | 4890–5941 ms | — |
+| inspect | step 1: goto /reel/ | 4 | 200 | 329–508 ms | 4890–9994 ms | — |
 | inspect | step 3: clickRole button "…" | 2 | 200 | 337–340 ms | 1363–1562 ms | — |
 | inspect | step 5: clickRole button "…" | 1 | 200 | 363 ms | 627 ms | — |
 | inspect | step 7: clickRole button "…" | 2 | 200 | 327–346 ms | 523–1213 ms | — |
-| inspect | step 9: clickRole button "…" | 2 | 200 | 350–401 ms | 723–1198 ms | — |
-| inspect | step 11: clickRole button "…" | 2 | 200 | 373–517 ms | 673–1659 ms | — |
+| inspect | step 9: clickRole button "…" | 3 | 200 | 350–509 ms | 723–1722 ms | — |
+| inspect | step 11: clickRole button "…" | 3 | 200 | 373–533 ms | 673–1659 ms | — |
 | inspect | step 12: clickRole button "…" | 1 | 200 | 455 ms | 574 ms | — |
-| inspect | step 13: clickRole button "…" | 1 | 200 | 1069 ms | 499 ms | — |
+| inspect | step 13: clickRole button "…" | 2 | 200 | 366–1069 ms | 499–1222 ms | — |
 | inspect | step 14: clickRole button "…" | 2 | 200 | 339–934 ms | 486–1067 ms | — |
 | inspect | step 16: clickRole button "…" | 2 | 200 | 342–1037 ms | 661–3073 ms | — |
 | inspect | step 18: clickRole button "…" | 2 | 200 | 315–341 ms | 546–2443 ms | — |
-| inspect | step 19: clickRole button "…" | 2 | 200 | 314–359 ms | 712–2536 ms | — |
+| inspect | step 19: clickRole button "…" | 3 | 200 | 314–538 ms | 712–2536 ms | — |
 | inspect | step 20: clickRole button "…" | 2 | 200 | 323–515 ms | 611–1475 ms | — |
 | inspect | step 21: clickRole button "…" | 1 | 200 | 819 ms | 506 ms | — |
 | inspect | step 23: clickRole button "…" | 1 | 200 | 557 ms | 532 ms | — |
@@ -95,7 +95,7 @@ Seen 129 time(s) in 13 run(s).
 | inspect | step 8: clickRole button "…" | 1 | 200 | 367 ms | 1684 ms | — |
 | inspect | step 10: clickRole button "…" | 1 | 200 | 410 ms | 1461 ms | — |
 | inspect | step 14: goto /reel/<id> | 1 | 200 | 781 ms | 5252 ms | — |
-| inspect | step 15: clickRole button "…" | 1 | 200 | 301 ms | 1247 ms | — |
+| inspect | step 15: clickRole button "…" | 2 | 200 | 301–458 ms | 1247–1426 ms | — |
 | inspect | step 23: goto /reel/<id> | 1 | 200 | 408 ms | 2356 ms | — |
 | inspect | step 24: clickRole button "…" | 1 | 200 | 326 ms | 1486 ms | — |
 | inspect | step 9: goto /reel/<id> | 1 | 200 | 612 ms | 7350 ms | — |
@@ -113,6 +113,13 @@ Seen 129 time(s) in 13 run(s).
 | inspect | step 88: clickRole button "…" | 1 | 200 | 688 ms | 2174 ms | — |
 | inspect | step 92: clickRole button "…" | 1 | 200 | 705 ms | 1268 ms | — |
 | inspect | step 96: clickRole button "…" | 1 | 200 | 1387 ms | 1662 ms | — |
+| inspect | step 1: goto / | 1 | 200 | 361 ms | 9079 ms | — |
+| warmup | step 1: goto / | 1 | 200 | 347 ms | 9074 ms | — |
+| warmup | scroll: +376px in 9 wheel steps, 906 ms | 1 | 200 | 518 ms | 3718 ms | — |
+| warmup | scroll: +981px in 24 wheel steps, 1672 ms | 1 | 200 | 358 ms | 5419 ms | — |
+| inspect | step 4: clickRole button "…" | 1 | 200 | 587 ms | 1287 ms | — |
+| inspect | step 8: goto /reel/<id> | 1 | 200 | 605 ms | 6445 ms | — |
+| inspect | step 17: clickRole button "…" | 1 | 200 | 356 ms | 1563 ms | — |
 
 <!-- facts:end -->
 

@@ -6,18 +6,18 @@
 | --- | --- |
 | Domain | background |
 | Kind | query |
-| doc_id | `29595904893343761` |
+| doc_id | `29004938205805573` |
 | Path | `/api/graphql/` |
 | Sends | `RELAY_INCREMENTAL_DELIVERY`, `clientQueryId`, `clientSession`, `connectionClass`, `count`, `cursor`, `experimentalValues`, `feedLocation`, `feedStyle`, `feedbackSource`, `focusCommentID`, `orderby`, `privacySelectorRenderLocation`, `recentVPVs`, `referringStoryRenderLocation`, `refreshMode`, `renderLocation`, `scale`, `shouldChangeBRSLabelFieldName`, `shouldObfuscateCategoryField`, `shouldUseBRSLabelFieldNameV1`, `shouldUseBRSLabelFieldNameV2`, `useDefaultActor`, `__relay_internal__pv__GHLShouldChangeSponsoredAuctionDistanceFieldNamerelayprovider`, `__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV1relayprovider`, `__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV2relayprovider`, `__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider`, `__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider`, `__relay_internal__pv__CometAdsSlotFillLoggingEnabledrelayprovider`, `__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider`, `__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider`, `__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider`, `__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider`, `__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider`, `__relay_internal__pv__IsWorkUserrelayprovider`, `__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider`, `__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider`, `__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider`, `__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider`, `__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider`, `__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider`, `__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider`, `__relay_internal__pv__IsMergQAPollsrelayprovider`, `__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider`, `__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider`, `__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider`, `__relay_internal__pv__CometUFIShareActionMigrationrelayprovider`, `__relay_internal__pv__CometUFISingleLineUFIrelayprovider`, `__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider`, `__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider`, `__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider`, `__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider`, `__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider`, `__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider` |
 | Reads | `viewer....CometNewsFeed_viewerConnection` |
 | Called from | `CometNewsFeed_viewerConnection.graphql` |
-| rea | `ev_a77df8791b332eab197a78214f9287bbde3c8c1aa376cf0027da20eb576b81e4` |
+| rea | `ev_47cd3cb116d108d9f1184684f455253912eaa99a8c93350c03d80543c9c9be38` |
 
-Seen 27 time(s) in 7 run(s).
+Seen 29 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| warmup | step 3: scroll 4-7 x 300-600px | 2 | 200 | 3058–3223 ms | 668–946 ms | — |
+| warmup | step 3: scroll 4-7 x 300-600px | 3 | 200 | 2548–3223 ms | 668–1575 ms | — |
 | warmup | scroll: +533px in 12 wheel steps, 734 ms | 1 | 200 | 1847 ms | 3224 ms | — |
 | warmup | scroll: +431px in 10 wheel steps, 422 ms | 1 | 200 | 1447 ms | 3473 ms | — |
 | inspect | post: "…", 103 words, 0 image(s), scrolled 58 px | 2 | 200 | 1521–1759 ms | 162–249 ms | — |
@@ -40,6 +40,7 @@ Seen 27 time(s) in 7 run(s).
 | inspect | step 4: nextPost | 1 | 200 | 2013 ms | 955 ms | — |
 | inspect | step 11: nextPost | 1 | 200 | 3464 ms | 1020 ms | — |
 | inspect | step 3: scroll 4-7 x 300-600px | 1 | 200 | 1708 ms | 964 ms | — |
+| inspect | post: "…", 123 words, 0 image(s), scrolled 53 px | 1 | 200 | 2937 ms | 302 ms | — |
 
 <!-- facts:end -->
 

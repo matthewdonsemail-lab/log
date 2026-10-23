@@ -13,11 +13,11 @@
 | Called from | `FBUnifiedVideoContainer_reels.graphql` |
 | rea | `ev_e0f416e05899b25acdf92584bfaa3ab0f3705c0b194d01f500c834c0c5a17a4d` |
 
-Seen 27 time(s) in 3 run(s).
+Seen 30 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 1: goto /reel/ | 3 | 200 | 1007–3015 ms | 2974–3857 ms | — |
+| inspect | step 1: goto /reel/ | 4 | 200 | 1007–3015 ms | 2974–7361 ms | — |
 | inspect | step 7: clickRole button "…" | 1 | 200 | 1132 ms | 362 ms | — |
 | inspect | step 13: clickRole button "…" | 1 | 200 | 4128 ms | 368 ms | — |
 | inspect | step 20: clickRole button "…" | 1 | 200 | 1253 ms | 417 ms | — |
@@ -41,6 +41,8 @@ Seen 27 time(s) in 3 run(s).
 | inspect | step 53: goto /reel/ | 1 | 200 | 1282 ms | 4886 ms | — |
 | inspect | step 65: clickRole button "…" | 1 | 200 | 1032 ms | 2013 ms | — |
 | inspect | step 80: clickRole button "…" | 1 | 200 | 3174 ms | 1202 ms | — |
+| inspect | step 8: goto /reel/<id> | 1 | 200 | 1261 ms | 4436 ms | — |
+| inspect | step 15: clickRole button "…" | 1 | 200 | 1130 ms | 1291 ms | — |
 
 <!-- facts:end -->
 

@@ -11,15 +11,15 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_234c75aefcc329813686b684e1147f5131974c702880e6b21ab1650509b614db` |
+| rea | `ev_1f2efc84d7328617553804a0b324fa57be90f6d575258bd012fdfe013be31ab0` |
 
-Seen 43 time(s) in 11 run(s).
+Seen 49 time(s) in 14 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | scroll: +127px in 4 wheel steps, 125 ms | 1 | 200 | 1326 ms | 2303 ms | — |
 | warmup | scroll: -605px in 14 wheel steps, 687 ms | 1 | 200 | 382 ms | 1893 ms | — |
-| warmup | step 10: openAny 2-4 x /marketplace/item/ | 1 | 200 | 1358 ms | 2348 ms | — |
+| warmup | step 10: openAny 2-4 x /marketplace/item/ | 2 | 200 | 1113–1358 ms | 473–2348 ms | — |
 | warmup | openAny: read /marketplace/item/<id>/ | 1 | 200 | 412 ms | 3499 ms | — |
 | warmup | scroll: -756px in 16 wheel steps, 656 ms | 1 | 200 | 477 ms | 869 ms | — |
 | inspect | step 3: clickRole tab "…" | 1 | 200 | 2729 ms | 1900 ms | — |
@@ -51,6 +51,11 @@ Seen 43 time(s) in 11 run(s).
 | inspect | step 1: goto /marketplace/inbox | 2 | 200 | 365–878 ms | 20925–22722 ms | — |
 | inspect | step 3: click e156 | 1 | 200 | 469 ms | 884 ms | — |
 | inspect | step 3: goto /marketplace/inbox | 9 | 200 | 390–795 ms | 471777–1354663 ms | — |
+| inspect | scroll: +161px in 5 wheel steps, 250 ms | 1 | 200 | 923 ms | 2074 ms | — |
+| inspect | scroll: -161px in 5 wheel steps, 172 ms | 1 | 200 | 565 ms | 833 ms | — |
+| warmup | scroll: -1034px in 22 wheel steps, 1032 ms | 1 | 200 | 450 ms | 971 ms | — |
+| warmup | scroll: +981px in 24 wheel steps, 1672 ms | 1 | 200 | 465 ms | 2215 ms | — |
+| inspect | step 6: clickAny 1 x link /see owner profile$/ | 1 | 200 | 813 ms | 2807 ms | — |
 
 <!-- facts:end -->
 

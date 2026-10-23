@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_70efc081c67ed7332e21c5498e2db53c87d1066c637ab8bfc22fe41d543c7021` |
+| rea | `ev_12a643860c4d5ed958151ae63a164cda5b0f0dd046397ab65052d4ac7ae079c4` |
 
-Seen 36 time(s) in 11 run(s).
+Seen 43 time(s) in 15 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -40,6 +40,12 @@ Seen 36 time(s) in 11 run(s).
 | inspect | step 3: goto /marketplace/inbox | 6 | 200 | 503–1552 ms | 509982–1675374 ms | — |
 | inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 979 ms | 17064 ms | — |
 | inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 380 ms | 15668 ms | — |
+| inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 1026 ms | 21524 ms | — |
+| warmup | step 3: goto /marketplace/you/selling | 1 | 200 | 697 ms | 16142 ms | — |
+| warmup | step 17: dwell 2-4s | 2 | 200 | 370–458 ms | 638–50657 ms | — |
+| inspect | step 3: dwell 24s | 1 | 200 | 629 ms | 16127 ms | — |
+| inspect | step 10: dwell 21s | 1 | 200 | 371 ms | 15216 ms | — |
+| inspect | step 18: dwell 19s | 1 | 200 | 1289 ms | 11038 ms | — |
 
 <!-- facts:end -->
 
