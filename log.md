@@ -5353,3 +5353,47 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: a listing's photos can now be shown the way they look on a phone. `python/creative/photosViewer.html` is the iOS 26 Photos viewer, matched to a screenshot of matt's phone: status bar, glass back and ••• buttons, a title pill with the town on top and the date and time under it, the photo fitted to the width on black, a filmstrip with the current photo larger, and the share, heart, info, edit and trash controls. Every face is scribbled out in red like the Markup pen: three overlapping passes at different angles, an uneven oval, the odd stroke past the edge, covering the whole head. `renderViewer.py` renders one photo into it at 1179 x 2556 (a real iPhone screenshot) through the system Edge headless; `renderListings.py` renders every `~/.logCli/listings/<creative>/` folder that has a `viewer.json` (place, and per frame the time, clock, battery and head boxes) into its `viewer/` folder, with a filmstrip built from the listings' own frames. The new `listingCreative` skill writes down the routine: the scene, action, before and after rubric SubQ read from 58 winner frames, generating each frame once on reapi gemini-3-pro-image with no text, logos or phone words in the prompt, and the viewer.
 Why: matt: the first generated frames had a Photos app screen drawn into them because the prompt said iPhone, so the phone has to be "made in an HTML file that we can then overlay", it has to look "exactly like the camera roll app" (from his screenshot), every photo has to "show the location", the face scribbles red and "a bit messier", then "that there is perfect now lets commit".
 Checked: `renderListings.py` rendered all 9 frames of garageOldMan, basementWoman and sideYardPile; the basement action frame matches the one matt approved pixel for pixel by eye, and every scribble was cropped and checked to cover its head. `bun run check:noComments`, `check:layout`, `check:naming` and `check:docs` pass. Not checked: `bun test` and the typecheck (no TypeScript changed), and SubQ hasn't scored the made frames yet.
+
+## 2026-10-23 12:00Z · feat/listingCreativeViewer
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `media/listings/basementWoman/images.jsonl`: new file
+- `media/listings/basementWoman/ios/action.jpg`: new file
+- `media/listings/basementWoman/ios/after.jpg`: new file
+- `media/listings/basementWoman/ios/before.jpg`: new file
+- `media/listings/basementWoman/iosScribbled/action.jpg`: new file
+- `media/listings/basementWoman/iosScribbled/after.jpg`: new file
+- `media/listings/basementWoman/iosScribbled/before.jpg`: new file
+- `media/listings/basementWoman/raw/action.jpg`: new file
+- `media/listings/basementWoman/raw/after.jpg`: new file
+- `media/listings/basementWoman/raw/before.jpg`: new file
+- `media/listings/basementWoman/viewer.json`: new file
+- `media/listings/garageOldMan/images.jsonl`: new file
+- `media/listings/garageOldMan/ios/action.jpg`: new file
+- `media/listings/garageOldMan/ios/after.jpg`: new file
+- `media/listings/garageOldMan/ios/before.jpg`: new file
+- `media/listings/garageOldMan/iosScribbled/action.jpg`: new file
+- `media/listings/garageOldMan/iosScribbled/after.jpg`: new file
+- `media/listings/garageOldMan/iosScribbled/before.jpg`: new file
+- `media/listings/garageOldMan/raw/action.jpg`: new file
+- `media/listings/garageOldMan/raw/after.jpg`: new file
+- `media/listings/garageOldMan/raw/before.jpg`: new file
+- `media/listings/garageOldMan/viewer.json`: new file
+- `media/listings/sideYardPile/images.jsonl`: new file
+- `media/listings/sideYardPile/ios/action.jpg`: new file
+- `media/listings/sideYardPile/ios/after.jpg`: new file
+- `media/listings/sideYardPile/ios/before.jpg`: new file
+- `media/listings/sideYardPile/iosScribbled/action.jpg`: new file
+- `media/listings/sideYardPile/iosScribbled/after.jpg`: new file
+- `media/listings/sideYardPile/iosScribbled/before.jpg`: new file
+- `media/listings/sideYardPile/raw/action.jpg`: new file
+- `media/listings/sideYardPile/raw/after.jpg`: new file
+- `media/listings/sideYardPile/raw/before.jpg`: new file
+- `media/listings/sideYardPile/viewer.json`: new file
+- `python/creative/renderListings.py`: added const OUTPUTS · changed const LISTINGS, def frame_path, def render_listing, def main
+- `python/creative/renderViewer.py`: changed def render
+- `skills/listingCreative/SKILL.md`: edited
+
+What changed: listing media now lives in the repo under `media/listings/<creative>/`, in three folders: `raw/` (the generated photos as they came back), `ios/` (each one inside the iPhone Photos viewer, no scribble) and `iosScribbled/` (the same, faces scribbled out in red), beside the folder's `images.jsonl` and `viewer.json`. `renderListings.py` reads `raw/` from there and writes both viewer folders as JPEG (quality 92; `renderViewer.py` writes JPEG when the output ends in .jpg). Only the three new creatives are in: garageOldMan, basementWoman and sideYardPile (before, action, after), the ones the research and SubQ's reading back; matt's earlier Bethlehem creative stays out of the repo. The `listingCreative` skill names the three folders.
+Why: matt: inside where the media is stored, have three directories, the iOS camera roll one, the iOS camera roll one without the scribble, and the plain one; "put them in the main repo not ./logCLI", and only the new creatives, "because we have the data to confirm what's good".
+Checked: `renderListings.py` rendered all 18 viewer frames (3 listings, ios and iosScribbled). `bun run check:naming` passes, and the pre-commit layout and noComments checks pass. The copies in `~/.logCli/listings` are left in place.

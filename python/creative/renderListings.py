@@ -9,13 +9,14 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from creative.renderViewer import render
 
-LISTINGS = Path.home() / ".logCli" / "listings"
+LISTINGS = Path(__file__).resolve().parents[2] / "media" / "listings"
 FRAME_FILES = ("before", "action", "after")
+OUTPUTS = {"ios": False, "iosScribbled": True}
 
 
 def frame_path(folder: Path, frame: str) -> Path | None:
     for ext in (".jpg", ".png", ".webp"):
-        p = folder / f"{frame}{ext}"
+        p = folder / "raw" / f"{frame}{ext}"
         if p.exists():
             return p
     return None
@@ -28,25 +29,27 @@ def camera_roll(folders: list[Path]) -> list[Path]:
 
 def render_listing(folder: Path, roll: list[Path]) -> list[Path]:
     spec = json.loads((folder / "viewer.json").read_text(encoding="utf-8"))
-    out_dir = folder / "viewer"
-    out_dir.mkdir(exist_ok=True)
     made = []
-    for k, (frame, item) in enumerate(spec["frames"].items()):
-        image = frame_path(folder, frame)
-        if not image:
-            print(f"{folder.name} {frame}: no image, skipped", flush=True)
-            continue
-        current = roll.index(image) + len(roll) // 2 if image in roll else None
-        out = render(image, out_dir / f"{frame}.png", item.get("faces", []), [str(p) for p in roll], current,
-                     clock=item.get("clock"), place=spec.get("place"), when=item.get("when"), battery=item.get("battery"), seed=k + 3)
-        print(f"{folder.name} {frame}: {out}", flush=True)
-        made.append(out)
+    for out_name, scribbled in OUTPUTS.items():
+        out_dir = folder / out_name
+        out_dir.mkdir(exist_ok=True)
+        for k, (frame, item) in enumerate(spec["frames"].items()):
+            image = frame_path(folder, frame)
+            if not image:
+                print(f"{folder.name} {frame}: no raw/{frame} image, skipped", flush=True)
+                continue
+            current = roll.index(image) + len(roll) // 2 if image in roll else None
+            faces = item.get("faces", []) if scribbled else []
+            out = render(image, out_dir / f"{frame}.jpg", faces, [str(p) for p in roll], current,
+                         clock=item.get("clock"), place=spec.get("place"), when=item.get("when"), battery=item.get("battery"), seed=k + 3)
+            print(f"{folder.name} {out_name}/{frame}.jpg", flush=True)
+            made.append(out)
     return made
 
 
 def main() -> None:
-    a = argparse.ArgumentParser(description="Render every listing folder that has a viewer.json inside the iPhone Photos viewer.")
-    a.add_argument("names", nargs="*", help="listing folder names under ~/.logCli/listings (default: every folder with viewer.json)")
+    a = argparse.ArgumentParser(description="Render each listing's raw/ frames into ios/ (the iPhone Photos viewer) and iosScribbled/ (the same, faces scribbled out in red).")
+    a.add_argument("names", nargs="*", help="listing folder names under media/listings (default: every folder with viewer.json)")
     a.add_argument("--root", default=str(LISTINGS))
     args = a.parse_args()
     root = Path(args.root)

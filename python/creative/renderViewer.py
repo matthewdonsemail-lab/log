@@ -25,7 +25,8 @@ def render(image: Path | str, out: Path | str, faces: list[dict], thumbs: list[s
         page = browser.new_page(viewport=VIEWPORT, device_scale_factor=SCALE)
         page.goto(HTML.resolve().as_uri() + "?" + urlencode(query))
         page.wait_for_selector("body[data-ready='1']", timeout=20000)
-        page.screenshot(path=str(out), type="png")
+        jpeg = str(out).lower().endswith((".jpg", ".jpeg"))
+        page.screenshot(path=str(out), type="jpeg" if jpeg else "png", **({"quality": 92} if jpeg else {}))
         browser.close()
     return Path(out)
 

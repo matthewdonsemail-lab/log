@@ -49,9 +49,17 @@ people match.
 the before's own output URL is passed to its action and after (valid about 7
 days). A photo only on this machine can't be a reference there.
 
-Frames go in `~/.logCli/listings/<creative>/` as `before.jpg`, `action.jpg`,
-`after.jpg`, each with a line in that folder's `images.jsonl` (prompt, avoid,
-task, credits).
+The media lives in this repo, `media/listings/<creative>/`, in three folders:
+
+| Folder | What's in it |
+|---|---|
+| `raw/` | the generated photos as they came back: `before.jpg`, `action.jpg`, `after.jpg` |
+| `ios/` | each photo inside the iPhone Photos viewer, no scribble |
+| `iosScribbled/` | the same, every face scribbled out in red |
+
+Beside them, `images.jsonl` (one line per generated frame: prompt, avoid, task,
+credits) and `viewer.json` (below). A new frame goes in `raw/`; `ios/` and
+`iosScribbled/` are always rendered from it, never edited by hand.
 
 ## The phone: Photos viewer, place and scribbles
 
@@ -85,11 +93,12 @@ Each listing folder gets a `viewer.json`:
 ```bash
 C:\Python312\python.exe python/creative/renderListings.py
 C:\Python312\python.exe python/creative/renderListings.py basementWoman
-C:\Python312\python.exe python/creative/renderViewer.py <image> <out.png> --faces "[...]" --place Bethlehem --when "October 21  10:12 AM"
+C:\Python312\python.exe python/creative/renderViewer.py <image> <out.jpg> --faces "[...]" --place Bethlehem --when "October 21  10:12 AM"
 ```
 
-`renderListings.py` renders every folder that has a `viewer.json` into its
-`viewer/` folder. The filmstrip is made from the listings' own frames, never
+`renderListings.py` renders the `raw/` frames of every folder under
+`media/listings` that has a `viewer.json` into its `ios/` and `iosScribbled/`
+folders (JPEG, quality 92). The filmstrip is made from the listings' own frames, never
 anyone else's photos. It drives the system Edge headless through Playwright,
 so nothing is downloaded.
 
