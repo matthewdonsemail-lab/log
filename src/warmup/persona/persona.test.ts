@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test'
+import { answeringFixture } from '../../browser/flow/helpers/answerFixture'
 import { createActor, fromPromise, toPromise } from 'xstate'
 import { FEED, feedPersonaMachine, planPost, stepsForPost, postReadRequest, planReel, playAt, readReelRead, realPlay, REEL, REEL_LABELS, reelCaption, reelPersonaMachine, reelReadRequest, segmentWeight, stepsForPlan } from '../../facebook/warmup/activities/index'
 import type { ActivityStep, AllowedActions, FeedLabel, ReelLabel, ReelPlan, ReelRead, StepReply } from '../../facebook/warmup/activities/index'
@@ -245,7 +246,7 @@ describe('reelPersonaMachine', () => {
     return fromPromise<StepReply, { account: string; step: ActivityStep }>(async ({ input }) => {
       acted.push(input.step.id)
       if (input.step.id === 'swipe') page++
-      return { ok: true, url: REEL_URL(page), folder: `steps/${acted.length}`, snapshot: input.step.id === 'unmute' ? '' : input.step.id === 'like' ? '- button "Remove Like"' : '- button "Unmute"' }
+      return { ok: true, url: REEL_URL(page), folder: `steps/${acted.length}`, snapshot: input.step.id === 'unmute' ? '' : input.step.id === 'like' ? '- button "Remove Like"' : '- button "Unmute"', exchanges: answeringFixture(input.step.expect?.answers, { uid: input.account }) }
     })
   }
   test('Reels and the sound, then each reel read by SubQ on the frame it landed on, then planned', async () => {
@@ -325,7 +326,7 @@ describe('the feed, post by post (planPost, feedPersonaMachine)', () => {
         act: fromPromise<StepReply, { account: string; step: ActivityStep }>(async ({ input }) => {
           acted.push(input.step.id)
           const url = input.step.id.toLowerCase().includes('marketplace') ? 'https://www.facebook.com/marketplace/' : 'https://www.facebook.com/'
-          return { ok: true, url, folder: `steps/${acted.length}`, post: input.step.id === 'nextPost' ? { heading: `Post ${acted.length}`, text: 'a few words here', images: [], words: 4, liked: false } : undefined }
+          return { ok: true, url, folder: `steps/${acted.length}`, post: input.step.id === 'nextPost' ? { heading: `Post ${acted.length}`, text: 'a few words here', images: [], words: 4, liked: false } : undefined, exchanges: answeringFixture(input.step.expect?.answers, { uid: input.account }) }
         }),
         read: fromPromise<ReelRead, { account: string; index: number; frame: string | null; post: { heading: string; text: string; images: string[]; words: number; liked: boolean }; labels: FeedLabel[] }>(async ({ input }) => read(input.index === 1 ? 1 : 0, 'like'))
       }

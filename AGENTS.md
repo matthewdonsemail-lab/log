@@ -42,9 +42,12 @@ finding`, `inspect read`), where flows are made to be run again and again.
   West Bank in Facebook's own answers.
 - **Status 2026-10-23:** built for `log inspect` (PR #36). The page states
   `marketplaceCreateLimitReached` and `marketplacePartnerFeed` are decided by
-  Facebook's answers. The warm-up likes (Reels and the feed) pass only when
-  `CometUFIFeedbackReactMutation` answers with the reaction we sent saved.
-  The other warm-up steps and machines don't read their answers yet (#35).
+  Facebook's answers. Every warm-up step that makes a call is decided by its
+  answer: the five stage flows (the create page's
+  `marketplace_new_seller_can_post_item` and `sell_location`, `buy_location`,
+  the feed's account, paging, listings) and the Reels and feed activities,
+  likes included. The other machines (connect, publish, profile, host) don't
+  read their answers yet (#35).
 
 Rules 73-76.
 
@@ -822,8 +825,8 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     internal API answers it triggers and the requests it sent, keeps them
     past the prune, and decides on them, never on a page loading, a timer or
     the step having run. The MCP instructions put it first. Inspect steps
-    read theirs since rule 74, and the warm-up likes since 2026-10-23; the
-    other warm-up steps don't yet (#35). Top of this file.
+    read theirs since rule 74, and every warm-up step that makes a call
+    since 2026-10-23; the other machines don't yet (#35). Top of this file.
 74. 2026-10-23 · matt: in the inspect flow, a state we can't decide is
     read by SubQ with everything around it, and said loudly to the agent.
     Only `log inspect` does this, because it is where flows are made to be

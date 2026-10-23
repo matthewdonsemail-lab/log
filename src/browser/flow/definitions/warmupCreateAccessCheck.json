@@ -7,6 +7,18 @@
       "id": "s01_gotomarketplace",
       "action": "goto",
       "url": "https://www.facebook.com/marketplace/",
+      "answers": [
+        {
+          "call": "page /marketplace/",
+          "says": [
+            {
+              "answer": "fields.buy_location.display_name",
+              "home": "city",
+              "code": "marketplaceLocationWrong"
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "11_gotoHttpsWwwFacebook",
         "ms": 23593,
@@ -51,6 +63,28 @@
       "id": "s03_gotomarketplaceCreateItem",
       "action": "goto",
       "url": "https://www.facebook.com/marketplace/create/item",
+      "answers": [
+        {
+          "call": "page /marketplace/create/item",
+          "says": [
+            {
+              "answer": "fields.marketplace_new_seller_can_post_item",
+              "is": true,
+              "code": "marketplaceMayNotPost"
+            },
+            {
+              "answer": "fields.sell_location.reverse_geocode_detailed.country_alpha_two",
+              "home": "country",
+              "code": "marketplaceLocationWrong"
+            },
+            {
+              "answer": "fields.sell_location.reverse_geocode_detailed.city",
+              "home": "city",
+              "code": "marketplaceLocationWrong"
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "13_gotoHttpsWwwFacebook",
         "ms": 23625,
@@ -85,6 +119,18 @@
       "id": "s05_gotomarketplace",
       "action": "goto",
       "url": "https://www.facebook.com/marketplace/",
+      "answers": [
+        {
+          "call": "page /marketplace/",
+          "says": [
+            {
+              "answer": "fields.buy_location.display_name",
+              "home": "city",
+              "code": "marketplaceLocationWrong"
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "15_gotoHttpsWwwFacebook",
         "ms": 21969,

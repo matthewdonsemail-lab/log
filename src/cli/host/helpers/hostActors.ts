@@ -157,7 +157,7 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
       const [firstName, ...rest] = account.profileName.split(" ");
       const photos = await preparePhotos([account.profilePhoto, account.coverPhoto], { dir: join(browser.session.current.runDir, "photos"), proxy: fetchProxyUrl(account.proxy) });
       if (!photos.ok) return error(photos.code, photos.detail);
-      const output = await runFlowInSession(context, browser.session.current, flow, { uid: account.accountName, profilePhoto: photos.photos[0].path, coverPhoto: photos.photos[1].path, firstName, lastName: rest.join(" ") });
+      const output = await runFlowInSession(context, browser.session.current, flow, { uid: account.accountName, profilePhoto: photos.photos[0].path, coverPhoto: photos.photos[1].path, firstName, lastName: rest.join(" ") }, { account: { uid: account.accountName, homeCity: account.homeCity, homeCountry: account.homeCountry } });
       const last = output.steps.at(-1);
       if (output.result === "done") return ok("profile photo, cover and name saved");
       if (last?.issue && last.issue !== "pageNotReached") return issue(last.issue, last.error);

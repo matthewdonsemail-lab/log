@@ -148,6 +148,8 @@ stateDiagram-v2
 | `captchaHtml` | no | `marketplace/account` | publish→blocked, monitor→blocked | The page loaded but shows a captcha instead of content. | Open the account by hand. `log facebook publish` routes captchas itself; `scan` does not. |
 | `unknownPlatform` | no | `marketplace/account` | publish→blocked, monitor→blocked | The account belongs to a platform log-cli does not know. | Facebook only (AGENTS.md rule 3). |
 | `unknown` | no | `marketplace/account` | publish→blocked, monitor→blocked | The client saw an account failure it could not map. | Look at the raw signal and add a code for it here. |
+| `marketplaceMayNotPost` | no | `cli/flow`, `cli/warmup` | publish→blocked | Marketplace's create page answers `marketplace_new_seller_can_post_item: false`: no listing can be created from this account now. Bethlehem, 2026-10-23 (it was true on 2026-10-22). | Publish nothing from this account; matt decides. Read the create page's answer again on a later day. |
+| `marketplaceLocationWrong` | yes | `cli/flow`, `cli/warmup` | publish→blocked | A Marketplace page's own answer puts the account somewhere other than its home: `sell_location` on the create page, or `buy_location` on Marketplace, names another city or country (Bethlehem's sell_location was Barranco, Peru on 2026-10-22). | Set the Marketplace location to the account's home with `log inspect do setLocation "City, State" --live` (rule 72), then read the page's answer again. |
 
 ## listing
 

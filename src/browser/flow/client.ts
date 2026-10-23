@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { evidenceIdOf } from '../../rea/capture/client'
 import { renderFlowDoc } from './helpers/index'
 import type { RecordedCommand } from './helpers/index'
-import type { FlowDefinition } from './types'
+import type { FlowDefinition, FlowStep } from './types'
 
 export const FLOWS_DIR = fileURLToPath(new URL('./definitions', import.meta.url))
 export const FLOW_DOCS_DIR = fileURLToPath(new URL('../../../docs/platforms/facebook/flows', import.meta.url))
@@ -66,10 +66,27 @@ export function loadFlow(name: string, dir = FLOWS_DIR): FlowDefinition | null {
   return existsSync(path) ? (JSON.parse(readFileSync(path, 'utf8')) as FlowDefinition) : null
 }
 
+const sameStep = (a: FlowStep, b: FlowStep) => a.action === b.action && (a.url ?? '') === (b.url ?? '') && JSON.stringify(a.args ?? []) === JSON.stringify(b.args ?? [])
+
+export function keepAnswers(flow: FlowDefinition, before: FlowDefinition | null): FlowDefinition {
+  if (!before) return flow
+  const left = before.steps.filter((s) => s.answers?.length)
+  return {
+    ...flow,
+    steps: flow.steps.map((step) => {
+      if (step.answers?.length) return step
+      const at = left.findIndex((old) => sameStep(old, step))
+      if (at < 0) return step
+      const [old] = left.splice(at, 1)
+      return { ...step, answers: old.answers }
+    })
+  }
+}
+
 export function saveFlow(flow: FlowDefinition, dir = FLOWS_DIR): string {
   mkdirSync(dir, { recursive: true })
   const path = join(dir, `${flow.name}.json`)
-  writeFileSync(path, `${JSON.stringify(flow, null, 2)}\n`)
+  writeFileSync(path, `${JSON.stringify(keepAnswers(flow, loadFlow(flow.name, dir)), null, 2)}\n`)
   return path
 }
 

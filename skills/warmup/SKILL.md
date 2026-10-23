@@ -21,6 +21,27 @@ description: Record and run the account warm-up (rule 36) - Listaro's five activ
    step's answers are read from its own recording and kept as
    `exchanges.json`. Other steps get `expect.answers` the same way, written
    from that request's doc ("What it sent and what came back").
+7. **Every step that makes a call is decided by its answer** (rule 73). The
+   five stage flows carry `answers` on each step whose recording shows a call
+   that answers it, and the run fails the step with its code when the answer
+   isn't right (`runFlowInSession`, `answersIssue`):
+   - the create page: `marketplace_new_seller_can_post_item` true (else
+     `marketplaceMayNotPost`), and `sell_location`'s country and city the
+     account's home (else `marketplaceLocationWrong`);
+   - Marketplace: `buy_location.display_name` names the home city (else
+     `marketplaceLocationWrong`);
+   - the home feed: `FeedComposerCometRootQuery` answers this account's id;
+   - a scroll that pages: `CometNewsFeedPaginationQuery` or
+     `MarketplaceCometBrowseFeedLightPaginationQuery` answers more;
+   - a listing: `MarketplacePDPContainerQuery` answers its details page;
+   - Selling and Messages: the page answers 2xx (Selling's
+     `current_marketplace`).
+   The Reels and feed activities do the same (`openReels`, `openFeed`,
+   `readFeed`, `openMarketplace`, `openListings`, and the likes). Dwells and
+   steps whose recording shows no call have nothing to read. A home check is
+   skipped when Twenty has no home for the account. Each flow's doc shows what
+   every step must answer, and recording a flow again keeps the checks
+   (`keepAnswers`).
 4. **Live and watched** (rule 26): run through Monitor; every step goes to the
    stage log as it happens.
 5. **Stops on the wrong page.** Every step's landing page is checked

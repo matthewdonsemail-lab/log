@@ -12,8 +12,8 @@ export const REEL: PlatformActivity = {
       action: 'goto',
       args: ['https://www.facebook.com/reel/'],
       why: 'Reels, signed in: Facebook sends it to the first reel',
-      expect: { urlMatches: '/reel/\\d+' },
-      recorded: `${RUN} step 01: /reel/ → /reel/1075919665236018, 167 requests, 24 s`
+      expect: { urlMatches: '/reel/\\d+', answers: [{ call: 'FBUnifiedVideoContainerQuery', says: [] }] },
+      recorded: `${RUN} step 01: /reel/ → /reel/1075919665236018, 167 requests, 24 s; FBUnifiedVideoContainerQuery answered 200 on each goto /reel/ (its doc)`
     },
     {
       id: 'unmute',

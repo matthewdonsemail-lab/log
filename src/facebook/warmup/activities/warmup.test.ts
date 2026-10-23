@@ -3,6 +3,7 @@ import { createActor, fromPromise, toPromise } from 'xstate'
 import { existsSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { answeringFixture } from '../../../browser/flow/helpers/answerFixture'
 import type { StepExchange } from '../../../subq/stepReading/types'
 import { answerWaitOf, checkStep, DEFAULT_SESSION, FACEBOOK_ACTIVITIES, FEED, parseRange, planSession, REEL, warmupActivityMachine } from './index'
 import type { ActivityStep, StepReply } from './index'
@@ -56,7 +57,7 @@ describe("a like passes on Facebook's answer, not on the button (rule 73)", () =
       expect(answerWaitOf(s)).toEqual({ name: 'CometUFIFeedbackReactMutation', ms: 15_000 })
       expect(checkStep(s, REEL_URL, { ok: true, url: REEL_URL, snapshot: removeLike, exchanges: [react(200, LIKE_ID)] }).ok).toBe(true)
       expect(checkStep(s, REEL_URL, { ok: true, url: REEL_URL, snapshot: removeLike, exchanges: [] }).issue).toBe('Facebook never answered CometUFIFeedbackReactMutation in this step (rule 73: its answer decides, not the screen)')
-      expect(checkStep(s, REEL_URL, { ok: true, url: REEL_URL, snapshot: removeLike, exchanges: [react(500, LIKE_ID)] }).issue).toBe('CometUFIFeedbackReactMutation answered 500')
+      expect(checkStep(s, REEL_URL, { ok: true, url: REEL_URL, snapshot: removeLike, exchanges: [react(500, LIKE_ID)] }).issue).toBe('CometUFIFeedbackReactMutation answered 500, never 2xx')
       expect(checkStep(s, REEL_URL, { ok: true, url: REEL_URL, snapshot: removeLike, exchanges: [react(200, null)] }).issue).toBe('CometUFIFeedbackReactMutation answered data.feedback_react.feedback.viewer_feedback_reaction_info.id = nothing, not "1635855486666999" (what we sent as variables.input.feedback_reaction_id)')
       expect(checkStep(s, REEL_URL, { ok: true, url: REEL_URL, snapshot: '', exchanges: [react(200, '1678524932434102', '1678524932434102')] }).ok).toBe(true)
     })
@@ -68,6 +69,23 @@ describe("a like passes on Facebook's answer, not on the button (rule 73)", () =
     writeFileSync(join(folder, 'network.har'), JSON.stringify(har))
     expect(checkStep(step('like'), REEL_URL, { ok: true, url: REEL_URL, folder }).ok).toBe(true)
     expect(existsSync(join(folder, 'exchanges.json'))).toBe(true)
+  })
+})
+
+describe("the other activity steps read Facebook's answers too (rule 73)", () => {
+  const FEED_URL = 'https://www.facebook.com/'
+  const composer = (id: string): StepExchange => ({ offsetMs: 1710, kind: 'api', name: 'FeedComposerCometRootQuery', method: 'POST', host: 'www.facebook.com', path: '/api/graphql/', status: 200, ms: 658, sent: {}, answer: { data: { viewer: { actor: { id, name: 'Bethlehem Trash' } } } }, errors: [], known: true })
+  const openFeed = FEED.steps.find((x) => x.id === 'openFeed')!
+
+  test('the home feed passes only when FeedComposerCometRootQuery answers this account as the one signed in', () => {
+    expect(checkStep(openFeed, null, { ok: true, url: FEED_URL, exchanges: [composer('61594063207669')] }, { uid: '61594063207669' }).ok).toBe(true)
+    expect(checkStep(openFeed, null, { ok: true, url: FEED_URL, exchanges: [composer('61500000000001')] }, { uid: '61594063207669' }).issue).toBe("FeedComposerCometRootQuery answered data.viewer.actor.id = \"61500000000001\", not the account's id (61594063207669)")
+  })
+
+  test('the steps checked are the ones whose recordings show a call that answers them; dwells and the rest have none to read', () => {
+    const checked = (steps: { id: string; expect?: { answers?: unknown[] } }[]) => [...new Set(steps.filter((x) => x.expect?.answers?.length).map((x) => x.id))]
+    expect(checked(FEED.steps)).toEqual(['openFeed', 'readFeed', 'likePost', 'openMarketplace', 'openListings'])
+    expect(checked(REEL.steps)).toEqual(['openReels', 'like'])
   })
 })
 
@@ -122,7 +140,8 @@ function run(steps: ActivityStep[], replies: StepReply[], options: { live?: bool
     actors: {
       act: fromPromise<StepReply, { account: string; step: ActivityStep }>(async ({ input }) => {
         acted.push(input.step.id)
-        return replies.shift() ?? { ok: true, url: REEL_URL }
+        const reply = replies.shift() ?? { ok: true, url: REEL_URL }
+        return reply.exchanges ? reply : { ...reply, exchanges: answeringFixture(input.step.expect?.answers, { uid: input.account }) }
       })
     }
   })

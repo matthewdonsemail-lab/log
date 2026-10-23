@@ -86,7 +86,7 @@ async function runFlow(context: Parameters<Command["run"]>[0], flow: FlowDefinit
     if ("error" in opened) return { code: 1, stderr: `log flow: ${opened.error}` };
     const { current, session } = opened;
     context.err(`Flow ${flow.name} on ${account.accountName}: ${flow.steps.length} steps, recorded in ${runDir}`);
-    const output = await runFlowInSession(context, current, flow, filled);
+    const output = await runFlowInSession(context, current, flow, filled, { account: { uid: account.accountName, homeCity: account.homeCity, homeCountry: account.homeCountry } });
     await context.sendInspect(current, "stop", [], 30_000);
     await session;
     try {

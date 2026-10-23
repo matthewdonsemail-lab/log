@@ -5664,3 +5664,46 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: (1) Two page states are named and decided by Facebook's answers: `marketplaceCreateLimitReached` (the create page's HTML says `marketplace_new_seller_can_post_item: false`, a person's state: nothing to press, matt decides) and `marketplacePartnerFeed` (an answer says `product_details_type: PARTNER_LISTING`, resolved by reading `buy_location` from the Marketplace page's answer). A state can carry an `answer` test on the step's exchanges; with the answers there they decide, and its text is used only without them. The hook (`readOpenBrowsers`, `findingOf`) and SubQ's reading pass each step's exchanges in, read from or taken out of its recording by `stepExchangesAt`. (2) The warm-up likes (Reels `like`, feed `likePost`) pass on Facebook's answer, not the "Remove Like" button: `StepExpect.answers` names the call and what its answer must say; the runners wait for the call (`answerWaitOf`, 15 s), and `checkStep` passes only when `CometUFIFeedbackReactMutation` answers 2xx, no errors, with `viewer_feedback_reaction_info.id` the reaction we sent (`answerIssue`). AGENTS.md's rule-one status and rule 73's status, the warmup and agentHooks skills, the like's request doc and the README follow.
 Why: matt: "Name today's two states (Limit reached, partner listings) as known page states, then make the warm-up flows read Facebook's answers, starting with the Reels like." Rule one's step 7 says to name a state once found, and rule 73 says the answers decide, never the screen.
 Checked: the may-post flag in the kept answers was true on 20261022T105341 and 20261022T110738 and false on 20261023T045453, and step 03 of that run answered PARTNER_LISTING twice; the tests are built from those. New tests: both states from their answers, and not from the screen alone; each like passes only with the reaction we sent saved and fails with no answer, a 500 or nothing saved; the answer is read from the step's own recording. `bun run check` passes with 888 tests; the docs gate passes.
+
+## 2026-10-23 06:24Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/platforms/facebook/flows/warmupCreateAccessCheck.md`: edited
+- `docs/platforms/facebook/flows/warmupFeedBrowse.md`: edited
+- `docs/platforms/facebook/flows/warmupMarketplaceBrowse.md`: edited
+- `docs/platforms/facebook/flows/warmupMessagesVisit.md`: edited
+- `docs/platforms/facebook/flows/warmupSellingVisit.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `skills/warmup/SKILL.md`: edited
+- `src/browser/flow/answers.test.ts`: added const BETHLEHEM, const page, const createPage, const flow, const step, test "the create page: Barranco, Peru (2026-10-22) is the wrong place, may-post false (2026-10-23) is no posting, Bethlehem US and true passes", test "Marketplace: buy_location must be the account's home city; Lima, Peru (2026-10-22) is not", test "a redirect before the page counts only if no 2xx answer follows", test "without the account's home in Twenty, a home check is skipped, never failed", test "the step waits for its first internal API call, not for a page load", test "every warm-up stage flow's page loads and calls are checked, and the flow doc says what each must answer", test "recording a flow again keeps the checks of the steps it had"
+- `src/browser/flow/client.ts`: added const sameStep, function keepAnswers · changed function saveFlow
+- `src/browser/flow/definitions/warmupCreateAccessCheck.json`: edited
+- `src/browser/flow/definitions/warmupFeedBrowse.json`: edited
+- `src/browser/flow/definitions/warmupMarketplaceBrowse.json`: edited
+- `src/browser/flow/definitions/warmupMessagesVisit.json`: edited
+- `src/browser/flow/definitions/warmupSellingVisit.json`: edited
+- `src/browser/flow/helpers/answerFixture.ts`: added function put, function valueFor, function answeringFixture
+- `src/browser/flow/helpers/answers.ts`: added const ANSWER_WAIT_MS, function valueAt, function answerWait, const shown, function homeOf, function checkOne, function answerIssueOf, function answersIssue
+- `src/browser/flow/helpers/index.ts`: added export from "./answers", export from "./answerFixture"
+- `src/browser/flow/helpers/renderFlowDoc.ts`: added function checkText · changed function renderFlowDoc
+- `src/browser/flow/index.ts`: changed export from "./types"
+- `src/browser/flow/types.ts`: added interface AnswerCheck, interface AnswerExpect, interface AnswerAccount, interface AnswerIssue · changed interface FlowStep
+- `src/cli/flow/helpers/flowSession.ts`: changed function runFlowInSession
+- `src/cli/flow/index.ts`: changed function runFlow
+- `src/cli/host/helpers/hostActors.ts`: changed function hostActors
+- `src/cli/warmup/helpers/stages.ts`: changed function runWarmup
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/facebook/warmup/activities/helpers/checkStep.ts`: changed function checkStep
+- `src/facebook/warmup/activities/helpers/feed.ts`: changed const FEED
+- `src/facebook/warmup/activities/helpers/reel.ts`: changed const REEL
+- `src/facebook/warmup/activities/helpers/stepAnswers.ts`: added export from "../../../../browser/flow/helpers/answers" · changed function answerWaitOf · removed const ANSWER_WAIT_MS, function valueAt, const shown, function checkOne, function answerIssue
+- `src/facebook/warmup/activities/machine.ts`: changed const warmupActivityMachine, const reelPersonaMachine, const feedPersonaMachine
+- `src/facebook/warmup/activities/types.ts`: added export from "../../../browser/flow/types" · removed interface AnswerCheck, interface AnswerExpect
+- `src/facebook/warmup/activities/warmup.test.ts`: added test "the home feed passes only when FeedComposerCometRootQuery answers this account as the one signed in", test "the steps checked are the ones whose recordings show a call that answers them; dwells and the rest have none to read" · changed function run
+- `src/warmup/persona/persona.test.ts`: changed test "the session: the feed, each post into view then read, then Marketplace and listings; without --likes no like"
+
+What changed: every warm-up step that makes a call is decided by Facebook's answer. Answer checks are shared (`src/browser/flow/helpers/answers.ts`: `answersIssue`, `answerWait`; types `AnswerExpect`, `AnswerCheck`, `AnswerAccount` in flow types): a check can need a value we sent, a fixed value, a field present, or the account's home city, country or id, and names the error code it raises; the last 2xx answer of the call counts (a redirect before it doesn't). Flow steps carry `answers`: `runFlowInSession` waits for the first call, reads the step's exchanges and fails the step with the check's code, with the account's home from `log flow run`, the stage runner and the host. The five stage flows got checks written from their recordings and request docs: the create page (`marketplace_new_seller_can_post_item` true, else `marketplaceMayNotPost`; `sell_location` country and city the home, else `marketplaceLocationWrong`), Marketplace (`buy_location.display_name` names the home city), the home feed (`FeedComposerCometRootQuery` answers the account's id), the paging scrolls, the listing (`MarketplacePDPContainerQuery`), Selling and Messages (2xx). The Reels and feed activities: `openReels`, `openFeed`, `readFeed`, `openMarketplace`, `openListings` (and the likes). Three error codes are added (`answerNotAsExpected`, `marketplaceMayNotPost`, `marketplaceLocationWrong`). Flow docs show what each step must answer, and `saveFlow` keeps a flow's checks when it is recorded again (`keepAnswers`). The warmup skill and AGENTS.md's status lines say so; `answeringFixture` gives tests the answers a step's checks need.
+Why: matt: "give the other warm-up steps answer checks the same way (starting with the create page's may-post flag and sell_location in warmupCreateAccessCheck), written from their request docs." On 2026-10-22 Bethlehem's warm-up loaded the create page twice with sell_location Barranco, Peru and passed (rule one's Why); on 2026-10-23 the same page said may-post false.
+Checked: the answer shapes are from the kept recordings (sell_location Barranco PE on 20261022T105341, buy_location Lima, Peru then Bethlehem, Pennsylvania, may-post true on 2026-10-22 and false on 2026-10-23, page /marketplace/ answering 302 four times, page /messages/ 200) and the request docs' samples. New tests: the create page fails Barranco PE as marketplaceLocationWrong and may-post false as marketplaceMayNotPost and passes Bethlehem US; buy_location Lima fails; a 302 then 200 passes and a 302 alone fails; a home check is skipped without the home; the wait is the first call; every stage flow's checked steps; the flow doc; checks kept on re-recording; the feed's account check. The Reels steps without saved answers only check the call answered 2xx. `bun run check` passes with 897 tests; the docs gate passes.

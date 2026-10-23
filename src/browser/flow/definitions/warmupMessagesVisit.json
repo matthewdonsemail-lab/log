@@ -7,6 +7,18 @@
       "id": "s01_gotomarketplace",
       "action": "goto",
       "url": "https://www.facebook.com/marketplace/",
+      "answers": [
+        {
+          "call": "page /marketplace/",
+          "says": [
+            {
+              "answer": "fields.buy_location.display_name",
+              "home": "city",
+              "code": "marketplaceLocationWrong"
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "21_gotoHttpsWwwFacebook",
         "ms": 22954,
@@ -31,6 +43,17 @@
         "4-7",
         "300-600"
       ],
+      "answers": [
+        {
+          "call": "MarketplaceCometBrowseFeedLightPaginationQuery",
+          "says": [
+            {
+              "answer": "first.data.marketplace_home_feed",
+              "present": true
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "22_scroll47X",
         "ms": 24406,
@@ -44,6 +67,17 @@
       "id": "s03_gotomarketplaceYouSelling",
       "action": "goto",
       "url": "https://www.facebook.com/marketplace/you/selling",
+      "answers": [
+        {
+          "call": "page /marketplace/you/selling",
+          "says": [
+            {
+              "answer": "fields.current_marketplace.id",
+              "present": true
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "23_gotoHttpsWwwFacebook",
         "ms": 18797,
@@ -77,6 +111,12 @@
       "id": "s05_gotomessages",
       "action": "goto",
       "url": "https://www.facebook.com/messages/",
+      "answers": [
+        {
+          "call": "page /messages/",
+          "says": []
+        }
+      ],
       "recorded": {
         "step": "25_gotoHttpsWwwFacebook",
         "ms": 11187,

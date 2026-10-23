@@ -1,6 +1,7 @@
 import type { StepExchange } from '../../../../subq/stepReading/types'
 import type { ActivityStep, StepOutcome } from '../types'
-import { answerIssue, answersAt } from './stepAnswers'
+import type { AnswerAccount } from '../../../../browser/flow/types'
+import { answersAt, answersIssue } from './stepAnswers'
 
 export interface StepReply {
   ok: boolean
@@ -18,7 +19,7 @@ function shows(snapshot: string, role: string, name: string): boolean {
   return new RegExp(`^\\s*-\\s+${role}\\s+"${quoted}"`, 'm').test(snapshot)
 }
 
-export function checkStep(step: ActivityStep, before: string | null, reply: StepReply): StepOutcome {
+export function checkStep(step: ActivityStep, before: string | null, reply: StepReply, account: AnswerAccount = {}): StepOutcome {
   const base = { id: step.id, url: reply.url, folder: reply.folder }
   if (!reply.ok && step.optional) return { ...base, ok: true, skipped: `nothing to act on (${reply.error ?? 'the step failed'})` }
   if (!reply.ok) return { ...base, ok: false, error: reply.error ?? 'the step failed' }
@@ -32,10 +33,8 @@ export function checkStep(step: ActivityStep, before: string | null, reply: Step
   if (expect.hides && shows(snapshot, expect.hides.role, expect.hides.name)) return { ...base, ok: false, issue: `${expect.hides.role} "${expect.hides.name}" is still there` }
   if (expect.answers?.length) {
     const exchanges = reply.exchanges ?? (reply.folder ? answersAt(reply.folder) : [])
-    for (const answers of expect.answers) {
-      const issue = answerIssue(answers, exchanges)
-      if (issue) return { ...base, ok: false, issue }
-    }
+    const issue = answersIssue(expect.answers, exchanges, account)
+    if (issue) return { ...base, ok: false, issue: issue.text }
   }
   return { ...base, ok: true }
 }

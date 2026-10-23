@@ -147,6 +147,7 @@ async function runWarmup(
         stage(context, { ...base, event: "activity", activity: input.activity, detail: `${flow.steps.length} steps` });
         const output = await runFlowInSession(context, current, flow, { uid: base.account }, {
           skip: (step) => step.action === "clickAny" && !likes,
+          account: { uid: account.accountName, homeCity: account.homeCity, homeCountry: account.homeCountry },
           onStep: (step, result) => stage(context, { ...base, event: "step", activity: input.activity, step: step.id, ok: result.ok, detail: result.ok ? (step.args ?? [step.url ?? ""]).join(" ") : result.error }),
         });
         if (output.result === "done") {
