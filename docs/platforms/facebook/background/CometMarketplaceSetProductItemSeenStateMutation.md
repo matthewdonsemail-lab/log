@@ -13,7 +13,7 @@
 | Called from | `CometMarketplaceSetProductItemSeenStateMutation` |
 | rea | `ev_d3844ff3ba89d42ce8912082c4735babb8314eb664819e8300eecce66eb73b01` |
 
-Seen 10 time(s) in 5 run(s).
+Seen 13 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -27,12 +27,15 @@ Seen 10 time(s) in 5 run(s).
 | inspect | step 25: openAny 1-3 x /marketplace/item/ | 1 | 200 | 915 ms | 4060 ms | — |
 | inspect | scroll: +161px in 5 wheel steps, 250 ms | 1 | 200 | 740 ms | 3443 ms | — |
 | inspect | scroll: -161px in 5 wheel steps, 172 ms | 1 | 200 | 1264 ms | 1430 ms | — |
+| warmup | scroll: +213px in 7 wheel steps, 453 ms | 1 | 200 | 920 ms | 297 ms | — |
+| warmup | scroll: -1034px in 22 wheel steps, 1032 ms | 1 | 200 | 652 ms | 1576 ms | — |
+| warmup | scroll: +981px in 24 wheel steps, 1672 ms | 1 | 200 | 570 ms | 3054 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T045453_61594063207669**, scroll: +161px in 5 wheel steps, 250 ms: 200, 740 ms
+**runs/warmup/20261023T074930_61594063207669**, scroll: +213px in 7 wheel steps, 453 ms: 200, 920 ms
 
 Sent:
 
@@ -44,9 +47,9 @@ Sent:
   "variables": {
     "input": {
       "has_seen": true,
-      "product_item_id": "39887208997530861",
+      "product_item_id": "1749699906261391",
       "actor_id": "61594063207669",
-      "client_mutation_id": "1"
+      "client_mutation_id": "2"
     }
   },
   "doc_id": "9680593255390206"
@@ -59,20 +62,23 @@ Answered:
 {
   "data": {
     "marketplace_set_product_item_seen_state": {
-      "product_item": null
+      "product_item": {
+        "has_viewer_previously_seen": true,
+        "id": "1749699906261391"
+      }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792731490393,
-      "time_at_flush_ms": 1792731490791
+      "request_start_time_ms": 1792742066013,
+      "time_at_flush_ms": 1792742066387
     },
     "is_final": true
   }
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, scroll: -161px in 5 wheel steps, 172 ms: 200, 1264 ms
+**runs/warmup/20261023T074930_61594063207669**, scroll: -1034px in 22 wheel steps, 1032 ms: 200, 652 ms
 
 Sent:
 
@@ -84,9 +90,9 @@ Sent:
   "variables": {
     "input": {
       "has_seen": true,
-      "product_item_id": "28549509658039213",
+      "product_item_id": "1098292579663100",
       "actor_id": "61594063207669",
-      "client_mutation_id": "3"
+      "client_mutation_id": "5"
     }
   },
   "doc_id": "9680593255390206"
@@ -99,13 +105,59 @@ Answered:
 {
   "data": {
     "marketplace_set_product_item_seen_state": {
-      "product_item": null
+      "product_item": {
+        "has_viewer_previously_seen": true,
+        "id": "1098292579663100"
+      }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792731499387,
-      "time_at_flush_ms": 1792731499877
+      "request_start_time_ms": 1792742074014,
+      "time_at_flush_ms": 1792742074314
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T074930_61594063207669**, scroll: +981px in 24 wheel steps, 1672 ms: 200, 570 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMarketplaceSetProductItemSeenStateMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "has_seen": true,
+      "product_item_id": "2064512760864293",
+      "actor_id": "61594063207669",
+      "client_mutation_id": "8"
+    }
+  },
+  "doc_id": "9680593255390206"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "marketplace_set_product_item_seen_state": {
+      "product_item": {
+        "has_viewer_previously_seen": true,
+        "id": "2064512760864293"
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742086793,
+      "time_at_flush_ms": 1792742087009
     },
     "is_final": true
   }

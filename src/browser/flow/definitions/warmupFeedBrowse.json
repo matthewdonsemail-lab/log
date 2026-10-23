@@ -63,7 +63,8 @@
               "answer": "first.data.viewer.news_feed",
               "present": true
             }
-          ]
+          ],
+          "ifSent": true
         }
       ],
       "recorded": {

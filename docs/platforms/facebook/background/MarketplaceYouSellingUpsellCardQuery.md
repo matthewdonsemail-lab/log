@@ -13,7 +13,7 @@
 | Called from | `MarketplaceYouSellingUpsellCard.react` |
 | rea | `ev_00977e2ab70ca12a60a74cc135fd797089c7b462f9a8434a2065fcc5480f693a` |
 
-Seen 14 time(s) in 7 run(s).
+Seen 16 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -27,10 +27,110 @@ Seen 14 time(s) in 7 run(s).
 | inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 1382 ms | 1687 ms | — |
 | inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 1182 ms | 1644 ms | — |
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 669 ms | 1503917 ms | — |
+| warmup | step 3: goto /marketplace/you/selling | 1 | 200 | 481 ms | 2837 ms | — |
+| warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 455 ms | 4597 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 481 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "MarketplaceYouSellingUpsellCardQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "9626969840719635"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "marketplace_uim_upsell_card": {
+        "card_type": "PROJECT_HAVEN_SELLER_TRUST_UPSELL",
+        "c2c_shipping_incentive_campaign_id": null,
+        "body": "Marking items as sold reduces unwanted messages and ensures transparency for potential buyers.",
+        "header": "Keep your listings up to date",
+        "icon_name": "shield",
+        "primary_button_text": "Learn more",
+        "primary_button_uri": "https://www.facebook.com/help/1156544111079919?helpref=about_content",
+        "secondary_button_text": null,
+        "secondary_button_uri": null,
+        "is_primary_button": true,
+        "is_deemphasized_button": false,
+        "ui_components": {
+          "component_name": "UIM_UPSELL_CARD_PROJECT_HAVEN_SELLER_TRUST_UPSELL",
+          "xout_component": "UIM_UPSELL_CARD_PROJECT_HAVEN_SELLER_TRUST_UPSELL_XOUT"
+        }
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742781870,
+      "time_at_flush_ms": 1792742782002
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T074930_61594063207669**, step 16: goto /marketplace/you/selling: 200, 455 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "MarketplaceYouSellingUpsellCardQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "9626969840719635"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "marketplace_uim_upsell_card": {
+        "card_type": "PROJECT_HAVEN_SELLER_TRUST_UPSELL",
+        "c2c_shipping_incentive_campaign_id": null,
+        "body": "Marking items as sold reduces unwanted messages and ensures transparency for potential buyers.",
+        "header": "Keep your listings up to date",
+        "icon_name": "shield",
+        "primary_button_text": "Learn more",
+        "primary_button_uri": "https://www.facebook.com/help/1156544111079919?helpref=about_content",
+        "secondary_button_text": null,
+        "secondary_button_uri": null,
+        "is_primary_button": true,
+        "is_deemphasized_button": false,
+        "ui_components": {
+          "component_name": "UIM_UPSELL_CARD_PROJECT_HAVEN_SELLER_TRUST_UPSELL",
+          "xout_component": "UIM_UPSELL_CARD_PROJECT_HAVEN_SELLER_TRUST_UPSELL_XOUT"
+        }
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742444794,
+      "time_at_flush_ms": 1792742444900
+    },
+    "is_final": true
+  }
+}
+```
 
 **runs/inspect/20261023T045453_61594063207669**, step 4: goto /marketplace/you/selling: 200, 460 ms
 
@@ -75,104 +175,6 @@ Answered:
     "server_metadata": {
       "request_start_time_ms": 1792731562021,
       "time_at_flush_ms": 1792731562102
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261023T000744_61594063207669**, step 2: goto /marketplace/you/selling: 200, 713 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "MarketplaceYouSellingUpsellCardQuery",
-  "server_timestamps": "true",
-  "variables": {},
-  "doc_id": "9626969840719635"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "marketplace_uim_upsell_card": {
-        "card_type": "PROJECT_HAVEN_SELLER_TRUST_UPSELL",
-        "c2c_shipping_incentive_campaign_id": null,
-        "body": "Marking items as sold reduces unwanted messages and ensures transparency for potential buyers.",
-        "header": "Keep your listings up to date",
-        "icon_name": "shield",
-        "primary_button_text": "Learn more",
-        "primary_button_uri": "https://www.facebook.com/help/1156544111079919?helpref=about_content",
-        "secondary_button_text": null,
-        "secondary_button_uri": null,
-        "is_primary_button": true,
-        "is_deemphasized_button": false,
-        "ui_components": {
-          "component_name": "UIM_UPSELL_CARD_PROJECT_HAVEN_SELLER_TRUST_UPSELL",
-          "xout_component": "UIM_UPSELL_CARD_PROJECT_HAVEN_SELLER_TRUST_UPSELL_XOUT"
-        }
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792714113181,
-      "time_at_flush_ms": 1792714113278
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261023T000744_61594063207669**, step 3: goto /marketplace/inbox: 200, 368 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "MarketplaceYouSellingUpsellCardQuery",
-  "server_timestamps": "true",
-  "variables": {},
-  "doc_id": "9626969840719635"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "marketplace_uim_upsell_card": {
-        "card_type": "PROJECT_HAVEN_SELLER_TRUST_UPSELL",
-        "c2c_shipping_incentive_campaign_id": null,
-        "body": "Marking items as sold reduces unwanted messages and ensures transparency for potential buyers.",
-        "header": "Keep your listings up to date",
-        "icon_name": "shield",
-        "primary_button_text": "Learn more",
-        "primary_button_uri": "https://www.facebook.com/help/1156544111079919?helpref=about_content",
-        "secondary_button_text": null,
-        "secondary_button_uri": null,
-        "is_primary_button": true,
-        "is_deemphasized_button": false,
-        "ui_components": {
-          "component_name": "UIM_UPSELL_CARD_PROJECT_HAVEN_SELLER_TRUST_UPSELL",
-          "xout_component": "UIM_UPSELL_CARD_PROJECT_HAVEN_SELLER_TRUST_UPSELL_XOUT"
-        }
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792714196312,
-      "time_at_flush_ms": 1792714196358
     },
     "is_final": true
   }

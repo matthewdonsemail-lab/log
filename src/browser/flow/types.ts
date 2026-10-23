@@ -16,6 +16,7 @@ export interface AnswerExpect {
   call: string
   says: AnswerCheck[]
   waitMs?: number
+  ifSent?: boolean
 }
 
 export interface AnswerAccount {

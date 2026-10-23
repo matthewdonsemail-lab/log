@@ -13,15 +13,15 @@
 | Called from | `RTWebCallBlockSettingHooks` |
 | rea | `ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6` |
 
-Seen 99 time(s) in 27 run(s).
+Seen 111 time(s) in 30 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| warmup | step 1: goto / | 2 | 200 | 371–1016 ms | 7478–21291 ms | — |
-| warmup | step 4: goto /marketplace/ | 2 | 200 | 405–477 ms | 4027–5361 ms | — |
-| warmup | step 7: goto /marketplace/ | 2 | 200 | 363–515 ms | 3058–5555 ms | — |
-| warmup | step 11: goto /marketplace/ | 2 | 200 | 415–505 ms | 3061–15132 ms | — |
-| warmup | step 13: goto /marketplace/create/item | 2 | 200 | 352–391 ms | 3042–10379 ms | — |
+| warmup | step 1: goto / | 4 | 200 | 371–1016 ms | 7059–21291 ms | — |
+| warmup | step 4: goto /marketplace/ | 3 | 200 | 364–477 ms | 4027–5361 ms | — |
+| warmup | step 7: goto /marketplace/ | 3 | 200 | 363–515 ms | 3058–5555 ms | — |
+| warmup | step 11: goto /marketplace/ | 3 | 200 | 390–505 ms | 3061–15132 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 3 | 200 | 344–391 ms | 3042–10379 ms | — |
 | warmup | step 15: goto /marketplace/ | 2 | 200 | 350–354 ms | 2861–3126 ms | — |
 | warmup | step 17: goto /marketplace/ | 2 | 200 | 340–388 ms | 2346–3722 ms | — |
 | warmup | step 19: goto /marketplace/you/selling | 2 | 200 | 358–432 ms | 2327–8384 ms | — |
@@ -81,12 +81,18 @@ Seen 99 time(s) in 27 run(s).
 | inspect | step 5: goto /messages/ | 1 | 200 | 639 ms | 9393 ms | — |
 | flow | step 1: goto /marketplace/ | 1 | 200 | 685 ms | 6752 ms | — |
 | flow | step 3: goto /marketplace/create/item | 1 | 200 | 388 ms | 3315 ms | — |
+| warmup | step 1: goto /marketplace/ | 1 | 200 | 387 ms | 4155 ms | — |
+| warmup | step 3: goto /marketplace/you/selling | 1 | 200 | 425 ms | 3414 ms | — |
+| warmup | step 5: goto /messages/ | 1 | 200 | 375 ms | 5783 ms | — |
+| warmup | step 14: goto /marketplace/ | 1 | 200 | 366 ms | 3745 ms | — |
+| warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 600 ms | 5751 ms | — |
+| warmup | step 18: goto /marketplace/ | 1 | 200 | 446 ms | 3662 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T051540_61594063207669**, step 1: goto /: 200, 481 ms
+**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 387 ms
 
 Sent:
 
@@ -111,28 +117,28 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792732563451,
-      "time_at_flush_ms": 1792732563470
+      "request_start_time_ms": 1792742733444,
+      "time_at_flush_ms": 1792742733466
     },
     "is_final": true
   }
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, step 1: goto /marketplace/create/item: 200, 395 ms
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 425 ms
 
 Sent:
 
 ```json
 {
-  "qpl_active_flow_ids": "138820675",
+  "qpl_active_flow_ids": "30613466",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "RTWebCallBlockSettingHooksQuery",
   "server_timestamps": "true",
   "variables": {},
   "doc_id": "9989124061109700",
   "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=138820675"
+    "qpl_active_flow_ids=30613466"
   ]
 }
 ```
@@ -148,15 +154,15 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792731336973,
-      "time_at_flush_ms": 1792731336992
+      "request_start_time_ms": 1792742782510,
+      "time_at_flush_ms": 1792742782528
     },
     "is_final": true
   }
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, step 2: goto /marketplace/: 200, 358 ms
+**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 375 ms
 
 Sent:
 
@@ -181,8 +187,8 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792731446233,
-      "time_at_flush_ms": 1792731446251
+      "request_start_time_ms": 1792742814814,
+      "time_at_flush_ms": 1792742814832
     },
     "is_final": true
   }

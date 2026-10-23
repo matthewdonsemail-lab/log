@@ -67,6 +67,7 @@ export function planSession(options: ReelSessionOptions, seed: number): SessionS
         out.push({ reel, step: step('openProfile') })
         out.push({ reel, step: step('watch', draw(rng, { min: 3, max: 9 })) })
         out.push({ reel, step: step('backToReel') })
+        out.push({ reel, step: step('unmute') })
       }
       if (options.likes && rng() < options.like) out.push({ reel, step: step('like') })
     }

@@ -13,14 +13,14 @@
 | Called from | `CometMegaphoneRoot.react` |
 | rea | `ev_a2e1e82b09a10f9f97361e424dc787adb4a3a8c0a7bb15f7feb91de015e7d2fa` |
 
-Seen 17 time(s) in 11 run(s).
+Seen 19 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | step 7: goto /marketplace/ | 1 | 200 | 553 ms | 13566 ms | — |
 | warmup | step 15: goto /marketplace/ | 1 | 200 | 672 ms | 12034 ms | — |
 | warmup | step 4: goto /marketplace/ | 1 | 200 | 756 ms | 7053 ms | — |
-| warmup | step 11: goto /marketplace/ | 1 | 200 | 583 ms | 8607 ms | — |
+| warmup | step 11: goto /marketplace/ | 2 | 200 | 583–789 ms | 8607–15105 ms | — |
 | warmup | step 17: goto /marketplace/ | 1 | 200 | 504 ms | 12044 ms | — |
 | inspect | step 24: clickRole button "…" | 1 | 200 | 739 ms | 1258019 ms | — |
 | inspect | step 3: clickRole button "…" | 1 | 200 | 613 ms | 5493 ms | — |
@@ -34,10 +34,87 @@ Seen 17 time(s) in 11 run(s).
 | inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 2596 ms | 11543 ms | — |
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 803 ms | 1708101 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 883 ms | 15210 ms | — |
+| warmup | step 14: goto /marketplace/ | 1 | 200 | 622 ms | 7193 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T074930_61594063207669**, step 11: goto /marketplace/: 200, 789 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMegaphoneRootQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "first": 1,
+    "scale": 1
+  },
+  "doc_id": "28541893478753857"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "megaphonePromotions": {
+        "edges": []
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742237952,
+      "time_at_flush_ms": 1792742238144
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T074930_61594063207669**, step 14: goto /marketplace/: 200, 622 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMegaphoneRootQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "first": 1,
+    "scale": 1
+  },
+  "doc_id": "28541893478753857"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "megaphonePromotions": {
+        "edges": []
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742396554,
+      "time_at_flush_ms": 1792742396610
+    },
+    "is_final": true
+  }
+}
+```
 
 **runs/inspect/20261023T045453_61594063207669**, openAny: read /marketplace/item/<id>/: 200, 883 ms
 
@@ -71,82 +148,6 @@ Answered:
     "server_metadata": {
       "request_start_time_ms": 1792731520768,
       "time_at_flush_ms": 1792731520977
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261023T000744_61594063207669**, step 3: goto /marketplace/inbox: 200, 1917 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometMegaphoneRootQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "first": 1,
-    "scale": 1
-  },
-  "doc_id": "28541893478753857"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "megaphonePromotions": {
-        "edges": []
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792714191788,
-      "time_at_flush_ms": 1792714192084
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261023T000744_61594063207669**, step 5: goto /marketplace/you/selling: 200, 2596 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometMegaphoneRootQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "first": 1,
-    "scale": 1
-  },
-  "doc_id": "28541893478753857"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "megaphonePromotions": {
-        "edges": []
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792715273182,
-      "time_at_flush_ms": 1792715273311
     },
     "is_final": true
   }

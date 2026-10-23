@@ -34,7 +34,7 @@ description: Run an account's whole lifecycle (rule 35) in ONE browser kept open
 ## The routine
 
 ```bash
-log facebook host start --account <a> [--live] [--likes] --gapMinutes 2 --watchMinutes 2   # watched; default 150 / 12
+log facebook host start --account <a> [--live] [--likes] --gapSeconds 10 --watchMinutes 2   # watched; default 10 s / 12 min
 log facebook check --account <a> [--bypass]   # the host's check once, by hand, in the open browser
 log facebook host status [--account <a>]          # state, warm-up done, opens today, every close and its reason
 log facebook host send --account <a> PERSON_DONE  # after clearing a checkpoint by hand in the window

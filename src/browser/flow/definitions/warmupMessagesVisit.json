@@ -51,7 +51,8 @@
               "answer": "first.data.marketplace_home_feed",
               "present": true
             }
-          ]
+          ],
+          "ifSent": true
         }
       ],
       "recorded": {

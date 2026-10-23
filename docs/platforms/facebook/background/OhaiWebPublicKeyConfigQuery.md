@@ -13,15 +13,15 @@
 | Called from | `OhaiWebPublicKeyConfig` |
 | rea | `ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013` |
 
-Seen 99 time(s) in 27 run(s).
+Seen 111 time(s) in 30 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| warmup | step 1: goto / | 2 | 200 | 338–718 ms | 7237–20791 ms | — |
-| warmup | step 4: goto /marketplace/ | 2 | 200 | 383–533 ms | 3907–5132 ms | — |
-| warmup | step 7: goto /marketplace/ | 2 | 200 | 419–424 ms | 2999–5480 ms | — |
-| warmup | step 11: goto /marketplace/ | 2 | 200 | 383–387 ms | 2979–14937 ms | — |
-| warmup | step 13: goto /marketplace/create/item | 2 | 200 | 357–406 ms | 2599–10247 ms | — |
+| warmup | step 1: goto / | 4 | 200 | 338–718 ms | 6162–20791 ms | — |
+| warmup | step 4: goto /marketplace/ | 3 | 200 | 364–533 ms | 3907–5132 ms | — |
+| warmup | step 7: goto /marketplace/ | 3 | 200 | 375–424 ms | 2999–5480 ms | — |
+| warmup | step 11: goto /marketplace/ | 3 | 200 | 358–387 ms | 2979–14937 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 3 | 200 | 353–406 ms | 2599–10247 ms | — |
 | warmup | step 15: goto /marketplace/ | 2 | 200 | 345–353 ms | 2685–3045 ms | — |
 | warmup | step 17: goto /marketplace/ | 2 | 200 | 339–390 ms | 2229–3589 ms | — |
 | warmup | step 19: goto /marketplace/you/selling | 2 | 200 | 376 ms | 2290–8265 ms | — |
@@ -81,12 +81,18 @@ Seen 99 time(s) in 27 run(s).
 | inspect | step 5: goto /messages/ | 1 | 200 | 966 ms | 7668 ms | — |
 | flow | step 1: goto /marketplace/ | 1 | 200 | 374 ms | 6652 ms | — |
 | flow | step 3: goto /marketplace/create/item | 1 | 200 | 435 ms | 3223 ms | — |
+| warmup | step 1: goto /marketplace/ | 1 | 200 | 367 ms | 3824 ms | — |
+| warmup | step 3: goto /marketplace/you/selling | 1 | 200 | 389 ms | 3346 ms | — |
+| warmup | step 5: goto /messages/ | 1 | 200 | 583 ms | 5032 ms | — |
+| warmup | step 14: goto /marketplace/ | 1 | 200 | 368 ms | 3644 ms | — |
+| warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 683 ms | 5658 ms | — |
+| warmup | step 18: goto /marketplace/ | 1 | 200 | 377 ms | 3501 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T051540_61594063207669**, step 1: goto /: 200, 526 ms
+**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 367 ms
 
 Sent:
 
@@ -128,28 +134,28 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792732563120,
-      "time_at_flush_ms": 1792732563139
+      "request_start_time_ms": 1792742733098,
+      "time_at_flush_ms": 1792742733119
     },
     "is_final": true
   }
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, step 1: goto /marketplace/create/item: 200, 361 ms
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 389 ms
 
 Sent:
 
 ```json
 {
-  "qpl_active_flow_ids": "138820675",
+  "qpl_active_flow_ids": "30613466",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "OhaiWebPublicKeyConfigQuery",
   "server_timestamps": "true",
   "variables": {},
   "doc_id": "26996952523264441",
   "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=138820675"
+    "qpl_active_flow_ids=30613466"
   ]
 }
 ```
@@ -182,15 +188,15 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792731336493,
-      "time_at_flush_ms": 1792731336513
+      "request_start_time_ms": 1792742782388,
+      "time_at_flush_ms": 1792742782407
     },
     "is_final": true
   }
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, step 2: goto /marketplace/: 200, 379 ms
+**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 583 ms
 
 Sent:
 
@@ -232,8 +238,8 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792731446265,
-      "time_at_flush_ms": 1792731446284
+      "request_start_time_ms": 1792742814264,
+      "time_at_flush_ms": 1792742814285
     },
     "is_final": true
   }

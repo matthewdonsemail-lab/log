@@ -5798,3 +5798,77 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: a warm-up carries on past "can't post". The stage machine notes an activity whose issue is in `NOTED_ISSUES` (`marketplaceMayNotPost`), counts it done and goes on (`noted` in its context and output); the stage runner writes a `noted` line to the stage log and says it in the result. The host's warm-up notes the same issue, finishes the activity and returns ok with the note. The feed's account check (stage flow `warmupFeedBrowse` s01 and the feed activity's `openFeed`) moves from `FeedComposerCometRootQuery` to `MAWVerifyThreadCutover_ContactCapabilities2Query`'s `data.user.id`.
 Why: matt: "make the warm-up carry on past can't-post" and "run the full stage warm-up". The first live run (warmup 20261023T072846) stopped at its first step: the feed never sent FeedComposerCometRootQuery that time, while MAWVerifyThreadCutover_ContactCapabilities2Query answered data.user.id = the account on every feed load recorded (the three page loads without it were a partner-listing redirect and two steps cut before the page loaded).
 Checked: the second live run (warmup 20261023T073115) passed feedBrowse s01-s04 with the new check before the computer crashed. New tests: Bethlehem's case runs all five activities with createAccessCheck noted; the host's warm-up notes may-not-post and finishes the activity. `bun run check` passes with 904 tests.
+
+## 2026-10-23 08:16Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceRecordPDPDwellTimeMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSetProductItemSeenStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNewsFeedPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/FeedComposerCometRootQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MWQuickPromotionThreadlistBannerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPC2CMediaViewerWithImagesQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPRightColumnAdsQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYouSellingUpsellCardQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxBz.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useCIXLogMutation.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/flows/warmupFeedBrowse.md`: edited
+- `docs/platforms/facebook/flows/warmupMessagesVisit.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerAttributesQuery.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `skills/host/SKILL.md`: edited
+- `skills/warmup/SKILL.md`: edited
+- `src/browser/flow/answers.test.ts`: added test "a scroll that loads nothing more has no answer to judge, but one that pages must answer right (warm-up 20261023T074930 step 19 made no call)"
+- `src/browser/flow/definitions/warmupFeedBrowse.json`: edited
+- `src/browser/flow/definitions/warmupMessagesVisit.json`: edited
+- `src/browser/flow/helpers/answers.ts`: changed function answerWait, function answerIssueOf
+- `src/browser/flow/helpers/renderFlowDoc.ts`: changed function renderFlowDoc
+- `src/browser/flow/types.ts`: changed interface AnswerExpect
+- `src/cli/host/index.ts`: changed const HOST_USAGE, const HOST_INPUT, const hostCommand
+- `src/cli/warmup/helpers/platformActivity.ts`: changed function actor
+- `src/cli/warmup/helpers/stages.ts`: changed const STAGES_USAGE, function runStages, function record, function runWarmup
+- `src/cli/warmup/index.ts`: changed const warmupCommand
+- `src/facebook/warmup/activities/helpers/feed.ts`: changed const FEED
+- `src/facebook/warmup/activities/helpers/reel.ts`: changed const REEL
+- `src/facebook/warmup/activities/helpers/reelSession.ts`: changed function planSession
+- `src/facebook/warmup/activities/machine.ts`: changed function stepsForPlan
+- `src/facebook/warmup/activities/warmup.test.ts`: added test "a swipe that left the URL as it was is an issue, saying so; one that moved on needs Facebook to mark the reel seen for this account" · changed test "the steps checked are the ones whose recordings show a call that answers them; dwells and the rest have none to read", test "the same seed, the same session; Next card between reels; no like without --likes (rule 8)" · removed test "a swipe that left the URL as it was is an issue, saying so"
+- `src/marketplace/lifecycle/types.ts`: changed const DEFAULT_LIFECYCLE_TIMING
+- `src/mcp/server/server.test.ts`: changed test "a typed call with a missing, unknown or wrong field never runs"
+- `src/warmup/persona/persona.test.ts`: changed test "each action its steps, with the pack's times; the last reel has no Next card"
+
+What changed: (1) The gap between warm-up activities is `--gapSeconds`, 10 by default, in `log facebook warmup stages run` and `log facebook host start` (was `--gapMinutes`, 150, Listaro's pacing; `DEFAULT_LIFECYCLE_TIMING.activityGapMs` is 10 s). (2) Reels play with the sound on every time a reel loads: `unmute` follows every `backToReel`, in the drawn session (`planSession`) and the persona plan (`stepsForPlan`), and the plain runner passes `already: button Mute` so it never mutes. (3) A check can apply only when its call is sent (`AnswerExpect.ifSent`): a scroll that loads nothing more has no answer to judge, one that pages must answer right; the paging checks of the feed and Messages scrolls and the feed activity's `readFeed` use it, and no step waits for such a call. (4) The Reels steps read their answers: every swipe needs `FBUnifiedVideoSeenStateMutation` to answer this account (`xfb_fb_shorts_seen_state_mutation.viewer.actor.id`), opening the creator's profile needs `ProfileCometHeaderQuery`'s `profile_header_renderer`, and back to the reel needs `FBUnifiedVideoContainerQuery`. The warm-up skill, both flows' docs and the request docs (today's warm-up and Reels runs) follow.
+Why: matt, after the crash and during the runs: "it shouldn't take 2 minutes it should be like 10 seconds"; "The audio is still muted ... when I went off of the page to go on the profile and went back on to the reel ... it's watching the reels without unmuting the audio"; and "add the Reels checks from what gets saved". The full warm-up's Messages scroll (warm-up 20261023T074930 step 19) made no call at all and failed a check that demanded paging.
+Checked: live on Bethlehem: the full warm-up passed feed, Marketplace and Selling with createAccessCheck noted as marketplaceMayNotPost and carried on (warm-up 20261023T074930), and Messages passed all 7 steps (the run after the scroll fix); the Reels run (inspect 20261023T080801) passed all 20 steps, 8 reels, and its answers are the source of the new checks (the seen mutation on 7 of 7 swipes, the profile header, the reels feed on the way back). New tests: unmute follows every backToReel in both plans; a scroll with no call passes and a wrong paging answer fails; a swipe without the seen answer fails. `bun run check` passes with 905 tests; the docs gate passes.

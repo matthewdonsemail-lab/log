@@ -13,15 +13,15 @@
 | Called from | `fetchMWChatVideoAutoplaySetting` |
 | rea | `ev_cec3d0049369021eb11311f83bae206c05ab77298da76206b6788d2cdc5c8ee1` |
 
-Seen 100 time(s) in 27 run(s).
+Seen 112 time(s) in 30 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| warmup | step 1: goto / | 2 | 200 | 376–408 ms | 2751–20772 ms | — |
-| warmup | step 4: goto /marketplace/ | 2 | 200 | 440–444 ms | 1900–4010 ms | — |
-| warmup | step 7: goto /marketplace/ | 2 | 200 | 394–545 ms | 1788–2979 ms | — |
-| warmup | step 11: goto /marketplace/ | 2 | 200 | 371–397 ms | 1405–12778 ms | — |
-| warmup | step 13: goto /marketplace/create/item | 2 | 200 | 345–467 ms | 1859–4643 ms | — |
+| warmup | step 1: goto / | 4 | 200 | 359–924 ms | 2751–20772 ms | — |
+| warmup | step 4: goto /marketplace/ | 3 | 200 | 366–444 ms | 1900–4010 ms | — |
+| warmup | step 7: goto /marketplace/ | 3 | 200 | 357–545 ms | 1788–2979 ms | — |
+| warmup | step 11: goto /marketplace/ | 3 | 200 | 371–410 ms | 1405–12778 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 3 | 200 | 345–467 ms | 1859–4643 ms | — |
 | warmup | step 15: goto /marketplace/ | 2 | 200 | 350–441 ms | 1630–1781 ms | — |
 | warmup | step 17: goto /marketplace/ | 2 | 200 | 363–416 ms | 1531–1697 ms | — |
 | warmup | step 19: goto /marketplace/you/selling | 2 | 200 | 377–391 ms | 2162–7524 ms | — |
@@ -81,12 +81,18 @@ Seen 100 time(s) in 27 run(s).
 | inspect | step 5: goto /messages/ | 1 | 200 | 415 ms | 7649 ms | — |
 | flow | step 1: goto /marketplace/ | 1 | 200 | 495 ms | 3198 ms | — |
 | flow | step 3: goto /marketplace/create/item | 1 | 200 | 476 ms | 1735 ms | — |
+| warmup | step 1: goto /marketplace/ | 1 | 200 | 425 ms | 2680 ms | — |
+| warmup | step 3: goto /marketplace/you/selling | 1 | 200 | 395 ms | 3072 ms | — |
+| warmup | step 5: goto /messages/ | 1 | 200 | 367 ms | 5012 ms | — |
+| warmup | step 14: goto /marketplace/ | 1 | 200 | 396 ms | 1729 ms | — |
+| warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 368 ms | 4773 ms | — |
+| warmup | step 18: goto /marketplace/ | 1 | 200 | 487 ms | 1823 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T051540_61594063207669**, step 1: goto /: 200, 412 ms
+**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 425 ms
 
 Sent:
 
@@ -113,28 +119,28 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792732561301,
-      "time_at_flush_ms": 1792732561324
+      "request_start_time_ms": 1792742732007,
+      "time_at_flush_ms": 1792742732028
     },
     "is_final": true
   }
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, step 1: goto /marketplace/create/item: 200, 492 ms
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 395 ms
 
 Sent:
 
 ```json
 {
-  "qpl_active_flow_ids": "138820675",
+  "qpl_active_flow_ids": "30613466",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "fetchMWChatVideoAutoplaySettingQuery",
   "server_timestamps": "true",
   "variables": {},
   "doc_id": "9713919638685405",
   "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=138820675"
+    "qpl_active_flow_ids=30613466"
   ]
 }
 ```
@@ -152,15 +158,15 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792731336025,
-      "time_at_flush_ms": 1792731336052
+      "request_start_time_ms": 1792742782111,
+      "time_at_flush_ms": 1792742782130
     },
     "is_final": true
   }
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, step 2: goto /marketplace/: 200, 369 ms
+**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 367 ms
 
 Sent:
 
@@ -187,8 +193,8 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792731446219,
-      "time_at_flush_ms": 1792731446237
+      "request_start_time_ms": 1792742814035,
+      "time_at_flush_ms": 1792742814052
     },
     "is_final": true
   }

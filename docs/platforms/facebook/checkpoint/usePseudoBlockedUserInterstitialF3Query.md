@@ -6,24 +6,24 @@
 | --- | --- |
 | Domain | checkpoint |
 | Kind | query |
-| doc_id | `27255340990751033` |
+| doc_id | `40106045909008763` |
 | Path | `/api/graphql/` |
 | Sends | — |
 | Reads | — |
 | Called from | `usePseudoBlockedUserInterstitial` |
-| rea | `ev_4f0f59bc7d5ff4c02ef9f2aba85fc9de893084a7a8fbdf3f1627ce6c1c3456fe` |
+| rea | `ev_bd4768487f8ce51543ac7bf31bbe4bddfd24eccd0b88381038a13399ea6e6697` |
 
-Seen 119 time(s) in 27 run(s).
+Seen 134 time(s) in 30 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| warmup | step 1: goto / | 2 | 200 | 341–381 ms | 7275–20768 ms | — |
-| warmup | step 4: goto /marketplace/ | 2 | 200 | 366–487 ms | 4024–5358 ms | — |
-| warmup | step 7: goto /marketplace/ | 2 | 200 | 364–456 ms | 3153–5551 ms | — |
+| warmup | step 1: goto / | 4 | 200 | 341–388 ms | 6785–20768 ms | — |
+| warmup | step 4: goto /marketplace/ | 3 | 200 | 366–487 ms | 4024–5358 ms | — |
+| warmup | step 7: goto /marketplace/ | 3 | 200 | 364–456 ms | 3153–5551 ms | — |
 | warmup | scroll: +127px in 4 wheel steps, 125 ms | 1 | 200 | 345 ms | 4532 ms | — |
 | warmup | scroll: -605px in 14 wheel steps, 687 ms | 1 | 200 | 353 ms | 2407 ms | — |
-| warmup | step 11: goto /marketplace/ | 2 | 200 | 415–505 ms | 3059–15128 ms | — |
-| warmup | step 13: goto /marketplace/create/item | 2 | 200 | 354–392 ms | 3039–10375 ms | — |
+| warmup | step 11: goto /marketplace/ | 3 | 200 | 395–505 ms | 3059–15128 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 3 | 200 | 354–392 ms | 3039–10375 ms | — |
 | warmup | step 15: goto /marketplace/ | 2 | 200 | 355–359 ms | 2857–3123 ms | — |
 | warmup | step 17: goto /marketplace/ | 2 | 200 | 342–395 ms | 2343–3720 ms | — |
 | warmup | step 19: goto /marketplace/you/selling | 2 | 200 | 357–369 ms | 2519–8339 ms | — |
@@ -94,12 +94,21 @@ Seen 119 time(s) in 27 run(s).
 | inspect | step 5: goto /messages/ | 1 | 200 | 808 ms | 8215 ms | — |
 | flow | step 1: goto /marketplace/ | 1 | 200 | 683 ms | 6749 ms | — |
 | flow | step 3: goto /marketplace/create/item | 1 | 200 | 377 ms | 3315 ms | — |
+| warmup | step 1: goto /marketplace/ | 1 | 200 | 389 ms | 4152 ms | — |
+| warmup | step 3: goto /marketplace/you/selling | 1 | 200 | 421 ms | 3410 ms | — |
+| warmup | step 5: goto /messages/ | 1 | 200 | 545 ms | 5526 ms | — |
+| warmup | scroll: +213px in 7 wheel steps, 453 ms | 1 | 200 | 399 ms | 285 ms | — |
+| warmup | scroll: -1034px in 22 wheel steps, 1032 ms | 1 | 200 | 352 ms | 1568 ms | — |
+| warmup | scroll: +981px in 24 wheel steps, 1672 ms | 1 | 200 | 358 ms | 3048 ms | — |
+| warmup | step 14: goto /marketplace/ | 1 | 200 | 364 ms | 3743 ms | — |
+| warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 610 ms | 5748 ms | — |
+| warmup | step 18: goto /marketplace/ | 1 | 200 | 379 ms | 3658 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T051540_61594063207669**, step 1: goto /: 200, 498 ms
+**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 389 ms
 
 Sent:
 
@@ -109,7 +118,7 @@ Sent:
   "fb_api_req_friendly_name": "usePseudoBlockedUserInterstitialF3Query",
   "server_timestamps": "true",
   "variables": {},
-  "doc_id": "27255340990751033"
+  "doc_id": "40106045909008763"
 }
 ```
 
@@ -124,28 +133,28 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792732563120,
-      "time_at_flush_ms": 1792732563144
+      "request_start_time_ms": 1792742733444,
+      "time_at_flush_ms": 1792742733466
     },
     "is_final": true
   }
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, step 1: goto /marketplace/create/item: 200, 386 ms
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 421 ms
 
 Sent:
 
 ```json
 {
-  "qpl_active_flow_ids": "138820675",
+  "qpl_active_flow_ids": "30613466",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "usePseudoBlockedUserInterstitialF3Query",
   "server_timestamps": "true",
   "variables": {},
-  "doc_id": "27255340990751033",
+  "doc_id": "40106045909008763",
   "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=138820675"
+    "qpl_active_flow_ids=30613466"
   ]
 }
 ```
@@ -161,15 +170,15 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792731336661,
-      "time_at_flush_ms": 1792731336686
+      "request_start_time_ms": 1792742782499,
+      "time_at_flush_ms": 1792742782520
     },
     "is_final": true
   }
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, step 2: goto /marketplace/: 200, 369 ms
+**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 545 ms
 
 Sent:
 
@@ -179,7 +188,7 @@ Sent:
   "fb_api_req_friendly_name": "usePseudoBlockedUserInterstitialF3Query",
   "server_timestamps": "true",
   "variables": {},
-  "doc_id": "27255340990751033"
+  "doc_id": "40106045909008763"
 }
 ```
 
@@ -194,8 +203,8 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792731446208,
-      "time_at_flush_ms": 1792731446230
+      "request_start_time_ms": 1792742814551,
+      "time_at_flush_ms": 1792742814574
     },
     "is_final": true
   }

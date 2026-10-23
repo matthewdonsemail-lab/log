@@ -13,18 +13,18 @@
 | Called from | `CometMarketplaceRecordPDPDwellTimeMutation` |
 | rea | `ev_7b946545027e3755bb8b1699090bf3da00216eac5a3c02a5026c1499fd521772` |
 
-Seen 10 time(s) in 5 run(s).
+Seen 13 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| warmup | openAny: read /marketplace/item/<id>/ | 5 | 200 | 446–686 ms | 73–93 ms | — |
+| warmup | openAny: read /marketplace/item/<id>/ | 8 | 200 | 432–686 ms | 70–93 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 5 | 200 | 448–893 ms | 73–112 ms | — |
 
 ### What it sent and what came back (the newest 1 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T045453_61594063207669**, openAny: read /marketplace/item/<id>/: 200, 568 ms
+**runs/warmup/20261023T074930_61594063207669**, openAny: read /marketplace/item/<id>/: 200, 432 ms
 
 Sent:
 
@@ -35,10 +35,10 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "listing_id": "39887208997530861",
-      "start_time": 1792731490232,
+      "listing_id": "1749699906261391",
+      "start_time": 1792742061173,
       "actor_id": "61594063207669",
-      "client_mutation_id": "2"
+      "client_mutation_id": "3"
     }
   },
   "doc_id": "24177643518491637"
@@ -50,12 +50,12 @@ Answered:
 ```json
 {
   "data": {
-    "marketplace_record_pdp_dwell_time": false
+    "marketplace_record_pdp_dwell_time": true
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792731495003,
-      "time_at_flush_ms": 1792731495027
+      "request_start_time_ms": 1792742068400,
+      "time_at_flush_ms": 1792742068500
     },
     "is_final": true
   }

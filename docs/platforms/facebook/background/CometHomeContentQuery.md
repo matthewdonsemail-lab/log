@@ -13,14 +13,14 @@
 | Called from | `CometHomeContent.react` |
 | rea | `ev_cf23e67c25aa3ceb49db2a20048e8ce344dfa1f57457ba9df343170946991f9b` |
 
-Seen 20 time(s) in 11 run(s).
+Seen 22 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | step 7: goto /marketplace/ | 1 | 200 | 473 ms | 13562 ms | — |
 | warmup | step 15: goto /marketplace/ | 1 | 200 | 668 ms | 12031 ms | — |
 | warmup | step 4: goto /marketplace/ | 1 | 200 | 745 ms | 7048 ms | — |
-| warmup | step 11: goto /marketplace/ | 1 | 200 | 477 ms | 8604 ms | — |
+| warmup | step 11: goto /marketplace/ | 2 | 200 | 477–754 ms | 8604–15104 ms | — |
 | warmup | step 17: goto /marketplace/ | 1 | 200 | 439 ms | 12041 ms | — |
 | inspect | step 24: clickRole button "…" | 1 | 200 | 568 ms | 1258015 ms | — |
 | inspect | step 3: clickRole button "…" | 1 | 200 | 396 ms | 5489 ms | — |
@@ -36,10 +36,77 @@ Seen 20 time(s) in 11 run(s).
 | inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 2508 ms | 11539 ms | — |
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 712 ms | 1708097 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 617 ms | 15207 ms | — |
+| warmup | step 14: goto /marketplace/ | 1 | 200 | 448 ms | 7190 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T074930_61594063207669**, step 11: goto /marketplace/: 200, 754 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeContentQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "28262615193401316"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "comet_top_of_home_feed_tabs_renderer": null
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742237951,
+      "time_at_flush_ms": 1792742237978
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T074930_61594063207669**, step 14: goto /marketplace/: 200, 448 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeContentQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "28262615193401316"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "comet_top_of_home_feed_tabs_renderer": null
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742396554,
+      "time_at_flush_ms": 1792742396575
+    },
+    "is_final": true
+  }
+}
+```
 
 **runs/inspect/20261023T045453_61594063207669**, openAny: read /marketplace/item/<id>/: 200, 617 ms
 
@@ -68,72 +135,6 @@ Answered:
     "server_metadata": {
       "request_start_time_ms": 1792731520751,
       "time_at_flush_ms": 1792731520785
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261023T000744_61594063207669**, step 3: goto /marketplace/inbox: 200, 1436 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometHomeContentQuery",
-  "server_timestamps": "true",
-  "variables": {},
-  "doc_id": "28262615193401316"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "comet_top_of_home_feed_tabs_renderer": null
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792714191563,
-      "time_at_flush_ms": 1792714191583
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261023T000744_61594063207669**, step 5: goto /marketplace/you/selling: 200, 2508 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometHomeContentQuery",
-  "server_timestamps": "true",
-  "variables": {},
-  "doc_id": "28262615193401316"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "comet_top_of_home_feed_tabs_renderer": null
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792715273015,
-      "time_at_flush_ms": 1792715273040
     },
     "is_final": true
   }

@@ -25,7 +25,7 @@ export function renderFlowDoc(flow: FlowDefinition, requestDoc: (name: string) =
     const doc = s.expect ? requestDoc(s.expect) : null
     const confirmed = s.expect ? (doc ? `[\`${s.expect}\`](${doc})` : `\`${s.expect}\``) : '—'
     const recorded = `${s.recorded.step}${s.recorded.ms ? `, ${s.recorded.ms} ms` : ''}${s.recorded.reaEvidenceId ? `, rea \`${s.recorded.reaEvidenceId}\`` : ''}`
-    const answers = s.answers?.length ? s.answers.map((a) => `\`${a.call}\` 2xx${a.says.length ? `: ${a.says.map(checkText).join('; ')}` : ''}`).join('<br>') : '—'
+    const answers = s.answers?.length ? s.answers.map((a) => `${a.ifSent ? 'if sent, ' : ''}\`${a.call}\` 2xx${a.says.length ? `: ${a.says.map(checkText).join('; ')}` : ''}`).join('<br>') : '—'
     out.push(`| ${i + 1} | \`${s.id}\` | ${does.replace(/\|/g, '/')} | ${confirmed} | ${answers.replace(/\|/g, '/')} | ${recorded} |`)
   })
   out.push('', '## Machine', '', '```mermaid', 'stateDiagram-v2', `  [*] --> ${flow.steps[0]?.id ?? 'done'}`)

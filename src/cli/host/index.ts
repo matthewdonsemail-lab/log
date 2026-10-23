@@ -13,7 +13,7 @@ import type { HostBrowser } from "./helpers/index.ts";
 export * from "./helpers/index.ts";
 
 export const HOST_USAGE = [
-  "Usage: log facebook host start --account <accountName> [--live] [--likes] [--bypass] [--gapMinutes <n>] [--watchMinutes <n>]   (--live: profile, name, location; --likes: the warm-up's likes)",
+  "Usage: log facebook host start --account <accountName> [--live] [--likes] [--bypass] [--gapSeconds <n>] [--watchMinutes <n>]   (--live: profile, name, location; --likes: the warm-up's likes)",
   "       log facebook host send --account <accountName> <PERSON_DONE|PAUSE|RESUME|SHUTDOWN|LOST>",
   "       log facebook host status [--account <accountName>]",
 ].join("\n");
@@ -31,7 +31,7 @@ export const HOST_INPUT: CommandInput = {
         { name: "live", kind: "boolean", live: true, description: "Profile, name and location on Facebook, only when matt asked (rule 8)" },
         { name: "likes", kind: "boolean", live: true, description: "The warm-up's likes, only when matt asked (rule 8)" },
         { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when matt asked (rule 20)" },
-        { name: "gapMinutes", kind: "integer", description: "Minutes between rounds" },
+        { name: "gapSeconds", kind: "integer", description: "Seconds between warm-up activities (default 10)" },
         { name: "watchMinutes", kind: "integer", description: "Minutes between watch checks" },
         PROXY_MS_FLAG,
       ],
@@ -88,9 +88,10 @@ export const hostCommand: Command = {
 
     if (sub !== "start") return { code: 1, stderr: `log facebook host: pick start, send or status\n${HOST_USAGE}` };
     const minutes = (flag: string, fallback: number) => (flags[flag] === undefined ? fallback : Number(flags[flag]));
-    const gap = minutes("gapMinutes", 150);
+    const gap = minutes("gapSeconds", 10);
     const watch = minutes("watchMinutes", 12);
-    if (![gap, watch].every((n) => Number.isFinite(n) && n >= 0 && n <= 600)) return { code: 1, stderr: "log facebook host: --gapMinutes and --watchMinutes are 0 to 600" };
+    if (!Number.isFinite(gap) || gap < 0 || gap > 36_000) return { code: 1, stderr: "log facebook host: --gapSeconds is 0 to 36000" };
+    if (!Number.isFinite(watch) || watch < 0 || watch > 600) return { code: 1, stderr: "log facebook host: --watchMinutes is 0 to 600" };
 
     const browser: HostBrowser = { run: null, session: null };
     const log = (line: string) => context.err(line);
@@ -101,7 +102,7 @@ export const hostCommand: Command = {
       actors: hostActors(context, account, browser, { bypassHours: Boolean(flags["bypass"]), likes: Boolean(flags["likes"]), log }) as never,
       saveFields: async (fields: Partial<Record<MilestoneField, string>>) => void (await context.twenty.update("socialAccounts", account.id, fields)),
       today: dayOf(account).today,
-      timing: { activityGapMs: gap * 60_000, watchIntervalMs: watch * 60_000 },
+      timing: { activityGapMs: gap * 1000, watchIntervalMs: watch * 60_000 },
       onLine: log,
       inspect: createInspector((line) => context.err(formatTraceLine(line))),
     });

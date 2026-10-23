@@ -13,7 +13,7 @@ export function valueAt(value: unknown, path: string): unknown {
 }
 
 export function answerWait(answers: readonly AnswerExpect[] | undefined): { name: string; ms: number } | undefined {
-  const first = answers?.find((a) => !a.call.startsWith('page '))
+  const first = answers?.find((a) => !a.call.startsWith('page ') && !a.ifSent)
   return first ? { name: first.call, ms: first.waitMs ?? ANSWER_WAIT_MS } : undefined
 }
 
@@ -48,6 +48,7 @@ function checkOne(check: AnswerCheck, exchange: StepExchange, account: AnswerAcc
 
 export function answerIssueOf(expect: AnswerExpect, exchanges: readonly StepExchange[], account: AnswerAccount = {}): AnswerIssue | null {
   const calls = exchanges.filter((e) => e.name === expect.call)
+  if (!calls.length && expect.ifSent) return null
   if (!calls.length) return { code: 'answerNotAsExpected', text: `Facebook never answered ${expect.call} in this step (rule 73: its answer decides, not the screen)` }
   const last = calls.filter((e) => e.status >= 200 && e.status < 300).at(-1)
   if (!last) return { code: 'answerNotAsExpected', text: `${expect.call} answered ${calls.map((e) => e.status).join(', ')}, never 2xx` }

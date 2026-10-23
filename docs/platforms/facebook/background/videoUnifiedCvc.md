@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_65fd97c211aa021a0baa4acbf28a21563c74f299d7c49a15653437eb50de6bef` |
+| rea | `ev_d8c27bbbd1cecca03ebd416423ee9407ce7cc982764845b7c2896ee484b960ca` |
 
-Seen 130 time(s) in 14 run(s).
+Seen 133 time(s) in 15 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -114,12 +114,15 @@ Seen 130 time(s) in 14 run(s).
 | inspect | step 92: clickRole button "…" | 1 | 200 | 705 ms | 1268 ms | — |
 | inspect | step 96: clickRole button "…" | 1 | 200 | 1387 ms | 1662 ms | — |
 | inspect | step 1: goto / | 1 | 200 | 361 ms | 9079 ms | — |
+| warmup | step 1: goto / | 1 | 200 | 347 ms | 9074 ms | — |
+| warmup | scroll: +376px in 9 wheel steps, 906 ms | 1 | 200 | 518 ms | 3718 ms | — |
+| warmup | scroll: +981px in 24 wheel steps, 1672 ms | 1 | 200 | 358 ms | 5419 ms | — |
 
-### What it sent and what came back (the newest 1 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T051540_61594063207669**, step 1: goto /: 200, 361 ms
+**runs/warmup/20261023T074930_61594063207669**, step 1: goto /: 200, 347 ms
 
 Sent:
 
@@ -129,13 +132,13 @@ Sent:
     "pps": null,
     "ps": {
       "m": true,
-      "pf": 21,
+      "pf": 25,
       "s": "playing",
-      "sa": 2032
+      "sa": 4
     },
-    "si": "fbd0df337507540dc",
+    "si": "f5e1b7ca86297f4c2",
     "so": "inline::fb_shorts_creation_feed_unit",
-    "vi": "1508021361207264"
+    "vi": "1112473577862183"
   }
 }
 ```
@@ -145,10 +148,10 @@ Answered:
 ```json
 {
   "__ar": 1,
-  "rid": "AOoAS_Jbxv0KBPLuSkKrjgR",
+  "rid": "A32sWsaeSOP1KJeDt_7IqO3",
   "payload": {
-    "vi": "1508021361207264",
-    "si": "fbd0df337507540dc",
+    "vi": "1112473577862183",
+    "si": "f5e1b7ca86297f4c2",
     "d": {
       "c": 0,
       "h": true
@@ -157,7 +160,91 @@ Answered:
       "t": "s"
     }
   },
-  "lid": "7699727743571538009"
+  "lid": "7699767373216913787"
+}
+```
+
+**runs/warmup/20261023T074930_61594063207669**, scroll: +376px in 9 wheel steps, 906 ms: 200, 518 ms
+
+Sent:
+
+```json
+{
+  "d": {
+    "pps": null,
+    "ps": {
+      "m": true,
+      "pf": 3,
+      "s": "playing",
+      "sa": 11
+    },
+    "si": "f5def5680d7fcfba0",
+    "so": "inline::fb_reels_video_preview",
+    "vi": "2194705858096130"
+  }
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "Ai5kcAIeqKQqSUNbzAPtwPA",
+  "payload": {
+    "vi": "2194705858096130",
+    "si": "f5def5680d7fcfba0",
+    "d": {
+      "c": 0,
+      "h": true
+    },
+    "a": {
+      "t": "s"
+    }
+  },
+  "lid": "7699767504524232373"
+}
+```
+
+**runs/warmup/20261023T074930_61594063207669**, scroll: +981px in 24 wheel steps, 1672 ms: 200, 358 ms
+
+Sent:
+
+```json
+{
+  "d": {
+    "pps": null,
+    "ps": {
+      "m": true,
+      "pf": 4,
+      "s": "playing",
+      "sa": 14
+    },
+    "si": "fcd2b001aec5dc1ec",
+    "so": "inline::inline",
+    "vi": "1114883744850595"
+  }
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "Al5J8ofcRLrVe10GGLj24IP",
+  "payload": {
+    "vi": "1114883744850595",
+    "si": "fcd2b001aec5dc1ec",
+    "d": {
+      "c": 0,
+      "h": true
+    },
+    "a": {
+      "t": "s"
+    }
+  },
+  "lid": "7699768644479556649"
 }
 ```
 

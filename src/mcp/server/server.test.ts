@@ -126,7 +126,7 @@ describe("guardCall", () => {
     expect(guardCall("check", { account: "a", bogus: 1 }, COMMANDS)).toEqual({ ok: false, message: 'check: unknown field "bogus"' });
     expect(guardCall("accountStatus", { account: "a", status: "NOPE" }, COMMANDS).ok).toBe(false);
     expect(guardCall("inspectDo", { action: "teleport" }, COMMANDS).ok).toBe(false);
-    expect(guardCall("hostStart", { account: "a", gapMinutes: "5" }, COMMANDS).ok).toBe(false);
+    expect(guardCall("hostStart", { account: "a", gapSeconds: "5" }, COMMANDS).ok).toBe(false);
     expect(guardCall("listings", { args: ["--json"] }, COMMANDS).ok).toBe(false);
   });
 

@@ -51,18 +51,25 @@ description: Record and run the account warm-up (rule 36) - Listaro's five activ
 6. **Scrolls like a hand** (`python/human/scrollMotion.py`, ported from the Robotic
    VSL repo): bell-curve wheel steps, overshoot and recoil, mid-pauses. No
    `scrollBy` or `scroll_into_view_if_needed` anywhere.
+7. **Reels play with the sound on, every time a reel loads.** Reels start
+   muted, and coming back from the creator's profile loads the reel again,
+   muted (matt, 2026-10-23: the run after the profile watched with the audio
+   off). So `unmute` follows every `backToReel`, in the drawn session and the
+   persona plan, and it presses nothing when `button "Mute"` already shows
+   (`already`), so it never mutes.
 
 ## The routine
 
 ```bash
 log facebook warmup stages plan                                        # the five scripts, recorded or not
 log facebook warmup stages record --account <a> --now                  # one headed session: each script, then each flow
-log facebook warmup stages run --account <a> --gapMinutes 2 --now      # watched run: the machine runs each flow in turn
+log facebook warmup stages run --account <a> --now                     # watched run: the machine runs each flow in turn, 10 s apart
 log facebook warmup stages log --account <a> --follow                 # the stage log, live
 ```
 
-`--gapMinutes` defaults to 150 (five activities across the account's day);
-use 1-5 when matt is watching. `--only feedBrowse,sellingVisit` limits it.
+`--gapSeconds` is the wait between activities: 10 by default (matt,
+2026-10-23: "it should be like 10 seconds", not Listaro's 150 minutes). `--only
+feedBrowse,sellingVisit` limits it.
 
 After recording, read each activity's steps with rea (rule 25) and rebuild the
 request docs (`log facebook capture --docs`, rule 27) before pushing.

@@ -13,14 +13,14 @@
 | Called from | `CometHomeContactChannelsContainer.react` |
 | rea | `ev_2b20cf591a095f7b9165ab97b7e2f350cb7e8c5253fad588365b692a046465d8` |
 
-Seen 20 time(s) in 11 run(s).
+Seen 22 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | step 7: goto /marketplace/ | 1 | 200 | 580 ms | 13569 ms | — |
 | warmup | step 15: goto /marketplace/ | 1 | 200 | 669 ms | 12038 ms | — |
 | warmup | step 4: goto /marketplace/ | 1 | 200 | 748 ms | 7057 ms | — |
-| warmup | step 11: goto /marketplace/ | 1 | 200 | 531 ms | 8610 ms | — |
+| warmup | step 11: goto /marketplace/ | 2 | 200 | 531–750 ms | 8610–15107 ms | — |
 | warmup | step 17: goto /marketplace/ | 1 | 200 | 550 ms | 12047 ms | — |
 | inspect | step 24: clickRole button "…" | 1 | 200 | 494 ms | 1258006 ms | — |
 | inspect | step 3: clickRole button "…" | 1 | 200 | 381 ms | 5482 ms | — |
@@ -36,10 +36,87 @@ Seen 20 time(s) in 11 run(s).
 | inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 2500 ms | 11548 ms | — |
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 865 ms | 1708105 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 829 ms | 15214 ms | — |
+| warmup | step 14: goto /marketplace/ | 1 | 200 | 612 ms | 7196 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T074930_61594063207669**, step 11: goto /marketplace/: 200, 750 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeContactChannelsContainerQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "9934887189887478"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "is_eligible_for_broadcast_channel_creation": false,
+      "actor": {
+        "__typename": "User",
+        "recent_broadcast_channels": [],
+        "id": "61594063207669"
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742237966,
+      "time_at_flush_ms": 1792742237985
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T074930_61594063207669**, step 14: goto /marketplace/: 200, 612 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeContactChannelsContainerQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "9934887189887478"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "is_eligible_for_broadcast_channel_creation": false,
+      "actor": {
+        "__typename": "User",
+        "recent_broadcast_channels": [],
+        "id": "61594063207669"
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742396587,
+      "time_at_flush_ms": 1792742396608
+    },
+    "is_final": true
+  }
+}
+```
 
 **runs/inspect/20261023T045453_61594063207669**, openAny: read /marketplace/item/<id>/: 200, 829 ms
 
@@ -73,82 +150,6 @@ Answered:
     "server_metadata": {
       "request_start_time_ms": 1792731520784,
       "time_at_flush_ms": 1792731520803
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261023T000744_61594063207669**, step 3: goto /marketplace/inbox: 200, 1431 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometHomeContactChannelsContainerQuery",
-  "server_timestamps": "true",
-  "variables": {},
-  "doc_id": "9934887189887478"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "is_eligible_for_broadcast_channel_creation": false,
-      "actor": {
-        "__typename": "User",
-        "recent_broadcast_channels": [],
-        "id": "61594063207669"
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792714191559,
-      "time_at_flush_ms": 1792714191584
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261023T000744_61594063207669**, step 5: goto /marketplace/you/selling: 200, 2500 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometHomeContactChannelsContainerQuery",
-  "server_timestamps": "true",
-  "variables": {},
-  "doc_id": "9934887189887478"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "is_eligible_for_broadcast_channel_creation": false,
-      "actor": {
-        "__typename": "User",
-        "recent_broadcast_channels": [],
-        "id": "61594063207669"
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792715273185,
-      "time_at_flush_ms": 1792715273205
     },
     "is_final": true
   }

@@ -13,7 +13,7 @@
 | Called from | `FBScreenTimeLogger.react` |
 | rea | `ev_9c20c08fbf4c14d62fa5b772be9b8dc2f4b32b06aa445a78cfb8f8ea86ba73c3` |
 
-Seen 68 time(s) in 21 run(s).
+Seen 70 time(s) in 22 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -49,10 +49,154 @@ Seen 68 time(s) in 21 run(s).
 | inspect | step 4: goto /marketplace/inbox | 6 | 200 | 572–2282 ms | 252472–1753170 ms | — |
 | inspect | step 6: goto /marketplace/inbox | 5 | 200 | 434–874 ms | 11719–1213257 ms | — |
 | inspect | step 6: wait 6s | 1 | 200 | 558 ms | 10373 ms | — |
+| warmup | openAny: read /marketplace/item/<id>/ | 1 | 200 | 420 ms | 1941 ms | — |
+| warmup | step 14: goto /marketplace/ | 1 | 200 | 806 ms | 6666 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T074930_61594063207669**, openAny: read /marketplace/item/<id>/: 200, 420 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBScreenTimeLogger_syncMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "actor_id": "61594063207669",
+      "client_mutation_id": "1",
+      "device_time_iso": "2026-10-23T07:54:52.628Z",
+      "fb_web_fb_intervals_payload": {
+        "device_timestamp": "1792742092",
+        "device_timezone": "America/New_York",
+        "intervals": [
+          {
+            "end_timestamp": "1792731798",
+            "start_timestamp": "1792731337"
+          },
+          {
+            "end_timestamp": "1792732767",
+            "start_timestamp": "1792732562"
+          },
+          {
+            "end_timestamp": "1792737847",
+            "start_timestamp": "1792737807"
+          },
+          {
+            "end_timestamp": "1792740565",
+            "start_timestamp": "1792740545"
+          },
+          {
+            "end_timestamp": "1792740809",
+            "start_timestamp": "1792740691"
+          },
+          {
+            "end_timestamp": "1792742092",
+            "start_timestamp": "1792741789"
+          }
+        ],
+        "local_storage_id": "2159989",
+        "version": "V1"
+      },
+      "screentime_snapshot_payload": {
+        "l24h_s": -1,
+        "last_sync_timestamp": 1792741789,
+        "today_s": 300
+      },
+      "trigger_reason": "REGULAR"
+    }
+  },
+  "doc_id": "28969188822673160"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "screen_time_sync": {
+      "aggs": {
+        "__typename": "ScreenTimeSyncMutationOutput",
+        "today_s": 1147,
+        "l24h_s": -1
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742093258,
+      "time_at_flush_ms": 1792742093338
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T074930_61594063207669**, step 14: goto /marketplace/: 200, 806 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBScreenTimeLogger_syncMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "actor_id": "61594063207669",
+      "client_mutation_id": "1",
+      "device_time_iso": "2026-10-23T07:59:55.380Z",
+      "fb_web_fb_intervals_payload": {
+        "device_timestamp": "1792742395",
+        "device_timezone": "America/New_York",
+        "intervals": [
+          {
+            "end_timestamp": "1792742395",
+            "start_timestamp": "1792741789"
+          }
+        ],
+        "local_storage_id": "53504705",
+        "version": "V1"
+      },
+      "screentime_snapshot_payload": {
+        "l24h_s": -1,
+        "last_sync_timestamp": 1792742092,
+        "today_s": 1147
+      },
+      "trigger_reason": "REGULAR"
+    }
+  },
+  "doc_id": "28969188822673160"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "screen_time_sync": {
+      "aggs": {
+        "__typename": "ScreenTimeSyncMutationOutput",
+        "today_s": 1450,
+        "l24h_s": -1
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742396315,
+      "time_at_flush_ms": 1792742396414
+    },
+    "is_final": true
+  }
+}
+```
 
 **runs/inspect/20261023T045453_61594063207669**, step 6: wait 6s: 200, 558 ms
 
@@ -113,132 +257,6 @@ Answered:
     "server_metadata": {
       "request_start_time_ms": 1792731636026,
       "time_at_flush_ms": 1792731636134
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261023T000744_61594063207669**, step 3: goto /marketplace/inbox: 200, 1377 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "FBScreenTimeLogger_syncMutation",
-  "server_timestamps": "true",
-  "variables": {
-    "input": {
-      "actor_id": "61594063207669",
-      "client_mutation_id": "1",
-      "device_time_iso": "2026-10-23T00:13:11.819Z",
-      "fb_web_fb_intervals_payload": {
-        "device_timestamp": "1792714391",
-        "device_timezone": "America/New_York",
-        "intervals": [
-          {
-            "end_timestamp": "1792686657",
-            "start_timestamp": "1792684778"
-          },
-          {
-            "end_timestamp": "1792714391",
-            "start_timestamp": "1792714089"
-          }
-        ],
-        "local_storage_id": "36502064",
-        "version": "V1"
-      },
-      "screentime_snapshot_payload": {
-        "l24h_s": -1,
-        "last_sync_timestamp": 1792714089,
-        "today_s": 9279
-      },
-      "trigger_reason": "REGULAR"
-    }
-  },
-  "doc_id": "28969188822673160"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "screen_time_sync": {
-      "aggs": {
-        "__typename": "ScreenTimeSyncMutationOutput",
-        "today_s": 9651,
-        "l24h_s": -1
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792714392487,
-      "time_at_flush_ms": 1792714392588
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261023T000744_61594063207669**, step 6: goto /marketplace/inbox: 200, 874 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "FBScreenTimeLogger_syncMutation",
-  "server_timestamps": "true",
-  "variables": {
-    "input": {
-      "actor_id": "61594063207669",
-      "client_mutation_id": "1",
-      "device_time_iso": "2026-10-23T00:28:12.373Z",
-      "fb_web_fb_intervals_payload": {
-        "device_timestamp": "1792715292",
-        "device_timezone": "America/New_York",
-        "intervals": [
-          {
-            "end_timestamp": "1792715292",
-            "start_timestamp": "1792714089"
-          }
-        ],
-        "local_storage_id": "90242846",
-        "version": "V1"
-      },
-      "screentime_snapshot_payload": {
-        "l24h_s": -1,
-        "last_sync_timestamp": 1792714992,
-        "today_s": 10252
-      },
-      "trigger_reason": "REGULAR"
-    }
-  },
-  "doc_id": "28969188822673160"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "screen_time_sync": {
-      "aggs": {
-        "__typename": "ScreenTimeSyncMutationOutput",
-        "today_s": 10552,
-        "l24h_s": -1
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792715292071,
-      "time_at_flush_ms": 1792715292165
     },
     "is_final": true
   }

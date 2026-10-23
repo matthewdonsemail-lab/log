@@ -11,22 +11,22 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_5a1496a9a2f701bcb02111a5c211fbef91eb3915170810fef3297176dbaccfbc` |
+| rea | `ev_4840b76a7b6fae5eb9e2ccd1fba5044ba1b9da1479a85adcefb3dc88829b4327` |
 
-Seen 658 time(s) in 30 run(s).
+Seen 691 time(s) in 32 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | step 1: goto / | 7 | 200 | 368–765 ms | 8512–51453 ms | — |
 | warmup | step 3: scroll 4-7 x 300-600px | 1 | 200 | 410 ms | 831 ms | — |
 | warmup | scroll: +388px in 10 wheel steps, 1109 ms | 1 | 200 | 341 ms | 1819 ms | — |
-| warmup | step 4: goto /marketplace/ | 1 | 200 | 372 ms | 330 ms | — |
+| warmup | step 4: goto /marketplace/ | 2 | 200 | 364–372 ms | 7–330 ms | — |
 | warmup | scroll: +582px in 13 wheel steps, 547 ms | 1 | 200 | 345 ms | 3004 ms | — |
 | warmup | step 7: goto /marketplace/ | 1 | 200 | 902 ms | 6227 ms | — |
 | warmup | step 9: scroll 3-5 x 400-700px | 1 | 200 | 335 ms | 532 ms | — |
 | warmup | scroll: +490px in 11 wheel steps, 469 ms | 1 | 200 | 338 ms | 2347 ms | — |
-| warmup | openAny: read /marketplace/item/<id>/ | 4 | 200 | 345–369 ms | 1442–39023 ms | — |
-| warmup | step 13: goto /marketplace/create/item | 9 | 200 | 336–1329 ms | 54–13255 ms | — |
+| warmup | openAny: read /marketplace/item/<id>/ | 8 | 200 | 344–381 ms | 1415–58591 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 14 | 200 | 336–1401 ms | 25–102578 ms | — |
 | warmup | step 15: goto /marketplace/ | 3 | 200 | 339–657 ms | 50–4974 ms | — |
 | warmup | scroll: +564px in 14 wheel steps, 781 ms | 1 | 200 | 350 ms | 7975 ms | — |
 | warmup | step 17: goto /marketplace/ | 4 | 200 | 365–844 ms | 39–4650 ms | — |
@@ -218,12 +218,24 @@ Seen 658 time(s) in 30 run(s).
 | inspect | step 3: likePost Like | 2 | 200 | 352–669 ms | 3775–25195 ms | — |
 | flow | step 1: goto /marketplace/ | 4 | 200 | 413–874 ms | 7530–8893 ms | — |
 | flow | step 3: goto /marketplace/create/item | 4 | 200 | 346–2215 ms | 50–11825 ms | — |
+| warmup | scroll: +314px in 8 wheel steps, 422 ms | 1 | 200 | 595 ms | 733 ms | — |
+| warmup | step 3: goto /marketplace/you/selling | 2 | 200 | 393–826 ms | 6665–7185 ms | — |
+| warmup | step 5: goto /messages/ | 2 | 200 | 371–661 ms | 390–8725 ms | — |
+| warmup | scroll: +376px in 9 wheel steps, 906 ms | 1 | 200 | 361 ms | 675 ms | — |
+| warmup | scroll: +537px in 13 wheel steps, 860 ms | 2 | 200 | 492–1304 ms | 2770–75202 ms | — |
+| warmup | scroll: +624px in 15 wheel steps, 953 ms | 1 | 200 | 359 ms | 2436 ms | — |
+| warmup | step 11: goto /marketplace/ | 4 | 200 | 341–625 ms | 5972–7293 ms | — |
+| warmup | step 14: goto /marketplace/ | 1 | 200 | 1068 ms | 6543 ms | — |
+| warmup | scroll: +319px in 8 wheel steps, 406 ms | 1 | 200 | 371 ms | 2052 ms | — |
+| warmup | step 16: goto /marketplace/you/selling | 2 | 200 | 700–902 ms | 9235–14460 ms | — |
+| warmup | step 17: dwell 2-4s | 5 | 200 | 359–1372 ms | 14831–87006 ms | — |
+| warmup | scroll: +463px in 14 wheel steps, 1031 ms | 1 | 200 | 1368 ms | 630 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T051540_61594063207669**, post: "…", 123 words, 0 image(s), scrolled 53 px: 200, 1126 ms
+**runs/warmup/20261023T080515_61594063207669**, scroll: +314px in 8 wheel steps, 422 ms: 200, 595 ms
 
 Sent:
 
@@ -241,13 +253,13 @@ Answered:
 ```json
 {
   "__ar": 1,
-  "rid": "AFGu_OOupSCrui8vY38lC1t",
+  "rid": "AE0EtWPif8Qi0qnG9W8FRRe",
   "payload": null,
-  "lid": "7699727855122977537"
+  "lid": "7699771538125504221"
 }
 ```
 
-**runs/inspect/20261023T051540_61594063207669**, step 3: likePost Like: 200, 669 ms
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 826 ms
 
 Sent:
 
@@ -265,21 +277,20 @@ Answered:
 ```json
 {
   "__ar": 1,
-  "rid": "AOXKvOdmT8l97Mjin-QhPFM",
+  "rid": "Aa_ULgZohJ9NhH3xEsi4cIc",
   "payload": null,
-  "lid": "7699728274810336266"
+  "lid": "7699771636854660104"
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, step 1: goto /marketplace/create/item: 200, 637 ms
+**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 371 ms
 
 Sent:
 
 ```json
 {
   "query": {
-    "ph": "C3",
-    "qpl_active_flow_ids": "138820675"
+    "ph": "C3"
   },
   "body": null
 }
@@ -288,12 +299,7 @@ Sent:
 Answered:
 
 ```json
-{
-  "__ar": 1,
-  "rid": "AtZ0nRbaxl5Geef91RJSvH_",
-  "payload": null,
-  "lid": "7699722471785515906"
-}
+null
 ```
 
 <!-- facts:end -->

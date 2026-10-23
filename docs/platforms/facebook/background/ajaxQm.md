@@ -11,17 +11,17 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_5a1496a9a2f701bcb02111a5c211fbef91eb3915170810fef3297176dbaccfbc` |
+| rea | `ev_df4801d859b5f78b7eb932fd4396f4fb50ed2d1b7b5558f6ee7642b19fc8650c` |
 
-Seen 106 time(s) in 30 run(s).
+Seen 118 time(s) in 33 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| warmup | step 1: goto / | 2 | 200 | 403–887 ms | 1709–15140 ms | — |
-| warmup | step 4: goto /marketplace/ | 2 | 200 | 409–5839 ms | 1202–6461 ms | — |
-| warmup | step 7: goto /marketplace/ | 2 | 200 | 423–424 ms | 813–1995 ms | — |
-| warmup | step 11: goto /marketplace/ | 2 | 200 | 383–417 ms | 768–11799 ms | — |
-| warmup | step 13: goto /marketplace/create/item | 2 | 200 | 443–554 ms | 1059–1694 ms | — |
+| warmup | step 1: goto / | 4 | 200 | 403–887 ms | 1709–15140 ms | — |
+| warmup | step 4: goto /marketplace/ | 3 | 200 | 409–5839 ms | 1202–6461 ms | — |
+| warmup | step 7: goto /marketplace/ | 3 | 200 | 423–493 ms | 813–1995 ms | — |
+| warmup | step 11: goto /marketplace/ | 3 | 200 | 383–452 ms | 768–11799 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 3 | 200 | 441–554 ms | 801–1694 ms | — |
 | warmup | step 15: goto /marketplace/ | 2 | 200 | 447–529 ms | 783–807 ms | — |
 | warmup | step 17: goto /marketplace/ | 2 | 200 | 442–487 ms | 686–776 ms | — |
 | warmup | step 19: goto /marketplace/you/selling | 2 | 200 | 588–2810 ms | 1303–6561 ms | — |
@@ -81,12 +81,18 @@ Seen 106 time(s) in 30 run(s).
 | inspect | step 5: goto /messages/ | 1 | 200 | 471 ms | 793 ms | — |
 | flow | step 1: goto /marketplace/ | 1 | 200 | 869 ms | 1884 ms | — |
 | flow | step 3: goto /marketplace/create/item | 1 | 200 | 438 ms | 798 ms | — |
+| warmup | step 1: goto /marketplace/ | 1 | 200 | 428 ms | 1756 ms | — |
+| warmup | step 3: goto /marketplace/you/selling | 1 | 200 | 427 ms | 1806 ms | — |
+| warmup | step 5: goto /messages/ | 1 | 200 | 438 ms | 1093 ms | — |
+| warmup | step 14: goto /marketplace/ | 1 | 200 | 437 ms | 806 ms | — |
+| warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 455 ms | 944 ms | — |
+| warmup | step 18: goto /marketplace/ | 1 | 200 | 451 ms | 808 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T051540_61594063207669**, step 1: goto /: 200, 1183 ms
+**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 428 ms
 
 Sent:
 
@@ -99,13 +105,13 @@ Answered:
 ```json
 {
   "__ar": 1,
-  "rid": "AKkJgnc3efvwbE9sum1UI8L",
+  "rid": "AE_hGpcLbigag3LZeVRrnoz",
   "payload": null,
-  "lid": "7699727711644696345"
+  "lid": "7699771399959004556"
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, step 1: goto /marketplace/create/item: 200, 455 ms
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 427 ms
 
 Sent:
 
@@ -118,13 +124,13 @@ Answered:
 ```json
 {
   "__ar": 1,
-  "rid": "A7p7Uz6_g2UlxCGbDQu_xS4",
+  "rid": "AoYMt7cPblvYvwqc7u6-6N8",
   "payload": null,
-  "lid": "7699722439004446570"
+  "lid": "7699771611009940763"
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, step 2: goto /marketplace/: 200, 566 ms
+**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 438 ms
 
 Sent:
 
@@ -137,9 +143,9 @@ Answered:
 ```json
 {
   "__ar": 1,
-  "rid": "ALg6nNnFl3_g4Bp7LKqbzbg",
+  "rid": "APPS8iAlIj4WWLVggRZhioy",
   "payload": null,
-  "lid": "7699722907367220674"
+  "lid": "7699771740668431251"
 }
 ```
 

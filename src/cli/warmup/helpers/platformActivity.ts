@@ -48,7 +48,7 @@ function actor(context: CommandContext, current: NonNullable<ReturnType<typeof r
   return fromPromise<StepReply, { account: string; step: ActivityStep }>(async ({ input }) => {
     const { step } = input;
     context.err(`  → ${step.id}: ${step.action} ${step.args.join(" ")}  (${step.why})`);
-    const reply = await context.sendInspect(current, step.action as InspectAction, step.args, 180_000, answerWaitOf(step));
+    const reply = await context.sendInspect(current, step.action as InspectAction, step.args, 180_000, answerWaitOf(step), step.id === "unmute" ? { already: ["button", "Mute"] } : undefined);
     if (!reply) return { ok: false, error: `no reply from the open browser in 180 s (${current.runDir})` };
     const snapshotPath = reply.folder ? join(reply.folder, "snapshot.yml") : null;
     return { ok: reply.ok !== false, error: reply.error, url: reply.url, folder: reply.folder, snapshot: snapshotPath && existsSync(snapshotPath) ? readFileSync(snapshotPath, "utf8") : undefined };

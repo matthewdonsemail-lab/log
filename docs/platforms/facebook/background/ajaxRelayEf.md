@@ -11,24 +11,24 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_5a1496a9a2f701bcb02111a5c211fbef91eb3915170810fef3297176dbaccfbc` |
+| rea | `ev_df4801d859b5f78b7eb932fd4396f4fb50ed2d1b7b5558f6ee7642b19fc8650c` |
 
-Seen 823 time(s) in 28 run(s).
+Seen 926 time(s) in 31 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| warmup | step 1: goto / | 13 | 200 | 343–2020 ms | 9724–43969 ms | — |
+| warmup | step 1: goto / | 22 | 200 | 343–2020 ms | 6910–43969 ms | — |
 | warmup | step 3: scroll 4-7 x 300-600px | 1 | 200 | 374 ms | 1068 ms | — |
 | warmup | scroll: +388px in 10 wheel steps, 1109 ms | 1 | 200 | 372 ms | 2791 ms | — |
-| warmup | step 4: goto /marketplace/ | 9 | 200 | 353–539 ms | 4232–20973 ms | — |
+| warmup | step 4: goto /marketplace/ | 15 | 200 | 353–1147 ms | 4232–21481 ms | — |
 | warmup | step 5: dwell 3-5s | 7 | 200 | 354–1712 ms | 3943–7110 ms | — |
 | warmup | step 6: scroll 1 x 400-800px | 1 | 200 | 384 ms | 206 ms | — |
 | warmup | scroll: +582px in 13 wheel steps, 547 ms | 2 | 200 | 364–1332 ms | 1775–21597 ms | — |
-| warmup | step 7: goto /marketplace/ | 18 | 200 | 336–546 ms | 3619–17789 ms | — |
+| warmup | step 7: goto /marketplace/ | 25 | 200 | 336–546 ms | 3619–17789 ms | — |
 | warmup | step 9: scroll 3-5 x 400-700px | 2 | 200 | 367–389 ms | 256–559 ms | — |
 | warmup | scroll: +449px in 12 wheel steps, 609 ms | 1 | 200 | 376 ms | 50 ms | — |
-| warmup | step 11: goto /marketplace/ | 10 | 200 | 361–482 ms | 2956–17286 ms | — |
-| warmup | step 13: goto /marketplace/create/item | 7 | 200 | 341–478 ms | 5083–22100 ms | — |
+| warmup | step 11: goto /marketplace/ | 19 | 200 | 342–949 ms | 2956–17286 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 11 | 200 | 341–478 ms | 5083–38256 ms | — |
 | warmup | step 15: goto /marketplace/ | 16 | 200 | 336–768 ms | 2612–19125 ms | — |
 | warmup | step 16: scroll 1 x 300-600px | 2 | 200 | 343–380 ms | 279–287 ms | — |
 | warmup | scroll: +564px in 14 wheel steps, 781 ms | 3 | 200 | 1375–1531 ms | 31173–61924 ms | — |
@@ -40,7 +40,7 @@ Seen 823 time(s) in 28 run(s).
 | warmup | step 23: goto /marketplace/you/selling | 12 | 200 | 350–676 ms | 2653–14521 ms | — |
 | warmup | scroll: +558px in 13 wheel steps, 672 ms | 1 | 200 | 408 ms | 29 ms | — |
 | warmup | scroll: +723px in 17 wheel steps, 1047 ms | 1 | 200 | 355 ms | 5666 ms | — |
-| warmup | openAny: read /marketplace/item/<id>/ | 2 | 200 | 376–399 ms | 3570–5123 ms | — |
+| warmup | openAny: read /marketplace/item/<id>/ | 5 | 200 | 350–440 ms | 3570–12647 ms | — |
 | warmup | scroll: +414px in 11 wheel steps, 656 ms | 1 | 200 | 615 ms | 3470 ms | — |
 | warmup | step 24: dwell 2-4s | 2 | 200 | 1179–1318 ms | 4043–4384 ms | — |
 | inspect | step 1: goto /groups/<id>/ | 29 | 200 | 329–2023 ms | 6733–23922 ms | — |
@@ -212,19 +212,35 @@ Seen 823 time(s) in 28 run(s).
 | flow | step 1: goto /marketplace/ | 8 | 200 | 343–706 ms | 6995–22295 ms | — |
 | flow | step 2: dwell 2-4s | 2 | 200 | 336–348 ms | 5753–6791 ms | — |
 | flow | step 3: goto /marketplace/create/item | 1 | 200 | 361 ms | 4452 ms | — |
+| warmup | step 1: goto /marketplace/ | 7 | 200 | 363–430 ms | 3685–20790 ms | — |
+| warmup | step 3: goto /marketplace/you/selling | 9 | 200 | 366–552 ms | 3753–19041 ms | — |
+| warmup | step 5: goto /messages/ | 4 | 200 | 368–413 ms | 8552–12448 ms | — |
+| warmup | step 6: dwell 2-3s | 1 | 200 | 640 ms | 6207 ms | — |
+| warmup | expected MAWVerifyThreadCutover_ContactCapabilities2Query: sent | 1 | 200 | 371 ms | 4365 ms | — |
+| warmup | step 2: dwell 3-5s | 1 | 200 | 369 ms | 6584 ms | — |
+| warmup | scroll: +535px in 12 wheel steps, 969 ms | 2 | 200 | 360–493 ms | 2168–2265 ms | — |
+| warmup | scroll: +537px in 13 wheel steps, 860 ms | 8 | 200 | 360–415 ms | 2095–19172 ms | — |
+| warmup | step 8: dwell 3-5s | 3 | 200 | 353–407 ms | 4669–5132 ms | — |
+| warmup | step 14: goto /marketplace/ | 8 | 200 | 363–511 ms | 3896–19726 ms | — |
+| warmup | scroll: +508px in 12 wheel steps, 625 ms | 3 | 200 | 371–445 ms | 2521–4207 ms | — |
+| warmup | step 16: goto /marketplace/you/selling | 5 | 200 | 363–540 ms | 6202–14758 ms | — |
+| warmup | step 17: dwell 2-4s | 6 | 200 | 385–624 ms | 11953–23865 ms | — |
+| warmup | step 18: goto /marketplace/ | 5 | 200 | 371–385 ms | 3807–9645 ms | — |
+| warmup | scroll: +463px in 14 wheel steps, 1031 ms | 2 | 200 | 366–406 ms | 3010–8007 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T051540_61594063207669**, step 1: goto /: 200, 458 ms
+**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 373 ms
 
 Sent:
 
 ```json
 {
-  "queries[0]": "GroupsCometLeftRailContainerQuery",
-  "queries[1]": "GroupsCometCrossGroupFeedContainerQuery"
+  "queries[0]": "MarketplacePDPC2CMediaViewerWithImagesQuery",
+  "queries[1]": "MarketplacePDPContainerQuery",
+  "queries[2]": "MarketplacePDPRightColumnAdsQuery"
 }
 ```
 
@@ -234,121 +250,219 @@ Answered:
 {
   "payload": {
     "predictions": {
-      "GroupsCometLeftRailContainerQuery": {},
-      "GroupsCometCrossGroupFeedContainerQuery": {
-        "csr:_k_0_+E": {
+      "MarketplacePDPC2CMediaViewerWithImagesQuery": {},
+      "MarketplacePDPContainerQuery": {
+        "TmyrEVZ": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4i-2u4/yk/l/en_GB-j/I7TPmm1DWQP.js",
+          "c": 1,
+          "p": ":112",
+          "m": "1051444067_main"
+        },
+        "csr:_c_1_Th": {
           "type": "csr",
-          "src": ":2,1,87,27,82,40,43,433,14,20,95,32,15,28,46,132,62,102,41,38,59,12,16,576,7,118,6,329,36,29,111,50,17,4,91,93,5,48,11,139,8,3,107,152,133,200,60,10,9,18",
-          "c": 1
-        }
-      }
-    },
-    "consistency": {
-      "rev": 1051428616
-    }
-  },
-  "dtsgAsyncGetToken": null,
-  "dtsgToken": null
-}
-```
-
-**runs/inspect/20261023T051540_61594063207669**, post: "…", 123 words, 0 image(s), scrolled 53 px: 200, 340 ms
-
-Sent:
-
-```json
-{
-  "queries[0]": "FBUnifiedVideoRootWithEntrypointQuery"
-}
-```
-
-Answered:
-
-```json
-{
-  "payload": {
-    "predictions": {
-      "FBUnifiedVideoRootWithEntrypointQuery": {
-        "csr:_1g_0_Ex": {
-          "type": "csr",
-          "src": ":2,1,27,82,40,141,43,63,142,42,57,14,20,199,119,222,15,140,28,19,31,102,83,59,12,76,16,7,47,67,6,66,75,116,13,4,5,55,22,134,11,8,3,104,107,143,124,60,9,18,154",
-          "c": 1
-        }
-      }
-    },
-    "consistency": {
-      "rev": 1051428616
-    }
-  },
-  "dtsgAsyncGetToken": null,
-  "dtsgToken": null
-}
-```
-
-**runs/inspect/20261023T051540_61594063207669**, step 5: likePost Like: 200, 380 ms
-
-Sent:
-
-```json
-{
-  "queries[0]": "CometGroupRootQuery",
-  "queries[1]": "GroupsCometDiscussionLayoutRootQuery",
-  "queries[2]": "CometGroupDiscussionRootSuccessQuery"
-}
-```
-
-Answered:
-
-```json
-{
-  "payload": {
-    "predictions": {
-      "CometGroupRootQuery": {
-        "csr:_2c_0_Kn": {
-          "type": "csr",
-          "src": ":2,1,27,82,580,43,57,14,53,358,32,15,26,807,46,301,592,156,41,38,180,646,59,52,7,269,6,137,230,36,29,480,35,17,4,665,54,518,203,5,22,11,219,8,3,168,60,9,144,65,18",
+          "src": ":76,2,1,26,192,24,18,141,30,654,315,643,99,121,82,570,3,65,184,128,255,542,139,5,29,140,206,39,269,27,527,75,107,47,216,376,657,227,106,32,31,79,60,122,85,68,14,9,69,8,148,197,541,146,35,295,90,19,96,208,70,598,532,64,61,186,63,207,23,435,41,168,6,34,62,59,243,114,209,7,83,44,12,391,456,10,4,297,86,78,178,190,187,66,16,544,20,11,25,55,45,274,7630",
           "c": 1
         }
       },
-      "GroupsCometDiscussionLayoutRootQuery": {},
-      "CometGroupDiscussionRootSuccessQuery": {
-        "CUPkuRo": {
-          "type": "js",
-          "src": "https://static.xx.fbcdn.net/rsrc.php/v4iYol4/y5/l/en_GB-j/Eo_bf_vnz4m.js",
-          "c": 1,
-          "p": ":1099",
-          "m": "1051428616_main"
-        },
-        "+iFaR5k": {
-          "type": "js",
-          "src": "https://static.xx.fbcdn.net/rsrc.php/v4iWRo4/yF/l/en_GB-j/tetvnQEY0iT.js",
-          "c": 1,
-          "p": ":959",
-          "m": "1051428616_main"
-        },
-        "kXM53O7": {
-          "type": "js",
-          "src": "https://static.xx.fbcdn.net/rsrc.php/v4/yM/r/wANTX-sBNSO.js",
-          "c": 1,
-          "p": ":970",
-          "m": "1051428616_main"
-        },
-        "W1pRhug": {
-          "type": "js",
-          "src": "https://static.xx.fbcdn.net/rsrc.php/v4ie7z4/yd/l/en_GB-j/5e_Bv6eENAP.js",
-          "c": 1,
-          "p": ":881",
-          "m": "1051428616_main"
-        },
-        "csr:_2c_1_fV": {
+      "MarketplacePDPRightColumnAdsQuery": {
+        "csr:_c_0_VI": {
           "type": "csr",
-          "src": ":2,1,87,27,183,82,580,40,43,63,57,433,14,20,95,32,131,15,26,46,818,31,132,62,438,41,38,59,12,52,16,7,118,6,329,137,268,36,690,29,111,480,50,440,96,450,21,17,4,665,93,518,5,248,22,48,11,139,8,3,107,152,60,9,466,18",
+          "src": ":2,1,3,5,8,73,6,7,10,460,4",
           "c": 1
         }
       }
     },
     "consistency": {
-      "rev": 1051428616
+      "rev": 1051444067
+    }
+  },
+  "dtsgAsyncGetToken": null,
+  "dtsgToken": null
+}
+```
+
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 552 ms
+
+Sent:
+
+```json
+{
+  "queries[0]": "CometMarketplaceLeftRailNavigationContainerQuery",
+  "queries[1]": "CometMarketplaceRootQuery",
+  "queries[2]": "MarketplaceCometBrowseFeedLightContainerQuery",
+  "queries[3]": "CometMarketplaceNotificationsListContainerQuery",
+  "queries[4]": "MarketplaceBannerContainerQuery",
+  "qpl_active_flow_ids": "30613466"
+}
+```
+
+Answered:
+
+```json
+{
+  "payload": {
+    "predictions": {
+      "CometMarketplaceLeftRailNavigationContainerQuery": {},
+      "CometMarketplaceRootQuery": {},
+      "MarketplaceCometBrowseFeedLightContainerQuery": {},
+      "CometMarketplaceNotificationsListContainerQuery": {},
+      "MarketplaceBannerContainerQuery": {}
+    },
+    "consistency": {
+      "rev": 1051444067
+    }
+  },
+  "dtsgAsyncGetToken": null,
+  "dtsgToken": null
+}
+```
+
+**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 368 ms
+
+Sent:
+
+```json
+{
+  "queries[0]": "CometFeedInlineComposerQuery",
+  "queries[1]": "CometModernHomeFeedQuery",
+  "queries[2]": "CometHomeContentQuery",
+  "queries[3]": "CometClassicHomeLeftRailContainerQuery",
+  "queries[4]": "CometMegaphoneRootQuery",
+  "queries[5]": "CometRightSideHeaderCardsQuery",
+  "queries[6]": "CometHomeContactChannelsContainerQuery",
+  "queries[7]": "CometHomeContactCommunityChatsContainerQuery",
+  "queries[8]": "CometHomeContactGroupsContainerQuery",
+  "queries[9]": "CometHomeContactsContainerQuery",
+  "queries[10]": "StoriesTrayRectangularRootQuery"
+}
+```
+
+Answered:
+
+```json
+{
+  "payload": {
+    "predictions": {
+      "CometFeedInlineComposerQuery": {
+        "csr:_j_0_As": {
+          "type": "csr",
+          "src": ":2,1,192,3,5,8,40,419,6,7,10,4,50",
+          "c": 1
+        }
+      },
+      "CometModernHomeFeedQuery": {
+        "2Ohn6eO": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4iuel4/y8/l/en_GB-j/wDaY0ZY8qrm.js",
+          "c": 1,
+          "p": ":88",
+          "m": "1051444067_main"
+        },
+        "+pZJFVd": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4iC6m4/yB/l/en_GB-j/RruxgiIDmeb.js",
+          "c": 1,
+          "p": ":109",
+          "m": "1051444067_main"
+        },
+        "UBlgEOC": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4/yh/r/ysE9SZ9QtIC.js",
+          "c": 1,
+          "p": ":108",
+          "m": "1051444067_main"
+        },
+        "6C2g8f2": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4i8LW4/yd/l/en_GB-j/EAYGKqai5Lt.js",
+          "c": 1,
+          "p": ":484",
+          "m": "1051444067_main"
+        },
+        "N43HXXk": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4iNh74/yr/l/en_GB-j/9bnlLdjWdKv.js",
+          "c": 1,
+          "p": ":136",
+          "m": "1051444067_main"
+        },
+        "csr:_j_5_dc": {
+          "type": "csr",
+          "src": ":2,1,26,54,24,30,72,33,52,37,21,3,281,5,203,27,75,43,115,57,32,31,283,60,13,122,14,9,120,69,8,40,19,70,382,15,73,41,6,114,132,158,174,51,7,74,12,149,10,4,124,150,103,66,16,20,11,104,45",
+          "c": 1
+        }
+      },
+      "CometHomeContentQuery": {
+        "L5QJ1cR": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4iHD64/yN/l/en_GB-j/u-ibXh_Gm62.js",
+          "c": 1,
+          "p": ":2499",
+          "m": "1051444067_main"
+        },
+        "csr:_j_6_Ho": {
+          "type": "csr",
+          "src": ":2,1,3,5,29,206,9,8,23,6,7,10,4,11,327",
+          "c": 1
+        }
+      },
+      "CometClassicHomeLeftRailContainerQuery": {},
+      "CometMegaphoneRootQuery": {
+        "MFf1moB": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4iIAn4/yO/l/en_GB-j/GSKlZ0dhdnO.js",
+          "c": 1,
+          "p": ":1253",
+          "m": "1051444067_main"
+        },
+        "csr:_j_2_3j": {
+          "type": "csr",
+          "src": ":2,1,26,54,24,30,37,3,184,5,29,770,32,31,68,9,8,40,73,41,6,7,149,10,4,150,11",
+          "c": 1
+        }
+      },
+      "CometRightSideHeaderCardsQuery": {
+        "ALlW4R7": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4ipnM4/yR/l/en_GB-j/STMnz9_3OIA.js",
+          "c": 1,
+          "p": ":236",
+          "m": "1051444067_main"
+        },
+        "csr:_j_3_xa": {
+          "type": "csr",
+          "src": ":2,1,3,5,32,9,118,8,171,70,73,6,7,12,10,22,4,16,20,11",
+          "c": 1
+        }
+      },
+      "CometHomeContactChannelsContainerQuery": {},
+      "CometHomeContactCommunityChatsContainerQuery": {},
+      "CometHomeContactGroupsContainerQuery": {},
+      "CometHomeContactsContainerQuery": {
+        "csr:_j_1_5f": {
+          "type": "csr",
+          "src": ":2,1,26,3,65,5,9,8,208,7338,73,402,98,41,6,330,7,10,4,78,11,25,364",
+          "c": 1
+        }
+      },
+      "StoriesTrayRectangularRootQuery": {
+        "UBlgEOC": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4/yh/r/ysE9SZ9QtIC.js",
+          "c": 1,
+          "p": ":108",
+          "m": "1051444067_main"
+        },
+        "csr:_j_4_HZ": {
+          "type": "csr",
+          "src": ":2,1,33,15",
+          "c": 1
+        }
+      }
+    },
+    "consistency": {
+      "rev": 1051444067
     }
   },
   "dtsgAsyncGetToken": null,

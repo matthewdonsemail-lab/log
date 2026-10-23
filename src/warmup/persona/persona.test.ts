@@ -227,7 +227,9 @@ describe('stepsForPlan: the watch, one action, then Next card', () => {
     expect(stepsForPlan(plan(null), { steps, pack: basePack() }, false, 'u').map((s) => s.id)).toEqual(['watch', 'swipe'])
     expect(stepsForPlan(plan('openComments'), { steps, pack: basePack() }, true, 'u').map((s) => s.id)).toEqual(['watch', 'openComments', 'scrollComments', 'inComments', 'closeComments'])
     expect(stepsForPlan(plan('like'), { steps, pack: basePack() }, true, 'u').map((s) => s.id)).toEqual(['watch', 'like'])
-    expect(stepsForPlan(plan('openProfile'), { steps, pack: basePack() }, true, 'https://www.facebook.com/reel/1').at(-1)?.args).toEqual(['https://www.facebook.com/reel/1'])
+    const profiled = stepsForPlan(plan('openProfile'), { steps, pack: basePack() }, true, 'https://www.facebook.com/reel/1')
+    expect(profiled.at(-2)?.args).toEqual(['https://www.facebook.com/reel/1'])
+    expect(profiled.at(-1)?.id).toBe('unmute')
   })
 })
 

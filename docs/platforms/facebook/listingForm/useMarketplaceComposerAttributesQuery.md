@@ -13,11 +13,11 @@
 | Called from | `MarketplacePDPC2CAttributesComponent.react` |
 | rea | `ev_23049485227d4ec91cc2c3b57b4b7da0f6322c73b1f8f951a6753ba37172d8cd` |
 
-Seen 8 time(s) in 6 run(s).
+Seen 9 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| warmup | step 13: goto /marketplace/create/item | 2 | 200 | 350–375 ms | 2490–9489 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 3 | 200 | 350–414 ms | 2490–9489 ms | — |
 | inspect | step 11: goto /marketplace/create/item | 1 | 200 | 369 ms | 2287 ms | — |
 | inspect | scroll: container +87px in 3 steps | 1 | 200 | 1709 ms | 1077 ms | — |
 | inspect | step 1: goto /marketplace/create/item | 2 | 200 | 425–545 ms | 5315–8980 ms | — |
@@ -27,6 +27,41 @@ Seen 8 time(s) in 6 run(s).
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T074930_61594063207669**, step 13: goto /marketplace/create/item: 200, 414 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "useMarketplaceComposerAttributesQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "categoryID": null
+  },
+  "doc_id": "24482075174793922"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "definitions": []
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742254971,
+      "time_at_flush_ms": 1792742254997
+    },
+    "is_final": true
+  }
+}
+```
 
 **runs/inspect/20261023T045453_61594063207669**, step 1: goto /marketplace/create/item: 200, 425 ms
 
@@ -92,76 +127,6 @@ Answered:
     "server_metadata": {
       "request_start_time_ms": 1792667593019,
       "time_at_flush_ms": 1792667593043
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261022T110738_61594063207669**, scroll: container +87px in 3 steps: 200, 1709 ms
-
-Sent:
-
-```json
-{
-  "qpl_active_flow_ids": "138820675",
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "useMarketplaceComposerAttributesQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "categoryID": "895487550471874"
-  },
-  "doc_id": "24482075174793922",
-  "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=138820675"
-  ]
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "definitions": [
-        {
-          "attribute_id": "607316689733399",
-          "attribute_name": "Condition",
-          "input_type": "LIST",
-          "is_required": true,
-          "attribute_type": "CONDITION",
-          "value_label_inputs": [
-            {
-              "label": "New",
-              "value": "new",
-              "value_id": "346439422568856"
-            },
-            {
-              "label": "Used – like new",
-              "value": "used_like_new",
-              "value_id": "364889705262752"
-            },
-            {
-              "label": "Used – good",
-              "value": "used_good",
-              "value_id": "4220858314666743"
-            },
-            {
-              "label": "Used – fair",
-              "value": "used_fair",
-              "value_id": "271795561030190"
-            }
-          ],
-          "sections": []
-        }
-      ]
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792667747056,
-      "time_at_flush_ms": 1792667747107
     },
     "is_final": true
   }

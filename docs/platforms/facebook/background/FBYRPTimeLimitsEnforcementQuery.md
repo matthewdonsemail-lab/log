@@ -13,15 +13,15 @@
 | Called from | `FBYRPTimeLimitsEnforcement.react` |
 | rea | `ev_5fe8db44bc61b2d547bfce0c51e3256e80ffd1e3477b2c6b640071a0ea96e750` |
 
-Seen 100 time(s) in 27 run(s).
+Seen 112 time(s) in 30 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| warmup | step 1: goto / | 2 | 200 | 436–533 ms | 2714–19903 ms | — |
-| warmup | step 4: goto /marketplace/ | 2 | 200 | 350–399 ms | 1800–3900 ms | — |
-| warmup | step 7: goto /marketplace/ | 2 | 200 | 463–487 ms | 1744–2884 ms | — |
-| warmup | step 11: goto /marketplace/ | 2 | 200 | 380–458 ms | 1354–12671 ms | — |
-| warmup | step 13: goto /marketplace/create/item | 2 | 200 | 370–453 ms | 1878–4376 ms | — |
+| warmup | step 1: goto / | 4 | 200 | 436–533 ms | 2714–19903 ms | — |
+| warmup | step 4: goto /marketplace/ | 3 | 200 | 350–399 ms | 1800–3900 ms | — |
+| warmup | step 7: goto /marketplace/ | 3 | 200 | 363–487 ms | 1744–2884 ms | — |
+| warmup | step 11: goto /marketplace/ | 3 | 200 | 380–458 ms | 1354–12671 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 3 | 200 | 366–453 ms | 1878–4376 ms | — |
 | warmup | step 15: goto /marketplace/ | 2 | 200 | 335–374 ms | 1599–1729 ms | — |
 | warmup | step 17: goto /marketplace/ | 2 | 200 | 356–473 ms | 1490–1639 ms | — |
 | warmup | step 19: goto /marketplace/you/selling | 2 | 200 | 371–422 ms | 1766–7546 ms | — |
@@ -81,12 +81,18 @@ Seen 100 time(s) in 27 run(s).
 | inspect | step 5: goto /messages/ | 1 | 200 | 412 ms | 7659 ms | — |
 | flow | step 1: goto /marketplace/ | 1 | 200 | 522 ms | 2977 ms | — |
 | flow | step 3: goto /marketplace/create/item | 1 | 200 | 363 ms | 1539 ms | — |
+| warmup | step 1: goto /marketplace/ | 1 | 200 | 372 ms | 2545 ms | — |
+| warmup | step 3: goto /marketplace/you/selling | 1 | 200 | 372 ms | 2455 ms | — |
+| warmup | step 5: goto /messages/ | 1 | 200 | 374 ms | 5023 ms | — |
+| warmup | step 14: goto /marketplace/ | 1 | 200 | 403 ms | 1675 ms | — |
+| warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 482 ms | 4793 ms | — |
+| warmup | step 18: goto /marketplace/ | 1 | 200 | 405 ms | 1764 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T051540_61594063207669**, step 1: goto /: 200, 388 ms
+**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 372 ms
 
 Sent:
 
@@ -111,15 +117,15 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792732560753,
-      "time_at_flush_ms": 1792732560774
+      "request_start_time_ms": 1792742731822,
+      "time_at_flush_ms": 1792742731843
     },
     "is_final": true
   }
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, step 1: goto /marketplace/create/item: 200, 428 ms
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 372 ms
 
 Sent:
 
@@ -144,15 +150,15 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792731335567,
-      "time_at_flush_ms": 1792731335667
+      "request_start_time_ms": 1792742781495,
+      "time_at_flush_ms": 1792742781514
     },
     "is_final": true
   }
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, step 2: goto /marketplace/: 200, 376 ms
+**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 374 ms
 
 Sent:
 
@@ -177,8 +183,8 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792731444914,
-      "time_at_flush_ms": 1792731444941
+      "request_start_time_ms": 1792742814050,
+      "time_at_flush_ms": 1792742814070
     },
     "is_final": true
   }

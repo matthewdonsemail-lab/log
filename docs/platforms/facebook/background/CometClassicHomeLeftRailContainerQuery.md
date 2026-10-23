@@ -13,14 +13,14 @@
 | Called from | `CometClassicHomeLeftRailContainer.react` |
 | rea | `ev_344ab74ba79925e4c65e7d7e1baed54ed21b8b5516428816c330a8a229cfc2b5` |
 
-Seen 20 time(s) in 11 run(s).
+Seen 22 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | step 7: goto /marketplace/ | 1 | 200 | 556 ms | 13564 ms | — |
 | warmup | step 15: goto /marketplace/ | 1 | 200 | 673 ms | 12032 ms | — |
 | warmup | step 4: goto /marketplace/ | 1 | 200 | 896 ms | 7049 ms | — |
-| warmup | step 11: goto /marketplace/ | 1 | 200 | 877 ms | 8605 ms | — |
+| warmup | step 11: goto /marketplace/ | 2 | 200 | 813–877 ms | 8605–15105 ms | — |
 | warmup | step 17: goto /marketplace/ | 1 | 200 | 544 ms | 12042 ms | — |
 | inspect | step 24: clickRole button "…" | 1 | 200 | 780 ms | 1258017 ms | — |
 | inspect | step 3: clickRole button "…" | 1 | 200 | 669 ms | 5491 ms | — |
@@ -36,10 +36,331 @@ Seen 20 time(s) in 11 run(s).
 | inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 2559 ms | 11541 ms | — |
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 932 ms | 1708099 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 884 ms | 15209 ms | — |
+| warmup | step 14: goto /marketplace/ | 1 | 200 | 657 ms | 7192 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T074930_61594063207669**, step 11: goto /marketplace/: 200, 813 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometClassicHomeLeftRailContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "isEligibleForProfessionalTools": false,
+    "numExploreBookmarks": 10,
+    "numShortcutBookmarks": 5,
+    "scale": 1,
+    "useNucleusIcon": false
+  },
+  "doc_id": "37551561817767907"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "comet_classic_identity": {
+        "bookmarks": {
+          "edges": [
+            {
+              "node": "(15 fields)"
+            }
+          ]
+        },
+        "id": "370399423318783"
+      },
+      "shortcut_bookmarks": {
+        "shortcut_bookmark": {
+          "count": 3,
+          "edges": [
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            }
+          ]
+        },
+        "id": "1592249071005526",
+        "bookmarks": {
+          "edges": [
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            }
+          ],
+          "page_info": {
+            "end_cursor": "Ym9va21hcms6MjQ3ODMzMjAxNTgxMDM5Mzow",
+            "has_next_page": false
+          }
+        }
+      },
+      "explore_bookmarks": {
+        "explore_bookmark": {
+          "edges": [
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            "… 4 more"
+          ]
+        },
+        "id": "644715445650924",
+        "bookmarks": {
+          "edges": [
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            "… 4 more"
+          ],
+          "page_info": {
+            "end_cursor": "Ym9va21hcms6NjgwMjE1MjIzMDow",
+            "has_next_page": true
+          }
+        }
+      }
+    }
+  },
+  "extensions": {
+    "prefetch_uris_v2": [
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yz/r/wZBdW_qnLOB.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yv/r/J6QQVMYHUJU.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      }
+    ],
+    "server_metadata": {
+      "request_start_time_ms": 1792742237952,
+      "time_at_flush_ms": 1792742238170
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T074930_61594063207669**, step 14: goto /marketplace/: 200, 657 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometClassicHomeLeftRailContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "isEligibleForProfessionalTools": false,
+    "numExploreBookmarks": 10,
+    "numShortcutBookmarks": 5,
+    "scale": 1,
+    "useNucleusIcon": false
+  },
+  "doc_id": "37551561817767907"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "comet_classic_identity": {
+        "bookmarks": {
+          "edges": [
+            {
+              "node": "(15 fields)"
+            }
+          ]
+        },
+        "id": "370399423318783"
+      },
+      "shortcut_bookmarks": {
+        "shortcut_bookmark": {
+          "count": 3,
+          "edges": [
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            }
+          ]
+        },
+        "id": "1592249071005526",
+        "bookmarks": {
+          "edges": [
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            }
+          ],
+          "page_info": {
+            "end_cursor": "Ym9va21hcms6MjQ3ODMzMjAxNTgxMDM5Mzow",
+            "has_next_page": false
+          }
+        }
+      },
+      "explore_bookmarks": {
+        "explore_bookmark": {
+          "edges": [
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            "… 4 more"
+          ]
+        },
+        "id": "644715445650924",
+        "bookmarks": {
+          "edges": [
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            "… 4 more"
+          ],
+          "page_info": {
+            "end_cursor": "Ym9va21hcms6NjgwMjE1MjIzMDow",
+            "has_next_page": true
+          }
+        }
+      }
+    }
+  },
+  "extensions": {
+    "prefetch_uris_v2": [
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yv/r/J6QQVMYHUJU.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yz/r/wZBdW_qnLOB.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      }
+    ],
+    "server_metadata": {
+      "request_start_time_ms": 1792742396554,
+      "time_at_flush_ms": 1792742396637
+    },
+    "is_final": true
+  }
+}
+```
 
 **runs/inspect/20261023T045453_61594063207669**, openAny: read /marketplace/item/<id>/: 200, 884 ms
 
@@ -195,326 +516,6 @@ Answered:
     "server_metadata": {
       "request_start_time_ms": 1792731520759,
       "time_at_flush_ms": 1792731520951
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261023T000744_61594063207669**, step 3: goto /marketplace/inbox: 200, 1608 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometClassicHomeLeftRailContainerQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "isEligibleForProfessionalTools": false,
-    "numExploreBookmarks": 10,
-    "numShortcutBookmarks": 5,
-    "scale": 1,
-    "useNucleusIcon": false
-  },
-  "doc_id": "37551561817767907"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "comet_classic_identity": {
-        "bookmarks": {
-          "edges": [
-            {
-              "node": "(15 fields)"
-            }
-          ]
-        },
-        "id": "370399423318783"
-      },
-      "shortcut_bookmarks": {
-        "shortcut_bookmark": {
-          "count": 3,
-          "edges": [
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            }
-          ]
-        },
-        "id": "1592249071005526",
-        "bookmarks": {
-          "edges": [
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            }
-          ],
-          "page_info": {
-            "end_cursor": "Ym9va21hcms6MjQ3ODMzMjAxNTgxMDM5Mzow",
-            "has_next_page": false
-          }
-        }
-      },
-      "explore_bookmarks": {
-        "explore_bookmark": {
-          "edges": [
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            "… 4 more"
-          ]
-        },
-        "id": "644715445650924",
-        "bookmarks": {
-          "edges": [
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            "… 4 more"
-          ],
-          "page_info": {
-            "end_cursor": "Ym9va21hcms6NjgwMjE1MjIzMDow",
-            "has_next_page": true
-          }
-        }
-      }
-    }
-  },
-  "extensions": {
-    "prefetch_uris_v2": [
-      {
-        "uri": "https://static.xx.fbcdn.net/rsrc.php/yv/r/J6QQVMYHUJU.webp",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://static.xx.fbcdn.net/rsrc.php/yz/r/wZBdW_qnLOB.webp",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      }
-    ],
-    "server_metadata": {
-      "request_start_time_ms": 1792714191547,
-      "time_at_flush_ms": 1792714191695
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261023T000744_61594063207669**, step 5: goto /marketplace/you/selling: 200, 2559 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometClassicHomeLeftRailContainerQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "isEligibleForProfessionalTools": false,
-    "numExploreBookmarks": 10,
-    "numShortcutBookmarks": 5,
-    "scale": 1,
-    "useNucleusIcon": false
-  },
-  "doc_id": "37551561817767907"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "comet_classic_identity": {
-        "bookmarks": {
-          "edges": [
-            {
-              "node": "(15 fields)"
-            }
-          ]
-        },
-        "id": "370399423318783"
-      },
-      "shortcut_bookmarks": {
-        "shortcut_bookmark": {
-          "count": 3,
-          "edges": [
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            }
-          ]
-        },
-        "id": "1592249071005526",
-        "bookmarks": {
-          "edges": [
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            }
-          ],
-          "page_info": {
-            "end_cursor": "Ym9va21hcms6MjQ3ODMzMjAxNTgxMDM5Mzow",
-            "has_next_page": false
-          }
-        }
-      },
-      "explore_bookmarks": {
-        "explore_bookmark": {
-          "edges": [
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            "… 4 more"
-          ]
-        },
-        "id": "644715445650924",
-        "bookmarks": {
-          "edges": [
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            "… 4 more"
-          ],
-          "page_info": {
-            "end_cursor": "Ym9va21hcms6NjgwMjE1MjIzMDow",
-            "has_next_page": true
-          }
-        }
-      }
-    }
-  },
-  "extensions": {
-    "prefetch_uris_v2": [
-      {
-        "uri": "https://static.xx.fbcdn.net/rsrc.php/yv/r/J6QQVMYHUJU.webp",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://static.xx.fbcdn.net/rsrc.php/yz/r/wZBdW_qnLOB.webp",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      }
-    ],
-    "server_metadata": {
-      "request_start_time_ms": 1792715273017,
-      "time_at_flush_ms": 1792715273221
     },
     "is_final": true
   }

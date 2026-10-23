@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_70efc081c67ed7332e21c5498e2db53c87d1066c637ab8bfc22fe41d543c7021` |
+| rea | `ev_0a640203094c1a85a7745155ac19a5b8b07393c2d53538f3ebe48f7e9a69f211` |
 
-Seen 37 time(s) in 12 run(s).
+Seen 40 time(s) in 14 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -41,10 +41,60 @@ Seen 37 time(s) in 12 run(s).
 | inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 979 ms | 17064 ms | — |
 | inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 380 ms | 15668 ms | — |
 | inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 1026 ms | 21524 ms | — |
+| warmup | step 3: goto /marketplace/you/selling | 1 | 200 | 697 ms | 16142 ms | — |
+| warmup | step 17: dwell 2-4s | 2 | 200 | 370–458 ms | 638–50657 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 697 ms
+
+Sent:
+
+```json
+{
+  "query": "(1 fields)",
+  "body": "(103 fields)"
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "AJadCUsA8-Z_m7Ojh23Y1uC",
+  "payload": {
+    "keys": []
+  },
+  "lid": "7699771676156232819"
+}
+```
+
+**runs/warmup/20261023T074930_61594063207669**, step 17: dwell 2-4s: 200, 458 ms
+
+Sent:
+
+```json
+{
+  "query": "(1 fields)",
+  "body": "(103 fields)"
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "AfnT1JphJydAbnHt8nr4Gck",
+  "payload": {
+    "keys": []
+  },
+  "lid": "7699770246374084873"
+}
+```
 
 **runs/inspect/20261023T045453_61594063207669**, step 4: goto /marketplace/you/selling: 200, 1026 ms
 
@@ -67,54 +117,6 @@ Answered:
     "keys": []
   },
   "lid": "7699723504138729208"
-}
-```
-
-**runs/inspect/20261023T000744_61594063207669**, step 2: goto /marketplace/you/selling: 200, 506 ms
-
-Sent:
-
-```json
-{
-  "query": "(1 fields)",
-  "body": "(97 fields)"
-}
-```
-
-Answered:
-
-```json
-{
-  "__ar": 1,
-  "rid": "ApnJc277U7EsF-LcCs9Q21A",
-  "payload": {
-    "keys": []
-  },
-  "lid": "7699648552726211589"
-}
-```
-
-**runs/inspect/20261023T000744_61594063207669**, step 5: goto /marketplace/you/selling: 200, 380 ms
-
-Sent:
-
-```json
-{
-  "query": "(1 fields)",
-  "body": "(97 fields)"
-}
-```
-
-Answered:
-
-```json
-{
-  "__ar": 1,
-  "rid": "AnXgY69SEI4ITQvD1osKBeq",
-  "payload": {
-    "keys": []
-  },
-  "lid": "7699653483340495767"
 }
 ```
 

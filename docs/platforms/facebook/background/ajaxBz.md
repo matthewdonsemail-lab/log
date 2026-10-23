@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_70efc081c67ed7332e21c5498e2db53c87d1066c637ab8bfc22fe41d543c7021` |
+| rea | `ev_0a640203094c1a85a7745155ac19a5b8b07393c2d53538f3ebe48f7e9a69f211` |
 
-Seen 58 time(s) in 6 run(s).
+Seen 59 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -37,10 +37,39 @@ Seen 58 time(s) in 6 run(s).
 | inspect | step 27: click e1541 | 1 | 200 | 1489 ms | 37737 ms | — |
 | inspect | step 5: wait 5s | 1 | 200 | 1403 ms | 80871 ms | — |
 | inspect | step 3: goto /marketplace/inbox | 3 | 200, 0 | 0–501 ms | 589944–1455304 ms | — |
+| warmup | step 17: dwell 2-4s | 1 | 200 | 377 ms | 80196 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T074930_61594063207669**, step 17: dwell 2-4s: 200, 377 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "cquick": "_r_31_",
+    "cquick_token": "AUdmRnUAYDZx6QpruXYYHJxPfaE",
+    "ctarget": "https://www.facebook.com"
+  },
+  "body": {
+    "------WebKitFormBoundarytLYumdcAb59VtD07\r\nContent-Disposition: form-data; name": "\"ts\"\r\n\r\n1792742541282\r\n------WebKitFormBoundarytLYumdcAb59VtD07\r\nContent-Disposition: form-data; name=\"q\"\r\n\r\n[{\"app_id\":\"2220391788200892\",\"posts\":\"zgS4W1sicWV4Iix7ImwiOiJKe1wicWVpZFwiOlwiNjE1OTQwNjMyMDc2NjlcIixcInUFGQULAHQFCwRmYgUNIGdrc1wiOltdLAE/eFwiOm51bGx9In0sMTc5Mjc0MjQ4MTI1NSwwLDg1XSz cQCmcQAELjT cwD cwD cwD cwCycwA4X2FjdGluZ19hY2NvdW50ptkBJC40LDAsMTAwXV0=\",\"user\":\"61594063207669\",\"webSessio… (556 chars)"
+  }
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "A-enHRPtqdcp945eGeLpZG8",
+  "payload": null,
+  "lid": "7699770584893673991"
+}
+```
 
 **runs/inspect/20261022T155857_61594063207669**, step 3: goto /marketplace/inbox: 200, 501 ms
 
@@ -95,34 +124,6 @@ Answered:
   "rid": "AYqhIu2zu9Y1-mrx8O882o2",
   "payload": null,
   "lid": "7699455287860523565"
-}
-```
-
-**runs/inspect/20261022T110738_61594063207669**, step 27: click e1541: 200, 1489 ms
-
-Sent:
-
-```json
-{
-  "query": {
-    "cquick": "_r_ae_",
-    "cquick_token": "AUehHkkVOzIG9jI4NoDRWETt3hw",
-    "ctarget": "https://www.facebook.com"
-  },
-  "body": {
-    "------WebKitFormBoundarydB2yf6OsPJSjAwp9\r\nContent-Disposition: form-data; name": "\"ts\"\r\n\r\n1792668006640\r\n------WebKitFormBoundarydB2yf6OsPJSjAwp9\r\nContent-Disposition: form-data; name=\"q\"\r\n\r\n[{\"app_id\":\"2220391788200892\",\"posts\":\"0wS4W1sicWV4Iix7ImwiOiJKe1wicWVpZFwiOlwiNjE1OTQwNjMyMDc2NjlcIixcInUFGQULAHQFCwRmYgUNIGdrc1wiOltdLAE/gFwiOm51bGx9In0sMTc5MjY2Nzk0NjYzNS4yLDAsODVdLP5zAKpzAAA1/nMA/nMA/nMA/nMAsnMAOF9hY3RpbmdfYWNjb3VudKrbASw1OTk5LDAsMTAwXV0=\",\"user\":\"61594063207669\",\"webSe… (560 chars)"
-  }
-}
-```
-
-Answered:
-
-```json
-{
-  "__ar": 1,
-  "rid": "AWSt8NCO7-1N8ONdYcbBgw-",
-  "payload": null,
-  "lid": "7699450463129631828"
 }
 ```
 

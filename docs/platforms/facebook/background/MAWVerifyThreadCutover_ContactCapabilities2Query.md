@@ -13,15 +13,15 @@
 | Called from | `MAWVerifyThreadCutover` |
 | rea | `ev_2ef4fcf81840e4c44dfd19b7c86b9e3e65429109c06595cfc96262bcea9f2bc2` |
 
-Seen 98 time(s) in 26 run(s).
+Seen 110 time(s) in 29 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| warmup | step 1: goto / | 2 | 200 | 349–584 ms | 7315–20961 ms | — |
-| warmup | step 4: goto /marketplace/ | 2 | 200 | 398 ms | 4115–5425 ms | — |
-| warmup | step 7: goto /marketplace/ | 2 | 200 | 356–390 ms | 3640–5793 ms | — |
-| warmup | step 11: goto /marketplace/ | 2 | 200 | 394–416 ms | 3172–15231 ms | — |
-| warmup | step 13: goto /marketplace/create/item | 2 | 200 | 350–368 ms | 3066–10443 ms | — |
+| warmup | step 1: goto / | 4 | 200 | 349–584 ms | 7245–20961 ms | — |
+| warmup | step 4: goto /marketplace/ | 3 | 200 | 376–398 ms | 4115–5425 ms | — |
+| warmup | step 7: goto /marketplace/ | 3 | 200 | 356–390 ms | 3640–5793 ms | — |
+| warmup | step 11: goto /marketplace/ | 3 | 200 | 366–416 ms | 3172–15231 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 3 | 200 | 350–368 ms | 3066–10443 ms | — |
 | warmup | step 15: goto /marketplace/ | 2 | 200 | 357–368 ms | 2911–3209 ms | — |
 | warmup | step 17: goto /marketplace/ | 2 | 200 | 344–432 ms | 2462–3835 ms | — |
 | warmup | step 19: goto /marketplace/you/selling | 2 | 200 | 358–382 ms | 2530–8438 ms | — |
@@ -80,12 +80,18 @@ Seen 98 time(s) in 26 run(s).
 | inspect | step 5: goto /messages/ | 1 | 200 | 715 ms | 8319 ms | — |
 | flow | step 1: goto /marketplace/ | 1 | 200 | 824 ms | 6901 ms | — |
 | flow | step 3: goto /marketplace/create/item | 1 | 200 | 366 ms | 3357 ms | — |
+| warmup | step 1: goto /marketplace/ | 1 | 200 | 366 ms | 4224 ms | — |
+| warmup | step 3: goto /marketplace/you/selling | 1 | 200 | 395 ms | 3452 ms | — |
+| warmup | step 5: goto /messages/ | 1 | 200 | 492 ms | 5621 ms | — |
+| warmup | step 14: goto /marketplace/ | 1 | 200 | 379 ms | 3909 ms | — |
+| warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 578 ms | 5794 ms | — |
+| warmup | step 18: goto /marketplace/ | 1 | 200 | 391 ms | 3744 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T051540_61594063207669**, step 1: goto /: 200, 454 ms
+**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 366 ms
 
 Sent:
 
@@ -113,21 +119,21 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792732563121,
-      "time_at_flush_ms": 1792732563148
+      "request_start_time_ms": 1792742733499,
+      "time_at_flush_ms": 1792742733519
     },
     "is_final": true
   }
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, step 1: goto /marketplace/create/item: 200, 464 ms
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 395 ms
 
 Sent:
 
 ```json
 {
-  "qpl_active_flow_ids": "138820675",
+  "qpl_active_flow_ids": "30613466",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "MAWVerifyThreadCutover_ContactCapabilities2Query",
   "server_timestamps": "true",
@@ -136,7 +142,7 @@ Sent:
   },
   "doc_id": "9948369021930229",
   "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=138820675"
+    "qpl_active_flow_ids=30613466"
   ]
 }
 ```
@@ -153,15 +159,15 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792731336829,
-      "time_at_flush_ms": 1792731336860
+      "request_start_time_ms": 1792742782510,
+      "time_at_flush_ms": 1792742782533
     },
     "is_final": true
   }
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, step 2: goto /marketplace/: 200, 368 ms
+**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 492 ms
 
 Sent:
 
@@ -189,8 +195,8 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792731446556,
-      "time_at_flush_ms": 1792731446577
+      "request_start_time_ms": 1792742814645,
+      "time_at_flush_ms": 1792742814672
     },
     "is_final": true
   }

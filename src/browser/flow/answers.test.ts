@@ -90,6 +90,14 @@ describe('a stage flow step passes on Facebook\'s answer (rule 73)', () => {
     expect(answersIssue(comment, [streamed], BETHLEHEM)).toBeNull()
   })
 
+  test('a scroll that loads nothing more has no answer to judge, but one that pages must answer right (warm-up 20261023T074930 step 19 made no call)', () => {
+    const scroll = loadFlow('warmupMessagesVisit')!.steps.find((s) => s.id === 's02_scroll')!.answers!
+    expect(answersIssue(scroll, [], BETHLEHEM)).toBeNull()
+    expect(answerWait(scroll)).toBeUndefined()
+    const paged: StepExchange = { offsetMs: 0, kind: 'api', name: 'MarketplaceCometBrowseFeedLightPaginationQuery', method: 'POST', host: 'www.facebook.com', path: '/api/graphql/', status: 200, ms: 900, sent: {}, answer: { first: { data: {} } }, errors: [], known: true }
+    expect(answersIssue(scroll, [paged], BETHLEHEM)).toEqual({ code: 'answerNotAsExpected', text: 'MarketplaceCometBrowseFeedLightPaginationQuery answered no first.data.marketplace_home_feed' })
+  })
+
   test('recording a flow again keeps the checks of the steps it had', () => {
     const dir = mkdtempSync(join(tmpdir(), 'flows'))
     saveFlow(flow, dir)

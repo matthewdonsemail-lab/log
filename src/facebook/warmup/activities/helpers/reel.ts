@@ -30,7 +30,7 @@ export const REEL: PlatformActivity = {
       action: 'clickRole',
       args: ['button', 'Next card'],
       why: "on to the next reel: desktop Reels' own control (the wheel only scrolls the page)",
-      expect: { urlChanges: true, urlMatches: '/reel/\\d+' },
+      expect: { urlChanges: true, urlMatches: '/reel/\\d+', answers: [{ call: 'FBUnifiedVideoSeenStateMutation', says: [{ answer: 'data.xfb_fb_shorts_seen_state_mutation.viewer.actor.id', home: 'uid' }] }] },
       clicks: true,
       recorded: `${RUN} step 11: Next card → /reel/1049925804499764, FBUnifiedVideoSeenStateMutation 200`
     },
@@ -40,9 +40,9 @@ export const REEL: PlatformActivity = {
       args: ['1-3'],
       why: "a glance: most reels aren't watched through, a person skips on after a second or two (matt, 2026-10-20)"
     },
-    { id: 'swipe', action: 'clickRole', args: ['button', 'Next card'], why: 'skip on', expect: { urlChanges: true, urlMatches: '/reel/\\d+' }, clicks: true },
+    { id: 'swipe', action: 'clickRole', args: ['button', 'Next card'], why: 'skip on', expect: { urlChanges: true, urlMatches: '/reel/\\d+', answers: [{ call: 'FBUnifiedVideoSeenStateMutation', says: [{ answer: 'data.xfb_fb_shorts_seen_state_mutation.viewer.actor.id', home: 'uid' }] }] }, clicks: true },
     { id: 'glance', action: 'dwell', args: ['1-3'], why: 'another glance' },
-    { id: 'swipe', action: 'clickRole', args: ['button', 'Next card'], why: 'skip on again: a few in a row', expect: { urlChanges: true, urlMatches: '/reel/\\d+' }, clicks: true },
+    { id: 'swipe', action: 'clickRole', args: ['button', 'Next card'], why: 'skip on again: a few in a row', expect: { urlChanges: true, urlMatches: '/reel/\\d+', answers: [{ call: 'FBUnifiedVideoSeenStateMutation', says: [{ answer: 'data.xfb_fb_shorts_seen_state_mutation.viewer.actor.id', home: 'uid' }] }] }, clicks: true },
     { id: 'watch', action: 'dwell', args: ['5-10'], why: 'this one catches: watch it' },
     {
       id: 'openComments',
@@ -75,7 +75,7 @@ export const REEL: PlatformActivity = {
       action: 'clickAny',
       args: ['link', 'see owner profile$', '1'],
       why: "open the creator's profile",
-      expect: { urlChanges: true },
+      expect: { urlChanges: true, answers: [{ call: 'ProfileCometHeaderQuery', says: [{ answer: 'data.user.profile_header_renderer', present: true }] }] },
       clicks: true,
       recorded: `${RUN} step 14: didn't open it; run 20261020T051842 step 08 opened it; run 20261020T052254 step 08 didn't (clickAny chose a covered card's link): now only a link a person can click`
     },
@@ -84,7 +84,7 @@ export const REEL: PlatformActivity = {
       action: 'goto',
       args: ['{urlBefore:openProfile}'],
       why: "back to the reel it came from, by the reel's own URL (the browser's back left Facebook when the reel was the first page)",
-      expect: { urlMatches: '/reel/\\d+' },
+      expect: { urlMatches: '/reel/\\d+', answers: [{ call: 'FBUnifiedVideoContainerQuery', says: [] }] },
       recorded: `${RUN} step 16: back went to about:blank; run 20261020T052254 step 09 the same after the profile didn't open: now the reel's URL`
     },
     {

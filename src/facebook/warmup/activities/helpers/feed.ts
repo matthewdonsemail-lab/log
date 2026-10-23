@@ -26,7 +26,7 @@ export const FEED: PlatformActivity = {
       recorded: `${INSPECT} step 27: heading "Remember password" with button "OK", button "Not now" and button "Close", over the feed`
     },
     { id: 'settle', action: 'dwell', args: ['3-5'], why: "the feed loads; a person looks at the top before reading down (Listaro: 3-5 s)" },
-    { id: 'readFeed', action: 'scroll', args: ['4-7', '300-600'], why: 'read down the feed: 4-7 wheel scrolls of 300-600 px (Listaro stage 1)', expect: { answers: [{ call: 'CometNewsFeedPaginationQuery', says: [{ answer: 'first.data.viewer.news_feed', present: true }] }] }, recorded: `${RUN} step 03: +378, +386, +411, +501 px, 86 requests, 3 posts on screen; CometNewsFeedPaginationQuery answered more of the feed (its doc)` },
+    { id: 'readFeed', action: 'scroll', args: ['4-7', '300-600'], why: 'read down the feed: 4-7 wheel scrolls of 300-600 px (Listaro stage 1)', expect: { answers: [{ call: 'CometNewsFeedPaginationQuery', ifSent: true, says: [{ answer: 'first.data.viewer.news_feed', present: true }] }] }, recorded: `${RUN} step 03: +378, +386, +411, +501 px, 86 requests, 3 posts on screen; CometNewsFeedPaginationQuery answered more of the feed (its doc)` },
     {
       id: 'nextPost',
       action: 'nextPost',

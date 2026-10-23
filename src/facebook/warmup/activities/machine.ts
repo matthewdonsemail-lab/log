@@ -172,7 +172,7 @@ export function stepsForPlan(plan: ReelPlan, input: Pick<PersonaSessionInput, 's
   const queue: ActivityStep[] = [dwell(s.watch, 'watch', plan.watchMs, why)]
   if (plan.action === 'openComments') queue.push(s.openComments, s.scrollComments, dwell(s.watch, 'inComments', t.commentMs, `${(t.commentMs / 1000).toFixed(1)} s in the comments (the pack's comment time)`), s.closeComments)
   if (plan.action === 'like') queue.push(s.like)
-  if (plan.action === 'openProfile' && reelUrl) queue.push(s.openProfile, dwell(s.watch, 'onProfile', t.profileMs, `${(t.profileMs / 1000).toFixed(1)} s on the profile`), { ...s.backToReel, args: [reelUrl] })
+  if (plan.action === 'openProfile' && reelUrl) queue.push(s.openProfile, dwell(s.watch, 'onProfile', t.profileMs, `${(t.profileMs / 1000).toFixed(1)} s on the profile`), { ...s.backToReel, args: [reelUrl] }, s.unmute)
   if (!lastReel) queue.push(s.swipe)
   return queue
 }
