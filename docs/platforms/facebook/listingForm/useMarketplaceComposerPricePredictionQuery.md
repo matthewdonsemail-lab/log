@@ -23,6 +23,142 @@ Seen 14 time(s) in 13 run(s).
 | inspect | scroll: container +87px in 3 steps | 1 | 200 | 1663 ms | 1091 ms | — |
 | inspect | step 10: type e232 | 1 | 200 | 380 ms | 6953 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261022T110738_61594063207669**, step 16: type e232: 200, 370 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "138820675",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "useMarketplaceComposerPricePredictionQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "params": {
+      "category_id": "1583634935226685",
+      "currency": "USD",
+      "photo_id": "122127505023468773",
+      "title": "Junk Removal & Cleanouts: Houses, Garages, Basements"
+    }
+  },
+  "doc_id": "9566914303429765",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=138820675"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "marketplace_c2c_pricing": {
+      "price_range": null
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792667670444,
+      "time_at_flush_ms": 1792667670470
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261022T110738_61594063207669**, scroll: container +87px in 3 steps: 200, 1663 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "138820675",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "useMarketplaceComposerPricePredictionQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "params": {
+      "category_id": "895487550471874",
+      "currency": "USD",
+      "photo_id": "122127505023468773",
+      "title": "Junk Removal & Cleanouts: Houses, Garages, Basements"
+    }
+  },
+  "doc_id": "9566914303429765",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=138820675"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "marketplace_c2c_pricing": {
+      "price_range": null
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792667747051,
+      "time_at_flush_ms": 1792667747084
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261022T105341_61594063207669**, step 10: type e232: 200, 380 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "138820675",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "useMarketplaceComposerPricePredictionQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "params": {
+      "category_id": "1583634935226685",
+      "currency": "ILS",
+      "photo_id": "122127497595468773",
+      "title": "Junk Removal & Cleanouts: Houses, Garages, Basements"
+    }
+  },
+  "doc_id": "9566914303429765",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=138820675"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "marketplace_c2c_pricing": {
+      "price_range": null
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792666664376,
+      "time_at_flush_ms": 1792666664405
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

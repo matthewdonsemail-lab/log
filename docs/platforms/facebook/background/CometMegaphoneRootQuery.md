@@ -35,6 +35,124 @@ Seen 17 time(s) in 11 run(s).
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 803 ms | 1708101 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 883 ms | 15210 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T045453_61594063207669**, openAny: read /marketplace/item/<id>/: 200, 883 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMegaphoneRootQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "first": 1,
+    "scale": 1
+  },
+  "doc_id": "28541893478753857"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "megaphonePromotions": {
+        "edges": []
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792731520768,
+      "time_at_flush_ms": 1792731520977
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T000744_61594063207669**, step 3: goto /marketplace/inbox: 200, 1917 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMegaphoneRootQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "first": 1,
+    "scale": 1
+  },
+  "doc_id": "28541893478753857"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "megaphonePromotions": {
+        "edges": []
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792714191788,
+      "time_at_flush_ms": 1792714192084
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T000744_61594063207669**, step 5: goto /marketplace/you/selling: 200, 2596 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMegaphoneRootQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "first": 1,
+    "scale": 1
+  },
+  "doc_id": "28541893478753857"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "megaphonePromotions": {
+        "edges": []
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792715273182,
+      "time_at_flush_ms": 1792715273311
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

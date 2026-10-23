@@ -130,7 +130,7 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 63 command tools + saved flows"]
+  mcp["MCP server log: 64 command tools + saved flows"]
   bin["bin/log.ts"]
   runCli["runCli: 37 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
@@ -193,7 +193,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log errors`](#log-errors) | List every error code: meaning, retryable, where each machine ends up | any (none) | `--layer <account|listing|photo|form|captcha|runtime|twenty|proxyVendor|auth|profile>` `--code <code>` `--json` `--markdown` | none | `errors` | PreToolUse, PostToolUse · PostToolUse | no | 25, 30, 38, 39, 40, 41 |
 | [`log graph`](#log-graph) | Print a machine's states and transitions as a Mermaid diagram | any (none) | none | none | `graph` | PreToolUse, PostToolUse · PostToolUse | no | 6, 25, 30, 38, 39, 40, 41 |
 | [`log facebook capture`](#log-facebook-capture) | Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds the Facebook client docs. No browser. | `facebook` first | `--har <path>` `--out <dir>` `--noRea` `--json` `--settle <runCaptureDir>` `--docs` | none | `capture` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 19, 22, 26, 27, 46, 48, 30, 38, 39, 40, 41 |
-| [`log runs`](#log-runs) | The recorded runs on this machine, and pruning the ones rea settled and the request docs hold, keeping each one's findings and domains | any (none) | `--json` `--before <YYYY-MM-DD>` `--apply` | none | `runsList`, `runsPrune`, `runsSpace` | PreToolUse, PostToolUse · PostToolUse | no | 19, 22, 25, 27, 66, 30, 38, 39, 40, 41 |
+| [`log runs`](#log-runs) | The recorded runs on this machine, and pruning the ones rea settled and the request docs hold, keeping each one's findings and domains | any (none) | `--json` `--before <YYYY-MM-DD>` `--apply` | none | `runsList`, `runsExchanges`, `runsPrune`, `runsSpace` | PreToolUse, PostToolUse · PostToolUse | no | 19, 22, 25, 27, 66, 73, 30, 38, 39, 40, 41 |
 | [`log browsers`](#log-browsers) | Where every open browser is: its page, the known page state it sits on, the call that resolves it, and what only matt can clear (rules 54-55) | any (none) | `--json` | none | `browsers` | PreToolUse, PostToolUse · PostToolUse | no | 29, 35, 54, 55, 30, 38, 39, 40, 41 |
 | [`log job`](#log-job) | Follow or stop a long MCP run: each runs as a job when it outlasts its call's wait | any (none) | `--afterLine <n>` `--waitMs <ms>` `--json` | none | `jobStatus`, `jobCancel`, `jobList` | PreToolUse, PostToolUse · PostToolUse | no | 10, 26, 35, 30, 38, 39, 40, 41 |
 | [`log mcp`](#log-mcp) | This server's MCP sign-ins over OAuth (through Twenty, the owner only): list the clients, revoke them | any (none) | `--json` | none | terminal only: manages who may sign in to this server's MCP (OAuth through Twenty). matt runs `bun bin/log.ts mcp clients` or `mcp revoke <clientId\|all>` in a terminal on the server. | PreToolUse, PostToolUse · n/a | no | 21, 47, 30, 38, 39, 40, 41 |
@@ -825,11 +825,12 @@ The HAR is the one Playwright writes from Camoufox. It is copied raw, and rea re
 
 #### log runs
 
-The recorded runs on this machine, and pruning the ones rea settled and the request docs hold, keeping each one's findings and domains MCP tools: `runsList`, `runsPrune`, `runsSpace`, one per form, with named fields.
+The recorded runs on this machine, and pruning the ones rea settled and the request docs hold, keeping each one's findings and domains MCP tools: `runsList`, `runsExchanges`, `runsPrune`, `runsSpace`, one per form, with named fields.
 
 ```text
 log runs [list] [--json]   (every recorded run: its size, settled by rea, in the request docs, and why it is kept or that it may go)
-log runs prune [--before <YYYY-MM-DD>] [--apply]   (deletes each analysed run, started before the day when given, keeping its findings.md, steps.jsonl, settle.json and its requests by domain; a dry run unless --apply)
+log runs exchanges   (takes every recorded step's internal API calls, what was sent and what came back, out of its HAR into exchanges.json, for every run still on disk; prune does it first too)
+log runs prune [--before <YYYY-MM-DD>] [--apply]   (deletes each analysed run, started before the day when given, after taking out every step's exchanges, keeping its findings.md, steps.jsonl, settle.json, every step's exchanges.json, reading.json and readingState.json, its goalFindings and its requests by domain; a dry run unless --apply)
 log runs space   (the size of ~/.logCli/runs and the disk's free space, as the storage hook says them)
 ```
 

@@ -24,6 +24,148 @@ Seen 10 time(s) in 4 run(s).
 | inspect | step 4: goto /marketplace/inbox | 1 | 200 | 2088 ms | 2644 ms | — |
 | inspect | step 6: goto /marketplace/inbox | 2 | 200 | 693–1205 ms | 2233–1514806 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T000744_61594063207669**, step 3: goto /marketplace/inbox: 200, 531 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMarketplaceInboxSellerTabThreadViewContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "availabilities": null,
+    "filterLabels": null,
+    "listingId": null,
+    "lookBackInDays": null,
+    "search": null,
+    "unreadOnly": null
+  },
+  "doc_id": "28084990444460312"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "marketplaceInboxSellerMessageThreads": {
+        "edges": [],
+        "page_info": {
+          "end_cursor": null,
+          "has_next_page": false
+        }
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792714134991,
+      "time_at_flush_ms": 1792714135203
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T000744_61594063207669**, step 6: goto /marketplace/inbox: 200, 693 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMarketplaceInboxSellerTabThreadViewContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "availabilities": null,
+    "filterLabels": null,
+    "listingId": null,
+    "lookBackInDays": null,
+    "search": null,
+    "unreadOnly": null
+  },
+  "doc_id": "28084990444460312"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "marketplaceInboxSellerMessageThreads": {
+        "edges": [],
+        "page_info": {
+          "end_cursor": null,
+          "has_next_page": false
+        }
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792715282647,
+      "time_at_flush_ms": 1792715282890
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261022T130601_61594063207669**, step 4: goto /marketplace/inbox: 200, 2088 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMarketplaceInboxSellerTabThreadViewContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "availabilities": null,
+    "filterLabels": null,
+    "listingId": null,
+    "lookBackInDays": null,
+    "search": null,
+    "unreadOnly": null
+  },
+  "doc_id": "28084990444460312"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "marketplaceInboxSellerMessageThreads": {
+        "edges": [],
+        "page_info": {
+          "end_cursor": null,
+          "has_next_page": false
+        }
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792674437397,
+      "time_at_flush_ms": 1792674437679
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

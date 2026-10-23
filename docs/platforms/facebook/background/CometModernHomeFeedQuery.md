@@ -35,6 +35,433 @@ Seen 17 time(s) in 11 run(s).
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 4442 ms | 1708095 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 3647 ms | 15206 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T045453_61594063207669**, openAny: read /marketplace/item/<id>/: 200, 3647 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometModernHomeFeedQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "RELAY_INCREMENTAL_DELIVERY": true,
+    "connectionClass": "EXCELLENT",
+    "feedbackSource": 1,
+    "feedInitialFetchSize": 4,
+    "feedLocation": "NEWSFEED",
+    "feedStyle": "DEFAULT",
+    "orderby": [
+      "TOP_STORIES"
+    ],
+    "privacySelectorRenderLocation": "COMET_STREAM",
+    "recentVPVs": [],
+    "refreshMode": "COLD_START",
+    "renderLocation": "homepage_stream",
+    "scale": 1,
+    "shouldChangeBRSLabelFieldName": false,
+    "shouldObfuscateCategoryField": true,
+    "shouldUseBRSLabelFieldNameV1": false,
+    "shouldUseBRSLabelFieldNameV2": false,
+    "useDefaultActor": false,
+    "__relay_internal__pv__GHLShouldChangeSponsoredAuctionDistanceFieldNamerelayprovider": true,
+    "__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV1relayprovider": true,
+    "__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV2relayprovider": false,
+    "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
+    "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
+    "__relay_internal__pv__CometAdsSlotFillLoggingEnabledrelayprovider": true,
+    "__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider": false,
+    "__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider": false,
+    "__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider": false,
+    "__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider": true,
+    "__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider": false,
+    "__relay_internal__pv__IsWorkUserrelayprovider": false,
+    "__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider": false,
+    "__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider": true,
+    "__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider": true,
+    "__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider": true,
+    "__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider": true,
+    "__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider": false,
+    "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false,
+    "__relay_internal__pv__IsMergQAPollsrelayprovider": false,
+    "__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider": true,
+    "__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider": false,
+    "__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider": "AUTO_TRANSLATE",
+    "__relay_internal__pv__CometUFIShareActionMigrationrelayprovider": true,
+    "__relay_internal__pv__CometUFISingleLineUFIrelayprovider": true,
+    "__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider": true,
+    "__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider": true,
+    "__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider": 206,
+    "__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider": false,
+    "__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider": false,
+    "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": false
+  },
+  "doc_id": "28651572944522952"
+}
+```
+
+Answered:
+
+```json
+{
+  "first": {
+    "data": {
+      "viewer": {
+        "news_feed": "(1 fields)",
+        "actor": "(3 fields)",
+        "can_have_friends": true,
+        "all_friends": "(1 fields)",
+        "is_fb_employee": false,
+        "rack_qrt_called_during_first_story": false,
+        "injected_stories": null
+      }
+    },
+    "extensions": {
+      "prefetch_uris_v2": [
+        "(5 fields)",
+        "(5 fields)"
+      ],
+      "server_metadata": {
+        "request_start_time_ms": 1792731520743,
+        "time_at_flush_ms": 1792731521889
+      },
+      "is_final": false,
+      "sr_payload": {
+        "ddd": "(4 fields)"
+      }
+    }
+  },
+  "followingParts": 10,
+  "parts": [
+    {
+      "label": "CometNewsFeed_viewerConnection$stream$CometNewsFeed_viewer_news_feed",
+      "path": [
+        "viewer",
+        "news_feed",
+        "edges",
+        1
+      ],
+      "data": {
+        "brs_content_label": null,
+        "cat_sensitive": "(2 fields)",
+        "deduplication_key": "-3887795066676390941",
+        "min_gap_type_index_string": "10",
+        "sposnsor_new_distac_action": null,
+        "top_story_cache_score": 0,
+        "is_ad_eligible_for_ad_pod": false,
+        "node": "(11 fields)",
+        "feed_backend_data": "(6 fields)",
+        "cursor": "FQQVAhsBXAIVBBhcTVRjNU1qY3pNVFV5TURveE56a3lOek14TlRJd09qSTZMVE00T0RjM09UVXdOalkyTnpZek9UQTVOREU2TURvdE5Ua3pNVFl6TmpVek1EQXlPREExT0RReE9Ebz0AGwJVHAIUBBUAAA=="
+      },
+      "extensions": {
+        "is_final": false,
+        "sr_payload": "(1 fields)"
+      }
+    },
+    {
+      "label": "CometNewsFeed_viewerConnection$stream$CometNewsFeed_viewer_news_feed",
+      "path": [
+        "viewer",
+        "news_feed",
+        "edges",
+        2
+      ],
+      "data": {
+        "brs_content_label": null,
+        "cat_sensitive": "(2 fields)",
+        "deduplication_key": "3130624533748682535",
+        "min_gap_type_index_string": "12",
+        "sposnsor_new_distac_action": null,
+        "top_story_cache_score": 0,
+        "is_ad_eligible_for_ad_pod": false,
+        "node": "(12 fields)",
+        "feed_backend_data": "(6 fields)",
+        "cursor": "FQYVAhsBXAIVBhhcTVRjNU1qY3pNVFV5TURveE56a3lOek14TlRJd09qTTZNekV6TURZeU5EVXpNemMwT0RZNE1qVXpOVG93T2kwMU9UTXhOak0yTlRNd01ESTRNRFU0TkRFNE9nPT0AGwNVHAIUBBgGFQAA"
+      },
+      "extensions": {
+        "prefetch_uris_v2": "(6 items)",
+        "all_video_dash_prefetch_representations": "(6 items)",
+        "is_final": false,
+        "sr_payload": "(1 fields)"
+      }
+    },
+    {
+      "label": "VideoPlayerRelay_video$defer$InstreamVideoAdBreaksPlayer_video",
+      "path": [
+        "viewer",
+        "news_feed",
+        "edges",
+        2,
+        "node",
+        "showcase_item",
+        "… 6 more"
+      ],
+      "data": {
+        "id": "2194705858096130",
+        "instream_extra_config": "(1 fields)",
+        "instream_video_ad_breaks_comet": null
+      },
+      "extensions": {
+        "prefetch_uris_v2": "(6 items)",
+        "all_video_dash_prefetch_representations": "(6 items)",
+        "is_final": false
+      }
+    }
+  ]
+}
+```
+
+**runs/inspect/20261023T000744_61594063207669**, step 3: goto /marketplace/inbox: 200, 4472 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometModernHomeFeedQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "RELAY_INCREMENTAL_DELIVERY": true,
+    "connectionClass": "EXCELLENT",
+    "feedbackSource": 1,
+    "feedInitialFetchSize": 4,
+    "feedLocation": "NEWSFEED",
+    "feedStyle": "DEFAULT",
+    "orderby": [
+      "TOP_STORIES"
+    ],
+    "privacySelectorRenderLocation": "COMET_STREAM",
+    "recentVPVs": [],
+    "refreshMode": "COLD_START",
+    "renderLocation": "homepage_stream",
+    "scale": 1,
+    "shouldChangeBRSLabelFieldName": false,
+    "shouldObfuscateCategoryField": true,
+    "shouldUseBRSLabelFieldNameV1": false,
+    "shouldUseBRSLabelFieldNameV2": false,
+    "useDefaultActor": false,
+    "__relay_internal__pv__GHLShouldChangeSponsoredAuctionDistanceFieldNamerelayprovider": true,
+    "__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV1relayprovider": true,
+    "__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV2relayprovider": false,
+    "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
+    "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
+    "__relay_internal__pv__CometAdsSlotFillLoggingEnabledrelayprovider": true,
+    "__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider": false,
+    "__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider": false,
+    "__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider": false,
+    "__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider": true,
+    "__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider": false,
+    "__relay_internal__pv__IsWorkUserrelayprovider": false,
+    "__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider": false,
+    "__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider": true,
+    "__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider": true,
+    "__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider": true,
+    "__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider": true,
+    "__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider": false,
+    "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false,
+    "__relay_internal__pv__IsMergQAPollsrelayprovider": false,
+    "__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider": true,
+    "__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider": false,
+    "__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider": "AUTO_TRANSLATE",
+    "__relay_internal__pv__CometUFIShareActionMigrationrelayprovider": true,
+    "__relay_internal__pv__CometUFISingleLineUFIrelayprovider": true,
+    "__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider": true,
+    "__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider": true,
+    "__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider": 206,
+    "__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider": false,
+    "__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider": false,
+    "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": false
+  },
+  "doc_id": "28651572944522952"
+}
+```
+
+Answered:
+
+```json
+null
+```
+
+**runs/inspect/20261023T000744_61594063207669**, step 5: goto /marketplace/you/selling: 200, 3384 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometModernHomeFeedQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "RELAY_INCREMENTAL_DELIVERY": true,
+    "connectionClass": "EXCELLENT",
+    "feedbackSource": 1,
+    "feedInitialFetchSize": 4,
+    "feedLocation": "NEWSFEED",
+    "feedStyle": "DEFAULT",
+    "orderby": [
+      "TOP_STORIES"
+    ],
+    "privacySelectorRenderLocation": "COMET_STREAM",
+    "recentVPVs": [],
+    "refreshMode": "COLD_START",
+    "renderLocation": "homepage_stream",
+    "scale": 1,
+    "shouldChangeBRSLabelFieldName": false,
+    "shouldObfuscateCategoryField": true,
+    "shouldUseBRSLabelFieldNameV1": false,
+    "shouldUseBRSLabelFieldNameV2": false,
+    "useDefaultActor": false,
+    "__relay_internal__pv__GHLShouldChangeSponsoredAuctionDistanceFieldNamerelayprovider": true,
+    "__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV1relayprovider": true,
+    "__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV2relayprovider": false,
+    "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
+    "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
+    "__relay_internal__pv__CometAdsSlotFillLoggingEnabledrelayprovider": true,
+    "__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider": false,
+    "__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider": false,
+    "__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider": false,
+    "__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider": true,
+    "__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider": false,
+    "__relay_internal__pv__IsWorkUserrelayprovider": false,
+    "__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider": false,
+    "__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider": true,
+    "__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider": true,
+    "__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider": true,
+    "__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider": true,
+    "__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider": false,
+    "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false,
+    "__relay_internal__pv__IsMergQAPollsrelayprovider": false,
+    "__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider": true,
+    "__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider": false,
+    "__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider": "AUTO_TRANSLATE",
+    "__relay_internal__pv__CometUFIShareActionMigrationrelayprovider": true,
+    "__relay_internal__pv__CometUFISingleLineUFIrelayprovider": true,
+    "__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider": true,
+    "__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider": true,
+    "__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider": 206,
+    "__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider": false,
+    "__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider": false,
+    "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": false
+  },
+  "doc_id": "28651572944522952"
+}
+```
+
+Answered:
+
+```json
+{
+  "first": {
+    "data": {
+      "viewer": {
+        "news_feed": "(1 fields)",
+        "actor": "(3 fields)",
+        "can_have_friends": true,
+        "all_friends": "(1 fields)",
+        "is_fb_employee": false,
+        "rack_qrt_called_during_first_story": false,
+        "injected_stories": null
+      }
+    },
+    "extensions": {
+      "prefetch_uris_v2": [
+        "(5 fields)",
+        "(5 fields)"
+      ],
+      "server_metadata": {
+        "request_start_time_ms": 1792715273011,
+        "time_at_flush_ms": 1792715273875
+      },
+      "is_final": false,
+      "sr_payload": {
+        "ddd": "(4 fields)"
+      }
+    }
+  },
+  "followingParts": 10,
+  "parts": [
+    {
+      "label": "CometNewsFeed_viewerConnection$stream$CometNewsFeed_viewer_news_feed",
+      "path": [
+        "viewer",
+        "news_feed",
+        "edges",
+        1
+      ],
+      "data": {
+        "brs_content_label": null,
+        "cat_sensitive": "(2 fields)",
+        "deduplication_key": "2361978148206864999",
+        "min_gap_type_index_string": "10",
+        "sposnsor_new_distac_action": null,
+        "top_story_cache_score": 0,
+        "is_ad_eligible_for_ad_pod": false,
+        "node": "(11 fields)",
+        "feed_backend_data": "(6 fields)",
+        "cursor": "FQQVAhsBXAIVBBhcTVRjNU1qY3hOVEkzTXpveE56a3lOekUxTWpjek9qSTZNak0yTVRrM09ERTBPREl3TmpnMk5EazVPVG93T2kwMU9UTXlOelV6TURFMU5EazVPVFl3T1RBeE9nPT0AGwJVAgIUBBUAAA=="
+      },
+      "extensions": {
+        "is_final": false,
+        "sr_payload": "(1 fields)"
+      }
+    },
+    {
+      "label": "CometNewsFeed_viewerConnection$stream$CometNewsFeed_viewer_news_feed",
+      "path": [
+        "viewer",
+        "news_feed",
+        "edges",
+        2
+      ],
+      "data": {
+        "brs_content_label": null,
+        "cat_sensitive": "(2 fields)",
+        "deduplication_key": "-279022799994779008",
+        "min_gap_type_index_string": "12",
+        "sposnsor_new_distac_action": null,
+        "top_story_cache_score": 0,
+        "is_ad_eligible_for_ad_pod": false,
+        "node": "(12 fields)",
+        "feed_backend_data": "(6 fields)",
+        "cursor": "FQYVAhsBXAIVBhhcTVRjNU1qY3hOVEkzTXpveE56a3lOekUxTWpjek9qTTZMVEkzT1RBeU1qYzVPVGs1TkRjM09UQXdPRG93T2kwMU9UTXlOelV6TURFMU5EazVPVFl3T1RBeE9nPT0AGwNVAgIUBBgGFQAA"
+      },
+      "extensions": {
+        "prefetch_uris_v2": "(6 items)",
+        "all_video_dash_prefetch_representations": "(6 items)",
+        "is_final": false,
+        "sr_payload": "(1 fields)"
+      }
+    },
+    {
+      "label": "VideoPlayerRelay_video$defer$InstreamVideoAdBreaksPlayer_video",
+      "path": [
+        "viewer",
+        "news_feed",
+        "edges",
+        2,
+        "node",
+        "showcase_item",
+        "… 6 more"
+      ],
+      "data": {
+        "id": "1604777394733994",
+        "instream_extra_config": "(1 fields)",
+        "instream_video_ad_breaks_comet": null
+      },
+      "extensions": {
+        "prefetch_uris_v2": "(6 items)",
+        "all_video_dash_prefetch_representations": "(6 items)",
+        "is_final": false
+      }
+    }
+  ]
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

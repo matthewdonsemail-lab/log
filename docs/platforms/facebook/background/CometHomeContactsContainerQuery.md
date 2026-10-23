@@ -37,6 +37,247 @@ Seen 20 time(s) in 11 run(s).
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 950 ms | 1708112 ms | A server error field_exception occured. Check server logs for details. |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 829 ms | 15219 ms | A server error field_exception occured. Check server logs for details. |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T045453_61594063207669**, openAny: read /marketplace/item/<id>/: 200, 829 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeContactsContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "numContactsToFetch": 17,
+    "scale": 1
+  },
+  "doc_id": "28451034771148738"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "actor": {
+        "__typename": "User",
+        "contacts_home_renderer": {
+          "__typename": "XFBContactsHomeDefaultRenderer",
+          "viewer": {
+            "chat_sidebar_is_collapsed": false,
+            "messenger_inbox_tray_contacts": [],
+            "chat_visibility": true
+          },
+          "__module_operation_CometHomeContactsContainerQuery": null,
+          "__module_component_CometHomeContactsContainerQuery": null
+        },
+        "id": "61594063207669"
+      }
+    }
+  },
+  "errors": [
+    {
+      "message": "A server error field_exception occured. Check server logs for details.",
+      "severity": "ERROR",
+      "mids": [
+        "001189db2a4071a04b876426152dd738"
+      ],
+      "debug_link": "https://www.meta.com/debug/?mid=001189db2a4071a04b876426152dd738",
+      "path": [
+        "viewer",
+        "actor",
+        "contacts_home_renderer",
+        "__module_operation_CometHomeContactsContainerQuery"
+      ]
+    },
+    {
+      "message": "A server error field_exception occured. Check server logs for details.",
+      "severity": "ERROR",
+      "mids": [
+        "38b7283558dc534b70b66c65fc1fcb18"
+      ],
+      "debug_link": "https://www.meta.com/debug/?mid=38b7283558dc534b70b66c65fc1fcb18",
+      "path": [
+        "viewer",
+        "actor",
+        "contacts_home_renderer",
+        "__module_component_CometHomeContactsContainerQuery"
+      ]
+    }
+  ],
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792731520809,
+      "time_at_flush_ms": 1792731520873
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T000744_61594063207669**, step 3: goto /marketplace/inbox: 200, 1670 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeContactsContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "numContactsToFetch": 17,
+    "scale": 1
+  },
+  "doc_id": "28451034771148738"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "actor": {
+        "__typename": "User",
+        "contacts_home_renderer": {
+          "__typename": "XFBContactsHomeDefaultRenderer",
+          "viewer": {
+            "chat_sidebar_is_collapsed": false,
+            "messenger_inbox_tray_contacts": [],
+            "chat_visibility": true
+          },
+          "__module_operation_CometHomeContactsContainerQuery": null,
+          "__module_component_CometHomeContactsContainerQuery": null
+        },
+        "id": "61594063207669"
+      }
+    }
+  },
+  "errors": [
+    {
+      "message": "A server error field_exception occured. Check server logs for details.",
+      "severity": "ERROR",
+      "mids": [
+        "001189db2a4071a04b876426152dd738"
+      ],
+      "debug_link": "https://www.meta.com/debug/?mid=001189db2a4071a04b876426152dd738",
+      "path": [
+        "viewer",
+        "actor",
+        "contacts_home_renderer",
+        "__module_operation_CometHomeContactsContainerQuery"
+      ]
+    },
+    {
+      "message": "A server error field_exception occured. Check server logs for details.",
+      "severity": "ERROR",
+      "mids": [
+        "38b7283558dc534b70b66c65fc1fcb18"
+      ],
+      "debug_link": "https://www.meta.com/debug/?mid=38b7283558dc534b70b66c65fc1fcb18",
+      "path": [
+        "viewer",
+        "actor",
+        "contacts_home_renderer",
+        "__module_component_CometHomeContactsContainerQuery"
+      ]
+    }
+  ],
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792714191571,
+      "time_at_flush_ms": 1792714191845
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T000744_61594063207669**, step 5: goto /marketplace/you/selling: 200, 2678 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeContactsContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "numContactsToFetch": 17,
+    "scale": 1
+  },
+  "doc_id": "28451034771148738"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "actor": {
+        "__typename": "User",
+        "contacts_home_renderer": {
+          "__typename": "XFBContactsHomeDefaultRenderer",
+          "viewer": {
+            "chat_sidebar_is_collapsed": false,
+            "messenger_inbox_tray_contacts": [],
+            "chat_visibility": true
+          },
+          "__module_operation_CometHomeContactsContainerQuery": null,
+          "__module_component_CometHomeContactsContainerQuery": null
+        },
+        "id": "61594063207669"
+      }
+    }
+  },
+  "errors": [
+    {
+      "message": "A server error field_exception occured. Check server logs for details.",
+      "severity": "ERROR",
+      "mids": [
+        "001189db2a4071a04b876426152dd738"
+      ],
+      "debug_link": "https://www.meta.com/debug/?mid=001189db2a4071a04b876426152dd738",
+      "path": [
+        "viewer",
+        "actor",
+        "contacts_home_renderer",
+        "__module_operation_CometHomeContactsContainerQuery"
+      ]
+    },
+    {
+      "message": "A server error field_exception occured. Check server logs for details.",
+      "severity": "ERROR",
+      "mids": [
+        "38b7283558dc534b70b66c65fc1fcb18"
+      ],
+      "debug_link": "https://www.meta.com/debug/?mid=38b7283558dc534b70b66c65fc1fcb18",
+      "path": [
+        "viewer",
+        "actor",
+        "contacts_home_renderer",
+        "__module_component_CometHomeContactsContainerQuery"
+      ]
+    }
+  ],
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792715273351,
+      "time_at_flush_ms": 1792715273599
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

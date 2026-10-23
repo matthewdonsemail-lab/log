@@ -20,6 +20,31 @@ Seen 2 time(s) in 2 run(s).
 | inspect | step 1: goto / | 1 | 200 | 975 ms | 19172 ms | — |
 | inspect | step 1: goto /marketplace/status | 1 | 200 | 887 ms | 15895 ms | — |
 
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T000744_61594063207669**, step 1: goto /marketplace/status: 200, 887 ms
+
+Sent:
+
+```json
+{
+  "data": "eyJldmVudCI6InNjYW5fcmVzdWx0IiwibG9jYWxfc3RvcmFnZSI6WyJwczoxMDAwOTUyNDM0OTQ5ODE6MDU3NDgzMWEtY2VkYy00MjA2LTk4OTQtYjU3ZmYxYmU1MDBmIiwicHM6MTAwMDk1MzYxODUxNzQ0OjA1NzQ4MzFhLWNlZGMtNDIwNi05ODk0LWI1N2ZmMWJlNTAwZiIsInBzOjEwMDA5NTI0MDI3MjYwMzo1NWU0YzI1Ni1jNzVjLTRkZjItYWQ0ZC0xMDM5ODNlM2Y1NTIiLCJwczoxMDAwOTUzMDIzMDk1NTI6NTU0MWM5NWEtODM3Yy00ODZhLWI2MTktMGUzZDhiOTk1OGM4IiwicHM6MTAwMDk1MDc4ODMyMTA1OjA1NzQ4MzFh… (41104 chars)"
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "Ae7OC83RspaUO2p68eZxGjc",
+  "payload": null,
+  "lid": "7699648432146207398"
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

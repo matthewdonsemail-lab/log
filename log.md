@@ -5510,3 +5510,115 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: SubQ judges an inspect goal across the session, not one step. Each earlier step it is given now carries what the platform saved in it (`saved`: mutations that answered 2xx with no errors, `savedOf`) and whether it counts for the goal (`forGoal`, after the goal was set); the bundle and SubQ's state carry `goalSoFar` (`goalSoFarOf`: steps since the goal and each saved mutation counted, this step included); and the goal question asks whether the whole goal is reached by now, a goal for a number of things needing that many saved in total. `readStep` takes the goal's `since` from `inspect do`. The inspect skill says so, and the Facebook request docs take the likes run.
 Why: matt: "make SubQ judge a goal across the session's steps (e.g. count the saved likes so far), not one step alone." On Bethlehem's likes run (20261023T051540) the goal "Like 2 to 3 posts" was said reached at the first like (53%), because SubQ was asked whether that one step reached it.
 Checked: new tests (the count over steps since the goal, only mutations that answered OK; SubQ's question and state). Read again by SubQ on the likes run: step 03 (1 like saved) now "not reached" (100%), step 05 (2 saved) "reached" (78%). `bun run check` passes with 879 tests; the docs gate passes.
+
+## 2026-10-23 05:38Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuShortcutsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceInboxBuyerTabViewContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceInboxContentContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceInboxSellerTabThreadViewContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceInboxSetPreferredViewerRoleMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceLeftRailNavigationContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceNUXUpdateStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceNotificationsListContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceNotificationsNavRootContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplacePartnerSelectorContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceRecordPDPDwellTimeMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSetBrowseRadiusMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSetProductItemSeenStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceStatusContentContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceYouFeedItemCommentListQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceYouSellingFastContentContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometMessagingJewelDropdownEBUpsellContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNewsFeedPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsUpdateSeenStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometUFIFeedbackReactMutation.md`: edited
+- `docs/platforms/facebook/background/EBFetchBackupIdsSharedFragmentQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/FeedComposerCometRootQuery.md`: edited
+- `docs/platforms/facebook/background/FriendingCometFriendRequestsRootQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MWChatEncryptedBackupsUpsellMessengerInboxQuery.md`: edited
+- `docs/platforms/facebook/background/MWQuickPromotionThreadlistBannerQuery.md`: edited
+- `docs/platforms/facebook/background/MWThreadListQPQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceBannerContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometPartnerListingDialogContentMutation.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometPartnerListingDialogContentQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceDeleteUtilsQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPC2CMediaViewerWithImagesQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPRightColumnAdsQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceSearchAddressDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYouSellingUpsellCardQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYourListingDialogQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/VestaServerGraphQLRegisterProviderBeginRegisterMutation.md`: edited
+- `docs/platforms/facebook/background/VestaServerGraphQLRegisterProviderFinishRegisterMutation.md`: edited
+- `docs/platforms/facebook/background/VestaServerGraphQLRegisterProviderInitQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBz.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/sharedUserPreferences.md`: edited
+- `docs/platforms/facebook/background/useMWEBAutoEBLogHighFrictionUpsellOnVisibleMutation.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/listingForm/CometMarketplaceSellingRootContentQuery.md`: edited
+- `docs/platforms/facebook/listingForm/MarketplaceComposerAIPricingDialogImplSimilarListingsQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useListingShippableEligibilityCheckQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerAttributesQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerBISNumberEligibilityRefetchQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerPricePredictionQuery.md`: edited
+- `docs/platforms/facebook/location/CometMarketplaceSetBuyLocationMutation.md`: edited
+- `docs/platforms/facebook/location/MarketplaceBuyLocationDialogLocationUrlQuery.md`: edited
+- `docs/platforms/facebook/location/MarketplaceBuyLocationDialogQuery.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/photos/ajaxReactComposerAttachmentsPhotoUpload.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometHeaderQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTimelineFeedQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTimelineListViewRootQuery.md`: edited
+- `docs/platforms/facebook/publishing/CometMarketplaceBoostListingPostPublishNuxDialogQuery.md`: edited
+- `docs/platforms/facebook/publishing/useCometMarketplaceListingCreateMutation.md`: edited
+- `skills/runs/SKILL.md`: edited
+- `src/browser/runStore/client.ts`: added const KEPT_RUN_FILES, const KEPT_STEP_FILES, const CUT_EXCHANGES, const dirsIn, function stepHarsOf, function backfillExchanges, function backfillAll, function keepReadings · changed function pruneRuns
+- `src/browser/runStore/index.ts`: changed export from "./types.ts"
+- `src/browser/runStore/runStore.test.ts`: added const LIKE_HAR, test "every step still on disk gets its exchanges taken out of its HAR, inspect step folders and settle cuts alike, and the prune keeps them with the readings and goal findings", test "a run whose step HAR cannot be read is not pruned, so nothing is lost"
+- `src/browser/runStore/types.ts`: added interface StepHar, interface Backfill
+- `src/cli/runs/index.ts`: changed const RUNS_USAGE, const RUNS_INPUT, const runsCommand
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/rea/facebookClient/client.ts`: added function withExchanges · changed function requestsInRun
+- `src/rea/facebookClient/factsStore.test.ts`: added test "the newest answer per step is kept in the store, past the run, and rendered in the doc with signed link tokens taken out", test "an answer too big for the doc is cut by depth, never dropped"
+- `src/rea/facebookClient/helpers/factsStore.ts`: added const MAX_SAMPLES, const MAX_SAMPLE_CHARS, const SIGNED_URL, function unsigned, function shallower, function fitSample, function samplesOf, const block, function renderSamples · changed interface StoredFacts, function foldOperation, function renderStoredSightings
+- `src/rea/facebookClient/types.ts`: added interface OperationSample · changed interface OperationSighting
+
+What changed: what Facebook's client really sent and got back is now kept and shown. (1) Each request's doc gets "What it sent and what came back": the newest 3 real exchanges, one per step, taken from the run's own recording (`withExchanges` pairs each sighting with its exchange from `exchangesOf`), with secrets and signed link tokens out and each cut by depth to 6,000 characters (`fitSample`, `samplesOf`, `renderSamples`). They are kept in `clientFacts.json` (`StoredFacts.samples`), so a doc keeps them after its runs are pruned. (2) The prune first takes every step's exchanges out of its HAR (`backfillExchanges`, `stepHarsOf`: inspect step folders and settle cuts) and keeps a run whose step HAR can't be read. It now keeps every inspect step's exchanges.json, reading.json and readingState.json, every settle cut's .exchanges.json, and goalFindings.md and .jsonl (`keepReadings`). (3) `log runs exchanges` does the backfill for every run on disk (MCP `runsExchanges`). The runs skill, README and the runs command's rules (73) say so.
+Why: matt: "put each request's real sent and answered data into its doc (folded into clientFacts so it survives the prune), make the prune keep every step's exchanges.json, reading.json, readingState.json and goalFindings.md, and backfill exchanges for every step still on disk before anything is pruned." The docs held only field names and timings, the prune deleted the answers rule 73 says are kept, and only the 11 inspect steps since #36 had their answers taken out.
+Checked: new tests (backfill for both step layouts, the prune keeping them and refusing a run with an unreadable step HAR; samples newest per step, kept across folds, signed tokens out, cut by depth). Ran live: `log runs exchanges` wrote 186 of 197 steps across 15 runs (11 already had them, none failed); `log facebook capture --docs` gave 90 of 219 request docs their real exchanges (the rest were only seen in runs pruned before today). `bun run check` passes with 883 tests; the docs gate passes.

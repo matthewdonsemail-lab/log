@@ -217,6 +217,83 @@ Seen 650 time(s) in 29 run(s).
 | inspect | post: "…", 123 words, 0 image(s), scrolled 53 px | 12 | 200 | 1126–20726 ms | 9012–99549 ms | — |
 | inspect | step 3: likePost Like | 2 | 200 | 352–669 ms | 3775–25195 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T051540_61594063207669**, post: "…", 123 words, 0 image(s), scrolled 53 px: 200, 1126 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "ph": "C3"
+  },
+  "body": null
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "AFGu_OOupSCrui8vY38lC1t",
+  "payload": null,
+  "lid": "7699727855122977537"
+}
+```
+
+**runs/inspect/20261023T051540_61594063207669**, step 3: likePost Like: 200, 669 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "ph": "C3"
+  },
+  "body": null
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "AOXKvOdmT8l97Mjin-QhPFM",
+  "payload": null,
+  "lid": "7699728274810336266"
+}
+```
+
+**runs/inspect/20261023T045453_61594063207669**, step 1: goto /marketplace/create/item: 200, 637 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "ph": "C3",
+    "qpl_active_flow_ids": "138820675"
+  },
+  "body": null
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "AtZ0nRbaxl5Geef91RJSvH_",
+  "payload": null,
+  "lid": "7699722471785515906"
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

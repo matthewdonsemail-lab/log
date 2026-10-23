@@ -19,6 +19,65 @@ Seen 1 time(s) in 1 run(s).
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 4: click e191 | 1 | 200 | 1283 ms | 2969 ms | — |
 
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261022T110738_61594063207669**, step 4: click e191: 200, 1283 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMarketplacePartnerSelectorContainerQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "27690950030545801"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "marketplace_settings": {
+        "selected_partner_ids": [
+          "1629659441068862",
+          "1240470891063721"
+        ],
+        "should_hide_organic_listings": false,
+        "is_partner_auto_opt_in_enabled": true,
+        "should_show_partner_selector": false,
+        "viewed_partner_ids": [
+          "1629659441068862",
+          "1240470891063721"
+        ],
+        "id": "TWFya2V0cGxhY2VTZXR0aW5nczo2MTU5NDA2MzIwNzY2OQ==",
+        "qualifies_for_partner_selector": true
+      },
+      "marketplace_partnership_catalog_settings": [
+        {
+          "partnership_settings_id": "1240470891063721"
+        },
+        {
+          "partnership_settings_id": "1629659441068862"
+        }
+      ]
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792667424740,
+      "time_at_flush_ms": 1792667424854
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

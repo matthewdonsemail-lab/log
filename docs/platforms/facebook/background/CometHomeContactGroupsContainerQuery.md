@@ -37,6 +37,148 @@ Seen 20 time(s) in 11 run(s).
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 1122 ms | 1708110 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 877 ms | 15218 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T045453_61594063207669**, openAny: read /marketplace/item/<id>/: 200, 877 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeContactGroupsContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "excludeBroadcastChannelThreads": true,
+    "excludeCmThreads": true,
+    "__relay_internal__pv__WebPixelRatiorelayprovider": 1
+  },
+  "doc_id": "25945115421852941"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "actor": {
+        "__typename": "User",
+        "should_hide_group_conversations_list": false,
+        "id": "61594063207669"
+      },
+      "chat_sidebar_is_collapsed": false,
+      "chat_visibility": true,
+      "message_threads": {
+        "edges": []
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792731520807,
+      "time_at_flush_ms": 1792731521030
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T000744_61594063207669**, step 3: goto /marketplace/inbox: 200, 1626 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeContactGroupsContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "excludeBroadcastChannelThreads": true,
+    "excludeCmThreads": true,
+    "__relay_internal__pv__WebPixelRatiorelayprovider": 1
+  },
+  "doc_id": "25945115421852941"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "actor": {
+        "__typename": "User",
+        "should_hide_group_conversations_list": false,
+        "id": "61594063207669"
+      },
+      "chat_sidebar_is_collapsed": false,
+      "chat_visibility": true,
+      "message_threads": {
+        "edges": []
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792714191561,
+      "time_at_flush_ms": 1792714191758
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T000744_61594063207669**, step 5: goto /marketplace/you/selling: 200, 2664 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeContactGroupsContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "excludeBroadcastChannelThreads": true,
+    "excludeCmThreads": true,
+    "__relay_internal__pv__WebPixelRatiorelayprovider": 1
+  },
+  "doc_id": "25945115421852941"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "actor": {
+        "__typename": "User",
+        "should_hide_group_conversations_list": false,
+        "id": "61594063207669"
+      },
+      "chat_sidebar_is_collapsed": false,
+      "chat_visibility": true,
+      "message_threads": {
+        "edges": []
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792715273349,
+      "time_at_flush_ms": 1792715273561
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

@@ -80,6 +80,113 @@ Seen 97 time(s) in 26 run(s).
 | inspect | step 2: goto /marketplace/ | 1 | 200 | 358 ms | 6377 ms | — |
 | inspect | step 5: goto /messages/ | 1 | 200 | 639 ms | 9393 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T051540_61594063207669**, step 1: goto /: 200, 481 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "RTWebCallBlockSettingHooksQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "9989124061109700"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "call_blocked_until": 0
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792732563451,
+      "time_at_flush_ms": 1792732563470
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T045453_61594063207669**, step 1: goto /marketplace/create/item: 200, 395 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "138820675",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "RTWebCallBlockSettingHooksQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "9989124061109700",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=138820675"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "call_blocked_until": 0
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792731336973,
+      "time_at_flush_ms": 1792731336992
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T045453_61594063207669**, step 2: goto /marketplace/: 200, 358 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "RTWebCallBlockSettingHooksQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "9989124061109700"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "call_blocked_until": 0
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792731446233,
+      "time_at_flush_ms": 1792731446251
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

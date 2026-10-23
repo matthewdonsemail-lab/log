@@ -28,6 +28,90 @@ Seen 10 time(s) in 5 run(s).
 | inspect | scroll: +161px in 5 wheel steps, 250 ms | 1 | 200 | 740 ms | 3443 ms | — |
 | inspect | scroll: -161px in 5 wheel steps, 172 ms | 1 | 200 | 1264 ms | 1430 ms | — |
 
+### What it sent and what came back (the newest 2 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T045453_61594063207669**, scroll: +161px in 5 wheel steps, 250 ms: 200, 740 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMarketplaceSetProductItemSeenStateMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "has_seen": true,
+      "product_item_id": "39887208997530861",
+      "actor_id": "61594063207669",
+      "client_mutation_id": "1"
+    }
+  },
+  "doc_id": "9680593255390206"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "marketplace_set_product_item_seen_state": {
+      "product_item": null
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792731490393,
+      "time_at_flush_ms": 1792731490791
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T045453_61594063207669**, scroll: -161px in 5 wheel steps, 172 ms: 200, 1264 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMarketplaceSetProductItemSeenStateMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "has_seen": true,
+      "product_item_id": "28549509658039213",
+      "actor_id": "61594063207669",
+      "client_mutation_id": "3"
+    }
+  },
+  "doc_id": "9680593255390206"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "marketplace_set_product_item_seen_state": {
+      "product_item": null
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792731499387,
+      "time_at_flush_ms": 1792731499877
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

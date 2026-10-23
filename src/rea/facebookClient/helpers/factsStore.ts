@@ -1,5 +1,5 @@
 import { REPORT_LINE } from '../../capture/helpers/splitHarBySteps'
-import type { ClientOperation, OperationKind, OperationSighting } from '../types'
+import type { ClientOperation, OperationKind, OperationSample, OperationSighting } from '../types'
 import { FACTS_END, FACTS_START, stepLabel } from './renderOperationDoc'
 
 export interface FactsRow {
@@ -22,6 +22,42 @@ export interface StoredFacts {
   seen: number
   runs: string[]
   legacyRuns: number
+  samples?: OperationSample[]
+}
+
+export const MAX_SAMPLES = 3
+export const MAX_SAMPLE_CHARS = 6_000
+
+const SIGNED_URL = /^(https?:\/\/[^/?\s]*(?:fbcdn\.net|cdninstagram\.com)[^?\s]*)\?\S*$/
+
+function unsigned(value: unknown): unknown {
+  if (typeof value === 'string') return value.replace(SIGNED_URL, '$1')
+  if (Array.isArray(value)) return value.map(unsigned)
+  if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([k, v]) => [k, unsigned(v)]))
+  return value
+}
+
+function shallower(value: unknown, depth: number, at = 0): unknown {
+  if (Array.isArray(value)) return at >= depth ? `(${value.length} items)` : value.map((v) => shallower(v, depth, at + 1))
+  if (value && typeof value === 'object') return at >= depth ? `(${Object.keys(value).length} fields)` : Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([k, v]) => [k, shallower(v, depth, at + 1)]))
+  return value
+}
+
+export function fitSample(value: unknown, limit = MAX_SAMPLE_CHARS): unknown {
+  const clean = unsigned(value)
+  if (JSON.stringify(clean ?? null).length <= limit) return clean
+  for (let depth = 8; depth >= 1; depth--) {
+    const cut = shallower(clean, depth)
+    if (JSON.stringify(cut).length <= limit) return cut
+  }
+  return `${JSON.stringify(clean).slice(0, limit)}… (cut to fit)`
+}
+
+export function samplesOf(stored: OperationSample[], sightings: OperationSighting[]): OperationSample[] {
+  const fresh = sightings.filter((s) => s.answer !== undefined).map((s) => ({ run: s.run, step: label(s), status: s.status, ms: s.ms, sent: fitSample(s.sent ?? null), answer: fitSample(s.answer ?? null) }))
+  const byStep = new Map<string, OperationSample>()
+  for (const sample of [...stored, ...fresh].sort((a, b) => b.run.localeCompare(a.run))) if (!byStep.has(sample.step)) byStep.set(sample.step, sample)
+  return [...byStep.values()].slice(0, MAX_SAMPLES)
 }
 
 const label = (s: OperationSighting) => (REPORT_LINE.test(s.step) ? 'a step (older run, split by its report lines)' : stepLabel(s.step))
@@ -87,7 +123,8 @@ export function foldOperation(stored: StoredFacts | null, operation: ClientOpera
     rows: mergeRows(base.rows, rowsOf(fresh)),
     seen: base.seen + fresh.length,
     runs: [...new Set([...base.runs, ...fresh.map((s) => s.run)])].sort(),
-    legacyRuns: base.legacyRuns
+    legacyRuns: base.legacyRuns,
+    samples: samplesOf(base.samples ?? [], operation.sightings)
   }
 }
 
@@ -100,6 +137,20 @@ export function renderStoredSightings(facts: StoredFacts): string {
     '',
     '| Action | Our step | Times | Status | Took | After step start | Errors |',
     '| --- | --- | --- | --- | --- | --- | --- |',
-    ...rows
+    ...rows,
+    ...renderSamples(facts.samples ?? [])
   ].join('\n')
+}
+
+const block = (value: unknown) => ['```json', JSON.stringify(value, null, 2), '```']
+
+export function renderSamples(samples: OperationSample[]): string[] {
+  if (!samples.length) return []
+  return [
+    '',
+    `### What it sent and what came back (the newest ${samples.length} from our runs)`,
+    '',
+    'Read from each run\'s own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.',
+    ...samples.flatMap((s) => ['', `**${s.run}**, ${s.step}: ${s.status}, ${s.ms} ms`, '', 'Sent:', '', ...block(s.sent), '', 'Answered:', '', ...block(s.answer)])
+  ]
 }

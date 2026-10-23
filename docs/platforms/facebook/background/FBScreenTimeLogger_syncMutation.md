@@ -50,6 +50,201 @@ Seen 68 time(s) in 21 run(s).
 | inspect | step 6: goto /marketplace/inbox | 5 | 200 | 434–874 ms | 11719–1213257 ms | — |
 | inspect | step 6: wait 6s | 1 | 200 | 558 ms | 10373 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T045453_61594063207669**, step 6: wait 6s: 200, 558 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBScreenTimeLogger_syncMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "actor_id": "61594063207669",
+      "client_mutation_id": "1",
+      "device_time_iso": "2026-10-23T05:00:37.140Z",
+      "fb_web_fb_intervals_payload": {
+        "device_timestamp": "1792731637",
+        "device_timezone": "America/New_York",
+        "intervals": [
+          {
+            "end_timestamp": "1792717080",
+            "start_timestamp": "1792714089"
+          },
+          {
+            "end_timestamp": "1792731637",
+            "start_timestamp": "1792731337"
+          }
+        ],
+        "local_storage_id": "72727970",
+        "version": "V1"
+      },
+      "screentime_snapshot_payload": {
+        "l24h_s": -1,
+        "last_sync_timestamp": 1792731337,
+        "today_s": 11753
+      },
+      "trigger_reason": "REGULAR"
+    }
+  },
+  "doc_id": "28969188822673160"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "screen_time_sync": {
+      "aggs": {
+        "__typename": "ScreenTimeSyncMutationOutput",
+        "today_s": 300,
+        "l24h_s": -1
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792731636026,
+      "time_at_flush_ms": 1792731636134
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T000744_61594063207669**, step 3: goto /marketplace/inbox: 200, 1377 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBScreenTimeLogger_syncMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "actor_id": "61594063207669",
+      "client_mutation_id": "1",
+      "device_time_iso": "2026-10-23T00:13:11.819Z",
+      "fb_web_fb_intervals_payload": {
+        "device_timestamp": "1792714391",
+        "device_timezone": "America/New_York",
+        "intervals": [
+          {
+            "end_timestamp": "1792686657",
+            "start_timestamp": "1792684778"
+          },
+          {
+            "end_timestamp": "1792714391",
+            "start_timestamp": "1792714089"
+          }
+        ],
+        "local_storage_id": "36502064",
+        "version": "V1"
+      },
+      "screentime_snapshot_payload": {
+        "l24h_s": -1,
+        "last_sync_timestamp": 1792714089,
+        "today_s": 9279
+      },
+      "trigger_reason": "REGULAR"
+    }
+  },
+  "doc_id": "28969188822673160"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "screen_time_sync": {
+      "aggs": {
+        "__typename": "ScreenTimeSyncMutationOutput",
+        "today_s": 9651,
+        "l24h_s": -1
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792714392487,
+      "time_at_flush_ms": 1792714392588
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T000744_61594063207669**, step 6: goto /marketplace/inbox: 200, 874 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBScreenTimeLogger_syncMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "actor_id": "61594063207669",
+      "client_mutation_id": "1",
+      "device_time_iso": "2026-10-23T00:28:12.373Z",
+      "fb_web_fb_intervals_payload": {
+        "device_timestamp": "1792715292",
+        "device_timezone": "America/New_York",
+        "intervals": [
+          {
+            "end_timestamp": "1792715292",
+            "start_timestamp": "1792714089"
+          }
+        ],
+        "local_storage_id": "90242846",
+        "version": "V1"
+      },
+      "screentime_snapshot_payload": {
+        "l24h_s": -1,
+        "last_sync_timestamp": 1792714992,
+        "today_s": 10252
+      },
+      "trigger_reason": "REGULAR"
+    }
+  },
+  "doc_id": "28969188822673160"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "screen_time_sync": {
+      "aggs": {
+        "__typename": "ScreenTimeSyncMutationOutput",
+        "today_s": 10552,
+        "l24h_s": -1
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792715292071,
+      "time_at_flush_ms": 1792715292165
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

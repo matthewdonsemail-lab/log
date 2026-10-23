@@ -20,9 +20,16 @@ an inspect run up to 1.4 GB. On 2026-10-22 they reached 12.5 GB, the disk had
 2. **Look:** `log runs` lists each run with `may go` or why it is kept (still
    being written, not settled, not in the docs).
 3. **Prune:** `log runs prune --apply` (`--before <YYYY-MM-DD>` keeps the
-   runs from that day on). Each pruned run leaves:
+   runs from that day on). First it takes every step's internal API calls
+   out of its HAR (`exchanges.json`: what was sent and what came back, rule
+   73), the same as `log runs exchanges` does for every run on disk. A run
+   with a step HAR it can't read is not pruned. Each pruned run leaves:
    - `~/.logCli/runs/kept/<action>/<run>/`: findings.md, steps.jsonl,
-     settle.json, pruned.json;
+     settle.json, pruned.json, goalFindings.md and .jsonl, every inspect
+     step's `steps/<step>/exchanges.json`, `reading.json` and
+     `readingState.json`, and every settle cut's
+     `<browser>/steps/<step>.exchanges.json` (2 MB for 11 steps, against
+     1.2 GB of HAR);
    - one line in `~/.logCli/runs/pruned.jsonl`: size, settled, documented, and
      its requests counted by docs domain (`groups`, `reels`, `checkpoint`…).
 
@@ -31,7 +38,11 @@ an inspect run up to 1.4 GB. On 2026-10-22 they reached 12.5 GB, the disk had
    (local: run ids carry account ids). Each run is counted once, a request
    seen again only adds its new rows, and a field a later build couldn't read
    (the bundle wasn't captured) keeps what was known. Without the store, a
-   request starts from its committed doc (`factsFromDoc`). First seen
+   request starts from its committed doc (`factsFromDoc`). The store also
+   keeps each request's newest 3 real exchanges (one per step: what it sent
+   and what came back, secrets and signed link tokens out, each cut to 6,000
+   characters by depth), and its doc shows them under "What it sent and what
+   came back". First seen
    2026-10-22: a rebuild after the prune had cut FBYRPTimeLimitsEnforcementQuery
    from 17 runs to 1.
 

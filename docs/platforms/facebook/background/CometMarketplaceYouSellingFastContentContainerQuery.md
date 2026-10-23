@@ -19,6 +19,172 @@ Seen 2 time(s) in 1 run(s).
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 3: goto /marketplace/inbox | 2 | 200 | 778–1275 ms | 494388–1361223 ms | — |
 
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261022T155857_61594063207669**, step 3: goto /marketplace/inbox: 200, 1275 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMarketplaceYouSellingFastContentContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "count": 5,
+    "order": "CREATION_TIMESTAMP_DESC",
+    "scale": 1,
+    "shouldDeferInfoSection": false,
+    "state": null,
+    "title_search": null,
+    "__relay_internal__pv__ShouldUpdateMarketplaceBoostListingBoostedStatusrelayprovider": false
+  },
+  "doc_id": "29188899014069653"
+}
+```
+
+Answered:
+
+```json
+{
+  "first": {
+    "data": {
+      "xfb_c2c_shipped_viewer_access": {
+        "can_onboard_to_shipped": {
+          "has_access": false
+        },
+        "id": "c2c_shipped_access_checker:61594063207669"
+      },
+      "viewer": {
+        "marketplace_nux_states": {
+          "mbl_www_selling_view_nux_state": "NOT_VISIBLE",
+          "mbl_www_post_publish_nux_state": "NOT_VISIBLE",
+          "marketplace_bulk_boost_comet_nux": "VISIBLE"
+        },
+        "inactive_sets": {
+          "is_empty": true
+        },
+        "active_sets": {
+          "is_empty": false
+        },
+        "marketplace_c2c_shipping_seller": {
+          "canUseMakeOffer": true,
+          "is_onboarded": false,
+          "you_selling_banner": null
+        },
+        "inactive_listing_sets": {
+          "edges": "(0 items)"
+        },
+        "marketplace_listing_sets": {
+          "edges": "(1 items)",
+          "is_empty": false
+        },
+        "problematic_listing_sets": {
+          "is_empty": true
+        },
+        "items": {
+          "count_up_to": 1
+        },
+        "seller": {
+          "__typename": "User",
+          "id": "61594063207669",
+          "marketplace_should_display_verified_badge": false,
+          "should_display_true_blue_badge_mp": false,
+          "__isActor": "User",
+          "profile_picture_160": "(1 fields)",
+          "profile_picture_112": "(1 fields)",
+          "profile_picture_64": "(1 fields)",
+          "profile_picture_60": "(1 fields)",
+          "profile_picture_50": "(1 fields)",
+          "__isActorWithCustomizableCommerceProfile": "User",
+          "commerce_profile_picture_with_fallback_160": "(1 fields)",
+          "commerce_profile_picture_with_fallback_112": "(1 fields)",
+          "commerce_profile_picture_with_fallback_64": "(1 fields)",
+          "commerce_profile_picture_with_fallback_60": "(1 fields)",
+          "commerce_profile_picture_with_fallback_50": "(1 fields)",
+          "name": "Bethlehem Trash"
+        },
+        "order_management": {
+          "is_carrier_scan_based_tracking_enabled": false,
+          "order_management_order_summaries": null,
+          "waiting_for_carrier_scan_summaries": "(1 fields)"
+        },
+        "marketplace_boosted_listing_candidate": [
+          "(6 fields)"
+        ],
+        "c2c_shipped_access": {
+          "can_create_shipped_listings": "(1 fields)",
+          "id": "c2c_shipped_access_checker:61594063207669",
+          "can_onboard_to_shipped": "(1 fields)"
+        },
+        "marketplace_shipping_eligible_listings": {
+          "nodes": "(1 items)"
+        },
+        "actor": {
+          "__typename": "User",
+          "human_readable_type": "(1 fields)",
+          "id": "61594063207669"
+        },
+        "marketplace_settings": {
+          "vacation_mode": null,
+          "id": "TWFya2V0cGxhY2VTZXR0aW5nczo2MTU5NDA2MzIwNzY2OQ=="
+        }
+      }
+    },
+    "extensions": {
+      "fulfilled_payloads": [
+        {
+          "label": "CometMarketplaceUnifiedYouSellingFastContent_viewer$defer$CometMarketplaceYouInfoSection_viewer",
+          "path": "(1 items)"
+        }
+      ],
+      "server_metadata": {
+        "request_start_time_ms": 1792685352099,
+        "time_at_flush_ms": 1792685352934
+      },
+      "is_final": false
+    }
+  },
+  "followingParts": 2,
+  "parts": [
+    {
+      "label": "MarketplaceYouSellingFastInactiveSection_viewerConnection$defer$MarketplaceYouSellingFastInactiveSection_inactive_listing_sets$page_info",
+      "path": [
+        "viewer",
+        "inactive_listing_sets"
+      ],
+      "data": {
+        "page_info": {
+          "end_cursor": null,
+          "has_next_page": false
+        }
+      },
+      "extensions": {
+        "is_final": false
+      }
+    },
+    {
+      "label": "MarketplaceYouSellingFastActiveSection_viewerConnection$defer$MarketplaceYouSellingFastActiveSection_marketplace_listing_sets$page_info",
+      "path": [
+        "viewer",
+        "marketplace_listing_sets"
+      ],
+      "data": {
+        "page_info": {
+          "end_cursor": "AQHTu3I27_hS5J3JXAQPe7QV8wC_cn8Rb5r-OfPZa4AZ9olqBcbLLFOCWyryQCm-8HwFDgxLjyDV7g4bK1cIY3H0Eg",
+          "has_next_page": false
+        }
+      },
+      "extensions": {
+        "is_final": true
+      }
+    }
+  ]
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

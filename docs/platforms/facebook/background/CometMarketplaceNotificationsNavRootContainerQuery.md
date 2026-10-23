@@ -19,6 +19,53 @@ Seen 1 time(s) in 1 run(s).
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 3: goto /marketplace/inbox | 1 | 200 | 740 ms | 472595 ms | — |
 
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261022T155857_61594063207669**, step 3: goto /marketplace/inbox: 200, 740 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMarketplaceNotificationsNavRootContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "count": 10,
+    "isCOBMOB": false,
+    "scale": 1
+  },
+  "doc_id": "27783648784560601"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "notifications_page": {
+        "edges": [],
+        "page_info": {
+          "end_cursor": null,
+          "has_next_page": false
+        }
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792685330560,
+      "time_at_flush_ms": 1792685330611
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

@@ -97,6 +97,767 @@ Seen 195 time(s) in 15 run(s).
 | inspect | post: "…", 123 words, 0 image(s), scrolled 53 px | 1 | 200 | 18115 ms | 70717 ms | — |
 | inspect | step 5: likePost Like | 1 | 200 | 693 ms | 1320 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T051540_61594063207669**, post: "…", 123 words, 0 image(s), scrolled 53 px: 200, 18115 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHovercardQueryRendererQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "actionBarRenderLocation": "WWW_COMET_HOVERCARD",
+    "context": "DEFAULT",
+    "entityID": "61550871239962",
+    "scale": 1,
+    "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false
+  },
+  "doc_id": "29231152373168310"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "node": {
+      "__typename": "User",
+      "__isEntity": "User",
+      "__isCometHovercard": "User",
+      "comet_hovercard_renderer": {
+        "__typename": "CometHovercardProfilePlusUserRenderer",
+        "user": {
+          "id": "61550871239962",
+          "name": "kalpesh ",
+          "is_visibly_memorialized": false,
+          "is_verified": false,
+          "username_for_profile": null,
+          "__isActor": "User",
+          "__isEntity": "User",
+          "profile_url": "https://www.facebook.com/profile.php?id=61550871239962",
+          "__typename": "User",
+          "story_bucket": {
+            "nodes": "(1 items)"
+          },
+          "url": "https://www.facebook.com/profile.php?id=61550871239962",
+          "profile_picture": {
+            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/756699792_122299173530029041_363609074122408438_n.jpg?stp=dst-jpg_tt6&cstp=mx1005x989&ctp=s100x100&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=D8HrfHDmPxkQ7kNvwHBvV48&_nc_oc=AdptdesTCuwARX2_z2PbU597Oix7Dh2WY9J-onToPQBxWcZzScx3e1FXfxMc22A_clg&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=PSOstrHsVurwQECZXgbswg&_nc_ss=792a8&oh=00_AQPqPecuNBhPbY3ZQvEVeIta… (434 chars)",
+            "width": 100,
+            "height": 98,
+            "scale": 1
+          },
+          "__isActorWithActionBar": "User",
+          "primaryActions": [
+            "(9 fields)",
+            "(9 fields)"
+          ],
+          "secondaryActions": [
+            "(12 fields)",
+            "(12 fields)",
+            "(12 fields)",
+            "(12 fields)"
+          ],
+          "is_scaled_category_view_enabled": false,
+          "newMoreOptionsActions": [],
+          "profile_plus_transition_path": "ADDITIONAL_PROFILE_CREATION",
+          "timeline_context_items": {
+            "nodes": "(2 items)"
+          }
+        },
+        "__module_operation_CometHovercard_entity": {
+          "__dr": "CometHovercardProfilePlusUserRenderer_user$normalization.graphql"
+        },
+        "__module_component_CometHovercard_entity": {
+          "__dr": "CometHovercardProfilePlusUserRenderer.react"
+        }
+      },
+      "id": "61550871239962"
+    }
+  },
+  "extensions": {
+    "prefetch_uris_v2": [
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yC/r/r-IrJXrkdca.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yL/r/VLNVMYsRNQ9.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yk/r/nSurzCxCD4K.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yX/r/Jrf2l_V9i4Q.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yv/r/NAYeFw2-WEm.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yG/r/chbAWa8chyx.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      "… 7 more"
+    ],
+    "server_metadata": {
+      "request_start_time_ms": 1792732653519,
+      "time_at_flush_ms": 1792732653843
+    },
+    "is_final": true,
+    "sr_payload": {
+      "ddd": {
+        "hsrp": {
+          "hsdp": {
+            "clpData": "(5 fields)",
+            "gkxData": "(3 fields)",
+            "ixData": "(56 fields)",
+            "metaconfigData": "(1 fields)",
+            "qexData": "(2 fields)",
+            "qplData": "(7 fields)",
+            "justknobxData": "(2 fields)"
+          },
+          "hblp": {
+            "consistency": "(1 fields)",
+            "rsrcMap": "(21 fields)",
+            "compMap": "(3 fields)",
+            "indexUpgrades": "(2 fields)"
+          }
+        },
+        "jsmods": {
+          "define": [
+            "(4 items)",
+            "(4 items)",
+            "(4 items)",
+            "(4 items)",
+            "(4 items)",
+            "(4 items)",
+            "… 68 more"
+          ],
+          "require": [
+            "(1 items)",
+            "(1 items)",
+            "(1 items)",
+            "(1 items)",
+            "(1 items)",
+            "(1 items)",
+            "… 34 more"
+          ],
+          "phd2_indexes": ":1172,1171,305,304,963,962,556,555,332,333,334,335,296,297,894,895,880,926,924,1358"
+        },
+        "allResources": [
+          "ikVTmwQ",
+          "csr:_1o_0_O6",
+          "csr:_1o_1_aI"
+        ],
+        "tieredResources": {
+          "r": [
+            "ikVTmwQ",
+            "csr:_1o_0_O6"
+          ],
+          "rdfds": [],
+          "rds": [
+            "csr:_1o_1_aI"
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+**runs/inspect/20261023T051540_61594063207669**, step 5: likePost Like: 200, 693 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHovercardQueryRendererQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "actionBarRenderLocation": "WWW_COMET_HOVERCARD",
+    "context": "GROUP",
+    "entityID": "2478332015810393",
+    "groupID": "2478332015810393",
+    "scale": 1,
+    "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false
+  },
+  "doc_id": "29231152373168310"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "node": {
+      "__typename": "Group",
+      "__isEntity": "Group",
+      "__isCometHovercard": "Group",
+      "comet_hovercard_renderer": {
+        "__typename": "CometHovercardGroupRenderer",
+        "group": {
+          "if_viewer_can_see_wayfinding_topics": null,
+          "name": "Bethlehem, PA Neighborhood",
+          "url": "https://www.facebook.com/groups/2478332015810393/",
+          "group_member_profiles": {
+            "formatted_count_text": "5.7K members"
+          },
+          "group_friend_members": {
+            "count": 0
+          },
+          "facepile_profiles": {
+            "edges": [
+              "(1 fields)",
+              "(1 fields)",
+              "(1 fields)",
+              "(1 fields)",
+              "(1 fields)",
+              "(1 fields)",
+              "… 2 more"
+            ]
+          },
+          "id": "2478332015810393",
+          "privacy_info": {
+            "icon_name": "globe-americas",
+            "title": {
+              "delight_ranges": "(0 items)",
+              "image_ranges": "(0 items)",
+              "inline_style_ranges": "(0 items)",
+              "aggregated_ranges": "(0 items)",
+              "ranges": "(0 items)",
+              "color_ranges": "(0 items)",
+              "text": "Public group"
+            }
+          },
+          "join_action_with_menu": {
+            "__typename": "GroupJoinedGroupAction",
+            "group": {
+              "id": "2478332015810393",
+              "url": "https://www.facebook.com/groups/2478332015810393/",
+              "group_type_name_for_content": "GROUP",
+              "name": "Bethlehem, PA Neighborhood"
+            },
+            "__module_operation_GroupsCometJoinGroupButtonWithMenuRelay_group_join_action": {
+              "__dr": "GroupsCometJoinedGroupButton_action$normalization.graphql"
+            },
+            "__module_component_GroupsCometJoinGroupButtonWithMenuRelay_group_join_action": {
+              "__dr": "GroupsCometJoinedGroupButton.react"
+            }
+          },
+          "__isActor": "Group",
+          "__isEntity": "Group",
+          "profile_url": "https://www.facebook.com/groups/2478332015810393/",
+          "__typename": "Group",
+          "profile_picture": {
+            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t1.6435-9/93806581_144287650470567_96044419450404864_n.png?stp=c257.0.315.315a_dst-png&cstp=mx315x315&ctp=s100x100&_nc_cat=110&ccb=1-7&_nc_sid=33e84f&_nc_ohc=sWuHqDfbgtIQ7kNvwE1ugzr&_nc_oc=AdqghXAOcGzuMlEvpe-GsnMt-25uqH4_LTICujPgHK5YfwIyeClIswNbQibiQFM4xvg&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=10n0OpzvYBRKqoKxChrVPg&_nc_ss=792a8&oh=00_AQOAvzST69DV-xvVaS… (440 chars)",
+            "width": 100,
+            "height": 100,
+            "scale": 1
+          }
+        },
+        "__module_operation_CometHovercard_entity": {
+          "__dr": "CometHovercardGroupRenderer_group$normalization.graphql"
+        },
+        "__module_component_CometHovercard_entity": {
+          "__dr": "CometHovercardGroupRenderer.react"
+        }
+      },
+      "id": "2478332015810393"
+    }
+  },
+  "extensions": {
+    "prefetch_uris_v2": [
+      {
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t1.6435-9/93806581_144287650470567_96044419450404864_n.png?stp=c257.0.315.315a_dst-png&cstp=mx315x315&ctp=s100x100&_nc_cat=110&ccb=1-7&_nc_sid=33e84f&_nc_ohc=sWuHqDfbgtIQ7kNvwE1ugzr&_nc_oc=AdqghXAOcGzuMlEvpe-GsnMt-25uqH4_LTICujPgHK5YfwIyeClIswNbQibiQFM4xvg&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=10n0OpzvYBRKqoKxChrVPg&_nc_ss=792a8&oh=00_AQOAvzST69DV-xvVaS… (440 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      }
+    ],
+    "server_metadata": {
+      "request_start_time_ms": 1792732745278,
+      "time_at_flush_ms": 1792732745340
+    },
+    "is_final": true,
+    "sr_payload": {
+      "ddd": {
+        "hsrp": {
+          "hsdp": {
+            "ixData": {
+              "482029": "(7 fields)",
+              "484385": "(7 fields)",
+              "484386": "(7 fields)",
+              "484388": "(7 fields)",
+              "857532": "(7 fields)",
+              "1164649": "(7 fields)",
+              "1164652": "(7 fields)",
+              "1164656": "(7 fields)",
+              "1164662": "(7 fields)",
+              "1679815": "(7 fields)",
+              "1876411": "(4 fields)",
+              "1876412": "(4 fields)",
+              "1876413": "(4 fields)",
+              "1876414": "(4 fields)",
+              "1876415": "(4 fields)",
+              "1876416": "(4 fields)",
+              "1876418": "(4 fields)",
+              "1876419": "(4 fields)",
+              "1876420": "(4 fields)",
+              "1876421": "(4 fields)",
+              "1876422": "(4 fields)",
+              "1876423": "(4 fields)",
+              "1876424": "(4 fields)",
+              "1876426": "(4 fields)",
+              "1876427": "(4 fields)",
+              "1876428": "(4 fields)",
+              "1876429": "(4 fields)",
+              "1876430": "(4 fields)",
+              "1876431": "(4 fields)",
+              "1876432": "(4 fields)",
+              "1876434": "(4 fields)",
+              "1876435": "(4 fields)",
+              "1876436": "(4 fields)",
+              "1876437": "(4 fields)",
+              "1876438": "(4 fields)",
+              "1876439": "(4 fields)",
+              "1876440": "(4 fields)",
+              "1876442": "(4 fields)",
+              "1876443": "(4 fields)",
+              "1876444": "(4 fields)",
+              "1876445": "(4 fields)",
+              "1876446": "(4 fields)",
+              "1876447": "(4 fields)",
+              "1876448": "(4 fields)",
+              "1876450": "(4 fields)",
+              "1876451": "(4 fields)",
+              "1876452": "(4 fields)",
+              "1876453": "(4 fields)",
+              "1876454": "(4 fields)",
+              "1876455": "(4 fields)",
+              "1876456": "(4 fields)",
+              "1876458": "(4 fields)",
+              "1940508": "(4 fields)",
+              "1940509": "(4 fields)",
+              "1940510": "(4 fields)",
+              "1940511": "(4 fields)",
+              "1940512": "(4 fields)",
+              "1940513": "(4 fields)"
+            }
+          },
+          "hblp": {
+            "consistency": {
+              "rev": 1051428616
+            },
+            "rsrcMap": {
+              "csr:_2b_0_C5": "(3 fields)"
+            },
+            "indexUpgrades": {
+              "__hsdp": ":1811,1812,1911,1910"
+            }
+          }
+        },
+        "jsmods": {
+          "define": [
+            [
+              "cr:310",
+              "(1 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:564",
+              "(1 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:619",
+              "(1 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:686",
+              "(0 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:734",
+              "(0 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:755",
+              "(1 items)",
+              "(1 fields)",
+              -1
+            ],
+            "… 54 more"
+          ],
+          "require": [
+            [
+              "CometHovercardGroupRenderer.react"
+            ],
+            [
+              "CometHovercardGroupRenderer_group$normalization.graphql"
+            ],
+            [
+              "GroupsCometJoinedGroupButton_action$normalization.graphql"
+            ],
+            [
+              "GroupsCometJoinedGroupButton.react"
+            ],
+            [
+              "emptyFunction",
+              "thatReturns",
+              "(1 items)",
+              "(1 items)"
+            ],
+            [
+              "bumpVultureJSHash"
+            ],
+            "… 8 more"
+          ],
+          "phd2_indexes": ":1811,1812,1911,1910"
+        },
+        "allResources": [
+          "csr:_2b_0_C5"
+        ],
+        "tieredResources": {
+          "r": [
+            "csr:_2b_0_C5"
+          ],
+          "rdfds": [],
+          "rds": []
+        }
+      }
+    }
+  }
+}
+```
+
+**runs/inspect/20261023T045453_61594063207669**, step 7: goto /: 200, 561 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHovercardQueryRendererQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "actionBarRenderLocation": "WWW_COMET_HOVERCARD",
+    "context": "GROUP",
+    "entityID": "2478332015810393",
+    "groupID": "2478332015810393",
+    "scale": 1,
+    "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false
+  },
+  "doc_id": "29231152373168310"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "node": {
+      "__typename": "Group",
+      "__isEntity": "Group",
+      "__isCometHovercard": "Group",
+      "comet_hovercard_renderer": {
+        "__typename": "CometHovercardGroupRenderer",
+        "group": {
+          "if_viewer_can_see_wayfinding_topics": null,
+          "name": "Bethlehem, PA Neighborhood",
+          "url": "https://www.facebook.com/groups/2478332015810393/",
+          "group_member_profiles": {
+            "formatted_count_text": "5.7K members"
+          },
+          "group_friend_members": {
+            "count": 0
+          },
+          "facepile_profiles": {
+            "edges": [
+              "(1 fields)",
+              "(1 fields)",
+              "(1 fields)",
+              "(1 fields)",
+              "(1 fields)",
+              "(1 fields)",
+              "… 2 more"
+            ]
+          },
+          "id": "2478332015810393",
+          "privacy_info": {
+            "icon_name": "globe-americas",
+            "title": {
+              "delight_ranges": "(0 items)",
+              "image_ranges": "(0 items)",
+              "inline_style_ranges": "(0 items)",
+              "aggregated_ranges": "(0 items)",
+              "ranges": "(0 items)",
+              "color_ranges": "(0 items)",
+              "text": "Public group"
+            }
+          },
+          "join_action_with_menu": {
+            "__typename": "GroupJoinedGroupAction",
+            "group": {
+              "id": "2478332015810393",
+              "url": "https://www.facebook.com/groups/2478332015810393/",
+              "group_type_name_for_content": "GROUP",
+              "name": "Bethlehem, PA Neighborhood"
+            },
+            "__module_operation_GroupsCometJoinGroupButtonWithMenuRelay_group_join_action": {
+              "__dr": "GroupsCometJoinedGroupButton_action$normalization.graphql"
+            },
+            "__module_component_GroupsCometJoinGroupButtonWithMenuRelay_group_join_action": {
+              "__dr": "GroupsCometJoinedGroupButton.react"
+            }
+          },
+          "__isActor": "Group",
+          "__isEntity": "Group",
+          "profile_url": "https://www.facebook.com/groups/2478332015810393/",
+          "__typename": "Group",
+          "profile_picture": {
+            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t1.6435-9/93806581_144287650470567_96044419450404864_n.png?stp=c257.0.315.315a_dst-png&cstp=mx315x315&ctp=s100x100&_nc_cat=110&ccb=1-7&_nc_sid=33e84f&_nc_ohc=sWuHqDfbgtIQ7kNvwE1ugzr&_nc_oc=AdqghXAOcGzuMlEvpe-GsnMt-25uqH4_LTICujPgHK5YfwIyeClIswNbQibiQFM4xvg&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=yb4LzX-zGmf-RIH9tVWaLw&_nc_ss=792a8&oh=00_AQMUFTJKrEAPf2Y-CL… (440 chars)",
+            "width": 100,
+            "height": 100,
+            "scale": 1
+          }
+        },
+        "__module_operation_CometHovercard_entity": {
+          "__dr": "CometHovercardGroupRenderer_group$normalization.graphql"
+        },
+        "__module_component_CometHovercard_entity": {
+          "__dr": "CometHovercardGroupRenderer.react"
+        }
+      },
+      "id": "2478332015810393"
+    }
+  },
+  "extensions": {
+    "prefetch_uris_v2": [
+      {
+        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t1.6435-9/93806581_144287650470567_96044419450404864_n.png?stp=c257.0.315.315a_dst-png&cstp=mx315x315&ctp=s100x100&_nc_cat=110&ccb=1-7&_nc_sid=33e84f&_nc_ohc=sWuHqDfbgtIQ7kNvwE1ugzr&_nc_oc=AdqghXAOcGzuMlEvpe-GsnMt-25uqH4_LTICujPgHK5YfwIyeClIswNbQibiQFM4xvg&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=yb4LzX-zGmf-RIH9tVWaLw&_nc_ss=792a8&oh=00_AQMUFTJKrEAPf2Y-CL… (440 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      }
+    ],
+    "server_metadata": {
+      "request_start_time_ms": 1792731668689,
+      "time_at_flush_ms": 1792731668768
+    },
+    "is_final": true,
+    "sr_payload": {
+      "ddd": {
+        "hsrp": {
+          "hsdp": {
+            "ixData": {
+              "482029": "(7 fields)",
+              "484385": "(7 fields)",
+              "484386": "(7 fields)",
+              "484388": "(7 fields)",
+              "857532": "(7 fields)",
+              "1164649": "(7 fields)",
+              "1164652": "(7 fields)",
+              "1164656": "(7 fields)",
+              "1164662": "(7 fields)",
+              "1679815": "(7 fields)",
+              "1876411": "(4 fields)",
+              "1876412": "(4 fields)",
+              "1876413": "(4 fields)",
+              "1876414": "(4 fields)",
+              "1876415": "(4 fields)",
+              "1876416": "(4 fields)",
+              "1876418": "(4 fields)",
+              "1876419": "(4 fields)",
+              "1876420": "(4 fields)",
+              "1876421": "(4 fields)",
+              "1876422": "(4 fields)",
+              "1876423": "(4 fields)",
+              "1876424": "(4 fields)",
+              "1876426": "(4 fields)",
+              "1876427": "(4 fields)",
+              "1876428": "(4 fields)",
+              "1876429": "(4 fields)",
+              "1876430": "(4 fields)",
+              "1876431": "(4 fields)",
+              "1876432": "(4 fields)",
+              "1876434": "(4 fields)",
+              "1876435": "(4 fields)",
+              "1876436": "(4 fields)",
+              "1876437": "(4 fields)",
+              "1876438": "(4 fields)",
+              "1876439": "(4 fields)",
+              "1876440": "(4 fields)",
+              "1876442": "(4 fields)",
+              "1876443": "(4 fields)",
+              "1876444": "(4 fields)",
+              "1876445": "(4 fields)",
+              "1876446": "(4 fields)",
+              "1876447": "(4 fields)",
+              "1876448": "(4 fields)",
+              "1876450": "(4 fields)",
+              "1876451": "(4 fields)",
+              "1876452": "(4 fields)",
+              "1876453": "(4 fields)",
+              "1876454": "(4 fields)",
+              "1876455": "(4 fields)",
+              "1876456": "(4 fields)",
+              "1876458": "(4 fields)",
+              "1940508": "(4 fields)",
+              "1940509": "(4 fields)",
+              "1940510": "(4 fields)",
+              "1940511": "(4 fields)",
+              "1940512": "(4 fields)",
+              "1940513": "(4 fields)"
+            }
+          },
+          "hblp": {
+            "consistency": {
+              "rev": 1051428616
+            },
+            "rsrcMap": {
+              "csr:_8_0_CK": "(3 fields)",
+              "wy60Rab": "(5 fields)",
+              "YGw4VtH": "(5 fields)",
+              "csr:_8_1_rb": "(3 fields)",
+              "csr:_8_2_zf": "(3 fields)",
+              "z5w0YMG": "(8 fields)",
+              "TmyrEVZ": "(8 fields)"
+            },
+            "compMap": {
+              "GroupsCometMoreActionMenu.react": "(4 fields)"
+            },
+            "indexUpgrades": {
+              "__hblp": ":5452",
+              "__hsdp": ":1811,1812,1911,1910"
+            }
+          }
+        },
+        "jsmods": {
+          "define": [
+            [
+              "cr:310",
+              "(1 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:564",
+              "(1 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:619",
+              "(1 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:686",
+              "(0 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:734",
+              "(0 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:755",
+              "(1 items)",
+              "(1 fields)",
+              -1
+            ],
+            "… 54 more"
+          ],
+          "require": [
+            [
+              "CometHovercardGroupRenderer.react"
+            ],
+            [
+              "CometHovercardGroupRenderer_group$normalization.graphql"
+            ],
+            [
+              "GroupsCometJoinedGroupButton_action$normalization.graphql"
+            ],
+            [
+              "GroupsCometJoinedGroupButton.react"
+            ],
+            [
+              "emptyFunction",
+              "thatReturns",
+              "(1 items)",
+              "(1 items)"
+            ],
+            [
+              "bumpVultureJSHash"
+            ],
+            "… 8 more"
+          ],
+          "phd2_indexes": ":1811,1812,1911,1910"
+        },
+        "allResources": [
+          "TmyrEVZ",
+          "z5w0YMG",
+          "csr:_8_0_CK"
+        ],
+        "tieredResources": {
+          "r": [
+            "TmyrEVZ",
+            "z5w0YMG",
+            "csr:_8_0_CK"
+          ],
+          "rdfds": [],
+          "rds": []
+        }
+      }
+    }
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

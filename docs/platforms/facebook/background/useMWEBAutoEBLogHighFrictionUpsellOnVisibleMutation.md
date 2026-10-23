@@ -20,6 +20,47 @@ Seen 3 time(s) in 3 run(s).
 | warmup | step 25: goto /messages/ | 2 | 200 | 390–498 ms | 2688–3681 ms | — |
 | inspect | step 1: goto /messages/ | 1 | 200 | 357 ms | 3318 ms | — |
 
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261022T100521_61594063207669**, step 1: goto /messages/: 200, 357 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "useMWEBAutoEBLogHighFrictionUpsellOnVisibleMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "is_new_user_upsell": true,
+    "is_new_user_soft_block": false
+  },
+  "doc_id": "25406806015621469"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_mw_eb_log_auto_eb_high_friction_upsell_impression": {
+      "did_log_impression": true,
+      "next_evergreen_pin_upsell_display_timestamp": null
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792663538664,
+      "time_at_flush_ms": 1792663538693
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

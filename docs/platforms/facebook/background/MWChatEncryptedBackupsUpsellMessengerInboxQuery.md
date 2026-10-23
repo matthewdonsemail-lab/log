@@ -19,6 +19,70 @@ Seen 1 time(s) in 1 run(s).
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 3: goto /marketplace/inbox | 1 | 200 | 496 ms | 1354422 ms | — |
 
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261022T155857_61594063207669**, step 3: goto /marketplace/inbox: 200, 496 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "MWChatEncryptedBackupsUpsellMessengerInboxQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "doesUserHaveAnEB": true,
+    "shouldShowOnboardingInterstitial": false
+  },
+  "doc_id": "25840958432234114"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_backup": {
+      "virtual_devices": [
+        {
+          "client_generated_id": "sp5MI2FeHD/hrI1wOQXbKg==",
+          "device_type": "HSM",
+          "id": "1127653853075647"
+        }
+      ],
+      "has_otc_eligible_devices": false,
+      "id": "1127653843075648",
+      "__typename": "XFBEncryptedBackup",
+      "last_sync_time": 1792663634
+    },
+    "viewer": {
+      "messenger_default_encrypted_backup": {
+        "vesta_user_info": {
+          "attempts_remaining": 10,
+          "is_registered": true,
+          "login_timeout_remaining_secs": null
+        }
+      },
+      "encrypted_backup": {
+        "has_seen_eb_auto_restore_notice": false,
+        "id": "1127653843075648"
+      },
+      "encrypted_backups_web_evergreen_pin_upsell_display_timestamp": null
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792686212087,
+      "time_at_flush_ms": 1792686212157
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

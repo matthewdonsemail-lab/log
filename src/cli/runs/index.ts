@@ -1,11 +1,12 @@
-import { diskFree, listRuns, pruneRuns, runsBytes, storageVerdict } from "../../browser/runStore/index.ts";
+import { backfillAll, diskFree, listRuns, pruneRuns, runsBytes, storageVerdict } from "../../browser/runStore/index.ts";
 import type { RunEntry } from "../../browser/runStore/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 
 export const RUNS_USAGE = [
   "Usage: log runs [list] [--json]   (every recorded run: its size, settled by rea, in the request docs, and why it is kept or that it may go)",
-  "       log runs prune [--before <YYYY-MM-DD>] [--apply]   (deletes each analysed run, started before the day when given, keeping its findings.md, steps.jsonl, settle.json and its requests by domain; a dry run unless --apply)",
+  "       log runs exchanges   (takes every recorded step's internal API calls, what was sent and what came back, out of its HAR into exchanges.json, for every run still on disk; prune does it first too)",
+  "       log runs prune [--before <YYYY-MM-DD>] [--apply]   (deletes each analysed run, started before the day when given, after taking out every step's exchanges, keeping its findings.md, steps.jsonl, settle.json, every step's exchanges.json, reading.json and readingState.json, its goalFindings and its requests by domain; a dry run unless --apply)",
   "       log runs space   (the size of ~/.logCli/runs and the disk's free space, as the storage hook says them)",
 ].join("\n");
 
@@ -23,9 +24,10 @@ function table(entries: RunEntry[]): string {
 export const RUNS_INPUT: CommandInput = {
   forms: [
     { words: ["list"], summary: "Every recorded run: its size, settled by rea, in the request docs, and whether it may go", positionals: [], flags: [JSON_FLAG] },
+    { words: ["exchanges"], summary: "Take every recorded step's internal API calls (sent and answered) out of its HAR into exchanges.json, for every run still on disk", positionals: [], flags: [] },
     {
       words: ["prune"], effect: "delete",
-      summary: "Delete each analysed run, keeping its findings; a dry run unless apply",
+      summary: "Delete each analysed run after taking out its steps' exchanges, keeping its findings, exchanges, readings and goal findings; a dry run unless apply",
       positionals: [],
       flags: [{ name: "before", kind: "string", description: "Only runs started before this day, YYYY-MM-DD" }, { name: "apply", kind: "boolean", description: "Delete them (without it, it only lists what would go)" }],
     },
@@ -40,7 +42,7 @@ export const runsCommand: Command = {
   effect: "read",
   input: RUNS_INPUT,
   summary: "The recorded runs on this machine, and pruning the ones rea settled and the request docs hold, keeping each one's findings and domains",
-  args: "[list|prune|space] [--before <day>] [--apply]",
+  args: "[list|exchanges|prune|space] [--before <day>] [--apply]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(RUNS_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log runs: ${parsed.error}\n${RUNS_USAGE}` };
@@ -55,6 +57,10 @@ export const runsCommand: Command = {
     }
     const entries = listRuns();
     if (sub === "list") return { code: 0, stdout: parsed.flags["json"] ? JSON.stringify({ runs: entries }, null, 2) : table(entries) };
+    if (sub === "exchanges") {
+      const done = backfillAll(entries, { apply: true, log: context.err });
+      return { code: done.failed.length ? 1 : 0, stdout: [`Exchanges: ${done.steps} recorded step(s) in ${entries.length} run(s); ${done.had} already had them, ${done.written} written.`, ...done.failed.map((f) => `Failed: ${f}`)].join("\n") };
+    }
     if (sub !== "prune") return { code: 1, stderr: `log runs: unknown subcommand "${sub}"\n${RUNS_USAGE}` };
     const apply = Boolean(parsed.flags["apply"]);
     const pruned = await pruneRuns(entries, { apply, before: typeof before === "string" ? before : undefined, log: context.err });

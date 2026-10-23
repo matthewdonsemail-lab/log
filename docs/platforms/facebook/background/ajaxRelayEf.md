@@ -210,6 +210,149 @@ Seen 812 time(s) in 27 run(s).
 | inspect | post: "…", 123 words, 0 image(s), scrolled 53 px | 4 | 200 | 340–18806 ms | 18892–80231 ms | — |
 | inspect | step 5: likePost Like | 1 | 200 | 380 ms | 1366 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T051540_61594063207669**, step 1: goto /: 200, 458 ms
+
+Sent:
+
+```json
+{
+  "queries[0]": "GroupsCometLeftRailContainerQuery",
+  "queries[1]": "GroupsCometCrossGroupFeedContainerQuery"
+}
+```
+
+Answered:
+
+```json
+{
+  "payload": {
+    "predictions": {
+      "GroupsCometLeftRailContainerQuery": {},
+      "GroupsCometCrossGroupFeedContainerQuery": {
+        "csr:_k_0_+E": {
+          "type": "csr",
+          "src": ":2,1,87,27,82,40,43,433,14,20,95,32,15,28,46,132,62,102,41,38,59,12,16,576,7,118,6,329,36,29,111,50,17,4,91,93,5,48,11,139,8,3,107,152,133,200,60,10,9,18",
+          "c": 1
+        }
+      }
+    },
+    "consistency": {
+      "rev": 1051428616
+    }
+  },
+  "dtsgAsyncGetToken": null,
+  "dtsgToken": null
+}
+```
+
+**runs/inspect/20261023T051540_61594063207669**, post: "…", 123 words, 0 image(s), scrolled 53 px: 200, 340 ms
+
+Sent:
+
+```json
+{
+  "queries[0]": "FBUnifiedVideoRootWithEntrypointQuery"
+}
+```
+
+Answered:
+
+```json
+{
+  "payload": {
+    "predictions": {
+      "FBUnifiedVideoRootWithEntrypointQuery": {
+        "csr:_1g_0_Ex": {
+          "type": "csr",
+          "src": ":2,1,27,82,40,141,43,63,142,42,57,14,20,199,119,222,15,140,28,19,31,102,83,59,12,76,16,7,47,67,6,66,75,116,13,4,5,55,22,134,11,8,3,104,107,143,124,60,9,18,154",
+          "c": 1
+        }
+      }
+    },
+    "consistency": {
+      "rev": 1051428616
+    }
+  },
+  "dtsgAsyncGetToken": null,
+  "dtsgToken": null
+}
+```
+
+**runs/inspect/20261023T051540_61594063207669**, step 5: likePost Like: 200, 380 ms
+
+Sent:
+
+```json
+{
+  "queries[0]": "CometGroupRootQuery",
+  "queries[1]": "GroupsCometDiscussionLayoutRootQuery",
+  "queries[2]": "CometGroupDiscussionRootSuccessQuery"
+}
+```
+
+Answered:
+
+```json
+{
+  "payload": {
+    "predictions": {
+      "CometGroupRootQuery": {
+        "csr:_2c_0_Kn": {
+          "type": "csr",
+          "src": ":2,1,27,82,580,43,57,14,53,358,32,15,26,807,46,301,592,156,41,38,180,646,59,52,7,269,6,137,230,36,29,480,35,17,4,665,54,518,203,5,22,11,219,8,3,168,60,9,144,65,18",
+          "c": 1
+        }
+      },
+      "GroupsCometDiscussionLayoutRootQuery": {},
+      "CometGroupDiscussionRootSuccessQuery": {
+        "CUPkuRo": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4iYol4/y5/l/en_GB-j/Eo_bf_vnz4m.js",
+          "c": 1,
+          "p": ":1099",
+          "m": "1051428616_main"
+        },
+        "+iFaR5k": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4iWRo4/yF/l/en_GB-j/tetvnQEY0iT.js",
+          "c": 1,
+          "p": ":959",
+          "m": "1051428616_main"
+        },
+        "kXM53O7": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4/yM/r/wANTX-sBNSO.js",
+          "c": 1,
+          "p": ":970",
+          "m": "1051428616_main"
+        },
+        "W1pRhug": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4ie7z4/yd/l/en_GB-j/5e_Bv6eENAP.js",
+          "c": 1,
+          "p": ":881",
+          "m": "1051428616_main"
+        },
+        "csr:_2c_1_fV": {
+          "type": "csr",
+          "src": ":2,1,87,27,183,82,580,40,43,63,57,433,14,20,95,32,131,15,26,46,818,31,132,62,438,41,38,59,12,52,16,7,118,6,329,137,268,36,690,29,111,480,50,440,96,450,21,17,4,665,93,518,5,248,22,48,11,139,8,3,107,152,60,9,466,18",
+          "c": 1
+        }
+      }
+    },
+    "consistency": {
+      "rev": 1051428616
+    }
+  },
+  "dtsgAsyncGetToken": null,
+  "dtsgToken": null
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

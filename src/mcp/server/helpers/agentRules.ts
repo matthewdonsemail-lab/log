@@ -54,7 +54,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   conversation: [34],
   messenger: [8, 21, 29, 54, 63, 67],
   check: [8, 13, 18, 22, 29, 35, 69, 73],
-  runs: [19, 22, 25, 27, 66],
+  runs: [19, 22, 25, 27, 66, 73],
   browsers: [29, 35, 54, 55],
   job: [10, 26, 35],
   mcp: [21, 47],

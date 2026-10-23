@@ -22,6 +22,119 @@ Seen 5 time(s) in 5 run(s).
 | inspect | step 3: goto /marketplace/inbox | 1 | 200 | 436 ms | 1355898 ms | — |
 | inspect | step 5: goto /messages/ | 1 | 200 | 399 ms | 10078 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T045453_61594063207669**, step 5: goto /messages/: 200, 399 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "MWQuickPromotionThreadlistBannerQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "27805253425807021"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "eligible_promotions": {
+        "nodes": []
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792731613359,
+      "time_at_flush_ms": 1792731613407
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261022T155857_61594063207669**, step 3: goto /marketplace/inbox: 200, 436 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "MWQuickPromotionThreadlistBannerQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "27805253425807021"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "eligible_promotions": {
+        "nodes": []
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792686213567,
+      "time_at_flush_ms": 1792686213592
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261022T100521_61594063207669**, step 1: goto /messages/: 200, 356 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "521482085",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "MWQuickPromotionThreadlistBannerQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "27805253425807021",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=521482085"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "eligible_promotions": {
+        "nodes": []
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792663538933,
+      "time_at_flush_ms": 1792663538959
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

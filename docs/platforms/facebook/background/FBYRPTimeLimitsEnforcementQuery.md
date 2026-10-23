@@ -80,6 +80,109 @@ Seen 98 time(s) in 26 run(s).
 | inspect | step 2: goto /marketplace/ | 1 | 200 | 376 ms | 5045 ms | — |
 | inspect | step 5: goto /messages/ | 1 | 200 | 412 ms | 7659 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T051540_61594063207669**, step 1: goto /: 200, 388 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBYRPTimeLimitsEnforcementQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "28934009902924466"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_youth_regulatory_config_platform": {
+      "query_configs_by_handler": []
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792732560753,
+      "time_at_flush_ms": 1792732560774
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T045453_61594063207669**, step 1: goto /marketplace/create/item: 200, 428 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBYRPTimeLimitsEnforcementQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "28934009902924466"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_youth_regulatory_config_platform": {
+      "query_configs_by_handler": []
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792731335567,
+      "time_at_flush_ms": 1792731335667
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T045453_61594063207669**, step 2: goto /marketplace/: 200, 376 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBYRPTimeLimitsEnforcementQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "28934009902924466"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_youth_regulatory_config_platform": {
+      "query_configs_by_handler": []
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792731444914,
+      "time_at_flush_ms": 1792731444941
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

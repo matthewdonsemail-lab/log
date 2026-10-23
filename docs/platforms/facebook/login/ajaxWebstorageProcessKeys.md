@@ -42,6 +42,82 @@ Seen 37 time(s) in 12 run(s).
 | inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 380 ms | 15668 ms | — |
 | inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 1026 ms | 21524 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T045453_61594063207669**, step 4: goto /marketplace/you/selling: 200, 1026 ms
+
+Sent:
+
+```json
+{
+  "query": "(1 fields)",
+  "body": "(97 fields)"
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "A4Pxp29FC1Y78wb6FqxBuIy",
+  "payload": {
+    "keys": []
+  },
+  "lid": "7699723504138729208"
+}
+```
+
+**runs/inspect/20261023T000744_61594063207669**, step 2: goto /marketplace/you/selling: 200, 506 ms
+
+Sent:
+
+```json
+{
+  "query": "(1 fields)",
+  "body": "(97 fields)"
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "ApnJc277U7EsF-LcCs9Q21A",
+  "payload": {
+    "keys": []
+  },
+  "lid": "7699648552726211589"
+}
+```
+
+**runs/inspect/20261023T000744_61594063207669**, step 5: goto /marketplace/you/selling: 200, 380 ms
+
+Sent:
+
+```json
+{
+  "query": "(1 fields)",
+  "body": "(97 fields)"
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "AnXgY69SEI4ITQvD1osKBeq",
+  "payload": {
+    "keys": []
+  },
+  "lid": "7699653483340495767"
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

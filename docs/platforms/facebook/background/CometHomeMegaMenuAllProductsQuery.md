@@ -30,6 +30,490 @@ Seen 14 time(s) in 12 run(s).
 | inspect | step 4: goto /marketplace/inbox | 1 | 200 | 1840 ms | 1630107 ms | — |
 | inspect | step 6: wait 6s | 2 | 200 | 647–732 ms | 17703–36581 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T045453_61594063207669**, step 6: wait 6s: 200, 732 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeMegaMenuAllProductsQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "scale": 1,
+    "useNucleusIcon": false
+  },
+  "doc_id": "26943575645248441"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "social": {
+        "name": "Social",
+        "bookmarks": {
+          "nodes": [
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)"
+          ]
+        },
+        "id": "2974823256138234"
+      },
+      "entertainment": {
+        "name": "Entertainment",
+        "bookmarks": {
+          "nodes": [
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)"
+          ]
+        },
+        "id": "487279742676481"
+      },
+      "shopping": {
+        "name": "Shopping",
+        "bookmarks": {
+          "nodes": [
+            "(9 fields)",
+            "(9 fields)"
+          ]
+        },
+        "id": "1072767163222607"
+      },
+      "personal": {
+        "name": "Personal",
+        "bookmarks": {
+          "nodes": [
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)"
+          ]
+        },
+        "id": "486958482316132"
+      },
+      "professional": {
+        "name": "Professional",
+        "bookmarks": {
+          "nodes": [
+            "(9 fields)"
+          ]
+        },
+        "id": "436682174236063"
+      },
+      "communityResources": {
+        "name": "Community resources",
+        "bookmarks": {
+          "nodes": []
+        },
+        "id": "425122528575951"
+      },
+      "appsFromFacebook": {
+        "name": "More from Meta",
+        "bookmarks": {
+          "nodes": [
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)"
+          ]
+        },
+        "id": "1759291240910861"
+      },
+      "actor": {
+        "__typename": "User",
+        "profile_plus_should_hoist_professional_section_comet_mega_menu": false,
+        "should_block_mbs_redirect": false,
+        "id": "61594063207669"
+      }
+    }
+  },
+  "extensions": {
+    "prefetch_uris_v2": [
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yz/r/wZBdW_qnLOB.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yJ/r/_E6CYXQ_FqC.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/y3/r/VTvvptemt72.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yT/r/JYr05Vf7xjV.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/y_/r/R4eauTzM8dl.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/ya/r/k_2AcQbzeZL.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      "… 16 more"
+    ],
+    "server_metadata": {
+      "request_start_time_ms": 1792731643360,
+      "time_at_flush_ms": 1792731643530
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T000744_61594063207669**, step 3: goto /marketplace/inbox: 200, 687 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeMegaMenuAllProductsQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "scale": 1,
+    "useNucleusIcon": false
+  },
+  "doc_id": "26943575645248441"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "social": {
+        "name": "Social",
+        "bookmarks": {
+          "nodes": [
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)"
+          ]
+        },
+        "id": "2974823256138234"
+      },
+      "entertainment": {
+        "name": "Entertainment",
+        "bookmarks": {
+          "nodes": [
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)"
+          ]
+        },
+        "id": "487279742676481"
+      },
+      "shopping": {
+        "name": "Shopping",
+        "bookmarks": {
+          "nodes": [
+            "(9 fields)",
+            "(9 fields)"
+          ]
+        },
+        "id": "1072767163222607"
+      },
+      "personal": {
+        "name": "Personal",
+        "bookmarks": {
+          "nodes": [
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)"
+          ]
+        },
+        "id": "486958482316132"
+      },
+      "professional": {
+        "name": "Professional",
+        "bookmarks": {
+          "nodes": [
+            "(9 fields)"
+          ]
+        },
+        "id": "436682174236063"
+      },
+      "communityResources": {
+        "name": "Community resources",
+        "bookmarks": {
+          "nodes": []
+        },
+        "id": "425122528575951"
+      },
+      "appsFromFacebook": {
+        "name": "More from Meta",
+        "bookmarks": {
+          "nodes": [
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)"
+          ]
+        },
+        "id": "1759291240910861"
+      },
+      "actor": {
+        "__typename": "User",
+        "profile_plus_should_hoist_professional_section_comet_mega_menu": false,
+        "should_block_mbs_redirect": false,
+        "id": "61594063207669"
+      }
+    }
+  },
+  "extensions": {
+    "prefetch_uris_v2": [
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/y3/r/VTvvptemt72.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yJ/r/_E6CYXQ_FqC.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yz/r/wZBdW_qnLOB.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yT/r/JYr05Vf7xjV.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yM/r/99HwH9ed7Uy.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yv/r/J6QQVMYHUJU.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      "… 16 more"
+    ],
+    "server_metadata": {
+      "request_start_time_ms": 1792714141824,
+      "time_at_flush_ms": 1792714141995
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261022T130601_61594063207669**, step 4: goto /marketplace/inbox: 200, 1840 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeMegaMenuAllProductsQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "scale": 1,
+    "useNucleusIcon": false
+  },
+  "doc_id": "26943575645248441"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "social": {
+        "name": "Social",
+        "bookmarks": {
+          "nodes": [
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)"
+          ]
+        },
+        "id": "2974823256138234"
+      },
+      "entertainment": {
+        "name": "Entertainment",
+        "bookmarks": {
+          "nodes": [
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)"
+          ]
+        },
+        "id": "487279742676481"
+      },
+      "shopping": {
+        "name": "Shopping",
+        "bookmarks": {
+          "nodes": [
+            "(9 fields)",
+            "(9 fields)"
+          ]
+        },
+        "id": "1072767163222607"
+      },
+      "personal": {
+        "name": "Personal",
+        "bookmarks": {
+          "nodes": [
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)"
+          ]
+        },
+        "id": "486958482316132"
+      },
+      "professional": {
+        "name": "Professional",
+        "bookmarks": {
+          "nodes": [
+            "(9 fields)"
+          ]
+        },
+        "id": "436682174236063"
+      },
+      "communityResources": {
+        "name": "Community resources",
+        "bookmarks": {
+          "nodes": []
+        },
+        "id": "425122528575951"
+      },
+      "appsFromFacebook": {
+        "name": "More from Meta",
+        "bookmarks": {
+          "nodes": [
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)",
+            "(9 fields)"
+          ]
+        },
+        "id": "1759291240910861"
+      },
+      "actor": {
+        "__typename": "User",
+        "profile_plus_should_hoist_professional_section_comet_mega_menu": false,
+        "should_block_mbs_redirect": false,
+        "id": "61594063207669"
+      }
+    }
+  },
+  "extensions": {
+    "prefetch_uris_v2": [
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yw/r/y1z3mT73M1Q.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yi/r/_-6DsSRXGcS.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yz/r/wZBdW_qnLOB.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yK/r/pt3boho8KBZ.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/y8/r/iaP8U-_yJOY.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yF/r/IOdWWyXde8k.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      "… 16 more"
+    ],
+    "server_metadata": {
+      "request_start_time_ms": 1792676064680,
+      "time_at_flush_ms": 1792676064854
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

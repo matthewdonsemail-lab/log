@@ -19,6 +19,60 @@ Seen 3 time(s) in 3 run(s).
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | pin: typed the account's Messenger PIN | 3 | 200 | 735 ms | 3953 ms | — |
 
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261022T100521_61594063207669**, pin: typed the account's Messenger PIN: 200, 735 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "521482085,521482858",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "VestaServerGraphQLRegisterProviderBeginRegisterMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "actor_id": "61594063207669",
+      "client_mutation_id": "3",
+      "base64url_encoded_opaque_r1": "QkjYWmUWoa5qGSCRi6HXrDMvlTduP2GgAhHD4BS60V4",
+      "fbid": "sp5MI2FeHD/hrI1wOQXbKg==",
+      "product_use_case": "MSGR_ENC_BACKUP",
+      "vesta_client_api_version": 6,
+      "vesta_client_protocol_version": 1,
+      "is_vesta_ota_enabled": false
+    }
+  },
+  "doc_id": "28946945608223566",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=521482085,521482858"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "fbid_based_auth_layer_vesta_begin_register": {
+      "base64url_encoded_opaque_r2": "evTDaTwlAkDEsYnMoFizEjDb82oe0Ck45SRZ3Lj1zSv6CwRfvCwsA75XF1xfP7FvJ97mV0QUQbq72Z1o2L-OXg",
+      "base64url_encoded_opaque_challenge": "KZOYLlnTSVLzLpHwGal1TF66x2rVqYMCnRrQIjw2OFc",
+      "base64url_encoded_opaque_r2_sig": "8ZNJAACPDYU1ayErV2tSh75dDNlSBZJ88Y9qwRj8QEJmkwpwEh0a6C1FqxZxLKVr5C1VYdmo0oGFQzFPY-aBBQ"
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792663630960,
+      "time_at_flush_ms": 1792663631357
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

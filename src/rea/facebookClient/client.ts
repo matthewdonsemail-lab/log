@@ -10,6 +10,8 @@ import { domainOf, factsFromDoc, foldOperation, importersOf, indexModules, readG
 import type { StoredFacts } from "./helpers/index";
 import type { RequestSeen } from "./helpers/index";
 import type { ClientDomain, ClientOperation, FacebookModule } from "./types";
+import { exchangesOf } from "../../subq/stepReading/helpers/exchangesOf";
+import type { StepExchange } from "../../subq/stepReading/types";
 
 export interface RunCapture {
   dir: string;
@@ -54,13 +56,22 @@ export function findRunCaptures(root: string): RunCapture[] {
   return found.sort((a, b) => statSync(join(b.dir, "session.har")).mtimeMs - statSync(join(a.dir, "session.har")).mtimeMs);
 }
 
+export function withExchanges(requests: RequestSeen[], exchanges: StepExchange[]): RequestSeen[] {
+  const queues = new Map<string, StepExchange[]>();
+  for (const e of exchanges) if (e.kind === "api") queues.set(e.name, [...(queues.get(e.name) ?? []), e]);
+  return requests.map((r) => {
+    const e = queues.get(r.name)?.shift();
+    return e ? { ...r, sent: e.sent, answer: e.answer } : r;
+  });
+}
+
 export function requestsInRun(capture: RunCapture): RequestSeen[] {
   const har = JSON.parse(readFileSync(join(capture.dir, "session.har"), "utf8")) as { log?: { entries?: { startedDateTime?: string }[] } };
   const stepsFile = join(capture.dir, "steps.jsonl");
   let steps = existsSync(stepsFile) ? parseSteps(readFileSync(stepsFile, "utf8")) : [];
   if (!steps.length) steps = [{ at: har.log?.entries?.[0]?.startedDateTime ?? new Date(0).toISOString(), step: "Whole run (no steps.jsonl)" }];
   return splitHarBySteps(har, steps).flatMap((part) =>
-    requestsInStep(part.har as never, { run: capture.run, action: capture.action, step: part.step, stepAt: steps[part.index - 1].at }),
+    withExchanges(requestsInStep(part.har as never, { run: capture.run, action: capture.action, step: part.step, stepAt: steps[part.index - 1].at }), exchangesOf(part.har, new Set(), [])),
   );
 }
 

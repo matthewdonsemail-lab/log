@@ -115,6 +115,52 @@ Seen 130 time(s) in 14 run(s).
 | inspect | step 96: clickRole button "…" | 1 | 200 | 1387 ms | 1662 ms | — |
 | inspect | step 1: goto / | 1 | 200 | 361 ms | 9079 ms | — |
 
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T051540_61594063207669**, step 1: goto /: 200, 361 ms
+
+Sent:
+
+```json
+{
+  "d": {
+    "pps": null,
+    "ps": {
+      "m": true,
+      "pf": 21,
+      "s": "playing",
+      "sa": 2032
+    },
+    "si": "fbd0df337507540dc",
+    "so": "inline::fb_shorts_creation_feed_unit",
+    "vi": "1508021361207264"
+  }
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "AOoAS_Jbxv0KBPLuSkKrjgR",
+  "payload": {
+    "vi": "1508021361207264",
+    "si": "fbd0df337507540dc",
+    "d": {
+      "c": 0,
+      "h": true
+    },
+    "a": {
+      "t": "s"
+    }
+  },
+  "lid": "7699727743571538009"
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

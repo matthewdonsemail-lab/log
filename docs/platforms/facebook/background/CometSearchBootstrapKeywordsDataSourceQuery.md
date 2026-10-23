@@ -80,6 +80,410 @@ Seen 96 time(s) in 25 run(s).
 | inspect | step 2: goto /marketplace/ | 1 | 200 | 389 ms | 6332 ms | — |
 | inspect | step 5: goto /messages/ | 1 | 200 | 988 ms | 8037 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T051540_61594063207669**, step 1: goto /: 200, 535 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometSearchBootstrapKeywordsDataSourceQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "first": 2000
+  },
+  "doc_id": "27797631676573850"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "bootstrap_keywords": {
+        "edges": [
+          {
+            "node": {
+              "keyword_text": "recommendations of bethlehem, pa and greater lehigh valley region",
+              "item_logging_id": "2026-10-22:DiQ0wI",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_group_suggestion\",\"kwEntConnected\":true,\"category\":\"group\",\"kwEntId\":4191018610937243,\"kwEntIds\":[4191018610937243],\"structured_suggestion_type\":1,\"high_confidence_code\":40,\"high_confidence_id\":4191018610937243,\"disambiguation_codes\":null,\"direct_nav_type\":null,\"direct_nav_id\":null,\"sts_is_connected\":null,\"sts_entity_type\":null,\"suggestion_keys\":{\"keys\":[\"-451… (584 chars)",
+              "sts_info": {
+                "direct_nav_result": null,
+                "high_confidence_result": "(7 fields)",
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 100,
+                "keys": "(1 items)",
+                "default_key": "-3162010204409643221"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "bethlehem community",
+              "item_logging_id": "2026-10-22:hIf4Mt",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_group_suggestion\",\"kwEntConnected\":true,\"category\":\"group\",\"kwEntId\":1794668660816001,\"kwEntIds\":[1794668660816001],\"structured_suggestion_type\":1,\"high_confidence_code\":40,\"high_confidence_id\":1794668660816001,\"disambiguation_codes\":null,\"direct_nav_type\":null,\"direct_nav_id\":null,\"sts_is_connected\":null,\"sts_entity_type\":null,\"suggestion_keys\":{\"keys\":[\"-403… (581 chars)",
+              "sts_info": {
+                "direct_nav_result": null,
+                "high_confidence_result": "(7 fields)",
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 100,
+                "keys": "(1 items)",
+                "default_key": "8939710153396872416"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "bethlehem pa community",
+              "item_logging_id": "2026-10-22:rkND7v",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unknown_suggestion\",\"kwEntConnected\":true,\"category\":\"unknown\",\"kwEntId\":4365911578446413815,\"kwEntIds\":[4365911578446413815],\"suggestion_keys\":{\"keys\":[],\"default_key\":\"3016116816568602210\",\"tier\":0},\"explainability_code\":1,\"features\":{\"16171\":1,\"16082\":16171,\"16178\":1,\"16173\":0.43300742204233,\"91043\":1,\"90684\":1}}",
+              "sts_info": null,
+              "suggestion_keys": {
+                "tier": 0,
+                "keys": "(0 items)",
+                "default_key": "3016116816568602210"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "bethlehem trash",
+              "item_logging_id": "2026-10-22:sUfo3W",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_user_suggestion\",\"kwEntConnected\":true,\"category\":\"user\",\"kwEntId\":61594063207669,\"kwEntIds\":[61594063207669],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":6,\"direct_nav_id\":61594063207669,\"sts_is_connected\":false,\"sts_entity_type\":\"user\",\"suggestion_keys\":{\"keys\":[\"9029983175… (576 chars)",
+              "sts_info": {
+                "direct_nav_result": "(8 fields)",
+                "high_confidence_result": null,
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 200,
+                "keys": "(1 items)",
+                "default_key": "4479362200166425434"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "terplanet",
+              "item_logging_id": "2026-10-22:RqYbEg",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_user_suggestion\",\"kwEntConnected\":false,\"category\":\"user\",\"kwEntId\":100063660293871,\"kwEntIds\":[100063660293871],\"suggestion_keys\":{\"keys\":[],\"default_key\":\"1351927792258287243\",\"tier\":0},\"explainability_code\":0,\"features\":{\"16162\":1,\"16082\":16162,\"16173\":0.38099466783787,\"91043\":0,\"90684\":1}}",
+              "sts_info": null,
+              "suggestion_keys": {
+                "tier": 0,
+                "keys": "(0 items)",
+                "default_key": "1351927792258287243"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "garden-meguri",
+              "item_logging_id": "2026-10-22:KbOHwX",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_user_suggestion\",\"kwEntConnected\":false,\"category\":\"user\",\"kwEntId\":61590403269346,\"kwEntIds\":[61590403269346],\"suggestion_keys\":{\"keys\":[],\"default_key\":\"6659535488656761380\",\"tier\":0},\"explainability_code\":0,\"features\":{\"16162\":1,\"16082\":16162,\"16173\":0.38099466783787,\"91043\":0,\"90684\":1}}",
+              "sts_info": null,
+              "suggestion_keys": {
+                "tier": 0,
+                "keys": "(0 items)",
+                "default_key": "6659535488656761380"
+              }
+            }
+          },
+          "… 202 more"
+        ]
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792732562116,
+      "time_at_flush_ms": 1792732562138
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T045453_61594063207669**, step 1: goto /marketplace/create/item: 200, 429 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "138820675",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometSearchBootstrapKeywordsDataSourceQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "first": 2000
+  },
+  "doc_id": "27797631676573850",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=138820675"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "bootstrap_keywords": {
+        "edges": [
+          {
+            "node": {
+              "keyword_text": "recommendations of bethlehem, pa and greater lehigh valley region",
+              "item_logging_id": "2026-10-22:9HCpva",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_group_suggestion\",\"kwEntConnected\":true,\"category\":\"group\",\"kwEntId\":4191018610937243,\"kwEntIds\":[4191018610937243],\"structured_suggestion_type\":1,\"high_confidence_code\":40,\"high_confidence_id\":4191018610937243,\"disambiguation_codes\":null,\"direct_nav_type\":null,\"direct_nav_id\":null,\"sts_is_connected\":null,\"sts_entity_type\":null,\"suggestion_keys\":{\"keys\":[\"-451… (584 chars)",
+              "sts_info": {
+                "direct_nav_result": null,
+                "high_confidence_result": "(7 fields)",
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 100,
+                "keys": "(1 items)",
+                "default_key": "-3162010204409643221"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "bethlehem community",
+              "item_logging_id": "2026-10-22:J4hI6C",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_group_suggestion\",\"kwEntConnected\":true,\"category\":\"group\",\"kwEntId\":1794668660816001,\"kwEntIds\":[1794668660816001],\"structured_suggestion_type\":1,\"high_confidence_code\":40,\"high_confidence_id\":1794668660816001,\"disambiguation_codes\":null,\"direct_nav_type\":null,\"direct_nav_id\":null,\"sts_is_connected\":null,\"sts_entity_type\":null,\"suggestion_keys\":{\"keys\":[\"-403… (581 chars)",
+              "sts_info": {
+                "direct_nav_result": null,
+                "high_confidence_result": "(7 fields)",
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 100,
+                "keys": "(1 items)",
+                "default_key": "8939710153396872416"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "bethlehem pa community",
+              "item_logging_id": "2026-10-22:PG3EfE",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unknown_suggestion\",\"kwEntConnected\":true,\"category\":\"unknown\",\"kwEntId\":4365911578446413815,\"kwEntIds\":[4365911578446413815],\"suggestion_keys\":{\"keys\":[],\"default_key\":\"3016116816568602210\",\"tier\":0},\"explainability_code\":1,\"features\":{\"16171\":1,\"16082\":16171,\"16178\":1,\"16173\":0.43300742204233,\"91043\":1,\"90684\":1}}",
+              "sts_info": null,
+              "suggestion_keys": {
+                "tier": 0,
+                "keys": "(0 items)",
+                "default_key": "3016116816568602210"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "bethlehem trash",
+              "item_logging_id": "2026-10-22:artP1s",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_user_suggestion\",\"kwEntConnected\":true,\"category\":\"user\",\"kwEntId\":61594063207669,\"kwEntIds\":[61594063207669],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":6,\"direct_nav_id\":61594063207669,\"sts_is_connected\":false,\"sts_entity_type\":\"user\",\"suggestion_keys\":{\"keys\":[\"9029983175… (576 chars)",
+              "sts_info": {
+                "direct_nav_result": "(8 fields)",
+                "high_confidence_result": null,
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 200,
+                "keys": "(1 items)",
+                "default_key": "4479362200166425434"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "terplanet",
+              "item_logging_id": "2026-10-22:O9aOO4",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_user_suggestion\",\"kwEntConnected\":false,\"category\":\"user\",\"kwEntId\":100063660293871,\"kwEntIds\":[100063660293871],\"suggestion_keys\":{\"keys\":[],\"default_key\":\"1351927792258287243\",\"tier\":0},\"explainability_code\":0,\"features\":{\"16162\":1,\"16082\":16162,\"16173\":0.38099466783787,\"91043\":0,\"90684\":1}}",
+              "sts_info": null,
+              "suggestion_keys": {
+                "tier": 0,
+                "keys": "(0 items)",
+                "default_key": "1351927792258287243"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "garden-meguri",
+              "item_logging_id": "2026-10-22:36MbLp",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_user_suggestion\",\"kwEntConnected\":false,\"category\":\"user\",\"kwEntId\":61590403269346,\"kwEntIds\":[61590403269346],\"suggestion_keys\":{\"keys\":[],\"default_key\":\"6659535488656761380\",\"tier\":0},\"explainability_code\":0,\"features\":{\"16162\":1,\"16082\":16162,\"16173\":0.38099466783787,\"91043\":0,\"90684\":1}}",
+              "sts_info": null,
+              "suggestion_keys": {
+                "tier": 0,
+                "keys": "(0 items)",
+                "default_key": "6659535488656761380"
+              }
+            }
+          },
+          "… 202 more"
+        ]
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792731336972,
+      "time_at_flush_ms": 1792731337002
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T045453_61594063207669**, step 2: goto /marketplace/: 200, 389 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometSearchBootstrapKeywordsDataSourceQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "first": 2000
+  },
+  "doc_id": "27797631676573850"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "bootstrap_keywords": {
+        "edges": [
+          {
+            "node": {
+              "keyword_text": "recommendations of bethlehem, pa and greater lehigh valley region",
+              "item_logging_id": "2026-10-22:muk7nl",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_group_suggestion\",\"kwEntConnected\":true,\"category\":\"group\",\"kwEntId\":4191018610937243,\"kwEntIds\":[4191018610937243],\"structured_suggestion_type\":1,\"high_confidence_code\":40,\"high_confidence_id\":4191018610937243,\"disambiguation_codes\":null,\"direct_nav_type\":null,\"direct_nav_id\":null,\"sts_is_connected\":null,\"sts_entity_type\":null,\"suggestion_keys\":{\"keys\":[\"-451… (584 chars)",
+              "sts_info": {
+                "direct_nav_result": null,
+                "high_confidence_result": "(7 fields)",
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 100,
+                "keys": "(1 items)",
+                "default_key": "-3162010204409643221"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "bethlehem community",
+              "item_logging_id": "2026-10-22:H1Xs9h",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_group_suggestion\",\"kwEntConnected\":true,\"category\":\"group\",\"kwEntId\":1794668660816001,\"kwEntIds\":[1794668660816001],\"structured_suggestion_type\":1,\"high_confidence_code\":40,\"high_confidence_id\":1794668660816001,\"disambiguation_codes\":null,\"direct_nav_type\":null,\"direct_nav_id\":null,\"sts_is_connected\":null,\"sts_entity_type\":null,\"suggestion_keys\":{\"keys\":[\"-403… (581 chars)",
+              "sts_info": {
+                "direct_nav_result": null,
+                "high_confidence_result": "(7 fields)",
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 100,
+                "keys": "(1 items)",
+                "default_key": "8939710153396872416"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "bethlehem pa community",
+              "item_logging_id": "2026-10-22:GnjwPK",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unknown_suggestion\",\"kwEntConnected\":true,\"category\":\"unknown\",\"kwEntId\":4365911578446413815,\"kwEntIds\":[4365911578446413815],\"suggestion_keys\":{\"keys\":[],\"default_key\":\"3016116816568602210\",\"tier\":0},\"explainability_code\":1,\"features\":{\"16171\":1,\"16082\":16171,\"16178\":1,\"16173\":0.43300742204233,\"91043\":1,\"90684\":1}}",
+              "sts_info": null,
+              "suggestion_keys": {
+                "tier": 0,
+                "keys": "(0 items)",
+                "default_key": "3016116816568602210"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "bethlehem trash",
+              "item_logging_id": "2026-10-22:NGJGfX",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_connected_user_suggestion\",\"kwEntConnected\":true,\"category\":\"user\",\"kwEntId\":61594063207669,\"kwEntIds\":[61594063207669],\"structured_suggestion_type\":3,\"high_confidence_code\":null,\"high_confidence_id\":null,\"disambiguation_codes\":null,\"direct_nav_type\":6,\"direct_nav_id\":61594063207669,\"sts_is_connected\":false,\"sts_entity_type\":\"user\",\"suggestion_keys\":{\"keys\":[\"9029983175… (576 chars)",
+              "sts_info": {
+                "direct_nav_result": "(8 fields)",
+                "high_confidence_result": null,
+                "disambiguation_result": null,
+                "badge_info": null
+              },
+              "suggestion_keys": {
+                "tier": 200,
+                "keys": "(1 items)",
+                "default_key": "4479362200166425434"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "terplanet",
+              "item_logging_id": "2026-10-22:auDn0l",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_user_suggestion\",\"kwEntConnected\":false,\"category\":\"user\",\"kwEntId\":100063660293871,\"kwEntIds\":[100063660293871],\"suggestion_keys\":{\"keys\":[],\"default_key\":\"1351927792258287243\",\"tier\":0},\"explainability_code\":0,\"features\":{\"16162\":1,\"16082\":16162,\"16173\":0.38099466783787,\"91043\":0,\"90684\":1}}",
+              "sts_info": null,
+              "suggestion_keys": {
+                "tier": 0,
+                "keys": "(0 items)",
+                "default_key": "1351927792258287243"
+              }
+            }
+          },
+          {
+            "node": {
+              "keyword_text": "garden-meguri",
+              "item_logging_id": "2026-10-22:xHWcZX",
+              "item_logging_info": "{\"source\":\"entity_bootstrap_unconnected_user_suggestion\",\"kwEntConnected\":false,\"category\":\"user\",\"kwEntId\":61590403269346,\"kwEntIds\":[61590403269346],\"suggestion_keys\":{\"keys\":[],\"default_key\":\"6659535488656761380\",\"tier\":0},\"explainability_code\":0,\"features\":{\"16162\":1,\"16082\":16162,\"16173\":0.38099466783787,\"91043\":0,\"90684\":1}}",
+              "sts_info": null,
+              "suggestion_keys": {
+                "tier": 0,
+                "keys": "(0 items)",
+                "default_key": "6659535488656761380"
+              }
+            }
+          },
+          "… 202 more"
+        ]
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792731446193,
+      "time_at_flush_ms": 1792731446227
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does
