@@ -10,8 +10,8 @@
 | Path | `/api/graphql/` |
 | Sends | `categoryID` |
 | Reads | `viewer.definitions` |
-| Called from | `MarketplacePDPC2CAttributesComponent.react` |
-| rea | `ev_23049485227d4ec91cc2c3b57b4b7da0f6322c73b1f8f951a6753ba37172d8cd` |
+| Called from | `useMarketplaceComposerAttributes`, `MarketplacePDPC2CAttributesComponent.react` |
+| rea | `ev_77c7779c2f652629c0ecb2787f18ef1624a32701bd6a431132af84b1503bb8df` |
 
 Seen 9 time(s) in 7 run(s).
 

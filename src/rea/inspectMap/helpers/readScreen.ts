@@ -11,7 +11,12 @@ const lines = (snapshot: string): Line[] =>
   snapshot
     .split(/\r?\n/)
     .filter((l) => l.trim())
-    .map((l) => ({ indent: l.length - l.trimStart().length, text: l.trim().replace(/^- /, '') }))
+    .map((l) => ({ indent: l.length - l.trimStart().length, text: unquote(l.trim().replace(/^- /, '')) }))
+
+function unquote(text: string): string {
+  const quoted = text.match(/^'(.*)'(:?)$/)
+  return quoted ? quoted[1].replace(/''/g, "'") + quoted[2] : text
+}
 
 function parseNode(text: string): { role: string; name: string | null; ref: string | null; disabled: boolean; value: string | null } {
   const role = text.match(/^([a-z]+)/)?.[1] ?? ''

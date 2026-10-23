@@ -125,5 +125,6 @@ export function fillStep(step: FlowStep, values: Record<string, string>): FlowSt
       if (!(key in values)) throw new Error(`missing value for {${key}}`)
       return values[key]
     })
-  return { ...step, ...(step.url ? { url: fill(step.url) } : {}), ...(step.value ? { value: fill(step.value) } : {}), ...(step.name ? { name: fill(step.name) } : {}) }
+  const answers = step.answers?.map((a) => ({ ...a, says: a.says.map((c) => (typeof c.is === 'string' ? { ...c, is: fill(c.is) } : c)) }))
+  return { ...step, ...(step.url ? { url: fill(step.url) } : {}), ...(step.value ? { value: fill(step.value) } : {}), ...(step.name ? { name: fill(step.name) } : {}), ...(answers ? { answers } : {}) }
 }

@@ -75,3 +75,23 @@ describe('Marketplace partner listings', () => {
     expect(pageStateOf('https://www.facebook.com/marketplace/', 'heading "Picks for you"')).toBeNull()
   })
 })
+
+describe('the Marketplace delete survey', () => {
+  test('"Did you sell this item?" after a delete is a known state; the Selling page and the delete dialog are not mapped', () => {
+    const selling = 'https://www.facebook.com/marketplace/you/selling'
+    expect(pageStateOf(selling, '- heading "Did you sell this item?" [level=2]\n- radio "No, haven\'t sold"')?.id).toBe('marketplaceDeleteSurvey')
+    expect(pageStateOf(selling, '- heading "Are you sure that you want to delete this listing?" [level=2]\n- button "Delete"')).toBeNull()
+    expect(pageStateOf(selling, '- heading "Selling" [level=1]')).toBeNull()
+  })
+})
+
+describe('resolving the delete survey', () => {
+  test('first "No, haven\'t sold", then Next once it is checked: never the same click twice', async () => {
+    const { resolveCallOf } = await import('./helpers/pageState')
+    const state = { id: 'marketplaceDeleteSurvey', what: '', resolve: '', person: false }
+    const first = resolveCallOf(state, { account: 'bethlehem', text: '- radio "No, haven\'t sold"' })
+    expect(JSON.stringify(first)).toContain("No, haven't sold")
+    const second = resolveCallOf(state, { account: 'bethlehem', text: '- radio "No, haven\'t sold" [checked] [active]' })
+    expect(JSON.stringify(second)).toContain('"Next"')
+  })
+})

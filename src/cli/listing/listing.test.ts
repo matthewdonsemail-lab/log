@@ -60,3 +60,40 @@ describe("copy versions in listing.json", () => {
     expect(bad.out).toContain("shares too many words");
   });
 });
+
+describe("log facebook listing remove", () => {
+  async function remove(argv: string[]) {
+    const { marketplaceFixture } = await import("../../twenty/graphql/index.ts");
+    const twenty = marketplaceFixture();
+    const out: string[] = [];
+    const err: string[] = [];
+    const code = await runCli(["facebook", "listing", "remove", ...argv], { twenty, out: (l) => out.push(l), err: (l) => err.push(l) });
+    return { code, out: out.join("\n"), err: err.join("\n"), twenty };
+  }
+
+  test("a dry run names the listing, its account and the recorded flow, and changes nothing", async () => {
+    const { code, out, twenty } = await remove(["liveOne"]);
+    expect(code).toBe(0);
+    expect(out).toContain("(111) on galwayOne, ACTIVE in Twenty.");
+    expect(out).toContain('click button "More options for ');
+    expect(out).toContain('click menuitem "Delete listing"');
+    expect(out).toContain("REMOVED in Twenty, only once Facebook's answer names this listing's id.");
+    expect(twenty.rows.agencyListings.find((r) => r.id === "liveOne")!.status).toBe("ACTIVE");
+  });
+
+  test("the Facebook listing id finds the row too", async () => {
+    const { code, out } = await remove(["222"]);
+    expect(code).toBe(0);
+    expect(out).toContain("(222) on galwayTwo");
+  });
+
+  test("a listing never published, or not live, is refused with listingNotRemovable", async () => {
+    const ready = await remove(["readyOne"]);
+    expect(ready.code).not.toBe(0);
+    expect(ready.err).toContain("listingNotRemovable");
+    const sold = await remove(["soldOne"]);
+    expect(sold.err).toContain("listingNotRemovable");
+    const missing = await remove(["nobody"]);
+    expect(missing.err).toContain("listingNotFound");
+  });
+});

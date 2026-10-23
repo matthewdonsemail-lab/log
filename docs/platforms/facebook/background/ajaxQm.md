@@ -13,7 +13,7 @@
 | Called from | — |
 | rea | `ev_d7f46c8cc1f3fbd68a82bc46b70630e2eb1283ceba774729ad62ba506a833c48` |
 
-Seen 120 time(s) in 34 run(s).
+Seen 121 time(s) in 35 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -88,6 +88,7 @@ Seen 120 time(s) in 34 run(s).
 | warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 455 ms | 944 ms | — |
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 451 ms | 808 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 437 ms | 762 ms | — |
+| inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 493 ms | 1825 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

@@ -6076,3 +6076,55 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: a new account status, DEACTIVATED, for an account taken out of use. `log facebook account status <name> DEACTIVATED` sets it, and the same write clears the account's `proxy`, so it holds no proxy and uses no traffic. It is never usable: no run and no sign-in may open it (`checkRunnable`), the lifecycle ends at once in a final `deactivated` state, `log proxy assign --missing` skips it and `--account` refuses it with `accountNotUsable`, and its listings are lost and replaced like a RESTRICTED account's (`LOSING_STATUSES`). The row, cookies and history stay (rule 13). Twenty's `socialAccounts.accountStatus` gained the DEACTIVATED option through `scripts/twenty/twentySetup.mjs` (it adds missing options and keeps the existing ones and their ids), and the generated client was rebuilt. `docs/accountsAndListings.md` and the README's status list say so.
 Why: matt: "we need a new step called DEACTIVATED, and this will remove all of the proxy allocations to them or just make them not able to be worked with", for the seven checkpointed accounts (Lancaster, Allentown, Scranton, Reading, Philadelphia, Erie, Harrisburg) and the two restricted ones (Pittsburgh, Wilkes-Barre).
 Checked: new tests: DEACTIVATED clears the proxy and keeps the row, may neither run nor sign in, other statuses keep the proxy; the lifecycle ends with no proxy check and no browser; proxy assign skips and refuses it. `bun run check`: 909 pass. `twentySetup.mjs` dry run showed only the new option, `--apply` added it (the first try hit a dropped connection and changed nothing). Then all nine accounts were set DEACTIVATED: `log facebook accounts` shows them with proxy NONE, Bethlehem still ACTIVE, and three listings (on Allentown, Reading and Philadelphia, none in a campaign) moved to ACCOUNT_LOST.
+
+## 2026-10-23 17:55Z · feat/listingRemove
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/accountsAndListings.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/pageStates.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSellerListingTransactionReportingDialogQuery.md`: new file
+- `docs/platforms/facebook/background/CometMarketplaceYouFeedCardMoreMenuTargetQuery.md`: new file
+- `docs/platforms/facebook/background/CometMarketplaceYouFeedCardMoreMenuViewerQuery.md`: new file
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MarketplaceDeleteUtilsQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYouSellingUpsellCardQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxBz.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useCometC2CTransactionSurveyImpressionMutation.md`: new file
+- `docs/platforms/facebook/background/useCometC2CTransactionSurveyResponseMutation.md`: new file
+- `docs/platforms/facebook/background/useCometMarketplaceForSaleItemDeleteMutation.md`: new file
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/flows/marketplaceListingDelete.md`: new file
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerAttributesQuery.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `python/errors/errorCatalog.json`: edited
+- `skills/flow/SKILL.md`: edited
+- `src/browser/flow/definitions/marketplaceListingDelete.json`: new file
+- `src/browser/flow/flow.test.ts`: added test "its menu and delete steps are decided by Facebook's answer naming the listing id we were given"
+- `src/browser/flow/helpers/flowFromRecording.ts`: changed function fillStep
+- `src/browser/flow/helpers/pageState.ts`: changed const PAGE_STATES, const RESOLVE_CALLS
+- `src/browser/flow/pageState.test.ts`: added test ""Did you sell this item?" after a delete is a known state; the Selling page and the delete dialog are not mapped", test "first "No, haven't sold", then Next once it is checked: never the same click twice"
+- `src/cli/flow/index.ts`: changed function runFlow
+- `src/cli/listing/index.ts`: added const REMOVABLE_STATUSES, function removeListing · changed const LISTING_USAGE, const LISTING_INPUT, const listingCommand
+- `src/cli/listing/listing.test.ts`: added test "a dry run names the listing, its account and the recorded flow, and changes nothing", test "the Facebook listing id finds the row too", test "a listing never published, or not live, is refused with listingNotRemovable"
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/rea/inspectMap/helpers/readScreen.ts`: added function unquote · changed const lines
+- `src/rea/inspectMap/inspectMap.test.ts`: added test "an element whose name has a colon is read: YAML quotes that line (Bethlehem's listing, 2026-10-23)"
+
+What changed: a Marketplace listing can now be taken down. `log facebook listing remove <agencyListingId|facebookListingId>` finds the Twenty row and its account, and runs the new flow `marketplaceListingDelete` (recorded on Bethlehem with `log inspect`, 2026-10-23): the listing's More options on Selling, Delete listing, Delete, then "No, haven't sold" and Next on Facebook's survey. Facebook's answers decide it (rule 73): the menu's answer must name the listing id given (`data.node.product_item.for_sale_item.id`), and the delete's answer must name it too (`commerce_for_sale_item_delete.deleted_for_sale_item_id`, also checked against what we sent). Only after the flow is done does the row become REMOVED in Twenty, a soft delete by status: the row, its account link, Facebook id, photos and clicks stay (rule 13). Without `--live` it is a dry run naming the listing, its account and every step. A listing never published, or not ACTIVE, UNDER_REVIEW, UNCONFIRMED, SOLD or DUPLICATE_TAKEDOWN, is refused with the new code `listingNotRemovable`. `log flow run` takes an `after` step now (exported `runFlow`), so a command runs a saved flow and acts on it only when every step passed; `fillStep` fills params inside answer checks. The snapshot reader now reads elements whose name has a colon (YAML quotes those lines; the listing's title has one, and `flow fromInspect` refused the recording). The post-delete survey is a known page state, `marketplaceDeleteSurvey`, resolved "No, haven't sold" then Next; the "Are you sure?" dialog is deliberately not mapped, so no hook ever presses Delete. The six new requests are documented with their reasoning (rule 27), and `MarketplaceDeleteUtilsQuery`'s doc no longer says log-cli never deletes.
+Why: matt asked how a listing is taken down and how it looks in Twenty, then: "record taking down a listing with log inspect, make it a flow and a command that sets REMOVED in Twenty. Tell me which listing before anything is clicked live". He was shown Bethlehem's only listing, 1425935622848350, and said to take it down live.
+Checked: live on Bethlehem (inspect 20261023T173652, AdsPower, after one start refused by `browserExitIpMismatch`): the delete answered `deleted_for_sale_item_id` 1425935622848350, the survey saved NO, Selling showed "When you start selling, your listings will appear here.", SubQ read the goal reached (92%). Twenty row 97758a4b set ACTIVE -> REMOVED (set directly, since the listing was already gone). New tests: the remove dry run, lookups by either id, the refusals, the flow's answers filled with the listing id, the colon names, the survey state and its resolver. `bun run check`: 916 pass. `capture --docs`: 223 requests documented. Not checked: `listing remove --live` itself has not run; the flow ran only as the inspect recording it came from.

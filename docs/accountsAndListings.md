@@ -43,6 +43,19 @@ set it themselves from what the page shows (`marketplace/socialAccount`
 `statusForIssue`). Proxy problems never change an account's status: they are
 setup, not the account's fault.
 
+## Taking a listing down
+
+`log facebook listing remove <agencyListingId|facebookListingId> --live` deletes
+the listing on Facebook from its own account's Selling page, through the
+recorded flow `marketplaceListingDelete` (More options, Delete listing, Delete,
+then "No, haven't sold"). Only once Facebook's delete answer names that
+listing's id does the Twenty row become **REMOVED**: a soft delete by status.
+The row is never deleted (rule 13): it keeps its title, photos, Facebook id,
+clicks and its account, so the account still shows it among its listings,
+marked REMOVED. Without `--live` it is a dry run that lists the steps. Only
+ACTIVE, UNDER_REVIEW, UNCONFIRMED, SOLD and DUPLICATE_TAKEDOWN listings with a
+Facebook id are taken down (`listingNotRemovable` otherwise).
+
 ## Losing an account, and its replacement
 
 When an account becomes RESTRICTED, BANNED, DEAD or DEACTIVATED (from a run or by hand):

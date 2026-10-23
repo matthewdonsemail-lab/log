@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_12a643860c4d5ed958151ae63a164cda5b0f0dd046397ab65052d4ac7ae079c4` |
+| rea | `ev_a3d9ca195e32d0df6bfa994a8c737586c0a2eb6dfe054fac378874b9462779b6` |
 
-Seen 43 time(s) in 15 run(s).
+Seen 45 time(s) in 16 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -46,6 +46,8 @@ Seen 43 time(s) in 15 run(s).
 | inspect | step 3: dwell 24s | 1 | 200 | 629 ms | 16127 ms | — |
 | inspect | step 10: dwell 21s | 1 | 200 | 371 ms | 15216 ms | — |
 | inspect | step 18: dwell 19s | 1 | 200 | 1289 ms | 11038 ms | — |
+| inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 382 ms | 20872 ms | — |
+| inspect | step 2: snapshot | 1 | 200 | 358 ms | 45975 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
@@ -99,14 +101,40 @@ Answered:
 }
 ```
 
-**runs/inspect/20261023T080801_61594063207669**, step 3: dwell 24s: 200, 629 ms
+**runs/inspect/20261023T173652_61594063207669**, step 1: goto /marketplace/you/selling: 200, 382 ms
 
 Sent:
 
 ```json
 {
-  "query": "(1 fields)",
-  "body": "(101 fields)"
+  "query": {
+    "state": "0"
+  },
+  "body": {
+    "local_storage[armadillo_msgr_data_loss_stats]": "2",
+    "local_storage[ps:100078448742456:e180158e-07ae-49d3-822e-2c6e7275eede]": "50",
+    "local_storage[CacheStorageVersion]": "2",
+    "local_storage[maw_eb_has_set_up_in_current_session]": "4",
+    "local_storage[mw_encrypted_backups_restore_upsell_first_impression_time_key]": "13",
+    "local_storage[Session]": "20",
+    "local_storage[_oz_bandwidthEstimate]": "7",
+    "local_storage[banzai:last_storage_flush]": "15",
+    "local_storage[screen_time_period_logging_facebook]": "336",
+    "local_storage[last_headload_time]": "13",
+    "local_storage[RSTData]": "172",
+    "local_storage[bdz_playback_state]": "45",
+    "local_storage[hb_timestamp]": "13",
+    "local_storage[_oz_bandwidthAndTTFBSamples]": "15",
+    "local_storage[ares_last_signal_flush]": "13",
+    "local_storage[signal_flush_timestamp]": "13",
+    "session_storage[alcei]": "1",
+    "session_storage[alcsid]": "9",
+    "session_storage[TabId]": "6",
+    "logtime": "1",
+    "cquick": "_r_31_",
+    "cquick_token": "AUdmRnUAYDZx6QpruXYYHJxPIpg",
+    "ctarget": "https://www.facebook.com"
+  }
 }
 ```
 
@@ -115,11 +143,11 @@ Answered:
 ```json
 {
   "__ar": 1,
-  "rid": "AkUcySC8D1CyDZ7yJM9GzK6",
+  "rid": "AZqKYm3ZHpFM-uZnkgEmlJj",
   "payload": {
     "keys": []
   },
-  "lid": "7699772318974175663"
+  "lid": "7699918791720181693"
 }
 ```
 
