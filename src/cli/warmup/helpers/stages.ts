@@ -15,7 +15,7 @@ export const stagesDeps = { flowsDir: FLOWS_DIR };
 export const STAGES_USAGE = [
   "       log facebook warmup stages plan",
   "       log facebook warmup stages record --account <accountName> [--only feedBrowse,marketplaceBrowse] [--likes] [--bypass] [--now]",
-  "       log facebook warmup stages run --account <accountName> [--only …] [--likes] [--gapMinutes <n>] [--bypass] [--now]",
+  "       log facebook warmup stages run --account <accountName> [--only …] [--likes] [--gapSeconds <n>] [--bypass] [--now]",
   "       log facebook warmup stages log [--account <accountName>] [--lines <n>] [--follow [--seconds <n>]]",
 ].join("\n");
 
@@ -49,8 +49,8 @@ export async function runStages(context: CommandContext, sub: string | undefined
       return { code: 1, stderr: `log facebook warmup: flowNotRecorded: ${missing.map((a) => ACTIVITY_SCRIPTS[a].flow).join(", ")} not recorded yet. Record them first, headed: log facebook warmup stages record --account <a> --only ${missing.join(",")}` };
     }
   }
-  const gapMinutes = flags["gapMinutes"] === undefined ? 150 : Number(flags["gapMinutes"]);
-  if (!Number.isFinite(gapMinutes) || gapMinutes < 0 || gapMinutes > 600) return { code: 1, stderr: "log facebook warmup: --gapMinutes must be 0 to 600" };
+  const gapSeconds = flags["gapSeconds"] === undefined ? 10 : Number(flags["gapSeconds"]);
+  if (!Number.isFinite(gapSeconds) || gapSeconds < 0 || gapSeconds > 36_000) return { code: 1, stderr: "log facebook warmup: --gapSeconds must be 0 to 36000" };
 
   const opened = await openAccount(context, "warmup", STAGES_USAGE, flags["account"], "run", Boolean(flags["bypass"]), true, Boolean(flags["now"]));
   if (!("run" in opened)) return opened;
@@ -65,7 +65,7 @@ export async function runStages(context: CommandContext, sub: string | undefined
     try {
       result = sub === "record"
         ? await record(context, session.current, picked.activities, Boolean(flags["likes"]), base, account)
-        : await runWarmup(context, session.current, picked.activities, Boolean(flags["likes"]), gapMinutes * 60_000, base, account);
+        : await runWarmup(context, session.current, picked.activities, Boolean(flags["likes"]), gapSeconds * 1000, base, account);
     } finally {
       await context.sendInspect(session.current, "stop", [], 30_000);
       await session.session;
@@ -113,7 +113,7 @@ async function record(
   }
   const lines = [`Recorded ${activities.length} activit${activities.length === 1 ? "y" : "ies"} in one browser (${current.runDir}):`, ...saveFlows(current, spans, base).map((l) => `  ${l}`)];
   stage(context, { ...base, event: "done", detail: `recorded ${spans.map((s) => s.activity).join(", ")}` });
-  lines.push("Run them: log facebook warmup stages run --account <a> [--likes] [--gapMinutes <n>]");
+  lines.push("Run them: log facebook warmup stages run --account <a> [--likes] [--gapSeconds <n>]");
   return { code: 0, stdout: lines.join("\n") };
 }
 
@@ -147,10 +147,11 @@ async function runWarmup(
         stage(context, { ...base, event: "activity", activity: input.activity, detail: `${flow.steps.length} steps` });
         const output = await runFlowInSession(context, current, flow, { uid: base.account }, {
           skip: (step) => step.action === "clickAny" && !likes,
+          account: { uid: account.accountName, homeCity: account.homeCity, homeCountry: account.homeCountry },
           onStep: (step, result) => stage(context, { ...base, event: "step", activity: input.activity, step: step.id, ok: result.ok, detail: result.ok ? (step.args ?? [step.url ?? ""]).join(" ") : result.error }),
         });
         if (output.result === "done") {
-          stage(context, { ...base, event: "gap", activity: input.activity, ok: true, detail: `done; next in ${Math.round(gapMs / 60_000)} min` });
+          stage(context, { ...base, event: "gap", activity: input.activity, ok: true, detail: `done; next in ${Math.round(gapMs / 1000)} s` });
           return { ok: true, steps: output.steps.length };
         }
         const last = output.steps.at(-1);
@@ -163,8 +164,9 @@ async function runWarmup(
   const output = await toPromise(actor);
   const failure = output.failure;
   if (output.blocked && failure?.issue) await accountIssue(context, account, failure.issue as ErrorCode, failure.error ?? "", base, failure.activity);
+  for (const note of output.noted) stage(context, { ...base, event: "noted", activity: note.activity, ok: false, detail: `${note.failedAt ?? "?"}: ${note.error ?? note.issue}; carried on` });
   stage(context, { ...base, event: failure ? "stopped" : "done", ok: !failure, detail: failure ? `${failure.activity} at ${failure.failedAt ?? "?"}: ${failure.error ?? ""}` : `${output.done.length} activities` });
-  const lines = [`Warm-up on ${base.account}: ${output.done.length}/${activities.length} activities done in one browser${failure ? `; stopped in ${failure.activity} at ${failure.failedAt}` : ""}.`, `Stage log: log facebook warmup stages log --account ${base.account}   (${stageLogPath()})`];
+  const lines = [`Warm-up on ${base.account}: ${output.done.length}/${activities.length} activities done in one browser${failure ? `; stopped in ${failure.activity} at ${failure.failedAt}` : ""}.`, ...output.noted.map((n) => `Noted in ${n.activity} at ${n.failedAt ?? "?"}: ${n.error ?? n.issue} (the warm-up carried on).`), `Stage log: log facebook warmup stages log --account ${base.account}   (${stageLogPath()})`];
   return { code: failure ? 1 : 0, stdout: lines.join("\n") };
 }
 

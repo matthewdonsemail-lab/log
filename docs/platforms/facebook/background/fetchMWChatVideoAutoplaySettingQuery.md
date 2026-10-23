@@ -89,6 +89,119 @@ Seen 114 time(s) in 31 run(s).
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 487 ms | 1823 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 387 ms | 4438 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 425 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "fetchMWChatVideoAutoplaySettingQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "9713919638685405"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "video_settings": {
+        "autoplay_setting_www": "default_autoplay"
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742732007,
+      "time_at_flush_ms": 1792742732028
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 395 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "30613466",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "fetchMWChatVideoAutoplaySettingQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "9713919638685405",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=30613466"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "video_settings": {
+        "autoplay_setting_www": "default_autoplay"
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742782111,
+      "time_at_flush_ms": 1792742782130
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 367 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "fetchMWChatVideoAutoplaySettingQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "9713919638685405"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "video_settings": {
+        "autoplay_setting_www": "default_autoplay"
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742814035,
+      "time_at_flush_ms": 1792742814052
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

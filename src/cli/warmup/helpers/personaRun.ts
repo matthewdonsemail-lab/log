@@ -7,7 +7,7 @@ import type { InspectAction, InspectStepOptions } from "../../../browser/inspect
 import { createInspector, formatTraceLine } from "../../../observability/trace/index.ts";
 import { createDecisionsClient } from "../../../subq/decisions/index.ts";
 import type { DecisionImage, DecisionsClient } from "../../../subq/decisions/index.ts";
-import { readReelRead, REEL, reelCaption, reelPersonaMachine, reelReadRequest } from "../../../facebook/warmup/activities/index.ts";
+import { answerWaitOf, readReelRead, REEL, reelCaption, reelPersonaMachine, reelReadRequest } from "../../../facebook/warmup/activities/index.ts";
 import type { ActivityStep, AllowedActions, ReelLabel, ReelRead, StepReply } from "../../../facebook/warmup/activities/index.ts";
 import type { InterestEffect } from "../../../warmup/viewer/index.ts";
 import { DEFAULT_TRAFFIC_BUDGET_MB, meterForProxy, readTrafficLedger, recordTraffic, trafficBudget } from "../../../proxyVendor/traffic/index.ts";
@@ -161,7 +161,7 @@ export async function runPersonaSession(
         context.err(`  → ${step.id}: ${action} ${args.join(" ")}  (${step.why})`);
         const stepOptions: InspectStepOptions = { reaLater: true, ...(step.id === "swipe" ? { urlChange: true, settleMaxMs: 3000, rest: true } : step.id === "watch" ? { rest: true } : step.id === "openProfile" ? { urlChange: true, settleMaxMs: 8000 } : step.id === "unmute" ? { already: ["button", "Mute"] } : {}) };
         const sentAt = Date.now();
-        const reply = await context.sendInspect(current, action, args, 180_000, undefined, stepOptions);
+        const reply = await context.sendInspect(current, action, args, 180_000, answerWaitOf(step), stepOptions);
         if (!reply) return { ok: false, error: `no reply from the open browser in 180 s (${current.runDir})` };
         const snapshotPath = reply.folder ? join(reply.folder, "snapshot.yml") : null;
         const out: StepReply = { ok: reply.ok !== false, error: reply.error, url: reply.url, folder: reply.folder, openedTab: reply.openedTab, snapshot: snapshotPath && existsSync(snapshotPath) ? readFileSync(snapshotPath, "utf8") : undefined };

@@ -24,6 +24,158 @@ Seen 6 time(s) in 4 run(s).
 | inspect | step 7: goto / | 1 | 200 | 994 ms | 118255 ms | — |
 | inspect | step 6: clickAny 1 x link /see owner profile$/ | 1 | 200 | 1444 ms | 2683 ms | — |
 
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T080801_61594063207669**, step 6: clickAny 1 x link /see owner profile$/: 200, 1444 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "ProfileCometHeaderQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "scale": 1,
+    "selectedID": "100078448742456",
+    "selectedSpaceType": "profile",
+    "shouldUseFXIMProfilePicEditor": false,
+    "userID": "100078448742456"
+  },
+  "doc_id": "28621615384199313"
+}
+```
+
+Answered:
+
+```json
+{
+  "first": {
+    "data": {
+      "user": {
+        "profile_header_renderer": {
+          "__typename": "XFBProfileEntityConvergenceHeaderRenderer",
+          "user": "(38 fields)",
+          "viewer": "(1 fields)",
+          "nux": null,
+          "restriction_violation_status": "No Violations.",
+          "dsa16_report_entrypoint": "profile",
+          "dsa16_reporting_url": "https://www.facebook.com/profile.php?id=100078448742456",
+          "is_dsa16_legal_reporting_enabled": false,
+          "legal_reporting_uri": null,
+          "legal_reporting_cta_type": null,
+          "rr_removal_viewer_exposure_universe": "page_ratings_reviews_removal",
+          "rr_removal_business_exposure_universe": null,
+          "rr_removal_business_exposure_id": null,
+          "__module_operation_ProfileCometHeaderQuery": "(1 fields)",
+          "__module_component_ProfileCometHeaderQuery": "(1 fields)"
+        },
+        "id": "100078448742456",
+        "profile_plus_post_transition_modal": null
+      }
+    },
+    "extensions": {
+      "prefetch_uris_v2": [
+        {
+          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/481331896_638977285393891_3209968374649310659_n.jpg?stp=dst-jpg_tt6&cstp=mx1152x2048&ctp=s960x960&_nc_cat=102&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=7z4ThVaso4MQ7kNvwGoXB17&_nc_oc=Adq55W4ALAl_3jBxD5EQVHij95xJwzduDX0Bt4AaUGiiexcn6bcj9E_as8A-vfPBfPM&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=nKnRbLAnMvw_fP3PnB4eTA&_nc_ss=792a8&oh=00_AQMZwni_OGXqgUtQmvzprmt… (435 chars)",
+          "label": null,
+          "width": null,
+          "height": null,
+          "surface": null
+        },
+        {
+          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/481331896_638977285393891_3209968374649310659_n.jpg?stp=dst-jpg_fb50_s180x540_tt6&_nc_cat=102&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=7z4ThVaso4MQ7kNvwGoXB17&_nc_oc=Adq55W4ALAl_3jBxD5EQVHij95xJwzduDX0Bt4AaUGiiexcn6bcj9E_as8A-vfPBfPM&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=nKnRbLAnMvw_fP3PnB4eTA&_nc_ss=792a8&oh=00_AQNIitrv2uTbTZxVS1Nq1rG52ZynKMuztnnkvcW… (419 chars)",
+          "label": null,
+          "width": null,
+          "height": null,
+          "surface": null
+        }
+      ],
+      "server_metadata": {
+        "request_start_time_ms": 1792742992151,
+        "time_at_flush_ms": 1792742992284
+      },
+      "is_final": false,
+      "sr_payload": {
+        "ddd": {
+          "hsrp": "(2 fields)",
+          "jsmods": "(3 fields)",
+          "allResources": "(7 items)",
+          "tieredResources": "(3 fields)"
+        }
+      }
+    }
+  },
+  "followingParts": 18,
+  "parts": [
+    {
+      "label": "ProfileCometProfilePicture_user$defer$ProfileCometLockedProfilePopover_user",
+      "path": [
+        "user",
+        "profile_header_renderer",
+        "user"
+      ],
+      "data": {
+        "name": "Duck Therapy",
+        "gender": "NEUTER",
+        "wem_private_sharing_bundle": {
+          "private_sharing_control_model_for_user": null
+        }
+      },
+      "extensions": {
+        "prefetch_uris_v2": [
+          "(5 fields)",
+          "(5 fields)"
+        ],
+        "is_final": false
+      }
+    },
+    {
+      "label": "ProfileCometProfilePicture_user$defer$ProfileCometProfilePictureViewMenu_user",
+      "path": [
+        "user",
+        "profile_header_renderer",
+        "user"
+      ],
+      "data": {
+        "story_bucket": {
+          "nodes": "(1 items)"
+        }
+      },
+      "extensions": {
+        "prefetch_uris_v2": [
+          "(5 fields)",
+          "(5 fields)"
+        ],
+        "is_final": false
+      }
+    },
+    {
+      "label": "ProfileCometProfilePicture_user$defer$ProfileCometProfilePictureEditMenu_user",
+      "path": [
+        "user",
+        "profile_header_renderer",
+        "user"
+      ],
+      "data": {
+        "story_bucket": {
+          "nodes": "(1 items)"
+        }
+      },
+      "extensions": {
+        "prefetch_uris_v2": [
+          "(5 fields)",
+          "(5 fields)"
+        ],
+        "is_final": false
+      }
+    }
+  ]
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

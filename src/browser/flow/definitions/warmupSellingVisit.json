@@ -7,6 +7,18 @@
       "id": "s01_gotomarketplace",
       "action": "goto",
       "url": "https://www.facebook.com/marketplace/",
+      "answers": [
+        {
+          "call": "page /marketplace/",
+          "says": [
+            {
+              "answer": "fields.buy_location.display_name",
+              "home": "city",
+              "code": "marketplaceLocationWrong"
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "17_gotoHttpsWwwFacebook",
         "ms": 24704,
@@ -53,6 +65,17 @@
       "id": "s03_gotomarketplaceYouSelling",
       "action": "goto",
       "url": "https://www.facebook.com/marketplace/you/selling",
+      "answers": [
+        {
+          "call": "page /marketplace/you/selling",
+          "says": [
+            {
+              "answer": "fields.current_marketplace.id",
+              "present": true
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "19_gotoHttpsWwwFacebook",
         "ms": 24218,

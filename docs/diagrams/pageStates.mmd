@@ -27,6 +27,12 @@ flowchart LR
   marketplacePartnerListings["marketplacePartnerListings: Marketplace's #quot;Discover more when you shop#quot; (partner shops, shown where the Marketplace location is in Europe#59; Bethlehem was sent to Granada by a bare zip, 20261022T110738 step 2)"]
   page --> marketplacePartnerListings
   marketplacePartnerListings -->|"press its Update by ref"| nextmarketplacePartnerListings(["next state"])
+  marketplaceCreateLimitReached["marketplaceCreateLimitReached: Marketplace's create page answers that this account may not post now: its HTML says `marketplace_new_seller_can_post_item: false` and the page shows #quot;Limit reached#quot; (Bethlehem, inspect 20261023T045453 step 01#59; the same field was true on 2026-10-22, runs 20261022T105341 and 20261022T110738)"]
+  page --> marketplaceCreateLimitReached
+  marketplaceCreateLimitReached --> person
+  marketplacePartnerFeed["marketplacePartnerFeed: Marketplace answers with partner shops' listings (`product_details_type: PARTNER_LISTING`, a `partner_brand_name` and a `partner_listing_location`), from Europe though the account is in the US (Bethlehem, inspect 20261023T045453 step 03: Catawiki in Italy and buycycle-es, while `buy_location` was Bethlehem, Pennsylvania)"]
+  page --> marketplacePartnerFeed
+  marketplacePartnerFeed -->|"read the Marketplace location from its own answer"| nextmarketplacePartnerFeed(["next state"])
   rememberPassword["rememberPassword: the #quot;Remember password#quot; prompt"]
   page --> rememberPassword
   rememberPassword -->|"click #quot;Not now#quot;"| nextrememberPassword(["next state"])

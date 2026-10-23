@@ -8,7 +8,7 @@ import { DEFAULT_TRAFFIC_BUDGET_MB, meterForProxy, readTrafficLedger, recordTraf
 import type { TrafficMeter } from "../../../proxyVendor/traffic/index.ts";
 import { createDecisionsClient } from "../../../subq/decisions/index.ts";
 import type { DecisionsClient } from "../../../subq/decisions/index.ts";
-import { FEED, feedPersonaMachine, postReadRequest, readReelRead } from "../../../facebook/warmup/activities/index.ts";
+import { answerWaitOf, FEED, feedPersonaMachine, postReadRequest, readReelRead } from "../../../facebook/warmup/activities/index.ts";
 import type { ActivityStep, FeedLabel, ReelRead, StepReply } from "../../../facebook/warmup/activities/index.ts";
 import { datasetsDir } from "../../../warmup/persona/index.ts";
 import type { BehaviourProfile, PersonaPack } from "../../../warmup/persona/index.ts";
@@ -81,7 +81,7 @@ export async function runFeedSession(
         context.err(`  → ${step.id}: ${step.action} ${args.join(" ")}  (${step.why})`);
         const quick = SETTLE[step.id] ?? (step.action === "goto" ? SETTLE.goto : step.action === "dwell" ? undefined : SETTLE.click);
         const sent = Date.now();
-        const reply = await context.sendInspect(current, step.action as InspectAction, args, 180_000, undefined, { reaLater: true, ...quick, ...(step.optional ? { findMs: 1500 } : {}) });
+        const reply = await context.sendInspect(current, step.action as InspectAction, args, 180_000, answerWaitOf(step), { reaLater: true, ...quick, ...(step.optional ? { findMs: 1500 } : {}) });
         if (!reply) return { ok: false, error: `no reply from the open browser in 180 s (${current.runDir})` };
         context.err(`    ${reply.ok === false ? "✗" : "✓"} ${step.id} ${reply.ms ?? "?"} ms in the browser, ${Date.now() - sent} ms round trip${reply.error ? `: ${reply.error}` : ""}`);
         const snapshotPath = reply.folder ? join(reply.folder, "snapshot.yml") : null;

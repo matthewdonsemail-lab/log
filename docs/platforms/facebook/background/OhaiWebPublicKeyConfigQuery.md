@@ -89,6 +89,164 @@ Seen 113 time(s) in 31 run(s).
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 377 ms | 3501 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 391 ms | 5445 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 367 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "OhaiWebPublicKeyConfigQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "26996952523264441"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_ohai_configurations": {
+      "ohai_configs": [
+        {
+          "key_id": 162,
+          "public_key": "11f2dd6638aa26bbbe773c077fb729b4a6188a8c698a24793c8c168f26e30a7c",
+          "kem_id": 32,
+          "kdf_id": 1,
+          "aead_id": 1,
+          "expiration_date": "1793139459"
+        },
+        {
+          "key_id": 163,
+          "public_key": "9c248a260f28ed05a9a47c8b75fb03c3ebc59d8e68fda6114c319082d3fbb231",
+          "kem_id": 32,
+          "kdf_id": 1,
+          "aead_id": 1,
+          "expiration_date": "1793751466"
+        }
+      ]
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742733098,
+      "time_at_flush_ms": 1792742733119
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 389 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "30613466",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "OhaiWebPublicKeyConfigQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "26996952523264441",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=30613466"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_ohai_configurations": {
+      "ohai_configs": [
+        {
+          "key_id": 162,
+          "public_key": "11f2dd6638aa26bbbe773c077fb729b4a6188a8c698a24793c8c168f26e30a7c",
+          "kem_id": 32,
+          "kdf_id": 1,
+          "aead_id": 1,
+          "expiration_date": "1793139459"
+        },
+        {
+          "key_id": 163,
+          "public_key": "9c248a260f28ed05a9a47c8b75fb03c3ebc59d8e68fda6114c319082d3fbb231",
+          "kem_id": 32,
+          "kdf_id": 1,
+          "aead_id": 1,
+          "expiration_date": "1793751466"
+        }
+      ]
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742782388,
+      "time_at_flush_ms": 1792742782407
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 583 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "OhaiWebPublicKeyConfigQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "26996952523264441"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_ohai_configurations": {
+      "ohai_configs": [
+        {
+          "key_id": 162,
+          "public_key": "11f2dd6638aa26bbbe773c077fb729b4a6188a8c698a24793c8c168f26e30a7c",
+          "kem_id": 32,
+          "kdf_id": 1,
+          "aead_id": 1,
+          "expiration_date": "1793139459"
+        },
+        {
+          "key_id": 163,
+          "public_key": "9c248a260f28ed05a9a47c8b75fb03c3ebc59d8e68fda6114c319082d3fbb231",
+          "kem_id": 32,
+          "kdf_id": 1,
+          "aead_id": 1,
+          "expiration_date": "1793751466"
+        }
+      ]
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742814264,
+      "time_at_flush_ms": 1792742814285
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

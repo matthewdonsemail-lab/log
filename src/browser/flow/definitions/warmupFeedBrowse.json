@@ -7,6 +7,17 @@
       "id": "s01_goto",
       "action": "goto",
       "url": "https://www.facebook.com/",
+      "answers": [
+        {
+          "call": "MAWVerifyThreadCutover_ContactCapabilities2Query",
+          "says": [
+            {
+              "answer": "data.user.id",
+              "home": "uid"
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "01_gotoHttpsWwwFacebook",
         "ms": 51188,
@@ -44,6 +55,18 @@
         "4-7",
         "300-600"
       ],
+      "answers": [
+        {
+          "call": "CometNewsFeedPaginationQuery",
+          "says": [
+            {
+              "answer": "first.data.viewer.news_feed",
+              "present": true
+            }
+          ],
+          "ifSent": true
+        }
+      ],
       "recorded": {
         "step": "03_scroll47X",
         "ms": 31453,
@@ -59,6 +82,18 @@
       "id": "s04_gotomarketplace",
       "action": "goto",
       "url": "https://www.facebook.com/marketplace/",
+      "answers": [
+        {
+          "call": "page /marketplace/",
+          "says": [
+            {
+              "answer": "fields.buy_location.display_name",
+              "home": "city",
+              "code": "marketplaceLocationWrong"
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "04_gotoHttpsWwwFacebook",
         "ms": 23610,

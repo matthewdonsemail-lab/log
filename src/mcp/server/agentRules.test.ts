@@ -32,13 +32,13 @@ describe("AGENTS.md in the MCP server", () => {
     expect(unmapped).toEqual([]);
   });
 
-  test("the instructions reach the client at initialize, rule 73 first and rule 30 second among the principles", async () => {
+  test("the instructions reach the client at initialize, rule one first and rule 30 second among the principles", async () => {
     const client = await connected();
     const instructions = client.getInstructions() ?? "";
     expect(instructions).toBe(SERVER_INSTRUCTIONS);
     const principles = instructions.split("\n").filter((l) => /^\d+\./.test(l));
-    expect(principles[0]).toContain("always read Facebook's internal API answers");
-    expect(principles[0]).toContain("(rule 73)");
+    expect(principles[0]).toContain("if we don't know, we do this");
+    expect(principles[0]).toContain("(rules 73-76)");
     expect(principles[1]).toContain("do it completely");
     expect(instructions).toContain(AGENTS_URI);
     await client.close();

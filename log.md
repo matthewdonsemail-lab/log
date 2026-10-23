@@ -5340,6 +5340,539 @@ What changed: rule 73 is the number one rule of the stack: always read Facebook'
 Why: matt: "It just never reads them" this here needs to become a rule "IT MUST ALWAYS READ THEM", the number one rule of all of the stack, the internal decision-making factor of what and when something is relevant, the deterministic factor of the system. On 2026-10-22 Bethlehem's warm-up loaded /marketplace/create/item twice; its HTML said sell_location Barranco, 15063, PE both times, the warm-up passed, and the prune deleted it.
 Checked: the agentRules test now checks that the first principle in the instructions is rule 73 and the second is rule 30, and that join's description cites 73. `bun run docs:build` rebuilt the README, and `bun run check` passes with 860 tests. Nothing in the browser code changed; the reads are #35's work.
 
+## 2026-10-23 03:38Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `scripts/checks/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `skills/inspect/SKILL.md`: edited
+- `src/agentHooks/pageState/index.ts`: changed function findingOf
+- `src/agentHooks/pageState/types.ts`: changed interface Finding
+- `src/browser/inspect/helpers/browserStates.ts`: added function readingAt · changed function readOpenBrowsers
+- `src/browser/inspect/types.ts`: changed interface CurrentInspect, interface BrowserAt
+- `src/cli/inspect/index.ts`: added function stepAccountOf, function readInspectStep · changed const INSPECT_USAGE, const INSPECT_INPUT, const inspectCommand
+- `src/cli/runner/index.ts`: changed function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `src/mcp/server/server.test.ts`: changed test "a typed tool's schema has its fields, their kinds and what is required, and no args"
+- `src/subq/decisions/types.ts`: changed interface DecisionRequest
+- `src/subq/stepReading/client.ts`: added const REPO, const MAX_IMAGE_BYTES, interface ReplyLine, interface ReadStepOptions, function readJson, function knownRequests, function repliesOf, function exitOf, function mouseOf, function screenshotOf, function earlierOf, function readStep, function latestReading
+- `src/subq/stepReading/helpers/collate.ts`: added interface CollateInput, function bundleOf, function bundleChars, function fitBundle, function stateOf
+- `src/subq/stepReading/helpers/decide.ts`: added function decisionOf
+- `src/subq/stepReading/helpers/exchangeLines.ts`: added const NOISE_KEYS, const WRAPPERS, const MAX_VALUE_CHARS, const PER_ITEM, function show, function leavesOf, function leafText, function sentForLine, function exchangeLine, function changedSent, function exchangeTimeline
+- `src/subq/stepReading/helpers/exchangesOf.ts`: added interface HarHeader, interface HarEntry, const SKIPPED_DESTS, const SKIPPED_MIME, function trimValue, function header, function parseJson, function paramsOf, function sentOf, function answerOf, function jsonFieldAt, function documentAnswerOf, function nameOf, function kindOf, function exchangesOf
+- `src/subq/stepReading/helpers/index.ts`: added export from "./collate", export from "./decide", export from "./exchangesOf", export from "./loud", export from "./questions", export from "./exchangeLines"
+- `src/subq/stepReading/helpers/loud.ts`: added const NOUL_SAYS, const pct, function answerLine, function meaningOf, function loudText, function timelineText
+- `src/subq/stepReading/helpers/questions.ts`: added const EXCHANGE_MEANINGS, const STEP_MEANINGS, function goalText, function coreQuestions, function exchangeKey, function questionsOf
+- `src/subq/stepReading/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/subq/stepReading/stepReading.test.ts`: added const T0, const at, function api, const offered, const WEST_BANK_HAR, const KNOWN, const ACCOUNT, const TAKEN, const GOAL, function bundle, function recordedStep, const ANSWERS, test "API calls and page loads are kept with what was sent and what came back; code, media, cross-site and secrets are not", test "the timeline shows what went in and what came back, and only what changed on a repeated call", test "a known page state decides it; a step that did nothing is noChange; anything else is undecided, with why", test "the core questions about meaning, then one per internal API call, never more than 128", test "fitting to the context window drops the largest answers first and keeps the small ones that carry the place", test "an undecided step is collated and read by SubQ, and said loudly with the data that went in and out", test "a known page state is not sent to SubQ", test "a SubQ failure is said loudly, never guessed past", test "log inspect read prints the loud reading and the timeline"
+- `src/subq/stepReading/types.ts`: added const SUBQ_STEP_MODEL, const EXCHANGES_FILE, const READING_FILE, const MAX_QUESTIONS, const MAX_STATE_CHARS, const MAX_STRING_CHARS, const MAX_LIST_ITEMS, const MAX_DEPTH, const MAX_PAGE_TEXT_CHARS, const MAX_DOCUMENT_FIELD_CHARS, const SECRET_PARAMS, const ANSWER_SECRETS, const DOCUMENT_FIELDS, const CODE_LOADING_PATHS, type ExchangeKind, interface StepExchange, interface StepAccount, interface StepTaken, interface EarlierStep, interface StepBundle, type StepDecision, interface StepAnswer, interface StepReading
+
+What changed: every `log inspect` step now reads its own internal API, and a step no known state names is read by SubQ (rule 74, `src/subq/stepReading`). After each `inspect do`, `readStep` takes the step's calls out of its `network.har` by code into `exchanges.json` and `exchanges.md`, collates the bundle (the session's `--goal`, the account from Twenty with the proxy's exit, what we did with the mouse and how long it took, every call, the snapshot text with typed fields redacted, the earlier steps and their readings), decides it (`decisionOf`: a known page state or a step that triggered nothing is decided; anything else is not, with why), and for an undecided step asks SubQ's Decisions API (`subq-snap-1.1`, checked against `/v1/models` for our key) ten questions about what it means plus one per call, up to 128, with the screenshot. The reading is printed first in the step's result (`>>> UNKNOWN STATE`, then each answer, then the timeline), saved as `reading.json` and `readingState.json`, and the page-state hook puts it into the agent's context (`kind: reading`). `log inspect read <stepFolder>` (MCP `inspectRead`) reads a recorded step again; `--goal` is on `start` and `do`. The timeline is what let SubQ say what caused the unknown state, and these are the changes to it: (1) calls are told from page loads by the browser's `sec-fetch-dest` header, because Facebook labels GraphQL answers `text/html` and the HAR has no resource type; (2) code loading and cross-site media are left out (`/static_resources`, `/ajax/bootloader-endpoint`, `/ajax/bulk-route-definitions`, `/ajax/route-definition`, `/btmanifest`, `rsrc.php`, fbcdn video pieces): the West Bank step went from 67 calls and 516K characters, with the search answers dropped to fit, to 36 calls and 86K with nothing dropped; (3) fitting to SubQ's context drops the largest answers first, where it used to drop every known routine answer, the place search included; (4) a page load is read for the platform's embedded fields (the Marketplace page said `buy_location` "Lima, Peru" before anything was typed); (5) each call is one line, seconds from the step's first request, method, name, status, duration, NEW when undocumented, then `sent:` and `answered:` with their values, with settings that never matter dropped and wrappers shortened; (6) a repeated call shows only what changed since its last call, so the query reads letter by letter with each answer ("B" gave San Borja, Peru; "Bethl" gave Bethlehem, Pennsylvania; "Bethlehem, PA" gave only Bethlehem, West Bank and Bethlehem, Free State); (7) lists show every item, three values each, so every place offered is in the line; (8) the same timeline goes into SubQ's state (`internalApiTimeline`), the loud lines and the output. Also: `DecisionRequest` takes a `model`; `CommandContext.decisions` lets tests give a stand-in; rule 73's status says inspect steps now read their calls; the inspect skill has a reading section; the naming check allows the browser's `sec-fetch-*`, `same-/cross-origin|site` values and `subq-snap-1.1`.
+Why: matt: in the inspect flow, when a step gets to a state we can't decide, collate the internal API of that step with the front end (the screenshot, the page), the account, the platform, the earlier steps, what we did and how long it took, and the outline goal; ask SubQ loads of questions about what it means, not the next state; and say it loudly into the context of the agent doing the inspect, so all of it works together instead of in silos, on any platform. Then: "it's not showing the data going in and going out" (issue #35's comment on the four ways), which is why each call now carries its sent and answered values.
+Checked: 9 new tests (`stepReading.test.ts`): calls and page loads kept with what was sent and answered, code, media, cross-site, cookies and tokens left out; the timeline shows the West Bank answers and only what changed on a repeated call; decided by a known page state or by nothing happening, undecided with its reasons; the ten core questions plus one per call, capped at 128; fitting drops the largest answer and keeps the place; a recorded step read with a stand-in SubQ writes `exchanges.json`, `exchanges.md`, `reading.json` and `readingState.json`, sends `subq-snap-1.1` with the goal, the account's exit, the mouse, the earlier step and the redacted page, and the hook finds it as a reading; a known checkpoint page isn't sent; a SubQ failure is said and never guessed past; `log inspect read` prints the reading and the timeline. Live, on a copy of the recorded West Bank step (20261022T105341 step 04), two real SubQ calls (about 40,000 and 49,000 input tokens): wrongResult 93%, the goal NOT reached 94%, something does not fit the account 95%, our action caused it 94%, and it flagged the Marketplace page's `buy_location` Lima, Peru (99%), the search for "Bethlehem, PA" answering only West Bank and Free State (61%), and the save at 31.7031, 35.1956 (55%). `bun run check` passes with 869 tests. Not run yet: a live `inspect do` in an open browser, which needs a launch.
+
+## 2026-10-23 03:56Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `skills/inspect/SKILL.md`: edited
+- `src/agentHooks/pageState/index.ts`: added interface GoalNote, function goalNotesOf · changed function hookReply
+- `src/browser/inspect/client.ts`: added const GOAL_EVENTS_FILE, const GOAL_FINDINGS_FILE, function runReadings, function goalEvents, function goalProgress, function addGoalEvent
+- `src/browser/inspect/goal.test.ts`: added const GOAL, function reading, const WRONG, const MORE, const REACHED, const finding, test "a goal no reading has met is open; a step that went wrong needs its P.E.E. finding", test "a step that only needs more steps asks for no finding, and the goal stays open until a reading says it is met", test "once reached, every finding must say how it was fixed; then the goal stops holding the turn", test "what only a person can clear never holds the turn; it is said to matt", test "the Stop hook holds the turn while the goal is open, once per unchanged state", test "a finding is written from the step reading, then fixed, and the P.E.E. file and the hook follow"
+- `src/browser/inspect/helpers/browserStates.ts`: changed function readOpenBrowsers
+- `src/browser/inspect/helpers/goal.ts`: added const GOAL_MET_AT, const PERSON_AT, const WENT_WRONG, function noulOf, function choiceOf, function foldFindings, function wentWrong, function evidenceOf, function goalProgressOf, function goalMark, const quote, function goalLine, function peeMarkdown
+- `src/browser/inspect/helpers/index.ts`: added export from "./goal"
+- `src/browser/inspect/types.ts`: added interface GoalFinding, type GoalEvent, type GoalStatus, interface GoalProgress · changed interface BrowserAt
+- `src/cli/inspect/index.ts`: added function goalText, function pickSession · changed const INSPECT_USAGE, const INSPECT_INPUT, function readInspectStep, const inspectCommand
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+
+What changed: an inspect session's goal now drives the agent hook (rule 75). `goalProgressOf` (`src/browser/inspect/helpers/goal.ts`) works out, from the run's step readings and its `goalFindings.jsonl`, whether the goal is `open` or `reached` (a reading's `goalMet` at least 0.5), which step went wrong and has no finding yet (its reading's meaning is wrongResult, stoppedByPlatform or unclear, or SubQ failed), which findings have no fix, and whether only a person can clear the latest step. `goalLine` turns that into one line and says whether it holds the turn. `readOpenBrowsers` adds each session's progress, and `hookReply` adds a goal note per session: on Stop it blocks while the goal is open, a finding is missing or a fix isn't written; on the other events it puts the line into context when it changes. The same unchanged state is held only once (its `goalMark`), and a person's state is said to matt and never blocks. Findings are P.E.E.: `log inspect finding --step --point --explain [--evidence]` quotes the step's reading as the evidence (meaning first, then the calls SubQ flagged, strongest first, with what was sent and what came back), and `--fixes <n> --fix` records how it was fixed. `log inspect goal [--set]` shows or sets the goal and prints the findings; each write renders `goalFindings.md`. `inspect do` prints the goal line (`>>> GOAL:`) after the reading. Rule 75, its MCP instruction and the inspect skill's section say so; the MCP gains `inspectGoal` and `inspectFinding` from the new forms.
+Why: matt: pair the loud events with hooks; if the goal hasn't been done, trigger a Claude hook that makes the model progress and continue until the goal is completed, with the findings along the way documented: what caused it, what the issue was, how it was fixed, the way P.E.E. works (Point, Evidence, Explain).
+Checked: 6 new tests (`goal.test.ts`): an open goal with a wrong step asks for its P.E.E. finding with the command; a step that only needs more steps asks for none; once reached, every finding must say its fix, then the goal stops holding the turn and `goalFindings.md` has Point, Evidence, Explain and Fix; a person's state never holds the turn; the Stop hook blocks, lets an unchanged state end the turn the second time, blocks again when the state moves, and stops blocking when the goal is reached and fixed; `log inspect goal --set` and `finding` write and fix a finding from a real reading. Live: the real `scripts/hooks/pageState.ts` on a copy of the West Bank run (20261022T105341) held the Stop with the known partner-listings page state and the goal's missing finding for step 04, quoting the Marketplace page's buy_location Lima, Peru (99%) and the Lima search first, and a second Stop on the same state let the turn end. `bun run check` passes with 875 tests.
+
+## 2026-10-23 04:02Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `src/mcp/server/agentRules.test.ts`: added test "the instructions reach the client at initialize, rule one first and rule 30 second among the principles" · removed test "the instructions reach the client at initialize, rule 73 first and rule 30 second among the principles"
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS
+
+What changed: rule one of the stack is now "if we don't know, we do this", in seven steps: read the internal API (what we sent and what came back, the answers decide), collate everything about the moment, ask SubQ what it means, say it loudly, keep going until the goal is reached, write what went wrong as P.E.E. with how it was fixed, and name the state. It replaces the top section of AGENTS.md (rule 73's "always read" is its first step), opens README.md above everything else with the inspect commands that do it, and is the first MCP instruction (rules 73-76), with rule 30 second. Rule 76 has its dated line; `RULES_REVIEWED_THROUGH` is 76, and the agentRules test checks the first principle is rule one.
+Why: matt: "make it so that it's the number one rule of the AGENTS.md and README.md that if we don't know we do this."
+Checked: AGENTS.md and README.md each have one "Rule one" section, first; `bun run docs:build` is up to date (the README's generated section is unchanged); `bun run check` passes with 875 tests, the agentRules test included.
+
+## 2026-10-23 05:07Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `src/browser/inspect/client.ts`: added function lastStepOf, function stepBefore · changed function goalProgress, function addGoalEvent
+- `src/browser/inspect/goal.test.ts`: added test "a goal set later counts only the readings after it was set, so a step that reached an earlier goal does not reach it" · changed test "a finding is written from the step reading, then fixed, and the P.E.E. file and the hook follow"
+- `src/browser/inspect/helpers/goal.ts`: changed function goalProgressOf
+- `src/browser/inspect/types.ts`: changed interface CurrentInspect
+- `src/cli/inspect/index.ts`: changed function goalText, function readInspectStep, const inspectCommand
+- `src/subq/stepReading/stepReading.test.ts`: added test "the create page says whether the account may post (marketplace_new_seller_can_post_item) and a feed listing whether it is a partner listing, read from the page itself"
+- `src/subq/stepReading/types.ts`: changed const DOCUMENT_FIELDS
+
+What changed: a goal set with `log inspect goal --set` records the step it was set after (`goalSince`), and only readings after it count, so a new goal is no longer "reached" by a step that reached the one before (`goalProgressOf(..., since)`, `lastStepOf`, `stepBefore`; a per-step `do --goal` counts that step only). The Facebook page reads also take `marketplace_new_seller_can_post_item` (the create page's may-post flag) and a listing's `product_details_type`, `partner_brand_name` and `partner_listing_location`.
+Why: matt's inspect run on Bethlehem (20261023T045453): the second and third goals were said reached at step 01 (goal met 98%, the first goal's "Limit reached"), while SubQ said they were not. `marketplace_new_seller_can_post_item` went true (2026-10-22) to false today with `marketplace_listing_creation_limit_reason` null on both days, so it is the posting-limit signal SubQ needs; Today's picks were European partner listings (Catawiki, buycycle-es) that SubQ missed on the Marketplace page because these fields weren't read.
+Checked: new tests: a later goal ignores an earlier reached step; the create page HTML gives the may-post flag and the partner fields. `bun run check` passes with 877 tests.
+
+## 2026-10-23 05:11Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuShortcutsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceRecordPDPDwellTimeMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSetProductItemSeenStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsUpdateSeenStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/FeedComposerCometRootQuery.md`: edited
+- `docs/platforms/facebook/background/FriendingCometFriendRequestsRootQuery.md`: new file
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MWQuickPromotionThreadlistBannerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPC2CMediaViewerWithImagesQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPRightColumnAdsQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYouSellingUpsellCardQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerAttributesQuery.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/profile/ProfileCometHeaderQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTimelineFeedQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTimelineListViewRootQuery.md`: edited
+
+What changed: the Facebook request docs were rebuilt with the 2026-10-23 Bethlehem inspect run (`log facebook capture --docs`): every request's facts gain that run's rows, rea read 5 new slices, and `FriendingCometFriendRequestsRootQuery` (the home page's friend requests panel, first seen on the home feed step) has its doc and reasoning.
+Why: the pre-push docs gate refused the push because that run was newer than the docs (rule 27).
+Checked: `bun run check:facebookClientDocs`: 217 requests documented, rea read every GraphQL slice.
+
+## 2026-10-23 05:24Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometNewsFeedPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometUFIFeedbackReactMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/FeedComposerCometRootQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `skills/inspect/SKILL.md`: edited
+- `src/cli/inspect/index.ts`: changed function readInspectStep
+- `src/subq/stepReading/client.ts`: changed interface ReadStepOptions, function earlierOf, function readStep
+- `src/subq/stepReading/helpers/collate.ts`: added function savedOf, function goalSoFarOf · changed interface CollateInput, function bundleOf, function stateOf
+- `src/subq/stepReading/helpers/questions.ts`: changed function coreQuestions
+- `src/subq/stepReading/stepReading.test.ts`: added test "what the platform saved is counted over every step since the goal was set, this one included, and only mutations that answered OK", test "SubQ is asked whether the whole goal is reached by now, with the count in its state" · changed test "an undecided step is collated and read by SubQ, and said loudly with the data that went in and out"
+- `src/subq/stepReading/types.ts`: added interface GoalSoFar · changed interface EarlierStep, interface StepBundle
+
+What changed: SubQ judges an inspect goal across the session, not one step. Each earlier step it is given now carries what the platform saved in it (`saved`: mutations that answered 2xx with no errors, `savedOf`) and whether it counts for the goal (`forGoal`, after the goal was set); the bundle and SubQ's state carry `goalSoFar` (`goalSoFarOf`: steps since the goal and each saved mutation counted, this step included); and the goal question asks whether the whole goal is reached by now, a goal for a number of things needing that many saved in total. `readStep` takes the goal's `since` from `inspect do`. The inspect skill says so, and the Facebook request docs take the likes run.
+Why: matt: "make SubQ judge a goal across the session's steps (e.g. count the saved likes so far), not one step alone." On Bethlehem's likes run (20261023T051540) the goal "Like 2 to 3 posts" was said reached at the first like (53%), because SubQ was asked whether that one step reached it.
+Checked: new tests (the count over steps since the goal, only mutations that answered OK; SubQ's question and state). Read again by SubQ on the likes run: step 03 (1 like saved) now "not reached" (100%), step 05 (2 saved) "reached" (78%). `bun run check` passes with 879 tests; the docs gate passes.
+
+## 2026-10-23 05:38Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuShortcutsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceInboxBuyerTabViewContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceInboxContentContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceInboxSellerTabThreadViewContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceInboxSetPreferredViewerRoleMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceLeftRailNavigationContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceNUXUpdateStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceNotificationsListContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceNotificationsNavRootContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplacePartnerSelectorContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceRecordPDPDwellTimeMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSetBrowseRadiusMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSetProductItemSeenStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceStatusContentContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceYouFeedItemCommentListQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceYouSellingFastContentContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometMessagingJewelDropdownEBUpsellContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNewsFeedPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsUpdateSeenStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometUFIFeedbackReactMutation.md`: edited
+- `docs/platforms/facebook/background/EBFetchBackupIdsSharedFragmentQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/FeedComposerCometRootQuery.md`: edited
+- `docs/platforms/facebook/background/FriendingCometFriendRequestsRootQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MWChatEncryptedBackupsUpsellMessengerInboxQuery.md`: edited
+- `docs/platforms/facebook/background/MWQuickPromotionThreadlistBannerQuery.md`: edited
+- `docs/platforms/facebook/background/MWThreadListQPQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceBannerContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometPartnerListingDialogContentMutation.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometPartnerListingDialogContentQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceDeleteUtilsQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPC2CMediaViewerWithImagesQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPRightColumnAdsQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceSearchAddressDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYouSellingUpsellCardQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYourListingDialogQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/VestaServerGraphQLRegisterProviderBeginRegisterMutation.md`: edited
+- `docs/platforms/facebook/background/VestaServerGraphQLRegisterProviderFinishRegisterMutation.md`: edited
+- `docs/platforms/facebook/background/VestaServerGraphQLRegisterProviderInitQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBz.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/sharedUserPreferences.md`: edited
+- `docs/platforms/facebook/background/useMWEBAutoEBLogHighFrictionUpsellOnVisibleMutation.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/listingForm/CometMarketplaceSellingRootContentQuery.md`: edited
+- `docs/platforms/facebook/listingForm/MarketplaceComposerAIPricingDialogImplSimilarListingsQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useListingShippableEligibilityCheckQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerAttributesQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerBISNumberEligibilityRefetchQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerPricePredictionQuery.md`: edited
+- `docs/platforms/facebook/location/CometMarketplaceSetBuyLocationMutation.md`: edited
+- `docs/platforms/facebook/location/MarketplaceBuyLocationDialogLocationUrlQuery.md`: edited
+- `docs/platforms/facebook/location/MarketplaceBuyLocationDialogQuery.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/photos/ajaxReactComposerAttachmentsPhotoUpload.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometHeaderQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTimelineFeedQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTimelineListViewRootQuery.md`: edited
+- `docs/platforms/facebook/publishing/CometMarketplaceBoostListingPostPublishNuxDialogQuery.md`: edited
+- `docs/platforms/facebook/publishing/useCometMarketplaceListingCreateMutation.md`: edited
+- `skills/runs/SKILL.md`: edited
+- `src/browser/runStore/client.ts`: added const KEPT_RUN_FILES, const KEPT_STEP_FILES, const CUT_EXCHANGES, const dirsIn, function stepHarsOf, function backfillExchanges, function backfillAll, function keepReadings · changed function pruneRuns
+- `src/browser/runStore/index.ts`: changed export from "./types.ts"
+- `src/browser/runStore/runStore.test.ts`: added const LIKE_HAR, test "every step still on disk gets its exchanges taken out of its HAR, inspect step folders and settle cuts alike, and the prune keeps them with the readings and goal findings", test "a run whose step HAR cannot be read is not pruned, so nothing is lost"
+- `src/browser/runStore/types.ts`: added interface StepHar, interface Backfill
+- `src/cli/runs/index.ts`: changed const RUNS_USAGE, const RUNS_INPUT, const runsCommand
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/rea/facebookClient/client.ts`: added function withExchanges · changed function requestsInRun
+- `src/rea/facebookClient/factsStore.test.ts`: added test "the newest answer per step is kept in the store, past the run, and rendered in the doc with signed link tokens taken out", test "an answer too big for the doc is cut by depth, never dropped"
+- `src/rea/facebookClient/helpers/factsStore.ts`: added const MAX_SAMPLES, const MAX_SAMPLE_CHARS, const SIGNED_URL, function unsigned, function shallower, function fitSample, function samplesOf, const block, function renderSamples · changed interface StoredFacts, function foldOperation, function renderStoredSightings
+- `src/rea/facebookClient/types.ts`: added interface OperationSample · changed interface OperationSighting
+
+What changed: what Facebook's client really sent and got back is now kept and shown. (1) Each request's doc gets "What it sent and what came back": the newest 3 real exchanges, one per step, taken from the run's own recording (`withExchanges` pairs each sighting with its exchange from `exchangesOf`), with secrets and signed link tokens out and each cut by depth to 6,000 characters (`fitSample`, `samplesOf`, `renderSamples`). They are kept in `clientFacts.json` (`StoredFacts.samples`), so a doc keeps them after its runs are pruned. (2) The prune first takes every step's exchanges out of its HAR (`backfillExchanges`, `stepHarsOf`: inspect step folders and settle cuts) and keeps a run whose step HAR can't be read. It now keeps every inspect step's exchanges.json, reading.json and readingState.json, every settle cut's .exchanges.json, and goalFindings.md and .jsonl (`keepReadings`). (3) `log runs exchanges` does the backfill for every run on disk (MCP `runsExchanges`). The runs skill, README and the runs command's rules (73) say so.
+Why: matt: "put each request's real sent and answered data into its doc (folded into clientFacts so it survives the prune), make the prune keep every step's exchanges.json, reading.json, readingState.json and goalFindings.md, and backfill exchanges for every step still on disk before anything is pruned." The docs held only field names and timings, the prune deleted the answers rule 73 says are kept, and only the 11 inspect steps since #36 had their answers taken out.
+Checked: new tests (backfill for both step layouts, the prune keeping them and refusing a run with an unreadable step HAR; samples newest per step, kept across folds, signed tokens out, cut by depth). Ran live: `log runs exchanges` wrote 186 of 197 steps across 15 runs (11 already had them, none failed); `log facebook capture --docs` gave 90 of 219 request docs their real exchanges (the rest were only seen in runs pruned before today). `bun run check` passes with 883 tests; the docs gate passes.
+
+## 2026-10-23 05:44Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `src/browser/runStore/client.ts`: added const TAKEN_OUT · changed function newestChange
+- `src/browser/runStore/runStore.test.ts`: changed test "every step still on disk gets its exchanges taken out of its HAR, inspect step folders and settle cuts alike, and the prune keeps them with the readings and goal findings"
+
+What changed: a run's "still being written" check (`newestChange`) no longer counts the exchanges files log-cli takes out of its HARs (`exchanges.json`, `<step>.exchanges.json`), only the files the run itself writes.
+Why: matt: "yeah prune that". After `log runs exchanges` backfilled every run, 12 of the 15 were kept as still being written for 10 minutes, though their own files were from the day before: our backfill had touched them.
+Checked: the backfill test now checks the run may go right after it. Then `log runs prune --apply` pruned all 15 runs (6.0 GB, disk free 2.4 GB to 8.4 GB), keeping 196 inspect step exchanges, 11 readings and readingStates and 2 goalFindings in 22 MB. The run store tests pass.
+
+## 2026-10-23 06:09Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/diagrams/pageStates.mmd`: edited
+- `docs/platforms/facebook/background/CometUFIFeedbackReactMutation.md`: edited
+- `skills/agentHooks/SKILL.md`: edited
+- `skills/warmup/SKILL.md`: edited
+- `src/agentHooks/pageState/index.ts`: changed function findingOf
+- `src/browser/flow/helpers/pageState.ts`: added function answered, const mayNotPost, const partnerListings · changed interface StateRule, interface StateContext, const PAGE_STATES, function pageStateOf, interface StateAt, const RESOLVE_CALLS
+- `src/browser/flow/pageState.test.ts`: added test "Limit reached on the create page is decided by its answer: marketplace_new_seller_can_post_item false (Bethlehem, 2026-10-23), true the day before", test "partner listings on Marketplace are decided by the answer (product_details_type PARTNER_LISTING), never by the screen alone"
+- `src/browser/inspect/helpers/browserStates.ts`: changed function readOpenBrowsers, function browserView
+- `src/browser/inspect/types.ts`: changed interface BrowserAt
+- `src/cli/warmup/helpers/feedRun.ts`: changed function runFeedSession
+- `src/cli/warmup/helpers/personaRun.ts`: changed function runPersonaSession
+- `src/cli/warmup/helpers/platformActivity.ts`: changed function actor
+- `src/facebook/warmup/activities/helpers/checkStep.ts`: changed interface StepReply, function checkStep
+- `src/facebook/warmup/activities/helpers/feed.ts`: changed const FEED
+- `src/facebook/warmup/activities/helpers/index.ts`: added export from "./stepAnswers"
+- `src/facebook/warmup/activities/helpers/reel.ts`: changed const REEL
+- `src/facebook/warmup/activities/helpers/stepAnswers.ts`: added const ANSWER_WAIT_MS, const answersAt, function answerWaitOf, function valueAt, const shown, function checkOne, function answerIssue
+- `src/facebook/warmup/activities/types.ts`: added interface AnswerCheck, interface AnswerExpect · changed interface StepExpect
+- `src/facebook/warmup/activities/warmup.test.ts`: added test "the answer is read from the step's own recording when the reply carries none, and kept as exchanges.json" · changed test "its steps in Listaro order, each saying what it must achieve; the like only with --likes (rule 8)"
+- `src/subq/stepReading/client.ts`: changed function readStep
+- `src/subq/stepReading/helpers/index.ts`: added export from "./stepExchanges"
+- `src/subq/stepReading/helpers/stepExchanges.ts`: added function stepExchangesAt
+
+What changed: (1) Two page states are named and decided by Facebook's answers: `marketplaceCreateLimitReached` (the create page's HTML says `marketplace_new_seller_can_post_item: false`, a person's state: nothing to press, matt decides) and `marketplacePartnerFeed` (an answer says `product_details_type: PARTNER_LISTING`, resolved by reading `buy_location` from the Marketplace page's answer). A state can carry an `answer` test on the step's exchanges; with the answers there they decide, and its text is used only without them. The hook (`readOpenBrowsers`, `findingOf`) and SubQ's reading pass each step's exchanges in, read from or taken out of its recording by `stepExchangesAt`. (2) The warm-up likes (Reels `like`, feed `likePost`) pass on Facebook's answer, not the "Remove Like" button: `StepExpect.answers` names the call and what its answer must say; the runners wait for the call (`answerWaitOf`, 15 s), and `checkStep` passes only when `CometUFIFeedbackReactMutation` answers 2xx, no errors, with `viewer_feedback_reaction_info.id` the reaction we sent (`answerIssue`). AGENTS.md's rule-one status and rule 73's status, the warmup and agentHooks skills, the like's request doc and the README follow.
+Why: matt: "Name today's two states (Limit reached, partner listings) as known page states, then make the warm-up flows read Facebook's answers, starting with the Reels like." Rule one's step 7 says to name a state once found, and rule 73 says the answers decide, never the screen.
+Checked: the may-post flag in the kept answers was true on 20261022T105341 and 20261022T110738 and false on 20261023T045453, and step 03 of that run answered PARTNER_LISTING twice; the tests are built from those. New tests: both states from their answers, and not from the screen alone; each like passes only with the reaction we sent saved and fails with no answer, a 500 or nothing saved; the answer is read from the step's own recording. `bun run check` passes with 888 tests; the docs gate passes.
+
+## 2026-10-23 06:24Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/platforms/facebook/flows/warmupCreateAccessCheck.md`: edited
+- `docs/platforms/facebook/flows/warmupFeedBrowse.md`: edited
+- `docs/platforms/facebook/flows/warmupMarketplaceBrowse.md`: edited
+- `docs/platforms/facebook/flows/warmupMessagesVisit.md`: edited
+- `docs/platforms/facebook/flows/warmupSellingVisit.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `skills/warmup/SKILL.md`: edited
+- `src/browser/flow/answers.test.ts`: added const BETHLEHEM, const page, const createPage, const flow, const step, test "the create page: Barranco, Peru (2026-10-22) is the wrong place, may-post false (2026-10-23) is no posting, Bethlehem US and true passes", test "Marketplace: buy_location must be the account's home city; Lima, Peru (2026-10-22) is not", test "a redirect before the page counts only if no 2xx answer follows", test "without the account's home in Twenty, a home check is skipped, never failed", test "the step waits for its first internal API call, not for a page load", test "every warm-up stage flow's page loads and calls are checked, and the flow doc says what each must answer", test "recording a flow again keeps the checks of the steps it had"
+- `src/browser/flow/client.ts`: added const sameStep, function keepAnswers · changed function saveFlow
+- `src/browser/flow/definitions/warmupCreateAccessCheck.json`: edited
+- `src/browser/flow/definitions/warmupFeedBrowse.json`: edited
+- `src/browser/flow/definitions/warmupMarketplaceBrowse.json`: edited
+- `src/browser/flow/definitions/warmupMessagesVisit.json`: edited
+- `src/browser/flow/definitions/warmupSellingVisit.json`: edited
+- `src/browser/flow/helpers/answerFixture.ts`: added function put, function valueFor, function answeringFixture
+- `src/browser/flow/helpers/answers.ts`: added const ANSWER_WAIT_MS, function valueAt, function answerWait, const shown, function homeOf, function checkOne, function answerIssueOf, function answersIssue
+- `src/browser/flow/helpers/index.ts`: added export from "./answers", export from "./answerFixture"
+- `src/browser/flow/helpers/renderFlowDoc.ts`: added function checkText · changed function renderFlowDoc
+- `src/browser/flow/index.ts`: changed export from "./types"
+- `src/browser/flow/types.ts`: added interface AnswerCheck, interface AnswerExpect, interface AnswerAccount, interface AnswerIssue · changed interface FlowStep
+- `src/cli/flow/helpers/flowSession.ts`: changed function runFlowInSession
+- `src/cli/flow/index.ts`: changed function runFlow
+- `src/cli/host/helpers/hostActors.ts`: changed function hostActors
+- `src/cli/warmup/helpers/stages.ts`: changed function runWarmup
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/facebook/warmup/activities/helpers/checkStep.ts`: changed function checkStep
+- `src/facebook/warmup/activities/helpers/feed.ts`: changed const FEED
+- `src/facebook/warmup/activities/helpers/reel.ts`: changed const REEL
+- `src/facebook/warmup/activities/helpers/stepAnswers.ts`: added export from "../../../../browser/flow/helpers/answers" · changed function answerWaitOf · removed const ANSWER_WAIT_MS, function valueAt, const shown, function checkOne, function answerIssue
+- `src/facebook/warmup/activities/machine.ts`: changed const warmupActivityMachine, const reelPersonaMachine, const feedPersonaMachine
+- `src/facebook/warmup/activities/types.ts`: added export from "../../../browser/flow/types" · removed interface AnswerCheck, interface AnswerExpect
+- `src/facebook/warmup/activities/warmup.test.ts`: added test "the home feed passes only when FeedComposerCometRootQuery answers this account as the one signed in", test "the steps checked are the ones whose recordings show a call that answers them; dwells and the rest have none to read" · changed function run
+- `src/warmup/persona/persona.test.ts`: changed test "the session: the feed, each post into view then read, then Marketplace and listings; without --likes no like"
+
+What changed: every warm-up step that makes a call is decided by Facebook's answer. Answer checks are shared (`src/browser/flow/helpers/answers.ts`: `answersIssue`, `answerWait`; types `AnswerExpect`, `AnswerCheck`, `AnswerAccount` in flow types): a check can need a value we sent, a fixed value, a field present, or the account's home city, country or id, and names the error code it raises; the last 2xx answer of the call counts (a redirect before it doesn't). Flow steps carry `answers`: `runFlowInSession` waits for the first call, reads the step's exchanges and fails the step with the check's code, with the account's home from `log flow run`, the stage runner and the host. The five stage flows got checks written from their recordings and request docs: the create page (`marketplace_new_seller_can_post_item` true, else `marketplaceMayNotPost`; `sell_location` country and city the home, else `marketplaceLocationWrong`), Marketplace (`buy_location.display_name` names the home city), the home feed (`FeedComposerCometRootQuery` answers the account's id), the paging scrolls, the listing (`MarketplacePDPContainerQuery`), Selling and Messages (2xx). The Reels and feed activities: `openReels`, `openFeed`, `readFeed`, `openMarketplace`, `openListings` (and the likes). Three error codes are added (`answerNotAsExpected`, `marketplaceMayNotPost`, `marketplaceLocationWrong`). Flow docs show what each step must answer, and `saveFlow` keeps a flow's checks when it is recorded again (`keepAnswers`). The warmup skill and AGENTS.md's status lines say so; `answeringFixture` gives tests the answers a step's checks need.
+Why: matt: "give the other warm-up steps answer checks the same way (starting with the create page's may-post flag and sell_location in warmupCreateAccessCheck), written from their request docs." On 2026-10-22 Bethlehem's warm-up loaded the create page twice with sell_location Barranco, Peru and passed (rule one's Why); on 2026-10-23 the same page said may-post false.
+Checked: the answer shapes are from the kept recordings (sell_location Barranco PE on 20261022T105341, buy_location Lima, Peru then Bethlehem, Pennsylvania, may-post true on 2026-10-22 and false on 2026-10-23, page /marketplace/ answering 302 four times, page /messages/ 200) and the request docs' samples. New tests: the create page fails Barranco PE as marketplaceLocationWrong and may-post false as marketplaceMayNotPost and passes Bethlehem US; buy_location Lima fails; a 302 then 200 passes and a 302 alone fails; a home check is skipped without the home; the wait is the first call; every stage flow's checked steps; the flow doc; checks kept on re-recording; the feed's account check. The Reels steps without saved answers only check the call answered 2xx. `bun run check` passes with 897 tests; the docs gate passes.
+
+## 2026-10-23 07:00Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/flows/marketplaceListingPublish.md`: edited
+- `docs/platforms/facebook/flows/profileSetup.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerAttributesQuery.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `python/errors/errorCatalog.json`: edited
+- `skills/flow/SKILL.md`: edited
+- `skills/host/SKILL.md`: edited
+- `src/browser/flow/answers.test.ts`: added test "publishing: the create page stops the flow before the form when the account may not post, and Publish needs the listing id in the create answer"
+- `src/browser/flow/definitions/marketplaceListingPublish.json`: edited
+- `src/browser/flow/definitions/profileSetup.json`: edited
+- `src/cli/host/helpers/hostActors.ts`: changed function hostActors
+- `src/cli/host/hostAnswers.test.ts`: added const BETHLEHEM, function createPage, function hostWith, test "the create page answering marketplace_new_seller_can_post_item false stops the host as marketplaceMayNotPost", test "with the account free to post and its locations at home, the activity is done"
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+
+What changed: the host's warm-up decides each step on Facebook's answer: it waits for the step's call (`expect`, or `answerWait`) and applies the flow's `answers` with the account's home (`answerOutcome` in `hostActors`); an account code (`marketplaceMayNotPost`, `marketplaceLocationWrong`) is an issue that goes to a person, anything else a retryable `answerNotAsExpected`. The publish flow `marketplaceListingPublish` checks `buy_location` on Marketplace, the set-location answer's city, the create page's `marketplace_new_seller_can_post_item` and `sell_location` (it stops before the form when the account may not post), the listing id in `useCometMarketplaceListingCreateMutation`'s answer (`noListingId`, whose meaning now covers it) and the NUX update; `profileSetup`'s three saves check their mutations answered 2xx. Both flows' docs are regenerated, and the request docs take today's two flow runs. The flow and host skills and AGENTS.md's status lines say what reads answers now and what doesn't (the Camoufox connect, publish and profile machines, whose HAR is written only at close).
+Why: matt: "stop asking me questions ... Just go and do it." The next step of rule 73 was the machines still deciding on the screen: the host's warm-up skipped the flows' answer checks, and the publish and profile flows only proved a call happened. The live createAccessCheck run on Bethlehem (flow 20261023T064309) showed the check stopping on `marketplace_new_seller_can_post_item: false`.
+Checked: the answer paths are from the request docs' samples (set-location `reverse_geocode.city` Bethlehem, the create answer's `listing.id` 1425935622848350, the NUX viewer). New tests: the host's warm-up actor, with a stubbed browser, stops as marketplaceMayNotPost on may-post false and is ok when free to post at home; the publish flow stops at the create page, needs the listing id, and fails a set location of Granada. `bun run check` passes with 900 tests; the docs gate passes.
+
+## 2026-10-23 07:04Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `skills/host/SKILL.md`: edited
+- `src/cli/host/helpers/hostActors.ts`: changed function hostActors
+- `src/cli/host/hostAnswers.test.ts`: added test "the account check reads Marketplace status from its answer: full access is ok, a ban or a profile not GOOD is the issue suspended"
+- `src/facebook/marketplace/check/client.ts`: changed function harOf
+
+What changed: the host's account check opens `/marketplace/status` and decides on Facebook's status answer (`CometMarketplaceStatusContentContainerQuery` through `marketplaceAccessOf`, `harOf` now exported): a ban, selling not ELIGIBLE, an enforcement or a profile not GOOD is the issue `suspended` (`accessProblem`); full access is ok with its title. Only when that answer didn't load does it read the page text as before. The host skill says so.
+Why: matt: "Just go and do it." The survey of the machines found the host's account check deciding on Selling's page text, while the status page's answer, already read by the watch check, says whether the account may sell (rule 73).
+Checked: a new test runs the real account check with a stubbed browser: full access is ok, a banned access is suspended with Facebook's words, and no status answer falls back to the page. `bun run check` passes with 901 tests; the docs gate passes.
+
+## 2026-10-23 07:15Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/platforms/facebook/flows/deletePost.md`: edited
+- `docs/platforms/facebook/flows/groupHeaderMenus.md`: edited
+- `docs/platforms/facebook/flows/groupTabs.md`: edited
+- `docs/platforms/facebook/flows/messengerPinCreate.md`: edited
+- `docs/platforms/facebook/flows/postComment.md`: edited
+- `docs/platforms/facebook/flows/profilePhotoPost.md`: edited
+- `docs/platforms/facebook/flows/profilePost.md`: edited
+- `skills/flow/SKILL.md`: edited
+- `src/browser/flow/answers.test.ts`: added test "every flow step that waits on a call also checks what it answered", test "a delete must answer success true with the trashed story, and a streamed answer is read from its first part"
+- `src/browser/flow/definitions/deletePost.json`: edited
+- `src/browser/flow/definitions/groupHeaderMenus.json`: edited
+- `src/browser/flow/definitions/groupTabs.json`: edited
+- `src/browser/flow/definitions/messengerPinCreate.json`: edited
+- `src/browser/flow/definitions/postComment.json`: edited
+- `src/browser/flow/definitions/profilePhotoPost.json`: edited
+- `src/browser/flow/definitions/profilePost.json`: edited
+- `src/browser/flow/helpers/answers.ts`: added function answerAt · changed function checkOne
+
+What changed: every flow step that waits on a call now checks what it answered, from the fields its request doc says it answers: deletePost (`move_to_trash_story.success` true and its `trashed_story_id`), postComment (`comment_create.feedback_comment_edge`), profilePost and profilePhotoPost (`story_create.story_id`), messengerPinCreate (the register call's challenge, its saved answer confirming the shape), groupTabs (the visit log) and groupHeaderMenus (the share URL). A check reads a streamed answer from its first part (`answerAt`). A test refuses any flow step with a confirming request and no answer check. The seven flows' docs, the flow skill and AGENTS.md's status lines (what reads answers on AdsPower, the primary browser) follow.
+Why: matt: "we're not using the camoufox as the primary. We're using the adspower one." On AdsPower (inspect, flow, warm-up, host, and join, read, poll and check in its browser), the flows other than warm-up, publish and profile were still the ones deciding a step had worked only because a call with that name happened (rule 73). Join, read, poll and check already decided on their answers.
+Checked: the fields are the ones each request doc's Reads lists from Facebook's own definitions (rea), and the PIN register call's saved answer. New tests: no flow step waits on a call without checking its answer; a delete with success false fails and true passes; a streamed comment answer passes from its first part. `bun run check` passes with 903 tests; the docs gate passes.
+
+## 2026-10-23 07:48Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/flows/warmupFeedBrowse.md`: edited
+- `src/browser/flow/definitions/warmupFeedBrowse.json`: edited
+- `src/cli/host/helpers/hostActors.ts`: changed function hostActors
+- `src/cli/host/hostAnswers.test.ts`: added test "the create page answering marketplace_new_seller_can_post_item false is noted, and the warm-up carries on through the activity" · removed test "the create page answering marketplace_new_seller_can_post_item false stops the host as marketplaceMayNotPost"
+- `src/cli/warmup/helpers/stages.ts`: changed function runWarmup
+- `src/facebook/warmup/activities/helpers/feed.ts`: changed const FEED
+- `src/facebook/warmup/activities/warmup.test.ts`: added test "the home feed passes only when MAWVerifyThreadCutover_ContactCapabilities2Query answers this account as the one signed in" · removed test "the home feed passes only when FeedComposerCometRootQuery answers this account as the one signed in"
+- `src/facebook/warmup/stages/machine.ts`: added const NOTED_ISSUES · changed const warmupMachine
+- `src/facebook/warmup/stages/types.ts`: changed interface StageLogLine, interface WarmupContext
+- `src/facebook/warmup/stages/warmup.test.ts`: added test "Bethlehem's case: the create page answers it may not post, so that's noted and the warm-up carries on to Selling and Messages" · changed test "runs Listaro's five activities in its stage order, one after another"
+
+What changed: a warm-up carries on past "can't post". The stage machine notes an activity whose issue is in `NOTED_ISSUES` (`marketplaceMayNotPost`), counts it done and goes on (`noted` in its context and output); the stage runner writes a `noted` line to the stage log and says it in the result. The host's warm-up notes the same issue, finishes the activity and returns ok with the note. The feed's account check (stage flow `warmupFeedBrowse` s01 and the feed activity's `openFeed`) moves from `FeedComposerCometRootQuery` to `MAWVerifyThreadCutover_ContactCapabilities2Query`'s `data.user.id`.
+Why: matt: "make the warm-up carry on past can't-post" and "run the full stage warm-up". The first live run (warmup 20261023T072846) stopped at its first step: the feed never sent FeedComposerCometRootQuery that time, while MAWVerifyThreadCutover_ContactCapabilities2Query answered data.user.id = the account on every feed load recorded (the three page loads without it were a partner-listing redirect and two steps cut before the page loaded).
+Checked: the second live run (warmup 20261023T073115) passed feedBrowse s01-s04 with the new check before the computer crashed. New tests: Bethlehem's case runs all five activities with createAccessCheck noted; the host's warm-up notes may-not-post and finishes the activity. `bun run check` passes with 904 tests.
+
+## 2026-10-23 08:16Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceRecordPDPDwellTimeMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSetProductItemSeenStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNewsFeedPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/FeedComposerCometRootQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MWQuickPromotionThreadlistBannerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPC2CMediaViewerWithImagesQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPRightColumnAdsQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYouSellingUpsellCardQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxBz.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useCIXLogMutation.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/flows/warmupFeedBrowse.md`: edited
+- `docs/platforms/facebook/flows/warmupMessagesVisit.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerAttributesQuery.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `skills/host/SKILL.md`: edited
+- `skills/warmup/SKILL.md`: edited
+- `src/browser/flow/answers.test.ts`: added test "a scroll that loads nothing more has no answer to judge, but one that pages must answer right (warm-up 20261023T074930 step 19 made no call)"
+- `src/browser/flow/definitions/warmupFeedBrowse.json`: edited
+- `src/browser/flow/definitions/warmupMessagesVisit.json`: edited
+- `src/browser/flow/helpers/answers.ts`: changed function answerWait, function answerIssueOf
+- `src/browser/flow/helpers/renderFlowDoc.ts`: changed function renderFlowDoc
+- `src/browser/flow/types.ts`: changed interface AnswerExpect
+- `src/cli/host/index.ts`: changed const HOST_USAGE, const HOST_INPUT, const hostCommand
+- `src/cli/warmup/helpers/platformActivity.ts`: changed function actor
+- `src/cli/warmup/helpers/stages.ts`: changed const STAGES_USAGE, function runStages, function record, function runWarmup
+- `src/cli/warmup/index.ts`: changed const warmupCommand
+- `src/facebook/warmup/activities/helpers/feed.ts`: changed const FEED
+- `src/facebook/warmup/activities/helpers/reel.ts`: changed const REEL
+- `src/facebook/warmup/activities/helpers/reelSession.ts`: changed function planSession
+- `src/facebook/warmup/activities/machine.ts`: changed function stepsForPlan
+- `src/facebook/warmup/activities/warmup.test.ts`: added test "a swipe that left the URL as it was is an issue, saying so; one that moved on needs Facebook to mark the reel seen for this account" · changed test "the steps checked are the ones whose recordings show a call that answers them; dwells and the rest have none to read", test "the same seed, the same session; Next card between reels; no like without --likes (rule 8)" · removed test "a swipe that left the URL as it was is an issue, saying so"
+- `src/marketplace/lifecycle/types.ts`: changed const DEFAULT_LIFECYCLE_TIMING
+- `src/mcp/server/server.test.ts`: changed test "a typed call with a missing, unknown or wrong field never runs"
+- `src/warmup/persona/persona.test.ts`: changed test "each action its steps, with the pack's times; the last reel has no Next card"
+
+What changed: (1) The gap between warm-up activities is `--gapSeconds`, 10 by default, in `log facebook warmup stages run` and `log facebook host start` (was `--gapMinutes`, 150, Listaro's pacing; `DEFAULT_LIFECYCLE_TIMING.activityGapMs` is 10 s). (2) Reels play with the sound on every time a reel loads: `unmute` follows every `backToReel`, in the drawn session (`planSession`) and the persona plan (`stepsForPlan`), and the plain runner passes `already: button Mute` so it never mutes. (3) A check can apply only when its call is sent (`AnswerExpect.ifSent`): a scroll that loads nothing more has no answer to judge, one that pages must answer right; the paging checks of the feed and Messages scrolls and the feed activity's `readFeed` use it, and no step waits for such a call. (4) The Reels steps read their answers: every swipe needs `FBUnifiedVideoSeenStateMutation` to answer this account (`xfb_fb_shorts_seen_state_mutation.viewer.actor.id`), opening the creator's profile needs `ProfileCometHeaderQuery`'s `profile_header_renderer`, and back to the reel needs `FBUnifiedVideoContainerQuery`. The warm-up skill, both flows' docs and the request docs (today's warm-up and Reels runs) follow.
+Why: matt, after the crash and during the runs: "it shouldn't take 2 minutes it should be like 10 seconds"; "The audio is still muted ... when I went off of the page to go on the profile and went back on to the reel ... it's watching the reels without unmuting the audio"; and "add the Reels checks from what gets saved". The full warm-up's Messages scroll (warm-up 20261023T074930 step 19) made no call at all and failed a check that demanded paging.
+Checked: live on Bethlehem: the full warm-up passed feed, Marketplace and Selling with createAccessCheck noted as marketplaceMayNotPost and carried on (warm-up 20261023T074930), and Messages passed all 7 steps (the run after the scroll fix); the Reels run (inspect 20261023T080801) passed all 20 steps, 8 reels, and its answers are the source of the new checks (the seen mutation on 7 of 7 swipes, the profile header, the reels feed on the way back). New tests: unmute follows every backToReel in both plans; a scroll with no call passes and a wrong paging answer fails; a swipe without the seen answer fails. `bun run check` passes with 905 tests; the docs gate passes.
+
 ## 2026-10-23 11:54Z · feat/listingCreativeViewer
 
 AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):

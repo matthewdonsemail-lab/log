@@ -42,6 +42,208 @@ Seen 29 time(s) in 9 run(s).
 | inspect | step 3: scroll 4-7 x 300-600px | 1 | 200 | 1708 ms | 964 ms | — |
 | inspect | post: "…", 123 words, 0 image(s), scrolled 53 px | 1 | 200 | 2937 ms | 302 ms | — |
 
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T074930_61594063207669**, step 3: scroll 4-7 x 300-600px: 200, 2548 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometNewsFeedPaginationQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "RELAY_INCREMENTAL_DELIVERY": true,
+    "clientQueryId": "0c0cde08-7bc3-465b-99b7-9eff2660f24d",
+    "clientSession": null,
+    "connectionClass": "EXCELLENT",
+    "count": 5,
+    "cursor": "FQgVAhsBXAIVCBhcTVRjNU1qYzBNVGM0TlRveE56a3lOelF4TnpnMU9qUTZMVFF6T1RRM05UWTRNVGc1TWprNU9UTTNNVFE2TURvdE5Ua3pNRGt6TVRFeE9EVTFNelUyT1RBd01Ebz0AGwNVHAIYBAIIFQAA",
+    "experimentalValues": null,
+    "feedLocation": "NEWSFEED",
+    "feedStyle": "DEFAULT",
+    "feedbackSource": 1,
+    "focusCommentID": null,
+    "orderby": [
+      "TOP_STORIES"
+    ],
+    "privacySelectorRenderLocation": "COMET_STREAM",
+    "recentVPVs": [
+      {
+        "client_vpv_token": "68a91a67-9edd-4b17-9adc-62acee6c0cdf",
+        "evt": "vpv",
+        "feed_backend_data_serialized_payloads": "GwtGsgMGGszp0cTi8JGyA8YB8KsB7AEmbgLwAwKeAaABALrgl4K3/xv8Axy0AwYiuuCXgrf/GxsBSMABA2ZvZhsAAA==",
+        "fetch_tracking": false,
+        "original_qid": "-5930931118553569000",
+        "qid": "-5930931118553569000",
+        "timestamp": 1792741789722,
+        "vsid": "1741057011017077865",
+        "vspos": 1
+      },
+      {
+        "client_vpv_token": "1959b343-04db-4faf-9b94-39a1790b9e6d",
+        "evt": "vpv",
+        "feed_backend_data_serialized_payloads": "GwZGGuz44sSeic4DxgGw5APsATL8AxjCAcoWtAMGGwFIwAEEbm9uZRsDSbbmAwbe5gMGhOcDBgA=",
+        "fetch_tracking": false,
+        "original_qid": "-5930931118553569000",
+        "qid": "-5930931118553569000",
+        "timestamp": 1792741819557,
+        "vsid": "6447435482739151293",
+        "vspos": 2
+      }
+    ],
+    "referringStoryRenderLocation": null,
+    "refreshMode": "AUTO",
+    "renderLocation": "homepage_stream",
+    "scale": 1,
+    "shouldChangeBRSLabelFieldName": false,
+    "shouldObfuscateCategoryField": true,
+    "shouldUseBRSLabelFieldNameV1": false,
+    "shouldUseBRSLabelFieldNameV2": false,
+    "useDefaultActor": false,
+    "__relay_internal__pv__GHLShouldChangeSponsoredAuctionDistanceFieldNamerelayprovider": true,
+    "__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV1relayprovider": true,
+    "__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV2relayprovider": false,
+    "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
+    "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
+    "__relay_internal__pv__CometAdsSlotFillLoggingEnabledrelayprovider": true,
+    "__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider": false,
+    "__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider": false,
+    "__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider": false,
+    "__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider": true,
+    "__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider": false,
+    "__relay_internal__pv__IsWorkUserrelayprovider": false,
+    "__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider": false,
+    "__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider": true,
+    "__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider": true,
+    "__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider": true,
+    "__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider": true,
+    "__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider": false,
+    "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false,
+    "__relay_internal__pv__IsMergQAPollsrelayprovider": false,
+    "__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider": true,
+    "__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider": false,
+    "__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider": "AUTO_TRANSLATE",
+    "__relay_internal__pv__CometUFIShareActionMigrationrelayprovider": true,
+    "__relay_internal__pv__CometUFISingleLineUFIrelayprovider": true,
+    "__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider": true,
+    "__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider": true,
+    "__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider": 206,
+    "__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider": false,
+    "__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider": false,
+    "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": false
+  },
+  "doc_id": "29004938205805573"
+}
+```
+
+Answered:
+
+```json
+{
+  "first": {
+    "data": {
+      "viewer": {
+        "news_feed": "(1 fields)"
+      }
+    },
+    "extensions": {
+      "server_metadata": {
+        "request_start_time_ms": 1792741820491,
+        "time_at_flush_ms": 1792741821983
+      },
+      "is_final": false,
+      "sr_payload": {
+        "ddd": "(4 fields)"
+      }
+    }
+  },
+  "followingParts": 5,
+  "parts": [
+    {
+      "label": "CometNewsFeed_viewerConnection$stream$CometNewsFeed_viewer_news_feed",
+      "path": [
+        "viewer",
+        "news_feed",
+        "edges",
+        1
+      ],
+      "data": {
+        "brs_content_label": 70,
+        "cat_sensitive": "(2 fields)",
+        "deduplication_key": "-5242790742967911516",
+        "min_gap_type_index_string": "1",
+        "sposnsor_new_distac_action": null,
+        "top_story_cache_score": 15040.642578125,
+        "is_ad_eligible_for_ad_pod": false,
+        "node": "(37 fields)",
+        "feed_backend_data": "(6 fields)",
+        "cursor": "FQwVAhsBXAIVDBhcTVRjNU1qYzBNVGM0TlRveE56a3lOelF4TnpnMU9qWTZMVFV5TkRJM09UQTNOREk1TmpjNU1URTFNVFk2TURvdE5Ua3pNRGt5T0RjeE16TXpNRE0xT0Rrek1Ubz0AGwRVHAIYBAIMHgoVAigSbW9yZ2Fud2FsdG9uY291bnR5GARtd2cyAA=="
+      },
+      "extensions": {
+        "prefetch_uris_v2": "(6 items)",
+        "is_final": false,
+        "sr_payload": "(1 fields)"
+      }
+    },
+    {
+      "label": "CometNewsFeed_viewerConnection$stream$CometNewsFeed_viewer_news_feed",
+      "path": [
+        "viewer",
+        "news_feed",
+        "edges",
+        2
+      ],
+      "data": {
+        "brs_content_label": null,
+        "cat_sensitive": "(2 fields)",
+        "deduplication_key": "-6898518268077340537",
+        "min_gap_type_index_string": "10",
+        "sposnsor_new_distac_action": null,
+        "top_story_cache_score": 0,
+        "is_ad_eligible_for_ad_pod": false,
+        "node": "(11 fields)",
+        "feed_backend_data": "(6 fields)",
+        "cursor": "FQ4VAhsBXAIVDhhcTVRjNU1qYzBNVGM0TlRveE56a3lOelF4TnpnMU9qYzZMVFk0T1RnMU1UZ3lOamd3Tnpjek5EQTFNemM2TURvdE5Ua3pNRGt5T0RjeE16TXpNRE0xT0Rrek1Ubz0AGwVVHAIYBAIMHgoUDhUCKBJtb3JnYW53YWx0b25jb3VudHkYBG13ZzIA"
+      },
+      "extensions": {
+        "is_final": false,
+        "sr_payload": "(1 fields)"
+      }
+    },
+    {
+      "label": "CometNewsFeed_viewerConnection$stream$CometNewsFeed_viewer_news_feed",
+      "path": [
+        "viewer",
+        "news_feed",
+        "edges",
+        3
+      ],
+      "data": {
+        "brs_content_label": 60,
+        "cat_sensitive": "(2 fields)",
+        "deduplication_key": "-9213527991209954566",
+        "min_gap_type_index_string": "1",
+        "sposnsor_new_distac_action": null,
+        "top_story_cache_score": 14063.990234375,
+        "is_ad_eligible_for_ad_pod": false,
+        "node": "(37 fields)",
+        "feed_backend_data": "(6 fields)",
+        "cursor": "FRAVAhsBXAIVEBhcTVRjNU1qYzBNVGM0TlRveE56a3lOelF4TnpnMU9qZzZMVGt5TVRNMU1qYzVPVEV5TURrNU5UUTFOalk2TURvdE5Ua3pNRGt5T0RjeE16TXpNRE0xT0Rrek1Ubz0AGwVVHAIYBAIQHgoUDhUCKBJtb3JnYW53YWx0b25jb3VudHkYBG13ZzIA"
+      },
+      "extensions": {
+        "prefetch_uris_v2": "(3 items)",
+        "is_final": false,
+        "sr_payload": "(1 fields)"
+      }
+    }
+  ]
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

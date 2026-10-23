@@ -105,6 +105,113 @@ Seen 136 time(s) in 31 run(s).
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 379 ms | 3658 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 497 ms | 5280 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 389 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "usePseudoBlockedUserInterstitialF3Query",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "40106045909008763"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "fx_feta_settings": {
+      "is_user_upgraded_to_feta": false
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742733444,
+      "time_at_flush_ms": 1792742733466
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 421 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "30613466",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "usePseudoBlockedUserInterstitialF3Query",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "40106045909008763",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=30613466"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "fx_feta_settings": {
+      "is_user_upgraded_to_feta": false
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742782499,
+      "time_at_flush_ms": 1792742782520
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 545 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "usePseudoBlockedUserInterstitialF3Query",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "40106045909008763"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "fx_feta_settings": {
+      "is_user_upgraded_to_feta": false
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742814551,
+      "time_at_flush_ms": 1792742814574
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

@@ -24,6 +24,80 @@ Seen 9 time(s) in 7 run(s).
 | inspect | step 5: goto /marketplace/create/item | 1 | 200 | 382 ms | 2487 ms | — |
 | flow | step 3: goto /marketplace/create/item | 1 | 200 | 359 ms | 2389 ms | — |
 
+### What it sent and what came back (the newest 2 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T074930_61594063207669**, step 13: goto /marketplace/create/item: 200, 414 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "useMarketplaceComposerAttributesQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "categoryID": null
+  },
+  "doc_id": "24482075174793922"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "definitions": []
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742254971,
+      "time_at_flush_ms": 1792742254997
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/flow/20261023T064309_61594063207669**, step 3: goto /marketplace/create/item: 200, 359 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "useMarketplaceComposerAttributesQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "categoryID": null
+  },
+  "doc_id": "24482075174793922"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "definitions": []
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792737838323,
+      "time_at_flush_ms": 1792737838347
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

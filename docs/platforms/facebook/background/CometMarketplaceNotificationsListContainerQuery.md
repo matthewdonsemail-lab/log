@@ -20,6 +20,94 @@ Seen 2 time(s) in 2 run(s).
 | inspect | step 4: click e191 | 1 | 200 | 1238 ms | 2967 ms | — |
 | inspect | step 3: goto /marketplace/inbox | 1 | 200 | 718 ms | 479389 ms | — |
 
+### What it sent and what came back (the newest 2 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261022T155857_61594063207669**, step 3: goto /marketplace/inbox: 200, 718 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMarketplaceNotificationsListContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "isCOBMOB": false,
+    "scale": 1
+  },
+  "doc_id": "28153689817567734"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "notifications_page": {
+        "edges": [],
+        "page_info": {
+          "end_cursor": null,
+          "has_next_page": false
+        }
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792685337346,
+      "time_at_flush_ms": 1792685337385
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261022T110738_61594063207669**, step 4: click e191: 200, 1238 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMarketplaceNotificationsListContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "isCOBMOB": false,
+    "scale": 1
+  },
+  "doc_id": "28153689817567734"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "notifications_page": {
+        "edges": [],
+        "page_info": {
+          "end_cursor": null,
+          "has_next_page": false
+        }
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792667424738,
+      "time_at_flush_ms": 1792667424814
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

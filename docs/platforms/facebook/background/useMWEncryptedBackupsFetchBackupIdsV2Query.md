@@ -89,6 +89,194 @@ Seen 113 time(s) in 31 run(s).
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 378 ms | 3627 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 419 ms | 5604 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 441 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "useMWEncryptedBackupsFetchBackupIdsV2Query",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "25220416984279164"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_backup": {
+      "id": "1127653843075648",
+      "backup_tenancy": "PRODUCTION",
+      "is_user_opted_out": false,
+      "has_otc_eligible_devices": false,
+      "encryption_management_delegator_id": null,
+      "virtual_devices": [
+        {
+          "client_generated_id": "sp5MI2FeHD/hrI1wOQXbKg==",
+          "device_type": "HSM",
+          "device_created_on": "Chrome",
+          "creation_time": 1792663635,
+          "migration_status": "DOES_NOT_REQUIRE_MIGRATION",
+          "id": "1127653853075647"
+        }
+      ],
+      "devices": {
+        "edges": [
+          {
+            "node": {
+              "id": "1127653846408981"
+            }
+          }
+        ]
+      }
+    },
+    "xfb_eb_user_preferences": {
+      "onboarding_decision": "BACKUP_CREATED",
+      "id": "1616100223633369"
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742733443,
+      "time_at_flush_ms": 1792742733475
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 386 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "30613466",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "useMWEncryptedBackupsFetchBackupIdsV2Query",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "25220416984279164",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=30613466"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_backup": {
+      "id": "1127653843075648",
+      "backup_tenancy": "PRODUCTION",
+      "is_user_opted_out": false,
+      "has_otc_eligible_devices": false,
+      "encryption_management_delegator_id": null,
+      "virtual_devices": [
+        {
+          "client_generated_id": "sp5MI2FeHD/hrI1wOQXbKg==",
+          "device_type": "HSM",
+          "device_created_on": "Chrome",
+          "creation_time": 1792663635,
+          "migration_status": "DOES_NOT_REQUIRE_MIGRATION",
+          "id": "1127653853075647"
+        }
+      ],
+      "devices": {
+        "edges": [
+          {
+            "node": {
+              "id": "1127653846408981"
+            }
+          }
+        ]
+      }
+    },
+    "xfb_eb_user_preferences": {
+      "onboarding_decision": "BACKUP_CREATED",
+      "id": "1616100223633369"
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742782428,
+      "time_at_flush_ms": 1792742782449
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 376 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "useMWEncryptedBackupsFetchBackupIdsV2Query",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "25220416984279164"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_backup": {
+      "id": "1127653843075648",
+      "backup_tenancy": "PRODUCTION",
+      "is_user_opted_out": false,
+      "has_otc_eligible_devices": false,
+      "encryption_management_delegator_id": null,
+      "virtual_devices": [
+        {
+          "client_generated_id": "sp5MI2FeHD/hrI1wOQXbKg==",
+          "device_type": "HSM",
+          "device_created_on": "Chrome",
+          "creation_time": 1792663635,
+          "migration_status": "DOES_NOT_REQUIRE_MIGRATION",
+          "id": "1127653853075647"
+        }
+      ],
+      "devices": {
+        "edges": [
+          {
+            "node": {
+              "id": "1127653846408981"
+            }
+          }
+        ]
+      }
+    },
+    "xfb_eb_user_preferences": {
+      "onboarding_decision": "BACKUP_CREATED",
+      "id": "1616100223633369"
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742814804,
+      "time_at_flush_ms": 1792742814826
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

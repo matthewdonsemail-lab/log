@@ -89,6 +89,67 @@ Seen 120 time(s) in 34 run(s).
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 451 ms | 808 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 437 ms | 762 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 428 ms
+
+Sent:
+
+```json
+null
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "AE_hGpcLbigag3LZeVRrnoz",
+  "payload": null,
+  "lid": "7699771399959004556"
+}
+```
+
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 427 ms
+
+Sent:
+
+```json
+null
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "AoYMt7cPblvYvwqc7u6-6N8",
+  "payload": null,
+  "lid": "7699771611009940763"
+}
+```
+
+**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 438 ms
+
+Sent:
+
+```json
+null
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "APPS8iAlIj4WWLVggRZhioy",
+  "payload": null,
+  "lid": "7699771740668431251"
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

@@ -1,3 +1,4 @@
+import type { StepExchange } from '../../subq/stepReading/types'
 import type { BrowserDriverName } from '../driver/types'
 
 export const INSPECT_ACTIONS = [
@@ -35,6 +36,8 @@ export interface CurrentInspect {
   repliesPath: string
   startedAt: string
   messengerPin?: boolean
+  goal?: string | null
+  goalSince?: string | null
 }
 
 export interface InspectCommand {
@@ -97,6 +100,9 @@ export interface BrowserAt {
   text: string
   failed: string | null
   messengerPin?: boolean
+  reading?: { decided: boolean; text: string } | null
+  goal?: GoalProgress | null
+  exchanges?: StepExchange[]
 }
 
 export interface BrowserView {
@@ -107,4 +113,32 @@ export interface BrowserView {
   state: { id: string; what: string; person: boolean } | null
   next: { tool: string; input: Record<string, unknown> } | null
   needsMatt: string | null
+}
+
+export interface GoalFinding {
+  n: number
+  at: string
+  step: string
+  point: string
+  evidence: string[]
+  explain: string
+  fix: string | null
+  fixedAt: string | null
+}
+
+export type GoalEvent =
+  | { type: 'finding'; at: string; step: string; point: string; evidence: string[]; explain: string }
+  | { type: 'fix'; at: string; n: number; fix: string }
+
+export type GoalStatus = 'none' | 'open' | 'reached'
+
+export interface GoalProgress {
+  goal: string | null
+  status: GoalStatus
+  lastStep: string | null
+  reachedAt: { step: string; goalMet: number } | null
+  needsFinding: { step: string; evidence: string[] } | null
+  personNeeded: { step: string; text: string } | null
+  unfixed: number[]
+  findings: GoalFinding[]
 }

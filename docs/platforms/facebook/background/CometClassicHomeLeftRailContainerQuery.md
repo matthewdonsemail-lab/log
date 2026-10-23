@@ -38,6 +38,330 @@ Seen 22 time(s) in 12 run(s).
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 884 ms | 15209 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 657 ms | 7192 ms | — |
 
+### What it sent and what came back (the newest 2 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T074930_61594063207669**, step 11: goto /marketplace/: 200, 813 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometClassicHomeLeftRailContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "isEligibleForProfessionalTools": false,
+    "numExploreBookmarks": 10,
+    "numShortcutBookmarks": 5,
+    "scale": 1,
+    "useNucleusIcon": false
+  },
+  "doc_id": "37551561817767907"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "comet_classic_identity": {
+        "bookmarks": {
+          "edges": [
+            {
+              "node": "(15 fields)"
+            }
+          ]
+        },
+        "id": "370399423318783"
+      },
+      "shortcut_bookmarks": {
+        "shortcut_bookmark": {
+          "count": 3,
+          "edges": [
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            }
+          ]
+        },
+        "id": "1592249071005526",
+        "bookmarks": {
+          "edges": [
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            }
+          ],
+          "page_info": {
+            "end_cursor": "Ym9va21hcms6MjQ3ODMzMjAxNTgxMDM5Mzow",
+            "has_next_page": false
+          }
+        }
+      },
+      "explore_bookmarks": {
+        "explore_bookmark": {
+          "edges": [
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            "… 4 more"
+          ]
+        },
+        "id": "644715445650924",
+        "bookmarks": {
+          "edges": [
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            "… 4 more"
+          ],
+          "page_info": {
+            "end_cursor": "Ym9va21hcms6NjgwMjE1MjIzMDow",
+            "has_next_page": true
+          }
+        }
+      }
+    }
+  },
+  "extensions": {
+    "prefetch_uris_v2": [
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yz/r/wZBdW_qnLOB.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yv/r/J6QQVMYHUJU.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      }
+    ],
+    "server_metadata": {
+      "request_start_time_ms": 1792742237952,
+      "time_at_flush_ms": 1792742238170
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T074930_61594063207669**, step 14: goto /marketplace/: 200, 657 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometClassicHomeLeftRailContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "isEligibleForProfessionalTools": false,
+    "numExploreBookmarks": 10,
+    "numShortcutBookmarks": 5,
+    "scale": 1,
+    "useNucleusIcon": false
+  },
+  "doc_id": "37551561817767907"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "comet_classic_identity": {
+        "bookmarks": {
+          "edges": [
+            {
+              "node": "(15 fields)"
+            }
+          ]
+        },
+        "id": "370399423318783"
+      },
+      "shortcut_bookmarks": {
+        "shortcut_bookmark": {
+          "count": 3,
+          "edges": [
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            }
+          ]
+        },
+        "id": "1592249071005526",
+        "bookmarks": {
+          "edges": [
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            }
+          ],
+          "page_info": {
+            "end_cursor": "Ym9va21hcms6MjQ3ODMzMjAxNTgxMDM5Mzow",
+            "has_next_page": false
+          }
+        }
+      },
+      "explore_bookmarks": {
+        "explore_bookmark": {
+          "edges": [
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            {
+              "__typename": "FolderBookmarksEdge"
+            },
+            "… 4 more"
+          ]
+        },
+        "id": "644715445650924",
+        "bookmarks": {
+          "edges": [
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            {
+              "node": "(18 fields)",
+              "cursor": null
+            },
+            "… 4 more"
+          ],
+          "page_info": {
+            "end_cursor": "Ym9va21hcms6NjgwMjE1MjIzMDow",
+            "has_next_page": true
+          }
+        }
+      }
+    }
+  },
+  "extensions": {
+    "prefetch_uris_v2": [
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yv/r/J6QQVMYHUJU.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yz/r/wZBdW_qnLOB.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      }
+    ],
+    "server_metadata": {
+      "request_start_time_ms": 1792742396554,
+      "time_at_flush_ms": 1792742396637
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

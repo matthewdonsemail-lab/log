@@ -1,4 +1,5 @@
 import { describe, expect, test } from 'bun:test'
+import type { StepExchange } from '../../subq/stepReading/types'
 import { pageStateOf } from './helpers/pageState'
 
 const CHECKPOINT = 'https://www.facebook.com/checkpoint/1501092823525282/'
@@ -52,5 +53,25 @@ describe('Marketplace partner listings', () => {
     const state = pageStateOf('https://www.facebook.com/marketplace/partner_listing/', 'generic: Discover more when you shop\nbutton "Update"')
     expect(state).toMatchObject({ id: 'marketplacePartnerListings', person: false })
     expect(state?.resolve).toContain('setLocation')
+  })
+
+  const CREATE = 'https://www.facebook.com/marketplace/create/item'
+  const page = (field: unknown): StepExchange => ({ offsetMs: 0, kind: 'document', name: 'page /marketplace/create/item', method: 'GET', host: 'www.facebook.com', path: '/marketplace/create/item', status: 200, ms: 3000, sent: null, answer: { title: 'Facebook', bytes: 1, fields: { marketplace_new_seller_can_post_item: field, marketplace_listing_creation_limit_reason: null } }, errors: [], known: true })
+  const pdp = (type: string): StepExchange => ({ offsetMs: 900, kind: 'api', name: 'MarketplacePDPContainerQuery', method: 'POST', host: 'www.facebook.com', path: '/api/graphql/', status: 200, ms: 800, sent: {}, answer: { data: { viewer: { marketplace_product_details_page: { target: { product_details_type: type, partner_brand_name: 'Catawiki', partner_listing_location: 'Italy' } } } } }, errors: [], known: true })
+
+  test('Limit reached on the create page is decided by its answer: marketplace_new_seller_can_post_item false (Bethlehem, 2026-10-23), true the day before', () => {
+    const state = pageStateOf(CREATE, 'heading "Limit reached"', { exchanges: [page(false)] })
+    expect(state).toMatchObject({ id: 'marketplaceCreateLimitReached', person: true })
+    expect(pageStateOf(CREATE, 'heading "Limit reached"', { exchanges: [page(true)] })).toBeNull()
+    expect(pageStateOf(CREATE, 'textbox "Title"', { exchanges: [page(false)] })?.id).toBe('marketplaceCreateLimitReached')
+    expect(pageStateOf(CREATE, 'You are not able to create new listings at the moment')?.id).toBe('marketplaceCreateLimitReached')
+  })
+
+  test('partner listings on Marketplace are decided by the answer (product_details_type PARTNER_LISTING), never by the screen alone', () => {
+    const state = pageStateOf('https://www.facebook.com/marketplace/item/1234567890/', 'heading "Picks for you"', { exchanges: [pdp('PARTNER_LISTING')] })
+    expect(state).toMatchObject({ id: 'marketplacePartnerFeed', person: false })
+    expect(state?.resolve).toContain('buy_location')
+    expect(pageStateOf('https://www.facebook.com/marketplace/item/1234567890/', 'heading "Picks for you"', { exchanges: [pdp('C2C')] })).toBeNull()
+    expect(pageStateOf('https://www.facebook.com/marketplace/', 'heading "Picks for you"')).toBeNull()
   })
 })

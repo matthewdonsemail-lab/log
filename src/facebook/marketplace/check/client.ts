@@ -17,7 +17,7 @@ export const CHECK_PAGES = {
 
 type Send = (action: InspectAction, args?: string[]) => Promise<InspectStepResult | null>
 
-function harOf(reply: InspectStepResult | null): unknown {
+export function harOf(reply: InspectStepResult | null): unknown {
   const path = reply?.folder ? join(reply.folder, 'network.har') : null
   try {
     return path && existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) : null

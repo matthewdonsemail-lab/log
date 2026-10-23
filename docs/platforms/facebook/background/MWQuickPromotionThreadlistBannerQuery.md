@@ -23,6 +23,45 @@ Seen 6 time(s) in 6 run(s).
 | inspect | step 5: goto /messages/ | 1 | 200 | 399 ms | 10078 ms | — |
 | warmup | step 5: goto /messages/ | 1 | 200 | 394 ms | 6212 ms | — |
 
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 394 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "MWQuickPromotionThreadlistBannerQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "27805253425807021"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "eligible_promotions": {
+        "nodes": []
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742815242,
+      "time_at_flush_ms": 1792742815270
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

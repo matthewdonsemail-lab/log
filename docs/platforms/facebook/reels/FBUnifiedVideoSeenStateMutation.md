@@ -88,6 +88,148 @@ Seen 96 time(s) in 4 run(s).
 | inspect | step 6: clickAny 1 x link /see owner profile$/ | 1 | 200 | 708 ms | 3601 ms | — |
 | inspect | step 17: clickRole button "…" | 1 | 200 | 423 ms | 1543 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T080801_61594063207669**, step 4: clickRole button "…": 200, 435 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBUnifiedVideoSeenStateMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "video_ids": [
+        "1967507720600004"
+      ],
+      "actor_id": "61594063207669",
+      "client_mutation_id": "1"
+    }
+  },
+  "doc_id": "9749301061815436"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_fb_shorts_seen_state_mutation": {
+      "viewer": {
+        "actor": {
+          "__typename": "User",
+          "id": "61594063207669"
+        }
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742958619,
+      "time_at_flush_ms": 1792742958693
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T080801_61594063207669**, step 6: clickAny 1 x link /see owner profile$/: 200, 708 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBUnifiedVideoSeenStateMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "video_ids": [
+        "1607183873661381"
+      ],
+      "actor_id": "61594063207669",
+      "client_mutation_id": "2"
+    }
+  },
+  "doc_id": "9749301061815436"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_fb_shorts_seen_state_mutation": {
+      "viewer": {
+        "actor": {
+          "__typename": "User",
+          "id": "61594063207669"
+        }
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742992626,
+      "time_at_flush_ms": 1792742992705
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T080801_61594063207669**, step 9: clickRole button "…": 200, 435 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBUnifiedVideoSeenStateMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "video_ids": [
+        "1607183873661381"
+      ],
+      "actor_id": "61594063207669",
+      "client_mutation_id": "1"
+    }
+  },
+  "doc_id": "9749301061815436"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_fb_shorts_seen_state_mutation": {
+      "viewer": {
+        "actor": {
+          "__typename": "User",
+          "id": "61594063207669"
+        }
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792743039619,
+      "time_at_flush_ms": 1792743039691
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

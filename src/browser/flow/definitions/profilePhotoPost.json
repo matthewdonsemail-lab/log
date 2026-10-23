@@ -54,6 +54,17 @@
       "role": "button",
       "name": "Post",
       "expect": "ComposerStoryCreateMutation",
+      "answers": [
+        {
+          "call": "ComposerStoryCreateMutation",
+          "says": [
+            {
+              "answer": "data.story_create.story_id",
+              "present": true
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "12_clickroleButtonPost",
         "ms": 7250,

@@ -1,5 +1,6 @@
 import { fromPromise } from "xstate";
-import { loadFlow, pageProblem } from "../../../browser/flow/index.ts";
+import { answersIssue, answerWait, loadFlow, pageProblem } from "../../../browser/flow/index.ts";
+import { stepExchangesAt } from "../../../subq/stepReading/helpers/stepExchanges.ts";
 import type { FlowStep } from "../../../browser/flow/index.ts";
 import type { InspectAction, InspectStepResult } from "../../../browser/inspect/index.ts";
 import type { PreparedRun } from "../../../browser/run/index.ts";
@@ -10,7 +11,7 @@ import { fetchProxyUrl, saveSession } from "../../../marketplace/socialAccount/i
 import { preparePhotos } from "../../../media/photo/index.ts";
 import { join } from "node:path";
 import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
-import { ACTIVITY_SCRIPTS } from "../../../facebook/warmup/stages/index.ts";
+import { ACTIVITY_SCRIPTS, NOTED_ISSUES } from "../../../facebook/warmup/stages/index.ts";
 import * as marketplaceCheck from "../../../facebook/marketplace/check/index.ts";
 import { placeProblem } from "../../../facebook/marketplace/location/index.ts";
 import { runFlowInSession, openInspectSession } from "../../flow/helpers/index.ts";
@@ -40,9 +41,16 @@ export function dayOf(account: FacebookAccount, now = new Date()): { today: stri
 
 export function hostActors(context: CommandContext, account: FacebookAccount, browser: HostBrowser, options: { bypassHours: boolean; likes?: boolean; log: (line: string) => void }) {
   const log = options.log;
-  const send = async (action: InspectAction, args: string[] = [], timeoutMs = 240_000): Promise<InspectStepResult | null> => {
+  const send = async (action: InspectAction, args: string[] = [], timeoutMs = 240_000, expect?: { name: string; ms?: number }): Promise<InspectStepResult | null> => {
     if (!browser.session) return null;
-    return context.sendInspect(browser.session.current, action, args, timeoutMs);
+    return context.sendInspect(browser.session.current, action, args, timeoutMs, expect);
+  };
+  const home = { uid: account.accountName, homeCity: account.homeCity, homeCountry: account.homeCountry };
+  const answerOutcome = (step: FlowStep, reply: InspectStepResult | null): StepOutcome | null => {
+    if (!step.answers?.length || !reply?.folder) return null;
+    const wrong = answersIssue(step.answers, stepExchangesAt(reply.folder), home);
+    if (!wrong) return null;
+    return wrong.code === "answerNotAsExpected" ? error(wrong.code, `${step.id}: ${wrong.text}`, true) : issue(wrong.code, `${step.id}: ${wrong.text}`);
   };
   const look = async () => send("pageText");
   const problemOf = (step: { action: string; url?: string }, reply: InspectStepResult | null): StepOutcome | null => {
@@ -143,10 +151,16 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
     }),
 
     checkAccount: fromPromise<StepOutcome, LifecycleActorInputs["checkAccount"]>(async () => {
-      const opened = await send("goto", [`${FB}/marketplace/selling/`]);
-      const landed = problemOf({ action: "goto", url: `${FB}/marketplace/selling/` }, opened);
+      const status = marketplaceCheck.CHECK_PAGES.status;
+      const opened = await send("goto", [status]);
+      const landed = problemOf({ action: "goto", url: status }, opened);
       if (landed) return landed;
-      return problemOf({ action: "pageText" }, await look()) ?? ok("Marketplace open, no restriction");
+      const access = marketplaceCheck.marketplaceAccessOf(marketplaceCheck.harOf(opened));
+      if (access) {
+        const problem = marketplaceCheck.accessProblem(access);
+        return problem ? issue("suspended", problem) : ok(`Marketplace status: ${access.title ?? "full access"}${access.sell ? `, selling ${access.sell}` : ""}`);
+      }
+      return problemOf({ action: "pageText" }, await look()) ?? ok("Marketplace open, no restriction (its status answer didn't load: read from the page)");
     }),
 
     setProfile: fromPromise<StepOutcome, LifecycleActorInputs["setProfile"]>(async ({ input }) => {
@@ -157,7 +171,7 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
       const [firstName, ...rest] = account.profileName.split(" ");
       const photos = await preparePhotos([account.profilePhoto, account.coverPhoto], { dir: join(browser.session.current.runDir, "photos"), proxy: fetchProxyUrl(account.proxy) });
       if (!photos.ok) return error(photos.code, photos.detail);
-      const output = await runFlowInSession(context, browser.session.current, flow, { uid: account.accountName, profilePhoto: photos.photos[0].path, coverPhoto: photos.photos[1].path, firstName, lastName: rest.join(" ") });
+      const output = await runFlowInSession(context, browser.session.current, flow, { uid: account.accountName, profilePhoto: photos.photos[0].path, coverPhoto: photos.photos[1].path, firstName, lastName: rest.join(" ") }, { account: home });
       const last = output.steps.at(-1);
       if (output.result === "done") return ok("profile photo, cover and name saved");
       if (last?.issue && last.issue !== "pageNotReached") return issue(last.issue, last.error);
@@ -189,16 +203,24 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
       const script = ACTIVITY_SCRIPTS[input.activity as WarmupActivity];
       const flow = loadFlow(script.flow);
       const steps: FlowStep[] = flow?.steps ?? script.steps.map((s, i) => ({ id: `s${i + 1}_${s.action}`, action: s.action, ...(s.action === "goto" ? { url: s.args[0] } : { args: s.args }), recorded: { step: "", ms: null, reaEvidenceId: null, requests: [] } }) as FlowStep);
+      const noted: string[] = [];
       for (const step of steps) {
         if (step.action === "clickAny" && !(input.live && options.likes)) continue;
         const args = step.action === "goto" ? [step.url!] : (step.args ?? []);
-        const reply = await send(step.action as InspectAction, args, 300_000);
+        const reply = await send(step.action as InspectAction, args, 300_000, step.expect ? { name: step.expect, ms: 45_000 } : answerWait(step.answers));
         const problem = problemOf(step, reply);
         if (problem) return problem;
         if (reply && reply.ok === false) return error("warmupStepFailed", `${step.id}: ${reply.error ?? ""}`, true);
+        const answered = answerOutcome(step, reply);
+        if (answered?.kind === "issue" && NOTED_ISSUES.includes(answered.issue)) {
+          noted.push(`${answered.issue}: ${answered.detail ?? ""}`);
+          log(`host ${account.accountName}: noted ${answered.issue} in ${input.activity}; carrying on`);
+          continue;
+        }
+        if (answered) return answered;
       }
       log(`host ${account.accountName}: warm-up ${input.activity} done`);
-      return ok();
+      return noted.length ? ok(`noted: ${noted.join("; ")}`) : ok();
     }),
 
     watchCheck: fromPromise<StepOutcome, LifecycleActorInputs["watchCheck"]>(async () => {

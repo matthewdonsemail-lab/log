@@ -15,6 +15,16 @@ description: Run an account's whole lifecycle (rule 35) in ONE browser kept open
    row go to a person (`signInSpent`), never round again.
 3. **Every page is checked for where it landed** (`pageProblem`): a checkpoint,
    a sign-out or a restriction is the step's outcome and goes to Twenty.
+   **The warm-up decides each step on Facebook's answer** (rule 73): it waits
+   for the step's call and applies its flow's `answers` with the account's
+   home. The create page answering `marketplace_new_seller_can_post_item:
+   false` is the issue `marketplaceMayNotPost`, and a location outside home
+   `marketplaceLocationWrong`; both go to a person (matt decides).
+   **The account check reads Marketplace status from its answer**:
+   `/marketplace/status`'s `CometMarketplaceStatusContentContainerQuery`
+   (`marketplaceAccessOf`). A ban, selling not `ELIGIBLE`, an enforcement or a
+   profile not `GOOD` is the issue `suspended` (`accessProblem`); only when that
+   answer didn't load is the page text read instead.
 4. **Writes need matt:** `--live` for profile, name and Marketplace location
    (rules 8, 28); `--likes` for the warm-up's likes.
 5. **Stop with SHUTDOWN, never by killing it,** so the browser closes for its
@@ -24,7 +34,7 @@ description: Run an account's whole lifecycle (rule 35) in ONE browser kept open
 ## The routine
 
 ```bash
-log facebook host start --account <a> [--live] [--likes] --gapMinutes 2 --watchMinutes 2   # watched; default 150 / 12
+log facebook host start --account <a> [--live] [--likes] --gapSeconds 10 --watchMinutes 2   # watched; default 10 s / 12 min
 log facebook check --account <a> [--bypass]   # the host's check once, by hand, in the open browser
 log facebook host status [--account <a>]          # state, warm-up done, opens today, every close and its reason
 log facebook host send --account <a> PERSON_DONE  # after clearing a checkpoint by hand in the window

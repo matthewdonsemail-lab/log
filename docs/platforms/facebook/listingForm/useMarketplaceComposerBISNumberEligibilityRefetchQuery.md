@@ -20,6 +20,52 @@ Seen 12 time(s) in 12 run(s).
 | publish | Category: Miscellaneous | 11 | 200 | 301–381 ms | 4384–6081 ms | — |
 | inspect | scroll: container +87px in 3 steps | 1 | 200 | 1465 ms | 1094 ms | — |
 
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261022T110738_61594063207669**, scroll: container +87px in 3 steps: 200, 1465 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "138820675",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "useMarketplaceComposerBISNumberEligibilityRefetchQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "category_id": "895487550471874",
+    "has_prefetched_category": true
+  },
+  "doc_id": "39227039350213554",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=138820675"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "bis_number_category": {
+      "__typename": "GroupSellCategory",
+      "id": "895487550471874",
+      "if_viewer_can_add_bis_certification_number": null
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792667746836,
+      "time_at_flush_ms": 1792667746900
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

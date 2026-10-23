@@ -39,7 +39,7 @@ describe("toolsFromCommands", () => {
     const tools = toolsFromCommands(COMMANDS);
     const start = tools.find((t) => t.name === "inspectStart")!;
     expect(start.inputSchema.required).toEqual(["account"]);
-    expect(Object.keys(start.inputSchema.properties)).toEqual(["account", "url", "bypass", "now", "noIdleMouse", "detach", "proxyMs", "confirmBypass", "waitMs"]);
+    expect(Object.keys(start.inputSchema.properties)).toEqual(["account", "url", "bypass", "now", "noIdleMouse", "detach", "goal", "proxyMs", "confirmBypass", "waitMs"]);
     const step = tools.find((t) => t.name === "inspectDo")!;
     expect((step.inputSchema.properties.action as { enum: string[] }).enum).toContain("setLocation");
     expect((step.inputSchema.properties.values as { type: string }).type).toBe("array");
@@ -126,7 +126,7 @@ describe("guardCall", () => {
     expect(guardCall("check", { account: "a", bogus: 1 }, COMMANDS)).toEqual({ ok: false, message: 'check: unknown field "bogus"' });
     expect(guardCall("accountStatus", { account: "a", status: "NOPE" }, COMMANDS).ok).toBe(false);
     expect(guardCall("inspectDo", { action: "teleport" }, COMMANDS).ok).toBe(false);
-    expect(guardCall("hostStart", { account: "a", gapMinutes: "5" }, COMMANDS).ok).toBe(false);
+    expect(guardCall("hostStart", { account: "a", gapSeconds: "5" }, COMMANDS).ok).toBe(false);
     expect(guardCall("listings", { args: ["--json"] }, COMMANDS).ok).toBe(false);
   });
 

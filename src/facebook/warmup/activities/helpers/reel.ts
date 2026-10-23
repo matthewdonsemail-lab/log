@@ -12,8 +12,8 @@ export const REEL: PlatformActivity = {
       action: 'goto',
       args: ['https://www.facebook.com/reel/'],
       why: 'Reels, signed in: Facebook sends it to the first reel',
-      expect: { urlMatches: '/reel/\\d+' },
-      recorded: `${RUN} step 01: /reel/ → /reel/1075919665236018, 167 requests, 24 s`
+      expect: { urlMatches: '/reel/\\d+', answers: [{ call: 'FBUnifiedVideoContainerQuery', says: [] }] },
+      recorded: `${RUN} step 01: /reel/ → /reel/1075919665236018, 167 requests, 24 s; FBUnifiedVideoContainerQuery answered 200 on each goto /reel/ (its doc)`
     },
     {
       id: 'unmute',
@@ -30,7 +30,7 @@ export const REEL: PlatformActivity = {
       action: 'clickRole',
       args: ['button', 'Next card'],
       why: "on to the next reel: desktop Reels' own control (the wheel only scrolls the page)",
-      expect: { urlChanges: true, urlMatches: '/reel/\\d+' },
+      expect: { urlChanges: true, urlMatches: '/reel/\\d+', answers: [{ call: 'FBUnifiedVideoSeenStateMutation', says: [{ answer: 'data.xfb_fb_shorts_seen_state_mutation.viewer.actor.id', home: 'uid' }] }] },
       clicks: true,
       recorded: `${RUN} step 11: Next card → /reel/1049925804499764, FBUnifiedVideoSeenStateMutation 200`
     },
@@ -40,9 +40,9 @@ export const REEL: PlatformActivity = {
       args: ['1-3'],
       why: "a glance: most reels aren't watched through, a person skips on after a second or two (matt, 2026-10-20)"
     },
-    { id: 'swipe', action: 'clickRole', args: ['button', 'Next card'], why: 'skip on', expect: { urlChanges: true, urlMatches: '/reel/\\d+' }, clicks: true },
+    { id: 'swipe', action: 'clickRole', args: ['button', 'Next card'], why: 'skip on', expect: { urlChanges: true, urlMatches: '/reel/\\d+', answers: [{ call: 'FBUnifiedVideoSeenStateMutation', says: [{ answer: 'data.xfb_fb_shorts_seen_state_mutation.viewer.actor.id', home: 'uid' }] }] }, clicks: true },
     { id: 'glance', action: 'dwell', args: ['1-3'], why: 'another glance' },
-    { id: 'swipe', action: 'clickRole', args: ['button', 'Next card'], why: 'skip on again: a few in a row', expect: { urlChanges: true, urlMatches: '/reel/\\d+' }, clicks: true },
+    { id: 'swipe', action: 'clickRole', args: ['button', 'Next card'], why: 'skip on again: a few in a row', expect: { urlChanges: true, urlMatches: '/reel/\\d+', answers: [{ call: 'FBUnifiedVideoSeenStateMutation', says: [{ answer: 'data.xfb_fb_shorts_seen_state_mutation.viewer.actor.id', home: 'uid' }] }] }, clicks: true },
     { id: 'watch', action: 'dwell', args: ['5-10'], why: 'this one catches: watch it' },
     {
       id: 'openComments',
@@ -75,7 +75,7 @@ export const REEL: PlatformActivity = {
       action: 'clickAny',
       args: ['link', 'see owner profile$', '1'],
       why: "open the creator's profile",
-      expect: { urlChanges: true },
+      expect: { urlChanges: true, answers: [{ call: 'ProfileCometHeaderQuery', says: [{ answer: 'data.user.profile_header_renderer', present: true }] }] },
       clicks: true,
       recorded: `${RUN} step 14: didn't open it; run 20261020T051842 step 08 opened it; run 20261020T052254 step 08 didn't (clickAny chose a covered card's link): now only a link a person can click`
     },
@@ -84,7 +84,7 @@ export const REEL: PlatformActivity = {
       action: 'goto',
       args: ['{urlBefore:openProfile}'],
       why: "back to the reel it came from, by the reel's own URL (the browser's back left Facebook when the reel was the first page)",
-      expect: { urlMatches: '/reel/\\d+' },
+      expect: { urlMatches: '/reel/\\d+', answers: [{ call: 'FBUnifiedVideoContainerQuery', says: [] }] },
       recorded: `${RUN} step 16: back went to about:blank; run 20261020T052254 step 09 the same after the profile didn't open: now the reel's URL`
     },
     {
@@ -92,10 +92,10 @@ export const REEL: PlatformActivity = {
       action: 'clickRole',
       args: ['button', 'Like'],
       why: 'like the reel (acts on Facebook)',
-      expect: { shows: { role: 'button', name: 'Remove Like' } },
+      expect: { answers: [{ call: 'CometUFIFeedbackReactMutation', says: [{ answer: 'data.feedback_react.feedback.viewer_feedback_reaction_info.id', sent: 'variables.input.feedback_reaction_id' }] }] },
       clicks: true,
       likes: true,
-      recorded: 'run 20261020T052708 step 10: Like became button "Remove Like"'
+      recorded: 'run 20261020T052708 step 10: Like became button "Remove Like"; from 2026-10-23 it passes on Facebook\'s answer instead (rule 73): CometUFIFeedbackReactMutation answered 200 with the reaction we sent saved (Bethlehem inspect 20261023T051540 steps 03 and 05)'
     }
   ],
   knownIssues: [

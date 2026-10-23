@@ -20,6 +20,48 @@ Seen 13 time(s) in 6 run(s).
 | warmup | openAny: read /marketplace/item/<id>/ | 8 | 200 | 432–686 ms | 70–93 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 5 | 200 | 448–893 ms | 73–112 ms | — |
 
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T074930_61594063207669**, openAny: read /marketplace/item/<id>/: 200, 432 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMarketplaceRecordPDPDwellTimeMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "listing_id": "1749699906261391",
+      "start_time": 1792742061173,
+      "actor_id": "61594063207669",
+      "client_mutation_id": "3"
+    }
+  },
+  "doc_id": "24177643518491637"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "marketplace_record_pdp_dwell_time": true
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742068400,
+      "time_at_flush_ms": 1792742068500
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

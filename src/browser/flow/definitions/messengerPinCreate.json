@@ -73,6 +73,17 @@
       "id": "s04_pin",
       "action": "pin",
       "expect": "VestaServerGraphQLRegisterProviderBeginRegisterMutation",
+      "answers": [
+        {
+          "call": "VestaServerGraphQLRegisterProviderBeginRegisterMutation",
+          "says": [
+            {
+              "answer": "data.fbid_based_auth_layer_vesta_begin_register.base64url_encoded_opaque_challenge",
+              "present": true
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "06_pin",
         "ms": 8593,

@@ -238,6 +238,77 @@ Seen 713 time(s) in 33 run(s).
 | inspect | step 17: clickRole button "…" | 2 | 200 | 382–588 ms | 2491–3492 ms | — |
 | inspect | step 20: dwell 2s | 12 | 200 | 324–2861 ms | 7984–478879 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T080515_61594063207669**, scroll: +314px in 8 wheel steps, 422 ms: 200, 595 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "ph": "C3"
+  },
+  "body": null
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "AE0EtWPif8Qi0qnG9W8FRRe",
+  "payload": null,
+  "lid": "7699771538125504221"
+}
+```
+
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 826 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "ph": "C3"
+  },
+  "body": null
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "Aa_ULgZohJ9NhH3xEsi4cIc",
+  "payload": null,
+  "lid": "7699771636854660104"
+}
+```
+
+**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 371 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "ph": "C3"
+  },
+  "body": null
+}
+```
+
+Answered:
+
+```json
+null
+```
+
 <!-- facts:end -->
 
 ## What it does

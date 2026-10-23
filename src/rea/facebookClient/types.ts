@@ -18,6 +18,17 @@ export interface OperationSighting {
   ms: number
   afterStepMs: number
   errors: string[]
+  sent?: unknown
+  answer?: unknown
+}
+
+export interface OperationSample {
+  run: string
+  step: string
+  status: number
+  ms: number
+  sent: unknown
+  answer: unknown
 }
 
 export interface GraphqlDefinition {

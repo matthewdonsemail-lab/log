@@ -34,7 +34,7 @@ export interface LifecycleTiming {
 
 export const DEFAULT_LIFECYCLE_TIMING: LifecycleTiming = {
   warmupMs: 24 * 60 * 60 * 1000,
-  activityGapMs: 150 * 60 * 1000,
+  activityGapMs: 10 * 1000,
   watchIntervalMs: 12 * 60 * 1000,
   retryMs: 60 * 1000,
   limitedRestMs: 24 * 60 * 60 * 1000

@@ -19,6 +19,67 @@ Seen 1 time(s) in 1 run(s).
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 4: click e191 | 1 | 200 | 603 ms | 2962 ms | — |
 
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261022T110738_61594063207669**, step 4: click e191: 200, 603 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMarketplaceRootQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "27968591542751515",
+  "fb_api_analytics_tags": [
+    "prefetch"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "marketplace_settings": {
+        "seller_mode_enabled": false,
+        "id": "TWFya2V0cGxhY2VTZXR0aW5nczo2MTU5NDA2MzIwNzY2OQ=="
+      },
+      "marketplace_age_verification_banner": null,
+      "marketplace_feature_access_status": {
+        "checkout_on_marketplace": "ELIGIBLE",
+        "comment_on_bsg_listing": "ELIGIBLE",
+        "comment_on_marketplace_listing": "ELIGIBLE",
+        "message_seller_on_marketplace": "ELIGIBLE",
+        "react_on_bsg_listing": "ELIGIBLE",
+        "react_on_marketplace_listing": "ELIGIBLE",
+        "see_seller_surfaces": "ELIGIBLE",
+        "sell_on_marketplace": "ELIGIBLE",
+        "view_seller_on_marketplace": "ELIGIBLE"
+      },
+      "marketplace_nux_states": {
+        "mp_seller_mode_browse_nux": "VISIBLE",
+        "mp_seller_mode_settings_nux": "VISIBLE",
+        "mp_seller_mode_tab_nux": "VISIBLE",
+        "mp_seller_mode_return_nux": "VISIBLE"
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792667424510,
+      "time_at_flush_ms": 1792667424567
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

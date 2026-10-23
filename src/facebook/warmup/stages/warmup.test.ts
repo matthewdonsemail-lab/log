@@ -27,7 +27,7 @@ describe('the warm-up machine (rule 35)', () => {
     const { actor, ran } = run()
     const output = await toPromise(actor)
     expect(ran).toEqual(['feedBrowse', 'marketplaceBrowse', 'createAccessCheck', 'sellingVisit', 'messagesVisit'])
-    expect(output).toEqual({ done: ran, failure: null, stopped: false, blocked: false })
+    expect(output).toEqual({ done: ran, failure: null, noted: [], stopped: false, blocked: false })
   })
 
   test('a failed step stops the warm-up there, and says which activity and step', async () => {
@@ -36,6 +36,14 @@ describe('the warm-up machine (rule 35)', () => {
     expect(ran).toEqual(['feedBrowse', 'marketplaceBrowse', 'createAccessCheck'])
     expect(output.failure).toEqual({ activity: 'createAccessCheck', failedAt: 's03_gotoMarketplaceCreateItem', error: 'redirected' })
     expect(output.stopped).toBe(true)
+  })
+
+  test("Bethlehem's case: the create page answers it may not post, so that's noted and the warm-up carries on to Selling and Messages", async () => {
+    const mayNotPost = 'marketplaceMayNotPost: page /marketplace/create/item answered fields.marketplace_new_seller_can_post_item = false, not true'
+    const { actor, ran } = run({ createAccessCheck: { ok: false, failedAt: 's03_gotomarketplaceCreateItem', error: mayNotPost, issue: 'marketplaceMayNotPost' } })
+    const output = await toPromise(actor)
+    expect(ran).toEqual(['feedBrowse', 'marketplaceBrowse', 'createAccessCheck', 'sellingVisit', 'messagesVisit'])
+    expect(output).toEqual({ done: ran, failure: null, noted: [{ activity: 'createAccessCheck', failedAt: 's03_gotomarketplaceCreateItem', error: mayNotPost, issue: 'marketplaceMayNotPost' }], stopped: false, blocked: false })
   })
 
   test("Erie's case: the first page was a checkpoint, so the warm-up is blocked there and goes no further", async () => {

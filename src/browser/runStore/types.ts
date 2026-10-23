@@ -24,3 +24,15 @@ export interface PrunedRun {
   domains: Record<string, number>
   kept: string
 }
+
+export interface StepHar {
+  har: string
+  exchanges: string
+}
+
+export interface Backfill {
+  steps: number
+  had: number
+  written: number
+  failed: string[]
+}

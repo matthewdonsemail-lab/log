@@ -54,6 +54,221 @@ Seen 73 time(s) in 23 run(s).
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 514 ms | 19383 ms | — |
 | inspect | step 20: dwell 2s | 2 | 200 | 497–801 ms | 171530–471647 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T074930_61594063207669**, openAny: read /marketplace/item/<id>/: 200, 420 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBScreenTimeLogger_syncMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "actor_id": "61594063207669",
+      "client_mutation_id": "1",
+      "device_time_iso": "2026-10-23T07:54:52.628Z",
+      "fb_web_fb_intervals_payload": {
+        "device_timestamp": "1792742092",
+        "device_timezone": "America/New_York",
+        "intervals": [
+          {
+            "end_timestamp": "1792731798",
+            "start_timestamp": "1792731337"
+          },
+          {
+            "end_timestamp": "1792732767",
+            "start_timestamp": "1792732562"
+          },
+          {
+            "end_timestamp": "1792737847",
+            "start_timestamp": "1792737807"
+          },
+          {
+            "end_timestamp": "1792740565",
+            "start_timestamp": "1792740545"
+          },
+          {
+            "end_timestamp": "1792740809",
+            "start_timestamp": "1792740691"
+          },
+          {
+            "end_timestamp": "1792742092",
+            "start_timestamp": "1792741789"
+          }
+        ],
+        "local_storage_id": "2159989",
+        "version": "V1"
+      },
+      "screentime_snapshot_payload": {
+        "l24h_s": -1,
+        "last_sync_timestamp": 1792741789,
+        "today_s": 300
+      },
+      "trigger_reason": "REGULAR"
+    }
+  },
+  "doc_id": "28969188822673160"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "screen_time_sync": {
+      "aggs": {
+        "__typename": "ScreenTimeSyncMutationOutput",
+        "today_s": 1147,
+        "l24h_s": -1
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742093258,
+      "time_at_flush_ms": 1792742093338
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T074930_61594063207669**, step 14: goto /marketplace/: 200, 806 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBScreenTimeLogger_syncMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "actor_id": "61594063207669",
+      "client_mutation_id": "1",
+      "device_time_iso": "2026-10-23T07:59:55.380Z",
+      "fb_web_fb_intervals_payload": {
+        "device_timestamp": "1792742395",
+        "device_timezone": "America/New_York",
+        "intervals": [
+          {
+            "end_timestamp": "1792742395",
+            "start_timestamp": "1792741789"
+          }
+        ],
+        "local_storage_id": "53504705",
+        "version": "V1"
+      },
+      "screentime_snapshot_payload": {
+        "l24h_s": -1,
+        "last_sync_timestamp": 1792742092,
+        "today_s": 1147
+      },
+      "trigger_reason": "REGULAR"
+    }
+  },
+  "doc_id": "28969188822673160"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "screen_time_sync": {
+      "aggs": {
+        "__typename": "ScreenTimeSyncMutationOutput",
+        "today_s": 1450,
+        "l24h_s": -1
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742396315,
+      "time_at_flush_ms": 1792742396414
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T080801_61594063207669**, step 8: goto /reel/<id>: 200, 514 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBScreenTimeLogger_syncMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "actor_id": "61594063207669",
+      "client_mutation_id": "1",
+      "device_time_iso": "2026-10-23T08:10:34.604Z",
+      "fb_web_fb_intervals_payload": {
+        "device_timestamp": "1792743034",
+        "device_timezone": "America/New_York",
+        "intervals": [
+          {
+            "end_timestamp": "1792742629",
+            "start_timestamp": "1792741789"
+          },
+          {
+            "end_timestamp": "1792742833",
+            "start_timestamp": "1792742731"
+          },
+          {
+            "end_timestamp": "1792743034",
+            "start_timestamp": "1792742903"
+          }
+        ],
+        "local_storage_id": "93452610",
+        "version": "V1"
+      },
+      "screentime_snapshot_payload": {
+        "l24h_s": -1,
+        "last_sync_timestamp": 1792742731,
+        "today_s": 1450
+      },
+      "trigger_reason": "REGULAR"
+    }
+  },
+  "doc_id": "28969188822673160"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "screen_time_sync": {
+      "aggs": {
+        "__typename": "ScreenTimeSyncMutationOutput",
+        "today_s": 1917,
+        "l24h_s": -1
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792743035053,
+      "time_at_flush_ms": 1792743035212
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

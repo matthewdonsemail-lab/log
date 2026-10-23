@@ -38,6 +38,86 @@ Seen 22 time(s) in 12 run(s).
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 829 ms | 15214 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 612 ms | 7196 ms | — |
 
+### What it sent and what came back (the newest 2 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T074930_61594063207669**, step 11: goto /marketplace/: 200, 750 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeContactChannelsContainerQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "9934887189887478"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "is_eligible_for_broadcast_channel_creation": false,
+      "actor": {
+        "__typename": "User",
+        "recent_broadcast_channels": [],
+        "id": "61594063207669"
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742237966,
+      "time_at_flush_ms": 1792742237985
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T074930_61594063207669**, step 14: goto /marketplace/: 200, 612 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeContactChannelsContainerQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "9934887189887478"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "is_eligible_for_broadcast_channel_creation": false,
+      "actor": {
+        "__typename": "User",
+        "recent_broadcast_channels": [],
+        "id": "61594063207669"
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742396587,
+      "time_at_flush_ms": 1792742396608
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

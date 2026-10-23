@@ -90,7 +90,7 @@ export const warmupActivityMachine = setup({
             const step = resolveStep(context.steps[context.index], context.urlBefore)
             const reply = event.output as StepReply
             const landed = pageProblem({ action: step.action, url: step.action === 'goto' ? step.args[0] : undefined }, reply)
-            const outcome = landed && (landed.code === 'checkpointed' || landed.code === 'loginWall') ? { id: step.id, ok: false, issue: `${landed.code}: ${landed.detail}`, url: reply.url, folder: reply.folder } : checkStep(step, context.url, reply)
+            const outcome = landed && (landed.code === 'checkpointed' || landed.code === 'loginWall') ? { id: step.id, ok: false, issue: `${landed.code}: ${landed.detail}`, url: reply.url, folder: reply.folder } : checkStep(step, context.url, reply, { uid: context.account })
             return {
               index: context.index + 1,
               url: reply.url ?? context.url,
@@ -172,7 +172,7 @@ export function stepsForPlan(plan: ReelPlan, input: Pick<PersonaSessionInput, 's
   const queue: ActivityStep[] = [dwell(s.watch, 'watch', plan.watchMs, why)]
   if (plan.action === 'openComments') queue.push(s.openComments, s.scrollComments, dwell(s.watch, 'inComments', t.commentMs, `${(t.commentMs / 1000).toFixed(1)} s in the comments (the pack's comment time)`), s.closeComments)
   if (plan.action === 'like') queue.push(s.like)
-  if (plan.action === 'openProfile' && reelUrl) queue.push(s.openProfile, dwell(s.watch, 'onProfile', t.profileMs, `${(t.profileMs / 1000).toFixed(1)} s on the profile`), { ...s.backToReel, args: [reelUrl] })
+  if (plan.action === 'openProfile' && reelUrl) queue.push(s.openProfile, dwell(s.watch, 'onProfile', t.profileMs, `${(t.profileMs / 1000).toFixed(1)} s on the profile`), { ...s.backToReel, args: [reelUrl] }, s.unmute)
   if (!lastReel) queue.push(s.swipe)
   return queue
 }
@@ -249,7 +249,7 @@ export const reelPersonaMachine = setup({
             const reply = event.output as StepReply
             const landed = pageProblem({ action: step.action, url: step.action === 'goto' ? step.args[0] : undefined }, reply)
             const walled = landed !== null && (landed.code === 'checkpointed' || landed.code === 'loginWall')
-            const outcome: StepOutcome = walled ? { id: step.id, ok: false, issue: `${landed!.code}: ${landed!.detail}`, url: reply.url, folder: reply.folder } : checkStep(step, context.url, reply)
+            const outcome: StepOutcome = walled ? { id: step.id, ok: false, issue: `${landed!.code}: ${landed!.detail}`, url: reply.url, folder: reply.folder } : checkStep(step, context.url, reply, { uid: context.account })
             const swiped = step.id === 'swipe' && outcome.ok
             const lands = LANDS.has(step.id) && reply.folder
             return {
@@ -410,7 +410,7 @@ export const feedPersonaMachine = setup({
             const reply = event.output as StepReply
             const landed = pageProblem({ action: step.action, url: step.action === 'goto' ? step.args[0] : undefined }, reply)
             const walled = landed !== null && (landed.code === 'checkpointed' || landed.code === 'loginWall')
-            const outcome: StepOutcome = walled ? { id: step.id, ok: false, issue: `${landed!.code}: ${landed!.detail}`, url: reply.url, folder: reply.folder } : checkStep(step, null, reply)
+            const outcome: StepOutcome = walled ? { id: step.id, ok: false, issue: `${landed!.code}: ${landed!.detail}`, url: reply.url, folder: reply.folder } : checkStep(step, null, reply, { uid: context.account })
             const isPost = step.id === 'nextPost'
             return {
               queue: context.queue.slice(1),

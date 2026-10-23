@@ -1,3 +1,5 @@
+import type { StepExchange } from '../../../subq/stepReading/types'
+
 export interface PageState {
   id: string
   what: string
@@ -8,12 +10,24 @@ export interface PageState {
 interface StateRule extends PageState {
   url?: RegExp
   text?: RegExp
+  answer?: (exchanges: readonly StepExchange[]) => boolean
   withoutPin?: string
 }
 
 export interface StateContext {
   messengerPin?: boolean
+  exchanges?: readonly StepExchange[]
 }
+
+export function answered(value: unknown, key: string, test: (found: unknown) => boolean): boolean {
+  if (Array.isArray(value)) return value.some((v) => answered(v, key, test))
+  if (value && typeof value === 'object') return Object.entries(value as Record<string, unknown>).some(([k, v]) => (k === key && test(v)) || answered(v, key, test))
+  return false
+}
+
+export const mayNotPost = (exchanges: readonly StepExchange[]): boolean => exchanges.some((e) => e.kind === 'document' && answered(e.answer, 'marketplace_new_seller_can_post_item', (v) => v === false))
+
+export const partnerListings = (exchanges: readonly StepExchange[]): boolean => exchanges.some((e) => answered(e.answer, 'product_details_type', (v) => v === 'PARTNER_LISTING'))
 
 const PIN_FROM_MATT = 'matt gives the account\'s 6-digit PIN once: `log facebook messenger pin --account <a>` in his terminal (a Clack prompt, kept in Twenty, never printed). Then reopen the browser so the session has it'
 
@@ -54,6 +68,23 @@ export const PAGE_STATES: readonly StateRule[] = [
     resolve: 'press its Update by ref (`log inspect do click <ref of "Update"> --live`), then set the location back with `log inspect do setLocation "City, State" --live`',
     person: false
   },
+  {
+    id: 'marketplaceCreateLimitReached',
+    url: /\/marketplace\/create/i,
+    text: /limit reached|not able to create new listings/i,
+    answer: mayNotPost,
+    what: 'Marketplace\'s create page answers that this account may not post now: its HTML says `marketplace_new_seller_can_post_item: false` and the page shows "Limit reached" (Bethlehem, inspect 20261023T045453 step 01; the same field was true on 2026-10-22, runs 20261022T105341 and 20261022T110738)',
+    resolve: 'nothing to press: no listing can be created from this account now, so it publishes nothing and matt decides. Read it again on a later day from the create page\'s answer (`marketplace_new_seller_can_post_item`)',
+    person: true
+  },
+  {
+    id: 'marketplacePartnerFeed',
+    url: /\/marketplace(\/|$)/i,
+    answer: partnerListings,
+    what: 'Marketplace answers with partner shops\' listings (`product_details_type: PARTNER_LISTING`, a `partner_brand_name` and a `partner_listing_location`), from Europe though the account is in the US (Bethlehem, inspect 20261023T045453 step 03: Catawiki in Italy and buycycle-es, while `buy_location` was Bethlehem, Pennsylvania)',
+    resolve: 'read the Marketplace location from its own answer: `log inspect do goto https://www.facebook.com/marketplace/` and read `buy_location` in the step\'s exchanges. If it isn\'t the account\'s home, `log inspect do setLocation "City, State" --live`. If it is, carry on with the step',
+    person: false
+  },
   { id: 'rememberPassword', text: /remember password/i, what: 'the "Remember password" prompt', resolve: 'click "Not now" (`clickRole button "Not now"`)', person: false },
   { id: 'twoStepCode', url: /two_step_verification|two_factor|\/checkpoint/i, text: /enter (the )?(6-digit )?code|authentication code|login code/i, what: 'two-step: the code field', resolve: '`log inspect do code --live --account <a>` (the TOTP from Twenty, rule 21)', person: false },
   { id: 'loginForm', url: /\/login|login\.php/i, what: 'the login form', resolve: '`log inspect do signIn --live --account <a>` (rule 21), or `log facebook connect --account <a>`', person: false },
@@ -63,8 +94,13 @@ export const PAGE_STATES: readonly StateRule[] = [
 export function pageStateOf(url: string, text: string, context: StateContext = {}): PageState | null {
   for (const s of PAGE_STATES) {
     if (s.url && !s.url.test(url)) continue
-    if (s.text && !s.text.test(text)) continue
-    if (!s.url && !s.text) continue
+    if (s.answer && context.exchanges?.length) {
+      if (!s.answer(context.exchanges)) continue
+    } else {
+      if (s.answer && !s.text) continue
+      if (s.text && !s.text.test(text)) continue
+    }
+    if (!s.url && !s.text && !s.answer) continue
     if (s.withoutPin && !context.messengerPin) return { id: s.id, what: s.what, resolve: s.withoutPin, person: true }
     return { id: s.id, what: s.what, resolve: s.resolve, person: s.person }
   }
@@ -80,6 +116,7 @@ export interface StateAt {
   account: string
   text: string
   messengerPin?: boolean
+  exchanges?: readonly StepExchange[]
 }
 
 export function refOf(text: string, label: RegExp): string | null {
@@ -116,6 +153,8 @@ export const RESOLVE_CALLS: Readonly<Record<string, (at: StateAt) => ResolveCall
   messengerPinCreate: (at) => (at.messengerPin ? { tool: 'flowMessengerPinCreateLive', input: { account: at.account, confirmLive: true } } : null),
   messengerPinEnter: (at) => (at.messengerPin ? liveStep(at.account, 'pin') : null),
   marketplacePartnerListings: clickLabel(/(:\s*|")Update"?\s*$/),
+  marketplaceCreateLimitReached: () => null,
+  marketplacePartnerFeed: (at) => ({ tool: 'inspectDo', input: { account: at.account, action: 'goto', values: ['https://www.facebook.com/marketplace/'] } }),
   rememberPassword: (at) => liveStep(at.account, 'clickRole', ['button', 'Not now']),
   twoStepCode: (at) => liveStep(at.account, 'code'),
   loginForm: (at) => liveStep(at.account, 'signIn'),

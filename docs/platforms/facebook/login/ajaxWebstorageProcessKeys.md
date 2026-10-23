@@ -47,6 +47,82 @@ Seen 43 time(s) in 15 run(s).
 | inspect | step 10: dwell 21s | 1 | 200 | 371 ms | 15216 ms | — |
 | inspect | step 18: dwell 19s | 1 | 200 | 1289 ms | 11038 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 697 ms
+
+Sent:
+
+```json
+{
+  "query": "(1 fields)",
+  "body": "(103 fields)"
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "AJadCUsA8-Z_m7Ojh23Y1uC",
+  "payload": {
+    "keys": []
+  },
+  "lid": "7699771676156232819"
+}
+```
+
+**runs/warmup/20261023T074930_61594063207669**, step 17: dwell 2-4s: 200, 458 ms
+
+Sent:
+
+```json
+{
+  "query": "(1 fields)",
+  "body": "(103 fields)"
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "AfnT1JphJydAbnHt8nr4Gck",
+  "payload": {
+    "keys": []
+  },
+  "lid": "7699770246374084873"
+}
+```
+
+**runs/inspect/20261023T080801_61594063207669**, step 3: dwell 24s: 200, 629 ms
+
+Sent:
+
+```json
+{
+  "query": "(1 fields)",
+  "body": "(101 fields)"
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "AkUcySC8D1CyDZ7yJM9GzK6",
+  "payload": {
+    "keys": []
+  },
+  "lid": "7699772318974175663"
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

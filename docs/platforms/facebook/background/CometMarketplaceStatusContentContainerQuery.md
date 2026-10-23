@@ -20,6 +20,138 @@ Seen 2 time(s) in 2 run(s).
 | inspect | step 1: goto /marketplace/inbox | 1 | 200 | 384 ms | 22463 ms | — |
 | inspect | step 3: goto /marketplace/inbox | 1 | 200 | 604 ms | 473985 ms | — |
 
+### What it sent and what came back (the newest 2 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261022T155857_61594063207669**, step 3: goto /marketplace/inbox: 200, 604 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMarketplaceStatusContentContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "scale": 1
+  },
+  "doc_id": "35298386203140047"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "marketplaceViolationTransparencyViewModel": {
+        "profile_name": "Bethlehem Trash",
+        "toast_title": null,
+        "toast_body": null,
+        "toast_icon_type": "WARNING_CAUTION",
+        "toast_button_text": null,
+        "toast_button_uri": null,
+        "toast_action": null,
+        "enforcement_instance_id": null,
+        "access_state_title": "You have full access to Marketplace",
+        "access_state_body": "You can sell items and message sellers on Marketplace.",
+        "access_state_image": null,
+        "is_marketplace_access_banned": false,
+        "comet_listings_uri": "/marketplace/you/selling",
+        "comet_policies_uri": "https://www.facebook.com/policies_center/commerce",
+        "csat_survey": {
+          "headline_text": "Tell us how we're doing",
+          "body_text": "How satisfied or dissatisfied are you with the help you received for this issue?",
+          "feedback_button_text": "Give feedback",
+          "entity_id": "61594063207669",
+          "csat_channel": "INTEGRITY_HUB_MARKETPLACE_STATUS",
+          "audience_config": "FB_GENPOP",
+          "should_show": true,
+          "profile_status": "GOOD"
+        }
+      },
+      "actor": {
+        "__typename": "User",
+        "id": "61594063207669"
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792685331863,
+      "time_at_flush_ms": 1792685331898
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261022T113536_61594063207669**, step 1: goto /marketplace/inbox: 200, 384 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMarketplaceStatusContentContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "scale": 1
+  },
+  "doc_id": "35298386203140047"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "marketplaceViolationTransparencyViewModel": {
+        "profile_name": "Bethlehem Trash",
+        "toast_title": null,
+        "toast_body": null,
+        "toast_icon_type": "WARNING_CAUTION",
+        "toast_button_text": null,
+        "toast_button_uri": null,
+        "toast_action": null,
+        "enforcement_instance_id": null,
+        "access_state_title": "You have full access to Marketplace",
+        "access_state_body": "You can sell items and message sellers on Marketplace.",
+        "access_state_image": null,
+        "is_marketplace_access_banned": false,
+        "comet_listings_uri": "/marketplace/you/selling",
+        "comet_policies_uri": "https://www.facebook.com/policies_center/commerce",
+        "csat_survey": {
+          "headline_text": "Tell us how we're doing",
+          "body_text": "How satisfied or dissatisfied are you with the help you received for this issue?",
+          "feedback_button_text": "Give feedback",
+          "entity_id": "61594063207669",
+          "csat_channel": "INTEGRITY_HUB_MARKETPLACE_STATUS",
+          "audience_config": "FB_GENPOP",
+          "should_show": true,
+          "profile_status": "GOOD"
+        }
+      },
+      "actor": {
+        "__typename": "User",
+        "id": "61594063207669"
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792668976992,
+      "time_at_flush_ms": 1792668977048
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

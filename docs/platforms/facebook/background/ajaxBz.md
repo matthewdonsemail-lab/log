@@ -39,6 +39,38 @@ Seen 59 time(s) in 7 run(s).
 | inspect | step 3: goto /marketplace/inbox | 3 | 200, 0 | 0–501 ms | 589944–1455304 ms | — |
 | warmup | step 17: dwell 2-4s | 1 | 200 | 377 ms | 80196 ms | — |
 
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T074930_61594063207669**, step 17: dwell 2-4s: 200, 377 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "cquick": "_r_31_",
+    "cquick_token": "AUdmRnUAYDZx6QpruXYYHJxPfaE",
+    "ctarget": "https://www.facebook.com"
+  },
+  "body": {
+    "------WebKitFormBoundarytLYumdcAb59VtD07\r\nContent-Disposition: form-data; name": "\"ts\"\r\n\r\n1792742541282\r\n------WebKitFormBoundarytLYumdcAb59VtD07\r\nContent-Disposition: form-data; name=\"q\"\r\n\r\n[{\"app_id\":\"2220391788200892\",\"posts\":\"zgS4W1sicWV4Iix7ImwiOiJKe1wicWVpZFwiOlwiNjE1OTQwNjMyMDc2NjlcIixcInUFGQULAHQFCwRmYgUNIGdrc1wiOltdLAE/eFwiOm51bGx9In0sMTc5Mjc0MjQ4MTI1NSwwLDg1XSz cQCmcQAELjT cwD cwD cwD cwCycwA4X2FjdGluZ19hY2NvdW50ptkBJC40LDAsMTAwXV0=\",\"user\":\"61594063207669\",\"webSessio… (556 chars)"
+  }
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "A-enHRPtqdcp945eGeLpZG8",
+  "payload": null,
+  "lid": "7699770584893673991"
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

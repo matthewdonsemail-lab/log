@@ -780,6 +780,39 @@
     "publish": "failed",
     "action": "Use \"City, Region\" as Facebook suggests it, or leave location out."
   },
+  "answerNotAsExpected": {
+    "layer": "warmup",
+    "meaning": "A step's internal API answer isn't what the step must achieve (rule 73): the call wasn't answered in the step, it answered an error status or errors, or a field it reads isn't the value the step needs. The step's own recording says which (exchanges.json).",
+    "retryable": true,
+    "raisedIn": [
+      "cli/flow",
+      "cli/warmup",
+      "facebook/warmup/activities"
+    ],
+    "action": "Read the step's exchanges.json and its request's doc (\"What it sent and what came back\"), then run the step again or fix the step from what the answer says (rule 25)."
+  },
+  "marketplaceMayNotPost": {
+    "layer": "account",
+    "meaning": "Marketplace's create page answers `marketplace_new_seller_can_post_item: false`: no listing can be created from this account now. Bethlehem, 2026-10-23 (it was true on 2026-10-22).",
+    "retryable": false,
+    "raisedIn": [
+      "cli/flow",
+      "cli/warmup"
+    ],
+    "publish": "blocked",
+    "action": "Publish nothing from this account; matt decides. Read the create page's answer again on a later day."
+  },
+  "marketplaceLocationWrong": {
+    "layer": "account",
+    "meaning": "A Marketplace page's own answer puts the account somewhere other than its home: `sell_location` on the create page, or `buy_location` on Marketplace, names another city or country (Bethlehem's sell_location was Barranco, Peru on 2026-10-22).",
+    "retryable": true,
+    "raisedIn": [
+      "cli/flow",
+      "cli/warmup"
+    ],
+    "publish": "blocked",
+    "action": "Set the Marketplace location to the account's home with `log inspect do setLocation \"City, State\" --live` (rule 72), then read the page's answer again."
+  },
   "priceMismatch": {
     "layer": "form",
     "meaning": "At review the Price reads something other than what was typed.",
@@ -831,10 +864,11 @@
   },
   "noListingId": {
     "layer": "form",
-    "meaning": "Publish was clicked but no Selling card matched the title.",
+    "meaning": "Publish was clicked but no listing id came back: no Selling card matched the title, or the create call's answer (useCometMarketplaceListingCreateMutation) had no `data.marketplace_listing_create.listing.id`.",
     "retryable": false,
     "raisedIn": [
-      "publish.capturingId"
+      "publish.capturingId",
+      "cli/flow"
     ],
     "publish": "unconfirmedId",
     "action": "Check Marketplace > Selling by hand. Never re-publish: it would duplicate."

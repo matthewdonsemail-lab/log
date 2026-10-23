@@ -7,6 +7,18 @@
       "id": "s01_gotomarketplace",
       "action": "goto",
       "url": "https://www.facebook.com/marketplace/",
+      "answers": [
+        {
+          "call": "page /marketplace/",
+          "says": [
+            {
+              "answer": "fields.buy_location.display_name",
+              "home": "city",
+              "code": "marketplaceLocationWrong"
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "07_gotoHttpsWwwFacebook",
         "ms": 20454,
@@ -58,6 +70,17 @@
       "args": [
         "/marketplace/item/",
         "2-4"
+      ],
+      "answers": [
+        {
+          "call": "MarketplacePDPContainerQuery",
+          "says": [
+            {
+              "answer": "data.viewer.marketplace_product_details_page",
+              "present": true
+            }
+          ]
+        }
       ],
       "recorded": {
         "step": "10_openany24X",

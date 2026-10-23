@@ -13,8 +13,8 @@ export const FEED: PlatformActivity = {
       action: 'goto',
       args: ['https://www.facebook.com/'],
       why: 'the home feed, signed in',
-      expect: { urlMatches: '^https://www\\.facebook\\.com/(\\?.*)?$' },
-      recorded: `${RUN} step 01: the home feed, 296 requests, 24 s`
+      expect: { urlMatches: '^https://www\\.facebook\\.com/(\\?.*)?$', answers: [{ call: 'MAWVerifyThreadCutover_ContactCapabilities2Query', says: [{ answer: 'data.user.id', home: 'uid' }] }] },
+      recorded: `${RUN} step 01: the home feed, 296 requests, 24 s; MAWVerifyThreadCutover_ContactCapabilities2Query answers the signed-in account as data.user.id on every feed load recorded (FeedComposerCometRootQuery wasn't sent on warm-up 20261023T072846's first load)`
     },
     {
       id: 'dismissPrompt',
@@ -26,7 +26,7 @@ export const FEED: PlatformActivity = {
       recorded: `${INSPECT} step 27: heading "Remember password" with button "OK", button "Not now" and button "Close", over the feed`
     },
     { id: 'settle', action: 'dwell', args: ['3-5'], why: "the feed loads; a person looks at the top before reading down (Listaro: 3-5 s)" },
-    { id: 'readFeed', action: 'scroll', args: ['4-7', '300-600'], why: 'read down the feed: 4-7 wheel scrolls of 300-600 px (Listaro stage 1)', recorded: `${RUN} step 03: +378, +386, +411, +501 px, 86 requests, 3 posts on screen` },
+    { id: 'readFeed', action: 'scroll', args: ['4-7', '300-600'], why: 'read down the feed: 4-7 wheel scrolls of 300-600 px (Listaro stage 1)', expect: { answers: [{ call: 'CometNewsFeedPaginationQuery', ifSent: true, says: [{ answer: 'first.data.viewer.news_feed', present: true }] }] }, recorded: `${RUN} step 03: +378, +386, +411, +501 px, 86 requests, 3 posts on screen; CometNewsFeedPaginationQuery answered more of the feed (its doc)` },
     {
       id: 'nextPost',
       action: 'nextPost',
@@ -39,10 +39,10 @@ export const FEED: PlatformActivity = {
       action: 'likePost',
       args: [],
       why: "like the post in view: its own Like, not the first on the page (acts on Facebook)",
-      expect: { shows: { role: 'button', name: 'Remove Like' } },
+      expect: { answers: [{ call: 'CometUFIFeedbackReactMutation', says: [{ answer: 'data.feedback_react.feedback.viewer_feedback_reaction_info.id', sent: 'variables.input.feedback_reaction_id' }] }] },
       clicks: true,
       likes: true,
-      recorded: `${RUN}: skipped without --likes; step 03's snapshot has each post's button "Like" (3) beside its count, button "Like: N people"`
+      recorded: `${RUN}: skipped without --likes; step 03's snapshot has each post's button "Like" (3) beside its count, button "Like: N people". Passes on Facebook's answer (rule 73): Bethlehem inspect 20261023T051540 steps 03 and 05, CometUFIFeedbackReactMutation answered 200 with the Like we sent saved`
     },
     {
       id: 'seeMore',
@@ -77,8 +77,8 @@ export const FEED: PlatformActivity = {
       action: 'goto',
       args: ['https://www.facebook.com/marketplace/'],
       why: 'then a short look at Marketplace (Listaro stage 1)',
-      expect: { urlMatches: '/marketplace/' },
-      recorded: `${RUN} step 04: /marketplace/, 248 requests, 19 s`
+      expect: { urlMatches: '/marketplace/', answers: [{ call: 'page /marketplace/', says: [{ answer: 'fields.buy_location.display_name', present: true }, { answer: 'fields.buy_location.display_name', home: 'city', code: 'marketplaceLocationWrong' }] }] },
+      recorded: `${RUN} step 04: /marketplace/, 248 requests, 19 s; the page's own answer says buy_location ("Bethlehem, Pennsylvania" on 20261022T113536)`
     },
     { id: 'lookMarketplace', action: 'dwell', args: ['3-5'], why: 'Marketplace loads; a look at it (Listaro: 3-5 s)' },
     { id: 'scrollMarketplace', action: 'scroll', args: ['1', '400-800'], why: 'one scroll down Marketplace (Listaro: 400-800 px)', recorded: `${RUN} step 06: +783 px` },
@@ -87,6 +87,7 @@ export const FEED: PlatformActivity = {
       action: 'openAny',
       args: ['/marketplace/item/', '1-3'],
       why: 'open 1-3 listings, read each and come back (Listaro stage 2: 2-4)',
+      expect: { answers: [{ call: 'MarketplacePDPContainerQuery', says: [{ answer: 'data.viewer.marketplace_product_details_page', present: true }] }] },
       clicks: true
     }
   ],

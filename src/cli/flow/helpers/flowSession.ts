@@ -1,9 +1,10 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
-import { createFlowMachine, fillStep, pageProblem } from "../../../browser/flow/index.ts";
+import { answersIssue, answerWait, createFlowMachine, fillStep, pageProblem } from "../../../browser/flow/index.ts";
+import { stepExchangesAt } from "../../../subq/stepReading/helpers/stepExchanges.ts";
 import { clearCurrentInspect, writeCurrentInspect } from "../../../browser/inspect/index.ts";
-import type { FlowActInput, FlowDefinition, FlowRunOutput, FlowStep, FlowStepResult } from "../../../browser/flow/index.ts";
+import type { AnswerAccount, FlowActInput, FlowDefinition, FlowRunOutput, FlowStep, FlowStepResult } from "../../../browser/flow/index.ts";
 import type { CurrentInspect, InspectAction } from "../../../browser/inspect/index.ts";
 import { createInspector, formatTraceLine } from "../../../observability/trace/index.ts";
 import type { CommandContext } from "../../runner/types.ts";
@@ -76,7 +77,7 @@ export async function runFlowInSession(
   current: CurrentInspect,
   flow: FlowDefinition,
   filled: Record<string, string>,
-  options: { skip?: (step: FlowStep) => boolean; onStep?: (step: FlowStep, result: FlowStepResult) => void } = {},
+  options: { skip?: (step: FlowStep) => boolean; onStep?: (step: FlowStep, result: FlowStepResult) => void; account?: AnswerAccount } = {},
 ): Promise<FlowRunOutput> {
   const steps = options.skip ? flow.steps.filter((s) => !options.skip!(s)) : flow.steps;
   const machine = createFlowMachine({ ...flow, steps }).provide({
@@ -84,12 +85,14 @@ export async function runFlowInSession(
       act: fromPromise<FlowStepResult, FlowActInput>(async ({ input }) => {
         const step = fillStep(input.step, filled);
         const { action, args } = commandFor(step);
-        const reply = await context.sendInspect(current, action, args, 240_000, step.expect ? { name: step.expect, ms: 45_000 } : undefined);
+        const reply = await context.sendInspect(current, action, args, 240_000, step.expect ? { name: step.expect, ms: 45_000 } : answerWait(step.answers));
         let result: FlowStepResult = reply
           ? { id: step.id, ok: reply.ok !== false, error: reply.error, expectSeen: reply.expect?.seen, ms: (reply as { ms?: number }).ms, folder: reply.folder }
           : { id: step.id, ok: false, error: "no reply from the session" };
         const problem = reply ? pageProblem(step, reply) : null;
         if (problem) result = { ...result, ok: false, issue: problem.code, error: `${problem.code}: ${problem.detail}` };
+        const wrong = result.ok && step.answers?.length && reply?.folder ? answersIssue(step.answers, stepExchangesAt(reply.folder), options.account ?? { uid: filled.uid }) : null;
+        if (wrong) result = { ...result, ok: false, issue: wrong.code, error: `${wrong.code}: ${wrong.text}` };
         options.onStep?.(step, result);
         return result;
       }),

@@ -235,6 +235,248 @@ Seen 938 time(s) in 32 run(s).
 | inspect | step 18: dwell 19s | 1 | 200 | 371 ms | 19369 ms | — |
 | inspect | step 20: dwell 2s | 1 | 200 | 614 ms | 150413 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 373 ms
+
+Sent:
+
+```json
+{
+  "queries[0]": "MarketplacePDPC2CMediaViewerWithImagesQuery",
+  "queries[1]": "MarketplacePDPContainerQuery",
+  "queries[2]": "MarketplacePDPRightColumnAdsQuery"
+}
+```
+
+Answered:
+
+```json
+{
+  "payload": {
+    "predictions": {
+      "MarketplacePDPC2CMediaViewerWithImagesQuery": {},
+      "MarketplacePDPContainerQuery": {
+        "TmyrEVZ": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4i-2u4/yk/l/en_GB-j/I7TPmm1DWQP.js",
+          "c": 1,
+          "p": ":112",
+          "m": "1051444067_main"
+        },
+        "csr:_c_1_Th": {
+          "type": "csr",
+          "src": ":76,2,1,26,192,24,18,141,30,654,315,643,99,121,82,570,3,65,184,128,255,542,139,5,29,140,206,39,269,27,527,75,107,47,216,376,657,227,106,32,31,79,60,122,85,68,14,9,69,8,148,197,541,146,35,295,90,19,96,208,70,598,532,64,61,186,63,207,23,435,41,168,6,34,62,59,243,114,209,7,83,44,12,391,456,10,4,297,86,78,178,190,187,66,16,544,20,11,25,55,45,274,7630",
+          "c": 1
+        }
+      },
+      "MarketplacePDPRightColumnAdsQuery": {
+        "csr:_c_0_VI": {
+          "type": "csr",
+          "src": ":2,1,3,5,8,73,6,7,10,460,4",
+          "c": 1
+        }
+      }
+    },
+    "consistency": {
+      "rev": 1051444067
+    }
+  },
+  "dtsgAsyncGetToken": null,
+  "dtsgToken": null
+}
+```
+
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 552 ms
+
+Sent:
+
+```json
+{
+  "queries[0]": "CometMarketplaceLeftRailNavigationContainerQuery",
+  "queries[1]": "CometMarketplaceRootQuery",
+  "queries[2]": "MarketplaceCometBrowseFeedLightContainerQuery",
+  "queries[3]": "CometMarketplaceNotificationsListContainerQuery",
+  "queries[4]": "MarketplaceBannerContainerQuery",
+  "qpl_active_flow_ids": "30613466"
+}
+```
+
+Answered:
+
+```json
+{
+  "payload": {
+    "predictions": {
+      "CometMarketplaceLeftRailNavigationContainerQuery": {},
+      "CometMarketplaceRootQuery": {},
+      "MarketplaceCometBrowseFeedLightContainerQuery": {},
+      "CometMarketplaceNotificationsListContainerQuery": {},
+      "MarketplaceBannerContainerQuery": {}
+    },
+    "consistency": {
+      "rev": 1051444067
+    }
+  },
+  "dtsgAsyncGetToken": null,
+  "dtsgToken": null
+}
+```
+
+**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 368 ms
+
+Sent:
+
+```json
+{
+  "queries[0]": "CometFeedInlineComposerQuery",
+  "queries[1]": "CometModernHomeFeedQuery",
+  "queries[2]": "CometHomeContentQuery",
+  "queries[3]": "CometClassicHomeLeftRailContainerQuery",
+  "queries[4]": "CometMegaphoneRootQuery",
+  "queries[5]": "CometRightSideHeaderCardsQuery",
+  "queries[6]": "CometHomeContactChannelsContainerQuery",
+  "queries[7]": "CometHomeContactCommunityChatsContainerQuery",
+  "queries[8]": "CometHomeContactGroupsContainerQuery",
+  "queries[9]": "CometHomeContactsContainerQuery",
+  "queries[10]": "StoriesTrayRectangularRootQuery"
+}
+```
+
+Answered:
+
+```json
+{
+  "payload": {
+    "predictions": {
+      "CometFeedInlineComposerQuery": {
+        "csr:_j_0_As": {
+          "type": "csr",
+          "src": ":2,1,192,3,5,8,40,419,6,7,10,4,50",
+          "c": 1
+        }
+      },
+      "CometModernHomeFeedQuery": {
+        "2Ohn6eO": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4iuel4/y8/l/en_GB-j/wDaY0ZY8qrm.js",
+          "c": 1,
+          "p": ":88",
+          "m": "1051444067_main"
+        },
+        "+pZJFVd": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4iC6m4/yB/l/en_GB-j/RruxgiIDmeb.js",
+          "c": 1,
+          "p": ":109",
+          "m": "1051444067_main"
+        },
+        "UBlgEOC": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4/yh/r/ysE9SZ9QtIC.js",
+          "c": 1,
+          "p": ":108",
+          "m": "1051444067_main"
+        },
+        "6C2g8f2": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4i8LW4/yd/l/en_GB-j/EAYGKqai5Lt.js",
+          "c": 1,
+          "p": ":484",
+          "m": "1051444067_main"
+        },
+        "N43HXXk": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4iNh74/yr/l/en_GB-j/9bnlLdjWdKv.js",
+          "c": 1,
+          "p": ":136",
+          "m": "1051444067_main"
+        },
+        "csr:_j_5_dc": {
+          "type": "csr",
+          "src": ":2,1,26,54,24,30,72,33,52,37,21,3,281,5,203,27,75,43,115,57,32,31,283,60,13,122,14,9,120,69,8,40,19,70,382,15,73,41,6,114,132,158,174,51,7,74,12,149,10,4,124,150,103,66,16,20,11,104,45",
+          "c": 1
+        }
+      },
+      "CometHomeContentQuery": {
+        "L5QJ1cR": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4iHD64/yN/l/en_GB-j/u-ibXh_Gm62.js",
+          "c": 1,
+          "p": ":2499",
+          "m": "1051444067_main"
+        },
+        "csr:_j_6_Ho": {
+          "type": "csr",
+          "src": ":2,1,3,5,29,206,9,8,23,6,7,10,4,11,327",
+          "c": 1
+        }
+      },
+      "CometClassicHomeLeftRailContainerQuery": {},
+      "CometMegaphoneRootQuery": {
+        "MFf1moB": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4iIAn4/yO/l/en_GB-j/GSKlZ0dhdnO.js",
+          "c": 1,
+          "p": ":1253",
+          "m": "1051444067_main"
+        },
+        "csr:_j_2_3j": {
+          "type": "csr",
+          "src": ":2,1,26,54,24,30,37,3,184,5,29,770,32,31,68,9,8,40,73,41,6,7,149,10,4,150,11",
+          "c": 1
+        }
+      },
+      "CometRightSideHeaderCardsQuery": {
+        "ALlW4R7": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4ipnM4/yR/l/en_GB-j/STMnz9_3OIA.js",
+          "c": 1,
+          "p": ":236",
+          "m": "1051444067_main"
+        },
+        "csr:_j_3_xa": {
+          "type": "csr",
+          "src": ":2,1,3,5,32,9,118,8,171,70,73,6,7,12,10,22,4,16,20,11",
+          "c": 1
+        }
+      },
+      "CometHomeContactChannelsContainerQuery": {},
+      "CometHomeContactCommunityChatsContainerQuery": {},
+      "CometHomeContactGroupsContainerQuery": {},
+      "CometHomeContactsContainerQuery": {
+        "csr:_j_1_5f": {
+          "type": "csr",
+          "src": ":2,1,26,3,65,5,9,8,208,7338,73,402,98,41,6,330,7,10,4,78,11,25,364",
+          "c": 1
+        }
+      },
+      "StoriesTrayRectangularRootQuery": {
+        "UBlgEOC": {
+          "type": "js",
+          "src": "https://static.xx.fbcdn.net/rsrc.php/v4/yh/r/ysE9SZ9QtIC.js",
+          "c": 1,
+          "p": ":108",
+          "m": "1051444067_main"
+        },
+        "csr:_j_4_HZ": {
+          "type": "csr",
+          "src": ":2,1,33,15",
+          "c": 1
+        }
+      }
+    },
+    "consistency": {
+      "rev": 1051444067
+    }
+  },
+  "dtsgAsyncGetToken": null,
+  "dtsgToken": null
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

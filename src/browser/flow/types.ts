@@ -3,6 +3,33 @@ export type FlowAction = 'goto' | 'click' | 'fill' | 'upload' | 'signIn' | 'code
   | 'scroll' | 'openAny' | 'clickAny' | 'dwell'
   | 'press' | 'scrollIn'
 
+export interface AnswerCheck {
+  answer: string
+  sent?: string
+  is?: string | number | boolean | null
+  present?: boolean
+  home?: 'city' | 'country' | 'uid'
+  code?: import('../../errors/catalog/index').ErrorCode
+}
+
+export interface AnswerExpect {
+  call: string
+  says: AnswerCheck[]
+  waitMs?: number
+  ifSent?: boolean
+}
+
+export interface AnswerAccount {
+  uid?: string | null
+  homeCity?: string | null
+  homeCountry?: string | null
+}
+
+export interface AnswerIssue {
+  code: import('../../errors/catalog/index').ErrorCode
+  text: string
+}
+
 export interface FlowStep {
   id: string
   action: FlowAction
@@ -11,6 +38,7 @@ export interface FlowStep {
   name?: string
   value?: string
   expect?: string
+  answers?: AnswerExpect[]
   args?: string[]
   recorded: { step: string; ms: number | null; reaEvidenceId: string | null; requests: string[] }
 }

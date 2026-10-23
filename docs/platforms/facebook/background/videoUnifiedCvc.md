@@ -121,6 +121,136 @@ Seen 142 time(s) in 16 run(s).
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 605 ms | 6445 ms | — |
 | inspect | step 17: clickRole button "…" | 1 | 200 | 356 ms | 1563 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T074930_61594063207669**, step 1: goto /: 200, 347 ms
+
+Sent:
+
+```json
+{
+  "d": {
+    "pps": null,
+    "ps": {
+      "m": true,
+      "pf": 25,
+      "s": "playing",
+      "sa": 4
+    },
+    "si": "f5e1b7ca86297f4c2",
+    "so": "inline::fb_shorts_creation_feed_unit",
+    "vi": "1112473577862183"
+  }
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "A32sWsaeSOP1KJeDt_7IqO3",
+  "payload": {
+    "vi": "1112473577862183",
+    "si": "f5e1b7ca86297f4c2",
+    "d": {
+      "c": 0,
+      "h": true
+    },
+    "a": {
+      "t": "s"
+    }
+  },
+  "lid": "7699767373216913787"
+}
+```
+
+**runs/warmup/20261023T074930_61594063207669**, scroll: +376px in 9 wheel steps, 906 ms: 200, 518 ms
+
+Sent:
+
+```json
+{
+  "d": {
+    "pps": null,
+    "ps": {
+      "m": true,
+      "pf": 3,
+      "s": "playing",
+      "sa": 11
+    },
+    "si": "f5def5680d7fcfba0",
+    "so": "inline::fb_reels_video_preview",
+    "vi": "2194705858096130"
+  }
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "Ai5kcAIeqKQqSUNbzAPtwPA",
+  "payload": {
+    "vi": "2194705858096130",
+    "si": "f5def5680d7fcfba0",
+    "d": {
+      "c": 0,
+      "h": true
+    },
+    "a": {
+      "t": "s"
+    }
+  },
+  "lid": "7699767504524232373"
+}
+```
+
+**runs/warmup/20261023T074930_61594063207669**, scroll: +981px in 24 wheel steps, 1672 ms: 200, 358 ms
+
+Sent:
+
+```json
+{
+  "d": {
+    "pps": null,
+    "ps": {
+      "m": true,
+      "pf": 4,
+      "s": "playing",
+      "sa": 14
+    },
+    "si": "fcd2b001aec5dc1ec",
+    "so": "inline::inline",
+    "vi": "1114883744850595"
+  }
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "Al5J8ofcRLrVe10GGLj24IP",
+  "payload": {
+    "vi": "1114883744850595",
+    "si": "fcd2b001aec5dc1ec",
+    "d": {
+      "c": 0,
+      "h": true
+    },
+    "a": {
+      "t": "s"
+    }
+  },
+  "lid": "7699768644479556649"
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

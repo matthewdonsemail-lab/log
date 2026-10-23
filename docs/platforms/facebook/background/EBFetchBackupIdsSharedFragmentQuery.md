@@ -19,6 +19,71 @@ Seen 6 time(s) in 3 run(s).
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | pin: typed the account's Messenger PIN | 6 | 200 | 360–457 ms | 9081–11927 ms | — |
 
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261022T100521_61594063207669**, pin: typed the account's Messenger PIN: 200, 457 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "521482085,521482858",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "EBFetchBackupIdsSharedFragmentQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "25164225499885252",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=521482085,521482858"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_backup": {
+      "id": "1127653843075648",
+      "backup_tenancy": "PRODUCTION",
+      "is_user_opted_out": false,
+      "has_otc_eligible_devices": false,
+      "encryption_management_delegator_id": null,
+      "virtual_devices": [
+        {
+          "client_generated_id": "sp5MI2FeHD/hrI1wOQXbKg==",
+          "device_type": "HSM",
+          "device_created_on": "Chrome",
+          "creation_time": 1792663635,
+          "migration_status": "DOES_NOT_REQUIRE_MIGRATION",
+          "id": "1127653853075647"
+        }
+      ],
+      "devices": {
+        "edges": [
+          {
+            "node": {
+              "id": "1127653846408981"
+            }
+          }
+        ]
+      }
+    },
+    "xfb_eb_user_preferences": null
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792663636078,
+      "time_at_flush_ms": 1792663636210
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

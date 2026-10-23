@@ -1,3 +1,5 @@
 export * from './flowFromRecording'
 export * from './pageCheck'
 export * from './renderFlowDoc'
+export * from './answers'
+export * from './answerFixture'

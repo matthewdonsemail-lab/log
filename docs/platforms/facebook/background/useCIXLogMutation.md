@@ -30,6 +30,139 @@ Seen 12 time(s) in 6 run(s).
 | warmup | scroll: -1034px in 22 wheel steps, 1032 ms | 1 | 200 | 384 ms | 1573 ms | — |
 | warmup | scroll: +981px in 24 wheel steps, 1672 ms | 1 | 200 | 392 ms | 3051 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T074930_61594063207669**, scroll: +213px in 7 wheel steps, 453 ms: 200, 445 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "useCIXLogMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "frx": {
+        "context": "{\"session_id\":\"adffeb56-4cac-4a66-b463-dc2a9d952d19\",\"type\":2,\"story_location\":\"marketplace_pdp\",\"entry_point\":\"report_button\",\"reportable_ent_token\":\"27743469221988791\"}",
+        "frx_menu_item_loaded": null,
+        "product_attribution": "CometMarketplacePermalinkRoot.react,comet.marketplace.item,unexpected,1792742061111,904453,1606854132932955,,;CometMarketplaceHomeRoot.react,comet.marketplace.home,via_cold_start,1792742007074,832974,1606854132932955,494,1749699906261391"
+      },
+      "actor_id": "61594063207669",
+      "client_mutation_id": "1"
+    }
+  },
+  "doc_id": "24438951589125380"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "cix_log": {
+      "__typename": "CIXLoggerOutput"
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742065852,
+      "time_at_flush_ms": 1792742065904
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T074930_61594063207669**, scroll: -1034px in 22 wheel steps, 1032 ms: 200, 384 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "useCIXLogMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "frx": {
+        "context": "{\"session_id\":\"d4362e68-8642-4c20-894a-0cfc7a92525d\",\"type\":2,\"story_location\":\"marketplace_pdp\",\"entry_point\":\"report_button\",\"reportable_ent_token\":\"28849178441364999\"}",
+        "frx_menu_item_loaded": null,
+        "product_attribution": "CometMarketplacePermalinkRoot.react,comet.marketplace.item,unexpected,1792742072683,373102,1606854132932955,,;CometMarketplaceHomeRoot.react,comet.marketplace.home,via_cold_start,1792742007074,832974,1606854132932955,494,1098292579663100"
+      },
+      "actor_id": "61594063207669",
+      "client_mutation_id": "4"
+    }
+  },
+  "doc_id": "24438951589125380"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "cix_log": {
+      "__typename": "CIXLoggerOutput"
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742074008,
+      "time_at_flush_ms": 1792742074054
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T074930_61594063207669**, scroll: +981px in 24 wheel steps, 1672 ms: 200, 392 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "useCIXLogMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "frx": {
+        "context": "{\"session_id\":\"5d0d97ca-9b93-4243-bb01-56693cf1b52b\",\"type\":2,\"story_location\":\"marketplace_pdp\",\"entry_point\":\"report_button\",\"reportable_ent_token\":\"28993031653624601\"}",
+        "frx_menu_item_loaded": null,
+        "product_attribution": "CometMarketplacePermalinkRoot.react,comet.marketplace.item,unexpected,1792742085256,781319,1606854132932955,,;CometMarketplaceHomeRoot.react,comet.marketplace.home,via_cold_start,1792742007074,832974,1606854132932955,494,2064512760864293"
+      },
+      "actor_id": "61594063207669",
+      "client_mutation_id": "7"
+    }
+  },
+  "doc_id": "24438951589125380"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "cix_log": {
+      "__typename": "CIXLoggerOutput"
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742086778,
+      "time_at_flush_ms": 1792742086838
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

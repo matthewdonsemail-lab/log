@@ -88,6 +88,122 @@ Seen 112 time(s) in 30 run(s).
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 391 ms | 3744 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 403 ms | 5374 ms | — |
 
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/warmup/20261023T080515_61594063207669**, step 1: goto /marketplace/: 200, 366 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "MAWVerifyThreadCutover_ContactCapabilities2Query",
+  "server_timestamps": "true",
+  "variables": {
+    "id": "61594063207669"
+  },
+  "doc_id": "9948369021930229"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "user": {
+      "message_capabilities2_str": "252060841644982528",
+      "id": "61594063207669"
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742733499,
+      "time_at_flush_ms": 1792742733519
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T080515_61594063207669**, step 3: goto /marketplace/you/selling: 200, 395 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "30613466",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "MAWVerifyThreadCutover_ContactCapabilities2Query",
+  "server_timestamps": "true",
+  "variables": {
+    "id": "61594063207669"
+  },
+  "doc_id": "9948369021930229",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=30613466"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "user": {
+      "message_capabilities2_str": "252060841644982528",
+      "id": "61594063207669"
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742782510,
+      "time_at_flush_ms": 1792742782533
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/warmup/20261023T080515_61594063207669**, step 5: goto /messages/: 200, 492 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "MAWVerifyThreadCutover_ContactCapabilities2Query",
+  "server_timestamps": "true",
+  "variables": {
+    "id": "61594063207669"
+  },
+  "doc_id": "9948369021930229"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "user": {
+      "message_capabilities2_str": "252060841644982528",
+      "id": "61594063207669"
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742814645,
+      "time_at_flush_ms": 1792742814672
+    },
+    "is_final": true
+  }
+}
+```
+
 <!-- facts:end -->
 
 ## What it does

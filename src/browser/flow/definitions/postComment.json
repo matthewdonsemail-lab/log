@@ -61,6 +61,17 @@
       "role": "button",
       "name": "Post comment",
       "expect": "useCometUFICreateCommentMutation",
+      "answers": [
+        {
+          "call": "useCometUFICreateCommentMutation",
+          "says": [
+            {
+              "answer": "data.comment_create.feedback_comment_edge",
+              "present": true
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "08_clickroleButtonPostComment",
         "ms": 17219,
