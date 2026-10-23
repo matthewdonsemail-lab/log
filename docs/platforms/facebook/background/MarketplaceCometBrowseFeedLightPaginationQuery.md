@@ -13,13 +13,14 @@
 | Called from | `MarketplaceCometBrowseFeedLight_dataConnection.graphql` |
 | rea | `ev_39467785ac779ed1db987a1df7fe6a2b6ac26588c33f988211911bebe2503a6a` |
 
-Seen 3 time(s) in 2 run(s).
+Seen 4 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | scroll: +476px in 12 wheel steps, 562 ms | 1 | 200 | 2448 ms | 2885 ms | — |
 | warmup | scroll: +301px in 7 wheel steps, 282 ms | 1 | 200 | 4779 ms | 3624 ms | — |
 | warmup | scroll: +408px in 11 wheel steps, 547 ms | 1 | 200 | 2702 ms | 3572 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 1 | 200 | 2545 ms | 484794 ms | — |
 
 <!-- facts:end -->
 

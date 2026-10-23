@@ -13,7 +13,7 @@
 | Called from | — |
 | rea | `ev_234c75aefcc329813686b684e1147f5131974c702880e6b21ab1650509b614db` |
 
-Seen 34 time(s) in 10 run(s).
+Seen 43 time(s) in 11 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -50,6 +50,7 @@ Seen 34 time(s) in 10 run(s).
 | inspect | step 13: setLocation 18015 | 1 | 200 | 412 ms | 15969 ms | — |
 | inspect | step 1: goto /marketplace/inbox | 2 | 200 | 365–878 ms | 20925–22722 ms | — |
 | inspect | step 3: click e156 | 1 | 200 | 469 ms | 884 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 9 | 200 | 390–795 ms | 471777–1354663 ms | — |
 
 <!-- facts:end -->
 

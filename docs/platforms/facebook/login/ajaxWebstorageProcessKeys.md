@@ -13,7 +13,7 @@
 | Called from | — |
 | rea | `ev_70efc081c67ed7332e21c5498e2db53c87d1066c637ab8bfc22fe41d543c7021` |
 
-Seen 25 time(s) in 8 run(s).
+Seen 34 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -36,6 +36,9 @@ Seen 25 time(s) in 8 run(s).
 | inspect | step 27: click e1541 | 1 | 200 | 457 ms | 8217 ms | — |
 | inspect | step 5: wait 5s | 3 | 200 | 395–482 ms | 969–300966 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1026 ms | 16771 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 2 | 200 | 449–619 ms | 24963–34720 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 6 | 200 | 503–1552 ms | 509982–1675374 ms | — |
+| inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 979 ms | 17064 ms | — |
 
 <!-- facts:end -->
 

@@ -13,7 +13,7 @@
 | Called from | `CometHomeMegaMenuAllProducts.react` |
 | rea | `ev_78a10afc58bb765d71fab141fd85b3c18aea439a22cd1af1ebfa86cb7d38ffd1` |
 
-Seen 9 time(s) in 8 run(s).
+Seen 11 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -26,6 +26,8 @@ Seen 9 time(s) in 8 run(s).
 | inspect | setLocation failed: TimeoutError: Locator.wait_for: Timeout 30000ms exceeded. | 1 | 200 | 1735 ms | 458 ms | — |
 | inspect | step 16: type e232 | 1 | 200 | 618 ms | 9064 ms | — |
 | inspect | step 5: wait 5s | 1 | 200 | 722 ms | 5574 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 1 | 200 | 743 ms | 22216 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 1 | 200 | 1840 ms | 1630107 ms | — |
 
 <!-- facts:end -->
 

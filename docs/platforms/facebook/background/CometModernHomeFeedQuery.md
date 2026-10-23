@@ -13,7 +13,7 @@
 | Called from | `CometModernHomeFeed.react` |
 | rea | `ev_4ec8830d6ef6271498b3372408c4bf6f0e0db14c6da5786e3a458e2f191f2b3d` |
 
-Seen 11 time(s) in 7 run(s).
+Seen 13 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -28,6 +28,8 @@ Seen 11 time(s) in 7 run(s).
 | inspect | step 4: snapshot | 1 | 200 | 3390 ms | 335 ms | — |
 | inspect | step 5: goto /marketplace/create/item | 1 | 200 | 3090 ms | 6667 ms | — |
 | inspect | step 5: wait 5s | 1 | 200 | 5114 ms | 103686 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 4065 ms | 5691 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 1 | 200 | 3883 ms | 558511 ms | — |
 
 <!-- facts:end -->
 

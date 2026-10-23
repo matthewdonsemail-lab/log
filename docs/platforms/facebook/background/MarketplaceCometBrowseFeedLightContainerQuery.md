@@ -13,12 +13,13 @@
 | Called from | `MarketplaceCometBrowseFeedLightContainer.react` |
 | rea | `ev_833ae1c60db6dcbd74033f7180994292a0c9bffafd296ffe20bae271da5648da` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 15: click e1354 | 1 | 200 | 4374 ms | 2366 ms | — |
 | inspect | step 4: click e191 | 1 | 200 | 4827 ms | 2965 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 1 | 200 | 4341 ms | 479387 ms | — |
 
 <!-- facts:end -->
 

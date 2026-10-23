@@ -13,7 +13,7 @@
 | Called from | `CometSearchBootstrapKeywordsDataSource.query` |
 | rea | `ev_5cb62e3a7cd21788732d77960d11bcea0adc8730aaaa23e6a78c097c1c44c7a6` |
 
-Seen 72 time(s) in 20 run(s).
+Seen 80 time(s) in 22 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -52,7 +52,7 @@ Seen 72 time(s) in 20 run(s).
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 696 ms | 4939 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 370 ms | 5585 ms | — |
 | inspect | step 1: goto /messages/ | 1 | 200 | 373 ms | 2958 ms | — |
-| inspect | step 1: goto /marketplace/ | 1 | 200 | 643 ms | 8895 ms | — |
+| inspect | step 1: goto /marketplace/ | 2 | 200 | 643–1366 ms | 6852–8895 ms | — |
 | inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 433 ms | 3235 ms | — |
 | inspect | step 5: setLocation Bethlehem, Pennsylvania | 1 | 200 | 864 ms | 3766 ms | — |
 | inspect | step 11: goto /marketplace/create/item | 1 | 200 | 653 ms | 2827 ms | — |
@@ -68,6 +68,12 @@ Seen 72 time(s) in 20 run(s).
 | inspect | step 9: goto /marketplace/status | 1 | 200 | 961 ms | 2144 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1443 ms | 2222 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 648 ms | 2318 ms | — |
+| inspect | step 1: goto /marketplace/status | 1 | 200 | 780 ms | 8939 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 612 ms | 3673 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 2 | 200 | 582–644 ms | 4842–1343953 ms | — |
+| inspect | step 2: goto /marketplace/status | 1 | 200 | 1036 ms | 2609 ms | — |
+| inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 2393 ms | 2032 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 1 | 200 | 1807 ms | 2693 ms | — |
 
 <!-- facts:end -->
 

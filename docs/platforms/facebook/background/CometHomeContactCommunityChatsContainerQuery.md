@@ -13,7 +13,7 @@
 | Called from | `CometHomeContactCommunityChatsContainer.react` |
 | rea | `ev_38a62071407b1d580cabfa2361b5d2c8ad31a9bb9fb9fefb54b7b887fa2b16aa` |
 
-Seen 13 time(s) in 7 run(s).
+Seen 16 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -30,6 +30,8 @@ Seen 13 time(s) in 7 run(s).
 | inspect | pin: typed the account's Messenger PIN | 1 | 200 | 611 ms | 561 ms | — |
 | inspect | step 5: goto /marketplace/create/item | 1 | 200 | 621 ms | 6681 ms | — |
 | inspect | step 5: wait 5s | 1 | 200 | 630 ms | 103696 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 547 ms | 5703 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 2 | 200 | 612–916 ms | 558523–564747 ms | — |
 
 <!-- facts:end -->
 

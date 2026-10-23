@@ -13,7 +13,7 @@
 | Called from | `CometMegaphoneRoot.react` |
 | rea | `ev_a2e1e82b09a10f9f97361e424dc787adb4a3a8c0a7bb15f7feb91de015e7d2fa` |
 
-Seen 11 time(s) in 7 run(s).
+Seen 13 time(s) in 9 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -28,6 +28,8 @@ Seen 11 time(s) in 7 run(s).
 | inspect | step 4: snapshot | 1 | 200 | 587 ms | 342 ms | — |
 | inspect | step 5: goto /marketplace/create/item | 1 | 200 | 743 ms | 6675 ms | — |
 | inspect | step 5: wait 5s | 1 | 200 | 913 ms | 103687 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 1020 ms | 5697 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 1 | 200 | 1290 ms | 558516 ms | — |
 
 <!-- facts:end -->
 

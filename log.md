@@ -5145,3 +5145,61 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the Marketplace check (`log facebook check` and the host's watch round) reads each listing's clicks from the Selling page: the page's "N clicks on listing", how many times people opened the listing's details page in the last 14 days, which the page's own HTML preloads (`CometMarketplaceYouSellingFastContentContainerQuery`) as the listing's `listing_insights.insights[0].count`. Each listing reads only its own stretch of the page, up to the next listing, so one listing never takes another's count. The count goes into the listing's existing `clicksCount` in Twenty (the field `scan` already fills, so Twenty's schema is unchanged), and the check's line says it (`19 clicks in 14 days; clicks empty → 19`). The host skill, the check's usage and the status page say so.
 Why: matt asked for the check to read each listing's clicks (`listing_insights` count) from the Selling page and save it on the listing in Twenty, so it can be pulled as analytics. It was found in step 02 of Bethlehem's inspect 20261023T000744: entry 20, the Selling page's own GET.
 Checked: tests: three listings read 15, none and 1 from their own `listing_insights`; keepCheck saves 15 to `clicksCount` and says `clicks empty → 15`. The reader returns 15 from the real recording (inspect 20261023T000744, step 02). Live on Bethlehem in its open browser (20:28 local): full access, the listing active with 19 clicks in 14 days, and Twenty's row read back with `clicksCount: 19`; the seller inbox has no chats. `bun run check` passes with 836 tests.
+
+## 2026-10-23 00:41Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuShortcutsQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceInboxContentContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceInboxSellerTabThreadViewContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceNotificationsListContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceNotificationsNavRootContainerQuery.md`: new file
+- `docs/platforms/facebook/background/CometMarketplaceStatusContentContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceYouFeedItemCommentListQuery.md`: new file
+- `docs/platforms/facebook/background/CometMarketplaceYouSellingFastContentContainerQuery.md`: new file
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometMessagingJewelDropdownEBUpsellContainerQuery.md`: new file
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MWChatEncryptedBackupsUpsellMessengerInboxQuery.md`: new file
+- `docs/platforms/facebook/background/MWQuickPromotionThreadlistBannerQuery.md`: edited
+- `docs/platforms/facebook/background/MWThreadListQPQuery.md`: new file
+- `docs/platforms/facebook/background/MarketplaceBannerContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceDeleteUtilsQuery.md`: new file
+- `docs/platforms/facebook/background/MarketplaceYouSellingUpsellCardQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYourListingDialogQuery.md`: new file
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxBz.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/listingForm/CometMarketplaceSellingRootContentQuery.md`: new file
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+
+What changed: `log facebook capture --docs` folded in the runs of 2026-10-22 and 23: 77 requests now, 10 new ones read by rea, and the reasoning written for the 9 that needed it. The Selling list query (`CometMarketplaceYouSellingFastContentContainerQuery`) now says it carries each listing's clicks in the last 14 days (`listing_insights.insights[0].count`) and that the check saves them to `clicksCount`; the others (the Selling frame, Marketplace notifications, a listing's dialog, its comments and delete check, Messenger's encrypted-backup prompts) say what they are and that nothing reads them.
+Why: rule 27: the push gate refuses runs newer than the docs and requests whose reasoning is unwritten, and two runs were new (the inbox checks of 2026-10-22 15:58 and 2026-10-23 00:07).
+Checked: `check:facebookClientDocs` passes: 216 requests documented, rea read every GraphQL slice.

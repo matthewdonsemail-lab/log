@@ -13,7 +13,7 @@
 | Called from | `usePseudoBlockedUserInterstitial` |
 | rea | `ev_4f0f59bc7d5ff4c02ef9f2aba85fc9de893084a7a8fbdf3f1627ce6c1c3456fe` |
 
-Seen 89 time(s) in 21 run(s).
+Seen 101 time(s) in 23 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -65,7 +65,7 @@ Seen 89 time(s) in 21 run(s).
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 1315 ms | 5511 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 334 ms | 5589 ms | — |
 | inspect | step 1: goto /messages/ | 1 | 200 | 344 ms | 3256 ms | — |
-| inspect | step 1: goto /marketplace/ | 1 | 200 | 380 ms | 10003 ms | — |
+| inspect | step 1: goto /marketplace/ | 2 | 200 | 380–1541 ms | 6854–10003 ms | — |
 | inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 882 ms | 3697 ms | — |
 | inspect | step 5: setLocation Bethlehem, Pennsylvania | 1 | 200 | 823 ms | 3811 ms | — |
 | inspect | step 11: goto /marketplace/create/item | 1 | 200 | 594 ms | 2814 ms | — |
@@ -81,6 +81,12 @@ Seen 89 time(s) in 21 run(s).
 | inspect | step 9: goto /marketplace/status | 1 | 200 | 524 ms | 2742 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1227 ms | 2498 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 678 ms | 2523 ms | — |
+| inspect | step 1: goto /marketplace/status | 1 | 200 | 536 ms | 9500 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 410 ms | 4562 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 6 | 200 | 429–789 ms | 4933–1357574 ms | — |
+| inspect | step 2: goto /marketplace/status | 1 | 200 | 1197 ms | 3044 ms | — |
+| inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 2606 ms | 2300 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 1 | 200 | 2477 ms | 3001 ms | — |
 
 <!-- facts:end -->
 

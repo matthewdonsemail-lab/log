@@ -13,11 +13,12 @@
 | Called from | `CometMarketplaceStatusContentContainer.react` |
 | rea | `ev_eecb50d6202597bec156a7136d3b27861031a02f173fdddc659c696e06a51c8d` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 1: goto /marketplace/inbox | 1 | 200 | 384 ms | 22463 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 1 | 200 | 604 ms | 473985 ms | — |
 
 <!-- facts:end -->
 

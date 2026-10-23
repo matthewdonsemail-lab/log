@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_8827368792a2c9c4b36b9101c115368c0fbfb2186aeb70d15f1a64cd4a7fde5b` |
+| rea | `ev_3ffffbc091b1066e9e20fc659eae4a1756b3c1361c980506743601dd55ea3f94` |
 
-Seen 470 time(s) in 24 run(s).
+Seen 563 time(s) in 26 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -169,7 +169,7 @@ Seen 470 time(s) in 24 run(s).
 | inspect | step 4: snapshot | 1 | 200 | 1365 ms | 19392 ms | — |
 | inspect | pin: typed the account's Messenger PIN | 2 | 200 | 347–367 ms | 13918–14335 ms | — |
 | inspect | step 7: wait 5s | 1 | 200 | 348 ms | 10989 ms | — |
-| inspect | step 1: goto /marketplace/ | 1 | 200 | 692 ms | 12246 ms | — |
+| inspect | step 1: goto /marketplace/ | 4 | 200 | 692–8880 ms | 8047–12246 ms | — |
 | inspect | step 2: setLocation Bethlehem, Pennsylvania | 2 | 200 | 661–1263 ms | 111–6652 ms | — |
 | inspect | setLocation failed: TimeoutError: Locator.wait_for: Timeout 30000ms exceeded. | 2 | 200 | 390–940 ms | 1256–31265 ms | — |
 | inspect | step 3: click e | 1 | 200 | 1026 ms | 24831 ms | — |
@@ -204,6 +204,12 @@ Seen 470 time(s) in 24 run(s).
 | inspect | step 9: goto /marketplace/status | 1 | 200 | 796 ms | 6060 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 3 | 200 | 452–751 ms | 52–7795 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 5 | 200 | 365–2921 ms | 4798–106788 ms | — |
+| inspect | step 1: goto /marketplace/status | 9 | 200 | 444–1225 ms | 11654–39898 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 2 | 200 | 446–988 ms | 8241–34916 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 54 | 200 | 370–19123 ms | 7872–1796951 ms | — |
+| inspect | step 2: goto /marketplace/status | 2 | 200 | 363–3802 ms | 57–4731 ms | — |
+| inspect | step 3: goto /marketplace/you/selling | 3 | 200 | 639–2373 ms | 42–7411 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 20 | 200 | 332–4167 ms | 51–1653991 ms | — |
 
 <!-- facts:end -->
 

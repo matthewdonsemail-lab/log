@@ -13,11 +13,12 @@
 | Called from | `MarketplaceBannerContainer.react` |
 | rea | `ev_381968d1c5011cfe91ef811cd87425592611ae2bb16d48689a668caffe2209d4` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 4: click e191 | 1 | 200 | 1283 ms | 2972 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 1 | 200 | 716 ms | 479391 ms | — |
 
 <!-- facts:end -->
 

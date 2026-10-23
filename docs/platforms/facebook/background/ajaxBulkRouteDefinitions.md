@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_bb2ceff7d11b9f11bb577d694461204dfdca9c8b2e014eb4992f30f7824b0424` |
+| rea | `ev_3ffffbc091b1066e9e20fc659eae4a1756b3c1361c980506743601dd55ea3f94` |
 
-Seen 800 time(s) in 21 run(s).
+Seen 842 time(s) in 23 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -250,7 +250,7 @@ Seen 800 time(s) in 21 run(s).
 | inspect | step 92: clickRole button "…" | 1 | 200 | 751 ms | 1219 ms | — |
 | inspect | step 96: clickRole button "…" | 1 | 200 | 1454 ms | 1586 ms | — |
 | inspect | step 1: goto /messages/ | 4 | 200 | 375–500 ms | 2447–3354 ms | — |
-| inspect | step 1: goto /marketplace/ | 2 | 200 | 481–600 ms | 8563–8568 ms | — |
+| inspect | step 1: goto /marketplace/ | 8 | 200 | 481–2506 ms | 2870–8568 ms | — |
 | inspect | step 2: setLocation Bethlehem, Pennsylvania | 2 | 200 | 440–482 ms | 2930–2973 ms | — |
 | inspect | setLocation failed: TimeoutError: Locator.wait_for: Timeout 30000ms exceeded. | 1 | 200 | 484 ms | 32682 ms | — |
 | inspect | step 4: click e191 | 3 | 200 | 686–881 ms | 5900–5902 ms | — |
@@ -273,6 +273,12 @@ Seen 800 time(s) in 21 run(s).
 | inspect | step 9: goto /marketplace/status | 3 | 200 | 729–1016 ms | 2091–2097 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 3 | 200 | 1212–1587 ms | 2001–2565 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 4 | 200 | 422–497 ms | 1332–2147 ms | — |
+| inspect | step 1: goto /marketplace/status | 3 | 200 | 858–3129 ms | 8675–8942 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 3 | 200 | 520–832 ms | 3629–4331 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 19 | 200 | 473–1150 ms | 3329–1366917 ms | — |
+| inspect | step 2: goto /marketplace/status | 3 | 200 | 690–1037 ms | 2483–2489 ms | — |
+| inspect | step 3: goto /marketplace/you/selling | 3 | 200 | 2107–2335 ms | 1919–3089 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 5 | 200 | 390–1862 ms | 1933–355258 ms | — |
 
 <!-- facts:end -->
 

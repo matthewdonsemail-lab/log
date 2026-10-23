@@ -13,7 +13,7 @@
 | Called from | — |
 | rea | `ev_70efc081c67ed7332e21c5498e2db53c87d1066c637ab8bfc22fe41d543c7021` |
 
-Seen 55 time(s) in 5 run(s).
+Seen 58 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -36,6 +36,7 @@ Seen 55 time(s) in 5 run(s).
 | connect | Auto-login: submitting (Enter). | 2 | -1 | -1 ms | 26–102 ms | — |
 | inspect | step 27: click e1541 | 1 | 200 | 1489 ms | 37737 ms | — |
 | inspect | step 5: wait 5s | 1 | 200 | 1403 ms | 80871 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 3 | 200, 0 | 0–501 ms | 589944–1455304 ms | — |
 
 <!-- facts:end -->
 

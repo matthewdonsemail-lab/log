@@ -13,7 +13,7 @@
 | Called from | `MarketplaceYouSellingUpsellCard.react` |
 | rea | `ev_00977e2ab70ca12a60a74cc135fd797089c7b462f9a8434a2065fcc5480f693a` |
 
-Seen 5 time(s) in 3 run(s).
+Seen 9 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -22,6 +22,9 @@ Seen 5 time(s) in 3 run(s).
 | inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 442 ms | 4339 ms | — |
 | inspect | step 7: goto /marketplace/you/selling | 1 | 200 | 797 ms | 1919 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 579 ms | 1845 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 769 ms | 3423 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 2 | 200 | 700–711 ms | 495689–1343361 ms | — |
+| inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 1382 ms | 1687 ms | — |
 
 <!-- facts:end -->
 

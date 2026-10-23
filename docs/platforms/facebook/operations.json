@@ -1,6 +1,6 @@
 {
-  "builtAt": "2026-10-22T13:39:35.922Z",
-  "runs": 6,
+  "builtAt": "2026-10-23T00:31:03.669Z",
+  "runs": 9,
   "operations": [
     {
       "name": "ajaxBnzai",
@@ -8,8 +8,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxBnzai.md",
-      "reaEvidenceId": "ev_8827368792a2c9c4b36b9101c115368c0fbfb2186aeb70d15f1a64cd4a7fde5b",
-      "seen": 470
+      "reaEvidenceId": "ev_3ffffbc091b1066e9e20fc659eae4a1756b3c1361c980506743601dd55ea3f94",
+      "seen": 563
     },
     {
       "name": "ajaxBulkRouteDefinitions",
@@ -17,8 +17,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxBulkRouteDefinitions.md",
-      "reaEvidenceId": "ev_bb2ceff7d11b9f11bb577d694461204dfdca9c8b2e014eb4992f30f7824b0424",
-      "seen": 800
+      "reaEvidenceId": "ev_3ffffbc091b1066e9e20fc659eae4a1756b3c1361c980506743601dd55ea3f94",
+      "seen": 842
     },
     {
       "name": "ajaxBz",
@@ -27,7 +27,7 @@
       "docId": null,
       "doc": "background/ajaxBz.md",
       "reaEvidenceId": "ev_70efc081c67ed7332e21c5498e2db53c87d1066c637ab8bfc22fe41d543c7021",
-      "seen": 55
+      "seen": 58
     },
     {
       "name": "ajaxNavigation",
@@ -36,7 +36,7 @@
       "docId": null,
       "doc": "background/ajaxNavigation.md",
       "reaEvidenceId": "ev_234c75aefcc329813686b684e1147f5131974c702880e6b21ab1650509b614db",
-      "seen": 34
+      "seen": 43
     },
     {
       "name": "ajaxQm",
@@ -44,8 +44,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxQm.md",
-      "reaEvidenceId": "ev_bb2ceff7d11b9f11bb577d694461204dfdca9c8b2e014eb4992f30f7824b0424",
-      "seen": 79
+      "reaEvidenceId": "ev_3ffffbc091b1066e9e20fc659eae4a1756b3c1361c980506743601dd55ea3f94",
+      "seen": 87
     },
     {
       "name": "ajaxReactComposerAttachmentsPhotoUpload",
@@ -62,8 +62,8 @@
       "kind": "endpoint",
       "docId": null,
       "doc": "background/ajaxRelayEf.md",
-      "reaEvidenceId": "ev_234c75aefcc329813686b684e1147f5131974c702880e6b21ab1650509b614db",
-      "seen": 607
+      "reaEvidenceId": "ev_3ffffbc091b1066e9e20fc659eae4a1756b3c1361c980506743601dd55ea3f94",
+      "seen": 685
     },
     {
       "name": "ajaxRouteDefinition",
@@ -90,7 +90,7 @@
       "docId": null,
       "doc": "login/ajaxWebstorageProcessKeys.md",
       "reaEvidenceId": "ev_70efc081c67ed7332e21c5498e2db53c87d1066c637ab8bfc22fe41d543c7021",
-      "seen": 25
+      "seen": 34
     },
     {
       "name": "CometAddTypeaheadRecentSearchMutation",
@@ -108,7 +108,7 @@
       "docId": "37551561817767907",
       "doc": "background/CometClassicHomeLeftRailContainerQuery.md",
       "reaEvidenceId": "ev_344ab74ba79925e4c65e7d7e1baed54ed21b8b5516428816c330a8a229cfc2b5",
-      "seen": 13
+      "seen": 16
     },
     {
       "name": "CometFacebookIXTNextMutation",
@@ -126,7 +126,7 @@
       "docId": "38525622117053498",
       "doc": "background/CometFeedInlineComposerQuery.md",
       "reaEvidenceId": "ev_3e02863ff58798e0b4e157f2227e5ceed62786408d21a22ae2d4cce84f7332b8",
-      "seen": 13
+      "seen": 16
     },
     {
       "name": "CometFeedStoryMenuQuery",
@@ -189,7 +189,7 @@
       "docId": "9934887189887478",
       "doc": "background/CometHomeContactChannelsContainerQuery.md",
       "reaEvidenceId": "ev_2b20cf591a095f7b9165ab97b7e2f350cb7e8c5253fad588365b692a046465d8",
-      "seen": 13
+      "seen": 16
     },
     {
       "name": "CometHomeContactCommunityChatsContainerQuery",
@@ -198,7 +198,7 @@
       "docId": "26941462065448526",
       "doc": "background/CometHomeContactCommunityChatsContainerQuery.md",
       "reaEvidenceId": "ev_38a62071407b1d580cabfa2361b5d2c8ad31a9bb9fb9fefb54b7b887fa2b16aa",
-      "seen": 13
+      "seen": 16
     },
     {
       "name": "CometHomeContactGroupsContainerQuery",
@@ -207,7 +207,7 @@
       "docId": "25945115421852941",
       "doc": "background/CometHomeContactGroupsContainerQuery.md",
       "reaEvidenceId": "ev_afbb77778bb0832d0311179d99af4e1015fdbeadac3bded27db6e5939b581138",
-      "seen": 13
+      "seen": 16
     },
     {
       "name": "CometHomeContactsContainerQuery",
@@ -216,7 +216,7 @@
       "docId": "28451034771148738",
       "doc": "background/CometHomeContactsContainerQuery.md",
       "reaEvidenceId": "ev_1382c6aaad8caec306d87c00b9b241ef1e74ac91f09082d75f7694f794713881",
-      "seen": 13
+      "seen": 16
     },
     {
       "name": "CometHomeContentQuery",
@@ -225,7 +225,7 @@
       "docId": "28262615193401316",
       "doc": "background/CometHomeContentQuery.md",
       "reaEvidenceId": "ev_cf23e67c25aa3ceb49db2a20048e8ce344dfa1f57457ba9df343170946991f9b",
-      "seen": 13
+      "seen": 16
     },
     {
       "name": "CometHomeCreateMenuContentQuery",
@@ -234,7 +234,7 @@
       "docId": "28430483319975420",
       "doc": "background/CometHomeCreateMenuContentQuery.md",
       "reaEvidenceId": "ev_ce3a3e0411d4d96c98fb842dce351a191c4e1062c311b30b7ceaf8d2c63e104c",
-      "seen": 9
+      "seen": 11
     },
     {
       "name": "CometHomeMegaMenuAllProductsQuery",
@@ -243,7 +243,7 @@
       "docId": "26943575645248441",
       "doc": "background/CometHomeMegaMenuAllProductsQuery.md",
       "reaEvidenceId": "ev_78a10afc58bb765d71fab141fd85b3c18aea439a22cd1af1ebfa86cb7d38ffd1",
-      "seen": 9
+      "seen": 11
     },
     {
       "name": "CometHomeMegaMenuShortcutsQuery",
@@ -252,7 +252,7 @@
       "docId": "26833428399625311",
       "doc": "background/CometHomeMegaMenuShortcutsQuery.md",
       "reaEvidenceId": "ev_387da7dffb2d726280e5df4abfd25b5a3f00569b707462e4a6fe946ba8004ba8",
-      "seen": 9
+      "seen": 11
     },
     {
       "name": "CometHovercardQueryRendererQuery",
@@ -315,7 +315,7 @@
       "docId": "27439893065673498",
       "doc": "background/CometMarketplaceInboxContentContainerQuery.md",
       "reaEvidenceId": "ev_4bc662aadf436f5bbfbb68090747cc344b4422b8b432341560b1e61402c05bcf",
-      "seen": 1
+      "seen": 2
     },
     {
       "name": "CometMarketplaceInboxSellerTabThreadViewContainerQuery",
@@ -324,7 +324,7 @@
       "docId": "28084990444460312",
       "doc": "background/CometMarketplaceInboxSellerTabThreadViewContainerQuery.md",
       "reaEvidenceId": "ev_fc63e98f46e063737ab32b1a0cc16802e92ec469b6ff41b72407ec3fa04b31f8",
-      "seen": 4
+      "seen": 6
     },
     {
       "name": "CometMarketplaceInboxSetPreferredViewerRoleMutation",
@@ -351,6 +351,15 @@
       "docId": "28153689817567734",
       "doc": "background/CometMarketplaceNotificationsListContainerQuery.md",
       "reaEvidenceId": "ev_db6029b93648bb0f97bb48100e923a2f1b143b437bc497c6144d5dfbf55f1720",
+      "seen": 2
+    },
+    {
+      "name": "CometMarketplaceNotificationsNavRootContainerQuery",
+      "domain": "background",
+      "kind": "query",
+      "docId": "27783648784560601",
+      "doc": "background/CometMarketplaceNotificationsNavRootContainerQuery.md",
+      "reaEvidenceId": "ev_e58f84cfc23339511ca5d0163d1a9cb012c36fd7a2e482589c493777d0a5bf96",
       "seen": 1
     },
     {
@@ -390,6 +399,15 @@
       "seen": 1
     },
     {
+      "name": "CometMarketplaceSellingRootContentQuery",
+      "domain": "listingForm",
+      "kind": "query",
+      "docId": "28536703559357267",
+      "doc": "listingForm/CometMarketplaceSellingRootContentQuery.md",
+      "reaEvidenceId": "ev_a8fc692ec81fda7e31eaa01f9cb8f5fedf563c1195f890aaccc01e8a4d29106e",
+      "seen": 1
+    },
+    {
       "name": "CometMarketplaceSetBrowseRadiusMutation",
       "domain": "background",
       "kind": "mutation",
@@ -423,7 +441,25 @@
       "docId": "35298386203140047",
       "doc": "background/CometMarketplaceStatusContentContainerQuery.md",
       "reaEvidenceId": "ev_eecb50d6202597bec156a7136d3b27861031a02f173fdddc659c696e06a51c8d",
+      "seen": 2
+    },
+    {
+      "name": "CometMarketplaceYouFeedItemCommentListQuery",
+      "domain": "background",
+      "kind": "query",
+      "docId": "39199556659689737",
+      "doc": "background/CometMarketplaceYouFeedItemCommentListQuery.md",
+      "reaEvidenceId": "ev_130bb68b7f167375394ecb9729978eb7b6ccdeb2f9eb9cdca06838a2fc84c556",
       "seen": 1
+    },
+    {
+      "name": "CometMarketplaceYouSellingFastContentContainerQuery",
+      "domain": "background",
+      "kind": "query",
+      "docId": "29188899014069653",
+      "doc": "background/CometMarketplaceYouSellingFastContentContainerQuery.md",
+      "reaEvidenceId": "ev_212cf616ae977ec0669a8e0077a1f11572208e25097749815af33b3cbeb6d22f",
+      "seen": 2
     },
     {
       "name": "CometMediaEditorAIProductTagSuggestionTriggerQuery",
@@ -441,7 +477,16 @@
       "docId": "28541893478753857",
       "doc": "background/CometMegaphoneRootQuery.md",
       "reaEvidenceId": "ev_a2e1e82b09a10f9f97361e424dc787adb4a3a8c0a7bb15f7feb91de015e7d2fa",
-      "seen": 11
+      "seen": 13
+    },
+    {
+      "name": "CometMessagingJewelDropdownEBUpsellContainerQuery",
+      "domain": "background",
+      "kind": "query",
+      "docId": "25961980840158091",
+      "doc": "background/CometMessagingJewelDropdownEBUpsellContainerQuery.md",
+      "reaEvidenceId": "ev_9fdcb875b45d48b4564dd5235fa4f00d220e86c6696c908ee222067d4dddeb63",
+      "seen": 1
     },
     {
       "name": "CometModernHomeFeedQuery",
@@ -450,7 +495,7 @@
       "docId": "28879564961664795",
       "doc": "background/CometModernHomeFeedQuery.md",
       "reaEvidenceId": "ev_4ec8830d6ef6271498b3372408c4bf6f0e0db14c6da5786e3a458e2f191f2b3d",
-      "seen": 11
+      "seen": 13
     },
     {
       "name": "CometNewsFeedPaginationQuery",
@@ -468,7 +513,7 @@
       "docId": "29240849615602606",
       "doc": "background/CometNotificationsDropdownQuery.md",
       "reaEvidenceId": "ev_ab1965911932cb7fcf25b222bf92e0487c624ad5aa06bc6a0e5e7860bc09d85a",
-      "seen": 73
+      "seen": 88
     },
     {
       "name": "CometNotificationsUpdateSeenStateMutation",
@@ -513,7 +558,7 @@
       "docId": "29755211854079266",
       "doc": "background/CometRightSideHeaderCardsQuery.md",
       "reaEvidenceId": "ev_0ca298c8c568c93036a5e8e8d989f3baf2a29fa5ca4d1fd7a8070819f4515962",
-      "seen": 13
+      "seen": 16
     },
     {
       "name": "CometSearchBootstrapKeywordsDataSourceQuery",
@@ -522,7 +567,7 @@
       "docId": "27797631676573850",
       "doc": "background/CometSearchBootstrapKeywordsDataSourceQuery.md",
       "reaEvidenceId": "ev_5cb62e3a7cd21788732d77960d11bcea0adc8730aaaa23e6a78c097c1c44c7a6",
-      "seen": 72
+      "seen": 80
     },
     {
       "name": "CometSearchKeywordDataSourceQuery",
@@ -720,7 +765,7 @@
       "docId": "28969188822673160",
       "doc": "background/FBScreenTimeLogger_syncMutation.md",
       "reaEvidenceId": "ev_9c20c08fbf4c14d62fa5b772be9b8dc2f4b32b06aa445a78cfb8f8ea86ba73c3",
-      "seen": 47
+      "seen": 59
     },
     {
       "name": "FBUnifiedVideoContainerQuery",
@@ -780,10 +825,10 @@
       "name": "FBYRPTimeLimitsEnforcementQuery",
       "domain": "background",
       "kind": "query",
-      "docId": "28750953961225359",
+      "docId": "28934009902924466",
       "doc": "background/FBYRPTimeLimitsEnforcementQuery.md",
-      "reaEvidenceId": "ev_6257439962be20bdb256b2c0fd4f7ed4a86b9d334bb2500d9045f2a42b81c9c9",
-      "seen": 73
+      "reaEvidenceId": "ev_5fe8db44bc61b2d547bfce0c51e3256e80ffd1e3477b2c6b640071a0ea96e750",
+      "seen": 81
     },
     {
       "name": "FeedComposerCometRootQuery",
@@ -801,7 +846,7 @@
       "docId": "9713919638685405",
       "doc": "background/fetchMWChatVideoAutoplaySettingQuery.md",
       "reaEvidenceId": "ev_cec3d0049369021eb11311f83bae206c05ab77298da76206b6788d2cdc5c8ee1",
-      "seen": 73
+      "seen": 81
     },
     {
       "name": "FriendingCometMutualFriendsSocialContextTooltipContentQuery",
@@ -1116,7 +1161,7 @@
       "docId": "36336015646043762",
       "doc": "background/MarketplaceBannerContainerQuery.md",
       "reaEvidenceId": "ev_381968d1c5011cfe91ef811cd87425592611ae2bb16d48689a668caffe2209d4",
-      "seen": 1
+      "seen": 2
     },
     {
       "name": "MarketplaceBuyLocationDialogLocationUrlQuery",
@@ -1143,7 +1188,7 @@
       "docId": "29127585736873863",
       "doc": "background/MarketplaceCometBrowseFeedLightContainerQuery.md",
       "reaEvidenceId": "ev_833ae1c60db6dcbd74033f7180994292a0c9bffafd296ffe20bae271da5648da",
-      "seen": 2
+      "seen": 3
     },
     {
       "name": "MarketplaceCometBrowseFeedLightPaginationQuery",
@@ -1152,7 +1197,7 @@
       "docId": "27655263074150438",
       "doc": "background/MarketplaceCometBrowseFeedLightPaginationQuery.md",
       "reaEvidenceId": "ev_39467785ac779ed1db987a1df7fe6a2b6ac26588c33f988211911bebe2503a6a",
-      "seen": 10
+      "seen": 4
     },
     {
       "name": "MarketplaceCometPartnerListingDialogContentMutation",
@@ -1180,6 +1225,15 @@
       "doc": "listingForm/MarketplaceComposerAIPricingDialogImplSimilarListingsQuery.md",
       "reaEvidenceId": "ev_a60b29dd39f9845fa773f6bcea083bd82d632d73e635b10861713226edadb094",
       "seen": 1
+    },
+    {
+      "name": "MarketplaceDeleteUtilsQuery",
+      "domain": "background",
+      "kind": "query",
+      "docId": "27605324959069136",
+      "doc": "background/MarketplaceDeleteUtilsQuery.md",
+      "reaEvidenceId": "ev_75e93fe4d2b889bd9688924dddf4badc31bafa4e41796fccaf9ed0e07501d6eb",
+      "seen": 2
     },
     {
       "name": "MarketplacePDPC2CMediaViewerWithImagesQuery",
@@ -1218,13 +1272,22 @@
       "seen": 102
     },
     {
+      "name": "MarketplaceYourListingDialogQuery",
+      "domain": "background",
+      "kind": "query",
+      "docId": "27832601083046297",
+      "doc": "background/MarketplaceYourListingDialogQuery.md",
+      "reaEvidenceId": "ev_22f59bbae443de234fa40584e0e8711ae894e0e7bcfb42cf6d605e5b3c885bfd",
+      "seen": 3
+    },
+    {
       "name": "MarketplaceYouSellingUpsellCardQuery",
       "domain": "background",
       "kind": "query",
       "docId": "9626969840719635",
       "doc": "background/MarketplaceYouSellingUpsellCardQuery.md",
       "reaEvidenceId": "ev_00977e2ab70ca12a60a74cc135fd797089c7b462f9a8434a2065fcc5480f693a",
-      "seen": 5
+      "seen": 9
     },
     {
       "name": "MAWFetchXMAData_fetchXmaPreviewDataQuery",
@@ -1242,7 +1305,16 @@
       "docId": "9948369021930229",
       "doc": "background/MAWVerifyThreadCutover_ContactCapabilities2Query.md",
       "reaEvidenceId": "ev_2ef4fcf81840e4c44dfd19b7c86b9e3e65429109c06595cfc96262bcea9f2bc2",
-      "seen": 72
+      "seen": 80
+    },
+    {
+      "name": "MWChatEncryptedBackupsUpsellMessengerInboxQuery",
+      "domain": "background",
+      "kind": "query",
+      "docId": "25840958432234114",
+      "doc": "background/MWChatEncryptedBackupsUpsellMessengerInboxQuery.md",
+      "reaEvidenceId": "ev_0427856e5e318d591f009ff82849b7d874599abd152a910cd4f4932c27587954",
+      "seen": 1
     },
     {
       "name": "MWQuickPromotionThreadlistBannerQuery",
@@ -1251,7 +1323,16 @@
       "docId": "27805253425807021",
       "doc": "background/MWQuickPromotionThreadlistBannerQuery.md",
       "reaEvidenceId": "ev_02409c15c4b121aaad55f1d4e5f805ab90c21a37abd6b11190448c8fa0d209e1",
-      "seen": 3
+      "seen": 4
+    },
+    {
+      "name": "MWThreadListQPQuery",
+      "domain": "background",
+      "kind": "query",
+      "docId": "26280754921508865",
+      "doc": "background/MWThreadListQPQuery.md",
+      "reaEvidenceId": "ev_fac3a4787d43e7e54b0b1e89f34f2fe7bb756024faabde3c30ea45217ba1e933",
+      "seen": 1
     },
     {
       "name": "OhaiWebPublicKeyConfigQuery",
@@ -1260,7 +1341,7 @@
       "docId": "26996952523264441",
       "doc": "background/OhaiWebPublicKeyConfigQuery.md",
       "reaEvidenceId": "ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013",
-      "seen": 73
+      "seen": 81
     },
     {
       "name": "ProfileCometAboutAppSectionQuery",
@@ -1413,7 +1494,7 @@
       "docId": "9989124061109700",
       "doc": "background/RTWebCallBlockSettingHooksQuery.md",
       "reaEvidenceId": "ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6",
-      "seen": 73
+      "seen": 81
     },
     {
       "name": "SearchCometResultsInitialResultsParallelFetchQuery",
@@ -1458,7 +1539,7 @@
       "docId": "27831542276468324",
       "doc": "background/StoriesTrayRectangularRootQuery.md",
       "reaEvidenceId": "ev_c974048d5563e87d75f5e8ddd458fdc3829a195d00e0a636a969922c24e6ae81",
-      "seen": 11
+      "seen": 13
     },
     {
       "name": "triggerGroupsCometHeaderInviteWithEmailExposureQuery",
@@ -1782,7 +1863,7 @@
       "docId": "25220416984279164",
       "doc": "background/useMWEncryptedBackupsFetchBackupIdsV2Query.md",
       "reaEvidenceId": "ev_16df7daca80a72c8f44b7a489690336b7def96e564429f0639a122f48023372a",
-      "seen": 73
+      "seen": 81
     },
     {
       "name": "usePseudoBlockedUserInterstitialF3Query",
@@ -1791,7 +1872,7 @@
       "docId": "27255340990751033",
       "doc": "checkpoint/usePseudoBlockedUserInterstitialF3Query.md",
       "reaEvidenceId": "ev_4f0f59bc7d5ff4c02ef9f2aba85fc9de893084a7a8fbdf3f1627ce6c1c3456fe",
-      "seen": 89
+      "seen": 101
     },
     {
       "name": "useSearchCometTypeaheadBootstrapValidationQuery",

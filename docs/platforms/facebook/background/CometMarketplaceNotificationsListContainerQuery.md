@@ -13,11 +13,12 @@
 | Called from | `CometMarketplaceNotificationsListContainer.react` |
 | rea | `ev_db6029b93648bb0f97bb48100e923a2f1b143b437bc497c6144d5dfbf55f1720` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 4: click e191 | 1 | 200 | 1238 ms | 2967 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 1 | 200 | 718 ms | 479389 ms | — |
 
 <!-- facts:end -->
 

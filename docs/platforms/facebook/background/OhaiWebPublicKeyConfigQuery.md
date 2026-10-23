@@ -13,7 +13,7 @@
 | Called from | `OhaiWebPublicKeyConfig` |
 | rea | `ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013` |
 
-Seen 73 time(s) in 21 run(s).
+Seen 81 time(s) in 23 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -52,7 +52,7 @@ Seen 73 time(s) in 21 run(s).
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 1307 ms | 5461 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 340 ms | 5471 ms | — |
 | inspect | step 1: goto /messages/ | 1 | 200 | 352 ms | 2825 ms | — |
-| inspect | step 1: goto /marketplace/ | 1 | 200 | 809 ms | 10119 ms | — |
+| inspect | step 1: goto /marketplace/ | 2 | 200 | 423–809 ms | 6607–10119 ms | — |
 | inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 445 ms | 3174 ms | — |
 | inspect | step 5: setLocation Bethlehem, Pennsylvania | 1 | 200 | 939 ms | 3650 ms | — |
 | inspect | step 11: goto /marketplace/create/item | 1 | 200 | 582 ms | 2597 ms | — |
@@ -68,6 +68,12 @@ Seen 73 time(s) in 21 run(s).
 | inspect | step 9: goto /marketplace/status | 1 | 200 | 746 ms | 2176 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1334 ms | 2264 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 685 ms | 2261 ms | — |
+| inspect | step 1: goto /marketplace/status | 1 | 200 | 451 ms | 9428 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 504 ms | 4501 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 2 | 200 | 482–574 ms | 4851–1343893 ms | — |
+| inspect | step 2: goto /marketplace/status | 1 | 200 | 1099 ms | 2612 ms | — |
+| inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 2620 ms | 2036 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 1 | 200 | 2026 ms | 2711 ms | — |
 
 <!-- facts:end -->
 

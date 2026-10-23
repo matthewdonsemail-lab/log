@@ -6,14 +6,14 @@
 | --- | --- |
 | Domain | background |
 | Kind | query |
-| doc_id | `28750953961225359` |
+| doc_id | `28934009902924466` |
 | Path | `/api/graphql/` |
 | Sends | — |
 | Reads | `xfb_youth_regulatory_config_platform.query_configs_by_handler` |
 | Called from | `FBYRPTimeLimitsEnforcement.react` |
-| rea | `ev_6257439962be20bdb256b2c0fd4f7ed4a86b9d334bb2500d9045f2a42b81c9c9` |
+| rea | `ev_5fe8db44bc61b2d547bfce0c51e3256e80ffd1e3477b2c6b640071a0ea96e750` |
 
-Seen 73 time(s) in 21 run(s).
+Seen 81 time(s) in 23 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -52,7 +52,7 @@ Seen 73 time(s) in 21 run(s).
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 465 ms | 4009 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 333 ms | 4910 ms | — |
 | inspect | step 1: goto /messages/ | 1 | 200 | 362 ms | 2291 ms | — |
-| inspect | step 1: goto /marketplace/ | 1 | 200 | 409 ms | 8471 ms | — |
+| inspect | step 1: goto /marketplace/ | 2 | 200 | 409–484 ms | 3582–8471 ms | — |
 | inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 382 ms | 2827 ms | — |
 | inspect | step 5: setLocation Bethlehem, Pennsylvania | 1 | 200 | 419 ms | 2193 ms | — |
 | inspect | step 11: goto /marketplace/create/item | 1 | 200 | 380 ms | 1565 ms | — |
@@ -68,6 +68,12 @@ Seen 73 time(s) in 21 run(s).
 | inspect | step 9: goto /marketplace/status | 1 | 200 | 408 ms | 1408 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 904 ms | 1500 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 496 ms | 1804 ms | — |
+| inspect | step 1: goto /marketplace/status | 1 | 200 | 620 ms | 8584 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 761 ms | 3250 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 2 | 200 | 557–606 ms | 3388–1343591 ms | — |
+| inspect | step 2: goto /marketplace/status | 1 | 200 | 519 ms | 1892 ms | — |
+| inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 619 ms | 1376 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 1 | 200 | 859 ms | 2321 ms | — |
 
 <!-- facts:end -->
 

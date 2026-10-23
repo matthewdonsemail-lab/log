@@ -13,7 +13,7 @@
 | Called from | `fetchMWChatVideoAutoplaySetting` |
 | rea | `ev_cec3d0049369021eb11311f83bae206c05ab77298da76206b6788d2cdc5c8ee1` |
 
-Seen 73 time(s) in 21 run(s).
+Seen 81 time(s) in 23 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -52,7 +52,7 @@ Seen 73 time(s) in 21 run(s).
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 622 ms | 4066 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 332 ms | 4888 ms | — |
 | inspect | step 1: goto /messages/ | 1 | 200 | 348 ms | 2610 ms | — |
-| inspect | step 1: goto /marketplace/ | 1 | 200 | 761 ms | 8779 ms | — |
+| inspect | step 1: goto /marketplace/ | 2 | 200 | 658–761 ms | 3624–8779 ms | — |
 | inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 367 ms | 2805 ms | — |
 | inspect | step 5: setLocation Bethlehem, Pennsylvania | 1 | 200 | 441 ms | 2242 ms | — |
 | inspect | step 11: goto /marketplace/create/item | 1 | 200 | 454 ms | 1901 ms | — |
@@ -68,6 +68,12 @@ Seen 73 time(s) in 21 run(s).
 | inspect | step 9: goto /marketplace/status | 1 | 200 | 640 ms | 2051 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 951 ms | 1938 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 516 ms | 1886 ms | — |
+| inspect | step 1: goto /marketplace/status | 1 | 200 | 476 ms | 8563 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 630 ms | 3557 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 2 | 200 | 527–624 ms | 4470–1343570 ms | — |
+| inspect | step 2: goto /marketplace/status | 1 | 200 | 563 ms | 2439 ms | — |
+| inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 1407 ms | 1820 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 1 | 200 | 1087 ms | 2365 ms | — |
 
 <!-- facts:end -->
 

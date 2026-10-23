@@ -13,7 +13,7 @@
 | Called from | `CometNotificationsDropdown.react` |
 | rea | `ev_ab1965911932cb7fcf25b222bf92e0487c624ad5aa06bc6a0e5e7860bc09d85a` |
 
-Seen 73 time(s) in 19 run(s).
+Seen 88 time(s) in 21 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -53,6 +53,9 @@ Seen 73 time(s) in 19 run(s).
 | inspect | step 5: wait 5s | 1 | 200 | 826 ms | 519978 ms | — |
 | inspect | step 8: goto /marketplace/inbox | 1 | 200 | 1394 ms | 10331 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 1177 ms | 7157 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 12 | 200 | 854–1818 ms | 5436–1410350 ms | — |
+| inspect | step 1: goto /marketplace/ | 2 | 200 | 1158–1484 ms | 18023–18294 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 1 | 200 | 684 ms | 354420 ms | — |
 
 <!-- facts:end -->
 
