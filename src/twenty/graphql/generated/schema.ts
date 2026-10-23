@@ -34521,6 +34521,10 @@ export interface AgencyListing {
     condition?: AgencyListingConditionEnum
     /** log-cli: e.g. 19601. A --live publish sets the account's Marketplace location to it when the form would list elsewhere (Facebook finds Reading, PA by its zip, not its name) */
     locationPostalCode?: Scalars['String']
+    /** log-cli: the ad's versions, each [{ id, title, description }] written by skills/listingCopy; each copy of the ad picks the one least like what is live in its city */
+    copyVersions?: Scalars['JSON']
+    /** log-cli: the version this copy went out with (copyVersions id) */
+    copyVersionId?: Scalars['String']
     /** AgencyListings tied to the Timeline Activity */
     timelineActivities?: TimelineActivityConnection
     /** AgencyListings tied to the Attachment */
@@ -35017,6 +35021,26 @@ export interface AgencyListingConnection {
     percentageEmptyLocationPostalCode?: Scalars['Float']
     /** Percentage of non-empty values for locationPostalCode */
     percentageNotEmptyLocationPostalCode?: Scalars['Float']
+    /** Number of unique values for copyVersions */
+    countUniqueValuesCopyVersions?: Scalars['Int']
+    /** Number of empty values for copyVersions */
+    countEmptyCopyVersions?: Scalars['Int']
+    /** Number of non-empty values for copyVersions */
+    countNotEmptyCopyVersions?: Scalars['Int']
+    /** Percentage of empty values for copyVersions */
+    percentageEmptyCopyVersions?: Scalars['Float']
+    /** Percentage of non-empty values for copyVersions */
+    percentageNotEmptyCopyVersions?: Scalars['Float']
+    /** Number of unique values for copyVersionId */
+    countUniqueValuesCopyVersionId?: Scalars['Int']
+    /** Number of empty values for copyVersionId */
+    countEmptyCopyVersionId?: Scalars['Int']
+    /** Number of non-empty values for copyVersionId */
+    countNotEmptyCopyVersionId?: Scalars['Int']
+    /** Percentage of empty values for copyVersionId */
+    percentageEmptyCopyVersionId?: Scalars['Float']
+    /** Percentage of non-empty values for copyVersionId */
+    percentageNotEmptyCopyVersionId?: Scalars['Float']
     edges: AgencyListingEdge[]
     pageInfo: PageInfo
     __typename: 'AgencyListingConnection'
@@ -35489,6 +35513,26 @@ export interface AgencyListingGroupByConnection {
     percentageEmptyLocationPostalCode?: Scalars['Float']
     /** Percentage of non-empty values for locationPostalCode */
     percentageNotEmptyLocationPostalCode?: Scalars['Float']
+    /** Number of unique values for copyVersions */
+    countUniqueValuesCopyVersions?: Scalars['Int']
+    /** Number of empty values for copyVersions */
+    countEmptyCopyVersions?: Scalars['Int']
+    /** Number of non-empty values for copyVersions */
+    countNotEmptyCopyVersions?: Scalars['Int']
+    /** Percentage of empty values for copyVersions */
+    percentageEmptyCopyVersions?: Scalars['Float']
+    /** Percentage of non-empty values for copyVersions */
+    percentageNotEmptyCopyVersions?: Scalars['Float']
+    /** Number of unique values for copyVersionId */
+    countUniqueValuesCopyVersionId?: Scalars['Int']
+    /** Number of empty values for copyVersionId */
+    countEmptyCopyVersionId?: Scalars['Int']
+    /** Number of non-empty values for copyVersionId */
+    countNotEmptyCopyVersionId?: Scalars['Int']
+    /** Percentage of empty values for copyVersionId */
+    percentageEmptyCopyVersionId?: Scalars['Float']
+    /** Percentage of non-empty values for copyVersionId */
+    percentageNotEmptyCopyVersionId?: Scalars['Float']
     edges: AgencyListingEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -112322,6 +112366,10 @@ export interface AgencyListingGenqlSelection{
     condition?: boolean | number
     /** log-cli: e.g. 19601. A --live publish sets the account's Marketplace location to it when the form would list elsewhere (Facebook finds Reading, PA by its zip, not its name) */
     locationPostalCode?: boolean | number
+    /** log-cli: the ad's versions, each [{ id, title, description }] written by skills/listingCopy; each copy of the ad picks the one least like what is live in its city */
+    copyVersions?: boolean | number
+    /** log-cli: the version this copy went out with (copyVersions id) */
+    copyVersionId?: boolean | number
     /** AgencyListings tied to the Timeline Activity */
     timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
     /** AgencyListings tied to the Attachment */
@@ -112820,6 +112868,26 @@ export interface AgencyListingConnectionGenqlSelection{
     percentageEmptyLocationPostalCode?: boolean | number
     /** Percentage of non-empty values for locationPostalCode */
     percentageNotEmptyLocationPostalCode?: boolean | number
+    /** Number of unique values for copyVersions */
+    countUniqueValuesCopyVersions?: boolean | number
+    /** Number of empty values for copyVersions */
+    countEmptyCopyVersions?: boolean | number
+    /** Number of non-empty values for copyVersions */
+    countNotEmptyCopyVersions?: boolean | number
+    /** Percentage of empty values for copyVersions */
+    percentageEmptyCopyVersions?: boolean | number
+    /** Percentage of non-empty values for copyVersions */
+    percentageNotEmptyCopyVersions?: boolean | number
+    /** Number of unique values for copyVersionId */
+    countUniqueValuesCopyVersionId?: boolean | number
+    /** Number of empty values for copyVersionId */
+    countEmptyCopyVersionId?: boolean | number
+    /** Number of non-empty values for copyVersionId */
+    countNotEmptyCopyVersionId?: boolean | number
+    /** Percentage of empty values for copyVersionId */
+    percentageEmptyCopyVersionId?: boolean | number
+    /** Percentage of non-empty values for copyVersionId */
+    percentageNotEmptyCopyVersionId?: boolean | number
     edges?: AgencyListingEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -113293,6 +113361,26 @@ export interface AgencyListingGroupByConnectionGenqlSelection{
     percentageEmptyLocationPostalCode?: boolean | number
     /** Percentage of non-empty values for locationPostalCode */
     percentageNotEmptyLocationPostalCode?: boolean | number
+    /** Number of unique values for copyVersions */
+    countUniqueValuesCopyVersions?: boolean | number
+    /** Number of empty values for copyVersions */
+    countEmptyCopyVersions?: boolean | number
+    /** Number of non-empty values for copyVersions */
+    countNotEmptyCopyVersions?: boolean | number
+    /** Percentage of empty values for copyVersions */
+    percentageEmptyCopyVersions?: boolean | number
+    /** Percentage of non-empty values for copyVersions */
+    percentageNotEmptyCopyVersions?: boolean | number
+    /** Number of unique values for copyVersionId */
+    countUniqueValuesCopyVersionId?: boolean | number
+    /** Number of empty values for copyVersionId */
+    countEmptyCopyVersionId?: boolean | number
+    /** Number of non-empty values for copyVersionId */
+    countNotEmptyCopyVersionId?: boolean | number
+    /** Percentage of empty values for copyVersionId */
+    percentageEmptyCopyVersionId?: boolean | number
+    /** Percentage of non-empty values for copyVersionId */
+    percentageNotEmptyCopyVersionId?: boolean | number
     edges?: AgencyListingEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -113412,7 +113500,11 @@ status?: (AgencyListingStatusEnum | null),
 /** log-cli */
 condition?: (AgencyListingConditionEnum | null),
 /** log-cli: e.g. 19601. A --live publish sets the account's Marketplace location to it when the form would list elsewhere (Facebook finds Reading, PA by its zip, not its name) */
-locationPostalCode?: (Scalars['String'] | null)}
+locationPostalCode?: (Scalars['String'] | null),
+/** log-cli: the ad's versions, each [{ id, title, description }] written by skills/listingCopy; each copy of the ad picks the one least like what is live in its city */
+copyVersions?: (Scalars['JSON'] | null),
+/** log-cli: the version this copy went out with (copyVersions id) */
+copyVersionId?: (Scalars['String'] | null)}
 
 
 /** Facebook Marketplace listings synced from facebook-camofox-client */
@@ -113510,7 +113602,11 @@ status?: (AgencyListingStatusEnum | null),
 /** log-cli */
 condition?: (AgencyListingConditionEnum | null),
 /** log-cli: e.g. 19601. A --live publish sets the account's Marketplace location to it when the form would list elsewhere (Facebook finds Reading, PA by its zip, not its name) */
-locationPostalCode?: (Scalars['String'] | null)}
+locationPostalCode?: (Scalars['String'] | null),
+/** log-cli: the ad's versions, each [{ id, title, description }] written by skills/listingCopy; each copy of the ad picks the one least like what is live in its city */
+copyVersions?: (Scalars['JSON'] | null),
+/** log-cli: the version this copy went out with (copyVersions id) */
+copyVersionId?: (Scalars['String'] | null)}
 
 
 /** Facebook Marketplace listings synced from facebook-camofox-client */
@@ -113608,7 +113704,11 @@ status?: (AgencyListingStatusEnumFilter | null),
 /** log-cli */
 condition?: (AgencyListingConditionEnumFilter | null),
 /** log-cli: e.g. 19601. A --live publish sets the account's Marketplace location to it when the form would list elsewhere (Facebook finds Reading, PA by its zip, not its name) */
-locationPostalCode?: (StringFilter | null),and?: ((AgencyListingFilterInput | null)[] | null),or?: ((AgencyListingFilterInput | null)[] | null),not?: (AgencyListingFilterInput | null)}
+locationPostalCode?: (StringFilter | null),
+/** log-cli: the ad's versions, each [{ id, title, description }] written by skills/listingCopy; each copy of the ad picks the one least like what is live in its city */
+copyVersions?: (RawJsonFilter | null),
+/** log-cli: the version this copy went out with (copyVersions id) */
+copyVersionId?: (StringFilter | null),and?: ((AgencyListingFilterInput | null)[] | null),or?: ((AgencyListingFilterInput | null)[] | null),not?: (AgencyListingFilterInput | null)}
 
 export interface AgencyListingLastRunResultEnumFilter {eq?: (AgencyListingLastRunResultEnum | null),neq?: (AgencyListingLastRunResultEnum | null),in?: ((AgencyListingLastRunResultEnum | null)[] | null),containsAny?: ((AgencyListingLastRunResultEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AgencyListingLastRunResultEnum | null),gte?: (AgencyListingLastRunResultEnum | null),lt?: (AgencyListingLastRunResultEnum | null),lte?: (AgencyListingLastRunResultEnum | null)}
 
@@ -113712,7 +113812,11 @@ status?: (OrderByDirection | null),
 /** log-cli */
 condition?: (OrderByDirection | null),
 /** log-cli: e.g. 19601. A --live publish sets the account's Marketplace location to it when the form would list elsewhere (Facebook finds Reading, PA by its zip, not its name) */
-locationPostalCode?: (OrderByDirection | null)}
+locationPostalCode?: (OrderByDirection | null),
+/** log-cli: the ad's versions, each [{ id, title, description }] written by skills/listingCopy; each copy of the ad picks the one least like what is live in its city */
+copyVersions?: (OrderByDirection | null),
+/** log-cli: the version this copy went out with (copyVersions id) */
+copyVersionId?: (OrderByDirection | null)}
 
 
 /** Facebook Marketplace listings synced from facebook-camofox-client */
@@ -113812,7 +113916,11 @@ status?: (OrderByDirection | null),
 /** log-cli */
 condition?: (OrderByDirection | null),
 /** log-cli: e.g. 19601. A --live publish sets the account's Marketplace location to it when the form would list elsewhere (Facebook finds Reading, PA by its zip, not its name) */
-locationPostalCode?: (OrderByDirection | null)}
+locationPostalCode?: (OrderByDirection | null),
+/** log-cli: the ad's versions, each [{ id, title, description }] written by skills/listingCopy; each copy of the ad picks the one least like what is live in its city */
+copyVersions?: (OrderByDirection | null),
+/** log-cli: the version this copy went out with (copyVersions id) */
+copyVersionId?: (OrderByDirection | null)}
 
 
 /** Aggregate-based ordering */
@@ -114292,7 +114400,27 @@ countNotEmptyLocationPostalCode?: (OrderByDirection | null),
 /** Percentage of empty values for locationPostalCode */
 percentageEmptyLocationPostalCode?: (OrderByDirection | null),
 /** Percentage of non-empty values for locationPostalCode */
-percentageNotEmptyLocationPostalCode?: (OrderByDirection | null)}
+percentageNotEmptyLocationPostalCode?: (OrderByDirection | null),
+/** Number of unique values for copyVersions */
+countUniqueValuesCopyVersions?: (OrderByDirection | null),
+/** Number of empty values for copyVersions */
+countEmptyCopyVersions?: (OrderByDirection | null),
+/** Number of non-empty values for copyVersions */
+countNotEmptyCopyVersions?: (OrderByDirection | null),
+/** Percentage of empty values for copyVersions */
+percentageEmptyCopyVersions?: (OrderByDirection | null),
+/** Percentage of non-empty values for copyVersions */
+percentageNotEmptyCopyVersions?: (OrderByDirection | null),
+/** Number of unique values for copyVersionId */
+countUniqueValuesCopyVersionId?: (OrderByDirection | null),
+/** Number of empty values for copyVersionId */
+countEmptyCopyVersionId?: (OrderByDirection | null),
+/** Number of non-empty values for copyVersionId */
+countNotEmptyCopyVersionId?: (OrderByDirection | null),
+/** Percentage of empty values for copyVersionId */
+percentageEmptyCopyVersionId?: (OrderByDirection | null),
+/** Percentage of non-empty values for copyVersionId */
+percentageNotEmptyCopyVersionId?: (OrderByDirection | null)}
 
 
 /** Facebook Marketplace listings synced from facebook-camofox-client */
@@ -114368,7 +114496,9 @@ status?: (Scalars['Boolean'] | null),
 /** log-cli */
 condition?: (Scalars['Boolean'] | null),
 /** log-cli: e.g. 19601. A --live publish sets the account's Marketplace location to it when the form would list elsewhere (Facebook finds Reading, PA by its zip, not its name) */
-locationPostalCode?: (Scalars['Boolean'] | null)}
+locationPostalCode?: (Scalars['Boolean'] | null),
+/** log-cli: the version this copy went out with (copyVersions id) */
+copyVersionId?: (Scalars['Boolean'] | null)}
 
 
 /** Outbound/inbound dialer calls: recording, transcript, relations to phone/prospect/lead, future meeting link. */

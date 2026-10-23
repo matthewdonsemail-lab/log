@@ -742,6 +742,17 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `python/checks/comments.py`) refuses any tracked code file that has one;
     `--strip` removes them. Generated code is exempt. `lefthook.yml` itself
     carries none.
+71. 2026-10-23 · matt: an ad says the same thing several ways. An ad that
+    goes out on more than one listing in a city carries copy versions
+    (`agencyListings.copyVersions`, title-and-description pairs written by
+    `skills/listingCopy`), at least as many as the listings it will have live
+    in that city and never fewer than 3, every two titles differing by at least
+    half their words (the city's not counted). Each copy (`campaign fill`,
+    `heal`) takes the version least like what is live in its city and records
+    it in `copyVersionId`; a replacement skips the lost copy's version.
+    `log facebook listing lint`, `listing create` and `campaign fill` refuse a
+    version that breaks a checkable copy rule, and `campaign fill` refuses too
+    few (`notEnoughCopyVersions`). `src/facebook/marketplace/copy`.
 
 ## Checks
 

@@ -1,5 +1,6 @@
 import type { AgencyListing as AgencyListingRecord } from '../../twenty/graphql/generated/index'
 import type { AGENCY_LISTING_FIELDS } from '../../twenty/graphql/client'
+import type { CopyVersion } from '../../facebook/marketplace/copy/types'
 
 export const LISTING_STATUSES = [
   'draft',
@@ -64,4 +65,6 @@ export interface AgencyListing {
   lastError: string | null
   clicksCount: number | null
   lastCheckedAt: string | null
+  copyVersions: CopyVersion[]
+  copyVersionId: string | null
 }

@@ -115,6 +115,40 @@ How it works:
 [Bethlehem and the towns you cover]. [Same-day pickup when we have a slot, only if true.]
 ```
 
+## Versions: one ad, several ways to say it (rule 71)
+
+An ad that goes out on more than one listing in a city carries **copy
+versions**: whole title-and-description pairs, each with its own angle (a
+garage cleanout, "moving out? we take what's left", one big item, a free quote
+from a photo). Write them in `listing.json` as `copyVersions`:
+
+```json
+"copyVersions": [
+  { "id": "photoQuote", "title": "Junk Removal Bethlehem PA – Free Quote From a Photo", "description": "..." },
+  { "id": "garageCleanout", "title": "Garage & Basement Cleanouts Bethlehem – Same-Day Pickup", "description": "..." },
+  { "id": "movingOut", "title": "Moving Out of Bethlehem? We Take What You Leave Behind", "description": "..." }
+]
+```
+
+- **How many:** at least as many as the listings the ad will have live in
+  that city, never fewer than 3. `log facebook campaign fill` counts the ones
+  already live (ready, publishing, unconfirmed, active, under review) and
+  refuses with `notEnoughCopyVersions` when it is short.
+- **How different:** every two titles differ by at least half their words, not
+  counting the city's.
+- **Each by the rules above:**
+  - every title names the city, at most 70 characters, no emoji, no words in
+    capitals, no "!", no banned words;
+  - every description has a price with a number, a list, and the photo ask.
+- **The first version is the ad's own title and description;** leave `title`
+  and `description` out, or make them match it.
+- **Check before saving:** `log facebook listing lint --file listing.json`
+  lists every broken rule; `listing create` and `campaign fill` refuse the same.
+- **Which copy gets which:** each copy of the ad (`campaign fill`, `heal`)
+  takes the version least like what's live in its city, by shared words (title
+  counted twice as much as the description). A replacement skips the version
+  the lost copy used. Code: `src/facebook/marketplace/copy`.
+
 ## Checklist before `log facebook listing create`
 
 - [ ] Title: service, city and one benefit, under 70 characters, no caps or symbols
@@ -125,6 +159,7 @@ How it works:
 - [ ] Call to action: send a photo, get a price
 - [ ] 4 to 6 photos, the strongest before/after first
 - [ ] Spell-checked, plain tone, no exclamation marks
+- [ ] Going out on more than one listing in a city: enough copy versions, and `log facebook listing lint` passes
 
 ## After it's up (A, C)
 

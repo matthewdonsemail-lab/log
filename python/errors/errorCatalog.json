@@ -1322,6 +1322,15 @@
     ],
     "action": "Fix the fields named in the detail in Twenty."
   },
+  "notEnoughCopyVersions": {
+    "layer": "listing",
+    "meaning": "The ad would be live on several listings in one city without enough copy versions, or a version breaks the copy rules (skills/listingCopy). Nothing was created.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/campaign"
+    ],
+    "action": "Write at least as many versions as listings it will have live in that city, never fewer than 3, each by skills/listingCopy, in copyVersions; check them with log facebook listing lint --file <listing.json>."
+  },
   "noReplacementAccount": {
     "layer": "listing",
     "meaning": "No FACEBOOK account in the listing's country is ACTIVE, proxied, under its cap and not already in the campaign. The listing stays ACCOUNT_LOST.",

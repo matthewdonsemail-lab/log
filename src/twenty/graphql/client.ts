@@ -82,6 +82,8 @@ export const AGENCY_LISTING_FIELDS = {
   lastError: true,
   clicksCount: true,
   lastCheckedAt: true,
+  copyVersions: true,
+  copyVersionId: true,
   createdAt: true
 } satisfies AgencyListingGenqlSelection
 

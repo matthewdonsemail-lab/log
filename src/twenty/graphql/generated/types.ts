@@ -111490,6 +111490,12 @@ export default {
             "locationPostalCode": [
                 1
             ],
+            "copyVersions": [
+                78
+            ],
+            "copyVersionId": [
+                1
+            ],
             "timelineActivities": [
                 539,
                 {
@@ -112373,6 +112379,36 @@ export default {
             "percentageNotEmptyLocationPostalCode": [
                 84
             ],
+            "countUniqueValuesCopyVersions": [
+                76
+            ],
+            "countEmptyCopyVersions": [
+                76
+            ],
+            "countNotEmptyCopyVersions": [
+                76
+            ],
+            "percentageEmptyCopyVersions": [
+                84
+            ],
+            "percentageNotEmptyCopyVersions": [
+                84
+            ],
+            "countUniqueValuesCopyVersionId": [
+                76
+            ],
+            "countEmptyCopyVersionId": [
+                76
+            ],
+            "countNotEmptyCopyVersionId": [
+                76
+            ],
+            "percentageEmptyCopyVersionId": [
+                84
+            ],
+            "percentageNotEmptyCopyVersionId": [
+                84
+            ],
             "edges": [
                 1045
             ],
@@ -113080,6 +113116,36 @@ export default {
             "percentageNotEmptyLocationPostalCode": [
                 84
             ],
+            "countUniqueValuesCopyVersions": [
+                76
+            ],
+            "countEmptyCopyVersions": [
+                76
+            ],
+            "countNotEmptyCopyVersions": [
+                76
+            ],
+            "percentageEmptyCopyVersions": [
+                84
+            ],
+            "percentageNotEmptyCopyVersions": [
+                84
+            ],
+            "countUniqueValuesCopyVersionId": [
+                76
+            ],
+            "countEmptyCopyVersionId": [
+                76
+            ],
+            "countNotEmptyCopyVersionId": [
+                76
+            ],
+            "percentageEmptyCopyVersionId": [
+                84
+            ],
+            "percentageNotEmptyCopyVersionId": [
+                84
+            ],
             "edges": [
                 1045
             ],
@@ -113265,6 +113331,12 @@ export default {
             "locationPostalCode": [
                 1
             ],
+            "copyVersions": [
+                78
+            ],
+            "copyVersionId": [
+                1
+            ],
             "__typename": [
                 1
             ]
@@ -113411,6 +113483,12 @@ export default {
             "locationPostalCode": [
                 1
             ],
+            "copyVersions": [
+                78
+            ],
+            "copyVersionId": [
+                1
+            ],
             "__typename": [
                 1
             ]
@@ -113555,6 +113633,12 @@ export default {
                 1056
             ],
             "locationPostalCode": [
+                7
+            ],
+            "copyVersions": [
+                9
+            ],
+            "copyVersionId": [
                 7
             ],
             "and": [
@@ -113817,6 +113901,12 @@ export default {
             "locationPostalCode": [
                 11
             ],
+            "copyVersions": [
+                11
+            ],
+            "copyVersionId": [
+                11
+            ],
             "__typename": [
                 1
             ]
@@ -113964,6 +114054,12 @@ export default {
                 11
             ],
             "locationPostalCode": [
+                11
+            ],
+            "copyVersions": [
+                11
+            ],
+            "copyVersionId": [
                 11
             ],
             "__typename": [
@@ -114685,6 +114781,36 @@ export default {
             "percentageNotEmptyLocationPostalCode": [
                 11
             ],
+            "countUniqueValuesCopyVersions": [
+                11
+            ],
+            "countEmptyCopyVersions": [
+                11
+            ],
+            "countNotEmptyCopyVersions": [
+                11
+            ],
+            "percentageEmptyCopyVersions": [
+                11
+            ],
+            "percentageNotEmptyCopyVersions": [
+                11
+            ],
+            "countUniqueValuesCopyVersionId": [
+                11
+            ],
+            "countEmptyCopyVersionId": [
+                11
+            ],
+            "countNotEmptyCopyVersionId": [
+                11
+            ],
+            "percentageEmptyCopyVersionId": [
+                11
+            ],
+            "percentageNotEmptyCopyVersionId": [
+                11
+            ],
             "__typename": [
                 1
             ]
@@ -114796,6 +114922,9 @@ export default {
                 13
             ],
             "locationPostalCode": [
+                13
+            ],
+            "copyVersionId": [
                 13
             ],
             "__typename": [

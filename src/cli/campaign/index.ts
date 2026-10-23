@@ -1,4 +1,4 @@
-import { getListing, listListingsWhere, toPublishListing } from "../../marketplace/agencyListing/index.ts";
+import { copyVersionsShortfall, getListing, listListingsWhere, toPublishListing } from "../../marketplace/agencyListing/index.ts";
 import { fillCampaign, healCampaign } from "../../marketplace/replacement/index.ts";
 import { listFacebookAccounts } from "../../marketplace/socialAccount/index.ts";
 import { renderListingsTable } from "../listing/helpers/index.ts";
@@ -45,8 +45,10 @@ export const campaignCommand: Command = {
         if (!ad) return refuse("campaign fill", "listingNotFound", from);
         const content = toPublishListing(ad);
         if (!content.ok) return refuse("campaign fill", "listingInvalid", content.problems.join("; "));
+        const shortfall = await copyVersionsShortfall(context.twenty, ad, count);
+        if (shortfall) return refuse("campaign fill", "notEnoughCopyVersions", shortfall);
         const report = await fillCampaign(context.twenty, campaignId, ad, count);
-        const lines = report.created.map((c) => `  READY ${c.listing.id} on ${c.account.accountName} (${c.account.homeCity ?? "?"}, ${c.account.homeCountry})`);
+        const lines = report.created.map((c) => `  READY ${c.listing.id} on ${c.account.accountName} (${c.account.homeCity ?? "?"}, ${c.account.homeCountry})${c.listing.copyVersionId ? `: version ${c.listing.copyVersionId}, "${c.listing.title}"` : ""}`);
         lines.unshift(`Created ${report.created.length} of ${count} listing(s) for "${ad.title}" in ${ad.locationQuery}.`);
         if (report.short) lines.push(`${report.short} short: no more FACEBOOK accounts in ${ad.locationCountry} that are ACTIVE, proxied, under their cap and not already in this campaign.`);
         lines.push("Publish with `log facebook campaign run --campaign <id>` (dry run unless --live).");

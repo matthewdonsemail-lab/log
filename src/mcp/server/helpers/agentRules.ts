@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 70;
+export const RULES_REVIEWED_THROUGH = 71;
 
 export const AGENTS_URI = "log://agents";
 
@@ -19,6 +19,7 @@ export const SERVER_INSTRUCTIONS = [
   "12. Facebook group listening is obris-dev/openmagpie#188's triage job: an account joins (`facebook join group`), OpenMagpie polls with `facebook poll --request` (a read in the account's open browser), keeps every post, triages them with its watch, and sends only the matches to Twenty's socialListening. log-cli writes only the group's cursor to Twenty; `facebook read group` reads by hand and saves nothing else (rule 65).",
   "13. The platform comes first in every command that acts on one: `log <platform> <command> …` (`log facebook connect`, `log facebook warmup reel`, `log facebook poll <group> <account> <how long to poll>`); there is no form without it, and an old form is refused with the one it became. Most tools are one form of a command each (`inspectStart`, `inspectDo`, `accountShow`, `runsPrune`…) and take named fields, each value passed whole; the rest take `args`, what follows the command (the warm-up's start with its platform) (rule 63). The code is laid out the same way, `src/<platform>/<area>/<domain>`: `src/facebook/group/…`, `src/facebook/warmup/…`; what any platform uses stays shared (rule 64).",
   "14. Code carries no comments and no docstrings: names, types, tests, skills and docs say what it does; `check:noComments` refuses a commit or push with one (rule 70).",
+  "15. An ad on more than one listing in a city carries copy versions (`copyVersions`, written by skills/listingCopy): at least as many as its live listings there, never fewer than 3, titles differing by half their words; each copy takes the one least like what's live; `listing lint` checks them, `campaign fill` refuses too few (rule 71).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -43,9 +44,9 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   capture: [19, 22, 26, 27, 46, 48],
   account: [13, 37],
   accounts: [13],
-  listing: [13],
+  listing: [13, 71],
   listings: [13],
-  campaign: [13, 18],
+  campaign: [13, 18, 71],
   conversation: [34],
   messenger: [8, 21, 29, 54, 63, 67],
   check: [8, 13, 18, 22, 29, 35, 69],

@@ -157,6 +157,7 @@ stateDiagram-v2
 | `listingNoAccount` | no | `marketplace/agencyListing` | command exits | The agencyListing has no socialAccount, so nothing knows which account posts it. | Set its Social account in Twenty, or fill the campaign with log facebook campaign fill. |
 | `listingNotPublishable` | no | `cli/publish` | command exits | The listing is not in a state that may be published (only DRAFT, READY, FAILED and BLOCKED). A live, publishing or unconfirmed listing would make a duplicate. | Check it on Facebook. An UNCONFIRMED one needs a person, never a re-publish. |
 | `listingInvalid` | no | `cli/publish` | command exits | The listing's fields would stall the create form (title, price, category, photos, location). | Fix the fields named in the detail in Twenty. |
+| `notEnoughCopyVersions` | no | `cli/campaign` | command exits | The ad would be live on several listings in one city without enough copy versions, or a version breaks the copy rules (skills/listingCopy). Nothing was created. | Write at least as many versions as listings it will have live in that city, never fewer than 3, each by skills/listingCopy, in copyVersions; check them with log facebook listing lint --file <listing.json>. |
 | `noReplacementAccount` | yes | `marketplace/replacement` | command exits | No FACEBOOK account in the listing's country is ACTIVE, proxied, under its cap and not already in the campaign. The listing stays ACCOUNT_LOST. | Add or activate an account in that country (with a proxy there), then run log facebook campaign heal. |
 
 ## photo

@@ -126,7 +126,14 @@ const AGENCY_LISTING_FIELDS = [
     ]
   },
   { name: 'lastErrorCode', label: 'Last error code', type: 'TEXT', description: 'log-cli: error catalog code (log errors --code <code>)' },
-  { name: 'replacementReason', label: 'Replacement reason', type: 'TEXT', description: 'log-cli: why this row replaced another' }
+  { name: 'replacementReason', label: 'Replacement reason', type: 'TEXT', description: 'log-cli: why this row replaced another' },
+  {
+    name: 'copyVersions',
+    label: 'Copy versions',
+    type: 'RAW_JSON',
+    description: 'log-cli: the ad\'s versions, each [{ id, title, description }] written by skills/listingCopy; each copy of the ad picks the one least like what is live in its city'
+  },
+  { name: 'copyVersionId', label: 'Copy version', type: 'TEXT', description: 'log-cli: the version this copy went out with (copyVersions id)' }
 ]
 
 const CHANNEL = [option('SMS', 'SMS', 'blue', 0), option('FACEBOOK_MARKETPLACE', 'Facebook Marketplace', 'purple', 1)]

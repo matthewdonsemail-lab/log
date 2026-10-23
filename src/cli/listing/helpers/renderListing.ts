@@ -35,6 +35,7 @@ export function renderListingDetail(l: AgencyListing, account: FacebookAccount |
     `  Photos       ${l.photos.length}`,
     `  Facebook     ${l.listingId ? `${l.listingId}  ${l.listingUrl ?? ""}` : "not published"}`,
     `  Generation   ${l.generation}${l.replacesId ? `  (replaces ${l.replacesId})` : ""}`,
+    ...(l.copyVersions.length ? [`  Copy         ${l.copyVersions.length} version(s): ${l.copyVersions.map((v) => (v.id === l.copyVersionId ? `${v.id} (this one)` : v.id)).join(", ")}`] : []),
     `  Last run     ${l.lastRunAt ? `${l.lastRunAt}  ${upper(l.lastRunResult)}${l.lastErrorCode ? `  ${l.lastErrorCode}: ${l.lastError ?? ""}` : ""}` : "never"}`,
   ].join("\n");
 }

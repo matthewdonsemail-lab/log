@@ -13,7 +13,8 @@ export const LISTINGS_USAGE = "Usage: log facebook listings [--status <STATUS>] 
 export const LISTING_USAGE = [
   "Usage: log facebook listing <agencyListingId> [--json]",
   "       log facebook listing create --account <accountName> --file <listing.json> [--json]",
-  "The file: title, description, price, priceCurrency, category, condition (new|usedLikeNew|usedGood|usedFair), photos (paths or URLs), locationQuery, locationCity, locationCountry, locationPostalCode (the zip: Facebook finds a US city by it).",
+  "       log facebook listing lint --file <listing.json> [--json]   (the copy rules on the file's copy versions, and whether it would publish; nothing is saved)",
+  "The file: title, description, price, priceCurrency, category, condition (new|usedLikeNew|usedGood|usedFair), photos (paths or URLs), locationQuery, locationCity, locationCountry, locationPostalCode (the zip: Facebook finds a US city by it), copyVersions ([{ id, title, description }], written by skills/listingCopy; the first is the ad's own title and description; each copy of the ad picks the one least like what is live in its city).",
 ].join("\n");
 
 export const LISTINGS_INPUT: CommandInput = {
@@ -75,9 +76,15 @@ export const LISTING_INPUT: CommandInput = {
       positionals: [],
       flags: [
         { name: "account", kind: "string", required: true, description: "The account that will publish it" },
-        { name: "file", kind: "string", required: true, description: "The listing.json path: title, description, price, priceCurrency, category, condition, photos, locationQuery, locationCity, locationCountry, locationPostalCode" },
+        { name: "file", kind: "string", required: true, description: "The listing.json path: title, description, price, priceCurrency, category, condition, photos, locationQuery, locationCity, locationCountry, locationPostalCode, copyVersions" },
         JSON_FLAG,
       ],
+    },
+    {
+      words: ["lint"],
+      summary: "Check a listing.json against the copy rules and the create form, saving nothing",
+      positionals: [],
+      flags: [{ name: "file", kind: "string", required: true, description: "The listing.json path" }, JSON_FLAG],
     },
   ],
 };
@@ -89,11 +96,26 @@ export const listingCommand: Command = {
   effect: "read",
   input: LISTING_INPUT,
   summary: "Show one Twenty listing, or create one for an account from a JSON file",
-  args: "<id> | create --account <name> --file <listing.json> [--json]",
+  args: "<id> | create --account <name> --file <listing.json> | lint --file <listing.json> [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, parserSpecOf(LISTING_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log facebook listing: ${parsed.error}\n${LISTING_USAGE}` };
     const [key, extra] = parsed.positionals;
+    if (key === "lint") {
+      const file = parsed.flags["file"];
+      if (typeof file !== "string") return { code: 1, stderr: `log facebook listing lint: --file is required\n${LISTING_USAGE}` };
+      let raw: unknown;
+      try {
+        raw = JSON.parse(readFileSync(file, "utf8"));
+      } catch (error) {
+        return { code: 1, stderr: `log facebook listing lint: can't read ${file}: ${error instanceof Error ? error.message : String(error)}` };
+      }
+      const checked = listingFromJson(raw);
+      if (parsed.flags["json"]) return { code: checked.ok ? 0 : 1, stdout: JSON.stringify(checked.ok ? { ok: true, copyVersions: checked.ad.copyVersions.map((v) => v.id) } : { ok: false, problems: checked.problems }, null, 2) };
+      if (!checked.ok) return { code: 1, stdout: [`${file}: ${checked.problems.length} problem(s)`, ...checked.problems.map((p) => `  - ${p}`)].join("\n") };
+      const n = checked.ad.copyVersions.length;
+      return { code: 0, stdout: `${file}: passes${n ? `, ${n} copy version(s) (${checked.ad.copyVersions.map((v) => v.id).join(", ")}), enough for ${n} listing(s) live in one city` : ", no copy versions: fine on one account, a campaign over 1 listing in a city needs at least 3"}.` };
+    }
     if (key === "create") {
       const account = parsed.flags["account"];
       const file = parsed.flags["file"];
