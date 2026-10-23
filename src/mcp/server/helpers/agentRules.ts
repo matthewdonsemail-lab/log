@@ -1,11 +1,11 @@
-export const RULES_REVIEWED_THROUGH = 75;
+export const RULES_REVIEWED_THROUGH = 76;
 
 export const AGENTS_URI = "log://agents";
 
 export const SERVER_INSTRUCTIONS = [
   "The `log` tools run log-cli: Facebook accounts (Twenty socialAccounts) and what they do on Facebook (Marketplace listings, groups).",
   `Its rules are matt's, in AGENTS.md (read the resource ${AGENTS_URI}; the newest rules are at the bottom and win). The core of them:`,
-  "1. Rule one, above every other: always read Facebook's internal API answers. They decide what is relevant and when, and are the deterministic factor of the system: every browser step reads the answers it triggers and the requests it sent, keeps them, and decides on them, never on a page loading, a timer or the step having run (rule 73).",
+  "1. Rule one, above every other: if we don't know, we do this. Read the step's internal API (what we sent and what came back; the answers decide, never the screen, a timer or the step having run); collate everything about the moment (goal, account, what we did, every call, the page, the screenshot, the earlier steps); ask SubQ what it means; say it loudly; keep going until the goal is reached; write what went wrong as P.E.E. (point, evidence, explain) with how it was fixed; and name the state so next time it is known. In `inspect`: `goal`, `inspectFinding`, `inspectGoal`, `inspectRead` (rules 73-76).",
   "2. When matt says to do something, do it completely, in the same turn: not stopped to ask again, not narrowed to what you think (rule 30).",
   "3. Only what matt said: never add options, scope, context or spending he didn't ask for; paid work does exactly what he said (rules 39-41).",
   "4. Never mention or discuss Meta's or Facebook's rules, terms or account ownership with matt unless he raises them (rule 38).",

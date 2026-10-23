@@ -1,5 +1,46 @@
 # log-cli
 
+## Rule one: if we don't know, we do this
+
+The number one rule of log-cli, above everything below. We already know most
+of the states a platform can be in. When a step lands somewhere we don't know:
+
+1. **Read the internal API.** Every step's internal API calls are taken out
+   of its recording by code: what we sent and what came back, in seconds from
+   our action (`exchanges.json`, `exchanges.md`). The answers decide, never the
+   screen, a timer, or the fact that a step ran. What we sent counts as much
+   as the answer (`viewer_coordinates` placed Bethlehem's search in Lima).
+2. **Collate everything about that moment.** The goal, the account (home,
+   platform, browser, the proxy's exit), what we did (the action, the mouse,
+   how long it took), every internal API call, the page, the screenshot and
+   the earlier steps, together, never in silos.
+3. **Ask SubQ what it means.** Not what to do next: was the goal met, does
+   everything fit the account, should something never have come up, does the
+   page agree with the API, did our action cause it, and what each call says
+   about the goal.
+4. **Say it loudly.** The reading comes first in the step's result
+   (`>>> UNKNOWN STATE`) and goes into the agent's context through the hook.
+5. **Keep going until the goal is reached.** The Stop hook holds the turn
+   until a step's reading says the goal is met.
+6. **Write what went wrong as P.E.E.** Point (the issue, one sentence),
+   Evidence (quoted from the step's reading), Explain (why it shows it, what
+   caused it), and, once the goal is reached, how it was fixed
+   (`log inspect finding`, `goalFindings.md`).
+7. **Name the state,** so next time it is known and nobody has to find it
+   out again.
+
+The same on every platform. In practice:
+
+```bash
+bun bin/log.ts inspect start --account <a> --goal "Set the Marketplace location to Bethlehem, Pennsylvania" --detach
+bun bin/log.ts inspect do <action>                                  # reads the step; >>> UNKNOWN STATE when we don't know
+bun bin/log.ts inspect finding --account <a> --step <step> --point "<the issue>" --explain "<why, and what caused it>"
+bun bin/log.ts inspect finding --account <a> --fixes 1 --fix "<how it was fixed>"
+bun bin/log.ts inspect goal --account <a>                           # the goal, whether it is reached, every finding
+```
+
+AGENTS.md rules 73-76.
+
 The command line for ListeningKit's Facebook Marketplace work. Accounts and
 listings live in Twenty (`socialAccounts`, `agencyListings`), reached through
 the same generated GraphQL client blaster and the dialer use.

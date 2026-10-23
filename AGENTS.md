@@ -1,32 +1,50 @@
 # AGENTS.md — log-cli
 
-## Rule one: always read Facebook's internal API answers (matt, 2026-10-23)
+## Rule one: if we don't know, we do this (matt, 2026-10-23)
 
 This is the number one rule of the whole stack, above every other rule in
-this file. Facebook's internal API answers are what decide what is
-relevant and when. They are the deterministic factor of the system: the
-answer decides, never the screen, a timer, or the fact that a step ran.
+this file. We already know most of the states a platform can be in. When a
+step lands somewhere we don't know:
 
-- **Every step reads them.** Every step the stack runs in a browser (a
-  warm-up activity, a flow step, an inspect step, a publish, a check)
-  reads the internal API answers it triggers, and the request it sent. A
-  step that only loads a page and moves on is not done.
-- **Read means kept and used.** What each answer said is taken out of the
-  run's recording by code, kept past the prune, and is what the machine
-  decides on.
-- **What we sent counts as much as the answer.** Example:
-  `viewer_coordinates` placed Bethlehem's place search in Lima.
-- **Why:** on 2026-10-22, Bethlehem's warm-up loaded
-  `/marketplace/create/item` twice. Both times its HTML said
-  `sell_location: Barranco, 15063, PE`, and both times the warm-up passed.
-  The prune then deleted it (#35).
-- **Status 2026-10-23:** every `log inspect` step now reads its internal
-  API calls by code, what was sent and what came back, into
-  `exchanges.json` and `exchanges.md` (rule 74). The warm-up flows and the
-  other machines don't yet: every warm-up flow step still has `expect: -`
-  (#35).
+1. **Read the internal API.** Every step's internal API calls are taken out
+   of its recording by code: what we sent and what came back, in seconds from
+   our action (`exchanges.json`, `exchanges.md`). The answers decide, never the
+   screen, a timer, or the fact that a step ran. What we sent counts as much
+   as the answer (`viewer_coordinates` placed Bethlehem's search in Lima).
+2. **Collate everything about that moment.** The goal, the account (home,
+   platform, browser, the proxy's exit), what we did (the action, the mouse,
+   how long it took), every internal API call, the page, the screenshot and
+   the earlier steps, together, never in silos.
+3. **Ask SubQ what it means.** Not what to do next: was the goal met, does
+   everything fit the account, should something never have come up, does the
+   page agree with the API, did our action cause it, and what each call says
+   about the goal.
+4. **Say it loudly.** The reading comes first in the step's result
+   (`>>> UNKNOWN STATE`) and goes into the agent's context through the hook.
+5. **Keep going until the goal is reached.** The Stop hook holds the turn
+   until a step's reading says the goal is met.
+6. **Write what went wrong as P.E.E.** Point (the issue, one sentence),
+   Evidence (quoted from the step's reading), Explain (why it shows it, what
+   caused it), and, once the goal is reached, how it was fixed
+   (`log inspect finding`, `goalFindings.md`).
+7. **Name the state,** so next time it is known and nobody has to find it
+   out again.
 
-Rule 73.
+It works the same on every platform: every platform's client triggers
+internal APIs nobody documents, and our job is to find what our action
+caused. It runs in `log inspect` (`--goal`, `inspect goal`, `inspect
+finding`, `inspect read`), where flows are made to be run again and again.
+
+- **Why:** on 2026-10-22 Bethlehem's warm-up loaded `/marketplace/create/item`
+  twice; its HTML said `sell_location: Barranco, 15063, PE` both times, and the
+  warm-up passed. Then "Bethlehem, PA" saved the West Bank, and every step said
+  ok. Read this way, SubQ said wrong result (93%) and pointed at Lima and the
+  West Bank in Facebook's own answers.
+- **Status 2026-10-23:** built for `log inspect` (PR #36). The warm-up flows
+  and the other machines don't read their answers yet: every warm-up flow step
+  still has `expect: -` (#35).
+
+Rules 73-76.
 
 ## The platform comes first: `log <platform> <command> …` (matt, 2026-10-22)
 
@@ -843,6 +861,13 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     What only a person can clear never holds the turn: it is said to matt.
     The hook holds the turn once per unchanged state, never twice on the
     same one. `src/browser/inspect/helpers/goal.ts`.
+76. 2026-10-23 · matt: "make it the number one rule of AGENTS.md and
+    README.md: if we don't know, we do this." When a step lands somewhere we
+    don't know: read the internal API (rule 73), collate everything about the
+    moment, ask SubQ what it means (rule 74), say it loudly, keep going until
+    the goal is reached, write what went wrong as P.E.E. with its fix (rule
+    75), and name the state. It is the first section of AGENTS.md, the first
+    section of README.md and the first MCP instruction. Top of this file.
 
 ## Checks
 
