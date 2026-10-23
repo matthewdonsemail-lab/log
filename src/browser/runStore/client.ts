@@ -19,6 +19,7 @@ const KEPT_FILES = ['findings.md', 'steps.jsonl', 'settle.json']
 const KEPT_RUN_FILES = ['goalFindings.md', 'goalFindings.jsonl']
 const KEPT_STEP_FILES = [EXCHANGES_FILE, 'reading.json', 'readingState.json']
 const CUT_EXCHANGES = /\.exchanges\.json$/
+const TAKEN_OUT = /(^|\.)exchanges\.json$/
 const BUSY_MS = 10 * 60_000
 
 function sizeOf(path: string): number {
@@ -40,7 +41,7 @@ function newestChange(path: string): number {
     return 0
   }
   if (!stat.isDirectory()) return stat.mtimeMs
-  return readdirSync(path).reduce((n, name) => Math.max(n, newestChange(join(path, name))), 0)
+  return readdirSync(path).filter((name) => !TAKEN_OUT.test(name)).reduce((n, name) => Math.max(n, newestChange(join(path, name))), 0)
 }
 
 export function docsBuiltAt(repoRoot = fileURLToPath(new URL('../../../', import.meta.url))): number {

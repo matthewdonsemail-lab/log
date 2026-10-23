@@ -68,6 +68,7 @@ describe('runStore', () => {
     expect(exchanges[0]).toMatchObject({ name: 'CometUFIFeedbackReactMutation', status: 200, answer: { data: { feedback_react: { feedback: { reaction_count: { count: 1 } } } } } })
     expect(existsSync(join(dir, 'adsPower', 'steps', '07_step3LikePost.exchanges.json'))).toBe(true)
     expect(backfillAll(entries, { apply: true }).had).toBe(2)
+    expect(listRuns({ root, builtAt: BUILT, now: Date.now(), open: [] })[0].keep).toBeNull()
     const [pruned] = await pruneRuns(entries, { apply: true, root })
     expect(existsSync(dir)).toBe(false)
     for (const file of ['exchanges.json', 'reading.json', 'readingState.json']) expect(existsSync(join(pruned.kept, 'steps', '03_likepostLike', file))).toBe(true)
