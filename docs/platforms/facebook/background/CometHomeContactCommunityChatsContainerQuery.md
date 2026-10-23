@@ -13,7 +13,7 @@
 | Called from | `CometHomeContactCommunityChatsContainer.react` |
 | rea | `ev_38a62071407b1d580cabfa2361b5d2c8ad31a9bb9fb9fefb54b7b887fa2b16aa` |
 
-Seen 16 time(s) in 9 run(s).
+Seen 19 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -32,6 +32,9 @@ Seen 16 time(s) in 9 run(s).
 | inspect | step 5: wait 5s | 1 | 200 | 630 ms | 103696 ms | — |
 | inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 547 ms | 5703 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 2 | 200 | 612–916 ms | 558523–564747 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 1 | 200 | 1632 ms | 59464 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 2569 ms | 11550 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 1 | 200 | 927 ms | 1708107 ms | — |
 
 <!-- facts:end -->
 

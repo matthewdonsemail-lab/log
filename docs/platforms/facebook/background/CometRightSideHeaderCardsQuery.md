@@ -13,7 +13,7 @@
 | Called from | `CometRightSideHeaderCards.react` |
 | rea | `ev_0ca298c8c568c93036a5e8e8d989f3baf2a29fa5ca4d1fd7a8070819f4515962` |
 
-Seen 16 time(s) in 9 run(s).
+Seen 19 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -32,6 +32,9 @@ Seen 16 time(s) in 9 run(s).
 | inspect | step 5: wait 5s | 1 | 200 | 811 ms | 103690 ms | — |
 | inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 723 ms | 5699 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 2 | 200 | 651–956 ms | 558519–564742 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 1 | 200 | 1507 ms | 59461 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 2574 ms | 11547 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 1 | 200 | 970 ms | 1708103 ms | — |
 
 <!-- facts:end -->
 

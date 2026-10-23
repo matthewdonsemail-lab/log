@@ -5214,3 +5214,47 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `skills/listingCopy/SKILL.md` holds the copy rules for a listing's title, description and photos, each with a good and a bad version, the Bethlehem listing as the worked "before" and a rewrite by the rules (with brackets for facts matt has to confirm), and a checklist before `log facebook listing create`. `docs/listingMedia.md` says how a listing's photos go from Twenty to Facebook: `agencyListings.photos` holds paths, URLs or data URLs, not files; each run reads them (URLs through the account's proxy), varies them and drops their metadata, writes them to the run folder and uploads them, `publish` up to 10 with their hashes saved, the recorded flow exactly two. The research with its sources is the workspace's `RESEARCH/LISTING_COPY_RESEARCH.md`. `skills.md` indexes the skill.
 Why: matt said the Bethlehem listing's copy "sucks" and asked for a set of rules for the copy, with good and bad versions, from high-converting Marketplace and classified ads looked up with treg, and an outline of how uploading the media works in Twenty.
 Checked: six TinyFish searches and twelve fetched pages (rule 53); the rules cite the six guides that loaded in full. The media outline was read from the code: `photoSource.ts`, `preparePhotos` and `variationParams` in `src/media/photo`, `photo.test.ts` (no EXIF), `validateListing`, the `photoHashes` write in `agencyListing/client.ts`, and the flow's two upload steps. No code changed.
+
+## 2026-10-23 01:15Z · feat/groupRead
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceInboxSellerTabThreadViewContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsUpdateSeenStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYouSellingUpsellCardQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/sharedUserPreferences.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerAttributesQuery.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+
+What changed: `log facebook capture --docs` folded in the steps the check added to tonight's open browser (inspect 20261023T000744): 79 requests from 10 runs, 4 slices newly read by rea, every doc's reasoning already written.
+Why: rule 27: the push gate refused a run newer than the docs.
+Checked: `check:facebookClientDocs` passes: 216 requests documented, rea read every GraphQL slice.

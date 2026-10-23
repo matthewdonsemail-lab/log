@@ -13,7 +13,7 @@
 | Called from | `useMWEncryptedBackupsFetchBackupIdsV2` |
 | rea | `ev_16df7daca80a72c8f44b7a489690336b7def96e564429f0639a122f48023372a` |
 
-Seen 81 time(s) in 23 run(s).
+Seen 91 time(s) in 24 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -68,12 +68,15 @@ Seen 81 time(s) in 23 run(s).
 | inspect | step 9: goto /marketplace/status | 1 | 200 | 524 ms | 2726 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1189 ms | 2487 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 806 ms | 2383 ms | — |
-| inspect | step 1: goto /marketplace/status | 1 | 200 | 456 ms | 9425 ms | — |
-| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 457 ms | 4499 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 2 | 200 | 516–857 ms | 4912–1344039 ms | — |
+| inspect | step 1: goto /marketplace/status | 2 | 200 | 370–456 ms | 6039–9425 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 2 | 200 | 343–457 ms | 4249–4499 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 5 | 200 | 347–857 ms | 4040–1344039 ms | — |
 | inspect | step 2: goto /marketplace/status | 1 | 200 | 1178 ms | 3037 ms | — |
 | inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 2619 ms | 2284 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 1 | 200 | 2482 ms | 2996 ms | — |
+| inspect | step 4: goto /marketplace/status | 1 | 200 | 784 ms | 4368 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 808 ms | 2210 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 3 | 200 | 502–1049 ms | 2345–1515105 ms | — |
 
 <!-- facts:end -->
 

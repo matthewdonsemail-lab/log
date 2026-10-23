@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_3ffffbc091b1066e9e20fc659eae4a1756b3c1361c980506743601dd55ea3f94` |
+| rea | `ev_36a106d5c6a349aaffd95d75400fb9370c5a8d58bad30e5c86f25c40aa5bf643` |
 
-Seen 842 time(s) in 23 run(s).
+Seen 882 time(s) in 24 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -273,12 +273,15 @@ Seen 842 time(s) in 23 run(s).
 | inspect | step 9: goto /marketplace/status | 3 | 200 | 729–1016 ms | 2091–2097 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 3 | 200 | 1212–1587 ms | 2001–2565 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 4 | 200 | 422–497 ms | 1332–2147 ms | — |
-| inspect | step 1: goto /marketplace/status | 3 | 200 | 858–3129 ms | 8675–8942 ms | — |
-| inspect | step 2: goto /marketplace/you/selling | 3 | 200 | 520–832 ms | 3629–4331 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 19 | 200 | 473–1150 ms | 3329–1366917 ms | — |
+| inspect | step 1: goto /marketplace/status | 7 | 200 | 384–3129 ms | 5260–8942 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 6 | 200 | 330–832 ms | 3629–4331 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 32 | 200 | 351–1150 ms | 3092–1366917 ms | — |
 | inspect | step 2: goto /marketplace/status | 3 | 200 | 690–1037 ms | 2483–2489 ms | — |
 | inspect | step 3: goto /marketplace/you/selling | 3 | 200 | 2107–2335 ms | 1919–3089 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 5 | 200 | 390–1862 ms | 1933–355258 ms | — |
+| inspect | step 4: goto /marketplace/status | 3 | 200 | 748–865 ms | 4123–4187 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 3 | 200 | 494–1062 ms | 1850–2864 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 14 | 200 | 507–1131 ms | 1381–1514910 ms | — |
 
 <!-- facts:end -->
 

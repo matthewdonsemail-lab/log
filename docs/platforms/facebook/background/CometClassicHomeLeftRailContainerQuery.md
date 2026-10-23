@@ -13,7 +13,7 @@
 | Called from | `CometClassicHomeLeftRailContainer.react` |
 | rea | `ev_344ab74ba79925e4c65e7d7e1baed54ed21b8b5516428816c330a8a229cfc2b5` |
 
-Seen 16 time(s) in 9 run(s).
+Seen 19 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -32,6 +32,9 @@ Seen 16 time(s) in 9 run(s).
 | inspect | step 5: wait 5s | 1 | 200 | 754 ms | 103685 ms | — |
 | inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 725 ms | 5695 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 2 | 200 | 814–1193 ms | 558515–564740 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 1 | 200 | 1608 ms | 59457 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 2559 ms | 11541 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 1 | 200 | 932 ms | 1708099 ms | — |
 
 <!-- facts:end -->
 

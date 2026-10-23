@@ -13,7 +13,7 @@
 | Called from | `FBScreenTimeLogger.react` |
 | rea | `ev_9c20c08fbf4c14d62fa5b772be9b8dc2f4b32b06aa445a78cfb8f8ea86ba73c3` |
 
-Seen 59 time(s) in 19 run(s).
+Seen 67 time(s) in 20 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -45,8 +45,9 @@ Seen 59 time(s) in 19 run(s).
 | inspect | type failed: TimeoutError: Locator.press_sequentially: Timeout 30000ms exceeded. | 1 | 200 | 1542 ms | 40440 ms | — |
 | inspect | step 5: wait 5s | 2 | 200 | 491–494 ms | 216260–516495 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 524 ms | 26832 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 6 | 200 | 591–1078 ms | 223677–1728919 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 9 | 200 | 497–1377 ms | 223677–1728919 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 6 | 200 | 572–2282 ms | 252472–1753170 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 5 | 200 | 434–874 ms | 11719–1213257 ms | — |
 
 <!-- facts:end -->
 

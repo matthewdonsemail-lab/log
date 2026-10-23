@@ -13,7 +13,7 @@
 | Called from | `OhaiWebPublicKeyConfig` |
 | rea | `ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013` |
 
-Seen 81 time(s) in 23 run(s).
+Seen 91 time(s) in 24 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -68,12 +68,15 @@ Seen 81 time(s) in 23 run(s).
 | inspect | step 9: goto /marketplace/status | 1 | 200 | 746 ms | 2176 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1334 ms | 2264 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 685 ms | 2261 ms | — |
-| inspect | step 1: goto /marketplace/status | 1 | 200 | 451 ms | 9428 ms | — |
-| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 504 ms | 4501 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 2 | 200 | 482–574 ms | 4851–1343893 ms | — |
+| inspect | step 1: goto /marketplace/status | 2 | 200 | 352–451 ms | 5880–9428 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 2 | 200 | 341–504 ms | 4148–4501 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 5 | 200 | 342–574 ms | 4091–1343893 ms | — |
 | inspect | step 2: goto /marketplace/status | 1 | 200 | 1099 ms | 2612 ms | — |
 | inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 2620 ms | 2036 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 1 | 200 | 2026 ms | 2711 ms | — |
+| inspect | step 4: goto /marketplace/status | 1 | 200 | 864 ms | 4278 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 1015 ms | 1930 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 3 | 200 | 429–975 ms | 2313–1515040 ms | — |
 
 <!-- facts:end -->
 

@@ -13,7 +13,7 @@
 | Called from | `RTWebCallBlockSettingHooks` |
 | rea | `ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6` |
 
-Seen 81 time(s) in 23 run(s).
+Seen 91 time(s) in 24 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -68,12 +68,15 @@ Seen 81 time(s) in 23 run(s).
 | inspect | step 9: goto /marketplace/status | 1 | 200 | 895 ms | 2244 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1285 ms | 2315 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 629 ms | 2322 ms | — |
-| inspect | step 1: goto /marketplace/status | 1 | 200 | 518 ms | 9526 ms | — |
-| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 468 ms | 4568 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 2 | 200 | 423–491 ms | 4937–1343956 ms | — |
+| inspect | step 1: goto /marketplace/status | 2 | 200 | 353–518 ms | 6072–9526 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 2 | 200 | 353–468 ms | 4285–4568 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 5 | 200 | 348–491 ms | 4090–1343956 ms | — |
 | inspect | step 2: goto /marketplace/status | 1 | 200 | 1143 ms | 2655 ms | — |
 | inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 2581 ms | 2076 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 1 | 200 | 2224 ms | 2783 ms | — |
+| inspect | step 4: goto /marketplace/status | 1 | 200 | 789 ms | 4383 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 1052 ms | 1965 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 3 | 200 | 484–878 ms | 2578–1515279 ms | — |
 
 <!-- facts:end -->
 

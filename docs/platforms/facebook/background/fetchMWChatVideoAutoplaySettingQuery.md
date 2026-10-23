@@ -13,7 +13,7 @@
 | Called from | `fetchMWChatVideoAutoplaySetting` |
 | rea | `ev_cec3d0049369021eb11311f83bae206c05ab77298da76206b6788d2cdc5c8ee1` |
 
-Seen 81 time(s) in 23 run(s).
+Seen 92 time(s) in 24 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -68,12 +68,15 @@ Seen 81 time(s) in 23 run(s).
 | inspect | step 9: goto /marketplace/status | 1 | 200 | 640 ms | 2051 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 951 ms | 1938 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 516 ms | 1886 ms | — |
-| inspect | step 1: goto /marketplace/status | 1 | 200 | 476 ms | 8563 ms | — |
-| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 630 ms | 3557 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 2 | 200 | 527–624 ms | 4470–1343570 ms | — |
+| inspect | step 1: goto /marketplace/status | 2 | 200 | 336–476 ms | 5120–8563 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 2 | 200 | 348–630 ms | 3552–3557 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 5 | 200 | 354–624 ms | 4057–1343570 ms | — |
 | inspect | step 2: goto /marketplace/status | 1 | 200 | 563 ms | 2439 ms | — |
 | inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 1407 ms | 1820 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 1 | 200 | 1087 ms | 2365 ms | — |
+| inspect | step 4: goto /marketplace/status | 1 | 200 | 806 ms | 3985 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 1062 ms | 1767 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 4 | 200 | 528–966 ms | 1752–1514653 ms | — |
 
 <!-- facts:end -->
 

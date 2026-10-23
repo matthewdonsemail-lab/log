@@ -13,7 +13,7 @@
 | Called from | `FBYRPTimeLimitsEnforcement.react` |
 | rea | `ev_5fe8db44bc61b2d547bfce0c51e3256e80ffd1e3477b2c6b640071a0ea96e750` |
 
-Seen 81 time(s) in 23 run(s).
+Seen 92 time(s) in 24 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -68,12 +68,15 @@ Seen 81 time(s) in 23 run(s).
 | inspect | step 9: goto /marketplace/status | 1 | 200 | 408 ms | 1408 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 904 ms | 1500 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 496 ms | 1804 ms | — |
-| inspect | step 1: goto /marketplace/status | 1 | 200 | 620 ms | 8584 ms | — |
-| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 761 ms | 3250 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 2 | 200 | 557–606 ms | 3388–1343591 ms | — |
+| inspect | step 1: goto /marketplace/status | 2 | 200 | 539–620 ms | 5138–8584 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 2 | 200 | 347–761 ms | 3003–3250 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 5 | 200 | 346–606 ms | 3388–1343591 ms | — |
 | inspect | step 2: goto /marketplace/status | 1 | 200 | 519 ms | 1892 ms | — |
 | inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 619 ms | 1376 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 1 | 200 | 859 ms | 2321 ms | — |
+| inspect | step 4: goto /marketplace/status | 1 | 200 | 595 ms | 3469 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 584 ms | 1387 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 4 | 200 | 492–624 ms | 1706–1514467 ms | — |
 
 <!-- facts:end -->
 

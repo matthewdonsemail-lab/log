@@ -13,11 +13,12 @@
 | Called from | `CometNotificationsUpdateSeenStateMutation` |
 | rea | `ev_93bb6af69452a5ed938292ec5a182e1e93cfbf55e743c8f55451b1103fbb50e5` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 19: clickRole button "…" | 1 | 200 | 5545 ms | 1475 ms | — |
+| inspect | step 1: goto /marketplace/status | 1 | 200 | 5412 ms | 18509 ms | — |
 
 <!-- facts:end -->
 

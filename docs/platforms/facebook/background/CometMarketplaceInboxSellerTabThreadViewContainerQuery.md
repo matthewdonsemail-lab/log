@@ -13,15 +13,16 @@
 | Called from | `CometMarketplaceInboxSellerTabThreadViewContainer.react` |
 | rea | `ev_fc63e98f46e063737ab32b1a0cc16802e92ec469b6ff41b72407ec3fa04b31f8` |
 
-Seen 6 time(s) in 3 run(s).
+Seen 10 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 1: goto /marketplace/inbox | 2 | 200 | 659–1209 ms | 6540–20812 ms | — |
 | inspect | step 8: goto /marketplace/inbox | 1 | 200 | 753 ms | 4340 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 635 ms | 2167 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 1 | 200 | 833 ms | 4948 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 3 | 200 | 531–833 ms | 3978–70619 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 1 | 200 | 2088 ms | 2644 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 2 | 200 | 693–1205 ms | 2233–1514806 ms | — |
 
 <!-- facts:end -->
 

@@ -13,7 +13,7 @@
 | Called from | `CometSearchBootstrapKeywordsDataSource.query` |
 | rea | `ev_5cb62e3a7cd21788732d77960d11bcea0adc8730aaaa23e6a78c097c1c44c7a6` |
 
-Seen 80 time(s) in 22 run(s).
+Seen 90 time(s) in 23 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -68,12 +68,15 @@ Seen 80 time(s) in 22 run(s).
 | inspect | step 9: goto /marketplace/status | 1 | 200 | 961 ms | 2144 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1443 ms | 2222 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 648 ms | 2318 ms | — |
-| inspect | step 1: goto /marketplace/status | 1 | 200 | 780 ms | 8939 ms | — |
-| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 612 ms | 3673 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 2 | 200 | 582–644 ms | 4842–1343953 ms | — |
+| inspect | step 1: goto /marketplace/status | 2 | 200 | 364–780 ms | 5973–8939 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 2 | 200 | 348–612 ms | 3673–3803 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 5 | 200 | 347–644 ms | 4050–1343953 ms | — |
 | inspect | step 2: goto /marketplace/status | 1 | 200 | 1036 ms | 2609 ms | — |
 | inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 2393 ms | 2032 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 1 | 200 | 1807 ms | 2693 ms | — |
+| inspect | step 4: goto /marketplace/status | 1 | 200 | 817 ms | 4227 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 979 ms | 1926 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 3 | 200 | 448–762 ms | 2570–1514888 ms | — |
 
 <!-- facts:end -->
 
