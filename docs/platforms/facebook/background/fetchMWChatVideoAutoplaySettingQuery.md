@@ -13,7 +13,7 @@
 | Called from | `fetchMWChatVideoAutoplaySetting` |
 | rea | `ev_cec3d0049369021eb11311f83bae206c05ab77298da76206b6788d2cdc5c8ee1` |
 
-Seen 98 time(s) in 26 run(s).
+Seen 100 time(s) in 27 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -79,6 +79,8 @@ Seen 98 time(s) in 26 run(s).
 | inspect | step 6: goto /marketplace/inbox | 4 | 200 | 528–966 ms | 1752–1514653 ms | — |
 | inspect | step 2: goto /marketplace/ | 1 | 200 | 369 ms | 6358 ms | — |
 | inspect | step 5: goto /messages/ | 1 | 200 | 415 ms | 7649 ms | — |
+| flow | step 1: goto /marketplace/ | 1 | 200 | 495 ms | 3198 ms | — |
+| flow | step 3: goto /marketplace/create/item | 1 | 200 | 476 ms | 1735 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

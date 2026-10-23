@@ -5707,3 +5707,38 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: every warm-up step that makes a call is decided by Facebook's answer. Answer checks are shared (`src/browser/flow/helpers/answers.ts`: `answersIssue`, `answerWait`; types `AnswerExpect`, `AnswerCheck`, `AnswerAccount` in flow types): a check can need a value we sent, a fixed value, a field present, or the account's home city, country or id, and names the error code it raises; the last 2xx answer of the call counts (a redirect before it doesn't). Flow steps carry `answers`: `runFlowInSession` waits for the first call, reads the step's exchanges and fails the step with the check's code, with the account's home from `log flow run`, the stage runner and the host. The five stage flows got checks written from their recordings and request docs: the create page (`marketplace_new_seller_can_post_item` true, else `marketplaceMayNotPost`; `sell_location` country and city the home, else `marketplaceLocationWrong`), Marketplace (`buy_location.display_name` names the home city), the home feed (`FeedComposerCometRootQuery` answers the account's id), the paging scrolls, the listing (`MarketplacePDPContainerQuery`), Selling and Messages (2xx). The Reels and feed activities: `openReels`, `openFeed`, `readFeed`, `openMarketplace`, `openListings` (and the likes). Three error codes are added (`answerNotAsExpected`, `marketplaceMayNotPost`, `marketplaceLocationWrong`). Flow docs show what each step must answer, and `saveFlow` keeps a flow's checks when it is recorded again (`keepAnswers`). The warmup skill and AGENTS.md's status lines say so; `answeringFixture` gives tests the answers a step's checks need.
 Why: matt: "give the other warm-up steps answer checks the same way (starting with the create page's may-post flag and sell_location in warmupCreateAccessCheck), written from their request docs." On 2026-10-22 Bethlehem's warm-up loaded the create page twice with sell_location Barranco, Peru and passed (rule one's Why); on 2026-10-23 the same page said may-post false.
 Checked: the answer shapes are from the kept recordings (sell_location Barranco PE on 20261022T105341, buy_location Lima, Peru then Bethlehem, Pennsylvania, may-post true on 2026-10-22 and false on 2026-10-23, page /marketplace/ answering 302 four times, page /messages/ 200) and the request docs' samples. New tests: the create page fails Barranco PE as marketplaceLocationWrong and may-post false as marketplaceMayNotPost and passes Bethlehem US; buy_location Lima fails; a 302 then 200 passes and a 302 alone fails; a home check is skipped without the home; the wait is the first call; every stage flow's checked steps; the flow doc; checks kept on re-recording; the feed's account check. The Reels steps without saved answers only check the call answered 2xx. `bun run check` passes with 897 tests; the docs gate passes.
+
+## 2026-10-23 07:00Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/flows/marketplaceListingPublish.md`: edited
+- `docs/platforms/facebook/flows/profileSetup.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerAttributesQuery.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `python/errors/errorCatalog.json`: edited
+- `skills/flow/SKILL.md`: edited
+- `skills/host/SKILL.md`: edited
+- `src/browser/flow/answers.test.ts`: added test "publishing: the create page stops the flow before the form when the account may not post, and Publish needs the listing id in the create answer"
+- `src/browser/flow/definitions/marketplaceListingPublish.json`: edited
+- `src/browser/flow/definitions/profileSetup.json`: edited
+- `src/cli/host/helpers/hostActors.ts`: changed function hostActors
+- `src/cli/host/hostAnswers.test.ts`: added const BETHLEHEM, function createPage, function hostWith, test "the create page answering marketplace_new_seller_can_post_item false stops the host as marketplaceMayNotPost", test "with the account free to post and its locations at home, the activity is done"
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+
+What changed: the host's warm-up decides each step on Facebook's answer: it waits for the step's call (`expect`, or `answerWait`) and applies the flow's `answers` with the account's home (`answerOutcome` in `hostActors`); an account code (`marketplaceMayNotPost`, `marketplaceLocationWrong`) is an issue that goes to a person, anything else a retryable `answerNotAsExpected`. The publish flow `marketplaceListingPublish` checks `buy_location` on Marketplace, the set-location answer's city, the create page's `marketplace_new_seller_can_post_item` and `sell_location` (it stops before the form when the account may not post), the listing id in `useCometMarketplaceListingCreateMutation`'s answer (`noListingId`, whose meaning now covers it) and the NUX update; `profileSetup`'s three saves check their mutations answered 2xx. Both flows' docs are regenerated, and the request docs take today's two flow runs. The flow and host skills and AGENTS.md's status lines say what reads answers now and what doesn't (the Camoufox connect, publish and profile machines, whose HAR is written only at close).
+Why: matt: "stop asking me questions ... Just go and do it." The next step of rule 73 was the machines still deciding on the screen: the host's warm-up skipped the flows' answer checks, and the publish and profile flows only proved a call happened. The live createAccessCheck run on Bethlehem (flow 20261023T064309) showed the check stopping on `marketplace_new_seller_can_post_item: false`.
+Checked: the answer paths are from the request docs' samples (set-location `reverse_geocode.city` Bethlehem, the create answer's `listing.id` 1425935622848350, the NUX viewer). New tests: the host's warm-up actor, with a stubbed browser, stops as marketplaceMayNotPost on may-post false and is ok when free to post at home; the publish flow stops at the create page, needs the listing id, and fails a set location of Granada. `bun run check` passes with 900 tests; the docs gate passes.

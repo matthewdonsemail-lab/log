@@ -13,7 +13,7 @@
 | Called from | `usePseudoBlockedUserInterstitial` |
 | rea | `ev_4f0f59bc7d5ff4c02ef9f2aba85fc9de893084a7a8fbdf3f1627ce6c1c3456fe` |
 
-Seen 117 time(s) in 26 run(s).
+Seen 119 time(s) in 27 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -92,6 +92,8 @@ Seen 117 time(s) in 26 run(s).
 | inspect | step 6: goto /marketplace/inbox | 3 | 200 | 473–889 ms | 2577–1515276 ms | — |
 | inspect | step 2: goto /marketplace/ | 1 | 200 | 369 ms | 6353 ms | — |
 | inspect | step 5: goto /messages/ | 1 | 200 | 808 ms | 8215 ms | — |
+| flow | step 1: goto /marketplace/ | 1 | 200 | 683 ms | 6749 ms | — |
+| flow | step 3: goto /marketplace/create/item | 1 | 200 | 377 ms | 3315 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

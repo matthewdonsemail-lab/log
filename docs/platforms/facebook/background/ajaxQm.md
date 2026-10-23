@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_d330b69a13af509d9a5f8468fc4f4211499333f41ee6812cde51a998ece4ee3e` |
+| rea | `ev_5a1496a9a2f701bcb02111a5c211fbef91eb3915170810fef3297176dbaccfbc` |
 
-Seen 104 time(s) in 29 run(s).
+Seen 106 time(s) in 30 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -79,6 +79,8 @@ Seen 104 time(s) in 29 run(s).
 | inspect | step 6: goto /marketplace/inbox | 4 | 200 | 526–972 ms | 975–1512191 ms | — |
 | inspect | step 2: goto /marketplace/ | 1 | 200 | 566 ms | 993 ms | — |
 | inspect | step 5: goto /messages/ | 1 | 200 | 471 ms | 793 ms | — |
+| flow | step 1: goto /marketplace/ | 1 | 200 | 869 ms | 1884 ms | — |
+| flow | step 3: goto /marketplace/create/item | 1 | 200 | 438 ms | 798 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

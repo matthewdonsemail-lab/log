@@ -13,7 +13,7 @@
 | Called from | `FBYRPTimeLimitsEnforcement.react` |
 | rea | `ev_5fe8db44bc61b2d547bfce0c51e3256e80ffd1e3477b2c6b640071a0ea96e750` |
 
-Seen 98 time(s) in 26 run(s).
+Seen 100 time(s) in 27 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -79,6 +79,8 @@ Seen 98 time(s) in 26 run(s).
 | inspect | step 6: goto /marketplace/inbox | 4 | 200 | 492–624 ms | 1706–1514467 ms | — |
 | inspect | step 2: goto /marketplace/ | 1 | 200 | 376 ms | 5045 ms | — |
 | inspect | step 5: goto /messages/ | 1 | 200 | 412 ms | 7659 ms | — |
+| flow | step 1: goto /marketplace/ | 1 | 200 | 522 ms | 2977 ms | — |
+| flow | step 3: goto /marketplace/create/item | 1 | 200 | 363 ms | 1539 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

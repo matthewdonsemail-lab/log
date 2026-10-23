@@ -13,7 +13,7 @@
 | Called from | `useMWEncryptedBackupsFetchBackupIdsV2` |
 | rea | `ev_16df7daca80a72c8f44b7a489690336b7def96e564429f0639a122f48023372a` |
 
-Seen 97 time(s) in 26 run(s).
+Seen 99 time(s) in 27 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -79,6 +79,8 @@ Seen 97 time(s) in 26 run(s).
 | inspect | step 6: goto /marketplace/inbox | 3 | 200 | 502–1049 ms | 2345–1515105 ms | — |
 | inspect | step 2: goto /marketplace/ | 1 | 200 | 361 ms | 6320 ms | — |
 | inspect | step 5: goto /messages/ | 1 | 200 | 656 ms | 9374 ms | — |
+| flow | step 1: goto /marketplace/ | 1 | 200 | 706 ms | 6727 ms | — |
+| flow | step 3: goto /marketplace/create/item | 1 | 200 | 401 ms | 3311 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

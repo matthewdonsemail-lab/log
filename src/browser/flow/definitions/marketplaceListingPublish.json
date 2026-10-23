@@ -38,6 +38,18 @@
       "id": "s01_gotomarketplace",
       "action": "goto",
       "url": "https://www.facebook.com/marketplace/",
+      "answers": [
+        {
+          "call": "page /marketplace/",
+          "says": [
+            {
+              "answer": "fields.buy_location.display_name",
+              "home": "city",
+              "code": "marketplaceLocationWrong"
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "01_gotoHttpsWwwFacebook",
         "ms": 9329,
@@ -50,6 +62,18 @@
       "action": "setLocation",
       "value": "{location}",
       "expect": "CometMarketplaceSetBuyLocationMutation",
+      "answers": [
+        {
+          "call": "CometMarketplaceSetBuyLocationMutation",
+          "says": [
+            {
+              "answer": "data.marketplace_set_buy_location.viewer.marketplace_settings.buy_location.reverse_geocode.city",
+              "home": "city",
+              "code": "marketplaceLocationWrong"
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "10_clickE1174",
         "ms": null,
@@ -63,6 +87,28 @@
       "id": "s03_gotomarketplaceCreateItem",
       "action": "goto",
       "url": "https://www.facebook.com/marketplace/create/item",
+      "answers": [
+        {
+          "call": "page /marketplace/create/item",
+          "says": [
+            {
+              "answer": "fields.marketplace_new_seller_can_post_item",
+              "is": true,
+              "code": "marketplaceMayNotPost"
+            },
+            {
+              "answer": "fields.sell_location.reverse_geocode_detailed.country_alpha_two",
+              "home": "country",
+              "code": "marketplaceLocationWrong"
+            },
+            {
+              "answer": "fields.sell_location.reverse_geocode_detailed.city",
+              "home": "city",
+              "code": "marketplaceLocationWrong"
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "11_gotoHttpsWwwFacebook",
         "ms": 20047,
@@ -227,6 +273,18 @@
       "role": "button",
       "name": "Publish",
       "expect": "useCometMarketplaceListingCreateMutation",
+      "answers": [
+        {
+          "call": "useCometMarketplaceListingCreateMutation",
+          "says": [
+            {
+              "answer": "data.marketplace_listing_create.listing.id",
+              "present": true,
+              "code": "noListingId"
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "25_clickE1241",
         "ms": 8718,
@@ -245,6 +303,17 @@
       "role": "button",
       "name": "Close",
       "expect": "CometMarketplaceNUXUpdateStateMutation",
+      "answers": [
+        {
+          "call": "CometMarketplaceNUXUpdateStateMutation",
+          "says": [
+            {
+              "answer": "data.marketplace_nux_update_state.viewer",
+              "present": true
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "27_clickE1541",
         "ms": 6343,

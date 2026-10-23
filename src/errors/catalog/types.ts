@@ -699,9 +699,9 @@ export const ERROR_CATALOG = {
   },
   noListingId: {
     layer: 'form',
-    meaning: 'Publish was clicked but no Selling card matched the title.',
+    meaning: 'Publish was clicked but no listing id came back: no Selling card matched the title, or the create call\'s answer (useCometMarketplaceListingCreateMutation) had no `data.marketplace_listing_create.listing.id`.',
     retryable: false,
-    raisedIn: ['publish.capturingId'],
+    raisedIn: ['publish.capturingId', 'cli/flow'],
     publish: 'unconfirmedId',
     action: 'Check Marketplace > Selling by hand. Never re-publish: it would duplicate.'
   },

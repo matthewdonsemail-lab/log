@@ -13,6 +13,17 @@ command → MCP tool.
 1. **Built from a recording, never by hand** (rules 25, 29). Each step's
    element is the role and accessible name the recorded snapshot gave it;
    each step's confirming request is the mutation the recorded step sent.
+   A confirming request only proves the call happened. **What it answered
+   decides the step** (rule 73): a step's `answers` name the call and what its
+   answer must say (a value, what we sent, present, the account's home city,
+   country or id), with the error code it raises, written from the request's
+   doc ("What it sent and what came back"). `marketplaceListingPublish` checks
+   `buy_location`, the set-location answer's city, the create page's
+   `marketplace_new_seller_can_post_item` and `sell_location` (so it stops
+   before the form when the account may not post), and the listing id in the
+   create answer (`noListingId`). `profileSetup`'s three saves check their
+   mutations answered 2xx (no saved answers to read fields from yet). The
+   flow's doc shows every check, and recording the flow again keeps them.
 2. **Dry run unless `--live`** (rule 8); over MCP, live is its own tool, `flow<Name>Live`, with confirmLive.
 3. **Every gate** (rules 11-12, 15-18, 22, 24): a run is one launch through
    the inspect session, so every step is recorded again (snapshot,

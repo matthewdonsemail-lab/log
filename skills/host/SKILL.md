@@ -15,6 +15,11 @@ description: Run an account's whole lifecycle (rule 35) in ONE browser kept open
    row go to a person (`signInSpent`), never round again.
 3. **Every page is checked for where it landed** (`pageProblem`): a checkpoint,
    a sign-out or a restriction is the step's outcome and goes to Twenty.
+   **The warm-up decides each step on Facebook's answer** (rule 73): it waits
+   for the step's call and applies its flow's `answers` with the account's
+   home. The create page answering `marketplace_new_seller_can_post_item:
+   false` is the issue `marketplaceMayNotPost`, and a location outside home
+   `marketplaceLocationWrong`; both go to a person (matt decides).
 4. **Writes need matt:** `--live` for profile, name and Marketplace location
    (rules 8, 28); `--likes` for the warm-up's likes.
 5. **Stop with SHUTDOWN, never by killing it,** so the browser closes for its

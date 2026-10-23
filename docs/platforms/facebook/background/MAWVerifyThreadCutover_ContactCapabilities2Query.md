@@ -13,7 +13,7 @@
 | Called from | `MAWVerifyThreadCutover` |
 | rea | `ev_2ef4fcf81840e4c44dfd19b7c86b9e3e65429109c06595cfc96262bcea9f2bc2` |
 
-Seen 96 time(s) in 25 run(s).
+Seen 98 time(s) in 26 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -78,6 +78,8 @@ Seen 96 time(s) in 25 run(s).
 | inspect | step 6: goto /marketplace/inbox | 3 | 200 | 438–853 ms | 2627–1515308 ms | — |
 | inspect | step 2: goto /marketplace/ | 1 | 200 | 368 ms | 6696 ms | — |
 | inspect | step 5: goto /messages/ | 1 | 200 | 715 ms | 8319 ms | — |
+| flow | step 1: goto /marketplace/ | 1 | 200 | 824 ms | 6901 ms | — |
+| flow | step 3: goto /marketplace/create/item | 1 | 200 | 366 ms | 3357 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

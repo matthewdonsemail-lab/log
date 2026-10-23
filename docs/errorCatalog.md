@@ -194,7 +194,7 @@ stateDiagram-v2
 | `publishNotFound` | yes | `publish.publishing` | publish→failed | No enabled Next or Publish button. Publish was not clicked. | Run again. Nothing was posted. |
 | `rejected` | no | `publish.confirming` | publish→failed | Facebook answered Publish with its "Oops / Something went wrong" dialog. Nothing was listed. | Don't retry straight away: it is often the account. Check it on Facebook. |
 | `noConfirmation` | no | `publish.confirming` | command exits | No toast or Selling page within 30s of Publish. It may still have gone out, so the run looks for it. | None: the run goes on to capturingId and ends published or unconfirmedId. |
-| `noListingId` | no | `publish.capturingId` | publish→unconfirmedId | Publish was clicked but no Selling card matched the title. | Check Marketplace > Selling by hand. Never re-publish: it would duplicate. |
+| `noListingId` | no | `publish.capturingId`, `cli/flow` | publish→unconfirmedId | Publish was clicked but no listing id came back: no Selling card matched the title, or the create call's answer (useCometMarketplaceListingCreateMutation) had no `data.marketplace_listing_create.listing.id`. | Check Marketplace > Selling by hand. Never re-publish: it would duplicate. |
 
 ## captcha
 

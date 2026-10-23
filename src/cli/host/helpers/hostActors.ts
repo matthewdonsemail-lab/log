@@ -1,5 +1,6 @@
 import { fromPromise } from "xstate";
-import { loadFlow, pageProblem } from "../../../browser/flow/index.ts";
+import { answersIssue, answerWait, loadFlow, pageProblem } from "../../../browser/flow/index.ts";
+import { stepExchangesAt } from "../../../subq/stepReading/helpers/stepExchanges.ts";
 import type { FlowStep } from "../../../browser/flow/index.ts";
 import type { InspectAction, InspectStepResult } from "../../../browser/inspect/index.ts";
 import type { PreparedRun } from "../../../browser/run/index.ts";
@@ -40,9 +41,16 @@ export function dayOf(account: FacebookAccount, now = new Date()): { today: stri
 
 export function hostActors(context: CommandContext, account: FacebookAccount, browser: HostBrowser, options: { bypassHours: boolean; likes?: boolean; log: (line: string) => void }) {
   const log = options.log;
-  const send = async (action: InspectAction, args: string[] = [], timeoutMs = 240_000): Promise<InspectStepResult | null> => {
+  const send = async (action: InspectAction, args: string[] = [], timeoutMs = 240_000, expect?: { name: string; ms?: number }): Promise<InspectStepResult | null> => {
     if (!browser.session) return null;
-    return context.sendInspect(browser.session.current, action, args, timeoutMs);
+    return context.sendInspect(browser.session.current, action, args, timeoutMs, expect);
+  };
+  const home = { uid: account.accountName, homeCity: account.homeCity, homeCountry: account.homeCountry };
+  const answerOutcome = (step: FlowStep, reply: InspectStepResult | null): StepOutcome | null => {
+    if (!step.answers?.length || !reply?.folder) return null;
+    const wrong = answersIssue(step.answers, stepExchangesAt(reply.folder), home);
+    if (!wrong) return null;
+    return wrong.code === "answerNotAsExpected" ? error(wrong.code, `${step.id}: ${wrong.text}`, true) : issue(wrong.code, `${step.id}: ${wrong.text}`);
   };
   const look = async () => send("pageText");
   const problemOf = (step: { action: string; url?: string }, reply: InspectStepResult | null): StepOutcome | null => {
@@ -157,7 +165,7 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
       const [firstName, ...rest] = account.profileName.split(" ");
       const photos = await preparePhotos([account.profilePhoto, account.coverPhoto], { dir: join(browser.session.current.runDir, "photos"), proxy: fetchProxyUrl(account.proxy) });
       if (!photos.ok) return error(photos.code, photos.detail);
-      const output = await runFlowInSession(context, browser.session.current, flow, { uid: account.accountName, profilePhoto: photos.photos[0].path, coverPhoto: photos.photos[1].path, firstName, lastName: rest.join(" ") }, { account: { uid: account.accountName, homeCity: account.homeCity, homeCountry: account.homeCountry } });
+      const output = await runFlowInSession(context, browser.session.current, flow, { uid: account.accountName, profilePhoto: photos.photos[0].path, coverPhoto: photos.photos[1].path, firstName, lastName: rest.join(" ") }, { account: home });
       const last = output.steps.at(-1);
       if (output.result === "done") return ok("profile photo, cover and name saved");
       if (last?.issue && last.issue !== "pageNotReached") return issue(last.issue, last.error);
@@ -192,10 +200,12 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
       for (const step of steps) {
         if (step.action === "clickAny" && !(input.live && options.likes)) continue;
         const args = step.action === "goto" ? [step.url!] : (step.args ?? []);
-        const reply = await send(step.action as InspectAction, args, 300_000);
+        const reply = await send(step.action as InspectAction, args, 300_000, step.expect ? { name: step.expect, ms: 45_000 } : answerWait(step.answers));
         const problem = problemOf(step, reply);
         if (problem) return problem;
         if (reply && reply.ok === false) return error("warmupStepFailed", `${step.id}: ${reply.error ?? ""}`, true);
+        const answered = answerOutcome(step, reply);
+        if (answered) return answered;
       }
       log(`host ${account.accountName}: warm-up ${input.activity} done`);
       return ok();

@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_b28b4ec5ab6ef6507972e3934e96a7fb692ee3810ca128a7efb0150c71c52588` |
+| rea | `ev_5a1496a9a2f701bcb02111a5c211fbef91eb3915170810fef3297176dbaccfbc` |
 
-Seen 935 time(s) in 26 run(s).
+Seen 945 time(s) in 27 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -287,6 +287,8 @@ Seen 935 time(s) in 26 run(s).
 | inspect | post: "…", 123 words, 0 image(s), scrolled 53 px | 8 | 200 | 378–5777 ms | 173–98970 ms | — |
 | inspect | post: "…", 39 words, 0 image(s), scrolled 1157 px | 1 | 200 | 418 ms | 12503 ms | — |
 | inspect | step 5: likePost Like | 1 | 200 | 393 ms | 3103 ms | — |
+| flow | step 1: goto /marketplace/ | 5 | 200 | 408–620 ms | 2535–3474 ms | — |
+| flow | step 3: goto /marketplace/create/item | 5 | 200 | 397–625 ms | 1585–3735 ms | — |
 
 <!-- facts:end -->
 

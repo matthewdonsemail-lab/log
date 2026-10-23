@@ -13,7 +13,7 @@
 | Called from | `RTWebCallBlockSettingHooks` |
 | rea | `ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6` |
 
-Seen 97 time(s) in 26 run(s).
+Seen 99 time(s) in 27 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -79,6 +79,8 @@ Seen 97 time(s) in 26 run(s).
 | inspect | step 6: goto /marketplace/inbox | 3 | 200 | 484–878 ms | 2578–1515279 ms | — |
 | inspect | step 2: goto /marketplace/ | 1 | 200 | 358 ms | 6377 ms | — |
 | inspect | step 5: goto /messages/ | 1 | 200 | 639 ms | 9393 ms | — |
+| flow | step 1: goto /marketplace/ | 1 | 200 | 685 ms | 6752 ms | — |
+| flow | step 3: goto /marketplace/create/item | 1 | 200 | 388 ms | 3315 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

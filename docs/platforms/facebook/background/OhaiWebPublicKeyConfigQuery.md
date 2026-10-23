@@ -13,7 +13,7 @@
 | Called from | `OhaiWebPublicKeyConfig` |
 | rea | `ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013` |
 
-Seen 97 time(s) in 26 run(s).
+Seen 99 time(s) in 27 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -79,6 +79,8 @@ Seen 97 time(s) in 26 run(s).
 | inspect | step 6: goto /marketplace/inbox | 3 | 200 | 429–975 ms | 2313–1515040 ms | — |
 | inspect | step 2: goto /marketplace/ | 1 | 200 | 379 ms | 6402 ms | — |
 | inspect | step 5: goto /messages/ | 1 | 200 | 966 ms | 7668 ms | — |
+| flow | step 1: goto /marketplace/ | 1 | 200 | 374 ms | 6652 ms | — |
+| flow | step 3: goto /marketplace/create/item | 1 | 200 | 435 ms | 3223 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

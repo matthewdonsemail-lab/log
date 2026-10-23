@@ -62,6 +62,19 @@ describe('a stage flow step passes on Facebook\'s answer (rule 73)', () => {
     expect(doc).toContain("`fields.sell_location.reverse_geocode_detailed.country_alpha_two` = the account's home country (else `marketplaceLocationWrong`)")
   })
 
+  test('publishing: the create page stops the flow before the form when the account may not post, and Publish needs the listing id in the create answer', () => {
+    const publish = loadFlow('marketplaceListingPublish')!
+    const at = (id: string) => publish.steps.find((s) => s.id === id)!.answers!
+    expect(answersIssue(at('s03_gotomarketplaceCreateItem'), [createPage(false, 'Bethlehem', 'US')], BETHLEHEM)?.code).toBe('marketplaceMayNotPost')
+    const created = (id: string | null): StepExchange => ({ offsetMs: 0, kind: 'api', name: 'useCometMarketplaceListingCreateMutation', method: 'POST', host: 'www.facebook.com', path: '/api/graphql/', status: 200, ms: 1200, sent: {}, answer: { data: { marketplace_listing_create: { listing: id ? { id, story: { url: `https://www.facebook.com/marketplace/item/${id}/` } } : null } } }, errors: [], known: true })
+    expect(answersIssue(at('s14_clickPublish'), [created('1425935622848350')], BETHLEHEM)).toBeNull()
+    expect(answersIssue(at('s14_clickPublish'), [created(null)], BETHLEHEM)).toEqual({ code: 'noListingId', text: 'useCometMarketplaceListingCreateMutation answered no data.marketplace_listing_create.listing.id' })
+    const located = (city: string): StepExchange => ({ offsetMs: 0, kind: 'api', name: 'CometMarketplaceSetBuyLocationMutation', method: 'POST', host: 'www.facebook.com', path: '/api/graphql/', status: 200, ms: 900, sent: {}, answer: { data: { marketplace_set_buy_location: { viewer: { marketplace_settings: { buy_location: { reverse_geocode: { city, state: 'PA' } } } } } } }, errors: [], known: true })
+    expect(answersIssue(at('s02_setLocation'), [located('Bethlehem')], BETHLEHEM)).toBeNull()
+    expect(answersIssue(at('s02_setLocation'), [located('Granada')], BETHLEHEM)?.code).toBe('marketplaceLocationWrong')
+    expect(loadFlow('profileSetup')!.steps.filter((s) => s.answers?.length).map((s) => s.id)).toEqual(['s05_clickSave', 's08_clickSaveChanges', 's13_clickDone'])
+  })
+
   test('recording a flow again keeps the checks of the steps it had', () => {
     const dir = mkdtempSync(join(tmpdir(), 'flows'))
     saveFlow(flow, dir)

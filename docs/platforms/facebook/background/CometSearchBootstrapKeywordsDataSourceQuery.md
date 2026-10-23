@@ -13,7 +13,7 @@
 | Called from | `CometSearchBootstrapKeywordsDataSource.query` |
 | rea | `ev_5cb62e3a7cd21788732d77960d11bcea0adc8730aaaa23e6a78c097c1c44c7a6` |
 
-Seen 96 time(s) in 25 run(s).
+Seen 98 time(s) in 26 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -79,6 +79,8 @@ Seen 96 time(s) in 25 run(s).
 | inspect | step 6: goto /marketplace/inbox | 3 | 200 | 448–762 ms | 2570–1514888 ms | — |
 | inspect | step 2: goto /marketplace/ | 1 | 200 | 389 ms | 6332 ms | — |
 | inspect | step 5: goto /messages/ | 1 | 200 | 988 ms | 8037 ms | — |
+| flow | step 1: goto /marketplace/ | 1 | 200 | 426 ms | 6589 ms | — |
+| flow | step 3: goto /marketplace/create/item | 1 | 200 | 506 ms | 3137 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
