@@ -1,12 +1,4 @@
 #!/usr/bin/env bun
-/**
- * Builds `~/.logCli/datasets/reelViewers/kuaiRand1k.json` from KuaiRand-1K's
- * standard logs (`~/.logCli/datasets/kuaiRand/KuaiRand-1K/data/log_standard_*.csv`):
- * each user's sessions in the swipe feed (`src/warmup/viewer`, rule 50).
- * Streams the CSVs line by line, one progress line per million rows (rule 26).
- *
- *   bun scripts/datasets/buildReelViewers.ts [dataDir]
- */
 import { mkdirSync, readdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { datasetsDir } from '../../src/warmup/persona/index'

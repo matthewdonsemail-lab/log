@@ -1,19 +1,3 @@
-/**
- * `log profile setup` as an XState machine (rule 28), so every step is traced
- * (`observability/trace`) and the run says which step ended it.
- *
- *   checking ─▶ preparing ─▶ opening ─▶ reading ┬─ not signed in ─────────────────────────▶ stopping (sessionExpired)
- *               (photos,                        └─ signed in ▶ planning ┬─ dry run ───────▶ done (planned)
- *    when set)                                              └─ --live ▶ uploadingProfilePhoto
- *                                                                       ▶ uploadingCoverPhoto ▶ done (saved)
- *
- * A dry run reads the profile and writes every control it has to the run's
- * profileFound.txt; it never clicks. With a profileName in Twenty it also
- * reads the name settings page (readingName, read only, nameFound.txt): the
- * rename is built from that recording, not guessed (rule 25). `--live` needs both photos in Twenty and
- * uploads them in one run, as matt chose. Any failed step stops the run:
- * nothing is retried on Facebook. The only side effects are the actors.
- */
 import { assign, fromPromise, setup } from 'xstate'
 import type { CodedFailure } from '../../errors/catalog/index'
 import type {
@@ -39,7 +23,6 @@ function missing<TOutput, TInput>(name: string) {
 const isFailure = (output: { ok?: boolean }): output is CodedFailure => output.ok === false
 const crash = (state: string, error: unknown): ProfileFailure => ({ state, code: 'crashed', detail: String(error) })
 
-/** What the run did, or would do, for each photo. Pure. */
 export function planOf(context: Pick<ProfileContext, 'page' | 'namePage' | 'hasProfilePhoto' | 'hasCoverPhoto' | 'profileName' | 'uploaded' | 'live'>): ProfilePlanStep[] {
   const step = (item: ProfilePlanStep['item'], has: boolean, control: string | null): ProfilePlanStep => ({
     item,
@@ -112,7 +95,6 @@ export const profileMachine = setup({
   states: {
     checking: {
       always: [
-        // --live uploads both or nothing: a missing photo stops it before any browser opens.
         {
           guard: { type: 'live' },
           target: 'preparing',
@@ -128,7 +110,6 @@ export const profileMachine = setup({
     preparing: {
       always: [
         { guard: ({ context }) => context.failure !== null, target: 'stopping' },
-        // A dry run with no photo in Twenty still reads the profile; there is nothing to prepare.
         { guard: { type: 'anyPhoto' }, target: 'preparingPhotos' },
         { target: 'opening' }
       ]
@@ -166,7 +147,7 @@ export const profileMachine = setup({
                 const { ok: _ok, ...page } = event.output as Extract<ProfileReadOutput, { ok: true }>
                 return { page }
               }),
-              { type: 'recordFailure', params: ({ event }) => ({ state: 'reading', code: 'sessionExpired' as const, detail: `the profile shows ${(event.output as { kind?: string }).kind} at ${(event.output as { path?: string }).path}: run log connect first` }) }
+              { type: 'recordFailure', params: ({ event }) => ({ state: 'reading', code: 'sessionExpired' as const, detail: `the profile shows ${(event.output as { kind?: string }).kind} at ${(event.output as { path?: string }).path}: run log facebook connect first` }) }
             ]
           }
         ],
@@ -176,7 +157,6 @@ export const profileMachine = setup({
     afterReading: {
       always: [{ guard: { type: 'wantsName' }, target: 'readingName' }, { target: 'planning' }]
     },
-    // Read only, and never the end of the run: the name page is information for the plan.
     readingName: {
       invoke: {
         src: 'readName',

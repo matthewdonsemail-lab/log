@@ -7,7 +7,7 @@
 The 2Captcha proxy password (17 characters) equals the account prefix at the
 start of every proxy username (R3, "Other finding"). log-cli treats the username
 as safe to show. `maskProxyUrl` hides the password but prints the full
-username. So `log accounts` and `log proxy check` print the password, in
+username. So `log facebook accounts` and `log proxy check` print the password, in
 effect, to the terminal and to anything that output is pasted into. Anyone
 holding it can use our paid proxy traffic, and can send their own traffic
 through an account's sticky session.
@@ -44,7 +44,7 @@ through an account's sticky session.
   }
   ```
   It is used by:
-  - `log accounts` (`src/cli/account/helpers/renderAccounts.ts:32`);
+  - `log facebook accounts` (`src/cli/account/helpers/renderAccounts.ts:32`);
   - `log proxy assign` (`src/cli/proxy/index.ts:91`);
   - `log proxy check`, text and `--json` (`src/cli/proxy/index.ts:183`, `:186`).
 
@@ -96,7 +96,7 @@ through an account's sticky session.
 
 ## How to re-test
 
-1. Run `log accounts` and `log proxy check --account <name> --json`. **Pass:**
+1. Run `log facebook accounts` and `log proxy check --account <name> --json`. **Pass:**
    the output doesn't contain the account prefix. Compare without printing it,
    e.g. in a script that reads `2CAPTCHA_PROXY_PASSWORD` and checks
    `!output.includes(password)`.
@@ -112,7 +112,7 @@ through an account's sticky session.
 Leaking (local exposure) at `f033e63`. **Fixed at `a9f7584`.** *unitTested*
 (`maskProxyUrl`, `src/marketplace/socialAccount/socialAccount.test.ts`)
 
-- The username's account part is masked everywhere: `log accounts`, `log account
+- The username's account part is masked everywhere: `log facebook accounts`, `log facebook account
   show`, `log proxy check`, `assign` and `balance`, in text and JSON output.
 - The Python side scrubs the password and the prefix from errors.
 - By design the full proxy URL, password included, is still stored in Twenty

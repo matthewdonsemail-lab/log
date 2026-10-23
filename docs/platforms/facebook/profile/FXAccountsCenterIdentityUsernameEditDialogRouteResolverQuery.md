@@ -1,6 +1,6 @@
 # FXAccountsCenterIdentityUsernameEditDialogRouteResolverQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -18,7 +18,7 @@ Seen 3 time(s) in 3 run(s).
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | flow | step 13: clickRole button "…" | 2 | 200 | 349–734 ms | 3727–7991 ms | — |
-| inspect | now on /profiles/<id>/name "…" after 2328 ms; 0 request(s) | 1 | 200 | 431 ms | 2529 ms | — |
+| inspect | a step (older run, split by its report lines) | 1 | 200 | 431 ms | 2529 ms | — |
 
 <!-- facts:end -->
 

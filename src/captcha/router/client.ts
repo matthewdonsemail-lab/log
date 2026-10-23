@@ -1,10 +1,3 @@
-/**
- * The captcha ledger and solver availability: the only I/O in captcha/router.
- *
- * Every solve attempt is one JSON line in `~/.logCli/captcha/attempts.jsonl`
- * (`LOG_CAPTCHA_LEDGER` overrides the path), so after real runs we can see which
- * solver actually gets accounts through, and reorder.
- */
 import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
@@ -27,16 +20,11 @@ export function readAttempts(path = ledgerPath()): CaptchaAttempt[] {
     try {
       out.push(JSON.parse(line) as CaptchaAttempt)
     } catch {
-      // A torn line from a crash is skipped, never fatal.
     }
   }
   return out
 }
 
-/**
- * Which solvers have a key. CaptchaKraken also reads
- * `~/.captchakraken/credentials` (written by its MCP's `create_api_key`).
- */
 export function solverAvailability(
   env: Record<string, string | undefined> = process.env,
   home: string = homedir()
@@ -44,7 +32,6 @@ export function solverAvailability(
   const krakenFile = join(env.CAPTCHA_KRAKEN_STATE_DIR || join(home, '.captchakraken'), 'credentials')
   return {
     captchaKraken: Boolean(env.CAPTCHA_KRAKEN_API_KEY || env.VLLM_API_KEY || existsSync(krakenFile)),
-    // matt's .env.local names it 2CAPTCHA_API_KEY; TWOCAPTCHA_API_KEY is the shell-safe spelling.
     twoCaptcha: Boolean(env.TWOCAPTCHA_API_KEY || env["2CAPTCHA_API_KEY"])
   }
 }

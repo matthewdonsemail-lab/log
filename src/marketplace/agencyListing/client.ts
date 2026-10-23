@@ -1,11 +1,8 @@
-/**
- * Marketplace listings in Twenty's `agencyListings`. Rows are never deleted:
- * a listing whose account is lost becomes `accountLost`, and a replacement is
- * a new row pointing back at it (`replacesId`).
- */
 import type { TwentyClient, TwentyObjects } from '../../twenty/graphql/index'
 import type { PublishOutput } from '../publish/types'
 import { fromTwentyEnum, toTwentyEnum } from '../socialAccount/helpers/index'
+import { copyVersionsOf, LIVE_COPY_STATUSES, lintVersions, pickVersion, requiredVersions, skipWordsOf } from '../../facebook/marketplace/copy/index'
+import type { CopyVersion, LiveCopy } from '../../facebook/marketplace/copy/index'
 import type { AgencyListing, AgencyListingRow, AgencyListingStatus, ListingCondition, RunResult } from './types'
 import { LISTING_STATUSES } from './types'
 
@@ -25,6 +22,14 @@ function photosOf(raw: unknown): string[] {
     }
   }
   return Array.isArray(value) ? value.map((p) => String(p).trim()).filter(Boolean) : []
+}
+
+function safeJson(text: string): unknown {
+  try {
+    return JSON.parse(text)
+  } catch {
+    return null
+  }
 }
 
 export function toAgencyListing(row: AgencyListingRow): AgencyListing {
@@ -56,7 +61,9 @@ export function toAgencyListing(row: AgencyListingRow): AgencyListing {
     lastErrorCode: row.lastErrorCode ?? null,
     lastError: row.lastError ?? null,
     clicksCount: typeof row.clicksCount === 'number' ? row.clicksCount : null,
-    lastCheckedAt: row.lastCheckedAt ?? null
+    lastCheckedAt: row.lastCheckedAt ?? null,
+    copyVersions: copyVersionsOf(typeof row.copyVersions === 'string' ? safeJson(row.copyVersions) : row.copyVersions),
+    copyVersionId: row.copyVersionId?.trim() || null
   }
 }
 
@@ -78,20 +85,43 @@ export async function setListingStatus(
   await twenty.update(AGENCY_LISTINGS, id, { status: toTwentyEnum(status) as ListingUpdate['status'], ...extra })
 }
 
-/**
- * Copies the ad to a new READY row on `accountId`: a campaign slot, or a
- * replacement when `replaces` is set (generation + 1, `replacesId` → old row).
- */
+export function copySkipWords(ad: Pick<AgencyListing, 'locationCity' | 'locationQuery'>): Set<string> {
+  return skipWordsOf(ad.locationCity, ad.locationQuery)
+}
+
+export async function liveCopiesIn(twenty: TwentyClient, ad: Pick<AgencyListing, 'locationCity' | 'locationCountry'>): Promise<LiveCopy[]> {
+  if (!ad.locationCity || !ad.locationCountry) return []
+  const rows = await listListingsWhere(twenty, { locationCity: { eq: ad.locationCity }, locationCountry: { eq: ad.locationCountry } })
+  return rows
+    .filter((l) => l.status && (LIVE_COPY_STATUSES as readonly string[]).includes(l.status))
+    .map((l) => ({ title: l.title, description: l.description ?? '', copyVersionId: l.copyVersionId }))
+}
+
+export async function copyVersionsShortfall(twenty: TwentyClient, ad: AgencyListing, count: number): Promise<string | null> {
+  const liveAfter = (await liveCopiesIn(twenty, ad)).length + count
+  const problems = lintVersions(ad.copyVersions, ad.locationCity, copySkipWords(ad))
+  if (problems.length) return problems.map((p) => `${p.versionId}: ${p.detail}`).join('; ')
+  if (liveAfter < 2) return null
+  const needed = requiredVersions(liveAfter)
+  if (ad.copyVersions.length >= needed) return null
+  return `${ad.copyVersions.length} copy version(s) for ${liveAfter} listing(s) live in ${ad.locationCity ?? '?'}: write at least ${needed} by skills/listingCopy (copyVersions in listing.json)`
+}
+
+export type { CopyVersion }
+
 export async function createSlot(
   twenty: TwentyClient,
   ad: AgencyListing,
   accountId: string,
   options: { campaignId: string | null; replaces?: AgencyListing; reason?: string }
 ): Promise<AgencyListing> {
+  const chosen = ad.copyVersions.length ? pickVersion(ad.copyVersions, await liveCopiesIn(twenty, ad), { skip: copySkipWords(ad), avoidId: options.replaces?.copyVersionId ?? null }) : null
   const row = await twenty.create(AGENCY_LISTINGS, {
-    name: ad.title,
-    title: ad.title,
-    description: ad.description,
+    name: chosen?.title ?? ad.title,
+    title: chosen?.title ?? ad.title,
+    description: chosen?.description ?? ad.description,
+    copyVersions: (ad.copyVersions.length ? ad.copyVersions : null) as unknown as ListingCreate['copyVersions'],
+    copyVersionId: chosen?.id ?? null,
     price: ad.price,
     priceCurrency: ad.priceCurrency,
     category: ad.category,
@@ -120,10 +150,6 @@ const RESULT_STATUS: Record<RunResult, AgencyListingStatus | null> = {
   failed: 'failed'
 }
 
-/**
- * Writes one publish run back to its row. A dry run only records the run; a
- * live run also moves the status and, when published, the Facebook id.
- */
 export async function recordRun(
   twenty: TwentyClient,
   listing: AgencyListing,
@@ -141,7 +167,6 @@ export async function recordRun(
   }
   if (output.photoHashes.length) update.photoHashes = output.photoHashes as unknown as ListingUpdate['photoHashes']
   if (receipt) update.screenshotUrl = receipt
-  // Published but held for review (a new account's listing): UNDER_REVIEW, not ACTIVE, until a scan sees it clear.
   const status = dryRun
     ? result === 'blocked' || result === 'needsPerson' ? 'blocked' : null
     : result === 'published' && output.review ? 'underReview' : RESULT_STATUS[result]
@@ -156,16 +181,8 @@ export async function recordRun(
   return result
 }
 
-/** Rows a dashboard scan may move: what is (or might be) live on Facebook. */
-const SYNCABLE: readonly AgencyListingStatus[] = ['publishing', 'unconfirmed', 'active', 'underReview', 'duplicateTakedown', 'unknown']
+export const SYNCABLE: readonly AgencyListingStatus[] = ['publishing', 'unconfirmed', 'active', 'underReview', 'duplicateTakedown', 'unknown']
 
-/**
- * One account's Marketplace > Selling, as scanned → its agencyListing rows.
- * A row matches by Facebook listing id, or, for an unconfirmed publish, by its
- * exact title (which also records the id it never got). Health badges are
- * Twenty status values already (ACTIVE, UNDER_REVIEW, DUPLICATE_TAKEDOWN...).
- * Returns how many rows changed.
- */
 export async function syncDashboard(
   twenty: TwentyClient,
   accountId: string,

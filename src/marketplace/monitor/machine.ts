@@ -1,17 +1,3 @@
-/**
- * The listing monitor as an XState machine, so each step can be watched
- * (`log watch` prints every event and state through XState's inspect API).
- *
- *   checking ──ok──────────▶ evaluating ──▶ waiting ──after poll──▶ checking
- *      │                         └── checks done ──▶ done
- *      ├──issue: rate_limited──▶ resting ──after 24h──▶ checking
- *      ├──issue: anything else─▶ blocked   (final: log in again / operator)
- *      └──error──▶ retrying ──after 5s──▶ checking
- *                    └── retries used, or same error 3× ──▶ tripped (final)
- *
- * `check` is the only side effect. It is a promise actor the caller
- * provides (`machine.provide`), so tests never launch a browser.
- */
 import { assign, fromPromise, setup } from 'xstate'
 import { detectHealth, evaluateRelist } from './helpers/index'
 import {
@@ -53,7 +39,6 @@ export const monitorMachine = setup({
   },
   actions: {
     recordOutcome: assign(({ context }, outcome: CheckOutcome) => {
-      // A quick retry belongs to the check it retries, so it does not count as a new one.
       const checks = context.retries > 0 ? context.checks : context.checks + 1
       if (outcome.kind === 'error') {
         const count = context.failure?.code === outcome.code ? context.failure.count + 1 : 1
@@ -70,7 +55,6 @@ export const monitorMachine = setup({
       const decisions = health.map(({ listingId, health: h }) =>
         evaluateRelist(context.listings.find((l) => l.listingId === listingId)!, h, context.policy)
       )
-      // Approved reposts are now pending: the next check must not queue them again.
       const listings = context.listings.map((listing) => {
         const decision = decisions.find((d) => d.listingId === listing.listingId)
         return decision?.shouldRepost ? { ...listing, repostPending: true } : listing
@@ -128,7 +112,6 @@ export const monitorMachine = setup({
           },
           { target: 'failed', actions: { type: 'recordOutcome', params: ({ event }) => event.output } }
         ],
-        // The check actor is meant to classify everything; a throw is a bug, not a signal.
         onError: {
           target: 'failed',
           actions: {

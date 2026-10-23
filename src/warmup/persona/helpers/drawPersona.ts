@@ -1,17 +1,14 @@
 import { existsSync, readFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
-import { seeded } from '../../facebook/helpers/reelSession'
+import { seeded } from '../../../facebook/warmup/activities/helpers/reelSession'
 import type { BehaviourProfile, DatasetRow } from '../types'
 
-/** `~/.logCli/datasets`, or LOG_DATASETS_DIR. */
 export function datasetsDir(env: Record<string, string | undefined> = process.env): string {
   return env.LOG_DATASETS_DIR || join(homedir(), '.logCli', 'datasets')
 }
 
-/** A CSV or tab file → rows by header, quoted fields kept whole. Pure. */
 export function parseTable(text: string, separator: ',' | '\t'): Record<string, string>[] {
-  // Lines end in CRLF, LF, or CR alone (the FB conversions file).
   const lines = text.split(/\r\n|\n|\r/).filter((l) => l.trim())
   const split = (line: string) => {
     const out: string[] = []
@@ -39,7 +36,6 @@ export function parseTable(text: string, separator: ',' | '\t'): Record<string, 
   })
 }
 
-/** How each dataset names a country (the account's is an ISO code). */
 const COUNTRY_NAMES: Record<string, { doomscrolling: string; socialBehaviour: string }> = {
   US: { doomscrolling: 'United States', socialBehaviour: 'USA' },
   GB: { doomscrolling: 'United Kingdom', socialBehaviour: 'UK' },
@@ -48,7 +44,6 @@ const COUNTRY_NAMES: Record<string, { doomscrolling: string; socialBehaviour: st
   DE: { doomscrolling: 'Germany', socialBehaviour: 'Germany' }
 }
 
-/** People whose main platform is where this warm-up runs: Facebook, or Instagram (its Reels). */
 const REELS_PLATFORMS = new Set(['Facebook', 'Instagram Reels', 'Instagram'])
 
 export interface DatasetFiles {
@@ -57,14 +52,12 @@ export interface DatasetFiles {
   shortFormMemory: Record<string, string>[]
 }
 
-/** The three datasets from their folder; a missing one says where to put it. */
 export function readDatasets(dir = datasetsDir()): DatasetFiles {
   const read = (path: string, sep: ',' | '\t', name: string) => {
     const full = join(dir, path)
     if (!existsSync(full)) throw Object.assign(new Error(`${name} isn't in ${dir} (${path})`), { code: 'datasetMissing' })
     return parseTable(readFileSync(full, 'utf8'), sep)
   }
-  // DaRUS serves its tables as CSV (`?format=original`), under the .tab name.
   return {
     doomscrolling: read('doomscrollingAlgorithmFatigue/doomscrolling_algorithm_fatigue_dataset.csv', ',', 'the doomscrolling dataset'),
     socialBehaviour: read('socialMediaUserBehavior/social_media_user_behavior.csv', ',', 'the social media user behaviour dataset'),
@@ -72,12 +65,6 @@ export function readDatasets(dir = datasetsDir()): DatasetFiles {
   }
 }
 
-/**
- * One persona, drawn: a row from each dataset, matched to the account's
- * country and to Facebook or Instagram as the main platform where the
- * dataset has those (all its rows when none match), and a TikTok-condition
- * participant from DaRUS-3327. Pure, given its seed and the datasets.
- */
 export function drawPersona(files: DatasetFiles, country: string, seed: number): BehaviourProfile {
   const rng = seeded(seed)
   const pick = <T>(rows: T[]) => rows[Math.floor(rng() * rows.length)]

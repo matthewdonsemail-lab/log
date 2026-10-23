@@ -1,6 +1,6 @@
 # CometMarketplaceSetBuyLocationMutation
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -13,11 +13,14 @@
 | Called from | `CometMarketplaceSetBuyLocationMutation` |
 | rea | `ev_6c7e203c15e273a1adfc76f48a3b85d02ad11eb05eea408878d7c7ec936ce3ee` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 4 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 15: click e1354 | 1 | 200 | 471 ms | 1321 ms | — |
+| inspect | step 10: click e1174 | 1 | 200 | 937 ms | 1525 ms | — |
+| inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 518 ms | 17664 ms | — |
+| inspect | step 13: setLocation 18015 | 1 | 200 | 569 ms | 15362 ms | — |
 
 <!-- facts:end -->
 

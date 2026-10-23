@@ -1,6 +1,6 @@
 # ProfileCometTilesFeedPaginationQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -17,7 +17,7 @@ Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| host | step 12: goto /me | 1 | 200 | 655 ms | 4553 ms | — |
+| inspect | step 1: goto /profile.php | 1 | 200 | 742 ms | 6797 ms | — |
 
 <!-- facts:end -->
 

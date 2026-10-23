@@ -1,14 +1,3 @@
-/**
- * The session boundary: the on-disk store and the blaster API that validates
- * and refreshes tokens. Ported from blaster
- * (`packages/core/src/platform/session/helpers/store.ts` and
- * `packages/blaster-cli/src/cli/login.ts`).
- *
- * The store lives in `~/.logCli/auth/` (`LOG_HOME` moves `~/.logCli`):
- * `config.json` and `sessions.json`. It holds live tokens: never print it.
- * The CLI never holds the OAuth client secret. blaster's API does, through
- * `GET /api/auth/me` and `POST /api/auth/refresh`.
- */
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
@@ -24,7 +13,6 @@ function readJsonFile(path: string): Record<string, unknown> | null {
   try {
     return existsSync(path) ? (JSON.parse(readFileSync(path, "utf8")) as Record<string, unknown>) : null;
   } catch {
-    // A corrupt store reads as "not signed in": the fix is the same either way.
     return null;
   }
 }
@@ -69,7 +57,6 @@ export function removeSessionRecord(apiUrl: string, dir = authDir()): boolean {
   return true;
 }
 
-/** Flag, then env, then the stored config, then hosted blaster. */
 export function resolveApiUrl(flag: string | undefined, dir = authDir()): string {
   return flag || process.env.LOG_API_URL || loadSessionHome(dir).config.apiUrl || DEFAULT_API_URL;
 }
@@ -85,7 +72,6 @@ function unreachableApi(apiUrl: string, error: unknown): string {
   return `Could not reach the blaster API at ${apiUrl} (${error instanceof Error ? error.message : String(error)}).`;
 }
 
-/** Validate a token through blaster's API, which checks it against Twenty. The token never appears in a message. */
 export async function validateSessionToken(apiUrl: string, accessToken: string, fetchFn: typeof fetch = fetch): Promise<ValidationResult> {
   if (accessToken.trim() === "") return { ok: false, kind: "config", message: "No session token." };
   let response: Response;
@@ -126,7 +112,6 @@ async function refreshSessionToken(
   const tokens = body.tokens ?? {};
   const accessToken = tokens.accessToken ?? tokens.access_token;
   if (typeof accessToken !== "string") return { ok: false };
-  // Validate the rotated token before trusting it.
   const validation = await validateSessionToken(apiUrl, accessToken, fetchFn);
   if (!validation.ok) return { ok: false };
   const nextRefresh = tokens.refreshToken ?? tokens.refresh_token;
@@ -142,10 +127,6 @@ async function refreshSessionToken(
   };
 }
 
-/**
- * A stored session as a live one: validated, or refreshed once when expired
- * or rejected. The message says what to do when it can't be.
- */
 export async function liveSession(
   record: SessionRecord,
   fetchFn: typeof fetch = fetch,

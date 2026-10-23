@@ -13,7 +13,6 @@ const fresh = (accountId: string): AccountStanding => ({
   named: false, locationSet: false, warmupStartedAt: null, warmedAt: null
 })
 
-/** Scripted steps: each answers ok unless `script` says otherwise; `calls` records the order. */
 function steps(script: Record<string, (input: never, n: number) => StepOutcome | Promise<StepOutcome>> = {}) {
   const calls: { name: string; input: unknown }[] = []
   const count: Record<string, number> = {}
@@ -52,7 +51,6 @@ describe('the host runner (rule 35)', () => {
 
   test('a host stopped in the warm-up resumes at the next activity, in a fresh browser, with the day’s opens counted', async () => {
     process.env.LOG_HOST_DIR = mkdtempSync(join(tmpdir(), 'logHost'))
-    // First run: two activities, then the process goes away (SHUTDOWN).
     const first = steps({ warmupActivity: (input: { activity: string }) => (input.activity === 'createAccessCheck' ? new Promise<StepOutcome>(() => {}) : { kind: 'ok' }) })
     const one = host('erie', first)
     await new Promise((r) => setTimeout(r, 60))
@@ -61,7 +59,6 @@ describe('the host runner (rule 35)', () => {
     expect(readProgress('erie')!.resume.warmupDone).toEqual(['feedBrowse', 'marketplaceBrowse'])
     expect(readProgress('erie')!.closes.map((c) => c.reason)).toEqual(['shutdown'])
 
-    // Second run: carries on from createAccessCheck, never repeating the first two.
     const second = steps({ watchCheck: () => ({ kind: 'issue', issue: 'accountDisabled' }) })
     const result = await host('erie', second).done
     const activities = second.calls.filter((c) => c.name === 'warmupActivity').map((c) => (c.input as { activity: string }).activity)

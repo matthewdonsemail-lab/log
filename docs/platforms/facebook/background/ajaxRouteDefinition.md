@@ -1,6 +1,6 @@
 # ajaxRouteDefinition
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -11,17 +11,22 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_2cc284eb516f0beefa9fd6d08ce43290191409c99d9e18dffb465f686bcdd604` |
+| rea | `ev_0d9683bd2b967787ca38bf76c01a112c3026d81b9df08129c95f7f29d8510e75` |
 
-Seen 10 time(s) in 2 run(s).
+Seen 16 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | rea read step 11_clickroleButtonNextCard: exit 0, ev_189e7df832ac014018be21a4d2fe3eb4b862d | 2 | 200 | 1301–1496 ms | 1702–1704 ms | — |
-| inspect | rea read step 20_clickroleButtonNextCard: exit 0, ev_b8ad981adedd3a055cbb6fd651deb9976e71e | 2 | 200 | 875–1135 ms | 1837–1838 ms | — |
+| inspect | step 1: goto /profile.php | 2 | 200 | 935–1029 ms | 7265–7287 ms | — |
+| inspect | step 12: clickAny 1 x link /see owner profile$/ | 2 | 200 | 1301–1496 ms | 2966–2968 ms | — |
+| inspect | step 21: clickAny 1 x link /see owner profile$/ | 2 | 200 | 875–1135 ms | 2572–2573 ms | — |
 | inspect | step 8: clickAny 1 x link /see owner profile$/ | 2 | 200 | 1125–2019 ms | 2767–2769 ms | — |
 | inspect | step 19: clickAny 1 x link /see owner profile$/ | 2 | 200 | 863–1649 ms | 2864–2867 ms | — |
 | inspect | clickAny: 1 link /see owner profile$/ | 2 | 200 | 1980–2160 ms | 4652–4653 ms | — |
+| inspect | step 10: click e1174 | 1 | 200 | 5110 ms | 1523 ms | — |
+| inspect | step 25: click e1241 | 1 | 200 | 7484 ms | 7701 ms | — |
+| inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 3860 ms | 17661 ms | — |
+| inspect | step 13: setLocation 18015 | 1 | 200 | 4291 ms | 15359 ms | — |
 
 <!-- facts:end -->
 

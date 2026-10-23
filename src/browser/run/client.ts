@@ -11,7 +11,6 @@ import type { PrepareRunOptions, PrepareRunResult } from './types'
 import { driverNameOf } from '../driver/client'
 import type { BrowserDriverName } from '../driver/types'
 
-/** Stored localStorage origins (Playwright's `[{ origin, localStorage: [...] }]`), or none. Pure. */
 export function toOrigins(raw: unknown): unknown[] {
   let value = raw
   if (typeof value === 'string') {
@@ -25,48 +24,22 @@ export function toOrigins(raw: unknown): unknown[] {
   return value.filter((o) => !!o && typeof o === 'object' && typeof (o as { origin?: unknown }).origin === 'string')
 }
 
-/**
- * Everything a run for `account` needs on its browser, or why it may not run. The
- * account check comes first (`checkRunnable`, rule 12): no proxy, no home
- * country, a non-Facebook or unusable account means no files and no browser.
- * Then its home (rule 16: a pinned locale and timezone for the country, or
- * refused), its local waking hours (rule 18: `outsideActiveHours`, with the
- * local time and when the window opens; `bypassHours` skips only this) and its stored device (rule 15: one
- * that can't be read is refused, never replaced). `check` only tests the
- * proxy, so it skips home, hours and device. A normal run also needs a saved
- * session; signing in doesn't.
- */
-/**
- * `~/.logCli/runs/inspect/20261019T212953_61594063207669/adsPower`: the capture folder is named
- * after the browser that ran (matt, 2026-10-20). Runs from before kept theirs as `firefox`, and
- * every reader takes all three (`CAPTURE_FOLDERS`). Pure.
- */
 export function captureDirFor(accountName: string, action: string, now: Date, root?: string, browser: BrowserDriverName = 'camoufox'): string {
   const stamp = now.toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, '')
   return join(root ?? (process.env.LOG_RUNS_DIR || join(homedir(), '.logCli', 'runs')), action, `${stamp}_${accountName.replace(/\W/g, '')}`, browser)
 }
 
-/** The actions that open through python/browser/browserDriver.py, so they run on the account's browser (rule 44). The rest still launch Camoufox. */
 export const OPENER_ACTIONS: ReadonlySet<string> = new Set(['inspect', 'flow', 'warmup', 'host'])
 
-/** The commands that act inside the account's browser already open (`inspect start --detach`), so they run on whichever browser that is. */
-export const IN_OPEN_BROWSER: ReadonlySet<string> = new Set(['join'])
+export const IN_OPEN_BROWSER: ReadonlySet<string> = new Set(['join', 'read', 'poll', 'check'])
 
-/**
- * The commands that still launch Camoufox themselves (facebook-camofox-client's
- * worker, or the sync publish, connect and profile sessions), not through the
- * driver yet: on AdsPower they don't run. Moving one onto the driver moves it
- * to OPENER_ACTIONS.
- */
 export const CAMOUFOX_ONLY: ReadonlySet<string> = new Set(['doctor', 'connect', 'scan', 'status', 'watch', 'publish', 'profile', 'campaign'])
 
-/** Which browser a command runs on: the account's (through the driver), Camoufox only, or none. Pure. */
 export function commandBrowser(command: string): 'accountBrowser' | 'camoufoxOnly' | 'none' {
   if (OPENER_ACTIONS.has(command) || IN_OPEN_BROWSER.has(command)) return 'accountBrowser'
   return CAMOUFOX_ONLY.has(command) ? 'camoufoxOnly' : 'none'
 }
 
-/** Which browser a run of this action uses, so its capture folder can say so. Pure. */
 export function runBrowserOf(account: { browserDriver: string | null; adsPowerProfileId: string | null }, action: string): BrowserDriverName {
   return OPENER_ACTIONS.has(action) ? driverNameOf(account) : 'camoufox'
 }
@@ -76,7 +49,7 @@ export function prepareRun(account: FacebookAccount, purpose: RunPurpose, option
   if (!check.ok) return check
   const cookies = toFacebookCookies(account.cookies)
   if (purpose === 'run' && cookies.length === 0) {
-    return { ok: false, code: 'neverConnected', detail: `${account.accountName} has no cookies in Twenty. Run: log connect --account ${account.accountName}` }
+    return { ok: false, code: 'neverConnected', detail: `${account.accountName} has no cookies in Twenty. Run: log facebook connect --account ${account.accountName}` }
   }
 
   let device: DeviceRunFile | null = null
@@ -85,7 +58,6 @@ export function prepareRun(account: FacebookAccount, purpose: RunPurpose, option
     if (!home.ok) return home
     const outside = options.bypassHours ? null : outsideActiveHours(account, home.home.timezone, options.now ?? new Date())
     if (outside) return { ok: false, code: 'outsideActiveHours', detail: outside }
-    // Rule 24: how often this account's browser opens on Facebook. --bypass doesn't skip it.
     if (!options.skipLaunchBudget) {
       const limits = options.skipLaunchGap ? { ...LAUNCH_LIMITS, minGapMinutes: 0 } : LAUNCH_LIMITS
       const over = overLaunchBudget(listLaunches(account.accountName, { runs: options.captureRoot }), options.now ?? new Date(), home.home.timezone, limits)
@@ -168,7 +140,6 @@ export function prepareRun(account: FacebookAccount, purpose: RunPurpose, option
         try {
           renameSync(dir, target)
         } catch {
-          // Another drive: copy, then remove the original.
           cpSync(dir, target, { recursive: true })
           rmSync(dir, { recursive: true, force: true })
         }

@@ -6,11 +6,6 @@ import { saveDeviceProfile, saveSession, toFacebookCookies } from "../../../mark
 import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
 import type { TwentyClient } from "../../../twenty/graphql/index.ts";
 
-/**
- * A run Twenty didn't fully take (`run.keep()`): its device and its session, saved
- * now. The folder is deleted once both are in Twenty; it never held login.json.
- * Returns the lines to print, never the device or a cookie.
- */
 export async function resaveKeptRun(twenty: TwentyClient, account: FacebookAccount, dir: string): Promise<{ ok: boolean; lines: string[] }> {
   const lines: string[] = [];
   if (!existsSync(dir)) return { ok: false, lines: [`No kept run at ${dir}`] };

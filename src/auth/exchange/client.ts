@@ -1,11 +1,3 @@
-/**
- * One-shot loopback exchange server, ported from blaster
- * `packages/blaster-cli/src/cli/login.ts` (`runExchangeServer`).
- *
- * Binds 127.0.0.1 only and accepts a single valid POST to /exchange. The POST
- * must echo this run's state and PKCE challenge, which ties it to the terminal
- * that opened the browser. The tokens themselves were minted by Twenty.
- */
 import http from "node:http";
 import { EXCHANGE_TIMEOUT_MS } from "./types.ts";
 import type { ExchangeResult, ExchangeServer } from "./types.ts";
@@ -13,7 +5,6 @@ import type { ExchangeResult, ExchangeServer } from "./types.ts";
 const MAX_BODY_BYTES = 64 * 1024;
 const MAX_TOKEN_LENGTH = 16_384;
 const CORS = {
-  // blaster's web app posts cross-origin, from its origin to 127.0.0.1.
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type",
@@ -22,7 +13,6 @@ const CORS = {
 const isTokenField = (value: unknown): value is string =>
   typeof value === "string" && value !== "" && value.length <= MAX_TOKEN_LENGTH;
 
-/** True when the POST body is a valid exchange for this run. Pure. */
 export function isValidExchange(payload: Record<string, unknown>, state: string, challenge: string): boolean {
   if (payload.state !== state || payload.code_challenge !== challenge) return false;
   if (!isTokenField(payload.access_token)) return false;

@@ -38,6 +38,16 @@ describe("page state hook", () => {
     expect(findingOf(selfie).line).toContain("tell matt");
   });
 
+  test("Messenger's Create PIN is resolved with the flow when the session has the PIN, and is matt's when not (rule 67)", () => {
+    const create = { url: "https://www.facebook.com/messages/", text: 'heading "Create a PIN to access your chats on any device" [level=2]' };
+    const withPin = findingOf(at({ ...create, messengerPin: true }));
+    expect(withPin).toMatchObject({ kind: "state", resolvable: true });
+    expect(withPin.line).toContain("log flow run messengerPinCreate");
+    const without = findingOf(at(create));
+    expect(without).toMatchObject({ kind: "state", resolvable: false });
+    expect(without.line).toContain("tell matt");
+  });
+
   test("a failed step is an unconfirmed page: snapshot, then resolve", () => {
     const f = findingOf(at({ failed: 'RuntimeError: no visible heading "Comments"' }));
     expect(f).toMatchObject({ kind: "failed", resolvable: true });
@@ -57,9 +67,7 @@ describe("page state hook", () => {
     const blocked = hookReply("Stop", [captcha], empty);
     expect(blocked.output).toMatchObject({ decision: "block" });
     expect(String(blocked.output?.reason)).toContain("log inspect do solve");
-    // Sent back once and nothing moved: the turn may end.
     expect(hookReply("Stop", [captcha], blocked.memory, true).output).toBeNull();
-    // Something moved (a new step on the same state): blocked again.
     expect(hookReply("Stop", [{ ...captcha, step: "43_solve" }], blocked.memory, true).output).toMatchObject({ decision: "block" });
     expect(hookReply("Stop", [selfie], empty).output).toBeNull();
     expect(hookReply("Stop", [at()], empty).output).toBeNull();
@@ -74,27 +82,26 @@ describe("page state hook", () => {
 
 describe("live logs hook", () => {
   test("finds the log command a shell line runs", () => {
-    expect(logCommandOf("bun bin/log.ts warmup facebook feed run --account a 2>&1 | tee x.log")).toBe("warmup");
+    expect(logCommandOf("bun bin/log.ts facebook warmup feed run --account a 2>&1 | tee x.log")).toBe("warmup");
     expect(logCommandOf('bun "C:\\repo\\bin\\log.ts" inspect do snapshot')).toBe("inspect");
     expect(logCommandOf("git status")).toBeNull();
   });
 
   test("tail/head buffer; tail -f and tee don't", () => {
-    expect(buffersOutput("bun bin/log.ts capture --docs 2>&1 | tail -20")).toBe(true);
-    expect(buffersOutput("bun bin/log.ts capture --docs | head")).toBe(true);
-    expect(buffersOutput("bun bin/log.ts capture --docs | Select-Object -Last 5")).toBe(true);
-    expect(buffersOutput("bun bin/log.ts capture --docs 2>&1 | tee run.log")).toBe(false);
+    expect(buffersOutput("bun bin/log.ts facebook capture --docs 2>&1 | tail -20")).toBe(true);
+    expect(buffersOutput("bun bin/log.ts facebook capture --docs | head")).toBe(true);
+    expect(buffersOutput("bun bin/log.ts facebook capture --docs | Select-Object -Last 5")).toBe(true);
+    expect(buffersOutput("bun bin/log.ts facebook capture --docs 2>&1 | tee run.log")).toBe(false);
     expect(buffersOutput("tail -f ~/.logCli/mcp/2026-10-20.log | grep warmup")).toBe(false);
-    // A tail on a later command of the line isn't the log run's.
     expect(buffersOutput("bun bin/log.ts errors >/dev/null 2>&1; grep cli ~/.logCli/mcp/x.log | tail -3")).toBe(false);
-    expect(buffersOutput("cd repo && bun bin/log.ts capture --docs | tail -3")).toBe(true);
+    expect(buffersOutput("cd repo && bun bin/log.ts facebook capture --docs | tail -3")).toBe(true);
   });
 
   test("a buffered log run is refused; a long one off a Monitor is reminded; Monitor with tee goes through", () => {
-    expect(liveLogVerdict("Monitor", "bun bin/log.ts warmup facebook feed run | tail -5").deny).toContain("rule 26");
-    expect(liveLogVerdict("Bash", "bun bin/log.ts warmup facebook feed run 2>&1 | tee w.log").context).toContain("Monitor");
-    expect(liveLogVerdict("Monitor", "bun bin/log.ts warmup facebook feed run 2>&1 | tee w.log")).toEqual({ deny: null, context: null });
-    expect(liveLogVerdict("Bash", "bun bin/log.ts accounts --json")).toEqual({ deny: null, context: null });
+    expect(liveLogVerdict("Monitor", "bun bin/log.ts facebook warmup feed run | tail -5").deny).toContain("rule 26");
+    expect(liveLogVerdict("Bash", "bun bin/log.ts facebook warmup feed run 2>&1 | tee w.log").context).toContain("Monitor");
+    expect(liveLogVerdict("Monitor", "bun bin/log.ts facebook warmup feed run 2>&1 | tee w.log")).toEqual({ deny: null, context: null });
+    expect(liveLogVerdict("Bash", "bun bin/log.ts facebook accounts --json")).toEqual({ deny: null, context: null });
     expect(liveLogVerdict("Bash", "ls | head")).toEqual({ deny: null, context: null });
   });
 });
@@ -103,10 +110,10 @@ describe("live log", () => {
   test("the CLI and the MCP append to the same day's file", () => {
     const dir = mkdtempSync(join(tmpdir(), "liveLog-"));
     try {
-      appendLiveLine(dir, "cli:warmup", "out", "▶ log warmup", "2026-10-20T10:00:00.000Z");
+      appendLiveLine(dir, "cli:warmup", "out", "▶ log facebook warmup", "2026-10-20T10:00:00.000Z");
       appendLiveLine(dir, "warmup", "session", "step 3/12", "2026-10-20T10:00:01.000Z");
       const text = readFileSync(join(dir, logFileName("2026-10-20T10:00:00.000Z")), "utf8");
-      expect(text).toBe("2026-10-20T10:00:00.000Z cli:warmup out    | ▶ log warmup\n2026-10-20T10:00:01.000Z warmup session| step 3/12\n");
+      expect(text).toBe("2026-10-20T10:00:00.000Z cli:warmup out    | ▶ log facebook warmup\n2026-10-20T10:00:01.000Z warmup session| step 3/12\n");
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

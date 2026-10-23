@@ -1,0 +1,97 @@
+{
+  "name": "warmupMarketplaceBrowse",
+  "summary": "Warm-up marketplaceBrowse: Listaro's runStage2, account-warmup.ts:135-174, recorded on 61594063207669 2026-10-22 (rule 35).",
+  "params": [],
+  "steps": [
+    {
+      "id": "s01_gotomarketplace",
+      "action": "goto",
+      "url": "https://www.facebook.com/marketplace/",
+      "recorded": {
+        "step": "07_gotoHttpsWwwFacebook",
+        "ms": 20454,
+        "reaEvidenceId": "ev_333611df173b5539eb2eb59c867db6e8dd91442af15889804f73ef66492469cf",
+        "requests": [
+          "FBYRPTimeLimitsEnforcementQuery",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "RTWebCallBlockSettingHooksQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query"
+        ]
+      }
+    },
+    {
+      "id": "s02_dwell",
+      "action": "dwell",
+      "args": [
+        "3-5"
+      ],
+      "recorded": {
+        "step": "08_dwell35s",
+        "ms": 8625,
+        "reaEvidenceId": "ev_4c10c5c422a3835699a05bb33c5eb3fd976ae86a58f246eae322fc82aa123a37",
+        "requests": [
+          "CometNotificationsDropdownQuery"
+        ]
+      }
+    },
+    {
+      "id": "s03_scroll",
+      "action": "scroll",
+      "args": [
+        "3-5",
+        "400-700"
+      ],
+      "recorded": {
+        "step": "09_scroll35X",
+        "ms": 24203,
+        "reaEvidenceId": "ev_135b9d4f72da541ffb5c3dfad10bd9ca68c4f77b60bc55cb3e8cbff8e12c3bf3",
+        "requests": []
+      }
+    },
+    {
+      "id": "s04_openAny",
+      "action": "openAny",
+      "args": [
+        "/marketplace/item/",
+        "2-4"
+      ],
+      "recorded": {
+        "step": "10_openany24X",
+        "ms": 40656,
+        "reaEvidenceId": "ev_5ba0cd8eaeca0ca5907f2666947d4012493bf0f670964481b3a5eee96fd95245",
+        "requests": [
+          "MarketplacePDPC2CMediaViewerWithImagesQuery",
+          "MarketplacePDPContainerQuery",
+          "MarketplacePDPRightColumnAdsQuery",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "useCIXLogMutation",
+          "CometMarketplaceSetProductItemSeenStateMutation",
+          "CometMarketplaceRecordPDPDwellTimeMutation",
+          "MarketplacePDPC2CMediaViewerWithImagesQuery",
+          "MarketplacePDPContainerQuery",
+          "MarketplacePDPRightColumnAdsQuery",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "useCIXLogMutation",
+          "CometMarketplaceSetProductItemSeenStateMutation",
+          "CometMarketplaceRecordPDPDwellTimeMutation",
+          "MarketplacePDPC2CMediaViewerWithImagesQuery",
+          "MarketplacePDPContainerQuery",
+          "MarketplacePDPRightColumnAdsQuery",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "useCIXLogMutation",
+          "CometMarketplaceSetProductItemSeenStateMutation",
+          "CometMarketplaceRecordPDPDwellTimeMutation"
+        ]
+      }
+    }
+  ],
+  "source": {
+    "runDir": "C:\\Users\\0\\.logCli\\runs\\warmup\\20261022T091121_61594063207669",
+    "account": "61594063207669",
+    "builtAt": "2026-10-22T09:20:18.334Z"
+  }
+}

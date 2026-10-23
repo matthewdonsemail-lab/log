@@ -7,7 +7,6 @@ import { parseSteps, settleInBackground, settleRunCapture, splitHarBySteps, step
 import { runCapture } from "../../cli/capture/index.ts";
 import type { ReaRunner } from "./index";
 
-
 const entry = (url: string, at: string) => ({ startedDateTime: at, request: { method: "GET", url }, response: { status: 200, content: { mimeType: "text/html", text: "" } } });
 const HAR = {
   log: {
@@ -35,7 +34,6 @@ describe("splitHarBySteps", () => {
       ["03_autoLoginSubmittingEnter", 2],
       ["04_autoLoginTypingTheAuthenticator", 1],
     ]);
-    // Entries are copied as they are (rule 19), the rest of the HAR kept.
     expect((parts[1].har as typeof HAR).log.version).toBe("1.2");
     expect((parts[1].har as typeof HAR).log.entries[0]).toEqual(HAR.log.entries[1]);
   });
@@ -48,6 +46,21 @@ describe("splitHarBySteps", () => {
   test("parseSteps sorts by time and skips a half-written line", () => {
     const text = `${JSON.stringify(STEPS[1])}\n${JSON.stringify(STEPS[0])}\n{"at":"2026-10-19T07:2`;
     expect(parseSteps(text).map((s) => s.step)).toEqual([STEPS[0].step, STEPS[1].step]);
+  });
+
+  test("a step's report lines are not steps: the requests after them stay the step's", () => {
+    const line = (at: string, step: string) => JSON.stringify({ at: `2026-10-20T14:36:${at}Z`, step });
+    const text = [
+      line("04.322", "step 3: scroll 2 x 700px"),
+      line("05.935", "  scroll: +700px in 16 wheel steps, 766 ms"),
+      line("16.179", "  mouse: 4 flick, 3 wander; 4 idle drift move(s)"),
+      line("16.189", "  now on https://www.facebook.com/groups/1/ \"Group\" after 11875 ms; 121 request(s)"),
+      line("16.195", "    POST 200 GroupsCometFeedRegularStoriesPaginationQuery (1346 ms)"),
+      line("19.563", "  rea read the step: exit 0, ev_1"),
+      line("19.567", "  page has 810 interactive element(s), 40 new since the last step; snapshot: C:/runs/x"),
+      line("23.494", "step 4: scroll 2 x 700px"),
+    ].join("\n");
+    expect(parseSteps(text).map((s) => s.step)).toEqual(["step 3: scroll 2 x 700px", "  scroll: +700px in 16 wheel steps, 766 ms", "step 4: scroll 2 x 700px"]);
   });
 
   test("stepSlug is camelCase and drops the [Ns] prefix", () => {
@@ -127,7 +140,6 @@ describe("settleInBackground", () => {
     const dir = mkdtempSync(join(tmpdir(), "logSettle"));
     try {
       expect(settleInBackground(dir)).toBeNull();
-      // What the background process runs: it leaves settle.json for the run.
       const result = await runCapture(["--settle", dir], async () => ({ code: 0, stdout: "", stderr: "" }));
       expect(result.code).toBe(0);
       expect(JSON.parse(readFileSync(join(dir, "settle.json"), "utf8"))).toMatchObject({ note: null });

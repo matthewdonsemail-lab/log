@@ -8,7 +8,6 @@ export interface LifecycleRow {
   left: string[];
 }
 
-/** One line per account: its status, where its lifecycle is, what onboarding has left. Pure. */
 export function renderLifecycleTable(rows: LifecycleRow[]): string {
   const lines = ["Account                               Status       Lifecycle                     Left"];
   for (const r of rows) {
@@ -18,7 +17,6 @@ export function renderLifecycleTable(rows: LifecycleRow[]): string {
   return lines.join("\n");
 }
 
-/** A node of the machine's definition, as much of XState's StateNode as is read here. */
 interface Node {
   key: string;
   id: string;
@@ -34,11 +32,6 @@ const short = (id: string) => id.replace(/^lifecycle\./, "");
 const targets = (t: { target?: Node[] }[] | undefined) =>
   [...new Set((t ?? []).flatMap((x) => (x.target ?? []).map((n) => short(n.id))))].join(" | ");
 
-/**
- * The machine's own definition as an indented tree: each state, what it runs,
- * its events, its automatic moves and timers. Generated, so the doc never
- * drifts from the code. Pure.
- */
 export function renderStateTree(root: Node, depth = 0): string[] {
   const lines: string[] = [];
   for (const node of Object.values(root.states ?? {})) {

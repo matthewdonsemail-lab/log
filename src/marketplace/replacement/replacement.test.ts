@@ -13,23 +13,19 @@ describe('losing an account', () => {
     const report = await setStatusAndReplace(twenty, account, 'banned', 'accountDisabled', 'Your account has been disabled')
 
     expect(statusOf(twenty, 'socialAccounts', 'galwayOne')).toMatchObject({ accountStatus: 'BANNED', statusReason: 'accountDisabled' })
-    // readyOne, liveOne (campaign) and abroad (no campaign) were live; soldOne stays SOLD.
     expect(report.lost.map((l) => l.id).sort()).toEqual(['abroad', 'liveOne', 'readyOne'])
     expect(statusOf(twenty, 'agencyListings', 'soldOne').status).toBe('SOLD')
     expect(statusOf(twenty, 'agencyListings', 'abroad').status).toBe('ACCOUNT_LOST')
 
-    // Two campaign listings → two replacements, each on a different Irish account not already in the campaign.
     expect(report.replacements).toHaveLength(2)
     const used = report.replacements.map((r) => r.account?.id)
     expect(new Set(used).size).toBe(2)
     for (const id of used) expect(['galwayThree', 'dublinOne']).toContain(id as string)
-    // Same city first: galwayThree is in Galway, dublinOne is not.
     expect(used[0]).toBe('galwayThree')
     for (const r of report.replacements) {
       expect(statusOf(twenty, 'agencyListings', r.old.id).status).toBe('REPLACED')
       expect(r.next).toMatchObject({ status: 'ready', generation: 1, replacesId: r.old.id, campaignId: FIXTURE_CAMPAIGN, locationCountry: 'IE' })
     }
-    // Nothing deleted.
     expect(twenty.rows.socialAccounts.some((r) => r.id === 'galwayOne')).toBe(true)
     expect(twenty.rows.agencyListings.filter((r) => ['readyOne', 'liveOne', 'abroad', 'soldOne'].includes(r.id))).toHaveLength(4)
   })
@@ -40,7 +36,6 @@ describe('losing an account', () => {
     const report = await setStatusAndReplace(twenty, await findAccount(twenty, 'galwayOne'), 'dead', 'setByHand')
     expect(report.replacements.every((r) => r.next === null)).toBe(true)
     expect(statusOf(twenty, 'agencyListings', 'liveOne')).toMatchObject({ status: 'ACCOUNT_LOST', lastErrorCode: 'noReplacementAccount' })
-    // The Vietnamese account was eligible on everything except country.
     expect(twenty.rows.agencyListings.some((r) => r.socialAccountId === 'vietnam' && r.replacesId)).toBe(false)
   })
 
@@ -61,7 +56,6 @@ describe('losing an account', () => {
     expect(statusOf(twenty, 'agencyListings', 'liveOne').status).toBe('ACTIVE')
     expect(await recordAccountIssue(twenty, await findAccount(twenty, 'banned'), 'checkpointed', null)).toBeNull()
     expect(statusOf(twenty, 'socialAccounts', 'banned').accountStatus).toBe('BANNED')
-    // Proxy problems are setup, not the account's fault: no status change.
     expect(await recordAccountIssue(twenty, await findAccount(twenty, 'galwayTwo'), 'proxyCountryMismatch', null)).toBeNull()
   })
 })
@@ -72,8 +66,6 @@ describe('filling a campaign', () => {
     const ad = (await getListing(twenty, 'adTemplate'))!
     const report = await fillCampaign(twenty, 'campaignNew', ad, 10)
     const accounts = report.created.map((c) => c.account.accountName)
-    // Irish, ACTIVE, proxied and signed in: galwayOne, galwayTwo, galwayThree, dublinOne. Not noProxy,
-    // noCountry, noCookies (no session), vietnam (VN), needsLogin, banned, unset.
     expect(accounts.sort()).toEqual(['dublinOne', 'galwayOne', 'galwayThree', 'galwayTwo'])
     expect(report.short).toBe(6)
     expect(report.created.at(-1)!.account.accountName).toBe('dublinOne')
@@ -92,11 +84,9 @@ describe("the daily cap counts the account's own day (rule 18)", () => {
   test('a listing posted late in the evening locally counts for that local day, not the UTC one', async () => {
     const { countPostedToday } = await import('./index')
     const listing = (id: string, publishedAt: string) => ({ socialAccountId: id, publishedAt }) as never
-    // 23:30 on the 18th in Sydney is 12:30 UTC on the 18th; 00:30 on the 19th in Sydney is 13:30 UTC on the 18th.
     const listings = [listing('sydney', '2026-10-18T12:30:00Z'), listing('sydney', '2026-10-18T13:30:00Z')]
-    const now = new Date('2026-10-18T14:00:00Z') // 01:00 on the 19th in Sydney
+    const now = new Date('2026-10-18T14:00:00Z')
     expect(countPostedToday(listings, now, new Map([['sydney', 'Australia/Sydney']])).get('sydney')).toBe(1)
-    // Without a zone it is the UTC day, as before.
     expect(countPostedToday(listings, now).get('sydney')).toBe(2)
   })
 })

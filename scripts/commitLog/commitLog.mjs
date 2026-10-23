@@ -1,16 +1,3 @@
-// Pre-commit gate: every commit adds an entry to log.md, built around an AST
-// summary of the staged code.
-//
-// 1. scripts/commitLog/astSummary.mjs parses every staged .ts/.mjs/.py file (before and
-//    after) into a syntax tree and lists the declarations and tests that were
-//    added, changed or removed.
-// 2. log.md not staged: append a template entry carrying that AST block, print
-//    the block (so it lands in the agent's context), and stop the commit.
-// 3. log.md staged: the new entry's AST block must match the staged code
-//    exactly (it is regenerated in place if the code moved on), and its
-//    What changed / Why / Checked lines must be written. Then the commit passes.
-//
-// See skills/commitLog/SKILL.md.
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -44,7 +31,6 @@ export function renderEntry({ when, branch, ast }) {
   ].join('\n');
 }
 
-/** Lines the staged diff adds to log.md. */
 export function addedLines(diff) {
   return diff
     .split('\n')
@@ -52,7 +38,6 @@ export function addedLines(diff) {
     .map((line) => line.slice(1).replace(/\r$/, ''));
 }
 
-/** The AST block's lines in an entry (after the heading, up to the blank line). */
 export function astBlock(lines) {
   const start = lines.indexOf(AST_HEADING);
   if (start === -1) return null;
@@ -64,9 +49,7 @@ export function astBlock(lines) {
   return block;
 }
 
-/** null when the added entry is complete and matches the code, else the reason. */
 export function checkAdded(allLines, ast) {
-  // Only the newest added entry counts (a rebuild may add older ones too).
   const start = allLines.findLastIndex((line) => line.startsWith('## '));
   if (start === -1) return 'log.md is staged but has no new "## " entry.';
   const lines = allLines.slice(start);
@@ -81,7 +64,6 @@ export function checkAdded(allLines, ast) {
   return null;
 }
 
-/** Replace the AST block of the last entry in the log text. Pure. */
 export function replaceLastAstBlock(text, ast) {
   const at = text.lastIndexOf(AST_HEADING);
   if (at === -1) return text;

@@ -1,6 +1,6 @@
 # ajaxBz
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_3ac696d9ca5b73b85be25c3eb0a04d8e07223fff4eb281ffe30fb79f8510e011` |
+| rea | `ev_70efc081c67ed7332e21c5498e2db53c87d1066c637ab8bfc22fe41d543c7021` |
 
-Seen 53 time(s) in 3 run(s).
+Seen 58 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -34,6 +34,9 @@ Seen 53 time(s) in 3 run(s).
 | connect | Page: loginForm /marketplace/selling/ "…" | 1 | -1 | -1 ms | 573 ms | — |
 | connect | submitCredentials failed: crashed Error | 1 | -1 | -1 ms | 1666 ms | — |
 | connect | Auto-login: submitting (Enter). | 2 | -1 | -1 ms | 26–102 ms | — |
+| inspect | step 27: click e1541 | 1 | 200 | 1489 ms | 37737 ms | — |
+| inspect | step 5: wait 5s | 1 | 200 | 1403 ms | 80871 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 3 | 200, 0 | 0–501 ms | 589944–1455304 ms | — |
 
 <!-- facts:end -->
 

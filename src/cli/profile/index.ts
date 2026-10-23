@@ -1,13 +1,3 @@
-/**
- * `log profile setup --account <name> [--live]` (rule 28): the account's
- * profile picture and cover photo, from Twenty's socialAccounts.profilePhoto
- * and coverPhoto, through the profile machine (`marketplace/profile`).
- *
- * A dry run (the default) opens the profile, lists every control it has in
- * the run folder's profileFound.txt and says what it would upload; nothing
- * on Facebook changes (rule 8). `--live` uploads both in the one run. Every
- * gate a run passes applies (rules 11-12, 15-18, 22, 24): it is one launch.
- */
 import { dirname, join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
 import type { ProfileSession, ProfileStep } from "../../camofox/session/index.ts";
@@ -23,17 +13,19 @@ import { renderProfile, summarizeProfile } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
 
-export const PROFILE_USAGE = "Usage: log profile setup --account <accountName> [--live] [--bypass] [--json]";
+export const PROFILE_USAGE = "Usage: log facebook profile setup --account <accountName> [--live] [--bypass] [--json]";
 
 export const profileCommand: Command = {
   usage: PROFILE_USAGE,
+  platform: "facebook",
   name: "profile",
+  effect: "browser",
   summary: "Set an account's profile picture and cover photo from Twenty (dry run unless --live, rule 28)",
   args: "setup --account <name> [--live] [--bypass] [--json]",
   async run(context, argv) {
     const parsed = parseArgs(argv, { boolean: ["live", "bypass", "json"], valued: ["account"] });
-    if (!parsed.ok) return { code: 1, stderr: `log profile: ${parsed.error}\n${PROFILE_USAGE}` };
-    if (parsed.positionals[0] !== "setup" || parsed.positionals.length > 1) return { code: 1, stderr: `log profile: expected "setup"\n${PROFILE_USAGE}` };
+    if (!parsed.ok) return { code: 1, stderr: `log facebook profile: ${parsed.error}\n${PROFILE_USAGE}` };
+    if (parsed.positionals[0] !== "setup" || parsed.positionals.length > 1) return { code: 1, stderr: `log facebook profile: expected "setup"\n${PROFILE_USAGE}` };
     const live = Boolean(parsed.flags["live"]);
     const opened = await openAccount(context, "profile", PROFILE_USAGE, parsed.flags["account"], "run", Boolean(parsed.flags["bypass"]));
     if (!("run" in opened)) return opened;
@@ -51,7 +43,6 @@ export const profileCommand: Command = {
         })).call<T>(step, params);
       const machine = profileMachine.provide({
         actors: {
-          // Fetched through the account's proxy, never from this machine, and varied so each file is new (`media/photo`).
           preparePhotos: fromPromise<ProfilePhotosOutput, ProfileActorInputs["preparePhotos"]>(async () => {
             const sources = [account.profilePhoto, account.coverPhoto].filter((s): s is string => Boolean(s));
             const result = await preparePhotos(sources, { dir: join(runDir ?? ".", "photos"), proxy: fetchProxyUrl(account.proxy) });

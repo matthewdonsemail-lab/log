@@ -1,6 +1,6 @@
 # ajaxReactComposerAttachmentsPhotoUpload
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -11,14 +11,15 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_1efa699a762f9e039dbc68751e3a9a1c3aef426c7a7a7bb563c2c943e21b165c` |
+| rea | `ev_75a8b0abe7503b1457d00b428d7bb9f43970a8ac125a37b072efbfe25dfa446a` |
 
-Seen 49 time(s) in 11 run(s).
+Seen 5 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| publish | Uploading 5 photo(s) | 45 | 200 | 1646–7281 ms | 381–9350 ms | — |
-| publish | Uploading 2 photo(s) | 4 | 200 | 1336–2672 ms | 353–724 ms | — |
+| inspect | upload: garbageRoom.jpg handed to the file chooser | 1 | 200 | 5129 ms | 3163 ms | — |
+| inspect | upload: before.png handed to the file chooser | 2 | 200 | 4818–8502 ms | 1323–1358 ms | — |
+| inspect | upload: after.png handed to the file chooser | 2 | 200 | 4708–5957 ms | 1313–1444 ms | — |
 
 <!-- facts:end -->
 

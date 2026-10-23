@@ -1,6 +1,6 @@
 # FBUnifiedVideoContainerQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -19,19 +19,19 @@ Seen 27 time(s) in 3 run(s).
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 1: goto /reel/ | 3 | 200 | 1007–3015 ms | 2974–3857 ms | — |
 | inspect | step 7: clickRole button "…" | 1 | 200 | 1132 ms | 362 ms | — |
-| inspect | rea read step 12_clickroleButtonNextCard: exit 0, ev_85d3eb6b06cf8f36f4642c89361343e8626c6 | 1 | 200 | 4128 ms | 306 ms | — |
-| inspect | rea read step 19_clickroleButtonNextCard: exit 0, ev_45ef075c58fbdae3bab1ffabc78a118951f55 | 1 | 200 | 1253 ms | 98 ms | — |
+| inspect | step 13: clickRole button "…" | 1 | 200 | 4128 ms | 368 ms | — |
+| inspect | step 20: clickRole button "…" | 1 | 200 | 1253 ms | 417 ms | — |
 | inspect | step 28: clickRole button "…" | 1 | 200 | 3456 ms | 370 ms | — |
 | inspect | step 37: clickRole button "…" | 2 | 200 | 1188–3499 ms | 364–1186 ms | — |
-| inspect | rea read step 43_clickroleButtonNextCard: exit 0, ev_aedaa378a6ea54807b97d6e5c8f6fe5bb7a5d | 1 | 200 | 3089 ms | 163 ms | — |
+| inspect | step 44: clickRole button "…" | 1 | 200 | 3089 ms | 367 ms | — |
 | inspect | step 51: clickRole button "…" | 1 | 200 | 1026 ms | 377 ms | — |
 | inspect | step 56: clickRole button "…" | 1 | 200 | 3336 ms | 407 ms | — |
 | inspect | step 63: clickRole button "…" | 1 | 200 | 1058 ms | 463 ms | — |
-| inspect | rea read step 68_clickroleButtonNextCard: exit 0, ev_b27fc6005b1ef2e36a37391948d57bdd4f3e4 | 1 | 200 | 3029 ms | 285 ms | — |
+| inspect | step 69: clickRole button "…" | 1 | 200 | 3029 ms | 430 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 3110 ms | 3721 ms | — |
-| inspect | rea read step 08_clickroleButtonNextCard: exit 0, ev_f6a7635960b1919bdfac52d21fd673ed4dc6c | 1 | 200 | 1155 ms | 261 ms | — |
-| inspect | rea read step 13_dwell600s: exit 0, ev_e8922deafb7ba9951a51bda6f8cd82b5b68c41db19bfe0cd164 | 1 | 200 | 2028 ms | 634 ms | — |
-| inspect | rea read step 18_clickroleButtonNextCard: exit 0, ev_33faffe301518f4ece688324618192249fe69 | 1 | 200 | 1058 ms | 1658 ms | — |
+| inspect | step 9: clickRole button "…" | 1 | 200 | 1155 ms | 1068 ms | — |
+| inspect | step 14: goto /reel/<id> | 1 | 200 | 2028 ms | 3533 ms | — |
+| inspect | step 19: clickRole button "…" | 1 | 200 | 1058 ms | 2361 ms | — |
 | inspect | step 23: goto /reel/<id> | 1 | 200 | 2399 ms | 1940 ms | — |
 | inspect | step 9: goto /reel/<id> | 1 | 200 | 1533 ms | 3049 ms | — |
 | inspect | step 11: goto /reel/ | 1 | 200 | 1115 ms | 2082 ms | — |
@@ -54,4 +54,4 @@ No state reads it. The Reels warm-up checks where it landed instead: `openReels`
 
 ## What can go wrong
 
-None seen: 15 calls, all 200 in 1032-3499 ms. If the feed did not load, `openReels` would not reach a `/reel/<id>` URL or a swipe would leave the URL unchanged, and `checkStep` names it. If the step fails anyway, `checkStep` reports it as an issue: `log warmup facebook reel record` goes on and outlines it, a `run` stops there, and a checkpoint or login page ends it as `blocked`.
+None seen: 15 calls, all 200 in 1032-3499 ms. If the feed did not load, `openReels` would not reach a `/reel/<id>` URL or a swipe would leave the URL unchanged, and `checkStep` names it. If the step fails anyway, `checkStep` reports it as an issue: `log facebook warmup reel record` goes on and outlines it, a `run` stops there, and a checkpoint or login page ends it as `blocked`.

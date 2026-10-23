@@ -1,6 +1,6 @@
 # UnifiedShareSheetMessengerSectionQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -13,12 +13,11 @@
 | Called from | `UnifiedShareSheetMessengerSection.react` |
 | rea | `ev_4e9844fcc357413d99295417750833b29f6f0dc5dbf4020e81d9cb65904242c5` |
 
-Seen 3 time(s) in 2 run(s).
+Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | page has 62 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T234 | 1 | 200 | 407 ms | 91185 ms | — |
-| inspect | page has 63 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T232 | 2 | 200 | 400–465 ms | 12215–46671 ms | — |
+| inspect | step 20: clickRole button "…" | 1 | 200 | 1619 ms | 1289 ms | — |
 
 <!-- facts:end -->
 

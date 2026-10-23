@@ -1,0 +1,72 @@
+{
+  "name": "profilePhotoPost",
+  "summary": "Post a photo on the account's own profile: Photo/video hands the file to the chooser, the upload finishes, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live).",
+  "params": [
+    {
+      "name": "photo",
+      "kind": "file",
+      "description": "uploaded through button \"Photo/video\""
+    }
+  ],
+  "steps": [
+    {
+      "id": "s01_gotoprofilePhp",
+      "action": "goto",
+      "url": "https://www.facebook.com/profile.php?id={uid}",
+      "recorded": {
+        "step": "01_gotoHttpsWwwFacebook",
+        "ms": 20672,
+        "reaEvidenceId": "ev_74b042e2afc0256a1336d27b608b10b6cf9940721c6ed74f02030277b7b8c36e",
+        "requests": [
+          "FBYRPTimeLimitsEnforcementQuery",
+          "ProfileCometTimelineFeedRefetchQuery",
+          "ProfileCometTilesFeedPaginationQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "CometNotificationsDropdownQuery",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "RTWebCallBlockSettingHooksQuery"
+        ]
+      }
+    },
+    {
+      "id": "s02_uploadPhotoVideo",
+      "action": "upload",
+      "role": "button",
+      "name": "Photo/video",
+      "value": "{photo}",
+      "recorded": {
+        "step": "10_uploadroleButtonPhotoVideo",
+        "ms": 8578,
+        "reaEvidenceId": "ev_0c7af96e561236535ace48a4976dc7cd05d9eaf842e9123f60dda34060ed1228",
+        "requests": [
+          "useComposerVideoUploaderConfigQuery",
+          "CometMediaEditorAIProductTagSuggestionTriggerQuery",
+          "EntPhotoCollageItemContainerQuery"
+        ]
+      }
+    },
+    {
+      "id": "s03_clickPost",
+      "action": "click",
+      "role": "button",
+      "name": "Post",
+      "expect": "ComposerStoryCreateMutation",
+      "recorded": {
+        "step": "12_clickroleButtonPost",
+        "ms": 7250,
+        "reaEvidenceId": "ev_2a8ba1b7140302d1b1c31f71745ec0546284fd4bcf9064fa6162bab87c4b149a",
+        "requests": [
+          "ComposerStoryCreateMutation"
+        ]
+      }
+    }
+  ],
+  "source": {
+    "runDir": "C:/Users/0/.logCli/runs/inspect/20261020T162343_61594063207669/sequences/profilePhotoPost",
+    "account": "profilePhotoPost",
+    "builtAt": "2026-10-20T16:35:07.993Z"
+  }
+}

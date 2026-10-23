@@ -1,4 +1,5 @@
 import { countryOfLocation } from '../../../browser/proxy/index'
+import { placeProblem } from '../../../facebook/marketplace/location/index'
 import { validateListing } from '../../publish/helpers/index'
 import type { PublishListing } from '../../publish/types'
 import type { AgencyListing } from '../types'
@@ -10,7 +11,6 @@ const CONDITION_LABEL: Record<NonNullable<AgencyListing['condition']>, string> =
   usedFair: 'fair'
 }
 
-/** An agencyListing row → what the publish machine posts, or why it can't. Pure. */
 export function toPublishListing(listing: AgencyListing): { ok: true; listing: PublishListing } | { ok: false; problems: string[] } {
   const publish: PublishListing = {
     title: listing.title,
@@ -24,15 +24,14 @@ export function toPublishListing(listing: AgencyListing): { ok: true; listing: P
   }
   const problems = validateListing(publish)
   if (!listing.locationQuery) problems.push('locationQuery is empty (e.g. "Galway, Ireland")')
+  else {
+    const place = placeProblem(listing.locationQuery)
+    if (place) problems.push(`locationQuery: ${place.detail}`)
+  }
   if (!listing.locationCountry) problems.push('locationCountry is empty (ISO, e.g. IE)')
   return problems.length ? { ok: false, problems } : { ok: true, listing: publish }
 }
 
-/**
- * The listing is in the account's country: `locationCountry` and the country
- * at the end of `locationQuery` both equal `homeCountry` (AGENTS.md rule 12).
- * null = fine, otherwise why not. Pure.
- */
 export function countryMismatch(listing: AgencyListing, homeCountry: string): string | null {
   const queryCountry = listing.locationQuery ? countryOfLocation(listing.locationQuery) : null
   if ((listing.locationCountry ?? '').toUpperCase() !== homeCountry) {

@@ -1,13 +1,7 @@
-/** Minimal flag parser shared by the commands. Pure. */
-
 export type ParsedArgs =
   | { ok: true; flags: Record<string, string | true>; positionals: string[] }
   | { ok: false; error: string };
 
-/**
- * `valued` flags take the next token (or `--flag=value`); `boolean` flags take
- * none. Anything else starting with `--` is a usage error.
- */
 export function parseArgs(argv: string[], spec: { boolean?: string[]; valued?: string[] }): ParsedArgs {
   const booleans = new Set(spec.boolean ?? []);
   const valued = new Set(spec.valued ?? []);

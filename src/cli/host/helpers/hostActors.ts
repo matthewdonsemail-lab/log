@@ -1,10 +1,3 @@
-/**
- * The lifecycle's steps for a real account (rule 35), every one inside ONE
- * inspect browser that stays open: the host opens it once per local day and
- * each step sends it commands (each recorded: snapshot, screenshot, HAR, rea).
- * Every page is checked for where it really landed (`pageProblem`): a
- * checkpoint, a sign-out or a restriction is the step's outcome, never ignored.
- */
 import { fromPromise } from "xstate";
 import { loadFlow, pageProblem } from "../../../browser/flow/index.ts";
 import type { FlowStep } from "../../../browser/flow/index.ts";
@@ -17,7 +10,9 @@ import { fetchProxyUrl, saveSession } from "../../../marketplace/socialAccount/i
 import { preparePhotos } from "../../../media/photo/index.ts";
 import { join } from "node:path";
 import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
-import { ACTIVITY_SCRIPTS } from "../../../marketplace/warmup/index.ts";
+import { ACTIVITY_SCRIPTS } from "../../../facebook/warmup/stages/index.ts";
+import * as marketplaceCheck from "../../../facebook/marketplace/check/index.ts";
+import { placeProblem } from "../../../facebook/marketplace/location/index.ts";
 import { runFlowInSession, openInspectSession } from "../../flow/helpers/index.ts";
 import type { OpenSession } from "../../flow/helpers/index.ts";
 import { keepNewDevice, keepSession, openAccount } from "../../live/index.ts";
@@ -26,7 +21,6 @@ import type { CommandContext } from "../../runner/types.ts";
 
 const FB = "https://www.facebook.com";
 
-/** The one browser this host holds, and the run it was prepared with (gates, files, capture). */
 export interface HostBrowser {
   run: PreparedRun | null;
   session: OpenSession | null;
@@ -36,7 +30,6 @@ const ok = (detail?: string, endOfDay?: boolean): StepOutcome => ({ kind: "ok", 
 const issue = (code: string, detail?: string): StepOutcome => ({ kind: "issue", issue: code as never, detail });
 const error = (code: string, detail?: string, retryable = false): StepOutcome => ({ kind: "error", code, detail, retryable });
 
-/** The account's local day and whether its active hours are over (rule 18). */
 export function dayOf(account: FacebookAccount, now = new Date()): { today: string; over: boolean; msUntilOpen: number } {
   const home = homeOf(account);
   if (!home.ok) return { today: now.toISOString().slice(0, 10), over: false, msUntilOpen: 0 };
@@ -47,14 +40,11 @@ export function dayOf(account: FacebookAccount, now = new Date()): { today: stri
 
 export function hostActors(context: CommandContext, account: FacebookAccount, browser: HostBrowser, options: { bypassHours: boolean; likes?: boolean; log: (line: string) => void }) {
   const log = options.log;
-  /** One command to the open browser; null when there is none. */
   const send = async (action: InspectAction, args: string[] = [], timeoutMs = 240_000): Promise<InspectStepResult | null> => {
     if (!browser.session) return null;
     return context.sendInspect(browser.session.current, action, args, timeoutMs);
   };
-  /** Where the page is now, with its text, for the classifiers. */
   const look = async () => send("pageText");
-  /** A reply → the account issue it shows (checkpoint, sign-out, restriction), or null. */
   const problemOf = (step: { action: string; url?: string }, reply: InspectStepResult | null): StepOutcome | null => {
     if (!reply) return error("browserGone", "the browser didn't answer");
     const landed = pageProblem(step, reply);
@@ -68,15 +58,13 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
   return {
     checkProxy: fromPromise<StepOutcome, LifecycleActorInputs["checkProxy"]>(async () => (account.proxy ? ok() : error("noProxy", "no proxy in Twenty (rule 12)"))),
 
-    /** The day's one open: every gate, the device, the self-check, the HAR (rules 11-12, 15-18, 22, 24). */
     openBrowser: fromPromise<StepOutcome, LifecycleActorInputs["openBrowser"]>(async () => {
-      let opened = await openAccount(context, "host", "log host start --account <a>", account.accountName, "connect", options.bypassHours, true);
-      // Too soon after the last launch (rule 24): wait the gap out, then open; a host doesn't give up on a clock.
+      let opened = await openAccount(context, "host", "log facebook host start --account <a>", account.accountName, "connect", options.bypassHours, true);
       if (!("run" in opened) && /launchTooSoon/.test(opened.stderr ?? "")) {
         const minutes = Number((opened.stderr ?? "").match(/wait (\d+) min/)?.[1] ?? 10);
         log(`host ${account.accountName}: the last launch was under 10 minutes ago (rule 24): opening in ${minutes} min`);
         await new Promise((r) => setTimeout(r, (minutes * 60 + 15) * 1000));
-        opened = await openAccount(context, "host", "log host start --account <a>", account.accountName, "connect", options.bypassHours, true);
+        opened = await openAccount(context, "host", "log facebook host start --account <a>", account.accountName, "connect", options.bypassHours, true);
       }
       if (!("run" in opened)) return error((opened.stderr ?? "").match(/: (\w+):/)?.[1] ?? "openRefused", opened.stderr);
       browser.run = opened.run;
@@ -94,7 +82,6 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
       return ok(session.current.runDir);
     }),
 
-    /** Close for the reason the machine gives, saving the session and a new device first; a failed save keeps them. */
     closeBrowser: fromPromise<StepOutcome, LifecycleActorInputs["closeBrowser"]>(async ({ input }) => {
       const run = browser.run;
       if (browser.session) {
@@ -106,7 +93,7 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
         const notes = [await keepNewDevice(context, account, run), await keepSession(context, account, run)].filter(Boolean) as string[];
         const failed = notes.some((n) => n.startsWith("Could not save"));
         for (const n of notes) log(`host ${account.accountName}: ${n}`);
-        if (failed) log(`host ${account.accountName}: kept the device and session at ${run.keep()} (log account resave)`);
+        if (failed) log(`host ${account.accountName}: kept the device and session at ${run.keep()} (log facebook account resave)`);
         if (run.captureDir) settleInBackground(run.captureDir);
         run.cleanup();
       }
@@ -115,12 +102,6 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
       return ok(input.reason);
     }),
 
-    /**
-     * Sign in, in this browser, the connect machine's way (rule 23). Signed in is decided by the session
-     * cookies (c_user and xs, Listaro's proof), never by the page's wording: on 2026-10-19 Harrisburg's
-     * signed-out Marketplace showed only "Log In  Forgot Account?" and was taken for signed in. A signed-out
-     * page with no form goes to /login/, which always has one.
-     */
     signIn: fromPromise<StepOutcome, LifecycleActorInputs["signIn"]>(async () => {
       await send("goto", [`${FB}/marketplace/selling/`]);
       let triedForm = 0;
@@ -144,7 +125,6 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
         const state = browser.run?.readStorageState();
         const signedIn = Boolean(state?.cookies.some((c) => c.name === "c_user") && state?.cookies.some((c) => c.name === "xs"));
         if (signedIn && !/\/login|login\.php/.test(url)) {
-          // Kept at once, not only when the browser closes; then the account check runs.
           await saveSession(context.twenty, account.id, state!);
           log(`host ${account.accountName}: signed in; session saved to Twenty (${state!.cookies.length} cookies)`);
           return ok();
@@ -162,7 +142,6 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
       return error("signInNotFinished", "twelve pages without a sign-in");
     }),
 
-    /** The account itself, on Marketplace: checkpoint, sign-out, restriction (Pittsburgh's notice), ban. */
     checkAccount: fromPromise<StepOutcome, LifecycleActorInputs["checkAccount"]>(async () => {
       const opened = await send("goto", [`${FB}/marketplace/selling/`]);
       const landed = problemOf({ action: "goto", url: `${FB}/marketplace/selling/` }, opened);
@@ -170,28 +149,23 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
       return problemOf({ action: "pageText" }, await look()) ?? ok("Marketplace open, no restriction");
     }),
 
-    /** Photo, cover and name: the recorded profileSetup flow (rule 28), live only (rule 8). */
     setProfile: fromPromise<StepOutcome, LifecycleActorInputs["setProfile"]>(async ({ input }) => {
       if (!input.live) return error("needsLive", "the profile changes Facebook: run the host with --live when matt asks (rule 8)");
       const flow = loadFlow("profileSetup");
       if (!flow || !browser.session) return error("flowNotRecorded", "profileSetup");
       if (!account.profilePhoto || !account.coverPhoto || !account.profileName) return error("noProfileInTwenty", "profilePhoto, coverPhoto and profileName are needed in Twenty");
       const [firstName, ...rest] = account.profileName.split(" ");
-      // Varied and fetched through the account's proxy, never the same bytes twice (rule 28, media/photo).
       const photos = await preparePhotos([account.profilePhoto, account.coverPhoto], { dir: join(browser.session.current.runDir, "photos"), proxy: fetchProxyUrl(account.proxy) });
       if (!photos.ok) return error(photos.code, photos.detail);
       const output = await runFlowInSession(context, browser.session.current, flow, { uid: account.accountName, profilePhoto: photos.photos[0].path, coverPhoto: photos.photos[1].path, firstName, lastName: rest.join(" ") });
       const last = output.steps.at(-1);
       if (output.result === "done") return ok("profile photo, cover and name saved");
-      // An account issue (checkpoint, sign-out) is the account's; a page that went elsewhere is the step's.
       if (last?.issue && last.issue !== "pageNotReached") return issue(last.issue, last.error);
       return error("profileNotSaved", `${output.failedAt}: ${last?.error ?? ""}`);
     }),
 
-    /** The profileSetup flow renames too: done with the profile, or nothing asked. */
     setName: fromPromise<StepOutcome, LifecycleActorInputs["setName"]>(async () => ok("named by profileSetup")),
 
-    /** The Marketplace location in the home city, by zip (recorded on Reading); a change is live only. */
     setLocation: fromPromise<StepOutcome, LifecycleActorInputs["setLocation"]>(async ({ input }) => {
       const form = await send("goto", [`${FB}/marketplace/create/item`]);
       const landed = problemOf({ action: "goto", url: `${FB}/marketplace/create/item` }, form);
@@ -200,22 +174,22 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
       const where = read?.sellLocation;
       const home = (account.homeCity ?? "").toLowerCase();
       if (where && where.city.toLowerCase() === home) return ok(`${where.city} ${where.postalCode}`);
-      const zip = await zipFor(context, account);
-      if (!zip) return error("noPostalCode", `the Marketplace location is ${where?.city ?? "unknown"}; give a listing of this account a locationPostalCode`);
-      if (!input.live) return error("needsLive", `the Marketplace location is ${where?.city ?? "unknown"}, not ${account.homeCity}: --live sets it to ${zip}`);
-      const set = await send("setLocation", [zip]);
+      const place = await placeFor(context, account);
+      if (!place) return error("noPlaceName", `the Marketplace location is ${where?.city ?? "unknown"}; give a listing of this account in ${account.homeCity ?? "its home city"} a locationQuery, "City, State" written out`);
+      const problem = placeProblem(place);
+      if (problem) return error(problem.code, problem.detail);
+      if (!input.live) return error("needsLive", `the Marketplace location is ${where?.city ?? "unknown"}, not ${account.homeCity}: --live sets it to ${place}`);
+      const set = await send("setLocation", [place]);
       if (!set || set.ok === false) return error("locationNotSet", set?.error ?? "no reply");
-      return ok(`set to ${zip}`);
+      return ok(`set to ${place}`);
     }),
 
-    /** One of Listaro's warm-up activities: its recorded flow, or its script, page-checked at every step. */
     warmupActivity: fromPromise<StepOutcome, LifecycleActorInputs["warmupActivity"]>(async ({ input }) => {
       if (dayOf(account).over && !options.bypassHours) return ok("the day is over", true);
       const script = ACTIVITY_SCRIPTS[input.activity as WarmupActivity];
       const flow = loadFlow(script.flow);
       const steps: FlowStep[] = flow?.steps ?? script.steps.map((s, i) => ({ id: `s${i + 1}_${s.action}`, action: s.action, ...(s.action === "goto" ? { url: s.args[0] } : { args: s.args }), recorded: { step: "", ms: null, reaEvidenceId: null, requests: [] } }) as FlowStep);
       for (const step of steps) {
-        // Likes act on Facebook: only with --likes, apart from --live (rule 8).
         if (step.action === "clickAny" && !(input.live && options.likes)) continue;
         const args = step.action === "goto" ? [step.url!] : (step.args ?? []);
         const reply = await send(step.action as InspectAction, args, 300_000);
@@ -227,18 +201,26 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
       return ok();
     }),
 
-    /** The host's check: is the day over, and is the account still fine where it sells. */
     watchCheck: fromPromise<StepOutcome, LifecycleActorInputs["watchCheck"]>(async () => {
       if (dayOf(account).over && !options.bypassHours) return ok("the day is over", true);
       if (!browser.session) return error("browserGone", "the window went away");
-      const page = await send("goto", [`${FB}/marketplace/you/selling`]);
-      return problemOf({ action: "goto", url: `${FB}/marketplace/you/selling` }, page) ?? ok();
+      let landed: StepOutcome | null = null;
+      const checked = async (action: InspectAction, args: string[] = []) => {
+        const reply = await send(action, args);
+        landed ??= problemOf({ action, url: args[0] }, reply);
+        return reply;
+      };
+      const found = await marketplaceCheck.readMarketplace(checked, log);
+      if (landed) return landed;
+      const report = await marketplaceCheck.keepCheck(context.twenty, account.id, account.accountName, found, browser.session.current.runDir);
+      for (const line of report.lines) log(`host ${line}`);
+      if (report.issue) return issue(report.issue.code, report.issue.detail);
+      return ok(report.threads ? `${report.threads} seller chat(s)` : undefined);
     }),
 
     act: fromPromise<StepOutcome, LifecycleActorInputs["act"]>(async ({ input }) =>
       error("actNotBuilt", `${input.action.kind} as a tab in the host isn't built yet (plan P3)`)),
 
-    /** Until the account's morning (rule 18). */
     waitForActiveHours: fromPromise<StepOutcome, LifecycleActorInputs["waitForActiveHours"]>(async () => {
       const { msUntilOpen } = dayOf(account);
       log(`host ${account.accountName}: resting ${Math.round(msUntilOpen / 60_000)} min until the account's morning`);
@@ -248,15 +230,9 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
   };
 }
 
-/** Each home city's main zip, for an account with no listing that names one (Facebook finds a US city by its zip). */
-const CITY_ZIPS: Record<string, string> = {
-  "US:reading": "19601", "US:harrisburg": "17101", "US:erie": "16501", "US:pittsburgh": "15222", "US:lancaster": "17602",
-  "US:bethlehem": "18015", "US:scranton": "18503", "US:allentown": "18101", "US:philadelphia": "19107", "US:wilkes-barre": "18701",
-};
-
-/** The zip of any of this account's listings (`agencyListing.locationPostalCode`), else its home city's, or null. */
-async function zipFor(context: CommandContext, account: FacebookAccount): Promise<string | null> {
+async function placeFor(context: CommandContext, account: FacebookAccount): Promise<string | null> {
   const rows = await context.twenty.list("agencyListings", { socialAccountId: { eq: account.id } });
-  const fromListing = rows.map((r) => r.locationPostalCode).find((z): z is string => Boolean(z));
-  return fromListing ?? CITY_ZIPS[`${account.homeCountry ?? ""}:${(account.homeCity ?? "").toLowerCase()}`] ?? null;
+  const home = (account.homeCity ?? "").toLowerCase();
+  const queries = rows.map((r) => r.locationQuery?.trim()).filter((q): q is string => Boolean(q));
+  return queries.find((q) => q.split(",")[0].trim().toLowerCase() === home) ?? queries[0] ?? null;
 }

@@ -1,6 +1,6 @@
 # ProfileCometAboutAppSectionQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -13,11 +13,13 @@
 | Called from | `ProfileCometAboutAppSection.react` |
 | rea | `ev_8d791e67d202e82b87375766750b1d234cf58a9260d5e9308a1c8de5280525ac` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 3 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | POST 200 /ajax/relay-ef/ (347 ms) | 1 | 200 | 506 ms | 302 ms | — |
+| inspect | step 5: clickRole button "…" | 1 | 200 | 688 ms | 10094 ms | — |
+| inspect | step 6: wait 6s | 1 | 200 | 615 ms | 12155 ms | — |
+| inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 506 ms | 10813 ms | — |
 
 <!-- facts:end -->
 

@@ -6,7 +6,6 @@ import { getProxyAccount, twoCaptchaCredentials } from '../twoCaptcha/client'
 import { vendorOfProxy } from '../vendor/helpers/vendorOfProxy'
 import type { TrafficEntry, TrafficMeter } from './types'
 
-/** `~/.logCli/proxyTraffic.jsonl`, or LOG_PROXY_TRAFFIC. */
 export const trafficLedgerPath = (env: Record<string, string | undefined> = process.env) => env.LOG_PROXY_TRAFFIC || join(homedir(), '.logCli', 'proxyTraffic.jsonl')
 
 export function readTrafficLedger(path = trafficLedgerPath()): TrafficEntry[] {
@@ -28,7 +27,6 @@ export function recordTraffic(entry: TrafficEntry, path = trafficLedgerPath()): 
   appendFileSync(path, `${JSON.stringify(entry)}\n`)
 }
 
-/** 2Captcha's used-traffic counter (MB), from the proxy account; throws when it can't be read. */
 export function twoCaptchaMeter(env: Record<string, string | undefined> = process.env): TrafficMeter {
   return async () => {
     const creds = twoCaptchaCredentials(env)
@@ -38,7 +36,6 @@ export function twoCaptchaMeter(env: Record<string, string | undefined> = proces
   }
 }
 
-/** Byteful's residential used-traffic counter, in MB (it counts bytes); throws when it can't be read. */
 export function bytefulMeter(env: Record<string, string | undefined> = process.env): TrafficMeter {
   return async () => {
     const creds = bytefulCredentials(env)
@@ -47,11 +44,6 @@ export function bytefulMeter(env: Record<string, string | undefined> = process.e
   }
 }
 
-/**
- * The meter for an account's proxy, by its provider (`vendorOfProxy`): a
- * traffic-billed proxy reads its provider's counter; a static IP (billed per IP,
- * its traffic included) or an unknown one has none, so null.
- */
 export function meterForProxy(proxy: string | null | undefined, env: Record<string, string | undefined> = process.env): TrafficMeter | null {
   const vendor = vendorOfProxy(proxy)
   if (!vendor || vendor.billing !== 'traffic') return null

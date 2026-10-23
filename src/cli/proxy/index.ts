@@ -1,20 +1,3 @@
-/**
- * `log proxy` — each account's proxy, the only way its browser reaches the
- * internet (AGENTS.md rule 12). Proxies live on the socialAccount in Twenty
- * (`proxy`, `homeCountry`); never in local files.
- *
- *   check    the exit IP and its country through the proxy, no browser;
- *            written to the account (proxyCheckedAt, proxyExitIp, proxyExitCountry)
- *   assign   a residential proxy from a provider (`--vendor twoCaptcha|byteful`,
- *            2Captcha by default) pinned to the account's home country and city,
- *            with a sticky session of its own. Checked first, saved to Twenty
- *            only if it really exits near home and is fast enough
- *   balance  every provider that is set up: traffic left, money balance
- *   static   Byteful's static (ISP) IPs on the account, each with where it is
- *
- * Provider-agnostic (`proxyVendor/vendor`): Twenty keeps one `proxy` URL per
- * account, whichever provider it is from.
- */
 import { countryName, slowFacebookMs } from "../../browser/proxy/index.ts";
 import type { ProxyCheck } from "../../browser/proxy/index.ts";
 import { prepareRun } from "../../browser/run/index.ts";
@@ -40,10 +23,8 @@ import { openAccount } from "../live/index.ts";
 import { parseArgs, refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
 
-/** How far from the home city an assigned proxy may exit. Lancaster → Kutztown is 97 km; the Texas miss was 2,000. */
 export const MAX_PROXY_KM = 100;
 
-/** Fresh 2Captcha sessions tried before giving up with proxyTooFar. */
 export const PROXY_ATTEMPTS = 3;
 
 export const PROXY_USAGE = [
@@ -54,7 +35,6 @@ export const PROXY_USAGE = [
   "The proxy is the socialAccount's `proxy` field in Twenty (scheme://user:pass@host:port), its country `homeCountry`.",
 ].join("\n");
 
-/** Runs proxy.check for `account` as it is (or with a candidate proxy). Never opens a browser. */
 async function checkProxy(context: CommandContext, account: FacebookAccount): Promise<{ ok: true; check: ProxyCheck } | { ok: false; result: CommandResult; exitIp: string | null; exitCountry: string | null }> {
   const prepared = prepareRun(account, "check");
   if (!prepared.ok) return { ok: false, result: refuse("proxy", prepared.code, prepared.detail), exitIp: null, exitCountry: null };
@@ -72,12 +52,6 @@ async function checkProxy(context: CommandContext, account: FacebookAccount): Pr
   }
 }
 
-/**
- * Candidate proxies for one account, each checked through the proxy before it
- * is saved: it must exit in the home country (the check refuses otherwise),
- * within MAX_PROXY_KM of home, and be fast enough for Facebook. The first that
- * passes goes to Twenty's `proxy`; the misses are said. Any provider.
- */
 async function saveFirstGood(
   context: CommandContext,
   account: FacebookAccount,
@@ -92,14 +66,12 @@ async function saveFirstGood(
     if (!checked.ok) {
       return { ok: false, line: `${account.accountName}: not saved. ${(checked.result.stderr ?? "").split("\n")[0].replace(/^log proxy: /, "")}` };
     }
-    // A provider doesn't always honour the state and city it was asked for.
     const { latitude, longitude } = checked.check;
     const km = centre && latitude !== undefined && longitude !== undefined ? Math.round(distanceKm(centre, { latitude, longitude })) : null;
     if (km !== null && km > MAX_PROXY_KM) {
       misses.push(`${checked.check.exitIp} ${km} km away`);
       continue;
     }
-    // Nor one too slow for Facebook: its pages would never get past the loading skeleton.
     const ms = checked.check.facebookMs;
     if (ms != null && ms > slowFacebookMs()) {
       misses.push(`${checked.check.exitIp} ${ms} ms per Facebook file`);
@@ -113,13 +85,11 @@ async function saveFirstGood(
   return { ok: false, line: `${account.accountName}: proxyTooFar: not saved. ${PROXY_ATTEMPTS} sessions exited over ${MAX_PROXY_KM} km from ${account.homeCity} or too slow for Facebook (${misses.join("; ")}). Try again, or --city/--region nearby.` };
 }
 
-/** Where to measure from: the home city's coordinates, unless --anyCity. */
 function centreOf(account: FacebookAccount, anyCity: boolean): { latitude: number; longitude: number } | null {
   const home = homeOf(account);
   return home.ok && !anyCity ? home.home.coordinates : null;
 }
 
-/** One account → a checked Byteful residential proxy (sticky 24 hours, its city) saved to Twenty, or why not. */
 async function assignByteful(
   context: CommandContext,
   account: FacebookAccount,
@@ -140,12 +110,10 @@ async function assignByteful(
     cityId = picked.cityId;
     where = `${picked.cityName}${picked.subdivisionId ? `, ${picked.subdivisionId.toUpperCase()}` : ""}, ${picked.nodes} devices`;
   }
-  // Each list call is a new sticky session, so each attempt is another exit IP.
   const next = () => residentialProxyUrl(creds, { proxyUserId, country, cityId, ttl: "24h", protocol: options.socks5 ? "socks5" : "http" });
   return saveFirstGood(context, account, centre, next, where);
 }
 
-/** One account → a checked 2Captcha proxy saved to Twenty, or why not. */
 async function assignOne(
   context: CommandContext,
   account: FacebookAccount,
@@ -157,13 +125,11 @@ async function assignOne(
   const city = options.anyCity ? null : (options.city ?? account.homeCity);
   let place: TwoCaptchaPlace | null = null;
   if (city) {
-    // 2Captcha writes `wilkes-barre` as `wilkesbarre`, so the slug is searched too.
     place = pickPlace(await searchPlaces(city), city, country, options.region);
     if (!place && slug(city) !== city.toLowerCase()) place = pickPlace(await searchPlaces(slug(city)), city, country, options.region);
     const inRegion = options.region ? `, ${options.region}` : "";
     if (!place) return { ok: false, line: `${account.accountName}: twoCaptchaNoPlace: 2Captcha has no "${city}"${inRegion} in ${countryName(country)} (use --city, --region or --anyCity)` };
   }
-  // Measured from the home city even with --city: a nearby city is fine, a far one is not.
   const centre = centreOf(account, options.anyCity);
   const where = place ? `${place.city}, ${place.region}, ${countryName(country)}` : countryName(country);
   const next = async (attempt: number) =>
@@ -182,7 +148,9 @@ async function assignOne(
 
 export const proxyCommand: Command = {
   usage: PROXY_USAGE,
+  platform: "any",
   name: "proxy",
+  effect: "write",
   summary: "Check an account's proxy, give it one from a provider (2Captcha, Byteful) in its home city, or see providers' traffic",
   args: "<check|assign|balance|static> [--account <name>] [--vendor twoCaptcha|byteful] [...]",
   async run(context, argv) {
@@ -194,7 +162,6 @@ export const proxyCommand: Command = {
     }
 
     if (action === "balance") {
-      // Every provider that is set up; one not set up is said, not refused.
       const creds = twoCaptchaCredentials();
       const apiKey = "apiKey" in creds ? creds.apiKey : (process.env["2CAPTCHA_API_KEY"] || process.env.TWOCAPTCHA_API_KEY || "").trim();
       const bytefulCreds = bytefulCredentials();
@@ -205,7 +172,6 @@ export const proxyCommand: Command = {
         if (apiKey) {
           const [account, balance] = await Promise.all([getProxyAccount(apiKey), getBalance(apiKey)]);
           out.twoCaptcha = {
-            // The username is the 2Captcha proxy password's prefix: never shown.
             username: "***",
             active: account.status === 1,
             trafficLeft: account.leftFlow,
@@ -315,7 +281,6 @@ export const proxyCommand: Command = {
       }
     }
 
-    // check
     const opened = await openAccount(context, "proxy check", PROXY_USAGE, parsed.flags["account"], "check");
     if (!("run" in opened)) return opened;
     const { account, run } = opened;

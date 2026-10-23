@@ -19,7 +19,6 @@ afterEach(() => {
   rmSync(dir, { recursive: true, force: true });
 });
 
-/** A fake blaster: /login carries the marker, /api/auth/me knows one token, /api/auth/refresh rotates. */
 function fakeBlaster(validTokens = new Set(["tokenGood123456"])) {
   authDeps.fetch = (async (input: string | URL | Request, init?: RequestInit) => {
     const url = String(input);
@@ -88,7 +87,6 @@ describe("loopback exchange", () => {
 describe("log login / whoami / logout", () => {
   test("browser login: the web app posts tokens to the loopback, the session is validated and stored", async () => {
     fakeBlaster();
-    // Play blaster's web app: read the exchange URL off the authorize URL and POST the tokens.
     authDeps.openBrowser = (authorize) => {
       const url = new URL(authorize);
       void fetch(url.searchParams.get("exchange")!, {

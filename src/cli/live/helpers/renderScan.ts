@@ -1,9 +1,7 @@
-/** Human renderers for the live camofox results. Pure, so tests assert text. */
 import type { DoctorChecks, ScanResult } from "../../../camofox/worker/index.ts";
 import type { LossReport } from "../../../marketplace/replacement/index.ts";
 import { renderTable } from "../../runner/helpers/index.ts";
 
-/** The dashboard cards as Facebook shows them. */
 export function renderScan(scan: ScanResult): string {
   const lines: string[] = [];
   if (scan.listings.length === 0) {
@@ -22,7 +20,6 @@ export function renderScan(scan: ScanResult): string {
   return lines.join("\n");
 }
 
-/** What losing (or flagging) an account did in Twenty. */
 export function renderLoss(loss: LossReport): string {
   const lines = [`${loss.account.accountName} is now ${loss.status.toUpperCase()} in Twenty (kept, never deleted).`];
   if (loss.lost.length) lines.push(`${loss.lost.length} listing(s) moved to ACCOUNT_LOST.`);
@@ -33,7 +30,7 @@ export function renderLoss(loss: LossReport): string {
         : `  "${r.old.title}" → no replacement: ${r.detail}`,
     );
   }
-  if (loss.replacements.some((r) => r.next)) lines.push("Publish them with `log campaign run --campaign <id>` (dry run unless --live).");
+  if (loss.replacements.some((r) => r.next)) lines.push("Publish them with `log facebook campaign run --campaign <id>` (dry run unless --live).");
   return lines.join("\n");
 }
 

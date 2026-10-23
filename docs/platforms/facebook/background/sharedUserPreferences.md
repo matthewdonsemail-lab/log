@@ -1,6 +1,6 @@
 # sharedUserPreferences
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -11,13 +11,14 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_315f7692a209571048ce2c004c2bb681d1989abf8498737a4e591be11f714362` |
+| rea | `ev_36a106d5c6a349aaffd95d75400fb9370c5a8d58bad30e5c86f25c40aa5bf643` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 1: goto / | 1 | 200 | 975 ms | 19172 ms | — |
+| inspect | step 1: goto /marketplace/status | 1 | 200 | 887 ms | 15895 ms | — |
 
 <!-- facts:end -->
 

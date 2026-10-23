@@ -1,11 +1,6 @@
-/**
- * Rules 16 and 18: the pinned locale and timezone per country, and the
- * account's local waking hours, on an injected clock.
- */
 import { describe, expect, test } from 'bun:test'
 import { activeWindow, homeOf, insideWindow, localClock, outsideActiveHours } from './index'
 
-/** The YYYY-MM-DD part of an ISO time. */
 const day = (iso: string) => iso.slice(0, 10)
 
 const galway = { accountName: 'galwayOne', homeCountry: 'IE', homeCity: 'Galway', activeHoursStart: null, activeHoursEnd: null }
@@ -23,7 +18,6 @@ describe('homeOf: one table, refused when unknown', () => {
         coordinates: { latitude: 53.2707, longitude: -9.0568 }
       }
     })
-    // A city with no known centre: the device falls back to the exit IP's location.
     expect(homeOf({ ...galway, homeCity: 'Oughterard' })).toMatchObject({ ok: true, home: { timezone: 'Europe/Dublin', coordinates: null } })
     expect(homeOf({ ...galway, homeCountry: 'GB', homeCity: 'Manchester' })).toMatchObject({ ok: true, home: { locale: 'en-GB', timezone: 'Europe/London' } })
   })
@@ -45,14 +39,12 @@ describe('local time (DST-correct through Intl)', () => {
   test('Galway is UTC+1 in summer and UTC+0 in winter; the date is the local one', () => {
     expect(localClock(new Date('2026-10-18T07:30:00Z'), 'Europe/Dublin')).toEqual({ date: day('2026-10-18T07:30:00Z'), hour: 8.5, label: '08:30' })
     expect(localClock(new Date('2026-12-01T07:30:00Z'), 'Europe/Dublin')).toEqual({ date: day('2026-12-01T07:30:00Z'), hour: 7.5, label: '07:30' })
-    // 23:30 UTC on the 18th is already the 19th in Sydney.
     expect(localClock(new Date('2026-10-18T23:30:00Z'), 'Australia/Sydney').date).toBe(day('2026-10-19T00:00:00Z'))
   })
 })
 
 describe('active hours (rule 18)', () => {
   test('08:00-22:00 local by default', () => {
-    // 09:00 in Vietnam is 03:00 in Galway (IST): refused, with the local time and when it opens.
     const night = outsideActiveHours(galway, 'Europe/Dublin', new Date('2026-10-18T02:00:00Z'))
     expect(night).toContain('it is 03:00 in Galway (Europe/Dublin)')
     expect(night).toContain('runs 08:00-22:00 local')

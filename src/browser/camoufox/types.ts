@@ -1,12 +1,5 @@
-/**
- * Camoufox as a browser (rule 44): the open-source Firefox log-cli started on. Its launch,
- * device and gate live in the `camofox` library (`src/camofox/*`, `python/browser/visibleBrowser.py`,
- * `python/browser/proxyGate.py`, `python/device/deviceProfile.py`). This domain is its place among the
- * browsers: its row of the parity table, and its driver for the session machine.
- */
 import type { BrowserCapabilities } from '../driver/types'
 
-/** Camoufox's row of the parity table (docs/browsers.md). */
 export const camoufoxCapabilities = {
   headedWindow: { status: 'built', how: 'visibleBrowser.launch_kwargs: headless False, humanize, showcursor (rule 11)' },
   proxyGate: { status: 'built', how: 'proxyGate.apply() builds the only launch options; the launch guard refuses any other' },

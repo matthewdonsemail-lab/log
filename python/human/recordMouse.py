@@ -1,16 +1,3 @@
-"""Record a person's own mouse, then measure how a human moves (rule 32's reference).
-
-    python python/human/recordMouse.py [seconds]          record (default 60), then analyse
-    python python/human/recordMouse.py --analyze <file>   analyse an earlier recording
-
-It polls the Windows cursor (GetCursorPos) and the mouse buttons
-(GetAsyncKeyState) about 120 times a second, on any window: no browser, nothing
-injected into a page, never the keyboard. The recording goes to
-~/.logCli/mouse/<time>.json; the analysis splits it into moves and still
-periods and prints, for each, what humanMouse.py should copy: how long a move
-takes for its distance, how fast it peaks, how curved it is, whether it
-overshoots, how long the hand rests, and how a click is approached.
-"""
 from __future__ import annotations
 
 import ctypes
@@ -23,8 +10,8 @@ from datetime import datetime
 from pathlib import Path
 
 HZ = 120
-MOVING_PX_S = 40      # faster than this is a move; slower is the hand resting
-STILL_GAP_S = 0.08    # a move ends after this long below MOVING_PX_S
+MOVING_PX_S = 40
+STILL_GAP_S = 0.08
 
 
 class POINT(ctypes.Structure):
@@ -57,7 +44,6 @@ def record(seconds: float) -> Path:
 def analyze(path: Path) -> dict:
     data = json.loads(path.read_text(encoding="utf8"))
     s = data["samples"]
-    # Speed between samples, and which are moving.
     speeds = [0.0]
     for a, b in zip(s, s[1:]):
         dt = max(b[0] - a[0], 1e-4)
@@ -90,10 +76,8 @@ def analyze(path: Path) -> dict:
         path_len = sum(math.dist(p[1:3], q[1:3]) for p, q in zip(pts, pts[1:]))
         dur = pts[-1][0] - pts[0][0]
         peak_at = max(range(a, b + 1), key=lambda k: speeds[k])
-        # Overshoot: the farthest the path went past the end point, along the move's direction.
         ux, uy = (pts[-1][1] - pts[0][1]) / chord, (pts[-1][2] - pts[0][2]) / chord
         beyond = max(((p[1] - pts[0][1]) * ux + (p[2] - pts[0][2]) * uy) - chord for p in pts)
-        # Curvature: the farthest the path strayed sideways from the straight line.
         side = max(abs((p[1] - pts[0][1]) * uy - (p[2] - pts[0][2]) * ux) for p in pts)
         click_after = next((round(k[0] - pts[-1][0], 3) for k in s[b:b + HZ * 2] if k[3] or k[4]), None)
         rows.append({"start": round(pts[0][0], 2), "ms": round(dur * 1000), "distance": round(chord), "path": round(path_len),

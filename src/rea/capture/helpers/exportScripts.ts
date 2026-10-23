@@ -28,13 +28,6 @@ function isScript(url: string, mime: string): boolean {
   }
 }
 
-/**
- * Read a HAR from Playwright (any browser driver: Camoufox, AdsPower) and copy each JavaScript response body
- * onto `scripts`, for `rea analyze-javascript-application`.
- *
- * The HAR is returned unchanged (rule 19): cookies, headers, query values
- * and bodies stay, because the analysis needs them. Pure.
- */
 export function exportScripts(value: unknown): BrowserCapture {
   const scripts: CapturedScript[] = [];
   if (!isRecord(value) || !isRecord(value.log) || !Array.isArray(value.log.entries)) {

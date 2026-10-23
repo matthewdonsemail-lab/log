@@ -53,10 +53,8 @@ describe('checkRunnable: every run asks this first (rule 12)', () => {
     expect(await code('banned')).toBe('accountNotUsable')
     expect(await code('unset')).toBe('accountNotUsable')
     expect(await code('twitterOne')).toBe('accountNotFacebook')
-    // Signing in fixes a login or a checkpoint, so connect may run on them; a normal run may not.
     expect(await code('needsLogin')).toBe('accountNotUsable')
     expect(await code('needsLogin', 'connect')).toBe('ok')
-    // Checking a proxy opens no browser, so any status may.
     expect(await code('banned', 'check')).toBe('ok')
   })
 })

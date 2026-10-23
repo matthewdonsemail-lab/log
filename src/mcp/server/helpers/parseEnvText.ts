@@ -1,4 +1,3 @@
-/** `KEY=value` lines of a `.env` file, quotes and comments dropped. Pure. */
 export function parseEnvText(text: string): Record<string, string> {
   const values: Record<string, string> = {};
   for (const raw of text.split(/\r?\n/)) {

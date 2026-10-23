@@ -1,13 +1,6 @@
 import ts from 'typescript'
 import type { FacebookModule, GraphqlDefinition, OperationKind } from '../types'
 
-/**
- * Facebook ships its client as bundles of `__d("Name", [deps], factory)`
- * modules (12,000 of them across one create page). rea timed out reading the
- * bundles whole, so we parse them into a syntax tree ourselves, the same way
- * `scripts/commitLog/astSummary.mjs` reads our own code, and hand rea only the modules
- * behind each request. Pure.
- */
 export function indexModules(file: string, text: string): FacebookModule[] {
   const source = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, false, ts.ScriptKind.JS)
   const modules: FacebookModule[] = []
@@ -26,30 +19,17 @@ export function indexModules(file: string, text: string): FacebookModule[] {
   return modules
 }
 
-/**
- * The modules rea reads for one operation: its `.graphql` definition, its
- * `_facebookRelayOperation` (the doc_id), and every module that imports the
- * definition, which is the hook or component that fires the request. Pure.
- */
 export function sliceFor(operation: string, modules: Map<string, FacebookModule>, importers: Map<string, string[]>): FacebookModule[] {
   const names = [`${operation}.graphql`, `${operation}_facebookRelayOperation`, ...(importers.get(`${operation}.graphql`) ?? [])]
   return [...new Set(names)].map((name) => modules.get(name)).filter((module): module is FacebookModule => !!module)
 }
 
-/** Module name → the modules that list it as a dependency. Pure. */
 export function importersOf(modules: Iterable<FacebookModule>): Map<string, string[]> {
   const importers = new Map<string, string[]>()
   for (const module of modules) for (const dep of module.deps) importers.set(dep, [...(importers.get(dep) ?? []), module.name])
   return importers
 }
 
-/**
- * Reads a `.graphql` module's Relay definition from its syntax tree: the
- * operation kind, the variables (`kind:"LocalArgument"`) and the fields its
- * `fragment.selections` read, two levels deep. Minified code keeps arrays in
- * local variables (`argumentDefinitions:e`), so identifiers are resolved
- * against the module's own declarations. Pure.
- */
 export function readGraphqlDefinition(text: string): GraphqlDefinition {
   const source = ts.createSourceFile('definition.js', text, ts.ScriptTarget.Latest, false, ts.ScriptKind.JS)
   const declared = new Map<string, ts.Expression>()

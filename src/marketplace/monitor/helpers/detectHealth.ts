@@ -1,12 +1,5 @@
 import type { ListingHealth, WatchedListing } from '../types'
 
-/**
- * What each watched listing's health is after one dashboard check.
- * Seen on the dashboard: its badge. Missing: DELETED_BY_FB, but only when the
- * check is trustworthy. Listaro's guard: if the page showed no listings, or
- * fewer than 3 while more than 3 are watched, treat missing as UNKNOWN (the
- * page probably did not load), never as removed. Pure.
- */
 export function detectHealth(
   watched: WatchedListing[],
   seen: { listingId: string; health: ListingHealth }[]

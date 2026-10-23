@@ -58,6 +58,18 @@ flowchart TB
   cli --> c_join
   mcp --> c_join
   c_join --> live
+  c_read["read"]
+  cli --> c_read
+  mcp --> c_read
+  c_read --> live
+  c_poll["poll"]
+  cli --> c_poll
+  mcp --> c_poll
+  c_poll --> live
+  c_check["check"]
+  cli --> c_check
+  mcp --> c_check
+  c_check --> live
   c_scan["scan"]
   cli --> c_scan
   mcp --> c_scan
@@ -87,6 +99,9 @@ flowchart TB
   c_conversation["conversation"]
   cli --> c_conversation
   mcp --> c_conversation
+  c_messenger["messenger"]
+  cli --> c_messenger
+  c_messenger -.- terminal
   c_errors["errors"]
   cli --> c_errors
   mcp --> c_errors
@@ -97,6 +112,18 @@ flowchart TB
   cli --> c_capture
   mcp --> c_capture
   c_capture --> live
+  c_runs["runs"]
+  cli --> c_runs
+  mcp --> c_runs
+  c_browsers["browsers"]
+  cli --> c_browsers
+  mcp --> c_browsers
+  c_job["job"]
+  cli --> c_job
+  mcp --> c_job
+  c_mcp["mcp"]
+  cli --> c_mcp
+  c_mcp -.- terminal
   c_login["login"]
   cli --> c_login
   c_login -.- terminal
@@ -106,6 +133,51 @@ flowchart TB
   c_whoami["whoami"]
   cli --> c_whoami
   mcp --> c_whoami
+  f_deletePost["flowDeletePost: flow run deletePost"]
+  mcp --> f_deletePost
+  f_deletePost --> c_flow
+  f_groupHeaderMenus["flowGroupHeaderMenus: flow run groupHeaderMenus"]
+  mcp --> f_groupHeaderMenus
+  f_groupHeaderMenus --> c_flow
+  f_groupPostComments["flowGroupPostComments: flow run groupPostComments"]
+  mcp --> f_groupPostComments
+  f_groupPostComments --> c_flow
+  f_groupPostDialog["flowGroupPostDialog: flow run groupPostDialog"]
+  mcp --> f_groupPostDialog
+  f_groupPostDialog --> c_flow
+  f_groupTabs["flowGroupTabs: flow run groupTabs"]
+  mcp --> f_groupTabs
+  f_groupTabs --> c_flow
+  f_marketplaceListingPublish["flowMarketplaceListingPublish: flow run marketplaceListingPublish"]
+  mcp --> f_marketplaceListingPublish
+  f_marketplaceListingPublish --> c_flow
+  f_messengerPinCreate["flowMessengerPinCreate: flow run messengerPinCreate"]
+  mcp --> f_messengerPinCreate
+  f_messengerPinCreate --> c_flow
+  f_postComment["flowPostComment: flow run postComment"]
+  mcp --> f_postComment
+  f_postComment --> c_flow
+  f_profilePhotoPost["flowProfilePhotoPost: flow run profilePhotoPost"]
+  mcp --> f_profilePhotoPost
+  f_profilePhotoPost --> c_flow
+  f_profilePost["flowProfilePost: flow run profilePost"]
+  mcp --> f_profilePost
+  f_profilePost --> c_flow
   f_profileSetup["flowProfileSetup: flow run profileSetup"]
   mcp --> f_profileSetup
   f_profileSetup --> c_flow
+  f_warmupCreateAccessCheck["flowWarmupCreateAccessCheck: flow run warmupCreateAccessCheck"]
+  mcp --> f_warmupCreateAccessCheck
+  f_warmupCreateAccessCheck --> c_flow
+  f_warmupFeedBrowse["flowWarmupFeedBrowse: flow run warmupFeedBrowse"]
+  mcp --> f_warmupFeedBrowse
+  f_warmupFeedBrowse --> c_flow
+  f_warmupMarketplaceBrowse["flowWarmupMarketplaceBrowse: flow run warmupMarketplaceBrowse"]
+  mcp --> f_warmupMarketplaceBrowse
+  f_warmupMarketplaceBrowse --> c_flow
+  f_warmupMessagesVisit["flowWarmupMessagesVisit: flow run warmupMessagesVisit"]
+  mcp --> f_warmupMessagesVisit
+  f_warmupMessagesVisit --> c_flow
+  f_warmupSellingVisit["flowWarmupSellingVisit: flow run warmupSellingVisit"]
+  mcp --> f_warmupSellingVisit
+  f_warmupSellingVisit --> c_flow

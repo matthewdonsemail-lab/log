@@ -9,7 +9,6 @@ import { createInspector, formatTraceLine } from "../../../observability/trace/i
 import type { CommandContext } from "../../runner/types.ts";
 import { browserFor } from "../../../browser/driver/index.ts";
 
-/** A filled flow step → the inspect session's command. */
 export function commandFor(step: FlowStep): { action: InspectAction; args: string[] } {
   switch (step.action) {
     case "goto":
@@ -20,10 +19,14 @@ export function commandFor(step: FlowStep): { action: InspectAction; args: strin
       return { action: "fillRole", args: [step.role!, step.name!, step.value!] };
     case "upload":
       return { action: "uploadRole", args: [step.role!, step.name!, step.value!] };
+    case "setLocation":
+      return { action: "setLocation", args: [step.value!] };
     case "scroll":
     case "openAny":
     case "clickAny":
     case "dwell":
+    case "press":
+    case "scrollIn":
       return { action: step.action, args: step.args ?? [] };
     default:
       return { action: step.action, args: [] };
@@ -32,15 +35,9 @@ export function commandFor(step: FlowStep): { action: InspectAction; args: strin
 
 export interface OpenSession {
   current: CurrentInspect;
-  /** Resolves with the session's exit code when the browser closes. */
   session: Promise<number>;
 }
 
-/**
- * One gated, headed inspect session for the account's prepared run (the same
- * launch every run gets), waited on until the browser is ready. Every step sent
- * to it is recorded: snapshot, screenshot, its own HAR, rea's reading.
- */
 export async function openInspectSession(
   context: CommandContext,
   account: { id: string; accountName: string; browserDriver?: string | null; adsPowerProfileId?: string | null },
@@ -60,7 +57,6 @@ export async function openInspectSession(
     startUrl: null,
     browser: browserFor(account),
   });
-  // Listed with the other open sessions, so `log inspect do --account` and `inspect sessions` see it.
   writeCurrentInspect(current);
   let ended = false;
   void session.then(() => {
@@ -75,11 +71,6 @@ export async function openInspectSession(
   return { current, session };
 }
 
-/**
- * Runs one flow's machine in an open session: each step goes to the session
- * and waits for its reply (and its confirming request). `skip` drops steps,
- * e.g. the warm-up's likes without --likes. `onStep` sees every result.
- */
 export async function runFlowInSession(
   context: CommandContext,
   current: CurrentInspect,
@@ -97,7 +88,6 @@ export async function runFlowInSession(
         let result: FlowStepResult = reply
           ? { id: step.id, ok: reply.ok !== false, error: reply.error, expectSeen: reply.expect?.seen, ms: (reply as { ms?: number }).ms, folder: reply.folder }
           : { id: step.id, ok: false, error: "no reply from the session" };
-        // Where the page really is: a checkpoint, a login or the wrong page stops the flow here (pageProblem).
         const problem = reply ? pageProblem(step, reply) : null;
         if (problem) result = { ...result, ok: false, issue: problem.code, error: `${problem.code}: ${problem.detail}` };
         options.onStep?.(step, result);

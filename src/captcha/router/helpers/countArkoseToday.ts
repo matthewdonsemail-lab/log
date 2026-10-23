@@ -1,6 +1,5 @@
 import type { CaptchaAttempt } from '../types'
 
-/** 2Captcha Arkose attempts on one account since UTC midnight of `now`. Pure. */
 export function countArkoseToday(attempts: CaptchaAttempt[], accountId: string, now: Date = new Date()): number {
   const day = now.toISOString().slice(0, 10)
   return attempts.filter(

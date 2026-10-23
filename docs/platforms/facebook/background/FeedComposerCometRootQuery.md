@@ -1,22 +1,23 @@
 # FeedComposerCometRootQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
 | Domain | background |
 | Kind | query |
-| doc_id | `28742010355419170` |
+| doc_id | `29266302386340694` |
 | Path | `/api/graphql/` |
 | Sends | `callerName`, `customPartnerParams`, `hasStory`, `isBizWeb`, `isLinksInPostEnabled`, `privacySelectorRenderLocation`, `privacyWriteID`, `profileID`, `scale`, `serviceNames`, `storyID`, `__relay_internal__pv__ShouldEnableSimplifiedComposerIconsrelayprovider`, `__relay_internal__pv__CometUnifiedVideoCreation_showPrivacyMergerelayprovider`, `__relay_internal__pv__CometUGCPublicCreation_showComposerPublicAwarenessTooltiprelayprovider`, `__relay_internal__pv__FeedComposerCometRoot_shouldFetchCrosspostMetadatarelayprovider` |
 | Reads | `viewer.actor`, `viewer.feed_comet_composer`, `viewer....FeedComposerComet_viewer` |
 | Called from | `FeedComposerCometRoot.react` |
-| rea | `ev_74df5fe04dcbed1ebf7e87e31af1f3fdfc75be3825828c415b2e908697f06b2b` |
+| rea | `ev_a7cba304334bc4e14c20455ee7a779e8ff76be7fa130500c1daa6ddab11f6589` |
 
-Seen 3 time(s) in 3 run(s).
+Seen 4 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | step 1: goto / | 1 | 200 | 1402 ms | 25511 ms | — |
 | inspect | step 27: goto / | 1 | 200 | 614 ms | 4855 ms | — |
 | inspect | step 1: goto / | 2 | 200 | 731–801 ms | 7877–16609 ms | — |
 

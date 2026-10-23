@@ -1,6 +1,6 @@
 # MarketplaceSearchAddressDataSourceQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -13,17 +13,21 @@
 | Called from | `MarketplaceSearchAddressDataSource.query` |
 | rea | `ev_419a0ebcddf76c934d343c10ff391a0b746b3baeb9644f33bc1850a30093eb4e` |
 
-Seen 53 time(s) in 2 run(s).
+Seen 102 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | publish | Uploading 5 photo(s) | 13 | 200 | 430–643 ms | 26008–27370 ms | — |
 | inspect | step 4: type e1311 | 21 | 200 | 421–658 ms | 159–2489 ms | — |
-| inspect | step 6: press Backspace | 1 | 200 | 446 ms | 44 ms | — |
+| inspect | step 6: press Backspace | 2 | 200 | 446–1864 ms | 44–79 ms | — |
 | inspect | step 8: press Backspace | 1 | 200 | 455 ms | 370 ms | — |
 | inspect | step 9: type e1311 | 11 | 200 | 429–607 ms | 176–1500 ms | A server error field_exception occured. Check server logs for details. |
 | inspect | step 11: press Backspace | 1 | 200 | 1411 ms | 926 ms | — |
 | inspect | step 12: type e1311 | 5 | 200 | 527–779 ms | 224–652 ms | — |
+| inspect | step 5: setLocation Bethlehem, Pennsylvania | 25 | 200 | 446–4392 ms | 8240–10641 ms | — |
+| inspect | step 7: press a | 1 | 200 | 708 ms | 61 ms | — |
+| inspect | step 4: setLocation Bethlehem, PA | 15 | 200 | 727–1420 ms | 11130–12491 ms | — |
+| inspect | step 13: setLocation 18015 | 7 | 200 | 444–668 ms | 9754–10258 ms | — |
 
 <!-- facts:end -->
 

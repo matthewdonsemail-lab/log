@@ -1,26 +1,9 @@
-"""log-cli's bridge into facebook-camofox-client.
-
-Same contract as the old inferencesaver `facebook-worker.py`: one request in,
-one JSON result out. The request is a JSON object in argv[1]:
-
-    {"action": "doctor" | "proxy.check" | "marketplace.scan" | "marketplace.status",
-     "account_id": "fbGalwayRubbish",
-     "storage_state_path": "C:/Users/.../fbGalwayRubbish.json",
-     "params": {"listing_id": "1583545526797714"}}
-
-The result is the only thing written to stdout (one JSON line). Progress goes
-to stderr.
-
-Every action is read-only on Facebook. Signing in is `log connect`, run by
-the connect machine through python/session/connectSession.py.
-"""
 from __future__ import annotations
 
 import asyncio
 import sys as _sys
 from pathlib import Path as _Path
 
-# python/ holds the domain packages (browser, human, session, ...): on the path when run directly.
 _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
 from human import scrollMotion
 import json
@@ -35,7 +18,6 @@ from browser.visibleBrowser import force_visible
 
 SELLING_URL = "https://www.facebook.com/marketplace/you/selling"
 
-# Same extractor as facebook-camofox-client scripts/scan_selling.py.
 EXTRACT_JS = """() => {
   const seen = new Map();
   for (const a of document.querySelectorAll('a[href*="/marketplace/item/"]')) {
@@ -59,8 +41,6 @@ def log(message: str) -> None:
     proxyGate.note_step(message)
 
 
-# Titles under the selling page's "Needs attention" heading, the zone Listaro's
-# agent (Listaro_backup agent/src/listing-checker.ts) treats as flagged.
 NEEDS_ATTENTION_JS = """() => {
   const main = document.querySelector('[role="main"]');
   if (!main) return [];
@@ -77,7 +57,6 @@ NEEDS_ATTENTION_JS = """() => {
 
 
 async def body_sample(page) -> str:
-    """First 4000 chars of the page text, for account-issue classification in log-cli."""
     try:
         return (await page.locator("body").inner_text(timeout=5000))[:4000]
     except Exception:
@@ -88,7 +67,6 @@ async def auth_flags(page) -> dict[str, bool]:
     title = (await page.title()).lower()
     url = page.url.lower()
     try:
-        # Listaro's isLoggedIn markers: a login button or the sign-up banner.
         banner = await page.evaluate("""() => {
           const text = document.body.innerText || '';
           return !!document.querySelector('button[name="login"]') ||
@@ -126,8 +104,6 @@ def doctor(_: dict[str, Any]) -> dict[str, Any]:
 
 
 def keep_state_on_release(manager, state_path: str | None) -> None:
-    """Before the browser closes, write its session (cookies and localStorage) to the
-    run's state file, so log-cli saves it to Twenty and the next run continues it."""
     real_release = manager.release
 
     async def release(session):
@@ -138,7 +114,7 @@ def keep_state_on_release(manager, state_path: str | None) -> None:
                 log(f"could not save the session state ({type(exc).__name__})")
         await real_release(session)
 
-    manager.release = release  # type: ignore[method-assign]
+    manager.release = release
 
 
 async def acquire(request: dict[str, Any], storage_state_path: str | None):
@@ -152,7 +128,6 @@ async def acquire(request: dict[str, Any], storage_state_path: str | None):
 
 
 async def scan(request: dict[str, Any]) -> dict[str, Any]:
-    """Read the seller dashboard (/you/selling). Deletes and edits nothing."""
     from facebook_camofox_client.domain_marketplace.health import (
         classify_dashboard_card,
         parse_clicks,
@@ -176,7 +151,6 @@ async def scan(request: dict[str, Any]) -> dict[str, Any]:
         except Exception:
             pass
         rows: list[dict[str, Any]] = []
-        # Cards hydrate on scroll: scroll and poll for item links (~25s max).
         for attempt in range(8):
             log(f"Waiting for listing cards ({attempt + 1}/8)")
             try:
@@ -212,7 +186,6 @@ async def scan(request: dict[str, Any]) -> dict[str, Any]:
 
 
 async def status(request: dict[str, Any]) -> dict[str, Any]:
-    """Read one public item page via MarketplaceStatusAction. Read-only."""
     from facebook_camofox_client.domain_actions.envelope import ActionEnvelope
     from facebook_camofox_client.domain_camofox.session_manager import CamofoxSessionManager
     from facebook_camofox_client.domain_events.emitter import InMemoryEventEmitter
@@ -230,7 +203,7 @@ async def status(request: dict[str, Any]) -> dict[str, Any]:
         kwargs.setdefault("storage_state_path", state)
         return await real_acquire(account_id, **kwargs)
 
-    manager.acquire = acquire_with_state  # type: ignore[method-assign]
+    manager.acquire = acquire_with_state
     action = MarketplaceStatusAction(manager, InMemoryEventEmitter())
     env = ActionEnvelope(
         action_id=f"log-cli-status-{listing_id}",
@@ -255,15 +228,11 @@ def main() -> int:
         print(json.dumps(failure("badRequest", f"request is not JSON: {exc}")))
         return 1
     action = request.get("action")
-    # No browser without the account's proxy, for any action, signing in included (rule 12).
     proxyGate.arm(request.get("proxy_path"), request.get("device_path"), request.get("capture_dir"))
     try:
-        # Every Camoufox facebook-camofox-client launches: proxy gate, then headed,
-        # humanized, cursor shown (rules 11 and 12).
         force_visible()
     except ImportError:
-        pass  # no camoufox: `doctor` reports it
-    # Anything a library prints goes to stderr, so stdout carries only the result.
+        pass
     real_stdout, sys.stdout = sys.stdout, sys.stderr
     try:
         if action == "doctor":

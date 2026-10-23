@@ -1,17 +1,10 @@
-/**
- * The 2Captcha calls log-cli makes. All read-only: nothing here buys traffic
- * or changes the 2Captcha account. The key goes in the query string, as the
- * API requires; it is never printed or put in an error.
- */
 import { TwoCaptchaError } from './types'
 import type { TwoCaptchaAccount, TwoCaptchaCredentials, TwoCaptchaPlace } from './types'
 
 const API = 'https://api.2captcha.com'
-/** The dashboard's public location search (the public API's country list is incomplete: no Ireland). */
 const PLACES = 'https://2captcha.com/api/v1/proxy/regions/search'
 const TIMEOUT_MS = 20_000
 
-/** `2CAPTCHA_API_KEY` (or `TWOCAPTCHA_API_KEY`) and `2CAPTCHA_PROXY_PASSWORD`, or why they're missing. */
 export function twoCaptchaCredentials(env: Record<string, string | undefined> = process.env): TwoCaptchaCredentials | { missing: string } {
   const apiKey = (env['2CAPTCHA_API_KEY'] || env.TWOCAPTCHA_API_KEY || '').trim()
   const proxyPassword = (env['2CAPTCHA_PROXY_PASSWORD'] || env.TWOCAPTCHA_PROXY_PASSWORD || '').trim()
@@ -33,7 +26,6 @@ async function getJson(url: string, what: string, fetchImpl: typeof fetch): Prom
   return body
 }
 
-/** `GET /proxy`: the proxy username and traffic. */
 export async function getProxyAccount(apiKey: string, fetchImpl: typeof fetch = fetch): Promise<TwoCaptchaAccount> {
   const body = (await getJson(`${API}/proxy?key=${encodeURIComponent(apiKey)}`, 'proxy account', fetchImpl)) as {
     data?: { username?: string; status?: number; total_flow?: number; use_flow?: number; last_flow?: number; ip_white?: string[] }
@@ -50,13 +42,11 @@ export async function getProxyAccount(apiKey: string, fetchImpl: typeof fetch = 
   }
 }
 
-/** `GET /proxy/balance`: money balance and traffic left. */
 export async function getBalance(apiKey: string, fetchImpl: typeof fetch = fetch): Promise<{ balance: number; traffic: number }> {
   const body = (await getJson(`${API}/proxy/balance?key=${encodeURIComponent(apiKey)}`, 'balance', fetchImpl)) as { balance?: number; traffic?: number }
   return { balance: Number(body.balance ?? 0), traffic: Number(body.traffic ?? 0) }
 }
 
-/** The places 2Captcha can exit in that match a city name. Public, no key. */
 export async function searchPlaces(city: string, fetchImpl: typeof fetch = fetch): Promise<TwoCaptchaPlace[]> {
   const body = await getJson(`${PLACES}/${encodeURIComponent(city.toLowerCase())}`, 'location search', fetchImpl)
   if (!Array.isArray(body)) return []

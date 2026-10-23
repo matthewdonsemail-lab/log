@@ -2,11 +2,6 @@ import type { LoginSecrets, TwentyClient, TwentyObject, TwentyObjects } from '..
 
 type Row = Record<string, unknown> & { id: string }
 
-/**
- * The subset of Twenty's GraphQL filter input log-cli uses:
- * `{ field: { eq | neq | in | is } }` and `{ and: [...] }`, `{ or: [...] }`.
- * Pure.
- */
 export function matchesFilter(row: Row, filter: Record<string, unknown> | undefined | null): boolean {
   if (!filter) return true
   for (const [key, condition] of Object.entries(filter)) {
@@ -30,10 +25,6 @@ export function matchesFilter(row: Row, filter: Record<string, unknown> | undefi
   return true
 }
 
-/**
- * An in-memory Twenty for tests: same interface as the live client, rows
- * keyed by object plural. `rows` is exposed so tests can seed and inspect.
- */
 export function createMemoryTwenty(seed: Partial<Record<TwentyObject, Row[]>> = {}): TwentyClient & { rows: Record<string, Row[]> } {
   const rows: Record<string, Row[]> = Object.fromEntries(Object.entries(seed).map(([k, v]) => [k, (v ?? []).map((r) => ({ ...r }))]))
   let next = 1
@@ -64,7 +55,7 @@ export function createMemoryTwenty(seed: Partial<Record<TwentyObject, Row[]>> = 
       const row = table('socialAccounts').find((r) => r.id === accountId)
       if (!row) return null
       const text = (value: unknown) => (typeof value === 'string' && value ? value : null)
-      return { email: text(row.email), password: text(row.password), totpSecret: text(row.totpSecret) }
+      return { email: text(row.email), password: text(row.password), totpSecret: text(row.totpSecret), messengerPin: text(row.messengerPin) }
     }
   }
 }

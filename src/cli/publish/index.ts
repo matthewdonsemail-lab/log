@@ -1,17 +1,3 @@
-/**
- * `log publish --listing <agencyListingId>` — post one Marketplace listing from
- * Twenty through the publish machine (XState) and print every step.
- *
- * The listing row says what to post and which socialAccount posts it. Before
- * anything opens (dry run or live, rule 12): the account is Facebook and
- * usable, has a proxy and a home country, and the listing is in that country.
- * At launch python/browser/proxyGate.py checks the proxy's exit IP is in it too.
- *
- * Dry run by default: it opens the form, uploads the photos, fills and reads
- * back every field, screenshots the review, and stops before Publish. Only
- * `--live` clicks Publish. Captchas are routed CaptchaKraken → 2Captcha → a
- * person (`captcha/router`). Every run is written back to the listing row.
- */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
@@ -49,14 +35,14 @@ import { preparePhotos } from "../../media/photo/index.ts";
 import { createInspector, formatTraceLine } from "../../observability/trace/index.ts";
 import { renderLoss } from "../live/helpers/index.ts";
 import { keepNewDevice, keepSession } from "../live/index.ts";
-import { parseArgs, refuse, refuseError } from "../runner/helpers/index.ts";
-import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf, PROXY_MS_FLAG, refuse, refuseError } from "../runner/helpers/index.ts";
+import type { Command, CommandContext, CommandInput, CommandResult } from "../runner/types.ts";
 import { renderPublishOutput, summarizePublish } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
 
 export const PUBLISH_USAGE = [
-  "Usage: log publish --listing <agencyListingId> [--live] [--json] [--formUrl <url>] [--bypass] [--now]",
+  "Usage: log facebook publish --listing <agencyListingId> [--live] [--json] [--formUrl <url>] [--bypass] [--now]",
   "Dry run unless --live: fills and checks everything, never clicks Publish.",
   "The listing, its account and the account's proxy all come from Twenty.",
   "--bypass skips only the account's waking hours (rule 18); every other gate still runs.",
@@ -67,7 +53,6 @@ function publishRunDir(runId: string, env: Record<string, string | undefined> = 
   return join(env.LOG_PUBLISH_DIR || join(homedir(), ".logCli", "publish"), runId);
 }
 
-/** A refusal before anything opened, also written to the listing row so Twenty shows why. */
 async function refuseListing(context: CommandContext, listing: AgencyListing, code: ErrorCode, detail: string): Promise<CommandResult> {
   try {
     await context.twenty.update("agencyListings", listing.id, {
@@ -77,12 +62,10 @@ async function refuseListing(context: CommandContext, listing: AgencyListing, co
       lastError: detail.slice(0, 500),
     });
   } catch {
-    // The refusal stands even if Twenty can't take the note.
   }
   return refuse("publish", code, detail);
 }
 
-/** Everything that must hold before a browser may open for this listing. */
 export async function checkPublishable(
   context: CommandContext,
   listingId: string,
@@ -104,7 +87,6 @@ export async function checkPublishable(
   }
   if (live) {
     const published = await listListingsWhere(context.twenty, { socialAccountId: { eq: account.id } });
-    // The account's own calendar day, not UTC (rule 18).
     const home = homeOf(account);
     const zones = new Map(home.ok ? [[account.id, home.home.timezone]] : []);
     const today = countPostedToday(published, now, zones).get(account.id) ?? 0;
@@ -115,17 +97,39 @@ export async function checkPublishable(
   return { listing, account };
 }
 
+export const PUBLISH_INPUT: CommandInput = {
+  forms: [
+    {
+      words: [],
+      summary: "Post one Twenty listing; a dry run unless live",
+      positionals: [],
+      flags: [
+        { name: "listing", kind: "string", required: true, description: "The agencyListing id" },
+        { name: "live", kind: "boolean", live: true, description: "Click Publish, only when matt asked (rule 10)" },
+        { name: "formUrl", kind: "string", description: "Fill a saved form instead (file://...), not counted as a launch" },
+        { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when matt asked (rule 20)" },
+        { name: "now", kind: "boolean", description: "Skip the 10-minute launch gap only (rule 24)" },
+        JSON_FLAG,
+        PROXY_MS_FLAG,
+      ],
+    },
+  ],
+};
+
 export const publishCommand: Command = {
   usage: PUBLISH_USAGE,
+  platform: "facebook",
   name: "publish",
+  effect: "browser",
+  input: PUBLISH_INPUT,
   summary: "Post one Twenty listing (dry run unless --live), printing every machine step",
   args: "--listing <id> [--live] [--json] [--bypass] [--now]",
   async run(context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["live", "json", "bypass", "now"], valued: ["listing", "formUrl"] });
-    if (!parsed.ok) return { code: 1, stderr: `log publish: ${parsed.error}\n${PUBLISH_USAGE}` };
-    if (parsed.positionals.length > 0) return { code: 1, stderr: `log publish: unexpected argument "${parsed.positionals[0]}"\n${PUBLISH_USAGE}` };
+    const parsed = parseArgs(argv, parserSpecOf(PUBLISH_INPUT));
+    if (!parsed.ok) return { code: 1, stderr: `log facebook publish: ${parsed.error}\n${PUBLISH_USAGE}` };
+    if (parsed.positionals.length > 0) return { code: 1, stderr: `log facebook publish: unexpected argument "${parsed.positionals[0]}"\n${PUBLISH_USAGE}` };
     const listingId = parsed.flags.listing;
-    if (typeof listingId !== "string") return { code: 1, stderr: `log publish: --listing is required (an agencyListing id)\n${PUBLISH_USAGE}` };
+    if (typeof listingId !== "string") return { code: 1, stderr: `log facebook publish: --listing is required (an agencyListing id)\n${PUBLISH_USAGE}` };
     const dryRun = !parsed.flags.live;
     const json = Boolean(parsed.flags.json);
 
@@ -141,16 +145,12 @@ export const publishCommand: Command = {
     const content = toPublishListing(listing);
     if (!content.ok) return refuse("publish", "listingInvalid", content.problems.join("; "));
 
-    // Rule 12: no proxy, no home country, or an unusable account means no files and no browser.
-    // The saved fixture form (file://) never reaches Facebook: not counted against rule 24.
     const fixture = typeof parsed.flags.formUrl === "string" && parsed.flags.formUrl.startsWith("file:");
-    // Rule 24: a login wall or checkpoint on the form is signed through in this browser, so
-    // the run gets Twenty's login details the way connect does (rule 21: a 0600 file, deleted after).
     let login: LoginSecrets | null = null;
     try {
       login = await context.twenty.loginSecrets(account.id);
     } catch {
-      login = null; // no details: a login wall ends the run as before
+      login = null;
     }
     const prepared = prepareRun(account, "run", { now, bypassHours: Boolean(parsed.flags["bypass"]), skipLaunchBudget: fixture, login, skipLaunchGap: Boolean(parsed.flags["now"]) });
     if (!prepared.ok) return refuseListing(context, listing, prepared.code, prepared.detail);
@@ -173,8 +173,6 @@ export const publishCommand: Command = {
         loginPath: run.loginPath,
       }));
     const call = <T>(step: Parameters<PublishSession["call"]>[0], params: Record<string, unknown> = {}) => open().call<T>(step, params);
-    // The exit IP is re-read through the browser at review and right before Publish (rule 12):
-    // another country stops the run (proxyCountryChanged); a new IP in the same country is recorded.
     const exitNotes: string[] = [];
     const noteExit = async <T>(result: T): Promise<T> => {
       const moved = (result as { exitIpChanged?: { from?: string; to?: string; country?: string } }).exitIpChanged;
@@ -183,7 +181,6 @@ export const publishCommand: Command = {
         try {
           await recordProxyCheck(context.twenty, account.id, { exitIp: moved.to, exitCountry: moved.country ?? account.homeCountry });
         } catch {
-          // The run goes on; the note says what moved.
         }
       }
       return result;
@@ -197,7 +194,6 @@ export const publishCommand: Command = {
           return { ok: true, paths: result.photos.map((p) => p.path), hashes: result.photos.map((p) => p.sha256) };
         }),
         openForm: fromPromise<FormOutcome, PublishActorInputs["openForm"]>(async ({ input }) => {
-          // A crashed step replies { ok: false, code }, not a FormOutcome.
           const result = await call<Partial<FormOutcome> & { code?: ErrorCode; detail?: string }>("open", { recheck: input.recheck, location: input.location, postalCode: input.postalCode, setLocation: input.setLocation });
           if (result.kind) return result as FormOutcome;
           return { kind: "error", code: result.code ?? "badReply", detail: result.detail ?? JSON.stringify(result).slice(0, 200) };
@@ -212,7 +208,6 @@ export const publishCommand: Command = {
         publish: fromPromise<PublishClickOutput, PublishActorInputs["publish"]>(async () => noteExit(await call<PublishClickOutput>("publish"))),
         confirm: fromPromise<ConfirmOutput, PublishActorInputs["confirm"]>(async () => call<ConfirmOutput>("confirm")),
         captureId: fromPromise<CaptureOutput, PublishActorInputs["captureId"]>(async ({ input }) => call<CaptureOutput>("captureId", input)),
-        // The connect machine over this same browser (rule 24): its steps are the session's signIn* steps.
         signIn: connectMachine.provide({
           actors: {
             open: fromPromise<ActOutput, undefined>(() => call("signInOpen")),
@@ -270,7 +265,6 @@ export const publishCommand: Command = {
       if (sessionNote) exitNotes.push(sessionNote);
       run.cleanup();
     }
-    // Every attempt goes to the ledger, with whether the page accepted it.
     for (const attempt of output.captchaAttempts) appendAttempt(attempt);
     writeFileSync(join(runDir, "output.json"), `${JSON.stringify({ dryRun, agencyListingId: listing.id, account: account.accountName, ...output }, null, 2)}\n`);
 

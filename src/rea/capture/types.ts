@@ -1,4 +1,3 @@
-/** One script body copied out of a run's HAR (any browser driver). */
 export interface CapturedScript {
   file: string
   url: string
@@ -6,7 +5,6 @@ export interface CapturedScript {
   text: string
 }
 
-/** A HAR as Playwright wrote it (rule 19: kept raw), and the scripts copied out of it. */
 export interface BrowserCapture {
   har: Record<string, unknown>
   entries: number
@@ -19,5 +17,4 @@ export interface ReaRunResult {
   stderr: string
 }
 
-/** Runs one `rea` invocation. Tests pass a fake. The default spawns the `rea` on PATH. */
 export type ReaRunner = (args: string[], cwd: string) => Promise<ReaRunResult>

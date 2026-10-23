@@ -1,6 +1,6 @@
 # UFACAISupportChatExperienceQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -13,11 +13,12 @@
 | Called from | `UFACAISupportChatExperience.react` |
 | rea | `ev_8ee95faa5bbd82f99ae9dcfe8cbd78add4e5241ff8073ebf16e7331f832cc1d5` |
 
-Seen 2 time(s) in 1 run(s).
+Seen 6 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | POST 200 fetchMWChatVideoAutoplaySettingQuery (574 ms) | 2 | 200 | 728–936 ms | 3040–4003 ms | — |
+| inspect | step 1: goto / | 4 | 200 | 390–1389 ms | 5337–8918 ms | — |
+| inspect | step 38: goto /marketplace/ | 2 | 200 | 728–936 ms | 21112–22075 ms | — |
 
 <!-- facts:end -->
 

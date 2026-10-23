@@ -7,7 +7,7 @@ it is in. The browser is chosen per account in Twenty (`socialAccounts.browserDr
 ## One Playwright layer, for every browser
 
 ```text
-TS  log host / log inspect / log flow / log warmup
+TS  log facebook host / log inspect / log flow / log facebook warmup
       └─ openInspectSession(account)  ── browser: browserFor(account)  (src/browser/driver)
 Py  inspectSession.py
       └─ browserDriver.open_browser(config)                (python/browser/browserDriver.py)
@@ -36,7 +36,7 @@ From `Listaro_backup/src/lib/adspower-client.ts` and its AdsPower server plan (2
 | Listaro | log-cli |
 | --- | --- |
 | The Local API client: start, stop and list profiles, then Playwright over CDP | `src/browser/adsPower/client.ts` (v2 endpoints) and `python/browser/adsPowerBrowser.py` |
-| One AdsPower window per account, held open | `log host` (rule 35) opens the account's profile once a day and keeps it open; every action is a tab |
+| One AdsPower window per account, held open | `log facebook host` (rule 35) opens the account's profile once a day and keeps it open; every action is a tab |
 | Never close the AdsPower context | Sessions close only their own tabs. The profile is stopped through the Local API at the end, never by `context.close()` |
 | No stealth scripts for AdsPower | Nothing is injected into any page (rule 32) |
 | No cookie injection for AdsPower: the profile keeps its own cookies | The profile keeps its own. Twenty's session is carried in once, only into a profile that has no Facebook login yet |
@@ -64,7 +64,7 @@ it is listed on every commit, not refused.
 | `localePinned` | navigator, Accept-Language and Intl in the home country's locale (rule 16) | built: HOME_COUNTRIES locale in the launch; the self-check checks it (rule 16) | built: the profile's language from HOME_COUNTRIES; the self-check checks it |
 | `sessionCarried` | The account's signed-in session carries over from one open to the next | built: Twenty's cookies and localStorage as the context's storage_state each open | built: the profile keeps its own cookies; Twenty's session is carried in once when it has none |
 | `sessionSaved` | The session is saved back to Twenty (saveState) | built: saveState writes the context storage state, saved to Twenty | built: saveState writes the context storage state, saved to Twenty |
-| `inspectSession` | log inspect, the flows, the warm-up and log host run in it (python/session/inspectSession.py) | built: python/browser/browserDriver.py open_camoufox | built: python/browser/browserDriver.py open_ads_power |
+| `inspectSession` | log inspect, the flows, the warm-up and log facebook host run in it (python/session/inspectSession.py) | built: python/browser/browserDriver.py open_camoufox | built: python/browser/browserDriver.py open_ads_power |
 | `syncSessions` | publishSession, connectSession and profileSession (the sync sessions) run in it | built: publishSession, connectSession and profileSession launch it (sync API) | **not built**: publishSession, connectSession and profileSession still launch Camoufox (sync API) |
 | `oneMachineAtATime` | It refuses to open where another machine already has the account open | n/a: Camoufox runs only where log-cli runs; there is no shared profile to open twice | **not built**: cloud-active before open (docs/deployment.md) |
 

@@ -1,6 +1,6 @@
 # useCometAISupportConversationLoggerMutation
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -13,11 +13,15 @@
 | Called from | `useCometAISupportConversationLogger.react` |
 | rea | `ev_9b8131e20d25cf5f2615540fd47b41670ee2c3b239082dde00fe6367de015a5b` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 22 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | POST 200 fetchMWChatVideoAutoplaySettingQuery (574 ms) | 1 | 200 | 512 ms | 3999 ms | — |
+| inspect | step 1: goto / | 3 | 200 | 384–1322 ms | 6752–9345 ms | — |
+| inspect | step 5: clickRole button "…" | 10 | 200 | 346–1280 ms | 954–11732 ms | — |
+| inspect | step 6: clickRole button "…" | 3 | 200 | 343–579 ms | 1229–1990 ms | — |
+| inspect | clickRole failed: RuntimeError: the element kept moving under the cursor: the point is on  | 5 | 200 | 348–594 ms | 1056–6931 ms | — |
+| inspect | step 38: goto /marketplace/ | 1 | 200 | 512 ms | 22071 ms | — |
 
 <!-- facts:end -->
 

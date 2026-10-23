@@ -1,6 +1,5 @@
 import { parseArgs } from "../../runner/helpers/index.ts";
 
-/** What `log join` can join. Only Facebook groups for now. */
 export const JOIN_TARGETS = ["group"] as const;
 export type JoinTarget = (typeof JOIN_TARGETS)[number];
 
@@ -8,7 +7,6 @@ export type ParseJoinArgsResult =
   | { ok: true; target: JoinTarget; account: string | null; group: string | null; live: boolean; show: boolean; answer: boolean; agree: boolean; fill: boolean; submit: boolean; bypass: boolean; json: boolean }
   | { ok: false; error: string };
 
-/** `group [--account <a>] [--group <g>] [--live] [--show] [--json]`; anything else is a usage error. Pure. */
 export function parseJoinArgs(argv: string[]): ParseJoinArgsResult {
   const parsed = parseArgs(argv, { boolean: ["json", "live", "show", "answer", "agree", "fill", "submit", "bypass"], valued: ["account", "group"] });
   if (!parsed.ok) return parsed;

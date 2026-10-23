@@ -1,6 +1,5 @@
 import { createMemoryTwenty } from './memoryTwenty'
 
-/** Two cookies Facebook needs for a session. Fake values. */
 export const FIXTURE_COOKIES = [
   { name: 'c_user', value: '1000', domain: '.facebook.com', path: '/' },
   { name: 'xs', value: 'fixture', domain: '.facebook.com', path: '/' }
@@ -8,10 +7,6 @@ export const FIXTURE_COOKIES = [
 
 export const FIXTURE_CAMPAIGN = 'campaignGalway'
 
-/**
- * An in-memory Twenty with the accounts and listings the CLI tests need, one
- * per case the account check and replacement have to handle. Fake data only.
- */
 export function marketplaceFixture(photo = '/photos/van.png') {
   const ad = {
     title: 'Rubbish Removal Galway',
@@ -35,7 +30,6 @@ export function marketplaceFixture(photo = '/photos/van.png') {
     homeCity: 'Galway',
     homeCountry: 'IE',
     cookies: FIXTURE_COOKIES,
-    // Always inside its hours, so tests don't depend on the clock; the hours gate has its own tests.
     activeHoursStart: 0,
     activeHoursEnd: 24,
     ...extra

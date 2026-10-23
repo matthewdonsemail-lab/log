@@ -1,6 +1,6 @@
 # CometHomeContactCommunityChatsContainerQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -11,16 +11,30 @@
 | Sends | `numChatsToFetch` |
 | Reads | `viewer....CometHomeContactCommunityChats_viewer` |
 | Called from | `CometHomeContactCommunityChatsContainer.react` |
-| rea | `ev_ff39c007f8bb69c80d97054de98908b54ee980822a6e89a6dbd0fbf56d559bf9` |
+| rea | `ev_38a62071407b1d580cabfa2361b5d2c8ad31a9bb9fb9fefb54b7b887fa2b16aa` |
 
-Seen 4 time(s) in 2 run(s).
+Seen 19 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | rea read step 24_clickroleButtonNextCard: exit 0, ev_08bd0b0aa3e491db75fd341d53b6ccf63883a | 1 | 200 | 593 ms | 1250233 ms | — |
+| warmup | step 7: goto /marketplace/ | 1 | 200 | 580 ms | 13571 ms | — |
+| warmup | step 15: goto /marketplace/ | 1 | 200 | 668 ms | 12039 ms | — |
+| warmup | step 4: goto /marketplace/ | 1 | 200 | 748 ms | 7059 ms | — |
+| warmup | step 11: goto /marketplace/ | 1 | 200 | 614 ms | 8612 ms | — |
+| warmup | step 17: goto /marketplace/ | 1 | 200 | 554 ms | 12049 ms | — |
+| inspect | step 24: clickRole button "…" | 1 | 200 | 593 ms | 1258008 ms | — |
 | inspect | step 3: clickRole button "…" | 1 | 200 | 404 ms | 5483 ms | — |
-| inspect | page has 46 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 1 | 200 | 399 ms | 2570 ms | — |
-| inspect | page has 45 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 1 | 200 | 389 ms | 1294639 ms | — |
+| inspect | step 71: dwell 1s | 1 | 200 | 399 ms | 8258 ms | — |
+| inspect | step 96: clickRole button "…" | 1 | 200 | 389 ms | 1305458 ms | — |
+| inspect | step 4: snapshot | 1 | 200 | 726 ms | 348 ms | — |
+| inspect | pin: typed the account's Messenger PIN | 1 | 200 | 611 ms | 561 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 621 ms | 6681 ms | — |
+| inspect | step 5: wait 5s | 1 | 200 | 630 ms | 103696 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 547 ms | 5703 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 2 | 200 | 612–916 ms | 558523–564747 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 1 | 200 | 1632 ms | 59464 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 2569 ms | 11550 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 1 | 200 | 927 ms | 1708107 ms | — |
 
 <!-- facts:end -->
 

@@ -7,9 +7,11 @@ sequenceDiagram
   participant Tool as Bash / PowerShell / Monitor / mcp__log__*
   Agent->>Hook: SessionStart
   Note over Hook: where every open browser is, the moment a session starts or comes back from compaction
+  Note over Hook: ~/.logCli/runs over 2 GB or the disk nearly full: said with `log runs prune` before AdsPower refuses to start
   matt->>Agent: a prompt
   Agent->>Hook: UserPromptSubmit
   Note over Hook: where every open browser is, with each of matt's prompts
+  Note over Hook: the same storage check with each of matt's prompts (measured at most every 15 minutes)
   loop each tool call
     Agent->>Hook: PreToolUse
     Note over Hook: a log-cli run that would hide its lines (piped through tail or head) is refused before it starts#59; a long one off a Monitor is told to start one (rule 26)

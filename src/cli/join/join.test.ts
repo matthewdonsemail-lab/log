@@ -4,8 +4,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { clearCurrentInspect, writeCurrentInspect } from "../../browser/inspect/index.ts";
 import type { InspectAction, InspectStepResult } from "../../browser/inspect/index.ts";
-import { readJoinOptions } from "../../group/join/index.ts";
-import { recordedAfterJoin, recordedGroupPage, recordedJoinHar } from "../../group/join/join.test.ts";
+import { readJoinOptions } from "../../facebook/group/join/index.ts";
+import { recordedAfterJoin, recordedGroupPage, recordedJoinHar } from "../../facebook/group/join/join.test.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { runCli } from "../runner/index.ts";
 import { joinDeps, parseJoinArgs } from "./index.ts";
@@ -51,9 +51,9 @@ describe("parseJoinArgs", () => {
   });
 });
 
-describe("log join group", () => {
+describe("log facebook join group", () => {
   test("never launches a browser: without the account's open one it is refused", async () => {
-    const { code, err, sent } = await run(["join", "group", "--account", "galwayOne", "--group", GROUP]);
+    const { code, err, sent } = await run(["facebook", "join", "group", "--account", "galwayOne", "--group", GROUP]);
     expect(code).toBe(1);
     expect(err).toContain("groupBrowserNotOpen");
     expect(sent).toEqual([]);
@@ -61,7 +61,7 @@ describe("log join group", () => {
 
   test("a dry run in the open browser reads the gate, clicks nothing, and patches joinSubmission per step", async () => {
     openBrowser();
-    const { code, out, err, sent, twenty } = await run(["join", "group", "--account", "galwayOne", "--group", GROUP], [recordedGroupPage() as InspectStepResult]);
+    const { code, out, err, sent, twenty } = await run(["facebook", "join", "group", "--account", "galwayOne", "--group", GROUP], [recordedGroupPage() as InspectStepResult]);
     expect(code).toBe(0);
     expect(sent.map((s) => s.action)).toEqual(["goto"]);
     expect(out).toContain("dry run, nothing clicked");
@@ -73,15 +73,14 @@ describe("log join group", () => {
 
   test("--live as on Bethlehem: a member, the Participant questions dialog kept in joinSubmission and read back by --show", async () => {
     openBrowser();
-    // The step folder the session wrote, with its snapshot.yml (the CLI reads it whole).
     const folder = mkdtempSync(join(tmpdir(), "logJoinStep"));
     writeFileSync(join(folder, "snapshot.yml"), recordedAfterJoin);
     const asked = { ok: true, url: GROUP, interactive: [], folder } as InspectStepResult;
-    const live = await run(["join", "group", "--account", "galwayOne", "--group", GROUP, "--live"], [recordedGroupPage() as InspectStepResult, { ok: true, url: GROUP }, asked]);
+    const live = await run(["facebook", "join", "group", "--account", "galwayOne", "--group", GROUP, "--live"], [recordedGroupPage() as InspectStepResult, { ok: true, url: GROUP }, asked]);
     expect(live.code).toBe(0);
     expect(live.sent.map((s) => s.action)).toEqual(["goto", "clickRole", "snapshot"]);
     expect(live.out).toContain('the group then asked "Participant questions"');
-    const shown = await run(["join", "group", "--account", "galwayOne", "--group", "4191018610937243", "--show"], [], live.twenty);
+    const shown = await run(["facebook", "join", "group", "--account", "galwayOne", "--group", "4191018610937243", "--show"], [], live.twenty);
     expect(shown.code).toBe(0);
     expect(shown.sent).toEqual([]);
     expect(shown.out).toContain("member");
@@ -92,13 +91,13 @@ describe("log join group", () => {
   });
 
   test("a bad --group is refused before anything", async () => {
-    const { code, err } = await run(["join", "group", "--account", "galwayOne", "--group", "https://example.com/x"]);
+    const { code, err } = await run(["facebook", "join", "group", "--account", "galwayOne", "--group", "https://example.com/x"]);
     expect(code).toBe(1);
     expect(err).toContain("groupRefInvalid");
   });
 
   test("never prompts without a terminal", async () => {
-    const { code, err } = await run(["join", "group", "--account", "galwayOne"]);
+    const { code, err } = await run(["facebook", "join", "group", "--account", "galwayOne"]);
     expect(code).toBe(1);
     expect(err).toContain("--account and --group are both needed");
   });
@@ -122,20 +121,18 @@ describe("log join group", () => {
       confirm: async () => false,
       note: () => {},
     };
-    const { code } = await run(["join", "group", "--show"]);
+    const { code } = await run(["facebook", "join", "group", "--show"]);
     expect(code).toBe(0);
     expect(asked).toEqual(["Which account joins?", "Which group? (its URL or id)"]);
   });
 
   test("--answer: the Clack stepper over a private group's recorded questions, saved to Twenty as the draft, nothing sent", async () => {
-    // The --live join first, as Complainers of Bethlehem answered it (its click HAR, cut).
     openBrowser();
     const folder = mkdtempSync(join(tmpdir(), "logJoinClick"));
     const click = { ok: true, url: GROUP, folder } as InspectStepResult;
     const twenty = marketplaceFixture();
-    const joined = await run(["join", "group", "--account", "galwayOne", "--group", GROUP, "--live"], [recordedGroupPage() as InspectStepResult, click, { ok: true, url: GROUP } as InspectStepResult], twenty);
+    const joined = await run(["facebook", "join", "group", "--account", "galwayOne", "--group", GROUP, "--live"], [recordedGroupPage() as InspectStepResult, click, { ok: true, url: GROUP } as InspectStepResult], twenty);
     expect(joined.code).toBe(0);
-    // The click HAR is read by the CLI from the step folder: write the recorded one there and patch it in as a run would.
     const row = twenty.rows.agencyGroups[0] as unknown as { joinSubmission: Record<string, unknown> };
     row.joinSubmission = { ...row.joinSubmission, options: readJoinOptions(recordedJoinHar("complainersOfBethlehem")) };
 
@@ -160,7 +157,7 @@ describe("log join group", () => {
         return true;
       },
     };
-    const answered = await run(["join", "group", "--account", "galwayOne", "--group", "4191018610937243", "--answer"], [], twenty);
+    const answered = await run(["facebook", "join", "group", "--account", "galwayOne", "--group", "4191018610937243", "--answer"], [], twenty);
     expect(answered.code).toBe(0);
     expect(answered.sent).toEqual([]);
     expect(asked).toEqual([
@@ -178,7 +175,7 @@ describe("log join group", () => {
   });
 
   test("--answer without join options says how to get them", async () => {
-    const { code, err } = await run(["join", "group", "--account", "galwayOne", "--group", GROUP, "--answer"]);
+    const { code, err } = await run(["facebook", "join", "group", "--account", "galwayOne", "--group", GROUP, "--answer"]);
     expect(code).toBe(1);
     expect(err).toContain("--live join");
   });
@@ -188,13 +185,12 @@ describe("log join group", () => {
     const twenty = marketplaceFixture();
     const row = twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")!;
     Object.assign(row, { activeHoursStart: 8, activeHoursEnd: 22 });
-    // 23:30 in Galway (IE, UTC+1 in October): outside 08:00-22:00.
     const late = () => new Date("2026-10-20T22:30:00Z");
-    const refused = await runCli(["join", "group", "--account", "galwayOne", "--group", GROUP], { twenty, now: late, sendInspect: async () => null, out: () => {}, err: () => {} });
+    const refused = await runCli(["facebook", "join", "group", "--account", "galwayOne", "--group", GROUP], { twenty, now: late, sendInspect: async () => null, out: () => {}, err: () => {} });
     expect(refused).toBe(1);
     const err: string[] = [];
     const sent: string[] = [];
-    const code = await runCli(["join", "group", "--account", "galwayOne", "--group", GROUP, "--bypass"], {
+    const code = await runCli(["facebook", "join", "group", "--account", "galwayOne", "--group", GROUP, "--bypass"], {
       twenty,
       now: late,
       sendInspect: async (_c, action) => (sent.push(action), recordedGroupPage() as InspectStepResult),
@@ -204,12 +200,11 @@ describe("log join group", () => {
     expect(code).toBe(0);
     expect(sent).toEqual(["goto"]);
     expect(err.join("\n")).toContain("--bypass: the waking-hours gate is skipped for this run only");
-    // --show only reads Twenty: never gated.
-    expect(await runCli(["join", "group", "--account", "galwayOne", "--group", GROUP, "--show"], { twenty, now: late, out: () => {}, err: () => {} })).toBe(0);
+    expect(await runCli(["facebook", "join", "group", "--account", "galwayOne", "--group", GROUP, "--show"], { twenty, now: late, out: () => {}, err: () => {} })).toBe(0);
   });
 
   test("an unknown account is refused", async () => {
-    const { code, err } = await run(["join", "group", "--account", "nobody", "--group", GROUP]);
+    const { code, err } = await run(["facebook", "join", "group", "--account", "nobody", "--group", GROUP]);
     expect(code).toBe(1);
     expect(err).toContain("accountNotFound");
   });

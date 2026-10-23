@@ -1,6 +1,6 @@
 # MAWVerifyThreadCutover_ContactCapabilities2Query
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -13,28 +13,69 @@
 | Called from | `MAWVerifyThreadCutover` |
 | rea | `ev_2ef4fcf81840e4c44dfd19b7c86b9e3e65429109c06595cfc96262bcea9f2bc2` |
 
-Seen 24 time(s) in 9 run(s).
+Seen 90 time(s) in 23 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | step 1: goto / | 2 | 200 | 349–584 ms | 7315–20961 ms | — |
+| warmup | step 4: goto /marketplace/ | 2 | 200 | 398 ms | 4115–5425 ms | — |
+| warmup | step 7: goto /marketplace/ | 2 | 200 | 356–390 ms | 3640–5793 ms | — |
+| warmup | step 11: goto /marketplace/ | 2 | 200 | 394–416 ms | 3172–15231 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 2 | 200 | 350–368 ms | 3066–10443 ms | — |
+| warmup | step 15: goto /marketplace/ | 2 | 200 | 357–368 ms | 2911–3209 ms | — |
+| warmup | step 17: goto /marketplace/ | 2 | 200 | 344–432 ms | 2462–3835 ms | — |
+| warmup | step 19: goto /marketplace/you/selling | 2 | 200 | 358–382 ms | 2530–8438 ms | — |
+| warmup | step 21: goto /marketplace/ | 2 | 200 | 433–517 ms | 3863–4750 ms | — |
+| warmup | step 23: goto /marketplace/you/selling | 2 | 200 | 371–771 ms | 2336–2482 ms | — |
+| warmup | step 25: goto /messages/ | 2 | 200 | 388–435 ms | 2757–3737 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 5 | 200 | 361–412 ms | 3689–6555 ms | — |
+| inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 377 ms | 6895 ms | — |
+| inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 363 ms | 6445 ms | — |
+| inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 357 ms | 7132 ms | — |
+| inspect | step 1: goto /groups/<id> | 1 | 200 | 358 ms | 7157 ms | — |
 | inspect | step 1: goto / | 5 | 200 | 501–553 ms | 6626–8849 ms | — |
 | inspect | step 7: goto / | 1 | 200 | 500 ms | 4963 ms | — |
-| inspect | rea read step 33_dwell028s: exit 0, ev_d164a9c78021b1afb8ce6c5a24456a0d8f46efdbc7c54440f7f | 1 | 200 | 524 ms | 3462 ms | — |
+| inspect | step 34: goto /marketplace/ | 1 | 200 | 524 ms | 6129 ms | — |
 | inspect | step 38: goto /marketplace/ | 1 | 200 | 734 ms | 7900 ms | — |
-| inspect | rea read step 21_dwell078s: exit 0, ev_87a54a6ea91a3418cb413686bdc6108f946bdf45884c8230e49 | 1 | 200 | 573 ms | 3703 ms | — |
+| inspect | step 22: goto /marketplace/ | 1 | 200 | 573 ms | 6267 ms | — |
 | inspect | step 27: goto / | 1 | 200 | 549 ms | 5270 ms | — |
 | inspect | step 4: goto /marketplace/ | 1 | 200 | 444 ms | 5803 ms | — |
-| inspect | step 1: goto /groups/<id>/ | 1 | 200 | 389 ms | 6555 ms | — |
 | inspect | step 1: goto /reel/ | 3 | 200 | 339–353 ms | 3408–4338 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 328 ms | 4281 ms | — |
-| inspect | rea read step 13_dwell600s: exit 0, ev_e8922deafb7ba9951a51bda6f8cd82b5b68c41db19bfe0cd164 | 1 | 200 | 1714 ms | 1264 ms | — |
-| inspect | rea read step 22_dwell600s: exit 0, ev_59385bb1add05e2efe91692d85b295ae9cd6334beafd2bccb4a | 1 | 200 | 328 ms | 2264 ms | — |
+| inspect | step 14: goto /reel/<id> | 1 | 200 | 1714 ms | 4163 ms | — |
+| inspect | step 23: goto /reel/<id> | 1 | 200 | 328 ms | 5005 ms | — |
 | inspect | step 9: goto /reel/<id> | 1 | 200 | 401 ms | 5863 ms | — |
 | inspect | step 11: goto /reel/ | 1 | 200 | 585 ms | 5360 ms | — |
 | inspect | step 20: goto /reel/<id> | 1 | 200 | 2124 ms | 2852 ms | — |
 | inspect | step 22: goto /reel/ | 1 | 200 | 3661 ms | 2982 ms | — |
-| inspect | mouse: 1 wander, 1 approach, 1 flick; 1 idle drift move(s) | 1 | 200 | 2065 ms | 459 ms | — |
+| inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 2065 ms | 5570 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 381 ms | 5835 ms | — |
+| inspect | step 1: goto /messages/ | 1 | 200 | 360 ms | 3368 ms | — |
+| inspect | step 1: goto /marketplace/ | 2 | 200 | 419–2770 ms | 7246–10033 ms | — |
+| inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 845 ms | 3734 ms | — |
+| inspect | step 5: setLocation Bethlehem, Pennsylvania | 1 | 200 | 787 ms | 3872 ms | — |
+| inspect | step 11: goto /marketplace/create/item | 1 | 200 | 868 ms | 2851 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 1 | 200 | 464 ms | 10151 ms | — |
+| inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 599 ms | 5546 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 392 ms | 2940 ms | — |
+| inspect | step 13: setLocation 18015 | 1 | 200 | 387 ms | 4587 ms | — |
+| inspect | step 1: goto /marketplace/inbox | 2 | 200 | 405–414 ms | 6950–19783 ms | — |
+| inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 548 ms | 5357 ms | — |
+| inspect | step 6: goto /marketplace/status | 1 | 200 | 553 ms | 5497 ms | — |
+| inspect | step 7: goto /marketplace/you/selling | 1 | 200 | 741 ms | 2468 ms | — |
+| inspect | step 8: goto /marketplace/inbox | 1 | 200 | 694 ms | 4789 ms | — |
+| inspect | step 9: goto /marketplace/status | 1 | 200 | 511 ms | 2773 ms | — |
+| inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1234 ms | 2539 ms | — |
+| inspect | step 11: goto /marketplace/inbox | 1 | 200 | 663 ms | 2526 ms | — |
+| inspect | step 1: goto /marketplace/status | 2 | 200 | 349–468 ms | 6130–9577 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 2 | 200 | 340–438 ms | 4322–4620 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 5 | 200 | 341–807 ms | 4184–1344092 ms | — |
+| inspect | step 2: goto /marketplace/status | 1 | 200 | 1395 ms | 3074 ms | — |
+| inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 3086 ms | 2324 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 1 | 200 | 3007 ms | 3024 ms | — |
+| inspect | step 4: goto /marketplace/status | 1 | 200 | 845 ms | 4443 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 774 ms | 2246 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 3 | 200 | 438–853 ms | 2627–1515308 ms | — |
 
 <!-- facts:end -->
 

@@ -1,6 +1,6 @@
 # FXAccountsCenterPersonalCentralIdentityDialogV2RouteResolverQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -20,7 +20,7 @@ Seen 6 time(s) in 3 run(s).
 | flow | step 9: goto /profiles/<id>/name | 2 | 200 | 366–1510 ms | 2939–8230 ms | — |
 | flow | step 13: clickRole button "…" | 2 | 200 | 328–676 ms | 2389–5329 ms | — |
 | inspect | step 14: goto /profiles/<id>/name | 1 | 200 | 583 ms | 3971 ms | — |
-| inspect | now on /profiles/<id>/name "…" after 2328 ms; 0 request(s) | 1 | 200 | 423 ms | 1007 ms | — |
+| inspect | a step (older run, split by its report lines) | 1 | 200 | 423 ms | 1007 ms | — |
 
 <!-- facts:end -->
 

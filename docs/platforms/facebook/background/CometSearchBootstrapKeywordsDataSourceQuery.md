@@ -1,6 +1,6 @@
 # CometSearchBootstrapKeywordsDataSourceQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -9,24 +9,41 @@
 | doc_id | `27797631676573850` |
 | Path | `/api/graphql/` |
 | Sends | `first` |
-| Reads | — |
-| Called from | — |
-| rea | not read yet |
+| Reads | `viewer.bootstrap_keywords` |
+| Called from | `CometSearchBootstrapKeywordsDataSource.query` |
+| rea | `ev_5cb62e3a7cd21788732d77960d11bcea0adc8730aaaa23e6a78c097c1c44c7a6` |
 
-Seen 23 time(s) in 8 run(s).
+Seen 90 time(s) in 23 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| warmup | step 1: goto / | 2 | 200 | 428–1023 ms | 6735–21288 ms | — |
+| warmup | step 4: goto /marketplace/ | 2 | 200 | 382–508 ms | 4021–5355 ms | — |
+| warmup | step 7: goto /marketplace/ | 2 | 200 | 496–508 ms | 2920–5509 ms | — |
+| warmup | step 11: goto /marketplace/ | 2 | 200 | 389–540 ms | 3056–14934 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 2 | 200 | 382–394 ms | 3037–9723 ms | — |
+| warmup | step 15: goto /marketplace/ | 2 | 200 | 367–368 ms | 2855–3120 ms | — |
+| warmup | step 17: goto /marketplace/ | 2 | 200 | 348–403 ms | 2227–3719 ms | — |
+| warmup | step 19: goto /marketplace/you/selling | 2 | 200 | 413–504 ms | 2324–7811 ms | — |
+| warmup | step 21: goto /marketplace/ | 2 | 200 | 398–411 ms | 3743–4633 ms | — |
+| warmup | step 23: goto /marketplace/you/selling | 2 | 200 | 584–586 ms | 1987–2184 ms | — |
+| warmup | step 25: goto /messages/ | 2 | 200 | 406–568 ms | 2160–3426 ms | — |
+| inspect | step 1: goto /groups/<id>/ | 4 | 200 | 371–428 ms | 3759–7185 ms | — |
+| inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 465 ms | 7031 ms | — |
+| inspect | step 1: goto /profile.php | 1 | 200 | 425 ms | 7450 ms | — |
+| inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 414 ms | 6533 ms | — |
+| inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 556 ms | 7197 ms | — |
+| inspect | step 1: goto /groups/<id> | 1 | 200 | 364 ms | 7210 ms | — |
 | inspect | step 1: goto / | 5 | 200 | 458–534 ms | 6491–8720 ms | — |
 | inspect | step 7: goto / | 1 | 200 | 466 ms | 4918 ms | — |
-| inspect | rea read step 33_dwell028s: exit 0, ev_d164a9c78021b1afb8ce6c5a24456a0d8f46efdbc7c54440f7f | 1 | 200 | 495 ms | 3174 ms | — |
+| inspect | step 34: goto /marketplace/ | 1 | 200 | 495 ms | 5841 ms | — |
 | inspect | step 38: goto /marketplace/ | 1 | 200 | 813 ms | 7818 ms | — |
-| inspect | rea read step 21_dwell078s: exit 0, ev_87a54a6ea91a3418cb413686bdc6108f946bdf45884c8230e49 | 1 | 200 | 516 ms | 3526 ms | — |
+| inspect | step 22: goto /marketplace/ | 1 | 200 | 516 ms | 6090 ms | — |
 | inspect | step 27: goto / | 1 | 200 | 472 ms | 3177 ms | — |
 | inspect | step 4: goto /marketplace/ | 1 | 200 | 503 ms | 5697 ms | — |
 | inspect | step 1: goto /reel/ | 3 | 200 | 347–391 ms | 3276–3898 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 338 ms | 3839 ms | — |
-| inspect | rea read step 13_dwell600s: exit 0, ev_e8922deafb7ba9951a51bda6f8cd82b5b68c41db19bfe0cd164 | 1 | 200 | 1402 ms | 1224 ms | — |
+| inspect | step 14: goto /reel/<id> | 1 | 200 | 1402 ms | 4123 ms | — |
 | inspect | step 23: goto /reel/<id> | 1 | 200 | 488 ms | 2166 ms | — |
 | inspect | step 9: goto /reel/<id> | 1 | 200 | 1565 ms | 3485 ms | — |
 | inspect | step 11: goto /reel/ | 1 | 200 | 403 ms | 2368 ms | — |
@@ -34,6 +51,32 @@ Seen 23 time(s) in 8 run(s).
 | inspect | step 22: goto /reel/ | 1 | 200 | 2547 ms | 2568 ms | — |
 | inspect | clickAny: 1 link /see owner profile$/ | 1 | 200 | 696 ms | 4939 ms | — |
 | inspect | step 53: goto /reel/ | 1 | 200 | 370 ms | 5585 ms | — |
+| inspect | step 1: goto /messages/ | 1 | 200 | 373 ms | 2958 ms | — |
+| inspect | step 1: goto /marketplace/ | 2 | 200 | 643–1366 ms | 6852–8895 ms | — |
+| inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 433 ms | 3235 ms | — |
+| inspect | step 5: setLocation Bethlehem, Pennsylvania | 1 | 200 | 864 ms | 3766 ms | — |
+| inspect | step 11: goto /marketplace/create/item | 1 | 200 | 653 ms | 2827 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 1 | 200 | 696 ms | 9548 ms | — |
+| inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 711 ms | 5357 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 391 ms | 2666 ms | — |
+| inspect | step 13: setLocation 18015 | 1 | 200 | 393 ms | 4315 ms | — |
+| inspect | step 1: goto /marketplace/inbox | 2 | 200 | 400–429 ms | 6579–19744 ms | — |
+| inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 411 ms | 5041 ms | — |
+| inspect | step 6: goto /marketplace/status | 1 | 200 | 570 ms | 5472 ms | — |
+| inspect | step 7: goto /marketplace/you/selling | 1 | 200 | 840 ms | 2305 ms | — |
+| inspect | step 8: goto /marketplace/inbox | 1 | 200 | 772 ms | 4753 ms | — |
+| inspect | step 9: goto /marketplace/status | 1 | 200 | 961 ms | 2144 ms | — |
+| inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1443 ms | 2222 ms | — |
+| inspect | step 11: goto /marketplace/inbox | 1 | 200 | 648 ms | 2318 ms | — |
+| inspect | step 1: goto /marketplace/status | 2 | 200 | 364–780 ms | 5973–8939 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 2 | 200 | 348–612 ms | 3673–3803 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 5 | 200 | 347–644 ms | 4050–1343953 ms | — |
+| inspect | step 2: goto /marketplace/status | 1 | 200 | 1036 ms | 2609 ms | — |
+| inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 2393 ms | 2032 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 1 | 200 | 1807 ms | 2693 ms | — |
+| inspect | step 4: goto /marketplace/status | 1 | 200 | 817 ms | 4227 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 979 ms | 1926 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 3 | 200 | 448–762 ms | 2570–1514888 ms | — |
 
 <!-- facts:end -->
 

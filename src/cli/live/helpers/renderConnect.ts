@@ -1,6 +1,5 @@
 import type { ConnectContext, ConnectOutput } from "../../../marketplace/connect/index.ts";
 
-/** The context fields worth showing on each state line of the connect trace. Pure. */
 export function summarizeConnect(context: unknown): Record<string, unknown> {
   const c = context as ConnectContext | undefined;
   if (!c) return {};
@@ -23,7 +22,6 @@ const RESULT_TEXT: Record<ConnectOutput["result"], string> = {
   failed: "Failed.",
 };
 
-/** Human summary of one connect run: how it ended and every page it went through. Pure. */
 export function renderConnect(accountName: string, output: ConnectOutput): string {
   const lines = [`${accountName}: ${RESULT_TEXT[output.result]}`];
   if (output.pages.length) lines.push(`Pages: ${output.pages.join(" → ")}`);

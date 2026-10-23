@@ -3,11 +3,6 @@ import type { FacebookAccount, RunPurpose, RunProxy, RunnableCheck } from '../ty
 
 const COUNTRY = /^[A-Z]{2}$/
 
-/**
- * `scheme://user:pass@host:port` (the socialAccounts.proxy format), or the
- * vendor style `host:port:user:pass`, → Playwright's proxy shape. null when it
- * can't be read. Pure.
- */
 export function parseProxyUrl(raw: string): Omit<RunProxy, 'country'> | null {
   const text = raw.trim()
   if (!text) return null
@@ -28,12 +23,6 @@ export function parseProxyUrl(raw: string): Omit<RunProxy, 'country'> | null {
   return out
 }
 
-/**
- * The account's proxy as a URL Bun's fetch can use (`fetch(url, { proxy })`),
- * credentials percent-encoded, or null when there is none or it is SOCKS5,
- * which fetch can't use. For downloads that must leave through the account's
- * own exit, never this machine. Pure.
- */
 export function fetchProxyUrl(raw: string | null): string | null {
   const proxy = raw ? parseProxyUrl(raw) : null
   if (!proxy || !/^https?:/.test(proxy.server)) return null
@@ -43,18 +32,11 @@ export function fetchProxyUrl(raw: string | null): string | null {
   return `${scheme}//${auth}@${hostPort}`
 }
 
-/**
- * A proxy username for display. Its first part is the vendor account (for
- * 2Captcha it is also the gateway password), so it is always redacted; the
- * geo and session parts after it stay readable
- * (`***-zone-custom-region-ie-...-session-ab12-sessTime-120`). Pure.
- */
 export function maskProxyUsername(username: string): string {
   const dash = username.indexOf('-')
   return dash > 0 ? `***${username.slice(dash)}` : '***'
 }
 
-/** The proxy for display: never the password, never the account part of the username. Pure. */
 export function maskProxyUrl(raw: string | null): string {
   if (!raw) return ''
   const proxy = parseProxyUrl(raw)
@@ -62,13 +44,6 @@ export function maskProxyUrl(raw: string | null): string {
   return `${proxy.server}${proxy.username ? ` as ${maskProxyUsername(proxy.username)}` : ''}`
 }
 
-/**
- * May this account open a browser for `purpose`? Every log-cli run asks this
- * first, dry or live, sign-in included (AGENTS.md rule 12): FACEBOOK, a usable
- * status, a readable proxy and a home country. There is no override and no
- * fallback. The proxy's exit country is checked next, in python/browser/proxyGate.py.
- * Pure.
- */
 export function checkRunnable(account: FacebookAccount, purpose: RunPurpose): RunnableCheck {
   if (account.platform !== 'FACEBOOK') {
     return { ok: false, code: 'accountNotFacebook', detail: `${account.accountName} is ${account.platform ?? 'no platform'}` }

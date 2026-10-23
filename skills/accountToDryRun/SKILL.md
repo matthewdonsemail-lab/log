@@ -23,7 +23,7 @@ matt says so.
    the cookies don't hold, matt signs in in that window during step 3.
 4. **`checkpointed` or `suspended`: stop.** Tell matt and don't retry.
 5. **Dry run only.** `publish` without `--live` stops before the Publish
-   button. `--live` needs `confirmLive: true` and matt's go (rule 10).
+   button. Live is its own tool, `publishLive`, with `confirmLive: true` and matt's go (rule 10).
 
 ## The steps
 
@@ -32,7 +32,7 @@ matt says so.
 ### 1. Proxy (no browser)
 
 ```text
-mcp__log__account   args ["show", "<a>"]                  Proxy set? Exit checked?
+mcp__log__accountShow   { account: "<a>" }                  Proxy set? Exit checked?
 mcp__log__proxy     args ["check", "--account", "<a>"]    exit IP in the home country
 ```
 
@@ -75,7 +75,7 @@ field `<set>`/`<empty>`), then `--apply`. It reads every `docs/vendors/*.txt`.
 Check it:
 
 ```text
-mcp__log__account   args ["show", "<a>"]    Status ACTIVE, May run yes
+mcp__log__accountShow   { account: "<a>" }    Status ACTIVE, May run yes
 ```
 
 `signInNotFinished` or `checkpointed` means the wait ran out on the page it
@@ -99,8 +99,8 @@ the cover:
 ```
 
 ```text
-mcp__log__listing   args ["create", "--account", "<a>", "--file", "<path.json>"]
-mcp__log__listing   args ["<listingId>"]
+mcp__log__listingCreate   { account: "<a>", file: "<path.json>" }
+mcp__log__listing         { id: "<listingId>" }
 ```
 
 `create` checks the ad the way `publish` will (price, category, photos,
@@ -109,8 +109,8 @@ location) and refuses one that can't post.
 ### 6. Dry run
 
 ```text
-mcp__log__publish   args ["--listing", "<listingId>", "--formUrl", "file:///<repo>/python/fixtures/createItem.html"]
-mcp__log__publish   args ["--listing", "<listingId>"]
+mcp__log__publish   { listing: "<listingId>", formUrl: "file:///<repo>/python/fixtures/createItem.html" }
+mcp__log__publish   { listing: "<listingId>" }
 ```
 
 The first run fills the saved copy of the form and never touches Facebook. The
@@ -118,20 +118,22 @@ second goes to the real create page and runs every machine step (proxy gate,
 self-check, session, photos varied and attached, title, price, category,
 condition, description, location picked in the home country), then stops
 before Publish. Each step is printed. Look for `dryRun` at the end. Any other
-ending is a code: `mcp__log__errors args ["--code", "<code>"]`.
+ending is a code: `mcp__log__errors { code: "<code>" }`.
 
 Before photos go up, the open step reads the account's Marketplace location
 from the page (`sell_location`). The US form has no Location field: if that
 isn't the listing's city, it stops there with `locationNotSet` and names the
-place ("Kearney (68847, US)"), and nothing is uploaded. Give the listing a
-`locationPostalCode` (the zip: Facebook finds "Reading, PA" by 19601, while
-the name finds Reading, Jamaica): a `--live` run then sets the account's
-Marketplace location to it first (Marketplace > Location > Change location >
-the zip > Apply, `CometMarketplaceSetBuyLocationMutation`) and checks the
-form again. A dry run never changes it. When the form has a Location field
-and the city name finds nothing in the right place, the zip is typed there
-too. A login wall or checkpoint on the form is signed through in the same
-browser (rule 24).
+place ("Kearney (68847, US)"), and nothing is uploaded. The listing's
+`locationQuery` is "City, State" with the state written out ("Reading,
+Pennsylvania"): a `--live` run then sets the account's Marketplace location
+to it first (Marketplace > Location > Change location > the place > the
+suggestion Facebook names as that place > Apply,
+`CometMarketplaceSetBuyLocationMutation`) and checks the form again. A dry
+run never changes it. A zip, a number or an abbreviation ("Reading, PA") is
+never typed: it is refused with `locationAbbreviated` before the run, because
+"Bethlehem, PA" was offered only as the West Bank and a bare zip offered
+Granada, Spain (rule 72). A login wall or checkpoint on the form is signed
+through in the same browser (rule 24).
 
 **Rule 24: launches cost.** Each account opens on Facebook at most 8 times
 per local day, 10 minutes apart, dry runs counted (`launchTooSoon`,
@@ -150,11 +152,11 @@ Facebook offers no way to hurry it (`appeal_status: appeal_not_exist`; an
 appeal exists only after a rejection). The run reads the id from Facebook's
 own answer to Publish (`useCometMarketplaceListingCreateMutation`), says
 "Held for review", and writes the row UNDER_REVIEW, not ACTIVE. A later
-`log scan` moves it to ACTIVE once the badge is gone. Reading's first listing,
+`log facebook scan` moves it to ACTIVE once the badge is gone. Reading's first listing,
 2026-10-19, was held this way.
 
 ```text
-mcp__log__publish   args ["--listing", "<listingId>", "--live"]   confirmLive: true
+mcp__log__publishLive   { listing: "<listingId>", confirmLive: true }
 mcp__log__scan      args ["--account", "<a>"]
 ```
 

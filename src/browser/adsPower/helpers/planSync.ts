@@ -5,11 +5,6 @@ import { NO_PROFILE_STATUSES } from '../types'
 import type { ProfileSyncEntry } from '../types'
 import { remarkAccountId } from './profileRequest'
 
-/**
- * What a sync would do for each account, from Twenty's accounts and AdsPower's profiles.
- * A stored link that still exists is kept; a profile whose remark names the account is
- * relinked; otherwise one is made. Banned, dead and unlocalisable accounts get none. Pure.
- */
 export function planSync(accounts: FacebookAccount[], profiles: AdsPowerProfile[]): ProfileSyncEntry[] {
   const byId = new Map(profiles.map((p) => [p.profileId, p]))
   const byAccount = new Map(profiles.flatMap((p) => { const id = remarkAccountId(p.remark); return id ? [[id, p] as const] : [] }))

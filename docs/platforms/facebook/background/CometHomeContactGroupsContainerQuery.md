@@ -1,6 +1,6 @@
 # CometHomeContactGroupsContainerQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -11,16 +11,30 @@
 | Sends | `excludeBroadcastChannelThreads`, `excludeCmThreads`, `__relay_internal__pv__WebPixelRatiorelayprovider` |
 | Reads | `viewer....CometHomeContactGroups_viewer` |
 | Called from | `CometHomeContactGroupsContainer.react` |
-| rea | `ev_1d05a014baf2cd336fd869d4a53a30ef7d6ab76df49c9ced2a1e73b1a60e03dd` |
+| rea | `ev_afbb77778bb0832d0311179d99af4e1015fdbeadac3bded27db6e5939b581138` |
 
-Seen 4 time(s) in 2 run(s).
+Seen 19 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | rea read step 24_clickroleButtonNextCard: exit 0, ev_08bd0b0aa3e491db75fd341d53b6ccf63883a | 1 | 200 | 807 ms | 1250235 ms | — |
+| warmup | step 7: goto /marketplace/ | 1 | 200 | 786 ms | 13574 ms | — |
+| warmup | step 15: goto /marketplace/ | 1 | 200 | 826 ms | 12041 ms | — |
+| warmup | step 4: goto /marketplace/ | 1 | 200 | 983 ms | 7073 ms | — |
+| warmup | step 11: goto /marketplace/ | 1 | 200 | 786 ms | 8614 ms | — |
+| warmup | step 17: goto /marketplace/ | 1 | 200 | 736 ms | 12050 ms | — |
+| inspect | step 24: clickRole button "…" | 1 | 200 | 807 ms | 1258010 ms | — |
 | inspect | step 3: clickRole button "…" | 1 | 200 | 584 ms | 5485 ms | — |
-| inspect | page has 46 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 1 | 200 | 640 ms | 2571 ms | — |
-| inspect | page has 45 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 1 | 200 | 573 ms | 1294641 ms | — |
+| inspect | step 71: dwell 1s | 1 | 200 | 640 ms | 8259 ms | — |
+| inspect | step 96: clickRole button "…" | 1 | 200 | 573 ms | 1305460 ms | — |
+| inspect | step 4: snapshot | 1 | 200 | 880 ms | 349 ms | — |
+| inspect | pin: typed the account's Messenger PIN | 1 | 200 | 803 ms | 564 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 805 ms | 6685 ms | — |
+| inspect | step 5: wait 5s | 1 | 200 | 802 ms | 103698 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 835 ms | 5706 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 2 | 200 | 883–1126 ms | 558525–564749 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 1 | 200 | 1626 ms | 59466 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 2664 ms | 11553 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 1 | 200 | 1122 ms | 1708110 ms | — |
 
 <!-- facts:end -->
 

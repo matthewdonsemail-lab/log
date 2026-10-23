@@ -1,13 +1,11 @@
 import type { ImageType, PhotoSourceKind } from '../types'
 
-/** `https://…` → url, `data:image/…` → dataUrl, anything else → path. Pure. */
 export function photoSourceKind(source: string): PhotoSourceKind {
   if (/^https?:\/\//i.test(source)) return 'url'
   if (/^data:/i.test(source)) return 'dataUrl'
   return 'path'
 }
 
-/** Decode a base64 data-URL (the dashboard's create form stores photos this way). Pure. */
 export function decodeDataUrl(source: string): Uint8Array | null {
   const match = source.match(/^data:([^;,]*)(;base64)?,(.*)$/is)
   if (!match || !match[2]) return null
@@ -18,7 +16,6 @@ export function decodeDataUrl(source: string): Uint8Array | null {
   }
 }
 
-/** What the bytes are, from their magic numbers (never the file extension). Pure. */
 export function sniffImageType(bytes: Uint8Array): ImageType | null {
   const at = (i: number) => bytes[i]
   const ascii = (start: number, end: number) => String.fromCharCode(...bytes.slice(start, end))
@@ -35,7 +32,6 @@ export function sniffImageType(bytes: Uint8Array): ImageType | null {
   return null
 }
 
-/** Short label for logs: data-URLs are huge, so only their head is kept. Pure. */
 export function describeSource(source: string): string {
   return photoSourceKind(source) === 'dataUrl' ? `${source.slice(0, 30)}… (${source.length} chars)` : source
 }

@@ -1,6 +1,5 @@
 import type { PublishListing } from '../types'
 
-/** Problems that stop a publish before any browser opens. Pure. Empty = fine. */
 export function validateListing(listing: PublishListing): string[] {
   const problems: string[] = []
   if (!listing.title.trim()) problems.push('title is empty')
@@ -13,10 +12,6 @@ export function validateListing(listing: PublishListing): string[] {
   return problems
 }
 
-/**
- * The create form's condition labels use an en dash ("Used – good"). Accepts
- * Listaro's stored values (`like_new`, `good`) and hyphenated labels too. Pure.
- */
 export function toConditionLabel(condition: string | undefined): string | undefined {
   if (!condition) return undefined
   const key = condition.trim().toLowerCase().replace(/[\s_–-]+/g, '')

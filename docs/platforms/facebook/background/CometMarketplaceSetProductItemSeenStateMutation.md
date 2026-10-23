@@ -1,6 +1,6 @@
 # CometMarketplaceSetProductItemSeenStateMutation
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -13,13 +13,18 @@
 | Called from | `CometMarketplaceSetProductItemSeenStateMutation` |
 | rea | `ev_d3844ff3ba89d42ce8912082c4735babb8314eb664819e8300eecce66eb73b01` |
 
-Seen 3 time(s) in 2 run(s).
+Seen 8 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | rea read step 36_scroll1X400: exit 0, ev_878f93e2480d9215dd7481db9487a1ed4fb3874251015daaf | 1 | 200 | 1029 ms | 3153 ms | — |
+| warmup | scroll: +127px in 4 wheel steps, 125 ms | 1 | 200 | 800 ms | 4549 ms | — |
+| warmup | scroll: -605px in 14 wheel steps, 687 ms | 1 | 200 | 868 ms | 2415 ms | — |
+| warmup | scroll: +459px in 11 wheel steps, 500 ms | 1 | 200 | 1025 ms | 1149 ms | — |
+| warmup | openAny: read /marketplace/item/<id>/ | 1 | 200 | 824 ms | 4243 ms | — |
+| warmup | scroll: -756px in 16 wheel steps, 656 ms | 1 | 200 | 902 ms | 1785 ms | — |
+| inspect | scroll: -577px in 13 wheel steps, 859 ms | 1 | 200 | 1029 ms | 3592 ms | — |
 | inspect | scroll: +978px in 22 wheel steps, 1531 ms | 1 | 200 | 652 ms | 1996 ms | — |
-| inspect | rea read step 24_scroll1X400: exit 0, ev_b216c28b15aac8907d6b5a345798a611d298acedb29f1a6ac | 1 | 200 | 915 ms | 1527 ms | — |
+| inspect | step 25: openAny 1-3 x /marketplace/item/ | 1 | 200 | 915 ms | 4060 ms | — |
 
 <!-- facts:end -->
 

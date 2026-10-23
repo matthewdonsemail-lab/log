@@ -1,11 +1,4 @@
 #!/usr/bin/env bun
-/**
- * Measures the interest effect (`src/warmup/viewer/helpers/interestEffect.ts`)
- * on KuaiRand-Pure and writes `~/.logCli/datasets/reelViewers/interestEffect.json`
- * (rule 50). One progress line per file (rule 26).
- *
- *   bun scripts/datasets/buildInterestEffect.ts [dataDir]
- */
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { datasetsDir } from '../../src/warmup/persona/index'

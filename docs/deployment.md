@@ -36,7 +36,7 @@ Exposing port 50325 or the CDP ports to the internet is not an option:
                 │  AdsPower  --headless=true --api-key=<key> --api-port=50325   (systemd, as Listaro)                                │
                 │     ▲ Local API http://127.0.0.1:50325 (Bearer key)        ▲ CDP ws://127.0.0.1:<port> per open profile             │
                 │     │                                                      │                                                        │
-                │  log-cli: `log host start --account <a>` per account, the Python sessions, proxyGate, rea; run folders + HARs here  │
+                │  log-cli: `log facebook host start --account <a>` per account, the Python sessions, proxyGate, rea; run folders + HARs here  │
                 └─────┼─────────────────┬────────────────────────────┬──────────────────────────────┬───────────────────────────────┘
                       │ HTTPS (API key) │ HTTP(S)/SOCKS5 outbound     │ HTTPS outbound               │ HTTPS outbound
                       ▼                 ▼                             ▼                              ▼
@@ -105,9 +105,9 @@ LOG_MCP_TOKEN=<a long random token> bun bin/logMcp.ts --http --host <tailscale i
 
 - **Endpoint:** `http://<host>:7337/mcp`. A client sends `Authorization: Bearer <token>`.
 - **Loopback by default** (`127.0.0.1`, no token needed). Any other address refuses to start
-  without `LOG_MCP_TOKEN`, and checks the Host header (DNS rebinding). Bind it to the private
-  network's address (Tailscale), never a public one; or keep it on loopback and reach it
-  through an SSH tunnel.
+  without `LOG_MCP_TOKEN` or OAuth (below), and checks the Host header (DNS rebinding). With
+  the static token only, bind it to the private network's address (Tailscale), never a
+  public one; or keep it on loopback and reach it through an SSH tunnel.
 - **One session per client**, its progress lines streamed as they happen (logging
   notifications), as over stdio.
 - **The same guards:** `--live` needs `confirmLive: true` (rule 10); a join, fill or check runs in
@@ -116,6 +116,41 @@ LOG_MCP_TOKEN=<a long random token> bun bin/logMcp.ts --http --host <tailscale i
   and returns `structuredContent` (`exit`, `ok`, `stdout`, `stderr`, `log`, and `json` when the
   command printed JSON); failures come back as `isError`; `tools.listChanged` is on and a saved
   flow (a tool of its own) sends `notifications/tools/list_changed`.
+
+## Reached by Claude's connectors (claude.ai, Duet): OAuth through Twenty
+
+Claude's custom connectors reach an MCP server from Anthropic's cloud, over the public
+internet, and sign in with OAuth (`oauth_dcr`); a static bearer token is a beta only some
+organizations get (claude.com/docs/connectors/building/authentication). So the server is
+also its own OAuth authorization server, and the only person who may sign in is the
+Twenty user who ran `log login` on it (`src/mcp/oauth`):
+
+```
+LOG_MCP_PUBLIC_URL=https://<public host>  TWENTY_BASIC_USER=…  TWENTY_BASIC_PASSWORD=…  bun bin/logMcp.ts --http --host 127.0.0.1 --port 7337
+```
+
+- **The connector URL** is `https://<public host>/mcp`, exactly (it is the metadata's
+  `resource`). TLS ends in front of port 7337; only `/mcp`, `/.well-known/*` and
+  `/oauth/*` go through. AdsPower's API and CDP stay on loopback (above).
+- **How a sign-in goes:** Claude registers itself (`/oauth/register`: only Claude's
+  callback `https://claude.ai/api/mcp/auth_callback` or a loopback address), sends the
+  browser to `/oauth/authorize` (S256 PKCE). The server registers itself once with Twenty
+  as a public client (Twenty's own `/oauth/register`, redirect
+  `https://<public host>/oauth/twenty/callback`) and sends the browser to Twenty's sign-in
+  (behind its basic-auth guard, `TWENTY_BASIC_USER`/`PASSWORD`, which the server also
+  sends on every call to Twenty's OAuth endpoints). Twenty's token names its user
+  (`userId`); only the owner's gets a code back to Claude. Codes last 60 s and are used
+  once; access tokens 1 hour, refresh tokens 30 days and rotate.
+- **The owner** is the `userId` in this server's `log login` session (or
+  `LOG_MCP_OWNER_USER_ID`). With neither, every sign-in is refused and says so.
+- **Why not `log login`'s own handoff:** blaster's web app hands its session only to a
+  loopback exchange on the same machine (`apps/web/src/lib/auth/cli-handoff.ts`), and a
+  connector's sign-in happens in a browser elsewhere. The server talks to Twenty's OAuth
+  directly instead, which is the same sign-in.
+- **Tokens** are stored only as hashes in `~/.logCli/mcp/oauth.json` (0600).
+  `log mcp clients` lists who signed in, `log mcp revoke <clientId|all>` cuts them off
+  (terminal only). The static `LOG_MCP_TOKEN` keeps working beside OAuth, for Claude Code
+  and Codex over the private network.
 
 ## The 2Captcha proxies (rule 43): what changes with an always-open browser
 
@@ -135,7 +170,7 @@ LOG_MCP_TOKEN=<a long random token> bun bin/logMcp.ts --http --host <tailscale i
 
 1. **Prod settings:**
    - `ADSPOWER_HOST` from the `local_api` file when present;
-   - `log doctor` checks the AdsPower Local API and that `ADSPOWER_API_KEY` is set;
+   - `log facebook doctor` checks the AdsPower Local API and that `ADSPOWER_API_KEY` is set;
    - a `docs/serverSetup.md` port of Listaro's `setup-adspower.sh`: Xvfb, AdsPower
      headless with `--api-key`, Bun and Python for log-cli, systemd units, and VNC on
      the private network only.

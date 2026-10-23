@@ -1,12 +1,3 @@
-"""AdsPower's Local API from Python, for browserDriver.py's AdsPower opener (rule 44).
-
-The same v2 endpoints the TS client uses (src/browser/adsPower/client.ts), from the
-AdsPower docs (RESEARCH/MARKETPLACE_PROVIDERS/antidetectBrowsers/adsPower/DOCS.md):
-start, stop and update a profile, with the key as `Authorization: Bearer`. The Local API
-answers only on this machine (local.adspower.net, localhost or 127.0.0.1; docs/deployment.md),
-so this runs beside AdsPower. ADSPOWER_HOST and ADSPOWER_API_KEY come from the environment
-(log-cli's .env.local). The key is never printed.
-"""
 from __future__ import annotations
 
 import json
@@ -50,7 +41,6 @@ def _call(method: str, path: str, body: dict[str, Any] | None = None) -> Any:
 
 
 def user_proxy_config(proxy: dict[str, Any]) -> dict[str, str]:
-    """The gate's proxy file (server, username, password) as AdsPower's user_proxy_config. Pure."""
     server = urlsplit(str(proxy["server"]) if "://" in str(proxy["server"]) else f"http://{proxy['server']}")
     return {
         "proxy_soft": "other",
@@ -70,8 +60,6 @@ def set_proxy(profile_id: str, config: dict[str, str]) -> None:
 
 
 def start(profile_id: str) -> str:
-    """Opens the profile headed (rule 11's intent: a window you can watch), no IP tab, no restored tabs.
-    Returns the CDP websocket Playwright's connect_over_cdp takes (AdsPower calls it `ws.puppeteer`)."""
     data = _call("POST", "/api/v2/browser-profile/start", {
         "profile_id": profile_id, "headless": "0", "last_opened_tabs": "0", "proxy_detection": "0", "cdp_mask": "1",
     })

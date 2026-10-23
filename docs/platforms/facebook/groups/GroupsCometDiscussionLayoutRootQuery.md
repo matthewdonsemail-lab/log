@@ -1,6 +1,6 @@
 # GroupsCometDiscussionLayoutRootQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -13,12 +13,11 @@
 | Called from | `GroupsCometDiscussionLayoutRoot.react` |
 | rea | `ev_3c4bec6d1ee592a87eefb29b5e39e83c5b10fd1b7fed6b6222ff13bc48050b69` |
 
-Seen 2 time(s) in 1 run(s).
+Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 5: click e2647 | 1 | 200 | 645 ms | 1888 ms | — |
-| inspect | step 7: click e2606 | 1 | 200 | 716 ms | 6105 ms | — |
+| inspect | step 42: clickRole tab "…" | 1 | 200 | 2451 ms | 848 ms | — |
 
 <!-- facts:end -->
 

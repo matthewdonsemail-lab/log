@@ -61,7 +61,7 @@ Why: <fill in>
 Checked: <fill in>
 ```
 
-- **What changed**: the behaviour behind the AST lines. Example: "`log connect`
+- **What changed**: the behaviour behind the AST lines. Example: "`log facebook connect`
   replaces `log login` for Facebook sessions", not "edited index.ts".
 - **Why**: the request or bug behind it. Quote matt's ask when there is one.
 - **Checked**: the exact command and its result (`bun run check`: 62 pass),

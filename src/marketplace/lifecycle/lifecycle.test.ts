@@ -20,7 +20,6 @@ const fresh: AccountStanding = {
 
 type Script = Partial<Record<keyof LifecycleActorInputs, (input: never, call: number) => StepOutcome | Promise<StepOutcome>>>
 
-/** Runs the machine with scripted actors: each returns ok unless the script says otherwise. */
 function run(standing: AccountStanding, script: Script = {}, liveActions = false) {
   const calls: { name: string; input: unknown }[] = []
   const count: Record<string, number> = {}
@@ -46,7 +45,6 @@ const inState = (a: ReturnType<typeof run>['actor'], path: string) => waitFor(a,
 describe('the account lifecycle (rule 35)', () => {
   test('a fresh account goes through onboarding and a day of warm-up in ONE open browser, then to its host', async () => {
     const r = run(fresh, {
-      // The host's second check ends the day; the morning never comes in this test, so the night can be looked at.
       watchCheck: (_i, n) => (n >= 2 ? { kind: 'ok', endOfDay: true } : { kind: 'ok' }),
       waitForActiveHours: () => new Promise<StepOutcome>(() => {})
     })
@@ -56,7 +54,6 @@ describe('the account lifecycle (rule 35)', () => {
     expect(ctx.trail.filter((t) => t.startsWith('warmup:'))).toEqual([
       'warmup:feedBrowse', 'warmup:marketplaceBrowse', 'warmup:createAccessCheck', 'warmup:sellingVisit', 'warmup:messagesVisit'
     ])
-    // The whole of onboarding and the warm-up day ran in one browser: opened once, never closed until the night.
     expect(r.count.openBrowser).toBe(1)
     expect(ctx.browser.closes.map((c) => c.reason)).toEqual(['endOfActiveHours'])
     expect(ctx.trail).toContain('attached')
@@ -88,7 +85,6 @@ describe('the account lifecycle (rule 35)', () => {
     const ctx = r.actor.getSnapshot().context
     const activities = r.calls.filter((c) => c.name === 'warmupActivity').map((c) => (c.input as { activity: string }).activity)
     expect(activities).toEqual(['feedBrowse', 'marketplaceBrowse', 'createAccessCheck', 'createAccessCheck', 'sellingVisit', 'messagesVisit'])
-    // The account was checked again after the person, and no second browser was opened.
     expect(r.count.checkAccount).toBe(2)
     expect(r.count.openBrowser).toBe(1)
     expect(ctx.browser.closes).toEqual([])
@@ -146,7 +142,6 @@ describe('the account lifecycle (rule 35)', () => {
   })
 
   test("waiting out the warm-up day, the end of the account's day sends it overnight (rule 18), and the morning resumes it", async () => {
-    // A warm-up day longer than the run: after the five activities, the first look finds the account's day over.
     const day = createActor(
       lifecycleMachine.provide({
         actors: Object.fromEntries(
@@ -215,7 +210,6 @@ describe('nextOnboardingStep', () => {
     expect(nextOnboardingStep10(ctx({ hasSession: true, status: 'active', profileSet: true, wantsName: false }))).toBe('settingLocation')
     const ready = { hasSession: true, status: 'active', profileSet: true, named: true, locationSet: true }
     expect(nextOnboardingStep10(ctx(ready))).toBe('warming')
-    // Every activity ran but the day isn't over yet: still warming.
     const all = ['feedBrowse', 'marketplaceBrowse', 'createAccessCheck', 'sellingVisit', 'messagesVisit']
     expect(nextOnboardingStep10({ ...ctx(ready, { done: all, startedAt: 9_500 }) })).toBe('warming')
     expect(nextOnboardingStep10({ ...ctx(ready, { done: all, startedAt: 8_000 }) })).toBe('attached')

@@ -24,7 +24,6 @@ beforeAll(async () => {
     saved[k] = process.env[k];
     process.env[k] = v;
   }
-  // The `2CAPTCHA_API_KEY` alias must not leak a real key into these tests either.
   saved["2CAPTCHA_API_KEY"] = process.env["2CAPTCHA_API_KEY"];
   process.env["2CAPTCHA_API_KEY"] = "";
   mkdirSync(root, { recursive: true });
@@ -38,7 +37,6 @@ afterAll(() => {
   }
 });
 
-/** A fake browser session: scripted replies per step, records every call and what its run files held. */
 function fakeSession(script: Partial<Record<SessionStep, Array<Record<string, unknown>>>> = {}) {
   const calls: Array<{ step: SessionStep; params: Record<string, unknown> }> = [];
   const configs: SessionConfig[] = [];
@@ -80,16 +78,15 @@ async function run(argv: string[], session = fakeSession(), twenty = marketplace
 
 const row = (twenty: ReturnType<typeof marketplaceFixture>, object: string, id: string) => twenty.rows[object].find((r) => r.id === id)!;
 
-describe("log publish", () => {
+describe("log facebook publish", () => {
   test("dry run by default: fills, reviews, never clicks Publish, records the run in Twenty", async () => {
-    const { code, out, err, session, twenty } = await run(["publish", "--listing", "readyOne"]);
+    const { code, out, err, session, twenty } = await run(["facebook", "publish", "--listing", "readyOne"]);
     expect(code).toBe(0);
     expect(out).toContain("Dry run");
     expect(err).toContain("uploadingPhotos");
     const steps = session.calls.map((c) => c.step);
     expect(steps).toEqual(["open", "setCategory", "uploadPhotos", "fillFields", "review"]);
     expect(session.closedCount()).toBe(1);
-    // The proxy came from the account in Twenty, as a file, and the file is gone afterwards.
     expect(session.proxyFiles[0]).toEqual({ server: "http://203.0.113.7:8080", username: "user", password: "secretPass", country: "IE" });
     expect(existsSync(session.configs[0].proxyPath)).toBe(false);
     const listing = row(twenty, "agencyListings", "readyOne");
@@ -98,7 +95,7 @@ describe("log publish", () => {
   });
 
   test("--live publishes, and the listing and account are updated in Twenty", async () => {
-    const { code, out, session, twenty } = await run(["publish", "--listing", "readyOne", "--live"]);
+    const { code, out, session, twenty } = await run(["facebook", "publish", "--listing", "readyOne", "--live"]);
     expect(code).toBe(0);
     expect(out).toContain("Published.");
     expect(session.calls.filter((c) => c.step === "publish")).toHaveLength(1);
@@ -111,7 +108,7 @@ describe("log publish", () => {
       open: [{ kind: "captcha", detection: { kind: "recaptcha", enterprise: true } }, { kind: "ready", url: "x" }],
       solveCaptcha: [{ solved: true, detail: "verdicts=[]" }],
     });
-    const { code, out } = await run(["publish", "--listing", "readyOne"], session);
+    const { code, out } = await run(["facebook", "publish", "--listing", "readyOne"], session);
     expect(code).toBe(0);
     expect(session.calls.find((c) => c.step === "solveCaptcha")!.params.solver).toBe("captchaKraken");
     expect(out).toContain("recaptcha via captchaKraken: solved, accepted");
@@ -120,7 +117,7 @@ describe("log publish", () => {
 
   test("Arkose with no 2Captcha key stops for a person, without solving", async () => {
     const session = fakeSession({ open: [{ kind: "captcha", detection: { kind: "arkose" } }] });
-    const { code, out, twenty } = await run(["publish", "--listing", "readyOne"], session);
+    const { code, out, twenty } = await run(["facebook", "publish", "--listing", "readyOne"], session);
     expect(code).toBe(1);
     expect(out).toContain("needs a person");
     expect(session.calls.some((c) => c.step === "solveCaptcha")).toBe(false);
@@ -139,7 +136,7 @@ describe("log publish", () => {
     });
     const out: string[] = [];
     const errs: string[] = [];
-    const code = await runCli(["publish", "--listing", "readyOne"], { session: session.factory, twenty, connectTiming: { pollMs: 1, codeWindowMs: 1 }, out: (l) => out.push(l), err: (l) => errs.push(l) });
+    const code = await runCli(["facebook", "publish", "--listing", "readyOne"], { session: session.factory, twenty, connectTiming: { pollMs: 1, codeWindowMs: 1 }, out: (l) => out.push(l), err: (l) => errs.push(l) });
     expect(code).toBe(0);
     expect(session.configs).toHaveLength(1);
     expect(session.calls.map((c) => c.step)).toEqual(["open", "signInOpen", "signInRead", "signInSubmitCredentials", "signInRead", "signInSave", "open", "setCategory", "uploadPhotos", "fillFields", "review"]);
@@ -153,7 +150,7 @@ describe("log publish", () => {
       signInRead: [{ ok: true, kind: "videoSelfie", path: "/checkpoint/1", heading: "Confirm your identity" }],
       signInOpen: [{ ok: true }],
     });
-    const code = await runCli(["publish", "--listing", "readyOne"], { session: session.factory, twenty, connectTiming: { pollMs: 1, codeWindowMs: 1 }, out: () => {}, err: () => {} });
+    const code = await runCli(["facebook", "publish", "--listing", "readyOne"], { session: session.factory, twenty, connectTiming: { pollMs: 1, codeWindowMs: 1 }, out: () => {}, err: () => {} });
     expect(code).toBe(1);
     expect(session.calls.map((c) => c.step)).toEqual(["open", "signInOpen", "signInRead"]);
     expect(row(twenty, "socialAccounts", "galwayOne").accountStatus).toBe("CHECKPOINT");
@@ -161,11 +158,10 @@ describe("log publish", () => {
 
   test("Facebook disabling the account mid-run makes it BANNED and replaces its campaign listings", async () => {
     const session = fakeSession({ open: [{ kind: "issue", issue: "accountDisabled", detail: "Your account has been disabled" }] });
-    const { code, out, twenty } = await run(["publish", "--listing", "readyOne", "--live"], session);
+    const { code, out, twenty } = await run(["facebook", "publish", "--listing", "readyOne", "--live"], session);
     expect(code).toBe(1);
     expect(out).toContain("galwayOne is now BANNED");
     expect(row(twenty, "socialAccounts", "galwayOne")).toMatchObject({ accountStatus: "BANNED", statusReason: "accountDisabled" });
-    // Its campaign listings are kept and each gets a new row on another Irish account.
     expect(row(twenty, "agencyListings", "liveOne").status).toBe("REPLACED");
     const replacements = twenty.rows.agencyListings.filter((r) => r.replacesId === "liveOne");
     expect(replacements).toHaveLength(1);
@@ -174,7 +170,7 @@ describe("log publish", () => {
   });
 
   test("--json streams the trace then the output, and writes the run record", async () => {
-    const { outLines } = await run(["publish", "--listing", "readyOne", "--json"]);
+    const { outLines } = await run(["facebook", "publish", "--listing", "readyOne", "--json"]);
     const parsed = outLines.map((l) => JSON.parse(l));
     expect(parsed.some((l) => l.kind === "state" && l.state === "reviewing")).toBe(true);
     const output = parsed.at(-1);
@@ -183,7 +179,7 @@ describe("log publish", () => {
   });
 });
 
-describe("log publish refuses before any browser opens", () => {
+describe("log facebook publish refuses before any browser opens", () => {
   const cases: [string, string[], string][] = [
     ["an unknown listing", ["--listing", "nope"], "listingNotFound"],
     ["a listing with no account", ["--listing", "adTemplate"], "listingNoAccount"],
@@ -195,7 +191,7 @@ describe("log publish refuses before any browser opens", () => {
   for (const [what, args, code] of cases) {
     for (const live of [false, true]) {
       test(`${what} (${live ? "live" : "dry run"}) → ${code}`, async () => {
-        const result = await run(["publish", ...args, ...(live ? ["--live"] : [])]);
+        const result = await run(["facebook", "publish", ...args, ...(live ? ["--live"] : [])]);
         expect(result.code).toBe(1);
         expect(result.err).toContain(code);
         expect(result.session.calls).toHaveLength(0);
@@ -205,7 +201,7 @@ describe("log publish refuses before any browser opens", () => {
   }
 
   test("the refusal is written to the listing row", async () => {
-    const { twenty } = await run(["publish", "--listing", "onNoProxy"]);
+    const { twenty } = await run(["facebook", "publish", "--listing", "onNoProxy"]);
     expect(row(twenty, "agencyListings", "onNoProxy")).toMatchObject({ lastRunResult: "BLOCKED", lastErrorCode: "noProxy" });
   });
 
@@ -213,15 +209,14 @@ describe("log publish refuses before any browser opens", () => {
     const twenty = marketplaceFixture(photo);
     await twenty.update("socialAccounts", "galwayOne", { dailyListingCap: 1 });
     await twenty.update("agencyListings", "liveOne", { publishedAt: new Date().toISOString() });
-    const live = await run(["publish", "--listing", "readyOne", "--live"], fakeSession(), twenty);
+    const live = await run(["facebook", "publish", "--listing", "readyOne", "--live"], fakeSession(), twenty);
     expect(live.code).toBe(1);
     expect(live.err).toContain("dailyCapReached");
-    // A dry run doesn't post, so it isn't capped.
-    expect((await run(["publish", "--listing", "readyOne"], fakeSession(), twenty)).code).toBe(0);
+    expect((await run(["facebook", "publish", "--listing", "readyOne"], fakeSession(), twenty)).code).toBe(0);
   });
 });
 
-describe("log publish: device, exit IP and local hours (rules 12, 15, 18)", () => {
+describe("log facebook publish: device, exit IP and local hours (rules 12, 15, 18)", () => {
   test("the session gets the run's device file, and a first-launch device is saved to Twenty", async () => {
     const session = fakeSession();
     const factory = session.factory;
@@ -242,7 +237,7 @@ describe("log publish: device, exit IP and local hours (rules 12, 15, 18)", () =
       writeFileSync(config.devicePath!, JSON.stringify({ ...file, profile: made, created: true }));
       return factory(config);
     };
-    const { code, out, twenty } = await run(["publish", "--listing", "readyOne"], session);
+    const { code, out, twenty } = await run(["facebook", "publish", "--listing", "readyOne"], session);
     expect(code).toBe(0);
     expect(out).toContain("Pinned a new device for galwayOne");
     expect(row(twenty, "socialAccounts", "galwayOne").deviceProfile).toEqual(made);
@@ -252,7 +247,7 @@ describe("log publish: device, exit IP and local hours (rules 12, 15, 18)", () =
     const session = fakeSession({
       review: [{ ok: true, receipt: null, photoCount: 1, exitIpChanged: { from: "203.0.113.1", to: "203.0.113.2", country: "IE" } }],
     });
-    const { code, out, twenty } = await run(["publish", "--listing", "readyOne"], session);
+    const { code, out, twenty } = await run(["facebook", "publish", "--listing", "readyOne"], session);
     expect(code).toBe(0);
     expect(out).toContain("The proxy exit moved from 203.0.113.1 to 203.0.113.2");
     expect(row(twenty, "socialAccounts", "galwayOne")).toMatchObject({ proxyExitIp: "203.0.113.2", proxyExitCountry: "IE" });
@@ -260,11 +255,10 @@ describe("log publish: device, exit IP and local hours (rules 12, 15, 18)", () =
 
   test("an exit that left the country before Publish blocks the run; Publish isn't retried", async () => {
     const session = fakeSession({ publish: [{ ok: false, code: "proxyCountryChanged", detail: "the exit moved to 1.2.3.4 in GB" }] });
-    const { code, twenty } = await run(["publish", "--listing", "readyOne", "--live"], session);
+    const { code, twenty } = await run(["facebook", "publish", "--listing", "readyOne", "--live"], session);
     expect(code).toBe(1);
     expect(session.calls.filter((c) => c.step === "publish")).toHaveLength(1);
     expect(row(twenty, "agencyListings", "readyOne")).toMatchObject({ lastRunResult: "BLOCKED", lastErrorCode: "proxyCountryChanged" });
-    // Not an account problem: the status stays.
     expect(row(twenty, "socialAccounts", "galwayOne").accountStatus).toBe("ACTIVE");
   });
 
@@ -273,7 +267,7 @@ describe("log publish: device, exit IP and local hours (rules 12, 15, 18)", () =
     await twenty.update("socialAccounts", "galwayOne", { activeHoursStart: null, activeHoursEnd: null });
     const session = fakeSession();
     const err: string[] = [];
-    const code = await runCli(["publish", "--listing", "readyOne"], {
+    const code = await runCli(["facebook", "publish", "--listing", "readyOne"], {
       session: session.factory,
       twenty,
       now: () => new Date("2026-10-18T02:00:00Z"),

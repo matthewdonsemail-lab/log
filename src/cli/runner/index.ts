@@ -1,9 +1,3 @@
-/**
- * Command registry and dispatcher.
- *
- * Commands are declared once here; usage text is generated from the same list,
- * so a new command cannot ship without documentation.
- */
 import { runInspectSession, sendInspectCommand } from "../../browser/inspect/index.ts";
 import { startConnectSession, startProfileSession, startSession } from "../../camofox/session/index.ts";
 import { runWorker } from "../../camofox/worker/index.ts";
@@ -17,6 +11,7 @@ import { conversationCommand, conversationsCommand } from "../conversation/index
 import { loginCommand, logoutCommand, whoamiCommand } from "../auth/index.ts";
 import { errorsCommand, graphCommand } from "../errors/index.ts";
 import { captureCommand } from "../capture/index.ts";
+import { checkCommand } from "../check/index.ts";
 import { launchCommand } from "../launch/index.ts";
 import { lifecycleCommand } from "../lifecycle/index.ts";
 import { listingCommand, listingsCommand } from "../listing/index.ts";
@@ -26,11 +21,18 @@ import { flowCommand } from "../flow/index.ts";
 import { hostCommand } from "../host/index.ts";
 import { inspectCommand } from "../inspect/index.ts";
 import { joinCommand } from "../join/index.ts";
+import { messengerCommand } from "../messenger/index.ts";
+import { pollCommand } from "../poll/index.ts";
 import { proxyCommand } from "../proxy/index.ts";
+import { readCommand } from "../read/index.ts";
+import { runsCommand } from "../runs/index.ts";
+import { browsersCommand } from "../browsers/index.ts";
+import { jobCommand } from "../job/index.ts";
+import { mcpCommand } from "../mcp/index.ts";
 import { publishCommand } from "../publish/index.ts";
 import { warmupCommand } from "../warmup/index.ts";
 import { watchCommand } from "../watch/index.ts";
-import { renderUsage } from "./helpers/index.ts";
+import { renderUsage, resolvePlatformForm } from "./helpers/index.ts";
 import type { Command, CommandContext } from "./types.ts";
 
 export * from "./helpers/index.ts";
@@ -52,6 +54,9 @@ export const COMMANDS: Command[] = [
   flowCommand,
   warmupCommand,
   joinCommand,
+  readCommand,
+  pollCommand,
+  checkCommand,
   scanCommand,
   statusCommand,
   watchCommand,
@@ -60,16 +65,20 @@ export const COMMANDS: Command[] = [
   campaignCommand,
   conversationsCommand,
   conversationCommand,
+  messengerCommand,
   errorsCommand,
   graphCommand,
   captureCommand,
+  runsCommand,
+  browsersCommand,
+  jobCommand,
+  mcpCommand,
   loginCommand,
   logoutCommand,
   whoamiCommand,
 ];
 
 const ALIASES: Record<string, string> = {
-  // rule 46: the old browser-named command, for a settle already running in the background and older MCP clients.
   firefoxCapture: "capture",
   "--help": "help",
   "-h": "help",
@@ -85,7 +94,7 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     connectSession: overrides.connectSession ?? startConnectSession,
     profileSession: overrides.profileSession ?? startProfileSession,
     inspectSession: overrides.inspectSession ?? runInspectSession,
-    sendInspect: overrides.sendInspect ?? ((current, action, args, timeoutMs, expect, options) => sendInspectCommand(current, action, args, timeoutMs, 50, expect, options)),
+    sendInspect: overrides.sendInspect ?? defaultSendInspect,
     adsPower: overrides.adsPower,
     connectTiming: overrides.connectTiming,
     out: overrides.out ?? ((line) => console.log(line)),
@@ -94,16 +103,6 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
   };
 }
 
-/**
- * Run one CLI invocation and return its exit code.
- *
- * Never throws for an unknown command: it reports and returns a non-zero code
- * so the binary can stay a thin wrapper.
- */
-/**
- * `--proxyMs <ms>` on any command (rule 33): this run's limit for the proxy's speed to Facebook
- * (default 2500 ms), set as LOG_PROXY_MAX_MS for the run and its Python, then restored.
- */
 export function takeProxyMs(argv: string[]): { argv: string[]; proxyMs: number | null; error: string | null } {
   const rest: string[] = [];
   let proxyMs: number | null = null;
@@ -120,6 +119,8 @@ export function takeProxyMs(argv: string[]): { argv: string[]; proxyMs: number |
   }
   return { argv: rest, proxyMs, error: null };
 }
+
+export const defaultSendInspect: CommandContext["sendInspect"] = (current, action, args, timeoutMs, expect, options) => sendInspectCommand(current, action, args, timeoutMs, 50, expect, options);
 
 export async function runCli(argv: string[], context?: Partial<CommandContext>): Promise<number> {
   const ctx = createContext(context);
@@ -148,14 +149,19 @@ async function dispatch(ctx: CommandContext, argv: string[]): Promise<number> {
     return 0;
   }
 
-  const command = COMMANDS.find((c) => c.name === requested);
-  if (!command) {
+  const form = resolvePlatformForm([requested, ...rest], (name) => COMMANDS.find((c) => c.name === (ALIASES[name] ?? name)));
+  if (!form.ok) {
+    ctx.err(form.error);
+    return 1;
+  }
+  if (!form.command) {
     ctx.err(`Unknown command: ${first}\n`);
     ctx.err(renderUsage(COMMANDS));
     return 2;
   }
+  const command = form.command;
 
-  const result = await command.run(ctx, rest);
+  const result = await command.run(ctx, form.argv);
   if (result.stdout) ctx.out(result.stdout);
   if (result.stderr) ctx.err(result.stderr);
   return result.code;

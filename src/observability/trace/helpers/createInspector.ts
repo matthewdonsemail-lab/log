@@ -2,12 +2,6 @@ import type { InspectionEvent } from "xstate";
 import type { TraceSink } from "../types.ts";
 import { stateToPath } from "./stateToPath.ts";
 
-/**
- * XState `inspect` callback -> trace lines. Keeps the process's own events
- * and child-actor results (`xstate.done.actor.check` shows as `check.done`),
- * and skips the rest of XState's internal `xstate.*` events.
- * `summarize` picks which context fields go on each state line.
- */
 export function createInspector(
   sink: TraceSink,
   summarize: (context: unknown) => Record<string, unknown> = () => ({}),

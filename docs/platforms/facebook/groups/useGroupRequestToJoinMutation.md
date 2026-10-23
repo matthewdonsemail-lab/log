@@ -1,6 +1,6 @@
 # useGroupRequestToJoinMutation
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -27,7 +27,7 @@ Pressing Join on a private group that needs approval sends this mutation: it ask
 
 ## What our machine does with it
 
-The join machine (`src/group/join`, `log join group`) reads it in `readJoinOptions` (`joinOptions.ts`): it is one of `JOIN_MUTATIONS`, so its `viewer_join_state` becomes the group's state (`REQUESTED` → `requested` in Twenty's `joinStatus`), with this mutation as the state's source, and `inferJoinState` takes the request path from it. When the group also has membership questions (`GroupsCometMembershipQuestionsPreloadedDialogQuery`), the machine stops at `questionsShown` with the questions kept in `joinSubmission`; answers are a separate step (`--answer`, `--fill`).
+The join machine (`src/facebook/group/join`, `log facebook join group`) reads it in `readJoinOptions` (`joinOptions.ts`): it is one of `JOIN_MUTATIONS`, so its `viewer_join_state` becomes the group's state (`REQUESTED` → `requested` in Twenty's `joinStatus`), with this mutation as the state's source, and `inferJoinState` takes the request path from it. When the group also has membership questions (`GroupsCometMembershipQuestionsPreloadedDialogQuery`), the machine stops at `questionsShown` with the questions kept in `joinSubmission`; answers are a separate step (`--answer`, `--fill`).
 
 ## What can go wrong
 

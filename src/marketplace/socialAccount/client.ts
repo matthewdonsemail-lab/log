@@ -1,9 +1,3 @@
-/**
- * Facebook accounts in Twenty's `socialAccounts`. log-cli reads every field it
- * needs and writes back only its own (status, proxy check, cookies after a
- * sign-in, lastPostedAt). Rows are never deleted: a banned account keeps its
- * record and history (matt, 2026-10-18).
- */
 import { hasStoredDevice } from '../../camofox/device/index'
 import type { DeviceProfile } from '../../camofox/device/index'
 import { TwentyError } from '../../twenty/graphql/index'
@@ -62,7 +56,6 @@ export async function listFacebookAccounts(twenty: TwentyClient): Promise<Facebo
   return rows.map(toFacebookAccount).sort((a, b) => a.accountName.localeCompare(b.accountName))
 }
 
-/** By record id or accountName (`@` optional). Any platform: `checkRunnable` refuses non-Facebook ones. */
 export async function findAccount(twenty: TwentyClient, ref: string): Promise<FacebookAccount> {
   const key = ref.trim().replace(/^@/, '')
   if (UUID.test(key)) {
@@ -77,7 +70,6 @@ export async function findAccount(twenty: TwentyClient, ref: string): Promise<Fa
   return toFacebookAccount(match[0])
 }
 
-/** Sets the status with its reason. Never deletes, never touches another field. */
 export async function setAccountStatus(
   twenty: TwentyClient,
   accountId: string,
@@ -107,17 +99,10 @@ export async function recordProxyCheck(
   })
 }
 
-/** After a sign-in: the fresh Facebook cookies replace the stored ones. */
 export async function saveCookies(twenty: TwentyClient, accountId: string, cookies: PlaywrightCookie[]): Promise<void> {
   await twenty.update(SOCIAL_ACCOUNTS, accountId, { cookies: cookies as unknown as AccountUpdate['cookies'] })
 }
 
-/**
- * The browser's session after a run (cookies and localStorage), so the next
- * run continues it instead of replaying the last sign-in's cookies in an
- * empty browser. Only a jar that still holds a Facebook session is saved: a
- * logged-out or empty one never replaces good cookies.
- */
 export async function saveSession(twenty: TwentyClient, accountId: string, state: { cookies: PlaywrightCookie[]; origins: unknown[] }): Promise<boolean> {
   if (!hasFacebookSession(state.cookies)) return false
   await twenty.update(SOCIAL_ACCOUNTS, accountId, {
@@ -127,22 +112,16 @@ export async function saveSession(twenty: TwentyClient, accountId: string, state
   return true
 }
 
-/** `log profile setup --live` saved both photos (rule 28): when, so it isn't redone. */
 export async function markProfileSet(twenty: TwentyClient, accountId: string, at: Date): Promise<void> {
   await twenty.update(SOCIAL_ACCOUNTS, accountId, { profileSetAt: at.toISOString() })
 }
 
-/**
- * The device a first launch generated (`camofox/device`). Written once: an
- * account that already has one keeps it, so it never changes device.
- */
 export async function saveDeviceProfile(twenty: TwentyClient, account: FacebookAccount, profile: DeviceProfile): Promise<boolean> {
   if (hasStoredDevice(account.deviceProfile)) return false
   await twenty.update(SOCIAL_ACCOUNTS, account.id, { deviceProfile: profile as unknown as AccountUpdate['deviceProfile'] })
   return true
 }
 
-/** `log adsPower sync` made or found the account's AdsPower profile (rule 42): Twenty keeps the link. */
 export async function saveAdsPowerProfileId(twenty: TwentyClient, accountId: string, profileId: string): Promise<void> {
   await twenty.update(SOCIAL_ACCOUNTS, accountId, { adsPowerProfileId: profileId })
 }

@@ -1,6 +1,6 @@
 # CometUnifiedShareSheetDialogQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -13,12 +13,11 @@
 | Called from | `CometUnifiedShareSheetDialog.react` |
 | rea | `ev_7035e27a70b6da58b992c6e61088868e0fe0ad453f923f702505c93025db22f8` |
 
-Seen 3 time(s) in 2 run(s).
+Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | page has 62 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T234 | 1 | 200 | 951 ms | 91187 ms | — |
-| inspect | page has 63 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261019T232 | 2 | 200 | 547–667 ms | 12219–46674 ms | — |
+| inspect | step 20: clickRole button "…" | 1 | 200 | 1864 ms | 1291 ms | — |
 
 <!-- facts:end -->
 

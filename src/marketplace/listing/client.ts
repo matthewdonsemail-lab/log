@@ -1,10 +1,3 @@
-/**
- * The listing data boundary. Today it serves the dashboard's Marketplace seed
- * (listeningkit-hackathon apps/web/src/lib/listings/mock.ts `MOCK_LISTINGS`),
- * the same rows the Listings table loads. The live facebook-camofox-client
- * exposes the same shapes (`GET /api/listings`, `GET /api/listings/{id}`);
- * when it lands, point these reads at it.
- */
 import { getAccountLabel, listAccounts } from '../account/index'
 import { uuid } from './helpers/uuid'
 import type { ListingRecord } from './types'
@@ -12,23 +5,8 @@ import type { ListingRecord } from './types'
 const img = (id: string) =>
   `https://images.unsplash.com/${id}?auto=format&fit=crop&w=640&q=80`
 
-/**
- * Default photo for form-created listings — the same marketplace shot the
- * mock rows use, so a fresh listing renders a photo fan immediately.
- */
 export const DEFAULT_LISTING_IMAGE = img('photo-1558618666-fcd25c85cd64')
 
-/**
- * Mocked rows for the listings table. The first two are the live-verified
- * listings captured by facebook-camofox-client (docs/okf/marketplace_create.md):
- * 38629807913299080 published 2026-09-09 and sat in duplicate hold, while
- * 1583545526797714 cleared review to `active` on 2026-09-10. The rest are
- * mocked to exercise the remaining status badges, including both `removed`
- * provenances — a seller delist (Patio Set, relistable) and a platform
- * takedown (Wardrobe, relist blocked). All rows are spread across the three
- * mock Facebook accounts above. Every row carries exactly two photos, so
- * each row's fan shows the two-card stack.
- */
 const SEED_LISTINGS: ListingRecord[] = [
   {
     id: uuid(),
@@ -129,7 +107,6 @@ const SEED_LISTINGS: ListingRecord[] = [
     publishedAt: '2026-09-13T10:22:00+00:00'
   }
 ]
-/** Every listing, as fresh copies with the account label resolved from the roster. */
 export function listListings(): ListingRecord[] {
   const accounts = listAccounts()
   return SEED_LISTINGS.map((row) => ({

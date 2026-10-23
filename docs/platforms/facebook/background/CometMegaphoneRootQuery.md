@@ -1,6 +1,6 @@
 # CometMegaphoneRootQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -13,13 +13,26 @@
 | Called from | `CometMegaphoneRoot.react` |
 | rea | `ev_a2e1e82b09a10f9f97361e424dc787adb4a3a8c0a7bb15f7feb91de015e7d2fa` |
 
-Seen 3 time(s) in 2 run(s).
+Seen 16 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | rea read step 24_clickroleButtonNextCard: exit 0, ev_08bd0b0aa3e491db75fd341d53b6ccf63883a | 1 | 200 | 739 ms | 1250244 ms | — |
+| warmup | step 7: goto /marketplace/ | 1 | 200 | 553 ms | 13566 ms | — |
+| warmup | step 15: goto /marketplace/ | 1 | 200 | 672 ms | 12034 ms | — |
+| warmup | step 4: goto /marketplace/ | 1 | 200 | 756 ms | 7053 ms | — |
+| warmup | step 11: goto /marketplace/ | 1 | 200 | 583 ms | 8607 ms | — |
+| warmup | step 17: goto /marketplace/ | 1 | 200 | 504 ms | 12044 ms | — |
+| inspect | step 24: clickRole button "…" | 1 | 200 | 739 ms | 1258019 ms | — |
 | inspect | step 3: clickRole button "…" | 1 | 200 | 613 ms | 5493 ms | — |
-| inspect | page has 46 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T052 | 1 | 200 | 518 ms | 2578 ms | — |
+| inspect | step 71: dwell 1s | 1 | 200 | 518 ms | 8266 ms | — |
+| inspect | step 4: snapshot | 1 | 200 | 587 ms | 342 ms | — |
+| inspect | step 5: goto /marketplace/create/item | 1 | 200 | 743 ms | 6675 ms | — |
+| inspect | step 5: wait 5s | 1 | 200 | 913 ms | 103687 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 1020 ms | 5697 ms | — |
+| inspect | step 4: goto /marketplace/inbox | 1 | 200 | 1290 ms | 558516 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 1 | 200 | 1917 ms | 59459 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 2596 ms | 11543 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 1 | 200 | 803 ms | 1708101 ms | — |
 
 <!-- facts:end -->
 

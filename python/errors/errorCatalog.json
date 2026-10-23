@@ -9,7 +9,7 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Run `log connect --account <id>` and log in by hand."
+    "action": "Run `log facebook connect --account <id>` and log in by hand."
   },
   "disconnected": {
     "layer": "account",
@@ -20,7 +20,7 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Run `log connect --account <id>` and log in by hand."
+    "action": "Run `log facebook connect --account <id>` and log in by hand."
   },
   "stale": {
     "layer": "account",
@@ -31,7 +31,7 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Run `log scan --account <id>`."
+    "action": "Run `log facebook scan --account <id>`."
   },
   "sessionExpired": {
     "layer": "account",
@@ -44,7 +44,7 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Run `log connect --account <id>` and log in by hand."
+    "action": "Run `log facebook connect --account <id>` and log in by hand."
   },
   "sessionInvalidatedChanged": {
     "layer": "account",
@@ -55,7 +55,7 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Run `log connect --account <id>` and log in by hand."
+    "action": "Run `log facebook connect --account <id>` and log in by hand."
   },
   "checkpointed": {
     "layer": "account",
@@ -68,18 +68,18 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Log in by hand and clear the checkpoint, then `log connect`. No solver can do it."
+    "action": "Log in by hand and clear the checkpoint, then `log facebook connect`. No solver can do it."
   },
   "wrongPassword": {
     "layer": "account",
-    "meaning": "Facebook said the password is wrong, or found no account for the email, when `log connect` signed in with Twenty's details.",
+    "meaning": "Facebook said the password is wrong, or found no account for the email, when `log facebook connect` signed in with Twenty's details.",
     "retryable": false,
     "raisedIn": [
       "connect.routing"
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Fix the account's email or password in Twenty, then `log connect` again. Auto-login stops at once so Facebook doesn't see repeated wrong passwords."
+    "action": "Fix the account's email or password in Twenty, then `log facebook connect` again. Auto-login stops at once so Facebook doesn't see repeated wrong passwords."
   },
   "videoSelfieRequired": {
     "layer": "account",
@@ -90,18 +90,18 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "A person records the selfie in the Camoufox window (or on the account owner's phone), then `log connect` again. Tell matt."
+    "action": "A person records the selfie in the Camoufox window (or on the account owner's phone), then `log facebook connect` again. Tell matt."
   },
   "signInNotFinished": {
     "layer": "account",
-    "meaning": "`log connect` reached its deadline (`--wait`) without a logged-in page: the login, two-step or a captcha was not finished.",
+    "meaning": "`log facebook connect` reached its deadline (`--wait`) without a logged-in page: the login, two-step or a captcha was not finished.",
     "retryable": false,
     "raisedIn": [
       "connect.signingIn"
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Run `log connect` again and finish the step its last page names in the Camoufox window, or give it a longer `--wait`. A two-step page needs the totpSecret in Twenty."
+    "action": "Run `log facebook connect` again and finish the step its last page names in the Camoufox window, or give it a longer `--wait`. A two-step page needs the totpSecret in Twenty."
   },
   "unconfirmedUser": {
     "layer": "account",
@@ -123,7 +123,7 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Run `log connect --account <id>` and log in by hand."
+    "action": "Run `log facebook connect --account <id>` and log in by hand."
   },
   "suspended": {
     "layer": "account",
@@ -325,7 +325,7 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Set accountStatus in Twenty (log account status), or use another account."
+    "action": "Set accountStatus in Twenty (log facebook account status), or use another account."
   },
   "noHomeCountry": {
     "layer": "account",
@@ -413,6 +413,17 @@
     "publish": "blocked",
     "monitor": "blocked",
     "action": "Run it inside the window in the detail, or change activeHoursStart/activeHoursEnd on the socialAccount in Twenty."
+  },
+  "accountBusy": {
+    "layer": "account",
+    "meaning": "A job over MCP already holds this account (one browser per account, rule 35). Nothing started.",
+    "retryable": true,
+    "raisedIn": [
+      "mcp/jobs"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Follow the job in the detail with jobStatus until it ends, or stop it with jobCancel, then call again."
   },
   "launchTooSoon": {
     "layer": "account",
@@ -547,7 +558,7 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Run `log connect --account <id>` and log in by hand."
+    "action": "Run `log facebook connect --account <id>` and log in by hand."
   },
   "captchaHtml": {
     "layer": "account",
@@ -558,7 +569,7 @@
     ],
     "publish": "blocked",
     "monitor": "blocked",
-    "action": "Open the account by hand. `log publish` routes captchas itself; `scan` does not."
+    "action": "Open the account by hand. `log facebook publish` routes captchas itself; `scan` does not."
   },
   "unknownPlatform": {
     "layer": "account",
@@ -743,6 +754,21 @@
     ],
     "publish": "failed",
     "action": "Run again."
+  },
+  "locationAbbreviated": {
+    "layer": "listing",
+    "meaning": "A Marketplace location is abbreviated (\"Bethlehem, PA\"), a zip or a number, or names no state or country. \"Bethlehem, PA\" was offered only as the West Bank and a bare zip offered Granada, Spain first, so nothing is typed. Nothing was done on Facebook.",
+    "retryable": false,
+    "raisedIn": [
+      "facebook/marketplace/location",
+      "cli/listing",
+      "cli/publish",
+      "cli/flow",
+      "cli/inspect",
+      "cli/host",
+      "python/session"
+    ],
+    "action": "Write it as \"City, State\" with the state written out (\"Bethlehem, Pennsylvania\"), or \"City, Country\" (\"Galway, Ireland\"), in the listing's locationQuery or the --set location value."
   },
   "locationNotSet": {
     "layer": "form",
@@ -1103,7 +1129,7 @@
     ],
     "publish": "failed",
     "monitor": "failed",
-    "action": "Set LOG_PYTHON to a Python with facebook-camofox-client installed (`log doctor`)."
+    "action": "Set LOG_PYTHON to a Python with facebook-camofox-client installed (`log facebook doctor`)."
   },
   "workerNoOutput": {
     "layer": "runtime",
@@ -1282,7 +1308,7 @@
     "raisedIn": [
       "marketplace/agencyListing"
     ],
-    "action": "Check the id (log listings shows them)."
+    "action": "Check the id (log facebook listings shows them)."
   },
   "listingNoAccount": {
     "layer": "listing",
@@ -1291,7 +1317,7 @@
     "raisedIn": [
       "marketplace/agencyListing"
     ],
-    "action": "Set its Social account in Twenty, or fill the campaign with log campaign fill."
+    "action": "Set its Social account in Twenty, or fill the campaign with log facebook campaign fill."
   },
   "listingNotPublishable": {
     "layer": "listing",
@@ -1311,6 +1337,15 @@
     ],
     "action": "Fix the fields named in the detail in Twenty."
   },
+  "notEnoughCopyVersions": {
+    "layer": "listing",
+    "meaning": "The ad would be live on several listings in one city without enough copy versions, or a version breaks the copy rules (skills/listingCopy). Nothing was created.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/campaign"
+    ],
+    "action": "Write at least as many versions as listings it will have live in that city, never fewer than 3, each by skills/listingCopy, in copyVersions; check them with log facebook listing lint --file <listing.json>."
+  },
   "noReplacementAccount": {
     "layer": "listing",
     "meaning": "No FACEBOOK account in the listing's country is ACTIVE, proxied, under its cap and not already in the campaign. The listing stays ACCOUNT_LOST.",
@@ -1318,7 +1353,7 @@
     "raisedIn": [
       "marketplace/replacement"
     ],
-    "action": "Add or activate an account in that country (with a proxy there), then run log campaign heal."
+    "action": "Add or activate an account in that country (with a proxy there), then run log facebook campaign heal."
   },
   "twentyNotConfigured": {
     "layer": "twenty",
@@ -1372,7 +1407,7 @@
     "raisedIn": [
       "marketplace/socialAccount"
     ],
-    "action": "log accounts lists the Facebook accounts."
+    "action": "log facebook accounts lists the Facebook accounts."
   },
   "twoCaptchaNotConfigured": {
     "layer": "proxyVendor",
@@ -1546,25 +1581,26 @@
     "meaning": "--group names no Facebook group (a facebook.com/groups/<id or name>/ URL, the id, or the name in the URL).",
     "retryable": false,
     "raisedIn": [
-      "group/join"
+      "facebook/group/join"
     ],
     "action": "Copy the group's URL from the browser and pass it as --group."
   },
   "groupBrowserNotOpen": {
     "layer": "group",
-    "meaning": "The account's browser is not open: a join is a step in it, never a launch of its own (rule 35).",
+    "meaning": "The account's browser is not open: a join or a read is a step in it, never a launch of its own (rule 35).",
     "retryable": false,
     "raisedIn": [
-      "cli/join"
+      "cli/join",
+      "cli/read"
     ],
-    "action": "Open it first: log inspect start --account <a> (or log host start), then run the join again."
+    "action": "Open it first: log inspect start --account <a> (or log facebook host start), then run the join or the read again."
   },
   "groupPageNotOpened": {
     "layer": "group",
     "meaning": "The group page did not open in the account's browser.",
     "retryable": true,
     "raisedIn": [
-      "group/join.opening"
+      "facebook/group/join.opening"
     ],
     "action": "Read the run's step folder (rule 25): its screenshot and HAR show where the page went."
   },
@@ -1573,17 +1609,17 @@
     "meaning": "The group page showed neither a Join nor a Joined button: a page not recorded yet.",
     "retryable": false,
     "raisedIn": [
-      "group/join.reading"
+      "facebook/group/join.reading"
     ],
-    "action": "Read the step's snapshot.yml and screenshot: name the page's button in group/join/helpers/readGroupPage.ts from that recording (rule 29)."
+    "action": "Read the step's snapshot.yml and screenshot: name the page's button in facebook/group/join/helpers/readGroupPage.ts from that recording (rule 29)."
   },
   "groupQuestionsNotReopened": {
     "layer": "group",
     "meaning": "The group page shows no way back into its questions: no \"Answer questions\" button and no open dialog.",
     "retryable": false,
     "raisedIn": [
-      "group/answer.choosing",
-      "group/answer.reopening"
+      "facebook/group/answer.choosing",
+      "facebook/group/answer.reopening"
     ],
     "action": "Read the opening step's snapshot (rule 25): a public group's participation questions have no recorded way back in yet. Record one with log inspect before filling it (rule 29)."
   },
@@ -1592,18 +1628,18 @@
     "meaning": "A fill step had no element in the dialog, or one failed: the draft and the dialog don't match.",
     "retryable": false,
     "raisedIn": [
-      "group/answer.planning",
-      "group/answer.filling"
+      "facebook/group/answer.planning",
+      "facebook/group/answer.filling"
     ],
-    "action": "Read the reading step's snapshot.yml: the questions may have changed (run the stepper again: log join group --answer), or a type isn't recorded yet."
+    "action": "Read the reading step's snapshot.yml: the questions may have changed (run the stepper again: log facebook join group --answer), or a type isn't recorded yet."
   },
   "groupSubmitNotConfirmed": {
     "layer": "group",
     "meaning": "Submit was pressed and the dialog stayed open, or the click failed. It is not pressed again.",
     "retryable": false,
     "raisedIn": [
-      "group/answer.submitting",
-      "group/answer.checking"
+      "facebook/group/answer.submitting",
+      "facebook/group/answer.checking"
     ],
     "action": "Read the submitting and checking steps' recordings (rule 25) before another --submit."
   },
@@ -1612,9 +1648,38 @@
     "meaning": "Join was pressed and the page did not change, or the click failed. It is not pressed again.",
     "retryable": false,
     "raisedIn": [
-      "group/join.joining",
-      "group/join.checking"
+      "facebook/group/join.joining",
+      "facebook/group/join.checking"
     ],
     "action": "Read the joining and checking steps' recordings (rule 25) before another --live run."
+  },
+  "groupIdUnknown": {
+    "layer": "group",
+    "meaning": "The group page never gave the group's numeric id (the read keeps a post only with its group's id).",
+    "retryable": true,
+    "raisedIn": [
+      "facebook/group/read.opening"
+    ],
+    "action": "Read the opening step's recording (rule 25), or pass the group's numeric id as --group."
+  },
+  "groupNoAccount": {
+    "layer": "group",
+    "meaning": "No account in Twenty is in this group (no agencyGroups row with its id), so none can read it.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/read.worker"
+    ],
+    "action": "Join it first with one account: log facebook join group --account <a> --group <id> --live."
+  },
+  "groupReadStepFailed": {
+    "layer": "group",
+    "meaning": "A step of the group read failed in the account's browser (a scroll, a post page, its comments).",
+    "retryable": true,
+    "raisedIn": [
+      "facebook/group/read.scrolling",
+      "facebook/group/read.openingPost",
+      "facebook/group/read.scrollingComments"
+    ],
+    "action": "Read the step's recording (rule 25): its screenshot and HAR show where the page was."
   }
 }

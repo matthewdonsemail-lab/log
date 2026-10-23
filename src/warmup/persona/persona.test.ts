@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test'
 import { createActor, fromPromise, toPromise } from 'xstate'
-import { FEED, feedPersonaMachine, planPost, stepsForPost, postReadRequest, planReel, playAt, readReelRead, realPlay, REEL, REEL_LABELS, reelCaption, reelPersonaMachine, reelReadRequest, segmentWeight, stepsForPlan } from '../facebook/index'
-import type { ActivityStep, AllowedActions, FeedLabel, ReelLabel, ReelPlan, ReelRead, StepReply } from '../facebook/index'
+import { FEED, feedPersonaMachine, planPost, stepsForPost, postReadRequest, planReel, playAt, readReelRead, realPlay, REEL, REEL_LABELS, reelCaption, reelPersonaMachine, reelReadRequest, segmentWeight, stepsForPlan } from '../../facebook/warmup/activities/index'
+import type { ActivityStep, AllowedActions, FeedLabel, ReelLabel, ReelPlan, ReelRead, StepReply } from '../../facebook/warmup/activities/index'
 import { buildViewers, describeViewer, measureInterestEffect, viewersForSpeed, watchBands, watchRatio } from '../viewer/index'
 import type { InterestEffect, KuaiRow, ReelViewer } from '../viewer/index'
 import { buildPersonaPack, drawPersona, parseTable, segmentOf } from './index'
@@ -38,7 +38,6 @@ describe('drawPersona: a behaviour profile from the three datasets matt named (r
   })
 })
 
-// A viewer with three sessions of ten swipes: plays of 0.5 s to 9.5 s, the 4th in the comments, the 7th liked.
 const row = (i: number, at: number): KuaiRow => ({ userId: 7, timeMs: at, tab: 1, playMs: 500 + i * 1000, durationMs: 20_000, commentMs: i === 3 ? 6000 : 0, profileMs: 0, liked: i === 6 ? 1 : 0 })
 const sessionRows = (start: number) => {
   const rows: KuaiRow[] = []
@@ -135,7 +134,6 @@ const basePack = (over: Partial<PersonaPack['traits']> = {}, segment: PersonaPac
   provenance: []
 })
 
-// The interest effect as measured on KuaiRand-Pure (2026-10-20), rounded.
 const effect: InterestEffect = { watchIn: [1.1, 1.23, 1.4, 1.67], watchOut: [0.99, 0.97, 0.94, 0.9], likeIn: 1.28, likeOut: 0.95, commentIn: 1.4, commentOut: 0.93, skipIn: 0.4, skipOut: 0.49, plays: { in: 1, out: 1 }, source: 'test' }
 const read = (interest: number, pick: ReelRead['pick'] = 'none'): ReelRead => ({ label: 'memes', labelConfidence: 0.9, interest, pick, pickProbabilities: {}, inputTokens: 500 })
 
@@ -165,7 +163,6 @@ describe('planReel: the action orderer on SubQ\'s read, deterministic first', ()
     const notTheirs = planReel({ ...input, read: read(0), reel: 4 })
     expect(theirs.match).toBe(true)
     expect(notTheirs.match).toBe(false)
-    // 3.5 s sits at the viewer's median: theirs maps to their 75th percentile (7.5 s), not theirs to their 25th (2.5 s).
     expect(theirs.watchMs).toBe(Math.round(7500 * 1.4))
     expect(notTheirs.watchMs).toBe(Math.round(2500 * 0.99))
     expect(playAt(viewer, 0.75)).toBe(7500)
@@ -338,7 +335,6 @@ describe('the feed, post by post (planPost, feedPersonaMachine)', () => {
     const output = await toPromise(actor)
     expect(acted).toEqual(['openFeed', 'dismissPrompt', 'settle', 'nextPost', 'onPost', 'nextPost', 'onPost', 'openMarketplace', 'lookMarketplace', 'scrollMarketplace', 'openListings'])
     expect(output.labels.map((l) => [l.index, l.plan?.match, l.plan?.like])).toEqual([[1, true, false], [2, false, false]])
-    // A pack that opens comments always: the post's comments opened, read and closed; one action per post.
     const commenter = basePack({ likeP: 0, commentP: 1 })
     const opened = planPost({ pack: commenter, effect, read: read(1, 'openComments'), post: { words: 20, liked: false, truncated: true }, index: 2, seed: 1, allowLike: false, allowClicks: true, lastLikeIndex: null })
     expect(opened).toMatchObject({ match: true, seeMore: true, action: 'openComments', like: false })

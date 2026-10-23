@@ -1,6 +1,6 @@
 ---
 name: reaCapture
-description: Analyze the Facebook create page from live Camoufox runs. `log publish` records a raw HAR of the session, the installed rea-agents CLI reads it and its scripts offline, and the findings go through SubQ matrices to make design decisions for log-cli's Facebook client. Use to resume the REA work, run a capture, read rea's Evidence, or turn findings into a matrix.
+description: Analyze the Facebook create page from live Camoufox runs. `log facebook publish` records a raw HAR of the session, the installed rea-agents CLI reads it and its scripts offline, and the findings go through SubQ matrices to make design decisions for log-cli's Facebook client. Use to resume the REA work, run a capture, read rea's Evidence, or turn findings into a matrix.
 ---
 
 # reaCapture
@@ -22,7 +22,7 @@ Why a HAR plus scripts, read offline: `docs/rea/matrix/` and
    stays on matt's development machine in the run folder
    (`~/.logCli/publish/<run>/<browser>`) and is never committed.
 2. **Captures come from every live run (rule 22)**: `connect`, `scan`,
-   `status`, each `watch` check and `log publish` (dry run unless `--live`,
+   `status`, each `watch` check and `log facebook publish` (dry run unless `--live`,
    rule 10). There is no flag to skip it. Those runs follow the launch rules as they are:
    headed (11), proxy in country (12), self-check (17), waking hours (18).
 3. **REA reads files, never the window.** No CDP, no attach. The rea
@@ -50,9 +50,9 @@ Any action records one. Through the MCP, `mcp__log__connect` / `scan` /
 `publish` do the same.
 
 ```bash
-bun bin/log.ts connect --account <a> --noPrompt   # the login, step by step
-bun bin/log.ts scan --account <a>
-bun bin/log.ts publish <listingId>                # dry run; the HAR records the whole session
+bun bin/log.ts facebook connect --account <a> --noPrompt   # the login, step by step
+bun bin/log.ts facebook scan --account <a>
+bun bin/log.ts facebook publish <listingId>                # dry run; the HAR records the whole session
 ```
 
 Where: `~/.logCli/runs/<action>/<time>_<account>/<browser>/` (`adsPower`, `camoufox`, or `firefox` for runs before 2026-10-20) (`LOG_RUNS_DIR`
@@ -76,10 +76,10 @@ notes print
 
 ### 2. Read with rea (offline)
 
-`log publish` runs these itself. To re-run on any HAR:
+`log facebook publish` runs these itself. To re-run on any HAR:
 
 ```bash
-bun bin/log.ts capture --har <path> --out <dir>      # --noRea to only write the files
+bun bin/log.ts facebook capture --har <path> --out <dir>      # --noRea to only write the files
 rea inspect-web-network-capture <absolute>/session.har har --format json
 ```
 
@@ -97,7 +97,7 @@ is read per request instead (step 2b).
 ### 2b. The Facebook client docs (per request, rules 25 and 27)
 
 ```bash
-bun bin/log.ts capture --docs          # run it live (Monitor), every stage prints
+bun bin/log.ts facebook capture --docs          # run it live (Monitor), every stage prints
 ```
 
 1. Every run under `~/.logCli` is split by its `steps.jsonl`; each request
@@ -154,7 +154,7 @@ Record the decision and its evidence ids in the `log.md` entry.
 
 ## Status (2026-10-18)
 
-- Done: the raw HAR capture in `log publish`, `log capture`, and
+- Done: the raw HAR capture in `log facebook publish`, `log facebook capture`, and
   rea 6.7.0 read on a sample HAR (both calls exit 0, with the POST body
   visible to rea).
 - Next: the first live capture run, then `docs/rea/findings/`, then the

@@ -20,10 +20,10 @@ function keptRun(accountName: string) {
   return dir;
 }
 
-describe("log account resave", () => {
+describe("log facebook account resave", () => {
   test("saves a kept run's session to Twenty, then removes the folder", async () => {
     const dir = keptRun("needsLogin");
-    const result = await run(["account", "resave", "needsLogin", "--from", dir]);
+    const result = await run(["facebook", "account", "resave", "needsLogin", "--from", dir]);
     expect(result.code).toBe(0);
     expect(result.out).toContain("Saved needsLogin's session (2 cookies) to Twenty.");
     expect(existsSync(dir)).toBe(false);
@@ -33,14 +33,14 @@ describe("log account resave", () => {
 
   test("refuses a folder that belongs to another account", async () => {
     const dir = keptRun("galwayTwo");
-    const result = await run(["account", "resave", "galwayOne", "--from", dir]);
+    const result = await run(["facebook", "account", "resave", "galwayOne", "--from", dir]);
     expect(result.code).toBe(1);
     expect(result.out).toContain("belongs to another account");
     expect(existsSync(dir)).toBe(true);
   });
 });
 
-describe("log account resetOpens", () => {
+describe("log facebook account resetOpens", () => {
   test("writes one dated reset per account and puts the host's opens back to 0, deleting nothing", async () => {
     const root = mkdtempSync(join(tmpdir(), "logReset"));
     process.env.LOG_LAUNCH_RESETS = join(root, "launchResets.jsonl");
@@ -49,7 +49,7 @@ describe("log account resetOpens", () => {
       mkdirSync(join(root, "host", "needsLogin"), { recursive: true });
       const progress = { account: "needsLogin", accountId: "needsLogin", state: "stopped", savedAt: "2026-10-19T16:35:00Z", day: "2026-10-19", resume: { warmupDone: [], warmupStartedAt: null, opensToday: 2 }, issue: null, lastError: null, closes: [], snapshot: null };
       writeFileSync(join(root, "host", "needsLogin", "progress.json"), JSON.stringify(progress));
-      const result = await run(["account", "resetOpens", "needsLogin", "--reason", "dev day"]);
+      const result = await run(["facebook", "account", "resetOpens", "needsLogin", "--reason", "dev day"]);
       expect(result.code).toBe(0);
       expect(result.out).toContain("needsLogin: opens reset at");
       expect(result.out).toContain("launch budget and host opens count from now");

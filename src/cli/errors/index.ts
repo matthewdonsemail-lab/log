@@ -1,13 +1,8 @@
-/**
- * `log errors` — the error catalog: every code, what it means, whether it
- * clears by itself, and where each machine ends up. `log graph` — a machine's
- * states and transitions as Mermaid, read from the machine itself.
- */
 import { ERROR_CATALOG, isErrorCode } from "../../errors/catalog/index.ts";
 import type { ErrorLayer } from "../../errors/catalog/index.ts";
 import { toMermaid } from "../../observability/graph/index.ts";
-import { parseArgs } from "../runner/helpers/index.ts";
-import type { Command } from "../runner/types.ts";
+import { JSON_FLAG, parseArgs, parserSpecOf } from "../runner/helpers/index.ts";
+import type { Command, CommandInput } from "../runner/types.ts";
 import { LAYERS, MACHINES, catalogEntries, renderCatalogEntry, renderCatalogMarkdown, renderCatalogTable } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
@@ -15,13 +10,32 @@ export * from "./helpers/index.ts";
 export const ERRORS_USAGE = `Usage: log errors [--layer <${LAYERS.join("|")}>] [--code <code>] [--json] [--markdown]`;
 export const GRAPH_USAGE = `Usage: log graph <${Object.keys(MACHINES).join("|")}>`;
 
+export const ERRORS_INPUT: CommandInput = {
+  forms: [
+    {
+      words: [],
+      summary: "The error catalog",
+      positionals: [],
+      flags: [
+        { name: "layer", kind: "enum", values: LAYERS, description: "Only this layer's codes" },
+        { name: "code", kind: "string", description: "One code in full" },
+        JSON_FLAG,
+        { name: "markdown", kind: "boolean", description: "As Markdown" },
+      ],
+    },
+  ],
+};
+
 export const errorsCommand: Command = {
   usage: ERRORS_USAGE,
+  platform: "any",
   name: "errors",
+  effect: "read",
+  input: ERRORS_INPUT,
   summary: "List every error code: meaning, retryable, where each machine ends up",
   args: "[--layer <layer>] [--code <code>] [--json] [--markdown]",
   run(_context, argv) {
-    const parsed = parseArgs(argv, { boolean: ["json", "markdown"], valued: ["layer", "code"] });
+    const parsed = parseArgs(argv, parserSpecOf(ERRORS_INPUT));
     if (!parsed.ok) return { code: 1, stderr: `log errors: ${parsed.error}\n${ERRORS_USAGE}` };
     if (parsed.positionals.length > 0) return { code: 1, stderr: `log errors: unexpected argument "${parsed.positionals[0]}"\n${ERRORS_USAGE}` };
 
@@ -38,7 +52,6 @@ export const errorsCommand: Command = {
     }
     if (parsed.flags["markdown"]) return { code: 0, stdout: renderCatalogMarkdown() };
     if (parsed.flags["json"]) {
-      // Also the export Python reads (python/errors/errorCatalog.json), so keep it the whole catalog when unfiltered.
       const entries = Object.fromEntries(catalogEntries(layer as ErrorLayer | undefined));
       return { code: 0, stdout: JSON.stringify(entries, null, 2) };
     }
@@ -48,7 +61,9 @@ export const errorsCommand: Command = {
 
 export const graphCommand: Command = {
   usage: GRAPH_USAGE,
+  platform: "any",
   name: "graph",
+  effect: "read",
   summary: "Print a machine's states and transitions as a Mermaid diagram",
   args: `<${Object.keys(MACHINES).join("|")}>`,
   run(_context, argv) {

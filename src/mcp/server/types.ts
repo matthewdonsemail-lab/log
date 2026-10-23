@@ -1,46 +1,71 @@
-/** The `log` MCP server: every CLI command as one tool. */
+import type { BrowserView } from "../../browser/inspect/types.ts";
 
-/** What a tool call takes: the same arguments the command takes after `log <name>`. */
 export interface LogToolInput {
   args?: string[];
-  /** Must be true for any call with `--live` (AGENTS.md rule 10: posting only when matt asks). */
   confirmLive?: boolean;
-  /** Must be true for any call with `--bypass` (rule 20: outside the account's hours only when matt asks). */
   confirmBypass?: boolean;
+  waitMs?: number;
+  [field: string]: unknown;
+}
+
+export interface LogToolAnnotations {
+  title: string;
+  readOnlyHint: boolean;
+  destructiveHint: boolean;
+  idempotentHint: boolean;
+  openWorldHint: boolean;
 }
 
 export interface LogTool {
   name: string;
+  title: string;
   description: string;
+  annotations: LogToolAnnotations;
   inputSchema: {
     type: "object";
     properties: Record<string, unknown>;
+    required?: string[];
     additionalProperties: false;
   };
-  /** Every tool's structured result (`structuredContent`), the same shape for each: see `TOOL_RESULT_SCHEMA`. */
   outputSchema: typeof TOOL_RESULT_SCHEMA;
 }
 
-/**
- * What every tool call returns as `structuredContent`, beside the text: the
- * command's exit code, its output, its progress lines, and its output parsed
- * when the command printed JSON (`--json`). One shape, so code that calls the
- * tools (MCP's programmatic tool calling) gets a typed result.
- */
 export const TOOL_RESULT_SCHEMA = {
   type: "object",
   properties: {
-    exit: { type: "integer", description: "The command's exit code: 0 done, 1 refused or failed (the reason is in stderr), 2 runtime" },
+    exit: { type: "integer", description: "The command's exit code: 0 done, 1 refused or failed (the reason is in stderr), 2 runtime, -1 still running as a job (see job)" },
     ok: { type: "boolean", description: "exit is 0" },
     stdout: { type: "string", description: "What the command printed" },
     stderr: { type: "string", description: "Its errors and refusals, with the error catalog code" },
     log: { type: "array", items: { type: "string" }, description: "Its progress lines, in order (rule 26)" },
     json: { description: "stdout parsed, when the command printed JSON (pass --json)" },
+    progress: {
+      type: "array",
+      items: { type: "object", properties: { at: { type: "string" }, source: { type: "string" }, line: { type: "string" } }, required: ["at", "source", "line"] },
+      description: "Every line the run streamed as it happened, with its time (rule 26): what a client without a shell watches instead of the live log",
+    },
+    browsers: {
+      type: "array",
+      items: { type: "object" },
+      description: "Every open browser after the call: account, step, url, the known page state it sits on (id, what, person), the failed step, its resolver call (next) and what only matt can clear (needsMatt) (rules 54-55)",
+    },
+    next: { description: "The tool call that resolves the first open browser's known state ({ tool, input }), or null: call it, do not stop (rule 54)" },
+    needsMatt: { description: "What only matt can clear (a video selfie, an ID, a disabled account, a PIN not in Twenty), or null: stop that account and tell him" },
+    job: {
+      type: "object",
+      properties: { id: { type: "string" }, status: { type: "string" }, afterLine: { type: "integer" } },
+      description: "A long run is a job: its id, its status (running, completed, failed, cancelled, lost) and how many progress lines are in so far. exit -1 means it is still running: follow it with jobStatus { jobId, afterLine }",
+    },
   },
-  required: ["exit", "ok", "stdout", "stderr", "log"],
+  required: ["exit", "ok", "stdout", "stderr", "log", "progress", "browsers", "next", "needsMatt"],
 } as const;
 
-/** The structured result of one call. */
+export interface ProgressLine {
+  at: string;
+  source: string;
+  line: string;
+}
+
 export interface ToolResult {
   exit: number;
   ok: boolean;
@@ -48,19 +73,20 @@ export interface ToolResult {
   stderr: string;
   log: string[];
   json?: unknown;
+  progress: ProgressLine[];
+  browsers: BrowserView[];
+  next: BrowserView["next"];
+  needsMatt: string | null;
+  job?: { id: string; status: string; afterLine: number };
 }
 
-/**
- * Commands that need a person at the terminal, so they are not tools. Over
- * stdio, stdin carries the MCP messages, and `launch` prompts with Clack.
- * `connect` is a tool because it always runs `--noPrompt` here (`NO_PROMPT`).
- */
 export const TERMINAL_ONLY: Readonly<Record<string, string>> = {
   launch: "prompts in a terminal (Clack). Call the commands it wraps directly.",
   login: "opens a browser for Twenty OAuth and waits for it. Run `bun bin/log.ts login` in a terminal.",
+  mcp: "manages who may sign in to this server's MCP (OAuth through Twenty). matt runs `bun bin/log.ts mcp clients` or `mcp revoke <clientId|all>` in a terminal on the server.",
+  messenger: "asks matt for the Messenger PIN in a Clack prompt (masked). He runs `bun bin/log.ts facebook messenger pin --account <a>` in a terminal.",
 };
 
-/** Flags added to a command's args so it never reads stdin. */
 export const NO_PROMPT: Readonly<Record<string, string>> = {
   connect: "--noPrompt",
 };

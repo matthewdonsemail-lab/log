@@ -55,7 +55,7 @@ the inbox showed it and:
 1. Finds the conversation by `pairKey`, or creates it as `NEW`.
 2. Ties it to a listing on that account. It matches the Facebook listing id
    first, then the title, but only when exactly one listing has that title.
-   Two listings with one title stay unmatched (`log conversation link`).
+   Two listings with one title stay unmatched (`log facebook conversation link`).
 3. Adds each message whose key isn't stored yet. Ours are read, the buyer's
    are unread.
 4. Moves the summary forward only. Our first reply makes the lead `CONTACTED`,
@@ -67,12 +67,12 @@ Running it twice on the same scan adds nothing.
 ## Commands
 
 ```bash
-log conversations [--account <name>] [--listing <agencyListingId>] [--json]
-log conversation show <id>
-log conversation read <id>                    # the buyer's messages are read; unread 0
-log conversation lead <id> BOOKED             # NEW | CONTACTED | QUALIFIED | BOOKED | LOST | SPAM
-log conversation link <id> --listing <agencyListingId>
-log conversation record --account <name> --file threads.json
+log facebook conversations [--account <name>] [--listing <agencyListingId>] [--json]
+log facebook conversation show <id>
+log facebook conversation read <id>                    # the buyer's messages are read; unread 0
+log facebook conversation lead <id> BOOKED             # NEW | CONTACTED | QUALIFIED | BOOKED | LOST | SPAM
+log facebook conversation link <id> --listing <agencyListingId>
+log facebook conversation record --account <name> --file threads.json
 ```
 
 The `--file` for `record` holds one thread, a list, or `{ "threads": [...] }`:

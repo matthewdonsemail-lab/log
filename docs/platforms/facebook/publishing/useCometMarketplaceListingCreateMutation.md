@@ -1,6 +1,6 @@
 # useCometMarketplaceListingCreateMutation
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -13,11 +13,12 @@
 | Called from | `useCometMarketplaceListingCreateMutation` |
 | rea | `ev_9b09bc743ecfcdaaf9245c052c78813cdc1ea6ffecabbeede3a18621e77a9635` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | publish | Marketplace location: Reading 19601 US | 1 | 200 | 6401 ms | 16766 ms | — |
+| inspect | step 25: click e1241 | 1 | 200 | 5731 ms | 1960 ms | — |
 
 <!-- facts:end -->
 

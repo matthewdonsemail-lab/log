@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { mkdtempSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import type { InspectSessionConfig } from "../../browser/inspect/index.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
@@ -87,7 +87,6 @@ describe("log inspect start --detach (how an MCP agent opens the account's brows
     const runDir = mkdtempSync(join(tmpdir(), "logDetachRun"));
     inspectDetachDeps.start = (argv) => {
       started.push(argv);
-      // What the real session writes once its gate and self-check passed.
       writeCurrentInspect({ account: "galwayOne", runDir, commandsPath: join(runDir, "commands.jsonl"), repliesPath: join(runDir, "replies.jsonl"), startedAt: "2026-10-20T00:00:00.000Z" });
       writeFileSync(join(runDir, "replies.jsonl"), '{"id": "ready", "result": {"ok": true}}\n');
       return { exited: () => null };
@@ -116,5 +115,41 @@ describe("log inspect start --detach (how an MCP agent opens the account's brows
     } finally {
       Object.assign(inspectDetachDeps, real);
     }
+  });
+
+  test("a refusal shows only this start's lines, never the previous session's (Bethlehem 2026-10-20)", async () => {
+    const { inspectDetachDeps } = await import("./index.ts");
+    const { appendFileSync, mkdirSync } = await import("node:fs");
+    const { dirname } = await import("node:path");
+    const real = { ...inspectDetachDeps };
+    inspectDetachDeps.start = (_argv, logPath) => {
+      appendFileSync(logPath, "log inspect: launchBudgetSpent: nothing opened\n");
+      return { exited: () => 1 };
+    };
+    try {
+      const logPath = join(homedir(), ".logCli", "runs", "inspect", "galwayOne.start.log");
+      mkdirSync(dirname(logPath), { recursive: true });
+      appendFileSync(logPath, "AdsPower profile k1 stopped\nInspect session for galwayOne ended (exit 0).\n");
+      const err: string[] = [];
+      const code = await runCli(["inspect", "start", "--account", "galwayOne", "--detach"], { twenty: marketplaceFixture(), out: () => {}, err: (l) => err.push(l) });
+      expect(code).toBe(1);
+      expect(err.join("\n")).toContain("launchBudgetSpent");
+      expect(err.join("\n")).not.toContain("AdsPower profile k1 stopped");
+    } finally {
+      Object.assign(inspectDetachDeps, real);
+    }
+  });
+});
+
+describe("the session's Messenger PIN flag (rule 67)", () => {
+  test("only whether login.json holds a 6-digit PIN leaves it, never the PIN", async () => {
+    const { writeFileSync } = await import("node:fs");
+    const { hasMessengerPin } = await import("./index.ts");
+    const dir = mkdtempSync(join(tmpdir(), "logPinFlag"));
+    const write = (body: unknown) => (writeFileSync(join(dir, "login.json"), JSON.stringify(body)), join(dir, "login.json"));
+    expect(hasMessengerPin(null)).toBe(false);
+    expect(hasMessengerPin(write({ email: "e", messengerPin: "482913" }))).toBe(true);
+    expect(hasMessengerPin(write({ email: "e", messengerPin: null }))).toBe(false);
+    expect(hasMessengerPin(write({ messengerPin: "12ab56" }))).toBe(false);
   });
 });

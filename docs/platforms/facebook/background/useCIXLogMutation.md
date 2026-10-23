@@ -1,6 +1,6 @@
 # useCIXLogMutation
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -13,13 +13,19 @@
 | Called from | `useCIXLogMutation` |
 | rea | `ev_861b046d2fca8f66f0fb54a8cbcb72051f984ac968338f63fa57bbc89194bb2d` |
 
-Seen 3 time(s) in 2 run(s).
+Seen 9 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | rea read step 36_scroll1X400: exit 0, ev_878f93e2480d9215dd7481db9487a1ed4fb3874251015daaf | 1 | 200 | 503 ms | 3150 ms | — |
+| warmup | scroll: +127px in 4 wheel steps, 125 ms | 1 | 200 | 359 ms | 4540 ms | — |
+| warmup | scroll: -605px in 14 wheel steps, 687 ms | 1 | 200 | 379 ms | 2410 ms | — |
+| warmup | scroll: +459px in 11 wheel steps, 500 ms | 1 | 200 | 368 ms | 1144 ms | — |
+| warmup | openAny: read /marketplace/item/<id>/ | 1 | 200 | 375 ms | 4240 ms | — |
+| warmup | scroll: -756px in 16 wheel steps, 656 ms | 1 | 200 | 383 ms | 1781 ms | — |
+| inspect | step 22: clickRole button "…" | 1 | 200 | 583 ms | 3161 ms | — |
+| inspect | scroll: -577px in 13 wheel steps, 859 ms | 1 | 200 | 503 ms | 3589 ms | — |
 | inspect | scroll: +978px in 22 wheel steps, 1531 ms | 1 | 200 | 468 ms | 1992 ms | — |
-| inspect | rea read step 24_scroll1X400: exit 0, ev_b216c28b15aac8907d6b5a345798a611d298acedb29f1a6ac | 1 | 200 | 486 ms | 1520 ms | — |
+| inspect | step 25: openAny 1-3 x /marketplace/item/ | 1 | 200 | 486 ms | 4053 ms | — |
 
 <!-- facts:end -->
 

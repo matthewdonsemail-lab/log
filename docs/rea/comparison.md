@@ -30,7 +30,7 @@ commit on the branch. Later commits (device pin, identity study, scale and
 provider notes) landed after that sentence. This session did not re-run
 the suite, so 300 is the author's claim, not a result from this pass.
 
-The PR body also contradicts itself. The proxy section says `log connect`
+The PR body also contradicts itself. The proxy section says `log facebook connect`
 may launch without a proxy. The later section, rule 12, and
 `checkRunnable` say sign-in is included. The code is the later rule.
 

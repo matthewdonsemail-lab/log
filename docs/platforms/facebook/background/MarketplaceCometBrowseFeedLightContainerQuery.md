@@ -1,23 +1,25 @@
 # MarketplaceCometBrowseFeedLightContainerQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
 | Domain | background |
 | Kind | query |
-| doc_id | `28602662802759552` |
+| doc_id | `29127585736873863` |
 | Path | `/api/graphql/` |
-| Sends | `buyLocation`, `count`, `cursor`, `imageWidth`, `includePDPRelevantListings`, `mediaType`, `pdpListingId`, `radius`, `scale`, `sizing`, `useSDFPath`, `__relay_internal__pv__CometMarketplaceShouldShowTopPicksStrikethroughrelayprovider`, `__relay_internal__pv__GHLShouldChangeMarketplaceSponsoredDataFieldNamerelayprovider`, `__relay_internal__pv__MarketplaceCometAdmodulerelayprovider`, `__relay_internal__pv__CometMarketplaceShouldShowFeedShippingIconrelayprovider` |
+| Sends | `buyLocation`, `count`, `cursor`, `imageWidth`, `includePDPRelevantListings`, `mediaType`, `pdpListingId`, `radius`, `scale`, `sizing`, `useSDFPath`, `__relay_internal__pv__MarketplacePDPShouldShowLowerPriceItemsrelayprovider`, `__relay_internal__pv__CometMarketplaceShouldShowTopPicksStrikethroughrelayprovider`, `__relay_internal__pv__GHLShouldChangeMarketplaceSponsoredDataFieldNamerelayprovider`, `__relay_internal__pv__MarketplaceCometAdmodulerelayprovider`, `__relay_internal__pv__CometMarketplaceShouldShowFeedShippingIconrelayprovider` |
 | Reads | `...MarketplaceCometBrowseFeedLight_dataConnection` |
 | Called from | `MarketplaceCometBrowseFeedLightContainer.react` |
-| rea | `ev_83c413e59250868ebd601b09b7d587209f5e7d646d60ded20f7458f27abc10c5` |
+| rea | `ev_6262d6e01798f9af0af9be94bbffcf8baacc740da92854281e63d2bc6babc557` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 15: click e1354 | 1 | 200 | 4374 ms | 2366 ms | — |
+| inspect | step 4: click e191 | 1 | 200 | 4827 ms | 2965 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 1 | 200 | 4341 ms | 479387 ms | — |
 
 <!-- facts:end -->
 

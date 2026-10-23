@@ -34,7 +34,6 @@ function capture() {
   return { context, out, err };
 }
 
-/** Scripted Clack answers; records every prompt and the options each select offered. */
 function stubPrompts(answers: unknown[]) {
   const calls: string[] = [];
   const offered: string[][] = [];

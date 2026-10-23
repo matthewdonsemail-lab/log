@@ -24,7 +24,7 @@ opening a browser, and writes the result to `proxyCheckedAt`, `proxyExitIp` and
 ## How one launch goes
 
 ```text
-log scan / status / watch / publish / campaign run / connect / proxy check
+log facebook scan / status / watch / publish / campaign run / connect / proxy check
   │  TS: findAccount (Twenty) → prepareRun (browser/run)
   │      not FACEBOOK / unusable status / no proxy / no homeCountry ──▶ refused, no Python started
   │      (publish) listing country ≠ homeCountry ──▶ listingCountryMismatch
@@ -116,7 +116,7 @@ page only.
 
 `outsideActiveHours` (`src/marketplace/home/helpers/activeHours.ts`) reads the
 wall clock in the home timezone through Intl, so it is DST-correct. Countries
-with several zones need the city in `CITY_TIMEZONES`. `log watch` checks
+with several zones need the city in `CITY_TIMEZONES`. `log facebook watch` checks
 before every scan, not only at the start. The daily listing cap counts the
 account's local date.
 
@@ -200,7 +200,7 @@ Facebook was never loaded. About 9 MB of proxy traffic.
 
 - camoufox 0.5.8 with browser 156.0.1-beta.39 (and before that 0.5.5 with
   152.0.4-beta.30):
-  - `log publish` dry runs against `python/fixtures/createItem.html` made the
+  - `log facebook publish` dry runs against `python/fixtures/createItem.html` made the
     device on the first launch, saved it to Twenty, and reused it after that.
     A device made on 0.5.5 also replayed on 156 with its UA moved to Firefox 156.
   - Three launches (two on the publishSession path, one on the logWorker /
@@ -217,12 +217,12 @@ Facebook was never loaded. About 9 MB of proxy traffic.
   `browserLocaleMismatch`. Both closed the browser before anything loaded.
 - Bypass attempts were all refused with `unguardedLaunch`: `from camoufox
   import Camoufox` with geoip=False, a caller `locale`, and `persistent_context`.
-- With a narrow window, `log scan`, `log publish` and `log connect` were
+- With a narrow window, `log facebook scan`, `log facebook publish` and `log facebook connect` were
   refused with `outsideActiveHours`, the local time and when the window opens.
 - Photo URL downloads exited at 86.41.85.43 (this PC is 116.105.162.81), and
   were refused without a proxy (`photoNeedsProxy`).
 - Not checked live: an exit-IP rotation during a run (unit-tested), a 2Captcha
-  solve (no captcha came up), and `log watch` over many hours.
+  solve (no captcha came up), and `log facebook watch` over many hours.
 
 Earlier checks (proxy gate, 2026-10-18):
 

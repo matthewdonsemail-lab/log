@@ -22,11 +22,6 @@ interface Reply {
   result: { step?: string; action?: string; args?: string[]; ms?: number; url?: string; notable?: string[]; rea?: { evidenceId?: string | null } }
 }
 
-/**
- * A run's recorded steps, in order, from `replies.jsonl` (what each step did)
- * and `steps/NN_*` (its snapshot). Replies from before a reply carried its
- * action are matched to `commands.jsonl` by id.
- */
 export function readRecordedSteps(runDir: string): RecordedStep[] {
   const commands = new Map(readJsonLines<{ id: string; action: string; args: string[] }>(join(runDir, 'commands.jsonl')).map((c) => [c.id, c]))
   const steps: RecordedStep[] = []
@@ -50,7 +45,6 @@ export function readRecordedSteps(runDir: string): RecordedStep[] {
   return steps.sort((a, b) => a.name.localeCompare(b.name))
 }
 
-/** Every inspect run folder that has recorded steps, newest last. */
 export function inspectRuns(root: string): string[] {
   if (!existsSync(root)) return []
   return readdirSync(root)
@@ -59,7 +53,6 @@ export function inspectRuns(root: string): string[] {
     .map((name) => join(root, name))
 }
 
-/** `log inspect map`: the run's flow → `flow.json`, `flow.md` and `machine.json` in the run folder. */
 export function mapInspectRun(runDir: string): { flow: Flow; files: string[] } {
   const flow = buildFlow(runDir, readRecordedSteps(runDir))
   const files = [join(runDir, 'flow.json'), join(runDir, 'flow.md'), join(runDir, 'machine.json')]
@@ -69,7 +62,6 @@ export function mapInspectRun(runDir: string): { flow: Flow; files: string[] } {
   return { flow, files }
 }
 
-/** `log inspect map --all`: every inspect run's flow collated into one machine, in `<root>/flowAll.*`. */
 export function mapAllInspectRuns(root: string): { flow: Flow; files: string[] } {
   const flow = mergeFlows(inspectRuns(root).map((dir) => buildFlow(dir, readRecordedSteps(dir))))
   const files = [join(root, 'flowAll.json'), join(root, 'flowAll.md'), join(root, 'machineAll.json')]

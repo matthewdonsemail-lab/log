@@ -4,7 +4,6 @@ import { dirname, join } from 'node:path'
 import type { LifecycleContext } from '../../lifecycle/types'
 import type { HostControl, HostProgress, MilestoneField } from '../types'
 
-/** `~/.logCli/runs/host/<account>/`, or `LOG_HOST_DIR/<account>`. */
 export function hostDir(account: string, env: Record<string, string | undefined> = process.env): string {
   return join(env.LOG_HOST_DIR || join(homedir(), '.logCli', 'runs', 'host'), account)
 }
@@ -20,7 +19,6 @@ export function readProgress(account: string): HostProgress | null {
   }
 }
 
-/** Written whole and renamed into place, so a crash never leaves half a file. */
 export function writeProgress(progress: HostProgress): void {
   const path = progressPath(progress.account)
   mkdirSync(dirname(path), { recursive: true })
@@ -28,10 +26,6 @@ export function writeProgress(progress: HostProgress): void {
   renameSync(`${path}.tmp`, path)
 }
 
-/**
- * What a restart takes from the saved progress: the warm-up done so far, and
- * today's opens only if it is still the same local day. Pure.
- */
 export function resumeFrom(progress: HostProgress | null, today: string): { warmupDone: HostProgress['resume']['warmupDone']; warmupStartedAt: number | null; opensToday: number } | undefined {
   if (!progress) return undefined
   return {
@@ -41,11 +35,6 @@ export function resumeFrom(progress: HostProgress | null, today: string): { warm
   }
 }
 
-/**
- * The Twenty fields to write when the context moves from `before` to `after`:
- * each onboarding milestone the moment it is passed, so the next start (or
- * another machine) reads where the account is. Pure.
- */
 export function milestones(before: LifecycleContext | null, after: LifecycleContext, state: string, at: Date): Partial<Record<MilestoneField, string>> {
   const out: Partial<Record<MilestoneField, string>> = {}
   const iso = at.toISOString()
@@ -59,7 +48,6 @@ export function milestones(before: LifecycleContext | null, after: LifecycleCont
   return { ...out, lifecycleState: state }
 }
 
-/** Today's host opens back to 0 (`log account resetOpens`). False when the account has no host progress yet. */
 export function resetHostOpens(account: string): boolean {
   const progress = readProgress(account)
   if (!progress) return false
@@ -67,7 +55,6 @@ export function resetHostOpens(account: string): boolean {
   return true
 }
 
-/** Events sent to a running host (`log host send`), read from the control file as they arrive. */
 export function readControl(account: string, offset: number): { events: HostControl[]; offset: number } {
   const path = controlPath(account)
   if (!existsSync(path)) return { events: [], offset: 0 }
@@ -79,7 +66,6 @@ export function readControl(account: string, offset: number): { events: HostCont
     try {
       events.push(JSON.parse(line) as HostControl)
     } catch {
-      // a line still being written: read on the next pass
     }
   }
   return { events, offset: text.length }

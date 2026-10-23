@@ -1,10 +1,4 @@
 #!/usr/bin/env bun
-/**
- * Agent hook (rules 26, 55), PreToolUse on Bash, PowerShell and Monitor, for
- * Claude Code and Codex (`src/agentHooks/registry`). A log-cli run piped
- * through tail/head is refused (exit 2, the reason on stderr: both hosts read
- * it the same way); a long one off a Monitor gets a reminder in context.
- */
 import { liveLogVerdict } from '../../src/agentHooks/liveLog/index'
 
 interface HookInput {

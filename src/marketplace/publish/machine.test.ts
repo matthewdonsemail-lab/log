@@ -24,7 +24,6 @@ interface Script {
   failCode?: ErrorCode
 }
 
-/** Runs the machine with scripted actors; returns output, visited states and which actors ran. */
 async function run(script: Script, input: Partial<PublishInput> = {}) {
   const forms = [...(script.forms ?? [{ kind: 'ready', url: 'create/item' }])]
   const solves = [...(script.solves ?? [])]

@@ -60,8 +60,8 @@ lands in `background/` is a gap in that table: move it there.
 ## Commands
 
 ```bash
-bun bin/log.ts capture --docs          # rebuild from every run, rea reads new slices
-bun bin/log.ts capture --docs --noRea  # facts only, no rea
+bun bin/log.ts facebook capture --docs          # rebuild from every run, rea reads new slices
+bun bin/log.ts facebook capture --docs --noRea  # facts only, no rea
 bun run check:facebookClientDocs              # the pre-push gate (lefthook.yml)
 ```
 

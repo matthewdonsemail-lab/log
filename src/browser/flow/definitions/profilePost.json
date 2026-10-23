@@ -1,0 +1,88 @@
+{
+  "name": "profilePost",
+  "summary": "Post text on the account's own profile: open the composer, type the text, Post, wait for ComposerStoryCreateMutation. Writes on Facebook (--live).",
+  "params": [
+    {
+      "name": "text",
+      "kind": "text",
+      "description": "typed into textbox \"What's on your mind?\""
+    }
+  ],
+  "steps": [
+    {
+      "id": "s01_gotoprofilePhp",
+      "action": "goto",
+      "url": "https://www.facebook.com/profile.php?id={uid}",
+      "recorded": {
+        "step": "01_gotoHttpsWwwFacebook",
+        "ms": 20672,
+        "reaEvidenceId": "ev_74b042e2afc0256a1336d27b608b10b6cf9940721c6ed74f02030277b7b8c36e",
+        "requests": [
+          "FBYRPTimeLimitsEnforcementQuery",
+          "ProfileCometTimelineFeedRefetchQuery",
+          "ProfileCometTilesFeedPaginationQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "CometNotificationsDropdownQuery",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "OhaiWebPublicKeyConfigQuery",
+          "RTWebCallBlockSettingHooksQuery"
+        ]
+      }
+    },
+    {
+      "id": "s02_clickWhatSOnYour",
+      "action": "click",
+      "role": "button",
+      "name": "What's on your mind?",
+      "recorded": {
+        "step": "03_clickroleButtonWhatS",
+        "ms": 7656,
+        "reaEvidenceId": "ev_df49ccc8e80ad5810797670db468f1310e59e21c0f8bdc8e953618f8b016edf8",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "ProfileCometFeedComposerRootQuery",
+          "useFeedComposerCometMentionsBootloadDataSourceWithTaggingTransparencyQuery",
+          "useFeedComposerCometMentionsNullstateDataSourceWithTaggingTransparencyQuery",
+          "useFeedComposerCometMentionsBootloadDataSourceQuery"
+        ]
+      }
+    },
+    {
+      "id": "s03_fillWhatSOnYour",
+      "action": "fill",
+      "role": "textbox",
+      "name": "What's on your mind?",
+      "value": "{text}",
+      "recorded": {
+        "step": "04_typeE1681",
+        "ms": 7125,
+        "reaEvidenceId": "ev_09a47d7f816b09cd0bd8472b3901e21bd5fabb33437de2f1a4d0bf0f8f87472a",
+        "requests": []
+      }
+    },
+    {
+      "id": "s04_clickPost",
+      "action": "click",
+      "role": "button",
+      "name": "Post",
+      "expect": "ComposerStoryCreateMutation",
+      "recorded": {
+        "step": "05_clickroleButtonPost",
+        "ms": 6406,
+        "reaEvidenceId": "ev_245e37597723003f411c6936861bffc355ba771de2a97f0db54082f1e560be28",
+        "requests": [
+          "ComposerStoryCreateMutation",
+          "CometHovercardQueryRendererQuery",
+          "ProfileCometAboutAppSectionQuery"
+        ]
+      }
+    }
+  ],
+  "source": {
+    "runDir": "C:/Users/0/.logCli/runs/inspect/20261020T162343_61594063207669/sequences/profilePost",
+    "account": "profilePost",
+    "builtAt": "2026-10-20T16:33:31.248Z"
+  }
+}

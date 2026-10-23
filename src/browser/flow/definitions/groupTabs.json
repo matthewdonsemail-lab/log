@@ -1,0 +1,185 @@
+{
+  "name": "groupTabs",
+  "summary": "Open each tab of a group the account is in (Featured, Open questions, People, Events, Media, Files, About) and come back to Discussion; read-only",
+  "params": [
+    {
+      "name": "groupId",
+      "kind": "text",
+      "description": "the group's numeric id, from its URL"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s01_gotogroups",
+      "action": "goto",
+      "url": "https://www.facebook.com/groups/{groupId}/",
+      "recorded": {
+        "step": "01_gotoHttpsWwwFacebook",
+        "ms": 27391,
+        "reaEvidenceId": "ev_08ee3372ed9790e46019fd8699391203ada2c19f39482b50711f064ea98496d9",
+        "requests": [
+          "FBYRPTimeLimitsEnforcementQuery",
+          "fetchMWChatVideoAutoplaySettingQuery",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "MAWVerifyThreadCutover_ContactCapabilities2Query",
+          "CometNotificationsDropdownQuery",
+          "useGroupsCometVisitMutation",
+          "usePseudoBlockedUserInterstitialF3Query",
+          "OhaiWebPublicKeyConfigQuery",
+          "useMWEncryptedBackupsFetchBackupIdsV2Query",
+          "CometSearchBootstrapKeywordsDataSourceQuery",
+          "RTWebCallBlockSettingHooksQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    },
+    {
+      "id": "s02_clickFeatured",
+      "action": "click",
+      "role": "tab",
+      "name": "Featured",
+      "recorded": {
+        "step": "03_clickroleTabFeatured",
+        "ms": 6750,
+        "reaEvidenceId": "ev_8f7b541988f83c6fee682e3d474475dcd0d2e3d582650804eb5a7191c2618cf2",
+        "requests": []
+      }
+    },
+    {
+      "id": "s03_clickOpenQuestions",
+      "action": "click",
+      "role": "tab",
+      "name": "Open questions",
+      "recorded": {
+        "step": "04_clickroleTabOpenQuestions",
+        "ms": 14687,
+        "reaEvidenceId": "ev_521509ce58b866188322f8bd1ec0e7ad10888bb7438c7f31d6121867bcd0837c",
+        "requests": [
+          "CometGroupRootQuery",
+          "CometGroupAnnouncementsRootFeedQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometGroupRootQuery",
+          "GroupsCometQuestionsRootSuccessQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    },
+    {
+      "id": "s04_clickPeople",
+      "action": "click",
+      "role": "tab",
+      "name": "People",
+      "recorded": {
+        "step": "06_clickroleTabPeople",
+        "ms": 13969,
+        "reaEvidenceId": "ev_920ba26b1c72feaef7154ea78799b91bae189633071e2b3f78b694a35f6247de",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "CometGroupRootQuery",
+          "GroupsCometMembersRootQuery",
+          "CometHovercardQueryRendererQuery"
+        ]
+      }
+    },
+    {
+      "id": "s05_clickEvents",
+      "action": "click",
+      "role": "tab",
+      "name": "Events",
+      "recorded": {
+        "step": "07_clickroleTabEvents",
+        "ms": 8641,
+        "reaEvidenceId": "ev_8083e752561f801d4747b3674d7cbcdc8ac6c94831e1b7660b429c7d845b7559",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometGroupRootQuery",
+          "CometGroupEventsRootQuery",
+          "usePseudoBlockedUserInterstitialF3Query"
+        ]
+      }
+    },
+    {
+      "id": "s06_clickMedia",
+      "action": "click",
+      "role": "tab",
+      "name": "Media",
+      "recorded": {
+        "step": "08_clickroleTabMedia",
+        "ms": 8563,
+        "reaEvidenceId": "ev_b0a574c83338588761247539c7b116651547fae756bd5ce6ed327f9271f6ea2c",
+        "requests": [
+          "CometGroupRootQuery",
+          "GroupsCometPhotosRootQueryContainerQuery"
+        ]
+      }
+    },
+    {
+      "id": "s07_clickFiles",
+      "action": "click",
+      "role": "tab",
+      "name": "Files",
+      "recorded": {
+        "step": "09_clickroleTabFiles",
+        "ms": 7672,
+        "reaEvidenceId": "ev_4ea1ce7042e53b2ebac1f32ee5c932c584b27a7dcf5e5357ea3f0a3ee8559e1b",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometGroupRootQuery",
+          "GroupsCometFilesTabRootQuery"
+        ]
+      }
+    },
+    {
+      "id": "s08_clickAbout",
+      "action": "click",
+      "role": "tab",
+      "name": "About",
+      "recorded": {
+        "step": "10_clickroleTabAbout",
+        "ms": 10875,
+        "reaEvidenceId": "ev_fbf06395a36d46155ff1f12a92591847ca93e6c3ebe46b81cbeb168ab3115661",
+        "requests": [
+          "CometHovercardQueryRendererQuery",
+          "CometHovercardQueryRendererQuery",
+          "CometGroupRootQuery",
+          "CometGroupAboutRootQuery"
+        ]
+      }
+    },
+    {
+      "id": "s09_clickDiscussion",
+      "action": "click",
+      "role": "tab",
+      "name": "Discussion",
+      "expect": "useGroupsCometVisitMutation",
+      "recorded": {
+        "step": "11_clickroleTabDiscussion",
+        "ms": 8468,
+        "reaEvidenceId": "ev_923e04f96d1d03fe700a57149f59ab2febcb52696ef7655447d0397cd597be63",
+        "requests": [
+          "CometGroupRootQuery",
+          "useGroupsCometVisitMutation",
+          "usePseudoBlockedUserInterstitialF3Query"
+        ]
+      }
+    }
+  ],
+  "source": {
+    "runDir": "C:/Users/0/.logCli/runs/inspect/20261020T153648_61594063207669/sequences/groupTabs",
+    "account": "groupTabs",
+    "builtAt": "2026-10-20T15:51:58.642Z"
+  }
+}

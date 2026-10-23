@@ -4,7 +4,6 @@ import type { DeviceProfile } from '../types'
 const isObject = (value: unknown): value is Record<string, unknown> => !!value && typeof value === 'object' && !Array.isArray(value)
 const isNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value)
 
-/** socialAccounts.deviceProfile as stored (object or JSON string) → a DeviceProfile, or null. Pure. */
 export function toDeviceProfile(raw: unknown): DeviceProfile | null {
   let value = raw
   if (typeof value === 'string') {
@@ -22,13 +21,11 @@ export function toDeviceProfile(raw: unknown): DeviceProfile | null {
   return value as unknown as DeviceProfile
 }
 
-/** Is anything stored at all (null, undefined, '' and {} count as nothing)? Pure. */
 export function hasStoredDevice(raw: unknown): boolean {
   if (raw == null || raw === '') return false
   return !(isObject(raw) && Object.keys(raw).length === 0)
 }
 
-/** A one-line, secret-free description for `log account show`. Pure. */
 export function deviceSummary(profile: DeviceProfile | null): string {
   if (!profile) return 'none yet (made on the first launch)'
   const c = profile.config

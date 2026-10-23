@@ -1,9 +1,3 @@
-/**
- * Buyer conversations in Twenty (rule 34): `agencyConversations` with their
- * `agencyMessages`, each conversation tied to its `agencyListing` and its
- * `socialAccount`. Rows are never deleted (rule 13). Nothing here touches
- * Facebook: a scan of the inbox hands `recordThread` what it saw.
- */
 import type { TwentyClient, TwentyObjects } from '../../twenty/graphql/index'
 import { listListingsWhere } from '../agencyListing/index'
 import type { AgencyListing } from '../agencyListing/index'
@@ -109,7 +103,6 @@ export function toMessage(row: MessageRow): Message {
   }
 }
 
-/** Marketplace conversations, newest message first: all, one account's, or one listing's. */
 export async function listConversations(twenty: TwentyClient, where: { socialAccountId?: string; agencyListingId?: string } = {}): Promise<Conversation[]> {
   const and: ConversationFilter[] = [{ channel: { eq: MARKETPLACE as never } }]
   if (where.socialAccountId) and.push({ socialAccountId: { eq: where.socialAccountId } })
@@ -123,18 +116,11 @@ export async function getConversation(twenty: TwentyClient, id: string): Promise
   return row ? toConversation(row) : null
 }
 
-/** A conversation's messages, oldest first (by the time the thread shows, then when stored). */
 export async function messagesOf(twenty: TwentyClient, conversationId: string): Promise<Message[]> {
   const rows = await twenty.list(AGENCY_MESSAGES, { agencyConversationId: { eq: conversationId } })
   return rows.map(toMessage).sort((a, b) => (a.sentAt ?? a.createdAt ?? '').localeCompare(b.sentAt ?? b.createdAt ?? ''))
 }
 
-/**
- * Which of the account's listings the thread is about: the one whose
- * Facebook id the thread shows, else the only one with the thread's title.
- * Listaro only ever had the title; two listings with one title stay unmatched
- * rather than guessed.
- */
 export function matchListing(listings: AgencyListing[], thread: Pick<ScannedThread, 'facebookListingId' | 'listingTitle'>): { listing: AgencyListing | null; by: ListingMatch } {
   if (thread.facebookListingId) {
     const byId = listings.find((l) => l.listingId === thread.facebookListingId)
@@ -144,13 +130,6 @@ export function matchListing(listings: AgencyListing[], thread: Pick<ScannedThre
   return byTitle.length === 1 ? { listing: byTitle[0], by: 'title' } : { listing: null, by: 'none' }
 }
 
-/**
- * Stores one scanned thread: finds or creates its conversation by the
- * account and Facebook thread id, ties it to its listing, adds each message
- * not stored yet (by its key) and moves the summary the way blaster does
- * (latest* only forward) and the lead the way Listaro does. Running it again
- * on the same scan adds nothing.
- */
 export async function recordThread(twenty: TwentyClient, socialAccountId: string, thread: ScannedThread, now = new Date()): Promise<RecordThreadResult> {
   const pairKey = conversationKey(socialAccountId, thread.facebookThreadId)
   const [existingRow] = await twenty.list(AGENCY_CONVERSATIONS, { pairKey: { eq: pairKey } })
@@ -207,7 +186,6 @@ export async function recordThread(twenty: TwentyClient, socialAccountId: string
       senderName: message.senderName,
       facebookMessageId: message.facebookMessageId ?? null,
       messageKey: key,
-      // Ours are read. A buyer's is unread until a person reads it (`markRead`).
       isRead: !inbound,
       sentBy: (inbound ? null : toTwentyEnum(message.sentBy ?? 'person')) as MessageCreate['sentBy'],
       media: (message.media ?? []) as unknown as MessageCreate['media']
@@ -225,7 +203,6 @@ export async function recordThread(twenty: TwentyClient, socialAccountId: string
       replied = true
       respondedAt ??= message.sentAt ?? now.toISOString()
     }
-    // blaster: the summary only moves forward. A message the page gave no time for counts as now.
     const at = message.sentAt ?? now.toISOString()
     if (!latestMessageAt || at >= latestMessageAt) {
       latestMessageAt = at
@@ -258,7 +235,6 @@ export async function recordThread(twenty: TwentyClient, socialAccountId: string
   return { conversation: saved, created, added: fresh.length, skipped: thread.messages.length - fresh.length, listingMatchedBy }
 }
 
-/** A person read the thread: every buyer message is marked read, the unread count goes to 0. */
 export async function markRead(twenty: TwentyClient, conversationId: string, now = new Date()): Promise<number> {
   const unread = (await messagesOf(twenty, conversationId)).filter((m) => m.direction === 'inbound' && !m.isRead)
   for (const message of unread) await twenty.update(AGENCY_MESSAGES, message.id, { isRead: true })
@@ -266,12 +242,10 @@ export async function markRead(twenty: TwentyClient, conversationId: string, now
   return unread.length
 }
 
-/** BOOKED, LOST and SPAM are a person's call; any status may be set by hand. */
 export async function setLeadStatus(twenty: TwentyClient, conversationId: string, status: LeadStatus): Promise<Conversation> {
   return toConversation(await twenty.update(AGENCY_CONVERSATIONS, conversationId, { leadStatus: toTwentyEnum(status) as ConversationUpdate['leadStatus'] }))
 }
 
-/** Ties a conversation to a listing by hand, when the scan couldn't tell which one it was about. */
 export async function linkListing(twenty: TwentyClient, conversationId: string, agencyListingId: string): Promise<Conversation> {
   return toConversation(await twenty.update(AGENCY_CONVERSATIONS, conversationId, { agencyListingId }))
 }

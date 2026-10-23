@@ -10,12 +10,12 @@ none of them prompt unless you run `log launch` in a terminal.
 
 ## Hard boundaries
 
-1. **Read-only on Facebook, except `log publish --live`.** `scan`, `status` and
+1. **Read-only on Facebook, except `log facebook publish --live`.** `scan`, `status` and
    `watch` only read. `connect` only saves cookies. `publish` is a dry run
    unless `--live` (AGENTS.md rule 10). Nothing is edited or deleted on Facebook.
 2. **Twenty is the source (rule 13).** Accounts are `socialAccounts` (FACEBOOK),
    listings are `agencyListings`. Never delete either: banned or dead accounts
-   keep their record (`log account status`). Never print cookies, proxies,
+   keep their record (`log facebook account status`). Never print cookies, proxies,
    passwords or 2FA secrets; `log` never selects password, email or totpSecret,
    except `connect --noPrompt`'s auto-login (rule 21).
 3. **Marketplace only.** No X, Reddit, keywords or communities.
@@ -51,12 +51,12 @@ none of them prompt unless you run `log launch` in a terminal.
 bun run launch                                          # Clack menu over everything below
 
 # Twenty data
-bun bin/log.ts accounts                                  # FACEBOOK accounts, and whether each may run
-bun bin/log.ts account show galwayOne
-bun bin/log.ts account status galwayOne BANNED --reason accountDisabled   # kept; campaign listings replaced
-bun bin/log.ts listings [--status READY] [--account galwayOne] [--campaign <id>]
-bun bin/log.ts listing <agencyListingId>
-bun bin/log.ts listing create --account galwayOne --file ad.json   # a READY row, checked like publish checks it
+bun bin/log.ts facebook accounts                                  # FACEBOOK accounts, and whether each may run
+bun bin/log.ts facebook account show galwayOne
+bun bin/log.ts facebook account status galwayOne BANNED --reason accountDisabled   # kept; campaign listings replaced
+bun bin/log.ts facebook listings [--status READY] [--account galwayOne] [--campaign <id>]
+bun bin/log.ts facebook listing <agencyListingId>
+bun bin/log.ts facebook listing create --account galwayOne --file ad.json   # a READY row, checked like publish checks it
 
 # sign in to log itself (Twenty OAuth through blaster's web app, same as `blaster login`)
 bun bin/log.ts login | whoami | logout
@@ -69,37 +69,78 @@ bun bin/log.ts proxy assign --account lancasterOne --region pennsylvania   # pin
 bun bin/log.ts proxy balance                             # 2Captcha traffic left
 
 # live (launches Camoufox through the proxy)
-bun bin/log.ts doctor                                    # setup check, which accounts may run
-bun bin/log.ts connect --account galwayOne               # the connect machine; a person signs in in the window, cookies saved to Twenty
-bun bin/log.ts connect --account galwayOne --noPrompt    # the same, auto-login typing Twenty's details (rule 21), up to --wait 600 s
-bun bin/log.ts scan --account galwayOne                  # Marketplace > Selling, written back to the listings
-bun bin/log.ts status <facebookListingId> --account galwayOne
+bun bin/log.ts facebook doctor                                    # setup check, which accounts may run
+bun bin/log.ts facebook connect --account galwayOne               # the connect machine; a person signs in in the window, cookies saved to Twenty
+bun bin/log.ts facebook connect --account galwayOne --noPrompt    # the same, auto-login typing Twenty's details (rule 21), up to --wait 600 s
+bun bin/log.ts facebook scan --account galwayOne                  # Marketplace > Selling, written back to the listings
+bun bin/log.ts facebook status <facebookListingId> --account galwayOne
 
 # the monitor (XState), every step printed live
-bun bin/log.ts watch --account galwayOne [--checks 0 --interval 240] [--json]
+bun bin/log.ts facebook watch --account galwayOne [--checks 0 --interval 240] [--json]
 
 # publish one Twenty listing (XState), every step printed live. Dry run unless --live
-bun bin/log.ts publish --listing <agencyListingId>
-bun bin/log.ts publish --listing <agencyListingId> --live
+bun bin/log.ts facebook publish --listing <agencyListingId>
+bun bin/log.ts facebook publish --listing <agencyListingId> --live
 # against the local copy of the create form (no Facebook)
-bun bin/log.ts publish --listing <id> --formUrl file:///$PWD/python/fixtures/createItem.html
+bun bin/log.ts facebook publish --listing <id> --formUrl file:///$PWD/python/fixtures/createItem.html
 
 # campaigns: one ad on N accounts in one place (docs/accountsAndListings.md)
-bun bin/log.ts campaign fill --campaign <id> --from <agencyListingId> --accounts 10
-bun bin/log.ts campaign run --campaign <id> [--live]
-bun bin/log.ts campaign heal --campaign <id>
+bun bin/log.ts facebook campaign fill --campaign <id> --from <agencyListingId> --accounts 10
+bun bin/log.ts facebook campaign run --campaign <id> [--live]
+bun bin/log.ts facebook campaign heal --campaign <id>
 ```
 
 ## As an MCP server
 
 `bin/logMcp.ts` (`bun run mcp`) serves every command as an MCP tool over
 stdio, registered as `log` in the repo's `.mcp.json`, so in Claude Code they
-show up as `mcp__log__<command>`. A tool takes `args` (what goes after
-`log <command>`) and returns the command's stdout, stderr and exit code. It
-runs through `runCli`, so every gate above still applies.
+show up as `mcp__log__<tool>`. A command that declares its input
+(`Command.input`, one flag spec per form) is one tool per form, named for the
+command and its words (`inspectStart`, `inspectDo`, `accountShow`,
+`runsPrune`…), and takes named fields: the spec gives each its kind, what is
+required and the enum values, and the tool turns them back into the argv the
+terminal would run (`argvOfInput`), each value whole. The command parses with
+`parserSpecOf` of the same spec, so the usage, the parser and the schema can't
+drift (`check:docs`). A command without one is still one tool taking `args`
+(what goes after `log <command>`). Every tool returns the command's stdout,
+stderr and exit code, through `runCli`, so every gate above still applies.
 
-- `--live` is refused unless the call also has `confirmLive: true`. Set it
-  only when matt asked for that live run (rule 10).
+- What acts on Facebook is a tool of its own, named `<tool>Live`
+  (`publishLive`, `inspectDoLive`, `hostStartLive`, `joinLive`, `warmupLive`,
+  `flow<Name>Live`): a form's single live flag is implied (`publishLive` runs
+  `--live`), several stay fields (`hostStartLive`: `live`, `likes`), and an
+  args tool takes them in `args`. Every live tool needs `confirmLive: true`;
+  every other tool refuses live and names its live twin. `bypass` needs
+  `confirmBypass: true`. Set them only when matt asked (rules 8, 10, 20).
+- Every result, refusals too, says where every open browser is: `browsers`,
+  `next` (the tool call that resolves a known page state: make it, rule 54),
+  `needsMatt` and `progress` (each streamed line with its time), and its text
+  starts with the same in a line or two. A client with a shell (Claude Code,
+  Codex, by its `clientInfo` name) is told to Monitor the live log for long
+  runs; any other client is told to read `progress` and `browsers`. The client's
+  name is written to the live log when it connects.
+- A long tool (`LONG_RUNNING`, and every flow) runs as a job
+  (`src/mcp/jobs`, `~/.logCli/mcp/jobs/<id>.json` and `.jsonl`): the call
+  waits `waitMs` (default 20 s, at most 50 s) and returns the result if the run
+  ended, or the job (`exit` -1, `job.id`, the lines so far). `jobStatus`
+  (`log job status <id> --afterLine <n>`) waits for new lines and returns the
+  result once it ends; `jobCancel` stops it before its next browser step
+  (`sendInspect`), never once Publish is clicked (rule 10); `jobList` lists
+  them. One job holds an account at a time (`accountBusy`). Jobs live on disk,
+  so any server or the terminal can follow them; a job whose server stopped
+  is `lost`.
+- Over HTTP (`--http`), Claude's connectors (claude.ai, Duet) sign in with OAuth
+  through Twenty when `LOG_MCP_PUBLIC_URL` is set: the server is its own authorization
+  server (`src/mcp/oauth`: discovery, `/oauth/register`, `/oauth/authorize`, Twenty's
+  callback, `/oauth/token`), and only the Twenty user of this server's `log login` gets a
+  token. `log mcp clients|revoke` (terminal only) manage them. How it is deployed:
+  `docs/deployment.md`.
+- Every tool carries a `title` and MCP annotations from its command's
+  `effect` (`read`, `write`, `delete`, `browser`, on the command and its
+  forms): reads are read-only and idempotent, a browser on Facebook is
+  open-world, a prune is destructive, and every live tool is destructive and
+  open-world, so a client can ask before each live call
+  (`src/mcp/server/helpers/toolAnnotations.ts`).
 - `connect` always runs `--noPrompt` as a tool. It is the connect machine
   (`marketplace/connect/machine.ts`): every page is read as a kind (loggedIn,
   loginForm, twoStepCode, twoStepMethod, trustDevice, automatedBehaviour,
@@ -132,10 +173,10 @@ explains one (meaning, retryable, where each machine ends, what to do), and
 
 | You see | Means | Do |
 | --- | --- | --- |
-| `neverConnected` | No saved session for that account | `log connect --account <accountId>` |
-| `loginWall` / `sessionExpired` | Facebook wants a fresh login | `log connect` again |
+| `neverConnected` | No saved session for that account | `log facebook connect --account <accountId>` |
+| `loginWall` / `sessionExpired` | Facebook wants a fresh login | `log facebook connect` again |
 | `checkpointed`, `suspended` | Account problem; the monitor stops at `blocked` | Tell matt, don't retry |
-| `wrongPassword` | connect: Facebook said Twenty's password is wrong | Fix it in Twenty, then `log connect` |
+| `wrongPassword` | connect: Facebook said Twenty's password is wrong | Fix it in Twenty, then `log facebook connect` |
 | `signInNotFinished` | connect: `--wait` ran out; the output names the last page | Finish that page in the window, or a longer `--wait` |
 | `tripped` | Same error 3 times in a row | Read the trace, fix the cause, run again |
 | Repost `yes (#n)` | A takedown that's within the repost budget | Decision only; nothing was posted |

@@ -1,88 +1,45 @@
-/**
- * The error catalog: every code log-cli, `python/session/logWorker.py` and
- * `python/session/publishSession.py` can produce, once, with what it means, whether it
- * clears by itself, where it is raised and where each machine ends up.
- *
- * This is the only place a code is defined. The TypeScript unions
- * (`ErrorCode`, `AccountIssue`, the captcha plan reasons) are derived from it,
- * `SOLVER_DEAD_CODES` is read from it, and the Python reads the same list from
- * `python/errors/errorCatalog.json` (`bun run errors:export`). Tests fail when a code
- * is used anywhere that isn't here (`catalog.test.ts`).
- *
- * `AccountIssue` started as listeningkit-hackathon's snake_case vocabulary
- * (apps/web/src/lib/account-issues/types.ts). log-cli spells it in camelCase
- * (AGENTS.md rule 1); the hackathon API boundary converts it.
- */
-
 export type ErrorLayer =
-  /** Something about the Facebook account: session, checkpoint, ban, limit, proxy. */
   | 'account'
-  /** Turning the listing's photos into upload-ready JPEGs (`media/photo`). */
   | 'photo'
-  /** A step on Facebook's create form that couldn't do or confirm its write. */
   | 'form'
-  /** Picking a captcha solver, or the solver's own refusal. */
   | 'captcha'
-  /** The Python processes and the pipes to them, not Facebook. */
   | 'runtime'
-  /** `log login`'s browser exchange with blaster. */
   | 'auth'
-  /** A Twenty agencyListing row that can't be run as it is. */
   | 'listing'
-  /** Twenty's REST API, where accounts and listings live. */
   | 'twenty'
-  /** A proxy seller's API (2Captcha), used to give accounts proxies. */
   | 'proxyVendor'
-  /** A change on the account's own profile page (`log profile setup`, rule 28). */
   | 'profile'
-  /** A browser session for any driver (`browser/driver`, rule 42). */
   | 'browser'
-  /** AdsPower's Local API and its profiles (`adsPower/*`). */
   | 'adsPower'
-  /** A Facebook group on one account (`group/*`, rule 45). */
   | 'group'
-  /** A warm-up activity on its platform (`warmup/<platform>`, rule 49). */
   | 'warmup'
 
-/** How a publish run ends when this code is raised (`marketplace/publish`). */
 export type PublishEnd = 'failed' | 'blocked' | 'needsPerson' | 'unconfirmedId'
 
-/** The monitor state a check with this code moves to (`marketplace/monitor`). */
 export type MonitorEnd =
-  /** Account problem: final, a person has to act. */
   | 'blocked'
-  /** Rate limited: rests (24h), then checks again. */
   | 'resting'
-  /** Failed check: one quick retry if retryable, the circuit breaker after 3 in a row. */
   | 'failed'
 
-/** What the captcha router does with a solver that returned this code (`captcha/router`). */
 export type CaptchaEnd =
-  /** The solver may be tried again, within the policy's attempts. */
   | 'retry'
-  /** The solver can't work right now: skipped for the rest of the run. */
   | 'skipSolver'
 
 export interface ErrorEntry {
   layer: ErrorLayer
-  /** What happened, in plain words. */
   meaning: string
-  /** True when it can clear by itself (a retry or the passage of time), with no person. */
   retryable: boolean
-  /** Where it is raised: `<machine>.<state>`, or the module that returns it. */
   raisedIn: readonly string[]
   publish?: PublishEnd
   monitor?: MonitorEnd
   captcha?: CaptchaEnd
-  /** What a person does about it. */
   action: string
 }
 
-const reconnect = 'Run `log connect --account <id>` and log in by hand.'
+const reconnect = 'Run `log facebook connect --account <id>` and log in by hand.'
 const tellMatt = "Tell matt. Don't retry the account until it's looked at."
 
 export const ERROR_CATALOG = {
-  // ── account ────────────────────────────────────────────────────────────
   neverConnected: {
     layer: 'account',
     meaning: 'No saved Facebook session for this account.',
@@ -108,7 +65,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['marketplace/account'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Run `log scan --account <id>`.'
+    action: 'Run `log facebook scan --account <id>`.'
   },
   sessionExpired: {
     layer: 'account',
@@ -135,16 +92,16 @@ export const ERROR_CATALOG = {
     raisedIn: ['worker', 'publish.openingForm', 'marketplace/account'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Log in by hand and clear the checkpoint, then `log connect`. No solver can do it.'
+    action: 'Log in by hand and clear the checkpoint, then `log facebook connect`. No solver can do it.'
   },
   wrongPassword: {
     layer: 'account',
-    meaning: "Facebook said the password is wrong, or found no account for the email, when `log connect` signed in with Twenty's details.",
+    meaning: "Facebook said the password is wrong, or found no account for the email, when `log facebook connect` signed in with Twenty's details.",
     retryable: false,
     raisedIn: ['connect.routing'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: "Fix the account's email or password in Twenty, then `log connect` again. Auto-login stops at once so Facebook doesn't see repeated wrong passwords."
+    action: "Fix the account's email or password in Twenty, then `log facebook connect` again. Auto-login stops at once so Facebook doesn't see repeated wrong passwords."
   },
   videoSelfieRequired: {
     layer: 'account',
@@ -153,16 +110,16 @@ export const ERROR_CATALOG = {
     raisedIn: ['connect.routing'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: "A person records the selfie in the Camoufox window (or on the account owner's phone), then `log connect` again. Tell matt."
+    action: "A person records the selfie in the Camoufox window (or on the account owner's phone), then `log facebook connect` again. Tell matt."
   },
   signInNotFinished: {
     layer: 'account',
-    meaning: '`log connect` reached its deadline (`--wait`) without a logged-in page: the login, two-step or a captcha was not finished.',
+    meaning: '`log facebook connect` reached its deadline (`--wait`) without a logged-in page: the login, two-step or a captcha was not finished.',
     retryable: false,
     raisedIn: ['connect.signingIn'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Run `log connect` again and finish the step its last page names in the Camoufox window, or give it a longer `--wait`. A two-step page needs the totpSecret in Twenty.'
+    action: 'Run `log facebook connect` again and finish the step its last page names in the Camoufox window, or give it a longer `--wait`. A two-step page needs the totpSecret in Twenty.'
   },
   unconfirmedUser: {
     layer: 'account',
@@ -333,7 +290,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['marketplace/socialAccount'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Set accountStatus in Twenty (log account status), or use another account.'
+    action: 'Set accountStatus in Twenty (log facebook account status), or use another account.'
   },
   noHomeCountry: {
     layer: 'account',
@@ -397,6 +354,15 @@ export const ERROR_CATALOG = {
     publish: 'blocked',
     monitor: 'blocked',
     action: 'Run it inside the window in the detail, or change activeHoursStart/activeHoursEnd on the socialAccount in Twenty.'
+  },
+  accountBusy: {
+    layer: 'account',
+    meaning: "A job over MCP already holds this account (one browser per account, rule 35). Nothing started.",
+    retryable: true,
+    raisedIn: ['mcp/jobs'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Follow the job in the detail with jobStatus until it ends, or stop it with jobCancel, then call again.'
   },
   launchTooSoon: {
     layer: 'account',
@@ -504,7 +470,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['marketplace/account'],
     publish: 'blocked',
     monitor: 'blocked',
-    action: 'Open the account by hand. `log publish` routes captchas itself; `scan` does not.'
+    action: 'Open the account by hand. `log facebook publish` routes captchas itself; `scan` does not.'
   },
   unknownPlatform: {
     layer: 'account',
@@ -525,7 +491,6 @@ export const ERROR_CATALOG = {
     action: 'Look at the raw signal and add a code for it here.'
   },
 
-  // ── photo ──────────────────────────────────────────────────────────────
   noPhotos: {
     layer: 'photo',
     meaning: 'The listing has no photos. Facebook keeps Next disabled with 0.',
@@ -575,7 +540,6 @@ export const ERROR_CATALOG = {
     action: 'Open the photo by hand; it is probably corrupt.'
   },
 
-  // ── form ───────────────────────────────────────────────────────────────
   pageNotReached: {
     layer: 'form',
     meaning: 'A flow or warm-up step went to a page and Facebook put the browser somewhere else.',
@@ -656,6 +620,13 @@ export const ERROR_CATALOG = {
     publish: 'failed',
     action: 'Run again.'
   },
+  locationAbbreviated: {
+    layer: 'listing',
+    meaning: 'A Marketplace location is abbreviated ("Bethlehem, PA"), a zip or a number, or names no state or country. "Bethlehem, PA" was offered only as the West Bank and a bare zip offered Granada, Spain first, so nothing is typed. Nothing was done on Facebook.',
+    retryable: false,
+    raisedIn: ['facebook/marketplace/location', 'cli/listing', 'cli/publish', 'cli/flow', 'cli/inspect', 'cli/host', 'python/session'],
+    action: 'Write it as "City, State" with the state written out ("Bethlehem, Pennsylvania"), or "City, Country" ("Galway, Ireland"), in the listing\'s locationQuery or the --set location value.'
+  },
   locationNotSet: {
     layer: 'form',
     meaning: 'No Location field, no suggestion matched, or it did not keep the value.',
@@ -712,7 +683,6 @@ export const ERROR_CATALOG = {
     action: 'Check Marketplace > Selling by hand. Never re-publish: it would duplicate.'
   },
 
-  // ── captcha: what the router decides ───────────────────────────────────
   noSolverForKind: {
     layer: 'captcha',
     meaning: "Facebook's own challenge, or a captcha no solver recognises.",
@@ -754,7 +724,6 @@ export const ERROR_CATALOG = {
     action: 'Clear it by hand. Facebook kept serving captchas: the account may be flagged.'
   },
 
-  // ── captcha: a solver's own refusal ────────────────────────────────────
   captchaNoProxy: {
     layer: 'captcha',
     meaning: "2Captcha would have solved from its own IP: the account's proxy couldn't be passed to it. Refused rather than mixing a foreign IP into the session.",
@@ -940,7 +909,6 @@ export const ERROR_CATALOG = {
     action: 'Read the detail. If it repeats, give it a code here.'
   },
 
-  // ── runtime ────────────────────────────────────────────────────────────
   workerNotStarted: {
     layer: 'runtime',
     meaning: 'The Python interpreter could not be started.',
@@ -948,7 +916,7 @@ export const ERROR_CATALOG = {
     raisedIn: ['worker', 'session'],
     publish: 'failed',
     monitor: 'failed',
-    action: 'Set LOG_PYTHON to a Python with facebook-camofox-client installed (`log doctor`).'
+    action: 'Set LOG_PYTHON to a Python with facebook-camofox-client installed (`log facebook doctor`).'
   },
   workerNoOutput: {
     layer: 'runtime',
@@ -1086,20 +1054,19 @@ export const ERROR_CATALOG = {
     action: 'Add the code to src/errors/catalog/types.ts, then `bun run errors:export`.'
   },
 
-  // ── listing ────────────────────────────────────────────────────────────
   listingNotFound: {
     layer: 'listing',
     meaning: 'No agencyListing with that id in Twenty.',
     retryable: false,
     raisedIn: ['marketplace/agencyListing'],
-    action: 'Check the id (log listings shows them).'
+    action: 'Check the id (log facebook listings shows them).'
   },
   listingNoAccount: {
     layer: 'listing',
     meaning: 'The agencyListing has no socialAccount, so nothing knows which account posts it.',
     retryable: false,
     raisedIn: ['marketplace/agencyListing'],
-    action: 'Set its Social account in Twenty, or fill the campaign with log campaign fill.'
+    action: 'Set its Social account in Twenty, or fill the campaign with log facebook campaign fill.'
   },
   listingNotPublishable: {
     layer: 'listing',
@@ -1115,15 +1082,21 @@ export const ERROR_CATALOG = {
     raisedIn: ['cli/publish'],
     action: 'Fix the fields named in the detail in Twenty.'
   },
+  notEnoughCopyVersions: {
+    layer: 'listing',
+    meaning: "The ad would be live on several listings in one city without enough copy versions, or a version breaks the copy rules (skills/listingCopy). Nothing was created.",
+    retryable: false,
+    raisedIn: ['cli/campaign'],
+    action: 'Write at least as many versions as listings it will have live in that city, never fewer than 3, each by skills/listingCopy, in copyVersions; check them with log facebook listing lint --file <listing.json>.'
+  },
   noReplacementAccount: {
     layer: 'listing',
     meaning: "No FACEBOOK account in the listing's country is ACTIVE, proxied, under its cap and not already in the campaign. The listing stays ACCOUNT_LOST.",
     retryable: true,
     raisedIn: ['marketplace/replacement'],
-    action: 'Add or activate an account in that country (with a proxy there), then run log campaign heal.'
+    action: 'Add or activate an account in that country (with a proxy there), then run log facebook campaign heal.'
   },
 
-  // ── twenty ─────────────────────────────────────────────────────────────
   twentyNotConfigured: {
     layer: 'twenty',
     meaning: 'TWENTY_BASE_URL or TWENTY_API_KEY is not set.',
@@ -1164,10 +1137,9 @@ export const ERROR_CATALOG = {
     meaning: 'No socialAccount with that accountName or id in Twenty.',
     retryable: false,
     raisedIn: ['marketplace/socialAccount'],
-    action: 'log accounts lists the Facebook accounts.'
+    action: 'log facebook accounts lists the Facebook accounts.'
   },
 
-  // ── proxyVendor ────────────────────────────────────────────────────────
   twoCaptchaNotConfigured: {
     layer: 'proxyVendor',
     meaning: "The 2Captcha proxy API key or proxy password isn't set.",
@@ -1218,7 +1190,6 @@ export const ERROR_CATALOG = {
     action: 'Run `log proxy assign` again, or pick a nearby city it has (--city, --region).'
   },
 
-  // ── auth ───────────────────────────────────────────────────────────────
   timedOut: {
     layer: 'auth',
     meaning: '`log login` waited and the browser never finished signing in.',
@@ -1254,7 +1225,6 @@ export const ERROR_CATALOG = {
     raisedIn: ['profile.uploadingProfilePhoto', 'profile.uploadingCoverPhoto'],
     action: "Read the run's capture and its saved page text; run once more after the launch gap (rule 24)."
   },
-  // rule 42: the browser as a driver (browser/driver) and AdsPower's Local API (adsPower/*).
   browserDriverFailed: {
     layer: 'browser',
     meaning: 'A browser driver step threw something without a catalog code, or a session was started without its driver steps.',
@@ -1297,78 +1267,95 @@ export const ERROR_CATALOG = {
     raisedIn: ['browser/adsPower', 'python/browserDriver'],
     action: 'Run `log adsPower sync --apply` (it makes the profile and links it).'
   },
-  // rule 45: groups (`group/join`, `log join group`).
   groupRefInvalid: {
     layer: 'group',
     meaning: '--group names no Facebook group (a facebook.com/groups/<id or name>/ URL, the id, or the name in the URL).',
     retryable: false,
-    raisedIn: ['group/join'],
+    raisedIn: ['facebook/group/join'],
     action: "Copy the group's URL from the browser and pass it as --group."
   },
   groupBrowserNotOpen: {
     layer: 'group',
-    meaning: "The account's browser is not open: a join is a step in it, never a launch of its own (rule 35).",
+    meaning: "The account's browser is not open: a join or a read is a step in it, never a launch of its own (rule 35).",
     retryable: false,
-    raisedIn: ['cli/join'],
-    action: 'Open it first: log inspect start --account <a> (or log host start), then run the join again.'
+    raisedIn: ['cli/join', 'cli/read'],
+    action: 'Open it first: log inspect start --account <a> (or log facebook host start), then run the join or the read again.'
   },
   groupPageNotOpened: {
     layer: 'group',
     meaning: "The group page did not open in the account's browser.",
     retryable: true,
-    raisedIn: ['group/join.opening'],
+    raisedIn: ['facebook/group/join.opening'],
     action: "Read the run's step folder (rule 25): its screenshot and HAR show where the page went."
   },
   groupGateUnknown: {
     layer: 'group',
     meaning: 'The group page showed neither a Join nor a Joined button: a page not recorded yet.',
     retryable: false,
-    raisedIn: ['group/join.reading'],
-    action: "Read the step's snapshot.yml and screenshot: name the page's button in group/join/helpers/readGroupPage.ts from that recording (rule 29)."
+    raisedIn: ['facebook/group/join.reading'],
+    action: "Read the step's snapshot.yml and screenshot: name the page's button in facebook/group/join/helpers/readGroupPage.ts from that recording (rule 29)."
   },
   groupQuestionsNotReopened: {
     layer: 'group',
     meaning: 'The group page shows no way back into its questions: no "Answer questions" button and no open dialog.',
     retryable: false,
-    raisedIn: ['group/answer.choosing', 'group/answer.reopening'],
+    raisedIn: ['facebook/group/answer.choosing', 'facebook/group/answer.reopening'],
     action: "Read the opening step's snapshot (rule 25): a public group's participation questions have no recorded way back in yet. Record one with log inspect before filling it (rule 29)."
   },
   groupFillIncomplete: {
     layer: 'group',
     meaning: "A fill step had no element in the dialog, or one failed: the draft and the dialog don't match.",
     retryable: false,
-    raisedIn: ['group/answer.planning', 'group/answer.filling'],
-    action: "Read the reading step's snapshot.yml: the questions may have changed (run the stepper again: log join group --answer), or a type isn't recorded yet."
+    raisedIn: ['facebook/group/answer.planning', 'facebook/group/answer.filling'],
+    action: "Read the reading step's snapshot.yml: the questions may have changed (run the stepper again: log facebook join group --answer), or a type isn't recorded yet."
   },
   groupSubmitNotConfirmed: {
     layer: 'group',
     meaning: 'Submit was pressed and the dialog stayed open, or the click failed. It is not pressed again.',
     retryable: false,
-    raisedIn: ['group/answer.submitting', 'group/answer.checking'],
+    raisedIn: ['facebook/group/answer.submitting', 'facebook/group/answer.checking'],
     action: "Read the submitting and checking steps' recordings (rule 25) before another --submit."
   },
   groupJoinNotConfirmed: {
     layer: 'group',
     meaning: 'Join was pressed and the page did not change, or the click failed. It is not pressed again.',
     retryable: false,
-    raisedIn: ['group/join.joining', 'group/join.checking'],
+    raisedIn: ['facebook/group/join.joining', 'facebook/group/join.checking'],
     action: "Read the joining and checking steps' recordings (rule 25) before another --live run."
+  },
+  groupIdUnknown: {
+    layer: 'group',
+    meaning: "The group page never gave the group's numeric id (the read keeps a post only with its group's id).",
+    retryable: true,
+    raisedIn: ['facebook/group/read.opening'],
+    action: "Read the opening step's recording (rule 25), or pass the group's numeric id as --group."
+  },
+  groupNoAccount: {
+    layer: 'group',
+    meaning: 'No account in Twenty is in this group (no agencyGroups row with its id), so none can read it.',
+    retryable: false,
+    raisedIn: ['cli/read.worker'],
+    action: 'Join it first with one account: log facebook join group --account <a> --group <id> --live.'
+  },
+  groupReadStepFailed: {
+    layer: 'group',
+    meaning: "A step of the group read failed in the account's browser (a scroll, a post page, its comments).",
+    retryable: true,
+    raisedIn: ['facebook/group/read.scrolling', 'facebook/group/read.openingPost', 'facebook/group/read.scrollingComments'],
+    action: "Read the step's recording (rule 25): its screenshot and HAR show where the page was."
   },
 } as const satisfies Record<string, ErrorEntry>
 
 export type ErrorCode = keyof typeof ERROR_CATALOG
 
-/** The codes of one layer, as a union. */
 export type CodeOfLayer<L extends ErrorLayer> = {
   [C in ErrorCode]: (typeof ERROR_CATALOG)[C]['layer'] extends L ? C : never
 }[ErrorCode]
 
-/** Why the captcha router hands a captcha to a person: the codes that end a publish in `needsPerson`. */
 export type CaptchaStopReason = {
   [C in ErrorCode]: (typeof ERROR_CATALOG)[C] extends { publish: 'needsPerson' } ? C : never
 }[ErrorCode]
 
-/** A failed step or worker call, as every boundary returns it. */
 export interface CodedFailure {
   ok: false
   code: ErrorCode

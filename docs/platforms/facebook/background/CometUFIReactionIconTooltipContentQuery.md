@@ -1,6 +1,6 @@
 # CometUFIReactionIconTooltipContentQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -17,16 +17,14 @@ Seen 22 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | POST 200 /ajax/bnzai (493 ms) | 1 | 200 | 781 ms | 1638 ms | — |
-| inspect | step 6: likePost Like | 1 | 200 | 1442 ms | 3 ms | — |
-| inspect | POST 200 CometUFIFeedbackReactMutation (1719 ms) | 1 | 200 | 729 ms | 1162 ms | — |
-| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T105 | 2 | 200 | 662–1826 ms | 2672–8108 ms | — |
-| inspect | rea read step 22_likepostLike: exit 0, ev_540383c4fa642403a764fbc232e14ac51cafa5f313056b88 | 1 | 200 | 816 ms | 2983 ms | — |
-| inspect | step 5: dwell 0.67s | 1 | 200 | 1109 ms | 121 ms | — |
-| inspect | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\inspect\20261020T103 | 10 | 200 | 763–1160 ms | 118–247832 ms | — |
-| inspect | rea read step 10_nextpost: exit 0, ev_7ff544567b0da5effece64331b722d7bf61996303ee2c1367083 | 1 | 200 | 1022 ms | 71 ms | — |
-| inspect | POST 200 CometHovercardQueryRendererQuery (1147 ms) | 2 | 200 | 1113–1170 ms | 789–885 ms | — |
-| inspect | rea read step 14_nextpost: exit 0, ev_6209fcf52acf0f7a90e081fed57af389f95de778645cfd8464dd | 2 | 200 | 980–1123 ms | 21418–37300 ms | — |
+| inspect | post: "…", 48 words, 1 image(s), scrolled 753 px | 1 | 200 | 781 ms | 3523 ms | — |
+| inspect | step 6: likePost Like | 4 | 200 | 662–1826 ms | 3–15944 ms | — |
+| inspect | likePost failed: RuntimeError: the element kept moving under the cursor: the point is on D | 1 | 200 | 816 ms | 9386 ms | — |
+| inspect | step 5: dwell 0.67s | 2 | 200 | 895–1109 ms | 121–1205 ms | — |
+| inspect | post: "…", 42 words, 1 image(s), scrolled 735 px | 1 | 200 | 763 ms | 649 ms | — |
+| inspect | step 11: dwell 0.52s | 1 | 200 | 1022 ms | 1098 ms | — |
+| inspect | step 31: clickRole button "…" | 10 | 200 | 976–1170 ms | 7673–258327 ms | — |
+| inspect | nextPost failed: TimeoutError: Locator.evaluate: Timeout 30000ms exceeded. | 2 | 200 | 980–1123 ms | 26238–42120 ms | — |
 
 <!-- facts:end -->
 

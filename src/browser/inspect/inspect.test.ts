@@ -10,7 +10,6 @@ describe('parseInspectAction', () => {
     expect(parseInspectAction(['type', 'e12', 'Allentown', 'Trash'])).toEqual({ ok: true, action: 'type', args: ['e12', 'Allentown', 'Trash'] })
     expect(parseInspectAction(['click'])).toMatchObject({ ok: false })
     expect(parseInspectAction(['hover'])).toMatchObject({ ok: false })
-    // Warm-up actions (rule 35): ranges are optional for scroll and dwell.
     expect(parseInspectAction(['scroll'])).toEqual({ ok: true, action: 'scroll', args: [] })
     expect(parseInspectAction(['scroll', '4-7', '300-600'])).toEqual({ ok: true, action: 'scroll', args: ['4-7', '300-600'] })
     expect(parseInspectAction(['openAny', '/marketplace/item/', '2-4'])).toMatchObject({ ok: true, action: 'openAny' })
@@ -24,8 +23,8 @@ describe('parseInspectAction', () => {
     expect(parseInspectAction(['goto', 'https://evil.example/facebook.com'])).toMatchObject({ ok: false })
   })
 
-  test('click, type, press, solve, signIn and code are the actions that act on Facebook (rule 8)', () => {
-    expect([...LIVE_ACTIONS].sort()).toEqual(['click', 'clickAny', 'clickRole', 'code', 'fillRole', 'likePost', 'postButton', 'press', 'setLocation', 'signIn', 'solve', 'type', 'upload', 'uploadRole'])
+  test('click, type, press, solve, signIn, code and pin are the actions that act on Facebook (rule 8)', () => {
+    expect([...LIVE_ACTIONS].sort()).toEqual(['click', 'clickAny', 'clickRole', 'code', 'fillRole', 'likePost', 'pin', 'postButton', 'press', 'setLocation', 'signIn', 'solve', 'type', 'upload', 'uploadRole'])
   })
 })
 
@@ -65,6 +64,12 @@ describe('renderInspectStep', () => {
     expect(text).toContain('GET 302 /me')
     expect(text).toContain('ev_1')
     expect(text).toContain('[ref=e5]')
+  })
+
+  test('counts every element on the page and says how many the step brought (a scroll\'s new posts, listed first)', () => {
+    const text = renderInspectStep({ ok: true, step: '05_scroll2X700px', url: 'u', interactive: ['- article [ref=e1041]', '- link "Facebook" [ref=e7]'], interactiveTotal: 810, interactiveNew: 1 })
+    expect(text).toContain('810 element(s) on the page, 1 new since the last step, listed first')
+    expect(text.indexOf('e1041')).toBeLessThan(text.indexOf('e7]'))
   })
 
   test('never shows what is typed in a field (rule 21)', () => {

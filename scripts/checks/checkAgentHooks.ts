@@ -1,24 +1,13 @@
-// Rule 55: the CLI, the MCP tools, the agent hooks and the live log stay in step.
-// Usage: bun scripts/checks/checkAgentHooks.ts           (pre-commit and pre-push: refuses any drift)
-//        bun scripts/checks/checkAgentHooks.ts --write   (rewrites both hosts' hook files from the registry)
-//
-// Checked:
-//   .claude/settings.json "hooks" and .codex/hooks.json "hooks"  equal the registry (src/agentHooks/registry)
-//   every hook script                                            exists, and answers each of its events with nothing or JSON
-//   every CLI command                                            is an MCP tool, or terminal-only with a reason
-//   every MCP tool (commands and saved flows)                    is matched by the PostToolUse hook (mcp__log__<tool>)
-//   every long-running tool                                      is a command, and its description points at the live log
-//   the MCP server's name                                        is the one in .mcp.json and in the hook matcher
-//   every resolver a page state names (`log <command>`)          is a real command
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { AGENT_HOOKS, hooksFor, MCP_SERVER_NAME, toolIsHooked } from "../../src/agentHooks/registry/index.ts";
 import type { HookEvent, HookHost } from "../../src/agentHooks/registry/index.ts";
-import { PAGE_STATES } from "../../src/browser/flow/helpers/pageState.ts";
+import { PAGE_STATES, RESOLVE_CALLS } from "../../src/browser/flow/helpers/pageState.ts";
+import { isPlatform } from "../../src/cli/runner/helpers/index.ts";
 import { COMMANDS } from "../../src/cli/runner/index.ts";
-import { LONG_RUNNING, toolsFromCommands } from "../../src/mcp/server/helpers/toolsFromCommands.ts";
+import { commandTools, LONG_RUNNING, toolsFromCommands } from "../../src/mcp/server/helpers/toolsFromCommands.ts";
 import { toolsFromFlows } from "../../src/mcp/server/helpers/toolsFromFlows.ts";
 import { savedFlows } from "../../src/mcp/server/index.ts";
 import { TERMINAL_ONLY } from "../../src/mcp/server/types.ts";
@@ -27,7 +16,6 @@ const root = join(import.meta.dir, "..", "..");
 const write = process.argv.includes("--write");
 const problems: string[] = [];
 
-// 1. Both hosts' hook files, from the registry.
 const HOST_FILES: Record<HookHost, string> = { claudeCode: ".claude/settings.json", codex: ".codex/hooks.json" };
 for (const [host, file] of Object.entries(HOST_FILES) as [HookHost, string][]) {
   const path = join(root, file);
@@ -41,13 +29,12 @@ for (const [host, file] of Object.entries(HOST_FILES) as [HookHost, string][]) {
   } else problems.push(`${file}: its hooks differ from src/agentHooks/registry. Run \`bun run check:agentHooks --write\`.`);
 }
 
-// 2. Every hook script runs and answers its events with nothing or JSON (against a scratch memory, so the real one is untouched).
 const scratch = mkdtempSync(join(tmpdir(), "agentHooks-"));
 try {
   const samples: Record<HookEvent, Record<string, unknown>> = {
     SessionStart: { hook_event_name: "SessionStart", source: "startup" },
     UserPromptSubmit: { hook_event_name: "UserPromptSubmit", prompt: "check" },
-    PreToolUse: { hook_event_name: "PreToolUse", tool_name: "Bash", tool_input: { command: "bun bin/log.ts warmup facebook feed run | tail -5" } },
+    PreToolUse: { hook_event_name: "PreToolUse", tool_name: "Bash", tool_input: { command: "bun bin/log.ts facebook warmup feed run | tail -5" } },
     PostToolUse: { hook_event_name: "PostToolUse", tool_name: "Bash", tool_input: { command: "echo" } },
     Stop: { hook_event_name: "Stop", stop_hook_active: false },
   };
@@ -59,7 +46,6 @@ try {
     }
     const run = spawnSync("bun", [script], { input: JSON.stringify(samples[hook.event]), encoding: "utf8", timeout: hook.timeout * 1000, env: { ...process.env, LOG_HOOK_MEMORY: join(scratch, "memory.json") } });
     const out = (run.stdout ?? "").trim();
-    // Exit 2 is a refusal both hosts understand (the reason on stderr); only PreToolUse and Stop may refuse.
     if (run.status === 2 && (hook.event === "PreToolUse" || hook.event === "Stop") && run.stderr.trim()) continue;
     if (run.status !== 0) {
       problems.push(`${hook.script} (${hook.event}) exited ${run.status}: ${(run.stderr ?? "").trim().slice(0, 300)}`);
@@ -73,7 +59,6 @@ try {
       }
     }
   }
-  // The buffered sample must be refused: that is the hook's job.
   const liveLogs = AGENT_HOOKS.find((h) => h.event === "PreToolUse");
   if (liveLogs) {
     const run = spawnSync("bun", [join(root, liveLogs.script)], { input: JSON.stringify(samples.PreToolUse), encoding: "utf8" });
@@ -83,26 +68,36 @@ try {
   rmSync(scratch, { recursive: true, force: true });
 }
 
-// 3. CLI ↔ MCP.
 const commandNames = new Set(COMMANDS.map((c) => c.name));
 const tools = [...toolsFromCommands(COMMANDS), ...toolsFromFlows(savedFlows())];
-const toolNames = new Set(tools.map((t) => t.name));
-for (const name of commandNames) if (!toolNames.has(name) && !TERMINAL_ONLY[name]) problems.push(`log ${name} has no MCP tool and isn't terminal-only (src/mcp/server/types.ts TERMINAL_ONLY, with why)`);
+const commandsWithTools = new Set(commandTools(COMMANDS).map((t) => t.command.name));
+for (const name of commandNames) if (!commandsWithTools.has(name) && !TERMINAL_ONLY[name]) problems.push(`log ${name} has no MCP tool and isn't terminal-only (src/mcp/server/types.ts TERMINAL_ONLY, with why)`);
 for (const name of Object.keys(TERMINAL_ONLY)) if (!commandNames.has(name)) problems.push(`TERMINAL_ONLY names "${name}", which isn't a command`);
 for (const tool of tools) if (!toolIsHooked(tool.name)) problems.push(`MCP tool ${tool.name} isn't matched by the PostToolUse hook (mcp__${MCP_SERVER_NAME}__${tool.name})`);
 for (const name of LONG_RUNNING) {
   if (!commandNames.has(name)) problems.push(`LONG_RUNNING names "${name}", which isn't a command`);
-  const tool = tools.find((t) => t.name === name);
-  if (tool && !tool.description.includes("~/.logCli/mcp/<day>.log")) problems.push(`MCP tool ${name} runs long but its description doesn't point at the live log (rule 26)`);
+  for (const entry of commandTools(COMMANDS).filter((t) => t.command.name === name)) {
+    const tool = tools.find((t) => t.name === entry.tool);
+    if (tool && !tool.description.includes("~/.logCli/mcp/<day>.log")) problems.push(`MCP tool ${entry.tool} runs long but its description doesn't point at the live log (rule 26)`);
+  }
 }
 const mcpJson = JSON.parse(readFileSync(join(root, ".mcp.json"), "utf8")) as { mcpServers?: Record<string, unknown> };
 if (!mcpJson.mcpServers?.[MCP_SERVER_NAME]) problems.push(`.mcp.json has no "${MCP_SERVER_NAME}" server: the hooks match mcp__${MCP_SERVER_NAME}__*`);
 const serverSource = readFileSync(join(root, "src/mcp/server/index.ts"), "utf8");
 if (!serverSource.includes(`name: "${MCP_SERVER_NAME}"`)) problems.push(`src/mcp/server/index.ts doesn't name its server "${MCP_SERVER_NAME}"`);
 
-// 4. Every resolver the hooks hand the agent is a real command.
+for (const [id, call] of Object.entries(RESOLVE_CALLS)) {
+  if (!PAGE_STATES.some((state) => state.id === id)) problems.push(`RESOLVE_CALLS names "${id}", which isn't a page state`);
+  const sample = call({ account: "a", text: "- generic [ref=e1]: Continue\n- generic [ref=e2]: Update\n- generic [ref=e3]: Dismiss", messengerPin: true });
+  if (sample && !tools.some((t) => t.name === sample.tool)) problems.push(`page state ${id} resolves with the tool ${sample.tool}, which isn't an MCP tool`);
+}
+for (const state of PAGE_STATES) if (!(state.id in RESOLVE_CALLS)) problems.push(`page state ${state.id} has no resolver call in RESOLVE_CALLS (src/browser/flow/helpers/pageState.ts): every result's next comes from it (rule 54)`);
+
 for (const state of PAGE_STATES) {
-  for (const match of state.resolve.matchAll(/`log ([a-zA-Z]+)/g)) if (!commandNames.has(match[1])) problems.push(`page state ${state.id} resolves with \`log ${match[1]}\`, which isn't a command`);
+  for (const match of state.resolve.matchAll(/`log ([a-zA-Z]+)(?: ([a-zA-Z]+))?/g)) {
+    const name = isPlatform(match[1]) && match[2] ? match[2] : match[1];
+    if (!commandNames.has(name)) problems.push(`page state ${state.id} resolves with \`log ${match[1]}${match[2] ? ` ${match[2]}` : ""}\`, which isn't a command`);
+  }
 }
 
 if (problems.length) {

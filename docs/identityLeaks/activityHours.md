@@ -27,9 +27,9 @@ hours, every day, is a "not local" signal (R2 §6, R4 H4).
 - **No time-of-day logic.** A grep for `getHours|timezone|cron|schedule|night|hour`
   in `src/` finds only `countArkoseToday`, which counts by UTC day (R4 H4).
   *verifiedSource*
-- **Commands run whenever the operator runs them:** `log publish --live`
-  (`src/cli/publish/index.ts`), `log scan`/`status`/`connect`
-  (`src/cli/live/index.ts`) and `log watch`. The monitor retries after 5 s and
+- **Commands run whenever the operator runs them:** `log facebook publish --live`
+  (`src/cli/publish/index.ts`), `log facebook scan`/`status`/`connect`
+  (`src/cli/live/index.ts`) and `log facebook watch`. The monitor retries after 5 s and
   rests 24 h after `rate_limited` (`src/marketplace/monitor/machine.ts:5-9`).
   None of them checks the account's clock. *verifiedSource*
 - **The daily cap uses the UTC date.** `src/marketplace/replacement/helpers/pickAccount.ts:57`:
@@ -56,7 +56,7 @@ to every action on every account, every day. And the fix is cheap.
   night.
 - Any daily cap or "today" count: `pickAccount.ts:57`, `countArkoseToday`.
 - Any future scheduler (cron, Task Scheduler, XState delays).
-- **Manual sign-in** (`log connect`) at the operator's convenience
+- **Manual sign-in** (`log facebook connect`) at the operator's convenience
   (`manualSignIn.md`).
 
 ## Mitigation
@@ -86,8 +86,8 @@ to every action on every account, every day. And the fix is cheap.
 1. Unit tests for `isActiveNow`: both DST changes (Europe/Dublin last Sunday of
    March and October), a US account in `America/Los_Angeles`, an AU account in
    `Australia/Sydney`, and midnight crossing.
-2. Command test: with a fixed `now` at 03:00 Europe/Dublin, `log publish --live`
-   and `log scan` return `outsideActiveHours` before any browser opens.
+2. Command test: with a fixed `now` at 03:00 Europe/Dublin, `log facebook publish --live`
+   and `log facebook scan` return `outsideActiveHours` before any browser opens.
 3. Monitor test: with 1 ms timings and a fake clock at night, the machine waits
    instead of checking.
 4. Cap test: a US account at 23:30 local, which is the next UTC day, still
@@ -99,9 +99,9 @@ Leaking at `f033e63`: there was no guard. **Fixed at `2de5ff5`** (rule 18,
 `src/marketplace/home/helpers/activeHours.ts`).
 
 - A local hours gate (default 08:00 to 22:00, per account `activeHoursStart` and
-  `activeHoursEnd`) refused `log connect`, `log scan` and `log publish` live:
+  `activeHoursEnd`) refused `log facebook connect`, `log facebook scan` and `log facebook publish` live:
   "it is 12:08 in Galway (Europe/Dublin)... opens at 23:00 local, in 10h52".
   *verifiedLive (proxied)*
-- DST and `log watch` were tested with an injected clock. The daily cap counts
+- DST and `log facebook watch` were tested with an injected clock. The daily cap counts
   by local date. *unitTested*
-- Not checked live: `log watch` over many hours.
+- Not checked live: `log facebook watch` over many hours.

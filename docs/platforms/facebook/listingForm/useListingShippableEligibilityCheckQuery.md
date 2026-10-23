@@ -1,6 +1,6 @@
 # useListingShippableEligibilityCheckQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -13,13 +13,14 @@
 | Called from | `useListingShippableEligibilityCheck` |
 | rea | `ev_2268109b78d0872eb0a55170e823376ab0a90f53109df20c59492cda9ce542b7` |
 
-Seen 33 time(s) in 11 run(s).
+Seen 34 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | publish | Category: Miscellaneous | 11 | 200 | 306–379 ms | 4402–6091 ms | — |
 | publish | Uploading 5 photo(s) | 18 | 200 | 326–397 ms | 5483–10056 ms | — |
 | publish | Uploading 2 photo(s) | 4 | 200 | 319–333 ms | 4295–4779 ms | — |
+| inspect | scroll: container +87px in 3 steps | 1 | 200 | 1668 ms | 1104 ms | — |
 
 <!-- facts:end -->
 

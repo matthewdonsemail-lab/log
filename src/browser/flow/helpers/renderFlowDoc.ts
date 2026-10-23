@@ -1,12 +1,5 @@
 import type { FlowDefinition } from '../types'
 
-/**
- * A flow's documentation, from its definition and the recording behind it:
- * what it does, its params, each step with the element it acts on and the
- * request that confirms it (linked to that request's doc in
- * docs/platforms/facebook), rea's Evidence per step, and the machine as a
- * diagram. Pure. `requestDoc` maps a request name to its doc path, if there is one.
- */
 export function renderFlowDoc(flow: FlowDefinition, requestDoc: (name: string) => string | null = () => null): string {
   const out = [
     `# Flow: \`${flow.name}\``,
@@ -38,7 +31,6 @@ export function renderFlowDoc(flow: FlowDefinition, requestDoc: (name: string) =
   return out.join('\n')
 }
 
-/** `profileSetup` → `flowProfileSetup`: the flow's MCP tool. Pure. */
 export function toolName(flow: string): string {
   return `flow${flow[0].toUpperCase()}${flow.slice(1)}`
 }

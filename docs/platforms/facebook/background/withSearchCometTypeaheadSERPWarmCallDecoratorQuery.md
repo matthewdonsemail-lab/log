@@ -1,6 +1,6 @@
 # withSearchCometTypeaheadSERPWarmCallDecoratorQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -17,7 +17,7 @@ Seen 1 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| inspect | step 2: type e20 | 1 | 200 | 446 ms | 64 ms | — |
+| inspect | step 12: clickRole button "…" | 1 | 200 | 845 ms | 1032 ms | — |
 
 <!-- facts:end -->
 
@@ -27,7 +27,7 @@ A warm call for the search results page (SERP), made by `withSearchCometTypeahea
 
 ## What our machine does with it
 
-Nothing. No machine of ours searches Facebook: `log join group` opens the group by its own URL (`groupJoin`, state `opening`), and `parseGroupRef` refuses `search` as a group. The steps it fired in were a hand-run `log inspect` session, so no state waits for it or reads it.
+Nothing. No machine of ours searches Facebook: `log facebook join group` opens the group by its own URL (`groupJoin`, state `opening`), and `parseGroupRef` refuses `search` as a group. The steps it fired in were a hand-run `log inspect` session, so no state waits for it or reads it.
 
 ## What can go wrong
 

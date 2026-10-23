@@ -1,6 +1,6 @@
 ---
 name: host
-description: Run an account's whole lifecycle (rule 35) in ONE browser kept open for its day - log host start opens it once, signs in by the session cookie, checks the account, sets profile/name/location (--live), runs the warm-up and watches, saving progress on every change so a restart resumes at the exact next step. Use when matt says host, keep it open, run the account, resume, or the persistent browser.
+description: Run an account's whole lifecycle (rule 35) in ONE browser kept open for its day - log facebook host start opens it once, signs in by the session cookie, checks the account, sets profile/name/location (--live), runs the warm-up and watches, saving progress on every change so a restart resumes at the exact next step. Use when matt says host, keep it open, run the account, resume, or the persistent browser.
 ---
 
 # host
@@ -18,17 +18,21 @@ description: Run an account's whole lifecycle (rule 35) in ONE browser kept open
 4. **Writes need matt:** `--live` for profile, name and Marketplace location
    (rules 8, 28); `--likes` for the warm-up's likes.
 5. **Stop with SHUTDOWN, never by killing it,** so the browser closes for its
-   reason and the session and device are saved (`log host send ... SHUTDOWN`,
+   reason and the session and device are saved (`log facebook host send ... SHUTDOWN`,
    or Ctrl+C).
 
 ## The routine
 
 ```bash
-log host start --account <a> [--live] [--likes] --gapMinutes 2 --watchMinutes 2   # watched; default 150 / 12
-log host status [--account <a>]          # state, warm-up done, opens today, every close and its reason
-log host send --account <a> PERSON_DONE  # after clearing a checkpoint by hand in the window
-log host send --account <a> SHUTDOWN
+log facebook host start --account <a> [--live] [--likes] --gapMinutes 2 --watchMinutes 2   # watched; default 150 / 12
+log facebook check --account <a> [--bypass]   # the host's check once, by hand, in the open browser
+log facebook host status [--account <a>]          # state, warm-up done, opens today, every close and its reason
+log facebook host send --account <a> PERSON_DONE  # after clearing a checkpoint by hand in the window
+log facebook host send --account <a> SHUTDOWN
 ```
+
+The host reads no Facebook group on its own: OpenMagpie polls, and its worker
+`log facebook poll --request` reads in the browser the host holds (rule 65).
 
 Run `start` through Monitor (rule 26). A restart reads
 `~/.logCli/runs/host/<a>/progress.json` and resumes: the warm-up activities
@@ -36,11 +40,35 @@ done, today's opens; a fresh browser opens and the router walks to the next
 step. Too soon after the last launch (rule 24), the host waits the gap out.
 
 A save Twenty refused keeps the run's device and session in
-`~/.logCli/runs/unsaved/` (login removed): `log account resave <a> --from <dir>`.
+`~/.logCli/runs/unsaved/` (login removed): `log facebook account resave <a> --from <dir>`.
 
 `opensSpent` or `launchBudgetSpent` ends the day. Only when matt asks, close
-every browser (`log host send --account <a> SHUTDOWN`), then run `log account
+every browser (`log facebook host send --account <a> SHUTDOWN`), then run `log facebook account
 resetOpens <a>|all --reason "<why>"` (rule 37). It deletes nothing.
 
 Code: `src/marketplace/host` (the runner), `src/cli/host` (the steps),
 `src/marketplace/lifecycle` (the machine). Doc: `docs/lifecycle.md`.
+
+## The check (every watch round, rule 69)
+
+Each round the host opens three pages in the browser it holds, reading each
+from its step's own recording, nothing clicked:
+
+1. `/marketplace/status`: may the account still sell (`access_state_title`,
+   `is_marketplace_access_banned`, `profile_status`, `sell_on_marketplace`).
+   Anything but full access is the account's `suspended` issue.
+2. `/marketplace/you/selling`: each listing's state (active, being reviewed,
+   sold, rejected) and its clicks into Twenty's `agencyListings` (status,
+   `clicksCount`, `lastCheckedAt`). The clicks are the page's "N clicks on
+   listing": how many times people opened the listing's details page in the last
+   14 days, preloaded in the page's own HTML by
+   `CometMarketplaceYouSellingFastContentContainerQuery` as the listing's
+   `listing_insights.insights[0].count` (Bethlehem, inspect 20261023T000744,
+   step 02).
+3. `/marketplace/inbox?targetTab=SELLER`: the seller chats. None: said so. Some:
+   counted and kept as Facebook sent them in the run folder, until a recording of
+   a real chat maps a thread's fields (rule 29) and they go to Twenty's
+   conversations (rule 34).
+
+`log facebook check --account <a>` runs the same once.
+Code: `src/facebook/marketplace/check`.

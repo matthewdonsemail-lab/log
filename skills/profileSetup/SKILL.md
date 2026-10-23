@@ -1,6 +1,6 @@
 ---
 name: profileSetup
-description: Give a Facebook account its profile picture and cover photo with `log profile setup` (rule 28). Dry run first to read the profile page and check its controls from the recording, then --live when matt asks. Use when setting up a new account's profile, when matt says "profile photo", "cover photo", "background profile", or when an upload step stops with profileControlNotFound.
+description: Give a Facebook account its profile picture and cover photo with `log facebook profile setup` (rule 28). Dry run first to read the profile page and check its controls from the recording, then --live when matt asks. Use when setting up a new account's profile, when matt says "profile photo", "cover photo", "background profile", or when an upload step stops with profileControlNotFound.
 ---
 
 # profileSetup
@@ -13,7 +13,7 @@ does that for one account, both photos in one run (matt's choice).
 ## Hard boundaries
 
 1. **Dry run first, `--live` only when matt asks** (rules 8, 28). Over MCP,
-   `--live` also needs `confirmLive: true`.
+   `--live` is `profileLive`, with `confirmLive: true`.
 2. **Read before clicking** (rule 25). The upload clicks in
    `python/session/profileSession.py` were written before the page was seen. The dry
    run writes every button, link and file input the profile page has to
@@ -24,7 +24,7 @@ does that for one account, both photos in one run (matt's choice).
    recording first (rule 29). Bio and every other field stay read-only.
 4. **It is a launch** (rule 24): it counts against the 8 a day, 10 minutes
    apart, and needs waking hours (rule 18), the proxy gate (12) and a saved
-   session (`log connect` first).
+   session (`log facebook connect` first).
 5. **Run it live** (rule 26): through Monitor, every machine state prints.
 
 ## The routine
@@ -39,7 +39,7 @@ does that for one account, both photos in one run (matt's choice).
 3. Dry run:
 
    ```bash
-   bun bin/log.ts profile setup --account <a> 2>&1 | tee <log>
+   bun bin/log.ts facebook profile setup --account <a> 2>&1 | tee <log>
    ```
 
    It prints each photo as `would upload`, `no photo set in Twenty` or
@@ -56,7 +56,7 @@ does that for one account, both photos in one run (matt's choice).
 6. Rebuild the Facebook client docs (rule 27): the profile requests are new.
 
    ```bash
-   bun bin/log.ts capture --docs
+   bun bin/log.ts facebook capture --docs
    ```
 
 ## Codes
@@ -66,4 +66,4 @@ does that for one account, both photos in one run (matt's choice).
 | `profilePhotoMissing` | `--live` without both photos, or a photo that can't be read | Set both fields in Twenty |
 | `profileControlNotFound` | No opener, no "Upload photo" item, no file input | Read `profileFound.txt` / `<item>Failed.txt`, fix the pattern |
 | `profileUploadNotSaved` | Save never enabled, or the dialog stayed open | Read the capture; run again after the gap |
-| `sessionExpired` | The profile wasn't signed in | `log connect --account <a>` first |
+| `sessionExpired` | The profile wasn't signed in | `log facebook connect --account <a>` first |

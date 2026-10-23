@@ -1,14 +1,3 @@
-/**
- * One account's browser session, for any driver (rule 42). XState v5, `setup()` with named
- * actors, guards and actions; the driver's steps are provided with `machine.provide`.
- *
- *   preparing ─▶ gating ─(gatePassed)─▶ starting ─▶ selfChecking ─(selfCheckPassed)─▶ open
- *                  └─(else)─▶ refused                    └─(else)─▶ closing(selfCheckFailed)
- *   open ─CLOSE─▶ closing ─▶ closed        open ─CRASHED─▶ closing(crashed) ─▶ closed
- *
- * `starting` is only reachable from a passed gate, so no driver opens a browser without its
- * proxy checked (rule 12), and nothing is "open" before the self-check passed (rule 17).
- */
 import { assign, fromPromise, setup } from 'xstate'
 import type { BrowserEndpoint, BrowserSessionContext, BrowserSessionEvent, BrowserSessionInput, BrowserSessionOutput, CloseReason, DriverFailure, GateResult } from './types'
 
@@ -20,7 +9,6 @@ const failureOf = (error: unknown): DriverFailure => {
   return { code: 'browserDriverFailed', detail: error instanceof Error ? error.message : String(error) }
 }
 
-/** Placeholders: a session must be given its driver's steps (`createBrowserSession`). */
 const missing = (step: string): never => {
   throw { code: 'browserDriverFailed', detail: `no driver step "${step}" provided` }
 }

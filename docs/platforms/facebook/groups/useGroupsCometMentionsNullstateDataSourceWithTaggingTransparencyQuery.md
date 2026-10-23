@@ -1,6 +1,6 @@
 # useGroupsCometMentionsNullstateDataSourceWithTaggingTransparencyQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -13,10 +13,13 @@
 | Called from | `useGroupsCometMentionsNullstateDataSourceWithTaggingTransparency` |
 | rea | `ev_31e1bb1ed4650cf3dec8b243999fc5e8a274807f4d3169d297a5fc186417fe52` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 4 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
+| inspect | step 40: clickRole textbox "…" | 1 | 200 | 529 ms | 1136 ms | — |
+| inspect | scroll: +657px in 17 wheel steps, 1328 ms | 1 | 200 | 996 ms | 3997 ms | — |
+| inspect | step 3: clickRole button "…" | 1 | 200 | 478 ms | 2522 ms | — |
 | inspect | scroll: +1731px in 35 wheel steps, 2093 ms | 1 | 200 | 1146 ms | 3238 ms | — |
 
 <!-- facts:end -->

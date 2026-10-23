@@ -1,6 +1,6 @@
 # FBReelHashtagSearchResultsQuery
 
-<!-- facts:start · written by `log capture --docs` from the run captures and rea. Not edited by hand. -->
+<!-- facts:start · written by `log facebook capture --docs` from the run captures and rea. Not edited by hand. -->
 
 | | |
 | --- | --- |
@@ -29,8 +29,8 @@ Loads a page of Reels results for a hashtag (`FBReelHashtagSearchResults_paginat
 
 ## What our machine does with it
 
-Nothing. No step of the Reels warm-up opens a hashtag (`src/warmup/facebook/helpers/reel.ts`). The Reels warm-up (`src/warmup/facebook`) checks each step against the page's URL and snapshot (`checkStep`), never against this response, and no code refers to it.
+Nothing. No step of the Reels warm-up opens a hashtag (`src/facebook/warmup/activities/helpers/reel.ts`). The Reels warm-up (`src/facebook/warmup/activities`) checks each step against the page's URL and snapshot (`checkStep`), never against this response, and no code refers to it.
 
 ## What can go wrong
 
-None seen: one call, 200 in 2108 ms. A hashtag dialog over the reel can leave a step's expectation unmet (the URL or the snapshot not what it should be); `checkStep` then names what didn't happen. If the step fails anyway, `checkStep` reports it as an issue: `log warmup facebook reel record` goes on and outlines it, a `run` stops there, and a checkpoint or login page ends it as `blocked`.
+None seen: one call, 200 in 2108 ms. A hashtag dialog over the reel can leave a step's expectation unmet (the URL or the snapshot not what it should be); `checkStep` then names what didn't happen. If the step fails anyway, `checkStep` reports it as an issue: `log facebook warmup reel record` goes on and outlines it, a `run` stops there, and a checkpoint or login page ends it as `blocked`.

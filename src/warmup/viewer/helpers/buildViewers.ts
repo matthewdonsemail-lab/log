@@ -1,6 +1,5 @@
 import type { ReelViewer, ViewerStats, ViewerSwipe } from '../types'
 
-/** One KuaiRand log row, the fields a viewer is built from. */
 export interface KuaiRow {
   userId: number
   timeMs: number
@@ -12,15 +11,12 @@ export interface KuaiRow {
   liked: number
 }
 
-/** KuaiRand's single-column swipe feed: one video at a time, played as it lands (is_click is a valid play there). */
 export const SWIPE_FEED_TAB = 1
-/** The next play started within its predecessor's play time plus this: the same session. */
 export const SESSION_GAP_MS = 60_000
 
 const quantile = (sorted: number[], p: number) => (sorted.length ? sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * p))] : 0)
 const median = (xs: number[]) => quantile([...xs].sort((a, b) => a - b), 0.5)
 
-/** A viewer's numbers, from their swipes. Pure. */
 export function viewerStats(sessions: ViewerSwipe[][]): ViewerStats {
   const swipes = sessions.flat()
   const plays = swipes.map((s) => s[0]).sort((a, b) => a - b)
@@ -40,13 +36,6 @@ export function viewerStats(sessions: ViewerSwipe[][]): ViewerStats {
   }
 }
 
-/**
- * KuaiRand rows → viewers: each user's plays in the swipe feed, in time order,
- * cut into sessions where the next play didn't start within the last one's
- * play time plus `SESSION_GAP_MS`. Sessions shorter than `minSwipes` are
- * dropped, and at most `maxSessions` are kept per viewer (their longest).
- * Pure.
- */
 export function buildViewers(rows: KuaiRow[], source: string, options: { minSwipes?: number; maxSessions?: number; minSessions?: number } = {}): ReelViewer[] {
   const minSwipes = options.minSwipes ?? 8
   const maxSessions = options.maxSessions ?? 12

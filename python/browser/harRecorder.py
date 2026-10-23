@@ -1,12 +1,3 @@
-"""HAR entries from a Playwright context's own events, for any browser log-cli drives (rule 44).
-
-Moved from inspectSession.py so every browser records the same way. `Recorder` gives
-the requests of one step (inspect's per-step `network.har`). `SessionHar` keeps every
-request of the session and writes it as `session.har` when the session ends. That is the
-raw session HAR (rules 19, 22) for browsers Playwright attaches to over CDP (AdsPower),
-where Playwright's own `record_har_path` can't be set, because the profile's context
-already exists. Camoufox contexts get Playwright's recorder from the proxy gate instead.
-"""
 from __future__ import annotations
 
 import asyncio
@@ -21,10 +12,10 @@ from typing import Any
 STATIC = re.compile(r"javascript|css|image/|font/|woff", re.I)
 TEXT_TYPES = re.compile(r"json|javascript|text|html|xml|x-www-form-urlencoded", re.I)
 MAX_BODY = 2_000_000
+MAX_DOCUMENT_BODY = 16_000_000
 
 
 class Recorder:
-    """The requests of the step in progress, as HAR entries, from the context's events."""
 
     def __init__(self) -> None:
         self.entries: list[dict[str, Any]] = []
@@ -33,8 +24,6 @@ class Recorder:
         self.last_start = 0.0
 
     def busy(self) -> bool:
-        """The page is loading: requests in flight, or one started in the last 0.4 s (the cursor waits, rule 32)."""
-        # A request still open 4 s after the last one started is a long poll, not the page loading.
         since = time.monotonic() - self.last_start
         return since < 0.4 or (self.inflight > 0 and since < 4.0)
 
@@ -81,19 +70,20 @@ class Recorder:
                 try:
                     raw = await response.body()
                     content["size"] = len(raw)
-                    if len(raw) <= MAX_BODY:
+                    limit = MAX_DOCUMENT_BODY if "html" in mime.lower() else MAX_BODY
+                    if len(raw) <= limit:
                         if TEXT_TYPES.search(mime):
                             content["text"] = raw.decode("utf8", "replace")
                         else:
                             content["text"], content["encoding"] = base64.b64encode(raw).decode(), "base64"
                 except Exception:
-                    pass  # redirects and aborted bodies have none
+                    pass
                 entry["response"].update({"status": response.status, "statusText": response.status_text,
                                           "headers": [{"name": k, "value": v} for k, v in rheaders.items()],
                                           "content": content, "redirectURL": rheaders.get("location", "")})
             self.entries.append(entry)
         except Exception:
-            pass  # the page closed under it
+            pass
 
     def seen(self) -> int:
         return len(self.entries) + len(self.pending)
@@ -106,7 +96,6 @@ class Recorder:
 
 
 class SessionHar(Recorder):
-    """Every request of the session, written once as a HAR 1.2 file when the session ends."""
 
     def __init__(self, path: Path) -> None:
         super().__init__()

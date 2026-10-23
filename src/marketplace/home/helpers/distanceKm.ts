@@ -1,10 +1,8 @@
-/** A point on the map, in degrees. */
 export interface LatLong {
   latitude: number
   longitude: number
 }
 
-/** Great-circle distance in km (haversine). Pure. */
 export function distanceKm(a: LatLong, b: LatLong): number {
   const radians = (degrees: number) => (degrees * Math.PI) / 180
   const dLat = radians(b.latitude - a.latitude)

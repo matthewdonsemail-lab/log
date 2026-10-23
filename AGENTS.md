@@ -1,5 +1,27 @@
 # AGENTS.md — log-cli
 
+## The platform comes first: `log <platform> <command> …` (matt, 2026-10-22)
+
+This is the shape of every command, at the start of this file because it
+was broken across the CLI.
+
+- **The platform is the first word after `log`:** `log <platform> <command>
+  <what> …`, e.g. `log facebook warmup reel`, `log facebook join group`.
+  There is no form without it.
+- **The poll is `log facebook poll <group> <account> <how long to poll>`**,
+  not a flag on another command.
+- **Old forms are refused** with the form they became, as rule 60 did for
+  the warm-up.
+- **A command that works on any platform** (`inspect`, `flow`, `proxy`,
+  `errors`, `login`…) takes none.
+- **The code is laid out the same way:** `src/<platform>/<area>/<domain>`,
+  because each platform has its own approach: `src/facebook/group/join`,
+  `src/facebook/group/read`, `src/facebook/warmup/activities`,
+  `src/facebook/warmup/stages`. What any platform uses stays shared
+  (`src/warmup/persona`, `src/warmup/viewer`). Rule 64.
+
+The full table, every command old and new: `docs/commandNaming.md`. Rule 63.
+
 ## Only what matt said: never add options, context or spend he didn't ask for (matt, 2026-10-19)
 
 This comes first, before every other rule. On 2026-10-19 an agent added two
@@ -595,10 +617,160 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     the hooks diagram on GitHub), a command summary that names one browser
     (unless it is that browser's own command or Camoufox-only), and a README
     heading outside the generated section that names one browser.
+60. 2026-10-20 · matt: log-cli is platform-agnostic as well as
+    browser-agnostic. Facebook (Marketplace and groups) is the first platform,
+    and what is scoped by platform names it in every form: `log warmup
+    <platform> <activity>`, with no form that skips the platform. Listaro's five
+    Facebook activities are the Facebook activity `stages`: `log warmup facebook
+    stages plan|record|run|log` (was `log warmup plan|record|run|feed`; those
+    are refused with the form they became), their code in
+    `src/warmup/facebookStages` (was `src/marketplace/warmup`), and their log
+    the stage log (`~/.logCli/runs/warmup/stageLog.jsonl`, was the "activity
+    feed", which clashed with the Facebook feed activity). Every command
+    declares its platform (`Command.platform`: `facebook`, `any` or
+    `byArgument`, a typecheck error without one), the README shows it in its
+    Platform column, and `check:docs` refuses a `byArgument` command with a
+    usage line that doesn't name the platform. The Facebook-only commands that
+    don't yet take the platform in their name are listed in issue #20
+    (github.com/matthewdonsemail-lab/log-cli/issues/20), to be scoped as matt
+    decides.
+61. 2026-10-22 · (replaced by rule 65, matt 2026-10-22) matt: a Facebook group's posts and comments are read with
+    `log read group --account <a> --group <g>` (beside `log join group`) and
+    live in Twenty in objects of their own, for Facebook groups only:
+    `agencyGroupPosts` on the group's `agencyGroups` row, `agencyGroupComments`
+    on the post (`scripts/twenty/twentySetup.mjs`, additive, rule 13). A read
+    is a step in the account's open browser (rule 35): the posts and comments
+    come from each step's own HAR (rule 22), only what is newer than the row's
+    `readCursor` is kept, a post is opened again only when its comment count
+    grew, and the cursor moves only after the posts and comments are saved
+    (`src/group/read`, `docs/groupRead.md`). Nothing is clicked unless
+    `--live`, which switches each post's comments to Newest (rule 8).
+62. 2026-10-22 · (replaced by rule 65, matt 2026-10-22) matt: "a firehose!" log-cli reads the groups on its own
+    and pours what it finds into Twenty; nothing has to ask it. The host
+    (`log host start`, rule 35) reads, in every watch check, each group its
+    account is a member of that is due (`--groupMinutes`, default 60, 0 reads
+    none), in the browser it holds, inside the account's hours, nothing
+    clicked (rule 8). A checkpoint or a sign-out on a group page is the
+    account's issue. Whatever wants the posts reads Twenty: OpenMagpie's
+    worker (`log read group --worker`, obris-dev/openmagpie#178) answers from
+    Twenty at once and opens no browser, saying which groups no host has read
+    lately (`groupNotReadYet`, `groupReadStale`).
+63. 2026-10-22 · matt: the platform comes first. Every command that acts
+    on one platform is `log <platform> <command> …` (`log facebook warmup
+    reel`, `log facebook join group`); there is no form without it. The poll
+    is `log facebook poll <group> <account> <how long to poll>`. Old forms
+    are refused with the form they became. This replaces rule 60's
+    `log warmup <platform> <activity>` and settles issue #20. OpenMagpie's
+    worker is `log facebook poll --request` (it was `read group --worker`),
+    a read in the account's open browser. `bun run check:docs` refuses a
+    usage line without the platform first. Top of this file; the table is
+    `docs/commandNaming.md`.
+64. 2026-10-22 · matt: the code is by platform first, as the commands are,
+    "because each has different approaches": `src/<platform>/<area>/<domain>`.
+    Facebook's groups are `src/facebook/group/{join,read,answer}` (were
+    `src/group/…`, rule 45) and its warm-up `src/facebook/warmup/activities`
+    and `src/facebook/warmup/stages` (were `src/warmup/facebook` and
+    `src/warmup/facebookStages`, rule 49). What every platform's warm-up
+    draws from stays shared: `src/warmup/persona`, `src/warmup/viewer`. Each
+    area has an `index.ts` (`check:naming`). Top of this file.
+65. 2026-10-22 · matt: Facebook group listening is the triage job of
+    obris-dev/openmagpie#188, and it replaces rules 61 and 62. Everything is
+    indexed in OpenMagpie, and only the matches reach Twenty. An account joins
+    (`log facebook join group`). OpenMagpie polls, and its worker is `log
+    facebook poll --request`, a read in the account's open browser. OpenMagpie
+    keeps every post, its watch triages them (`semantic_filter`), and its
+    `webhook` sends the matches to Twenty's `socialListening`. log-cli then
+    acts on the NEW rows from the same account (not built yet). log-cli writes
+    only the group's `readCursor`, `lastReadAt` and `lastReadReason` to
+    Twenty. `agencyGroupPosts` and `agencyGroupComments` stay, unused. The host
+    reads no group on its own. Comment reading is kept for acting on a match,
+    for new posts only, and saves nothing. #28's scoring and alerts become
+    OpenMagpie watches. Spec: `docs/groupListening.md`.
+66. 2026-10-22 · matt: the runs never fill the disk again. A run is deleted
+    once it is analysed: rea settled it (`settle.json`) and the request docs
+    hold its requests (`log facebook capture --docs`). The docs build folds
+    each request's facts into `~/.logCli/rea/clientFacts.json`, so a doc keeps
+    every row its pruned runs gave and only adds. `log runs` lists them, `log runs prune
+    --apply` deletes them and keeps each one's findings.md, steps.jsonl,
+    settle.json and requests by domain (`~/.logCli/runs/kept`,
+    `runs/pruned.jsonl`). An agent hook (`scripts/hooks/storage.ts`) says so
+    when `~/.logCli/runs` passes 2 GB or the disk has under 5 GB free. Tests
+    never write into the real runs (`scripts/tests/preload.ts`).
+    `skills/runs/SKILL.md`.
+67. 2026-10-22 · matt: Messenger's "Create a PIN to access your chats on any
+    device" blocks the inbox, so it is flagged and passed. It is a page state
+    only matt clears (`messengerPinCreate`): he gives the account's 6-digit PIN
+    once, in a Clack prompt (`log facebook messenger pin --account <a>`,
+    masked, twice), kept in Twenty's `socialAccounts.messengerPin` with the
+    account's other secrets and never printed. `log inspect do pin --live`
+    types it from the run's private login.json (rule 21). The Create PIN
+    screens were recorded with `log inspect` on Bethlehem (rule 29) and made
+    the flow `messengerPinCreate` (`log flow run messengerPinCreate --account
+    <a> --live`).
+68. 2026-10-22 · matt: the Marketplace location is typed as "City, State"
+    with the state written out in full ("Bethlehem, Pennsylvania", never
+    "PA"): "Bethlehem, PA" was offered only as the West Bank, and a bare zip
+    offered Granada, Spain first (Bethlehem, inspect 20261022T105341 and
+    20261022T110738). `setLocation` writes a US state code out, picks the
+    option Facebook's own answer names as the place typed, clicks it, and
+    sets nothing when none matches. A listing is published from the account's
+    open AdsPower browser by the recorded flow `marketplaceListingPublish`
+    (location, Create, photos, title, price, category, condition,
+    description, Next, Publish; never Boost, rule 41), not by a second
+    browser. "Discover more when you shop" (partner listings, a European
+    location) is a known page state, pressed through with Update.
+69. 2026-10-22 · matt: once a listing is live, the account is checked on a
+    schedule. The host's check (every watch round, in the browser it holds)
+    reads Marketplace status (may it still sell: anything but full access is
+    the account's `suspended` issue), each listing's state on Selling into
+    Twenty (active, being reviewed, sold, rejected), and the seller inbox's
+    chats, each from its step's own recording, nothing clicked.
+    `log facebook check --account <a>` runs it once by hand. A chat's
+    fields are mapped from the first recording of a real one (rule 29); until
+    then chats are counted and kept as sent. `src/facebook/marketplace/check`. The page-state hook resolves it with that flow when the
+    account's PIN is in Twenty, and flags it to matt only when it isn't (the
+    session records a yes or no when it opens, never the PIN). "Enter your
+    PIN" (`messengerPinEnter`) is mapped the same way: the PIN is typed from
+    Twenty and each step recorded until it is a flow.
+70. 2026-10-22 · matt: no code comments, because they cause context rot in
+    the system designs. Code carries no comments and no docstrings: TS, JS
+    and Python, line, block, JSDoc, `#` and docstrings alike. What a thing
+    does is said by its name, its types, its tests, its skill and its docs,
+    never by a comment beside it. lefthook's `noComments` (`bun run
+    check:noComments`, pre-commit and pre-push,
+    `scripts/checks/checkNoComments.ts`, Python through
+    `python/checks/comments.py`) refuses any tracked code file that has one;
+    `--strip` removes them. Generated code is exempt. `lefthook.yml` itself
+    carries none.
+71. 2026-10-23 · matt: an ad says the same thing several ways. An ad that
+    goes out on more than one listing in a city carries copy versions
+    (`agencyListings.copyVersions`, title-and-description pairs written by
+    `skills/listingCopy`), at least as many as the listings it will have live
+    in that city and never fewer than 3, every two titles differing by at least
+    half their words (the city's not counted). Each copy (`campaign fill`,
+    `heal`) takes the version least like what is live in its city and records
+    it in `copyVersionId`; a replacement skips the lost copy's version.
+    `log facebook listing lint`, `listing create` and `campaign fill` refuse a
+    version that breaks a checkable copy rule, and `campaign fill` refuses too
+    few (`notEnoughCopyVersions`). `src/facebook/marketplace/copy`.
+
+72. 2026-10-23 · matt: a Marketplace location is never abbreviated. It is
+    typed as "City, State" with the state written out ("Bethlehem,
+    Pennsylvania") or "City, Country" ("Galway, Ireland"): "Bethlehem, PA"
+    was offered only as the West Bank, and a bare zip offered Granada, Spain
+    first (rule 68). A check blocks before any action: a place with an
+    acronym, a state code, a zip or any number, or no state or country is
+    refused with `locationAbbreviated` (`placeProblem`,
+    `src/facebook/marketplace/location`; `python/location/placeName.py` in the
+    sessions), in a listing's `locationQuery` (`listing create`, `lint`,
+    `publish`, `campaign fill`), `log inspect do setLocation`, a flow's
+    `location`, and the host's setLocation, which types the listing's
+    `locationQuery` and never a zip. A written-out state counts as the US for
+    the country check.
 
 ## Checks
 
-- Run `bun run check` before pushing: naming gate, `tsc --noEmit`, `bun test`.
+- Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.
 - Naming: `docs/namingConventions.md`. camelCase everywhere, never kebab-case,
   `{library}/{domain}/` with `index.ts`, `types.ts`, `client.ts`, `machine.ts`,
   `helpers/`.

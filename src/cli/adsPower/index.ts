@@ -1,10 +1,3 @@
-/**
- * `log adsPower status` — is the AdsPower app's Local API up.
- * `log adsPower profiles [--json]` — the profiles in AdsPower, and which Twenty account each belongs to.
- * `log adsPower sync [--apply] [--account <a>]` — one AdsPower profile per Facebook account in
- * Twenty, linked by socialAccounts.adsPowerProfileId (rule 42). A dry run unless --apply.
- * Nothing opens a browser: profiles hold no proxy, password or cookies (those stay in Twenty).
- */
 import { createAdsPowerClient } from "../../browser/adsPower/index.ts";
 import { remarkAccountId, syncProfiles } from "../../browser/adsPower/index.ts";
 import { parseArgs, refuseError } from "../runner/helpers/index.ts";
@@ -18,7 +11,9 @@ export const ADS_POWER_USAGE = [
 
 export const adsPowerCommand: Command = {
   usage: ADS_POWER_USAGE,
+  platform: "any",
   name: "adsPower",
+  effect: "write",
   summary: "AdsPower: Local API status, its profiles, and one profile per Twenty account (sync)",
   args: "<status|profiles|sync> [--apply] [--account <a>] [--json]",
   async run(context, argv) {

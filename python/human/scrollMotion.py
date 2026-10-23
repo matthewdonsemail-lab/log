@@ -1,22 +1,3 @@
-"""Human scrolling (rule 32): the Robotic VSL engine's trajectory scroll, ported.
-
-Source (read through the GitHub API, 2026-10-19):
-matthewdonsemail-lab/Robotic-Video-Sales-Letter-Pydantic-Camoufox-Agent-for-GTM,
-`src/capability/scroll_math.py` (pure trajectory, a port of HumanJS `planScroll`)
-and `src/capability/scroll_motion.py` (driving it on a real page).
-
-One scroll is ONE trajectory: wheel deltas weighted by a half-sine, so the page
-accelerates from rest, peaks halfway and slows to a stop, the deltas summing to
-the distance exactly (no correction jump at the end). Short flicks overshoot
-more (up to 25 %) and recoil in a short reverse phase; long scrolls overshoot
-~3 %. A few mid-scroll pauses (8 % of steps, 100-240 ms). The page's own wheel
-scrolling does the moving (`page.mouse.wheel`), or `scrollTop` inside a nested
-scroll container; never `scroll_into_view_if_needed`, which jumps instantly
-(the Robotic VSL's own rule, and what made our scrolls look wrong).
-
-Our cursor (humanMouse.py) is moved onto the page first by its own trajectory,
-where the Robotic VSL moved it there in one jump.
-"""
 from __future__ import annotations
 
 import asyncio
@@ -29,15 +10,12 @@ from typing import Any
 
 @dataclass
 class ScrollStep:
-    """One wheel delta in a human scroll trajectory."""
     delta_y: float
     delay_ms: int
 
 
 def _bell_phase(distance: float, *, segments_per_kpx: float = 18.0, segment_delay_ms: float = 32.0,
                 delay_jitter: float = 0.20, rng: random.Random) -> list[ScrollStep]:
-    """Bell-curve-velocity segments (scroll_math._bell_phase): half-sine weights normalised to sum to the
-    distance; fewer, faster steps for a short flick (12 ms floor), the full 32 ms ramp from 5000 px."""
     if distance == 0:
         return []
     abs_dist = abs(distance)
@@ -59,9 +37,6 @@ def _bell_phase(distance: float, *, segments_per_kpx: float = 18.0, segment_dela
 
 
 def human_scroll_trajectory(distance: float, *, seed: int | None = None) -> list[ScrollStep]:
-    """The whole scroll (scroll_math.human_scroll_trajectory): forward bell to the target plus an overshoot
-    that shrinks with distance (25 % → 3 % at 5000 px, linear in log-distance), a short reverse bell recoiling
-    the overshoot, and the occasional mid-scroll pause (never in the recoil). Pure."""
     rng = random.Random(seed)
     if not distance:
         return []
@@ -91,7 +66,6 @@ def human_scroll_trajectory(distance: float, *, seed: int | None = None) -> list
     return out
 
 
-# Where a locator scrolls from: the page, or its nearest scrollable ancestor (scroll_motion.resolve_scroll_owner).
 OWNER_JS = """(el) => {
   let cur = el;
   while (cur && cur !== document.documentElement) {
@@ -105,8 +79,6 @@ OWNER_JS = """(el) => {
   return {isWindow: true};
 }"""
 
-# How far the page (or the container) must move to bring the element to 28 % from the top, clamped to what
-# it can move (scroll_motion.scroll_to_ref's target, as a relative distance so the owner needs no locator).
 DISTANCE_JS = """(el) => {
   let cur = el.parentElement, owner = null;
   while (cur && cur !== document.documentElement) {
@@ -126,7 +98,6 @@ DISTANCE_JS = """(el) => {
   return {isWindow: false, distance: Math.min(want, max) - owner.scrollTop, inView: r.top >= c.top && r.bottom <= c.bottom && r.height > 0};
 }"""
 
-# One step of a nested container's scroll (scroll_motion.walk_segments_container), found from the element.
 CONTAINER_STEP_JS = """(el, d) => {
   let cur = el.parentElement;
   while (cur && cur !== document.documentElement) {
@@ -139,7 +110,6 @@ CONTAINER_STEP_JS = """(el, d) => {
 
 
 def _viewport(page: Any, mouse: Any = None) -> dict:
-    """The page's viewport, or the window size the mouse measured when Playwright has none (an attached browser, rule 44)."""
     if mouse is not None and hasattr(mouse, "viewport"):
         return mouse.viewport()
     return page.viewport_size or {"width": 1280, "height": 800}
@@ -150,11 +120,7 @@ def _wheel_point(page: Any, rng: random.Random, mouse: Any = None) -> tuple[floa
     return vp["width"] * 0.5 + rng.uniform(-60, 60), vp["height"] * 0.45 + rng.uniform(-50, 50)
 
 
-# -- async (the inspect and flow sessions) --------------------------------------------------------
 async def scroll_by(page: Any, distance: float, mouse: Any = None, log=lambda _l: None, at: tuple[float, float] | None = None) -> int:
-    """One human scroll of `distance` px on the page (scroll_motion.human_scroll_by). The cursor glides onto
-    the page first (humanMouse), so the wheel lands where a hand is. `at`: the point to scroll over (a side
-    panel the page's middle isn't over, e.g. a reel's comments), glided to first. Returns the steps sent."""
     steps = human_scroll_trajectory(distance)
     if not steps:
         return 0
@@ -165,7 +131,6 @@ async def scroll_by(page: Any, distance: float, mouse: Any = None, log=lambda _l
     elif at is not None:
         await asyncio.wait_for(page.mouse.move(x, y), timeout=5.0)
     elif mouse is not None and mouse.x is not None:
-        # Already over the page's middle band: scroll where the hand is, as a person does.
         vp = _viewport(page, mouse)
         if not (vp["width"] * 0.2 < mouse.x < vp["width"] * 0.8 and vp["height"] * 0.15 < mouse.y < vp["height"] * 0.85):
             await mouse.glide(x, y, "scrollPosition")
@@ -183,9 +148,6 @@ async def scroll_by(page: Any, distance: float, mouse: Any = None, log=lambda _l
 
 
 async def scroll_into_view(locator: Any, mouse: Any = None, log=lambda _l: None) -> bool:
-    """Bring an element to 28 % from the top by one trajectory scroll (scroll_motion.scroll_to_ref), never
-    scroll_into_view_if_needed. A nested container scrolls by its scrollTop with the cursor over it.
-    Returns whether it ended up in view."""
     page = locator.page
     await locator.wait_for(state="attached", timeout=10_000)
     where = await locator.evaluate(DISTANCE_JS)
@@ -206,7 +168,6 @@ async def scroll_into_view(locator: Any, mouse: Any = None, log=lambda _l: None)
     return bool((await locator.evaluate(DISTANCE_JS))["inView"])
 
 
-# -- sync (the publish, connect and profile sessions) ---------------------------------------------
 def scroll_by_sync(page: Any, distance: float, mouse: Any = None, log=lambda _l: None) -> int:
     steps = human_scroll_trajectory(distance)
     if not steps:
