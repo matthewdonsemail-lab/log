@@ -10,6 +10,7 @@ import {
   maskProxyUrl,
   maskProxyUsername,
   parseProxyUrl,
+  setAccountStatus,
   statusForIssue,
   toFacebookCookies,
   toTwentyEnum
@@ -132,5 +133,23 @@ describe('helpers', () => {
     expect(toTwentyEnum('accountLost')).toBe('ACCOUNT_LOST')
     expect(fromTwentyEnum('UNDER_REVIEW')).toBe('underReview')
     expect(fromTwentyEnum('DELETED_BY_FB')).toBe('deletedByFb')
+  })
+})
+
+describe('DEACTIVATED: an account that is never used again', () => {
+  test('takes the proxy off, keeps the row, and may neither run nor sign in', async () => {
+    const twenty = marketplaceFixture()
+    await setAccountStatus(twenty, 'galwayThree', 'deactivated', 'setByHand')
+    const row = twenty.rows.socialAccounts.find((r) => r.id === 'galwayThree')!
+    expect(row).toMatchObject({ accountStatus: 'DEACTIVATED', proxy: null, statusReason: 'setByHand' })
+    const account = await findAccount(twenty, 'galwayThree')
+    expect(checkRunnable(account, 'run')).toMatchObject({ ok: false })
+    expect(checkRunnable(account, 'connect')).toMatchObject({ ok: false })
+  })
+
+  test('any other status leaves the proxy where it is', async () => {
+    const twenty = marketplaceFixture()
+    await setAccountStatus(twenty, 'galwayThree', 'checkpoint', 'checkpointed')
+    expect(twenty.rows.socialAccounts.find((r) => r.id === 'galwayThree')!.proxy).toBeTruthy()
   })
 })

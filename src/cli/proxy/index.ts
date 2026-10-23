@@ -97,6 +97,7 @@ async function assignByteful(
   proxyUserId: string,
   options: { city: string | null; anyCity: boolean; socks5: boolean },
 ): Promise<{ ok: boolean; line: string }> {
+  if (account.status === "deactivated") return { ok: false, line: `${account.accountName}: accountNotUsable (DEACTIVATED: it gets no proxy)` };
   if (account.platform !== "FACEBOOK") return { ok: false, line: `${account.accountName}: accountNotFacebook` };
   if (!account.homeCountry) return { ok: false, line: `${account.accountName}: noHomeCountry (set homeCountry in Twenty first)` };
   const country = account.homeCountry;
@@ -119,6 +120,7 @@ async function assignOne(
   account: FacebookAccount,
   options: { username: string; password: string; city: string | null; region: string | null; anyCity: boolean; minutes: number; socks5: boolean },
 ): Promise<{ ok: boolean; line: string }> {
+  if (account.status === "deactivated") return { ok: false, line: `${account.accountName}: accountNotUsable (DEACTIVATED: it gets no proxy)` };
   if (account.platform !== "FACEBOOK") return { ok: false, line: `${account.accountName}: accountNotFacebook` };
   if (!account.homeCountry) return { ok: false, line: `${account.accountName}: noHomeCountry (set homeCountry in Twenty first)` };
   const country = account.homeCountry;
@@ -226,7 +228,7 @@ export const proxyCommand: Command = {
         if (summary.bytesLeft <= 0) return refuse("proxy assign", "bytefulRefused", "the residential plan has no traffic left (log proxy balance)");
         let accounts: FacebookAccount[];
         if (parsed.flags["missing"]) {
-          accounts = (await listFacebookAccounts(context.twenty)).filter((a) => !a.proxy);
+          accounts = (await listFacebookAccounts(context.twenty)).filter((a) => !a.proxy && a.status !== "deactivated");
           if (accounts.length === 0) return { code: 0, stdout: "Every FACEBOOK account already has a proxy." };
         } else if (typeof parsed.flags["account"] === "string") {
           accounts = [await findAccount(context.twenty, parsed.flags["account"])];
@@ -255,7 +257,7 @@ export const proxyCommand: Command = {
       try {
         let accounts: FacebookAccount[];
         if (parsed.flags["missing"]) {
-          accounts = (await listFacebookAccounts(context.twenty)).filter((a) => !a.proxy);
+          accounts = (await listFacebookAccounts(context.twenty)).filter((a) => !a.proxy && a.status !== "deactivated");
           if (accounts.length === 0) return { code: 0, stdout: "Every FACEBOOK account already has a proxy." };
         } else if (typeof parsed.flags["account"] === "string") {
           accounts = [await findAccount(context.twenty, parsed.flags["account"])];

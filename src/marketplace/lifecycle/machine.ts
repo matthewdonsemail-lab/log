@@ -171,6 +171,7 @@ export const lifecycleMachine = setup({
       always: [
         { guard: ({ context }) => context.standing.status === 'banned', target: 'banned' },
         { guard: ({ context }) => context.standing.status === 'dead', target: 'lost' },
+        { guard: ({ context }) => context.standing.status === 'deactivated', target: 'deactivated' },
         { guard: ({ context }) => context.standing.status === 'restricted', target: 'restricted' },
         { guard: ({ context }) => context.standing.status === 'paused', target: 'paused' },
         { guard: ({ context }) => !context.standing.hasProxy, target: 'onboarding.proxying' },
@@ -437,6 +438,7 @@ export const lifecycleMachine = setup({
     paused: { on: { RESUME: { target: 'onboarding.opening' } } },
     stuck: { on: { PERSON_DONE: { target: 'onboarding.opening', actions: assign({ retried: false, lastError: null }) } } },
     restricted: { type: 'final' },
+    deactivated: { type: 'final' },
     banned: { type: 'final' },
     lost: { type: 'final' },
     stopped: { type: 'final' }

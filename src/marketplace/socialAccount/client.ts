@@ -82,7 +82,8 @@ export async function setAccountStatus(
     accountStatus: toTwentyEnum(status) as AccountUpdate['accountStatus'],
     statusReason: reason,
     statusDetail: detail ? detail.slice(0, 500) : null,
-    statusChangedAt: now.toISOString()
+    statusChangedAt: now.toISOString(),
+    ...(status === 'deactivated' ? { proxy: null } : {})
   })
 }
 

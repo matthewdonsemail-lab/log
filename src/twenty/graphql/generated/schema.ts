@@ -10209,7 +10209,7 @@ export type SocialAccountPlatformEnum = 'YOUTUBE' | 'TIKTOK' | 'INSTAGRAM' | 'LI
 
 
 /** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
-export type SocialAccountAccountStatusEnum = 'ACTIVE' | 'WARMING' | 'LIMITED' | 'PAUSED' | 'NEEDS_LOGIN' | 'CHECKPOINT' | 'RESTRICTED' | 'BANNED' | 'DEAD'
+export type SocialAccountAccountStatusEnum = 'ACTIVE' | 'WARMING' | 'LIMITED' | 'PAUSED' | 'NEEDS_LOGIN' | 'CHECKPOINT' | 'RESTRICTED' | 'BANNED' | 'DEAD' | 'DEACTIVATED'
 
 
 /** Social media accounts */
@@ -10258,8 +10258,6 @@ export interface SocialAccount {
     homeCity?: Scalars['String']
     /** log-cli: ISO 3166 alpha-2 (IE). The proxy exit and every listing must be in this country */
     homeCountry?: Scalars['String']
-    /** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
-    accountStatus?: SocialAccountAccountStatusEnum
     /** log-cli: error catalog code behind the status (log errors --code <code>) */
     statusReason?: Scalars['String']
     /** log-cli: what the page said */
@@ -10312,6 +10310,8 @@ export interface SocialAccount {
     browserDriver?: Scalars['String']
     /** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
     messengerPin?: Scalars['String']
+    /** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
+    accountStatus?: SocialAccountAccountStatusEnum
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: TimelineActivityConnection
     /** SocialAccounts tied to the Task Target */
@@ -10624,16 +10624,6 @@ export interface SocialAccountConnection {
     percentageEmptyHomeCountry?: Scalars['Float']
     /** Percentage of non-empty values for homeCountry */
     percentageNotEmptyHomeCountry?: Scalars['Float']
-    /** Number of unique values for accountStatus */
-    countUniqueValuesAccountStatus?: Scalars['Int']
-    /** Number of empty values for accountStatus */
-    countEmptyAccountStatus?: Scalars['Int']
-    /** Number of non-empty values for accountStatus */
-    countNotEmptyAccountStatus?: Scalars['Int']
-    /** Percentage of empty values for accountStatus */
-    percentageEmptyAccountStatus?: Scalars['Float']
-    /** Percentage of non-empty values for accountStatus */
-    percentageNotEmptyAccountStatus?: Scalars['Float']
     /** Number of unique values for statusReason */
     countUniqueValuesStatusReason?: Scalars['Int']
     /** Number of empty values for statusReason */
@@ -10946,6 +10936,16 @@ export interface SocialAccountConnection {
     percentageEmptyMessengerPin?: Scalars['Float']
     /** Percentage of non-empty values for messengerPin */
     percentageNotEmptyMessengerPin?: Scalars['Float']
+    /** Number of unique values for accountStatus */
+    countUniqueValuesAccountStatus?: Scalars['Int']
+    /** Number of empty values for accountStatus */
+    countEmptyAccountStatus?: Scalars['Int']
+    /** Number of non-empty values for accountStatus */
+    countNotEmptyAccountStatus?: Scalars['Int']
+    /** Percentage of empty values for accountStatus */
+    percentageEmptyAccountStatus?: Scalars['Float']
+    /** Percentage of non-empty values for accountStatus */
+    percentageNotEmptyAccountStatus?: Scalars['Float']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     __typename: 'SocialAccountConnection'
@@ -11236,16 +11236,6 @@ export interface SocialAccountGroupByConnection {
     percentageEmptyHomeCountry?: Scalars['Float']
     /** Percentage of non-empty values for homeCountry */
     percentageNotEmptyHomeCountry?: Scalars['Float']
-    /** Number of unique values for accountStatus */
-    countUniqueValuesAccountStatus?: Scalars['Int']
-    /** Number of empty values for accountStatus */
-    countEmptyAccountStatus?: Scalars['Int']
-    /** Number of non-empty values for accountStatus */
-    countNotEmptyAccountStatus?: Scalars['Int']
-    /** Percentage of empty values for accountStatus */
-    percentageEmptyAccountStatus?: Scalars['Float']
-    /** Percentage of non-empty values for accountStatus */
-    percentageNotEmptyAccountStatus?: Scalars['Float']
     /** Number of unique values for statusReason */
     countUniqueValuesStatusReason?: Scalars['Int']
     /** Number of empty values for statusReason */
@@ -11558,6 +11548,16 @@ export interface SocialAccountGroupByConnection {
     percentageEmptyMessengerPin?: Scalars['Float']
     /** Percentage of non-empty values for messengerPin */
     percentageNotEmptyMessengerPin?: Scalars['Float']
+    /** Number of unique values for accountStatus */
+    countUniqueValuesAccountStatus?: Scalars['Int']
+    /** Number of empty values for accountStatus */
+    countEmptyAccountStatus?: Scalars['Int']
+    /** Number of non-empty values for accountStatus */
+    countNotEmptyAccountStatus?: Scalars['Int']
+    /** Percentage of empty values for accountStatus */
+    percentageEmptyAccountStatus?: Scalars['Float']
+    /** Percentage of non-empty values for accountStatus */
+    percentageNotEmptyAccountStatus?: Scalars['Float']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -65303,8 +65303,6 @@ export interface SocialAccountGenqlSelection{
     homeCity?: boolean | number
     /** log-cli: ISO 3166 alpha-2 (IE). The proxy exit and every listing must be in this country */
     homeCountry?: boolean | number
-    /** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
-    accountStatus?: boolean | number
     /** log-cli: error catalog code behind the status (log errors --code <code>) */
     statusReason?: boolean | number
     /** log-cli: what the page said */
@@ -65357,6 +65355,8 @@ export interface SocialAccountGenqlSelection{
     browserDriver?: boolean | number
     /** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
     messengerPin?: boolean | number
+    /** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
+    accountStatus?: boolean | number
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
     /** SocialAccounts tied to the Task Target */
@@ -65671,16 +65671,6 @@ export interface SocialAccountConnectionGenqlSelection{
     percentageEmptyHomeCountry?: boolean | number
     /** Percentage of non-empty values for homeCountry */
     percentageNotEmptyHomeCountry?: boolean | number
-    /** Number of unique values for accountStatus */
-    countUniqueValuesAccountStatus?: boolean | number
-    /** Number of empty values for accountStatus */
-    countEmptyAccountStatus?: boolean | number
-    /** Number of non-empty values for accountStatus */
-    countNotEmptyAccountStatus?: boolean | number
-    /** Percentage of empty values for accountStatus */
-    percentageEmptyAccountStatus?: boolean | number
-    /** Percentage of non-empty values for accountStatus */
-    percentageNotEmptyAccountStatus?: boolean | number
     /** Number of unique values for statusReason */
     countUniqueValuesStatusReason?: boolean | number
     /** Number of empty values for statusReason */
@@ -65993,6 +65983,16 @@ export interface SocialAccountConnectionGenqlSelection{
     percentageEmptyMessengerPin?: boolean | number
     /** Percentage of non-empty values for messengerPin */
     percentageNotEmptyMessengerPin?: boolean | number
+    /** Number of unique values for accountStatus */
+    countUniqueValuesAccountStatus?: boolean | number
+    /** Number of empty values for accountStatus */
+    countEmptyAccountStatus?: boolean | number
+    /** Number of non-empty values for accountStatus */
+    countNotEmptyAccountStatus?: boolean | number
+    /** Percentage of empty values for accountStatus */
+    percentageEmptyAccountStatus?: boolean | number
+    /** Percentage of non-empty values for accountStatus */
+    percentageNotEmptyAccountStatus?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -66284,16 +66284,6 @@ export interface SocialAccountGroupByConnectionGenqlSelection{
     percentageEmptyHomeCountry?: boolean | number
     /** Percentage of non-empty values for homeCountry */
     percentageNotEmptyHomeCountry?: boolean | number
-    /** Number of unique values for accountStatus */
-    countUniqueValuesAccountStatus?: boolean | number
-    /** Number of empty values for accountStatus */
-    countEmptyAccountStatus?: boolean | number
-    /** Number of non-empty values for accountStatus */
-    countNotEmptyAccountStatus?: boolean | number
-    /** Percentage of empty values for accountStatus */
-    percentageEmptyAccountStatus?: boolean | number
-    /** Percentage of non-empty values for accountStatus */
-    percentageNotEmptyAccountStatus?: boolean | number
     /** Number of unique values for statusReason */
     countUniqueValuesStatusReason?: boolean | number
     /** Number of empty values for statusReason */
@@ -66606,6 +66596,16 @@ export interface SocialAccountGroupByConnectionGenqlSelection{
     percentageEmptyMessengerPin?: boolean | number
     /** Percentage of non-empty values for messengerPin */
     percentageNotEmptyMessengerPin?: boolean | number
+    /** Number of unique values for accountStatus */
+    countUniqueValuesAccountStatus?: boolean | number
+    /** Number of empty values for accountStatus */
+    countEmptyAccountStatus?: boolean | number
+    /** Number of non-empty values for accountStatus */
+    countNotEmptyAccountStatus?: boolean | number
+    /** Percentage of empty values for accountStatus */
+    percentageEmptyAccountStatus?: boolean | number
+    /** Percentage of non-empty values for accountStatus */
+    percentageNotEmptyAccountStatus?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -66668,8 +66668,6 @@ activeHoursStart?: (Scalars['Float'] | null),
 homeCity?: (Scalars['String'] | null),
 /** log-cli: ISO 3166 alpha-2 (IE). The proxy exit and every listing must be in this country */
 homeCountry?: (Scalars['String'] | null),
-/** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
-accountStatus?: (SocialAccountAccountStatusEnum | null),
 /** log-cli: error catalog code behind the status (log errors --code <code>) */
 statusReason?: (Scalars['String'] | null),
 /** log-cli: what the page said */
@@ -66721,7 +66719,9 @@ adsPowerProfileId?: (Scalars['String'] | null),
 /** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
 browserDriver?: (Scalars['String'] | null),
 /** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
-messengerPin?: (Scalars['String'] | null)}
+messengerPin?: (Scalars['String'] | null),
+/** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
+accountStatus?: (SocialAccountAccountStatusEnum | null)}
 
 
 /** Social media accounts */
@@ -66762,8 +66762,6 @@ activeHoursStart?: (Scalars['Float'] | null),
 homeCity?: (Scalars['String'] | null),
 /** log-cli: ISO 3166 alpha-2 (IE). The proxy exit and every listing must be in this country */
 homeCountry?: (Scalars['String'] | null),
-/** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
-accountStatus?: (SocialAccountAccountStatusEnum | null),
 /** log-cli: error catalog code behind the status (log errors --code <code>) */
 statusReason?: (Scalars['String'] | null),
 /** log-cli: what the page said */
@@ -66815,7 +66813,9 @@ adsPowerProfileId?: (Scalars['String'] | null),
 /** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
 browserDriver?: (Scalars['String'] | null),
 /** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
-messengerPin?: (Scalars['String'] | null)}
+messengerPin?: (Scalars['String'] | null),
+/** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
+accountStatus?: (SocialAccountAccountStatusEnum | null)}
 
 
 /** Social media accounts */
@@ -66856,8 +66856,6 @@ activeHoursStart?: (FloatFilter | null),
 homeCity?: (StringFilter | null),
 /** log-cli: ISO 3166 alpha-2 (IE). The proxy exit and every listing must be in this country */
 homeCountry?: (StringFilter | null),
-/** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
-accountStatus?: (SocialAccountAccountStatusEnumFilter | null),
 /** log-cli: error catalog code behind the status (log errors --code <code>) */
 statusReason?: (StringFilter | null),
 /** log-cli: what the page said */
@@ -66909,7 +66907,9 @@ adsPowerProfileId?: (StringFilter | null),
 /** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
 browserDriver?: (StringFilter | null),
 /** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
-messengerPin?: (StringFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
+messengerPin?: (StringFilter | null),
+/** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
+accountStatus?: (SocialAccountAccountStatusEnumFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
 
 export interface SocialAccountPlatformEnumFilter {eq?: (SocialAccountPlatformEnum | null),neq?: (SocialAccountPlatformEnum | null),in?: ((SocialAccountPlatformEnum | null)[] | null),containsAny?: ((SocialAccountPlatformEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (SocialAccountPlatformEnum | null),gte?: (SocialAccountPlatformEnum | null),lt?: (SocialAccountPlatformEnum | null),lte?: (SocialAccountPlatformEnum | null)}
 
@@ -66954,8 +66954,6 @@ activeHoursStart?: (OrderByDirection | null),
 homeCity?: (OrderByDirection | null),
 /** log-cli: ISO 3166 alpha-2 (IE). The proxy exit and every listing must be in this country */
 homeCountry?: (OrderByDirection | null),
-/** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
-accountStatus?: (OrderByDirection | null),
 /** log-cli: error catalog code behind the status (log errors --code <code>) */
 statusReason?: (OrderByDirection | null),
 /** log-cli: what the page said */
@@ -67007,7 +67005,9 @@ adsPowerProfileId?: (OrderByDirection | null),
 /** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
 browserDriver?: (OrderByDirection | null),
 /** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
-messengerPin?: (OrderByDirection | null)}
+messengerPin?: (OrderByDirection | null),
+/** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
+accountStatus?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
@@ -67050,8 +67050,6 @@ activeHoursStart?: (OrderByDirection | null),
 homeCity?: (OrderByDirection | null),
 /** log-cli: ISO 3166 alpha-2 (IE). The proxy exit and every listing must be in this country */
 homeCountry?: (OrderByDirection | null),
-/** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
-accountStatus?: (OrderByDirection | null),
 /** log-cli: error catalog code behind the status (log errors --code <code>) */
 statusReason?: (OrderByDirection | null),
 /** log-cli: what the page said */
@@ -67103,7 +67101,9 @@ adsPowerProfileId?: (OrderByDirection | null),
 /** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
 browserDriver?: (OrderByDirection | null),
 /** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
-messengerPin?: (OrderByDirection | null)}
+messengerPin?: (OrderByDirection | null),
+/** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
+accountStatus?: (OrderByDirection | null)}
 
 
 /** Aggregate-based ordering */
@@ -67390,16 +67390,6 @@ countNotEmptyHomeCountry?: (OrderByDirection | null),
 percentageEmptyHomeCountry?: (OrderByDirection | null),
 /** Percentage of non-empty values for homeCountry */
 percentageNotEmptyHomeCountry?: (OrderByDirection | null),
-/** Number of unique values for accountStatus */
-countUniqueValuesAccountStatus?: (OrderByDirection | null),
-/** Number of empty values for accountStatus */
-countEmptyAccountStatus?: (OrderByDirection | null),
-/** Number of non-empty values for accountStatus */
-countNotEmptyAccountStatus?: (OrderByDirection | null),
-/** Percentage of empty values for accountStatus */
-percentageEmptyAccountStatus?: (OrderByDirection | null),
-/** Percentage of non-empty values for accountStatus */
-percentageNotEmptyAccountStatus?: (OrderByDirection | null),
 /** Number of unique values for statusReason */
 countUniqueValuesStatusReason?: (OrderByDirection | null),
 /** Number of empty values for statusReason */
@@ -67711,7 +67701,17 @@ countNotEmptyMessengerPin?: (OrderByDirection | null),
 /** Percentage of empty values for messengerPin */
 percentageEmptyMessengerPin?: (OrderByDirection | null),
 /** Percentage of non-empty values for messengerPin */
-percentageNotEmptyMessengerPin?: (OrderByDirection | null)}
+percentageNotEmptyMessengerPin?: (OrderByDirection | null),
+/** Number of unique values for accountStatus */
+countUniqueValuesAccountStatus?: (OrderByDirection | null),
+/** Number of empty values for accountStatus */
+countEmptyAccountStatus?: (OrderByDirection | null),
+/** Number of non-empty values for accountStatus */
+countNotEmptyAccountStatus?: (OrderByDirection | null),
+/** Percentage of empty values for accountStatus */
+percentageEmptyAccountStatus?: (OrderByDirection | null),
+/** Percentage of non-empty values for accountStatus */
+percentageNotEmptyAccountStatus?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
@@ -67736,8 +67736,6 @@ activeHoursStart?: (Scalars['Boolean'] | null),
 homeCity?: (Scalars['Boolean'] | null),
 /** log-cli: ISO 3166 alpha-2 (IE). The proxy exit and every listing must be in this country */
 homeCountry?: (Scalars['Boolean'] | null),
-/** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
-accountStatus?: (Scalars['Boolean'] | null),
 /** log-cli: error catalog code behind the status (log errors --code <code>) */
 statusReason?: (Scalars['Boolean'] | null),
 /** log-cli: what the page said */
@@ -67787,7 +67785,9 @@ adsPowerProfileId?: (Scalars['Boolean'] | null),
 /** log-cli: which browser runs this account: adsPower or camoufox (empty: camoufox, rule 42) */
 browserDriver?: (Scalars['Boolean'] | null),
 /** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
-messengerPin?: (Scalars['Boolean'] | null)}
+messengerPin?: (Scalars['Boolean'] | null),
+/** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
+accountStatus?: (Scalars['Boolean'] | null)}
 
 
 /** Calendar events */
@@ -135265,7 +135265,8 @@ export const enumSocialAccountAccountStatusEnum = {
    CHECKPOINT: 'CHECKPOINT' as const,
    RESTRICTED: 'RESTRICTED' as const,
    BANNED: 'BANNED' as const,
-   DEAD: 'DEAD' as const
+   DEAD: 'DEAD' as const,
+   DEACTIVATED: 'DEACTIVATED' as const
 }
 
 export const enumCalendarEventParticipantResponseStatusEnum = {

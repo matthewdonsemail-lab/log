@@ -100,6 +100,13 @@ describe('the account lifecycle (rule 35)', () => {
     expect(r.names()).not.toContain('setProfile')
   })
 
+  test('a DEACTIVATED account ends the lifecycle at once: no proxy check, no browser', async () => {
+    const r = run({ ...fresh, status: 'deactivated', hasProxy: false })
+    await inState(r.actor, 'deactivated')
+    expect(r.actor.getSnapshot().status).toBe('done')
+    expect(r.names()).toEqual([])
+  })
+
   test('a lost sign-in inside the host is fixed in the same browser and goes back to watching', async () => {
     const warmed = { ...fresh, hasProxy: true, hasSession: true, status: 'active', profileSet: true, named: true, locationSet: true, warmedAt: '2026-10-18T10:00:00Z' }
     const r = run(warmed, { watchCheck: (_i, n) => (n === 1 ? { kind: 'issue', issue: 'loginWall' } : { kind: 'ok' }) })

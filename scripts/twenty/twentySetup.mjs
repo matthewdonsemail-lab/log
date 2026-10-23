@@ -26,7 +26,7 @@ const SOCIAL_ACCOUNT_FIELDS = [
     name: 'accountStatus',
     label: 'Account status',
     type: 'SELECT',
-    description: 'log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted',
+    description: 'log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. DEACTIVATED is set by hand, takes the proxy off and is never used. Rows are never deleted',
     options: [
       option('ACTIVE', 'Active', 'green', 0),
       option('WARMING', 'Warming', 'turquoise', 1),
@@ -36,7 +36,8 @@ const SOCIAL_ACCOUNT_FIELDS = [
       option('CHECKPOINT', 'Checkpoint', 'orange', 5),
       option('RESTRICTED', 'Restricted', 'red', 6),
       option('BANNED', 'Banned', 'red', 7),
-      option('DEAD', 'Dead', 'gray', 8)
+      option('DEAD', 'Dead', 'gray', 8),
+      option('DEACTIVATED', 'Deactivated', 'gray', 9)
     ]
   },
   { name: 'statusReason', label: 'Status reason', type: 'TEXT', description: 'log-cli: error catalog code behind the status (log errors --code <code>)' },
@@ -380,6 +381,17 @@ if (missing.length) {
   plan.push({
     what: `agencyListing.status + ${missing.map((o) => o.value).join(', ')} (keeps ${existing.length} existing options and their ids)`,
     run: () => gql(UPDATE_FIELD, { input: { id: status.id, update: { options: [...existing, ...missing] } } })
+  })
+}
+
+const accountStatus = objects.get('socialAccount').fields.get('accountStatus')
+const accountStatusSpec = SOCIAL_ACCOUNT_FIELDS.find((f) => f.name === 'accountStatus')
+const accountExisting = Array.isArray(accountStatus?.options) ? accountStatus.options : []
+const accountMissing = accountStatus ? accountStatusSpec.options.filter((add) => !accountExisting.some((o) => o.value === add.value)) : []
+if (accountMissing.length) {
+  plan.push({
+    what: `socialAccount.accountStatus + ${accountMissing.map((o) => o.value).join(', ')} (keeps ${accountExisting.length} existing options and their ids)`,
+    run: () => gql(UPDATE_FIELD, { input: { id: accountStatus.id, update: { options: [...accountExisting, ...accountMissing.map((o, i) => ({ ...o, position: accountExisting.length + i }))] } } })
   })
 }
 
