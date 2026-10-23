@@ -58,6 +58,21 @@
       "role": "button",
       "name": "Move",
       "expect": "useCometTrashPostMutation",
+      "answers": [
+        {
+          "call": "useCometTrashPostMutation",
+          "says": [
+            {
+              "answer": "data.move_to_trash_story.success",
+              "is": true
+            },
+            {
+              "answer": "data.move_to_trash_story.trashed_story_id",
+              "present": true
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "17_clickroleButtonMove",
         "ms": 6609,

@@ -165,6 +165,17 @@
       "role": "tab",
       "name": "Discussion",
       "expect": "useGroupsCometVisitMutation",
+      "answers": [
+        {
+          "call": "useGroupsCometVisitMutation",
+          "says": [
+            {
+              "answer": "data.viewer_groups_tab_log_group_visit",
+              "present": true
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "11_clickroleTabDiscussion",
         "ms": 8468,

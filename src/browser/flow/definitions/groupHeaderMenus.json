@@ -155,6 +155,17 @@
       "role": "button",
       "name": "Share group",
       "expect": "useLinkSharingCreateWrappedUrlMutation",
+      "answers": [
+        {
+          "call": "useLinkSharingCreateWrappedUrlMutation",
+          "says": [
+            {
+              "answer": "data.xfb_create_share_url_wrapper.share_url_wrapper",
+              "present": true
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "20_clickroleButtonShareGroup",
         "ms": 14656,

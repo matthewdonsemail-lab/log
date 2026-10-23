@@ -3,7 +3,7 @@ import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import type { StepExchange } from '../../subq/stepReading/types'
-import { answersIssue, answerWait, keepAnswers, loadFlow, renderFlowDoc, saveFlow } from './index'
+import { answersIssue, answerWait, keepAnswers, listFlows, loadFlow, renderFlowDoc, saveFlow } from './index'
 import type { AnswerExpect, FlowDefinition } from './index'
 
 const BETHLEHEM = { uid: '61594063207669', homeCity: 'Bethlehem', homeCountry: 'US' }
@@ -73,6 +73,21 @@ describe('a stage flow step passes on Facebook\'s answer (rule 73)', () => {
     expect(answersIssue(at('s02_setLocation'), [located('Bethlehem')], BETHLEHEM)).toBeNull()
     expect(answersIssue(at('s02_setLocation'), [located('Granada')], BETHLEHEM)?.code).toBe('marketplaceLocationWrong')
     expect(loadFlow('profileSetup')!.steps.filter((s) => s.answers?.length).map((s) => s.id)).toEqual(['s05_clickSave', 's08_clickSaveChanges', 's13_clickDone'])
+  })
+
+  test('every flow step that waits on a call also checks what it answered', () => {
+    const unchecked = listFlows().flatMap((name) => loadFlow(name)!.steps.filter((s) => s.expect && !s.answers?.length).map((s) => `${name}.${s.id}`))
+    expect(unchecked).toEqual([])
+  })
+
+  test('a delete must answer success true with the trashed story, and a streamed answer is read from its first part', () => {
+    const trash = loadFlow('deletePost')!.steps.find((s) => s.id === 's04_clickMove')!.answers!
+    const trashed = (success: boolean): StepExchange => ({ offsetMs: 0, kind: 'api', name: 'useCometTrashPostMutation', method: 'POST', host: 'www.facebook.com', path: '/api/graphql/', status: 200, ms: 700, sent: {}, answer: { data: { move_to_trash_story: { success, trashed_story_id: success ? 'S:1' : null } } }, errors: [], known: true })
+    expect(answersIssue(trash, [trashed(true)], BETHLEHEM)).toBeNull()
+    expect(answersIssue(trash, [trashed(false)], BETHLEHEM)).toEqual({ code: 'answerNotAsExpected', text: 'useCometTrashPostMutation answered data.move_to_trash_story.success = false, not true' })
+    const comment = loadFlow('postComment')!.steps.find((s) => s.id === 's03_clickPostComment')!.answers!
+    const streamed: StepExchange = { offsetMs: 0, kind: 'api', name: 'useCometUFICreateCommentMutation', method: 'POST', host: 'www.facebook.com', path: '/api/graphql/', status: 200, ms: 900, sent: {}, answer: { first: { data: { comment_create: { feedback_comment_edge: { node: { id: 'c1' } } } } }, followingParts: 2, parts: [] }, errors: [], known: true }
+    expect(answersIssue(comment, [streamed], BETHLEHEM)).toBeNull()
   })
 
   test('recording a flow again keeps the checks of the steps it had', () => {

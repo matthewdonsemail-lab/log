@@ -26,9 +26,14 @@ function homeOf(check: AnswerCheck, account: AnswerAccount): { want: string; mat
   return null
 }
 
+export function answerAt(answer: unknown, path: string): unknown {
+  const direct = valueAt(answer, path)
+  return direct === undefined && answer && typeof answer === 'object' && 'first' in answer ? valueAt((answer as { first: unknown }).first, path) : direct
+}
+
 function checkOne(check: AnswerCheck, exchange: StepExchange, account: AnswerAccount): AnswerIssue | null {
   const code = check.code ?? 'answerNotAsExpected'
-  const got = valueAt(exchange.answer, check.answer)
+  const got = answerAt(exchange.answer, check.answer)
   if (check.present) return got === undefined || got === null ? { code, text: `${exchange.name} answered no ${check.answer}` } : null
   if (check.home) {
     const home = homeOf(check, account)

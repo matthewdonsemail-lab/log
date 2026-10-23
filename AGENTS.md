@@ -48,9 +48,14 @@ finding`, `inspect read`), where flows are made to be run again and again.
   the feed's account, paging, listings) and the Reels and feed activities,
   likes included, in `log flow run`, the stage runner and the host. The
   publish flow checks the create page and the listing id in the create
-  answer; the profile flow its three saves. The Camoufox machines (connect,
-  publish, profile) don't read answers between steps: their HAR is written
-  only when the browser closes (#35).
+  answer; the profile flow its three saves; every other flow step that waits
+  on a call checks its answer (delete, comment, posts, the Messenger PIN, the
+  group tabs and share). On AdsPower (the account's browser: inspect, flow,
+  warm-up, host, and join, read, poll and check in it) the host's account
+  check reads Marketplace status from its answer, and join, read, poll and
+  check already decided on theirs. Only the host's sign-in still decides on
+  Facebook's sign-in cookies and the URL. The Camoufox-only commands aren't
+  the primary path (#35).
 
 Rules 73-76.
 
@@ -828,8 +833,8 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     internal API answers it triggers and the requests it sent, keeps them
     past the prune, and decides on them, never on a page loading, a timer or
     the step having run. The MCP instructions put it first. Inspect steps
-    read theirs since rule 74, and every warm-up, publish-flow and
-    profile-flow step that makes a call since 2026-10-23; the Camoufox
+    read theirs since rule 74, and every flow, warm-up and host step on
+    AdsPower that makes a call since 2026-10-23; the Camoufox-only
     machines don't yet (#35). Top of this file.
 74. 2026-10-23 · matt: in the inspect flow, a state we can't decide is
     read by SubQ with everything around it, and said loudly to the agent.

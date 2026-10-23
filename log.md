@@ -5754,3 +5754,29 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the host's account check opens `/marketplace/status` and decides on Facebook's status answer (`CometMarketplaceStatusContentContainerQuery` through `marketplaceAccessOf`, `harOf` now exported): a ban, selling not ELIGIBLE, an enforcement or a profile not GOOD is the issue `suspended` (`accessProblem`); full access is ok with its title. Only when that answer didn't load does it read the page text as before. The host skill says so.
 Why: matt: "Just go and do it." The survey of the machines found the host's account check deciding on Selling's page text, while the status page's answer, already read by the watch check, says whether the account may sell (rule 73).
 Checked: a new test runs the real account check with a stubbed browser: full access is ok, a banned access is suspended with Facebook's words, and no status answer falls back to the page. `bun run check` passes with 901 tests; the docs gate passes.
+
+## 2026-10-23 07:15Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `docs/platforms/facebook/flows/deletePost.md`: edited
+- `docs/platforms/facebook/flows/groupHeaderMenus.md`: edited
+- `docs/platforms/facebook/flows/groupTabs.md`: edited
+- `docs/platforms/facebook/flows/messengerPinCreate.md`: edited
+- `docs/platforms/facebook/flows/postComment.md`: edited
+- `docs/platforms/facebook/flows/profilePhotoPost.md`: edited
+- `docs/platforms/facebook/flows/profilePost.md`: edited
+- `skills/flow/SKILL.md`: edited
+- `src/browser/flow/answers.test.ts`: added test "every flow step that waits on a call also checks what it answered", test "a delete must answer success true with the trashed story, and a streamed answer is read from its first part"
+- `src/browser/flow/definitions/deletePost.json`: edited
+- `src/browser/flow/definitions/groupHeaderMenus.json`: edited
+- `src/browser/flow/definitions/groupTabs.json`: edited
+- `src/browser/flow/definitions/messengerPinCreate.json`: edited
+- `src/browser/flow/definitions/postComment.json`: edited
+- `src/browser/flow/definitions/profilePhotoPost.json`: edited
+- `src/browser/flow/definitions/profilePost.json`: edited
+- `src/browser/flow/helpers/answers.ts`: added function answerAt · changed function checkOne
+
+What changed: every flow step that waits on a call now checks what it answered, from the fields its request doc says it answers: deletePost (`move_to_trash_story.success` true and its `trashed_story_id`), postComment (`comment_create.feedback_comment_edge`), profilePost and profilePhotoPost (`story_create.story_id`), messengerPinCreate (the register call's challenge, its saved answer confirming the shape), groupTabs (the visit log) and groupHeaderMenus (the share URL). A check reads a streamed answer from its first part (`answerAt`). A test refuses any flow step with a confirming request and no answer check. The seven flows' docs, the flow skill and AGENTS.md's status lines (what reads answers on AdsPower, the primary browser) follow.
+Why: matt: "we're not using the camoufox as the primary. We're using the adspower one." On AdsPower (inspect, flow, warm-up, host, and join, read, poll and check in its browser), the flows other than warm-up, publish and profile were still the ones deciding a step had worked only because a call with that name happened (rule 73). Join, read, poll and check already decided on their answers.
+Checked: the fields are the ones each request doc's Reads lists from Facebook's own definitions (rea), and the PIN register call's saved answer. New tests: no flow step waits on a call without checking its answer; a delete with success false fails and true passes; a streamed comment answer passes from its first part. `bun run check` passes with 903 tests; the docs gate passes.
