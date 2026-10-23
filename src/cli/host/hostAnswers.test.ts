@@ -51,4 +51,27 @@ describe("the host's warm-up decides each step on Facebook's answer (rule 73)", 
     expect(outcome).toEqual({ kind: "ok" });
     expect(sent.map((s) => s.action)).toEqual(["goto", "dwell", "goto", "dwell", "goto", "scroll"]);
   });
+
+  function statusHost(model: Record<string, unknown> | null) {
+    const root = mkdtempSync(join(tmpdir(), "hostStatus"));
+    const context = {
+      err: () => {},
+      sendInspect: async (_current: unknown, action: string, args: string[]) => {
+        const folder = join(root, action);
+        mkdirSync(folder, { recursive: true });
+        const entries = model ? [{ request: { postData: { text: "fb_api_req_friendly_name=CometMarketplaceStatusContentContainerQuery" } }, response: { content: { text: JSON.stringify({ data: { viewer: { marketplaceViolationTransparencyViewModel: model } } }) } } }] : [];
+        writeFileSync(join(folder, "network.har"), JSON.stringify({ log: { entries } }));
+        return { ok: true, url: action === "goto" ? args[0] : "https://www.facebook.com/marketplace/status", title: "Marketplace", text: "Marketplace status", folder };
+      },
+    } as unknown as CommandContext;
+    const browser: HostBrowser = { run: null, session: { current: { account: "61594063207669" } } as never };
+    return hostActors(context, BETHLEHEM, browser, { bypassHours: true, log: () => {} });
+  }
+
+  test("the account check reads Marketplace status from its answer: full access is ok, a ban or a profile not GOOD is the issue suspended", async () => {
+    const run = (model: Record<string, unknown> | null) => toPromise(createActor(statusHost(model).checkAccount, { input: {} as never }).start());
+    expect(await run({ access_state_title: "You have full access", is_marketplace_access_banned: false, csat_survey: { profile_status: "GOOD" }, enforcement_instance_id: null })).toEqual({ kind: "ok", detail: "Marketplace status: You have full access" });
+    expect(await run({ access_state_title: "You can't buy or sell", access_state_body: "on Marketplace", is_marketplace_access_banned: true })).toEqual({ kind: "issue", issue: "suspended", detail: "Marketplace access banned: You can't buy or sell on Marketplace" });
+    expect(await run(null)).toMatchObject({ kind: "ok", detail: "Marketplace open, no restriction (its status answer didn't load: read from the page)" });
+  });
 });

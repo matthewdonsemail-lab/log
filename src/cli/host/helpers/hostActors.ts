@@ -151,10 +151,16 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
     }),
 
     checkAccount: fromPromise<StepOutcome, LifecycleActorInputs["checkAccount"]>(async () => {
-      const opened = await send("goto", [`${FB}/marketplace/selling/`]);
-      const landed = problemOf({ action: "goto", url: `${FB}/marketplace/selling/` }, opened);
+      const status = marketplaceCheck.CHECK_PAGES.status;
+      const opened = await send("goto", [status]);
+      const landed = problemOf({ action: "goto", url: status }, opened);
       if (landed) return landed;
-      return problemOf({ action: "pageText" }, await look()) ?? ok("Marketplace open, no restriction");
+      const access = marketplaceCheck.marketplaceAccessOf(marketplaceCheck.harOf(opened));
+      if (access) {
+        const problem = marketplaceCheck.accessProblem(access);
+        return problem ? issue("suspended", problem) : ok(`Marketplace status: ${access.title ?? "full access"}${access.sell ? `, selling ${access.sell}` : ""}`);
+      }
+      return problemOf({ action: "pageText" }, await look()) ?? ok("Marketplace open, no restriction (its status answer didn't load: read from the page)");
     }),
 
     setProfile: fromPromise<StepOutcome, LifecycleActorInputs["setProfile"]>(async ({ input }) => {

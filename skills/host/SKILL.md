@@ -20,6 +20,11 @@ description: Run an account's whole lifecycle (rule 35) in ONE browser kept open
    home. The create page answering `marketplace_new_seller_can_post_item:
    false` is the issue `marketplaceMayNotPost`, and a location outside home
    `marketplaceLocationWrong`; both go to a person (matt decides).
+   **The account check reads Marketplace status from its answer**:
+   `/marketplace/status`'s `CometMarketplaceStatusContentContainerQuery`
+   (`marketplaceAccessOf`). A ban, selling not `ELIGIBLE`, an enforcement or a
+   profile not `GOOD` is the issue `suspended` (`accessProblem`); only when that
+   answer didn't load is the page text read instead.
 4. **Writes need matt:** `--live` for profile, name and Marketplace location
    (rules 8, 28); `--likes` for the warm-up's likes.
 5. **Stop with SHUTDOWN, never by killing it,** so the browser closes for its
