@@ -13,18 +13,22 @@
 | Called from | `MarketplacePDPC2CMediaViewerWithImagesQuery.react` |
 | rea | `ev_d19547c947d1ed9edc723be26989de28ee93ca5425cd34a5443cfad49621a338` |
 
-Seen 8 time(s) in 4 run(s).
+Seen 13 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | scroll: +127px in 4 wheel steps, 125 ms | 1 | 200 | 1332 ms | 2117 ms | — |
 | warmup | scroll: -605px in 14 wheel steps, 687 ms | 1 | 200 | 377 ms | 1686 ms | — |
-| warmup | step 10: openAny 2-4 x /marketplace/item/ | 1 | 200 | 1393 ms | 2097 ms | — |
+| warmup | step 10: openAny 2-4 x /marketplace/item/ | 2 | 200 | 1316–1393 ms | 248–2097 ms | — |
 | warmup | openAny: read /marketplace/item/<id>/ | 1 | 200 | 390 ms | 3299 ms | — |
 | warmup | scroll: -756px in 16 wheel steps, 656 ms | 1 | 200 | 410 ms | 684 ms | — |
 | inspect | scroll: -577px in 13 wheel steps, 859 ms | 1 | 200 | 524 ms | 2389 ms | — |
 | inspect | scroll: +978px in 22 wheel steps, 1531 ms | 1 | 200 | 527 ms | 819 ms | — |
 | inspect | step 25: openAny 1-3 x /marketplace/item/ | 1 | 200 | 499 ms | 1231 ms | — |
+| inspect | scroll: +161px in 5 wheel steps, 250 ms | 1 | 200 | 462 ms | 1884 ms | — |
+| inspect | scroll: -161px in 5 wheel steps, 172 ms | 1 | 200 | 413 ms | 697 ms | — |
+| warmup | scroll: -1034px in 22 wheel steps, 1032 ms | 1 | 200 | 448 ms | 797 ms | — |
+| warmup | scroll: +981px in 24 wheel steps, 1672 ms | 1 | 200 | 392 ms | 2043 ms | — |
 
 <!-- facts:end -->
 

@@ -11,22 +11,22 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_36a106d5c6a349aaffd95d75400fb9370c5a8d58bad30e5c86f25c40aa5bf643` |
+| rea | `ev_d7f46c8cc1f3fbd68a82bc46b70630e2eb1283ceba774729ad62ba506a833c48` |
 
-Seen 620 time(s) in 27 run(s).
+Seen 713 time(s) in 33 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | step 1: goto / | 7 | 200 | 368–765 ms | 8512–51453 ms | — |
 | warmup | step 3: scroll 4-7 x 300-600px | 1 | 200 | 410 ms | 831 ms | — |
 | warmup | scroll: +388px in 10 wheel steps, 1109 ms | 1 | 200 | 341 ms | 1819 ms | — |
-| warmup | step 4: goto /marketplace/ | 1 | 200 | 372 ms | 330 ms | — |
+| warmup | step 4: goto /marketplace/ | 2 | 200 | 364–372 ms | 7–330 ms | — |
 | warmup | scroll: +582px in 13 wheel steps, 547 ms | 1 | 200 | 345 ms | 3004 ms | — |
 | warmup | step 7: goto /marketplace/ | 1 | 200 | 902 ms | 6227 ms | — |
 | warmup | step 9: scroll 3-5 x 400-700px | 1 | 200 | 335 ms | 532 ms | — |
 | warmup | scroll: +490px in 11 wheel steps, 469 ms | 1 | 200 | 338 ms | 2347 ms | — |
-| warmup | openAny: read /marketplace/item/<id>/ | 4 | 200 | 345–369 ms | 1442–39023 ms | — |
-| warmup | step 13: goto /marketplace/create/item | 9 | 200 | 336–1329 ms | 54–13255 ms | — |
+| warmup | openAny: read /marketplace/item/<id>/ | 8 | 200 | 344–381 ms | 1415–58591 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 14 | 200 | 336–1401 ms | 25–102578 ms | — |
 | warmup | step 15: goto /marketplace/ | 3 | 200 | 339–657 ms | 50–4974 ms | — |
 | warmup | scroll: +564px in 14 wheel steps, 781 ms | 1 | 200 | 350 ms | 7975 ms | — |
 | warmup | step 17: goto /marketplace/ | 4 | 200 | 365–844 ms | 39–4650 ms | — |
@@ -50,7 +50,7 @@ Seen 620 time(s) in 27 run(s).
 | inspect | scroll: +800px in 18 wheel steps, 781 ms | 22 | 200 | 337–1538 ms | 2912–1778687 ms | — |
 | inspect | step 2: snapshot | 6 | 200 | 336–1482 ms | 6316–23691 ms | — |
 | inspect | step 4: type e1681 | 1 | 200 | 1400 ms | 1138 ms | — |
-| inspect | step 6: wait 6s | 1 | 200 | 365 ms | 21607 ms | — |
+| inspect | step 6: wait 6s | 2 | 200 | 365–1548 ms | 16892–21607 ms | — |
 | inspect | step 8: clickRole button "…" | 1 | 200 | 363 ms | 10817 ms | — |
 | inspect | step 12: clickRole button "…" | 4 | 200 | 309–1348 ms | 116–11918 ms | — |
 | inspect | step 13: wait 8s | 2 | 200 | 346–348 ms | 23242–26763 ms | — |
@@ -96,13 +96,13 @@ Seen 620 time(s) in 27 run(s).
 | inspect | post: "…", 46 words, 1 image(s), scrolled 1584 px | 1 | 200 | 493 ms | 2402 ms | — |
 | inspect | post: "…", 48 words, 1 image(s), scrolled 753 px | 1 | 200 | 493 ms | 12307 ms | — |
 | inspect | step 6: likePost Like | 1 | 200 | 481 ms | 7582 ms | — |
-| inspect | step 7: goto / | 5 | 200 | 447–704 ms | 6459–8690 ms | — |
+| inspect | step 7: goto / | 9 | 200 | 344–704 ms | 6459–125526 ms | — |
 | inspect | post: "…", 57 words, 2 image(s), scrolled 773 px | 1 | 200 | 480 ms | 17 ms | — |
 | inspect | step 22: dwell 21.38s | 1 | 200 | 432 ms | 7455 ms | — |
 | inspect | step 33: dwell 0.28s | 1 | 200 | 570 ms | 442 ms | — |
 | inspect | step 34: goto /marketplace/ | 1 | 200 | 679 ms | 39 ms | — |
 | inspect | scroll: +978px in 22 wheel steps, 1531 ms | 1 | 200 | 491 ms | 1445 ms | — |
-| inspect | openAny: read /marketplace/item/<id>/ | 6 | 200 | 434–2143 ms | 22635–167540 ms | — |
+| inspect | openAny: read /marketplace/item/<id>/ | 9 | 200 | 383–2143 ms | 1043–167540 ms | — |
 | inspect | step 38: goto /marketplace/ | 6 | 200 | 468–820 ms | 8630–21242 ms | — |
 | inspect | step 39: snapshot | 1 | 200 | 515 ms | 3765 ms | — |
 | inspect | clickRole failed: RuntimeError: no visible button "…" | 9 | 200, 0 | 0–475 ms | 17568–103154 ms | — |
@@ -132,10 +132,10 @@ Seen 620 time(s) in 27 run(s).
 | inspect | step 4: goto /marketplace/ | 1 | 200 | 424 ms | 161 ms | — |
 | inspect | scroll: +783px in 18 wheel steps, 797 ms | 4 | 200 | 441–488 ms | 3056–183074 ms | — |
 | inspect | step 3: snapshot | 4 | 200 | 317–1273 ms | 74040–175635 ms | — |
-| inspect | step 1: goto /reel/ | 3 | 200 | 617–825 ms | 6115–7601 ms | — |
+| inspect | step 1: goto /reel/ | 4 | 200 | 617–825 ms | 6115–12853 ms | — |
 | inspect | step 4: dwell 10.63s | 1 | 200 | 311 ms | 1798 ms | — |
 | inspect | step 65: clickRole button "…" | 2 | 200 | 296–374 ms | 3045–7843 ms | — |
-| inspect | clickAny: 1 link /see owner profile$/ | 37 | 200 | 304–2506 ms | 542–473886 ms | — |
+| inspect | clickAny: 1 link /see owner profile$/ | 38 | 200 | 304–2506 ms | 542–473886 ms | — |
 | inspect | step 71: goto /reel/ | 14 | 200 | 312–664 ms | 7676–21182 ms | — |
 | inspect | step 72: clickRole button "…" | 1 | 200 | 314 ms | 11252 ms | — |
 | inspect | step 4: scrollIn heading "…" 2-3 x 300-500px | 1 | 200 | 324 ms | 590 ms | — |
@@ -187,7 +187,7 @@ Seen 620 time(s) in 27 run(s).
 | inspect | step 25: click e1241 | 1 | 200 | 1466 ms | 1736 ms | — |
 | inspect | step 26: wait 8s | 1 | 200 | 349 ms | 1039 ms | — |
 | inspect | step 27: click e1541 | 2 | 200 | 362–1438 ms | 105422–127143 ms | — |
-| inspect | step 1: goto /marketplace/create/item | 1 | 200 | 957 ms | 12971 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 5 | 200 | 360–1362 ms | 8602–109030 ms | — |
 | inspect | step 4: setLocation Bethlehem, PA | 2 | 200 | 1596–1694 ms | 10733–36259 ms | — |
 | inspect | step 6: sellLocation | 1 | 200 | 1435 ms | 9751 ms | — |
 | inspect | upload: before.png handed to the file chooser | 1 | 200 | 582 ms | 5971 ms | — |
@@ -196,7 +196,7 @@ Seen 620 time(s) in 27 run(s).
 | inspect | type failed: TimeoutError: Locator.press_sequentially: Timeout 30000ms exceeded. | 1 | 200 | 442 ms | 50819 ms | — |
 | inspect | step 13: setLocation 18015 | 4 | 200 | 363–1764 ms | 10384–127906 ms | — |
 | inspect | step 1: goto /marketplace/inbox | 4 | 200 | 359–1645 ms | 10466–24960 ms | — |
-| inspect | step 4: goto /marketplace/you/selling | 3 | 200 | 333–817 ms | 18–11343 ms | — |
+| inspect | step 4: goto /marketplace/you/selling | 6 | 200 | 333–966 ms | 18–36217 ms | — |
 | inspect | step 5: wait 5s | 10 | 200 | 360–2573 ms | 17515–559238 ms | — |
 | inspect | step 6: goto /marketplace/status | 1 | 200 | 875 ms | 8022 ms | — |
 | inspect | step 7: goto /marketplace/you/selling | 3 | 200 | 407–948 ms | 37–12857 ms | — |
@@ -213,6 +213,30 @@ Seen 620 time(s) in 27 run(s).
 | inspect | step 4: goto /marketplace/status | 1 | 200 | 989 ms | 7277 ms | — |
 | inspect | step 5: goto /marketplace/you/selling | 3 | 200 | 345–1133 ms | 22–7892 ms | — |
 | inspect | step 6: goto /marketplace/inbox | 30 | 200 | 353–2153 ms | 46–1715204 ms | — |
+| inspect | step 2: goto /marketplace/ | 1 | 200 | 484 ms | 36511 ms | — |
+| inspect | post: "…", 123 words, 0 image(s), scrolled 53 px | 12 | 200 | 1126–20726 ms | 9012–99549 ms | — |
+| inspect | step 3: likePost Like | 2 | 200 | 352–669 ms | 3775–25195 ms | — |
+| flow | step 1: goto /marketplace/ | 4 | 200 | 413–874 ms | 7530–8893 ms | — |
+| flow | step 3: goto /marketplace/create/item | 4 | 200 | 346–2215 ms | 50–11825 ms | — |
+| warmup | scroll: +314px in 8 wheel steps, 422 ms | 1 | 200 | 595 ms | 733 ms | — |
+| warmup | step 3: goto /marketplace/you/selling | 2 | 200 | 393–826 ms | 6665–7185 ms | — |
+| warmup | step 5: goto /messages/ | 2 | 200 | 371–661 ms | 390–8725 ms | — |
+| warmup | scroll: +376px in 9 wheel steps, 906 ms | 1 | 200 | 361 ms | 675 ms | — |
+| warmup | scroll: +537px in 13 wheel steps, 860 ms | 2 | 200 | 492–1304 ms | 2770–75202 ms | — |
+| warmup | scroll: +624px in 15 wheel steps, 953 ms | 1 | 200 | 359 ms | 2436 ms | — |
+| warmup | step 11: goto /marketplace/ | 4 | 200 | 341–625 ms | 5972–7293 ms | — |
+| warmup | step 14: goto /marketplace/ | 1 | 200 | 1068 ms | 6543 ms | — |
+| warmup | scroll: +319px in 8 wheel steps, 406 ms | 1 | 200 | 371 ms | 2052 ms | — |
+| warmup | step 16: goto /marketplace/you/selling | 2 | 200 | 700–902 ms | 9235–14460 ms | — |
+| warmup | step 17: dwell 2-4s | 5 | 200 | 359–1372 ms | 14831–87006 ms | — |
+| warmup | scroll: +463px in 14 wheel steps, 1031 ms | 1 | 200 | 1368 ms | 630 ms | — |
+| inspect | step 3: dwell 24s | 1 | 200 | 377 ms | 5937 ms | — |
+| inspect | step 4: clickRole button "…" | 1 | 200 | 372 ms | 7572 ms | — |
+| inspect | step 7: dwell 7s | 2 | 200 | 363–398 ms | 3035–3464 ms | — |
+| inspect | step 10: dwell 21s | 1 | 200 | 374 ms | 5383 ms | — |
+| inspect | step 15: clickRole button "…" | 1 | 200 | 361 ms | 8840 ms | — |
+| inspect | step 17: clickRole button "…" | 2 | 200 | 382–588 ms | 2491–3492 ms | — |
+| inspect | step 20: dwell 2s | 12 | 200 | 324–2861 ms | 7984–478879 ms | — |
 
 <!-- facts:end -->
 

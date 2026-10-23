@@ -5397,3 +5397,61 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: listing media now lives in the repo under `media/listings/<creative>/`, in three folders: `raw/` (the generated photos as they came back), `ios/` (each one inside the iPhone Photos viewer, no scribble) and `iosScribbled/` (the same, faces scribbled out in red), beside the folder's `images.jsonl` and `viewer.json`. `renderListings.py` reads `raw/` from there and writes both viewer folders as JPEG (quality 92; `renderViewer.py` writes JPEG when the output ends in .jpg). Only the three new creatives are in: garageOldMan, basementWoman and sideYardPile (before, action, after), the ones the research and SubQ's reading back; matt's earlier Bethlehem creative stays out of the repo. The `listingCreative` skill names the three folders.
 Why: matt: inside where the media is stored, have three directories, the iOS camera roll one, the iOS camera roll one without the scribble, and the plain one; "put them in the main repo not ./logCLI", and only the new creatives, "because we have the data to confirm what's good".
 Checked: `renderListings.py` rendered all 18 viewer frames (3 listings, ios and iosScribbled). `bun run check:naming` passes, and the pre-commit layout and noComments checks pass. The copies in `~/.logCli/listings` are left in place.
+
+## 2026-10-23 12:11Z · feat/listingCreativeViewer
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceRecordPDPDwellTimeMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSetProductItemSeenStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNewsFeedPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/FeedComposerCometRootQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MWQuickPromotionThreadlistBannerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPC2CMediaViewerWithImagesQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPRightColumnAdsQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYouSellingUpsellCardQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxBz.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/ajaxRouteDefinition.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useCIXLogMutation.md`: edited
+- `docs/platforms/facebook/background/useInstreamAdsHaloFetcherQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/videoUnifiedCvc.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerAttributesQuery.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/profile/ProfileCometHeaderQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTopAppSectionQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoContainerQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoEntityDialogImplQuery.md`: edited
+- `docs/platforms/facebook/reels/FBUnifiedVideoSeenStateMutation.md`: edited
+
+What changed: `log facebook capture --docs` rebuilt the request docs from the 7 runs recorded on 2026-10-23 (one inspect, four warm-ups, two flows on 61594063207669): 49 requests across background, checkpoint, listingForm, login, profile and reels, with their timings and exchanges updated, and one new slice, `useInstreamAdsHaloFetcherQuery`, read by rea in 24 s.
+Why: the pre-push docs gate (rule 27) refused pushing feat/listingCreativeViewer because those 7 runs were newer than the docs; matt asked to push and open the PR.
+Checked: `node scripts/checks/checkFacebookClientDocs.mjs`: 216 requests documented, rea read every GraphQL slice, 0 still need their reasoning written.

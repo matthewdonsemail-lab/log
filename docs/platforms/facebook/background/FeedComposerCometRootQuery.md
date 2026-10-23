@@ -13,13 +13,17 @@
 | Called from | `FeedComposerCometRoot.react` |
 | rea | `ev_a7cba304334bc4e14c20455ee7a779e8ff76be7fa130500c1daa6ddab11f6589` |
 
-Seen 4 time(s) in 4 run(s).
+Seen 10 time(s) in 7 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | step 1: goto / | 1 | 200 | 1402 ms | 25511 ms | — |
 | inspect | step 27: goto / | 1 | 200 | 614 ms | 4855 ms | — |
-| inspect | step 1: goto / | 2 | 200 | 731–801 ms | 7877–16609 ms | — |
+| inspect | step 1: goto / | 3 | 200 | 658–801 ms | 7877–22524 ms | — |
+| inspect | step 7: goto / | 2 | 200 | 594–778 ms | 10909–45148 ms | — |
+| inspect | post: "…", 123 words, 0 image(s), scrolled 53 px | 1 | 200 | 3856 ms | 70245 ms | — |
+| inspect | step 3: likePost Like | 1 | 200 | 422 ms | 21003 ms | — |
+| warmup | expected MAWVerifyThreadCutover_ContactCapabilities2Query: sent | 1 | 200 | 729 ms | 4376 ms | — |
 
 <!-- facts:end -->
 

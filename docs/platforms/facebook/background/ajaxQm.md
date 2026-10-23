@@ -11,17 +11,17 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_36a106d5c6a349aaffd95d75400fb9370c5a8d58bad30e5c86f25c40aa5bf643` |
+| rea | `ev_d7f46c8cc1f3fbd68a82bc46b70630e2eb1283ceba774729ad62ba506a833c48` |
 
-Seen 98 time(s) in 27 run(s).
+Seen 120 time(s) in 34 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| warmup | step 1: goto / | 2 | 200 | 403–887 ms | 1709–15140 ms | — |
-| warmup | step 4: goto /marketplace/ | 2 | 200 | 409–5839 ms | 1202–6461 ms | — |
-| warmup | step 7: goto /marketplace/ | 2 | 200 | 423–424 ms | 813–1995 ms | — |
-| warmup | step 11: goto /marketplace/ | 2 | 200 | 383–417 ms | 768–11799 ms | — |
-| warmup | step 13: goto /marketplace/create/item | 2 | 200 | 443–554 ms | 1059–1694 ms | — |
+| warmup | step 1: goto / | 4 | 200 | 403–887 ms | 1709–15140 ms | — |
+| warmup | step 4: goto /marketplace/ | 3 | 200 | 409–5839 ms | 1202–6461 ms | — |
+| warmup | step 7: goto /marketplace/ | 3 | 200 | 423–493 ms | 813–1995 ms | — |
+| warmup | step 11: goto /marketplace/ | 3 | 200 | 383–452 ms | 768–11799 ms | — |
+| warmup | step 13: goto /marketplace/create/item | 3 | 200 | 441–554 ms | 801–1694 ms | — |
 | warmup | step 15: goto /marketplace/ | 2 | 200 | 447–529 ms | 783–807 ms | — |
 | warmup | step 17: goto /marketplace/ | 2 | 200 | 442–487 ms | 686–776 ms | — |
 | warmup | step 19: goto /marketplace/you/selling | 2 | 200 | 588–2810 ms | 1303–6561 ms | — |
@@ -31,17 +31,17 @@ Seen 98 time(s) in 27 run(s).
 | inspect | step 1: goto /groups/<id>/ | 5 | 200 | 414–8934 ms | 1640–10709 ms | — |
 | inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 503 ms | 747 ms | — |
 | inspect | step 1: goto /profile.php | 1 | 200 | 468 ms | 2145 ms | — |
-| inspect | step 1: goto / | 8 | 200 | 431–2879 ms | 1957–4779 ms | — |
+| inspect | step 1: goto / | 9 | 200 | 431–2879 ms | 1800–4779 ms | — |
 | inspect | step 25: goto /groups/<id>/questions | 1 | 200 | 431 ms | 736 ms | — |
 | inspect | step 4: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 7439 ms | 7856 ms | — |
 | inspect | step 1: goto /groups/<id> | 1 | 200 | 673 ms | 1809 ms | — |
-| inspect | step 7: goto / | 1 | 200 | 544 ms | 1020 ms | — |
+| inspect | step 7: goto / | 2 | 200 | 544–6038 ms | 1020–6602 ms | — |
 | inspect | step 34: goto /marketplace/ | 1 | 200 | 7107 ms | 7782 ms | — |
 | inspect | step 38: goto /marketplace/ | 2 | 200 | 482–2441 ms | 970–11572 ms | — |
 | inspect | step 22: goto /marketplace/ | 1 | 200 | 548 ms | 1536 ms | — |
 | inspect | step 27: goto / | 1 | 200 | 886 ms | 770 ms | — |
 | inspect | step 4: goto /marketplace/ | 1 | 200 | 7230 ms | 7678 ms | — |
-| inspect | step 1: goto /reel/ | 3 | 200 | 415–497 ms | 1357–1504 ms | — |
+| inspect | step 1: goto /reel/ | 4 | 200 | 386–497 ms | 1357–1781 ms | — |
 | inspect | clickAny: 1 link /see owner profile$/ | 2 | 200 | 301–4072 ms | 366–3657 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 338 ms | 2483 ms | — |
 | inspect | step 14: goto /reel/<id> | 1 | 200 | 357 ms | 635 ms | — |
@@ -56,12 +56,12 @@ Seen 98 time(s) in 27 run(s).
 | inspect | step 2: setLocation Bethlehem, Pennsylvania | 1 | 200 | 345 ms | 2228 ms | — |
 | inspect | step 5: setLocation Bethlehem, Pennsylvania | 1 | 200 | 979 ms | 923 ms | — |
 | inspect | step 11: goto /marketplace/create/item | 1 | 200 | 495 ms | 1017 ms | — |
-| inspect | step 1: goto /marketplace/create/item | 1 | 200 | 474 ms | 2550 ms | — |
+| inspect | step 1: goto /marketplace/create/item | 2 | 200 | 455–474 ms | 897–2550 ms | — |
 | inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 505 ms | 851 ms | — |
 | inspect | step 5: goto /marketplace/create/item | 1 | 200 | 569 ms | 994 ms | — |
 | inspect | step 13: setLocation 18015 | 1 | 200 | 483 ms | 1912 ms | — |
 | inspect | step 1: goto /marketplace/inbox | 2 | 200 | 360–406 ms | 1928–18493 ms | — |
-| inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 432 ms | 885 ms | — |
+| inspect | step 4: goto /marketplace/you/selling | 2 | 200 | 432–445 ms | 812–885 ms | — |
 | inspect | step 6: goto /marketplace/status | 1 | 200 | 448 ms | 2006 ms | — |
 | inspect | step 7: goto /marketplace/you/selling | 1 | 200 | 455 ms | 808 ms | — |
 | inspect | step 8: goto /marketplace/inbox | 1 | 200 | 455 ms | 3301 ms | — |
@@ -77,6 +77,17 @@ Seen 98 time(s) in 27 run(s).
 | inspect | step 4: goto /marketplace/status | 1 | 200 | 880 ms | 2360 ms | — |
 | inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 439 ms | 785 ms | — |
 | inspect | step 6: goto /marketplace/inbox | 4 | 200 | 526–972 ms | 975–1512191 ms | — |
+| inspect | step 2: goto /marketplace/ | 1 | 200 | 566 ms | 993 ms | — |
+| inspect | step 5: goto /messages/ | 1 | 200 | 471 ms | 793 ms | — |
+| flow | step 1: goto /marketplace/ | 1 | 200 | 869 ms | 1884 ms | — |
+| flow | step 3: goto /marketplace/create/item | 1 | 200 | 438 ms | 798 ms | — |
+| warmup | step 1: goto /marketplace/ | 1 | 200 | 428 ms | 1756 ms | — |
+| warmup | step 3: goto /marketplace/you/selling | 1 | 200 | 427 ms | 1806 ms | — |
+| warmup | step 5: goto /messages/ | 1 | 200 | 438 ms | 1093 ms | — |
+| warmup | step 14: goto /marketplace/ | 1 | 200 | 437 ms | 806 ms | — |
+| warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 455 ms | 944 ms | — |
+| warmup | step 18: goto /marketplace/ | 1 | 200 | 451 ms | 808 ms | — |
+| inspect | step 8: goto /reel/<id> | 1 | 200 | 437 ms | 762 ms | — |
 
 <!-- facts:end -->
 

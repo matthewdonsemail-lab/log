@@ -13,7 +13,7 @@
 | Called from | `FBUnifiedVideoEntityDialogImpl.react` |
 | rea | `ev_86c55860632301261adc729568972b8c68698dd7f99a2d2b9710325b4f021afc` |
 
-Seen 13 time(s) in 3 run(s).
+Seen 15 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -29,6 +29,8 @@ Seen 13 time(s) in 3 run(s).
 | inspect | step 72: clickRole button "…" | 1 | 200 | 1355 ms | 3452 ms | — |
 | inspect | step 88: clickRole button "…" | 1 | 200 | 1347 ms | 5028 ms | — |
 | inspect | step 96: clickRole button "…" | 1 | 200 | 949 ms | 393792 ms | — |
+| inspect | step 8: goto /reel/<id> | 1 | 200 | 1072 ms | 10414 ms | — |
+| inspect | step 20: dwell 2s | 1 | 200 | 1046 ms | 146932 ms | — |
 
 <!-- facts:end -->
 

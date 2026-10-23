@@ -13,7 +13,7 @@
 | Called from | `CometMarketplaceSetProductItemSeenStateMutation` |
 | rea | `ev_d3844ff3ba89d42ce8912082c4735babb8314eb664819e8300eecce66eb73b01` |
 
-Seen 8 time(s) in 4 run(s).
+Seen 13 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -25,6 +25,11 @@ Seen 8 time(s) in 4 run(s).
 | inspect | scroll: -577px in 13 wheel steps, 859 ms | 1 | 200 | 1029 ms | 3592 ms | — |
 | inspect | scroll: +978px in 22 wheel steps, 1531 ms | 1 | 200 | 652 ms | 1996 ms | — |
 | inspect | step 25: openAny 1-3 x /marketplace/item/ | 1 | 200 | 915 ms | 4060 ms | — |
+| inspect | scroll: +161px in 5 wheel steps, 250 ms | 1 | 200 | 740 ms | 3443 ms | — |
+| inspect | scroll: -161px in 5 wheel steps, 172 ms | 1 | 200 | 1264 ms | 1430 ms | — |
+| warmup | scroll: +213px in 7 wheel steps, 453 ms | 1 | 200 | 920 ms | 297 ms | — |
+| warmup | scroll: -1034px in 22 wheel steps, 1032 ms | 1 | 200 | 652 ms | 1576 ms | — |
+| warmup | scroll: +981px in 24 wheel steps, 1672 ms | 1 | 200 | 570 ms | 3054 ms | — |
 
 <!-- facts:end -->
 
