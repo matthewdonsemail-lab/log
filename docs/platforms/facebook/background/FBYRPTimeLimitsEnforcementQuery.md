@@ -13,7 +13,7 @@
 | Called from | `FBYRPTimeLimitsEnforcement.react` |
 | rea | `ev_5fe8db44bc61b2d547bfce0c51e3256e80ffd1e3477b2c6b640071a0ea96e750` |
 
-Seen 112 time(s) in 30 run(s).
+Seen 114 time(s) in 31 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -41,7 +41,7 @@ Seen 112 time(s) in 30 run(s).
 | inspect | step 22: goto /marketplace/ | 1 | 200 | 571 ms | 2585 ms | — |
 | inspect | step 27: goto / | 1 | 200 | 501 ms | 2080 ms | — |
 | inspect | step 4: goto /marketplace/ | 1 | 200 | 425 ms | 4879 ms | — |
-| inspect | step 1: goto /reel/ | 3 | 200 | 344–445 ms | 2016–3547 ms | — |
+| inspect | step 1: goto /reel/ | 4 | 200 | 344–565 ms | 2016–7392 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 329 ms | 3005 ms | — |
 | inspect | step 14: goto /reel/<id> | 1 | 200 | 359 ms | 3554 ms | — |
 | inspect | step 23: goto /reel/<id> | 1 | 200 | 324 ms | 1251 ms | — |
@@ -87,6 +87,7 @@ Seen 112 time(s) in 30 run(s).
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 403 ms | 1675 ms | — |
 | warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 482 ms | 4793 ms | — |
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 405 ms | 1764 ms | — |
+| inspect | step 8: goto /reel/<id> | 1 | 200 | 600 ms | 4459 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

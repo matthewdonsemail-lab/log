@@ -13,7 +13,7 @@
 | Called from | `usePseudoBlockedUserInterstitial` |
 | rea | `ev_bd4768487f8ce51543ac7bf31bbe4bddfd24eccd0b88381038a13399ea6e6697` |
 
-Seen 134 time(s) in 30 run(s).
+Seen 136 time(s) in 31 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -54,7 +54,7 @@ Seen 134 time(s) in 30 run(s).
 | inspect | step 25: openAny 1-3 x /marketplace/item/ | 1 | 200 | 463 ms | 4047 ms | — |
 | inspect | step 27: goto / | 1 | 200 | 450 ms | 5222 ms | — |
 | inspect | step 4: goto /marketplace/ | 1 | 200 | 464 ms | 5295 ms | — |
-| inspect | step 1: goto /reel/ | 3 | 200 | 332–388 ms | 3372–4289 ms | — |
+| inspect | step 1: goto /reel/ | 4 | 200 | 332–388 ms | 3372–8697 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 357 ms | 4001 ms | — |
 | inspect | step 14: goto /reel/<id> | 1 | 200 | 1721 ms | 4126 ms | — |
 | inspect | step 23: goto /reel/<id> | 1 | 200 | 370 ms | 4961 ms | — |
@@ -103,6 +103,7 @@ Seen 134 time(s) in 30 run(s).
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 364 ms | 3743 ms | — |
 | warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 610 ms | 5748 ms | — |
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 379 ms | 3658 ms | — |
+| inspect | step 8: goto /reel/<id> | 1 | 200 | 497 ms | 5280 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

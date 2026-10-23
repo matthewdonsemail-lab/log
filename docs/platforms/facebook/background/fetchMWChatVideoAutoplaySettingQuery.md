@@ -13,7 +13,7 @@
 | Called from | `fetchMWChatVideoAutoplaySetting` |
 | rea | `ev_cec3d0049369021eb11311f83bae206c05ab77298da76206b6788d2cdc5c8ee1` |
 
-Seen 112 time(s) in 30 run(s).
+Seen 114 time(s) in 31 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -41,7 +41,7 @@ Seen 112 time(s) in 30 run(s).
 | inspect | step 22: goto /marketplace/ | 1 | 200 | 530 ms | 2705 ms | — |
 | inspect | step 27: goto / | 1 | 200 | 463 ms | 2136 ms | — |
 | inspect | step 4: goto /marketplace/ | 1 | 200 | 533 ms | 5300 ms | — |
-| inspect | step 1: goto /reel/ | 3 | 200 | 330–401 ms | 2256–3534 ms | — |
+| inspect | step 1: goto /reel/ | 4 | 200 | 330–591 ms | 2256–7364 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 415 ms | 2981 ms | — |
 | inspect | step 14: goto /reel/<id> | 1 | 200 | 369 ms | 3536 ms | — |
 | inspect | step 23: goto /reel/<id> | 1 | 200 | 323 ms | 1231 ms | — |
@@ -87,6 +87,7 @@ Seen 112 time(s) in 30 run(s).
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 396 ms | 1729 ms | — |
 | warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 368 ms | 4773 ms | — |
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 487 ms | 1823 ms | — |
+| inspect | step 8: goto /reel/<id> | 1 | 200 | 387 ms | 4438 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

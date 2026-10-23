@@ -39,7 +39,7 @@ Seen 59 time(s) in 7 run(s).
 | inspect | step 3: goto /marketplace/inbox | 3 | 200, 0 | 0–501 ms | 589944–1455304 ms | — |
 | warmup | step 17: dwell 2-4s | 1 | 200 | 377 ms | 80196 ms | — |
 
-### What it sent and what came back (the newest 3 from our runs)
+### What it sent and what came back (the newest 1 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -68,62 +68,6 @@ Answered:
   "rid": "A-enHRPtqdcp945eGeLpZG8",
   "payload": null,
   "lid": "7699770584893673991"
-}
-```
-
-**runs/inspect/20261022T155857_61594063207669**, step 3: goto /marketplace/inbox: 200, 501 ms
-
-Sent:
-
-```json
-{
-  "query": {
-    "cquick": "_r_uo_",
-    "cquick_token": "AUehHkkVOzIG9jI4NoDRWETt25U",
-    "ctarget": "https://www.facebook.com"
-  },
-  "body": {
-    "------WebKitFormBoundaryCZUGYBYfOBmqdqCo\r\nContent-Disposition: form-data; name": "\"ts\"\r\n\r\n1792685448099\r\n------WebKitFormBoundaryCZUGYBYfOBmqdqCo\r\nContent-Disposition: form-data; name=\"q\"\r\n\r\n[{\"app_id\":\"2220391788200892\",\"posts\":\"0wS4W1sicWV4Iix7ImwiOiJKe1wicWVpZFwiOlwiNjE1OTQwNjMyMDc2NjlcIixcInUFGQULAHQFCwRmYgUNIGdrc1wiOltdLAE/kFwiOm51bGx9In0sMTc5MjY4NTM4ODA5Mi4yMDAyLDAsODVdLFv dgCmdgAANf5zAMZzAAA2/nMA/nMA5nMAOF9hY3RpbmdfYWNjb3VudKreASA2LDAsMTAwXV0=\",\"user\":\"61594063207669\",\"w… (564 chars)"
-  }
-}
-```
-
-Answered:
-
-```json
-{
-  "__ar": 1,
-  "rid": "A4KS55YXP4Y_uBFYlBke3Wn",
-  "payload": null,
-  "lid": "7699525367192032385"
-}
-```
-
-**runs/inspect/20261022T113536_61594063207669**, step 5: wait 5s: 200, 1403 ms
-
-Sent:
-
-```json
-{
-  "query": {
-    "cquick": "_r_31_",
-    "cquick_token": "AUehHkkVOzIG9jI4NoDRWETtuT0",
-    "ctarget": "https://www.facebook.com"
-  },
-  "body": {
-    "------WebKitFormBoundaryRZPZmXHouM5GdwQf\r\nContent-Disposition: form-data; name": "\"ts\"\r\n\r\n1792669129979\r\n------WebKitFormBoundaryRZPZmXHouM5GdwQf\r\nContent-Disposition: form-data; name=\"q\"\r\n\r\n[{\"app_id\":\"2220391788200892\",\"posts\":\"0AS4W1sicWV4Iix7ImwiOiJKe1wicWVpZFwiOlwiNjE1OTQwNjMyMDc2NjlcIixcInUFGQULAHQFCwRmYgUNIGdrc1wiOltdLAE/gFwiOm51bGx9In0sMTc5MjY2OTA2OTk3My40LDAsODVdLP5zAKpzAAA4/nMA/nMA/nMA/nMAsnMAOF9hY3RpbmdfYWNjb3VudKrbASA4LDAsMTAwXV0=\",\"user\":\"61594063207669\",\"webSessio… (556 chars)"
-  }
-}
-```
-
-Answered:
-
-```json
-{
-  "__ar": 1,
-  "rid": "AYqhIu2zu9Y1-mrx8O882o2",
-  "payload": null,
-  "lid": "7699455287860523565"
 }
 ```
 

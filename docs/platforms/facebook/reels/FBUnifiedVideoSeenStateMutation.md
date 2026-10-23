@@ -13,21 +13,21 @@
 | Called from | `FBUnifiedVideoSeenStateMutation` |
 | rea | `ev_5b1d67703bcc2154905f7461407849c35b29d19eaf9efca5ad6f5e1b8f46008a` |
 
-Seen 88 time(s) in 3 run(s).
+Seen 96 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 3: clickRole button "…" | 2 | 200 | 372–503 ms | 1339–1467 ms | — |
 | inspect | step 5: clickRole button "…" | 1 | 200 | 521 ms | 624 ms | — |
 | inspect | step 7: clickRole button "…" | 2 | 200 | 430–442 ms | 519–1157 ms | — |
-| inspect | step 9: clickRole button "…" | 2 | 200 | 382–427 ms | 636–1114 ms | — |
-| inspect | step 11: clickRole button "…" | 2 | 200 | 398–556 ms | 599–1608 ms | — |
+| inspect | step 9: clickRole button "…" | 3 | 200 | 382–435 ms | 636–1639 ms | — |
+| inspect | step 11: clickRole button "…" | 3 | 200 | 398–636 ms | 599–1608 ms | — |
 | inspect | step 12: clickRole button "…" | 1 | 200 | 375 ms | 455 ms | — |
-| inspect | step 13: clickRole button "…" | 1 | 200 | 1110 ms | 499 ms | — |
+| inspect | step 13: clickRole button "…" | 2 | 200 | 515–1110 ms | 499–1201 ms | — |
 | inspect | step 14: clickRole button "…" | 2 | 200 | 519–1076 ms | 483–1010 ms | — |
 | inspect | step 16: clickRole button "…" | 2 | 200 | 407–758 ms | 546–3011 ms | — |
 | inspect | step 18: clickRole button "…" | 2 | 200 | 494–606 ms | 545–2454 ms | — |
-| inspect | step 19: clickRole button "…" | 2 | 200 | 372–554 ms | 711–2444 ms | — |
+| inspect | step 19: clickRole button "…" | 3 | 200 | 372–554 ms | 711–2444 ms | — |
 | inspect | step 20: clickRole button "…" | 2 | 200 | 359–666 ms | 609–1452 ms | — |
 | inspect | step 21: clickRole button "…" | 1 | 200 | 864 ms | 503 ms | — |
 | inspect | step 23: clickRole button "…" | 1 | 200 | 639 ms | 530 ms | — |
@@ -68,7 +68,7 @@ Seen 88 time(s) in 3 run(s).
 | inspect | step 8: clickRole button "…" | 1 | 200 | 384 ms | 1612 ms | — |
 | inspect | step 10: clickRole button "…" | 1 | 200 | 401 ms | 1371 ms | — |
 | inspect | step 12: clickAny 1 x link /see owner profile$/ | 1 | 200 | 383 ms | 2420 ms | — |
-| inspect | step 15: clickRole button "…" | 1 | 200 | 373 ms | 1170 ms | — |
+| inspect | step 15: clickRole button "…" | 2 | 200 | 373–463 ms | 1170–1345 ms | — |
 | inspect | step 21: clickAny 1 x link /see owner profile$/ | 1 | 200 | 365 ms | 2032 ms | — |
 | inspect | step 24: clickRole button "…" | 1 | 200 | 478 ms | 1446 ms | — |
 | inspect | step 8: clickAny 1 x link /see owner profile$/ | 1 | 200 | 377 ms | 2073 ms | — |
@@ -84,6 +84,151 @@ Seen 88 time(s) in 3 run(s).
 | inspect | step 88: clickRole button "…" | 1 | 200 | 787 ms | 2077 ms | — |
 | inspect | step 92: clickRole button "…" | 1 | 200 | 727 ms | 1249 ms | — |
 | inspect | step 96: clickRole button "…" | 1 | 200 | 1449 ms | 1597 ms | — |
+| inspect | step 4: clickRole button "…" | 1 | 200 | 435 ms | 1251 ms | — |
+| inspect | step 6: clickAny 1 x link /see owner profile$/ | 1 | 200 | 708 ms | 3601 ms | — |
+| inspect | step 17: clickRole button "…" | 1 | 200 | 423 ms | 1543 ms | — |
+
+### What it sent and what came back (the newest 3 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T080801_61594063207669**, step 4: clickRole button "…": 200, 435 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBUnifiedVideoSeenStateMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "video_ids": [
+        "1967507720600004"
+      ],
+      "actor_id": "61594063207669",
+      "client_mutation_id": "1"
+    }
+  },
+  "doc_id": "9749301061815436"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_fb_shorts_seen_state_mutation": {
+      "viewer": {
+        "actor": {
+          "__typename": "User",
+          "id": "61594063207669"
+        }
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742958619,
+      "time_at_flush_ms": 1792742958693
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T080801_61594063207669**, step 6: clickAny 1 x link /see owner profile$/: 200, 708 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBUnifiedVideoSeenStateMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "video_ids": [
+        "1607183873661381"
+      ],
+      "actor_id": "61594063207669",
+      "client_mutation_id": "2"
+    }
+  },
+  "doc_id": "9749301061815436"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_fb_shorts_seen_state_mutation": {
+      "viewer": {
+        "actor": {
+          "__typename": "User",
+          "id": "61594063207669"
+        }
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792742992626,
+      "time_at_flush_ms": 1792742992705
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261023T080801_61594063207669**, step 9: clickRole button "…": 200, 435 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FBUnifiedVideoSeenStateMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "video_ids": [
+        "1607183873661381"
+      ],
+      "actor_id": "61594063207669",
+      "client_mutation_id": "1"
+    }
+  },
+  "doc_id": "9749301061815436"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_fb_shorts_seen_state_mutation": {
+      "viewer": {
+        "actor": {
+          "__typename": "User",
+          "id": "61594063207669"
+        }
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792743039619,
+      "time_at_flush_ms": 1792743039691
+    },
+    "is_final": true
+  }
+}
+```
 
 <!-- facts:end -->
 

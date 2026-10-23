@@ -13,7 +13,7 @@
 | Called from | `RTWebCallBlockSettingHooks` |
 | rea | `ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6` |
 
-Seen 111 time(s) in 30 run(s).
+Seen 113 time(s) in 31 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -41,7 +41,7 @@ Seen 111 time(s) in 30 run(s).
 | inspect | step 22: goto /marketplace/ | 1 | 200 | 616 ms | 6214 ms | — |
 | inspect | step 27: goto / | 1 | 200 | 497 ms | 5225 ms | — |
 | inspect | step 4: goto /marketplace/ | 1 | 200 | 521 ms | 5680 ms | — |
-| inspect | step 1: goto /reel/ | 3 | 200 | 340–381 ms | 3376–4292 ms | — |
+| inspect | step 1: goto /reel/ | 4 | 200 | 340–381 ms | 3376–8967 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 358 ms | 4007 ms | — |
 | inspect | step 14: goto /reel/<id> | 1 | 200 | 1005 ms | 4979 ms | — |
 | inspect | step 23: goto /reel/<id> | 1 | 200 | 364 ms | 4963 ms | — |
@@ -87,6 +87,7 @@ Seen 111 time(s) in 30 run(s).
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 366 ms | 3745 ms | — |
 | warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 600 ms | 5751 ms | — |
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 446 ms | 3662 ms | — |
+| inspect | step 8: goto /reel/<id> | 1 | 200 | 400 ms | 5704 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_4840b76a7b6fae5eb9e2ccd1fba5044ba1b9da1479a85adcefb3dc88829b4327` |
+| rea | `ev_d7f46c8cc1f3fbd68a82bc46b70630e2eb1283ceba774729ad62ba506a833c48` |
 
-Seen 691 time(s) in 32 run(s).
+Seen 713 time(s) in 33 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -132,10 +132,10 @@ Seen 691 time(s) in 32 run(s).
 | inspect | step 4: goto /marketplace/ | 1 | 200 | 424 ms | 161 ms | — |
 | inspect | scroll: +783px in 18 wheel steps, 797 ms | 4 | 200 | 441–488 ms | 3056–183074 ms | — |
 | inspect | step 3: snapshot | 4 | 200 | 317–1273 ms | 74040–175635 ms | — |
-| inspect | step 1: goto /reel/ | 3 | 200 | 617–825 ms | 6115–7601 ms | — |
+| inspect | step 1: goto /reel/ | 4 | 200 | 617–825 ms | 6115–12853 ms | — |
 | inspect | step 4: dwell 10.63s | 1 | 200 | 311 ms | 1798 ms | — |
 | inspect | step 65: clickRole button "…" | 2 | 200 | 296–374 ms | 3045–7843 ms | — |
-| inspect | clickAny: 1 link /see owner profile$/ | 37 | 200 | 304–2506 ms | 542–473886 ms | — |
+| inspect | clickAny: 1 link /see owner profile$/ | 38 | 200 | 304–2506 ms | 542–473886 ms | — |
 | inspect | step 71: goto /reel/ | 14 | 200 | 312–664 ms | 7676–21182 ms | — |
 | inspect | step 72: clickRole button "…" | 1 | 200 | 314 ms | 11252 ms | — |
 | inspect | step 4: scrollIn heading "…" 2-3 x 300-500px | 1 | 200 | 324 ms | 590 ms | — |
@@ -230,6 +230,13 @@ Seen 691 time(s) in 32 run(s).
 | warmup | step 16: goto /marketplace/you/selling | 2 | 200 | 700–902 ms | 9235–14460 ms | — |
 | warmup | step 17: dwell 2-4s | 5 | 200 | 359–1372 ms | 14831–87006 ms | — |
 | warmup | scroll: +463px in 14 wheel steps, 1031 ms | 1 | 200 | 1368 ms | 630 ms | — |
+| inspect | step 3: dwell 24s | 1 | 200 | 377 ms | 5937 ms | — |
+| inspect | step 4: clickRole button "…" | 1 | 200 | 372 ms | 7572 ms | — |
+| inspect | step 7: dwell 7s | 2 | 200 | 363–398 ms | 3035–3464 ms | — |
+| inspect | step 10: dwell 21s | 1 | 200 | 374 ms | 5383 ms | — |
+| inspect | step 15: clickRole button "…" | 1 | 200 | 361 ms | 8840 ms | — |
+| inspect | step 17: clickRole button "…" | 2 | 200 | 382–588 ms | 2491–3492 ms | — |
+| inspect | step 20: dwell 2s | 12 | 200 | 324–2861 ms | 7984–478879 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

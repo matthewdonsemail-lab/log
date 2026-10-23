@@ -13,7 +13,7 @@
 | Called from | `MAWVerifyThreadCutover` |
 | rea | `ev_2ef4fcf81840e4c44dfd19b7c86b9e3e65429109c06595cfc96262bcea9f2bc2` |
 
-Seen 110 time(s) in 29 run(s).
+Seen 112 time(s) in 30 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -40,7 +40,7 @@ Seen 110 time(s) in 29 run(s).
 | inspect | step 22: goto /marketplace/ | 1 | 200 | 573 ms | 6267 ms | — |
 | inspect | step 27: goto / | 1 | 200 | 549 ms | 5270 ms | — |
 | inspect | step 4: goto /marketplace/ | 1 | 200 | 444 ms | 5803 ms | — |
-| inspect | step 1: goto /reel/ | 3 | 200 | 339–353 ms | 3408–4338 ms | — |
+| inspect | step 1: goto /reel/ | 4 | 200 | 339–386 ms | 3408–8805 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 328 ms | 4281 ms | — |
 | inspect | step 14: goto /reel/<id> | 1 | 200 | 1714 ms | 4163 ms | — |
 | inspect | step 23: goto /reel/<id> | 1 | 200 | 328 ms | 5005 ms | — |
@@ -86,6 +86,7 @@ Seen 110 time(s) in 29 run(s).
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 379 ms | 3909 ms | — |
 | warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 578 ms | 5794 ms | — |
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 391 ms | 3744 ms | — |
+| inspect | step 8: goto /reel/<id> | 1 | 200 | 403 ms | 5374 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

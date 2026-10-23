@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_df4801d859b5f78b7eb932fd4396f4fb50ed2d1b7b5558f6ee7642b19fc8650c` |
+| rea | `ev_d7f46c8cc1f3fbd68a82bc46b70630e2eb1283ceba774729ad62ba506a833c48` |
 
-Seen 118 time(s) in 33 run(s).
+Seen 120 time(s) in 34 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -41,7 +41,7 @@ Seen 118 time(s) in 33 run(s).
 | inspect | step 22: goto /marketplace/ | 1 | 200 | 548 ms | 1536 ms | — |
 | inspect | step 27: goto / | 1 | 200 | 886 ms | 770 ms | — |
 | inspect | step 4: goto /marketplace/ | 1 | 200 | 7230 ms | 7678 ms | — |
-| inspect | step 1: goto /reel/ | 3 | 200 | 415–497 ms | 1357–1504 ms | — |
+| inspect | step 1: goto /reel/ | 4 | 200 | 386–497 ms | 1357–1781 ms | — |
 | inspect | clickAny: 1 link /see owner profile$/ | 2 | 200 | 301–4072 ms | 366–3657 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 338 ms | 2483 ms | — |
 | inspect | step 14: goto /reel/<id> | 1 | 200 | 357 ms | 635 ms | — |
@@ -87,6 +87,7 @@ Seen 118 time(s) in 33 run(s).
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 437 ms | 806 ms | — |
 | warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 455 ms | 944 ms | — |
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 451 ms | 808 ms | — |
+| inspect | step 8: goto /reel/<id> | 1 | 200 | 437 ms | 762 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

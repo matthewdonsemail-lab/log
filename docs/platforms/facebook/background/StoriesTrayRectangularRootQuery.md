@@ -36,7 +36,7 @@ Seen 19 time(s) in 12 run(s).
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 948 ms | 15223 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 797 ms | 7204 ms | — |
 
-### What it sent and what came back (the newest 3 from our runs)
+### What it sent and what came back (the newest 2 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -274,126 +274,6 @@ Answered:
     "server_metadata": {
       "request_start_time_ms": 1792742396622,
       "time_at_flush_ms": 1792742396947
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261023T045453_61594063207669**, openAny: read /marketplace/item/<id>/: 200, 948 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "StoriesTrayRectangularRootQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "blur": 10,
-    "bucketsToFetch": 6,
-    "isFbNotesIncluded": false,
-    "scale": 1,
-    "__relay_internal__pv__StoriesTrayTileCoverImageWidthrelayprovider": 110,
-    "__relay_internal__pv__StoriesTrayTileCoverImageHeightrelayprovider": 160,
-    "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": false,
-    "__relay_internal__pv__StoriesTrayTileShouldSkipPrefetchImageURIrelayprovider": false,
-    "__relay_internal__pv__StoriesTrayProfessionalInset3DEnabledrelayprovider": true,
-    "__relay_internal__pv__StoriesShouldEnableVideoAutoplayrelayprovider": true,
-    "__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider": false
-  },
-  "doc_id": "27831542276468324"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "me": {
-      "__typename": "User",
-      "unified_stories_buckets": {
-        "edges": [
-          {
-            "node": {
-              "__typename": "DirectMessageThreadBucket",
-              "__isStoryBucket": "DirectMessageThreadBucket",
-              "id": "122126439807468773",
-              "unified_stories": {
-                "nodes": [],
-                "is_empty": true
-              },
-              "first_story_to_show": null,
-              "story_bucket_owner": {
-                "__typename": "User",
-                "profilePic": {
-                  "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg?stp=c239.0.950.951a_cp0_dst-jpg_tt6&cstp=mx950x951&ctp=s40x40&_nc_cat=105&ccb=1-7&_nc_sid=e99d92&_nc_ohc=8hLmZGt4kLwQ7kNvwE6bxJw&_nc_oc=AdqzfI05YFO4WVkHHaoOX7NfkF0BMZceA_z57oIowgpfBIwIKrM5VIHRnNOHr1H3XWY&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=6EFm-S9U6ycWKgPjW7pUBw&_nc_ss=792a8&oh=00_AQO3… (454 chars)"
-                },
-                "__isNode": "User",
-                "id": "61594063207669",
-                "is_viewer_friend": false,
-                "gender": "FEMALE",
-                "name": "Bethlehem Trash",
-                "profile_picture": {
-                  "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg?stp=c239.0.950.951a_cp0_dst-jpg_tt6&cstp=mx950x951&ctp=s40x40&_nc_cat=105&ccb=1-7&_nc_sid=e99d92&_nc_ohc=8hLmZGt4kLwQ7kNvwE6bxJw&_nc_oc=AdqzfI05YFO4WVkHHaoOX7NfkF0BMZceA_z57oIowgpfBIwIKrM5VIHRnNOHr1H3XWY&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=6EFm-S9U6ycWKgPjW7pUBw&_nc_ss=792a8&oh=00_AQO3… (454 chars)"
-                },
-                "coverImage": {
-                  "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg?stp=c387.0.654.951a_dst-jpg_tt6&cstp=mx654x951&ctp=s160x160&_nc_cat=105&ccb=1-7&_nc_sid=e99d92&_nc_ohc=8hLmZGt4kLwQ7kNvwE6bxJw&_nc_oc=AdqzfI05YFO4WVkHHaoOX7NfkF0BMZceA_z57oIowgpfBIwIKrM5VIHRnNOHr1H3XWY&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=6EFm-S9U6ycWKgPjW7pUBw&_nc_ss=792a8&oh=00_AQOouB… (452 chars)"
-                }
-              },
-              "story_bucket_type": "STORY",
-              "is_bucket_seen_by_viewer": true,
-              "unified_stories_with_notes": {
-                "edges": [],
-                "nodes": []
-              },
-              "can_viewer_post": true,
-              "should_show_close_friend_badge": false,
-              "ranking_tracking_string": "{\"request_id\":\"136959db-1fad-42ad-8252-b67c0a5f5d2c\",\"bucket_id\":\"122126439807468773\",\"owner_id\":\"61594063207669\",\"scored_time\":0,\"ranker_join_key\":\"136959db-1fad-42ad-8252-b67c0a5f5d2c\",\"raas_position\":0,\"raas_newly_scored_position\":0,\"random_rate\":0,\"usecase_id\":\"1\",\"is_suggested\":false,\"viewstate_token\":\"{\\\"shardManagerScope\\\":\\\"rva\\\",\\\"snapshotId\\\":6729382173318379007,\\\"versionId\\\":0,\\\"creatio… (421 chars)",
-              "thumbnail_story_to_show": null,
-              "is_bucket_live": false
-            },
-            "cursor": "NjE1OTQwNjMyMDc2Njk6MToxNzkyNzMxNTIwOjEyMjEyNjQzOTgwNzQ2ODc3MzotMTpydmE6NjcyOTM4MjE3MzMxODM3OTAwNzowOjE3OTI3MzE1MjA6OjA="
-          }
-        ],
-        "page_info": {
-          "end_cursor": "NjE1OTQwNjMyMDc2Njk6MToxNzkyNzMxNTIwOjEyMjEyNjQzOTgwNzQ2ODc3MzotMTpydmE6NjcyOTM4MjE3MzMxODM3OTAwNzowOjE3OTI3MzE1MjA6OjA=",
-          "has_next_page": false
-        }
-      },
-      "id": "61594063207669",
-      "profilePicture": {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg?stp=c239.0.950.951a_dst-jpg_tt6&cstp=mx950x951&ctp=s160x160&_nc_cat=105&ccb=1-7&_nc_sid=e99d92&_nc_ohc=8hLmZGt4kLwQ7kNvwE6bxJw&_nc_oc=AdqzfI05YFO4WVkHHaoOX7NfkF0BMZceA_z57oIowgpfBIwIKrM5VIHRnNOHr1H3XWY&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=6EFm-S9U6ycWKgPjW7pUBw&_nc_ss=792a8&oh=00_AQOCar… (452 chars)"
-      }
-    },
-    "viewer": {
-      "actor": {
-        "__typename": "User",
-        "id": "61594063207669"
-      }
-    }
-  },
-  "extensions": {
-    "prefetch_uris_v2": [
-      {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg?stp=c239.0.950.951a_dst-jpg_tt6&cstp=mx950x951&ctp=s160x160&_nc_cat=105&ccb=1-7&_nc_sid=e99d92&_nc_ohc=8hLmZGt4kLwQ7kNvwE6bxJw&_nc_oc=AdqzfI05YFO4WVkHHaoOX7NfkF0BMZceA_z57oIowgpfBIwIKrM5VIHRnNOHr1H3XWY&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=6EFm-S9U6ycWKgPjW7pUBw&_nc_ss=792a8&oh=00_AQOCar… (452 chars)",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
-        "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg?stp=c239.0.950.951a_cp0_dst-jpg_tt6&cstp=mx950x951&ctp=s40x40&_nc_cat=105&ccb=1-7&_nc_sid=e99d92&_nc_ohc=8hLmZGt4kLwQ7kNvwE6bxJw&_nc_oc=AdqzfI05YFO4WVkHHaoOX7NfkF0BMZceA_z57oIowgpfBIwIKrM5VIHRnNOHr1H3XWY&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=6EFm-S9U6ycWKgPjW7pUBw&_nc_ss=792a8&oh=00_AQO3… (454 chars)",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      }
-    ],
-    "server_metadata": {
-      "request_start_time_ms": 1792731520978,
-      "time_at_flush_ms": 1792731521152
     },
     "is_final": true
   }

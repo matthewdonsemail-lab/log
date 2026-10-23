@@ -13,7 +13,7 @@
 | Called from | `ProfileCometHeader.react` |
 | rea | `ev_4cedb55954fe0c35463d9aac371107df285f48cd40a1dfe186a84c7c4647ff7d` |
 
-Seen 5 time(s) in 3 run(s).
+Seen 6 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -22,12 +22,13 @@ Seen 5 time(s) in 3 run(s).
 | inspect | step 8: clickAny 1 x link /see owner profile$/ | 1 | 200 | 757 ms | 1915 ms | — |
 | inspect | step 19: clickAny 1 x link /see owner profile$/ | 1 | 200 | 610 ms | 2108 ms | — |
 | inspect | step 7: goto / | 1 | 200 | 994 ms | 118255 ms | — |
+| inspect | step 6: clickAny 1 x link /see owner profile$/ | 1 | 200 | 1444 ms | 2683 ms | — |
 
 ### What it sent and what came back (the newest 1 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T045453_61594063207669**, step 7: goto /: 200, 994 ms
+**runs/inspect/20261023T080801_61594063207669**, step 6: clickAny 1 x link /see owner profile$/: 200, 1444 ms
 
 Sent:
 
@@ -38,10 +39,10 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "scale": 1,
-    "selectedID": "61556829712306",
+    "selectedID": "100078448742456",
     "selectedSpaceType": "profile",
     "shouldUseFXIMProfilePicEditor": false,
-    "userID": "61556829712306"
+    "userID": "100078448742456"
   },
   "doc_id": "28621615384199313"
 }
@@ -61,31 +62,31 @@ Answered:
           "nux": null,
           "restriction_violation_status": "No Violations.",
           "dsa16_report_entrypoint": "profile",
-          "dsa16_reporting_url": "https://www.facebook.com/profile.php?id=61556829712306",
+          "dsa16_reporting_url": "https://www.facebook.com/profile.php?id=100078448742456",
           "is_dsa16_legal_reporting_enabled": false,
           "legal_reporting_uri": null,
           "legal_reporting_cta_type": null,
-          "rr_removal_viewer_exposure_universe": null,
+          "rr_removal_viewer_exposure_universe": "page_ratings_reviews_removal",
           "rr_removal_business_exposure_universe": null,
           "rr_removal_business_exposure_id": null,
           "__module_operation_ProfileCometHeaderQuery": "(1 fields)",
           "__module_component_ProfileCometHeaderQuery": "(1 fields)"
         },
-        "id": "61556829712306",
+        "id": "100078448742456",
         "profile_plus_post_transition_modal": null
       }
     },
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/490717431_122234604848227657_5345076135601296617_n.jpg?stp=dst-jpg_fb50_s320x320_tt6&_nc_cat=107&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=bR6Z9oNseYcQ7kNvwH_95yC&_nc_oc=AdqKCmumXMkxRPT9cwcl23jwqljRKMV2xThP8u6SB4iRwE6D7kSPLf_KLqbJVkpFDkA&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=E6HJsEOlZqO8WQbsBzj41w&_nc_ss=792a8&oh=00_AQNNG0dvQdcgs4r7Ux_YPMeNPGhyY0xaP4DE… (422 chars)",
+          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/481331896_638977285393891_3209968374649310659_n.jpg?stp=dst-jpg_tt6&cstp=mx1152x2048&ctp=s960x960&_nc_cat=102&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=7z4ThVaso4MQ7kNvwGoXB17&_nc_oc=Adq55W4ALAl_3jBxD5EQVHij95xJwzduDX0Bt4AaUGiiexcn6bcj9E_as8A-vfPBfPM&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=nKnRbLAnMvw_fP3PnB4eTA&_nc_ss=792a8&oh=00_AQMZwni_OGXqgUtQmvzprmt… (435 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/490717431_122234604848227657_5345076135601296617_n.jpg?stp=dst-jpg_tt6&cstp=mx720x1106&ctp=s960x960&_nc_cat=107&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=bR6Z9oNseYcQ7kNvwH_95yC&_nc_oc=AdqKCmumXMkxRPT9cwcl23jwqljRKMV2xThP8u6SB4iRwE6D7kSPLf_KLqbJVkpFDkA&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=E6HJsEOlZqO8WQbsBzj41w&_nc_ss=792a8&oh=00_AQMRXO56jun9pJMgM5UZb… (437 chars)",
+          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/481331896_638977285393891_3209968374649310659_n.jpg?stp=dst-jpg_fb50_s180x540_tt6&_nc_cat=102&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=7z4ThVaso4MQ7kNvwGoXB17&_nc_oc=Adq55W4ALAl_3jBxD5EQVHij95xJwzduDX0Bt4AaUGiiexcn6bcj9E_as8A-vfPBfPM&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=nKnRbLAnMvw_fP3PnB4eTA&_nc_ss=792a8&oh=00_AQNIitrv2uTbTZxVS1Nq1rG52ZynKMuztnnkvcW… (419 chars)",
           "label": null,
           "width": null,
           "height": null,
@@ -93,15 +94,15 @@ Answered:
         }
       ],
       "server_metadata": {
-        "request_start_time_ms": 1792731782076,
-        "time_at_flush_ms": 1792731782173
+        "request_start_time_ms": 1792742992151,
+        "time_at_flush_ms": 1792742992284
       },
       "is_final": false,
       "sr_payload": {
         "ddd": {
           "hsrp": "(2 fields)",
           "jsmods": "(3 fields)",
-          "allResources": "(3 items)",
+          "allResources": "(7 items)",
           "tieredResources": "(3 fields)"
         }
       }
@@ -117,10 +118,10 @@ Answered:
         "user"
       ],
       "data": {
-        "name": "Tadele Azmeraw",
-        "gender": "FEMALE",
+        "name": "Duck Therapy",
+        "gender": "NEUTER",
         "wem_private_sharing_bundle": {
-          "private_sharing_control_model_for_user": "(2 fields)"
+          "private_sharing_control_model_for_user": null
         }
       },
       "extensions": {
@@ -128,10 +129,7 @@ Answered:
           "(5 fields)",
           "(5 fields)"
         ],
-        "is_final": false,
-        "sr_payload": {
-          "ddd": "(4 fields)"
-        }
+        "is_final": false
       }
     },
     {
@@ -143,7 +141,7 @@ Answered:
       ],
       "data": {
         "story_bucket": {
-          "nodes": "(0 items)"
+          "nodes": "(1 items)"
         }
       },
       "extensions": {
@@ -163,7 +161,7 @@ Answered:
       ],
       "data": {
         "story_bucket": {
-          "nodes": "(0 items)"
+          "nodes": "(1 items)"
         }
       },
       "extensions": {

@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_0a640203094c1a85a7745155ac19a5b8b07393c2d53538f3ebe48f7e9a69f211` |
+| rea | `ev_12a643860c4d5ed958151ae63a164cda5b0f0dd046397ab65052d4ac7ae079c4` |
 
-Seen 40 time(s) in 14 run(s).
+Seen 43 time(s) in 15 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -43,6 +43,9 @@ Seen 40 time(s) in 14 run(s).
 | inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 1026 ms | 21524 ms | — |
 | warmup | step 3: goto /marketplace/you/selling | 1 | 200 | 697 ms | 16142 ms | — |
 | warmup | step 17: dwell 2-4s | 2 | 200 | 370–458 ms | 638–50657 ms | — |
+| inspect | step 3: dwell 24s | 1 | 200 | 629 ms | 16127 ms | — |
+| inspect | step 10: dwell 21s | 1 | 200 | 371 ms | 15216 ms | — |
+| inspect | step 18: dwell 19s | 1 | 200 | 1289 ms | 11038 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
@@ -96,14 +99,14 @@ Answered:
 }
 ```
 
-**runs/inspect/20261023T045453_61594063207669**, step 4: goto /marketplace/you/selling: 200, 1026 ms
+**runs/inspect/20261023T080801_61594063207669**, step 3: dwell 24s: 200, 629 ms
 
 Sent:
 
 ```json
 {
   "query": "(1 fields)",
-  "body": "(97 fields)"
+  "body": "(101 fields)"
 }
 ```
 
@@ -112,11 +115,11 @@ Answered:
 ```json
 {
   "__ar": 1,
-  "rid": "A4Pxp29FC1Y78wb6FqxBuIy",
+  "rid": "AkUcySC8D1CyDZ7yJM9GzK6",
   "payload": {
     "keys": []
   },
-  "lid": "7699723504138729208"
+  "lid": "7699772318974175663"
 }
 ```
 

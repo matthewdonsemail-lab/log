@@ -13,7 +13,7 @@
 | Called from | `CometSearchBootstrapKeywordsDataSource.query` |
 | rea | `ev_5cb62e3a7cd21788732d77960d11bcea0adc8730aaaa23e6a78c097c1c44c7a6` |
 
-Seen 109 time(s) in 28 run(s).
+Seen 111 time(s) in 29 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -41,7 +41,7 @@ Seen 109 time(s) in 28 run(s).
 | inspect | step 22: goto /marketplace/ | 1 | 200 | 516 ms | 6090 ms | — |
 | inspect | step 27: goto / | 1 | 200 | 472 ms | 3177 ms | — |
 | inspect | step 4: goto /marketplace/ | 1 | 200 | 503 ms | 5697 ms | — |
-| inspect | step 1: goto /reel/ | 3 | 200 | 347–391 ms | 3276–3898 ms | — |
+| inspect | step 1: goto /reel/ | 4 | 200 | 347–715 ms | 3276–7959 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 338 ms | 3839 ms | — |
 | inspect | step 14: goto /reel/<id> | 1 | 200 | 1402 ms | 4123 ms | — |
 | inspect | step 23: goto /reel/<id> | 1 | 200 | 488 ms | 2166 ms | — |
@@ -87,6 +87,7 @@ Seen 109 time(s) in 28 run(s).
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 387 ms | 3704 ms | — |
 | warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 609 ms | 5050 ms | — |
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 414 ms | 3654 ms | — |
+| inspect | step 8: goto /reel/<id> | 1 | 200 | 525 ms | 5015 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

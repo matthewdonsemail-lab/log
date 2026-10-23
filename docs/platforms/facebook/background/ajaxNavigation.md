@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_41150d41c23f90f9b596c82cd168a62757972d2e05c861c553e5ee1d44a00c07` |
+| rea | `ev_1f2efc84d7328617553804a0b324fa57be90f6d575258bd012fdfe013be31ab0` |
 
-Seen 48 time(s) in 13 run(s).
+Seen 49 time(s) in 14 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -55,6 +55,7 @@ Seen 48 time(s) in 13 run(s).
 | inspect | scroll: -161px in 5 wheel steps, 172 ms | 1 | 200 | 565 ms | 833 ms | — |
 | warmup | scroll: -1034px in 22 wheel steps, 1032 ms | 1 | 200 | 450 ms | 971 ms | — |
 | warmup | scroll: +981px in 24 wheel steps, 1672 ms | 1 | 200 | 465 ms | 2215 ms | — |
+| inspect | step 6: clickAny 1 x link /see owner profile$/ | 1 | 200 | 813 ms | 2807 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

@@ -1,0 +1,50 @@
+{
+  "place": "Allentown",
+  "frames": {
+    "before": {
+      "when": "October 21  10:12 AM",
+      "clock": "2:21",
+      "battery": 72,
+      "faces": [
+        {
+          "x": 295,
+          "y": 1035,
+          "w": 110,
+          "h": 145
+        }
+      ]
+    },
+    "action": {
+      "when": "October 21  11:47 AM",
+      "clock": "2:22",
+      "battery": 71,
+      "faces": [
+        {
+          "x": 247,
+          "y": 805,
+          "w": 119,
+          "h": 145
+        },
+        {
+          "x": 688,
+          "y": 798,
+          "w": 125,
+          "h": 170
+        }
+      ]
+    },
+    "after": {
+      "when": "October 21  1:05 PM",
+      "clock": "2:23",
+      "battery": 71,
+      "faces": [
+        {
+          "x": 342,
+          "y": 870,
+          "w": 170,
+          "h": 145
+        }
+      ]
+    }
+  }
+}

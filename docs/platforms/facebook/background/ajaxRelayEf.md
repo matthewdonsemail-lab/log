@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_df4801d859b5f78b7eb932fd4396f4fb50ed2d1b7b5558f6ee7642b19fc8650c` |
+| rea | `ev_d7f46c8cc1f3fbd68a82bc46b70630e2eb1283ceba774729ad62ba506a833c48` |
 
-Seen 926 time(s) in 31 run(s).
+Seen 938 time(s) in 32 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -141,10 +141,10 @@ Seen 926 time(s) in 31 run(s).
 | inspect | scroll: +378px in 10 wheel steps, 875 ms | 1 | 200 | 435 ms | 3663 ms | — |
 | inspect | step 4: goto /marketplace/ | 5 | 200 | 437–533 ms | 11555–14399 ms | — |
 | inspect | scroll: +783px in 18 wheel steps, 797 ms | 10 | 200 | 467–2059 ms | 16561–95364 ms | — |
-| inspect | step 2: clickRole button "…" | 2 | 200 | 324–337 ms | 637–1733 ms | — |
-| inspect | step 1: goto /reel/ | 4 | 200 | 323–1107 ms | 8092–13367 ms | — |
+| inspect | step 2: clickRole button "…" | 3 | 200 | 324–385 ms | 637–1733 ms | — |
+| inspect | step 1: goto /reel/ | 5 | 200 | 323–1107 ms | 8092–15328 ms | — |
 | inspect | step 65: clickRole button "…" | 1 | 200 | 303 ms | 1942 ms | — |
-| inspect | clickAny: 1 link /see owner profile$/ | 8 | 200 | 326–1404 ms | 182–68643 ms | — |
+| inspect | clickAny: 1 link /see owner profile$/ | 9 | 200 | 326–1404 ms | 182–68643 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 322 ms | 11344 ms | — |
 | inspect | clickRole failed: RuntimeError: no visible button "…" | 5 | 200, 0 | 0–343 ms | 17170–101843 ms | — |
 | inspect | step 12: clickAny 1 x link /see owner profile$/ | 1 | 200 | 348 ms | 1852 ms | — |
@@ -227,6 +227,13 @@ Seen 926 time(s) in 31 run(s).
 | warmup | step 17: dwell 2-4s | 6 | 200 | 385–624 ms | 11953–23865 ms | — |
 | warmup | step 18: goto /marketplace/ | 5 | 200 | 371–385 ms | 3807–9645 ms | — |
 | warmup | scroll: +463px in 14 wheel steps, 1031 ms | 2 | 200 | 366–406 ms | 3010–8007 ms | — |
+| inspect | step 3: dwell 24s | 1 | 200 | 637 ms | 18362 ms | — |
+| inspect | step 6: clickAny 1 x link /see owner profile$/ | 1 | 200 | 1358 ms | 1933 ms | — |
+| inspect | step 8: goto /reel/<id> | 2 | 200 | 382–401 ms | 10203–10407 ms | — |
+| inspect | step 14: dwell 3s | 1 | 200 | 1351 ms | 3633 ms | — |
+| inspect | step 15: clickRole button "…" | 2 | 200 | 359–382 ms | 2179–9896 ms | — |
+| inspect | step 18: dwell 19s | 1 | 200 | 371 ms | 19369 ms | — |
+| inspect | step 20: dwell 2s | 1 | 200 | 614 ms | 150413 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

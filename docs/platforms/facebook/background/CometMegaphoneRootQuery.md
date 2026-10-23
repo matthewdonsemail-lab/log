@@ -36,7 +36,7 @@ Seen 19 time(s) in 12 run(s).
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 883 ms | 15210 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 622 ms | 7193 ms | — |
 
-### What it sent and what came back (the newest 3 from our runs)
+### What it sent and what came back (the newest 2 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -110,44 +110,6 @@ Answered:
     "server_metadata": {
       "request_start_time_ms": 1792742396554,
       "time_at_flush_ms": 1792742396610
-    },
-    "is_final": true
-  }
-}
-```
-
-**runs/inspect/20261023T045453_61594063207669**, openAny: read /marketplace/item/<id>/: 200, 883 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometMegaphoneRootQuery",
-  "server_timestamps": "true",
-  "variables": {
-    "first": 1,
-    "scale": 1
-  },
-  "doc_id": "28541893478753857"
-}
-```
-
-Answered:
-
-```json
-{
-  "data": {
-    "viewer": {
-      "megaphonePromotions": {
-        "edges": []
-      }
-    }
-  },
-  "extensions": {
-    "server_metadata": {
-      "request_start_time_ms": 1792731520768,
-      "time_at_flush_ms": 1792731520977
     },
     "is_final": true
   }

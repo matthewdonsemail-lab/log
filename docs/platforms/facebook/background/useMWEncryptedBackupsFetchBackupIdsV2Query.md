@@ -13,7 +13,7 @@
 | Called from | `useMWEncryptedBackupsFetchBackupIdsV2` |
 | rea | `ev_16df7daca80a72c8f44b7a489690336b7def96e564429f0639a122f48023372a` |
 
-Seen 111 time(s) in 30 run(s).
+Seen 113 time(s) in 31 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -41,7 +41,7 @@ Seen 111 time(s) in 30 run(s).
 | inspect | step 22: goto /marketplace/ | 1 | 200 | 572 ms | 6188 ms | — |
 | inspect | step 27: goto / | 1 | 200 | 471 ms | 5193 ms | — |
 | inspect | step 4: goto /marketplace/ | 1 | 200 | 461 ms | 5260 ms | — |
-| inspect | step 1: goto /reel/ | 3 | 200 | 320–361 ms | 3347–4263 ms | — |
+| inspect | step 1: goto /reel/ | 4 | 200 | 320–403 ms | 3347–8937 ms | — |
 | inspect | step 71: goto /reel/ | 1 | 200 | 337 ms | 3941 ms | — |
 | inspect | step 14: goto /reel/<id> | 1 | 200 | 1021 ms | 4953 ms | — |
 | inspect | step 23: goto /reel/<id> | 1 | 200 | 336 ms | 4926 ms | — |
@@ -87,6 +87,7 @@ Seen 111 time(s) in 30 run(s).
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 378 ms | 3715 ms | — |
 | warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 631 ms | 5725 ms | — |
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 378 ms | 3627 ms | — |
+| inspect | step 8: goto /reel/<id> | 1 | 200 | 419 ms | 5604 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

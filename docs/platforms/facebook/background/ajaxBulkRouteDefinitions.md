@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_df4801d859b5f78b7eb932fd4396f4fb50ed2d1b7b5558f6ee7642b19fc8650c` |
+| rea | `ev_d7f46c8cc1f3fbd68a82bc46b70630e2eb1283ceba774729ad62ba506a833c48` |
 
-Seen 1022 time(s) in 30 run(s).
+Seen 1037 time(s) in 31 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -61,7 +61,7 @@ Seen 1022 time(s) in 30 run(s).
 | inspect | step 8: clickRole button "…" | 2 | 200 | 370–409 ms | 1685–3942 ms | — |
 | inspect | step 12: clickRole button "…" | 2 | 200 | 416–531 ms | 572–6606 ms | — |
 | inspect | step 13: wait 8s | 1 | 200 | 410 ms | 10710 ms | — |
-| inspect | step 19: clickRole button "…" | 5 | 200 | 330–1617 ms | 593–46085 ms | — |
+| inspect | step 19: clickRole button "…" | 6 | 200 | 330–1617 ms | 593–46085 ms | — |
 | inspect | step 3: clickRole tab "…" | 4 | 200 | 873–1022 ms | 9768–9774 ms | — |
 | inspect | step 4: clickRole tab "…" | 4 | 200 | 617–787 ms | 5274–7693 ms | — |
 | inspect | clickRole failed: RuntimeError: the element kept moving under the cursor: the point is on  | 2 | 200 | 419–568 ms | 1771–9124 ms | — |
@@ -179,11 +179,11 @@ Seen 1022 time(s) in 30 run(s).
 | inspect | scroll: +386px in 9 wheel steps, 469 ms | 1 | 200 | 536 ms | 3489 ms | — |
 | inspect | scroll: +411px in 10 wheel steps, 484 ms | 1 | 200 | 525 ms | 3981 ms | — |
 | inspect | step 4: goto /marketplace/ | 8 | 200 | 453–636 ms | 4581–6383 ms | — |
-| inspect | step 1: goto /reel/ | 11 | 200 | 332–519 ms | 2079–4655 ms | — |
+| inspect | step 1: goto /reel/ | 13 | 200 | 332–741 ms | 2079–7926 ms | — |
 | inspect | step 7: clickRole button "…" | 2 | 200 | 386–397 ms | 523–1138 ms | — |
-| inspect | step 9: clickRole button "…" | 2 | 200 | 409–510 ms | 729–1200 ms | — |
-| inspect | step 11: clickRole button "…" | 2 | 200 | 395–552 ms | 561–1606 ms | — |
-| inspect | step 13: clickRole button "…" | 1 | 200 | 971 ms | 495 ms | — |
+| inspect | step 9: clickRole button "…" | 3 | 200 | 382–510 ms | 729–1680 ms | — |
+| inspect | step 11: clickRole button "…" | 3 | 200 | 394–552 ms | 561–1606 ms | — |
+| inspect | step 13: clickRole button "…" | 2 | 200 | 404–971 ms | 495–1146 ms | — |
 | inspect | step 16: clickRole button "…" | 4 | 200 | 353–1092 ms | 560–3567 ms | — |
 | inspect | step 18: clickRole button "…" | 3 | 200 | 332–371 ms | 429–2446 ms | — |
 | inspect | step 21: clickRole button "…" | 1 | 200 | 647 ms | 367 ms | — |
@@ -223,9 +223,9 @@ Seen 1022 time(s) in 30 run(s).
 | inspect | scroll: +353px in 8 wheel steps, 265 ms | 1 | 200 | 357 ms | 4499 ms | — |
 | inspect | step 10: clickRole button "…" | 1 | 200 | 474 ms | 1439 ms | — |
 | inspect | step 12: clickAny 1 x link /see owner profile$/ | 2 | 200 | 401–458 ms | 2970–2972 ms | — |
-| inspect | clickAny: 1 link /see owner profile$/ | 7 | 200 | 544–1044 ms | 300–6934 ms | — |
+| inspect | clickAny: 1 link /see owner profile$/ | 10 | 200 | 472–1044 ms | 192–6934 ms | — |
 | inspect | step 14: goto /reel/<id> | 2 | 200 | 1556–1739 ms | 4096–4097 ms | — |
-| inspect | step 15: clickRole button "…" | 1 | 200 | 365 ms | 1250 ms | — |
+| inspect | step 15: clickRole button "…" | 2 | 200 | 365–535 ms | 1250–1381 ms | — |
 | inspect | step 21: clickAny 1 x link /see owner profile$/ | 2 | 200 | 407–432 ms | 2575–2576 ms | — |
 | inspect | step 23: goto /reel/<id> | 2 | 200 | 402–549 ms | 1504–2037 ms | — |
 | inspect | step 24: clickRole button "…" | 1 | 200 | 373 ms | 1436 ms | — |
@@ -300,6 +300,10 @@ Seen 1022 time(s) in 30 run(s).
 | warmup | step 14: goto /marketplace/ | 6 | 200 | 394–435 ms | 1138–2114 ms | — |
 | warmup | step 16: goto /marketplace/you/selling | 3 | 200 | 424–639 ms | 4867–5081 ms | — |
 | warmup | step 18: goto /marketplace/ | 6 | 200 | 407–635 ms | 1140–2450 ms | — |
+| inspect | step 4: clickRole button "…" | 1 | 200 | 407 ms | 1234 ms | — |
+| inspect | step 6: clickAny 1 x link /see owner profile$/ | 1 | 200 | 405 ms | 4303 ms | — |
+| inspect | step 8: goto /reel/<id> | 2 | 200 | 532–591 ms | 4950–5037 ms | — |
+| inspect | step 17: clickRole button "…" | 1 | 200 | 687 ms | 1565 ms | — |
 
 <!-- facts:end -->
 
