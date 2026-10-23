@@ -136,11 +136,23 @@ export function goalEvents(runDir: string): GoalEvent[] {
   return out
 }
 
-export function goalProgress(session: Pick<CurrentInspect, 'runDir' | 'goal'>): GoalProgress {
-  return goalProgressOf(session.goal ?? null, runReadings(session.runDir), goalEvents(session.runDir))
+export function lastStepOf(runDir: string): string | null {
+  const stepsDir = join(runDir, 'steps')
+  if (!existsSync(stepsDir)) return null
+  return readdirSync(stepsDir).sort().at(-1) ?? null
 }
 
-export function addGoalEvent(session: Pick<CurrentInspect, 'runDir' | 'goal' | 'account'>, event: GoalEvent): GoalProgress {
+export function stepBefore(runDir: string, step: string | null): string | null {
+  const stepsDir = join(runDir, 'steps')
+  if (!step || !existsSync(stepsDir)) return null
+  return readdirSync(stepsDir).filter((s) => s.localeCompare(step) < 0).sort().at(-1) ?? null
+}
+
+export function goalProgress(session: Pick<CurrentInspect, 'runDir' | 'goal' | 'goalSince'>): GoalProgress {
+  return goalProgressOf(session.goal ?? null, runReadings(session.runDir), goalEvents(session.runDir), session.goalSince ?? null)
+}
+
+export function addGoalEvent(session: Pick<CurrentInspect, 'runDir' | 'goal' | 'goalSince' | 'account'>, event: GoalEvent): GoalProgress {
   appendFileSync(join(session.runDir, GOAL_EVENTS_FILE), `${JSON.stringify(event)}\n`)
   const progress = goalProgress(session)
   writeFileSync(join(session.runDir, GOAL_FINDINGS_FILE), peeMarkdown(progress, session.account))

@@ -5406,3 +5406,18 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: rule one of the stack is now "if we don't know, we do this", in seven steps: read the internal API (what we sent and what came back, the answers decide), collate everything about the moment, ask SubQ what it means, say it loudly, keep going until the goal is reached, write what went wrong as P.E.E. with how it was fixed, and name the state. It replaces the top section of AGENTS.md (rule 73's "always read" is its first step), opens README.md above everything else with the inspect commands that do it, and is the first MCP instruction (rules 73-76), with rule 30 second. Rule 76 has its dated line; `RULES_REVIEWED_THROUGH` is 76, and the agentRules test checks the first principle is rule one.
 Why: matt: "make it so that it's the number one rule of the AGENTS.md and README.md that if we don't know we do this."
 Checked: AGENTS.md and README.md each have one "Rule one" section, first; `bun run docs:build` is up to date (the README's generated section is unchanged); `bun run check` passes with 875 tests, the agentRules test included.
+
+## 2026-10-23 05:07Z · feat/inspectReading
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `src/browser/inspect/client.ts`: added function lastStepOf, function stepBefore · changed function goalProgress, function addGoalEvent
+- `src/browser/inspect/goal.test.ts`: added test "a goal set later counts only the readings after it was set, so a step that reached an earlier goal does not reach it" · changed test "a finding is written from the step reading, then fixed, and the P.E.E. file and the hook follow"
+- `src/browser/inspect/helpers/goal.ts`: changed function goalProgressOf
+- `src/browser/inspect/types.ts`: changed interface CurrentInspect
+- `src/cli/inspect/index.ts`: changed function goalText, function readInspectStep, const inspectCommand
+- `src/subq/stepReading/stepReading.test.ts`: added test "the create page says whether the account may post (marketplace_new_seller_can_post_item) and a feed listing whether it is a partner listing, read from the page itself"
+- `src/subq/stepReading/types.ts`: changed const DOCUMENT_FIELDS
+
+What changed: a goal set with `log inspect goal --set` records the step it was set after (`goalSince`), and only readings after it count, so a new goal is no longer "reached" by a step that reached the one before (`goalProgressOf(..., since)`, `lastStepOf`, `stepBefore`; a per-step `do --goal` counts that step only). The Facebook page reads also take `marketplace_new_seller_can_post_item` (the create page's may-post flag) and a listing's `product_details_type`, `partner_brand_name` and `partner_listing_location`.
+Why: matt's inspect run on Bethlehem (20261023T045453): the second and third goals were said reached at step 01 (goal met 98%, the first goal's "Limit reached"), while SubQ said they were not. `marketplace_new_seller_can_post_item` went true (2026-10-22) to false today with `marketplace_listing_creation_limit_reason` null on both days, so it is the posting-limit signal SubQ needs; Today's picks were European partner listings (Catawiki, buycycle-es) that SubQ missed on the Marketplace page because these fields weren't read.
+Checked: new tests: a later goal ignores an earlier reached step; the create page HTML gives the may-post flag and the partner fields. `bun run check` passes with 877 tests.

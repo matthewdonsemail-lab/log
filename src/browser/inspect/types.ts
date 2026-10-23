@@ -36,6 +36,7 @@ export interface CurrentInspect {
   startedAt: string
   messengerPin?: boolean
   goal?: string | null
+  goalSince?: string | null
 }
 
 export interface InspectCommand {

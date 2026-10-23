@@ -43,9 +43,9 @@ export function evidenceOf(reading: StepReading): string[] {
   return [...meaning, ...flagged, ...rest].map((line) => `SubQ on ${reading.step}: ${line}`)
 }
 
-export function goalProgressOf(goal: string | null, readings: StepReading[], events: GoalEvent[]): GoalProgress {
+export function goalProgressOf(goal: string | null, readings: StepReading[], events: GoalEvent[], since: string | null = null): GoalProgress {
   const findings = foldFindings(events)
-  const sorted = readings.slice().sort((a, b) => a.step.localeCompare(b.step))
+  const sorted = readings.filter((r) => !since || r.step.localeCompare(since) > 0).sort((a, b) => a.step.localeCompare(b.step))
   const lastStep = sorted.at(-1)?.step ?? null
   const base: GoalProgress = { goal, status: goal ? 'open' : 'none', lastStep, reachedAt: null, needsFinding: null, personNeeded: null, unfixed: [], findings }
   if (!goal) return base

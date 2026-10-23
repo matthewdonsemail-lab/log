@@ -16,7 +16,7 @@ export const SECRET_PARAMS = /^(fb_dtsg|fb_dtsg_ag|lsd|jazoest|__user|__a|__req|
 export const ANSWER_SECRETS = /^(fb_dtsg|lsd|jazoest|access_token|csrf_token|password)$/i
 
 export const DOCUMENT_FIELDS: Record<string, readonly string[]> = {
-  facebook: ['sell_location', 'buy_location', 'marketplace_listing_creation_limit_reason', 'current_marketplace']
+  facebook: ['sell_location', 'buy_location', 'marketplace_listing_creation_limit_reason', 'marketplace_new_seller_can_post_item', 'current_marketplace', 'product_details_type', 'partner_brand_name', 'partner_listing_location']
 }
 
 export const CODE_LOADING_PATHS = /^\/(static_resources|ajax\/bootloader-endpoint|ajax\/bulk-route-definitions|ajax\/route-definition|btmanifest|rsrc\.php)(\/|$)/i

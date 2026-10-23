@@ -1,9 +1,9 @@
 import { spawn } from "node:child_process";
 import { closeSync, existsSync, mkdirSync, openSync, readFileSync, statSync } from "node:fs";
 import { homedir } from "node:os";
-import { dirname, join } from "node:path";
+import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { addGoalEvent, clearCurrentInspect, currentInspectPath, evidenceOf, GOAL_FINDINGS_FILE, goalEvents, goalLine, goalProgress, goalProgressOf, INSPECT_ACTIONS, LIVE_ACTIONS, openInspects, parseInspectAction, peeMarkdown, readCurrentInspect, renderInspectStep, runReadings, writeCurrentInspect } from "../../browser/inspect/index.ts";
+import { addGoalEvent, clearCurrentInspect, currentInspectPath, evidenceOf, GOAL_FINDINGS_FILE, goalEvents, goalLine, goalProgress, goalProgressOf, INSPECT_ACTIONS, lastStepOf, stepBefore, LIVE_ACTIONS, openInspects, parseInspectAction, peeMarkdown, readCurrentInspect, renderInspectStep, runReadings, writeCurrentInspect } from "../../browser/inspect/index.ts";
 import type { CurrentInspect } from "../../browser/inspect/index.ts";
 import { findAccount } from "../../marketplace/socialAccount/index.ts";
 import { inspectRuns, mapAllInspectRuns, mapInspectRun } from "../../rea/inspectMap/index.ts";
@@ -156,9 +156,9 @@ export function stepAccountOf(account: FacebookAccount | null, name: string): { 
   return { name: account.accountName, platform: (account.platform ?? "facebook").toLowerCase(), homeCity: account.homeCity, homeCountry: account.homeCountry, browser: browserFor(account).driver };
 }
 
-export function goalText(accountName: string, runDir: string, goal: string | null): string | null {
+export function goalText(accountName: string, runDir: string, goal: string | null, since: string | null = null): string | null {
   if (!goal) return null;
-  const note = goalLine(accountName, goalProgressOf(goal, runReadings(runDir), goalEvents(runDir)));
+  const note = goalLine(accountName, goalProgressOf(goal, runReadings(runDir), goalEvents(runDir), since));
   return note ? `>>> GOAL: ${note.line}` : null;
 }
 
@@ -171,12 +171,12 @@ async function pickSession(context: CommandContext, wanted: unknown): Promise<Cu
   return { code: 1, stderr: name ? `log inspect: no session is open for ${name}` : `log inspect: ${open.length} sessions are open (${open.map((o) => o.account).join(", ")}): add --account <name>` };
 }
 
-export async function readInspectStep(context: CommandContext, accountName: string, folder: string | null, goal: string | null): Promise<{ reading: StepReading | null; text: string }> {
+export async function readInspectStep(context: CommandContext, accountName: string, folder: string | null, goal: string | null, since: string | null = null): Promise<{ reading: StepReading | null; text: string }> {
   if (!folder || !existsSync(folder)) return { reading: null, text: ">>> No recording for this step, so nothing was read (rule 73)." };
   const account = await findAccount(context.twenty, accountName).catch(() => null);
   try {
     const reading = await readStep(folder, { goal, account: stepAccountOf(account, accountName), decisions: context.decisions, now: context.now });
-    const goalNote = goalText(accountName, dirname(dirname(folder)), goal);
+    const goalNote = goalText(accountName, dirname(dirname(folder)), goal, since);
     return { reading, text: [loudText(reading), ...(goalNote ? [goalNote] : []), timelineText(reading)].join("\n\n") };
   } catch (error) {
     return { reading: null, text: `>>> The step could not be read (rule 73): ${error instanceof Error ? error.message : String(error)}` };
@@ -258,7 +258,8 @@ export const inspectCommand: Command = {
       const reply = await context.sendInspect(current, action.action, action.args, timeout * 1000);
       if (!reply) return { code: 1, stderr: `log inspect: no reply from the session in ${timeout} s (is it still open? ${current.runDir})` };
       const goal = typeof parsed.flags["goal"] === "string" ? parsed.flags["goal"] : current.goal ?? null;
-      const read = reply.stopped ? null : await readInspectStep(context, current.account, reply.folder ?? null, goal);
+      const since = typeof parsed.flags["goal"] === "string" ? stepBefore(current.runDir, reply.folder ? basename(reply.folder) : null) : current.goalSince ?? null;
+      const read = reply.stopped ? null : await readInspectStep(context, current.account, reply.folder ?? null, goal, since);
       if (parsed.flags["json"]) return { code: reply.ok === false ? 1 : 0, stdout: JSON.stringify({ ...reply, reading: read?.reading ?? null }, null, 2) };
       const rendered = renderInspectStep(reply);
       return { code: reply.ok === false ? 1 : 0, stdout: read ? `${read.text}\n\n${rendered}` : rendered };
@@ -279,8 +280,10 @@ export const inspectCommand: Command = {
       if (typeof parsed.flags["set"] === "string") {
         const goal = parsed.flags["set"].trim();
         if (!goal) return { code: 1, stderr: "log inspect: --set needs the goal in plain words" };
-        writeCurrentInspect({ ...session, goal });
+        const goalSince = lastStepOf(session.runDir);
+        writeCurrentInspect({ ...session, goal, goalSince });
         session.goal = goal;
+        session.goalSince = goalSince;
       }
       const progress = goalProgress(session);
       if (parsed.flags["json"]) return { code: 0, stdout: JSON.stringify(progress, null, 2) };

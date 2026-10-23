@@ -7,7 +7,7 @@ import { readingAt } from '../../browser/inspect/helpers/browserStates'
 import { runCli } from '../../cli/runner/index'
 import { marketplaceFixture } from '../../twenty/graphql/helpers/marketplaceFixture'
 import type { DecisionRequest, DecisionResponse } from '../decisions/types'
-import { bundleOf, decisionOf, exchangesOf, exchangeTimeline, fitBundle, loudText, questionsOf, readStep, SUBQ_STEP_MODEL } from './index'
+import { bundleOf, decisionOf, DOCUMENT_FIELDS, documentAnswerOf, exchangesOf, exchangeTimeline, fitBundle, loudText, questionsOf, readStep, SUBQ_STEP_MODEL } from './index'
 import type { StepAccount, StepBundle, StepTaken } from './index'
 
 const T0 = Date.parse('2026-10-22T10:55:16.000Z')
@@ -64,6 +64,14 @@ describe('the internal API of a step, read by code (rule 73)', () => {
     const text = JSON.stringify(exchanges)
     expect(text).not.toContain('SECRET')
     expect(text).not.toContain('c_user')
+  })
+
+  test('the create page says whether the account may post (marketplace_new_seller_can_post_item) and a feed listing whether it is a partner listing, read from the page itself', () => {
+    const html = '<title>Facebook</title><script>{"marketplace_new_seller_can_post_item":false,"marketplace_listing_creation_limit_reason":null,"product_details_type":"PARTNER_LISTING","partner_brand_name":"Catawiki","partner_listing_location":"Italy"}</script>'
+    const answer = documentAnswerOf(html, DOCUMENT_FIELDS.facebook!) as { fields: Record<string, unknown> }
+    expect(answer.fields['marketplace_new_seller_can_post_item']).toBe(false)
+    expect(answer.fields['product_details_type']).toBe('PARTNER_LISTING')
+    expect(answer.fields['partner_brand_name']).toBe('Catawiki')
   })
 
   test('the timeline shows what went in and what came back, and only what changed on a repeated call', () => {

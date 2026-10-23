@@ -59,6 +59,13 @@ describe('the goal of an inspect session (rule 75)', () => {
     expect(withFinding.unfixed).toEqual([1])
   })
 
+  test('a goal set later counts only the readings after it was set, so a step that reached an earlier goal does not reach it', () => {
+    const later = goalProgressOf(GOAL, [REACHED, MORE], [], '12_selllocation')
+    expect(later.status).toBe('open')
+    expect(later.reachedAt).toBeNull()
+    expect(goalProgressOf(GOAL, [REACHED, MORE], []).status).toBe('reached')
+  })
+
   test('once reached, every finding must say how it was fixed; then the goal stops holding the turn', () => {
     const reached = goalProgressOf(GOAL, [WRONG, MORE, REACHED], [finding])
     expect(reached.status).toBe('reached')
@@ -106,12 +113,12 @@ describe('log inspect goal and finding', () => {
     const stepDir = join(runDir, 'steps', '04_setlocationBethlehemPa')
     mkdirSync(stepDir, { recursive: true })
     writeFileSync(join(stepDir, 'reading.json'), JSON.stringify(WRONG))
-    writeCurrentInspect({ account: 'galwayOne', runDir, commandsPath: 'c', repliesPath: join(runDir, 'replies.jsonl'), startedAt: '2026-10-23T09:00:00.000Z' })
+    writeCurrentInspect({ account: 'galwayOne', runDir, commandsPath: 'c', repliesPath: join(runDir, 'replies.jsonl'), startedAt: '2026-10-23T09:00:00.000Z', goal: GOAL })
     const out: string[] = []
     const err: string[] = []
     const run = (argv: string[]) => runCli(argv, { twenty: marketplaceFixture(), out: (l) => out.push(l), err: (l) => err.push(l), now: () => new Date('2026-10-23T10:05:00.000Z') })
     try {
-      expect(await run(['inspect', 'goal', '--account', 'galwayOne', '--set', GOAL])).toBe(0)
+      expect(await run(['inspect', 'goal', '--account', 'galwayOne'])).toBe(0)
       expect(out.join('\n')).toContain('step 04_setlocationBethlehemPa went wrong')
       expect(await run(['inspect', 'finding', '--account', 'galwayOne', '--point', 'Typing "Bethlehem, PA" saved the West Bank.'])).toBe(1)
       expect(err.join('\n')).toContain('--explain')
