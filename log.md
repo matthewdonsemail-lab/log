@@ -5455,3 +5455,13 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `log facebook capture --docs` rebuilt the request docs from the 7 runs recorded on 2026-10-23 (one inspect, four warm-ups, two flows on 61594063207669): 49 requests across background, checkpoint, listingForm, login, profile and reels, with their timings and exchanges updated, and one new slice, `useInstreamAdsHaloFetcherQuery`, read by rea in 24 s.
 Why: the pre-push docs gate (rule 27) refused pushing feat/listingCreativeViewer because those 7 runs were newer than the docs; matt asked to push and open the PR.
 Checked: `node scripts/checks/checkFacebookClientDocs.mjs`: 216 requests documented, rea read every GraphQL slice, 0 still need their reasoning written.
+
+## 2026-10-23 12:12Z · feat/listingCreativeViewer
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `skills.md`: edited
+- `skills/nicheCreativeResearch/SKILL.md`: new file
+
+What changed: the new `nicheCreativeResearch` skill writes down the routine behind the junk removal creatives so it runs the same for any niche, industry or offer, in eight steps with junk removal as the worked example: 1 sources (what operators say gets messages, with quotes, numbers and an A/B/C evidence grade), 2 winner listings with signs they get answers, 3 `creatives.jsonl` (every winner image as one line), 4 SubQ's definition of a winner in that niche (contact sheets, at most 4 images a call), 5 the rubric (scene, action, before, after) and spin-outs of matt's concept scored against the winners, 6 generating each frame once, 7 phone media through `listingCreative`, 8 measuring messages per listing. It is indexed in `skills.md`.
+Why: matt: outline how we're exploring different industries and niches, how we built out the creatives, the research and the rubric, so we can analyse content, define what a winner is inside the niche, and use the same logic going into different offers and industries.
+Checked: every figure in it comes from this session's files (`RESEARCH/JUNK_REMOVAL_MARKETPLACE_SOURCES.md`, `creatives.jsonl`, `subqReading.json`, the generation logs). Pre-commit checks pass. Step 8 isn't done for junk removal yet and the skill says so.
