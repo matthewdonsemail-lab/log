@@ -164,8 +164,9 @@ async function runWarmup(
   const output = await toPromise(actor);
   const failure = output.failure;
   if (output.blocked && failure?.issue) await accountIssue(context, account, failure.issue as ErrorCode, failure.error ?? "", base, failure.activity);
+  for (const note of output.noted) stage(context, { ...base, event: "noted", activity: note.activity, ok: false, detail: `${note.failedAt ?? "?"}: ${note.error ?? note.issue}; carried on` });
   stage(context, { ...base, event: failure ? "stopped" : "done", ok: !failure, detail: failure ? `${failure.activity} at ${failure.failedAt ?? "?"}: ${failure.error ?? ""}` : `${output.done.length} activities` });
-  const lines = [`Warm-up on ${base.account}: ${output.done.length}/${activities.length} activities done in one browser${failure ? `; stopped in ${failure.activity} at ${failure.failedAt}` : ""}.`, `Stage log: log facebook warmup stages log --account ${base.account}   (${stageLogPath()})`];
+  const lines = [`Warm-up on ${base.account}: ${output.done.length}/${activities.length} activities done in one browser${failure ? `; stopped in ${failure.activity} at ${failure.failedAt}` : ""}.`, ...output.noted.map((n) => `Noted in ${n.activity} at ${n.failedAt ?? "?"}: ${n.error ?? n.issue} (the warm-up carried on).`), `Stage log: log facebook warmup stages log --account ${base.account}   (${stageLogPath()})`];
   return { code: failure ? 1 : 0, stdout: lines.join("\n") };
 }
 

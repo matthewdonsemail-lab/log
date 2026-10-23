@@ -39,10 +39,11 @@ function hostWith(canPost: boolean) {
 }
 
 describe("the host's warm-up decides each step on Facebook's answer (rule 73)", () => {
-  test("the create page answering marketplace_new_seller_can_post_item false stops the host as marketplaceMayNotPost", async () => {
-    const { actors } = hostWith(false);
+  test("the create page answering marketplace_new_seller_can_post_item false is noted, and the warm-up carries on through the activity", async () => {
+    const { actors, sent } = hostWith(false);
     const outcome = await toPromise(createActor(actors.warmupActivity, { input: { activity: "createAccessCheck", live: true } as never }).start());
-    expect(outcome).toEqual({ kind: "issue", issue: "marketplaceMayNotPost", detail: "s03_gotomarketplaceCreateItem: page /marketplace/create/item answered fields.marketplace_new_seller_can_post_item = false, not true" });
+    expect(outcome).toEqual({ kind: "ok", detail: "noted: marketplaceMayNotPost: s03_gotomarketplaceCreateItem: page /marketplace/create/item answered fields.marketplace_new_seller_can_post_item = false, not true" });
+    expect(sent.map((s) => s.action)).toEqual(["goto", "dwell", "goto", "dwell", "goto", "scroll"]);
   });
 
   test("with the account free to post and its locations at home, the activity is done", async () => {

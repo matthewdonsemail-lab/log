@@ -12,7 +12,7 @@ None.
 
 | # | Step | Does | Confirmed by | Facebook must answer (rule 73) | Recorded |
 | --- | --- | --- | --- | --- | --- |
-| 1 | `s01_goto` | open `https://www.facebook.com/` | — | `FeedComposerCometRootQuery` 2xx: `data.viewer.actor.id` = the account's id | 01_gotoHttpsWwwFacebook, 51188 ms, rea `ev_e341cadab219a4d1edb87e0a6124f2b5162c089a0f15018b6ee042631fae405a` |
+| 1 | `s01_goto` | open `https://www.facebook.com/` | — | `MAWVerifyThreadCutover_ContactCapabilities2Query` 2xx: `data.user.id` = the account's id | 01_gotoHttpsWwwFacebook, 51188 ms, rea `ev_e341cadab219a4d1edb87e0a6124f2b5162c089a0f15018b6ee042631fae405a` |
 | 2 | `s02_dwell` | dwell | — | — | 02_dwell35s, 8359 ms, rea `ev_8b17ac975a97ee0782de3bebb8d729284eea306c4ae08d616d68f57e2dbe89e4` |
 | 3 | `s03_scroll` | scroll | — | `CometNewsFeedPaginationQuery` 2xx: `first.data.viewer.news_feed` is present | 03_scroll47X, 31453 ms, rea `ev_7ae1c0a30cf066f417fd1305af192253b09f82057d70298cc4fdfe4b8c0f2697` |
 | 4 | `s04_gotomarketplace` | open `https://www.facebook.com/marketplace/` | — | `page /marketplace/` 2xx: `fields.buy_location.display_name` names the account's home city (else `marketplaceLocationWrong`) | 04_gotoHttpsWwwFacebook, 23610 ms, rea `ev_23709d00eac049d029c7267e2b4df5942d7dd6c775ad174cbe341099a3c3e798` |

@@ -74,12 +74,12 @@ describe("a like passes on Facebook's answer, not on the button (rule 73)", () =
 
 describe("the other activity steps read Facebook's answers too (rule 73)", () => {
   const FEED_URL = 'https://www.facebook.com/'
-  const composer = (id: string): StepExchange => ({ offsetMs: 1710, kind: 'api', name: 'FeedComposerCometRootQuery', method: 'POST', host: 'www.facebook.com', path: '/api/graphql/', status: 200, ms: 658, sent: {}, answer: { data: { viewer: { actor: { id, name: 'Bethlehem Trash' } } } }, errors: [], known: true })
+  const composer = (id: string): StepExchange => ({ offsetMs: 1710, kind: 'api', name: 'MAWVerifyThreadCutover_ContactCapabilities2Query', method: 'POST', host: 'www.facebook.com', path: '/api/graphql/', status: 200, ms: 658, sent: {}, answer: { data: { user: { message_capabilities2_str: '252060841644982528', id } } }, errors: [], known: true })
   const openFeed = FEED.steps.find((x) => x.id === 'openFeed')!
 
-  test('the home feed passes only when FeedComposerCometRootQuery answers this account as the one signed in', () => {
+  test('the home feed passes only when MAWVerifyThreadCutover_ContactCapabilities2Query answers this account as the one signed in', () => {
     expect(checkStep(openFeed, null, { ok: true, url: FEED_URL, exchanges: [composer('61594063207669')] }, { uid: '61594063207669' }).ok).toBe(true)
-    expect(checkStep(openFeed, null, { ok: true, url: FEED_URL, exchanges: [composer('61500000000001')] }, { uid: '61594063207669' }).issue).toBe("FeedComposerCometRootQuery answered data.viewer.actor.id = \"61500000000001\", not the account's id (61594063207669)")
+    expect(checkStep(openFeed, null, { ok: true, url: FEED_URL, exchanges: [composer('61500000000001')] }, { uid: '61594063207669' }).issue).toBe("MAWVerifyThreadCutover_ContactCapabilities2Query answered data.user.id = \"61500000000001\", not the account's id (61594063207669)")
   })
 
   test('the steps checked are the ones whose recordings show a call that answers them; dwells and the rest have none to read', () => {

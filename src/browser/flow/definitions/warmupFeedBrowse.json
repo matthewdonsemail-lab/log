@@ -9,10 +9,10 @@
       "url": "https://www.facebook.com/",
       "answers": [
         {
-          "call": "FeedComposerCometRootQuery",
+          "call": "MAWVerifyThreadCutover_ContactCapabilities2Query",
           "says": [
             {
-              "answer": "data.viewer.actor.id",
+              "answer": "data.user.id",
               "home": "uid"
             }
           ]

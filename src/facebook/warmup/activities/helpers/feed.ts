@@ -13,8 +13,8 @@ export const FEED: PlatformActivity = {
       action: 'goto',
       args: ['https://www.facebook.com/'],
       why: 'the home feed, signed in',
-      expect: { urlMatches: '^https://www\\.facebook\\.com/(\\?.*)?$', answers: [{ call: 'FeedComposerCometRootQuery', says: [{ answer: 'data.viewer.actor.id', home: 'uid' }] }] },
-      recorded: `${RUN} step 01: the home feed, 296 requests, 24 s; FeedComposerCometRootQuery answers the signed-in account as data.viewer.actor.id (its doc)`
+      expect: { urlMatches: '^https://www\\.facebook\\.com/(\\?.*)?$', answers: [{ call: 'MAWVerifyThreadCutover_ContactCapabilities2Query', says: [{ answer: 'data.user.id', home: 'uid' }] }] },
+      recorded: `${RUN} step 01: the home feed, 296 requests, 24 s; MAWVerifyThreadCutover_ContactCapabilities2Query answers the signed-in account as data.user.id on every feed load recorded (FeedComposerCometRootQuery wasn't sent on warm-up 20261023T072846's first load)`
     },
     {
       id: 'dismissPrompt',

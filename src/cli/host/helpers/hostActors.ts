@@ -11,7 +11,7 @@ import { fetchProxyUrl, saveSession } from "../../../marketplace/socialAccount/i
 import { preparePhotos } from "../../../media/photo/index.ts";
 import { join } from "node:path";
 import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
-import { ACTIVITY_SCRIPTS } from "../../../facebook/warmup/stages/index.ts";
+import { ACTIVITY_SCRIPTS, NOTED_ISSUES } from "../../../facebook/warmup/stages/index.ts";
 import * as marketplaceCheck from "../../../facebook/marketplace/check/index.ts";
 import { placeProblem } from "../../../facebook/marketplace/location/index.ts";
 import { runFlowInSession, openInspectSession } from "../../flow/helpers/index.ts";
@@ -203,6 +203,7 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
       const script = ACTIVITY_SCRIPTS[input.activity as WarmupActivity];
       const flow = loadFlow(script.flow);
       const steps: FlowStep[] = flow?.steps ?? script.steps.map((s, i) => ({ id: `s${i + 1}_${s.action}`, action: s.action, ...(s.action === "goto" ? { url: s.args[0] } : { args: s.args }), recorded: { step: "", ms: null, reaEvidenceId: null, requests: [] } }) as FlowStep);
+      const noted: string[] = [];
       for (const step of steps) {
         if (step.action === "clickAny" && !(input.live && options.likes)) continue;
         const args = step.action === "goto" ? [step.url!] : (step.args ?? []);
@@ -211,10 +212,15 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
         if (problem) return problem;
         if (reply && reply.ok === false) return error("warmupStepFailed", `${step.id}: ${reply.error ?? ""}`, true);
         const answered = answerOutcome(step, reply);
+        if (answered?.kind === "issue" && NOTED_ISSUES.includes(answered.issue)) {
+          noted.push(`${answered.issue}: ${answered.detail ?? ""}`);
+          log(`host ${account.accountName}: noted ${answered.issue} in ${input.activity}; carrying on`);
+          continue;
+        }
         if (answered) return answered;
       }
       log(`host ${account.accountName}: warm-up ${input.activity} done`);
-      return ok();
+      return noted.length ? ok(`noted: ${noted.join("; ")}`) : ok();
     }),
 
     watchCheck: fromPromise<StepOutcome, LifecycleActorInputs["watchCheck"]>(async () => {
