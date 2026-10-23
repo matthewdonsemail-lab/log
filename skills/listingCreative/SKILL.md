@@ -22,6 +22,11 @@ line, from real Craigslist and Marketplace junk removal listings),
 - **No phone or interface words in a prompt.** "Shot on an iPhone" made the
   model draw a Photos app screen into the picture (Verizon, a clock, a date bar).
   Prompt the photo only; the phone around it is `photosViewer.html`.
+- **No vehicles in any frame.** No car, truck, pickup, trailer or dumpster,
+  parked in the background or part of the job (matt, 2026-10-23: every made shot
+  with a car in it came out wrong). The action is the crew carrying things out,
+  a dolly at most. Every prompt says "no cars, trucks or trailers anywhere in the
+  frame" and every avoid list repeats it.
 - **Generate each frame once, then show matt.** Never regenerate on your own
   judgement. Generation costs money (rule 41): ask before anything he didn't say.
 
@@ -32,7 +37,7 @@ What SubQ read from the 58 winner frames (`subqReading.json`, 2026-10-23):
 | | Winners |
 |---|---|
 | Scene | an interior room or a side yard along a fence, then a garage |
-| Action | the truck at the house and crew mid-job (99%) |
+| Action | crew mid-job (99%); never a vehicle (below) |
 | Before | a room's or a yard's worth of junk (95%), raw phone snapshot (95%) |
 | After | the exact same spot and angle (99%), bare (88%) |
 | People | a homeowner almost never in frame |

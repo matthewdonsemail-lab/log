@@ -79,14 +79,15 @@ SubQ's Decisions API (`src/subq/decisions`) gets the whole `creatives.jsonl` as
 state and the images, **at most 4 per call**, so pack them into labelled contact
 sheets. Ask what the winners are, not what to do: `choice` for the main scene,
 the before/after layout and the cover; `noul` for each element (same angle,
-truck at the house, crew working, phone snapshot, overlays, people in frame);
+crew working, phone snapshot, overlays, people in frame);
 `score` for how much mess, what the after looks like, how authentic. The
 answers are the niche's definition of a winner (`subqReading.json`).
 
 Junk removal: a flyer cover (89%), then real phone photos of a room- or
-yard-sized pile, the truck at the house with crew working (99%), an after from
-the exact same spot (99%), bare (88%), Before/After or the number on top (99%),
-almost never a homeowner in frame.
+yard-sized pile, the crew working (99%), an after from the exact same spot
+(99%), bare (88%), Before/After or the number on top (99%), almost never a
+homeowner in frame. matt's own rules sit above what the winners show: no
+vehicles in any frame, whatever the winners do (`listingCreative`).
 
 ### 5. Rubric and spin-outs
 
@@ -99,8 +100,8 @@ aspect, keepSameAs), and SubQ scores each plan against the winners: in the
 winners' composition, raw phone snapshot, shows the job happening, what it is
 most missing.
 
-Junk removal: garage 94%, side yard 95%, basement 82% (missing the truck at the
-house), matt's Bethlehem set 42% (missing crew at work).
+Junk removal: garage 94%, side yard 95%, basement 82%, matt's Bethlehem set 42%
+(missing crew at work).
 
 ### 6. Generate once
 
@@ -110,9 +111,9 @@ output URL is the reference), so the place and people match. Each frame once,
 then show matt every one.
 
 Junk removal: 9 frames for $0.20 on the second run. The first run's prompt said
-"iPhone" and the model drew a Photos app screen into the pictures; the action
-that forced a truck into the garage made no sense. Both are now in the prompt
-rules.
+"iPhone" and the model drew a Photos app screen into the pictures, and every
+shot with a car, truck or trailer in it came out wrong. Both are now prompt
+rules: no phone words, no vehicles.
 
 ### 7. Phone media
 
