@@ -203,3 +203,17 @@ describe('createFlowMachine', () => {
     expect(output).toMatchObject({ result: 'failed', failedAt: failAt })
   })
 })
+
+describe("marketplaceListingDelete", () => {
+  test("its menu and delete steps are decided by Facebook's answer naming the listing id we were given", async () => {
+    const { loadFlow, fillStep } = await import("./index");
+    const flow = loadFlow("marketplaceListingDelete")!;
+    const values = { listingTitle: "Sofa pickup", listingId: "999" };
+    const menu = fillStep(flow.steps.find((s) => s.id === "s02_clickMoreOptions")!, values);
+    expect(menu.name).toBe("More options for Sofa pickup");
+    expect(menu.answers![0].says[0]).toMatchObject({ answer: "data.node.product_item.for_sale_item.id", is: "999" });
+    const del = fillStep(flow.steps.find((s) => s.id === "s04_clickDelete")!, values);
+    expect(del.answers![0]).toMatchObject({ call: "useCometMarketplaceForSaleItemDeleteMutation" });
+    expect(del.answers![0].says[0]).toMatchObject({ answer: "data.commerce_for_sale_item_delete.deleted_for_sale_item_id", is: "999" });
+  });
+});

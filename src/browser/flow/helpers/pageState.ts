@@ -85,6 +85,14 @@ export const PAGE_STATES: readonly StateRule[] = [
     resolve: 'read the Marketplace location from its own answer: `log inspect do goto https://www.facebook.com/marketplace/` and read `buy_location` in the step\'s exchanges. If it isn\'t the account\'s home, `log inspect do setLocation "City, State" --live`. If it is, carry on with the step',
     person: false
   },
+  {
+    id: 'marketplaceDeleteSurvey',
+    url: /\/marketplace\/you\/selling/i,
+    text: /did you sell this item\?/i,
+    what: 'Marketplace\'s "Did you sell this item?" survey, shown after a listing is deleted (the delete is already done: `useCometMarketplaceForSaleItemDeleteMutation` answered its id; Bethlehem, inspect 20261023T173652 step 05)',
+    resolve: 'click radio "No, haven\'t sold", then button "Next" (`log inspect do click <ref> --live`); it only saves the answer (`useCometC2CTransactionSurveyResponseMutation`)',
+    person: false
+  },
   { id: 'rememberPassword', text: /remember password/i, what: 'the "Remember password" prompt', resolve: 'click "Not now" (`clickRole button "Not now"`)', person: false },
   { id: 'twoStepCode', url: /two_step_verification|two_factor|\/checkpoint/i, text: /enter (the )?(6-digit )?code|authentication code|login code/i, what: 'two-step: the code field', resolve: '`log inspect do code --live --account <a>` (the TOTP from Twenty, rule 21)', person: false },
   { id: 'loginForm', url: /\/login|login\.php/i, what: 'the login form', resolve: '`log inspect do signIn --live --account <a>` (rule 21), or `log facebook connect --account <a>`', person: false },
@@ -155,6 +163,8 @@ export const RESOLVE_CALLS: Readonly<Record<string, (at: StateAt) => ResolveCall
   marketplacePartnerListings: clickLabel(/(:\s*|")Update"?\s*$/),
   marketplaceCreateLimitReached: () => null,
   marketplacePartnerFeed: (at) => ({ tool: 'inspectDo', input: { account: at.account, action: 'goto', values: ['https://www.facebook.com/marketplace/'] } }),
+  marketplaceDeleteSurvey: (at) =>
+    /radio "No, haven't sold" \[checked\]/.test(at.text) ? liveStep(at.account, 'clickRole', ['button', 'Next']) : liveStep(at.account, 'clickRole', ['radio', "No, haven't sold"]),
   rememberPassword: (at) => liveStep(at.account, 'clickRole', ['button', 'Not now']),
   twoStepCode: (at) => liveStep(at.account, 'code'),
   loginForm: (at) => liveStep(at.account, 'signIn'),

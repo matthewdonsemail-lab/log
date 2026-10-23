@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_d7f46c8cc1f3fbd68a82bc46b70630e2eb1283ceba774729ad62ba506a833c48` |
+| rea | `ev_40544dae9444025f581ab50486ee4fd1bb31e1479be8264ec5fa13c071c42cee` |
 
-Seen 713 time(s) in 33 run(s).
+Seen 717 time(s) in 34 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -237,6 +237,9 @@ Seen 713 time(s) in 33 run(s).
 | inspect | step 15: clickRole button "…" | 1 | 200 | 361 ms | 8840 ms | — |
 | inspect | step 17: clickRole button "…" | 2 | 200 | 382–588 ms | 2491–3492 ms | — |
 | inspect | step 20: dwell 2s | 12 | 200 | 324–2861 ms | 7984–478879 ms | — |
+| inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 1616 ms | 13401 ms | — |
+| inspect | step 3: click e356 | 2 | 200 | 343–359 ms | 12710–25470 ms | — |
+| inspect | step 6: click e602 | 1 | 200 | 1338 ms | 9892 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

@@ -13,7 +13,7 @@
 | Called from | `RTWebCallBlockSettingHooks` |
 | rea | `ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6` |
 
-Seen 113 time(s) in 31 run(s).
+Seen 114 time(s) in 32 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -88,6 +88,7 @@ Seen 113 time(s) in 31 run(s).
 | warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 600 ms | 5751 ms | — |
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 446 ms | 3662 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 400 ms | 5704 ms | — |
+| inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 367 ms | 6644 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

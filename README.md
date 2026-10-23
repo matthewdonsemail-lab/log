@@ -130,7 +130,7 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 64 command tools + saved flows"]
+  mcp["MCP server log: 66 command tools + saved flows"]
   bin["bin/log.ts"]
   runCli["runCli: 37 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
@@ -165,7 +165,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | [`log launch`](#log-launch) | Guided Clack menu over the listings, accounts and live commands | any (none) | `--json` | none | terminal only: prompts in a terminal (Clack). Call the commands it wraps directly. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
 | [`log facebook listings`](#log-facebook-listings) | List the Twenty listings, by status, account or campaign | `facebook` first | `--status <STATUS>` `--account <accountName>` `--campaign <campaignId>` `--json` | none | `listings` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
-| [`log facebook listing`](#log-facebook-listing) | Show one Twenty listing, or create one for an account from a JSON file | `facebook` first | `--json` `--account <accountName>` `--file <listing.json>` | none | `listing`, `listingCreate`, `listingLint` | PreToolUse, PostToolUse · PostToolUse | no | 13, 71, 72, 30, 38, 39, 40, 41 |
+| [`log facebook listing`](#log-facebook-listing) | Show one Twenty listing, or create one for an account from a JSON file | `facebook` first | `--json` `--account <accountName>` `--file <listing.json>` `--live` `--bypass` `--now` | none | `listing`, `listingCreate`, `listingRemove`, `listingRemoveLive`, `listingLint` | PreToolUse, PostToolUse · PostToolUse | no | 13, 71, 72, 30, 38, 39, 40, 41 |
 | [`log facebook accounts`](#log-facebook-accounts) | List the FACEBOOK accounts in Twenty: status, home, proxy, and whether each may run | `facebook` first | `--json` | none | `accounts` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
 | [`log facebook account`](#log-facebook-account) | Show one account, or set its status (banned/dead/restricted replace its campaign listings) | `facebook` first | `--json` `--from <folder>` `--reason <text>` `--detail <text>` | none | `accountShow`, `accountResave`, `accountResetOpens`, `accountStatus` | PreToolUse, PostToolUse · PostToolUse | no | 13, 37, 30, 38, 39, 40, 41 |
 | [`log adsPower`](#log-adspower) | AdsPower: Local API status, its profiles, and one profile per Twenty account (sync) | any (none) | `--json` `--apply` `--account <accountName>` | none | `adsPower` | PreToolUse, PostToolUse · PostToolUse | no | 42, 44, 30, 38, 39, 40, 41 |
@@ -210,6 +210,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | `flowGroupPostComments`, `flowGroupPostCommentsLive` | `log flow run groupPostComments` | On a group's Open questions tab, open a post's comments, switch the sort to All comments and scroll them; read-only | `groupId` | gotogroupsQuestions → clickLeaveAComment → clickMostRelevant → clickAllCommentsShowAll → scroll |
 | `flowGroupPostDialog`, `flowGroupPostDialogLive` | `log flow run groupPostDialog` | On a group's Discussion feed, open a post in its dialog with Leave a comment (the comment box takes focus, nothing is typed) and close it | `groupId` | gotogroups → clickLeaveAComment → clickClose |
 | `flowGroupTabs`, `flowGroupTabsLive` | `log flow run groupTabs` | Open each tab of a group the account is in (Featured, Open questions, People, Events, Media, Files, About) and come back to Discussion; read-only | `groupId` | gotogroups → clickFeatured → clickOpenQuestions → clickPeople → clickEvents → clickMedia → clickFiles → clickAbout → clickDiscussion |
+| `flowMarketplaceListingDelete`, `flowMarketplaceListingDeleteLive` | `log flow run marketplaceListingDelete` | Delete one Marketplace listing from the Selling page: its More options menu, Delete listing, Delete, then "No, haven't sold" on Facebook's survey. Recorded on Bethlehem, 2026-10-23 (listing 1425935622848350). | `listingTitle`, `listingId` | gotomarketplaceYouSelling → clickMoreOptions → clickDeleteListing → clickDelete → clickNoHavenTSold → clickNext |
 | `flowMarketplaceListingPublish`, `flowMarketplaceListingPublishLive` | `log flow run marketplaceListingPublish` | Publish one Marketplace listing in the account's open AdsPower browser: set the Marketplace location (City, State written out), open Create, two photos, title, price, category Miscellaneous, condition New, description, Next, Publish, close the Boost offer. Recorded on Bethlehem 2026-10-22 (listing 1425935622848350, held for review). | `location`, `photo1`, `photo2`, `title`, `price`, `description` | gotomarketplace → setLocation → gotomarketplaceCreateItem → uploadAddPhotosOrDrag → uploadAddPhoto → fillTitle → fillPrice → clickCategory → clickMiscellaneous → clickCondition → clickNew → fillDescription → clickNext → clickPublish → clickClose |
 | `flowMessengerPinCreate`, `flowMessengerPinCreateLive` | `log flow run messengerPinCreate` | Messenger's Create a PIN: open /messages/, press Create PIN, type the account's PIN from Twenty, then again to confirm (rule 67). Recorded on Bethlehem 2026-10-22. | none | gotomessages → clickCreatePin → pin → pin |
 | `flowPostComment`, `flowPostCommentLive` | `log flow run postComment` | Comment on the newest post on the account's own profile: type in its Write a comment box, Post comment (useCometUFICreateCommentMutation). Writes on Facebook (--live). | `comment` | gotoprofilePhp → fillWriteAComment → clickPostComment |
@@ -375,6 +376,9 @@ flowchart TB
   f_groupTabs["flowGroupTabs: flow run groupTabs"]
   mcp --> f_groupTabs
   f_groupTabs --> c_flow
+  f_marketplaceListingDelete["flowMarketplaceListingDelete: flow run marketplaceListingDelete"]
+  mcp --> f_marketplaceListingDelete
+  f_marketplaceListingDelete --> c_flow
   f_marketplaceListingPublish["flowMarketplaceListingPublish: flow run marketplaceListingPublish"]
   mcp --> f_marketplaceListingPublish
   f_marketplaceListingPublish --> c_flow
@@ -506,6 +510,9 @@ flowchart LR
   marketplacePartnerFeed["marketplacePartnerFeed: Marketplace answers with partner shops' listings (`product_details_type: PARTNER_LISTING`, a `partner_brand_name` and a `partner_listing_location`), from Europe though the account is in the US (Bethlehem, inspect 20261023T045453 step 03: Catawiki in Italy and buycycle-es, while `buy_location` was Bethlehem, Pennsylvania)"]
   page --> marketplacePartnerFeed
   marketplacePartnerFeed -->|"read the Marketplace location from its own answer"| nextmarketplacePartnerFeed(["next state"])
+  marketplaceDeleteSurvey["marketplaceDeleteSurvey: Marketplace's #quot;Did you sell this item?#quot; survey, shown after a listing is deleted (the delete is already done: `useCometMarketplaceForSaleItemDeleteMutation` answered its id#59; Bethlehem, inspect 20261023T173652 step 05)"]
+  page --> marketplaceDeleteSurvey
+  marketplaceDeleteSurvey -->|"click radio #quot;No, haven't sold#quot;"| nextmarketplaceDeleteSurvey(["next state"])
   rememberPassword["rememberPassword: the #quot;Remember password#quot; prompt"]
   page --> rememberPassword
   rememberPassword -->|"click #quot;Not now#quot;"| nextrememberPassword(["next state"])
@@ -542,12 +549,13 @@ log facebook listings [--status <STATUS>] [--account <accountName>] [--campaign 
 
 #### log facebook listing
 
-Show one Twenty listing, or create one for an account from a JSON file MCP tools: `listing`, `listingCreate`, `listingLint`, one per form, with named fields.
+Show one Twenty listing, or create one for an account from a JSON file MCP tools: `listing`, `listingCreate`, `listingRemove`, `listingRemoveLive`, `listingLint`, one per form, with named fields.
 
 ```text
 log facebook listing <agencyListingId> [--json]
 log facebook listing create --account <accountName> --file <listing.json> [--json]
 log facebook listing lint --file <listing.json> [--json]   (the copy rules on the file's copy versions, and whether it would publish; nothing is saved)
+log facebook listing remove <agencyListingId|facebookListingId> [--live] [--bypass] [--now] [--json]   (delete it on Facebook through the recorded flow marketplaceListingDelete, then REMOVED in Twenty; a dry run unless --live)
 The file: title, description, price, priceCurrency, category, condition (new|usedLikeNew|usedGood|usedFair), photos (paths or URLs), locationQuery ('City, State' with the state written out, 'Bethlehem, Pennsylvania', or 'City, Country': an abbreviation, zip or number is refused, rule 72), locationCity, locationCountry, locationPostalCode (kept, never typed), copyVersions ([{ id, title, description }], written by skills/listingCopy; the first is the ad's own title and description; each copy of the ad picks the one least like what is live in its city).
 ```
 

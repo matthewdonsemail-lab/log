@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_d7f46c8cc1f3fbd68a82bc46b70630e2eb1283ceba774729ad62ba506a833c48` |
+| rea | `ev_40544dae9444025f581ab50486ee4fd1bb31e1479be8264ec5fa13c071c42cee` |
 
-Seen 1037 time(s) in 31 run(s).
+Seen 1041 time(s) in 32 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -304,6 +304,8 @@ Seen 1037 time(s) in 31 run(s).
 | inspect | step 6: clickAny 1 x link /see owner profile$/ | 1 | 200 | 405 ms | 4303 ms | — |
 | inspect | step 8: goto /reel/<id> | 2 | 200 | 532–591 ms | 4950–5037 ms | — |
 | inspect | step 17: clickRole button "…" | 1 | 200 | 687 ms | 1565 ms | — |
+| inspect | step 1: goto /marketplace/you/selling | 3 | 200 | 352–605 ms | 6048–6116 ms | — |
+| inspect | step 3: click e356 | 1 | 200 | 491 ms | 2032 ms | — |
 
 <!-- facts:end -->
 

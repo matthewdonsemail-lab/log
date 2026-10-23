@@ -67,3 +67,4 @@ Rebuild the request docs after a run (rule 27): `capture --docs`.
 | Flow | Recorded | Does |
 | --- | --- | --- |
 | `profileSetup` | Lancaster, 2026-10-19 | Profile picture, cover photo, name (13 steps) |
+| `marketplaceListingDelete` | Bethlehem, 2026-10-23 | Delete one Marketplace listing from Selling: More options, Delete listing, Delete, then "No, haven't sold" on Facebook's survey (6 steps). The menu answer must name the listing id given, and so must the delete answer (`commerce_for_sale_item_delete.deleted_for_sale_item_id`). Run it through `log facebook listing remove`, which then sets the Twenty row REMOVED. |

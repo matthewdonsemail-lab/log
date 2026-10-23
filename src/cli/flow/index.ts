@@ -52,7 +52,13 @@ function renderRun(flow: FlowDefinition, output: FlowRunOutput, runDir: string):
   return lines.join("\n");
 }
 
-async function runFlow(context: Parameters<Command["run"]>[0], flow: FlowDefinition, values: Record<string, string>, flags: Record<string, string | true>): Promise<CommandResult> {
+export async function runFlow(
+  context: Parameters<Command["run"]>[0],
+  flow: FlowDefinition,
+  values: Record<string, string>,
+  flags: Record<string, string | true>,
+  after?: (output: FlowRunOutput) => Promise<string[]>,
+): Promise<CommandResult> {
   const missing = flow.params.filter((p) => !(p.name in values)).map((p) => p.name);
   if (missing.length) return { code: 1, stderr: `log flow: ${flow.name} needs ${missing.map((m) => `--set ${m}=…`).join(" ")}` };
   const uid = typeof flags["account"] === "string" ? flags["account"] : "";
@@ -93,8 +99,9 @@ async function runFlow(context: Parameters<Command["run"]>[0], flow: FlowDefinit
       mapInspectRun(runDir);
     } catch {
     }
-    if (flags["json"]) return { code: output.result === "done" ? 0 : 1, stdout: JSON.stringify(output, null, 2) };
-    return { code: output.result === "done" ? 0 : 1, stdout: renderRun(flow, output, runDir) };
+    const afterLines = output.result === "done" && after ? await after(output) : [];
+    if (flags["json"]) return { code: output.result === "done" ? 0 : 1, stdout: JSON.stringify({ ...output, ...(afterLines.length ? { after: afterLines } : {}) }, null, 2) };
+    return { code: output.result === "done" ? 0 : 1, stdout: [renderRun(flow, output, runDir), ...afterLines].join("\n") };
   });
 }
 

@@ -6,14 +6,14 @@
 | --- | --- |
 | Domain | background |
 | Kind | query |
-| doc_id | `28934009902924466` |
+| doc_id | `29210280235242852` |
 | Path | `/api/graphql/` |
 | Sends | — |
 | Reads | `xfb_youth_regulatory_config_platform.query_configs_by_handler` |
 | Called from | `FBYRPTimeLimitsEnforcement.react` |
-| rea | `ev_5fe8db44bc61b2d547bfce0c51e3256e80ffd1e3477b2c6b640071a0ea96e750` |
+| rea | `ev_a9881646cf5ca72e0b60def37ca88904d00b58f050bd2309e1812e104bf21960` |
 
-Seen 114 time(s) in 31 run(s).
+Seen 115 time(s) in 32 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -88,6 +88,7 @@ Seen 114 time(s) in 31 run(s).
 | warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 482 ms | 4793 ms | — |
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 405 ms | 1764 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 600 ms | 4459 ms | — |
+| inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 520 ms | 5780 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

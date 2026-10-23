@@ -13,7 +13,7 @@
 | Called from | `usePseudoBlockedUserInterstitial` |
 | rea | `ev_bd4768487f8ce51543ac7bf31bbe4bddfd24eccd0b88381038a13399ea6e6697` |
 
-Seen 136 time(s) in 31 run(s).
+Seen 137 time(s) in 32 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -104,6 +104,7 @@ Seen 136 time(s) in 31 run(s).
 | warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 610 ms | 5748 ms | — |
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 379 ms | 3658 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 497 ms | 5280 ms | — |
+| inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 366 ms | 6640 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

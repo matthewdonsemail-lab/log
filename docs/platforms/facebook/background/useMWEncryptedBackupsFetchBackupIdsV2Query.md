@@ -13,7 +13,7 @@
 | Called from | `useMWEncryptedBackupsFetchBackupIdsV2` |
 | rea | `ev_16df7daca80a72c8f44b7a489690336b7def96e564429f0639a122f48023372a` |
 
-Seen 113 time(s) in 31 run(s).
+Seen 114 time(s) in 32 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -88,6 +88,7 @@ Seen 113 time(s) in 31 run(s).
 | warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 631 ms | 5725 ms | — |
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 378 ms | 3627 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 419 ms | 5604 ms | — |
+| inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 408 ms | 6621 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

@@ -1344,6 +1344,15 @@
     ],
     "action": "Check the id (log facebook listings shows them)."
   },
+  "listingNotRemovable": {
+    "layer": "listing",
+    "meaning": "The listing can't be deleted on Facebook: it was never published (no Facebook listing id), it has no account, or its status is not ACTIVE, UNDER_REVIEW, UNCONFIRMED, SOLD or DUPLICATE_TAKEDOWN.",
+    "retryable": false,
+    "raisedIn": [
+      "cli/listing"
+    ],
+    "action": "Check it with log facebook listing <id>. A listing already REMOVED stays as it is."
+  },
   "listingNoAccount": {
     "layer": "listing",
     "meaning": "The agencyListing has no socialAccount, so nothing knows which account posts it.",

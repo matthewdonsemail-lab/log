@@ -13,7 +13,7 @@
 | Called from | `OhaiWebPublicKeyConfig` |
 | rea | `ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013` |
 
-Seen 113 time(s) in 31 run(s).
+Seen 114 time(s) in 32 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -88,6 +88,7 @@ Seen 113 time(s) in 31 run(s).
 | warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 683 ms | 5658 ms | — |
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 377 ms | 3501 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 391 ms | 5445 ms | — |
+| inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 382 ms | 6522 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

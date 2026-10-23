@@ -13,15 +13,67 @@
 | Called from | `MarketplaceDeleteUtils` |
 | rea | `ev_75e93fe4d2b889bd9688924dddf4badc31bafa4e41796fccaf9ed0e07501d6eb` |
 
-Seen 2 time(s) in 1 run(s).
+Seen 3 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 3: goto /marketplace/inbox | 2 | 200 | 548–581 ms | 503022–1366292 ms | — |
+| inspect | step 3: click e356 | 1 | 200 | 481 ms | 1510 ms | — |
 
-### What it sent and what came back (the newest 1 from our runs)
+### What it sent and what came back (the newest 2 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261023T173652_61594063207669**, step 3: click e356: 200, 481 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "MarketplaceDeleteUtilsQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "id": "1425935622848350",
+    "shouldSkip": false
+  },
+  "doc_id": "27605324959069136"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "marketplace_listing": {
+        "__typename": "GroupCommerceProductItem",
+        "__isMarketplaceListingRenderable": "GroupCommerceProductItem",
+        "should_show_txn_survey_on_delete": true,
+        "__isMarketplaceListingWithCrossposting": "GroupCommerceProductItem",
+        "cross_post_sync_metadata": null,
+        "marketplace_listing_title": "Junk Removal & Cleanouts: Houses, Garages, Basements",
+        "primary_listing_photo": {
+          "__typename": "ProductImage",
+          "image": {
+            "uri": "https://scontent-ord5-1.xx.fbcdn.net/v/t45.5328-4/856660594_2379535212790769_660742871528716392_n.jpg?stp=c0.80.206.206a_dst-jpg_p206x206_tt6&_nc_cat=111&ccb=1-7&_nc_sid=247b10&_nc_ohc=azfCRYsIeUMQ7kNvwEf01u5&_nc_oc=Adq51ffsZjpWNPXgVHrMTJXqQm_KGHlLmFvws7hvrjiHqr-qWYYEEAu4-RB-29u58hY&_nc_zt=23&_nc_ht=scontent-ord5-1.xx&_nc_gid=no7JK7B7z7ZKlPQ6rI1mvw&_nc_ss=792a8&oh=00_AQO7pPfmPUkFPySkCv5-HaOoK169oJ… (428 chars)"
+          },
+          "id": "2379535206124103"
+        },
+        "id": "1425935622848350"
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792777113132,
+      "time_at_flush_ms": 1792777113285
+    },
+    "is_final": true
+  }
+}
+```
 
 **runs/inspect/20261022T155857_61594063207669**, step 3: goto /marketplace/inbox: 200, 548 ms
 
@@ -82,8 +134,8 @@ Asks, for a listing (`id`), what deleting it would involve, so the listing's men
 
 ## What our machine does with it
 
-Nothing reads it, and nothing in log-cli deletes a listing (rule 8: nothing is deleted unless matt asks).
+Nothing reads it. It answers `should_show_txn_survey_on_delete`, which says the delete will be followed by the "Did you sell this item?" survey, the last two steps of `marketplaceListingDelete` (run by `log facebook listing remove`, only when matt asks, rule 8).
 
 ## What can go wrong
 
-Seen only with 200. It changes nothing on its own; a delete would be a separate mutation, which log-cli never sends.
+Seen only with 200. It changes nothing on its own; the delete is `useCometMarketplaceForSaleItemDeleteMutation`.

@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_0a640203094c1a85a7745155ac19a5b8b07393c2d53538f3ebe48f7e9a69f211` |
+| rea | `ev_40544dae9444025f581ab50486ee4fd1bb31e1479be8264ec5fa13c071c42cee` |
 
-Seen 59 time(s) in 7 run(s).
+Seen 60 time(s) in 8 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -38,8 +38,9 @@ Seen 59 time(s) in 7 run(s).
 | inspect | step 5: wait 5s | 1 | 200 | 1403 ms | 80871 ms | — |
 | inspect | step 3: goto /marketplace/inbox | 3 | 200, 0 | 0–501 ms | 589944–1455304 ms | — |
 | warmup | step 17: dwell 2-4s | 1 | 200 | 377 ms | 80196 ms | — |
+| inspect | step 3: click e356 | 1 | 200 | 348 ms | 16302 ms | — |
 
-### What it sent and what came back (the newest 1 from our runs)
+### What it sent and what came back (the newest 2 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -68,6 +69,34 @@ Answered:
   "rid": "A-enHRPtqdcp945eGeLpZG8",
   "payload": null,
   "lid": "7699770584893673991"
+}
+```
+
+**runs/inspect/20261023T173652_61594063207669**, step 3: click e356: 200, 348 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "cquick": "_r_31_",
+    "cquick_token": "AUdmRnUAYDZx6QpruXYYHJxPIpg",
+    "ctarget": "https://www.facebook.com"
+  },
+  "body": {
+    "------WebKitFormBoundarynBtRGxioZDGOyUCm\r\nContent-Disposition: form-data; name": "\"ts\"\r\n\r\n1792777127968\r\n------WebKitFormBoundarynBtRGxioZDGOyUCm\r\nContent-Disposition: form-data; name=\"q\"\r\n\r\n[{\"app_id\":\"2220391788200892\",\"posts\":\"0wS4W1sicWV4Iix7ImwiOiJKe1wicWVpZFwiOlwiNjE1OTQwNjMyMDc2NjlcIixcInUFGQULAHQFCwRmYgUNIGdrc1wiOltdLAE/kFwiOm51bGx9In0sMTc5Mjc3NzA2Nzk1NS4yOTk4LDAsODVdLFv dgCmdgAANf5zAP5zAP5zAP5zALJzADhfYWN0aW5nX2FjY291bnSq3gEgNSwwLDEwMF1d\",\"user\":\"61594063207669\",\"webSe… (560 chars)"
+  }
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "AwKk-c6ud9hHf7FUNLUkCqI",
+  "payload": null,
+  "lid": "7699919130611382816"
 }
 ```
 
