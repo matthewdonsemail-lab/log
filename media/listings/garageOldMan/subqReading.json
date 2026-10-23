@@ -1,0 +1,82 @@
+{
+  "at": "2026-10-23T14:03:00.170Z",
+  "model": "subq-snap-1.1",
+  "images": [
+    "iosScribbled/before.jpg",
+    "iosScribbled/action.jpg",
+    "iosScribbled/after.jpg"
+  ],
+  "answers": {
+    "sceneMatchesWinners": {
+      "type": "noul",
+      "noul": 0.9923571348190308
+    },
+    "sameAngle": {
+      "type": "noul",
+      "noul": 0.9218409657478333
+    },
+    "hasAction": {
+      "type": "noul",
+      "noul": 0.9296700358390808
+    },
+    "readsInstantly": {
+      "type": "noul",
+      "noul": 0.9577954411506653
+    },
+    "looksReal": {
+      "type": "noul",
+      "noul": 0.9952221512794495
+    },
+    "peopleConsistent": {
+      "type": "noul",
+      "noul": 0.9796676635742188
+    },
+    "authenticity": {
+      "type": "score",
+      "score": 1.943696927279234,
+      "legend": {
+        "0": "staged or stock",
+        "1": "mixed",
+        "2": "raw phone snapshot"
+      },
+      "probabilities": {
+        "0": 0.0023019174113869667,
+        "1": 0.051699232310056686,
+        "2": 0.9459988474845886
+      },
+      "confidence": 0.9155453993007541
+    },
+    "closeness": {
+      "type": "score",
+      "score": 1.5786053538322449,
+      "legend": {
+        "0": "unlike the winners",
+        "1": "partly like the winners",
+        "2": "in the winners' composition"
+      },
+      "probabilities": {
+        "0": 0.009291757829487324,
+        "1": 0.40281111001968384,
+        "2": 0.5878971219062805
+      },
+      "confidence": 0.36790806148201227
+    },
+    "missingElement": {
+      "type": "choice",
+      "choice": "truckOrTrailerAtHouse",
+      "probabilities": {
+        "none": 0.07126212120056152,
+        "truckOrTrailerAtHouse": 0.8317819237709045,
+        "crewInAction": 0.04266965389251709,
+        "sameAngleAfter": 0.02928285486996174,
+        "messLevel": 0.017325937747955322,
+        "phoneSnapshotLook": 0.0076774549670517445
+      },
+      "confidence": 0.7981383085250855
+    }
+  },
+  "usage": {
+    "input_tokens": 17662,
+    "output_tokens": 0
+  }
+}

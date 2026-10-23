@@ -1,0 +1,8 @@
+{
+  "place": "Philadelphia",
+  "frames": {
+    "before": { "when": "October 22  9:18 AM", "clock": "1:46", "battery": 58, "faces": [{ "x": 1150, "y": 790, "w": 165, "h": 195 }] },
+    "action": { "when": "October 22  11:02 AM", "clock": "1:47", "battery": 58, "faces": [{ "x": 410, "y": 830, "w": 190, "h": 220 }, { "x": 955, "y": 900, "w": 175, "h": 215 }, { "x": 1160, "y": 820, "w": 155, "h": 200 }] },
+    "after": { "when": "October 22  12:31 PM", "clock": "1:48", "battery": 57, "faces": [{ "x": 1170, "y": 800, "w": 145, "h": 205 }] }
+  }
+}

@@ -5998,3 +5998,61 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the new `nicheCreativeResearch` skill writes down the routine behind the junk removal creatives so it runs the same for any niche, industry or offer, in eight steps with junk removal as the worked example: 1 sources (what operators say gets messages, with quotes, numbers and an A/B/C evidence grade), 2 winner listings with signs they get answers, 3 `creatives.jsonl` (every winner image as one line), 4 SubQ's definition of a winner in that niche (contact sheets, at most 4 images a call), 5 the rubric (scene, action, before, after) and spin-outs of matt's concept scored against the winners, 6 generating each frame once, 7 phone media through `listingCreative`, 8 measuring messages per listing. It is indexed in `skills.md`.
 Why: matt: outline how we're exploring different industries and niches, how we built out the creatives, the research and the rubric, so we can analyse content, define what a winner is inside the niche, and use the same logic going into different offers and industries.
 Checked: every figure in it comes from this session's files (`RESEARCH/JUNK_REMOVAL_MARKETPLACE_SOURCES.md`, `creatives.jsonl`, `subqReading.json`, the generation logs). Pre-commit checks pass. Step 8 isn't done for junk removal yet and the skill says so.
+
+## 2026-10-23 14:59Z · feat/moreListingCreatives
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `media/listings/apartmentMoveOut/images.jsonl`: new file
+- `media/listings/apartmentMoveOut/ios/action.jpg`: new file
+- `media/listings/apartmentMoveOut/ios/after.jpg`: new file
+- `media/listings/apartmentMoveOut/ios/before.jpg`: new file
+- `media/listings/apartmentMoveOut/iosScribbled/action.jpg`: new file
+- `media/listings/apartmentMoveOut/iosScribbled/after.jpg`: new file
+- `media/listings/apartmentMoveOut/iosScribbled/before.jpg`: new file
+- `media/listings/apartmentMoveOut/raw/action.jpg`: new file
+- `media/listings/apartmentMoveOut/raw/after.jpg`: new file
+- `media/listings/apartmentMoveOut/raw/before.jpg`: new file
+- `media/listings/apartmentMoveOut/subqReading.json`: new file
+- `media/listings/apartmentMoveOut/viewer.json`: new file
+- `media/listings/basementWoman/subqReading.json`: new file
+- `media/listings/curbsideCouch/images.jsonl`: new file
+- `media/listings/curbsideCouch/ios/action.jpg`: new file
+- `media/listings/curbsideCouch/ios/after.jpg`: new file
+- `media/listings/curbsideCouch/ios/before.jpg`: new file
+- `media/listings/curbsideCouch/iosScribbled/action.jpg`: new file
+- `media/listings/curbsideCouch/iosScribbled/after.jpg`: new file
+- `media/listings/curbsideCouch/iosScribbled/before.jpg`: new file
+- `media/listings/curbsideCouch/raw/action.jpg`: new file
+- `media/listings/curbsideCouch/raw/after.jpg`: new file
+- `media/listings/curbsideCouch/raw/before.jpg`: new file
+- `media/listings/curbsideCouch/viewer.json`: new file
+- `media/listings/garageOldMan/subqReading.json`: new file
+- `media/listings/lawnMattresses/images.jsonl`: new file
+- `media/listings/lawnMattresses/ios/action.jpg`: new file
+- `media/listings/lawnMattresses/ios/after.jpg`: new file
+- `media/listings/lawnMattresses/ios/before.jpg`: new file
+- `media/listings/lawnMattresses/iosScribbled/action.jpg`: new file
+- `media/listings/lawnMattresses/iosScribbled/after.jpg`: new file
+- `media/listings/lawnMattresses/iosScribbled/before.jpg`: new file
+- `media/listings/lawnMattresses/raw/action.jpg`: new file
+- `media/listings/lawnMattresses/raw/after.jpg`: new file
+- `media/listings/lawnMattresses/raw/before.jpg`: new file
+- `media/listings/lawnMattresses/viewer.json`: new file
+- `media/listings/patioPile/images.jsonl`: new file
+- `media/listings/patioPile/ios/action.jpg`: new file
+- `media/listings/patioPile/ios/after.jpg`: new file
+- `media/listings/patioPile/ios/before.jpg`: new file
+- `media/listings/patioPile/iosScribbled/action.jpg`: new file
+- `media/listings/patioPile/iosScribbled/after.jpg`: new file
+- `media/listings/patioPile/iosScribbled/before.jpg`: new file
+- `media/listings/patioPile/raw/action.jpg`: new file
+- `media/listings/patioPile/raw/after.jpg`: new file
+- `media/listings/patioPile/raw/before.jpg`: new file
+- `media/listings/patioPile/viewer.json`: new file
+- `media/listings/sideYardPile/subqReading.json`: new file
+- `skills/listingCreative/SKILL.md`: edited
+- `skills/nicheCreativeResearch/SKILL.md`: edited
+
+What changed: four more listing creatives through the rubric, each with a different age, ethnicity and situation, in `media/listings/<set>/` (raw, ios, iosScribbled, images.jsonl, viewer.json): apartmentMoveOut (Philadelphia, a Black woman in her late twenties moving out of an apartment bedroom), curbsideCouch (Reading, a Hispanic man in his forties with a sofa pile at the curb of a row house), patioPile (Harrisburg, an Asian American woman in her sixties with a back patio of broken furniture) and lawnMattresses (Lancaster, a Black landlord in his seventies with mattresses a tenant left on the lawn), with mixed crews. The first three sets and apartmentMoveOut carry SubQ's reading of their made images (`subqReading.json`). Vehicles are out of the rubric: the `listingCreative` skill has a hard rule of no car, truck, trailer or dumpster in any frame, the action is the crew carrying things out, and every prompt and avoid list says so; `nicheCreativeResearch` drops the truck from the junk removal example.
+Why: matt: "make a few more sets of creatives, try some different age demographics and ethnicities and situations through the rubric", then "every shot that contains a car is fucked up, delete that from the rubric", and "remove the car shots and remake them without any vehicles".
+Checked: 19 frames generated on reapi gemini-3-pro-image (12 for about $0.34, then the 7 car shots deleted and remade without vehicles for about $0.20), each once; one dropped download was recovered from treg's call log, not regenerated. Every frame looked at for vehicles, every head measured on a zoomed crop and every scribble cropped to check it covers the face. SubQ on the made images: looks real 97-100%, raw phone snapshot 91-97%, in the winners' composition 55-66%. Not done: SubQ hasn't re-scored the remade curbside, patio and lawn sets, so they have no `subqReading.json`.

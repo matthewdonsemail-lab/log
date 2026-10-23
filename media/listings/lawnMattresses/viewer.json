@@ -1,0 +1,8 @@
+{
+  "place": "Lancaster",
+  "frames": {
+    "before": { "when": "October 21  3:27 PM", "clock": "9:58", "battery": 66, "faces": [{ "x": 1165, "y": 1115, "w": 95, "h": 125 }] },
+    "action": { "when": "October 22  9:05 AM", "clock": "9:59", "battery": 66, "faces": [{ "x": 1165, "y": 1115, "w": 95, "h": 125 }, { "x": 55, "y": 1160, "w": 100, "h": 130 }, { "x": 680, "y": 1165, "w": 100, "h": 135 }] },
+    "after": { "when": "October 22  10:48 AM", "clock": "10:00", "battery": 65, "faces": [{ "x": 1165, "y": 1115, "w": 95, "h": 125 }] }
+  }
+}
