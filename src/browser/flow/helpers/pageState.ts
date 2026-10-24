@@ -5,6 +5,7 @@ export interface PageState {
   what: string
   resolve: string
   person: boolean
+  needsNothing?: boolean
 }
 
 interface StateRule extends PageState {
@@ -28,6 +29,11 @@ export function answered(value: unknown, key: string, test: (found: unknown) => 
 export const mayNotPost = (exchanges: readonly StepExchange[]): boolean => exchanges.some((e) => e.kind === 'document' && answered(e.answer, 'marketplace_new_seller_can_post_item', (v) => v === false))
 
 export const partnerListings = (exchanges: readonly StepExchange[]): boolean => exchanges.some((e) => answered(e.answer, 'product_details_type', (v) => v === 'PARTNER_LISTING'))
+
+export const GROUP_MEMBERS_REFETCH = 'GroupsCometMembersPageNewMembersSectionRefetchQuery'
+
+export const newMembersAnswered = (exchanges: readonly StepExchange[]): boolean =>
+  exchanges.some((e) => e.name === GROUP_MEMBERS_REFETCH && answered(e.answer, 'new_members', (v) => Array.isArray((v as { edges?: unknown } | null)?.edges) && ((v as { edges: unknown[] }).edges.length > 0)))
 
 const PIN_FROM_MATT = 'matt gives the account\'s 6-digit PIN once: `log facebook messenger pin --account <a>` in his terminal (a Clack prompt, kept in Twenty, never printed). Then reopen the browser so the session has it'
 
@@ -93,6 +99,15 @@ export const PAGE_STATES: readonly StateRule[] = [
     resolve: 'click radio "No, haven\'t sold", then button "Next" (`log inspect do click <ref> --live`); it only saves the answer (`useCometC2CTransactionSurveyResponseMutation`)',
     person: false
   },
+  {
+    id: 'groupMembersList',
+    url: /\/groups\/[^/?#]+\/members/i,
+    answer: newMembersAnswered,
+    what: 'a group\'s People tab answered with more of its newest members: `GroupsCometMembersPageNewMembersSectionRefetchQuery` gave `new_members` edges, about 10 a call, each a profile with its bio, page category, followers and when they joined (61594063207669, inspect 20261024T060921 steps 04-21)',
+    resolve: 'nothing to resolve: the list loaded. Scroll on for more, or read the members with `log facebook read members --account <a> --group <g> --count <n>`',
+    person: false,
+    needsNothing: true
+  },
   { id: 'rememberPassword', text: /remember password/i, what: 'the "Remember password" prompt', resolve: 'click "Not now" (`clickRole button "Not now"`)', person: false },
   { id: 'twoStepCode', url: /two_step_verification|two_factor|\/checkpoint/i, text: /enter (the )?(6-digit )?code|authentication code|login code/i, what: 'two-step: the code field', resolve: '`log inspect do code --live --account <a>` (the TOTP from Twenty, rule 21)', person: false },
   { id: 'loginForm', url: /\/login|login\.php/i, what: 'the login form', resolve: '`log inspect do signIn --live --account <a>` (rule 21), or `log facebook connect --account <a>`', person: false },
@@ -110,7 +125,7 @@ export function pageStateOf(url: string, text: string, context: StateContext = {
     }
     if (!s.url && !s.text && !s.answer) continue
     if (s.withoutPin && !context.messengerPin) return { id: s.id, what: s.what, resolve: s.withoutPin, person: true }
-    return { id: s.id, what: s.what, resolve: s.resolve, person: s.person }
+    return { id: s.id, what: s.what, resolve: s.resolve, person: s.person, ...(s.needsNothing ? { needsNothing: true } : {}) }
   }
   return null
 }
@@ -163,6 +178,7 @@ export const RESOLVE_CALLS: Readonly<Record<string, (at: StateAt) => ResolveCall
   marketplacePartnerListings: clickLabel(/(:\s*|")Update"?\s*$/),
   marketplaceCreateLimitReached: () => null,
   marketplacePartnerFeed: (at) => ({ tool: 'inspectDo', input: { account: at.account, action: 'goto', values: ['https://www.facebook.com/marketplace/'] } }),
+  groupMembersList: () => null,
   marketplaceDeleteSurvey: (at) =>
     /radio "No, haven't sold" \[checked\]/.test(at.text) ? liveStep(at.account, 'clickRole', ['button', 'Next']) : liveStep(at.account, 'clickRole', ['radio', "No, haven't sold"]),
   rememberPassword: (at) => liveStep(at.account, 'clickRole', ['button', 'Not now']),
@@ -172,6 +188,6 @@ export const RESOLVE_CALLS: Readonly<Record<string, (at: StateAt) => ResolveCall
 }
 
 export function resolveCallOf(state: PageState, at: StateAt): ResolveCall | null {
-  if (state.person) return null
+  if (state.person || state.needsNothing) return null
   return RESOLVE_CALLS[state.id]?.(at) ?? snapshotCall(at.account)
 }

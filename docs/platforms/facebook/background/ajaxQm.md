@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_d7f46c8cc1f3fbd68a82bc46b70630e2eb1283ceba774729ad62ba506a833c48` |
+| rea | `ev_b58c43b70d35241632190aee8935cd8eb8c620bc9f00a33fec5df4af92183149` |
 
-Seen 121 time(s) in 35 run(s).
+Seen 123 time(s) in 36 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -89,6 +89,8 @@ Seen 121 time(s) in 35 run(s).
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 451 ms | 808 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 437 ms | 762 ms | — |
 | inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 493 ms | 1825 ms | — |
+| inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 3775 ms | 4210 ms | — |
+| inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 337 ms | 2114 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

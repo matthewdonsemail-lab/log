@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | `...EBFetchBackupIdsSharedFragment` |
 | Called from | `useMWEncryptedBackupsFetchBackupIdsV2` |
-| rea | `ev_16df7daca80a72c8f44b7a489690336b7def96e564429f0639a122f48023372a` |
+| rea | `ev_58707e46c3cdf9a15dc3ce8b9916708228a15a775e7c93bafff9e14d4c975279` |
 
-Seen 114 time(s) in 32 run(s).
+Seen 116 time(s) in 33 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -89,6 +89,8 @@ Seen 114 time(s) in 32 run(s).
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 378 ms | 3627 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 419 ms | 5604 ms | — |
 | inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 408 ms | 6621 ms | — |
+| inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 353 ms | 4599 ms | — |
+| inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 330 ms | 5136 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
