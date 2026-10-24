@@ -8,7 +8,7 @@ import { createDecisionsClient } from '../../subq/decisions/client'
 import type { DecisionImage, DecisionsClient } from '../../subq/decisions/types'
 import { drawPersona } from '../../warmup/persona/helpers/drawPersona'
 import type { DatasetFiles } from '../../warmup/persona/helpers/drawPersona'
-import { characteristicsOf, checkTotal, PERSONA_AVOID, personaIdOf, personaPrompt, pictureCheckRequest, readPictureCheck, retryPrompt } from './helpers/index'
+import { backgroundCheckRequest, backgroundOf, characteristicsOf, nextBackground, checkTotal, PERSONA_AVOID, personaIdOf, personaPrompt, pictureCheckRequest, readPictureCheck, retryPrompt } from './helpers/index'
 import { PERSONA_IMAGE_ENDPOINT, PERSONA_IMAGE_MODEL, PERSONA_MIN_AGE, PERSONA_IMAGE_RESOLUTION, PERSONA_IMAGE_SIZE, PERSONA_MAX_ATTEMPTS, PROFILE_PICTURE_FILE } from './types'
 import type { GeneratedImage, PersonaRecord, PictureAttempt, PictureCheck, PictureDeps, PictureFacet } from './types'
 
@@ -17,10 +17,12 @@ export const personasFile = (dir = personasDir()) => join(dir, 'personas.jsonl')
 
 export function drawPersonas(files: DatasetFiles, country: string, seeds: number[]): PersonaRecord[] {
   const taken = new Set<string>()
+  const usedBackgrounds = new Set<string>()
   const adults = { ...files, doomscrolling: files.doomscrolling.filter((r) => Number(r.age) >= PERSONA_MIN_AGE) }
   return seeds.map((seed) => {
     const profile = drawPersona(adults, country, seed)
     const characteristics = characteristicsOf(profile)
+    characteristics.background = backgroundOf(characteristics, seed, usedBackgrounds)
     return {
       personaId: personaIdOf(characteristics, taken),
       seed,
@@ -60,6 +62,15 @@ export async function makeProfilePicture(record: PersonaRecord, deps: PictureDep
       return record
     }
     for (const f of check.failed) everFailed.add(f)
+    if (check.failed.includes('backgroundDistinct') && record.characteristics.background) {
+      record.backgroundsTried = [...new Set([...(record.backgroundsTried ?? []), record.characteristics.background])]
+      const next = nextBackground(record.characteristics, record.backgroundsTried)
+      if (next) {
+        record.characteristics.background = next
+        refreshPrompt(record)
+        deps.log(`${record.personaId}: background too like the others, trying ${next}`)
+      }
+    }
     prompt = retryPrompt(record, [...everFailed])
   }
   if (best) record.profilePicture = await deps.save(record, best.png)
@@ -93,13 +104,20 @@ export async function tregGenerate(prompt: string, avoid: string, wait = (ms: nu
   throw Object.assign(new Error(`image task ${task} took over 10 minutes`), { code: 'imageTaskTimeout' })
 }
 
+export const SUBQ_IMAGE_WIDTH = 768
+
+export async function shrinkImage(image: DecisionImage): Promise<DecisionImage> {
+  const bytes = await sharp(Buffer.from(image.base64, 'base64')).resize({ width: SUBQ_IMAGE_WIDTH, withoutEnlargement: true }).jpeg({ quality: 80 }).toBuffer()
+  return { mediaType: 'image/jpeg', base64: bytes.toString('base64') }
+}
+
 export function imageOf(path: string): DecisionImage {
   const bytes = readFileSync(path)
   const mediaType = bytes[0] === 0x89 ? 'image/png' : bytes[0] === 0x52 ? 'image/webp' : 'image/jpeg'
   return { mediaType, base64: bytes.toString('base64') }
 }
 
-export function liveDeps(options: { dir?: string; examples?: DecisionImage[]; subq?: DecisionsClient; log: (line: string) => void }): PictureDeps {
+export function liveDeps(options: { dir?: string; examples?: DecisionImage[]; reference?: DecisionImage | null; others?: (record: PersonaRecord) => DecisionImage[]; subq?: DecisionsClient; log: (line: string) => void }): PictureDeps {
   const dir = options.dir ?? personasDir()
   const subq = options.subq ?? createDecisionsClient()
   return {
@@ -110,7 +128,16 @@ export function liveDeps(options: { dir?: string; examples?: DecisionImage[]; su
       return new Uint8Array(await res.arrayBuffer())
     },
     toPng: async (bytes) => new Uint8Array(await sharp(bytes).png().toBuffer()),
-    check: async (record, png) => readPictureCheck(await subq(pictureCheckRequest(record, { mediaType: 'image/png', base64: Buffer.from(png).toString('base64') }, options.examples ?? []))),
+    check: async (record, png) => {
+      const picture = await shrinkImage({ mediaType: 'image/png', base64: Buffer.from(png).toString('base64') })
+      const examples = await Promise.all((options.examples ?? []).map(shrinkImage))
+      const reference = options.reference ? await shrinkImage(options.reference) : null
+      const main = await subq(pictureCheckRequest(record, picture, examples, reference))
+      const others = await Promise.all((options.others?.(record) ?? []).map(shrinkImage))
+      const backgrounds = []
+      for (let i = 0; i < others.length; i += 3) backgrounds.push(await subq(backgroundCheckRequest(picture, others.slice(i, i + 3))))
+      return readPictureCheck(main, ...backgrounds)
+    },
     save: async (record, png) => {
       const folder = join(dir, record.personaId)
       mkdirSync(folder, { recursive: true })

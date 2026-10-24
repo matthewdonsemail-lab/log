@@ -43,8 +43,12 @@ people:
 - bad light: a blown-out ceiling light, or a dark room lit from below
 - old front-camera quality: soft focus, noise, washed-out colours
 
-The place comes from the occupation and the light from the time of day they
-scroll. The prompt never says phone, iPhone or screen (`listingCreative`), and
+The place comes from the persona's `profession` in the social behaviour dataset
+(Engineer, Teacher, Marketer, Researcher, Entrepreneur, Student, Freelancer,
+Doctor, Designer, Other), or `Unemployed` from the occupation. Each has three
+places in `BACKGROUNDS`, and no two personas in a draw get the same one
+(`backgroundOf`), because matt said the pictures can't all look the same. The
+light comes from the time of day they scroll. The prompt never says phone, iPhone or screen (`listingCreative`), and
 it carries no text or logos.
 
 Generation is done only from the prompt. matt's photos are never passed to the
@@ -71,7 +75,18 @@ first attempts missed them. Each later prompt adds a fix for every check that
 has failed so far. It tries at most 5 times, then keeps the closest attempt and
 sets `matched: false`.
 
-The first approved picture is SubQ's third style example, after matt's two.
+- `likeReference`: taken the same way as the style reference, the picture matt
+  liked best (`--styleFrom <id>`, now freelancerSelfEmployedMale36). It is SubQ's
+  fourth image, after the picture and matt's two examples.
+- `backgroundDistinct`: a second SubQ call shows the picture beside the other
+  personas' pictures (three at a time) and asks whether its kind of room
+  differs from every one of theirs. Only the kind of room counts, because a
+  classroom and an office failed for sharing ceiling tiles. When it fails, the
+  persona moves to the next place for its profession (`nextBackground`,
+  `backgroundsTried`) before the retry.
+
+Every image sent to SubQ is shrunk to a 768 px JPEG first (`shrinkImage`), because
+SubQ refuses more than 8 MiB of images in one call.
 
 ## matt's verdict comes first
 

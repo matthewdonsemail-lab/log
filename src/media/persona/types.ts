@@ -8,7 +8,7 @@ export const PERSONA_PASS = 0.6
 export const PERSONA_OVERALL_PASS = 0.7
 export const PROFILE_PICTURE_FILE = 'profilePicture.png'
 
-export type PictureFacet = 'matchesPersona' | 'ageFits' | 'genderFits' | 'lifeFits' | 'selfieStyle' | 'looksReal' | 'noText' | 'armHidden' | 'lowAngle' | 'unflattering'
+export type PictureFacet = 'matchesPersona' | 'ageFits' | 'genderFits' | 'lifeFits' | 'selfieStyle' | 'looksReal' | 'noText' | 'armHidden' | 'lowAngle' | 'unflattering' | 'backgroundDistinct' | 'likeReference'
 
 export interface PictureCheck {
   scores: Record<PictureFacet, number>
@@ -49,6 +49,8 @@ export interface PersonaRecord {
   rejected?: { at: string; by: string; reason: string; tasks: string[] }[]
   rechecks?: { at: string; check: PictureCheck }[]
   approved?: { at: string; by: string }
+  styleReference?: boolean
+  backgroundsTried?: string[]
 }
 
 export interface PictureDeps {

@@ -3,7 +3,7 @@ import { existsSync, readdirSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { parseArgs } from 'node:util'
-import { drawPersonas, imageOf, liveDeps, makeProfilePicture, personasDir, personasFile, readPersonas, recheckPicture, refreshPrompt, rejectPicture, writePersonas } from '../../src/media/persona/index'
+import { backgroundOf, drawPersonas, imageOf, liveDeps, makeProfilePicture, personasDir, personasFile, readPersonas, recheckPicture, refreshPrompt, rejectPicture, writePersonas } from '../../src/media/persona/index'
 import type { PersonaRecord, PictureFacet } from '../../src/media/persona/index'
 import { readDatasets } from '../../src/warmup/persona/index'
 
@@ -15,12 +15,23 @@ const { values } = parseArgs({
     redo: { type: 'string' },
     recheck: { type: 'boolean', default: false },
     approve: { type: 'string' },
+    styleFrom: { type: 'string' },
     reason: { type: 'string', default: 'matt said it is bad' }
   }
 })
 const log = (line: string) => console.error(`${new Date().toISOString().slice(11, 19)} ${line}`)
-const ALWAYS_FIX: PictureFacet[] = ['selfieStyle', 'noText', 'armHidden', 'lowAngle', 'unflattering']
+const ALWAYS_FIX: PictureFacet[] = ['selfieStyle', 'noText', 'armHidden', 'lowAngle', 'unflattering', 'backgroundDistinct', 'likeReference']
 const saved = existsSync(personasFile()) ? readPersonas() : []
+
+if (values.styleFrom) {
+  const record = saved.find((r) => r.personaId === values.styleFrom)
+  if (!record?.profilePicture) throw new Error(`no picture for persona ${values.styleFrom} in ${personasFile()}`)
+  for (const r of saved) delete r.styleReference
+  record.styleReference = true
+  log(`${record.personaId} is the style reference SubQ judges every picture against`)
+  writePersonas(saved)
+  process.exit(0)
+}
 
 if (values.approve) {
   for (const id of values.approve.split(',')) {
@@ -34,14 +45,18 @@ if (values.approve) {
 }
 
 const mattExamples = existsSync(values.examples) ? readdirSync(values.examples).filter((f) => /\.(jpe?g|png|webp)$/i.test(f)).slice(0, 2).map((f) => join(values.examples, f)) : []
-const approvedExample = saved.filter((r) => r.approved && r.profilePicture).map((r) => join(personasDir(), r.profilePicture!)).slice(0, 1)
-const exampleFiles = [...mattExamples, ...approvedExample]
-log(`style examples for SubQ: ${mattExamples.length} of matt's, ${approvedExample.length} approved`)
-const deps = liveDeps({ examples: exampleFiles.map(imageOf), log })
-let records: PersonaRecord[]
+const referenceRecord = saved.find((r) => r.styleReference && r.profilePicture) ?? null
+log(`style examples for SubQ: ${mattExamples.length} of matt's${referenceRecord ? `, ${referenceRecord.personaId} as the best one` : ''}`)
+let records: PersonaRecord[] = saved
 let todo: PersonaRecord[]
+const othersOf = (record: PersonaRecord) => records.filter((r) => r !== record && r.profilePicture && existsSync(join(personasDir(), r.profilePicture))).map((r) => imageOf(join(personasDir(), r.profilePicture!)))
+const deps = liveDeps({ examples: mattExamples.map(imageOf), reference: referenceRecord ? imageOf(join(personasDir(), referenceRecord.profilePicture!)) : null, others: othersOf, log })
 
 async function regenerate(record: PersonaRecord, fixes: PictureFacet[]) {
+  if (!record.characteristics.background) {
+    const used = new Set(records.filter((r) => r !== record).map((r) => r.characteristics.background).filter((b): b is string => Boolean(b)))
+    record.characteristics.background = backgroundOf(record.characteristics, record.seed, used)
+  }
   refreshPrompt(record)
   log(`regenerating ${record.personaId} with fixes for ${fixes.join(', ')}`)
   await makeProfilePicture(record, deps, undefined, fixes)
@@ -49,7 +64,7 @@ async function regenerate(record: PersonaRecord, fixes: PictureFacet[]) {
 }
 
 if (values.recheck) {
-  records = saved
+
   todo = []
   for (const record of records) {
     if (record.approved) {
@@ -64,7 +79,7 @@ if (values.recheck) {
     todo.push(record)
   }
 } else if (values.redo) {
-  records = saved
+
   const record = records.find((r) => r.personaId === values.redo)
   if (!record) throw new Error(`no persona ${values.redo} in ${personasFile()}`)
   if (record.approved) throw new Error(`${record.personaId} is approved by matt: it is never regenerated`)
