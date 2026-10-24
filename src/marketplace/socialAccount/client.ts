@@ -117,6 +117,10 @@ export async function markProfileSet(twenty: TwentyClient, accountId: string, at
   await twenty.update(SOCIAL_ACCOUNTS, accountId, { profileSetAt: at.toISOString() })
 }
 
+export async function saveProfilePhoto(twenty: TwentyClient, accountId: string, source: string): Promise<void> {
+  await twenty.update(SOCIAL_ACCOUNTS, accountId, { profilePhoto: source })
+}
+
 export async function saveDeviceProfile(twenty: TwentyClient, account: FacebookAccount, profile: DeviceProfile): Promise<boolean> {
   if (hasStoredDevice(account.deviceProfile)) return false
   await twenty.update(SOCIAL_ACCOUNTS, account.id, { deviceProfile: profile as unknown as AccountUpdate['deviceProfile'] })

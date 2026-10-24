@@ -6,9 +6,10 @@ export const PERSONA_MAX_ATTEMPTS = 5
 export const PERSONA_MIN_AGE = 18
 export const PERSONA_PASS = 0.6
 export const PERSONA_OVERALL_PASS = 0.7
+export const PERSONA_BACKGROUND_PASS = 0.25
 export const PROFILE_PICTURE_FILE = 'profilePicture.png'
 
-export type PictureFacet = 'matchesPersona' | 'ageFits' | 'genderFits' | 'lifeFits' | 'selfieStyle' | 'looksReal' | 'noText' | 'armHidden' | 'lowAngle' | 'unflattering' | 'backgroundDistinct' | 'likeReference'
+export type PictureFacet = 'matchesPersona' | 'ageFits' | 'genderFits' | 'lifeFits' | 'selfieStyle' | 'looksReal' | 'noText' | 'armHidden' | 'lowAngle' | 'unflattering' | 'backgroundDistinct' | 'likeReference' | 'noStonewashedHoodie' | 'clothingFits'
 
 export interface PictureCheck {
   scores: Record<PictureFacet, number>
@@ -24,6 +25,7 @@ export interface PictureAttempt {
   credits: number
   prompt: string
   check: PictureCheck
+  background?: string
 }
 
 export interface GeneratedImage {
@@ -32,7 +34,14 @@ export interface GeneratedImage {
   credits: number
 }
 
+export interface PersonaAccount {
+  accountName: string
+  homeCity: string
+  homeCountry: string
+}
+
 export interface PersonaRecord {
+  account?: PersonaAccount
   personaId: string
   seed: number
   country: string
@@ -60,4 +69,5 @@ export interface PictureDeps {
   save: (record: PersonaRecord, png: Uint8Array) => Promise<string>
   toPng: (bytes: Uint8Array) => Promise<Uint8Array>
   log: (line: string) => void
+  usedBackgrounds?: (record: PersonaRecord) => string[]
 }

@@ -8,41 +8,60 @@ import { createDecisionsClient } from '../../subq/decisions/client'
 import type { DecisionImage, DecisionsClient } from '../../subq/decisions/types'
 import { drawPersona } from '../../warmup/persona/helpers/drawPersona'
 import type { DatasetFiles } from '../../warmup/persona/helpers/drawPersona'
+import type { BehaviourProfile } from '../../warmup/persona/types'
 import { backgroundCheckRequest, backgroundOf, characteristicsOf, nextBackground, checkTotal, PERSONA_AVOID, personaIdOf, personaPrompt, pictureCheckRequest, readPictureCheck, retryPrompt } from './helpers/index'
 import { PERSONA_IMAGE_ENDPOINT, PERSONA_IMAGE_MODEL, PERSONA_MIN_AGE, PERSONA_IMAGE_RESOLUTION, PERSONA_IMAGE_SIZE, PERSONA_MAX_ATTEMPTS, PROFILE_PICTURE_FILE } from './types'
-import type { GeneratedImage, PersonaRecord, PictureAttempt, PictureCheck, PictureDeps, PictureFacet } from './types'
+import type { GeneratedImage, PersonaAccount, PersonaRecord, PictureAttempt, PictureCheck, PictureDeps, PictureFacet } from './types'
 
 export const personasDir = (repoRoot = fileURLToPath(new URL('../../../', import.meta.url))) => join(repoRoot, 'media', 'personas')
 export const personasFile = (dir = personasDir()) => join(dir, 'personas.jsonl')
 
+export const adultsOnly = (files: DatasetFiles): DatasetFiles => ({ ...files, doomscrolling: files.doomscrolling.filter((r) => Number(r.age) >= PERSONA_MIN_AGE) })
+
 export function drawPersonas(files: DatasetFiles, country: string, seeds: number[]): PersonaRecord[] {
   const taken = new Set<string>()
   const usedBackgrounds = new Set<string>()
-  const adults = { ...files, doomscrolling: files.doomscrolling.filter((r) => Number(r.age) >= PERSONA_MIN_AGE) }
-  return seeds.map((seed) => {
-    const profile = drawPersona(adults, country, seed)
-    const characteristics = characteristicsOf(profile)
-    characteristics.background = backgroundOf(characteristics, seed, usedBackgrounds)
-    return {
-      personaId: personaIdOf(characteristics, taken),
-      seed,
-      country,
-      characteristics,
-      sources: profile.rows.map((r) => r.source),
-      prompt: personaPrompt(characteristics),
-      avoid: PERSONA_AVOID,
-      size: PERSONA_IMAGE_SIZE,
-      resolution: PERSONA_IMAGE_RESOLUTION,
-      generatedWith: `${PERSONA_IMAGE_ENDPOINT} (${PERSONA_IMAGE_MODEL}, ${PERSONA_IMAGE_RESOLUTION}, ${PERSONA_IMAGE_SIZE})`,
-      attempts: [],
-      profilePicture: null,
-      matched: false
-    }
+  return seeds.map((seed) => personaRecordOf(drawPersona(adultsOnly(files), country, seed), taken, usedBackgrounds))
+}
+
+export function assignPersonas(files: DatasetFiles, accounts: PersonaAccount[], seedOf: (accountName: string) => number, existing: PersonaRecord[] = []): { record: PersonaRecord; profile: BehaviourProfile }[] {
+  const taken = new Set(existing.map((r) => r.personaId))
+  const usedBackgrounds = new Set(existing.map((r) => r.characteristics.background).filter((b): b is string => Boolean(b)))
+  return accounts.map((account) => {
+    const profile = drawPersona(adultsOnly(files), account.homeCountry, seedOf(account.accountName))
+    const record = personaRecordOf(profile, taken, usedBackgrounds, account)
+    record.characteristics.homeCity = account.homeCity
+    record.prompt = personaPrompt(record.characteristics)
+    return { record, profile }
   })
 }
 
+function personaRecordOf(profile: BehaviourProfile, taken: Set<string>, usedBackgrounds: Set<string>, account?: PersonaAccount): PersonaRecord {
+  const { seed, country } = profile
+  const characteristics = characteristicsOf(profile)
+  characteristics.background = backgroundOf(characteristics, seed, usedBackgrounds)
+  const cityPrefix = account ? account.homeCity.replace(/[^A-Za-z]+/g, ' ').trim().split(' ').map((w, i) => (i ? w[0].toUpperCase() + w.slice(1).toLowerCase() : w.toLowerCase())).join('') : ''
+  const id = personaIdOf(characteristics, account ? new Set<string>() : taken)
+  return {
+    ...(account ? { account } : {}),
+    personaId: cityPrefix ? uniqueId(`${cityPrefix}${id[0].toUpperCase()}${id.slice(1)}`, taken) : id,
+    seed,
+    country,
+    characteristics,
+    sources: profile.rows.map((r) => r.source),
+    prompt: personaPrompt(characteristics),
+    avoid: PERSONA_AVOID,
+    size: PERSONA_IMAGE_SIZE,
+    resolution: PERSONA_IMAGE_RESOLUTION,
+    generatedWith: `${PERSONA_IMAGE_ENDPOINT} (${PERSONA_IMAGE_MODEL}, ${PERSONA_IMAGE_RESOLUTION}, ${PERSONA_IMAGE_SIZE})`,
+    attempts: [],
+    profilePicture: null,
+    matched: false
+  }
+}
+
 export async function makeProfilePicture(record: PersonaRecord, deps: PictureDeps, maxAttempts = PERSONA_MAX_ATTEMPTS, startFixes: PictureFacet[] = []): Promise<PersonaRecord> {
-  let best: { png: Uint8Array; check: PictureCheck } | null = null
+  let best: { png: Uint8Array; check: PictureCheck; background?: string } | null = null
   const everFailed = new Set<PictureFacet>(startFixes)
   let prompt = retryPrompt(record, [...everFailed])
   const first = record.attempts.length
@@ -52,10 +71,10 @@ export async function makeProfilePicture(record: PersonaRecord, deps: PictureDep
     const png = await deps.toPng(await deps.download(image.url))
     deps.log(`${record.personaId} ${n}/${first + maxAttempts}: generated (${image.credits} credits), SubQ checking`)
     const check = await deps.check(record, png)
-    const attempt: PictureAttempt = { n, task: image.task, url: image.url, credits: image.credits, prompt, check }
+    const attempt: PictureAttempt = { n, task: image.task, url: image.url, credits: image.credits, prompt, check, background: record.characteristics.background }
     record.attempts.push(attempt)
     deps.log(`${record.personaId} ${n}/${first + maxAttempts}: ${check.passed ? 'matches' : `low on ${check.failed.join(', ')}`} (${Object.entries(check.scores).map(([f, s]) => `${f} ${s}`).join(', ')})`)
-    if (!best || checkTotal(check) > checkTotal(best.check)) best = { png, check }
+    if (!best || checkTotal(check) > checkTotal(best.check)) best = { png, check, background: record.characteristics.background }
     if (check.passed) {
       record.profilePicture = await deps.save(record, png)
       record.matched = true
@@ -64,7 +83,7 @@ export async function makeProfilePicture(record: PersonaRecord, deps: PictureDep
     for (const f of check.failed) everFailed.add(f)
     if (check.failed.includes('backgroundDistinct') && record.characteristics.background) {
       record.backgroundsTried = [...new Set([...(record.backgroundsTried ?? []), record.characteristics.background])]
-      const next = nextBackground(record.characteristics, record.backgroundsTried)
+      const next = nextBackground(record.characteristics, [...record.backgroundsTried, ...(deps.usedBackgrounds?.(record) ?? [])])
       if (next) {
         record.characteristics.background = next
         refreshPrompt(record)
@@ -73,7 +92,13 @@ export async function makeProfilePicture(record: PersonaRecord, deps: PictureDep
     }
     prompt = retryPrompt(record, [...everFailed])
   }
-  if (best) record.profilePicture = await deps.save(record, best.png)
+  if (best) {
+    record.profilePicture = await deps.save(record, best.png)
+    if (best.background) {
+      record.characteristics.background = best.background
+      refreshPrompt(record)
+    }
+  }
   deps.log(`${record.personaId}: no attempt matched in ${maxAttempts}, kept the closest`)
   return record
 }
@@ -176,4 +201,11 @@ export async function recheckPicture(record: PersonaRecord, deps: PictureDeps, d
 export function writePersonas(records: PersonaRecord[], file = personasFile()): void {
   mkdirSync(join(file, '..'), { recursive: true })
   writeFileSync(file, records.map((r) => JSON.stringify(r)).join('\n') + '\n')
+}
+
+function uniqueId(base: string, taken: Set<string>): string {
+  let id = base
+  for (let n = 2; taken.has(id); n++) id = `${base}${n}`
+  taken.add(id)
+  return id
 }

@@ -1,9 +1,9 @@
 import type { DecisionAnswer, DecisionImage, DecisionRequest, DecisionResponse } from '../../../subq/decisions/types'
-import { PERSONA_OVERALL_PASS, PERSONA_PASS } from '../types'
+import { PERSONA_BACKGROUND_PASS, PERSONA_OVERALL_PASS, PERSONA_PASS } from '../types'
 import type { PersonaRecord, PictureCheck, PictureFacet } from '../types'
 import { SELFIE_STYLE } from './prompt'
 
-export const PICTURE_FACETS: PictureFacet[] = ['matchesPersona', 'ageFits', 'genderFits', 'lifeFits', 'selfieStyle', 'looksReal', 'noText', 'armHidden', 'lowAngle', 'unflattering', 'backgroundDistinct', 'likeReference']
+export const PICTURE_FACETS: PictureFacet[] = ['matchesPersona', 'ageFits', 'genderFits', 'lifeFits', 'selfieStyle', 'looksReal', 'noText', 'armHidden', 'lowAngle', 'unflattering', 'backgroundDistinct', 'likeReference', 'noStonewashedHoodie', 'clothingFits']
 
 export function pictureCheckRequest(record: PersonaRecord, picture: DecisionImage, examples: DecisionImage[], reference: DecisionImage | null = null): DecisionRequest {
   const c = record.characteristics
@@ -30,6 +30,8 @@ export function pictureCheckRequest(record: PersonaRecord, picture: DecisionImag
       armHidden: { type: 'noul', instructions: 'Is the person\'s own arm, the one holding the camera, out of image 1 or under 20% of it?', criteria: { true: 'No arm, or the arm is under 20% of the picture', false: 'The arm holding the camera takes up 20% or more of the picture' } },
       lowAngle: { type: 'noul', instructions: 'In image 1, is the camera below the face pointing up at it, so the jaw and underside of the nose are seen from below?', criteria: { true: 'Taken from below, pointing up at the face', false: 'Taken from eye level or above' } },
       unflattering: { type: 'noul', instructions: 'Is image 1 an unflattering shot of the person, the way an ordinary careless selfie from below is: under the chin, nostrils, a heavy jaw, bad light, not their best side?', criteria: { true: 'Unflattering, careless', false: 'Flattering, posed or attractive' } },
+      noStonewashedHoodie: { type: 'noul', instructions: 'Is the person in image 1 wearing something other than a stonewashed, acid-washed or faded washed-out hoodie or sweatshirt?', criteria: { true: 'Not a stonewashed or washed-out hoodie or sweatshirt', false: 'A stonewashed, acid-washed or faded washed-out hoodie or sweatshirt' } },
+      clothingFits: { type: 'noul', instructions: `Do the clothes in image 1 suit where this person lives (${c.homeCity ? `${c.homeCity}, ` : ''}${c.country}) and the place they are in (${c.background ?? 'their surroundings'}): casual, not formal, not just a plain t-shirt, and particular to that place rather than generic?`, criteria: { true: 'Casual clothes that suit their home and that place, not a plain t-shirt, not formal', false: 'Formal, a plain t-shirt, generic, or wrong for their home or that place' } },
       ...likeReference
     }
   }
@@ -51,7 +53,7 @@ export function readPictureCheck(response: DecisionResponse, ...more: DecisionRe
   const all = [response, ...more]
   const answer = (f: PictureFacet) => Math.min(...all.map((r) => noul(r.answers[f] as DecisionAnswer | undefined)))
   const scores = Object.fromEntries(PICTURE_FACETS.map((f) => [f, answer(f)])) as Record<PictureFacet, number>
-  const failed = PICTURE_FACETS.filter((f) => scores[f] < (f === 'matchesPersona' ? PERSONA_OVERALL_PASS : PERSONA_PASS))
+  const failed = PICTURE_FACETS.filter((f) => scores[f] < (f === 'matchesPersona' ? PERSONA_OVERALL_PASS : f === 'backgroundDistinct' ? PERSONA_BACKGROUND_PASS : PERSONA_PASS))
   return { scores, passed: failed.length === 0, failed, inputTokens: all.reduce((n, r) => n + (r.usage?.input_tokens ?? 0), 0) }
 }
 

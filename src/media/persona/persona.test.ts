@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'bun:test'
-import { drawPersonas, makeProfilePicture } from './client'
+import { assignPersonas, drawPersonas, makeProfilePicture } from './client'
 import { BACKGROUNDS, backgroundCheckRequest, personaPrompt, pictureCheckRequest, readPictureCheck, retryPrompt } from './helpers/index'
 import type { PictureCheck, PictureDeps } from './types'
 
@@ -11,7 +11,7 @@ const FILES = {
 }
 
 const check = (scores: Partial<PictureCheck['scores']>): PictureCheck =>
-  readPictureCheck({ model: 'x', usage: { input_tokens: 1, output_tokens: 1 }, answers: Object.fromEntries(Object.entries({ matchesPersona: 0.9, ageFits: 0.9, genderFits: 0.9, lifeFits: 0.9, selfieStyle: 0.9, looksReal: 0.9, noText: 0.9, armHidden: 0.9, lowAngle: 0.9, unflattering: 0.9, ...scores }).map(([k, v]) => [k, { type: 'noul', noul: v }])) })
+  readPictureCheck({ model: 'x', usage: { input_tokens: 1, output_tokens: 1 }, answers: Object.fromEntries(Object.entries({ matchesPersona: 0.9, ageFits: 0.9, genderFits: 0.9, lifeFits: 0.9, selfieStyle: 0.9, looksReal: 0.9, noText: 0.9, armHidden: 0.9, lowAngle: 0.9, unflattering: 0.9, noStonewashedHoodie: 0.9, clothingFits: 0.9, ...scores }).map(([k, v]) => [k, { type: 'noul', noul: v }])) })
 
 describe('persona profile pictures', () => {
   test('a persona is drawn from the datasets and its prompt is built from its characteristics, in the selfie style, with no device words', () => {
@@ -61,6 +61,18 @@ describe('persona profile pictures', () => {
     expect(prompts[1]).toContain(out.characteristics.background)
   })
 
+  test('each account gets its own adult persona from its home, named for its city, with the seed the warm-up uses', () => {
+    const files = { ...FILES, doomscrolling: [{ ...FILES.doomscrolling[0], respondent_id: 'D0', age: '14' }, ...FILES.doomscrolling] }
+    const seeds: Record<string, number> = { '615': 11, '616': 12 }
+    const out = assignPersonas(files, [{ accountName: '615', homeCity: 'Mountain Top', homeCountry: 'US' }, { accountName: '616', homeCity: 'Kamloops', homeCountry: 'CA' }], (a) => seeds[a])
+    expect(out.map((o) => o.record.personaId)).toEqual(['mountainTopFullTimeEmployeeMale61', 'kamloopsFullTimeEmployeeMale61'])
+    expect(out.map((o) => o.record.seed)).toEqual([11, 12])
+    expect(out.map((o) => o.profile.seed)).toEqual([11, 12])
+    expect(out[1].record.account).toEqual({ accountName: '616', homeCity: 'Kamloops', homeCountry: 'CA' })
+    expect(out[1].record.prompt).toContain('from Kamloops, United States')
+    expect(out[0].record.characteristics.background).not.toBe(out[1].record.characteristics.background)
+  })
+
   test('only adults are drawn: a row under 18 is never a persona', () => {
     const files = { ...FILES, doomscrolling: [{ ...FILES.doomscrolling[0], respondent_id: 'D0', age: '14' }, ...FILES.doomscrolling] }
     for (const seed of [1, 2, 3, 4, 5, 6]) expect(drawPersonas(files, 'US', [seed])[0].characteristics.age).toBe('61')
@@ -70,7 +82,7 @@ describe('persona profile pictures', () => {
     const [p] = drawPersonas(FILES, 'US', [7])
     const req = pictureCheckRequest(p, { mediaType: 'image/png', base64: 'a' }, [{ mediaType: 'image/jpeg', base64: 'b' }, { mediaType: 'image/jpeg', base64: 'c' }])
     expect(req.images).toHaveLength(3)
-    expect(Object.keys(req.questions)).toEqual(['matchesPersona', 'ageFits', 'genderFits', 'lifeFits', 'selfieStyle', 'looksReal', 'noText', 'armHidden', 'lowAngle', 'unflattering'])
+    expect(Object.keys(req.questions)).toEqual(['matchesPersona', 'ageFits', 'genderFits', 'lifeFits', 'selfieStyle', 'looksReal', 'noText', 'armHidden', 'lowAngle', 'unflattering', 'noStonewashedHoodie', 'clothingFits'])
     expect(String((req.state as { images: string }).images)).toContain('Images 2 to 3')
   })
 

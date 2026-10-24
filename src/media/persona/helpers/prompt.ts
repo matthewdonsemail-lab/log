@@ -78,17 +78,18 @@ const LIGHT: Record<string, string> = {
 }
 
 export const SELFIE_STYLE =
-  'It is a selfie they took of themselves to use as a profile picture: the camera held a little below the face and slightly off to one side, tilted, pointing up at it, so it is seen from underneath at an angle: the jaw, neck and underside of the nose show, the head turned a little, the ceiling or upper wall is behind the head, and the top of the head is close to the edge of the frame or cut off. It is an unflattering angle and they have not tried to look good. The arm holding the camera is out of the frame: no arm, elbow or hand in the picture. They look just off the lens with a flat, neutral, unsmiling expression, not posing. Ordinary everyday clothes, nothing styled. Old front-facing camera quality: low resolution, soft focus, noise in the shadows, washed-out colours, auto exposure that blows any light or window out to white. Unflattering and unposed, nothing composed: the kind of picture an ordinary person takes without thinking about it.'
+  'It is a selfie they took of themselves to use as a profile picture: the camera held a little below the face and slightly off to one side, tilted, pointing up at it, so it is seen from underneath at an angle: the jaw, neck and underside of the nose show, the head turned a little, the ceiling or upper wall is behind the head, and the top of the head is close to the edge of the frame or cut off. It is an unflattering angle and they have not tried to look good. The arm holding the camera is out of the frame: no arm, elbow or hand in the picture. They look just off the lens with a flat, neutral, unsmiling expression, not posing. Casual everyday clothes that suit where they live and the place they are in, nothing formal or styled, not a plain t-shirt, and never a stonewashed or washed-out hoodie or sweatshirt. Old front-facing camera quality: low resolution, soft focus, noise in the shadows, washed-out colours, auto exposure that blows any light or window out to white. Unflattering and unposed, nothing composed: the kind of picture an ordinary person takes without thinking about it.'
 
 export const PERSONA_AVOID =
-  'No readable text, letters, numbers, logos or brand names anywhere. No device, screen, app interface or frame drawn into the picture. No outstretched arm, elbow or hand holding the camera in the frame. No eye-level or high flattering angle. No smiling for the camera, no posing, no studio or cinematic lighting, no beauty filter, no smooth retouched skin, no model or influencer looks, no sharp detail, no shallow depth of field or bokeh, no HDR, no glossy CGI look, no extra fingers or warped hands, no distorted face.'
+  'No readable text, letters, numbers, logos or brand names anywhere. No device, screen, app interface or frame drawn into the picture. No outstretched arm, elbow or hand holding the camera in the frame. No eye-level or high flattering angle. No smiling for the camera, no posing, no studio or cinematic lighting, no beauty filter, no smooth retouched skin, no model or influencer looks, no sharp detail, no shallow depth of field or bokeh, no HDR, no glossy CGI look, no extra fingers or warped hands, no distorted face. No stonewashed, acid-washed or faded washed-out hoodie or sweatshirt.'
 
 export function personaPrompt(c: Record<string, string>): string {
   const who = WHO[c.gender ?? ''] ?? 'person'
   const setting = c.background ?? SETTING[c.occupation ?? ''] ?? 'at home'
   const light = LIGHT[c.whenTheyScroll ?? ''] ?? LIGHT.Afternoon
   const mood = c.moodWhileScrolling ? ` They look ${c.moodWhileScrolling.toLowerCase()}.` : ''
-  return `A candid photo of an ordinary ${c.age}-year-old ${who} from ${c.country ?? 'the United States'}, ${setting}. ${light[0].toUpperCase()}${light.slice(1)}.${mood} ${SELFIE_STYLE} Nothing in the picture carries readable text, letters, numbers, logos or brand names.`
+  const from = c.homeCity ? `${c.homeCity}, ${c.country ?? 'the United States'}` : c.country ?? 'the United States'
+  return `A candid photo of an ordinary ${c.age}-year-old ${who} from ${from}, ${setting}. ${light[0].toUpperCase()}${light.slice(1)}.${mood} ${SELFIE_STYLE} Nothing in the picture carries readable text, letters, numbers, logos or brand names.`
 }
 
 const FIX: Record<PictureFacet, (c: Record<string, string>) => string> = {
@@ -98,6 +99,8 @@ const FIX: Record<PictureFacet, (c: Record<string, string>) => string> = {
   lifeFits: (c) => `The place and light must clearly be ${c.background ?? SETTING[c.occupation ?? ''] ?? 'at home'}, ${(c.whenTheyScroll ?? '').toLowerCase()}.`,
   backgroundDistinct: (c) => `The place must clearly be ${c.background ?? 'somewhere of their own'}, not a plain office or a bedroom.`,
   likeReference: () => 'Take it the way the best example is taken: slightly from below and off to one side, the head turned a little, part of the head cut off by the edge, warm everyday light.',
+  noStonewashedHoodie: () => 'They wear something other than a hoodie or sweatshirt: no stonewashed, acid-washed or faded washed-out top.',
+  clothingFits: (c) => `Their clothes must suit ${c.homeCity ? `${c.homeCity}, ` : ''}${c.country ?? 'home'} and ${c.background ?? 'the place they are in'}: casual and particular to that place, not formal, not a plain t-shirt.`,
   selfieStyle: () => 'It must be a low-angle selfie looking up at the face, unposed, flat expression.',
   lowAngle: () => 'The camera must be below the face pointing up at it, seen from under the chin, the ceiling behind the head.',
   unflattering: () => 'It must be unflattering: under the chin, nostrils showing, a heavy jaw, bad light, not posed or attractive.',

@@ -88,6 +88,43 @@ sets `matched: false`.
 Every image sent to SubQ is shrunk to a 768 px JPEG first (`shrinkImage`), because
 SubQ refuses more than 8 MiB of images in one call.
 
+## The accounts' own personas
+
+`--accounts` gives every new Facebook account (`needsLogin`, no `profilePhoto`)
+a persona of its own:
+
+- It is drawn in the account's country with `seedOf(accountName)`, the seed the
+  Reels warm-up uses, and written to `~/.logCli/personas/<account>.json` when
+  that file is missing. The picture and the warm-up are the same person.
+- The id starts with the city (`kamloopsPartTimeEmployeeFemale18`), the prompt
+  names the home ("from Kamloops, Canada"), and the record keeps `account`
+  (accountName, homeCity, homeCountry).
+- The background check compares each picture with the last three pictures from
+  the same country.
+- A picture goes into Twenty only when it passes every check:
+  `socialAccounts.profilePhoto` is set to its path (`saveProfilePhoto`), the
+  field the host's profile step uploads from.
+
+`--accountsRedo` re-checks every account picture that isn't approved against
+the current checks and regenerates whichever fail. An account whose last
+attempts never passed moves to another place first, and an account with no
+picture yet is generated.
+
+Clothing checks (matt, 2026-10-24):
+
+- `noStonewashedHoodie`: no stonewashed, acid-washed or faded washed-out
+  hoodie or sweatshirt.
+- `clothingFits`: casual clothes that suit the home and the place, not formal
+  and not a plain t-shirt.
+
+`backgroundDistinct` passes at 0.25 (`PERSONA_BACKGROUND_PASS`). Places are
+unique when they are assigned, and SubQ scored different rooms as low as 0.11,
+so a higher bar only burned tries. A picture kept after failing keeps the
+background it was taken in.
+
+On 2026-10-24 all 20 accounts (10 in Pennsylvania, 10 around Kamloops) matched,
+and each one's picture is its profilePhoto in Twenty.
+
 ## matt's verdict comes first
 
 - `--approve <id,id>` locks pictures matt likes (`approved`). They are never

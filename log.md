@@ -6173,3 +6173,41 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the persona pictures no longer share a background. Each persona's place comes from its `profession` in the social behaviour dataset, or `Unemployed` from its occupation. There are three places per profession (`BACKGROUNDS`), and no two personas in a draw get the same one (`backgroundOf`). A second SubQ call shows each picture beside the other personas' pictures, three at a time, and asks whether its kind of room differs from every one of theirs (`backgroundDistinct`, `backgroundCheckRequest`). It asks about the kind of room only, because the first wording failed a classroom and a library for sharing ceiling tiles with an office. When that check fails, the persona moves to the next place for its profession before the retry (`nextBackground`, `backgroundsTried`). `--styleFrom <id>` makes one picture the style reference (freelancerSelfEmployedMale36, the one matt liked best). It is SubQ's fourth image, and `likeReference` asks whether the picture is taken the same way. The prompt now asks for that angle: a little below the face and off to one side, tilted, head turned. Images sent to SubQ are shrunk to 768 px JPEGs (`shrinkImage`), because four full-size PNGs passed SubQ's 8 MiB limit.
 Why: matt said the pictures can't look the same: the backgrounds should be spun out from the profession and the dataset, and SubQ can take a few images to compare them. He said the freelancer one looks best and the two remade ones looked weird.
 Checked: studentMale30 and studentFemale25 were redone live. Each went through 5 attempts without passing every check, so the closest was kept: a teacher in an empty classroom (every other check at least 0.94, backgroundDistinct 0.3 under the old wording) and a researcher between library shelves (every other check at least 0.8, backgroundDistinct 0.29). The two wrongly failed backgrounds are why the question was reworded; a home desk like the freelancer's rightly scored 0.03. The five pictures are now a classroom, an office, a library, a cubicle and a home desk. The approved three were not touched. Together with the earlier redos this came to 35 image generations, about $1. New tests cover distinct backgrounds within a draw, the background request, and swapping the background before a retry.
+
+## 2026-10-24 06:29Z · feat/personaPictures
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `media/personas/accountsSheet.jpg`: new file
+- `media/personas/barriereFreelancerSelfEmployedFemale31/profilePicture.png`: new file
+- `media/personas/chaseFreelancerSelfEmployedFemale24/profilePicture.png`: new file
+- `media/personas/exeterPartTimeEmployeeMale20/profilePicture.png`: new file
+- `media/personas/hazletonFreelancerSelfEmployedFemale27/profilePicture.png`: new file
+- `media/personas/kamloopsPartTimeEmployeeFemale18/profilePicture.png`: new file
+- `media/personas/kelownaPartTimeEmployeeFemale34/profilePicture.png`: new file
+- `media/personas/kingstonUnemployedOther24/profilePicture.png`: new file
+- `media/personas/lakeCountryFullTimeEmployeeFemale39/profilePicture.png`: new file
+- `media/personas/merrittFullTimeEmployeeFemale25/profilePicture.png`: new file
+- `media/personas/mountainTopPartTimeEmployeeMale31/profilePicture.png`: new file
+- `media/personas/nanticokeFreelancerSelfEmployedFemale30/profilePicture.png`: new file
+- `media/personas/pentictonFreelancerSelfEmployedFemale31/profilePicture.png`: new file
+- `media/personas/personas.jsonl`: edited
+- `media/personas/pittstonFullTimeEmployeeMale25/profilePicture.png`: new file
+- `media/personas/plymouthStudentFemale26/profilePicture.png`: new file
+- `media/personas/scrantonStudentMale19/profilePicture.png`: new file
+- `media/personas/shavertownFullTimeEmployeeMale26/profilePicture.png`: new file
+- `media/personas/summerlandStudentMale24/profilePicture.png`: new file
+- `media/personas/vernonUnemployedMale21/profilePicture.png`: new file
+- `media/personas/westKelownaFreelancerSelfEmployedFemale30/profilePicture.png`: new file
+- `media/personas/wilkesBarreFullTimeEmployeeMale26/profilePicture.png`: new file
+- `scripts/media/personaPictures.ts`: added function linkInTwenty · changed const ALWAYS_FIX, const othersOf, const deps
+- `skills/personaPicture/SKILL.md`: edited
+- `src/marketplace/socialAccount/client.ts`: added function saveProfilePhoto
+- `src/media/persona/client.ts`: added const adultsOnly, function assignPersonas, function personaRecordOf, function uniqueId · changed function drawPersonas, function makeProfilePicture
+- `src/media/persona/helpers/check.ts`: changed const PICTURE_FACETS, function pictureCheckRequest, function readPictureCheck
+- `src/media/persona/helpers/prompt.ts`: changed const SELFIE_STYLE, const PERSONA_AVOID, function personaPrompt, const FIX
+- `src/media/persona/persona.test.ts`: added test "each account gets its own adult persona from its home, named for its city, with the seed the warm-up uses" · changed const check, test "SubQ is asked about image 1 only, with the persona and the style examples"
+- `src/media/persona/types.ts`: added const PERSONA_BACKGROUND_PASS, interface PersonaAccount · changed type PictureFacet, interface PictureAttempt, interface PersonaRecord, interface PictureDeps
+
+What changed: every new Facebook account now has a persona of its own and a profile picture made from it. `--accounts` in `scripts/media/personaPictures.ts` takes each account that is `needsLogin` with no `profilePhoto` (20: ten around Pennsylvania, ten around Kamloops). For each one, `assignPersonas` draws an adult persona in the account's country with `seedOf(accountName)`, the Reels warm-up's own seed, and writes it to `~/.logCli/personas/<account>.json` when it is missing, so the picture and the warm-up are the same person. The persona id starts with the city, the prompt names the home, and the record keeps the account. Each picture is generated and checked as before. Only one that passes every check is written to the account's `socialAccounts.profilePhoto` (`saveProfilePhoto`), the field the host's profile step uploads from (`setProfile`, flow `profileSetup`). `--accountsRedo` re-checks every account picture that isn't approved against the current checks, regenerates whichever fail, and moves an account that never passed to another place first. Two new SubQ clothing checks, at matt's word: `noStonewashedHoodie`, and `clothingFits` (casual clothes that suit the home and the place, not formal, not a plain t-shirt). The prompt and avoid list carry both from the first attempt. `backgroundDistinct` now passes at 0.25 (`PERSONA_BACKGROUND_PASS`), because places are unique when assigned and SubQ scored clearly different rooms as low as 0.11. A kept picture keeps the background it was taken in (`PictureAttempt.background`). A background swap skips places other personas use (`usedBackgrounds`). The account picture sheet is `media/personas/accountsSheet.jpg`.
+Why: matt asked to work out how an image gets uploaded to the accounts, to assign a persona to each of the new accounts in the log tool across Pennsylvania and Kamloops, and to make it actually work. While it ran he added: no stonewashed hoodies, and clothing that suits their location, not too formal, not just t-shirts, and particular to the place.
+Checked: live, all 20 accounts matched every check, and each one's profilePhoto in Twenty points at its picture (read back from personas.jsonl: 20 accounts, 20 matched). Across the runs, the account pictures took 42 images for 1176 credits in the last run, plus the earlier attempts. Hazleton never passed its arm check in the first run and was redone on a sofa. Five pictures that already matched were re-checked against the clothing rules and kept; the rest were regenerated. Not checked: nothing was uploaded to Facebook. The host's profile step also needs `coverPhoto` and `profileName` in Twenty, and these accounts have neither, so it will refuse with `noProfileInTwenty` until those are set. New test: each account gets its own adult persona from its home, named for its city, with the warm-up's seed.

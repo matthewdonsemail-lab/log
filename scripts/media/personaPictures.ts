@@ -1,11 +1,14 @@
 #!/usr/bin/env bun
-import { existsSync, readdirSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs'
 import { homedir } from 'node:os'
 import { join } from 'node:path'
 import { parseArgs } from 'node:util'
-import { backgroundOf, drawPersonas, imageOf, liveDeps, makeProfilePicture, personasDir, personasFile, readPersonas, recheckPicture, refreshPrompt, rejectPicture, writePersonas } from '../../src/media/persona/index'
+import { assignPersonas, backgroundOf, drawPersonas, nextBackground, imageOf, liveDeps, makeProfilePicture, personasDir, personasFile, readPersonas, recheckPicture, refreshPrompt, rejectPicture, writePersonas } from '../../src/media/persona/index'
 import type { PersonaRecord, PictureFacet } from '../../src/media/persona/index'
 import { readDatasets } from '../../src/warmup/persona/index'
+import { listFacebookAccounts, saveProfilePhoto } from '../../src/marketplace/socialAccount/index'
+import { createTwentyClient } from '../../src/twenty/graphql/client'
+import { personaPath, seedOf } from '../../src/cli/warmup/helpers/personaRun'
 
 const { values } = parseArgs({
   options: {
@@ -16,11 +19,13 @@ const { values } = parseArgs({
     recheck: { type: 'boolean', default: false },
     approve: { type: 'string' },
     styleFrom: { type: 'string' },
+    accounts: { type: 'boolean', default: false },
+    accountsRedo: { type: 'boolean', default: false },
     reason: { type: 'string', default: 'matt said it is bad' }
   }
 })
 const log = (line: string) => console.error(`${new Date().toISOString().slice(11, 19)} ${line}`)
-const ALWAYS_FIX: PictureFacet[] = ['selfieStyle', 'noText', 'armHidden', 'lowAngle', 'unflattering', 'backgroundDistinct', 'likeReference']
+const ALWAYS_FIX: PictureFacet[] = ['selfieStyle', 'noText', 'armHidden', 'lowAngle', 'unflattering', 'backgroundDistinct', 'likeReference', 'noStonewashedHoodie', 'clothingFits']
 const saved = existsSync(personasFile()) ? readPersonas() : []
 
 if (values.styleFrom) {
@@ -49,8 +54,22 @@ const referenceRecord = saved.find((r) => r.styleReference && r.profilePicture) 
 log(`style examples for SubQ: ${mattExamples.length} of matt's${referenceRecord ? `, ${referenceRecord.personaId} as the best one` : ''}`)
 let records: PersonaRecord[] = saved
 let todo: PersonaRecord[]
-const othersOf = (record: PersonaRecord) => records.filter((r) => r !== record && r.profilePicture && existsSync(join(personasDir(), r.profilePicture))).map((r) => imageOf(join(personasDir(), r.profilePicture!)))
-const deps = liveDeps({ examples: mattExamples.map(imageOf), reference: referenceRecord ? imageOf(join(personasDir(), referenceRecord.profilePicture!)) : null, others: othersOf, log })
+const othersOf = (record: PersonaRecord) => {
+  const withPicture = records.filter((r) => r !== record && r.profilePicture && existsSync(join(personasDir(), r.profilePicture)))
+  const near = record.account ? withPicture.filter((r) => r.account?.homeCountry === record.account!.homeCountry).slice(-3) : withPicture
+  return near.map((r) => imageOf(join(personasDir(), r.profilePicture!)))
+}
+const deps = { ...liveDeps({ examples: mattExamples.map(imageOf), reference: referenceRecord ? imageOf(join(personasDir(), referenceRecord.profilePicture!)) : null, others: othersOf, log }), usedBackgrounds: (record: PersonaRecord) => records.filter((r) => r !== record).map((r) => r.characteristics.background).filter((b): b is string => Boolean(b)) }
+
+async function linkInTwenty(twenty: ReturnType<typeof createTwentyClient>, accountId: string, record: PersonaRecord) {
+  if (!record.matched || !record.profilePicture) {
+    log(`${record.account!.homeCity}: no picture passed every check, so socialAccounts.profilePhoto is left as it is`)
+    return
+  }
+  const source = join(personasDir(), record.profilePicture).replace(/\\/g, '/')
+  await saveProfilePhoto(twenty, accountId, source)
+  log(`${record.account!.homeCity}: socialAccounts.profilePhoto set to ${source}`)
+}
 
 async function regenerate(record: PersonaRecord, fixes: PictureFacet[]) {
   if (!record.characteristics.background) {
@@ -63,7 +82,62 @@ async function regenerate(record: PersonaRecord, fixes: PictureFacet[]) {
   writePersonas(records)
 }
 
-if (values.recheck) {
+if (values.accounts) {
+  const twenty = createTwentyClient()
+  const all = await listFacebookAccounts(twenty)
+  const wanted = all.filter((a) => a.status === 'needsLogin' && !a.profilePhoto && a.homeCity && a.homeCountry && !records.some((r) => r.account?.accountName === a.accountName))
+  log(`accounts with no persona yet: ${wanted.length} (${wanted.map((a) => `${a.homeCity} ${a.homeCountry}`).join(', ')})`)
+  const assigned = assignPersonas(readDatasets(), wanted.map((a) => ({ accountName: a.accountName, homeCity: a.homeCity!, homeCountry: a.homeCountry! })), seedOf, records)
+  for (const { record, profile } of assigned) {
+    const warmup = personaPath(record.account!.accountName)
+    if (!existsSync(warmup)) {
+      mkdirSync(join(warmup, '..'), { recursive: true })
+      writeFileSync(warmup, `${JSON.stringify(profile, null, 2)}\n`)
+    }
+    log(`persona ${record.personaId} for ${record.account!.homeCity} (${record.account!.accountName}): ${record.characteristics.age} ${record.characteristics.gender} ${record.characteristics.profession ?? record.characteristics.occupation}, ${record.characteristics.background}`)
+    records.push(record)
+  }
+  writePersonas(records)
+  todo = []
+  for (const [i, { record }] of assigned.entries()) {
+    log(`account ${i + 1}/${assigned.length} ${record.account!.homeCity}: ${record.personaId}`)
+    await makeProfilePicture(record, deps, undefined, ALWAYS_FIX)
+    writePersonas(records)
+    const account = wanted.find((a) => a.accountName === record.account!.accountName)!
+    await linkInTwenty(twenty, account.id, record)
+    todo.push(record)
+  }
+} else if (values.accountsRedo) {
+  const twenty = createTwentyClient()
+  const all = await listFacebookAccounts(twenty)
+  todo = []
+  const accountRecords = records.filter((r) => r.account && !r.approved)
+  for (const [i, record] of accountRecords.entries()) {
+    const account = all.find((a) => a.accountName === record.account!.accountName)
+    if (!account) continue
+    log(`account ${i + 1}/${accountRecords.length} ${record.account!.homeCity}: ${record.personaId}`)
+    if (record.matched && record.profilePicture) {
+      const check = await recheckPicture(record, deps)
+      writePersonas(records)
+      if (check?.passed) continue
+      rejectPicture(record, `recheck low on ${check?.failed.join(', ')}`)
+      await regenerate(record, [...new Set<PictureFacet>([...ALWAYS_FIX, ...(check?.failed ?? [])])])
+    } else if (record.attempts.length) {
+      rejectPicture(record, 'no attempt matched every check')
+      if (record.characteristics.background) {
+        record.backgroundsTried = [...new Set([...(record.backgroundsTried ?? []), record.characteristics.background])]
+        record.characteristics.background = nextBackground(record.characteristics, [...record.backgroundsTried, ...deps.usedBackgrounds(record)]) ?? record.characteristics.background
+      }
+      log(`redo ${record.account!.homeCity} in ${record.characteristics.background}`)
+      writePersonas(records)
+      await regenerate(record, [...ALWAYS_FIX, 'ageFits'])
+    } else {
+      await regenerate(record, ALWAYS_FIX)
+    }
+    await linkInTwenty(twenty, account.id, record)
+    todo.push(record)
+  }
+} else if (values.recheck) {
 
   todo = []
   for (const record of records) {
