@@ -904,6 +904,18 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `groupMembersList`, which needs nothing: no resolver, no SubQ reading,
     and the Stop hook doesn't hold the turn on it. `src/facebook/group/members`,
     `docs/groupMembers.md`.
+78. 2026-10-24 · matt: a deactivated account gives its AdsPower profile
+    back, and another account takes the slot (AdsPower holds 22). When an
+    account is DEACTIVATED, by `log facebook account status <a> DEACTIVATED`
+    or in Twenty, its profile is deleted from AdsPower and
+    `adsPowerProfileId` cleared; the account's row stays (rule 13). The status
+    command does it at once and runs the sync, so an account waiting for a
+    profile is given the freed one. `log adsPower sync --apply` releases
+    first, then makes profiles, so a status set in Twenty is caught there.
+    matt: "I just want to do Pennsylvania": only accounts whose home is in
+    `LOG_ADSPOWER_HOMES` (`.env.local`, `US`; or `--homes`) hold a profile,
+    and the others give theirs back the same way. Nothing else about them
+    changes. `src/browser/adsPower`, `docs/adsPower.md`.
 
 ## Checks
 

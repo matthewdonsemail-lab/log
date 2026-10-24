@@ -43,6 +43,7 @@ export interface AdsPowerClient {
   ensureGroup(name: string): Promise<string>
   createProfile(body: CreateProfileBody): Promise<{ profileId: string; profileNo: string | null }>
   updateProfile(profileId: string, fields: Record<string, unknown>): Promise<void>
+  deleteProfiles(profileIds: string[]): Promise<void>
   startBrowser(profileId: string, options?: { launchArgs?: string[] }): Promise<StartedBrowser>
   activeBrowser(profileId: string): Promise<StartedBrowser | null>
   stopBrowser(profileId: string): Promise<void>
@@ -62,10 +63,15 @@ export const ADS_POWER_GROUP = 'logCli'
 
 export const NO_PROFILE_STATUSES = ['banned', 'dead'] as const
 
+export const RELEASE_STATUSES = ['deactivated'] as const
+
+export const ADS_POWER_HOMES_ENV = 'LOG_ADSPOWER_HOMES'
+
 export type ProfileSyncAction =
   | 'linked'
   | 'relink'
   | 'create'
+  | 'release'
   | 'skip'
 
 export interface ProfileSyncEntry {

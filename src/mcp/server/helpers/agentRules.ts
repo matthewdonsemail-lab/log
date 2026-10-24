@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 77;
+export const RULES_REVIEWED_THROUGH = 78;
 
 export const AGENTS_URI = "log://agents";
 
@@ -44,9 +44,9 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   watch: [6, 18, 73],
   doctor: [12],
   proxy: [12, 33, 41, 43, 51, 52],
-  adsPower: [42, 44],
+  adsPower: [42, 44, 78],
   capture: [19, 22, 26, 27, 46, 48],
-  account: [13, 37],
+  account: [13, 37, 78],
   accounts: [13],
   listing: [13, 71, 72],
   listings: [13],

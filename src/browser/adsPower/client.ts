@@ -5,7 +5,7 @@ import type { FacebookAccount } from '../../marketplace/socialAccount/index'
 import type { TwentyClient } from '../../twenty/graphql/index'
 import type { BrowserDriver, BrowserEndpoint, GateResult } from '../driver/index'
 import { planSync, profileRequest } from './helpers/index'
-import { ADS_POWER_GROUP } from './types'
+import { ADS_POWER_GROUP, ADS_POWER_HOMES_ENV } from './types'
 import type { ProfileSyncEntry, ProfileSyncResult } from './types'
 
 export const RATE_LIMIT_WAIT_MS = [2000, 4000]
@@ -92,6 +92,9 @@ export function createAdsPowerClient(
     async updateProfile(profileId, fields) {
       await call('POST', '/api/v2/browser-profile/update', { profile_id: profileId, ...fields })
     },
+    async deleteProfiles(profileIds) {
+      await call('POST', '/api/v2/browser-profile/delete', { profile_id: profileIds })
+    },
     async startBrowser(profileId, options = {}) {
       const data = await call<{ ws?: { puppeteer?: string }; debug_port?: string }>('POST', '/api/v2/browser-profile/start', {
         profile_id: profileId,
@@ -113,24 +116,41 @@ export function createAdsPowerClient(
   }
 }
 
+export function adsPowerHomes(env: Record<string, string | undefined> = process.env): string[] | null {
+  return homesOf(env[ADS_POWER_HOMES_ENV])
+}
+
+export function homesOf(value: string | undefined | null): string[] | null {
+  const homes = (value ?? '').split(',').map((h) => h.trim().toUpperCase()).filter(Boolean)
+  return homes.length ? homes : null
+}
+
 export async function syncProfiles(
   twenty: TwentyClient,
   adsPower: AdsPowerClient,
-  options: { apply: boolean; account?: string; log?: (line: string) => void }
+  options: { apply: boolean; account?: string; homes?: string[] | null; log?: (line: string) => void }
 ): Promise<ProfileSyncResult> {
   const log = options.log ?? (() => {})
   const all = await listFacebookAccounts(twenty)
   const accounts = options.account ? all.filter((a) => a.accountName === options.account || a.id === options.account) : all
-  log(`adsPower: ${accounts.length} account(s) from Twenty; reading AdsPower's profiles`)
+  const homes = options.homes === undefined ? adsPowerHomes() : options.homes
+  log(`adsPower: ${accounts.length} account(s) from Twenty${homes ? ` (homes ${homes.join(', ')})` : ''}; reading AdsPower's profiles`)
   const profiles = await adsPower.listProfiles()
-  const entries = planSync(accounts, profiles)
-  if (!options.apply) return { applied: false, entries }
-  const groupId = await adsPower.ensureGroup(ADS_POWER_GROUP)
+  const planned = planSync(accounts, profiles, homes)
+  if (!options.apply) return { applied: false, entries: planned }
+  const entries = [...planned.filter((e) => e.action === 'release'), ...planned.filter((e) => e.action !== 'release')]
+  const live = new Set(profiles.map((p) => p.profileId))
+  const groupId = entries.some((e) => e.action === 'create') ? await adsPower.ensureGroup(ADS_POWER_GROUP) : ''
   const done: ProfileSyncEntry[] = []
   for (const [i, entry] of entries.entries()) {
     const account = accounts.find((a) => a.id === entry.accountId)!
     try {
-      if (entry.action === 'create') {
+      if (entry.action === 'release') {
+        if (entry.profileId && live.has(entry.profileId)) await adsPower.deleteProfiles([entry.profileId])
+        await saveAdsPowerProfileId(twenty, account.id, null)
+        done.push(entry)
+        log(`adsPower ${i + 1}/${entries.length} ${account.accountName}: released profile ${entry.profileId ?? '-'} (${entry.note}), unlinked in Twenty`)
+      } else if (entry.action === 'create') {
         const body = profileRequest(account, groupId)!
         const made = await adsPower.createProfile(body)
         await saveAdsPowerProfileId(twenty, account.id, made.profileId)

@@ -123,7 +123,7 @@ export async function saveDeviceProfile(twenty: TwentyClient, account: FacebookA
   return true
 }
 
-export async function saveAdsPowerProfileId(twenty: TwentyClient, accountId: string, profileId: string): Promise<void> {
+export async function saveAdsPowerProfileId(twenty: TwentyClient, accountId: string, profileId: string | null): Promise<void> {
   await twenty.update(SOCIAL_ACCOUNTS, accountId, { adsPowerProfileId: profileId })
 }
 
