@@ -8,7 +8,7 @@
 | Kind | query |
 | doc_id | `29231152373168310` |
 | Path | `/api/graphql/` |
-| Sends | `actionBarRenderLocation`, `context`, `entityID`, `scale`, `__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider` |
+| Sends | `actionBarRenderLocation`, `context`, `entityID`, `groupID`, `scale`, `__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider` |
 | Reads | `node....CometHovercard_entity` |
 | Called from | `CometHovercardQueryRenderer.react` |
 | rea | `ev_95529720f6ba751fe065571b8fd81d09f67f7e4539594c0761343470652ec320` |

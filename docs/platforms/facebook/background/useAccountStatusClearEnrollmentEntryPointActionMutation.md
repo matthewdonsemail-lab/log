@@ -5,13 +5,13 @@
 | | |
 | --- | --- |
 | Domain | background |
-| Kind | query |
+| Kind | mutation |
 | doc_id | `28258638120444097` |
 | Path | `/api/graphql/` |
-| Sends | `serialized_state`, `ixt_clear_token` |
-| Reads | — |
-| Called from | — |
-| rea | not read yet |
+| Sends | `ixt_clear_token`, `serialized_state` |
+| Reads | `xfb_ixt_gateway_clear_flow` |
+| Called from | `useAccountStatusClearEnrollmentEntryPointAction` |
+| rea | `ev_a0062e8b8f34740088df51924ac1166d77286c18047383e4f5bedbd513b14830` |
 
 Seen 1 time(s) in 1 run(s).
 

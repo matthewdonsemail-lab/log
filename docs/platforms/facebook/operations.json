@@ -1,5 +1,5 @@
 {
-  "builtAt": "2026-10-24T22:03:30.720Z",
+  "builtAt": "2026-10-24T22:08:03.270Z",
   "runs": 1,
   "operations": [
     {
@@ -1643,10 +1643,10 @@
     {
       "name": "useAccountStatusClearEnrollmentEntryPointActionMutation",
       "domain": "background",
-      "kind": "query",
+      "kind": "mutation",
       "docId": "28258638120444097",
       "doc": "background/useAccountStatusClearEnrollmentEntryPointActionMutation.md",
-      "reaEvidenceId": null,
+      "reaEvidenceId": "ev_a0062e8b8f34740088df51924ac1166d77286c18047383e4f5bedbd513b14830",
       "seen": 1
     },
     {
