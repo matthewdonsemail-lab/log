@@ -4,7 +4,8 @@ The `groups` domain of Facebook's client (rule 48): the requests a group page
 makes, one doc each, built by `log facebook capture --docs` from the runs' recordings.
 The code that works on groups is its own library, `src/facebook/group/<domain>/`
 (rule 45): `join` (request to join), `answer` (the membership questions),
-`read` (the posts, issue #27, `docs/groupRead.md`).
+`read` (the posts, issue #27, `docs/groupRead.md`), `members` (the People
+tab's newest members, rule 77, `docs/groupMembers.md`).
 
 ## What can be done on a group page
 

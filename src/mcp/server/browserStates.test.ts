@@ -47,9 +47,15 @@ describe("where every open browser is, in every tool result (rules 54-55)", () =
     for (const state of PAGE_STATES) {
       expect(Object.keys(RESOLVE_CALLS)).toContain(state.id);
       const call = RESOLVE_CALLS[state.id]({ account: "a", text: "- generic [ref=e1]: Continue\n- generic [ref=e2]: Update\n- generic [ref=e3]: Dismiss", messengerPin: true });
-      if (state.person) expect(call).toBeNull();
+      if (state.person || state.needsNothing) expect(call).toBeNull();
       else expect(tools.has(call!.tool)).toBe(true);
     }
+  });
+
+  test("a group members list is named with no next call and nothing for matt", () => {
+    const exchanges = [{ offsetMs: 1, kind: "api" as const, name: "GroupsCometMembersPageNewMembersSectionRefetchQuery", method: "POST", host: "www.facebook.com", path: "/api/graphql/", status: 200, ms: 600, sent: {}, answer: { data: { node: { new_members: { edges: [{ node: { id: "1" } }] } } } }, errors: [], known: false }];
+    const view = browserView(at("https://www.facebook.com/groups/junkremovalwinners/members", "", { exchanges }));
+    expect(view).toMatchObject({ state: { id: "groupMembersList", person: false }, next: null, needsMatt: null });
   });
 
   test("the result's first lines say it, and its structured part carries it", async () => {

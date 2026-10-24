@@ -11,9 +11,9 @@
 | Sends | `actionBarRenderLocation`, `context`, `entityID`, `groupID`, `scale`, `__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider` |
 | Reads | `node....CometHovercard_entity` |
 | Called from | `CometHovercardQueryRenderer.react` |
-| rea | `ev_95529720f6ba751fe065571b8fd81d09f67f7e4539594c0761343470652ec320` |
+| rea | `ev_64712917092a1f5957d987e769fff4925a6e259824f9f1e6a4930f46e0b78e42` |
 
-Seen 198 time(s) in 16 run(s).
+Seen 230 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -98,6 +98,14 @@ Seen 198 time(s) in 16 run(s).
 | inspect | step 5: likePost Like | 1 | 200 | 693 ms | 1320 ms | — |
 | warmup | step 3: scroll 4-7 x 300-600px | 1 | 200 | 986 ms | 99 ms | — |
 | warmup | scroll: +535px in 12 wheel steps, 969 ms | 1 | 200 | 592 ms | 2123 ms | — |
+| inspect | step 2: pageText | 1 | 200 | 567 ms | 15246 ms | — |
+| inspect | step 3: goto /groups/junkremovalwinners/members | 3 | 200 | 440–792 ms | 13797–20430 ms | — |
+| inspect | scroll: +376px in 9 wheel steps, 328 ms | 7 | 200 | 396–1705 ms | 7418–12862 ms | — |
+| inspect | scroll: +315px in 8 wheel steps, 297 ms | 12 | 200 | 381–1493 ms | 4616–96900 ms | — |
+| inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 570 ms | 31400 ms | — |
+| inspect | scroll: +400px in 9 wheel steps, 281 ms | 2 | 200 | 523–718 ms | 3926–4124 ms | — |
+| inspect | scroll: +592px in 15 wheel steps, 906 ms | 5 | 200 | 372–492 ms | 3542–14308 ms | — |
+| inspect | scroll: +515px in 13 wheel steps, 656 ms | 1 | 200 | 371 ms | 2595 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

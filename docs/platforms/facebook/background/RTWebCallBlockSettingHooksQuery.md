@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | `RTWebCallBlockSettingHooks` |
-| rea | `ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6` |
+| rea | `ev_5b645adc2c95bd9ae389558827e6dd1e4acc2fea5db95180bbba87a95a7cc99d` |
 
-Seen 114 time(s) in 32 run(s).
+Seen 116 time(s) in 33 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -89,6 +89,8 @@ Seen 114 time(s) in 32 run(s).
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 446 ms | 3662 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 400 ms | 5704 ms | — |
 | inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 367 ms | 6644 ms | — |
+| inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 348 ms | 4825 ms | — |
+| inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 430 ms | 5152 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

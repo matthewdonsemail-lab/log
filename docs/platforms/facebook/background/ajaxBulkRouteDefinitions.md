@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_40544dae9444025f581ab50486ee4fd1bb31e1479be8264ec5fa13c071c42cee` |
+| rea | `ev_0a8e3e704254828e0244a7b2ee382809431f59eff1c9887d163932511aba2c46` |
 
-Seen 1041 time(s) in 32 run(s).
+Seen 1075 time(s) in 33 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -306,6 +306,17 @@ Seen 1041 time(s) in 32 run(s).
 | inspect | step 17: clickRole button "…" | 1 | 200 | 687 ms | 1565 ms | — |
 | inspect | step 1: goto /marketplace/you/selling | 3 | 200 | 352–605 ms | 6048–6116 ms | — |
 | inspect | step 3: click e356 | 1 | 200 | 491 ms | 2032 ms | — |
+| inspect | step 2: pageText | 1 | 200 | 370 ms | 15894 ms | — |
+| inspect | step 3: goto /groups/junkremovalwinners/members | 8 | 200 | 343–456 ms | 3070–21269 ms | — |
+| inspect | scroll: +376px in 9 wheel steps, 328 ms | 3 | 200 | 340–370 ms | 700–13841 ms | — |
+| inspect | scroll: +458px in 11 wheel steps, 578 ms | 1 | 200 | 379 ms | 377 ms | — |
+| inspect | scroll: +315px in 8 wheel steps, 297 ms | 8 | 200 | 329–1230 ms | 8524–650063 ms | — |
+| inspect | step 22: goto /groups/junkremovalwinners/members | 5 | 200 | 332–569 ms | 2819–5597 ms | — |
+| inspect | scroll: +400px in 9 wheel steps, 281 ms | 1 | 200 | 332 ms | 635 ms | — |
+| inspect | scroll: +592px in 15 wheel steps, 906 ms | 4 | 200 | 335–698 ms | 356–20535 ms | — |
+| inspect | step 24: scroll 3-5 x 300-600px | 1 | 200 | 332 ms | 769 ms | — |
+| inspect | scroll: +548px in 14 wheel steps, 796 ms | 1 | 200 | 331 ms | 568 ms | — |
+| inspect | scroll: +515px in 13 wheel steps, 656 ms | 1 | 200 | 328 ms | 332 ms | — |
 
 <!-- facts:end -->
 

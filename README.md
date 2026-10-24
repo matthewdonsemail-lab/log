@@ -130,7 +130,7 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 66 command tools + saved flows"]
+  mcp["MCP server log: 67 command tools + saved flows"]
   bin["bin/log.ts"]
   runCli["runCli: 37 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
@@ -178,7 +178,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log flow`](#log-flow) | Recorded inspect runs as flows: docs, an XState machine per flow, run on any account (rule 31) | any (none) | `--name <name>` `--summary <text>` `--rename` `--account <accountName>` `--set <param>` `--live` `--bypass` `--now` `--json` | the account's | `flow`, `flowLive` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 29, 31, 68, 72, 73, 30, 38, 39, 40, 41 |
 | [`log <platform> warmup`](#log-platform-warmup) | The warm-up, by platform and activity: `log facebook warmup reel\|feed\|stages` (the account's browser primed with the activity, each step checked, the outline written; rules 49, 60) | `<platform>` first | `--account <a>` `--live` `--likes` `--bypass` `--now` `--json` `--newPersona` `--seed <n>` `--reels` `--watch` `--skip` `--comments` `--profile` `--persona` `--trafficMb` `--posts` `--only` `--gapSeconds <n>` `--lines <n>` `--follow` `--seconds <n>` | the account's | `warmup`, `warmupLive` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 18, 20, 25, 26, 29, 32, 35, 36, 49, 50, 51, 54, 55, 60, 64, 73, 30, 38, 39, 40, 41 |
 | [`log facebook join`](#log-facebook-join) | Join a Facebook group as one account, in its open browser: read the gate, --live presses Join; every step patches agencyGroups.joinSubmission (rule 45) | `facebook` first | `--account <accountName>` `--group <group url, id or name>` `--live` `--json` `--show` `--answer` `--set <n>` `--agree` `--fill` `--submit` `--bypass` | the account's | `join`, `joinLive` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 10, 18, 20, 25, 26, 29, 35, 45, 64, 73, 30, 38, 39, 40, 41 |
-| [`log facebook read`](#log-facebook-read) | Read a Facebook group's new posts and their comments as one account, in its open browser, by hand; only the group's cursor is saved to Twenty (#27, rule 65) | `facebook` first | `--account <accountName>` `--group <group url or id>` `--scrolls <n>` `--commentPosts <n>` `--live` `--bypass` `--json` `--show` `--worker` | the account's | `read`, `readLive` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 13, 18, 20, 22, 25, 26, 29, 35, 45, 63, 64, 65, 73, 30, 38, 39, 40, 41 |
+| [`log facebook read`](#log-facebook-read) | Read a Facebook group's new posts and their comments, or its newest members, as one account, in its open browser, by hand; only the group's cursor is saved to Twenty (#27, rule 65), the members to a file | `facebook` first | `--account <accountName>` `--group <group url or id>` `--scrolls <n>` `--commentPosts <n>` `--live` `--bypass` `--json` `--show` `--worker` `--count <n>` `--secondsPerScroll <s>` `--maxScrolls <n>` `--owners` | the account's | `readGroup`, `readGroupLive`, `readMembers` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 13, 18, 20, 22, 25, 26, 29, 35, 45, 54, 63, 64, 65, 73, 77, 30, 38, 39, 40, 41 |
 | [`log facebook poll`](#log-facebook-poll) | Poll a Facebook group from one account, in its open browser, for a time or once: each poll's posts as one JSON line, OpenMagpie's records; --request answers OpenMagpie's facebook_group worker (#27, rule 63) | `facebook` first | `--bypass` `--request <request json>` | the account's | `poll` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 13, 18, 22, 26, 35, 45, 63, 64, 65, 73, 30, 38, 39, 40, 41 |
 | [`log facebook check`](#log-facebook-check) | Check one account in its open browser: may it still sell, each listing's state on Selling (into Twenty), and its seller inbox's chats | `facebook` first | `--account <accountName>` `--bypass` `--json` | the account's | `check` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 13, 18, 22, 29, 35, 69, 73, 30, 38, 39, 40, 41 |
 | [`log facebook scan`](#log-facebook-scan) | Read Marketplace > Selling live for one account and update its listings in Twenty | `facebook` first | `--account <accountName>` `--json` `--bypass` | Camoufox only | `scan` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 18, 22, 73, 30, 38, 39, 40, 41 |
@@ -513,6 +513,9 @@ flowchart LR
   marketplaceDeleteSurvey["marketplaceDeleteSurvey: Marketplace's #quot;Did you sell this item?#quot; survey, shown after a listing is deleted (the delete is already done: `useCometMarketplaceForSaleItemDeleteMutation` answered its id#59; Bethlehem, inspect 20261023T173652 step 05)"]
   page --> marketplaceDeleteSurvey
   marketplaceDeleteSurvey -->|"click radio #quot;No, haven't sold#quot;"| nextmarketplaceDeleteSurvey(["next state"])
+  groupMembersList["groupMembersList: a group's People tab answered with more of its newest members: `GroupsCometMembersPageNewMembersSectionRefetchQuery` gave `new_members` edges, about 10 a call, each a profile with its bio, page category, followers and when they joined (61594063207669, inspect 20261024T060921 steps 04-21)"]
+  page --> groupMembersList
+  groupMembersList -->|"nothing to resolve"| nextgroupMembersList(["carry on"])
   rememberPassword["rememberPassword: the #quot;Remember password#quot; prompt"]
   page --> rememberPassword
   rememberPassword -->|"click #quot;Not now#quot;"| nextrememberPassword(["next state"])
@@ -690,7 +693,7 @@ The account's browser must be open (log inspect start --account <a>, or log face
 
 #### log facebook read
 
-Read a Facebook group's new posts and their comments as one account, in its open browser, by hand; only the group's cursor is saved to Twenty (#27, rule 65) MCP tool: `read, readLive` (`args` takes the same arguments).
+Read a Facebook group's new posts and their comments, or its newest members, as one account, in its open browser, by hand; only the group's cursor is saved to Twenty (#27, rule 65), the members to a file MCP tools: `readGroup`, `readGroupLive`, `readMembers`, one per form, with named fields.
 
 ```text
 log facebook read group --account <accountName> --group <group url or id> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json]
@@ -701,6 +704,11 @@ Reads the group's new posts (since its cursor in Twenty) and the comments of the
 --live: each post's comments are switched to Newest first (two clicks, rule 8); without it nothing is clicked and the page's Most relevant comments are read.
 Every step in the browser runs inside the account's local hours (rule 18); --bypass skips that for one run, only when matt asked (rule 20).
 The account's browser must be open (log inspect start --account <a>, or log facebook host start): a read is a step in it (rule 35).
+log facebook read members --account <accountName> --group <group url or id> --count <n> [--secondsPerScroll <s>] [--maxScrolls <n>] [--owners] [--bypass] [--json]
+Reads the group's newest members from its People tab (/groups/<g>/members) in the account's open browser: the page's first 10, then a scroll at a time, each scroll's GroupsCometMembersPageNewMembersSectionRefetchQuery answers (about 10 members each, 2 a scroll). Nothing is clicked (rule 8).
+--count: members to read (1-5000). --secondsPerScroll: the wait before each scroll (default 15; matt: the time 40 scrolls take is a variable). --maxScrolls: scrolls at most (default twice the plan's, plus 2). It says up front: count N → ~S scrolls, ~M min at Xs per scroll.
+It stops at --count members, when the list ends (has_next_page false) or at --maxScrolls. --owners keeps only owners: a bio naming owner, co-owner, founder, CEO, president, proprietor or self-employed, or a page (a category set).
+The members go to ~/.logCli/members/<group>/<run time>.tsv and .json, never to Twenty; it prints how many, how many with a bio, owners and pages, and the files. --json gives them.
 ```
 
 #### log facebook poll

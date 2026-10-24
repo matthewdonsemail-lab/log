@@ -11,9 +11,9 @@
 | Sends | `id` |
 | Reads | `user.message_capabilities2_str` |
 | Called from | `MAWVerifyThreadCutover` |
-| rea | `ev_2ef4fcf81840e4c44dfd19b7c86b9e3e65429109c06595cfc96262bcea9f2bc2` |
+| rea | `ev_44e3cb9f5f2e6e9a2fcdb0d5cab0d74c8132d812cb7b5877864210161e514c73` |
 
-Seen 113 time(s) in 31 run(s).
+Seen 115 time(s) in 32 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -88,6 +88,8 @@ Seen 113 time(s) in 31 run(s).
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 391 ms | 3744 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 403 ms | 5374 ms | — |
 | inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 371 ms | 6682 ms | — |
+| inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 342 ms | 4919 ms | — |
+| inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 375 ms | 5030 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

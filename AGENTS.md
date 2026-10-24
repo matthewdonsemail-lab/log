@@ -882,6 +882,28 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     the goal is reached, write what went wrong as P.E.E. with its fix (rule
     75), and name the state. It is the first section of AGENTS.md, the first
     section of README.md and the first MCP instruction. Top of this file.
+77. 2026-10-24 · matt: a group's members are read from its People tab.
+    `log facebook read members --account <a> --group <url|id> --count <n>
+    [--secondsPerScroll <s>] [--maxScrolls <n>] [--owners] [--bypass]
+    [--json]` (beside `read group`; MCP `readMembers`, no live twin) goes
+    to `/groups/<g>/members` in the account's open browser (rule 35) and
+    scrolls, nothing clicked (rule 8). The members come from each step's own
+    recording (rule 73): the page's HTML gives the first 10, and every
+    scroll's `GroupsCometMembersPageNewMembersSectionRefetchQuery` answers
+    about 10 more each, two a scroll (inspect 20261024T060921): name,
+    profile, bio, page category, followers and when they joined. matt: "the
+    time it takes for 40 scrolls is interesting and should also be a
+    variable": `--secondsPerScroll` (default 15) is the wait before each
+    scroll, and it says up front "count N → ~S scrolls, ~M min at Xs per
+    scroll". It stops at `--count`, when the list ends (`has_next_page`
+    false) or at `--maxScrolls`. `--owners` keeps a bio naming owner,
+    co-owner, founder, CEO, president, proprietor or self-employed, or a
+    page (a category set). The members go to
+    `~/.logCli/members/<group>/<run time>.tsv` and `.json`, never to Twenty.
+    A members page whose refetch answered with members is the known state
+    `groupMembersList`, which needs nothing: no resolver, no SubQ reading,
+    and the Stop hook doesn't hold the turn on it. `src/facebook/group/members`,
+    `docs/groupMembers.md`.
 
 ## Checks
 

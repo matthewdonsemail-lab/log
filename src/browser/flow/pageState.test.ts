@@ -95,3 +95,18 @@ describe('resolving the delete survey', () => {
     expect(JSON.stringify(second)).toContain('"Next"')
   })
 })
+
+describe('a group People tab that answered with its newest members', () => {
+  const MEMBERS = 'https://www.facebook.com/groups/junkremovalwinners/members'
+  const refetch = (edges: unknown[]): StepExchange => ({ offsetMs: 1200, kind: 'api', name: 'GroupsCometMembersPageNewMembersSectionRefetchQuery', method: 'POST', host: 'www.facebook.com', path: '/api/graphql/', status: 200, ms: 640, sent: { count: 10 }, answer: { data: { node: { __typename: 'Group', id: '3549906855288164', new_members: { edges, page_info: { has_next_page: true } } } } }, errors: [], known: false })
+
+  test('is groupMembersList, decided by the refetch answer having new_members edges, and needs nothing', async () => {
+    const { resolveCallOf } = await import('./helpers/pageState')
+    const state = pageStateOf(MEMBERS, '- heading "New to the group"', { exchanges: [refetch([{ node: { __typename: 'User', id: '1' } }])] })
+    expect(state).toMatchObject({ id: 'groupMembersList', person: false, needsNothing: true })
+    expect(resolveCallOf(state!, { account: '61594063207669', text: '' })).toBeNull()
+    expect(pageStateOf(MEMBERS, '', { exchanges: [refetch([])] })).toBeNull()
+    expect(pageStateOf('https://www.facebook.com/groups/junkremovalwinners', '', { exchanges: [refetch([{ node: { __typename: 'User', id: '1' } }])] })).toBeNull()
+    expect(pageStateOf(MEMBERS, '- heading "New to the group"')).toBeNull()
+  })
+})
