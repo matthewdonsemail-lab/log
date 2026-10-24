@@ -13,7 +13,7 @@
 | Called from | `OhaiWebPublicKeyConfig` |
 | rea | `ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013` |
 
-Seen 117 time(s) in 33 run(s).
+Seen 124 time(s) in 35 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -92,6 +92,13 @@ Seen 117 time(s) in 33 run(s).
 | inspect | step 1: goto /groups/junkremovalwinners | 1 | 200 | 327 ms | 7842 ms | — |
 | inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 531 ms | 4672 ms | — |
 | inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 322 ms | 3622 ms | — |
+| inspect | step 1: goto /me | 1 | 200 | 408 ms | 5553 ms | — |
+| inspect | step 7: click e1395 | 1 | 200 | 479 ms | 11104 ms | — |
+| host | step 3: clickRole button "…" | 1 | 200 | 383 ms | 9698 ms | — |
+| host | step 6: goto /marketplace/status | 1 | 200 | 370 ms | 2707 ms | — |
+| host | step 7: goto /me | 1 | 200 | 359 ms | 4049 ms | — |
+| host | step 12: goto /me | 1 | 200 | 379 ms | 3268 ms | — |
+| host | step 17: goto /me | 1 | 200 | 375 ms | 3471 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

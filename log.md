@@ -6371,3 +6371,77 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: The AdsPower client reads each profile's user agent (`profileUserAgents`, `POST /api/v2/browser-profile/ua`, 10 profiles a call) and `kernelOfUserAgent` takes the Chrome major version from it. `ensureKernel` now waits for a given version, and `ensureProfileKernel` waits for the one a profile's user agent names (refusing a user agent with no version). The host's open waits for its own profile's kernel; preflight's `kernelFacts` checks each account against its profile's kernel and `--apply` downloads each missing version once. `newestKernel` is gone, and the adsPowerKernelMissing meaning, the usage and the host skill say the profile's own kernel.
 Why: matt asked to prune AdsPower's old kernels; checking first showed ua_auto starts the Chrome version in each profile's user agent, not the newest: Scranton, Pittston and Nanticoke start 154, Wilkes-Barre and Shavertown 155, the other five 156. Only 153 was unused and was deleted. The preflight and host checked only 156, so a missing 154 or 155 would have passed preflight and failed at launch.
 Checked: `bun run check`: 982 pass, 0 fail, with `kernels.test.ts` (the Pennsylvania user agents as AdsPower answered, batching, a 154 profile waiting for 154 not 156, no version refused) and `src/cli/preflight/preflight.test.ts` (report only, --apply downloading 154 and 155 once each, AdsPower down). Live: `log facebook preflight --homes US --noProxy` read every profile's kernel from AdsPower: 154 for Scranton, Pittston, Nanticoke; 155 for Wilkes-Barre, Shavertown; 156 for the rest, all ready.
+
+## 2026-10-24 22:05Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometActorGatewayHandlerQuery.md`: new file
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuShortcutsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceNUXUpdateStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSellerListingTransactionReportingDialogQuery.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometTS2BitArrayLoggerMutation.md`: new file
+- `docs/platforms/facebook/background/CometUnifiedShareSheetDialogQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/FeedComposerCometRootQuery.md`: edited
+- `docs/platforms/facebook/background/FriendingCometFriendRequestsRootQuery.md`: edited
+- `docs/platforms/facebook/background/FriendingCometMutualFriendsSocialContextTooltipContentQuery.md`: edited
+- `docs/platforms/facebook/background/MAWCatQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometPartnerListingDialogContentQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceDeleteUtilsQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPC2CMediaViewerWithImagesQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYourListingDialogQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/UserSignalsHovercardQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/ajaxRouteDefinition.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/sharedUserPreferences.md`: edited
+- `docs/platforms/facebook/background/useAccountStatusClearEnrollmentEntryPointActionMutation.md`: new file
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/checkpoint/FBScrapingWarningMutation.md`: edited
+- `docs/platforms/facebook/checkpoint/UFACAISupportChatExperienceQuery.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometVisitMutation.md`: edited
+- `docs/platforms/facebook/login/CometLogoutHandlerQuery.md`: edited
+- `docs/platforms/facebook/login/ajaxTimezoneUpdatePhp.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/photos/ajaxReactComposerAttachmentsPhotoUpload.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometHeaderQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometProfilePictureEditDialogQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometProfilePictureSetMutation.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTimelineFeedQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTimelineFeedRefetchQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfilePromptQuickPromotionMutation.md`: edited
+- `docs/platforms/facebook/profile/profilePictureUpload.md`: edited
+- `docs/platforms/facebook/publishing/CometMarketplaceBoostListingPostPublishNuxDialogQuery.md`: edited
+- `src/rea/facebookClient/factsStore.test.ts`: added test "a whole link, a shortened one with its length note, and one inside other text all lose their query", test "Facebook's one-time action tokens are taken out by their key, the rest of what was sent stays"
+- `src/rea/facebookClient/helpers/factsStore.ts`: added const SECRET_KEY · changed const SIGNED_URL, function unsigned, function samplesOf
+
+What changed: The Facebook request docs are rebuilt by `log facebook capture --docs` from today's Exeter inspect run and Hazleton's host run: 43 requests with what each sent and answered, three of them new (`useAccountStatusClearEnrollmentEntryPointActionMutation`, `CometActorGatewayHandlerQuery`, `CometTS2BitArrayLoggerMutation`) with their reasoning written. The facts store now strips the signature from every fbcdn/cdninstagram link inside a value, not only a whole-link value (a shortened `… (441 chars)` link slipped through), takes out values under token-like keys (`ixt_clear_token`, `serialized_state`, `fb_dtsg`, `jazoest`, `lsd`) as `(taken out)`, and cleans stored samples on the way through too. Sixteen older request docs that still carried signed image links were cleaned with the same rule.
+Why: matt asked to commit the rebuilt request docs. Reviewing them before committing showed the docs saying "secrets and signed link tokens taken out" while 9 lines still carried `oh=`/`_nc_ohc=` image signatures and the new clear mutation carried its one-time `ixt_clear_token` and `serialized_state`; the docs are committed, so they must say true.
+Checked: two new cases in `factsStore.test.ts` (a whole, a shortened and an embedded signed link; token keys taken out while the rest of what was sent stays); `bun run check`: 984 pass, 0 fail. After the rebuild no tracked doc under `docs/platforms/facebook` matches `oh=00_`, `_nc_ohc=` or the recorded tokens. Not yet passing: `check:facebookClientDocs` (pre-push) wants rea's reading of the three new requests' code slices, and the host run kept no Facebook bundles to cut them from, so the next inspect run that records them, then `capture --docs`, clears it.

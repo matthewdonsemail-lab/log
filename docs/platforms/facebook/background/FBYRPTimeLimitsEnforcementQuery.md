@@ -13,7 +13,7 @@
 | Called from | `FBYRPTimeLimitsEnforcement.react` |
 | rea | `ev_a9881646cf5ca72e0b60def37ca88904d00b58f050bd2309e1812e104bf21960` |
 
-Seen 118 time(s) in 33 run(s).
+Seen 125 time(s) in 35 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -92,6 +92,13 @@ Seen 118 time(s) in 33 run(s).
 | inspect | step 1: goto /groups/junkremovalwinners | 1 | 200 | 508 ms | 5575 ms | — |
 | inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 402 ms | 3354 ms | — |
 | inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 341 ms | 3395 ms | — |
+| inspect | step 1: goto /me | 1 | 200 | 436 ms | 3203 ms | — |
+| inspect | step 7: click e1395 | 1 | 200 | 658 ms | 8588 ms | — |
+| host | step 3: clickRole button "…" | 1 | 200 | 367 ms | 8557 ms | — |
+| host | step 6: goto /marketplace/status | 1 | 200 | 354 ms | 2289 ms | — |
+| host | step 7: goto /me | 1 | 200 | 364 ms | 2522 ms | — |
+| host | step 12: goto /me | 1 | 200 | 383 ms | 2316 ms | — |
+| host | step 17: goto /me | 1 | 200 | 356 ms | 1959 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

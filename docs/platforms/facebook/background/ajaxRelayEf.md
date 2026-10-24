@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_95421f05dd3f9efcf081ae70b4a85b300d73f7dae30bb96edbb2caa5ade4a5a3` |
+| rea | `ev_eb4e6fa8742e9ad786748859ae836e12036ec2a8cc8c1bd662da3df39f3228fe` |
 
-Seen 984 time(s) in 34 run(s).
+Seen 1023 time(s) in 36 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -50,7 +50,7 @@ Seen 984 time(s) in 34 run(s).
 | inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 535 ms | 20609 ms | — |
 | inspect | scroll: +800px in 18 wheel steps, 781 ms | 5 | 200 | 347–548 ms | 30593–267118 ms | — |
 | inspect | step 1: goto /profile.php | 3 | 200 | 354–455 ms | 7766–20765 ms | — |
-| inspect | step 2: snapshot | 8 | 200 | 356–1507 ms | 944–14754 ms | — |
+| inspect | step 2: snapshot | 9 | 200 | 356–1507 ms | 944–14754 ms | — |
 | inspect | step 3: clickRole button "…" | 6 | 200 | 307–405 ms | 301–5352 ms | — |
 | inspect | step 5: clickRole button "…" | 1 | 200 | 365 ms | 9345 ms | — |
 | inspect | step 6: wait 6s | 5 | 200 | 339–461 ms | 23412–55301 ms | — |
@@ -249,6 +249,17 @@ Seen 984 time(s) in 34 run(s).
 | inspect | scroll: +560px in 12 wheel steps, 547 ms | 1 | 200 | 311 ms | 3043 ms | — |
 | inspect | scroll: +323px in 9 wheel steps, 421 ms | 1 | 200 | 313 ms | 68 ms | — |
 | inspect | scroll: +515px in 13 wheel steps, 656 ms | 6 | 200 | 321–394 ms | 267065–270528 ms | — |
+| inspect | step 1: goto /me | 2 | 200 | 397–405 ms | 5186–6760 ms | — |
+| inspect | step 7: click e1395 | 2 | 200 | 397–401 ms | 12311–15351 ms | — |
+| inspect | step 8: wait 5s | 12 | 200 | 374–486 ms | 5410–825785 ms | — |
+| host | step 3: clickRole button "…" | 1 | 200 | 358 ms | 9919 ms | — |
+| host | step 4: pageText | 1 | 200 | 356 ms | 46 ms | — |
+| host | step 7: goto /me | 1 | 200 | 340 ms | 4239 ms | — |
+| host | step 12: goto /me | 1 | 200 | 338 ms | 4454 ms | — |
+| host | step 16: snapshot | 6 | 200 | 341–480 ms | 1186–22382 ms | — |
+| host | step 17: goto /me | 2 | 200 | 335–339 ms | 3526–3539 ms | — |
+| host | step 19: clickRole menuitem "…" | 1 | 200 | 1108 ms | 386 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 9 | 200 | 336–410 ms | 45706–291031 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

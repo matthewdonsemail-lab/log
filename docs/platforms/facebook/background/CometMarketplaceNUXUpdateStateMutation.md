@@ -13,14 +13,15 @@
 | Called from | `CometMarketplaceNUXUpdateStateMutation` |
 | rea | `ev_9ecefa2a0620b4c94f8bf3f4a7190a2f64f6cb5b3a8dfa2dc1c6ebd3cedfea74` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | warmup | step 21: goto /marketplace/ | 1 | 200 | 439 ms | 47 ms | — |
 | inspect | step 27: click e1541 | 1 | 200 | 455 ms | 918 ms | — |
+| host | step 6: goto /marketplace/status | 1 | 200 | 643 ms | 47 ms | — |
 
-### What it sent and what came back (the newest 1 from our runs)
+### What it sent and what came back (the newest 2 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -97,6 +98,32 @@ Answered:
     "is_final": true
   }
 }
+```
+
+**runs/host/20261024T211541_61593939852820**, step 6: goto /marketplace/status: 200, 643 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMarketplaceNUXUpdateStateMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "input": {
+      "nux_type": "mp_seller_announcement_center_nux",
+      "actor_id": "61593939852820",
+      "client_mutation_id": "1"
+    }
+  },
+  "doc_id": "23955024057437109"
+}
+```
+
+Answered:
+
+```json
+null
 ```
 
 <!-- facts:end -->

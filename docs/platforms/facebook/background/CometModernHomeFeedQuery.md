@@ -8,12 +8,12 @@
 | Kind | query |
 | doc_id | `29152597714334312` |
 | Path | `/api/graphql/` |
-| Sends | `RELAY_INCREMENTAL_DELIVERY`, `connectionClass`, `experimentalValues`, `feedClientSession`, `feedEndCursor`, `feedInitialFetchSize`, `feedLocation`, `feedStyle`, `feedbackSource`, `focusCommentID`, `orderby`, `privacySelectorRenderLocation`, `recentVPVs`, `referringStoryRenderLocation`, `refreshMode`, `renderLocation`, `scale`, `shouldChangeBRSLabelFieldName`, `shouldObfuscateCategoryField`, `shouldUseBRSLabelFieldNameV1`, `shouldUseBRSLabelFieldNameV2`, `useDefaultActor`, `__relay_internal__pv__GHLShouldChangeSponsoredAuctionDistanceFieldNamerelayprovider`, `__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV1relayprovider`, `__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV2relayprovider`, `__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider`, `__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider`, `__relay_internal__pv__CometAdsSlotFillLoggingEnabledrelayprovider`, `__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider`, `__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider`, `__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider`, `__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider`, `__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider`, `__relay_internal__pv__IsWorkUserrelayprovider`, `__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider`, `__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider`, `__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider`, `__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider`, `__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider`, `__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider`, `__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider`, `__relay_internal__pv__IsMergQAPollsrelayprovider`, `__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider`, `__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider`, `__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider`, `__relay_internal__pv__CometUFIShareActionMigrationrelayprovider`, `__relay_internal__pv__CometUFISingleLineUFIrelayprovider`, `__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider`, `__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider`, `__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider`, `__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider`, `__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider`, `__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider` |
+| Sends | `RELAY_INCREMENTAL_DELIVERY`, `connectionClass`, `feedbackSource`, `feedInitialFetchSize`, `feedLocation`, `feedStyle`, `orderby`, `privacySelectorRenderLocation`, `recentVPVs`, `refreshMode`, `renderLocation`, `scale`, `shouldChangeBRSLabelFieldName`, `shouldObfuscateCategoryField`, `shouldUseBRSLabelFieldNameV1`, `shouldUseBRSLabelFieldNameV2`, `useDefaultActor`, `__relay_internal__pv__GHLShouldChangeSponsoredAuctionDistanceFieldNamerelayprovider`, `__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV1relayprovider`, `__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV2relayprovider`, `__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider`, `__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider`, `__relay_internal__pv__CometAdsSlotFillLoggingEnabledrelayprovider`, `__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider`, `__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider`, `__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider`, `__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider`, `__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider`, `__relay_internal__pv__IsWorkUserrelayprovider`, `__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider`, `__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider`, `__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider`, `__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider`, `__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider`, `__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider`, `__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider`, `__relay_internal__pv__IsMergQAPollsrelayprovider`, `__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider`, `__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider`, `__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider`, `__relay_internal__pv__CometUFIShareActionMigrationrelayprovider`, `__relay_internal__pv__CometUFISingleLineUFIrelayprovider`, `__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider`, `__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider`, `__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider`, `__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider`, `__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider`, `__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider` |
 | Reads | `viewer....CometNewsFeed_viewerConnection`, `viewer....CometNewsFeed_viewer` |
 | Called from | `CometModernHomeFeed.react` |
 | rea | `ev_115730b4ac8c47f6922201d9452d5fe5b45d8f0086285216bf40009f9303cb0a` |
 
-Seen 20 time(s) in 13 run(s).
+Seen 21 time(s) in 14 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -36,6 +36,7 @@ Seen 20 time(s) in 13 run(s).
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 3647 ms | 15206 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 2362 ms | 7187 ms | — |
 | inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 3658 ms | 18334 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 1 | 200 | 4431 ms | 45795 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
@@ -133,14 +134,14 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/462209792_1682975165831226_6278810203753941575_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx943x960&ctp=s24x24&_nc_cat=100&ccb=1-7&_nc_sid=e99d92&_nc_ohc=87DnGcAiuIgQ7kNvwEwlbTw&_nc_oc=AdrlwDuB4MzCswEUIdlAJosoN8LPdbTXjHYu6zl-79xjJH1cQZyMqcPEnIF6d-u0-xM&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=eaXKiHlAjH6fVNiVk1jP_g&_nc_ss=792a8&oh=00_AQNKAb_uRgPq99a16wmZIg… (436 chars)",
+          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/462209792_1682975165831226_6278810203753941575_n.jpg (436 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/486386928_1805101740285234_8116276554609323478_n.jpg?stp=dst-jpg_tt6&cstp=mx665x660&ctp=p526x296&_nc_cat=106&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=JuxsfWzUbPwQ7kNvwELgCy4&_nc_oc=AdqlCYnIUsLlKlmM64w44IqdJv1SYB47K5s4FUyVYKwwsvDoePN30bYwtXqdubKSWM0&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=eaXKiHlAjH6fVNiVk1jP_g&_nc_ss=792a8&oh=00_AQO9LYQl5ztdMLi6vGQnxTwa… (434 chars)",
+          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/486386928_1805101740285234_8116276554609323478_n.jpg (434 chars)",
           "label": null,
           "width": 680,
           "height": null,
@@ -402,7 +403,7 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/529746677_24667720239520157_119063301246289542_n.jpg?stp=c0.0.720.720a_cp0_dst-jpg_tt6&cstp=mx720x720&ctp=s24x24&_nc_cat=110&ccb=1-7&_nc_sid=e99d92&_nc_ohc=MsjEjb-BA18Q7kNvwF2Ce28&_nc_oc=AdoYT8f50sFlrlqsKmgX13HS-O8rE7Y0vZr9Cw3mIlO3pnodE1Q47tmWU7RuP-2PRq0&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=mZF80tCibFxm7uW2DUWLFw&_nc_ss=792a8&oh=00_AQOVsIc9… (450 chars)",
+          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/529746677_24667720239520157_119063301246289542_n.jpg (450 chars)",
           "label": null,
           "width": null,
           "height": null,
@@ -676,7 +677,7 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/506455007_9961606340561180_15147271089376521_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx960x960&ctp=s40x40&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=R7CRmU4__V0Q7kNvwEE66P8&_nc_oc=Adr7soHoB16oMM9Ed3g0cv9WnvZp9R9JD0eapeTKvH0AR_9SUveEluNwJiq-UZ30eN4&_nc_zt=24&_nc_ht=scontent-xxc1-1.xx&_nc_gid=1szW6yWIcVA85ngWoXbG4Q&_nc_ss=792a8&oh=00_AQPwKDBFjwEMt0vdRnEtBrt6xI… (432 chars)",
+          "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/506455007_9961606340561180_15147271089376521_n.jpg (432 chars)",
           "label": null,
           "width": null,
           "height": null,

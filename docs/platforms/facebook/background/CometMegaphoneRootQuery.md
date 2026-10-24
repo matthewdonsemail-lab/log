@@ -13,7 +13,7 @@
 | Called from | `CometMegaphoneRoot.react` |
 | rea | `ev_a2e1e82b09a10f9f97361e424dc787adb4a3a8c0a7bb15f7feb91de015e7d2fa` |
 
-Seen 20 time(s) in 13 run(s).
+Seen 21 time(s) in 14 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -36,6 +36,7 @@ Seen 20 time(s) in 13 run(s).
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 883 ms | 15210 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 622 ms | 7193 ms | — |
 | inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 902 ms | 18342 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 1 | 200 | 805 ms | 45801 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

@@ -13,7 +13,7 @@
 | Called from | `CometHomeContactGroupsContainer.react` |
 | rea | `ev_afbb77778bb0832d0311179d99af4e1015fdbeadac3bded27db6e5939b581138` |
 
-Seen 23 time(s) in 13 run(s).
+Seen 25 time(s) in 14 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -38,6 +38,7 @@ Seen 23 time(s) in 13 run(s).
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 877 ms | 15218 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 787 ms | 7200 ms | — |
 | inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 793 ms | 18351 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 2 | 200 | 689–895 ms | 45811–1773949 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

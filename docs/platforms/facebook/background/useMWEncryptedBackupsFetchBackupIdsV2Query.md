@@ -13,7 +13,7 @@
 | Called from | `useMWEncryptedBackupsFetchBackupIdsV2` |
 | rea | `ev_16df7daca80a72c8f44b7a489690336b7def96e564429f0639a122f48023372a` |
 
-Seen 117 time(s) in 33 run(s).
+Seen 124 time(s) in 35 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -92,6 +92,13 @@ Seen 117 time(s) in 33 run(s).
 | inspect | step 1: goto /groups/junkremovalwinners | 1 | 200 | 363 ms | 8839 ms | — |
 | inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 353 ms | 4599 ms | — |
 | inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 330 ms | 5136 ms | — |
+| inspect | step 1: goto /me | 1 | 200 | 463 ms | 6306 ms | — |
+| inspect | step 7: click e1395 | 1 | 200 | 388 ms | 11253 ms | — |
+| host | step 3: clickRole button "…" | 1 | 200 | 390 ms | 9587 ms | — |
+| host | step 6: goto /marketplace/status | 1 | 200 | 378 ms | 3387 ms | — |
+| host | step 7: goto /me | 1 | 200 | 347 ms | 3968 ms | — |
+| host | step 12: goto /me | 1 | 200 | 378 ms | 3965 ms | — |
+| host | step 17: goto /me | 1 | 200 | 360 ms | 3673 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

@@ -47,12 +47,12 @@ Answered:
   "payload": {
     "isSpherical": false,
     "height": 1672,
-    "imageSrc": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/861498281_122127505029468773_7925144315177568439_n.jpg?stp=dst-jpg_tt6&cstp=mx941x1672&ctp=s941x1672&_nc_cat=104&ccb=1-7&_nc_sid=12b72b&_nc_ohc=uvpvTYMCl3gQ7kNvwHFqnHe&_nc_oc=Adpmai9o_VbJgKUis-3QfM6WZpRvwXuxnLSUaCtyeS6Qn6WKi7bOerkxw70cHcSlY8I&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=UkhWVIuNiLXKZONsbj_FRw&_nc_ss=792a8&oh=00_AQM4ZL5VzvOcvgvPe-up… (438 chars)",
+    "imageSrc": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/861498281_122127505029468773_7925144315177568439_n.jpg (438 chars)",
     "mediaLocation": null,
     "originalPhotoID": "",
     "photoID": "122127505023468773",
     "sphericalPhotoID": "",
-    "thumbSrc": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/861498281_122127505029468773_7925144315177568439_n.jpg?stp=c0.241.941.941a_dst-jpg_tt6&cstp=mx941x941&ctp=s100x100&_nc_cat=104&ccb=1-7&_nc_sid=12b72b&_nc_ohc=uvpvTYMCl3gQ7kNvwHFqnHe&_nc_oc=Adpmai9o_VbJgKUis-3QfM6WZpRvwXuxnLSUaCtyeS6Qn6WKi7bOerkxw70cHcSlY8I&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=UkhWVIuNiLXKZONsbj_FRw&_nc_ss=792a8&oh=00_AQMEvV… (452 chars)",
+    "thumbSrc": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/861498281_122127505029468773_7925144315177568439_n.jpg (452 chars)",
     "width": 941,
     "mediaTakenTime": null
   },
@@ -82,12 +82,12 @@ Answered:
   "payload": {
     "isSpherical": false,
     "height": 1672,
-    "imageSrc": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/859475432_122127505179468773_5558946944240149402_n.jpg?stp=dst-jpg_tt6&cstp=mx941x1672&ctp=s941x1672&_nc_cat=109&ccb=1-7&_nc_sid=12b72b&_nc_ohc=mGvFG5jE-EcQ7kNvwEbbeSe&_nc_oc=AdrNkYWtooac-nxFEsLHRh-I82Aq2M_65_gZYdmiFLzg-x-V8xKgblBPLGNzkDn5a1c&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=c8MajNToeViRo9odQqJ_bA&_nc_ss=792a8&oh=00_AQOtnabkL3Cv61jTvnsF… (438 chars)",
+    "imageSrc": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/859475432_122127505179468773_5558946944240149402_n.jpg (438 chars)",
     "mediaLocation": null,
     "originalPhotoID": "",
     "photoID": "122127505173468773",
     "sphericalPhotoID": "",
-    "thumbSrc": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/859475432_122127505179468773_5558946944240149402_n.jpg?stp=c0.241.941.941a_dst-jpg_tt6&cstp=mx941x941&ctp=s100x100&_nc_cat=109&ccb=1-7&_nc_sid=12b72b&_nc_ohc=mGvFG5jE-EcQ7kNvwEbbeSe&_nc_oc=AdrNkYWtooac-nxFEsLHRh-I82Aq2M_65_gZYdmiFLzg-x-V8xKgblBPLGNzkDn5a1c&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=c8MajNToeViRo9odQqJ_bA&_nc_ss=792a8&oh=00_AQNRpi… (452 chars)",
+    "thumbSrc": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/859475432_122127505179468773_5558946944240149402_n.jpg (452 chars)",
     "width": 941,
     "mediaTakenTime": null
   },

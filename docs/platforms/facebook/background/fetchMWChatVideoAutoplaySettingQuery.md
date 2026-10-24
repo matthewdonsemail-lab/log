@@ -13,7 +13,7 @@
 | Called from | `fetchMWChatVideoAutoplaySetting` |
 | rea | `ev_cec3d0049369021eb11311f83bae206c05ab77298da76206b6788d2cdc5c8ee1` |
 
-Seen 118 time(s) in 33 run(s).
+Seen 125 time(s) in 35 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -92,6 +92,13 @@ Seen 118 time(s) in 33 run(s).
 | inspect | step 1: goto /groups/junkremovalwinners | 1 | 200 | 425 ms | 6854 ms | — |
 | inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 544 ms | 4626 ms | — |
 | inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 383 ms | 3473 ms | — |
+| inspect | step 1: goto /me | 1 | 200 | 463 ms | 3244 ms | — |
+| inspect | step 7: click e1395 | 1 | 200 | 447 ms | 9166 ms | — |
+| host | step 3: clickRole button "…" | 1 | 200 | 362 ms | 9650 ms | — |
+| host | step 6: goto /marketplace/status | 1 | 200 | 341 ms | 2272 ms | — |
+| host | step 7: goto /me | 1 | 200 | 341 ms | 3998 ms | — |
+| host | step 12: goto /me | 1 | 200 | 392 ms | 2356 ms | — |
+| host | step 17: goto /me | 1 | 200 | 377 ms | 1998 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

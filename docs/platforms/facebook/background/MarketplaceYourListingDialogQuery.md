@@ -104,14 +104,14 @@ Answered:
           {
             "__typename": "ProductImage",
             "image": {
-              "uri": "https://scontent-lga3-1.xx.fbcdn.net/v/t45.5328-4/856660594_2379535212790769_660742871528716392_n.jpg?stp=c0.80.206.206a_dst-jpg_p206x206_tt6&_nc_cat=111&ccb=1-7&_nc_sid=247b10&_nc_ohc=azfCRYsIeUMQ7kNvwEjo79u&_nc_oc=AdozHNnxDlOGj-O-d6nMyUIv_5xQ_vPfVLHlwEGwDBliY61x7UM6iY-yTA2cUqxtM28&_nc_zt=23&_nc_ht=scontent-lga3-1.xx&_nc_gid=GIMqVqjP7TUtEkjLnMkTuQ&_nc_ss=792a8&oh=00_AQP7A_2mH3JUHvJmN33qz_wtaHTFeW… (428 chars)"
+              "uri": "https://scontent-lga3-1.xx.fbcdn.net/v/t45.5328-4/856660594_2379535212790769_660742871528716392_n.jpg (428 chars)"
             },
             "id": "2379535206124103"
           },
           {
             "__typename": "ProductImage",
             "image": {
-              "uri": "https://scontent-lga3-3.xx.fbcdn.net/v/t45.5328-4/856888990_1841284863737368_3153641676653129513_n.jpg?stp=c0.80.206.206a_dst-jpg_p206x206_tt6&_nc_cat=104&ccb=1-7&_nc_sid=247b10&_nc_ohc=08r2jHz1AtQQ7kNvwHDQzyp&_nc_oc=AdpXtiSFpCIOZXyXtbmmAnulAQ42S_05VPKgl7-KVKQjDggHyZPZxckHpOPkAoyyJB8&_nc_zt=23&_nc_ht=scontent-lga3-3.xx&_nc_gid=GIMqVqjP7TUtEkjLnMkTuQ&_nc_ss=792a8&oh=00_AQOg_yQZit6uuUZ1sRKbvOwLmiFn1… (429 chars)"
+              "uri": "https://scontent-lga3-3.xx.fbcdn.net/v/t45.5328-4/856888990_1841284863737368_3153641676653129513_n.jpg (429 chars)"
             },
             "id": "1841284860404035"
           }

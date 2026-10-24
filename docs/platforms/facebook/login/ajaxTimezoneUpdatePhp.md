@@ -13,11 +13,39 @@
 | Called from | — |
 | rea | `ev_22820a70d07184e3dad79cde4fbbaad7a75a8f7b85ef130a99a5d8f7eb75f99e` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | connect | Page: loggedIn /marketplace/selling/ "…" | 1 | 200 | 651 ms | 6073 ms | — |
+| host | step 3: clickRole button "…" | 1 | 200 | 1051 ms | 8962 ms | — |
+
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/host/20261024T211541_61593939852820**, step 3: clickRole button "…": 200, 1051 ms
+
+Sent:
+
+```json
+{
+  "gmt_off": "-240",
+  "is_forced": "true",
+  "tz": "America/New_York"
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "ACA3Fv27sucSD3jfRuLmirY",
+  "payload": null,
+  "lid": "7700346294843364284"
+}
+```
 
 <!-- facts:end -->
 

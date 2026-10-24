@@ -13,7 +13,7 @@
 | Called from | — |
 | rea | `ev_1f2efc84d7328617553804a0b324fa57be90f6d575258bd012fdfe013be31ab0` |
 
-Seen 49 time(s) in 14 run(s).
+Seen 50 time(s) in 15 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -56,6 +56,7 @@ Seen 49 time(s) in 14 run(s).
 | warmup | scroll: -1034px in 22 wheel steps, 1032 ms | 1 | 200 | 450 ms | 971 ms | — |
 | warmup | scroll: +981px in 24 wheel steps, 1672 ms | 1 | 200 | 465 ms | 2215 ms | — |
 | inspect | step 6: clickAny 1 x link /see owner profile$/ | 1 | 200 | 813 ms | 2807 ms | — |
+| host | step 21: clickRole button "…" | 1 | 200 | 423 ms | 8414 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
@@ -287,7 +288,7 @@ Answered:
               "view_public_for": "(5 fields)",
               "tracking": "(5 fields)",
               "dynamicUrlInfo": "(5 fields)",
-              "token": "(5 fields)",
+              "token": "(taken out)",
               "is_background": "(5 fields)",
               "hoisted_story_ids": "(5 fields)",
               "hoisted_story_optimistic_data": "(5 fields)",
@@ -606,7 +607,7 @@ Answered:
               "view_public_for": "(5 fields)",
               "tracking": "(5 fields)",
               "dynamicUrlInfo": "(5 fields)",
-              "token": "(5 fields)",
+              "token": "(taken out)",
               "is_background": "(5 fields)",
               "hoisted_story_ids": "(5 fields)",
               "hoisted_story_optimistic_data": "(5 fields)",
@@ -925,7 +926,7 @@ Answered:
               "view_public_for": "(5 fields)",
               "tracking": "(5 fields)",
               "dynamicUrlInfo": "(5 fields)",
-              "token": "(5 fields)",
+              "token": "(taken out)",
               "is_background": "(5 fields)",
               "hoisted_story_ids": "(5 fields)",
               "hoisted_story_optimistic_data": "(5 fields)",

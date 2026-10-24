@@ -13,7 +13,7 @@
 | Called from | `CometHomeMegaMenuAllProducts.react` |
 | rea | `ev_78a10afc58bb765d71fab141fd85b3c18aea439a22cd1af1ebfa86cb7d38ffd1` |
 
-Seen 14 time(s) in 12 run(s).
+Seen 15 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -29,6 +29,7 @@ Seen 14 time(s) in 12 run(s).
 | inspect | step 3: goto /marketplace/inbox | 2 | 200 | 687–743 ms | 10616–22216 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 1 | 200 | 1840 ms | 1630107 ms | — |
 | inspect | step 6: wait 6s | 2 | 200 | 647–732 ms | 17703–36581 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 1 | 200 | 526 ms | 1413758 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

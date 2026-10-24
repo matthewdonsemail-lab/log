@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_95421f05dd3f9efcf081ae70b4a85b300d73f7dae30bb96edbb2caa5ade4a5a3` |
+| rea | `ev_eb4e6fa8742e9ad786748859ae836e12036ec2a8cc8c1bd662da3df39f3228fe` |
 
-Seen 125 time(s) in 36 run(s).
+Seen 135 time(s) in 38 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -93,6 +93,15 @@ Seen 125 time(s) in 36 run(s).
 | inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 3775 ms | 4210 ms | — |
 | inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 337 ms | 2114 ms | — |
 | inspect | scroll: +515px in 13 wheel steps, 656 ms | 1 | 200 | 2374 ms | 495125 ms | — |
+| inspect | step 1: goto /me | 1 | 200 | 533 ms | 2223 ms | — |
+| inspect | step 7: click e1395 | 1 | 200 | 1348 ms | 7448 ms | — |
+| inspect | step 8: wait 5s | 1 | 200 | 2507 ms | 1649309 ms | — |
+| host | step 1: goto /marketplace/selling/ | 1 | 200 | 346 ms | 1974 ms | — |
+| host | step 3: clickRole button "…" | 2 | 200 | 367–3015 ms | 3836–8017 ms | — |
+| host | step 6: goto /marketplace/status | 1 | 200 | 1247 ms | 1819 ms | — |
+| host | step 7: goto /me | 1 | 200 | 6000 ms | 6610 ms | — |
+| host | step 12: goto /me | 1 | 200 | 406 ms | 1095 ms | — |
+| host | step 17: goto /me | 1 | 200 | 427 ms | 1101 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

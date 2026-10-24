@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_95421f05dd3f9efcf081ae70b4a85b300d73f7dae30bb96edbb2caa5ade4a5a3` |
+| rea | `ev_eb4e6fa8742e9ad786748859ae836e12036ec2a8cc8c1bd662da3df39f3228fe` |
 
-Seen 1160 time(s) in 33 run(s).
+Seen 1215 time(s) in 35 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -101,7 +101,7 @@ Seen 1160 time(s) in 33 run(s).
 | inspect | scroll: +800px in 18 wheel steps, 875 ms | 1 | 200 | 372 ms | 544 ms | — |
 | inspect | scroll: +800px in 18 wheel steps, 906 ms | 1 | 200 | 390 ms | 22 ms | — |
 | inspect | scroll: +800px in 17 wheel steps, 672 ms | 1 | 200 | 378 ms | 4141 ms | — |
-| inspect | step 2: snapshot | 5 | 200 | 367–588 ms | 1095–7489 ms | — |
+| inspect | step 2: snapshot | 7 | 200 | 367–588 ms | 1095–14826 ms | — |
 | inspect | scroll: +700px in 16 wheel steps, 766 ms | 5 | 200 | 369–619 ms | 1172–3862 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 1000 ms | 2 | 200 | 368–395 ms | 9372–10621 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 766 ms | 2 | 200 | 356–584 ms | 778–779 ms | — |
@@ -356,6 +356,16 @@ Seen 1160 time(s) in 33 run(s).
 | inspect | step 24: scroll 3-5 x 300-600px | 1 | 200 | 332 ms | 769 ms | — |
 | inspect | scroll: +548px in 14 wheel steps, 796 ms | 1 | 200 | 331 ms | 568 ms | — |
 | inspect | scroll: +515px in 13 wheel steps, 656 ms | 10 | 200 | 327–385 ms | 332–308762 ms | — |
+| inspect | step 1: goto /me | 8 | 200 | 399–555 ms | 2895–22335 ms | — |
+| inspect | step 7: click e1395 | 7 | 200 | 448–1144 ms | 7743–11678 ms | — |
+| inspect | step 8: wait 5s | 6 | 200 | 394–599 ms | 71675–371076 ms | — |
+| host | step 3: clickRole button "…" | 5 | 200 | 356–436 ms | 8233–9909 ms | — |
+| host | step 4: pageText | 2 | 200 | 360–384 ms | 2666–2974 ms | — |
+| host | step 6: goto /marketplace/status | 5 | 200 | 345–573 ms | 3026–3885 ms | — |
+| host | step 7: goto /me | 5 | 200 | 390–575 ms | 2267–5325 ms | — |
+| host | step 12: goto /me | 6 | 200 | 342–445 ms | 1838–4669 ms | — |
+| host | step 17: goto /me | 5 | 200 | 365–426 ms | 1489–4486 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 4 | 200 | 358–461 ms | 13305–180910 ms | — |
 
 <!-- facts:end -->
 

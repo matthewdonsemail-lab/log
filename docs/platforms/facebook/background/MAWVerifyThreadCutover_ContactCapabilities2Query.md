@@ -13,7 +13,7 @@
 | Called from | `MAWVerifyThreadCutover` |
 | rea | `ev_2ef4fcf81840e4c44dfd19b7c86b9e3e65429109c06595cfc96262bcea9f2bc2` |
 
-Seen 116 time(s) in 32 run(s).
+Seen 118 time(s) in 33 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -91,6 +91,8 @@ Seen 116 time(s) in 32 run(s).
 | inspect | step 1: goto /groups/junkremovalwinners | 1 | 200 | 432 ms | 8986 ms | — |
 | inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 342 ms | 4919 ms | — |
 | inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 375 ms | 5030 ms | — |
+| host | step 3: clickRole button "…" | 1 | 200 | 375 ms | 9829 ms | — |
+| host | step 6: goto /marketplace/status | 1 | 200 | 356 ms | 3433 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

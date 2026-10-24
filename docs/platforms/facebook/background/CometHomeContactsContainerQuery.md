@@ -13,7 +13,7 @@
 | Called from | `CometHomeContactsContainer.react` |
 | rea | `ev_1382c6aaad8caec306d87c00b9b241ef1e74ac91f09082d75f7694f794713881` |
 
-Seen 23 time(s) in 13 run(s).
+Seen 25 time(s) in 14 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -38,6 +38,7 @@ Seen 23 time(s) in 13 run(s).
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 829 ms | 15219 ms | A server error field_exception occured. Check server logs for details. |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 648 ms | 7202 ms | A server error field_exception occured. Check server logs for details. |
 | inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 953 ms | 18354 ms | A server error field_exception occured. Check server logs for details. |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 2 | 200 | 582–1109 ms | 45814–1773952 ms | A server error field_exception occured. Check server logs for details. |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

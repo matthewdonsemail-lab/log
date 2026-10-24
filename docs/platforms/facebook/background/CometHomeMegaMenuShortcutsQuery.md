@@ -13,7 +13,7 @@
 | Called from | `CometHomeMegaMenuShortcuts.react` |
 | rea | `ev_387da7dffb2d726280e5df4abfd25b5a3f00569b707462e4a6fe946ba8004ba8` |
 
-Seen 12 time(s) in 11 run(s).
+Seen 13 time(s) in 12 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -29,6 +29,7 @@ Seen 12 time(s) in 11 run(s).
 | inspect | step 3: goto /marketplace/inbox | 1 | 200 | 740 ms | 22256 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 1 | 200 | 1627 ms | 1630153 ms | — |
 | inspect | step 6: wait 6s | 1 | 200 | 635 ms | 36624 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 1 | 200 | 496 ms | 1413800 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
@@ -74,7 +75,7 @@ Answered:
                 "uri": "https://static.xx.fbcdn.net/rsrc.php/y8/r/iaP8U-_yJOY.webp"
               },
               "image": {
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/645294606_10238351084488917_8182127059574139500_n.jpg?stp=c97.0.776.776a_cp6_dst-jpg_tt6&cstp=mx776x776&ctp=s50x50&_nc_cat=106&ccb=1-7&_nc_sid=1760b9&_nc_ohc=Ha3-UBUXX1cQ7kNvwGr8gWR&_nc_oc=AdrZlm4ot4kvLjN6rQ7q_DSPqEiCHzKKL8JyXthhkr0RDP0cZQdUqHBB7aJH20IwKnE&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=FrpAAkhAdJ9gBYo9bDLA2g&_nc_ss=792a8&oh=00_AQNdqc… (452 chars)",
+                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/645294606_10238351084488917_8182127059574139500_n.jpg (452 chars)",
                 "is_silhouette": false
               },
               "section": "GROUP",
@@ -103,7 +104,7 @@ Answered:
                 "uri": "https://static.xx.fbcdn.net/rsrc.php/y8/r/iaP8U-_yJOY.webp"
               },
               "image": {
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/275511929_10127159636577474_4037586103475890512_n.jpg?stp=c157.0.1127.1127a_cp0_dst-jpg_tt6&cstp=mx1127x1127&ctp=s50x50&_nc_cat=108&ccb=1-7&_nc_sid=1760b9&_nc_ohc=RHvUj21jl1QQ7kNvwEcpCMN&_nc_oc=Adp5msS-ewk3sIH6KnOQtZLcaH4vhN0x4K6ifiIgq8ak6-8_luyRtEEt537s4jVfbVE&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=FrpAAkhAdJ9gBYo9bDLA2g&_nc_ss=792a8&oh=00_A… (457 chars)",
+                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/275511929_10127159636577474_4037586103475890512_n.jpg (457 chars)",
                 "is_silhouette": false
               },
               "section": "GROUP",
@@ -132,7 +133,7 @@ Answered:
                 "uri": "https://static.xx.fbcdn.net/rsrc.php/y8/r/iaP8U-_yJOY.webp"
               },
               "image": {
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t1.6435-9/93806581_144287650470567_96044419450404864_n.png?stp=c257.0.315.315a_cp0_dst-png&cstp=mx315x315&ctp=s50x50&_nc_cat=110&ccb=1-7&_nc_sid=1760b9&_nc_ohc=sWuHqDfbgtIQ7kNvwE1ugzr&_nc_oc=AdqghXAOcGzuMlEvpe-GsnMt-25uqH4_LTICujPgHK5YfwIyeClIswNbQibiQFM4xvg&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=FrpAAkhAdJ9gBYo9bDLA2g&_nc_ss=792a8&oh=00_AQPNGLmyAiYIv80s… (442 chars)",
+                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t1.6435-9/93806581_144287650470567_96044419450404864_n.png (442 chars)",
                 "is_silhouette": false
               },
               "section": "GROUP",
@@ -217,7 +218,7 @@ Answered:
                 "uri": "https://static.xx.fbcdn.net/rsrc.php/y8/r/iaP8U-_yJOY.webp"
               },
               "image": {
-                "uri": "https://scontent-lga3-3.xx.fbcdn.net/v/t39.30808-6/645294606_10238351084488917_8182127059574139500_n.jpg?stp=c97.0.776.776a_cp6_dst-jpg_tt6&cstp=mx776x776&ctp=s50x50&_nc_cat=106&ccb=1-7&_nc_sid=1760b9&_nc_ohc=Ha3-UBUXX1cQ7kNvwEZMpgw&_nc_oc=AdrGZTsf8Wmmxo2rMvH2iKJcFnmG32PhCMrmkNsypeFUecX8p2wd6eyQSXXi5cEQVdM&_nc_zt=23&_nc_ht=scontent-lga3-3.xx&_nc_gid=yYTpaINqr0qMhgo-HS5KVw&_nc_ss=792a8&oh=00_AQPMwv… (452 chars)",
+                "uri": "https://scontent-lga3-3.xx.fbcdn.net/v/t39.30808-6/645294606_10238351084488917_8182127059574139500_n.jpg (452 chars)",
                 "is_silhouette": false
               },
               "section": "GROUP",
@@ -246,7 +247,7 @@ Answered:
                 "uri": "https://static.xx.fbcdn.net/rsrc.php/y8/r/iaP8U-_yJOY.webp"
               },
               "image": {
-                "uri": "https://scontent-lga3-3.xx.fbcdn.net/v/t39.30808-6/275511929_10127159636577474_4037586103475890512_n.jpg?stp=c157.0.1127.1127a_cp0_dst-jpg_tt6&cstp=mx1127x1127&ctp=s50x50&_nc_cat=108&ccb=1-7&_nc_sid=1760b9&_nc_ohc=_B0Q9a9J9IEQ7kNvwEt8vAx&_nc_oc=AdoHFwvlN5jgcckwTCOG0IQ4YIJ3A2iPPajKBOtnOECRZypUhFOm1URY3t5sxIQVZvE&_nc_zt=23&_nc_ht=scontent-lga3-3.xx&_nc_gid=yYTpaINqr0qMhgo-HS5KVw&_nc_ss=792a8&oh=00_A… (457 chars)",
+                "uri": "https://scontent-lga3-3.xx.fbcdn.net/v/t39.30808-6/275511929_10127159636577474_4037586103475890512_n.jpg (457 chars)",
                 "is_silhouette": false
               },
               "section": "GROUP",
@@ -275,7 +276,7 @@ Answered:
                 "uri": "https://static.xx.fbcdn.net/rsrc.php/y8/r/iaP8U-_yJOY.webp"
               },
               "image": {
-                "uri": "https://scontent-lga3-1.xx.fbcdn.net/v/t1.6435-9/93806581_144287650470567_96044419450404864_n.png?stp=c257.0.315.315a_cp0_dst-png&cstp=mx315x315&ctp=s50x50&_nc_cat=110&ccb=1-7&_nc_sid=1760b9&_nc_ohc=sWuHqDfbgtIQ7kNvwH89nHZ&_nc_oc=AdoPyjEmSd4V6YuqrByOe9BNcUbkWIuJUPCNT_xuGIiL6GePJGx1dHerxRpHS9AF1a4&_nc_zt=23&_nc_ht=scontent-lga3-1.xx&_nc_gid=yYTpaINqr0qMhgo-HS5KVw&_nc_ss=792a8&oh=00_AQNBcaFB2OWDax_d… (442 chars)",
+                "uri": "https://scontent-lga3-1.xx.fbcdn.net/v/t1.6435-9/93806581_144287650470567_96044419450404864_n.png (442 chars)",
                 "is_silhouette": false
               },
               "section": "GROUP",
@@ -360,7 +361,7 @@ Answered:
                 "uri": "https://static.xx.fbcdn.net/rsrc.php/y8/r/iaP8U-_yJOY.webp"
               },
               "image": {
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/645294606_10238351084488917_8182127059574139500_n.jpg?stp=c97.0.776.776a_cp6_dst-jpg_tt6&cstp=mx776x776&ctp=s50x50&_nc_cat=106&ccb=1-7&_nc_sid=1760b9&_nc_ohc=Ha3-UBUXX1cQ7kNvwGr8gWR&_nc_oc=AdrZlm4ot4kvLjN6rQ7q_DSPqEiCHzKKL8JyXthhkr0RDP0cZQdUqHBB7aJH20IwKnE&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=IGkTOF8phjG8XEcVojcikw&_nc_ss=792a8&oh=00_AQP0OZ… (452 chars)",
+                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/645294606_10238351084488917_8182127059574139500_n.jpg (452 chars)",
                 "is_silhouette": false
               },
               "section": "GROUP",
@@ -389,7 +390,7 @@ Answered:
                 "uri": "https://static.xx.fbcdn.net/rsrc.php/y8/r/iaP8U-_yJOY.webp"
               },
               "image": {
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/275511929_10127159636577474_4037586103475890512_n.jpg?stp=c157.0.1127.1127a_cp0_dst-jpg_tt6&cstp=mx1127x1127&ctp=s50x50&_nc_cat=108&ccb=1-7&_nc_sid=1760b9&_nc_ohc=_B0Q9a9J9IEQ7kNvwHql1Ov&_nc_oc=Adq276QewKMPHaSof7Royg_60vnoDCMcSJ9Vqw0qNOo7UtBENbKCZMqGVXsevkPrflg&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=IGkTOF8phjG8XEcVojcikw&_nc_ss=792a8&oh=00_A… (457 chars)",
+                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/275511929_10127159636577474_4037586103475890512_n.jpg (457 chars)",
                 "is_silhouette": false
               },
               "section": "GROUP",
@@ -418,7 +419,7 @@ Answered:
                 "uri": "https://static.xx.fbcdn.net/rsrc.php/y8/r/iaP8U-_yJOY.webp"
               },
               "image": {
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t1.6435-9/93806581_144287650470567_96044419450404864_n.png?stp=c257.0.315.315a_cp0_dst-png&cstp=mx315x315&ctp=s50x50&_nc_cat=110&ccb=1-7&_nc_sid=1760b9&_nc_ohc=sWuHqDfbgtIQ7kNvwE1ugzr&_nc_oc=AdqghXAOcGzuMlEvpe-GsnMt-25uqH4_LTICujPgHK5YfwIyeClIswNbQibiQFM4xvg&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=IGkTOF8phjG8XEcVojcikw&_nc_ss=792a8&oh=00_AQOiRAueL3a1SCOW… (442 chars)",
+                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t1.6435-9/93806581_144287650470567_96044419450404864_n.png (442 chars)",
                 "is_silhouette": false
               },
               "section": "GROUP",

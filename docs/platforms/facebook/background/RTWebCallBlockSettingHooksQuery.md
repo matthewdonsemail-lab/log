@@ -13,7 +13,7 @@
 | Called from | `RTWebCallBlockSettingHooks` |
 | rea | `ev_1cd240cd88b74ce0c02e6218c665f21c92f2ebe302e100c7ea846dce65f28ad6` |
 
-Seen 117 time(s) in 33 run(s).
+Seen 124 time(s) in 35 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -92,6 +92,13 @@ Seen 117 time(s) in 33 run(s).
 | inspect | step 1: goto /groups/junkremovalwinners | 1 | 200 | 325 ms | 8906 ms | — |
 | inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 348 ms | 4825 ms | — |
 | inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 430 ms | 5152 ms | — |
+| inspect | step 1: goto /me | 1 | 200 | 501 ms | 6331 ms | — |
+| inspect | step 7: click e1395 | 1 | 200 | 399 ms | 11400 ms | — |
+| host | step 3: clickRole button "…" | 1 | 200 | 363 ms | 9797 ms | — |
+| host | step 6: goto /marketplace/status | 1 | 200 | 471 ms | 3156 ms | — |
+| host | step 7: goto /me | 1 | 200 | 336 ms | 4113 ms | — |
+| host | step 12: goto /me | 1 | 200 | 392 ms | 3991 ms | — |
+| host | step 17: goto /me | 1 | 200 | 391 ms | 3718 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

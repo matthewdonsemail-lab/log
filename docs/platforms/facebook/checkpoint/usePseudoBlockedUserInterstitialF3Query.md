@@ -13,7 +13,7 @@
 | Called from | `usePseudoBlockedUserInterstitial` |
 | rea | `ev_bd4768487f8ce51543ac7bf31bbe4bddfd24eccd0b88381038a13399ea6e6697` |
 
-Seen 141 time(s) in 33 run(s).
+Seen 148 time(s) in 35 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -108,6 +108,13 @@ Seen 141 time(s) in 33 run(s).
 | inspect | step 1: goto /groups/junkremovalwinners | 2 | 200 | 324–352 ms | 5831–8899 ms | — |
 | inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 551 ms | 4619 ms | — |
 | inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 335 ms | 4182 ms | — |
+| inspect | step 1: goto /me | 1 | 200 | 484 ms | 6327 ms | — |
+| inspect | step 7: click e1395 | 1 | 200 | 421 ms | 11396 ms | — |
+| host | step 3: clickRole button "…" | 1 | 200 | 373 ms | 9644 ms | — |
+| host | step 6: goto /marketplace/status | 1 | 200 | 344 ms | 3396 ms | — |
+| host | step 7: goto /me | 1 | 200 | 360 ms | 3993 ms | — |
+| host | step 12: goto /me | 1 | 200 | 386 ms | 3988 ms | — |
+| host | step 17: goto /me | 1 | 200 | 405 ms | 3714 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

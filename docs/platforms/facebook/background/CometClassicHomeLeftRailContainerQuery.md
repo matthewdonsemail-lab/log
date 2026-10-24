@@ -13,7 +13,7 @@
 | Called from | `CometClassicHomeLeftRailContainer.react` |
 | rea | `ev_344ab74ba79925e4c65e7d7e1baed54ed21b8b5516428816c330a8a229cfc2b5` |
 
-Seen 23 time(s) in 13 run(s).
+Seen 25 time(s) in 14 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -38,6 +38,7 @@ Seen 23 time(s) in 13 run(s).
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 884 ms | 15209 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 657 ms | 7192 ms | — |
 | inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 591 ms | 18339 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 2 | 200 | 736–764 ms | 45799–1773939 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

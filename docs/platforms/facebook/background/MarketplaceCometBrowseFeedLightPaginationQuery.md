@@ -77,7 +77,7 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.84726-6/858553357_1595844581848390_7234823353784418412_n.jpg?stp=c0.151.261.261a_dst-jpg_p261x260_tt6&_nc_cat=101&ccb=1-7&_nc_sid=92e707&_nc_ohc=tGtfI9Pz9wYQ7kNvwGFvvZp&_nc_oc=AdpWgV6U7Z6B2lh3X4MI-VpCMPjS7zFtzl2jpeJ6TXJtXNgGWsOIPXRMVNxBU7QGBB0&_nc_zt=14&_nc_ht=scontent-phl2-1.xx&_nc_gid=tOQ99i6pgY_XtNu4jLl_aA&_nc_ss=792a8&oh=00_AQOXwKVy8KVKjdZwxjd9TlFwdyF… (431 chars)",
+          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.84726-6/858553357_1595844581848390_7234823353784418412_n.jpg (431 chars)",
           "label": null,
           "width": null,
           "height": null,

@@ -90,7 +90,7 @@ Answered:
           "logging_id": ""
         },
         "image": {
-          "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-6/447843169_122043041345420024_8407522355823862737_n.png?stp=cp0_dst-png&cstp=mx512x512&ctp=s50x50&_nc_cat=1&ccb=1-7&_nc_sid=357ae6&_nc_ohc=-B5Gf1cB9QAQ7kNvwEm3sWU&_nc_oc=Adq9LmYvJBDgQhyX41sPB6SoTAZoFzl5sDNC1afCEfQ3Ba2EVW1R3mGB8nOyocIqpq4&_nc_zt=23&_nc_ht=scontent-xxc1-1.xx&_nc_gid=llyw3t58-gVrAT92fpzZrw&_nc_ss=792a8&oh=00_AQMupyAf5q34_8Lh_lQfd4ewwB… (432 chars)",
+          "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-6/447843169_122043041345420024_8407522355823862737_n.png (432 chars)",
           "is_silhouette": true
         },
         "query_prefetching_eligible": true,

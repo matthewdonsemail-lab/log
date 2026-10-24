@@ -13,7 +13,7 @@
 | Called from | `CometRightSideHeaderCards.react` |
 | rea | `ev_0ca298c8c568c93036a5e8e8d989f3baf2a29fa5ca4d1fd7a8070819f4515962` |
 
-Seen 23 time(s) in 13 run(s).
+Seen 25 time(s) in 14 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -38,6 +38,7 @@ Seen 23 time(s) in 13 run(s).
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 876 ms | 15212 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 663 ms | 7195 ms | — |
 | inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 785 ms | 18344 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 2 | 200 | 563–777 ms | 45804–1773942 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

@@ -86,7 +86,7 @@ Answered:
         "has_professional_features_for_watch": false,
         "name": "Bethlehem Trash",
         "profile_picture": {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg?stp=c239.0.950.951a_cp0_dst-jpg_tt6&cstp=mx950x951&ctp=s40x40&_nc_cat=105&ccb=1-7&_nc_sid=e99d92&_nc_ohc=8hLmZGt4kLwQ7kNvwFGX9Mc&_nc_oc=AdrcJvjvCTJsMtX_wCl0FuLhtWE_LjJPvmUjOuO3q_fxG-8z1zV8Cz68OKvdIm8D0M0&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=9zuGt2DQlp_EDeOYZOlMZQ&_nc_ss=792a8&oh=00_AQM7… (454 chars)"
+          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)"
         },
         "url": "https://www.facebook.com/profile.php?id=61594063207669",
         "short_name": "Bethlehem",

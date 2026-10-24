@@ -13,7 +13,7 @@
 | Called from | `CometSearchBootstrapKeywordsDataSource.query` |
 | rea | `ev_5cb62e3a7cd21788732d77960d11bcea0adc8730aaaa23e6a78c097c1c44c7a6` |
 
-Seen 114 time(s) in 31 run(s).
+Seen 121 time(s) in 33 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -91,6 +91,13 @@ Seen 114 time(s) in 31 run(s).
 | inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 435 ms | 6504 ms | — |
 | inspect | step 1: goto /groups/junkremovalwinners | 1 | 200 | 481 ms | 7231 ms | — |
 | inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 379 ms | 4616 ms | — |
+| inspect | step 1: goto /me | 1 | 200 | 497 ms | 6325 ms | — |
+| inspect | step 7: click e1395 | 1 | 200 | 633 ms | 10948 ms | — |
+| host | step 3: clickRole button "…" | 1 | 200 | 356 ms | 8836 ms | — |
+| host | step 6: goto /marketplace/status | 1 | 200 | 466 ms | 3156 ms | — |
+| host | step 7: goto /me | 1 | 200 | 345 ms | 3989 ms | — |
+| host | step 12: goto /me | 1 | 200 | 352 ms | 3982 ms | — |
+| host | step 17: goto /me | 1 | 200 | 363 ms | 3156 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

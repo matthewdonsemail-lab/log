@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_8d81f7cfce59ffe10ca0456d18d3be3e038f54211be1e9bd545588382ef93c4c` |
+| rea | `ev_a27ad8fd641e8a835ab4b3fc61d7fdb28ebcee6a43234eaecdfc083755f4e680` |
 
-Seen 804 time(s) in 35 run(s).
+Seen 846 time(s) in 37 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -48,7 +48,7 @@ Seen 804 time(s) in 35 run(s).
 | inspect | scroll: +700px in 16 wheel steps, 985 ms | 2 | 200 | 362–585 ms | 1607–2609 ms | — |
 | inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 354 ms | 54 ms | — |
 | inspect | scroll: +800px in 18 wheel steps, 781 ms | 22 | 200 | 337–1538 ms | 2912–1778687 ms | — |
-| inspect | step 2: snapshot | 6 | 200 | 336–1482 ms | 6316–23691 ms | — |
+| inspect | step 2: snapshot | 7 | 200 | 336–1482 ms | 6316–23691 ms | — |
 | inspect | step 4: type e1681 | 1 | 200 | 1400 ms | 1138 ms | — |
 | inspect | step 6: wait 6s | 2 | 200 | 365–1548 ms | 16892–21607 ms | — |
 | inspect | step 8: clickRole button "…" | 1 | 200 | 363 ms | 10817 ms | — |
@@ -255,6 +255,19 @@ Seen 804 time(s) in 35 run(s).
 | inspect | scroll: +560px in 12 wheel steps, 547 ms | 1 | 200 | 313 ms | 2692 ms | — |
 | inspect | scroll: +515px in 13 wheel steps, 656 ms | 24 | 200 | 310–1617 ms | 31496–761489 ms | — |
 | inspect | step 25: pageText | 34 | 200 | 318–2388 ms | 40416–1770311 ms | — |
+| inspect | step 4: click e1211 | 1 | 200 | 419 ms | 3852 ms | — |
+| inspect | step 7: click e1395 | 6 | 200 | 371–411 ms | 6089–15238 ms | — |
+| inspect | step 8: wait 5s | 14 | 200 | 380–498 ms | 20915–1787348 ms | — |
+| host | step 1: goto /marketplace/selling/ | 2 | 200 | 339–1303 ms | 8402–9399 ms | — |
+| host | step 2: pageText | 2 | 200 | 346–626 ms | 1419–8922 ms | — |
+| host | step 3: clickRole button "…" | 1 | 200 | 392 ms | 3097 ms | — |
+| host | step 4: pageText | 1 | 200 | 778 ms | 3692 ms | — |
+| host | step 6: goto /marketplace/status | 2 | 200 | 364–653 ms | 43–6344 ms | — |
+| host | step 7: goto /me | 1 | 200 | 394 ms | 18 ms | — |
+| host | clickRole failed: RuntimeError: the element kept moving under the cursor: the point is on  | 2 | 200 | 373–409 ms | 9814–10335 ms | — |
+| host | step 17: goto /me | 2 | 200 | 336–339 ms | 43–5430 ms | — |
+| host | step 19: clickRole menuitem "…" | 2 | 200 | 334–367 ms | 2198–4199 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 5 | 200 | 337–383 ms | 55854–1436046 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
