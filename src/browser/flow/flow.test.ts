@@ -1,7 +1,7 @@
 import { pageProblem } from './helpers/pageCheck'
 import { describe, expect, test } from 'bun:test'
 import { createActor, fromPromise, toPromise } from 'xstate'
-import { confirmingRequest, createFlowMachine, fillStep, flowFromRecording, renderFlowDoc, toolName } from './index'
+import { confirmingRequest, createFlowMachine, fillStep, flowFromRecording, flowWithParams, loadFlow, renderFlowDoc, toolName } from './index'
 import type { FlowActInput, FlowRunOutput, FlowStepResult } from './index'
 import type { RecordedCommand } from './helpers/index'
 
@@ -217,3 +217,17 @@ describe("marketplaceListingDelete", () => {
     expect(del.answers![0].says[0]).toMatchObject({ answer: "data.commerce_for_sale_item_delete.deleted_for_sale_item_id", is: "999" });
   });
 });
+
+describe('flowWithParams', () => {
+  const profileSetup = loadFlow('profileSetup')!
+
+  test('only the profile picture when Twenty has no cover or name', () => {
+    const flow = flowWithParams(profileSetup, { uid: '1', profilePhoto: 'a.png' })
+    expect(flow.steps.map((s) => s.id)).toEqual(['s01_gotome', 's02_clickProfilePictureActions', 's03_clickChooseProfilePicture', 's04_uploadUploadPhoto', 's05_clickSave'])
+  })
+
+  test('every section when every param is given', () => {
+    const flow = flowWithParams(profileSetup, { uid: '1', profilePhoto: 'a.png', coverPhoto: 'b.png', firstName: 'A', lastName: 'B' })
+    expect(flow.steps.length).toBe(profileSetup.steps.length)
+  })
+})

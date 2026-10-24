@@ -82,3 +82,16 @@ from its step's own recording, nothing clicked:
 
 `log facebook check --account <a>` runs the same once.
 Code: `src/facebook/marketplace/check`.
+
+## Before the host opens (rule 79)
+
+Run `log facebook preflight [--homes US] [--account <a>]` first. It opens no
+browser and says, per account, what would stop it: no home timezone
+(`noHomeTimezone`), outside its hours, the proxy's country and speed against
+this run's `--proxyMs`, no AdsPower profile, the newest SunBrowser kernel not
+downloaded (`adsPowerKernelMissing`; `--apply` downloads it and waits), today's
+launches and host opens spent, a live session holding it (a session whose
+process is gone is dropped), and its profile picture not on this machine.
+Exit 1 when any account is blocked. The host itself waits for a kernel that is
+still downloading before it opens, and `host start --now` skips the 10-minute
+launch gap only (rule 30).

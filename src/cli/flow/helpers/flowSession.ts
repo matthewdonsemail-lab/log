@@ -85,7 +85,7 @@ export async function runFlowInSession(
       act: fromPromise<FlowStepResult, FlowActInput>(async ({ input }) => {
         const step = fillStep(input.step, filled);
         const { action, args } = commandFor(step);
-        const reply = await context.sendInspect(current, action, args, 240_000, step.expect ? { name: step.expect, ms: 45_000 } : answerWait(step.answers));
+        const reply = await context.sendInspect(current, action, args, 240_000, step.expect ? { name: step.expect, ms: 45_000 } : answerWait(step.answers), step.within ? { within: step.within } : undefined);
         let result: FlowStepResult = reply
           ? { id: step.id, ok: reply.ok !== false, error: reply.error, expectSeen: reply.expect?.seen, ms: (reply as { ms?: number }).ms, folder: reply.folder }
           : { id: step.id, ok: false, error: "no reply from the session" };

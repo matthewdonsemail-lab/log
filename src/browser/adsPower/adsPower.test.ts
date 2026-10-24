@@ -39,7 +39,9 @@ function memoryAdsPower(profiles: AdsPowerProfile[] = []) {
     },
     startBrowser: async (id) => (log.push(`start ${id}`), { profileId: id, cdpUrl: 'ws://127.0.0.1:9/devtools/browser/x', debugPort: '9' }),
     activeBrowser: async () => null,
-    stopBrowser: async (id) => void log.push(`stop ${id}`)
+    stopBrowser: async (id) => void log.push(`stop ${id}`),
+    kernels: async () => [{ version: "156", downloaded: true }],
+    downloadKernel: async () => ({ status: "completed", progress: null })
   }
   return { client, profiles, log }
 }

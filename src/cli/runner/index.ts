@@ -14,6 +14,7 @@ import { captureCommand } from "../capture/index.ts";
 import { checkCommand } from "../check/index.ts";
 import { launchCommand } from "../launch/index.ts";
 import { lifecycleCommand } from "../lifecycle/index.ts";
+import { preflightCommand } from "../preflight/index.ts";
 import { listingCommand, listingsCommand } from "../listing/index.ts";
 import { connectCommand, doctorCommand, scanCommand, statusCommand } from "../live/index.ts";
 import { profileCommand } from "../profile/index.ts";
@@ -46,6 +47,7 @@ export const COMMANDS: Command[] = [
   accountCommand,
   adsPowerCommand,
   lifecycleCommand,
+  preflightCommand,
   doctorCommand,
   connectCommand,
   profileCommand,

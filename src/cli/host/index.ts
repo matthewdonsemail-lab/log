@@ -13,7 +13,7 @@ import type { HostBrowser } from "./helpers/index.ts";
 export * from "./helpers/index.ts";
 
 export const HOST_USAGE = [
-  "Usage: log facebook host start --account <accountName> [--live] [--likes] [--bypass] [--gapSeconds <n>] [--watchMinutes <n>]   (--live: profile, name, location; --likes: the warm-up's likes)",
+  "Usage: log facebook host start --account <accountName> [--live] [--likes] [--bypass] [--now] [--gapSeconds <n>] [--watchMinutes <n>]   (--live: profile, name, location; --likes: the warm-up's likes)",
   "       log facebook host send --account <accountName> <PERSON_DONE|PAUSE|RESUME|SHUTDOWN|LOST>",
   "       log facebook host status [--account <accountName>]",
 ].join("\n");
@@ -31,6 +31,7 @@ export const HOST_INPUT: CommandInput = {
         { name: "live", kind: "boolean", live: true, description: "Profile, name and location on Facebook, only when matt asked (rule 8)" },
         { name: "likes", kind: "boolean", live: true, description: "The warm-up's likes, only when matt asked (rule 8)" },
         { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when matt asked (rule 20)" },
+        { name: "now", kind: "boolean", description: "Skip the 10-minute launch gap only (rule 30)" },
         { name: "gapSeconds", kind: "integer", description: "Seconds between warm-up activities (default 10)" },
         { name: "watchMinutes", kind: "integer", description: "Minutes between watch checks" },
         PROXY_MS_FLAG,
@@ -99,7 +100,7 @@ export const hostCommand: Command = {
       account: account.accountName,
       standing: standingOf(account),
       liveActions: Boolean(flags["live"]),
-      actors: hostActors(context, account, browser, { bypassHours: Boolean(flags["bypass"]), likes: Boolean(flags["likes"]), log }) as never,
+      actors: hostActors(context, account, browser, { bypassHours: Boolean(flags["bypass"]), now: Boolean(flags["now"]), likes: Boolean(flags["likes"]), log }) as never,
       saveFields: async (fields: Partial<Record<MilestoneField, string>>) => void (await context.twenty.update("socialAccounts", account.id, fields)),
       today: dayOf(account).today,
       timing: { activityGapMs: gap * 1000, watchIntervalMs: watch * 60_000 },

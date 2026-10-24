@@ -27,6 +27,8 @@ function memoryAdsPower(limit: number) {
     startBrowser: async (id) => ({ profileId: id, cdpUrl: "ws://x", debugPort: null }),
     activeBrowser: async () => null,
     stopBrowser: async () => {},
+    kernels: async () => [{ version: "156", downloaded: true }],
+    downloadKernel: async () => ({ status: "completed", progress: null }),
   };
   return { client, profiles, deleted };
 }

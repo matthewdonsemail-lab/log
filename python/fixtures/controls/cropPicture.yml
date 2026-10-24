@@ -1,0 +1,41 @@
+- main [ref=e33]:
+  - button "Save" [ref=e900] [cursor=pointer]:
+    - generic [ref=e901]: Save
+  - dialog "Choose profile picture" [ref=e1301]:
+    - heading "Choose profile picture" [active] [level=2] [ref=e1304]:
+      - generic [ref=e1306]: Choose profile picture
+    - button "Close" [ref=e1308] [cursor=pointer]
+    - generic [ref=e1331]:
+      - generic [ref=e1336]:
+        - generic: Description
+        - textbox "Description" [ref=e1338]
+      - generic [ref=e1339]:
+        - slider "Move crop area" [ref=e1342]:
+          - generic [ref=e1349]:
+            - img [ref=e1351]
+            - generic [ref=e1353]: Drag or use arrow keys to reposition image
+        - generic [ref=e1354]:
+          - button "Zoom out" [disabled] [ref=e1355]:
+            - img [ref=e1356]
+          - slider "Zoom" [ref=e1361] [cursor=pointer]
+          - button "Zoom in" [ref=e1362] [cursor=pointer]:
+            - img [ref=e1363]
+      - generic [ref=e1365]:
+        - button "Crop photo" [ref=e1368] [cursor=pointer]:
+          - generic [ref=e1369]:
+            - img [ref=e1370]
+            - generic [ref=e1374]: Crop photo
+        - button "Make temporary" [ref=e1376] [cursor=pointer]:
+          - generic [ref=e1377]:
+            - img [ref=e1378]
+            - generic [ref=e1381]: Make temporary
+      - generic [ref=e1382]:
+        - img [ref=e1384]
+        - generic [ref=e1387]: Your profile picture is public.
+      - generic [ref=e1388]:
+        - button "Cancel" [ref=e1390] [cursor=pointer]:
+          - generic [ref=e1393]: Cancel
+        - button "Save" [ref=e1395] [cursor=pointer]:
+          - generic [ref=e1398]: Save
+  - button "New message" [ref=e1197] [cursor=pointer]:
+    - img [ref=e1198]

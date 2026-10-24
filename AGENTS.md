@@ -916,6 +916,24 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `LOG_ADSPOWER_HOMES` (`.env.local`, `US`; or `--homes`) hold a profile,
     and the others give theirs back the same way. Nothing else about them
     changes. `src/browser/adsPower`, `docs/adsPower.md`.
+79. 2026-10-25 · matt: "we can't do that in production, that's why we
+    need it deterministic." A flow step never depends on a page's exact
+    wording or a person stepping in. A control is picked by one scored match
+    (`python/browser/controlMatch.py`): its role, then its name as the
+    accessible name, aria-label, label, text or placeholder, case and
+    spacing ignored, inside the dialog the step names (`within`, taken from
+    the recording's snapshot) or an open dialog over the page behind it;
+    two equal matches are refused (`controlAmbiguous`), none is
+    `controlMissing`, a disabled one is waited for (`controlDisabled`). Every
+    step waits for the call it must cause (`expect`: a mutation, a plain
+    endpoint such as `profilePictureUpload`, or a dialog query) and checks
+    its answer (rule 73) before the next one fires. `log facebook preflight`
+    says before any browser opens what would stop each account (home
+    timezone, hours, proxy country and speed, the browser kernel, launches
+    and host opens left, a session left open, its picture on disk); `--apply`
+    downloads a missing kernel and the host waits for one. A session whose
+    process is gone is dropped. Snapshot excerpts of each page version are
+    test fixtures (`python/fixtures/controls/`).
 
 ## Checks
 

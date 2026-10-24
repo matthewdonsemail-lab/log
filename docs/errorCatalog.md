@@ -150,6 +150,8 @@ stateDiagram-v2
 | `unknown` | no | `marketplace/account` | publish→blocked, monitor→blocked | The client saw an account failure it could not map. | Look at the raw signal and add a code for it here. |
 | `marketplaceMayNotPost` | no | `cli/flow`, `cli/warmup` | publish→blocked | Marketplace's create page answers `marketplace_new_seller_can_post_item: false`: no listing can be created from this account now. Bethlehem, 2026-10-23 (it was true on 2026-10-22). | Publish nothing from this account; matt decides. Read the create page's answer again on a later day. |
 | `marketplaceLocationWrong` | yes | `cli/flow`, `cli/warmup` | publish→blocked | A Marketplace page's own answer puts the account somewhere other than its home: `sell_location` on the create page, or `buy_location` on Marketplace, names another city or country (Bethlehem's sell_location was Barranco, Peru on 2026-10-22). | Set the Marketplace location to the account's home with `log inspect do setLocation "City, State" --live` (rule 72), then read the page's answer again. |
+| `proxyWrongCountry` | no | `cli/preflight` | publish→blocked, monitor→blocked | The proxy answers, but its exit is in another country than the account's home. | Run `log proxy assign --account <id>`. |
+| `proxyCheckFailed` | yes | `cli/preflight` | publish→blocked, monitor→blocked | The proxy check itself could not run (the worker or the run folder failed), so the proxy is unknown. | Run `log proxy check --account <id>` and read its error. |
 
 ## listing
 
@@ -250,6 +252,8 @@ stateDiagram-v2
 | `crashedAfterPublish` | no | `publish.publishing`, `publish.capturingId` | publish→unconfirmedId | A step threw after Publish was clicked. The listing may be live. | Check Marketplace > Selling by hand. Never re-publish: it would duplicate. |
 | `checkCrashed` | no | `monitor.checking` | monitor→failed | The monitor's check threw instead of returning an outcome. | A bug in toCheckOutcome or the worker client. |
 | `uncatalogued` | no | `worker`, `session` | publish→failed, monitor→failed | A Python process sent a code that is not in this catalog. The detail starts with the code it sent. | Add the code to src/errors/catalog/types.ts, then `bun run errors:export`. |
+| `sessionOpen` | yes | `cli/preflight` | command exits | A live session already holds the account's browser, so another can't open it. | Use that session, or close it: log inspect do stop --account <a>. |
+| `opensSpent` | yes | `lifecycle.opening`, `cli/preflight` | command exits | The host already opened the account's browser the most times allowed today (rule 35). | It opens again tomorrow, local time. Only matt resets it: log facebook account resetOpens <a> (rule 37). |
 
 ## twenty
 

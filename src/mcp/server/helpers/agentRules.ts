@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 78;
+export const RULES_REVIEWED_THROUGH = 79;
 
 export const AGENTS_URI = "log://agents";
 
@@ -24,6 +24,7 @@ export const SERVER_INSTRUCTIONS = [
   "17. A Marketplace location is typed by name, never abbreviated: \"City, State\" with the state written out (\"Bethlehem, Pennsylvania\") or \"City, Country\". An abbreviation (\"Bethlehem, PA\" was offered only as the West Bank), a zip or a number (a bare zip offered Granada, Spain) is refused with `locationAbbreviated` before anything is typed: in a listing's locationQuery, `inspectDo setLocation`, a flow's `location`, publish and the host (rule 72).",
   "18. In `inspect`, every step reads its internal API calls (what was sent and what came back) into exchanges.json; a step no known state names is read by SubQ with the goal (`goal`), the account, what we did, every call, the page, the screenshot and the earlier steps, for what it means. Its reading comes first in the result (`>>> UNKNOWN STATE`): name that state before the flow goes on. `inspectRead` reads a recorded step again (rule 74).",
   "19. An inspect session has a goal (`goal` on `inspectStart`, or `inspectGoal` with `set`), and the turn is not over until a step's reading says it is reached. A step that went wrong gets its P.E.E. finding before the next step, with `inspectFinding`: point (the issue, one sentence), explain (why the evidence shows it, what caused it); the evidence is quoted from the step's reading. Once reached, each finding says how it was fixed (`fixes`, `fix`). What only a person can clear is said to matt (rule 75).",
+  "20. Flows are deterministic: a control is one scored match by role and name (accessible name, aria-label, label, text or placeholder, case ignored) inside the dialog the step names (`within`), never a guess (`controlAmbiguous`, `controlMissing`, `controlDisabled`); every step waits for the call it must cause and checks its answer before the next fires. Run `preflight` before opening accounts: it says what would stop each one (timezone, hours, proxy, kernel, opens left, a session left open, its picture) and `--apply` fetches a missing kernel (rule 79).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -35,10 +36,11 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   connect: [12, 18, 21, 23, 24, 73],
   publish: [8, 10, 12, 18, 22, 24, 68, 72, 73],
   profile: [8, 28, 73],
-  host: [18, 35, 73],
+  host: [18, 35, 73, 79],
   lifecycle: [35],
+  preflight: [12, 18, 24, 33, 35, 37, 79],
   warmup: [8, 18, 20, 25, 26, 29, 32, 35, 36, 49, 50, 51, 54, 55, 60, 64, 73],
-  flow: [29, 31, 68, 72, 73],
+  flow: [29, 31, 68, 72, 73, 79],
   scan: [12, 18, 22, 73],
   status: [12, 18, 22, 73],
   watch: [6, 18, 73],

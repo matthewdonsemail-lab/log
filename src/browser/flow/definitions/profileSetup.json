@@ -62,6 +62,18 @@
       "action": "click",
       "role": "menuitem",
       "name": "Choose profile picture",
+      "expect": "ProfileCometProfilePictureEditDialogQuery",
+      "answers": [
+        {
+          "call": "ProfileCometProfilePictureEditDialogQuery",
+          "says": [
+            {
+              "answer": "data.viewer.actor.id",
+              "home": "uid"
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "03_clickE1096",
         "ms": 6343,
@@ -75,8 +87,25 @@
       "id": "s04_uploadUploadPhoto",
       "action": "upload",
       "role": "button",
-      "name": "Upload Photo",
+      "name": "Upload photo",
+      "within": "Choose profile picture",
       "value": "{profilePhoto}",
+      "expect": "profilePictureUpload",
+      "answers": [
+        {
+          "call": "profilePictureUpload",
+          "says": [
+            {
+              "answer": "payload.profileID",
+              "home": "uid"
+            },
+            {
+              "answer": "payload.fbid",
+              "present": true
+            }
+          ]
+        }
+      ],
       "recorded": {
         "step": "04_uploadE1180",
         "ms": 5563,
@@ -89,6 +118,7 @@
       "action": "click",
       "role": "button",
       "name": "Save",
+      "within": "Choose profile picture",
       "expect": "ProfileCometProfilePictureSetMutation",
       "answers": [
         {

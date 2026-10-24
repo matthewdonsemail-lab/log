@@ -1,5 +1,6 @@
 import { fromPromise } from "xstate";
-import { answersIssue, answerWait, loadFlow, pageProblem } from "../../../browser/flow/index.ts";
+import { createAdsPowerClient, ensureKernel } from "../../../browser/adsPower/index.ts";
+import { answersIssue, answerWait, flowWithParams, loadFlow, pageProblem } from "../../../browser/flow/index.ts";
 import { stepExchangesAt } from "../../../subq/stepReading/helpers/stepExchanges.ts";
 import type { FlowStep } from "../../../browser/flow/index.ts";
 import type { InspectAction, InspectStepResult } from "../../../browser/inspect/index.ts";
@@ -39,7 +40,7 @@ export function dayOf(account: FacebookAccount, now = new Date()): { today: stri
   return { today: clock.date, over, msUntilOpen: over ? Math.round(hoursUntilOpen(clock.hour, activeWindow(account)) * 3_600_000) : 0 };
 }
 
-export function hostActors(context: CommandContext, account: FacebookAccount, browser: HostBrowser, options: { bypassHours: boolean; likes?: boolean; log: (line: string) => void }) {
+export function hostActors(context: CommandContext, account: FacebookAccount, browser: HostBrowser, options: { bypassHours: boolean; now?: boolean; likes?: boolean; log: (line: string) => void }) {
   const log = options.log;
   const send = async (action: InspectAction, args: string[] = [], timeoutMs = 240_000, expect?: { name: string; ms?: number }): Promise<InspectStepResult | null> => {
     if (!browser.session) return null;
@@ -67,12 +68,16 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
     checkProxy: fromPromise<StepOutcome, LifecycleActorInputs["checkProxy"]>(async () => (account.proxy ? ok() : error("noProxy", "no proxy in Twenty (rule 12)"))),
 
     openBrowser: fromPromise<StepOutcome, LifecycleActorInputs["openBrowser"]>(async () => {
-      let opened = await openAccount(context, "host", "log facebook host start --account <a>", account.accountName, "connect", options.bypassHours, true);
+      if (account.adsPowerProfileId) {
+        const kernel = await ensureKernel(context.adsPower ?? createAdsPowerClient(), log).catch((e: unknown) => ({ ok: false as const, detail: e instanceof Error ? e.message : String(e) }));
+        if (!kernel.ok) return error("adsPowerKernelMissing", kernel.detail);
+      }
+      let opened = await openAccount(context, "host", "log facebook host start --account <a>", account.accountName, "connect", options.bypassHours, true, Boolean(options.now));
       if (!("run" in opened) && /launchTooSoon/.test(opened.stderr ?? "")) {
         const minutes = Number((opened.stderr ?? "").match(/wait (\d+) min/)?.[1] ?? 10);
         log(`host ${account.accountName}: the last launch was under 10 minutes ago (rule 24): opening in ${minutes} min`);
         await new Promise((r) => setTimeout(r, (minutes * 60 + 15) * 1000));
-        opened = await openAccount(context, "host", "log facebook host start --account <a>", account.accountName, "connect", options.bypassHours, true);
+        opened = await openAccount(context, "host", "log facebook host start --account <a>", account.accountName, "connect", options.bypassHours, true, Boolean(options.now));
       }
       if (!("run" in opened)) return error((opened.stderr ?? "").match(/: (\w+):/)?.[1] ?? "openRefused", opened.stderr);
       browser.run = opened.run;
@@ -165,15 +170,18 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
 
     setProfile: fromPromise<StepOutcome, LifecycleActorInputs["setProfile"]>(async ({ input }) => {
       if (!input.live) return error("needsLive", "the profile changes Facebook: run the host with --live when matt asks (rule 8)");
-      const flow = loadFlow("profileSetup");
-      if (!flow || !browser.session) return error("flowNotRecorded", "profileSetup");
-      if (!account.profilePhoto || !account.coverPhoto || !account.profileName) return error("noProfileInTwenty", "profilePhoto, coverPhoto and profileName are needed in Twenty");
-      const [firstName, ...rest] = account.profileName.split(" ");
-      const photos = await preparePhotos([account.profilePhoto, account.coverPhoto], { dir: join(browser.session.current.runDir, "photos"), proxy: fetchProxyUrl(account.proxy) });
+      const recorded = loadFlow("profileSetup");
+      if (!recorded || !browser.session) return error("flowNotRecorded", "profileSetup");
+      if (!account.profilePhoto) return error("noProfileInTwenty", "profilePhoto is needed in Twenty");
+      const [firstName, ...rest] = (account.profileName ?? "").split(" ");
+      const sources = [account.profilePhoto, account.coverPhoto].filter((p): p is string => Boolean(p));
+      const photos = await preparePhotos(sources, { dir: join(browser.session.current.runDir, "photos"), proxy: fetchProxyUrl(account.proxy) });
       if (!photos.ok) return error(photos.code, photos.detail);
-      const output = await runFlowInSession(context, browser.session.current, flow, { uid: account.accountName, profilePhoto: photos.photos[0].path, coverPhoto: photos.photos[1].path, firstName, lastName: rest.join(" ") }, { account: home });
+      const params = { uid: account.accountName, profilePhoto: photos.photos[0].path, coverPhoto: photos.photos[1]?.path, firstName: firstName || undefined, lastName: rest.join(" ") || undefined };
+      const flow = flowWithParams(recorded, params);
+      const output = await runFlowInSession(context, browser.session.current, flow, Object.fromEntries(Object.entries(params).filter(([, v]) => v)) as Record<string, string>, { account: home });
       const last = output.steps.at(-1);
-      if (output.result === "done") return ok("profile photo, cover and name saved");
+      if (output.result === "done") return ok(["profile photo", account.coverPhoto && "cover", account.profileName && "name"].filter(Boolean).join(", ") + " saved");
       if (last?.issue && last.issue !== "pageNotReached") return issue(last.issue, last.error);
       return error("profileNotSaved", `${output.failedAt}: ${last?.error ?? ""}`);
     }),

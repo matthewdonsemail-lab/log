@@ -20,6 +20,7 @@ _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
 from login import autoLogin
 from human import scrollMotion
 from browser import proxyGate
+from browser import controlMatch
 from location.placeName import pick_suggestion, place_problem
 from human.humanMouse import HumanMouse
 from errors.errorCodes import failure
@@ -56,7 +57,14 @@ def request_names(entries: list[dict[str, Any]]) -> set[str]:
         match = FRIENDLY_NAME.search(e["request"].get("postData", {}).get("text", "") or "")
         if match:
             names.add(match.group(1) or match.group(2))
+        names.add(endpoint_name(e["request"].get("url", "")))
     return names
+
+
+def endpoint_name(url: str) -> str:
+    path = re.sub(r"^[a-z]+://[^/]+", "", url).split("?", 1)[0].split("#", 1)[0]
+    words = [w for w in re.split(r"[^A-Za-z0-9]+", path) if w]
+    return "".join(w.lower() if i == 0 else w[0].upper() + w[1:].lower() for i, w in enumerate(words)) or "root"
 
 
 def notable(entries: list[dict[str, Any]]) -> list[str]:
@@ -401,9 +409,9 @@ class Inspector:
 
     async def enter_code(self) -> None:
         secret = self.secrets.get("totpSecret")
-        field = await self.first_visible(autoLogin.CODE_FIELD)
-        if field is None or not secret:
-            raise RuntimeError("no code field on the page, or no totpSecret in Twenty")
+        if not secret:
+            raise RuntimeError("no totpSecret in Twenty")
+        field = await self.first_visible(autoLogin.CODE_FIELD) or await self.by_role("textbox", "Code", 10_000)
         await field.click()
         await field.press_sequentially(autoLogin.totp(str(secret)), delay=110)
         log("  code: typed the current authenticator code; submitting with Enter")
@@ -419,21 +427,29 @@ class Inspector:
         await self.page.keyboard.type(pin, delay=140)
         log("  pin: typed the account's Messenger PIN")
 
-    async def by_role(self, role: str, name: str, timeout_ms: int = 15_000):
+    async def shows(self, role: str, name: str) -> bool:
+        try:
+            candidates = await self.page.evaluate(controlMatch.CANDIDATES_JS)
+        except Exception:
+            return False
+        return controlMatch.pick(candidates, role, name).get("code") != "controlMissing"
+
+    async def by_role(self, role: str, name: str, timeout_ms: int = 15_000, within: str | None = None):
         deadline = time.monotonic() + timeout_ms / 1000
+        within = within if within is not None else (self.opts.get("within") or None)
         while True:
-            found = self.page.get_by_role(role, name=name, exact=True)
-            visible = [found.nth(i) for i in range(await found.count()) if await found.nth(i).is_visible()]
-            for candidate in reversed(visible):
-                try:
-                    if await candidate.evaluate(HITTABLE_JS):
-                        return candidate
-                except Exception:
-                    continue
-            if visible:
-                return visible[-1]
+            try:
+                candidates = await self.page.evaluate(controlMatch.CANDIDATES_JS)
+            except Exception:
+                candidates = []
+            found = controlMatch.pick(candidates, role, name, within)
+            if "path" in found and found["enabled"]:
+                getattr(self, "extra", {})["control"] = found["path"]
+                return self.page.locator(found["path"])
+            if "path" in found:
+                found = {"code": "controlDisabled", "detail": f'{role} "{name}" is there but disabled'}
             if time.monotonic() > deadline:
-                raise RuntimeError(f'no visible {role} "{name}"')
+                raise RuntimeError(f'{found["code"]}: {found["detail"]}')
             await asyncio.sleep(0.5)
 
     async def handle(self, command: dict[str, Any]) -> dict[str, Any]:
@@ -442,7 +458,7 @@ class Inspector:
         page = self.page
         expect = command.get("expect") or None
         expect_ms = int(command.get("expectMs") or 30_000)
-        self.opts = {k: command.get(k) for k in ("reaLater", "quietMs", "settleMaxMs", "urlChange", "findMs")}
+        self.opts = {k: command.get(k) for k in ("reaLater", "quietMs", "settleMaxMs", "urlChange", "findMs", "within")}
         if action == "closeTab":
             async def close_tab() -> None:
                 popup = getattr(self, "popup", None)
@@ -458,7 +474,7 @@ class Inspector:
             already = command.get("already")
 
             async def click_role() -> None:
-                if already and await self.page.get_by_role(already[0], name=already[1], exact=True).count() and not await self.page.get_by_role(args[0], name=args[1], exact=True).count():
+                if already and await self.shows(already[0], already[1]) and not await self.shows(args[0], args[1]):
                     self.extra["already"] = f'{already[0]} "{already[1]}"'
                     log(f'  {args[0]} "{args[1]}" not needed: {already[0]} "{already[1]}" shows')
                     return

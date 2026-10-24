@@ -47,6 +47,18 @@ export interface AdsPowerClient {
   startBrowser(profileId: string, options?: { launchArgs?: string[] }): Promise<StartedBrowser>
   activeBrowser(profileId: string): Promise<StartedBrowser | null>
   stopBrowser(profileId: string): Promise<void>
+  kernels(): Promise<AdsPowerKernel[]>
+  downloadKernel(version: string): Promise<KernelDownload>
+}
+
+export interface AdsPowerKernel {
+  version: string
+  downloaded: boolean
+}
+
+export interface KernelDownload {
+  status: string
+  progress: number | null
 }
 
 export class AdsPowerError extends Error {

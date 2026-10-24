@@ -1374,6 +1374,73 @@ export const ERROR_CATALOG = {
     raisedIn: ['facebook/group/read.scrolling', 'facebook/group/read.openingPost', 'facebook/group/read.scrollingComments'],
     action: "Read the step's recording (rule 25): its screenshot and HAR show where the page was."
   },
+  controlMissing: {
+    layer: 'browser',
+    meaning: "No visible control of the step's role has its name as its accessible name, aria-label, label, text or placeholder (case and spacing ignored), inside the dialog the step names.",
+    retryable: false,
+    raisedIn: ['inspectSession.by_role'],
+    action: "Read the step's snapshot.yml: the page changed or a state came up first. Record the page again with log inspect and rebuild the flow (rule 29)."
+  },
+  controlAmbiguous: {
+    layer: 'browser',
+    meaning: 'More than one visible, enabled control matches the step, so none is clicked: the step never guesses.',
+    retryable: false,
+    raisedIn: ['inspectSession.by_role'],
+    action: "Give the step the dialog it sits in (`within`, from the recording's snapshot) or record the page again (rule 29)."
+  },
+  controlDisabled: {
+    layer: 'browser',
+    meaning: "The step's control is there but stayed disabled until the step's wait ran out: what it waits on never finished.",
+    retryable: true,
+    raisedIn: ['inspectSession.by_role'],
+    action: "Read the previous step's answers (rule 73): the call that enables it did not come back."
+  },
+  adsPowerKernelMissing: {
+    layer: 'adsPower',
+    meaning: "AdsPower's newest SunBrowser kernel (what ua_auto profiles start) is not downloaded, so a profile can't start.",
+    retryable: true,
+    raisedIn: ['host.openBrowser', 'cli/preflight'],
+    action: 'Run `log facebook preflight --apply`: it downloads the kernel and waits for it.'
+  },
+  noAdsPowerProfile: {
+    layer: 'adsPower',
+    meaning: 'The account has no AdsPower profile linked (adsPowerProfileId is empty).',
+    retryable: false,
+    raisedIn: ['cli/preflight'],
+    action: 'Run `log adsPower sync --apply`.'
+  },
+  sessionOpen: {
+    layer: 'runtime',
+    meaning: "A live session already holds the account's browser, so another can't open it.",
+    retryable: true,
+    raisedIn: ['cli/preflight'],
+    action: 'Use that session, or close it: log inspect do stop --account <a>.'
+  },
+  proxyWrongCountry: {
+    layer: 'account',
+    meaning: "The proxy answers, but its exit is in another country than the account's home.",
+    retryable: false,
+    raisedIn: ['cli/preflight'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Run `log proxy assign --account <id>`.'
+  },
+  proxyCheckFailed: {
+    layer: 'account',
+    meaning: 'The proxy check itself could not run (the worker or the run folder failed), so the proxy is unknown.',
+    retryable: true,
+    raisedIn: ['cli/preflight'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: 'Run `log proxy check --account <id>` and read its error.'
+  },
+  opensSpent: {
+    layer: 'runtime',
+    meaning: "The host already opened the account's browser the most times allowed today (rule 35).",
+    retryable: true,
+    raisedIn: ['lifecycle.opening', 'cli/preflight'],
+    action: 'It opens again tomorrow, local time. Only matt resets it: log facebook account resetOpens <a> (rule 37).'
+  },
 } as const satisfies Record<string, ErrorEntry>
 
 export type ErrorCode = keyof typeof ERROR_CATALOG

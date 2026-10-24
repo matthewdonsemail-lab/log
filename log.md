@@ -6261,3 +6261,56 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `log facebook capture --docs` rebuilt the Facebook client docs from the members-read inspect run 20261024T060921 (492 requests, 38 operations, rea had already read all 34 slices): the facts tables and the "What it sent and what came back" rows of 37 docs are updated, and one request is new, `MAWCatQuery` (background, the Messenger inbox's client access token rotation, `MAWRotateCAT`). Its reasoning is written: no machine waits on it, and its answer on 2026-10-24 was error 1357053 "Please review your account" with a redirect to `/checkpoint`, a checkpoint read from the internal API (rule 73).
 Why: the pre-push gate (rule 27, `check:facebookClientDocs`) refused the push of feat/adsPowerRelease because a run was newer than the docs.
 Checked: `bun run check:facebookClientDocs`: 226 requests documented, rea read every GraphQL slice.
+
+## 2026-10-24 21:07Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/platforms/facebook/flows/profileSetup.md`: edited
+- `python/browser/controlMatch.py`: added const CANDIDATES_JS, const NAME_FIELDS, def norm, def describe, def pick
+- `python/errors/errorCatalog.json`: edited
+- `python/fixtures/controls/README.md`: new file
+- `python/fixtures/controls/automatedBehaviour.yml`: new file
+- `python/fixtures/controls/choosePicture.yml`: new file
+- `python/fixtures/controls/cropPicture.yml`: new file
+- `python/fixtures/controls/twoStepCode.yml`: new file
+- `python/session/inspectSession.py`: added def endpoint_name · changed def request_names, class Inspector
+- `skills.md`: edited
+- `skills/flow/SKILL.md`: edited
+- `skills/host/SKILL.md`: edited
+- `src/browser/adsPower/adsPower.test.ts`: changed function memoryAdsPower
+- `src/browser/adsPower/client.ts`: added function newestKernel, function ensureKernel · changed function createAdsPowerClient
+- `src/browser/adsPower/types.ts`: added interface AdsPowerKernel, interface KernelDownload · changed interface AdsPowerClient
+- `src/browser/flow/answers.test.ts`: changed test "publishing: the create page stops the flow before the form when the account may not post, and Publish needs the listing id in the create answer"
+- `src/browser/flow/client.ts`: added function flowSections, function flowWithParams
+- `src/browser/flow/controlMatch.test.ts`: added const python, const fixture, const INTERACTIVE, interface Candidate, function candidatesOf, function pick, test "the two-step box is the textbox named Code, though it has none of CODE_FIELD's attributes", test "Dismiss is found by its text when the button has no accessible name", test ""Upload Photo" from the 2026-10-19 recording finds today's "Upload photo"", test "Save is the one inside the dialog the step names, not the page behind it", test "two equal matches are refused, never guessed", test "a disabled match is reported as disabled, a missing one as missing", test "dialogOf reads the dialog around a control from a snapshot", test "a step that sends no mutation is confirmed by its plain endpoint or its dialog query", test "profileSetup's picture steps each wait on Facebook's answer, inside the dialog they belong to", test "the dialog must be for this account, the upload must name it and return the photo's id", test "the session names a plain endpoint the way the readings do, so a step can wait on it"
+- `src/browser/flow/definitions/profileSetup.json`: edited
+- `src/browser/flow/flow.test.ts`: added test "only the profile picture when Twenty has no cover or name", test "every section when every param is given"
+- `src/browser/flow/helpers/dialogOf.ts`: added const indentOf, const sameName, function dialogAt, function dialogOf
+- `src/browser/flow/helpers/flowFromRecording.ts`: added const endpointOf · changed function confirmingRequest, function flowFromRecording
+- `src/browser/flow/helpers/index.ts`: added export from "./dialogOf"
+- `src/browser/flow/types.ts`: changed interface FlowStep
+- `src/browser/inspect/client.ts`: added function processAlive, const ownerGone · changed function openInspects, function writeCurrentInspect
+- `src/browser/inspect/types.ts`: changed interface CurrentInspect, interface InspectStepOptions
+- `src/cli/account/deactivate.test.ts`: changed function memoryAdsPower
+- `src/cli/flow/helpers/flowSession.ts`: changed function runFlowInSession
+- `src/cli/host/helpers/hostActors.ts`: changed function hostActors
+- `src/cli/host/index.ts`: changed const HOST_USAGE, const HOST_INPUT, const hostCommand
+- `src/cli/preflight/index.ts`: added const PREFLIGHT_USAGE, function proxyFact, function kernelFact, const onDisk, const preflightCommand
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/marketplace/home/types.ts`: changed const CITY_TIMEZONES
+- `src/marketplace/preflight/client.ts`: added const pass, const fail, function preflightOf, function renderPreflight
+- `src/marketplace/preflight/index.ts`: added export from "./client", export from "./types"
+- `src/marketplace/preflight/preflight.test.ts`: added const EXETER, const GOOD, const NOON_EDT, const failed, test "an account with everything in place is ready", test "each of 2026-10-24's stops on Exeter is caught up front", test "the proxy limit is the run's, a wrong country and a missing profile are blocking too", test "yesterday's host opens and an earlier launch gap don't count against today", test "outside the waking hours is said up front"
+- `src/marketplace/preflight/types.ts`: added type PreflightName, interface PreflightCheck, interface ProxyFact, interface KernelFact, interface PreflightFacts, interface PreflightAccount, interface PreflightRow
+- `src/mcp/server/flowTools.test.ts`: changed test "the live tool without confirmLive never runs; the dry one lists the steps and opens nothing"
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+
+What changed: Flow steps pick their control with `controlMatch.pick`, one scored match by role and name (accessible name, aria-label, label, text or placeholder, case ignored) inside the step's dialog (`within`), refusing two equal matches (`controlAmbiguous`) and reporting `controlMissing` / `controlDisabled`; `by_role`, the code box and the clickRole `already` check use it. The session names plain endpoints like the readings do (`endpoint_name`), so `expect` can wait on `/profile/picture/upload/`. `flowFromRecording` records each control's dialog (`dialogOf`) and a confirming plain endpoint or dialog query when no mutation fires. profileSetup's picture steps now wait on the dialog query, the upload and the set mutation inside "Choose profile picture" and check their answers; the host runs only the sections Twenty has data for (`flowWithParams`), waits for a missing AdsPower kernel (`ensureKernel`) and takes `--now`. New `log facebook preflight [--account] [--homes] [--noProxy] [--apply] [--json]` checks timezone, hours, proxy country and speed, AdsPower profile and kernel, launches and host opens left, a live session and the picture on disk before anything opens. Inspect sessions record their process id and a dead one is dropped. Eight Pennsylvania towns join CITY_TIMEZONES. Nine error codes, rule 79, the MCP rules, skills and docs follow.
+Why: matt: "we can't do that in production, that's why we need it deterministic." On 2026-10-24 Exeter's run stopped on things that changed or weren't checked: "Upload Photo" had become "Upload photo", Dismiss had no accessible name, the two-step box matched none of CODE_FIELD, Save fired before the upload answered, and before that a missing timezone, a slow proxy, a kernel mid-download, the host's 2 opens and a stale session record each stopped it. Each step now either matches one control and gets its answer, or stops with a named code; the rest is caught by preflight before a browser opens.
+Checked: `bun run check` passes (968 tests, 0 fail), with fixtures of today's Exeter pages (`python/fixtures/controls/`) run through the Python matcher. Live: `log facebook preflight --homes US` measured all 10 Pennsylvania accounts (3 ready; 7 proxyTooSlow at 2.5-3.7 s; Exeter opensSpent), and the matcher's scan on Exeter's open profile resolved "Profile picture actions", "Account, your profile" and "Home" to one element each, read-only.

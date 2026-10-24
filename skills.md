@@ -16,7 +16,7 @@ skill in the same commit.
 | [`listingCreative`](skills/listingCreative/SKILL.md) | Make a listing's photos as scene, action, before and after in the winners' composition, generate each frame once, and show them in the iPhone Photos viewer with the town and red face scribbles (`python/creative`) |
 | [`nicheCreativeResearch`](skills/nicheCreativeResearch/SKILL.md) | Take a new niche, industry or offer from operator research and winning listings to SubQ's definition of a winner, a rubric, spin-outs of matt's concept, generated frames and phone media, the way junk removal was done |
 | [`conversations`](skills/conversations/SKILL.md) | Buyers' Marketplace conversations in Twenty (rule 34): list, show, record a scanned thread, mark read, set the lead, link the listing |
-| [`host`](skills/host/SKILL.md) | Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35) |
+| [`host`](skills/host/SKILL.md) | Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); `log facebook preflight` first (rule 79) |
 | [`lifecycle`](skills/lifecycle/SKILL.md) | The account lifecycle (rule 35): one machine per account, the browser kept open, onboarding with a day's warm-up, then its host |
 | [`runs`](skills/runs/SKILL.md) | List the recorded runs and prune the ones rea settled and the request docs hold, keeping findings and domains; the storage hook (rule 66) |
 | [`warmup`](skills/warmup/SKILL.md) | Record the five warm-up activities headed, turn them into flows, run them in one open browser with an activity feed (rule 36) |

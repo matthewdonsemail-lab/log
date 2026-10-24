@@ -36,6 +36,7 @@ export interface FlowStep {
   url?: string
   role?: string
   name?: string
+  within?: string
   value?: string
   expect?: string
   answers?: AnswerExpect[]
