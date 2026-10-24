@@ -60,6 +60,16 @@ CANDIDATES_JS = r"""() => {
   return out;
 }"""
 
+TAG_ATTRIBUTE = "data-log-control"
+
+TAG_JS = r"""([path, token]) => {
+  for (const old of document.querySelectorAll('[data-log-control]')) old.removeAttribute('data-log-control');
+  const el = document.querySelector(path);
+  if (!el) return false;
+  el.setAttribute('data-log-control', token);
+  return true;
+}"""
+
 NAME_FIELDS = ("aria", "label", "text", "placeholder")
 
 

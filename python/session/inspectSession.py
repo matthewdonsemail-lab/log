@@ -12,6 +12,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import parse_qs
 
 import sys as _sys
 from pathlib import Path as _Path
@@ -59,6 +60,24 @@ def request_names(entries: list[dict[str, Any]]) -> set[str]:
             names.add(match.group(1) or match.group(2))
         names.add(endpoint_name(e["request"].get("url", "")))
     return names
+
+
+def query_of(post_data: str) -> str | None:
+    variables = (parse_qs(post_data).get("variables") or [""])[0]
+    match = re.search(r'"query"\s*:\s*"((?:[^"\\]|\\.)*)"', variables)
+    return json.loads(f'"{match.group(1)}"') if match else None
+
+
+async def answer_for(place: str, answers: list, wait_s: float) -> list[str]:
+    deadline = time.monotonic() + wait_s
+    while True:
+        for query, offered in reversed(answers):
+            if query is not None and query.strip().lower() == place.strip().lower():
+                return offered
+        if time.monotonic() > deadline:
+            unnamed = [offered for query, offered in answers if query is None]
+            return unnamed[-1] if unnamed else []
+        await asyncio.sleep(0.25)
 
 
 def endpoint_name(url: str) -> str:
@@ -445,7 +464,14 @@ class Inspector:
             found = controlMatch.pick(candidates, role, name, within)
             if "path" in found and found["enabled"]:
                 getattr(self, "extra", {})["control"] = found["path"]
-                return self.page.locator(found["path"])
+                token = f"c{time.monotonic_ns()}"
+                try:
+                    tagged = await self.page.evaluate(controlMatch.TAG_JS, [found["path"], token])
+                except Exception:
+                    tagged = False
+                if tagged:
+                    return self.page.locator(f'[{controlMatch.TAG_ATTRIBUTE}="{token}"]')
+                found = {"code": "controlMissing", "detail": f'{role} "{name}" moved before it could be held'}
             if "path" in found:
                 found = {"code": "controlDisabled", "detail": f'{role} "{name}" is there but disabled'}
             if time.monotonic() > deadline:
@@ -646,7 +672,7 @@ class Inspector:
                         if "MarketplaceSearchAddressDataSourceQuery" not in (response.request.post_data or ""):
                             return
                         text = await response.text()
-                        answers.append([json.loads(f'"{a}"') for a in re.findall(r'"single_line_address":"((?:[^"\\]|\\.)*)"', text)])
+                        answers.append((query_of(response.request.post_data or ""), [json.loads(f'"{a}"') for a in re.findall(r'"single_line_address":"((?:[^"\\]|\\.)*)"', text)]))
                     except Exception:
                         pass
 
@@ -662,9 +688,8 @@ class Inspector:
                 await page.keyboard.press("Control+a")
                 await page.keyboard.press("Backspace")
                 await page.keyboard.type(place, delay=90)
-                await asyncio.sleep(2.5)
+                offered = await answer_for(place, answers, 20.0)
                 page.remove_listener("response", on_response)
-                offered = answers[-1] if answers else []
                 index = pick_suggestion(place, offered)
                 if index is None:
                     await page.keyboard.press("Escape")

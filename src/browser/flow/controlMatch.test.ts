@@ -173,3 +173,35 @@ describe("the picture steps' answers decide them (rule 73)", () => {
     expect(run.stdout.trim()).toBe('profilePictureUpload ajaxBnzai')
   })
 })
+
+describe('a picked control is held by a tag, not by where it sat (rule 79)', () => {
+  test('the form re-rendering after the title is typed still finds the Price box', async () => {
+    const { JSDOM } = await import('jsdom' as string)
+    const script = ['import sys', 'sys.path.insert(0, ".")', 'from browser import controlMatch', 'print(controlMatch.TAG_JS)'].join('\n')
+    const run = spawnSync(process.env.LOG_PYTHON || 'python', ['-c', script], { cwd: python, encoding: 'utf8' })
+    const dom = new JSDOM('<form><label>Title<input id="title"></label><label>Price<input id="price"></label></form>')
+    const document = dom.window.document
+    const tag = new dom.window.Function('document', `return (${run.stdout.trim()})`)(document)
+    const path = 'html > body:nth-child(2) > form:nth-child(1) > label:nth-child(2) > input:nth-child(1)'
+    expect(tag([path, 'c1'])).toBe(true)
+    document.querySelector('form')!.insertBefore(document.createElement('div'), document.querySelector('label'))
+    expect(document.querySelector(path)?.id).toBe('title')
+    expect(document.querySelector('[data-log-control="c1"]')?.id).toBe('price')
+    expect(tag(['html > body:nth-child(2) > form:nth-child(1) > label:nth-child(9) > input:nth-child(1)', 'c2'])).toBe(false)
+    expect(document.querySelectorAll('[data-log-control]').length).toBe(0)
+  })
+})
+
+describe("the location step reads Facebook's answer to the whole place typed, never a prefix's (rule 73)", () => {
+  test('a late answer for "Mont" is passed over for the one that searched "Mountain Top, Pennsylvania"', () => {
+    const script = [
+      'import sys, asyncio, json', 'sys.path.insert(0, ".")', 'from urllib.parse import urlencode', 'from session.inspectSession import query_of, answer_for',
+      'sent = lambda q: urlencode({"variables": json.dumps({"params": {"query": q}})})',
+      'answers = [(query_of(sent("Mountain Top, Pennsylvania")), ["Mountain Top, Pennsylvania", "Mountaintop, Pennsylvania"]), (query_of(sent("Mont")), ["Montreal, Quebec"])]',
+      'print(json.dumps(asyncio.run(answer_for("Mountain Top, Pennsylvania", answers, 0))))',
+      'print(json.dumps(asyncio.run(answer_for("Bethlehem, Pennsylvania", answers, 0))))',
+    ].join('\n')
+    const run = spawnSync(process.env.LOG_PYTHON || 'python', ['-c', script], { cwd: python, encoding: 'utf8' })
+    expect(run.stdout.trim().split(/\r?\n/)).toEqual(['["Mountain Top, Pennsylvania", "Mountaintop, Pennsylvania"]', '[]'])
+  })
+})
