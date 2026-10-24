@@ -13,11 +13,87 @@
 | Called from | `UnifiedShareSheetMessengerSection.react` |
 | rea | `ev_4e9844fcc357413d99295417750833b29f6f0dc5dbf4020e81d9cb65904242c5` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 20: clickRole button "…" | 1 | 200 | 1619 ms | 1289 ms | — |
+| inspect | scroll: +515px in 13 wheel steps, 656 ms | 1 | 200 | 443 ms | 270626 ms | — |
+
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261024T060921_61594063207669**, scroll: +515px in 13 wheel steps, 656 ms: 200, 443 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "431626709",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "UnifiedShareSheetMessengerSectionQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "__relay_internal__pv__isAttachmentsQueryOptimizationEnabledrelayprovider": true,
+    "__relay_internal__pv__isWaAddressableFieldsEnabledrelayprovider": true
+  },
+  "doc_id": "23993111606963614",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=431626709"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "messenger_suggested_recipients": {
+        "nodes": [
+          {
+            "section_type": "RECENTS",
+            "attachments_pageable": {
+              "edges": []
+            },
+            "id": "messengerbroadcastsection:recents"
+          },
+          {
+            "section_type": "COMMUNITY_CHATS",
+            "attachments_pageable": {
+              "edges": []
+            },
+            "id": "messengerbroadcastsection:community_chats"
+          },
+          {
+            "section_type": "GROUPS",
+            "attachments_pageable": {
+              "edges": []
+            },
+            "id": "messengerbroadcastsection:groups"
+          },
+          {
+            "section_type": "CONTACTS",
+            "attachments_pageable": {
+              "edges": []
+            },
+            "id": "messengerbroadcastsection:contacts"
+          }
+        ]
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792824467799,
+      "time_at_flush_ms": 1792824467843
+    },
+    "is_final": true
+  }
+}
+```
 
 <!-- facts:end -->
 

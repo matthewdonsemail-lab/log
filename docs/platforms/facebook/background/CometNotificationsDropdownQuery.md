@@ -11,9 +11,9 @@
 | Sends | `count`, `environment`, `scale` |
 | Reads | `viewer....CometNotificationsListWrapper_viewer` |
 | Called from | `CometNotificationsDropdown.react` |
-| rea | `ev_863f79f1a12f6afff24461be6caea7ee74acdc1016ade7e16939e0fecf466834` |
+| rea | `ev_ab1965911932cb7fcf25b222bf92e0487c624ad5aa06bc6a0e5e7860bc09d85a` |
 
-Seen 138 time(s) in 28 run(s).
+Seen 141 time(s) in 28 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -69,6 +69,7 @@ Seen 138 time(s) in 28 run(s).
 | inspect | scroll: +376px in 9 wheel steps, 328 ms | 3 | 200 | 713–1399 ms | 54430–55611 ms | — |
 | inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 720 ms | 5367 ms | — |
 | inspect | scroll: +315px in 8 wheel steps, 297 ms | 1 | 200 | 2119 ms | 1147627 ms | — |
+| inspect | scroll: +515px in 13 wheel steps, 656 ms | 3 | 200 | 893–2190 ms | 274709–439238 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

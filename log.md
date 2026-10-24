@@ -6214,3 +6214,50 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: an AdsPower profile is now given back when its account stops using it. `planSync` has a new action, `release`: an account that is DEACTIVATED (`RELEASE_STATUSES`), or whose home country isn't in the chosen homes, has its profile (the stored link, or one found by its remark) deleted. With no profile it is skipped. `syncProfiles` runs every release first (AdsPower `/api/v2/browser-profile/delete`, then `adsPowerProfileId` cleared in Twenty), then makes and links profiles, so a freed slot goes straight to an account waiting for one. The homes come from `LOG_ADSPOWER_HOMES` (`.env.local`, comma separated) or `--homes` on `log adsPower sync`; empty means every country. `log facebook account status <a> DEACTIVATED` (MCP `accountStatus`) gives the profile back at once by running the sync and says which account took the slot; if AdsPower isn't up it says to run the sync later. `saveAdsPowerProfileId` takes null. Rule 78, `docs/adsPower.md`, `docs/accountsAndListings.md`, skills/adsPower, `.env.example`. Tests never read the real homes (preload).
 Why: AdsPower's plan holds 22 profiles, and on 2026-10-24 the sync could not make 10 of them because deactivated accounts still held 11. matt: "for the accounts that are deactivated, remove them from our part... if an account gets deactivated in Twenty or we deactivate it via the tool, it then removes it from our part. Then we need to load in another account", and "I don't want any of the British Columbia accounts in there. I just want to do Pennsylvania."
 Checked: unit tests for the plan (deactivated and out-of-home released, creates only in the homes), the applied sync (delete, unlink, then skip on a rerun), the homes parsing, and the status command end to end with a full AdsPower (the freed slot taken). `bun run check`: 948 pass, every gate green. Live with `LOG_ADSPOWER_HOMES=US`: the dry run planned 16 releases (10 DEACTIVATED, 6 British Columbia) and 5 creates; applied, all 16 profiles were deleted and unlinked, and the 5 Pennsylvania accounts that had no profile got one (k1ib91g4, k1ib91gl, k1ib91gs, k1ib91h0, k1ib91hl). AdsPower now holds 10 log-cli profiles, one per Pennsylvania account, and a rerun shows 10 linked, 21 skipped.
+
+## 2026-10-24 14:02Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometProfileVerificationBadgePopoverQuery.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometUnifiedShareSheetDialogQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWCatQuery.md`: new file
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/UnifiedShareSheetMessengerSectionQuery.md`: edited
+- `docs/platforms/facebook/background/UserSignalsHovercardQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/checkpoint/UFACAISupportChatExperienceQuery.md`: edited
+- `docs/platforms/facebook/checkpoint/useCometAISupportConversationLoggerMutation.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/checkpoint/useUFACSubmitActionMutation.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometFeedRegularStoriesPaginationQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometMembersPageNewMembersSectionRefetchQuery.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometVisitMutation.md`: edited
+- `docs/platforms/facebook/login/CometLogoutHandlerQuery.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+
+What changed: `log facebook capture --docs` rebuilt the Facebook client docs from the members-read inspect run 20261024T060921 (492 requests, 38 operations, rea had already read all 34 slices): the facts tables and the "What it sent and what came back" rows of 37 docs are updated, and one request is new, `MAWCatQuery` (background, the Messenger inbox's client access token rotation, `MAWRotateCAT`). Its reasoning is written: no machine waits on it, and its answer on 2026-10-24 was error 1357053 "Please review your account" with a redirect to `/checkpoint`, a checkpoint read from the internal API (rule 73).
+Why: the pre-push gate (rule 27, `check:facebookClientDocs`) refused the push of feat/adsPowerRelease because a run was newer than the docs.
+Checked: `bun run check:facebookClientDocs`: 226 requests documented, rea read every GraphQL slice.

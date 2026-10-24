@@ -13,7 +13,7 @@
 | Called from | `CometRightSideHeaderCards.react` |
 | rea | `ev_0ca298c8c568c93036a5e8e8d989f3baf2a29fa5ca4d1fd7a8070819f4515962` |
 
-Seen 22 time(s) in 12 run(s).
+Seen 23 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -37,8 +37,9 @@ Seen 22 time(s) in 12 run(s).
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 970 ms | 1708103 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 876 ms | 15212 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 663 ms | 7195 ms | — |
+| inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 785 ms | 18344 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -600,6 +601,269 @@ Answered:
           "rdfds": [],
           "rds": [
             "csr:_y_1_5K"
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+**runs/inspect/20261024T060921_61594063207669**, scroll: +386px in 10 wheel steps, 531 ms: 200, 785 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "431626709",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometRightSideHeaderCardsQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "refresh_num": 0,
+    "scale": 1,
+    "__relay_internal__pv__GHLShouldChangeRHCSideFeedFieldNamerelayprovider": true,
+    "__relay_internal__pv__GHLShouldChangeRHCAdsFieldNamerelayprovider": true,
+    "__relay_internal__pv__GHLShouldChangeRHCFieldNamerelayprovider": false
+  },
+  "doc_id": "29755211854079266",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=431626709"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "side_feed": {
+        "nodes": [
+          {
+            "__typename": "FriendingRequestsSideFeedUnit",
+            "is_hidden": false,
+            "highlighted_requests": [
+              "(4 fields)"
+            ],
+            "should_show_osa_explainer": false,
+            "__module_operation_CometRightSideHeaderCards_viewerSideFeed": {
+              "__dr": "FriendingCometHomeInlineRHCContainer_friendsPanel$normalization.graphql"
+            },
+            "__module_component_CometRightSideHeaderCards_viewerSideFeed": {
+              "__dr": "FriendingCometHomeInlineRHCContainer.react"
+            }
+          }
+        ]
+      },
+      "auxColumnUnits": {
+        "nodes": [
+          {
+            "__typename": "FriendingRequestsSideFeedUnit"
+          }
+        ]
+      },
+      "actor": {
+        "__typename": "User",
+        "id": "61594063207669",
+        "delegate_page_id": null,
+        "can_manage_classic_page_in_pages_tab": true
+      }
+    },
+    "logout_whitelist": [
+      "^CacheStorageVersion$",
+      "^RSTData$",
+      "^RTC_VIDEO_INPUT$",
+      "^RTC_AUDIO_INPUT$",
+      "^RTC_AUDIO_OUTPUT$",
+      "^RTC_IS_AUDIO_ONLY$",
+      "… 98 more"
+    ]
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792822379720,
+      "time_at_flush_ms": 1792822379958
+    },
+    "is_final": true,
+    "sr_payload": {
+      "ddd": {
+        "hsrp": {
+          "hsdp": {
+            "clpData": {
+              "981": "(2 fields)",
+              "3282": "(2 fields)",
+              "1744261": "(1 fields)",
+              "1744262": "(1 fields)",
+              "1744267": "(1 fields)"
+            },
+            "gkxData": {
+              "4229": "(2 fields)",
+              "14760": "(2 fields)"
+            },
+            "ixData": {
+              "478232": "(7 fields)",
+              "478237": "(7 fields)",
+              "484391": "(7 fields)",
+              "484757": "(7 fields)",
+              "492454": "(7 fields)",
+              "492518": "(7 fields)",
+              "492521": "(7 fields)",
+              "492572": "(7 fields)",
+              "492575": "(7 fields)",
+              "505565": "(7 fields)",
+              "545517": "(7 fields)",
+              "621399": "(7 fields)",
+              "659288": "(7 fields)",
+              "1876411": "(4 fields)",
+              "1876412": "(4 fields)",
+              "1876413": "(4 fields)",
+              "1876414": "(4 fields)",
+              "1876415": "(4 fields)",
+              "1876416": "(4 fields)",
+              "1876418": "(4 fields)",
+              "1876419": "(4 fields)",
+              "1876420": "(4 fields)",
+              "1876421": "(4 fields)",
+              "1876422": "(4 fields)",
+              "1876423": "(4 fields)",
+              "1876424": "(4 fields)",
+              "1876426": "(4 fields)",
+              "1876427": "(4 fields)",
+              "1876428": "(4 fields)",
+              "1876429": "(4 fields)",
+              "1876430": "(4 fields)",
+              "1876431": "(4 fields)",
+              "1876432": "(4 fields)",
+              "1876434": "(4 fields)",
+              "1876435": "(4 fields)",
+              "1876436": "(4 fields)",
+              "1876437": "(4 fields)",
+              "1876438": "(4 fields)",
+              "1876439": "(4 fields)",
+              "1876440": "(4 fields)",
+              "1876442": "(4 fields)",
+              "1876443": "(4 fields)",
+              "1876444": "(4 fields)",
+              "1876445": "(4 fields)",
+              "1876446": "(4 fields)",
+              "1876447": "(4 fields)",
+              "1876448": "(4 fields)",
+              "1876450": "(4 fields)",
+              "1876451": "(4 fields)",
+              "1876452": "(4 fields)",
+              "1876453": "(4 fields)",
+              "1876454": "(4 fields)",
+              "1876455": "(4 fields)",
+              "1876456": "(4 fields)",
+              "1876458": "(4 fields)",
+              "1940508": "(4 fields)",
+              "1940509": "(4 fields)",
+              "1940510": "(4 fields)",
+              "1940511": "(4 fields)",
+              "1940512": "(4 fields)",
+              "1940513": "(4 fields)"
+            }
+          },
+          "hblp": {
+            "consistency": {
+              "rev": 1051577552
+            },
+            "rsrcMap": {
+              "csr:_2p_0_hJ": "(3 fields)",
+              "csr:_2p_1_Qo": "(3 fields)",
+              "nWm7Eze": "(5 fields)",
+              "csr:_2p_2_3y": "(3 fields)",
+              "csr:_2p_3_1/": "(3 fields)",
+              "csr:_2p_4_et": "(3 fields)"
+            },
+            "compMap": {
+              "FriendingCometFriendRequestsListItemMoreMenu.react": "(4 fields)"
+            },
+            "indexUpgrades": {
+              "__hblp": ":12442",
+              "__hsdp": ":1623,1622,1799,1592,1831"
+            }
+          }
+        },
+        "jsmods": {
+          "define": [
+            [
+              "cr:310",
+              "(1 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:564",
+              "(1 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:619",
+              "(1 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:686",
+              "(0 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:734",
+              "(0 items)",
+              "(1 fields)",
+              -1
+            ],
+            [
+              "cr:755",
+              "(1 items)",
+              "(1 fields)",
+              -1
+            ],
+            "… 55 more"
+          ],
+          "require": [
+            [
+              "FriendingCometHomeInlineRHCContainer.react"
+            ],
+            [
+              "FriendingCometHomeInlineRHCContainer_friendsPanel$normalization.graphql"
+            ],
+            [
+              "emptyFunction",
+              "thatReturns",
+              "(1 items)",
+              "(1 items)"
+            ],
+            [
+              "CometToast.react"
+            ],
+            [
+              "RequestClickFalcoEvent"
+            ],
+            [
+              "RequestSeenFalcoEvent"
+            ],
+            "… 16 more"
+          ],
+          "phd2_indexes": ":1623,1622,1799,1592,1831"
+        },
+        "allResources": [
+          "csr:_2p_0_hJ",
+          "csr:_2p_1_Qo"
+        ],
+        "tieredResources": {
+          "r": [
+            "csr:_2p_0_hJ"
+          ],
+          "rdfds": [],
+          "rds": [
+            "csr:_2p_1_Qo"
           ]
         }
       }

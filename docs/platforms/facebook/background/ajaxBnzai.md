@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_b58c43b70d35241632190aee8935cd8eb8c620bc9f00a33fec5df4af92183149` |
+| rea | `ev_8d81f7cfce59ffe10ca0456d18d3be3e038f54211be1e9bd545588382ef93c4c` |
 
-Seen 739 time(s) in 35 run(s).
+Seen 804 time(s) in 35 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -240,12 +240,21 @@ Seen 739 time(s) in 35 run(s).
 | inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 1616 ms | 13401 ms | — |
 | inspect | step 3: click e356 | 2 | 200 | 343–359 ms | 12710–25470 ms | — |
 | inspect | step 6: click e602 | 1 | 200 | 1338 ms | 9892 ms | — |
+| inspect | step 2: pageText | 1 | 200 | 334 ms | 2745 ms | — |
 | inspect | step 3: goto /groups/junkremovalwinners/members | 3 | 200 | 329–683 ms | 57–34738 ms | — |
 | inspect | scroll: +376px in 9 wheel steps, 328 ms | 2 | 200 | 330–333 ms | 40256–50766 ms | — |
 | inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 330 ms | 3139 ms | — |
+| inspect | scroll: +491px in 11 wheel steps, 406 ms | 1 | 200 | 334 ms | 1966 ms | — |
+| inspect | scroll: +571px in 13 wheel steps, 594 ms | 1 | 200 | 508 ms | 310 ms | — |
+| inspect | scroll: +359px in 11 wheel steps, 734 ms | 1 | 200 | 343 ms | 2155 ms | — |
+| inspect | scroll: +595px in 14 wheel steps, 656 ms | 1 | 200 | 331 ms | 933 ms | — |
+| inspect | scroll: +445px in 11 wheel steps, 704 ms | 1 | 200 | 338 ms | 8053 ms | — |
+| inspect | step 21: scroll 3-5 x 300-600px | 1 | 200 | 319 ms | 202 ms | — |
 | inspect | scroll: +315px in 8 wheel steps, 297 ms | 14 | 200 | 312–1274 ms | 94383–1236974 ms | — |
 | inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 1029 ms | 6367 ms | — |
 | inspect | scroll: +560px in 12 wheel steps, 547 ms | 1 | 200 | 313 ms | 2692 ms | — |
+| inspect | scroll: +515px in 13 wheel steps, 656 ms | 24 | 200 | 310–1617 ms | 31496–761489 ms | — |
+| inspect | step 25: pageText | 34 | 200 | 318–2388 ms | 40416–1770311 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

@@ -13,7 +13,7 @@
 | Called from | `CometHomeContactChannelsContainer.react` |
 | rea | `ev_2b20cf591a095f7b9165ab97b7e2f350cb7e8c5253fad588365b692a046465d8` |
 
-Seen 22 time(s) in 12 run(s).
+Seen 23 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -37,8 +37,9 @@ Seen 22 time(s) in 12 run(s).
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 865 ms | 1708105 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 829 ms | 15214 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 612 ms | 7196 ms | — |
+| inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 641 ms | 18348 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -112,6 +113,48 @@ Answered:
     "server_metadata": {
       "request_start_time_ms": 1792742396587,
       "time_at_flush_ms": 1792742396608
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261024T060921_61594063207669**, scroll: +386px in 10 wheel steps, 531 ms: 200, 641 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "431626709",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeContactChannelsContainerQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "9934887189887478",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=431626709"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "is_eligible_for_broadcast_channel_creation": false,
+      "actor": {
+        "__typename": "User",
+        "recent_broadcast_channels": [],
+        "id": "61594063207669"
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792822379784,
+      "time_at_flush_ms": 1792822379806
     },
     "is_final": true
   }

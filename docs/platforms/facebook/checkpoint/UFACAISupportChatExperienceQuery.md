@@ -13,12 +13,55 @@
 | Called from | `UFACAISupportChatExperience.react` |
 | rea | `ev_8ee95faa5bbd82f99ae9dcfe8cbd78add4e5241ff8073ebf16e7331f832cc1d5` |
 
-Seen 6 time(s) in 4 run(s).
+Seen 8 time(s) in 5 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 1: goto / | 4 | 200 | 390–1389 ms | 5337–8918 ms | — |
 | inspect | step 38: goto /marketplace/ | 2 | 200 | 728–936 ms | 21112–22075 ms | — |
+| inspect | scroll: +515px in 13 wheel steps, 656 ms | 2 | 200 | 496–568 ms | 500494–501021 ms | — |
+
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261024T060921_61594063207669**, scroll: +515px in 13 wheel steps, 656 ms: 200, 496 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "UFACAISupportChatExperienceQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "request": {
+      "existing_token": null
+    }
+  },
+  "doc_id": "26465902889674584"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "init_conversational_support_attempt_for_ufac": {
+      "is_cometai_chat_available": true,
+      "attempt_token": "Q8CtDAEoCn4qCWgxsluih0G4Yxsz5XkrXIho1J1SOq2E7WLfu2N5GMj9wlNlrKfRoaZrHz7wc1CBC85tdDgKQtudxE4h3fwdfETVzeKGoRaXctkKfyJBzPLEtMLuL5EgjHKdFJdTGOcTnaaENp3VjhMSzzQW0IkXxM2hPF367ZpVNNF47nhvQB0JsufcbbjBpKnCj0kp6FG1qceh0XRisR3HsXQcbwcv7AcPsIy8Qpf-Mwl2dTHzK8V8oq0FN1A-NS5ORAUVDuQJR9tZmxVEndiZXIWMUBe23aAimwSf_mVTAhMHaSaekXLdHHMU7JjKcDgsOz2ET6qkEKM8CvfSi1sdDnV1p9xwCM6sXkNTXlkYvB0L-GROrS-QTBJ-hPRr_k_QOEd7hGX78OkG… (2007 chars)"
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792824697652,
+      "time_at_flush_ms": 1792824697834
+    },
+    "is_final": true
+  }
+}
+```
 
 <!-- facts:end -->
 

@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | `usePseudoBlockedUserInterstitial` |
-| rea | `ev_62d6face4a61d806c18d6d4cb46f32997b6310f6eb9088ae70e93b777cf8bac3` |
+| rea | `ev_bd4768487f8ce51543ac7bf31bbe4bddfd24eccd0b88381038a13399ea6e6697` |
 
-Seen 139 time(s) in 33 run(s).
+Seen 141 time(s) in 33 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -105,6 +105,7 @@ Seen 139 time(s) in 33 run(s).
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 379 ms | 3658 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 497 ms | 5280 ms | — |
 | inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 366 ms | 6640 ms | — |
+| inspect | step 1: goto /groups/junkremovalwinners | 2 | 200 | 324–352 ms | 5831–8899 ms | — |
 | inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 551 ms | 4619 ms | — |
 | inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 335 ms | 4182 ms | — |
 

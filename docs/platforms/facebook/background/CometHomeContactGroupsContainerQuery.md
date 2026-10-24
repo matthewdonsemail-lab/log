@@ -13,7 +13,7 @@
 | Called from | `CometHomeContactGroupsContainer.react` |
 | rea | `ev_afbb77778bb0832d0311179d99af4e1015fdbeadac3bded27db6e5939b581138` |
 
-Seen 22 time(s) in 12 run(s).
+Seen 23 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -37,8 +37,9 @@ Seen 22 time(s) in 12 run(s).
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 1122 ms | 1708110 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 877 ms | 15218 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 787 ms | 7200 ms | — |
+| inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 793 ms | 18351 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -128,6 +129,56 @@ Answered:
     "server_metadata": {
       "request_start_time_ms": 1792742396611,
       "time_at_flush_ms": 1792742396928
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261024T060921_61594063207669**, scroll: +386px in 10 wheel steps, 531 ms: 200, 793 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "431626709",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeContactGroupsContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "excludeBroadcastChannelThreads": true,
+    "excludeCmThreads": true,
+    "__relay_internal__pv__WebPixelRatiorelayprovider": 1
+  },
+  "doc_id": "25945115421852941",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=431626709"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "actor": {
+        "__typename": "User",
+        "should_hide_group_conversations_list": false,
+        "id": "61594063207669"
+      },
+      "chat_sidebar_is_collapsed": false,
+      "chat_visibility": true,
+      "message_threads": {
+        "edges": []
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792822379788,
+      "time_at_flush_ms": 1792822379987
     },
     "is_final": true
   }

@@ -6,14 +6,14 @@
 | --- | --- |
 | Domain | groups |
 | Kind | query |
-| doc_id | `39852225757724348` |
+| doc_id | `28356402754042733` |
 | Path | `/api/graphql/` |
 | Sends | `count`, `cursor`, `feedLocation`, `feedType`, `feedbackSource`, `filterTopicId`, `focusCommentID`, `id`, `privacySelectorRenderLocation`, `referringStoryRenderLocation`, `renderLocation`, `scale`, `sortingSetting`, `stream_initial_count`, `useDefaultActor`, `youthIntegrityHostID`, `__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider`, `__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider`, `__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider`, `__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider`, `__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider`, `__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider`, `__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider`, `__relay_internal__pv__IsWorkUserrelayprovider`, `__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider`, `__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider`, `__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider`, `__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider`, `__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider`, `__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider`, `__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider`, `__relay_internal__pv__IsMergQAPollsrelayprovider`, `__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider`, `__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider`, `__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider`, `__relay_internal__pv__CometUFIShareActionMigrationrelayprovider`, `__relay_internal__pv__CometUFISingleLineUFIrelayprovider`, `__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider`, `__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider`, `__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider`, `__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider`, `__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider`, `__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider` |
 | Reads | `node....GroupsCometFeedRegularStories_paginationGroup` |
 | Called from | `GroupsCometFeedRegularStories_paginationGroup.graphql` |
-| rea | `ev_1cee7d22d2b7ab4c747006eb28c7c434b538da0f8ff727b0036a4b435670f996` |
+| rea | `ev_f314fa7c7ded3e1ae6690cd2d8345025f12935614984361d308cafd4e9289790` |
 
-Seen 18 time(s) in 5 run(s).
+Seen 20 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -35,6 +35,155 @@ Seen 18 time(s) in 5 run(s).
 | inspect | step 1: goto /groups/<id> | 1 | 200 | 951 ms | 6923 ms | — |
 | inspect | step 3: scroll 1 x 700px | 1 | 200 | 1001 ms | 1292 ms | — |
 | inspect | step 5: scroll 2 x 600-800px | 1 | 200 | 876 ms | 735 ms | — |
+| inspect | step 1: goto /groups/junkremovalwinners | 2 | 200 | 1126–1172 ms | 6709–8782 ms | — |
+
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261024T060921_61594063207669**, step 1: goto /groups/junkremovalwinners: 200, 1172 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "25305590,431626709",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "GroupsCometFeedRegularStoriesPaginationQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "count": 3,
+    "cursor": "Cg8TZXhpc3RpbmdfdW5pdF9jb3VudAICDwtyZWFsX2N1cnNvcg+vQVFIVHc4WTQzal9UOERCUm1nZmxpcFRLVE4xSW1lU3V2R3AzdU54VHV1X3BVM3VSd3owc3ZYNmg3YV8xX2FSblEwbXlKbWJLY0UzMGI4LTVtdDM5TC1EbmtROmV5SXdJam94TnpreU9ESXlNVGd5TENJeElqbzNOamd5TENJeklqb3dMQ0kwSWpveExDSTFJam95TENJMklqb3dMQ0kzSWpvdE1Td2lPQ0k2TFRGOQ8TaGVhZGVyX2dsb2JhbF9jb3VudAIBDxJtYWluX2ZlZWRfcG9zaXRpb24CAg8NZmVlZF9vcmRlcmluZw8bcmFua2VkX2ludGVyZXN0X2NvbW11bml0… (548 chars)",
+    "feedLocation": "GROUP",
+    "feedType": "DISCUSSION",
+    "feedbackSource": 0,
+    "filterTopicId": null,
+    "focusCommentID": null,
+    "privacySelectorRenderLocation": "COMET_STREAM",
+    "referringStoryRenderLocation": null,
+    "renderLocation": "group",
+    "scale": 1,
+    "sortingSetting": "TOP_POSTS",
+    "stream_initial_count": 1,
+    "useDefaultActor": false,
+    "youthIntegrityHostID": "3549906855288164",
+    "id": "3549906855288164",
+    "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
+    "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
+    "__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider": false,
+    "__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider": false,
+    "__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider": false,
+    "__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider": true,
+    "__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider": false,
+    "__relay_internal__pv__IsWorkUserrelayprovider": false,
+    "__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider": false,
+    "__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider": true,
+    "__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider": true,
+    "__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider": true,
+    "__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider": true,
+    "__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider": false,
+    "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false,
+    "__relay_internal__pv__IsMergQAPollsrelayprovider": false,
+    "__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider": true,
+    "__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider": false,
+    "__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider": "AUTO_TRANSLATE",
+    "__relay_internal__pv__CometUFIShareActionMigrationrelayprovider": true,
+    "__relay_internal__pv__CometUFISingleLineUFIrelayprovider": true,
+    "__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider": true,
+    "__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider": true,
+    "__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider": 206,
+    "__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider": false,
+    "__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider": false,
+    "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": false
+  },
+  "doc_id": "28356402754042733",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=25305590,431626709"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "first": {
+    "data": {
+      "node": {
+        "__typename": "Group",
+        "group_feed": "(1 fields)",
+        "id": "3549906855288164"
+      }
+    },
+    "extensions": {
+      "prefetch_uris_v2": [
+        "(5 fields)"
+      ],
+      "server_metadata": {
+        "request_start_time_ms": 1792822187357,
+        "time_at_flush_ms": 1792822187728
+      },
+      "is_final": false,
+      "sr_payload": {
+        "ddd": "(4 fields)"
+      }
+    }
+  },
+  "followingParts": 3,
+  "parts": [
+    {
+      "label": "GroupsCometFeedRegularStories_paginationGroup$stream$GroupsCometFeedRegularStories_group_group_feed",
+      "path": [
+        "node",
+        "group_feed",
+        "edges",
+        1
+      ],
+      "data": {
+        "node": "(38 fields)",
+        "cursor": "AQHTDPAcKBjn4BGvgpTAf1PYClJ48wLVtWyIpdKLNlvr_kVw4uGzCufuiiRwpY0nA-MiDbrXr_cgpK3beg8Ks54Xkg:eyIwIjoxNzkyODIyMTgyLCIxIjo3NjgyLCIzIjoxLCI0IjoxLCI1IjoyLCI2IjowLCI3IjotMSwiOCI6LTF9"
+      },
+      "extensions": {
+        "prefetch_uris_v2": "(4 items)",
+        "is_final": false,
+        "sr_payload": "(1 fields)"
+      }
+    },
+    {
+      "label": "GroupsCometFeedRegularStories_paginationGroup$stream$GroupsCometFeedRegularStories_group_group_feed",
+      "path": [
+        "node",
+        "group_feed",
+        "edges",
+        2
+      ],
+      "data": {
+        "node": "(38 fields)",
+        "cursor": "AQHTbIxc65QIXBtBS52xIkIbWGvwj46Z7t5sUwChz6Lhkc1tgAQpRz05HFHVu1K_dLkfTPBgvXxMcQuBNe8RC8M3cg:eyIwIjoxNzkyODIyMTgyLCIxIjo3NjgyLCIzIjoxLCI0IjoxLCI1IjoyLCI2IjowLCI3IjotMSwiOCI6LTF9"
+      },
+      "extensions": {
+        "prefetch_uris_v2": "(1 items)",
+        "is_final": false,
+        "sr_payload": "(1 fields)"
+      }
+    },
+    {
+      "label": "GroupsCometFeedRegularStories_paginationGroup$defer$GroupsCometFeedRegularStories_group_group_feed$page_info",
+      "path": [
+        "node",
+        "group_feed"
+      ],
+      "data": {
+        "page_info": "(2 fields)"
+      },
+      "extensions": {
+        "prefetch_uris_v2": "(1 items)",
+        "is_final": true
+      }
+    }
+  ]
+}
+```
 
 <!-- facts:end -->
 
