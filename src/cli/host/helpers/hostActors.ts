@@ -1,6 +1,7 @@
 import { fromPromise } from "xstate";
 import { createAdsPowerClient, ensureProfileKernel } from "../../../browser/adsPower/index.ts";
 import { answersIssue, answerWait, flowWithParams, loadFlow, pageProblem } from "../../../browser/flow/index.ts";
+import { AUTH_APP_RADIO, authAppOffered, pageStateOf, TWO_STEP_PICKER } from "../../../browser/flow/helpers/pageState.ts";
 import { stepExchangesAt } from "../../../subq/stepReading/helpers/stepExchanges.ts";
 import type { FlowStep } from "../../../browser/flow/index.ts";
 import type { InspectAction, InspectStepResult } from "../../../browser/inspect/index.ts";
@@ -130,6 +131,19 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
         }
         if (/\/checkpoint\//.test(url)) return issue("checkpointed", `${url}: ${text.slice(0, 120)}`);
         if (/wrong password|incorrect password|password you.ve entered is incorrect/i.test(text)) return issue("wrongPassword");
+        const twoStep = pageStateOf(url, text)?.id;
+        if (twoStep === "twoStepPasskey") {
+          log(`host ${account.accountName}: Facebook asks for a passkey: Try another way`);
+          const picker = await send("clickRole", ["button", "Try another way"], 240_000, { name: TWO_STEP_PICKER, ms: 30_000 });
+          if (!picker?.folder || !authAppOffered(stepExchangesAt(picker.folder))) return issue("twoStepNoAuthApp", `${TWO_STEP_PICKER} did not offer the authentication app (TOTP)`);
+          continue;
+        }
+        if (twoStep === "twoStepMethodPicker") {
+          log(`host ${account.accountName}: two-step method picker: Authentication app, then Continue`);
+          await send("clickRole", ["radio", AUTH_APP_RADIO]);
+          await send("clickRole", ["button", "Continue"]);
+          continue;
+        }
         if (/two_step|approvals_code/i.test(url) || /enter the code|authentication app|6-digit code/i.test(text)) {
           await send("code");
           continue;

@@ -48,6 +48,12 @@ flowchart LR
   rememberPassword["rememberPassword: the #quot;Remember password#quot; prompt"]
   page --> rememberPassword
   rememberPassword -->|"click #quot;Not now#quot;"| nextrememberPassword(["next state"])
+  twoStepMethodPicker["twoStepMethodPicker: Facebook's two-step method picker (#quot;Choose a way to confirm it's you#quot;: Passkey, Authentication app, Backup code)#59; `TwoStepVerificationChallengePickerDialogQuery` lists them as `PASSKEY`, `TOTP`, `BACKUP_CODES` (Mountain Top, host 20261024T222706 step 15)"]
+  page --> twoStepMethodPicker
+  twoStepMethodPicker -->|"choose #quot;Authentication app#quot;"| nexttwoStepMethodPicker(["next state"])
+  twoStepPasskey["twoStepPasskey: Facebook asks for a passkey (#quot;Use face scan, fingerprint or screen lock to confirm it's you#quot;): no code box on the page, so `code` finds nothing (Mountain Top, host 20261024T222706 steps 08-14)"]
+  page --> twoStepPasskey
+  twoStepPasskey -->|"press #quot;Try another way#quot;"| nexttwoStepPasskey(["next state"])
   twoStepCode["twoStepCode: two-step: the code field"]
   page --> twoStepCode
   twoStepCode -->|"log inspect do code --live --account #lt;a#gt;"| nexttwoStepCode(["next state"])

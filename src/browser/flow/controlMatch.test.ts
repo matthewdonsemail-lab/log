@@ -103,6 +103,11 @@ describe('controlMatch picks one control or says why not, the same every time', 
     expect(tie).toMatchObject({ path: 'shown' })
   })
 
+  test("the authentication app's radio is one match inside Facebook's method picker", () => {
+    const [found] = pick([{ candidates: candidatesOf(fixture('twoStepMethodPicker')), role: 'radio', name: 'Authentication app Get a code from your authentication app.', within: 'Choose two-factor authentication method' }])
+    expect(found).toMatchObject({ path: 'e137', enabled: true })
+  })
+
   test('two equal matches are refused, never guessed', () => {
     const save = candidatesOf(fixture('cropPicture')).find((c) => c.path === 'e1395')!
     const [found] = pick([{ candidates: [save, { ...save, path: 'copy' }], role: 'button', name: 'Save' }])

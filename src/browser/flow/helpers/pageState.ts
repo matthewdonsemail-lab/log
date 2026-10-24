@@ -30,6 +30,13 @@ export const mayNotPost = (exchanges: readonly StepExchange[]): boolean => excha
 
 export const partnerListings = (exchanges: readonly StepExchange[]): boolean => exchanges.some((e) => answered(e.answer, 'product_details_type', (v) => v === 'PARTNER_LISTING'))
 
+export const TWO_STEP_PICKER = 'TwoStepVerificationChallengePickerDialogQuery'
+
+export const AUTH_APP_RADIO = 'Authentication app Get a code from your authentication app.'
+
+export const authAppOffered = (exchanges: readonly StepExchange[]): boolean =>
+  exchanges.some((e) => e.name === TWO_STEP_PICKER && answered(e.answer, 'methods', (v) => Array.isArray(v) && v.some((m) => (m as { method?: string } | null)?.method === 'TOTP' && !(m as { is_disabled?: boolean }).is_disabled)))
+
 export const GROUP_MEMBERS_REFETCH = 'GroupsCometMembersPageNewMembersSectionRefetchQuery'
 
 export const newMembersAnswered = (exchanges: readonly StepExchange[]): boolean =>
@@ -123,6 +130,22 @@ export const PAGE_STATES: readonly StateRule[] = [
     needsNothing: true
   },
   { id: 'rememberPassword', text: /remember password/i, what: 'the "Remember password" prompt', resolve: 'click "Not now" (`clickRole button "Not now"`)', person: false },
+  {
+    id: 'twoStepMethodPicker',
+    url: /two_step_verification|two_factor/i,
+    text: /choose a way to confirm it.?s you|choose two-factor authentication method/i,
+    what: 'Facebook\'s two-step method picker ("Choose a way to confirm it\'s you": Passkey, Authentication app, Backup code); `TwoStepVerificationChallengePickerDialogQuery` lists them as `PASSKEY`, `TOTP`, `BACKUP_CODES` (Mountain Top, host 20261024T222706 step 15)',
+    resolve: 'choose "Authentication app", then Continue, when the picker\'s answer lists `TOTP` not disabled; then the code (rule 21). With no `TOTP`, only a person can sign in',
+    person: false
+  },
+  {
+    id: 'twoStepPasskey',
+    url: /two_step_verification|two_factor/i,
+    text: /use face scan, fingerprint or screen lock to confirm it.?s you/i,
+    what: 'Facebook asks for a passkey ("Use face scan, fingerprint or screen lock to confirm it\'s you"): no code box on the page, so `code` finds nothing (Mountain Top, host 20261024T222706 steps 08-14)',
+    resolve: 'press "Try another way" (`clickRole button "Try another way"`): the method picker opens, then choose the authentication app',
+    person: false
+  },
   { id: 'twoStepCode', url: /two_step_verification|two_factor|\/checkpoint/i, text: /enter (the )?(6-digit )?code|authentication code|login code/i, what: 'two-step: the code field', resolve: '`log inspect do code --live --account <a>` (the TOTP from Twenty, rule 21)', person: false },
   { id: 'loginForm', url: /\/login|login\.php/i, what: 'the login form', resolve: '`log inspect do signIn --live --account <a>` (rule 21), or `log facebook connect --account <a>`', person: false },
   { id: 'checkpoint', url: /\/checkpoint/i, what: 'a Facebook checkpoint not mapped yet', resolve: 'take a snapshot, read the page, press its Continue/next control to see the next state (matt: never stop at a checkpoint), and add the state here', person: false }
@@ -198,6 +221,9 @@ export const RESOLVE_CALLS: Readonly<Record<string, (at: StateAt) => ResolveCall
   marketplaceDeleteSurvey: (at) =>
     /radio "No, haven't sold" \[checked\]/.test(at.text) ? liveStep(at.account, 'clickRole', ['button', 'Next']) : liveStep(at.account, 'clickRole', ['radio', "No, haven't sold"]),
   rememberPassword: (at) => liveStep(at.account, 'clickRole', ['button', 'Not now']),
+  twoStepMethodPicker: (at) =>
+    /radio "Authentication app[^"]*" \[checked\]/.test(at.text) ? liveStep(at.account, 'clickRole', ['button', 'Continue']) : liveStep(at.account, 'clickRole', ['radio', AUTH_APP_RADIO]),
+  twoStepPasskey: (at) => liveStep(at.account, 'clickRole', ['button', 'Try another way']),
   twoStepCode: (at) => liveStep(at.account, 'code'),
   loginForm: (at) => liveStep(at.account, 'signIn'),
   checkpoint: (at) => snapshotCall(at.account)

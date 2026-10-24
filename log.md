@@ -6463,3 +6463,23 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `capture --docs` takes a run's bundles from its own `session.har` when the run isn't settled yet (`scriptsFromHar`), keeps them as `scripts/`, and says how many response bodies the recording lost, so every action's run (a host still open included) feeds the request docs' code slices. The recorder (`harRecorder.py`) now reads each response body first, before the request and response header round trips, keeps scripts and documents up to 16 MB (other bodies still 2 MB), and writes `_bodyError` with the reason on a body it couldn't keep. The docs are rebuilt from Hazleton's host run with rea's reading of `useAccountStatusClearEnrollmentEntryPointActionMutation`, now documented as a mutation with its definition.
 Why: matt: "it should just do the capture across all actions." The docs gate refused a push because rea had read none of the three new requests: Hazleton's host run was never settled, so it had no `scripts/` and the build read no code from it, though its 158 MB `session.har` held 869 bundles. Of its 910 script responses, 41 had no body: one 2.3 MB bundle over the 2 MB limit, and 40 whose body was gone by the time the recorder asked for it after three header round trips.
 Checked: `harRecorder.test.ts` runs the real recorder on fake responses (body read right after the response, a 2.3 MB script kept whole, a lost body and an over-limit JSON each carrying `_bodyError`); `facebookClient.test.ts` builds modules from an unsettled run's `session.har` and reports the lost body. Live: the rebuild took 869 bundles from Hazleton's open run and rea read the clear mutation's slice. `bun run check`: 988 pass, 0 fail. Still unread: `CometActorGatewayHandlerQuery` and `CometTS2BitArrayLoggerMutation`, whose bundles were among the 41 lost in that recording; the next run with the new recorder keeps them.
+
+## 2026-10-24 22:38Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/pageStates.mmd`: edited
+- `docs/errorCatalog.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `python/fixtures/controls/twoStepMethodPicker.yml`: new file
+- `python/fixtures/controls/twoStepPasskey.yml`: new file
+- `skills/host/SKILL.md`: edited
+- `src/browser/flow/controlMatch.test.ts`: added test "the authentication app's radio is one match inside Facebook's method picker"
+- `src/browser/flow/helpers/pageState.ts`: added const TWO_STEP_PICKER, const AUTH_APP_RADIO, const authAppOffered · changed const PAGE_STATES, const RESOLVE_CALLS
+- `src/browser/flow/pageState.test.ts`: added test "the passkey prompt and the method picker are named before the code page, each with its press", test "the authentication app is chosen only when the picker's answer offers TOTP, not disabled"
+- `src/cli/host/helpers/hostActors.ts`: changed function hostActors
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+
+What changed: Two page states join the two-step ones: `twoStepPasskey` ("Use face scan, fingerprint or screen lock to confirm it's you", resolved with "Try another way") and `twoStepMethodPicker` ("Choose a way to confirm it's you", resolved with the Authentication app radio, then Continue). The host's sign-in handles both before the code: it presses Try another way, waits for `TwoStepVerificationChallengePickerDialogQuery` and goes on only when its answer lists `TOTP` not disabled (`authAppOffered`), else the new account issue `twoStepNoAuthApp`; on the picker it chooses the app and Continue, then types the code as before. Fixtures of both pages, the host skill, the error catalog and the page-state diagram follow.
+Why: matt: "new state". Mountain Top (host 20261024T222706) landed on a passkey prompt after its password; with no code box on it, `code` failed with `controlMissing` six times. Pressing Try another way opened the picker, whose answer listed `PASSKEY`, `TOTP`, `BACKUP_CODES`; choosing Authentication app gave the code box, the code signed it in, and the run went on to set its persona picture.
+Checked: `pageState.test.ts` names both pages from Mountain Top's snapshots, picks their presses (radio, then Continue once it is checked) and accepts TOTP only when offered and enabled; `controlMatch.test.ts` finds the app's radio as one match in the picker dialog. Live, the same presses by hand signed Mountain Top in, and its host then cleared the notifications notice by itself and saved its persona picture (`ProfileCometProfilePictureSetMutation` 200, profileSetAt 22:34:02Z in Twenty). `bun run check`: 992 pass, 0 fail.

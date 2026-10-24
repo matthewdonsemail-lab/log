@@ -98,3 +98,14 @@ process is gone is dropped), and its profile picture not on this machine.
 Exit 1 when any account is blocked. The host itself waits for its profile's
 kernel while it is still downloading, before it opens, and `host start --now` skips the 10-minute
 launch gap only (rule 30).
+
+## Two-step when Facebook asks for a passkey
+
+Some accounts land on "Use face scan, fingerprint or screen lock to confirm
+it's you" (`twoStepPasskey`) instead of the code box. The host presses "Try
+another way", waits for `TwoStepVerificationChallengePickerDialogQuery`, and
+goes on only when its answer lists `TOTP` not disabled (`authAppOffered`; else
+`twoStepNoAuthApp`, for matt). On the picker (`twoStepMethodPicker`) it chooses
+"Authentication app", then Continue, and the code is typed from Twenty as
+usual (rule 21). Mountain Top, host 20261024T222706, steps 12-26.
+

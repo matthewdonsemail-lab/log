@@ -1395,6 +1395,15 @@ export const ERROR_CATALOG = {
     raisedIn: ['inspectSession.by_role'],
     action: "Read the previous step's answers (rule 73): the call that enables it did not come back."
   },
+  twoStepNoAuthApp: {
+    layer: 'account',
+    meaning: "Facebook asked for a passkey and its method picker (TwoStepVerificationChallengePickerDialogQuery) offered no authentication app (TOTP), or disabled it, so the account's authenticator secret can't sign it in.",
+    retryable: false,
+    raisedIn: ['host.signIn'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: tellMatt
+  },
   overlayNotCleared: {
     layer: 'browser',
     meaning: "A known overlay (the browser-notifications notice, an ended 'What happened' notice) stayed over the page after its key, or its clearing call didn't answer as it must, so the flow's first click never happens.",
