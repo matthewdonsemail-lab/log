@@ -109,3 +109,15 @@ goes on only when its answer lists `TOTP` not disabled (`authAppOffered`; else
 "Authentication app", then Continue, and the code is typed from Twenty as
 usual (rule 21). Mountain Top, host 20261024T222706, steps 12-26.
 
+## The Marketplace location is the account's home
+
+The host's setLocation types the account's own home written out
+(`homePlace`: its city and the state or province from `CITY_REGIONS`,
+`src/marketplace/home/types.ts`, through `fullPlaceName`, so it passes the
+acronym check, rule 72): "Mountain Top, Pennsylvania", "Kamloops, British
+Columbia". A listing's `locationQuery` is used only for a home with no region.
+`log facebook preflight` shows each account's place and refuses one with no
+region (`noHomeRegion`). Mountain Top's was Pachuca, Mexico, until it was set
+this way (`CometMarketplaceSetBuyLocationMutation` answered city "Mountain
+Top", 2026-10-24).
+

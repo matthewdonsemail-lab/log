@@ -62,6 +62,13 @@ describe('preflight says before any browser opens what would stop an account', (
     expect(failed(preflightOf(EXETER, { ...GOOD, kernel: { reachable: false, version: null, downloaded: false } }, NOON_EDT, 2500))).toEqual(['adsPowerUnavailable'])
   })
 
+  test("its Marketplace location is said up front: its home written out, or noHomeRegion", () => {
+    expect(preflightOf(EXETER, GOOD, NOON_EDT, 2500).checks.find((c) => c.name === 'location')).toMatchObject({ ok: true, detail: 'Marketplace location "Exeter, Pennsylvania"' })
+    expect(failed(preflightOf({ ...EXETER, homeCity: 'Philadelphia' }, GOOD, NOON_EDT, 2500))).toEqual([])
+    const noRegion = preflightOf({ ...EXETER, homeCountry: 'IE', homeCity: 'Galway' }, GOOD, NOON_EDT, 2500)
+    expect(failed(noRegion)).toContain('noHomeRegion')
+  })
+
   test('outside the waking hours is said up front', () => {
     expect(failed(preflightOf(EXETER, GOOD, new Date('2026-10-24T06:00:00Z'), 2500))).toEqual(['outsideActiveHours'])
   })

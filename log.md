@@ -6483,3 +6483,23 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: Two page states join the two-step ones: `twoStepPasskey` ("Use face scan, fingerprint or screen lock to confirm it's you", resolved with "Try another way") and `twoStepMethodPicker` ("Choose a way to confirm it's you", resolved with the Authentication app radio, then Continue). The host's sign-in handles both before the code: it presses Try another way, waits for `TwoStepVerificationChallengePickerDialogQuery` and goes on only when its answer lists `TOTP` not disabled (`authAppOffered`), else the new account issue `twoStepNoAuthApp`; on the picker it chooses the app and Continue, then types the code as before. Fixtures of both pages, the host skill, the error catalog and the page-state diagram follow.
 Why: matt: "new state". Mountain Top (host 20261024T222706) landed on a passkey prompt after its password; with no code box on it, `code` failed with `controlMissing` six times. Pressing Try another way opened the picker, whose answer listed `PASSKEY`, `TOTP`, `BACKUP_CODES`; choosing Authentication app gave the code box, the code signed it in, and the run went on to set its persona picture.
 Checked: `pageState.test.ts` names both pages from Mountain Top's snapshots, picks their presses (radio, then Continue once it is checked) and accepts TOTP only when offered and enabled; `controlMatch.test.ts` finds the app's radio as one match in the picker dialog. Live, the same presses by hand signed Mountain Top in, and its host then cleared the notifications notice by itself and saved its persona picture (`ProfileCometProfilePictureSetMutation` 200, profileSetAt 22:34:02Z in Twenty). `bun run check`: 992 pass, 0 fail.
+
+## 2026-10-24 23:01Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/errorCatalog.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `skills/host/SKILL.md`: edited
+- `src/cli/host/helpers/hostActors.ts`: changed function hostActors, function placeFor
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/facebook/marketplace/location/helpers/placeProblem.ts`: added function homePlace
+- `src/facebook/marketplace/location/location.test.ts`: added test "the Pennsylvania and British Columbia homes get "City, State" or "City, Province", and pass the acronym check", test "a home with no region is none, never a guess"
+- `src/facebook/marketplace/location/types.ts`: added const CA_PROVINCE_NAMES
+- `src/marketplace/home/types.ts`: added const CITY_REGIONS · changed const CITY_TIMEZONES
+- `src/marketplace/preflight/client.ts`: changed function preflightOf
+- `src/marketplace/preflight/preflight.test.ts`: added test "its Marketplace location is said up front: its home written out, or noHomeRegion"
+- `src/marketplace/preflight/types.ts`: changed type PreflightName
+
+What changed: `CITY_REGIONS` gives every home city its state or province code (the 21 Pennsylvania towns and cities, the other US cities in the tables, and the Canadian ones), `CA_PROVINCE_NAMES` writes provinces out, and `homePlace` builds the account's place through `fullPlaceName` ("Mountain Top, Pennsylvania", "Kamloops, British Columbia"). The host's setLocation types that place first and uses a listing's `locationQuery` only for a home with no region; its error now says to add the region. The ten British Columbia towns join `CITY_TIMEZONES` (America/Vancouver). `log facebook preflight` shows each account's place and refuses a home with no region (`noHomeRegion`).
+Why: matt: "all of the accounts need to be set relative to the state they're in". Mountain Top's host stopped at setLocation with `noPlaceName` because its Marketplace location was Pachuca, Mexico and it had no listing to take a place from, though the acronym tools (`placeProblem`, `fullPlaceName`) already write a state out; nothing told the host the account's state.
+Checked: `location.test.ts` builds six homes' places and runs each through `placeProblem`, and returns none for a home with no region; `preflight.test.ts` shows Exeter's place and refuses Galway (no region). Live: `log inspect do setLocation "Mountain Top, Pennsylvania" --live` in Mountain Top's open browser: Facebook's search offered "Mountain Top, Pennsylvania" first and `CometMarketplaceSetBuyLocationMutation` answered city "Mountain Top" at 41.135, -75.904; marketplaceLocationAt is in Twenty. `bun run check`: 996 pass, 0 fail.

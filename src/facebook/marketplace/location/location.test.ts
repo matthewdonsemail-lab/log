@@ -3,7 +3,7 @@ import { countryOfLocation } from '../../../browser/proxy/index'
 import { parseInspectAction } from '../../../browser/inspect/index'
 import { toPublishListing } from '../../../marketplace/agencyListing/index'
 import type { AgencyListing } from '../../../marketplace/agencyListing/index'
-import { fullPlaceName, placeProblem } from './index'
+import { fullPlaceName, homePlace, placeProblem } from './index'
 
 describe('placeProblem: a Marketplace location is typed written out', () => {
   test('"City, State" written out and "City, Country" pass', () => {
@@ -58,5 +58,28 @@ describe('the check blocks before any action', () => {
   test('a written-out state is a US place for the country check', () => {
     expect(countryOfLocation('Bethlehem, Pennsylvania')).toBe('US')
     expect(countryOfLocation('Galway, Ireland')).toBe('IE')
+  })
+})
+
+describe("every account's Marketplace location is its own home, written out", () => {
+  test('the Pennsylvania and British Columbia homes get "City, State" or "City, Province", and pass the acronym check', () => {
+    const cases: [string, string, string][] = [
+      ['Mountain Top', 'US', 'Mountain Top, Pennsylvania'],
+      ['Wilkes-Barre', 'US', 'Wilkes-Barre, Pennsylvania'],
+      ['Exeter', 'US', 'Exeter, Pennsylvania'],
+      ['Shavertown', 'US', 'Shavertown, Pennsylvania'],
+      ['Kamloops', 'CA', 'Kamloops, British Columbia'],
+      ['West Kelowna', 'CA', 'West Kelowna, British Columbia'],
+    ]
+    for (const [homeCity, homeCountry, want] of cases) {
+      const place = homePlace({ homeCity, homeCountry })
+      expect(place).toBe(want)
+      expect(placeProblem(place)).toBeNull()
+    }
+  })
+
+  test('a home with no region is none, never a guess', () => {
+    expect(homePlace({ homeCity: 'Nowhere Town', homeCountry: 'US' })).toBeNull()
+    expect(homePlace({ homeCity: null, homeCountry: 'US' })).toBeNull()
   })
 })

@@ -1,4 +1,5 @@
-import { MIN_REGION_LETTERS, US_STATE_NAMES } from '../types'
+import { CA_PROVINCE_NAMES, MIN_REGION_LETTERS, US_STATE_NAMES } from '../types'
+import { CITY_REGIONS } from '../../../../marketplace/home/types'
 import type { PlaceProblem } from '../types'
 
 const EXAMPLE = '"City, State" with the state written out ("Bethlehem, Pennsylvania")'
@@ -32,4 +33,12 @@ export function fullPlaceName(city: string, region: string): string {
   const state = US_STATE_NAMES[region.trim().toUpperCase()]
   const name = city.trim().replace(/\b\p{Ll}/gu, (letter) => letter.toUpperCase())
   return `${name}, ${state ?? region.trim()}`
+}
+
+export function homePlace(account: { homeCity: string | null; homeCountry: string | null }): string | null {
+  const country = (account.homeCountry ?? '').trim().toUpperCase()
+  const city = (account.homeCity ?? '').trim()
+  const region = city ? CITY_REGIONS[`${country}:${city.toLowerCase()}`] : undefined
+  const name = region ? (country === 'CA' ? CA_PROVINCE_NAMES[region] : US_STATE_NAMES[region]) : undefined
+  return name ? fullPlaceName(city, name) : null
 }

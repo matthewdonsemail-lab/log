@@ -15,7 +15,7 @@ import { join } from "node:path";
 import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
 import { ACTIVITY_SCRIPTS, NOTED_ISSUES } from "../../../facebook/warmup/stages/index.ts";
 import * as marketplaceCheck from "../../../facebook/marketplace/check/index.ts";
-import { placeProblem } from "../../../facebook/marketplace/location/index.ts";
+import { homePlace, placeProblem } from "../../../facebook/marketplace/location/index.ts";
 import { runFlowInSession, openInspectSession } from "../../flow/helpers/index.ts";
 import type { OpenSession } from "../../flow/helpers/index.ts";
 import { keepNewDevice, keepSession, openAccount } from "../../live/index.ts";
@@ -211,7 +211,7 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
       const home = (account.homeCity ?? "").toLowerCase();
       if (where && where.city.toLowerCase() === home) return ok(`${where.city} ${where.postalCode}`);
       const place = await placeFor(context, account);
-      if (!place) return error("noPlaceName", `the Marketplace location is ${where?.city ?? "unknown"}; give a listing of this account in ${account.homeCity ?? "its home city"} a locationQuery, "City, State" written out`);
+      if (!place) return error("noPlaceName", `the Marketplace location is ${where?.city ?? "unknown"}; its home ${account.homeCity ?? "city"} (${account.homeCountry ?? "?"}) has no region in CITY_REGIONS, and no listing of this account has a locationQuery: add the city's state to CITY_REGIONS (src/marketplace/home/types.ts)`);
       const problem = placeProblem(place);
       if (problem) return error(problem.code, problem.detail);
       if (!input.live) return error("needsLive", `the Marketplace location is ${where?.city ?? "unknown"}, not ${account.homeCity}: --live sets it to ${place}`);
@@ -275,6 +275,8 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
 }
 
 async function placeFor(context: CommandContext, account: FacebookAccount): Promise<string | null> {
+  const fromHome = homePlace(account);
+  if (fromHome) return fromHome;
   const rows = await context.twenty.list("agencyListings", { socialAccountId: { eq: account.id } });
   const home = (account.homeCity ?? "").toLowerCase();
   const queries = rows.map((r) => r.locationQuery?.trim()).filter((q): q is string => Boolean(q));

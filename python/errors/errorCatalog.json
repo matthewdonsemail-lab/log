@@ -1752,6 +1752,18 @@
     ],
     "action": "Read the previous step's answers (rule 73): the call that enables it did not come back."
   },
+  "noHomeRegion": {
+    "layer": "account",
+    "meaning": "The account's home city has no state or province in CITY_REGIONS, so its Marketplace location can't be typed as \"City, State\" written out (rule 72).",
+    "retryable": false,
+    "raisedIn": [
+      "cli/preflight",
+      "host.setLocation"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Add the city with its state or province code to CITY_REGIONS in src/marketplace/home/types.ts."
+  },
   "twoStepNoAuthApp": {
     "layer": "account",
     "meaning": "Facebook asked for a passkey and its method picker (TwoStepVerificationChallengePickerDialogQuery) offered no authentication app (TOTP), or disabled it, so the account's authenticator secret can't sign it in.",

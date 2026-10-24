@@ -1,4 +1,4 @@
-export type PreflightName = 'home' | 'hours' | 'proxy' | 'adsPower' | 'kernel' | 'launches' | 'hostOpens' | 'session' | 'profilePhoto'
+export type PreflightName = 'home' | 'location' | 'hours' | 'proxy' | 'adsPower' | 'kernel' | 'launches' | 'hostOpens' | 'session' | 'profilePhoto'
 
 export interface PreflightCheck {
   name: PreflightName
