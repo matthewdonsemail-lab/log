@@ -933,7 +933,12 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     and host opens left, a session left open, its picture on disk); `--apply`
     downloads a missing kernel and the host waits for one. A session whose
     process is gone is dropped. Snapshot excerpts of each page version are
-    test fixtures (`python/fixtures/controls/`).
+    test fixtures (`python/fixtures/controls/`). Before a flow's first click
+    it clears the known overlays with Escape, each checked: the
+    browser-notifications notice (gone from the page) and an ended "What
+    happened" notice (`useAccountStatusClearEnrollmentEntryPointActionMutation`
+    answers `xfb_ixt_gateway_clear_flow: true`); one that stays stops the
+    flow with `overlayNotCleared`.
 
 ## Checks
 

@@ -503,6 +503,12 @@ flowchart LR
   automatedBehaviour["automatedBehaviour: #quot;We suspect automated behaviour#quot;"]
   page --> automatedBehaviour
   automatedBehaviour -->|"dismiss it, as Listaro did"| nextautomatedBehaviour(["next state"])
+  browserNotificationsNotice["browserNotificationsNotice: Facebook's browser-notifications notice over the page: its text covers its own Close, so nothing under it can be pressed (Hazleton, host 20261024T211541 steps 08-13)"]
+  page --> browserNotificationsNotice
+  browserNotificationsNotice -->|"press Escape"| nextbrowserNotificationsNotice(["next state"])
+  pastNoticeDialog["pastNoticeDialog: Facebook's #quot;What happened#quot; dialog about a limit on the account that has ended (#quot;Ended on #lt;date#gt;#quot;), over the page (Hazleton, host 20261024T211541 step 14)"]
+  page --> pastNoticeDialog
+  pastNoticeDialog -->|"press Escape"| nextpastNoticeDialog(["next state"])
   messengerPinCreate["messengerPinCreate: Messenger's #quot;Create a PIN to access your chats on any device#quot;: the inbox stays behind it (Bethlehem, warm-up 20261022T092119 steps 25-27)"]
   page --> messengerPinCreate
   messengerPinCreate -->|"run the recorded flow with the PIN from Twenty"| nextmessengerPinCreate(["next state"])

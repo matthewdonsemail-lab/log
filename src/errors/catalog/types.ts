@@ -1395,6 +1395,13 @@ export const ERROR_CATALOG = {
     raisedIn: ['inspectSession.by_role'],
     action: "Read the previous step's answers (rule 73): the call that enables it did not come back."
   },
+  overlayNotCleared: {
+    layer: 'browser',
+    meaning: "A known overlay (the browser-notifications notice, an ended 'What happened' notice) stayed over the page after its key, or its clearing call didn't answer as it must, so the flow's first click never happens.",
+    retryable: true,
+    raisedIn: ['flow.clearOverlays'],
+    action: "Read the press step's snapshot and exchanges (rule 73): the overlay may have changed. Record it with log inspect and update its page state (rule 54)."
+  },
   adsPowerKernelMissing: {
     layer: 'adsPower',
     meaning: "AdsPower's newest SunBrowser kernel (what ua_auto profiles start) is not downloaded, so a profile can't start.",

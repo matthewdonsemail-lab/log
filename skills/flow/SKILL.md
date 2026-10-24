@@ -83,6 +83,20 @@ accessible name is found by its text.
   exchanges before the flow ships; `answers.test.ts` refuses a step with
   `expect` and no `answers`.
 
+Before a flow's first click, fill or upload, `clearOverlays` reads the page
+and presses Escape for each known overlay over it (`OVERLAY_CLEARS`,
+`src/browser/flow/helpers/overlays.ts`), then reads the page again:
+
+| Overlay | Page state | Checked by |
+| --- | --- | --- |
+| "To allow or block browser notifications from Facebook…" | `browserNotificationsNotice` | gone from the page (Escape sends no call) |
+| "What happened" … "Ended on <date>" | `pastNoticeDialog` | `useAccountStatusClearEnrollmentEntryPointActionMutation` answers `data.xfb_ixt_gateway_clear_flow: true` |
+
+One still there after its Escape, or a clear call that answers otherwise,
+stops the flow at that step with `overlayNotCleared`. A "What happened" with
+no "Ended on" is not cleared: it stays unknown, for SubQ to read (rule 74).
+A new overlay is added there with its page state, fixture and answer.
+
 When Facebook changes a page, add its snapshot excerpt to
 `python/fixtures/controls/` (no names, no page copy) and a case to
 `src/browser/flow/controlMatch.test.ts`, so the next change fails a test, not

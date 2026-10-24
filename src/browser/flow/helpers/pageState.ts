@@ -51,6 +51,20 @@ export const PAGE_STATES: readonly StateRule[] = [
   },
   { id: 'automatedBehaviour', text: /suspect automated behaviou?r|we suspect automated/i, what: '"We suspect automated behaviour"', resolve: 'dismiss it, as Listaro did (rule 23): the Dismiss/Continue control, then go on', person: false },
   {
+    id: 'browserNotificationsNotice',
+    text: /to allow or block browser notifications from facebook/i,
+    what: 'Facebook\'s browser-notifications notice over the page: its text covers its own Close, so nothing under it can be pressed (Hazleton, host 20261024T211541 steps 08-13)',
+    resolve: 'press Escape (`log inspect do press Escape --live --account <a>`): it closes with no call, so the check is that the notice is gone. A flow clears it before its first click (rule 79)',
+    person: false
+  },
+  {
+    id: 'pastNoticeDialog',
+    text: /what happened[\s\S]{0,600}?\bended on\b/i,
+    what: 'Facebook\'s "What happened" dialog about a limit on the account that has ended ("Ended on <date>"), over the page (Hazleton, host 20261024T211541 step 14)',
+    resolve: 'press Escape (`log inspect do press Escape --live --account <a>`): Facebook answers `useAccountStatusClearEnrollmentEntryPointActionMutation` with `xfb_ixt_gateway_clear_flow: true` (step 15). A flow clears it before its first click (rule 79). A "What happened" with no "Ended on" is not this state',
+    person: false
+  },
+  {
     id: 'messengerPinCreate',
     text: /create a pin to access your chats/i,
     what: 'Messenger\'s "Create a PIN to access your chats on any device": the inbox stays behind it (Bethlehem, warm-up 20261022T092119 steps 25-27)',
@@ -173,6 +187,8 @@ export const RESOLVE_CALLS: Readonly<Record<string, (at: StateAt) => ResolveCall
   textCaptcha: (at) => liveStep(at.account, 'solve'),
   checkpointStart: clickLabel(/(:\s*|")Continue"?\s*$/),
   automatedBehaviour: clickLabel(/(:\s*|")(Dismiss|Continue)"?\s*$/),
+  browserNotificationsNotice: (at) => liveStep(at.account, 'press', ['Escape']),
+  pastNoticeDialog: (at) => liveStep(at.account, 'press', ['Escape']),
   messengerPinCreate: (at) => (at.messengerPin ? { tool: 'flowMessengerPinCreateLive', input: { account: at.account, confirmLive: true } } : null),
   messengerPinEnter: (at) => (at.messengerPin ? liveStep(at.account, 'pin') : null),
   marketplacePartnerListings: clickLabel(/(:\s*|")Update"?\s*$/),

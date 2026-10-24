@@ -6325,3 +6325,26 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `CANDIDATES_JS` keeps controls under an `aria-hidden` ancestor and marks them `ariaHidden`; `pick` uses that only as a tie-breaker after enabled, so a control outside aria-hidden wins an otherwise equal match.
 Why: on Hazleton's live checkpoint page (2026-10-24 21:10Z) every control sits inside `div#scrollview[aria-hidden=true]` though the page is visible, so the matcher saw 0 controls and the host stopped on `controlMissing: no visible button "Dismiss"` 7 times. A snapshot doesn't show aria-hidden, so the fixture test passed while the live page failed.
 Checked: a read-only scan of Hazleton's open checkpoint page found 14 controls and picked Dismiss as one element; the rerun dismissed it on its own, signed in, passed the account check and set the persona picture through profileSetup's five picture steps, each answer seen. `bun run check`: 969 pass, 0 fail, with a new aria-hidden case in `controlMatch.test.ts`.
+
+## 2026-10-24 21:39Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/diagrams/pageStates.mmd`: edited
+- `python/errors/errorCatalog.json`: edited
+- `python/fixtures/controls/README.md`: edited
+- `python/fixtures/controls/browserNotificationsNotice.yml`: new file
+- `python/fixtures/controls/pastNoticeDialog.yml`: new file
+- `skills/flow/SKILL.md`: edited
+- `src/browser/flow/helpers/index.ts`: added export from "./overlays"
+- `src/browser/flow/helpers/overlays.ts`: added interface OverlayClear, const OVERLAY_CLEARS, const PRESSING_ACTIONS, function overlayOf
+- `src/browser/flow/helpers/pageState.ts`: changed const PAGE_STATES, const RESOLVE_CALLS
+- `src/cli/flow/helpers/flowSession.ts`: added function clearOverlays · changed function runFlowInSession
+- `src/cli/flow/overlays.test.ts`: added const fixture, const PROFILE, const NOTICE, const PAST, const CLEAN, const HAZLETON, const current, function scripted, test "the browser-notifications notice and an ended 'What happened' notice are named, each resolved with Escape", test "a 'What happened' that hasn't ended is not cleared: it stays unknown, for SubQ to read", test "the notice, then the past notice as they came on Hazleton: two Escapes, the second waits on its clear call", test "the past notice's clear call must answer true, and an overlay still there after Escape stops the flow", test "the run checks once, right before its first click, and a blocked one fails that step with overlayNotCleared"
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/mcp/server/helpers/agentRules.ts`: changed const SERVER_INSTRUCTIONS
+
+What changed: Two page states join PAGE_STATES with Escape as their resolver: `browserNotificationsNotice` ("To allow or block browser notifications from Facebook…") and `pastNoticeDialog` (a "What happened" dialog with an "Ended on" date). `runFlowInSession` calls the new `clearOverlays` once, right before the flow's first click, fill or upload: it reads the page, presses Escape for each overlay in `OVERLAY_CLEARS`, and checks the result, the notice by being gone from the page and the past notice by `useAccountStatusClearEnrollmentEntryPointActionMutation` answering `data.xfb_ixt_gateway_clear_flow: true`. One that stays, or a clear call that answers otherwise, fails that step with the new code `overlayNotCleared`. Rule 79, the MCP instructions, the flow skill and the page-state diagram say so.
+Why: matt asked for both to be known states cleared with Escape before a flow's first click and checked by their answers. On Hazleton (host 20261024T211541) the notice covered "Profile picture actions" and its own Close, so the profile step stopped and both overlays were cleared by hand; a "What happened" notice still in force is left unknown so SubQ reads it instead of it being pressed away.
+Checked: `src/cli/flow/overlays.test.ts` runs both states from Hazleton's step-09 snapshot excerpts (`python/fixtures/controls/`): the order they came in (notice, then the past notice, with the second Escape waiting on its clear call), a clear call answering false or not at all, a notice still there after Escape, a 'What happened' without "Ended on" left alone, and a flow that checks once before its first click and fails that step with overlayNotCleared. The answer shape is the one recorded at step 15. `bun run check`: 974 pass, 0 fail.
