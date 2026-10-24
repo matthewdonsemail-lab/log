@@ -93,6 +93,16 @@ describe('controlMatch picks one control or says why not, the same every time', 
     expect(page).toMatchObject({ path: 'e900' })
   })
 
+  test("a page wrapped in aria-hidden still has its controls, and one outside aria-hidden wins a tie", () => {
+    const dismiss = { ...candidatesOf(fixture('automatedBehaviour')).find((c) => c.path === 'e53')!, ariaHidden: true }
+    const [wrapped, tie] = pick([
+      { candidates: [dismiss], role: 'button', name: 'Dismiss' },
+      { candidates: [dismiss, { ...dismiss, path: 'shown', ariaHidden: false }], role: 'button', name: 'Dismiss' }
+    ])
+    expect(wrapped).toMatchObject({ path: 'e53' })
+    expect(tie).toMatchObject({ path: 'shown' })
+  })
+
   test('two equal matches are refused, never guessed', () => {
     const save = candidatesOf(fixture('cropPicture')).find((c) => c.path === 'e1395')!
     const [found] = pick([{ candidates: [save, { ...save, path: 'copy' }], role: 'button', name: 'Save' }])

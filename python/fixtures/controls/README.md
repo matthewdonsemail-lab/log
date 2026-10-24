@@ -11,3 +11,6 @@ names and page copy.
 | `automatedBehaviour.yml` | Exeter host run 20261024T163457, step 18 | Dismiss is a button with no accessible name, only its text |
 | `choosePicture.yml` | Exeter inspect run 20261024T164523, step 04 | the button reads "Upload photo"; the flow recorded on 2026-10-19 says "Upload Photo" |
 | `cropPicture.yml` | Exeter inspect run 20261024T164523, step 06, plus a page "Save" outside the dialog | Save is picked inside the dialog the step names |
+
+On the live checkpoint page (Hazleton, 2026-10-24) every control sits inside `div#scrollview[aria-hidden=true]`,
+which a snapshot doesn't show: `aria-hidden` is a tie-breaker in `pick`, never a reason to drop a control.

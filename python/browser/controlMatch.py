@@ -41,7 +41,7 @@ CANDIDATES_JS = r"""() => {
   for (const el of document.querySelectorAll('[role], button, a[href], input, textarea, select')) {
     const r = el.getBoundingClientRect();
     const cs = getComputedStyle(el);
-    if (r.width < 1 || r.height < 1 || cs.visibility === 'hidden' || cs.display === 'none' || el.closest('[aria-hidden=true]')) continue;
+    if (r.width < 1 || r.height < 1 || cs.visibility === 'hidden' || cs.display === 'none') continue;
     const x = r.left + r.width / 2, y = r.top + r.height / 2;
     const hit = document.elementFromPoint(x, y);
     out.push({
@@ -53,6 +53,7 @@ CANDIDATES_JS = r"""() => {
       dialog: dialogOf(el),
       hit: !!hit && (hit === el || el.contains(hit)),
       enabled: !el.disabled && el.getAttribute('aria-disabled') !== 'true',
+      ariaHidden: !!el.closest('[aria-hidden=true]'),
       path: pathOf(el),
     });
   }
@@ -82,7 +83,7 @@ def pick(candidates: list[dict[str, Any]], role: str, name: str, within: str | N
     if not named:
         place = f' in dialog "{within}"' if within is not None else ""
         return {"code": "controlMissing", "detail": f'no visible {role} "{name}"{place}'}
-    for test in (lambda c: c.get("enabled"), lambda c: c.get("hit")):
+    for test in (lambda c: c.get("enabled"), lambda c: not c.get("ariaHidden"), lambda c: c.get("hit")):
         narrowed = [i for i in named if test(candidates[i])]
         if narrowed:
             named = narrowed
