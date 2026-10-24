@@ -882,6 +882,13 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     the goal is reached, write what went wrong as P.E.E. with its fix (rule
     75), and name the state. It is the first section of AGENTS.md, the first
     section of README.md and the first MCP instruction. Top of this file.
+77. 2026-10-24 · matt: "we need to make it auto switch when that happens to
+    checkpointed." An open browser reports every page it lands on
+    (`navigations.jsonl` in its run), and the session behind it sets the
+    account to CHECKPOINT in Twenty the moment one is a `/checkpoint` page,
+    between steps as well as during them, with the page and the time as the
+    detail. An account already at CHECKPOINT keeps its reason.
+    `src/cli/inspect/helpers/watchCheckpoint.ts`.
 
 ## Checks
 

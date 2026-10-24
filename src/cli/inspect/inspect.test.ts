@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { mkdtempSync } from "node:fs";
+import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import type { InspectSessionConfig } from "../../browser/inspect/index.ts";
 import { marketplaceFixture } from "../../twenty/graphql/index.ts";
 import { runCli } from "../runner/index.ts";
@@ -29,6 +29,38 @@ describe("log inspect", () => {
     expect(configs[0].captureDir.replaceAll("\\", "/")).toMatch(/\/inspect\/\d{8}T\d{6}_galwayOne\/camoufox$/);
     expect(configs[0].commandsPath.endsWith("commands.jsonl")).toBe(true);
     expect(result.out).toContain("ended (exit 0)");
+  });
+
+  test("a browser Facebook sends to a checkpoint while it is open sets the account to CHECKPOINT in Twenty", async () => {
+    const twenty = marketplaceFixture();
+    const result = await run(["inspect", "start", "--account", "galwayOne"], {
+      twenty,
+      inspectSession: async (config: InspectSessionConfig) => {
+        const navigations = [
+          { url: "https://www.facebook.com/groups/123/members", at: "2026-10-24T06:42:06.000Z" },
+          { url: "https://www.facebook.com/checkpoint/1501092823525282/?next=https%3A%2F%2Fwww.facebook.com%2F", at: "2026-10-24T06:51:09.000Z" },
+        ];
+        mkdirSync(dirname(config.captureDir), { recursive: true });
+        writeFileSync(join(dirname(config.captureDir), "navigations.jsonl"), navigations.map((n) => JSON.stringify(n)).join("\n") + "\n");
+        return 0;
+      },
+    });
+    expect(result.code).toBe(0);
+    expect(twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")).toMatchObject({ accountStatus: "CHECKPOINT", statusReason: "checkpointed" });
+    expect(result.err).toContain("galwayOne is CHECKPOINT in Twenty: Facebook sent the page to /checkpoint/1501092823525282/ (a checkpoint) at 2026-10-24T06:51:09.000Z");
+  });
+
+  test("a browser that never lands on a checkpoint leaves the account's status as it was", async () => {
+    const twenty = marketplaceFixture();
+    await run(["inspect", "start", "--account", "galwayOne"], {
+      twenty,
+      inspectSession: async (config: InspectSessionConfig) => {
+        mkdirSync(dirname(config.captureDir), { recursive: true });
+        writeFileSync(join(dirname(config.captureDir), "navigations.jsonl"), JSON.stringify({ url: "https://www.facebook.com/groups/123/members", at: "2026-10-24T06:42:06.000Z" }) + "\n");
+        return 0;
+      },
+    });
+    expect(twenty.rows.socialAccounts.find((r) => r.id === "galwayOne")!.accountStatus).toBe("ACTIVE");
   });
 
   test("start goes through the same gates: an account with no proxy opens nothing", async () => {
