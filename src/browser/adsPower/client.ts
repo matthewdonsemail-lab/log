@@ -117,6 +117,10 @@ export function createAdsPowerClient(
       const data = await call<{ list?: { kernel: string; is_downloaded: boolean }[] }>('GET', '/api/v2/browser-profile/kernels?kernel_type=Chrome')
       return (data?.list ?? []).map((k) => ({ version: String(k.kernel), downloaded: Boolean(k.is_downloaded) })).sort((a, b) => Number(a.version) - Number(b.version))
     },
+    async profileUserAgents(profileIds) {
+      const data = await call<{ list?: { profile_id: string; ua?: string }[] }>('POST', '/api/v2/browser-profile/ua', { profile_id: profileIds })
+      return Object.fromEntries((data?.list ?? []).map((row) => [String(row.profile_id), String(row.ua ?? '')]))
+    },
     async downloadKernel(version) {
       const data = await call<{ status?: string; progress?: number }>('POST', '/api/v2/browser-profile/download-kernel', { kernel_type: 'Chrome', kernel_version: version })
       return { status: String(data?.status ?? ''), progress: data?.progress == null ? null : Number(data.progress) }
@@ -124,30 +128,53 @@ export function createAdsPowerClient(
   }
 }
 
-export async function newestKernel(client: AdsPowerClient): Promise<{ newest: string | null; downloaded: boolean }> {
-  const newest = (await client.kernels()).at(-1) ?? null
-  return { newest: newest?.version ?? null, downloaded: Boolean(newest?.downloaded) }
+export function kernelOfUserAgent(userAgent: string | null | undefined): string | null {
+  return /Chrome\/(\d+)\./.exec(userAgent ?? '')?.[1] ?? null
+}
+
+export async function profileKernels(client: AdsPowerClient, profileIds: string[]): Promise<Record<string, string | null>> {
+  const out: Record<string, string | null> = {}
+  for (let i = 0; i < profileIds.length; i += 10) {
+    const agents = await client.profileUserAgents(profileIds.slice(i, i + 10))
+    for (const id of profileIds.slice(i, i + 10)) out[id] = kernelOfUserAgent(agents[id])
+  }
+  return out
+}
+
+export async function kernelReady(client: AdsPowerClient, version: string): Promise<boolean> {
+  return (await client.kernels()).some((k) => k.version === version && k.downloaded)
 }
 
 export async function ensureKernel(
   client: AdsPowerClient,
   log: (line: string) => void,
-  options: { pollMs?: number; maxMs?: number } = {}
-): Promise<{ ok: true; version: string | null } | { ok: false; detail: string }> {
-  const { newest, downloaded } = await newestKernel(client)
-  if (downloaded || !newest) return { ok: true, version: newest }
+  options: { version: string; pollMs?: number; maxMs?: number }
+): Promise<{ ok: true; version: string } | { ok: false; detail: string }> {
+  const version = options.version
+  if (await kernelReady(client, version)) return { ok: true, version }
   const started = Date.now()
   let last = ''
   while (Date.now() - started < (options.maxMs ?? 900_000)) {
-    const state = await client.downloadKernel(newest)
-    const line = `AdsPower SunBrowser ${newest}: ${state.status}${state.progress == null ? '' : ` ${state.progress}%`}`
+    const state = await client.downloadKernel(version)
+    const line = `AdsPower SunBrowser ${version}: ${state.status}${state.progress == null ? '' : ` ${state.progress}%`}`
     if (line !== last) log(line)
     last = line
-    if (state.status === 'completed') return { ok: true, version: newest }
+    if (state.status === 'completed') return { ok: true, version }
     if (state.status !== 'downloading' && state.status !== 'installing') return { ok: false, detail: line }
     await new Promise((r) => setTimeout(r, options.pollMs ?? 5000))
   }
-  return { ok: false, detail: `SunBrowser ${newest} still downloading after ${Math.round((options.maxMs ?? 900_000) / 60_000)} min` }
+  return { ok: false, detail: `SunBrowser ${version} still downloading after ${Math.round((options.maxMs ?? 900_000) / 60_000)} min` }
+}
+
+export async function ensureProfileKernel(
+  client: AdsPowerClient,
+  profileId: string,
+  log: (line: string) => void,
+  options: { pollMs?: number; maxMs?: number } = {}
+): Promise<{ ok: true; version: string } | { ok: false; detail: string }> {
+  const version = (await profileKernels(client, [profileId]))[profileId]
+  if (!version) return { ok: false, detail: `profile ${profileId}: its user agent names no Chrome version, so its kernel is unknown` }
+  return ensureKernel(client, log, { ...options, version })
 }
 
 export function adsPowerHomes(env: Record<string, string | undefined> = process.env): string[] | null {

@@ -1,5 +1,5 @@
 import { fromPromise } from "xstate";
-import { createAdsPowerClient, ensureKernel } from "../../../browser/adsPower/index.ts";
+import { createAdsPowerClient, ensureProfileKernel } from "../../../browser/adsPower/index.ts";
 import { answersIssue, answerWait, flowWithParams, loadFlow, pageProblem } from "../../../browser/flow/index.ts";
 import { stepExchangesAt } from "../../../subq/stepReading/helpers/stepExchanges.ts";
 import type { FlowStep } from "../../../browser/flow/index.ts";
@@ -69,7 +69,7 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
 
     openBrowser: fromPromise<StepOutcome, LifecycleActorInputs["openBrowser"]>(async () => {
       if (account.adsPowerProfileId) {
-        const kernel = await ensureKernel(context.adsPower ?? createAdsPowerClient(), log).catch((e: unknown) => ({ ok: false as const, detail: e instanceof Error ? e.message : String(e) }));
+        const kernel = await ensureProfileKernel(context.adsPower ?? createAdsPowerClient(), account.adsPowerProfileId, log).catch((e: unknown) => ({ ok: false as const, detail: e instanceof Error ? e.message : String(e) }));
         if (!kernel.ok) return error("adsPowerKernelMissing", kernel.detail);
       }
       let opened = await openAccount(context, "host", "log facebook host start --account <a>", account.accountName, "connect", options.bypassHours, true, Boolean(options.now));

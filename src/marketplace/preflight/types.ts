@@ -17,14 +17,14 @@ export interface ProxyFact {
 
 export interface KernelFact {
   reachable: boolean
-  newest: string | null
+  version: string | null
   downloaded: boolean
   detail?: string
 }
 
 export interface PreflightFacts {
   proxy: ProxyFact | null
-  kernel: KernelFact
+  kernel: KernelFact | null
   launches: Date[]
   hostOpensToday: number
   hostDay: string | null

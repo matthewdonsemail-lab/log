@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { adsPowerHomes, createAdsPowerClient, ensureKernel, homesOf, newestKernel } from "../../browser/adsPower/index.ts";
+import { adsPowerHomes, createAdsPowerClient, ensureKernel, homesOf, profileKernels } from "../../browser/adsPower/index.ts";
 import { readCurrentInspect } from "../../browser/inspect/index.ts";
 import { slowFacebookMs } from "../../browser/proxy/index.ts";
 import { listLaunches, prepareRun } from "../../browser/run/index.ts";
@@ -14,7 +14,7 @@ import type { Command, CommandContext } from "../runner/types.ts";
 export const PREFLIGHT_USAGE = [
   "Usage: log facebook preflight [--account <accountName>] [--homes <US,CA>] [--noProxy] [--apply] [--json]",
   "  Before any browser opens: each account's home timezone, waking hours, proxy (country and speed), AdsPower profile and browser kernel, today's launches and host opens, a session left open, and its profile picture on disk.",
-  "  --apply downloads AdsPower's newest SunBrowser kernel when it is missing and waits for it. Nothing opens on Facebook.",
+  "  --apply downloads the SunBrowser kernel each profile's user agent needs when it is missing, and waits for it. Nothing opens on Facebook.",
 ].join("\n");
 
 async function proxyFact(context: CommandContext, account: FacebookAccount): Promise<ProxyFact | null> {
@@ -33,18 +33,26 @@ async function proxyFact(context: CommandContext, account: FacebookAccount): Pro
   }
 }
 
-async function kernelFact(context: CommandContext, apply: boolean): Promise<KernelFact> {
+export async function kernelFacts(context: CommandContext, profileIds: string[], apply: boolean): Promise<Record<string, KernelFact>> {
   const adsPower = context.adsPower ?? createAdsPowerClient();
-  if (!(await adsPower.status())) return { reachable: false, newest: null, downloaded: false, detail: "the AdsPower Local API does not answer (is AdsPower running?)" };
+  const each = (fact: KernelFact) => Object.fromEntries(profileIds.map((id) => [id, fact]));
+  if (!(await adsPower.status())) return each({ reachable: false, version: null, downloaded: false, detail: "the AdsPower Local API does not answer (is AdsPower running?)" });
   try {
+    const versions = await profileKernels(adsPower, profileIds);
+    const failed: Record<string, string> = {};
     if (apply) {
-      const ensured = await ensureKernel(adsPower, context.err);
-      if (!ensured.ok) return { reachable: true, newest: null, downloaded: false, detail: ensured.detail };
+      for (const version of [...new Set(Object.values(versions).filter((v): v is string => !!v))]) {
+        const ensured = await ensureKernel(adsPower, context.err, { version });
+        if (!ensured.ok) failed[version] = ensured.detail;
+      }
     }
-    const { newest, downloaded } = await newestKernel(adsPower);
-    return { reachable: true, newest, downloaded };
+    const ready = new Set((await adsPower.kernels()).filter((k) => k.downloaded).map((k) => k.version));
+    return Object.fromEntries(profileIds.map((id) => {
+      const version = versions[id] ?? null;
+      return [id, { reachable: true, version, downloaded: !!version && ready.has(version), ...(version && failed[version] ? { detail: failed[version] } : {}) }];
+    }));
   } catch (error) {
-    return { reachable: false, newest: null, downloaded: false, detail: error instanceof Error ? error.message : String(error) };
+    return each({ reachable: false, version: null, downloaded: false, detail: error instanceof Error ? error.message : String(error) });
   }
 }
 
@@ -66,15 +74,16 @@ export const preflightCommand: Command = {
         ? [await findAccount(context.twenty, parsed.flags["account"])]
         : (await listFacebookAccounts(context.twenty)).filter((a) => a.status !== "deactivated" && (!homes || homes.includes((a.homeCountry ?? "").toUpperCase())));
       const now = (context.now ?? (() => new Date()))();
-      context.err(`preflight: ${accounts.length} account(s), AdsPower kernel first`);
-      const kernel = await kernelFact(context, Boolean(parsed.flags["apply"]));
+      context.err(`preflight: ${accounts.length} account(s), each AdsPower profile's kernel first`);
+      const profileIds = accounts.map((a) => a.adsPowerProfileId).filter((id): id is string => !!id);
+      const kernels = profileIds.length ? await kernelFacts(context, profileIds, Boolean(parsed.flags["apply"])) : {};
       const rows = [];
       for (const [i, account] of accounts.entries()) {
         context.err(`preflight ${i + 1}/${accounts.length}: ${account.accountName} (${account.homeCity ?? "?"})${parsed.flags["noProxy"] ? "" : ", measuring its proxy"}`);
         const progress = readProgress(account.accountName);
         const facts: PreflightFacts = {
           proxy: parsed.flags["noProxy"] ? null : await proxyFact(context, account),
-          kernel,
+          kernel: account.adsPowerProfileId ? kernels[account.adsPowerProfileId] : null,
           launches: listLaunches(account.accountName),
           hostOpensToday: progress?.resume.opensToday ?? 0,
           hostDay: progress?.day ?? null,

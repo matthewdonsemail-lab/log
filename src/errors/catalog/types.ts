@@ -1404,7 +1404,7 @@ export const ERROR_CATALOG = {
   },
   adsPowerKernelMissing: {
     layer: 'adsPower',
-    meaning: "AdsPower's newest SunBrowser kernel (what ua_auto profiles start) is not downloaded, so a profile can't start.",
+    meaning: "The SunBrowser kernel a profile starts is not downloaded, so it can't start: with ua_auto that is the Chrome version in the profile's own user agent (Scranton's is 154, Exeter's 156), not the newest.",
     retryable: true,
     raisedIn: ['host.openBrowser', 'cli/preflight'],
     action: 'Run `log facebook preflight --apply`: it downloads the kernel and waits for it.'

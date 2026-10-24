@@ -49,6 +49,7 @@ export interface AdsPowerClient {
   stopBrowser(profileId: string): Promise<void>
   kernels(): Promise<AdsPowerKernel[]>
   downloadKernel(version: string): Promise<KernelDownload>
+  profileUserAgents(profileIds: string[]): Promise<Record<string, string>>
 }
 
 export interface AdsPowerKernel {

@@ -621,7 +621,7 @@ Before any browser opens, check each account will get through: home timezone, ho
 ```text
 log facebook preflight [--account <accountName>] [--homes <US,CA>] [--noProxy] [--apply] [--json]
 Before any browser opens: each account's home timezone, waking hours, proxy (country and speed), AdsPower profile and browser kernel, today's launches and host opens, a session left open, and its profile picture on disk.
---apply downloads AdsPower's newest SunBrowser kernel when it is missing and waits for it. Nothing opens on Facebook.
+--apply downloads the SunBrowser kernel each profile's user agent needs when it is missing, and waits for it. Nothing opens on Facebook.
 ```
 
 #### log facebook doctor

@@ -41,7 +41,8 @@ function memoryAdsPower(profiles: AdsPowerProfile[] = []) {
     activeBrowser: async () => null,
     stopBrowser: async (id) => void log.push(`stop ${id}`),
     kernels: async () => [{ version: "156", downloaded: true }],
-    downloadKernel: async () => ({ status: "completed", progress: null })
+    downloadKernel: async () => ({ status: "completed", progress: null }),
+    profileUserAgents: async (ids) => Object.fromEntries(ids.map((id) => [id, "Mozilla/5.0 Chrome/156.0.8078.47 Safari/537.36"]))
   }
   return { client, profiles, log }
 }
