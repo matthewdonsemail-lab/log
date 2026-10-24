@@ -13,7 +13,7 @@
 | Called from | `FBScreenTimeLogger.react` |
 | rea | `ev_9c20c08fbf4c14d62fa5b772be9b8dc2f4b32b06aa445a78cfb8f8ea86ba73c3` |
 
-Seen 73 time(s) in 23 run(s).
+Seen 81 time(s) in 24 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -53,6 +53,10 @@ Seen 73 time(s) in 23 run(s).
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 806 ms | 6666 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 514 ms | 19383 ms | — |
 | inspect | step 20: dwell 2s | 2 | 200 | 497–801 ms | 171530–471647 ms | — |
+| inspect | scroll: +425px in 10 wheel steps, 360 ms | 1 | 200 | 419 ms | 937 ms | — |
+| inspect | scroll: +517px in 12 wheel steps, 500 ms | 1 | 200 | 417 ms | 3612 ms | — |
+| inspect | scroll: +315px in 8 wheel steps, 297 ms | 4 | 200 | 433–1378 ms | 278596–1179741 ms | — |
+| inspect | scroll: +515px in 13 wheel steps, 656 ms | 2 | 200 | 430–1366 ms | 96579–396929 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
@@ -200,12 +204,13 @@ Answered:
 }
 ```
 
-**runs/inspect/20261023T080801_61594063207669**, step 8: goto /reel/<id>: 200, 514 ms
+**runs/inspect/20261024T060921_61594063207669**, scroll: +425px in 10 wheel steps, 360 ms: 200, 419 ms
 
 Sent:
 
 ```json
 {
+  "qpl_active_flow_ids": "431626709",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "FBScreenTimeLogger_syncMutation",
   "server_timestamps": "true",
@@ -213,36 +218,39 @@ Sent:
     "input": {
       "actor_id": "61594063207669",
       "client_mutation_id": "1",
-      "device_time_iso": "2026-10-23T08:10:34.604Z",
+      "device_time_iso": "2026-10-24T06:14:48.772Z",
       "fb_web_fb_intervals_payload": {
-        "device_timestamp": "1792743034",
+        "device_timestamp": "1792822488",
         "device_timezone": "America/New_York",
         "intervals": [
           {
-            "end_timestamp": "1792742629",
-            "start_timestamp": "1792741789"
-          },
-          {
-            "end_timestamp": "1792742833",
-            "start_timestamp": "1792742731"
-          },
-          {
-            "end_timestamp": "1792743034",
+            "end_timestamp": "1792743639",
             "start_timestamp": "1792742903"
+          },
+          {
+            "end_timestamp": "1792777218",
+            "start_timestamp": "1792777033"
+          },
+          {
+            "end_timestamp": "1792822488",
+            "start_timestamp": "1792822188"
           }
         ],
-        "local_storage_id": "93452610",
+        "local_storage_id": "50811158",
         "version": "V1"
       },
       "screentime_snapshot_payload": {
         "l24h_s": -1,
-        "last_sync_timestamp": 1792742731,
-        "today_s": 1450
+        "last_sync_timestamp": 1792822188,
+        "today_s": 2517
       },
       "trigger_reason": "REGULAR"
     }
   },
-  "doc_id": "28969188822673160"
+  "doc_id": "28969188822673160",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=431626709"
+  ]
 }
 ```
 
@@ -254,15 +262,15 @@ Answered:
     "screen_time_sync": {
       "aggs": {
         "__typename": "ScreenTimeSyncMutationOutput",
-        "today_s": 1917,
+        "today_s": 300,
         "l24h_s": -1
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792743035053,
-      "time_at_flush_ms": 1792743035212
+      "request_start_time_ms": 1792822488238,
+      "time_at_flush_ms": 1792822488345
     },
     "is_final": true
   }

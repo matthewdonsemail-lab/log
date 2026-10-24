@@ -13,7 +13,7 @@
 | Called from | `StoriesTrayRectangularRoot.react` |
 | rea | `ev_c974048d5563e87d75f5e8ddd458fdc3829a195d00e0a636a969922c24e6ae81` |
 
-Seen 19 time(s) in 12 run(s).
+Seen 20 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -35,8 +35,9 @@ Seen 19 time(s) in 12 run(s).
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 1190 ms | 1708114 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 948 ms | 15223 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 797 ms | 7204 ms | — |
+| inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 797 ms | 18356 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -274,6 +275,130 @@ Answered:
     "server_metadata": {
       "request_start_time_ms": 1792742396622,
       "time_at_flush_ms": 1792742396947
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261024T060921_61594063207669**, scroll: +386px in 10 wheel steps, 531 ms: 200, 797 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "431626709",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "StoriesTrayRectangularRootQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "blur": 10,
+    "bucketsToFetch": 6,
+    "isFbNotesIncluded": false,
+    "scale": 1,
+    "__relay_internal__pv__StoriesTrayTileCoverImageWidthrelayprovider": 110,
+    "__relay_internal__pv__StoriesTrayTileCoverImageHeightrelayprovider": 160,
+    "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": false,
+    "__relay_internal__pv__StoriesTrayTileShouldSkipPrefetchImageURIrelayprovider": false,
+    "__relay_internal__pv__StoriesTrayProfessionalInset3DEnabledrelayprovider": true,
+    "__relay_internal__pv__StoriesShouldEnableVideoAutoplayrelayprovider": true,
+    "__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider": false
+  },
+  "doc_id": "27831542276468324",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=431626709"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "me": {
+      "__typename": "User",
+      "unified_stories_buckets": {
+        "edges": [
+          {
+            "node": {
+              "__typename": "DirectMessageThreadBucket",
+              "__isStoryBucket": "DirectMessageThreadBucket",
+              "id": "122126439807468773",
+              "unified_stories": {
+                "nodes": [],
+                "is_empty": true
+              },
+              "first_story_to_show": null,
+              "story_bucket_owner": {
+                "__typename": "User",
+                "profilePic": {
+                  "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg?stp=c239.0.950.951a_cp0_dst-jpg_tt6&cstp=mx950x951&ctp=s40x40&_nc_cat=105&ccb=1-7&_nc_sid=e99d92&_nc_ohc=8hLmZGt4kLwQ7kNvwFe_zpz&_nc_oc=AdqU6c8f9VrOAi7mMVT6wpXf-yHK8jgQN2IidKDDIyl2OP1YU7z4GSMgz2v6QxRKtaM&_nc_zt=24&_nc_ht=scontent-xxc1-1.xx&_nc_gid=_s83uewFYh-P1Aya3VyQwg&_nc_ss=792a8&oh=00_AQO5… (454 chars)"
+                },
+                "__isNode": "User",
+                "id": "61594063207669",
+                "is_viewer_friend": false,
+                "gender": "FEMALE",
+                "name": "Bethlehem Trash",
+                "profile_picture": {
+                  "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg?stp=c239.0.950.951a_cp0_dst-jpg_tt6&cstp=mx950x951&ctp=s40x40&_nc_cat=105&ccb=1-7&_nc_sid=e99d92&_nc_ohc=8hLmZGt4kLwQ7kNvwFe_zpz&_nc_oc=AdqU6c8f9VrOAi7mMVT6wpXf-yHK8jgQN2IidKDDIyl2OP1YU7z4GSMgz2v6QxRKtaM&_nc_zt=24&_nc_ht=scontent-xxc1-1.xx&_nc_gid=_s83uewFYh-P1Aya3VyQwg&_nc_ss=792a8&oh=00_AQO5… (454 chars)"
+                },
+                "coverImage": {
+                  "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg?stp=c387.0.654.951a_dst-jpg_tt6&cstp=mx654x951&ctp=s160x160&_nc_cat=105&ccb=1-7&_nc_sid=e99d92&_nc_ohc=8hLmZGt4kLwQ7kNvwFe_zpz&_nc_oc=AdqU6c8f9VrOAi7mMVT6wpXf-yHK8jgQN2IidKDDIyl2OP1YU7z4GSMgz2v6QxRKtaM&_nc_zt=24&_nc_ht=scontent-xxc1-1.xx&_nc_gid=_s83uewFYh-P1Aya3VyQwg&_nc_ss=792a8&oh=00_AQMOMD… (452 chars)"
+                }
+              },
+              "story_bucket_type": "STORY",
+              "is_bucket_seen_by_viewer": true,
+              "unified_stories_with_notes": {
+                "edges": [],
+                "nodes": []
+              },
+              "can_viewer_post": true,
+              "should_show_close_friend_badge": false,
+              "ranking_tracking_string": "{\"request_id\":\"59d86260-328c-44b8-9407-292cf88ede77\",\"bucket_id\":\"122126439807468773\",\"owner_id\":\"61594063207669\",\"scored_time\":0,\"ranker_join_key\":\"59d86260-328c-44b8-9407-292cf88ede77\",\"raas_position\":0,\"raas_newly_scored_position\":0,\"random_rate\":0,\"usecase_id\":\"1\",\"is_suggested\":false,\"viewstate_token\":\"{\\\"shardManagerScope\\\":\\\"ldc\\\",\\\"snapshotId\\\":5266408754987595709,\\\"versionId\\\":0,\\\"creatio… (421 chars)",
+              "thumbnail_story_to_show": null,
+              "is_bucket_live": false
+            },
+            "cursor": "NjE1OTQwNjMyMDc2Njk6MToxNzkyODIyMzc5OjEyMjEyNjQzOTgwNzQ2ODc3MzotMTpsZGM6NTI2NjQwODc1NDk4NzU5NTcwOTowOjE3OTI4MjIzNzk6OjA="
+          }
+        ],
+        "page_info": {
+          "end_cursor": "NjE1OTQwNjMyMDc2Njk6MToxNzkyODIyMzc5OjEyMjEyNjQzOTgwNzQ2ODc3MzotMTpsZGM6NTI2NjQwODc1NDk4NzU5NTcwOTowOjE3OTI4MjIzNzk6OjA=",
+          "has_next_page": false
+        }
+      },
+      "id": "61594063207669",
+      "profilePicture": {
+        "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg?stp=c239.0.950.951a_dst-jpg_tt6&cstp=mx950x951&ctp=s160x160&_nc_cat=105&ccb=1-7&_nc_sid=e99d92&_nc_ohc=8hLmZGt4kLwQ7kNvwFe_zpz&_nc_oc=AdqU6c8f9VrOAi7mMVT6wpXf-yHK8jgQN2IidKDDIyl2OP1YU7z4GSMgz2v6QxRKtaM&_nc_zt=24&_nc_ht=scontent-xxc1-1.xx&_nc_gid=_s83uewFYh-P1Aya3VyQwg&_nc_ss=792a8&oh=00_AQOoGE… (452 chars)"
+      }
+    },
+    "viewer": {
+      "actor": {
+        "__typename": "User",
+        "id": "61594063207669"
+      }
+    }
+  },
+  "extensions": {
+    "prefetch_uris_v2": [
+      {
+        "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg?stp=c239.0.950.951a_dst-jpg_tt6&cstp=mx950x951&ctp=s160x160&_nc_cat=105&ccb=1-7&_nc_sid=e99d92&_nc_ohc=8hLmZGt4kLwQ7kNvwFe_zpz&_nc_oc=AdqU6c8f9VrOAi7mMVT6wpXf-yHK8jgQN2IidKDDIyl2OP1YU7z4GSMgz2v6QxRKtaM&_nc_zt=24&_nc_ht=scontent-xxc1-1.xx&_nc_gid=_s83uewFYh-P1Aya3VyQwg&_nc_ss=792a8&oh=00_AQOoGE… (452 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg?stp=c239.0.950.951a_cp0_dst-jpg_tt6&cstp=mx950x951&ctp=s40x40&_nc_cat=105&ccb=1-7&_nc_sid=e99d92&_nc_ohc=8hLmZGt4kLwQ7kNvwFe_zpz&_nc_oc=AdqU6c8f9VrOAi7mMVT6wpXf-yHK8jgQN2IidKDDIyl2OP1YU7z4GSMgz2v6QxRKtaM&_nc_zt=24&_nc_ht=scontent-xxc1-1.xx&_nc_gid=_s83uewFYh-P1Aya3VyQwg&_nc_ss=792a8&oh=00_AQO5… (454 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      }
+    ],
+    "server_metadata": {
+      "request_start_time_ms": 1792822379785,
+      "time_at_flush_ms": 1792822379991
     },
     "is_final": true
   }

@@ -6,14 +6,14 @@
 | --- | --- |
 | Domain | background |
 | Kind | query |
-| doc_id | `28651572944522952` |
+| doc_id | `29152597714334312` |
 | Path | `/api/graphql/` |
 | Sends | `RELAY_INCREMENTAL_DELIVERY`, `connectionClass`, `experimentalValues`, `feedClientSession`, `feedEndCursor`, `feedInitialFetchSize`, `feedLocation`, `feedStyle`, `feedbackSource`, `focusCommentID`, `orderby`, `privacySelectorRenderLocation`, `recentVPVs`, `referringStoryRenderLocation`, `refreshMode`, `renderLocation`, `scale`, `shouldChangeBRSLabelFieldName`, `shouldObfuscateCategoryField`, `shouldUseBRSLabelFieldNameV1`, `shouldUseBRSLabelFieldNameV2`, `useDefaultActor`, `__relay_internal__pv__GHLShouldChangeSponsoredAuctionDistanceFieldNamerelayprovider`, `__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV1relayprovider`, `__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV2relayprovider`, `__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider`, `__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider`, `__relay_internal__pv__CometAdsSlotFillLoggingEnabledrelayprovider`, `__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider`, `__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider`, `__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider`, `__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider`, `__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider`, `__relay_internal__pv__IsWorkUserrelayprovider`, `__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider`, `__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider`, `__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider`, `__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider`, `__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider`, `__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider`, `__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider`, `__relay_internal__pv__IsMergQAPollsrelayprovider`, `__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider`, `__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider`, `__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider`, `__relay_internal__pv__CometUFIShareActionMigrationrelayprovider`, `__relay_internal__pv__CometUFISingleLineUFIrelayprovider`, `__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider`, `__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider`, `__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider`, `__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider`, `__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider`, `__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider` |
 | Reads | `viewer....CometNewsFeed_viewerConnection`, `viewer....CometNewsFeed_viewer` |
 | Called from | `CometModernHomeFeed.react` |
-| rea | `ev_1b460d553cf6534a2af5b25c753e1e08cf72dc0bc41987677951d9a3388a29e3` |
+| rea | `ev_115730b4ac8c47f6922201d9452d5fe5b45d8f0086285216bf40009f9303cb0a` |
 
-Seen 19 time(s) in 12 run(s).
+Seen 20 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -35,8 +35,9 @@ Seen 19 time(s) in 12 run(s).
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 4442 ms | 1708095 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 3647 ms | 15206 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 2362 ms | 7187 ms | — |
+| inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 3658 ms | 18334 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -573,6 +574,237 @@ Answered:
         "sr_payload": {
           "ddd": "(4 fields)"
         }
+      }
+    }
+  ]
+}
+```
+
+**runs/inspect/20261024T060921_61594063207669**, scroll: +386px in 10 wheel steps, 531 ms: 200, 3658 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "431626709",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometModernHomeFeedQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "RELAY_INCREMENTAL_DELIVERY": true,
+    "connectionClass": "EXCELLENT",
+    "feedbackSource": 1,
+    "feedInitialFetchSize": 4,
+    "feedLocation": "NEWSFEED",
+    "feedStyle": "DEFAULT",
+    "orderby": [
+      "TOP_STORIES"
+    ],
+    "privacySelectorRenderLocation": "COMET_STREAM",
+    "recentVPVs": [],
+    "refreshMode": "COLD_START",
+    "renderLocation": "homepage_stream",
+    "scale": 1,
+    "shouldChangeBRSLabelFieldName": false,
+    "shouldObfuscateCategoryField": true,
+    "shouldUseBRSLabelFieldNameV1": false,
+    "shouldUseBRSLabelFieldNameV2": false,
+    "useDefaultActor": false,
+    "__relay_internal__pv__GHLShouldChangeSponsoredAuctionDistanceFieldNamerelayprovider": true,
+    "__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV1relayprovider": true,
+    "__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV2relayprovider": false,
+    "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
+    "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
+    "__relay_internal__pv__CometAdsSlotFillLoggingEnabledrelayprovider": true,
+    "__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider": false,
+    "__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider": false,
+    "__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider": false,
+    "__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider": true,
+    "__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider": false,
+    "__relay_internal__pv__IsWorkUserrelayprovider": false,
+    "__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider": false,
+    "__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider": true,
+    "__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider": true,
+    "__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider": true,
+    "__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider": true,
+    "__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider": false,
+    "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false,
+    "__relay_internal__pv__IsMergQAPollsrelayprovider": false,
+    "__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider": true,
+    "__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider": false,
+    "__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider": "AUTO_TRANSLATE",
+    "__relay_internal__pv__CometUFIShareActionMigrationrelayprovider": true,
+    "__relay_internal__pv__CometUFISingleLineUFIrelayprovider": true,
+    "__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider": true,
+    "__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider": true,
+    "__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider": 206,
+    "__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider": false,
+    "__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider": false,
+    "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": false
+  },
+  "doc_id": "29152597714334312",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=431626709"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "first": {
+    "data": {
+      "viewer": {
+        "news_feed": {
+          "edges": "(1 items)"
+        },
+        "actor": {
+          "__typename": "User",
+          "name": "Bethlehem Trash",
+          "id": "61594063207669"
+        },
+        "can_have_friends": true,
+        "all_friends": {
+          "friend_count": 0
+        },
+        "is_fb_employee": false,
+        "rack_qrt_called_during_first_story": false,
+        "injected_stories": null
+      }
+    },
+    "extensions": {
+      "prefetch_uris_v2": [
+        {
+          "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/506455007_9961606340561180_15147271089376521_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx960x960&ctp=s40x40&_nc_cat=1&ccb=1-7&_nc_sid=2d3e12&_nc_ohc=R7CRmU4__V0Q7kNvwEE66P8&_nc_oc=Adr7soHoB16oMM9Ed3g0cv9WnvZp9R9JD0eapeTKvH0AR_9SUveEluNwJiq-UZ30eN4&_nc_zt=24&_nc_ht=scontent-xxc1-1.xx&_nc_gid=1szW6yWIcVA85ngWoXbG4Q&_nc_ss=792a8&oh=00_AQPwKDBFjwEMt0vdRnEtBrt6xI… (432 chars)",
+          "label": null,
+          "width": null,
+          "height": null,
+          "surface": null
+        }
+      ],
+      "all_video_dash_prefetch_representations": [
+        {
+          "initial_representation_ids": "(0 items)",
+          "representations": "(7 items)",
+          "video_id": "1539696108174417",
+          "nextgendash": true
+        },
+        {
+          "initial_representation_ids": "(0 items)",
+          "representations": "(7 items)",
+          "video_id": "1539696108174417",
+          "nextgendash": true
+        },
+        {
+          "initial_representation_ids": "(0 items)",
+          "representations": "(7 items)",
+          "video_id": "1539696108174417",
+          "nextgendash": true
+        },
+        {
+          "initial_representation_ids": "(0 items)",
+          "representations": "(7 items)",
+          "video_id": "1539696108174417",
+          "nextgendash": true
+        }
+      ],
+      "server_metadata": {
+        "request_start_time_ms": 1792822379554,
+        "time_at_flush_ms": 1792822380713
+      },
+      "is_final": false,
+      "sr_payload": {
+        "ddd": {
+          "hsrp": "(2 fields)",
+          "jsmods": "(3 fields)",
+          "allResources": "(7 items)",
+          "tieredResources": "(3 fields)"
+        }
+      }
+    }
+  },
+  "followingParts": 18,
+  "parts": [
+    {
+      "label": "VideoPlayerCometFeedStoryControlsImplNotLive_video$defer$CometAudioLanguageUtils_dubtrackMapping",
+      "path": [
+        "viewer",
+        "news_feed",
+        "edges",
+        0,
+        "node",
+        "attachments",
+        "… 4 more"
+      ],
+      "data": {
+        "dubbed_track_mapping": []
+      },
+      "extensions": {
+        "prefetch_uris_v2": [
+          "(5 fields)"
+        ],
+        "all_video_dash_prefetch_representations": [
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)"
+        ],
+        "is_final": false
+      }
+    },
+    {
+      "label": "VideoPlayerCometFeedStoryControlsImplNotLive_video$defer$CometAudioLanguageUtils_dubtrackMapping",
+      "path": [
+        "viewer",
+        "news_feed",
+        "edges",
+        0,
+        "node",
+        "attachments",
+        "… 9 more"
+      ],
+      "data": {
+        "dubbed_track_mapping": []
+      },
+      "extensions": {
+        "prefetch_uris_v2": [
+          "(5 fields)"
+        ],
+        "all_video_dash_prefetch_representations": [
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)"
+        ],
+        "is_final": false
+      }
+    },
+    {
+      "label": "VideoPlayerCometFeedStoryControlsImplNotLive_video$defer$CometAudioLanguageUtils_dubtrackMapping",
+      "path": [
+        "viewer",
+        "news_feed",
+        "edges",
+        0,
+        "node",
+        "comet_sections",
+        "… 7 more"
+      ],
+      "data": {
+        "dubbed_track_mapping": []
+      },
+      "extensions": {
+        "prefetch_uris_v2": [
+          "(5 fields)"
+        ],
+        "all_video_dash_prefetch_representations": [
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)"
+        ],
+        "is_final": false
       }
     }
   ]

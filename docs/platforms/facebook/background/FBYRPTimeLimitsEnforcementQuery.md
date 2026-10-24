@@ -13,7 +13,7 @@
 | Called from | `FBYRPTimeLimitsEnforcement.react` |
 | rea | `ev_a9881646cf5ca72e0b60def37ca88904d00b58f050bd2309e1812e104bf21960` |
 
-Seen 115 time(s) in 32 run(s).
+Seen 118 time(s) in 33 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -89,6 +89,9 @@ Seen 115 time(s) in 32 run(s).
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 405 ms | 1764 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 600 ms | 4459 ms | — |
 | inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 520 ms | 5780 ms | — |
+| inspect | step 1: goto /groups/junkremovalwinners | 1 | 200 | 508 ms | 5575 ms | — |
+| inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 402 ms | 3354 ms | — |
+| inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 341 ms | 3395 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

@@ -6142,3 +6142,52 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: an account's open browser now switches it to CHECKPOINT in Twenty on its own. `inspectSession.py` writes every main-frame page it lands on (its own page and any new tab) to `navigations.jsonl` in the run, as `{url, at}`, in its own file so the step readers of `replies.jsonl` are untouched. `log inspect start` (the process behind every `--detach` browser) runs `watchCheckpoint` while the session is open: every second it reads the new landings, and the first one `pageProblem` calls `checkpointed` (a `/checkpoint` path) goes through `recordAccountIssue` as `checkpointed`, with the path, the time and the run folder as the detail, and a loud `>>> <account> is CHECKPOINT in Twenty` line in the session log. It checks once more when the session ends, retries if Twenty refused, and leaves an account already at CHECKPOINT (and its reason) alone. Rule 77 in AGENTS.md.
 Why: Bethlehem's browser was pushed to /checkpoint/1501092823525282/ at 06:51:09 UTC on 2026-10-24, about 8 minutes after its last step, and Twenty still said ACTIVE until it was set by hand. Only whole commands (connect, scan, publish, watch) classified the page; nothing looked at an open browser between steps. matt: "we need to make it auto switch when that happens to checkpointed because it didn't do that at all".
 Checked: two new tests in `src/cli/inspect/inspect.test.ts` replay Bethlehem's landings (members page, then the /checkpoint/ page) through `inspect start` and see galwayOne go CHECKPOINT / checkpointed with the loud line, and a run with no checkpoint leave it ACTIVE. `bun run check`: 918 pass, typecheck, naming, layout, docs and noComments clean. Not checked: a live browser actually landing on a checkpoint; the Playwright `framenavigated` handler has only been parsed, not run.
+
+## 2026-10-24 07:40Z · feat/checkpointWatch
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNewsFeedPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometProfileVerificationBadgePopoverQuery.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometUnifiedShareSheetDialogQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWCatQuery.md`: new file
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/UnifiedShareSheetMessengerSectionQuery.md`: edited
+- `docs/platforms/facebook/background/UserSignalsHovercardQuery.md`: new file
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/checkpoint/UFACAISupportChatExperienceQuery.md`: edited
+- `docs/platforms/facebook/checkpoint/useCometAISupportConversationLoggerMutation.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/checkpoint/useUFACSubmitActionMutation.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometFeedRegularStoriesPaginationQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometMembersPageNewMembersSectionRefetchQuery.md`: new file
+- `docs/platforms/facebook/groups/useGroupsCometVisitMutation.md`: edited
+- `docs/platforms/facebook/login/CometLogoutHandlerQuery.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH
+
+What changed: `log facebook capture --docs` rebuilt the Facebook client docs with Bethlehem's inspect run 20261024T060921 (the members read before its checkpoint). Three new requests are documented with their reasoning: `GroupsCometMembersPageNewMembersSectionRefetchQuery` (the People tab's new-members paging, 38 pages in that run), `UserSignalsHovercardQuery` (a member badge card from the cursor resting on it) and `MAWCatQuery` (Messenger's token query, which answered 1357053 "Please review your account" with `redirectTo` `/checkpoint/1501092823525282/`). The other docs only gained that run's counts. `RULES_REVIEWED_THROUGH` is 77: rule 77 changes nothing in the MCP summary, since the checkpoint switch needs no tool call.
+Why: the pre-push gates. `checkFacebookClientDocs` refused the push because a run was recorded after the docs were built, and `agentRules.test.ts` fails on a new AGENTS rule until the MCP summary is reviewed against it.
+Checked: `node scripts/checks/checkFacebookClientDocs.mjs`: 226 requests documented, rea read every GraphQL slice. The MAWCatQuery answer quoted is the one in the doc's facts block, read from the run's own recording.

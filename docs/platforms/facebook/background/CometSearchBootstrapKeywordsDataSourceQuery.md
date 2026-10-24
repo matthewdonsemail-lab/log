@@ -13,7 +13,7 @@
 | Called from | `CometSearchBootstrapKeywordsDataSource.query` |
 | rea | `ev_5cb62e3a7cd21788732d77960d11bcea0adc8730aaaa23e6a78c097c1c44c7a6` |
 
-Seen 112 time(s) in 30 run(s).
+Seen 114 time(s) in 31 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -89,6 +89,8 @@ Seen 112 time(s) in 30 run(s).
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 414 ms | 3654 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 525 ms | 5015 ms | — |
 | inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 435 ms | 6504 ms | — |
+| inspect | step 1: goto /groups/junkremovalwinners | 1 | 200 | 481 ms | 7231 ms | — |
+| inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 379 ms | 4616 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

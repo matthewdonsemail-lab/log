@@ -13,7 +13,7 @@
 | Called from | `OhaiWebPublicKeyConfig` |
 | rea | `ev_786baf260253294e0033320946363519208e8dffae26d32768956add42a7d013` |
 
-Seen 114 time(s) in 32 run(s).
+Seen 117 time(s) in 33 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -89,6 +89,9 @@ Seen 114 time(s) in 32 run(s).
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 377 ms | 3501 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 391 ms | 5445 ms | — |
 | inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 382 ms | 6522 ms | — |
+| inspect | step 1: goto /groups/junkremovalwinners | 1 | 200 | 327 ms | 7842 ms | — |
+| inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 531 ms | 4672 ms | — |
+| inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 322 ms | 3622 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

@@ -13,7 +13,7 @@
 | Called from | `fetchMWChatVideoAutoplaySetting` |
 | rea | `ev_cec3d0049369021eb11311f83bae206c05ab77298da76206b6788d2cdc5c8ee1` |
 
-Seen 115 time(s) in 32 run(s).
+Seen 118 time(s) in 33 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -89,6 +89,9 @@ Seen 115 time(s) in 32 run(s).
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 487 ms | 1823 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 387 ms | 4438 ms | — |
 | inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 539 ms | 5754 ms | — |
+| inspect | step 1: goto /groups/junkremovalwinners | 1 | 200 | 425 ms | 6854 ms | — |
+| inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 544 ms | 4626 ms | — |
+| inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 383 ms | 3473 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

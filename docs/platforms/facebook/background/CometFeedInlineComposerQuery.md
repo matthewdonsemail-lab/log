@@ -13,7 +13,7 @@
 | Called from | `CometFeedInlineComposer.react` |
 | rea | `ev_3e02863ff58798e0b4e157f2227e5ceed62786408d21a22ae2d4cce84f7332b8` |
 
-Seen 22 time(s) in 12 run(s).
+Seen 23 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -37,8 +37,9 @@ Seen 22 time(s) in 12 run(s).
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 717 ms | 1708095 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 399 ms | 15203 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 616 ms | 7184 ms | — |
+| inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 482 ms | 18331 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -512,6 +513,356 @@ Answered:
           "rdfds": [],
           "rds": [
             "csr:_t_1_ce"
+          ]
+        }
+      }
+    }
+  }
+}
+```
+
+**runs/inspect/20261024T060921_61594063207669**, scroll: +386px in 10 wheel steps, 531 ms: 200, 482 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "431626709",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometFeedInlineComposerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "scale": 1
+  },
+  "doc_id": "38525622117053498",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=431626709"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "actor": {
+        "__typename": "User",
+        "id": "61594063207669",
+        "__isActor": "User",
+        "short_name": "Bethlehem",
+        "__isProfile": "User",
+        "__isEntity": "User",
+        "url": "https://www.facebook.com/profile.php?id=61594063207669",
+        "profile_picture": {
+          "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg?stp=c239.0.950.951a_cp0_dst-jpg_tt6&cstp=mx950x951&ctp=s40x40&_nc_cat=105&ccb=1-7&_nc_sid=e99d92&_nc_ohc=8hLmZGt4kLwQ7kNvwFe_zpz&_nc_oc=AdqU6c8f9VrOAi7mMVT6wpXf-yHK8jgQN2IidKDDIyl2OP1YU7z4GSMgz2v6QxRKtaM&_nc_zt=24&_nc_ht=scontent-xxc1-1.xx&_nc_gid=qfLwZyEta8DLqmcwfQcvtw&_nc_ss=792a8&oh=00_AQOQ… (454 chars)"
+        },
+        "name": "Bethlehem Trash",
+        "has_professional_features_for_watch": false
+      },
+      "feed_comet_composer": {
+        "__isICometComposer": "FeedCometComposer",
+        "inline_sprouts": [
+          {
+            "__typename": "FeedCometComposerLiveProducerSprout",
+            "__isICometComposerSprout": "FeedCometComposerLiveProducerSprout",
+            "inline_label": "Live video",
+            "icon": {
+              "uri": "https://static.xx.fbcdn.net/rsrc.php/yE/r/f0XMdTi7eQy.webp"
+            },
+            "__module_operation_CometFeedInlineComposerSproutsList_composer": {
+              "__dr": "InlineComposerLiveProducerSprout_sprout$normalization.graphql"
+            },
+            "__module_component_CometFeedInlineComposerSproutsList_composer": {
+              "__dr": "InlineComposerLiveProducerSprout.react"
+            }
+          },
+          {
+            "__typename": "CometComposerUploadMediaSprout",
+            "__isICometComposerSprout": "CometComposerUploadMediaSprout",
+            "inline_label": "Photo/video",
+            "icon": {
+              "uri": "https://static.xx.fbcdn.net/rsrc.php/yX/r/8_VnccIZfRa.webp"
+            },
+            "__module_operation_CometFeedInlineComposerSproutsList_composer": {
+              "__dr": "FeedInlineComposerMediaSprout_sprout$normalization.graphql"
+            },
+            "__module_component_CometFeedInlineComposerSproutsList_composer": {
+              "__dr": "FeedInlineComposerMediaSprout.react"
+            }
+          },
+          {
+            "__typename": "CometComposerMinutiaeSprout",
+            "__isICometComposerSprout": "CometComposerMinutiaeSprout",
+            "inline_label": "Feeling/activity",
+            "icon": {
+              "uri": "https://static.xx.fbcdn.net/rsrc.php/ya/r/XlpCJi9w2HF.webp"
+            },
+            "__module_operation_CometFeedInlineComposerSproutsList_composer": {
+              "__dr": "FeedInlineComposerFeelingSprout_sprout$normalization.graphql"
+            },
+            "__module_component_CometFeedInlineComposerSproutsList_composer": {
+              "__dr": "FeedInlineComposerFeelingSprout.react"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "extensions": {
+    "prefetch_uris_v2": [
+      {
+        "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg?stp=c239.0.950.951a_cp0_dst-jpg_tt6&cstp=mx950x951&ctp=s40x40&_nc_cat=105&ccb=1-7&_nc_sid=e99d92&_nc_ohc=8hLmZGt4kLwQ7kNvwFe_zpz&_nc_oc=AdqU6c8f9VrOAi7mMVT6wpXf-yHK8jgQN2IidKDDIyl2OP1YU7z4GSMgz2v6QxRKtaM&_nc_zt=24&_nc_ht=scontent-xxc1-1.xx&_nc_gid=qfLwZyEta8DLqmcwfQcvtw&_nc_ss=792a8&oh=00_AQOQ… (454 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yE/r/f0XMdTi7eQy.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/yX/r/8_VnccIZfRa.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      },
+      {
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/ya/r/XlpCJi9w2HF.webp",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
+      }
+    ],
+    "server_metadata": {
+      "request_start_time_ms": 1792822379544,
+      "time_at_flush_ms": 1792822379614
+    },
+    "is_final": true,
+    "sr_payload": {
+      "ddd": {
+        "hsrp": {
+          "hsdp": {
+            "qexData": {
+              "4917": {
+                "r": false,
+                "l": "J{\"qeid\":\"61594063207669\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
+              },
+              "5648": {
+                "r": null,
+                "l": "J{\"qeid\":\"61594063207669\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
+              },
+              "5702": {
+                "r": null,
+                "l": "J{\"qeid\":\"61594063207669\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
+              }
+            }
+          },
+          "hblp": {
+            "consistency": {
+              "rev": 1051577552
+            },
+            "rsrcMap": {
+              "csr:_2k_0_dV": {
+                "type": "csr",
+                "src": ":1,373,12,221,14,2,9,11,25,16,15,7,49,6,44,58,41,48,5,33,13,24,3",
+                "c": 1
+              },
+              "csr:_2k_1_HC": {
+                "type": "csr",
+                "src": ":35",
+                "c": 1
+              },
+              "4ELVBtO": {
+                "type": "js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4icmD4/y9/l/en_GB-j/-sekXR_lQTM.js",
+                "c": 1,
+                "p": ":764",
+                "m": "1051577552_main"
+              },
+              "nWze+I9": {
+                "type": "js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4iPvu4/yM/l/en_GB-j/KXk65ncraD7.js",
+                "c": 1,
+                "p": ":446",
+                "m": "1051577552_main"
+              },
+              "csr:_2k_2_AH": {
+                "type": "csr",
+                "src": ":12,221,14,171,546,396,2,108,254,77,34,218,363,216,33,13,9,357,215,944,11,117,25,222,915,24,258,166,35,8,173,19,142,375,16,15,191,7,6,118,120,182,172,3,1,23,835,44,219,48,58,41,5,126,210,146,141,87,72,10,127,32,236,28",
+                "c": 1
+              },
+              "csr:_2k_3_ho": {
+                "type": "csr",
+                "src": ":22,188,18,110,111,109,93,50,112,136",
+                "c": 1
+              },
+              "csr:_2k_4_qb": {
+                "type": "csr",
+                "src": ":921,242,60,130,114,415,526,125,199,52,232,181,327",
+                "c": 1
+              }
+            },
+            "compMap": {
+              "CometComposerMediaAttachmentArea.react": {
+                "r": [
+                  "4ELVBtO",
+                  "nWze+I9",
+                  "csr:_2k_2_AH"
+                ],
+                "rdfds": {
+                  "m": [
+                    "…",
+                    "…",
+                    "…",
+                    "…"
+                  ],
+                  "r": [
+                    "…"
+                  ]
+                },
+                "rds": {
+                  "m": [
+                    "…",
+                    "…",
+                    "…",
+                    "…",
+                    "…",
+                    "…",
+                    "… 10 more"
+                  ],
+                  "r": [
+                    "…"
+                  ]
+                },
+                "be": 1
+              }
+            },
+            "indexUpgrades": {
+              "__hblp": ":3170",
+              "__hsdp": ":1030,1029,974,975,1230,1231"
+            }
+          }
+        },
+        "jsmods": {
+          "define": [
+            [
+              "cr:310",
+              [
+                "RunWWW"
+              ],
+              {
+                "__rc": [
+                  "RunWWW",
+                  null
+                ]
+              },
+              -1
+            ],
+            [
+              "cr:564",
+              [
+                "ClickIDDomainBlacklistSVConfigJSModuleWrapper"
+              ],
+              {
+                "__rc": [
+                  "ClickIDDomainBlacklistSVConfigJSModuleWrapper",
+                  null
+                ]
+              },
+              -1
+            ],
+            [
+              "cr:619",
+              [
+                "setTimeoutCometLoggingPriWWW"
+              ],
+              {
+                "__rc": [
+                  "setTimeoutCometLoggingPriWWW",
+                  null
+                ]
+              },
+              -1
+            ],
+            [
+              "cr:686",
+              [],
+              {
+                "__rc": [
+                  null,
+                  null
+                ]
+              },
+              -1
+            ],
+            [
+              "cr:734",
+              [],
+              {
+                "__rc": [
+                  null,
+                  null
+                ]
+              },
+              -1
+            ],
+            [
+              "cr:755",
+              [
+                "warningWWW"
+              ],
+              {
+                "__rc": [
+                  "warningWWW",
+                  null
+                ]
+              },
+              -1
+            ],
+            "… 56 more"
+          ],
+          "require": [
+            [
+              "InlineComposerLiveProducerSprout_sprout$normalization.graphql"
+            ],
+            [
+              "InlineComposerLiveProducerSprout.react"
+            ],
+            [
+              "FeedInlineComposerMediaSprout_sprout$normalization.graphql"
+            ],
+            [
+              "FeedInlineComposerMediaSprout.react"
+            ],
+            [
+              "FeedInlineComposerFeelingSprout_sprout$normalization.graphql"
+            ],
+            [
+              "FeedInlineComposerFeelingSprout.react"
+            ],
+            "… 10 more"
+          ],
+          "phd2_indexes": ":1030,1029,974,975,1230,1231"
+        },
+        "allResources": [
+          "csr:_2k_0_dV",
+          "csr:_2k_1_HC"
+        ],
+        "tieredResources": {
+          "r": [
+            "csr:_2k_0_dV"
+          ],
+          "rdfds": [],
+          "rds": [
+            "csr:_2k_1_HC"
           ]
         }
       }
