@@ -137,7 +137,7 @@ for (const [name, route] of Object.entries(DIRECT_ROUTES)) {
   const index = join(cliRoot, dir, "index.ts");
   if (!existsSync(index) || !readFileSync(index, "utf8").includes(`context.${route.seam}`)) problems.push(`DIRECT_ROUTES.${name} says it runs on the direct-API engine through context.${route.seam}, but src/cli/${dir}/index.ts never calls it`);
   if (!new RegExp(`\\b${route.seam}\\??:`).test(contextType)) problems.push(`DIRECT_ROUTES.${name}: context.${route.seam} isn't on CommandContext (src/cli/runner/types.ts)`);
-  const entry = entries.find((e) => e.name === name);
+  const entry = entries.find((e) => e.key === name);
   if (entry && !entry.usage.some((line) => /direct-API engine/.test(line))) problems.push(`log ${name} runs on the direct-API engine first, but its usage never says so: name "the direct-API engine" in it`);
   if (entry && /in (its|the account's) open browser/.test(entry.summary) && !/direct-API/.test(entry.summary)) problems.push(`log ${name}'s summary says it runs in the open browser only, but DIRECT_ROUTES runs it on the direct-API engine first`);
 }

@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 82;
+export const RULES_REVIEWED_THROUGH = 83;
 
 export const AGENTS_URI = "log://agents";
 
@@ -26,6 +26,7 @@ export const SERVER_INSTRUCTIONS = [
   "19. An inspect session has a goal (`goal` on `inspectStart`, or `inspectGoal` with `set`), and the turn is not over until a step's reading says it is reached. A step that went wrong gets its P.E.E. finding before the next step, with `inspectFinding`: point (the issue, one sentence), explain (why the evidence shows it, what caused it); the evidence is quoted from the step's reading. Once reached, each finding says how it was fixed (`fixes`, `fix`). What only a person can clear is said to matt (rule 75).",
   "20. Flows are deterministic: a control is one scored match by role and name (accessible name, aria-label, label, text or placeholder, case ignored) inside the dialog the step names (`within`), never a guess (`controlAmbiguous`, `controlMissing`, `controlDisabled`); every step waits for the call it must cause and checks its answer before the next fires; before its first click a flow clears the known overlays (the browser-notifications notice, an ended \"What happened\" notice) with Escape, each checked, or stops with `overlayNotCleared`. Run `preflight` before opening accounts: it says what would stop each one (timezone, hours, proxy, kernel, opens left, a session left open, its picture) and `--apply` fetches a missing kernel (rule 79).",
   "21. X (Twitter) is a platform of its own, `log twitter <command>`, on the direct-API engine only: twikit (vendor/twikit) with the account's saved cookies from Twenty, no browser and no proxy. X accounts call X directly, as twitter-controller does. X's own answer decides (`socialAccounts.sessionState`), each account has its own governor, and refreshed cookies are merged back (rule 80). We maintain vendor/twikit ourselves: its transport is curl_cffi (impersonating Safari), never httpx (`check:twikitTransport`, rule 81).",
+  "22. A new platform is made whole with `log new platform <name>` (`newPlatform`): its session, `log <name> session check`, its engine and docs, wired into the repo through the syntax tree; a dry run until `apply`, and `check:platforms` refuses one half wired (rule 83).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -57,13 +58,13 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   conversation: [34],
   messenger: [8, 21, 29, 54, 63, 67],
   check: [8, 13, 18, 22, 29, 35, 69, 73],
-  session: [13, 21, 26, 63, 64, 73, 80, 81],
-  follows: [13, 53, 63, 64, 73, 80, 81],
-  reply: [8, 13, 53, 63, 64, 73, 80, 81],
-  quote: [8, 13, 53, 63, 64, 73, 80, 81],
-  like: [8, 13, 53, 63, 64, 73, 80, 81],
-  dm: [8, 13, 53, 63, 64, 73, 80, 81],
-  queue: [6, 8, 26, 53, 63, 64, 73, 80, 81],
+  twitterSession: [13, 21, 26, 63, 64, 73, 80, 81],
+  twitterFollows: [13, 53, 63, 64, 73, 80, 81],
+  twitterReply: [8, 13, 53, 63, 64, 73, 80, 81],
+  twitterQuote: [8, 13, 53, 63, 64, 73, 80, 81],
+  twitterLike: [8, 13, 53, 63, 64, 73, 80, 81],
+  twitterDm: [8, 13, 53, 63, 64, 73, 80, 81],
+  twitterQueue: [6, 8, 26, 53, 63, 64, 73, 80, 81],
   runs: [19, 22, 25, 27, 66, 73],
   browsers: [29, 35, 54, 55],
   job: [10, 26, 35],
@@ -71,6 +72,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   conversations: [34],
   errors: [25],
   graph: [6, 25],
+  new: [1, 2, 63, 64, 83],
   logout: [],
   whoami: [],
 };

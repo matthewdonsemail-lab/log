@@ -1,3 +1,4 @@
+import { commandKey } from "../../cli/runner/helpers/platforms.ts";
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
@@ -28,7 +29,7 @@ describe("AGENTS.md in the MCP server", () => {
   });
 
   test("every tool has its own AGENTS.md rules (a new command can't ship without them)", () => {
-    const unmapped = COMMANDS.map((c) => c.name).filter((name) => !(name in TERMINAL_ONLY) && !(name in COMMAND_RULES));
+    const unmapped = COMMANDS.filter((c) => !(c.name in TERMINAL_ONLY)).map(commandKey).filter((key) => !(key in COMMAND_RULES));
     expect(unmapped).toEqual([]);
   });
 

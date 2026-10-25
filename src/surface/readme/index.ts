@@ -62,7 +62,7 @@ export function renderSurface(entries: readonly CommandEntry[], flows: readonly 
     "",
     "A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser: Facebook through fbk (`vendor/fbk`) and the account's proxy, X through twikit (`vendor/twikit`) directly (rule 80). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it.",
     "",
-    ...direct.map((e) => `- \`log ${e.words}\`: ${engineLine(e.name) ?? ""}`),
+    ...direct.map((e) => `- \`log ${e.words}\`: ${engineLine(e.key) ?? ""}`),
     "",
   );
   const surface = pick("surface");

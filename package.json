@@ -21,11 +21,12 @@
     "check:layout": "bun scripts/checks/checkLayout.ts",
     "check:noComments": "bun scripts/checks/checkNoComments.ts",
     "check:twikitTransport": "bun scripts/checks/checkTwikitTransport.ts",
+    "check:platforms": "bun scripts/checks/checkPlatforms.ts",
     "docs:build": "bun scripts/docs/buildDocs.ts",
     "check:docs": "bun scripts/docs/buildDocs.ts --check",
     "browsers:docs": "bun scripts/checks/checkBrowserParity.ts --write",
     "errors:export": "bun bin/log.ts errors --json > python/errors/errorCatalog.json && bun bin/log.ts errors --markdown > docs/errorCatalog.md",
-    "check": "bun run check:noComments && bun run check:twikitTransport && bun run check:naming && bun run check:layout && bun run check:browsers && bun run check:agentHooks && bun run check:docs && bun run typecheck && bun run test",
+    "check": "bun run check:noComments && bun run check:twikitTransport && bun run check:platforms && bun run check:naming && bun run check:layout && bun run check:browsers && bun run check:agentHooks && bun run check:docs && bun run typecheck && bun run test",
     "prepare": "git config --unset core.hooksPath; lefthook install",
     "twenty:client": "node scripts/twenty/emitTwentyClient.mjs",
     "twenty:client:check": "node scripts/twenty/emitTwentyClient.mjs --check"

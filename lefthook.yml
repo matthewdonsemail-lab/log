@@ -6,6 +6,9 @@ pre-commit:
     twikitTransport:
       run: bun run check:twikitTransport
 
+    platforms:
+      run: bun run check:platforms
+
     layout:
       run: bun run check:layout
 
@@ -29,6 +32,9 @@ pre-push:
 
     twikitTransport:
       run: bun run check:twikitTransport
+
+    platforms:
+      run: bun run check:platforms
 
     naming:
       run: bun run check:naming
