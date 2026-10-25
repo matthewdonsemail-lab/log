@@ -1,0 +1,30 @@
+%% The platforms. log-cli is platform-agnostic: each platform is a row in `PLATFORMS` and `PLATFORM_SITES` (`src/cli/runner/helpers/platforms.ts`), with its direct-API client from `DIRECT_ROUTES` (`src/directApi/engine`) and its browser path, with or without a proxy. A new one is made by `log new platform <name>` (rule 83).
+%% Written by `bun run docs:build` from the code (rule 56). Not edited by hand.
+flowchart LR
+  twenty[("Twenty socialAccounts: one row per account, its platform, session and proxy")]
+  api["The platform's internal API: its own answer decides (rule 73)"]
+  drivers["The account's browser: AdsPower or Camoufox, through the driver (The browser layer)"]
+  p_facebook["Facebook (FACEBOOK): 23 commands of its own"]
+  twenty --> p_facebook
+  p_facebook -->|"direct API: facebook read"| e_fbk["fbk (vendor/fbk): the saved session, a governor per account"]
+  e_fbk --> api
+  p_facebook -->|"browser: facebook doctor, facebook connect, facebook profile, facebook host, #lt;platform#gt; warmup, facebook join, facebook read, facebook poll, facebook check, facebook scan, facebook status, facebook watch, facebook publish, facebook campaign"| b_facebook["Facebook's browser path: its proxy in the account's home country (rule 12)"]
+  b_facebook --> drivers
+  p_twitter["X (TWITTER): 7 commands of its own"]
+  twenty --> p_twitter
+  p_twitter -->|"direct API: twitter session, twitter follows, twitter reply, twitter quote, twitter like, twitter dm, twitter queue"| e_twikit["twikit (vendor/twikit): the saved session, a governor per account"]
+  e_twikit --> api
+  p_twitter -.->|"no browser path (rule 80)"| nob_twitter["X runs on its direct API only"]
+  p_reddit["Reddit (REDDIT): 1 command of its own"]
+  twenty --> p_reddit
+  p_reddit -->|"direct API: reddit session"| e_rdvwr["rdvwr (vendor/rdvwr): the saved session, a governor per account"]
+  e_rdvwr --> api
+  p_reddit -->|"browser: the any-platform commands"| b_reddit["Reddit's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
+  b_reddit --> drivers
+  anyB["Any platform with a browser path: inspect, flow"]
+  anyB --> b_facebook
+  anyB --> b_reddit
+  anyN["Any platform, no browser: launch, adsPower, proxy, errors, graph, runs, browsers, job, mcp, login, logout, whoami, new"]
+  anyN -.-> twenty
+  newP["log new platform name: one more platform, wired whole (rule 83)"] -.-> twenty
+  drivers --> api

@@ -41,19 +41,39 @@ bun bin/log.ts inspect goal --account <a>                           # the goal, 
 
 AGENTS.md rules 73-76.
 
-The command line for ListeningKit's Facebook Marketplace work. Accounts and
-listings live in Twenty (`socialAccounts`, `agencyListings`), reached through
-the same generated GraphQL client blaster and the dialer use.
+The command line for ListeningKit's social accounts, on every platform they
+live on. Accounts live in Twenty as `socialAccounts` (one row per account, its
+platform, session and proxy), Marketplace listings as `agencyListings`, reached
+through the same generated GraphQL client blaster and the dialer use. Every
+result is written back to Twenty.
 
-log-cli is **browser-agnostic**. Each account's browser is a driver picked from
-Twenty: **AdsPower** first (one profile per account, Listaro's browser),
+log-cli is **platform-agnostic**. Three platforms so far:
+
+- **Facebook:** Marketplace listings (publish, check, campaigns) and groups
+  (join, read, poll, members), on its direct API (fbk, `vendor/fbk`) first and
+  the account's browser behind it, always through a proxy in the account's
+  home country (rule 12).
+- **X:** session checks, follows, replies, quotes, likes, DMs and a reply
+  queue, on its direct API only (twikit, `vendor/twikit`), with no proxy and no
+  browser (rule 80).
+- **Reddit:** the session check on its direct API (rdvwr, `vendor/rdvwr`), and
+  `log inspect` in the account's browser with no proxy (rule 84).
+
+A command that acts on one platform names it first (`log facebook publish`,
+`log twitter reply`, `log reddit session check`, rule 63). A new platform is
+one command, `log new platform <name>` (rule 83). Every platform's internal
+calls go through rea, their code as well as their network (rule 85), into
+`docs/platforms/<platform>/`.
+
+log-cli is **browser-agnostic** too. Each account's browser is a driver picked
+from Twenty: **AdsPower** first (one profile per account, Listaro's browser),
 Camoufox kept, and more browser providers to come, each one more driver
-(`src/browser/<name>`). Every driver opens through the same gates: the proxy in
-the account's home country (rule 12), the launch self-check (rule 17), a raw HAR
-of everything (rule 22), and one human mouse (rule 32). Which commands run on
-the account's browser, and which still launch Camoufox themselves, is in
-[Browsers](#the-browser-layer) below, generated from the code. Every result is
-written back to Twenty.
+(`src/browser/<name>`). Every driver opens through the same gates: the proxy
+the platform needs (rules 12, 84), the launch self-check (rule 17), a raw HAR
+of everything (rule 22), and one human mouse (rule 32). Which platform runs
+where, and which commands run on the account's browser, is in
+[The platforms](#the-platforms) and [The browser layer](#the-browser-layer)
+below, generated from the code.
 
 Built the same way as the Rank CLI from the Nebius hackathon: a command registry
 that generates its own usage, commands that return results rather than
@@ -68,12 +88,17 @@ What log-cli has been used for, with a real run, every step's command and MCP to
 
 ```bash
 bun install
-cp .env.example .env.local     # TWENTY_BASE_URL, TWENTY_API_KEY, CAPTCHA_KRAKEN_API_KEY, 2CAPTCHA_API_KEY
+cp .env.example .env.local     # TWENTY_BASE_URL, TWENTY_API_KEY, LOG_PYTHON, CAPTCHA_KRAKEN_API_KEY, 2CAPTCHA_API_KEY, BYTEFUL_*
 bun run launch                 # guided menu (needs a terminal)
-bun bin/log.ts accounts        # FACEBOOK accounts in Twenty, and whether each may run
-bun bin/log.ts listings --status READY
-bun bin/log.ts publish --listing <agencyListingId>        # dry run
+bun bin/log.ts facebook accounts                              # Facebook accounts in Twenty, and whether each may run
+bun bin/log.ts facebook listings --status READY
+bun bin/log.ts facebook publish --listing <agencyListingId>   # dry run
+bun bin/log.ts twitter session check --account <accountName>  # X: is the saved session still signed in
+bun bin/log.ts reddit session check --account <accountName>   # Reddit: the same
 ```
+
+`LOG_PYTHON` points at the Python with the vendored clients' dependencies
+(curl_cffi and the rest); the direct-API engines and their tests run on it.
 
 Every command takes `--json` and never prompts, so scripts and agents can use it.
 
@@ -87,22 +112,59 @@ How proxies load and are checked: `docs/proxies.md`. Where accounts are bought:
 <!-- surface:start · written by `bun run docs:build` from the code. Not edited by hand. -->
 ## Commands, MCP tools and hooks
 
-log-cli is browser-agnostic: each account's browser is a driver (AdsPower first, Camoufox kept, more browser providers to come), and every driver opens through the same gates.
-It is platform-agnostic too: Facebook (Marketplace and groups) is the first platform. A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook connect`, `log facebook warmup reel`), in every form; one that works on any platform takes none (the Platform column, rule 63).
-Every command is a CLI command (`bun bin/log.ts [<platform>] <command>`) and, unless it only works in a terminal, an MCP tool named for the command on the `log` server (a Facebook tool runs `log facebook <command>`).
+log-cli is platform-agnostic: 3 platforms so far, Facebook (23 commands of its own), X (7 commands of its own), Reddit (1 command of its own), and a new one is made by `log new platform <name>` (rule 83). A command that acts on one platform names it first, `log <platform> <command> …` (`log facebook listings`, `log twitter session`, `log reddit session`), in every form; one that works on any platform takes none (the Platform column, rule 63).
+Each command runs on the platform's direct API first where it has one, and on the account's browser otherwise (the Engine and Browser columns). log-cli is browser-agnostic too: each account's browser is a driver (AdsPower first, Camoufox kept, more browser providers to come), and every driver opens through the same gates.
+Every command is a CLI command (`bun bin/log.ts [<platform>] <command>`) and, unless it only works in a terminal, an MCP tool on the `log` server (Facebook's take the command's name, every other platform's start with the platform: `twitterReply`, `redditSessionCheck`).
 The same hooks fire whether it runs from a shell or over MCP, and both write the same live log, `~/.logCli/mcp/<day>.log`.
 This section and `docs/diagrams/*.mmd` are generated from the code (`COMMANDS`, `AGENT_HOOKS`, `PAGE_STATES`, the saved flows) by `bun run docs:build`.
 `bun run check:docs` (lefthook pre-commit and pre-push) refuses a commit where they differ (rule 56).
 
-### The browser layer
+### The platforms
 
-log-cli is browser-agnostic: each account's browser is a driver picked from Twenty, AdsPower first, and every driver opens through the same gates. From `BROWSER_DRIVERS` (`src/browser/driver`) and `commandBrowser` (`src/browser/run`).
+log-cli is platform-agnostic: each platform is a row in `PLATFORMS` and `PLATFORM_SITES` (`src/cli/runner/helpers/platforms.ts`), with its direct-API client from `DIRECT_ROUTES` (`src/directApi/engine`) and its browser path, with or without a proxy. A new one is made by `log new platform <name>` (rule 83).
 
 ```mermaid
 flowchart LR
-  twenty["Twenty socialAccounts: browserDriver, adsPowerProfileId"]
+  twenty[("Twenty socialAccounts: one row per account, its platform, session and proxy")]
+  api["The platform's internal API: its own answer decides (rule 73)"]
+  drivers["The account's browser: AdsPower or Camoufox, through the driver (The browser layer)"]
+  p_facebook["Facebook (FACEBOOK): 23 commands of its own"]
+  twenty --> p_facebook
+  p_facebook -->|"direct API: facebook read"| e_fbk["fbk (vendor/fbk): the saved session, a governor per account"]
+  e_fbk --> api
+  p_facebook -->|"browser: facebook doctor, facebook connect, facebook profile, facebook host, #lt;platform#gt; warmup, facebook join, facebook read, facebook poll, facebook check, facebook scan, facebook status, facebook watch, facebook publish, facebook campaign"| b_facebook["Facebook's browser path: its proxy in the account's home country (rule 12)"]
+  b_facebook --> drivers
+  p_twitter["X (TWITTER): 7 commands of its own"]
+  twenty --> p_twitter
+  p_twitter -->|"direct API: twitter session, twitter follows, twitter reply, twitter quote, twitter like, twitter dm, twitter queue"| e_twikit["twikit (vendor/twikit): the saved session, a governor per account"]
+  e_twikit --> api
+  p_twitter -.->|"no browser path (rule 80)"| nob_twitter["X runs on its direct API only"]
+  p_reddit["Reddit (REDDIT): 1 command of its own"]
+  twenty --> p_reddit
+  p_reddit -->|"direct API: reddit session"| e_rdvwr["rdvwr (vendor/rdvwr): the saved session, a governor per account"]
+  e_rdvwr --> api
+  p_reddit -->|"browser: the any-platform commands"| b_reddit["Reddit's browser path: no proxy: this machine's own exit, the profile's timezone follows it (rule 84)"]
+  b_reddit --> drivers
+  anyB["Any platform with a browser path: inspect, flow"]
+  anyB --> b_facebook
+  anyB --> b_reddit
+  anyN["Any platform, no browser: launch, adsPower, proxy, errors, graph, runs, browsers, job, mcp, login, logout, whoami, new"]
+  anyN -.-> twenty
+  newP["log new platform name: one more platform, wired whole (rule 83)"] -.-> twenty
+  drivers --> api
+```
+
+Source: [`docs/diagrams/platforms.mmd`](docs/diagrams/platforms.mmd).
+
+### The browser layer
+
+log-cli is browser-agnostic: each account's browser is a driver picked from Twenty, AdsPower first, and every driver opens through the same gates. Whether the gate needs a proxy is the platform's (`PLATFORM_SITES`). From `BROWSER_DRIVERS` (`src/browser/driver`) and `commandBrowser` (`src/browser/run`).
+
+```mermaid
+flowchart LR
+  twenty["Twenty socialAccounts: platform, browserDriver, adsPowerProfileId"]
   pick{"driverNameOf"}
-  gates["Every driver: proxy gate, self-check, HAR, human mouse (rules 12, 17, 22, 32)"]
+  gates["Every driver: the proxy gate (Facebook: a proxy in the home country, rule 12. Reddit: no proxy, rule 84), self-check, HAR, human mouse (rules 17, 22, 32)"]
   session["One Playwright context: python/browser/browserDriver.py"]
   twenty --> pick
   pick -->|"browserDriver camoufox, or no profile"| d_camoufox["camoufox"]
@@ -111,37 +173,47 @@ flowchart LR
   d_adsPower --> gates
   more["Next browser provider: one more driver (src/browser/name), rule 44"] -.-> gates
   gates --> session
-  account["On the account's browser: host, inspect, flow, warmup, join, read, poll, check"]
-  camoufox["Camoufox only, not on the driver yet: doctor, connect, profile, scan, status, watch, publish, campaign"]
+  account["On the account's browser: facebook host, inspect, flow, #lt;platform#gt; warmup, facebook join, facebook read, facebook poll, facebook check"]
+  camoufox["Camoufox only, not on the driver yet: facebook doctor, facebook connect, facebook profile, facebook scan, facebook status, facebook watch, facebook publish, facebook campaign"]
   session --> account
   camoufox -.->|"launches Camoufox itself"| d_camoufox
+  nobrowser["No browser path: X (direct API only, rule 80)"] -.-x pick
 ```
 
 Source: [`docs/diagrams/browsers.mmd`](docs/diagrams/browsers.mmd).
 
-- **The account's browser, through the driver:** `host`, `inspect`, `flow`, `warmup`, `join`, `read`, `poll`, `check`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
-- **Camoufox only, not on the driver yet:** `doctor`, `connect`, `profile`, `scan`, `status`, `watch`, `publish`, `campaign`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `listings`, `listing`, `accounts`, `account`, `adsPower`, `lifecycle`, `preflight`, `proxy`, `conversations`, `conversation`, `messenger`, `errors`, `graph`, `capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `session`, `follows`, `reply`, `quote`, `like`, `dm`, `queue`, `new`, `session`.
+- **The account's browser, through the driver:** `facebook host`, `inspect`, `flow`, `<platform> warmup`, `facebook join`, `facebook read`, `facebook poll`, `facebook check`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
+- **Camoufox only, not on the driver yet:** `facebook doctor`, `facebook connect`, `facebook profile`, `facebook scan`, `facebook status`, `facebook watch`, `facebook publish`, `facebook campaign`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
+- **No browser:** `launch`, `facebook listings`, `facebook listing`, `facebook accounts`, `facebook account`, `adsPower`, `facebook lifecycle`, `facebook preflight`, `proxy`, `facebook conversations`, `facebook conversation`, `facebook messenger`, `errors`, `graph`, `facebook capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `twitter session`, `twitter follows`, `twitter reply`, `twitter quote`, `twitter like`, `twitter dm`, `twitter queue`, `new`, `reddit session`.
+- **No browser path at all:** X. Its accounts run on the direct API only (rule 80).
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](docs/browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](docs/adsPower.md).
 
 ### Engines: the direct API first, the browser behind it
 
-A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser: Facebook through fbk (`vendor/fbk`) and the account's proxy, X through twikit (`vendor/twikit`) directly (rule 80). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it.
+A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser. Each platform has its own vendored client: Facebook through fbk (`vendor/fbk`), X through twikit (`vendor/twikit`), Reddit through rdvwr (`vendor/rdvwr`). Every one reaches the network through one curl_cffi session (`check:twikitTransport`, `check:rdvwrTransport`). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it (3 clients, 9 commands).
 
-- `log facebook read`: Engine: the direct-API engine first (fbk groups.feed_read, no browser) for read group without --live on a numeric group id, when the account has a saved c_user + xs session, a proxy in its home country and is inside its hours (--bypass skips the hours). Facebook's own page decides, not accountStatus: loggedIn reads; checkpoint stops and deactivates the account; loggedOut or accountWarning hands over to the browser path. Each account has its own governor (gaps of 4 s or more, 120 an hour, 500 a day, 40 writes a day, a 15-minute pause on a soft block, 6 hours on a checkpoint) and its result is written to socialAccounts.sessionState.
-- `log twitter session`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, account.ping for the session check; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
-- `log twitter follows`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, friendships.show for the follows read; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
-- `log twitter reply`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.create_tweet for the reply; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
-- `log twitter quote`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.create_tweet for the quote; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
-- `log twitter like`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.favorite_tweet for the like; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
-- `log twitter dm`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, messages.send_dm for the dm; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
-- `log twitter queue`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.create_tweet for the queue run --live (each like and reply); no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
-- `log reddit session`: Engine: the direct-API engine only (rdvwr, account.ping for the session check; no browser). Reddit's own answer decides. Each account has its own governor under ~/.logCli/reddit/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
+**Facebook.** Facebook's own page decides, not accountStatus: loggedIn reads; checkpoint stops and deactivates the account; loggedOut or accountWarning hands over to the browser path. Each account has its own governor (gaps of 4 s or more, 120 an hour, 500 a day, 40 writes a day, a 15-minute pause on a soft block, 6 hours on a checkpoint) and its result is written to socialAccounts.sessionState.
+
+- `log facebook read`: the direct-API engine first (fbk groups.feed_read, no browser) for read group without --live on a numeric group id, when the account has a saved c_user + xs session, a proxy in its home country and is inside its hours (--bypass skips the hours).
+
+**X.** X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
+
+- `log twitter session`: the direct-API engine only (twikit, vendored in vendor/twikit, account.ping for the session check; no browser and no proxy: X accounts call X directly, rule 80).
+- `log twitter follows`: the direct-API engine only (twikit, vendored in vendor/twikit, friendships.show for the follows read; no browser and no proxy: X accounts call X directly, rule 80).
+- `log twitter reply`: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.create_tweet for the reply; no browser and no proxy: X accounts call X directly, rule 80).
+- `log twitter quote`: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.create_tweet for the quote; no browser and no proxy: X accounts call X directly, rule 80).
+- `log twitter like`: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.favorite_tweet for the like; no browser and no proxy: X accounts call X directly, rule 80).
+- `log twitter dm`: the direct-API engine only (twikit, vendored in vendor/twikit, messages.send_dm for the dm; no browser and no proxy: X accounts call X directly, rule 80).
+- `log twitter queue`: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.create_tweet for the queue run --live (each like and reply); no browser and no proxy: X accounts call X directly, rule 80).
+
+**Reddit.** Reddit's own answer decides. Each account has its own governor under ~/.logCli/reddit/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
+
+- `log reddit session`: the direct-API engine only (rdvwr, vendored in vendor/rdvwr, account.ping for the session check; no browser).
 
 ### How a call reaches log-cli
 
-From a shell or over MCP, both run the same commands through `runCli`, write the same live log, and pass through the same hooks.
+From a shell or over MCP, both run the same commands through `runCli`, write the same live log, and pass through the same hooks. `commandEngine` sends each command to the platform's direct API or to the account's browser.
 
 ```mermaid
 flowchart LR
@@ -152,14 +224,23 @@ flowchart LR
   bin["bin/log.ts"]
   runCli["runCli: 47 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
+  engine{"commandEngine: DIRECT_ROUTES"}
+  direct["Direct-API engine: fbk, twikit, rdvwr (vendor/), the account's saved session, a governor per account"]
   browser["The account's browser (one per day, rule 35)"]
+  api["The platform's internal API: its answer decides (rule 73)"]
+  twenty[("Twenty: socialAccounts.sessionState, refreshed cookies")]
   agent --> shell
   matt --> bin
   shell --> bin
   agent -->|mcp__log__tool| mcp
   bin --> runCli
   mcp -->|runToolCall| runCli
-  runCli --> browser
+  runCli --> engine
+  engine -->|direct API| direct
+  engine -->|browser| browser
+  direct --> api
+  browser --> api
+  direct --> twenty
   bin -->|cli:command lines| live
   mcp -->|tool lines| live
   live -.->|tail -f, under Monitor| agent
@@ -179,7 +260,7 @@ Source: [`docs/diagrams/surface.mmd`](docs/diagrams/surface.mmd).
 
 ### Every command
 
-Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33). `--live` acts on Facebook and over MCP needs `confirmLive: true`; `--bypass` needs `confirmBypass: true` (rules 8, 10, 20).
+Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33). `--live` acts on the platform and over MCP needs `confirmLive: true`; `--bypass` needs `confirmBypass: true` (rules 8, 10, 20).
 
 | Command | What it does | Platform | Flags | Engine | Browser | MCP tool | Hooks: shell · MCP | Live log | Rules |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -257,7 +338,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 
 ### Every command, CLI and MCP
 
-Each command is a CLI command and, unless terminal-only, an MCP tool of the same name; the long-running ones write the live log. Saved flows are MCP tools that run `log flow run`.
+Each command is a CLI command and, unless terminal-only, an MCP tool; the long-running ones write the live log. Grouped by platform: a platform's command is `log <platform> <command>` (rule 63). Saved flows are MCP tools that run `log flow run`.
 
 ```mermaid
 flowchart TB
@@ -265,165 +346,175 @@ flowchart TB
   mcp["MCP server log"]
   live[("live log")]
   terminal["terminal only"]
-  c_launch["launch"]
+  subgraph g_any["Any platform"]
+    c_launch["launch"]
+    c_adsPower["adsPower"]
+    c_inspect["inspect"]
+    c_flow["flow"]
+    c_proxy["proxy"]
+    c_errors["errors"]
+    c_graph["graph"]
+    c_runs["runs"]
+    c_browsers["browsers"]
+    c_job["job"]
+    c_mcp["mcp"]
+    c_login["login"]
+    c_logout["logout"]
+    c_whoami["whoami"]
+    c_new["new"]
+  end
+  subgraph g_byArgument["Platform named first"]
+    c_warmup["#lt;platform#gt; warmup"]
+  end
+  subgraph g_facebook["Facebook"]
+    c_listings["listings"]
+    c_listing["listing"]
+    c_accounts["accounts"]
+    c_account["account"]
+    c_lifecycle["lifecycle"]
+    c_preflight["preflight"]
+    c_doctor["doctor"]
+    c_connect["connect"]
+    c_profile["profile"]
+    c_host["host"]
+    c_join["join"]
+    c_read["read"]
+    c_poll["poll"]
+    c_check["check"]
+    c_scan["scan"]
+    c_status["status"]
+    c_watch["watch"]
+    c_publish["publish"]
+    c_campaign["campaign"]
+    c_conversations["conversations"]
+    c_conversation["conversation"]
+    c_messenger["messenger"]
+    c_capture["capture"]
+  end
+  subgraph g_twitter["X"]
+    c_twitterSession["session"]
+    c_twitterFollows["follows"]
+    c_twitterReply["reply"]
+    c_twitterQuote["quote"]
+    c_twitterLike["like"]
+    c_twitterDm["dm"]
+    c_twitterQueue["queue"]
+  end
+  subgraph g_reddit["Reddit"]
+    c_redditSession["session"]
+  end
   cli --> c_launch
   c_launch -.- terminal
-  c_listings["listings"]
   cli --> c_listings
   mcp --> c_listings
-  c_listing["listing"]
   cli --> c_listing
   mcp --> c_listing
-  c_accounts["accounts"]
   cli --> c_accounts
   mcp --> c_accounts
-  c_account["account"]
   cli --> c_account
   mcp --> c_account
-  c_adsPower["adsPower"]
   cli --> c_adsPower
   mcp --> c_adsPower
-  c_lifecycle["lifecycle"]
   cli --> c_lifecycle
   mcp --> c_lifecycle
-  c_preflight["preflight"]
   cli --> c_preflight
   mcp --> c_preflight
-  c_doctor["doctor"]
   cli --> c_doctor
   mcp --> c_doctor
   c_doctor --> live
-  c_connect["connect"]
   cli --> c_connect
   mcp --> c_connect
   c_connect --> live
-  c_profile["profile"]
   cli --> c_profile
   mcp --> c_profile
   c_profile --> live
-  c_host["host"]
   cli --> c_host
   mcp --> c_host
   c_host --> live
-  c_inspect["inspect"]
   cli --> c_inspect
   mcp --> c_inspect
   c_inspect --> live
-  c_flow["flow"]
   cli --> c_flow
   mcp --> c_flow
   c_flow --> live
-  c_warmup["warmup"]
   cli --> c_warmup
   mcp --> c_warmup
   c_warmup --> live
-  c_join["join"]
   cli --> c_join
   mcp --> c_join
   c_join --> live
-  c_read["read"]
   cli --> c_read
   mcp --> c_read
   c_read --> live
-  c_poll["poll"]
   cli --> c_poll
   mcp --> c_poll
   c_poll --> live
-  c_check["check"]
   cli --> c_check
   mcp --> c_check
   c_check --> live
-  c_scan["scan"]
   cli --> c_scan
   mcp --> c_scan
   c_scan --> live
-  c_status["status"]
   cli --> c_status
   mcp --> c_status
   c_status --> live
-  c_watch["watch"]
   cli --> c_watch
   mcp --> c_watch
   c_watch --> live
-  c_proxy["proxy"]
   cli --> c_proxy
   mcp --> c_proxy
-  c_publish["publish"]
   cli --> c_publish
   mcp --> c_publish
   c_publish --> live
-  c_campaign["campaign"]
   cli --> c_campaign
   mcp --> c_campaign
   c_campaign --> live
-  c_conversations["conversations"]
   cli --> c_conversations
   mcp --> c_conversations
-  c_conversation["conversation"]
   cli --> c_conversation
   mcp --> c_conversation
-  c_messenger["messenger"]
   cli --> c_messenger
   c_messenger -.- terminal
-  c_errors["errors"]
   cli --> c_errors
   mcp --> c_errors
-  c_graph["graph"]
   cli --> c_graph
   mcp --> c_graph
-  c_capture["capture"]
   cli --> c_capture
   mcp --> c_capture
   c_capture --> live
-  c_runs["runs"]
   cli --> c_runs
   mcp --> c_runs
-  c_browsers["browsers"]
   cli --> c_browsers
   mcp --> c_browsers
-  c_job["job"]
   cli --> c_job
   mcp --> c_job
-  c_mcp["mcp"]
   cli --> c_mcp
   c_mcp -.- terminal
-  c_login["login"]
   cli --> c_login
   c_login -.- terminal
-  c_logout["logout"]
   cli --> c_logout
   mcp --> c_logout
-  c_whoami["whoami"]
   cli --> c_whoami
   mcp --> c_whoami
-  c_session["session"]
-  cli --> c_session
-  mcp --> c_session
-  c_follows["follows"]
-  cli --> c_follows
-  mcp --> c_follows
-  c_reply["reply"]
-  cli --> c_reply
-  mcp --> c_reply
-  c_quote["quote"]
-  cli --> c_quote
-  mcp --> c_quote
-  c_like["like"]
-  cli --> c_like
-  mcp --> c_like
-  c_dm["dm"]
-  cli --> c_dm
-  mcp --> c_dm
-  c_queue["queue"]
-  cli --> c_queue
-  mcp --> c_queue
-  c_queue --> live
-  c_new["new"]
+  cli --> c_twitterSession
+  mcp --> c_twitterSession
+  cli --> c_twitterFollows
+  mcp --> c_twitterFollows
+  cli --> c_twitterReply
+  mcp --> c_twitterReply
+  cli --> c_twitterQuote
+  mcp --> c_twitterQuote
+  cli --> c_twitterLike
+  mcp --> c_twitterLike
+  cli --> c_twitterDm
+  mcp --> c_twitterDm
+  cli --> c_twitterQueue
+  mcp --> c_twitterQueue
+  c_twitterQueue --> live
   cli --> c_new
   mcp --> c_new
-  c_session["session"]
-  cli --> c_session
-  mcp --> c_session
+  cli --> c_redditSession
+  mcp --> c_redditSession
   f_deletePost["flowDeletePost: flow run deletePost"]
   mcp --> f_deletePost
   f_deletePost --> c_flow
@@ -501,7 +592,7 @@ One list (`src/agentHooks/registry`) writes Claude Code's `.claude/settings.json
 | PostToolUse | `Bash\|PowerShell\|Monitor\|mcp__log__.*` | [`scripts/hooks/pageState.ts`](scripts/hooks/pageState.ts) | a browser landed on a known state (checkpoint, captcha, prompt) or a step failed: its resolver, at once |
 | Stop | every turn | [`scripts/hooks/pageState.ts`](scripts/hooks/pageState.ts) | the turn does not end while a browser sits on a state log-cli can resolve (rule 54) |
 
-Around every turn, whatever is called: SessionStart, UserPromptSubmit, SessionStart, UserPromptSubmit, SessionStart, UserPromptSubmit, Stop.
+Around every turn, whatever is called: SessionStart (pageState.ts, storage.ts, engines.ts), UserPromptSubmit (pageState.ts, storage.ts, engines.ts), Stop (pageState.ts).
 
 ### The hooks in one turn
 
@@ -1120,7 +1211,7 @@ Reddit's own answer decides. The result goes to socialAccounts.sessionState, and
   dialer (`bun run api:client`) do. `bun run twenty:client:check` fails when it is stale.
 - Tests never call Twenty: they inject `marketplaceFixture()`, an in-memory Twenty.
 
-## The listing monitor (`log watch`)
+## The listing monitor (`log facebook watch`)
 
 `src/marketplace/monitor/machine.ts` is an XState v5 machine:
 
@@ -1134,7 +1225,7 @@ checking --ok-----------> evaluating --> waiting --after poll--> checking
                  '-- otherwise --> waiting
 ```
 
-`log watch` prints each event and state through XState's inspect API
+`log facebook watch` prints each event and state through XState's inspect API
 (`src/observability/trace`). `--json` streams them as NDJSON, one line per step,
 with the result on the last line. `--checks 0` runs until Ctrl+C.
 
@@ -1182,7 +1273,7 @@ Twenty, and the proxy goes on only to open and comes off at close.
 ```bash
 bun bin/log.ts adsPower status          # AdsPower's Local API answers
 bun bin/log.ts adsPower profiles        # its profiles, and the Twenty account of each
-bun bin/log.ts adsPower sync            # dry run: one profile per Facebook account
+bun bin/log.ts adsPower sync            # dry run: one profile per account on a platform with a browser path (rule 84)
 bun bin/log.ts adsPower sync --apply    # make them, link each in socialAccounts.adsPowerProfileId
 ```
 
@@ -1200,7 +1291,7 @@ the driver yet launch it themselves, through
 git clone https://github.com/PRACE1/facebook-camofox-client ../facebook-camofox-client
 pip install -e ../facebook-camofox-client
 python -m camoufox fetch          # downloads the Camoufox browser
-bun bin/log.ts doctor
+bun bin/log.ts facebook doctor
 ```
 
 Whichever browser runs, the account must pass the account check first, its
@@ -1216,35 +1307,59 @@ screenshot, HAR, rea). `log flow fromInspect` turns that
 recording into a flow: its docs, an XState machine, `log flow run <name>` for
 any account, and an MCP tool of its own (`flowProfileSetup`). The whole
 pipeline, the actions, the saved flows and what the recordings showed:
-`docs/recordToFlow.md`. Every request Facebook's pages made: `docs/platforms/facebook/`.
+`docs/recordToFlow.md`. It works on every platform with a browser path
+(Facebook, Reddit, rule 84), and every request a platform's pages made is
+documented, read by rea from its code, in `docs/platforms/<platform>/`
+(`log facebook capture --docs`, rule 85).
 
 ## Layout
 
 ```text
 bin/log.ts                      entrypoint
+src/cli/*                       the commands, `log [<platform>] <command>` (rule 63)
+src/cli/runner/helpers/platforms.ts  PLATFORMS and PLATFORM_SITES: every platform, its hosts, proxy and browser path
+src/facebook/                   Facebook's own areas: group/ (join, read, members, answer), marketplace/ (check, copy, location), warmup/ (rule 64)
+src/twitter/                    X: account/ (session), copy/, post/send (reply, quote, like, dm), queue/
+src/reddit/                     Reddit: account/session
+src/platformKit/                what every platform's account session shares (find, gate, run the engine, record)
+src/scaffold/platform/          `log new platform <name>`: writes and wires a new platform (rule 83)
+src/directApi/engine/           DIRECT_ROUTES, commandEngine, the direct-API engine runner and governors
 src/twenty/graphql/             the generated Twenty client (generated/), its seam, an in-memory Twenty for tests
-src/marketplace/socialAccount/  Facebook accounts in Twenty, the account check (checkRunnable)
+src/marketplace/socialAccount/  accounts in Twenty, the account check (checkRunnable)
 src/marketplace/agencyListing/  listings in Twenty, run write-back, dashboard sync
 src/marketplace/replacement/    losing an account, replacements, campaign fill
 src/marketplace/publish/        the XState publish machine
 src/marketplace/monitor/        the XState listing monitor + relist rules
+src/marketplace/lifecycle/      each account's lifecycle machine (rule 35)
 src/marketplace/listing/        the listeningkit-hackathon listing machine port (+ its seed)
+src/warmup/                     what every platform's warm-up draws from: persona/, viewer/
 src/browser/driver/             the browser-agnostic session machine and capability list (rules 42, 44)
 src/browser/camoufox/           Camoufox's driver and capability row (kept)
 src/browser/adsPower/           AdsPower: Local API client (from Listaro), profile sync, its driver and capability row
 src/browser/run/                one run's private proxy/cookie files, the launch budget (every browser)
 src/browser/proxy/              the proxy check's result types (every browser)
-src/browser/inspect/            log inspect: one open browser driven a step at a time (every browser)
+src/browser/inspect/            log inspect: one open browser driven a step at a time (every browser, every platform)
 src/browser/flow/               recordings → flows, their XState machines, the page states (every browser)
 src/camofox/                    what only Camoufox needs: its device per account (rule 15), its worker and sync sessions
+src/proxyVendor/                proxy providers: twoCaptcha/, byteful/, traffic budgets (rules 51, 52)
+src/rea/                        rea's readings: capture/, platformClient/ (every platform's calls and their code, rule 85)
+src/subq/                       SubQ's readings of steps we don't know (rule 74)
 src/captcha/router/             CaptchaKraken → 2Captcha → a person
 src/errors/catalog/             every error code, once
-src/cli/*                       the commands
 src/agentHooks/                 the agent hooks (Claude Code, Codex) and what each decides (rule 55)
 src/surface/                    the catalog of commands, MCP tools and hooks; the README section and diagrams (rule 56)
+vendor/fbk/                     Facebook's direct-API client
+vendor/twikit/                  X's direct-API client, on curl_cffi (rule 81)
+vendor/rdvwr/                   Reddit's direct-API client, one pinned curl_cffi session (check:rdvwrTransport)
+vendor/twitterController/       the X controller being ported
+python/directApi/               Facebook's direct-API engine (fbk)
+python/twitterApi/              X's engine (twikit)
+python/redditApi/               Reddit's engine (rdvwr)
+python/platformKit/             what every platform's engine shares
 python/browser/                 every driver's opener (browserDriver.py), the proxy gate, the HAR recorder, headed launch
 python/session/                 the processes TypeScript runs: inspect, connect, publish, profile, the worker
 python/human/                   the cursor and the wheel, fitted to matt's hand (rule 32)
+docs/platforms/<platform>/      every platform's internal requests, by domain, read by rea (rules 27, 48, 85)
 ```
 
 See `docs/namingConventions.md`. Run `bun run check` for the naming gate, typecheck and tests.

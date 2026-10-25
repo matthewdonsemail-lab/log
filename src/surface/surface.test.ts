@@ -1,7 +1,8 @@
 import { describe, expect, test } from "bun:test";
 import { COMMANDS } from "../cli/runner/index.ts";
 import { catalog, commandEntry, flagsOf, usageLines } from "./catalog/index.ts";
-import { browsersDiagram, diagrams, label, resolverStep } from "./diagrams/index.ts";
+import { PLATFORM_LABELS, PLATFORMS } from "../cli/runner/helpers/platforms.ts";
+import { browsersDiagram, diagrams, label, platformsDiagram, resolverStep } from "./diagrams/index.ts";
 import { renderSurface, SURFACE_END, withSurface } from "./readme/index.ts";
 
 describe("catalog", () => {
@@ -52,10 +53,35 @@ describe("diagrams", () => {
     expect(resolverStep("click Continue: it is plain text")).toBe("click Continue");
   });
 
-  test("five diagrams, each Mermaid", () => {
+  test("six diagrams, each Mermaid", () => {
     const all = diagrams(catalog(COMMANDS), []);
-    expect(all.map((d) => d.name)).toEqual(["browsers", "surface", "commands", "hooks", "pageStates"]);
+    expect(all.map((d) => d.name)).toEqual(["platforms", "browsers", "surface", "commands", "hooks", "pageStates"]);
     for (const d of all) expect(d.mermaid).toMatch(/^(flowchart|sequenceDiagram)/);
+  });
+
+  test("the platforms diagram has every platform, its direct-API client and its browser path", () => {
+    const d = platformsDiagram(catalog(COMMANDS)).mermaid;
+    for (const p of PLATFORMS) expect(d).toContain(`p_${p}["${PLATFORM_LABELS[p]} (`);
+    for (const lib of ["fbk", "twikit", "rdvwr"]) expect(d).toContain(`e_${lib}["${lib} (vendor/${lib})`);
+    expect(d).toContain("nob_twitter");
+    expect(d).toMatch(/b_reddit\["Reddit's browser path: no proxy/);
+    expect(d).toMatch(/b_facebook\["Facebook's browser path: its proxy/);
+  });
+
+  test("the commands diagram gives each platform's command its own node, grouped by platform", () => {
+    const d = diagrams(catalog(COMMANDS), []).find((x) => x.name === "commands")!.mermaid;
+    expect(d).toContain('c_twitterSession["session"]');
+    expect(d).toContain('c_redditSession["session"]');
+    expect(d).toContain('subgraph g_reddit["Reddit"]');
+    const ids = [...d.matchAll(/^\s+(c_\w+)\[/gm)].map((m) => m[1]);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  test("the surface diagram sends commands to the direct-API engine or the browser", () => {
+    const d = diagrams(catalog(COMMANDS), []).find((x) => x.name === "surface")!.mermaid;
+    expect(d).toContain("engine -->|direct API| direct");
+    expect(d).toContain("engine -->|browser| browser");
+    expect(d).toMatch(/Direct-API engine: [^"]*rdvwr/);
   });
 });
 
@@ -65,6 +91,10 @@ describe("readme", () => {
     const section = renderSurface(entries, [], diagrams(entries, []));
     expect(section).toContain("| [`log facebook connect`](#log-facebook-connect) |");
     expect(section).toContain("```mermaid");
+    expect(section).toContain("### The platforms");
+    expect(section).toContain("Reddit through rdvwr (`vendor/rdvwr`)");
+    expect(section).toContain("- `log reddit session`: the direct-API engine only (rdvwr, vendored in vendor/rdvwr");
+    expect(section).not.toContain("is the first platform");
     const first = withSurface("# x\n\nintro\n\n## Twenty\n\nrest\n", section);
     expect(first.indexOf("<!-- surface:start")).toBeLessThan(first.indexOf("## Twenty"));
     expect(withSurface(first, section)).toBe(first);
