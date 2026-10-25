@@ -7141,3 +7141,35 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: Step 1 of X as a platform: the twikit engine and `log twitter session check` (MCP `twitterSessionCheck`). `python/twitterApi/engine.py` reads the account's cookies (every shape Twenty may hold, ported from twitter-controller) and calls X directly with no proxy. It gates on a per-account governor (`~/.logCli/twitter/<account>`). X's answer decides: the session check's HTTP status (401/403 loggedOut, 200/404 loggedIn), then the profile read (suspended or locked: restricted; 429: rateLimited). Cloudflare's block page is named `cloudflareBlocked`, never dumped as HTML, and pauses the governor. Refreshed cookies go to a private file, never stdout. `src/twitter/account/session` has the gate (TWITTER, not deactivated, auth_token + ct0), the run, and the write-back: `sessionState`, plus refreshed cookies merged in the row's own shape on success. Platforms are generalised: `PLATFORMS` gains `twitter`, a command is looked up by platform and refused under the wrong one, MCP tools of a non-Facebook platform are prefixed (`twitterSessionCheck`), and the README, guardCall and check:docs read any platform. `DIRECT_ROUTES.session` is `directApiOnly`. The engines hook shows X accounts and their governor. New error codes `accountNotTwitter` and `noTwitterSession`. Rule 80 is in AGENTS.md and the MCP instructions. The plan doc records matt's answers.
 Why: matt: "No: X accounts call X directly as the controller does today. Build step 1 (the twikit engine and log twitter session check)."
 Checked: `bun run check` passes: 1030 tests, naming, noComments, layout, browsers, agentHooks (108 MCP tools hooked), docs. New tests cover loggedIn writing sessionState and merging refreshed cookies in the stored shape, loggedOut writing the state but not the cookies, the gate refusing before X is called, the platform-first and wrong-platform refusals, and the cookie shapes. Live on both X accounts (read-only, nothing sent): the session check answered 404, so X accepts both sessions. Then the profile read (GraphQL UserByRestId) got Cloudflare's "Sorry, you have been blocked / unable to access x.com" page. The engine now reports `cloudflareBlocked (loggedIn)` and pauses that account for 15 minutes.
+
+## 2026-10-25 10:57Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/twitterPlatform.md`: edited
+- `lefthook.yml`: edited
+- `package.json`: edited
+- `python/checks/twikitTransport.py`: added const ROOT, const VENDOR, const PACKAGE, const TARGET_MODULE, const RENAMED, const NO_EQUIVALENT, const DOC_NAMES, const REQUIREMENT, const REQUIREMENTS, def session_attributes, def is_httpx, class Touchpoints, def scan_file, def python_files, def scan, def splice, def replacement_text, def segment, def apply, def main
+- `scripts/checks/checkTwikitTransport.ts`: added const root, function python, const mode, const run
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `vendor/twikit/docs/requirements.txt`: edited
+- `vendor/twikit/requirements.txt`: edited
+- `vendor/twikit/tests/test_transport.py`: added class Handler, def server, def offline_client, def run, def test_session_is_curl_cffi_with_pinned_impersonation, def test_impersonation_can_be_overridden, def test_proxy_round_trips, def test_set_cookies_are_sent_and_duplicate_ct0_keeps_the_first_as_with_httpx, def test_set_cookie_from_the_answer_lands_in_the_jar, def test_non_json_answer_falls_back_to_text, def test_redirects_are_not_followed, def test_error_carries_the_answer_headers, def test_media_append_goes_as_multipart, def test_stream_reads_lines
+- `vendor/twikit/twikit/_captcha/base.py`: no declaration changed (comments, formatting or line endings)
+- `vendor/twikit/twikit/_captcha/capsolver.py`: changed class Capsolver
+- `vendor/twikit/twikit/bookmark.py`: no declaration changed (comments, formatting or line endings)
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+- `vendor/twikit/twikit/client/v11.py`: changed class V11Client
+- `vendor/twikit/twikit/constants.py`: added const IMPERSONATE
+- `vendor/twikit/twikit/group.py`: changed class Group, class GroupMessage
+- `vendor/twikit/twikit/guest/client.py`: changed class GuestClient
+- `vendor/twikit/twikit/list.py`: changed class List
+- `vendor/twikit/twikit/message.py`: changed class Message
+- `vendor/twikit/twikit/tweet.py`: changed class Tweet, class ScheduledTweet
+- `vendor/twikit/twikit/user.py`: changed class User
+- `vendor/twikit/twikit/utils.py`: removed def httpx_transport_to_url
+
+What changed: vendor/twikit's HTTP transport is curl_cffi instead of httpx, and only the transport. `self.http` on Client and GuestClient is a curl_cffi AsyncSession pinned to `IMPERSONATE` (safari17_0, matching twikit's Safari user agent; `impersonate=` still overrides it) with redirects off as httpx had them. The proxy property reads and writes the session's `proxies` instead of httpx's private `_mounts`/`URLPattern`/`AsyncHTTPTransport`, so `httpx_transport_to_url` is gone. Media APPEND chunks go as a `CurlMime` part (curl_cffi refuses `files=`), closed after the call. Capsolver posts with `curl_cffi.requests.post`, every `Response` type and docstring names `curl_cffi.requests.Response`, and both requirements files ask for `curl_cffi>=0.15`. `python/checks/twikitTransport.py` maps every httpx touchpoint by syntax tree (imports, type names, `.http.<attr>` uses checked against AsyncSession, `files=` calls, text), applied the 115 rewrites that have a curl_cffi equivalent by node position, and refuses any left (`bun run check:twikitTransport`, pre-commit and pre-push). `vendor/twikit/tests/test_transport.py` covers it against a local server. Rule 81 in AGENTS.md, the MCP instructions and the README.
+Why: matt: we're taking ownership of vendor/twikit and maintaining it ourselves since nobody upstream does, with the transport on curl_cffi the way vendor/fbk does it (rule 81).
+Checked: the map found 154 touchpoints; the 26 with no curl_cffi type of the same name (proxy mounts, the transport-to-URL helper, files=) were edited by hand, then `--apply` did 115 and `--check` is ok, with no httpx left in vendor/twikit and `httpx` not in sys.modules after making a Client and a GuestClient. 10 transport tests pass: pinned impersonation, proxy round trip, cookies sent and a Set-Cookie landing in the jar, duplicate ct0 keeping the first, as httpx did (checked side by side), non-JSON falling back to text, a 302 not followed, a 429 carrying x-rate-limit-reset, multipart APPEND, stream lines. Live: `log twitter session check --account matthewsoldit` ok, loggedIn, profile read @matthewsoldit, refreshed cookies merged into Twenty. `bun run check`: 1030 tests pass.

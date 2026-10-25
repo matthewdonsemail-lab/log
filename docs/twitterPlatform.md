@@ -1,6 +1,6 @@
 # Twitter as a log-cli platform: the plan
 
-Status: 2026-10-25. Step 1 is built: the engine (`python/twitterApi/engine.py`) and `log twitter session check` (`src/twitter/account/session`, rule 80). The rest is the plan. The library is in: `vendor/twikit` (unclecode's fork of twikit, MIT, commit `6a73ab9`, 2026-05-17, the same one the skill installs) and `vendor/twitterController` (the skill's scripts and tests as they were, the code being ported).
+Status: 2026-10-25. Step 1 is built: the engine (`python/twitterApi/engine.py`) and `log twitter session check` (`src/twitter/account/session`, rule 80). The rest is the plan. The library is in: `vendor/twikit` (unclecode's fork of twikit, MIT, commit `6a73ab9`, 2026-05-17, the same one the skill installs) and `vendor/twitterController` (the skill's scripts and tests as they were, the code being ported). We maintain `vendor/twikit` ourselves (rule 81): its transport is curl_cffi impersonating Safari, as fbk's is, not httpx, checked by `bun run check:twikitTransport` and `vendor/twikit/tests/test_transport.py`.
 
 ## In one line
 

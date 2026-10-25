@@ -953,6 +953,18 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `~/.logCli/twitter/<account>`, and X's refreshed cookies are merged back
     into the row. Discovery stays treg's (rule 53). First command: `log
     twitter session check`. Plan: `docs/twitterPlatform.md`.
+81. 2026-10-25 · matt: we own `vendor/twikit` and keep it up to date
+    ourselves, since nobody upstream maintains it. Its HTTP transport is
+    curl_cffi, the way `vendor/fbk` does it, never httpx: `self.http` is a
+    curl_cffi `AsyncSession` pinned to one impersonation target
+    (`IMPERSONATE`, `safari17_0`, matching twikit's Safari user agent),
+    redirects not followed (as httpx did), the proxy kept in the session's
+    `proxies`, media chunks sent as a `CurlMime`. Only the transport changed.
+    `python/checks/twikitTransport.py` finds every httpx touchpoint by syntax
+    tree (`--map`), rewrites the ones with a curl_cffi equivalent (`--apply`)
+    and refuses any left (`--check`, `bun run check:twikitTransport`,
+    pre-commit and pre-push); `vendor/twikit/tests/test_transport.py` holds
+    the behaviour.
 
 ## Checks
 
