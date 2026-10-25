@@ -93,7 +93,8 @@ def pick(candidates: list[dict[str, Any]], role: str, name: str, within: str | N
     if not named:
         place = f' in dialog "{within}"' if within is not None else ""
         return {"code": "controlMissing", "detail": f'no visible {role} "{name}"{place}'}
-    for test in (lambda c: c.get("enabled"), lambda c: not c.get("ariaHidden"), lambda c: c.get("hit")):
+    accessible = lambda c: norm(next((c.get(f) for f in NAME_FIELDS if c.get(f)), "")) == want
+    for test in (accessible, lambda c: c.get("enabled"), lambda c: not c.get("ariaHidden"), lambda c: c.get("hit")):
         narrowed = [i for i in named if test(candidates[i])]
         if narrowed:
             named = narrowed

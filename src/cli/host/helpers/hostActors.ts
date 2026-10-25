@@ -24,6 +24,8 @@ import type { CommandContext } from "../../runner/types.ts";
 
 const FB = "https://www.facebook.com";
 
+const DISMISS_LABELS = ["Dismiss", "تجاهل"];
+
 export interface HostBrowser {
   run: PreparedRun | null;
   session: OpenSession | null;
@@ -124,9 +126,10 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
         if (!page) return error("browserGone");
         const url = page.url ?? "";
         const text = (page as InspectStepResult & { text?: string }).text ?? "";
-        if (/checkpoint\/601051028565049/.test(url) || /suspect automated behaviou?r/i.test(text)) {
-          log(`host ${account.accountName}: "We suspect automated behaviour": Dismiss`);
-          await send("clickRole", ["button", "Dismiss"]);
+        if (pageStateOf(url, text)?.id === "automatedBehaviour" || /checkpoint\/601051028565049/.test(url)) {
+          const label = DISMISS_LABELS.find((name) => text.includes(name)) ?? DISMISS_LABELS[0];
+          log(`host ${account.accountName}: "We suspect automated behaviour": ${label}`);
+          await send("clickRole", ["button", label]);
           continue;
         }
         if (/\/checkpoint\//.test(url)) return issue("checkpointed", `${url}: ${text.slice(0, 120)}`);

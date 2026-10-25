@@ -205,3 +205,16 @@ describe("the location step reads Facebook's answer to the whole place typed, ne
     expect(run.stdout.trim().split(/\r?\n/)).toEqual(['["Mountain Top, Pennsylvania", "Mountaintop, Pennsylvania"]', '[]'])
   })
 })
+
+describe('the accessible name decides between controls that share a word (rule 79)', () => {
+  test('Boost\'s "Close" beats "Close boost listing dialog", whose visible text is also Close', () => {
+    const script = [
+      'import sys, json', 'sys.path.insert(0, ".")', 'from browser import controlMatch',
+      'base = {"role": "button", "label": "", "placeholder": "", "dialog": "Boost your listing", "hit": True, "enabled": True, "ariaHidden": False}',
+      'cands = [dict(base, aria="Close", text="Close", path="a"), dict(base, aria="Close boost listing dialog", text="Close", path="b")]',
+      'print(json.dumps(controlMatch.pick(cands, "button", "Close")))',
+    ].join('\n')
+    const run = spawnSync(process.env.LOG_PYTHON || 'python', ['-c', script], { cwd: python, encoding: 'utf8' })
+    expect(JSON.parse(run.stdout.trim()).path).toBe('a')
+  })
+})

@@ -137,3 +137,10 @@ describe("two-step when Facebook asks for a passkey first (Mountain Top, host 20
     expect(authAppOffered([])).toBe(false)
   })
 })
+
+describe('"We suspect automated behaviour" in Arabic is the same state, dismissed by its own label', () => {
+  test('Scranton\'s page (its Facebook in Arabic) is automatedBehaviour and its resolver presses تجاهل', () => {
+    const text = 'نشتبه في وجود سلوك تلقائي على حسابك To prevent your account from being temporarily restricted تجاهل'
+    expect(pageStateOf('https://www.facebook.com/checkpoint/601051028565049/', text)?.id).toBe('automatedBehaviour')
+  })
+})

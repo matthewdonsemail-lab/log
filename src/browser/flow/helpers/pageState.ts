@@ -56,10 +56,10 @@ export const PAGE_STATES: readonly StateRule[] = [
     resolve: 'click Continue: it is plain text, not a button: `log inspect do click <ref of "Continue"> --live` (the ref from the step\'s snapshot), then a snapshot for the next state',
     person: false
   },
-  { id: 'automatedBehaviour', text: /suspect automated behaviou?r|we suspect automated/i, what: '"We suspect automated behaviour"', resolve: 'dismiss it, as Listaro did (rule 23): the Dismiss/Continue control, then go on', person: false },
+  { id: 'automatedBehaviour', text: /suspect automated behaviou?r|we suspect automated|نشتبه في وجود سلوك تلقائي/i, what: '"We suspect automated behaviour"', resolve: 'dismiss it, as Listaro did (rule 23): the Dismiss/Continue control, then go on', person: false },
   {
     id: 'browserNotificationsNotice',
-    text: /to allow or block browser notifications from facebook/i,
+    text: /to allow or block browser notifications from facebook|للسماح بإشعار المتصفح من فيسبوك/i,
     what: 'Facebook\'s browser-notifications notice over the page: its text covers its own Close, so nothing under it can be pressed (Hazleton, host 20261024T211541 steps 08-13)',
     resolve: 'press Escape (`log inspect do press Escape --live --account <a>`): it closes with no call, so the check is that the notice is gone. A flow clears it before its first click (rule 79)',
     person: false
@@ -209,7 +209,7 @@ export const RESOLVE_CALLS: Readonly<Record<string, (at: StateAt) => ResolveCall
   videoSelfie: () => null,
   textCaptcha: (at) => liveStep(at.account, 'solve'),
   checkpointStart: clickLabel(/(:\s*|")Continue"?\s*$/),
-  automatedBehaviour: clickLabel(/(:\s*|")(Dismiss|Continue)"?\s*$/),
+  automatedBehaviour: clickLabel(/(:\s*|")(Dismiss|Continue|تجاهل)"?\s*$/),
   browserNotificationsNotice: (at) => liveStep(at.account, 'press', ['Escape']),
   pastNoticeDialog: (at) => liveStep(at.account, 'press', ['Escape']),
   messengerPinCreate: (at) => (at.messengerPin ? { tool: 'flowMessengerPinCreateLive', input: { account: at.account, confirmLive: true } } : null),
