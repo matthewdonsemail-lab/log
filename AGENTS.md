@@ -1029,6 +1029,14 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     (`check:facebookClientDocs`) refuses a platform's doc that rea hasn't
     read or whose reasoning isn't written. The first Reddit run: 39 calls,
     33 read from their code, the other 6 from their step.
+86. 2026-10-25 · matt: the self-check's languages are checked by order.
+    AdsPower's browser (SunBrowser 154) adds `en-US, en-GB` after the
+    profile's own languages, whatever the profile says (Kamloops,
+    2026-10-24: `en-CA, en, en-US, en-GB`, three starts refused). The
+    self-check passes when `navigator.languages` starts with the pinned
+    languages (`en-CA, en`), in page and worker, so the account's language
+    still comes first; extras after them are allowed. `language`, Intl and
+    the number locale are still exactly the pinned locale (rules 16-17).
 
 ## Checks
 
