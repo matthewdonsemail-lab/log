@@ -4,12 +4,12 @@ import type { AgencyListing } from '../agencyListing/types'
 import type { ErrorCode } from '../../errors/catalog/index'
 import { listFacebookAccounts, setAccountStatus } from '../socialAccount/client'
 import { statusForIssue } from '../socialAccount/helpers/index'
-import { LOSING_STATUSES, TERMINAL_STATUSES } from '../socialAccount/types'
+import { accountBlocked, TERMINAL_STATUSES } from '../socialAccount/types'
 import type { AccountStatus, FacebookAccount } from '../socialAccount/types'
 import type { TwentyClient } from '../../twenty/graphql/index'
 import { countPostedToday, homeZones, pickAccount } from './helpers/index'
 import type { PickContext } from './helpers/index'
-import type { FillReport, LossReport, Replacement } from './types'
+import type { BlockedListing, FillReport, LossReport, Replacement, SweepReport } from './types'
 
 async function pickContext(twenty: TwentyClient, campaignId: string | null, exclude: string[], now: Date): Promise<PickContext> {
   const [accounts, published, campaignListings] = await Promise.all([
@@ -44,7 +44,7 @@ export async function setStatusAndReplace(
 ): Promise<LossReport> {
   await setAccountStatus(twenty, account.id, status, reason, detail, now)
   const report: LossReport = { account, status, lost: [], replacements: [] }
-  if (!LOSING_STATUSES.includes(status)) return report
+  if (!accountBlocked(status, reason)) return report
 
   const listings = await listListingsWhere(twenty, { socialAccountId: { eq: account.id } })
   report.lost = listings.filter((l) => l.status !== null && LOSABLE_STATUSES.includes(l.status))
@@ -60,6 +60,33 @@ export async function setStatusAndReplace(
     for (const old of lost) {
       report.replacements.push(await replaceOne(twenty, { ...old, status: 'accountLost' }, context, `account${status[0].toUpperCase()}${status.slice(1)}: ${account.accountName}`))
     }
+  }
+  return report
+}
+
+export async function blockedListings(twenty: TwentyClient): Promise<BlockedListing[]> {
+  const [accounts, listings] = await Promise.all([listFacebookAccounts(twenty), listListingsWhere(twenty)])
+  const byId = new Map(accounts.map((a) => [a.id, a]))
+  return listings.flatMap((listing) => {
+    const account = listing.socialAccountId ? byId.get(listing.socialAccountId) : undefined
+    if (!account || listing.status === null || !LOSABLE_STATUSES.includes(listing.status)) return []
+    return accountBlocked(account.status, account.statusReason) ? [{ listing, account }] : []
+  })
+}
+
+export async function sweepBlockedListings(twenty: TwentyClient, now: Date = new Date()): Promise<SweepReport> {
+  const blocked = await blockedListings(twenty)
+  const report: SweepReport = { lost: blocked, replacements: [] }
+  for (const { listing, account } of blocked) {
+    await setListingStatus(twenty, listing.id, 'accountLost', { lastErrorCode: account.statusReason, lastError: `account ${account.status}${account.statusReason ? ` (${account.statusReason})` : ''}: ${account.accountName}` })
+  }
+  const byCampaign = new Map<string, BlockedListing[]>()
+  for (const row of blocked) {
+    if (row.listing.campaignId) byCampaign.set(row.listing.campaignId, [...(byCampaign.get(row.listing.campaignId) ?? []), row])
+  }
+  for (const [campaignId, rows] of byCampaign) {
+    const context = await pickContext(twenty, campaignId, rows.map((r) => r.account.id), now)
+    for (const { listing } of rows) report.replacements.push(await replaceOne(twenty, { ...listing, status: 'accountLost' }, context, 'accountBlocked'))
   }
   return report
 }

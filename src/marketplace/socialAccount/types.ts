@@ -25,7 +25,13 @@ export const USABLE_STATUSES: Record<RunPurpose, readonly AccountStatus[]> = {
   check: ACCOUNT_STATUSES
 }
 
-export const LOSING_STATUSES: readonly AccountStatus[] = ['restricted', 'banned', 'dead', 'deactivated']
+export const LOSING_STATUSES: readonly AccountStatus[] = ['checkpoint', 'restricted', 'banned', 'dead', 'deactivated']
+
+export const BLOCKING_REASONS: readonly string[] = ['wrongPassword']
+
+export function accountBlocked(status: AccountStatus | null, reason: string | null): boolean {
+  return (status !== null && LOSING_STATUSES.includes(status)) || (reason !== null && BLOCKING_REASONS.includes(reason))
+}
 
 export const TERMINAL_STATUSES: readonly AccountStatus[] = ['banned', 'dead']
 

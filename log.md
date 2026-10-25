@@ -6546,3 +6546,20 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `PRESSING_ACTIONS` includes `setLocation`, so a flow clears the known overlays (the browser-notifications notice) before the location step, the publish flow's first press. setLocation presses Escape after it reloads Marketplace, since the reload brings the notice back. The host's wrong-password check also matches "The password you entered is incorrect."
 Why: matt asked for the remaining US listings to go up. Kingston's and Wilkes-Barre's first publishes timed out at setLocation with the page greyed by the notice over the Location button (Kingston flow 20261025T041059 step 02, Wilkes-Barre 20261025T041433 step 05, after the flow's own Escape). Pittston's host signed in twice and ended signInNotFinished: the login page said "The password you entered is incorrect.", which the old pattern ("you've entered") missed.
 Checked: `overlays.test.ts` (6 pass) has setLocation among the pressing actions and goto not; Kingston's second run cleared the notice and reached the location save (`CometMarketplaceSetBuyLocationMutation` then answered 1675030, a separate issue); the wrong-password pattern matches both wordings. `tsc --noEmit` clean. Live runs after this were stopped by AdsPower refusing to start on a nearly full disk.
+
+## 2026-10-25 06:45Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `src/cli/flow/index.ts`: changed function runFlow
+- `src/cli/host/index.ts`: changed const hostCommand
+- `src/cli/listing/index.ts`: changed const LISTING_USAGE, const LISTING_INPUT, const listingCommand
+- `src/marketplace/replacement/client.ts`: added function blockedListings, function sweepBlockedListings · changed function setStatusAndReplace
+- `src/marketplace/replacement/replacement.test.ts`: added test "a checkpoint is a loss: its listings go ACCOUNT_LOST", test "a wrong password leaves the account needing a login, and its listings are dead", test "the sweep finds listings left on accounts already blocked, and only those"
+- `src/marketplace/replacement/types.ts`: added interface BlockedListing, interface SweepReport
+- `src/marketplace/socialAccount/types.ts`: added const BLOCKING_REASONS, function accountBlocked · changed const LOSING_STATUSES
+
+What changed: an account is blocked when its status is checkpoint, restricted, banned, dead or deactivated, or its reason is wrongPassword (`accountBlocked`, `LOSING_STATUSES` gains checkpoint, `BLOCKING_REASONS`). `setStatusAndReplace` marks every listing of a blocked account ACCOUNT_LOST and hands a campaign's copy to another account in the same country. The host and `log flow run` now record the account's issue when they end on one (`recordAccountIssue`), so a checkpoint or wrong password reaches the account and its listings. `log facebook listing sweep [--apply]` finds every listing still READY, ACTIVE or the like on a blocked account (`blockedListings`) and marks it (`sweepBlockedListings`).
+Why: matt: "if we are basically blocked on that account then all of the listings are dead... fix that". Twenty held 17 listings and only 4 were live: the host and flows reported an account issue (Scranton ineligible, Pittston and Nanticoke wrong password, Wilkes-Barre and Exeter checkpointed) without writing it to the account, so its listings stayed READY; a checkpoint and a wrong password weren't losses at all.
+Checked: `replacement.test.ts` (10 pass): a checkpoint and a wrong password each put the account's listings in ACCOUNT_LOST and leave SOLD alone; the sweep finds only listings on blocked accounts and finds none after it runs. Full `bun test`: 1006 pass. Live on Twenty: Scranton RESTRICTED (suspended), Pittston and Nanticoke needsLogin (wrongPassword), one listing each now ACCOUNT_LOST; `log facebook listing sweep` then finds 0. `tsc --noEmit` clean.

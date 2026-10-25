@@ -130,7 +130,7 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 68 command tools + saved flows"]
+  mcp["MCP server log: 69 command tools + saved flows"]
   bin["bin/log.ts"]
   runCli["runCli: 38 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
@@ -165,7 +165,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | [`log launch`](#log-launch) | Guided Clack menu over the listings, accounts and live commands | any (none) | `--json` | none | terminal only: prompts in a terminal (Clack). Call the commands it wraps directly. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
 | [`log facebook listings`](#log-facebook-listings) | List the Twenty listings, by status, account or campaign | `facebook` first | `--status <STATUS>` `--account <accountName>` `--campaign <campaignId>` `--json` | none | `listings` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
-| [`log facebook listing`](#log-facebook-listing) | Show one Twenty listing, or create one for an account from a JSON file | `facebook` first | `--json` `--account <accountName>` `--file <listing.json>` `--live` `--bypass` `--now` | none | `listing`, `listingCreate`, `listingRemove`, `listingRemoveLive`, `listingLint` | PreToolUse, PostToolUse · PostToolUse | no | 13, 71, 72, 30, 38, 39, 40, 41 |
+| [`log facebook listing`](#log-facebook-listing) | Show one Twenty listing, or create one for an account from a JSON file | `facebook` first | `--json` `--account <accountName>` `--file <listing.json>` `--apply` `--live` `--bypass` `--now` | none | `listing`, `listingCreate`, `listingRemove`, `listingRemoveLive`, `listingSweep`, `listingLint` | PreToolUse, PostToolUse · PostToolUse | no | 13, 71, 72, 30, 38, 39, 40, 41 |
 | [`log facebook accounts`](#log-facebook-accounts) | List the FACEBOOK accounts in Twenty: status, home, proxy, and whether each may run | `facebook` first | `--json` | none | `accounts` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
 | [`log facebook account`](#log-facebook-account) | Show one account, or set its status (banned/dead/restricted replace its campaign listings) | `facebook` first | `--json` `--from <folder>` `--reason <text>` `--detail <text>` | none | `accountShow`, `accountResave`, `accountResetOpens`, `accountStatus` | PreToolUse, PostToolUse · PostToolUse | no | 13, 37, 78, 30, 38, 39, 40, 41 |
 | [`log adsPower`](#log-adspower) | AdsPower: Local API status, its profiles, and one profile per Twenty account (sync) | any (none) | `--json` `--apply` `--account <accountName>` `--homes <US,IE>` | none | `adsPower` | PreToolUse, PostToolUse · PostToolUse | no | 42, 44, 78, 30, 38, 39, 40, 41 |
@@ -576,11 +576,12 @@ log facebook listings [--status <STATUS>] [--account <accountName>] [--campaign 
 
 #### log facebook listing
 
-Show one Twenty listing, or create one for an account from a JSON file MCP tools: `listing`, `listingCreate`, `listingRemove`, `listingRemoveLive`, `listingLint`, one per form, with named fields.
+Show one Twenty listing, or create one for an account from a JSON file MCP tools: `listing`, `listingCreate`, `listingRemove`, `listingRemoveLive`, `listingSweep`, `listingLint`, one per form, with named fields.
 
 ```text
 log facebook listing <agencyListingId> [--json]
 log facebook listing create --account <accountName> --file <listing.json> [--json]
+log facebook listing sweep [--apply] [--json]   (every listing whose account is blocked (checkpoint, restricted, banned, dead, deactivated, or a wrong password) is marked ACCOUNT_LOST, and a campaign's copy goes to another account; a dry run unless --apply)
 log facebook listing lint --file <listing.json> [--json]   (the copy rules on the file's copy versions, and whether it would publish; nothing is saved)
 log facebook listing remove <agencyListingId|facebookListingId> [--live] [--bypass] [--now] [--json]   (delete it on Facebook through the recorded flow marketplaceListingDelete, then REMOVED in Twenty; a dry run unless --live)
 The file: title, description, price, priceCurrency, category, condition (new|usedLikeNew|usedGood|usedFair), photos (paths or URLs), locationQuery ('City, State' with the state written out, 'Bethlehem, Pennsylvania', or 'City, Country': an abbreviation, zip or number is refused, rule 72), locationCity, locationCountry, locationPostalCode (kept, never typed), copyVersions ([{ id, title, description }], written by skills/listingCopy; the first is the ad's own title and description; each copy of the ad picks the one least like what is live in its city).

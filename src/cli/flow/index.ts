@@ -1,3 +1,5 @@
+import { recordAccountIssue } from "../../marketplace/replacement/index.ts";
+import { findAccount, toTwentyEnum } from "../../marketplace/socialAccount/index.ts";
 import { existsSync, readFileSync } from "node:fs";
 import { basename, dirname, join } from "node:path";
 import { createActor, fromPromise, toPromise } from "xstate";
@@ -99,7 +101,9 @@ export async function runFlow(
       mapInspectRun(runDir);
     } catch {
     }
-    const afterLines = output.result === "done" && after ? await after(output) : [];
+    const issue = output.steps.find((s) => !s.ok)?.issue;
+    const blocked = issue ? await recordAccountIssue(context.twenty, await findAccount(context.twenty, account.accountName), issue, output.failedAt) : null;
+    const afterLines = output.result === "done" && after ? await after(output) : blocked ? [`${account.accountName} is now ${toTwentyEnum(blocked.status)} (${issue}): ${blocked.lost.length} listing(s) marked ACCOUNT_LOST, ${blocked.replacements.filter((r) => r.next).length} handed to another account`] : [];
     if (flags["json"]) return { code: output.result === "done" ? 0 : 1, stdout: JSON.stringify({ ...output, ...(afterLines.length ? { after: afterLines } : {}) }, null, 2) };
     return { code: output.result === "done" ? 0 : 1, stdout: [renderRun(flow, output, runDir), ...afterLines].join("\n") };
   });
