@@ -7469,3 +7469,31 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: log inspect and the account's AdsPower browser work on every platform with a browser path, not only Facebook. PLATFORM_SITES (platforms.ts) says, per platform, its Twenty value, cookie domain, hosts, home page, whether it needs a proxy and whether it has a browser (Facebook: proxy required, browser; X: no proxy, no browser). checkRunnable lets a known browser platform through and, when it needs no proxy, writes a direct run (proxy.json direct with its platform); an unset status is allowed; prepareRun gives a no-home direct account en-US on the machine's timezone (directHome) and keeps its cookies under the platform's own domain. The Python gate takes a direct run only for a platform other than Facebook (rule 12), reads this machine's own exit and skips the Facebook speed probe; the AdsPower opener sets no proxy for it and carries the account's own platform cookies in. Inspect's goto and --url take any known platform's hosts, it opens on the account's platform home, the session's notable list follows the platform's hosts, and each internal call is named by Facebook's friendly name, a GraphQL operationName or operation, else its path. adsPower sync lists every browser platform's accounts; a no-proxy one needs no home and gets an en-US profile on its platform's host. A row with an empty accountName is found by its name (findAccount and platformKit). log new platform writes the platform's PLATFORM_SITES row through the syntax tree (--hosts, --home, --noProxy, --noBrowser) and check:platforms refuses a platform without one. Rule 84, MCP instruction 23.
 Why: matt asked to make Reddit and explore it with log inspect in the account's AdsPower browser (Maleficent-Try-8338, cookies in Twenty, its handle in name), with no proxy, like X.
 Checked: 6 new tests (Facebook still needs its proxy, X has no browser path, an unknown platform is refused, sites by Twenty value, goto only to known hosts and https, call names by friendly name, operation or path, the Python gate refuses a direct Facebook run); bun run check 1071 pass.
+
+## 2026-10-25 12:58Z · feat/redditPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/platforms/reddit/README.md`: new file
+- `python/browser/proxyGate.py`: added def same_zone · changed def exit_checked, def compare
+- `python/redditApi/__init__.py`: new file, no top-level declarations
+- `python/redditApi/engine.py`: added const ROOT, const PLATFORM, const LIBRARY, def ping, const ACTIONS
+- `src/browser/run/directRun.test.ts`: added test "the self-check takes two names of one timezone as the same zone, and two zones apart as different"
+- `src/cli/reddit/index.ts`: added const REDDIT_SESSION_USAGE, const REDDIT_SESSION_INPUT, function render, const redditSessionCommand
+- `src/cli/reddit/reddit.test.ts`: added function fixture, function run, test "loggedIn: the engine's answer goes to Twenty", test "an account of another platform is refused before the engine is called", test "the generated engine answers engineNotBuilt until its client is wired in"
+- `src/cli/runner/helpers/platforms.ts`: changed const PLATFORMS, const PLATFORM_LABELS, const PLATFORM_SITES
+- `src/cli/runner/index.ts`: changed const COMMANDS, function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/reddit/account/index.ts`: added export from "./session/index.ts"
+- `src/reddit/account/session/client.ts`: added const REDDIT_PLATFORM, const REDDIT_COOKIE_DOMAIN, function findRedditAccount, function redditGate, function runRedditEngine, function recordRedditSession
+- `src/reddit/account/session/index.ts`: added export from "./client"
+- `src/twenty/graphql/generated/schema.ts`: changed type SocialAccountPlatformEnum, interface SocialAccount, interface SocialAccountConnection, interface SocialAccountGroupByConnection, interface SocialAccountGenqlSelection, interface SocialAccountConnectionGenqlSelection, interface SocialAccountGroupByConnectionGenqlSelection, interface SocialAccountCreateInput, interface SocialAccountUpdateInput, interface SocialAccountFilterInput, interface SocialAccountOrderByInput, interface SocialAccountOrderByWithGroupByInput, interface SocialAccountOrderByWithGroupByAggregateInput, interface SocialAccountGroupByInput, const enumSocialAccountPlatformEnum
+- `src/twenty/graphql/generated/types.ts`: no declaration changed (comments, formatting or line endings)
+
+What changed: Reddit is log-cli's third platform, made whole by `log new platform reddit --noProxy` over MCP (hosts reddit.com, redd.it, redditmedia.com; home https://www.reddit.com/; session cookie reddit_session): its account session, `log reddit session check` and MCP tool, a direct-API engine in python/redditApi (engineNotBuilt until a client is vendored) and docs/platforms/reddit, wired through the syntax tree. The Twenty client is regenerated and now has REDDIT. The gate's self-check compares timezones with `same_zone` (the same UTC offset through the year) instead of their names.
+Why: matt asked for Reddit as a new platform, with no proxy like X, to load Maleficent-Try-8338's AdsPower browser in `log inspect` and record Reddit's internal calls. The self-check refused the first no-proxy run because the browser said Asia/Saigon and the exit lookup said Asia/Ho_Chi_Minh, two names of one zone.
+Checked: a 12-step inspect run on Maleficent-Try-8338 (gate on this machine's exit, AdsPower profile with no proxy, self-check passed, logged in; goal met 86%, 0 findings); a test that same_zone takes Asia/Saigon and Asia/Ho_Chi_Minh as one and New York and Chicago as two; bun run check (every gate, 1075 tests).

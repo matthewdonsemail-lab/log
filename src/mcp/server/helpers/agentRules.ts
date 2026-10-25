@@ -76,6 +76,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   new: [1, 2, 63, 64, 83],
   logout: [],
   whoami: [],
+  redditSession: [13, 63, 64, 73, 83],
 };
 
 export const EVERY_TOOL_RULES = [30, 38, 39, 40, 41];

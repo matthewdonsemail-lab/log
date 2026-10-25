@@ -39,6 +39,8 @@ import { warmupCommand } from "../warmup/index.ts";
 import { watchCommand } from "../watch/index.ts";
 import { isPlatform, renderUsage, resolvePlatformForm } from "./helpers/index.ts";
 import type { Command, CommandContext } from "./types.ts";
+import { redditSessionCommand } from "../reddit/index.ts";
+import { runRedditEngine } from "../../reddit/account/session/index.ts";
 
 export * from "./helpers/index.ts";
 export type { Command, CommandContext, CommandResult, MarketplaceData } from "./types.ts";
@@ -90,6 +92,7 @@ export const COMMANDS: Command[] = [
   dmCommand,
   queueCommand,
   newCommand,
+  redditSessionCommand,
 ];
 
 const ALIASES: Record<string, string> = {
@@ -118,6 +121,7 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     sleep: overrides.sleep,
     directRead: overrides.directRead ?? readGroupDirect,
     directTwitter: overrides.directTwitter ?? runTwitterEngine,
+    directReddit: overrides.directReddit ?? runRedditEngine,
   };
 }
 

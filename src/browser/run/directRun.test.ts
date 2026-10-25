@@ -51,4 +51,11 @@ describe('runs by platform', () => {
     if (run.error) return
     expect(run.stdout.trim().split('\n').pop()).toBe('noProxy')
   })
+
+  test('the self-check takes two names of one timezone as the same zone, and two zones apart as different', () => {
+    const script = `import sys; sys.path.insert(0, 'python'); from browser import proxyGate\nprint(proxyGate.same_zone('Asia/Saigon', 'Asia/Ho_Chi_Minh'), proxyGate.same_zone('America/New_York', 'America/Chicago'), proxyGate.same_zone('Europe/Dublin', None))`
+    const run = spawnSync(process.env.LOG_PYTHON || 'python', ['-c', script], { encoding: 'utf8' })
+    if (run.error) return
+    expect(run.stdout.trim().split('\n').pop()).toBe('True False False')
+  })
 })

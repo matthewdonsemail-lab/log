@@ -333,7 +333,7 @@ def exit_checked(ip: str, locate: Any = None) -> str | None:
         where = (locate or locate_ip)(ip)
     except Exception:
         where = {"country": "", "timezone": ""}
-    if where.get("country") != _armed["country"] or where.get("timezone") != _armed["timezone"]:
+    if where.get("country") != _armed["country"] or not same_zone(where.get("timezone"), _armed["timezone"]):
         return f"the browser exits at {ip} in {where.get('country') or 'an unknown country'} ({where.get('timezone') or 'no timezone'}), the gate checked {_armed['exitIp']} in {_armed['country']} ({_armed['timezone']})"
     log(f"The browser exits at {ip}, not the gate's {_armed['exitIp']}: checked it, {where['country']} on {where['timezone']}, the same as the account's")
     _armed["exitIp"] = ip
@@ -393,12 +393,32 @@ def expected() -> dict[str, Any]:
     return {"timezone": _armed["timezone"], "locale": _armed["locale"], "languages": _armed["languages"], "exitIp": _armed["exitIp"]}
 
 
+def same_zone(a: str | None, b: str | None) -> bool:
+    if not a or not b:
+        return False
+    if a == b:
+        return True
+    from datetime import datetime, timezone
+    from zoneinfo import ZoneInfo
+
+    try:
+        left, right = ZoneInfo(a), ZoneInfo(b)
+    except Exception:
+        return False
+    year = datetime.now(timezone.utc).year
+    for month in range(1, 13):
+        moment = datetime(year, month, 15, 12, tzinfo=timezone.utc)
+        if moment.astimezone(left).utcoffset() != moment.astimezone(right).utcoffset():
+            return False
+    return True
+
+
 def compare(observed: dict[str, Any], want: dict[str, Any]) -> tuple[str, str] | None:
     for realm in ("page", "worker"):
         values = observed.get(realm) or {}
         if values.get("error") or not values:
             return "selfCheckFailed", f"{realm}: {values.get('error') or 'no answer'}"
-        if values.get("timeZone") != want["timezone"]:
+        if not same_zone(values.get("timeZone"), want["timezone"]):
             return "browserTimezoneMismatch", f"the {realm} is on {values.get('timeZone')}, the exit IP is on {want['timezone']}"
     if (observed["page"].get("offset") != observed["worker"].get("offset")):
         return "browserTimezoneMismatch", f"page offset {observed['page'].get('offset')} != worker {observed['worker'].get('offset')}"

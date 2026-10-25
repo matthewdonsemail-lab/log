@@ -33390,17 +33390,14 @@ export default {
                 1
             ]
         },
-        "SocialAccountPlatformEnum": {},
         "SocialAccountAccountStatusEnum": {},
+        "SocialAccountPlatformEnum": {},
         "SocialAccount": {
             "password": [
                 1
             ],
             "phoneNumber": [
                 1
-            ],
-            "platform": [
-                383
             ],
             "email": [
                 1
@@ -33550,13 +33547,16 @@ export default {
                 1
             ],
             "accountStatus": [
-                384
+                383
             ],
             "sessionState": [
                 1
             ],
             "sessionCheckedAt": [
                 79
+            ],
+            "platform": [
+                384
             ],
             "timelineActivities": [
                 539,
@@ -33823,21 +33823,6 @@ export default {
             "percentageNotEmptyPhoneNumber": [
                 84
             ],
-            "countUniqueValuesPlatform": [
-                76
-            ],
-            "countEmptyPlatform": [
-                76
-            ],
-            "countNotEmptyPlatform": [
-                76
-            ],
-            "percentageEmptyPlatform": [
-                84
-            ],
-            "percentageNotEmptyPlatform": [
-                84
-            ],
             "countUniqueValuesEmail": [
                 76
             ],
@@ -34731,6 +34716,21 @@ export default {
             ],
             "maxSessionCheckedAt": [
                 79
+            ],
+            "countUniqueValuesPlatform": [
+                76
+            ],
+            "countEmptyPlatform": [
+                76
+            ],
+            "countNotEmptyPlatform": [
+                76
+            ],
+            "percentageEmptyPlatform": [
+                84
+            ],
+            "percentageNotEmptyPlatform": [
+                84
             ],
             "edges": [
                 386
@@ -34776,21 +34776,6 @@ export default {
             "percentageNotEmptyPhoneNumber": [
                 84
             ],
-            "countUniqueValuesPlatform": [
-                76
-            ],
-            "countEmptyPlatform": [
-                76
-            ],
-            "countNotEmptyPlatform": [
-                76
-            ],
-            "percentageEmptyPlatform": [
-                84
-            ],
-            "percentageNotEmptyPlatform": [
-                84
-            ],
             "countUniqueValuesEmail": [
                 76
             ],
@@ -35684,6 +35669,21 @@ export default {
             ],
             "maxSessionCheckedAt": [
                 79
+            ],
+            "countUniqueValuesPlatform": [
+                76
+            ],
+            "countEmptyPlatform": [
+                76
+            ],
+            "countNotEmptyPlatform": [
+                76
+            ],
+            "percentageEmptyPlatform": [
+                84
+            ],
+            "percentageNotEmptyPlatform": [
+                84
             ],
             "edges": [
                 386
@@ -35735,9 +35735,6 @@ export default {
             "phoneNumber": [
                 1
             ],
-            "platform": [
-                383
-            ],
             "email": [
                 1
             ],
@@ -35886,13 +35883,16 @@ export default {
                 1
             ],
             "accountStatus": [
-                384
+                383
             ],
             "sessionState": [
                 1
             ],
             "sessionCheckedAt": [
                 79
+            ],
+            "platform": [
+                384
             ],
             "__typename": [
                 1
@@ -35905,9 +35905,6 @@ export default {
             "phoneNumber": [
                 1
             ],
-            "platform": [
-                383
-            ],
             "email": [
                 1
             ],
@@ -36056,13 +36053,16 @@ export default {
                 1
             ],
             "accountStatus": [
-                384
+                383
             ],
             "sessionState": [
                 1
             ],
             "sessionCheckedAt": [
                 79
+            ],
+            "platform": [
+                384
             ],
             "__typename": [
                 1
@@ -36074,9 +36074,6 @@ export default {
             ],
             "phoneNumber": [
                 7
-            ],
-            "platform": [
-                395
             ],
             "email": [
                 7
@@ -36226,13 +36223,16 @@ export default {
                 7
             ],
             "accountStatus": [
-                396
+                395
             ],
             "sessionState": [
                 7
             ],
             "sessionCheckedAt": [
                 98
+            ],
+            "platform": [
+                396
             ],
             "and": [
                 394
@@ -36247,7 +36247,7 @@ export default {
                 1
             ]
         },
-        "SocialAccountPlatformEnumFilter": {
+        "SocialAccountAccountStatusEnumFilter": {
             "eq": [
                 383
             ],
@@ -36282,7 +36282,7 @@ export default {
                 1
             ]
         },
-        "SocialAccountAccountStatusEnumFilter": {
+        "SocialAccountPlatformEnumFilter": {
             "eq": [
                 384
             ],
@@ -36324,9 +36324,6 @@ export default {
             "phoneNumber": [
                 11
             ],
-            "platform": [
-                11
-            ],
             "email": [
                 11
             ],
@@ -36481,6 +36478,9 @@ export default {
                 11
             ],
             "sessionCheckedAt": [
+                11
+            ],
+            "platform": [
                 11
             ],
             "__typename": [
@@ -36497,9 +36497,6 @@ export default {
             "phoneNumber": [
                 11
             ],
-            "platform": [
-                11
-            ],
             "email": [
                 11
             ],
@@ -36655,6 +36652,9 @@ export default {
             ],
             "sessionCheckedAt": [
                 69
+            ],
+            "platform": [
+                11
             ],
             "__typename": [
                 1
@@ -36692,21 +36692,6 @@ export default {
                 11
             ],
             "percentageNotEmptyPhoneNumber": [
-                11
-            ],
-            "countUniqueValuesPlatform": [
-                11
-            ],
-            "countEmptyPlatform": [
-                11
-            ],
-            "countNotEmptyPlatform": [
-                11
-            ],
-            "percentageEmptyPlatform": [
-                11
-            ],
-            "percentageNotEmptyPlatform": [
                 11
             ],
             "countUniqueValuesEmail": [
@@ -37603,6 +37588,21 @@ export default {
             "maxSessionCheckedAt": [
                 11
             ],
+            "countUniqueValuesPlatform": [
+                11
+            ],
+            "countEmptyPlatform": [
+                11
+            ],
+            "countNotEmptyPlatform": [
+                11
+            ],
+            "percentageEmptyPlatform": [
+                11
+            ],
+            "percentageNotEmptyPlatform": [
+                11
+            ],
             "__typename": [
                 1
             ]
@@ -37612,9 +37612,6 @@ export default {
                 13
             ],
             "phoneNumber": [
-                13
-            ],
-            "platform": [
                 13
             ],
             "email": [
@@ -37745,6 +37742,9 @@ export default {
             ],
             "sessionCheckedAt": [
                 68
+            ],
+            "platform": [
+                13
             ],
             "__typename": [
                 1
