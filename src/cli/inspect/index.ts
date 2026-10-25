@@ -1,3 +1,4 @@
+import { platformOfAccount, PLATFORMS, siteOfAccount } from "../runner/helpers/platforms.ts";
 import { spawn } from "node:child_process";
 import { closeSync, existsSync, mkdirSync, openSync, readFileSync, statSync } from "node:fs";
 import { homedir } from "node:os";
@@ -18,7 +19,7 @@ import type { CommandContext } from "../runner/types.ts";
 import { watchCheckpoint } from "./helpers/index.ts";
 
 export const INSPECT_USAGE = [
-  "Usage: log inspect start --account <accountName> [--goal <text>] [--url <https://www.facebook.com/...>] [--bypass] [--now] [--noIdleMouse] [--detach]   (one session per account: two accounts can be open at once; --detach runs it as its own process and returns once it is open)",
+  "Usage: log inspect start --account <accountName> [--goal <text>] [--url <https://www.facebook.com/... or the platform's own page>] [--bypass] [--now] [--noIdleMouse] [--detach]   (one session per account: two accounts can be open at once; --detach runs it as its own process and returns once it is open)",
   "       log inspect map [<runDir>] [--all]  (the recorded steps as states and transitions: flow.md, machine.json; default the latest run; --all collates every run)",
   "       log inspect do <goto <url>|snapshot|back|wait [s]|click <ref>|type <ref> <text>|press <key>|upload <ref> <file>|highlight <role> <name>|solve|signIn|code|pin|stop> [--live] [--goal <text>] [--timeout <s>] [--json] [--account <accountName>]   (--account picks the session when more than one is open; every step's internal API calls are read, and a step no known state names is read by SubQ against the goal, rules 73-74)",
   "       log inspect read <stepFolder> --account <accountName> [--goal <text>] [--json]   (read a recorded step again: its internal API calls, the page and the earlier steps, by SubQ when no known state names it)",
@@ -86,7 +87,7 @@ export const INSPECT_INPUT: CommandInput = {
       positionals: [],
       flags: [
         { name: "account", kind: "string", required: true, description: "The account to open" },
-        { name: "url", kind: "string", description: "The first page (https://www.facebook.com/...)" },
+        { name: "url", kind: "string", description: "The first page (https://www.facebook.com/..., or the account's own platform; default: the platform's home)" },
         { name: "bypass", kind: "boolean", bypass: true, description: "Outside the account's waking hours, only when matt asked (rule 20)" },
         { name: "now", kind: "boolean", description: "Skip the 10-minute launch gap only (rule 30)" },
         { name: "noIdleMouse", kind: "boolean", description: "No idle mouse loop between steps" },
@@ -103,7 +104,7 @@ export const INSPECT_INPUT: CommandInput = {
         { name: "values", kind: "rest", description: "The step's values in order, each whole: goto [url], wait [s], click [ref], type [ref, text], press [key], upload [ref, file], highlight [role, name]" },
       ],
       flags: [
-        { name: "live", kind: "boolean", live: true, description: `Needed for ${LIVE_ACTIONS.join(", ")}: they act on Facebook, only when matt asked (rule 8)` },
+        { name: "live", kind: "boolean", live: true, description: `Needed for ${LIVE_ACTIONS.join(", ")}: they act on the platform, only when matt asked (rule 8)` },
         { name: "goal", kind: "string", description: "What this step is for, if not the session's goal (rule 74)" },
         { name: "timeout", kind: "integer", description: "Seconds to wait for the step" },
         { name: "account", kind: "string", description: "Picks the session when more than one is open" },
@@ -199,7 +200,7 @@ export const inspectCommand: Command = {
 
     if (sub === "start") {
       const url = typeof parsed.flags["url"] === "string" ? parsed.flags["url"] : null;
-      if (url && !parseInspectAction(["goto", url]).ok) return { code: 1, stderr: `log inspect: --url takes a https://*.facebook.com URL\n${INSPECT_USAGE}` };
+      if (url && !parseInspectAction(["goto", url]).ok) return { code: 1, stderr: `log inspect: --url takes a https URL on a platform log-cli knows\n${INSPECT_USAGE}` };
       const wanted = typeof parsed.flags["account"] === "string" ? parsed.flags["account"] : null;
       if (wanted) {
         const accountName = await findAccount(context.twenty, wanted).then((a) => a.accountName, () => wanted);
@@ -230,7 +231,8 @@ export const inspectCommand: Command = {
             repliesPath: current.repliesPath,
             loginPath: run.loginPath,
             idleMouse: !parsed.flags["noIdleMouse"],
-            startUrl: url,
+            startUrl: url ?? (platformOfAccount(account) === PLATFORMS[0] ? null : siteOfAccount(account).home),
+            site: { platform: platformOfAccount(account), domain: siteOfAccount(account).domain, hosts: siteOfAccount(account).hosts },
             browser: browserFor(account),
           });
         } finally {
@@ -245,7 +247,7 @@ export const inspectCommand: Command = {
       const action = parseInspectAction(rest);
       if (!action.ok) return { code: 1, stderr: `log inspect: ${action.error}\n${INSPECT_USAGE}` };
       if (LIVE_ACTIONS.includes(action.action) && !parsed.flags["live"]) {
-        return { code: 1, stderr: `log inspect: ${action.action} acts on Facebook: add --live when matt asked for it (rule 8)` };
+        return { code: 1, stderr: `log inspect: ${action.action} acts on the platform: add --live when matt asked for it (rule 8)` };
       }
       const open = openInspects();
       const wanted = typeof parsed.flags["account"] === "string" ? parsed.flags["account"] : undefined;

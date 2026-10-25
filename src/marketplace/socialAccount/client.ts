@@ -17,7 +17,7 @@ export function toFacebookAccount(row: SocialAccountRow): FacebookAccount {
   const status = row.accountStatus ? fromTwentyEnum(row.accountStatus) : null
   return {
     id: row.id,
-    accountName: row.accountName?.trim() || row.id,
+    accountName: row.accountName?.trim() || (row.platform && row.platform !== 'FACEBOOK' ? row.name?.trim() : '') || row.id,
     label: row.name?.trim() || row.accountName?.trim() || row.id,
     platform: row.platform ?? null,
     proxy: row.proxy?.trim() || null,
@@ -58,13 +58,19 @@ export async function listFacebookAccounts(twenty: TwentyClient): Promise<Facebo
   return rows.map(toFacebookAccount).sort((a, b) => a.accountName.localeCompare(b.accountName))
 }
 
+export async function listBrowserAccounts(twenty: TwentyClient, platforms: readonly string[]): Promise<FacebookAccount[]> {
+  const rows = (await twenty.list(SOCIAL_ACCOUNTS, {})).filter((r) => platforms.includes(String(r.platform ?? '')))
+  return rows.map(toFacebookAccount).sort((a, b) => a.accountName.localeCompare(b.accountName))
+}
+
 export async function findAccount(twenty: TwentyClient, ref: string): Promise<FacebookAccount> {
   const key = ref.trim().replace(/^@/, '')
   if (UUID.test(key)) {
     const row = await twenty.get(SOCIAL_ACCOUNTS, key)
     if (row) return toFacebookAccount(row)
   }
-  const rows = await twenty.list(SOCIAL_ACCOUNTS, { accountName: { eq: key } })
+  const named = await twenty.list(SOCIAL_ACCOUNTS, { accountName: { eq: key } })
+  const rows = named.length ? named : (await twenty.list(SOCIAL_ACCOUNTS, { name: { eq: key } })).filter((r) => r.platform !== 'FACEBOOK' && !r.accountName?.trim())
   const facebook = rows.filter((r) => r.platform === 'FACEBOOK')
   const match = facebook.length ? facebook : rows
   if (match.length === 0) throw new TwentyError('accountNotFound', `no socialAccount "${key}"`)

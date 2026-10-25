@@ -996,6 +996,26 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     label, src, command, engine, session route, rules or docs.
     `src/scaffold/platform`, `src/cli/new`.
 
+84. 2026-10-25 · matt: `log inspect` and the account's AdsPower browser
+    work on every platform, not only Facebook, so a new platform is explored
+    the same way (rules 29, 48). One table says what each platform is,
+    `PLATFORM_SITES` (`src/cli/runner/helpers/platforms.ts`): its Twenty
+    value, cookie domain, hosts, home page, whether it needs a proxy and
+    whether it has a browser path. Facebook needs its proxy (rule 12,
+    unchanged; the gate refuses a direct run for it); X has no browser path
+    (rule 80). matt, for Reddit: "no proxy, like X": a platform marked
+    `proxy: none` opens its AdsPower profile with no proxy, the gate reads
+    this machine's own exit and the profile's timezone follows it; an account
+    with no home runs in en-US on the machine's timezone. `log inspect` goes
+    only to known platforms' hosts, opens on the account's platform home,
+    carries the account's own cookies in, and names each internal call by
+    Facebook's friendly name or a GraphQL `operationName`/`operation`, else
+    its path. `log adsPower sync` gives a profile to every browser platform's
+    accounts (a no-proxy one needs no home). A row whose `accountName` is
+    empty is found by its `name`. `log new platform` writes the platform's
+    row (`--hosts`, `--home`, `--noProxy`, `--noBrowser`), and
+    `check:platforms` refuses a platform without one.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

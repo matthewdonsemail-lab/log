@@ -1,3 +1,4 @@
+import { siteOfAccount } from '../../../cli/runner/helpers/platforms'
 import { HOME_COUNTRIES } from '../../../marketplace/home/index'
 import type { FacebookAccount } from '../../../marketplace/socialAccount/index'
 import type { CreateProfileBody } from '../types'
@@ -6,14 +7,15 @@ export const twentyRemark = (accountId: string) => `log-cli twenty:${accountId}`
 export const remarkAccountId = (remark: string | null): string | null => remark?.match(/twenty:(\S+)/)?.[1] ?? null
 
 export function profileRequest(account: FacebookAccount, groupId: string): CreateProfileBody | null {
-  const home = HOME_COUNTRIES[account.homeCountry ?? '']
+  const site = siteOfAccount(account)
+  const home = HOME_COUNTRIES[account.homeCountry ?? ''] ?? (site.proxy === 'none' ? HOME_COUNTRIES.US : undefined)
   if (!home) return null
   const language = [home.locale, home.locale.split('-')[0]]
   return {
     name: account.accountName,
     group_id: groupId,
     remark: twentyRemark(account.id),
-    platform: 'facebook.com',
+    platform: site.hosts[0],
     user_proxy_config: { proxy_soft: 'no_proxy' },
     fingerprint_config: {
       browser_kernel_config: { type: 'chrome', version: 'ua_auto' },

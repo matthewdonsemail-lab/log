@@ -7436,3 +7436,36 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: src/scaffold/platform/platform.test.ts plans and applies a platform called scaffoldProbe instead of reddit, so the tests keep passing once reddit (or any real platform) is made.
 Why: the proof run below made reddit for real, and the two tests that planned reddit against copies of the real registration files then refused it as already a platform.
 Checked: the proof. log new platform reddit --sessionCookies reddit_session --apply wrote 8 files, made all 9 syntax-tree edits and rebuilt the docs (47 commands); bun run check then passed every gate on the repo with reddit in it (noComments 668 files, check:platforms facebook, twitter and reddit wired whole, naming, layout, browsers, agentHooks, docs, typecheck), and the 3 generated reddit tests passed, the generated Python engine answering engineNotBuilt; log reddit session check --account nobody ran against Twenty and refused with accountNotFound (no REDDIT socialAccount). The only failures were these two tests. Then the tree went back to the commit (reddit is not added). bun test src/scaffold: 6 pass.
+
+## 2026-10-25 12:41Z · feat/redditPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `python/browser/browserDriver.py`: added def carry_site_session_once · changed def open_ads_power, def carry_session_once
+- `python/browser/proxyGate.py`: changed def load_proxy, def twocaptcha_proxy, def exit_location, def check, def gate_attached
+- `python/session/inspectSession.py`: added def operation_of · changed def notable, class Inspector
+- `scripts/checks/checkPlatforms.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/adsPower/client.ts`: changed function syncProfiles
+- `src/browser/adsPower/helpers/planSync.ts`: changed function planSync
+- `src/browser/adsPower/helpers/profileRequest.ts`: changed function profileRequest
+- `src/browser/inspect/helpers/parseInspectAction.ts`: changed function parseInspectAction
+- `src/browser/inspect/types.ts`: changed interface InspectSessionConfig
+- `src/browser/run/client.ts`: added function directHome · changed function prepareRun
+- `src/browser/run/directRun.test.ts`: added const account, test "a Facebook account still needs its proxy (rule 12)", test "an X account has no browser path; an unknown platform is refused", test "an account's platform and site come from its Twenty value", test "inspect goes only to the hosts of a platform log-cli knows", test "a call is named by Facebook's friendly name, else a GraphQL operation in its JSON body, else its path", test "the Python gate refuses a direct run for a Facebook account"
+- `src/cli/inspect/index.ts`: changed const INSPECT_USAGE, const INSPECT_INPUT, const inspectCommand
+- `src/cli/new/index.ts`: changed const NEW_USAGE, const NEW_INPUT, const newCommand
+- `src/cli/runner/helpers/platforms.ts`: added interface PlatformSite, const PLATFORM_SITES, function platformOfAccount, function siteOfAccount, function isKnownPlatformAccount, function hostOnPlatforms
+- `src/marketplace/socialAccount/client.ts`: added function listBrowserAccounts · changed function toFacebookAccount, function findAccount
+- `src/marketplace/socialAccount/helpers/checkRunnable.ts`: changed function checkRunnable
+- `src/marketplace/socialAccount/helpers/facebookCookies.ts`: changed function toFacebookCookies
+- `src/marketplace/socialAccount/types.ts`: changed interface RunProxy
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `src/platformKit/session/client.ts`: changed function findPlatformAccount
+- `src/scaffold/platform/client.ts`: changed function namesOf, function planNewPlatform
+- `src/scaffold/platform/types.ts`: changed interface NewPlatformOptions, interface PlatformNames
+- `src/subq/stepReading/helpers/exchangesOf.ts`: changed function nameOf
+
+What changed: log inspect and the account's AdsPower browser work on every platform with a browser path, not only Facebook. PLATFORM_SITES (platforms.ts) says, per platform, its Twenty value, cookie domain, hosts, home page, whether it needs a proxy and whether it has a browser (Facebook: proxy required, browser; X: no proxy, no browser). checkRunnable lets a known browser platform through and, when it needs no proxy, writes a direct run (proxy.json direct with its platform); an unset status is allowed; prepareRun gives a no-home direct account en-US on the machine's timezone (directHome) and keeps its cookies under the platform's own domain. The Python gate takes a direct run only for a platform other than Facebook (rule 12), reads this machine's own exit and skips the Facebook speed probe; the AdsPower opener sets no proxy for it and carries the account's own platform cookies in. Inspect's goto and --url take any known platform's hosts, it opens on the account's platform home, the session's notable list follows the platform's hosts, and each internal call is named by Facebook's friendly name, a GraphQL operationName or operation, else its path. adsPower sync lists every browser platform's accounts; a no-proxy one needs no home and gets an en-US profile on its platform's host. A row with an empty accountName is found by its name (findAccount and platformKit). log new platform writes the platform's PLATFORM_SITES row through the syntax tree (--hosts, --home, --noProxy, --noBrowser) and check:platforms refuses a platform without one. Rule 84, MCP instruction 23.
+Why: matt asked to make Reddit and explore it with log inspect in the account's AdsPower browser (Maleficent-Try-8338, cookies in Twenty, its handle in name), with no proxy, like X.
+Checked: 6 new tests (Facebook still needs its proxy, X has no browser path, an unknown platform is refused, sites by Twenty value, goto only to known hosts and https, call names by friendly name, operation or path, the Python gate refuses a direct Facebook run); bun run check 1071 pass.

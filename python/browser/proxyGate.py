@@ -96,6 +96,10 @@ def load_proxy(path: str | None) -> dict[str, Any] | None:
         proxy = json.loads(Path(path).read_text(encoding="utf8"))
     except Exception as exc:
         raise GateError("proxyMalformed", f"{path}: {exc}") from None
+    if isinstance(proxy, dict) and proxy.get("direct") is True:
+        if str(proxy.get("platform") or "facebook") == "facebook":
+            raise GateError("noProxy", f"{path}: a Facebook account never opens without its proxy (rule 12)")
+        return proxy
     if not isinstance(proxy, dict) or not proxy.get("server") or len(str(proxy.get("country") or "")) != 2:
         raise GateError("proxyMalformed", f"{path}: needs server and a 2-letter country")
     username = str(proxy.get("username") or "")
@@ -133,7 +137,7 @@ def loaded_proxy() -> dict[str, Any] | None:
 
 def twocaptcha_proxy() -> dict[str, str] | None:
     proxy = _armed["proxy"]
-    if not proxy:
+    if not proxy or proxy.get("direct"):
         return None
     scheme, _, hostport = str(proxy["server"]).partition("://")
     if not hostport:
@@ -160,7 +164,7 @@ def exit_location(proxy: dict[str, Any]) -> dict[str, Any]:
     from camoufox.ip import public_ip
 
     try:
-        ip = public_ip(proxy_url(proxy))
+        ip = public_ip(None if proxy.get("direct") else proxy_url(proxy))
     except InvalidIP as exc:
         if "407" in str(exc):
             raise GateError("proxyAuthFailed", "the proxy answered 407: check username and password") from None
@@ -178,6 +182,12 @@ def check(proxy_path: str | None) -> dict[str, Any]:
     proxy = load_proxy(proxy_path)
     if proxy is None:
         raise GateError("noProxy", f"no proxy file at {proxy_path}")
+    if proxy.get("direct"):
+        where = exit_location(proxy)
+        if not where["timezone"]:
+            raise GateError("proxyCountryMismatch", f"this machine's exit {where['ip']} has no known timezone")
+        return {"ok": True, "direct": True, "exitIp": where["ip"], "exitCountry": where["country"], "country": where["country"], "timezone": where["timezone"],
+                "latitude": where["latitude"], "longitude": where["longitude"], "facebookMs": None}
     where = exit_location(proxy)
     ip, country, timezone = where["ip"], where["country"], where["timezone"]
     want = str(proxy["country"]).upper()
@@ -292,7 +302,10 @@ def gate_attached() -> dict[str, Any]:
         "languages": list(run["languages"]),
         "facebookLocale": run.get("facebookLocale"),
     })
-    log(f"Gate passed: exit {exit_['exitIp']} in {exit_['country']} ({exit_['timezone']}), proxy to Facebook {exit_.get('facebookMs')} ms")
+    if exit_.get("direct"):
+        log(f"Gate passed with no proxy ({proxy.get('platform')} runs direct): this machine's exit {exit_['exitIp']} in {exit_['country']} ({exit_['timezone']})")
+    else:
+        log(f"Gate passed: exit {exit_['exitIp']} in {exit_['country']} ({exit_['timezone']}), proxy to Facebook {exit_.get('facebookMs')} ms")
     return {"proxy": proxy, **exit_}
 
 

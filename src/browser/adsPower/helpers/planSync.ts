@@ -1,3 +1,4 @@
+import { siteOfAccount } from '../../../cli/runner/helpers/platforms'
 import { HOME_COUNTRIES } from '../../../marketplace/home/index'
 import type { FacebookAccount } from '../../../marketplace/socialAccount/index'
 import type { AdsPowerProfile } from '../types'
@@ -11,10 +12,11 @@ export function planSync(accounts: FacebookAccount[], profiles: AdsPowerProfile[
   return accounts.map((account) => {
     const base = { accountId: account.id, accountName: account.accountName }
     const held = account.adsPowerProfileId ?? byAccount.get(account.id)?.profileId ?? null
-    const releasing = account.status && (RELEASE_STATUSES as readonly string[]).includes(account.status) ? `status ${account.status}` : homes && !homes.includes((account.homeCountry ?? '').toUpperCase()) ? `home ${account.homeCountry ?? '(none)'} is not in ${homes.join(', ')}` : null
+    const direct = siteOfAccount(account).proxy === 'none'
+    const releasing = account.status && (RELEASE_STATUSES as readonly string[]).includes(account.status) ? `status ${account.status}` : homes && !direct && !homes.includes((account.homeCountry ?? '').toUpperCase()) ? `home ${account.homeCountry ?? '(none)'} is not in ${homes.join(', ')}` : null
     if (releasing) return held ? { ...base, action: 'release', profileId: held, note: releasing } : { ...base, action: 'skip', profileId: null, note: releasing }
     if (account.status && (NO_PROFILE_STATUSES as readonly string[]).includes(account.status)) return { ...base, action: 'skip', profileId: account.adsPowerProfileId, note: `status ${account.status}` }
-    if (!HOME_COUNTRIES[account.homeCountry ?? '']) return { ...base, action: 'skip', profileId: null, note: `no home locale for country ${account.homeCountry ?? '(none)'}` }
+    if (!direct && !HOME_COUNTRIES[account.homeCountry ?? '']) return { ...base, action: 'skip', profileId: null, note: `no home locale for country ${account.homeCountry ?? '(none)'}` }
     if (account.adsPowerProfileId && byId.has(account.adsPowerProfileId)) return { ...base, action: 'linked', profileId: account.adsPowerProfileId, note: null }
     const found = byAccount.get(account.id)
     if (found) return { ...base, action: 'relink', profileId: found.profileId, note: account.adsPowerProfileId ? `stored ${account.adsPowerProfileId} is gone` : null }

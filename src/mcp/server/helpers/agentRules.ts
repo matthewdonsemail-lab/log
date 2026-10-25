@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 83;
+export const RULES_REVIEWED_THROUGH = 84;
 
 export const AGENTS_URI = "log://agents";
 
@@ -27,6 +27,7 @@ export const SERVER_INSTRUCTIONS = [
   "20. Flows are deterministic: a control is one scored match by role and name (accessible name, aria-label, label, text or placeholder, case ignored) inside the dialog the step names (`within`), never a guess (`controlAmbiguous`, `controlMissing`, `controlDisabled`); every step waits for the call it must cause and checks its answer before the next fires; before its first click a flow clears the known overlays (the browser-notifications notice, an ended \"What happened\" notice) with Escape, each checked, or stops with `overlayNotCleared`. Run `preflight` before opening accounts: it says what would stop each one (timezone, hours, proxy, kernel, opens left, a session left open, its picture) and `--apply` fetches a missing kernel (rule 79).",
   "21. X (Twitter) is a platform of its own, `log twitter <command>`, on the direct-API engine only: twikit (vendor/twikit) with the account's saved cookies from Twenty, no browser and no proxy. X accounts call X directly, as twitter-controller does. X's own answer decides (`socialAccounts.sessionState`), each account has its own governor, and refreshed cookies are merged back (rule 80). We maintain vendor/twikit ourselves: its transport is curl_cffi (impersonating Safari), never httpx (`check:twikitTransport`, rule 81).",
   "22. A new platform is made whole with `log new platform <name>` (`newPlatform`): its session, `log <name> session check`, its engine and docs, wired into the repo through the syntax tree; a dry run until `apply`, and `check:platforms` refuses one half wired (rule 83).",
+  "23. `inspect` and the account's browser work on every platform with a browser path: `PLATFORM_SITES` says its hosts, home and whether it needs a proxy. Facebook always does (rule 12); a platform marked no-proxy (Reddit) opens direct on this machine's exit (rule 84).",
   "A refusal names its error code and what to do (`errors` tool). Each tool's description ends with the AGENTS.md rules it falls under.",
 ].join("\n");
 
@@ -34,7 +35,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   join: [8, 10, 18, 20, 25, 26, 29, 35, 45, 64, 73],
   read: [8, 13, 18, 20, 22, 25, 26, 29, 35, 45, 54, 63, 64, 65, 73, 77],
   poll: [8, 13, 18, 22, 26, 35, 45, 63, 64, 65, 73],
-  inspect: [8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68, 72, 73, 74, 75, 82],
+  inspect: [8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68, 72, 73, 74, 75, 82, 84],
   connect: [12, 18, 21, 23, 24, 73],
   publish: [8, 10, 12, 18, 22, 24, 68, 72, 73],
   profile: [8, 28, 73],
@@ -48,7 +49,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   watch: [6, 18, 73],
   doctor: [12],
   proxy: [12, 33, 41, 43, 51, 52],
-  adsPower: [42, 44, 78],
+  adsPower: [42, 44, 78, 84],
   capture: [19, 22, 26, 27, 46, 48],
   account: [13, 37, 78],
   accounts: [13],

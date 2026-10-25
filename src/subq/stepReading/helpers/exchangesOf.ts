@@ -115,6 +115,9 @@ export function nameOf(entry: HarEntry): string {
   if (friendly) return friendly
   const fromBody = /(?:^|&)fb_api_req_friendly_name=([A-Za-z0-9_]+)/.exec(entry.request.postData?.text ?? '')?.[1]
   if (fromBody) return fromBody
+  const sent = parseJson(entry.request.postData?.text ?? '')
+  const operation = sent && typeof sent === 'object' && !Array.isArray(sent) ? ((sent as Record<string, unknown>).operationName ?? (sent as Record<string, unknown>).operation) : null
+  if (typeof operation === 'string' && /^[A-Za-z0-9_]+$/.test(operation)) return operation
   return endpointName(new URL(entry.request.url).pathname)
 }
 
