@@ -5,6 +5,7 @@ import { dirname, join } from "node:path";
 import { addImport, addToArray, addToInterface, addToObject, addToReturnedObject, AstEditError, applyPlan, namesOf, planNewPlatform } from "./index.ts";
 
 const REPO = join(import.meta.dir, "..", "..", "..");
+const PROBE = "scaffoldProbe";
 
 describe("the syntax-tree edits", () => {
   test("an array gains an element, multi-line or on one line, `as const` kept", () => {
@@ -43,25 +44,25 @@ describe("log new platform", () => {
 
   test("the plan wires every registration through the syntax tree and writes the platform's files", () => {
     const root = copyOfRepo();
-    const plan = planNewPlatform(root, { name: "reddit", sessionCookies: ["reddit_session"] });
-    expect(plan.notes.join(" ")).toContain("no REDDIT option");
+    const plan = planNewPlatform(root, { name: PROBE, sessionCookies: ["probe_session"] });
+    expect(plan.notes.join(" ")).toContain(`no ${PROBE.toUpperCase()} option`);
     applyPlan(root, plan);
     const read = (p: string) => readFileSync(join(root, p), "utf8");
-    expect(read("src/cli/runner/helpers/platforms.ts")).toMatch(/PLATFORMS = \[[^\]]*"reddit"/);
-    expect(read("src/cli/runner/helpers/platforms.ts")).toContain('reddit: "Reddit"');
-    expect(read("src/cli/runner/index.ts")).toContain('import { redditSessionCommand } from "../reddit/index.ts";');
-    expect(read("src/cli/runner/index.ts")).toContain("directReddit: overrides.directReddit ?? runRedditEngine");
-    expect(read("src/cli/runner/types.ts")).toContain("directReddit?: (account:");
-    expect(read("src/directApi/engine/client.ts")).toContain("redditSession: { platform: 'reddit'");
-    expect(read("src/mcp/server/helpers/agentRules.ts")).toContain("redditSession: [13, 63, 64, 73, 83]");
-    for (const file of ["src/reddit/account/session/client.ts", "src/cli/reddit/index.ts", "src/cli/reddit/reddit.test.ts", "python/redditApi/engine.py", "python/redditApi/__init__.py", "docs/platforms/reddit/README.md"]) expect(existsSync(join(root, file))).toBe(true);
-    expect(read("src/reddit/account/session/client.ts")).toContain("sessionCookies: ['reddit_session']");
+    expect(read("src/cli/runner/helpers/platforms.ts")).toContain(`"${PROBE}"`);
+    expect(read("src/cli/runner/helpers/platforms.ts")).toContain(`${PROBE}: "ScaffoldProbe"`);
+    expect(read("src/cli/runner/index.ts")).toContain(`import { ${PROBE}SessionCommand } from "../${PROBE}/index.ts";`);
+    expect(read("src/cli/runner/index.ts")).toContain("directScaffoldProbe: overrides.directScaffoldProbe ?? runScaffoldProbeEngine");
+    expect(read("src/cli/runner/types.ts")).toContain("directScaffoldProbe?: (account:");
+    expect(read("src/directApi/engine/client.ts")).toContain(`${PROBE}Session: { platform: '${PROBE}'`);
+    expect(read("src/mcp/server/helpers/agentRules.ts")).toContain(`${PROBE}Session: [13, 63, 64, 73, 83]`);
+    for (const file of [`src/${PROBE}/account/session/client.ts`, `src/cli/${PROBE}/index.ts`, `src/cli/${PROBE}/${PROBE}.test.ts`, `python/${PROBE}Api/engine.py`, `python/${PROBE}Api/__init__.py`, `docs/platforms/${PROBE}/README.md`]) expect(existsSync(join(root, file))).toBe(true);
+    expect(read(`src/${PROBE}/account/session/client.ts`)).toContain("sessionCookies: ['probe_session']");
   });
 
   test("an existing platform, a bad name or a missing library is refused before anything is written", () => {
     const root = copyOfRepo();
     expect(() => planNewPlatform(root, { name: "twitter" })).toThrow("already a platform");
     expect(() => planNewPlatform(root, { name: "Red-dit" })).toThrow("camelCase");
-    expect(() => planNewPlatform(root, { name: "reddit", library: "vendor/nothingHere" })).toThrow("doesn't exist");
+    expect(() => planNewPlatform(root, { name: PROBE, library: "vendor/nothingHere" })).toThrow("doesn't exist");
   });
 });
