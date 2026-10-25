@@ -16,7 +16,7 @@ export const OVERLAY_CLEARS: Readonly<Record<string, OverlayClear>> = {
   }
 }
 
-export const PRESSING_ACTIONS: ReadonlySet<FlowAction> = new Set(['click', 'fill', 'upload'])
+export const PRESSING_ACTIONS: ReadonlySet<FlowAction> = new Set(['click', 'fill', 'upload', 'setLocation'])
 
 export function overlayOf(url: string, text: string): OverlayClear | null {
   const state = pageStateOf(url, text)

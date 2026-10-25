@@ -678,6 +678,8 @@ class Inspector:
 
                 page.on("response", on_response)
                 await page.goto("https://www.facebook.com/marketplace/", wait_until="domcontentloaded")
+                await asyncio.sleep(2.0)
+                await page.keyboard.press("Escape")
                 button = page.get_by_role("button", name=re.compile(r"^Location: "))
                 await button.first.wait_for(state="visible", timeout=30_000)
                 await self.mouse.click(button.first)

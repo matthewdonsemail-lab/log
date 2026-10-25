@@ -133,7 +133,7 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
           continue;
         }
         if (/\/checkpoint\//.test(url)) return issue("checkpointed", `${url}: ${text.slice(0, 120)}`);
-        if (/wrong password|incorrect password|password you.ve entered is incorrect/i.test(text)) return issue("wrongPassword");
+        if (/wrong password|incorrect password|password you.?(ve )?entered is incorrect/i.test(text)) return issue("wrongPassword");
         const twoStep = pageStateOf(url, text)?.id;
         if (twoStep === "twoStepPasskey") {
           log(`host ${account.accountName}: Facebook asks for a passkey: Try another way`);

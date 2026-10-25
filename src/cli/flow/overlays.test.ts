@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { overlayOf } from "../../browser/flow/index.ts";
+import { overlayOf, PRESSING_ACTIONS } from "../../browser/flow/index.ts";
 import { pageStateOf, resolveCallOf } from "../../browser/flow/helpers/pageState.ts";
 import type { FlowDefinition } from "../../browser/flow/index.ts";
 import type { CurrentInspect, InspectAction, InspectStepResult } from "../../browser/inspect/index.ts";
@@ -93,5 +93,12 @@ describe("a flow clears them with Escape before its first click, each checked (r
     const out = await runFlowInSession(blocked.context, current, flow, {}, { account: HAZLETON });
     expect(out).toMatchObject({ result: "failed", failedAt: "s02_clickProfilePictureActions" });
     expect(out.steps.at(-1)).toMatchObject({ ok: false, issue: "overlayNotCleared" });
+  });
+});
+
+describe("setLocation clears the overlays too, since the Location button is the publish flow's first press", () => {
+  test("Kingston's notice covered Location before any click", () => {
+    expect(PRESSING_ACTIONS.has("setLocation")).toBe(true);
+    expect(PRESSING_ACTIONS.has("goto")).toBe(false);
   });
 });
