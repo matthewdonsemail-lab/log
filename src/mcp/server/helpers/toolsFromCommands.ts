@@ -1,4 +1,5 @@
 import { formToolName, inputSchemaOf } from "../../../cli/runner/helpers/commandInput.ts";
+import { isPlatform, toolBaseName } from "../../../cli/runner/helpers/platforms.ts";
 import type { Command, InputForm, ToolEffect } from "../../../cli/runner/types.ts";
 import type { LogTool } from "../types.ts";
 import { TERMINAL_ONLY, TOOL_RESULT_SCHEMA } from "../types.ts";
@@ -9,7 +10,7 @@ import { annotationsOf, LIVE_SUFFIX, titleOf } from "./toolAnnotations.ts";
 export const LONG_RUNNING = new Set(["inspect", "join", "read", "poll", "check", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign"]);
 
 export const commandWords = (command: Command): string =>
-  command.platform === "facebook" ? `facebook ${command.name}` : command.platform === "byArgument" ? `<platform> ${command.name}` : command.name;
+  isPlatform(command.platform) ? `${command.platform} ${command.name}` : command.platform === "byArgument" ? `<platform> ${command.name}` : command.name;
 
 export interface CommandTool {
   tool: string;
@@ -42,8 +43,8 @@ export function commandTools(commands: readonly Command[]): CommandTool[] {
     .filter((command) => !(command.name in TERMINAL_ONLY))
     .flatMap((command): CommandTool[] => {
       if (command.input) return command.input.forms.flatMap((form) => formTools(command, form));
-      const plain: CommandTool = { tool: command.name, command, form: null, live: false, forced: [], effect: command.effect };
-      return argsLiveFlags(command).length ? [plain, { ...plain, tool: `${command.name}${LIVE_SUFFIX}`, live: true }] : [plain];
+      const plain: CommandTool = { tool: toolBaseName(command), command, form: null, live: false, forced: [], effect: command.effect };
+      return argsLiveFlags(command).length ? [plain, { ...plain, tool: `${toolBaseName(command)}${LIVE_SUFFIX}`, live: true }] : [plain];
     });
 }
 

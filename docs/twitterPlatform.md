@@ -1,6 +1,6 @@
 # Twitter as a log-cli platform: the plan
 
-Status: plan, 2026-10-25. Nothing in `src/twitter` is built yet. The library is in: `vendor/twikit` (unclecode's fork of twikit, MIT, commit `6a73ab9`, 2026-05-17, the same one the skill installs) and `vendor/twitterController` (the skill's scripts and tests as they were, the code being ported).
+Status: 2026-10-25. Step 1 is built: the engine (`python/twitterApi/engine.py`) and `log twitter session check` (`src/twitter/account/session`, rule 80). The rest is the plan. The library is in: `vendor/twikit` (unclecode's fork of twikit, MIT, commit `6a73ab9`, 2026-05-17, the same one the skill installs) and `vendor/twitterController` (the skill's scripts and tests as they were, the code being ported).
 
 ## In one line
 
@@ -38,8 +38,8 @@ flowchart LR
 | --- | --- | --- |
 | The library | `vendor/fbk` (surfaces per family) | `vendor/twikit` (one `Client`, 114 calls) |
 | The engine | `python/directApi/engine.py`: reads the session's login state first, then calls one surface | `python/twitterApi/engine.py`: `ping` first (the controller's `check_session`), then one twikit call |
-| Per account | `~/.logCli/fbk/<account>`: governor and token cache | `~/.logCli/twitter/<account>`: governor, cool-off state, refreshed cookies merged back to Twenty |
-| The gate | `directGate` | the same checks, platform TWITTER |
+| Per account | `~/.logCli/fbk/<account>`: governor and token cache | `~/.logCli/twitter/<account>`: governor; refreshed cookies merged back to Twenty |
+| The gate | `directGate` (session, proxy in the home country, hours) | `twitterGate`: platform TWITTER, not deactivated, `auth_token` + `ct0` saved. No proxy (rule 80) |
 | The result | `socialAccounts.sessionState` | the same field (`loggedIn`, `loggedOut` for 401/32, `restricted` for 226) |
 | Declared in | `DIRECT_ROUTES`, `commandEngine` | the same, with a new engine kind `directApiOnly`: X has no browser path |
 
@@ -89,7 +89,7 @@ The warm-up, X listening (searching and reading posts: #26's first half), a brow
 4. The queue (plan, approve, run, nudge) as the XState machine above.
 5. `vendor/twitterController` retires once each script has its command: the skill points at `log twitter …`.
 
-## Open for matt
+## Decided (matt, 2026-10-25)
 
-- **Proxy and home for X accounts.** No browser opens for X, but every Facebook call goes through the account's proxy in its home country (rule 12). Do X accounts get the same rule (a proxy and a home on the row before any call), or do they call X directly, as the controller does today?
-- **Name.** The platform word is `twitter` (Twenty's `TWITTER`, and the skill's name). Issue #26 says "x". This plan uses `twitter`.
+- **No proxy for X.** X accounts call X directly, as the controller does today. Rule 12 stays Facebook's (rule 80).
+- **Name.** The platform word is `twitter` (Twenty's `TWITTER`, the skill's name).

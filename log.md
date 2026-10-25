@@ -7103,3 +7103,41 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: Twitter comes in as log-cli's second platform, as fbk did. `vendor/twikit` is unclecode's fork of twikit (MIT, commit 6a73ab9, 2026-05-17, the one twitter-controller installs), as plain files from GitHub's tarball of that commit. `vendor/twitterController` is the twitter-controller skill's scripts and tests as they were (send_approved_reply, sequence, random_run), the code to port. `docs/twitterPlatform.md` is the plan. It covers what the controller does, how it maps onto log-cli's three layers (`log twitter <command>`, `src/twitter/<area>/<domain>`, `python/twitterApi/engine.py` around twikit, a per-account governor, `sessionState`, `DIRECT_ROUTES` with a `directApiOnly` engine kind), its families (session, follows, reply/quote/like, dm, queue, copy style), the random runner as an XState machine, and the order of work. The warm-up and X listening are out for now.
 Why: matt: read twitter-controller, put its library in vendor, and plan to map it onto log-cli the way Facebook works through fbk. The use case differs from Facebook's and there's no warm-up yet. We build around platform clients instead of carrying over log's own.
 Checked: twikit 2.3.3 imports from vendor/twikit with LOG_PYTHON. The plan's Mermaid diagram parses with the repo's mermaid and jsdom, as check:docs does. Twenty has 2 TWITTER socialAccounts: cookies set, no proxy, home or status (counted, no values read out). check:naming, check:noComments and check:layout pass (vendor is skipped as before).
+
+## 2026-10-25 10:35Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/twitterPlatform.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `python/twitterApi/__init__.py`: new file, no top-level declarations
+- `python/twitterApi/engine.py`: added const ROOT, const VENDOR, const SECRET_KEYS, const ACTIONS, def state_root, def state_dir, def _domain_rank, def normalize_cookies, def has_session, def own_user_id, def redact, def governor_for, def governor_status, def session_answer, def page_title, def blocked_answer, def login_state_of, def ping, def run, def main
+- `scripts/checks/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `scripts/docs/buildDocs.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/tests/preload.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/runner/helpers/commandInput.ts`: changed function formToolName
+- `src/cli/runner/helpers/platforms.ts`: added function toolBaseName · changed const PLATFORMS, function resolvePlatformForm
+- `src/cli/runner/index.ts`: changed const COMMANDS, function createContext, function dispatch
+- `src/cli/runner/types.ts`: changed interface CommandContext, interface Command
+- `src/cli/twitter/index.ts`: added const SESSION_USAGE, const SESSION_INPUT, function render, const sessionCommand
+- `src/cli/twitter/twitter.test.ts`: added function fixture, function run, test "loggedIn: on the direct-API engine with no proxy, sessionState and refreshed cookies go back to Twenty in the stored shape", test "loggedOut: exit 1, sessionState written, cookies left as they were", test "the gate: no auth_token + ct0 is refused before X is called; a Facebook account is refused", test "the platform comes first and must match", test "every shape Twenty may hold is read, and a merge keeps the stored shape"
+- `src/directApi/engine/client.ts`: added function twitterStateRoot, function allEngineStates · changed const DIRECT_ROUTES, function commandEngine, function engineLine, function writeLocalSession, function localEngineStates, function engineContext
+- `src/directApi/engine/types.ts`: changed type CommandEngine, interface DirectRoute, interface LocalEngineState
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `src/mcp/server/helpers/guardCall.ts`: changed function commandLine
+- `src/mcp/server/helpers/toolsFromCommands.ts`: changed const commandWords, function commandTools
+- `src/surface/catalog/types.ts`: changed interface CommandEntry
+- `src/surface/readme/index.ts`: added const platformText · changed const ENGINE_TEXT, function renderSurface · removed const PLATFORM_TEXT
+- `src/twitter/account/index.ts`: added export from "./session/index.ts"
+- `src/twitter/account/session/client.ts`: added const ENGINE, type TwitterAccount, function findTwitterAccount, function twitterCookies, function twitterGate, function mergeCookieShape, function runTwitterEngine, function recordTwitterSession
+- `src/twitter/account/session/index.ts`: added export from "./client", export from "./types"
+- `src/twitter/account/session/types.ts`: added type TwitterLoginState, interface TwitterGovernor, interface TwitterSessionAnswer, interface TwitterEngineRun, type TwitterGate
+
+What changed: Step 1 of X as a platform: the twikit engine and `log twitter session check` (MCP `twitterSessionCheck`). `python/twitterApi/engine.py` reads the account's cookies (every shape Twenty may hold, ported from twitter-controller) and calls X directly with no proxy. It gates on a per-account governor (`~/.logCli/twitter/<account>`). X's answer decides: the session check's HTTP status (401/403 loggedOut, 200/404 loggedIn), then the profile read (suspended or locked: restricted; 429: rateLimited). Cloudflare's block page is named `cloudflareBlocked`, never dumped as HTML, and pauses the governor. Refreshed cookies go to a private file, never stdout. `src/twitter/account/session` has the gate (TWITTER, not deactivated, auth_token + ct0), the run, and the write-back: `sessionState`, plus refreshed cookies merged in the row's own shape on success. Platforms are generalised: `PLATFORMS` gains `twitter`, a command is looked up by platform and refused under the wrong one, MCP tools of a non-Facebook platform are prefixed (`twitterSessionCheck`), and the README, guardCall and check:docs read any platform. `DIRECT_ROUTES.session` is `directApiOnly`. The engines hook shows X accounts and their governor. New error codes `accountNotTwitter` and `noTwitterSession`. Rule 80 is in AGENTS.md and the MCP instructions. The plan doc records matt's answers.
+Why: matt: "No: X accounts call X directly as the controller does today. Build step 1 (the twikit engine and log twitter session check)."
+Checked: `bun run check` passes: 1030 tests, naming, noComments, layout, browsers, agentHooks (108 MCP tools hooked), docs. New tests cover loggedIn writing sessionState and merging refreshed cookies in the stored shape, loggedOut writing the state but not the cookies, the gate refusing before X is called, the platform-first and wrong-platform refusals, and the cookie shapes. Live on both X accounts (read-only, nothing sent): the session check answered 404, so X accepts both sessions. Then the profile read (GraphQL UserByRestId) got Cloudflare's "Sorry, you have been blocked / unable to access x.com" page. The engine now reports `cloudflareBlocked (loggedIn)` and pauses that account for 15 minutes.

@@ -70,6 +70,28 @@
     "monitor": "blocked",
     "action": "Log in by hand and clear the checkpoint, then `log facebook connect`. No solver can do it."
   },
+  "accountNotTwitter": {
+    "layer": "account",
+    "meaning": "A log twitter command was given an account whose platform in Twenty is not TWITTER.",
+    "retryable": false,
+    "raisedIn": [
+      "twitter/account/session"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Name a TWITTER socialAccount (its accountName is the handle)."
+  },
+  "noTwitterSession": {
+    "layer": "account",
+    "meaning": "The X account's saved cookies in Twenty have no auth_token + ct0, so there is no session to call X with.",
+    "retryable": false,
+    "raisedIn": [
+      "twitter/account/session"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Save the account's cookies from a normal manual login into its socialAccounts row."
+  },
   "governorBlocked": {
     "layer": "account",
     "meaning": "The account's direct-API governor refused the call: a soft-block or checkpoint pause, the hourly or daily request cap, or the 40-a-day write budget (fbk's RequestGovernor, one per account under ~/.logCli/fbk/<account>).",

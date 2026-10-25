@@ -12,9 +12,9 @@ const cell = (text: string) => text.replace(/\|/g, "\\|").replace(/\n/g, " ");
 
 const BROWSER_TEXT: Record<CommandEntry["browser"], string> = { accountBrowser: "the account's", camoufoxOnly: "Camoufox only", none: "none" };
 
-const ENGINE_TEXT: Record<CommandEntry["engine"], string> = { directApiFirst: "direct API first", browser: "browser", none: "none" };
+const ENGINE_TEXT: Record<CommandEntry["engine"], string> = { directApiFirst: "direct API first", directApiOnly: "direct API only", browser: "browser", none: "none" };
 
-const PLATFORM_TEXT: Record<CommandEntry["platform"], string> = { facebook: "`facebook` first", any: "any (none)", byArgument: "`<platform>` first" };
+const platformText = (p: CommandEntry["platform"]) => (p === "any" ? "any (none)" : p === "byArgument" ? "`<platform>` first" : `\`${p}\` first`);
 
 const anchorOf = (words: string) => `log-${words}`.toLowerCase().replace(/[^a-z0-9 -]/g, "").replace(/ /g, "-");
 
@@ -56,11 +56,11 @@ export function renderSurface(entries: readonly CommandEntry[], flows: readonly 
       "",
     );
   }
-  const direct = entries.filter((e) => e.engine === "directApiFirst");
+  const direct = entries.filter((e) => e.engine === "directApiFirst" || e.engine === "directApiOnly");
   out.push(
     "### Engines: the direct API first, the browser behind it",
     "",
-    "A command on the direct-API engine calls Facebook's internal API with the account's saved session, through its proxy, paced by its own governor (fbk, vendored in `vendor/fbk`), and opens no browser. Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it.",
+    "A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser: Facebook through fbk (`vendor/fbk`) and the account's proxy, X through twikit (`vendor/twikit`) directly (rule 80). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it.",
     "",
     ...direct.map((e) => `- \`log ${e.words}\`: ${engineLine(e.name) ?? ""}`),
     "",
@@ -79,7 +79,7 @@ export function renderSurface(entries: readonly CommandEntry[], flows: readonly 
   for (const e of entries) {
     const tool = e.tool ? e.tool.split(", ").map((t) => `\`${t}\``).join(", ") : `terminal only: ${cell(e.terminalOnly ?? "")}`;
     const hooksText = `${e.hooks.cli.join(", ") || "none"} · ${e.tool ? e.hooks.mcp.join(", ") || "none" : "n/a"}`;
-    out.push(`| [\`log ${e.words}\`](#${anchorOf(e.words)}) | ${cell(e.summary)} | ${PLATFORM_TEXT[e.platform]} | ${e.flags.map(flagText).join(" ") || "none"} | ${ENGINE_TEXT[e.engine]} | ${BROWSER_TEXT[e.browser]} | ${tool} | ${hooksText} | ${e.longRunning ? "yes: watch it" : "no"} | ${e.rules.join(", ")} |`);
+    out.push(`| [\`log ${e.words}\`](#${anchorOf(e.words)}) | ${cell(e.summary)} | ${platformText(e.platform)} | ${e.flags.map(flagText).join(" ") || "none"} | ${ENGINE_TEXT[e.engine]} | ${BROWSER_TEXT[e.browser]} | ${tool} | ${hooksText} | ${e.longRunning ? "yes: watch it" : "no"} | ${e.rules.join(", ")} |`);
   }
   out.push("");
 

@@ -940,6 +940,20 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     answers `xfb_ixt_gateway_clear_flow: true`); one that stays stops the
     flow with `overlayNotCleared`.
 
+80. 2026-10-25 · matt: X (Twitter) is log-cli's second platform, built
+    around a vendored client the way Facebook's direct API is built around
+    fbk: twikit (`vendor/twikit`, unclecode's fork) and twitter-controller
+    (`vendor/twitterController`, the code being ported). Its commands are
+    `log twitter <command>` (`src/twitter/<area>/<domain>`,
+    `python/twitterApi/engine.py`), declared `directApiOnly` in
+    `DIRECT_ROUTES`. matt: "No: X accounts call X directly as the controller
+    does today": no proxy is required or used for an X account, and rule 12
+    stays Facebook's. X's own answer decides (`socialAccounts.sessionState`:
+    loggedIn, loggedOut, restricted), each account has its own governor under
+    `~/.logCli/twitter/<account>`, and X's refreshed cookies are merged back
+    into the row. Discovery stays treg's (rule 53). First command: `log
+    twitter session check`. Plan: `docs/twitterPlatform.md`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

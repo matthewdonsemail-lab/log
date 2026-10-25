@@ -117,15 +117,16 @@ Source: [`docs/diagrams/browsers.mmd`](docs/diagrams/browsers.mmd).
 
 - **The account's browser, through the driver:** `host`, `inspect`, `flow`, `warmup`, `join`, `read`, `poll`, `check`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
 - **Camoufox only, not on the driver yet:** `doctor`, `connect`, `profile`, `scan`, `status`, `watch`, `publish`, `campaign`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `listings`, `listing`, `accounts`, `account`, `adsPower`, `lifecycle`, `preflight`, `proxy`, `conversations`, `conversation`, `messenger`, `errors`, `graph`, `capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`.
+- **No browser:** `launch`, `listings`, `listing`, `accounts`, `account`, `adsPower`, `lifecycle`, `preflight`, `proxy`, `conversations`, `conversation`, `messenger`, `errors`, `graph`, `capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `session`.
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](docs/browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](docs/adsPower.md).
 
 ### Engines: the direct API first, the browser behind it
 
-A command on the direct-API engine calls Facebook's internal API with the account's saved session, through its proxy, paced by its own governor (fbk, vendored in `vendor/fbk`), and opens no browser. Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it.
+A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser: Facebook through fbk (`vendor/fbk`) and the account's proxy, X through twikit (`vendor/twikit`) directly (rule 80). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it.
 
 - `log facebook read`: Engine: the direct-API engine first (fbk groups.feed_read, no browser) for read group without --live on a numeric group id, when the account has a saved c_user + xs session, a proxy in its home country and is inside its hours (--bypass skips the hours). Facebook's own page decides, not accountStatus: loggedIn reads; checkpoint stops and deactivates the account; loggedOut or accountWarning hands over to the browser path. Each account has its own governor (gaps of 4 s or more, 120 an hour, 500 a day, 40 writes a day, a 15-minute pause on a soft block, 6 hours on a checkpoint) and its result is written to socialAccounts.sessionState.
+- `log twitter session`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, account.ping; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status (401 or 403 is loggedOut, 200 or 404 loggedIn), then the account's profile read; a suspended or locked account is restricted. Each account has its own governor under ~/.logCli/twitter/<account>, refreshed cookies are merged back into its Twenty row, and the result is written to socialAccounts.sessionState.
 
 ### How a call reaches log-cli
 
@@ -136,9 +137,9 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 69 command tools + saved flows"]
+  mcp["MCP server log: 70 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 38 commands (COMMANDS)"]
+  runCli["runCli: 39 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   browser["The account's browser (one per day, rule 35)"]
   agent --> shell
@@ -209,6 +210,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log login`](#log-login) | Sign in with Twenty through blaster's web app (OAuth), like `blaster login` | any (none) | `--webUrl <url>` `--apiUrl <url>` `--token <accessToken>` `--json` | none | none | terminal only: opens a browser for Twenty OAuth and waits for it. Run `bun bin/log.ts login` in a terminal. | PreToolUse, PostToolUse · n/a | no | 30, 38, 39, 40, 41 |
 | [`log logout`](#log-logout) | Forget the stored Twenty session | any (none) | `--apiUrl <url>` `--json` | none | none | `logout` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
 | [`log whoami`](#log-whoami) | Show who is signed in, refreshing the session if it expired | any (none) | `--apiUrl <url>` `--json` | none | none | `whoami` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
+| [`log twitter session`](#log-twitter-session) | Check that X still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `twitter` first | `--account <accountName>` `--json` | direct API only | none | `twitterSessionCheck` | PreToolUse, PostToolUse · PostToolUse | no | 13, 21, 26, 63, 64, 73, 80, 30, 38, 39, 40, 41 |
 
 ### Saved flows: MCP tools of their own (rule 31)
 
@@ -375,6 +377,9 @@ flowchart TB
   c_whoami["whoami"]
   cli --> c_whoami
   mcp --> c_whoami
+  c_session["session"]
+  cli --> c_session
+  mcp --> c_session
   f_deletePost["flowDeletePost: flow run deletePost"]
   mcp --> f_deletePost
   f_deletePost --> c_flow
@@ -956,6 +961,16 @@ Show who is signed in, refreshing the session if it expired MCP tool: `whoami` (
 
 ```text
 log whoami [--apiUrl <url>] [--json]
+```
+
+#### log twitter session
+
+Check that X still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty MCP tools: `twitterSessionCheck`, one per form, with named fields.
+
+```text
+log twitter session check --account <accountName> [--json]
+Checks that X still accepts the account's saved session, on the direct-API engine (twikit, no browser, no proxy: X accounts call X directly, rule 80). Sends nothing.
+X's own answer decides: the session check's HTTP status (401 or 403 loggedOut, 200 or 404 loggedIn), then the account's profile read (suspended or locked: restricted). The result goes to socialAccounts.sessionState, and X's refreshed cookies are merged back into the row.
 ```
 
 <!-- surface:end -->

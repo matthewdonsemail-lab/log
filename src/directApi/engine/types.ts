@@ -39,9 +39,12 @@ export type DirectOutcome<Row> =
   | { ok: true; rows: Row[]; sessionState: SessionState; governor?: GovernorStatus }
   | { ok: false; code: string; detail: string; sessionState: SessionState | null; stop: boolean }
 
-export type CommandEngine = 'directApiFirst' | 'browser' | 'none'
+export type CommandEngine = 'directApiFirst' | 'directApiOnly' | 'browser' | 'none'
 
 export interface DirectRoute {
+  platform: 'facebook' | 'twitter'
+  library: 'fbk' | 'twikit'
+  only: boolean
   surface: string
   method: string
   when: string
@@ -50,7 +53,7 @@ export interface DirectRoute {
 
 export interface LocalEngineState {
   account: string
-  sessionState: SessionState | null
+  sessionState: string | null
   checkedAt: string | null
   day: string | null
   today: number

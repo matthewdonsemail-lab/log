@@ -115,8 +115,8 @@ for (const e of entries) {
     const named = first === e.name ? null : second === e.name ? first : undefined;
     if (named === undefined) continue;
     if (e.platform === "any" && named !== null) problems.push(`log ${e.name} works on any platform, but "${line.slice(0, 80)}" puts ${named} in front of it (rule 63)`);
-    if (e.platform !== "any" && named === null) problems.push(`log ${e.name} acts on one platform, but "${line.slice(0, 80)}" doesn't start with it: every form is log ${e.platform === "facebook" ? "facebook" : "<platform>"} ${e.name} … (rule 63)`);
-    if (e.platform === "facebook" && named !== null && named !== "facebook") problems.push(`log ${e.name} is Facebook's, but "${line.slice(0, 80)}" starts with ${named} (rule 63)`);
+    if (e.platform !== "any" && named === null) problems.push(`log ${e.name} acts on one platform, but "${line.slice(0, 80)}" doesn't start with it: every form is log ${isPlatform(e.platform) ? e.platform : "<platform>"} ${e.name} … (rule 63)`);
+    if (isPlatform(e.platform) && named !== null && named !== e.platform) problems.push(`log ${e.name} is ${e.platform}'s, but "${line.slice(0, 80)}" starts with ${named} (rule 63)`);
     if (e.platform === "byArgument" && named !== null && named !== "<platform>" && !isPlatform(named)) problems.push(`log ${e.name}: "${line.slice(0, 80)}" starts with ${named}, which isn't a platform (rule 63)`);
   }
 }
@@ -133,8 +133,9 @@ for (const dir of readdirSync(cliRoot)) {
   }
 }
 for (const [name, route] of Object.entries(DIRECT_ROUTES)) {
-  const index = join(cliRoot, name, "index.ts");
-  if (!existsSync(index) || !readFileSync(index, "utf8").includes(`context.${route.seam}`)) problems.push(`DIRECT_ROUTES.${name} says it runs on the direct-API engine through context.${route.seam}, but src/cli/${name}/index.ts never calls it`);
+  const dir = route.platform === "facebook" ? name : route.platform;
+  const index = join(cliRoot, dir, "index.ts");
+  if (!existsSync(index) || !readFileSync(index, "utf8").includes(`context.${route.seam}`)) problems.push(`DIRECT_ROUTES.${name} says it runs on the direct-API engine through context.${route.seam}, but src/cli/${dir}/index.ts never calls it`);
   if (!new RegExp(`\\b${route.seam}\\??:`).test(contextType)) problems.push(`DIRECT_ROUTES.${name}: context.${route.seam} isn't on CommandContext (src/cli/runner/types.ts)`);
   const entry = entries.find((e) => e.name === name);
   if (entry && !entry.usage.some((line) => /direct-API engine/.test(line))) problems.push(`log ${name} runs on the direct-API engine first, but its usage never says so: name "the direct-API engine" in it`);

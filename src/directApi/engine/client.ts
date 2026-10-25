@@ -12,22 +12,33 @@ import { accountHasSession, cookiesOf, lastJsonLine, netscape, sessionStateOf } 
 import type { LocalEngineState, CommandEngine, DirectGate, DirectOutcome, DirectRoute, EngineAnswer, EngineSpec, GovernorStatus, SessionState } from './types'
 
 export const DIRECT_ROUTES: Readonly<Record<string, DirectRoute>> = {
-  read: { surface: 'groups', method: 'feed_read', when: 'read group without --live on a numeric group id', seam: 'directRead' }
+  read: { platform: 'facebook', library: 'fbk', only: false, surface: 'groups', method: 'feed_read', when: 'read group without --live on a numeric group id', seam: 'directRead' },
+  session: { platform: 'twitter', library: 'twikit', only: true, surface: 'account', method: 'ping', when: 'session check', seam: 'directTwitter' }
 }
 
 export function commandEngine(command: string): CommandEngine {
-  if (DIRECT_ROUTES[command]) return 'directApiFirst'
+  const route = DIRECT_ROUTES[command]
+  if (route) return route.only ? 'directApiOnly' : 'directApiFirst'
   return commandBrowser(command) === 'none' ? 'none' : 'browser'
 }
 
 export function engineLine(command: string): string | null {
   const route = DIRECT_ROUTES[command]
   if (!route) return null
+  if (route.platform === 'twitter') return `Engine: the direct-API engine only (twikit, vendored in vendor/twikit, ${route.surface}.${route.method}; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status (401 or 403 is loggedOut, 200 or 404 loggedIn), then the account's profile read; a suspended or locked account is restricted. Each account has its own governor under ~/.logCli/twitter/<account>, refreshed cookies are merged back into its Twenty row, and the result is written to socialAccounts.sessionState.`
   return `Engine: the direct-API engine first (fbk ${route.surface}.${route.method}, no browser) for ${route.when}, when the account has a saved c_user + xs session, a proxy in its home country and is inside its hours (--bypass skips the hours). Facebook's own page decides, not accountStatus: loggedIn reads; checkpoint stops and deactivates the account; loggedOut or accountWarning hands over to the browser path. Each account has its own governor (gaps of 4 s or more, 120 an hour, 500 a day, 40 writes a day, a 15-minute pause on a soft block, 6 hours on a checkpoint) and its result is written to socialAccounts.sessionState.`
 }
 
 export function fbkStateRoot(): string {
   return process.env.LOG_FBK_STATE || join(homedir(), '.logCli', 'fbk')
+}
+
+export function twitterStateRoot(): string {
+  return process.env.LOG_TWITTER_STATE || join(homedir(), '.logCli', 'twitter')
+}
+
+export function allEngineStates(now: Date = new Date()): LocalEngineState[] {
+  return [...localEngineStates(fbkStateRoot(), now), ...localEngineStates(twitterStateRoot(), now).map((s) => ({ ...s, account: `twitter ${s.account}` }))]
 }
 
 function readJson<T>(path: string): T | null {
@@ -38,7 +49,7 @@ function readJson<T>(path: string): T | null {
   }
 }
 
-export function writeLocalSession(accountName: string, state: SessionState, now: Date, root = fbkStateRoot()): void {
+export function writeLocalSession(accountName: string, state: string, now: Date, root = fbkStateRoot()): void {
   const dir = join(root, accountName)
   mkdirSync(dir, { recursive: true })
   writeFileSync(join(dir, 'session.json'), JSON.stringify({ sessionState: state, checkedAt: now.toISOString() }))
@@ -48,7 +59,7 @@ export function localEngineStates(root = fbkStateRoot(), now: Date = new Date())
   if (!existsSync(root)) return []
   const out: LocalEngineState[] = []
   for (const name of readdirSync(root).sort()) {
-    const session = readJson<{ sessionState: SessionState; checkedAt: string }>(join(root, name, 'session.json'))
+    const session = readJson<{ sessionState: string; checkedAt: string }>(join(root, name, 'session.json'))
     const governor = readJson<{ day: string; hour_count: number; day_count: number; mutation_count: number; cooldown_until: number; soft_blocks_seen: number }>(join(root, name, 'governor_state.json'))
     if (!session && !governor) continue
     const cooldown = governor ? Math.max(0, Math.round(governor.cooldown_until - now.getTime() / 1000)) : 0
@@ -57,11 +68,11 @@ export function localEngineStates(root = fbkStateRoot(), now: Date = new Date())
   return out
 }
 
-export function engineContext(states: LocalEngineState[] = localEngineStates(), now: Date = new Date()): string {
+export function engineContext(states: LocalEngineState[] = allEngineStates(), now: Date = new Date()): string {
   const today = now.toISOString().slice(0, 10)
-  const routes = Object.entries(DIRECT_ROUTES).map(([name, r]) => `log facebook ${name} (${r.when}) → fbk ${r.surface}.${r.method}`)
+  const routes = Object.entries(DIRECT_ROUTES).map(([name, r]) => `log ${r.platform} ${name} (${r.when}) → ${r.library} ${r.surface}.${r.method}${r.only ? ', direct only' : ', before the browser'}`)
   const lines = [
-    `log-cli engines: the direct-API engine (vendor/fbk, per-account governor and token cache under ~/.logCli/fbk/<account>) runs ${routes.join('; ')}, before the browser. Facebook's own page decides there (socialAccounts.sessionState), not accountStatus. Everything else runs in the browser. Declared in DIRECT_ROUTES (src/directApi/engine).`
+    `log-cli engines: the direct-API engine runs ${routes.join('; ')}. Facebook goes through vendor/fbk with its proxy and a governor and token cache per account (~/.logCli/fbk/<account>); X goes through vendor/twikit directly, with no proxy (rule 80) and a governor per account (~/.logCli/twitter/<account>). The platform's own answer decides (socialAccounts.sessionState), not accountStatus. Everything else runs in the browser. Declared in DIRECT_ROUTES (src/directApi/engine).`
   ]
   for (const s of states) {
     const pause = s.cooldownSeconds > 0 ? `, PAUSED ${Math.ceil(s.cooldownSeconds / 60)} min (governor cooldown)` : ''

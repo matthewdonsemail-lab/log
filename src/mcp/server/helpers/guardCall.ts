@@ -6,7 +6,7 @@ import { LIVE_SUFFIX } from "./toolAnnotations.ts";
 import { argsLiveFlags, commandTools } from "./toolsFromCommands.ts";
 
 export function commandLine(command: Command, args: string[]): string[] {
-  if (command.platform === "facebook") return [PLATFORMS[0], command.name, ...args];
+  if (isPlatform(command.platform)) return [command.platform, command.name, ...args];
   if (command.platform === "byArgument" && isPlatform(args[0])) return [args[0], command.name, ...args.slice(1)];
   return [command.name, ...args];
 }
