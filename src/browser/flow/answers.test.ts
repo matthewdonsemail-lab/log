@@ -72,7 +72,7 @@ describe('a stage flow step passes on Facebook\'s answer (rule 73)', () => {
     const located = (city: string): StepExchange => ({ offsetMs: 0, kind: 'api', name: 'CometMarketplaceSetBuyLocationMutation', method: 'POST', host: 'www.facebook.com', path: '/api/graphql/', status: 200, ms: 900, sent: {}, answer: { data: { marketplace_set_buy_location: { viewer: { marketplace_settings: { buy_location: { reverse_geocode: { city, state: 'PA' } } } } } } }, errors: [], known: true })
     expect(answersIssue(at('s02_setLocation'), [located('Bethlehem')], BETHLEHEM)).toBeNull()
     expect(answersIssue(at('s02_setLocation'), [located('Granada')], BETHLEHEM)?.code).toBe('marketplaceLocationWrong')
-    expect(loadFlow('profileSetup')!.steps.filter((s) => s.answers?.length).map((s) => s.id)).toEqual(['s05_clickSave', 's08_clickSaveChanges', 's13_clickDone'])
+    expect(loadFlow('profileSetup')!.steps.filter((s) => s.answers?.length).map((s) => s.id)).toEqual(['s03_clickChooseProfilePicture', 's04_uploadUploadPhoto', 's05_clickSave', 's08_clickSaveChanges', 's13_clickDone'])
   })
 
   test('every flow step that waits on a call also checks what it answered', () => {

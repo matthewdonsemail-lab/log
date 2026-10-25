@@ -5,7 +5,7 @@ import type { FacebookAccount } from '../../marketplace/socialAccount/index'
 import type { TwentyClient } from '../../twenty/graphql/index'
 import type { BrowserDriver, BrowserEndpoint, GateResult } from '../driver/index'
 import { planSync, profileRequest } from './helpers/index'
-import { ADS_POWER_GROUP } from './types'
+import { ADS_POWER_GROUP, ADS_POWER_HOMES_ENV } from './types'
 import type { ProfileSyncEntry, ProfileSyncResult } from './types'
 
 export const RATE_LIMIT_WAIT_MS = [2000, 4000]
@@ -92,6 +92,9 @@ export function createAdsPowerClient(
     async updateProfile(profileId, fields) {
       await call('POST', '/api/v2/browser-profile/update', { profile_id: profileId, ...fields })
     },
+    async deleteProfiles(profileIds) {
+      await call('POST', '/api/v2/browser-profile/delete', { profile_id: profileIds })
+    },
     async startBrowser(profileId, options = {}) {
       const data = await call<{ ws?: { puppeteer?: string }; debug_port?: string }>('POST', '/api/v2/browser-profile/start', {
         profile_id: profileId,
@@ -109,28 +112,106 @@ export function createAdsPowerClient(
     },
     async stopBrowser(profileId) {
       await call('POST', '/api/v2/browser-profile/stop', { profile_id: profileId })
+    },
+    async kernels() {
+      const data = await call<{ list?: { kernel: string; is_downloaded: boolean }[] }>('GET', '/api/v2/browser-profile/kernels?kernel_type=Chrome')
+      return (data?.list ?? []).map((k) => ({ version: String(k.kernel), downloaded: Boolean(k.is_downloaded) })).sort((a, b) => Number(a.version) - Number(b.version))
+    },
+    async profileUserAgents(profileIds) {
+      const data = await call<{ list?: { profile_id: string; ua?: string }[] }>('POST', '/api/v2/browser-profile/ua', { profile_id: profileIds })
+      return Object.fromEntries((data?.list ?? []).map((row) => [String(row.profile_id), String(row.ua ?? '')]))
+    },
+    async downloadKernel(version) {
+      const data = await call<{ status?: string; progress?: number }>('POST', '/api/v2/browser-profile/download-kernel', { kernel_type: 'Chrome', kernel_version: version })
+      return { status: String(data?.status ?? ''), progress: data?.progress == null ? null : Number(data.progress) }
     }
   }
+}
+
+export function kernelOfUserAgent(userAgent: string | null | undefined): string | null {
+  return /Chrome\/(\d+)\./.exec(userAgent ?? '')?.[1] ?? null
+}
+
+export async function profileKernels(client: AdsPowerClient, profileIds: string[]): Promise<Record<string, string | null>> {
+  const out: Record<string, string | null> = {}
+  for (let i = 0; i < profileIds.length; i += 10) {
+    const agents = await client.profileUserAgents(profileIds.slice(i, i + 10))
+    for (const id of profileIds.slice(i, i + 10)) out[id] = kernelOfUserAgent(agents[id])
+  }
+  return out
+}
+
+export async function kernelReady(client: AdsPowerClient, version: string): Promise<boolean> {
+  return (await client.kernels()).some((k) => k.version === version && k.downloaded)
+}
+
+export async function ensureKernel(
+  client: AdsPowerClient,
+  log: (line: string) => void,
+  options: { version: string; pollMs?: number; maxMs?: number }
+): Promise<{ ok: true; version: string } | { ok: false; detail: string }> {
+  const version = options.version
+  if (await kernelReady(client, version)) return { ok: true, version }
+  const started = Date.now()
+  let last = ''
+  while (Date.now() - started < (options.maxMs ?? 900_000)) {
+    const state = await client.downloadKernel(version)
+    const line = `AdsPower SunBrowser ${version}: ${state.status}${state.progress == null ? '' : ` ${state.progress}%`}`
+    if (line !== last) log(line)
+    last = line
+    if (state.status === 'completed') return { ok: true, version }
+    if (state.status !== 'downloading' && state.status !== 'installing') return { ok: false, detail: line }
+    await new Promise((r) => setTimeout(r, options.pollMs ?? 5000))
+  }
+  return { ok: false, detail: `SunBrowser ${version} still downloading after ${Math.round((options.maxMs ?? 900_000) / 60_000)} min` }
+}
+
+export async function ensureProfileKernel(
+  client: AdsPowerClient,
+  profileId: string,
+  log: (line: string) => void,
+  options: { pollMs?: number; maxMs?: number } = {}
+): Promise<{ ok: true; version: string } | { ok: false; detail: string }> {
+  const version = (await profileKernels(client, [profileId]))[profileId]
+  if (!version) return { ok: false, detail: `profile ${profileId}: its user agent names no Chrome version, so its kernel is unknown` }
+  return ensureKernel(client, log, { ...options, version })
+}
+
+export function adsPowerHomes(env: Record<string, string | undefined> = process.env): string[] | null {
+  return homesOf(env[ADS_POWER_HOMES_ENV])
+}
+
+export function homesOf(value: string | undefined | null): string[] | null {
+  const homes = (value ?? '').split(',').map((h) => h.trim().toUpperCase()).filter(Boolean)
+  return homes.length ? homes : null
 }
 
 export async function syncProfiles(
   twenty: TwentyClient,
   adsPower: AdsPowerClient,
-  options: { apply: boolean; account?: string; log?: (line: string) => void }
+  options: { apply: boolean; account?: string; homes?: string[] | null; log?: (line: string) => void }
 ): Promise<ProfileSyncResult> {
   const log = options.log ?? (() => {})
   const all = await listFacebookAccounts(twenty)
   const accounts = options.account ? all.filter((a) => a.accountName === options.account || a.id === options.account) : all
-  log(`adsPower: ${accounts.length} account(s) from Twenty; reading AdsPower's profiles`)
+  const homes = options.homes === undefined ? adsPowerHomes() : options.homes
+  log(`adsPower: ${accounts.length} account(s) from Twenty${homes ? ` (homes ${homes.join(', ')})` : ''}; reading AdsPower's profiles`)
   const profiles = await adsPower.listProfiles()
-  const entries = planSync(accounts, profiles)
-  if (!options.apply) return { applied: false, entries }
-  const groupId = await adsPower.ensureGroup(ADS_POWER_GROUP)
+  const planned = planSync(accounts, profiles, homes)
+  if (!options.apply) return { applied: false, entries: planned }
+  const entries = [...planned.filter((e) => e.action === 'release'), ...planned.filter((e) => e.action !== 'release')]
+  const live = new Set(profiles.map((p) => p.profileId))
+  const groupId = entries.some((e) => e.action === 'create') ? await adsPower.ensureGroup(ADS_POWER_GROUP) : ''
   const done: ProfileSyncEntry[] = []
   for (const [i, entry] of entries.entries()) {
     const account = accounts.find((a) => a.id === entry.accountId)!
     try {
-      if (entry.action === 'create') {
+      if (entry.action === 'release') {
+        if (entry.profileId && live.has(entry.profileId)) await adsPower.deleteProfiles([entry.profileId])
+        await saveAdsPowerProfileId(twenty, account.id, null)
+        done.push(entry)
+        log(`adsPower ${i + 1}/${entries.length} ${account.accountName}: released profile ${entry.profileId ?? '-'} (${entry.note}), unlinked in Twenty`)
+      } else if (entry.action === 'create') {
         const body = profileRequest(account, groupId)!
         const made = await adsPower.createProfile(body)
         await saveAdsPowerProfileId(twenty, account.id, made.profileId)

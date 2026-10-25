@@ -12,6 +12,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from urllib.parse import parse_qs
 
 import sys as _sys
 from pathlib import Path as _Path
@@ -20,6 +21,7 @@ _sys.path.insert(0, str(_Path(__file__).resolve().parents[1]))
 from login import autoLogin
 from human import scrollMotion
 from browser import proxyGate
+from browser import controlMatch
 from location.placeName import pick_suggestion, place_problem
 from human.humanMouse import HumanMouse
 from errors.errorCodes import failure
@@ -56,7 +58,32 @@ def request_names(entries: list[dict[str, Any]]) -> set[str]:
         match = FRIENDLY_NAME.search(e["request"].get("postData", {}).get("text", "") or "")
         if match:
             names.add(match.group(1) or match.group(2))
+        names.add(endpoint_name(e["request"].get("url", "")))
     return names
+
+
+def query_of(post_data: str) -> str | None:
+    variables = (parse_qs(post_data).get("variables") or [""])[0]
+    match = re.search(r'"query"\s*:\s*"((?:[^"\\]|\\.)*)"', variables)
+    return json.loads(f'"{match.group(1)}"') if match else None
+
+
+async def answer_for(place: str, answers: list, wait_s: float) -> list[str]:
+    deadline = time.monotonic() + wait_s
+    while True:
+        for query, offered in reversed(answers):
+            if query is not None and query.strip().lower() == place.strip().lower():
+                return offered
+        if time.monotonic() > deadline:
+            unnamed = [offered for query, offered in answers if query is None]
+            return unnamed[-1] if unnamed else []
+        await asyncio.sleep(0.25)
+
+
+def endpoint_name(url: str) -> str:
+    path = re.sub(r"^[a-z]+://[^/]+", "", url).split("?", 1)[0].split("#", 1)[0]
+    words = [w for w in re.split(r"[^A-Za-z0-9]+", path) if w]
+    return "".join(w.lower() if i == 0 else w[0].upper() + w[1:].lower() for i, w in enumerate(words)) or "root"
 
 
 def notable(entries: list[dict[str, Any]]) -> list[str]:
@@ -401,9 +428,9 @@ class Inspector:
 
     async def enter_code(self) -> None:
         secret = self.secrets.get("totpSecret")
-        field = await self.first_visible(autoLogin.CODE_FIELD)
-        if field is None or not secret:
-            raise RuntimeError("no code field on the page, or no totpSecret in Twenty")
+        if not secret:
+            raise RuntimeError("no totpSecret in Twenty")
+        field = await self.first_visible(autoLogin.CODE_FIELD) or await self.by_role("textbox", "Code", 10_000)
         await field.click()
         await field.press_sequentially(autoLogin.totp(str(secret)), delay=110)
         log("  code: typed the current authenticator code; submitting with Enter")
@@ -419,21 +446,36 @@ class Inspector:
         await self.page.keyboard.type(pin, delay=140)
         log("  pin: typed the account's Messenger PIN")
 
-    async def by_role(self, role: str, name: str, timeout_ms: int = 15_000):
+    async def shows(self, role: str, name: str) -> bool:
+        try:
+            candidates = await self.page.evaluate(controlMatch.CANDIDATES_JS)
+        except Exception:
+            return False
+        return controlMatch.pick(candidates, role, name).get("code") != "controlMissing"
+
+    async def by_role(self, role: str, name: str, timeout_ms: int = 15_000, within: str | None = None):
         deadline = time.monotonic() + timeout_ms / 1000
+        within = within if within is not None else (self.opts.get("within") or None)
         while True:
-            found = self.page.get_by_role(role, name=name, exact=True)
-            visible = [found.nth(i) for i in range(await found.count()) if await found.nth(i).is_visible()]
-            for candidate in reversed(visible):
+            try:
+                candidates = await self.page.evaluate(controlMatch.CANDIDATES_JS)
+            except Exception:
+                candidates = []
+            found = controlMatch.pick(candidates, role, name, within)
+            if "path" in found and found["enabled"]:
+                getattr(self, "extra", {})["control"] = found["path"]
+                token = f"c{time.monotonic_ns()}"
                 try:
-                    if await candidate.evaluate(HITTABLE_JS):
-                        return candidate
+                    tagged = await self.page.evaluate(controlMatch.TAG_JS, [found["path"], token])
                 except Exception:
-                    continue
-            if visible:
-                return visible[-1]
+                    tagged = False
+                if tagged:
+                    return self.page.locator(f'[{controlMatch.TAG_ATTRIBUTE}="{token}"]')
+                found = {"code": "controlMissing", "detail": f'{role} "{name}" moved before it could be held'}
+            if "path" in found:
+                found = {"code": "controlDisabled", "detail": f'{role} "{name}" is there but disabled'}
             if time.monotonic() > deadline:
-                raise RuntimeError(f'no visible {role} "{name}"')
+                raise RuntimeError(f'{found["code"]}: {found["detail"]}')
             await asyncio.sleep(0.5)
 
     async def handle(self, command: dict[str, Any]) -> dict[str, Any]:
@@ -442,7 +484,7 @@ class Inspector:
         page = self.page
         expect = command.get("expect") or None
         expect_ms = int(command.get("expectMs") or 30_000)
-        self.opts = {k: command.get(k) for k in ("reaLater", "quietMs", "settleMaxMs", "urlChange", "findMs")}
+        self.opts = {k: command.get(k) for k in ("reaLater", "quietMs", "settleMaxMs", "urlChange", "findMs", "within")}
         if action == "closeTab":
             async def close_tab() -> None:
                 popup = getattr(self, "popup", None)
@@ -458,7 +500,7 @@ class Inspector:
             already = command.get("already")
 
             async def click_role() -> None:
-                if already and await self.page.get_by_role(already[0], name=already[1], exact=True).count() and not await self.page.get_by_role(args[0], name=args[1], exact=True).count():
+                if already and await self.shows(already[0], already[1]) and not await self.shows(args[0], args[1]):
                     self.extra["already"] = f'{already[0]} "{already[1]}"'
                     log(f'  {args[0]} "{args[1]}" not needed: {already[0]} "{already[1]}" shows')
                     return
@@ -630,12 +672,14 @@ class Inspector:
                         if "MarketplaceSearchAddressDataSourceQuery" not in (response.request.post_data or ""):
                             return
                         text = await response.text()
-                        answers.append([json.loads(f'"{a}"') for a in re.findall(r'"single_line_address":"((?:[^"\\]|\\.)*)"', text)])
+                        answers.append((query_of(response.request.post_data or ""), [json.loads(f'"{a}"') for a in re.findall(r'"single_line_address":"((?:[^"\\]|\\.)*)"', text)]))
                     except Exception:
                         pass
 
                 page.on("response", on_response)
                 await page.goto("https://www.facebook.com/marketplace/", wait_until="domcontentloaded")
+                await asyncio.sleep(2.0)
+                await page.keyboard.press("Escape")
                 button = page.get_by_role("button", name=re.compile(r"^Location: "))
                 await button.first.wait_for(state="visible", timeout=30_000)
                 await self.mouse.click(button.first)
@@ -646,9 +690,8 @@ class Inspector:
                 await page.keyboard.press("Control+a")
                 await page.keyboard.press("Backspace")
                 await page.keyboard.type(place, delay=90)
-                await asyncio.sleep(2.5)
+                offered = await answer_for(place, answers, 20.0)
                 page.remove_listener("response", on_response)
-                offered = answers[-1] if answers else []
                 index = pick_suggestion(place, offered)
                 if index is None:
                     await page.keyboard.press("Escape")
@@ -714,6 +757,16 @@ class Inspector:
             return await self.step("press", args[0], lambda: page.keyboard.press(args[0]))
         return failure("badRequest", f"unknown or incomplete action: {action} {' '.join(args)}")
 
+    def watch_navigations(self, page: Any) -> None:
+        def navigated(frame: Any) -> None:
+            if frame != page.main_frame:
+                return
+            event = {"url": frame.url, "at": now_iso()}
+            with (self.run_dir / "navigations.jsonl").open("a", encoding="utf8") as out:
+                out.write(json.dumps(event) + "\n")
+
+        page.on("framenavigated", navigated)
+
     async def serve(self) -> int:
         commands = Path(self.config["commandsPath"])
         replies = Path(self.config["repliesPath"])
@@ -727,6 +780,8 @@ class Inspector:
             self.mouse = HumanMouse(self.page, log, busy=self.recorder.busy)
             self.closed = False
             self.page.on("close", lambda _page: setattr(self, "closed", True))
+            self.watch_navigations(self.page)
+            self.context.on("page", self.watch_navigations)
             if self.config.get("idleMouse", True):
                 self.mouse.start_idle()
             else:

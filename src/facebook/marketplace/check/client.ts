@@ -4,7 +4,7 @@ import type { InspectAction, InspectStepResult } from '../../../browser/inspect/
 import { AGENCY_LISTINGS, listListingsWhere, SYNCABLE } from '../../../marketplace/agencyListing/index.ts'
 import { toTwentyEnum } from '../../../marketplace/socialAccount/helpers/index.ts'
 import type { TwentyClient } from '../../../twenty/graphql/index.ts'
-import { accessProblem, marketplaceAccessOf, sellerInboxOf, sellingListingsOf } from './helpers/index.ts'
+import { accessProblem, IDENTITY_HOLD, marketplaceAccessOf, sellerInboxOf, sellingListingsOf } from './helpers/index.ts'
 import type { CheckReport, MarketplaceCheck } from './types.ts'
 
 const FB = 'https://www.facebook.com'
@@ -62,6 +62,8 @@ export async function keepCheck(twenty: TwentyClient, accountId: string, account
       lines.push(`  listing ${said}${moved ? `; Twenty ${row.status ?? 'empty'} → ${listing.status}` : ''}${listing.clicks !== null && row.clicksCount !== listing.clicks ? `; clicks ${row.clicksCount ?? 'empty'} → ${listing.clicks}` : ''}`)
     }
     if (!check.listings.length) lines.push('  no listings on Selling')
+    const held = check.listings.find((l) => l.notice && IDENTITY_HOLD.test(l.notice))
+    if (held && !issue) issue = { code: 'identityVerificationRequired', detail: `${held.title} (${held.listingId}): "${held.notice}"` }
   }
   const threads = check.inbox?.threads ?? 0
   if (!check.inbox) lines.push(`${accountName}: the seller inbox didn't load`)

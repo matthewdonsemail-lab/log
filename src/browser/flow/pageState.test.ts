@@ -1,6 +1,8 @@
 import { describe, expect, test } from 'bun:test'
 import type { StepExchange } from '../../subq/stepReading/types'
-import { pageStateOf } from './helpers/pageState'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { AUTH_APP_RADIO, authAppOffered, pageStateOf, resolveCallOf, TWO_STEP_PICKER } from './helpers/pageState'
 
 const CHECKPOINT = 'https://www.facebook.com/checkpoint/1501092823525282/'
 
@@ -93,5 +95,62 @@ describe('resolving the delete survey', () => {
     expect(JSON.stringify(first)).toContain("No, haven't sold")
     const second = resolveCallOf(state, { account: 'bethlehem', text: '- radio "No, haven\'t sold" [checked] [active]' })
     expect(JSON.stringify(second)).toContain('"Next"')
+  })
+})
+
+describe('a group People tab that answered with its newest members', () => {
+  const MEMBERS = 'https://www.facebook.com/groups/junkremovalwinners/members'
+  const refetch = (edges: unknown[]): StepExchange => ({ offsetMs: 1200, kind: 'api', name: 'GroupsCometMembersPageNewMembersSectionRefetchQuery', method: 'POST', host: 'www.facebook.com', path: '/api/graphql/', status: 200, ms: 640, sent: { count: 10 }, answer: { data: { node: { __typename: 'Group', id: '3549906855288164', new_members: { edges, page_info: { has_next_page: true } } } } }, errors: [], known: false })
+
+  test('is groupMembersList, decided by the refetch answer having new_members edges, and needs nothing', async () => {
+    const { resolveCallOf } = await import('./helpers/pageState')
+    const state = pageStateOf(MEMBERS, '- heading "New to the group"', { exchanges: [refetch([{ node: { __typename: 'User', id: '1' } }])] })
+    expect(state).toMatchObject({ id: 'groupMembersList', person: false, needsNothing: true })
+    expect(resolveCallOf(state!, { account: '61594063207669', text: '' })).toBeNull()
+    expect(pageStateOf(MEMBERS, '', { exchanges: [refetch([])] })).toBeNull()
+    expect(pageStateOf('https://www.facebook.com/groups/junkremovalwinners', '', { exchanges: [refetch([{ node: { __typename: 'User', id: '1' } }])] })).toBeNull()
+    expect(pageStateOf(MEMBERS, '- heading "New to the group"')).toBeNull()
+  })
+})
+
+describe("two-step when Facebook asks for a passkey first (Mountain Top, host 20261024T222706)", () => {
+  const fixture = (name: string) => readFileSync(join(import.meta.dir, '..', '..', '..', 'python', 'fixtures', 'controls', `${name}.yml`), 'utf8')
+  const TWO_FACTOR = 'https://www.facebook.com/two_step_verification/two_factor/'
+  const picker = (methods: { method: string; is_disabled: boolean }[]): StepExchange => ({ offsetMs: 0, kind: 'api', name: TWO_STEP_PICKER, method: 'POST', host: 'www.facebook.com', path: '/api/graphql/', status: 200, ms: 450, sent: {}, answer: { data: { xfb_two_factor_login_methods: { methods } } }, errors: [], known: true })
+
+  test('the passkey prompt and the method picker are named before the code page, each with its press', () => {
+    const passkey = fixture('twoStepPasskey')
+    const chooser = fixture('twoStepMethodPicker')
+    expect(pageStateOf(TWO_FACTOR, passkey)?.id).toBe('twoStepPasskey')
+    expect(pageStateOf(TWO_FACTOR, `${passkey}\n${chooser}`)?.id).toBe('twoStepMethodPicker')
+    expect(resolveCallOf(pageStateOf(TWO_FACTOR, passkey)!, { account: 'a', text: passkey })?.input).toMatchObject({ action: 'clickRole', values: ['button', 'Try another way'] })
+    expect(resolveCallOf(pageStateOf(TWO_FACTOR, chooser)!, { account: 'a', text: chooser })?.input).toMatchObject({ action: 'clickRole', values: ['radio', AUTH_APP_RADIO] })
+    const chosen = chooser.replace(/radio "Authentication app([^"]*)" \[ref=/, 'radio "Authentication app$1" [checked] [ref=')
+    expect(resolveCallOf(pageStateOf(TWO_FACTOR, chosen)!, { account: 'a', text: chosen })?.input).toMatchObject({ action: 'clickRole', values: ['button', 'Continue'] })
+    expect(pageStateOf(TWO_FACTOR, '- textbox "Code"\n- generic: Enter the 6-digit code for this account')?.id).toBe('twoStepCode')
+  })
+
+  test("the authentication app is chosen only when the picker's answer offers TOTP, not disabled", () => {
+    expect(authAppOffered([picker([{ method: 'PASSKEY', is_disabled: false }, { method: 'TOTP', is_disabled: false }, { method: 'BACKUP_CODES', is_disabled: false }])])).toBe(true)
+    expect(authAppOffered([picker([{ method: 'PASSKEY', is_disabled: false }, { method: 'TOTP', is_disabled: true }])])).toBe(false)
+    expect(authAppOffered([picker([{ method: 'PASSKEY', is_disabled: false }])])).toBe(false)
+    expect(authAppOffered([])).toBe(false)
+  })
+})
+
+describe('"We suspect automated behaviour" in Arabic is the same state, dismissed by its own label', () => {
+  test('Scranton\'s page (its Facebook in Arabic) is automatedBehaviour and its resolver presses تجاهل', () => {
+    const text = 'نشتبه في وجود سلوك تلقائي على حسابك To prevent your account from being temporarily restricted تجاهل'
+    expect(pageStateOf('https://www.facebook.com/checkpoint/601051028565049/', text)?.id).toBe('automatedBehaviour')
+  })
+})
+
+describe('the identity hold is a known state only a person clears', () => {
+  test('from the Selling text, and from MarketplaceYourListingDialogQuery\'s INTEGRITY_NEEDS_VERIFICATION_VH notice', () => {
+    const fromText = pageStateOf('https://www.facebook.com/marketplace/you/selling', 'Confirm your identity to publish this and any future listings Junk Removal Hazleton $99')
+    expect(fromText?.id).toBe('identityVerificationHold')
+    expect(fromText?.person).toBe(true)
+    const notice = { name: 'MarketplaceYourListingDialogQuery', answer: { listing_seller_notices: [{ type: 'INTEGRITY_NEEDS_VERIFICATION_VH' }] } } as unknown as StepExchange
+    expect(pageStateOf('https://www.facebook.com/marketplace/you/selling', 'More Info Needed to Publish This Listing', { exchanges: [notice] })?.id).toBe('identityVerificationHold')
   })
 })

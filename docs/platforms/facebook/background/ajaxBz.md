@@ -11,25 +11,25 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_40544dae9444025f581ab50486ee4fd1bb31e1479be8264ec5fa13c071c42cee` |
+| rea | `ev_03dd59976ffbffa3f633595a9830f9a4e1c3a6e34beb6a3c9d6eaebff43ecccf` |
 
-Seen 60 time(s) in 8 run(s).
+Seen 93 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
-| host | step 1: goto /marketplace/selling/ | 15 | -1 | -1 ms | 5723–9570 ms | — |
+| host | step 1: goto /marketplace/selling/ | 22 | -1, 200 | -1–1415 ms | 4829–13611 ms | — |
 | host | GET 200 /nw/ (319 ms) | 1 | -1 | -1 ms | 2587 ms | — |
-| host | step 4: goto /login/ | 3 | -1 | -1 ms | 59–5778 ms | — |
+| host | step 4: goto /login/ | 5 | -1, 200 | -1–373 ms | 37–5778 ms | — |
 | host | GET 200 /nw/ (344 ms) | 1 | -1 | -1 ms | 3711 ms | — |
 | host | step 7: signIn | 1 | -1 | -1 ms | 2322 ms | — |
-| host | signIn: email typed | 1 | -1 | -1 ms | 1997 ms | — |
-| host | signIn: password typed; submitting with Enter | 2 | -1 | -1 ms | 1037–4859 ms | — |
+| host | signIn: email typed | 2 | -1, 200 | -1–1577 ms | 1896–1997 ms | — |
+| host | signIn: password typed; submitting with Enter | 9 | -1, 200 | -1–797 ms | 69–17116 ms | — |
 | host | GET 200 /nw/ (355 ms) | 3 | -1 | -1 ms | 392–2265 ms | — |
 | host | step 2: pageText | 1 | -1 | -1 ms | 835 ms | — |
 | host | step 4: goto /marketplace/selling/ | 6 | -1 | -1 ms | 58–2707 ms | — |
-| host | step 5: pageText | 1 | -1 | -1 ms | 1528 ms | — |
+| host | step 5: pageText | 2 | -1, 200 | -1–362 ms | 1313–1528 ms | — |
 | host | step 7: goto /marketplace/selling/ | 6 | -1 | -1 ms | 57–3042 ms | — |
-| host | step 8: pageText | 1 | -1 | -1 ms | 1241 ms | — |
+| host | step 8: pageText | 2 | -1, 200 | -1–353 ms | 1241–5159 ms | — |
 | connect | Opening Marketplace > Selling. | 7 | -1 | -1 ms | 7239–9789 ms | — |
 | connect | Page: loginForm /marketplace/selling/ "…" | 1 | -1 | -1 ms | 573 ms | — |
 | connect | submitCredentials failed: crashed Error | 1 | -1 | -1 ms | 1666 ms | — |
@@ -39,8 +39,16 @@ Seen 60 time(s) in 8 run(s).
 | inspect | step 3: goto /marketplace/inbox | 3 | 200, 0 | 0–501 ms | 589944–1455304 ms | — |
 | warmup | step 17: dwell 2-4s | 1 | 200 | 377 ms | 80196 ms | — |
 | inspect | step 3: click e356 | 1 | 200 | 348 ms | 16302 ms | — |
+| host | step 13: code | 1 | 200 | 360 ms | 8434 ms | — |
+| host | code failed: RuntimeError: controlMissing: no visible textbox "…" | 1 | 200 | 375 ms | 5140 ms | — |
+| host | step 20: code | 1 | 200 | 1542 ms | 6077 ms | — |
+| host | code: typed the current authenticator code; submitting with Enter | 1 | 200 | 436 ms | 3103 ms | — |
+| inspect | step 1: goto /login/ | 5 | 200 | 506–2835 ms | 8286–17100 ms | — |
+| inspect | step 2: signIn | 1 | 200 | 3011 ms | 2117 ms | — |
+| inspect | signIn: email typed | 1 | 200 | 845 ms | 1847 ms | — |
+| inspect | signIn: password typed; submitting with Enter | 3 | 200, 0 | 0–840 ms | 1023–11159 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -52,7 +60,7 @@ Sent:
 {
   "query": {
     "cquick": "_r_31_",
-    "cquick_token": "AUdmRnUAYDZx6QpruXYYHJxPfaE",
+    "cquick_token": "(taken out)",
     "ctarget": "https://www.facebook.com"
   },
   "body": {
@@ -72,19 +80,17 @@ Answered:
 }
 ```
 
-**runs/inspect/20261023T173652_61594063207669**, step 3: click e356: 200, 348 ms
+**runs/inspect/20261025T063549_61594360734687**, step 1: goto /login/: 200, 1631 ms
 
 Sent:
 
 ```json
 {
   "query": {
-    "cquick": "_r_31_",
-    "cquick_token": "AUdmRnUAYDZx6QpruXYYHJxPIpg",
-    "ctarget": "https://www.facebook.com"
+    "ph": "C3"
   },
   "body": {
-    "------WebKitFormBoundarynBtRGxioZDGOyUCm\r\nContent-Disposition: form-data; name": "\"ts\"\r\n\r\n1792777127968\r\n------WebKitFormBoundarynBtRGxioZDGOyUCm\r\nContent-Disposition: form-data; name=\"q\"\r\n\r\n[{\"app_id\":\"2220391788200892\",\"posts\":\"0wS4W1sicWV4Iix7ImwiOiJKe1wicWVpZFwiOlwiNjE1OTQwNjMyMDc2NjlcIixcInUFGQULAHQFCwRmYgUNIGdrc1wiOltdLAE/kFwiOm51bGx9In0sMTc5Mjc3NzA2Nzk1NS4yOTk4LDAsODVdLFv dgCmdgAANf5zAP5zAP5zAP5zALJzADhfYWN0aW5nX2FjY291bnSq3gEgNSwwLDEwMF1d\",\"user\":\"61594063207669\",\"webSe… (560 chars)"
+    "------WebKitFormBoundary4PRdgXhOgUmst6iA\r\nContent-Disposition: form-data; name": "\"ts\"\r\n\r\n1792910178572\r\n------WebKitFormBoundary4PRdgXhOgUmst6iA\r\nContent-Disposition: form-data; name=\"q\"\r\n\r\n[{\"app_id\":\"2220391788200892\",\"posts\":[[\"falco:qe2_js_exposure\",{\"e\":\"{\\\"universe\\\":\\\"fblite_urs_comet_qr_codes\\\",\\\"unit_id\\\":\\\"\\\",\\\"unit_type\\\":5,\\\"param\\\":\\\"should_show_qr_on_login_page\\\"}\",\"r\":1,\"d\":\"fd.ARvwx6PlHSgHPk4FtNScsBxmYnJl74rt5Y7T0B6iaolABoKoxZqLm43SyuebGfLRhNxc9RBequFarFoc8xK4S… (717 chars)"
   }
 }
 ```
@@ -94,9 +100,34 @@ Answered:
 ```json
 {
   "__ar": 1,
-  "rid": "AwKk-c6ud9hHf7FUNLUkCqI",
+  "rid": "AaKpakR_C1Hsgurdlm25k6o",
   "payload": null,
-  "lid": "7699919130611382816"
+  "lid": "7700490584250620089"
+}
+```
+
+**runs/inspect/20261025T063549_61594360734687**, step 2: signIn: 200, 3011 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "ph": "C3",
+    "qpl_active_flow_ids": "175125627,516759801"
+  },
+  "body": null
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "AbZBj6K3kh_6syLlZsuWs3I",
+  "payload": null,
+  "lid": "7700490671414194123"
 }
 ```
 

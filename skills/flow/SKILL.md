@@ -60,11 +60,52 @@ params by name; its live twin `flow<Name>Live` runs it on Facebook with `confirm
 
 A failed step ends the run (`failedAt`): read that step's folder in the new
 recording (rule 25), re-record the changed part with inspect, rebuild the flow.
+
+## Deterministic steps (rule 79)
+
+A step never guesses which control to press. The session gathers every visible
+control and `python/browser/controlMatch.py` scores them: the step's role, then
+its name as the accessible name, aria-label, label, text or placeholder (case
+and spacing ignored), inside the step's dialog (`within`) or an open dialog
+over the page behind it. One match is pressed; two are refused
+(`controlAmbiguous`), none is `controlMissing`, a disabled one is waited for
+until the step's time runs out (`controlDisabled`). So "Upload Photo" in a
+recording finds Facebook's "Upload photo", and a Dismiss button with no
+accessible name is found by its text.
+
+`fromInspect` writes what keeps a step deterministic:
+
+- `within`: the dialog around the control in the snapshot before the step.
+- `expect`: the call the step must cause, a mutation first, else a plain
+  endpoint (`/profile/picture/upload/` is `profilePictureUpload`), else a
+  `…DialogQuery`. The session waits for it, and the step fails without it.
+- `answers`: what that call must say (rule 73), added from the recording's
+  exchanges before the flow ships; `answers.test.ts` refuses a step with
+  `expect` and no `answers`.
+
+Before a flow's first click, fill or upload, `clearOverlays` reads the page
+and presses Escape for each known overlay over it (`OVERLAY_CLEARS`,
+`src/browser/flow/helpers/overlays.ts`), then reads the page again:
+
+| Overlay | Page state | Checked by |
+| --- | --- | --- |
+| "To allow or block browser notifications from Facebook…" | `browserNotificationsNotice` | gone from the page (Escape sends no call) |
+| "What happened" … "Ended on <date>" | `pastNoticeDialog` | `useAccountStatusClearEnrollmentEntryPointActionMutation` answers `data.xfb_ixt_gateway_clear_flow: true` |
+
+One still there after its Escape, or a clear call that answers otherwise,
+stops the flow at that step with `overlayNotCleared`. A "What happened" with
+no "Ended on" is not cleared: it stays unknown, for SubQ to read (rule 74).
+A new overlay is added there with its page state, fixture and answer.
+
+When Facebook changes a page, add its snapshot excerpt to
+`python/fixtures/controls/` (no names, no page copy) and a case to
+`src/browser/flow/controlMatch.test.ts`, so the next change fails a test, not
+a live run.
 Rebuild the request docs after a run (rule 27): `capture --docs`.
 
 ## Saved flows
 
 | Flow | Recorded | Does |
 | --- | --- | --- |
-| `profileSetup` | Lancaster, 2026-10-19 | Profile picture, cover photo, name (13 steps) |
+| `profileSetup` | Lancaster, 2026-10-19; the picture steps checked on Exeter, 2026-10-24 | Profile picture, cover photo, name (13 steps). The picture steps wait on the dialog query, the upload and the set mutation, inside "Choose profile picture". The host runs only the parts Twenty has data for (`flowWithParams`). |
 | `marketplaceListingDelete` | Bethlehem, 2026-10-23 | Delete one Marketplace listing from Selling: More options, Delete listing, Delete, then "No, haven't sold" on Facebook's survey (6 steps). The menu answer must name the listing id given, and so must the delete answer (`commerce_for_sale_item_delete.deleted_for_sale_item_id`). Run it through `log facebook listing remove`, which then sets the Twenty row REMOVED. |

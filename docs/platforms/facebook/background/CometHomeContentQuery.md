@@ -13,7 +13,7 @@
 | Called from | `CometHomeContent.react` |
 | rea | `ev_cf23e67c25aa3ceb49db2a20048e8ce344dfa1f57457ba9df343170946991f9b` |
 
-Seen 22 time(s) in 12 run(s).
+Seen 28 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -37,8 +37,13 @@ Seen 22 time(s) in 12 run(s).
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 712 ms | 1708097 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 617 ms | 15207 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 448 ms | 7190 ms | — |
+| inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 418 ms | 18337 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 2 | 200 | 384–395 ms | 45797–1773929 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 624 ms | 219884 ms | — |
+| inspect | step 1: goto /marketplace/status | 1 | 200 | 477 ms | 12033 ms | — |
+| inspect | step 4: goto /marketplace/status | 1 | 200 | 475 ms | 9208 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -102,6 +107,39 @@ Answered:
     "server_metadata": {
       "request_start_time_ms": 1792742396554,
       "time_at_flush_ms": 1792742396575
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 477 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeContentQuery",
+  "server_timestamps": "true",
+  "variables": {},
+  "doc_id": "28262615193401316"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "comet_top_of_home_feed_tabs_renderer": null
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792911375640,
+      "time_at_flush_ms": 1792911375770
     },
     "is_final": true
   }

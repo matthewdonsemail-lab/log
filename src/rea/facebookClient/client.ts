@@ -2,8 +2,8 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { basename, dirname, join, relative, resolve, sep } from "node:path";
-import { defaultReaRunner, evidenceIdOf } from "../capture/client";
-import { parseSteps, splitHarBySteps } from "../capture/helpers/index";
+import { defaultReaRunner, evidenceIdOf, writeCaptureScripts } from "../capture/client";
+import { exportScripts, parseSteps, splitHarBySteps } from "../capture/helpers/index";
 import type { ReaRunner } from "../capture/types";
 import { CAPTURE_FOLDERS } from "../../browser/driver/types";
 import { domainOf, factsFromDoc, foldOperation, importersOf, indexModules, readGraphqlDefinition, renderOperationDoc, renderStoredSightings, requestsInStep, sliceFor } from "./helpers/index";
@@ -89,11 +89,27 @@ function stepEvidence(capture: RunCapture): Map<string, string> {
   return evidence;
 }
 
+export function scriptsFromHar(capture: RunCapture, log: (line: string) => void): number {
+  try {
+    const har = JSON.parse(readFileSync(join(capture.dir, "session.har"), "utf8")) as { log?: { entries?: { response?: { content?: { _bodyError?: string } } }[] } };
+    const lost = (har.log?.entries ?? []).filter((e) => e.response?.content?._bodyError).length;
+    const exported = exportScripts(har as unknown);
+    if (!exported.scripts.length) return 0;
+    writeCaptureScripts(capture.dir, exported);
+    log(`  ${capture.run}: not settled yet, ${exported.scripts.length} bundle(s) taken from its session.har${lost ? `; ${lost} response body(ies) lost in the recording (_bodyError)` : ""}`);
+    return exported.scripts.length;
+  } catch (error) {
+    log(`  ${capture.run}: its session.har could not be read for bundles (${error instanceof Error ? error.message : String(error)})`);
+    return 0;
+  }
+}
+
 export function indexRunModules(captures: RunCapture[], log: (line: string) => void): Map<string, FacebookModule> {
   const modules = new Map<string, FacebookModule>();
   const parsed = new Set<string>();
   for (const capture of captures) {
     const scriptsDir = join(capture.dir, "scripts");
+    if (!existsSync(scriptsDir)) scriptsFromHar(capture, log);
     if (!existsSync(scriptsDir)) continue;
     let fresh = 0;
     for (const file of readdirSync(scriptsDir)) {

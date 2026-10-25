@@ -7,6 +7,7 @@ import type { ListingRecord } from "../../marketplace/listing/index.ts";
 import type { TwentyClient } from "../../twenty/graphql/index.ts";
 import type { AdsPowerClient } from "../../browser/adsPower/index.ts";
 import type { DecisionsClient } from "../../subq/decisions/index.ts";
+import type { Platform } from "./helpers/platforms.ts";
 
 export interface CommandResult {
   code: number;
@@ -34,6 +35,9 @@ export interface CommandContext {
   out: (line: string) => void;
   err: (line: string) => void;
   now?: () => Date;
+  sleep?: (ms: number) => Promise<void>;
+  directTwitter?: (account: import("../../marketplace/socialAccount/index.ts").FacebookAccount, spec: import("../../twitter/account/session/index.ts").TwitterEngineSpec) => import("../../twitter/account/session/index.ts").TwitterEngineRun;
+  directRead?: (account: import("../../marketplace/socialAccount/index.ts").FacebookAccount, groupId: string) => import("../../directApi/engine/index.ts").DirectOutcome<{ id: string | null; text: string; creation_time: number | null }>;
 }
 
 export interface FlagSpec {
@@ -74,7 +78,7 @@ export interface Command {
   summary: string;
   args?: string;
   usage: string;
-  platform: "facebook" | "any" | "byArgument";
+  platform: Platform | "any" | "byArgument";
   effect: ToolEffect;
   input?: CommandInput;
   run(context: CommandContext, argv: string[]): Promise<CommandResult> | CommandResult;

@@ -66,6 +66,20 @@ export function loadFlow(name: string, dir = FLOWS_DIR): FlowDefinition | null {
   return existsSync(path) ? (JSON.parse(readFileSync(path, 'utf8')) as FlowDefinition) : null
 }
 
+export function flowSections(flow: FlowDefinition): FlowStep[][] {
+  const sections: FlowStep[][] = [[]]
+  for (const step of flow.steps) {
+    sections.at(-1)!.push(step)
+    if (step.expect) sections.push([])
+  }
+  return sections.filter((s) => s.length)
+}
+
+export function flowWithParams(flow: FlowDefinition, given: Record<string, string | undefined>): FlowDefinition {
+  const missing = (step: FlowStep) => [step.value, step.url].some((text) => [...(text ?? '').matchAll(/\{(\w+)\}/g)].some(([, name]) => !given[name]))
+  return { ...flow, steps: flowSections(flow).filter((section) => !section.some(missing)).flat() }
+}
+
 const sameStep = (a: FlowStep, b: FlowStep) => a.action === b.action && (a.url ?? '') === (b.url ?? '') && JSON.stringify(a.args ?? []) === JSON.stringify(b.args ?? [])
 
 export function keepAnswers(flow: FlowDefinition, before: FlowDefinition | null): FlowDefinition {

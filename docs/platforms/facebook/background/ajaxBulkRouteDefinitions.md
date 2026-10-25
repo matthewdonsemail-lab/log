@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_40544dae9444025f581ab50486ee4fd1bb31e1479be8264ec5fa13c071c42cee` |
+| rea | `ev_97c9b95af3c6df9f48922c119a56eb765f69a4164d9153aef5a12b884211cda8` |
 
-Seen 1041 time(s) in 32 run(s).
+Seen 1357 time(s) in 41 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -101,7 +101,7 @@ Seen 1041 time(s) in 32 run(s).
 | inspect | scroll: +800px in 18 wheel steps, 875 ms | 1 | 200 | 372 ms | 544 ms | — |
 | inspect | scroll: +800px in 18 wheel steps, 906 ms | 1 | 200 | 390 ms | 22 ms | — |
 | inspect | scroll: +800px in 17 wheel steps, 672 ms | 1 | 200 | 378 ms | 4141 ms | — |
-| inspect | step 2: snapshot | 5 | 200 | 367–588 ms | 1095–7489 ms | — |
+| inspect | step 2: snapshot | 7 | 200 | 367–588 ms | 1095–14826 ms | — |
 | inspect | scroll: +700px in 16 wheel steps, 766 ms | 5 | 200 | 369–619 ms | 1172–3862 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 1000 ms | 2 | 200 | 368–395 ms | 9372–10621 ms | — |
 | inspect | scroll: +700px in 15 wheel steps, 766 ms | 2 | 200 | 356–584 ms | 778–779 ms | — |
@@ -273,22 +273,22 @@ Seen 1041 time(s) in 32 run(s).
 | inspect | step 9: goto /marketplace/status | 3 | 200 | 729–1016 ms | 2091–2097 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 3 | 200 | 1212–1587 ms | 2001–2565 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 4 | 200 | 422–497 ms | 1332–2147 ms | — |
-| inspect | step 1: goto /marketplace/status | 7 | 200 | 384–3129 ms | 5260–8942 ms | — |
-| inspect | step 2: goto /marketplace/you/selling | 6 | 200 | 330–832 ms | 3629–4331 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 32 | 200 | 351–1150 ms | 3092–1366917 ms | — |
+| inspect | step 1: goto /marketplace/status | 14 | 200 | 384–3129 ms | 5260–8942 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 11 | 200 | 330–832 ms | 3278–4610 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 43 | 200 | 351–1150 ms | 2137–1366917 ms | — |
 | inspect | step 2: goto /marketplace/status | 3 | 200 | 690–1037 ms | 2483–2489 ms | — |
 | inspect | step 3: goto /marketplace/you/selling | 3 | 200 | 2107–2335 ms | 1919–3089 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 5 | 200 | 390–1862 ms | 1933–355258 ms | — |
-| inspect | step 4: goto /marketplace/status | 3 | 200 | 748–865 ms | 4123–4187 ms | — |
-| inspect | step 5: goto /marketplace/you/selling | 3 | 200 | 494–1062 ms | 1850–2864 ms | — |
-| inspect | step 6: goto /marketplace/inbox | 14 | 200 | 507–1131 ms | 1381–1514910 ms | — |
+| inspect | step 4: goto /marketplace/status | 6 | 200 | 429–865 ms | 3065–4187 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 6 | 200 | 390–1062 ms | 1850–2864 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 18 | 200 | 401–1131 ms | 1210–1514910 ms | — |
 | inspect | step 2: goto /marketplace/ | 9 | 200 | 387–512 ms | 4947–9931 ms | — |
 | inspect | step 5: goto /messages/ | 3 | 200 | 731–972 ms | 7814–9430 ms | — |
 | inspect | post: "…", 123 words, 0 image(s), scrolled 53 px | 8 | 200 | 378–5777 ms | 173–98970 ms | — |
 | inspect | post: "…", 39 words, 0 image(s), scrolled 1157 px | 1 | 200 | 418 ms | 12503 ms | — |
 | inspect | step 5: likePost Like | 1 | 200 | 393 ms | 3103 ms | — |
-| flow | step 1: goto /marketplace/ | 5 | 200 | 408–620 ms | 2535–3474 ms | — |
-| flow | step 3: goto /marketplace/create/item | 5 | 200 | 397–625 ms | 1585–3735 ms | — |
+| flow | step 1: goto /marketplace/ | 27 | 200 | 408–1496 ms | 1717–6001 ms | — |
+| flow | step 3: goto /marketplace/create/item | 13 | 200 | 397–669 ms | 1585–6146 ms | — |
 | warmup | step 1: goto /marketplace/ | 6 | 200 | 389–448 ms | 2152–3091 ms | — |
 | warmup | step 3: goto /marketplace/you/selling | 3 | 200 | 411–473 ms | 3246–3432 ms | — |
 | warmup | step 5: goto /messages/ | 2 | 200 | 523–697 ms | 5111–5589 ms | — |
@@ -306,6 +306,79 @@ Seen 1041 time(s) in 32 run(s).
 | inspect | step 17: clickRole button "…" | 1 | 200 | 687 ms | 1565 ms | — |
 | inspect | step 1: goto /marketplace/you/selling | 3 | 200 | 352–605 ms | 6048–6116 ms | — |
 | inspect | step 3: click e356 | 1 | 200 | 491 ms | 2032 ms | — |
+| inspect | step 1: goto /groups/junkremovalwinners | 7 | 200 | 335–643 ms | 6918–10638 ms | — |
+| inspect | step 2: pageText | 2 | 200 | 346–370 ms | 1097–15894 ms | — |
+| inspect | step 3: goto /groups/junkremovalwinners/members | 8 | 200 | 343–456 ms | 3070–21269 ms | — |
+| inspect | scroll: +376px in 9 wheel steps, 328 ms | 3 | 200 | 340–370 ms | 700–13841 ms | — |
+| inspect | scroll: +458px in 11 wheel steps, 578 ms | 1 | 200 | 379 ms | 377 ms | — |
+| inspect | scroll: +505px in 11 wheel steps, 422 ms | 1 | 200 | 352 ms | 487 ms | — |
+| inspect | scroll: +491px in 11 wheel steps, 406 ms | 1 | 200 | 345 ms | 506 ms | — |
+| inspect | scroll: +321px in 9 wheel steps, 437 ms | 5 | 200 | 340–1279 ms | 14243–40214 ms | — |
+| inspect | scroll: +423px in 10 wheel steps, 360 ms | 1 | 200 | 348 ms | 534 ms | — |
+| inspect | scroll: +571px in 13 wheel steps, 594 ms | 1 | 200 | 349 ms | 274 ms | — |
+| inspect | scroll: +534px in 12 wheel steps, 422 ms | 2 | 200 | 380–425 ms | 302–2594 ms | — |
+| inspect | scroll: +478px in 12 wheel steps, 625 ms | 4 | 200 | 350–409 ms | 135–1253 ms | — |
+| inspect | scroll: +352px in 10 wheel steps, 578 ms | 1 | 200 | 341 ms | 369 ms | — |
+| inspect | scroll: +385px in 9 wheel steps, 438 ms | 1 | 200 | 363 ms | 6187 ms | — |
+| inspect | scroll: +425px in 10 wheel steps, 360 ms | 1 | 200 | 409 ms | 581 ms | — |
+| inspect | scroll: +350px in 11 wheel steps, 859 ms | 1 | 200 | 358 ms | 231 ms | — |
+| inspect | scroll: +441px in 11 wheel steps, 672 ms | 1 | 200 | 367 ms | 208 ms | — |
+| inspect | scroll: +572px in 13 wheel steps, 516 ms | 1 | 200 | 530 ms | 455 ms | — |
+| inspect | scroll: +597px in 14 wheel steps, 610 ms | 3 | 200 | 350–531 ms | 2502–6726 ms | — |
+| inspect | scroll: +439px in 10 wheel steps, 375 ms | 1 | 200 | 362 ms | 485 ms | — |
+| inspect | scroll: +595px in 14 wheel steps, 656 ms | 1 | 200 | 386 ms | 492 ms | — |
+| inspect | scroll: +333px in 8 wheel steps, 250 ms | 3 | 200 | 351–376 ms | 2559–5760 ms | — |
+| inspect | scroll: +538px in 12 wheel steps, 516 ms | 1 | 200 | 389 ms | 746 ms | — |
+| inspect | scroll: +567px in 15 wheel steps, 953 ms | 1 | 200 | 397 ms | 161 ms | — |
+| inspect | scroll: +334px in 8 wheel steps, 344 ms | 4 | 200 | 343–392 ms | 695–13590 ms | — |
+| inspect | scroll: +531px in 13 wheel steps, 734 ms | 1 | 200 | 411 ms | 576 ms | — |
+| inspect | scroll: +540px in 13 wheel steps, 641 ms | 2 | 200 | 349–362 ms | 449–1521 ms | — |
+| inspect | scroll: +326px in 8 wheel steps, 343 ms | 2 | 200 | 338–965 ms | 3887–22284 ms | — |
+| inspect | scroll: +531px in 13 wheel steps, 656 ms | 1 | 200 | 365 ms | 1229 ms | — |
+| inspect | scroll: +445px in 11 wheel steps, 704 ms | 4 | 200 | 346–398 ms | 2374–14032 ms | — |
+| inspect | scroll: +314px in 9 wheel steps, 485 ms | 2 | 200 | 372–381 ms | 564–1550 ms | — |
+| inspect | scroll: +307px in 8 wheel steps, 281 ms | 1 | 200 | 362 ms | 5943 ms | — |
+| inspect | scroll: +400px in 10 wheel steps, 500 ms | 2 | 200 | 355–364 ms | 414–1346 ms | — |
+| inspect | scroll: +573px in 14 wheel steps, 656 ms | 3 | 200 | 357–419 ms | 4339–15924 ms | — |
+| inspect | scroll: +578px in 13 wheel steps, 531 ms | 2 | 200 | 364–365 ms | 366–1514 ms | — |
+| inspect | scroll: +370px in 10 wheel steps, 594 ms | 1 | 200 | 368 ms | 11188 ms | — |
+| inspect | scroll: +409px in 11 wheel steps, 640 ms | 1 | 200 | 377 ms | 590 ms | — |
+| inspect | scroll: +354px in 8 wheel steps, 281 ms | 1 | 200 | 344 ms | 15306 ms | — |
+| inspect | scroll: +568px in 14 wheel steps, 687 ms | 2 | 200 | 342–394 ms | 1828–2712 ms | — |
+| inspect | scroll: +390px in 9 wheel steps, 328 ms | 2 | 200 | 336–379 ms | 11884–13463 ms | — |
+| inspect | scroll: +391px in 10 wheel steps, 547 ms | 1 | 200 | 342 ms | 344 ms | — |
+| inspect | scroll: +517px in 12 wheel steps, 500 ms | 2 | 200 | 336–371 ms | 502–1452 ms | — |
+| inspect | scroll: +454px in 10 wheel steps, 328 ms | 1 | 200 | 336 ms | 6032 ms | — |
+| inspect | scroll: +315px in 8 wheel steps, 297 ms | 10 | 200 | 329–1230 ms | 676–650063 ms | — |
+| inspect | step 22: goto /groups/junkremovalwinners/members | 5 | 200 | 332–569 ms | 2819–5597 ms | — |
+| inspect | scroll: +400px in 9 wheel steps, 281 ms | 1 | 200 | 332 ms | 635 ms | — |
+| inspect | scroll: +592px in 15 wheel steps, 906 ms | 4 | 200 | 335–698 ms | 356–20535 ms | — |
+| inspect | step 24: scroll 3-5 x 300-600px | 1 | 200 | 332 ms | 769 ms | — |
+| inspect | scroll: +548px in 14 wheel steps, 796 ms | 1 | 200 | 331 ms | 568 ms | — |
+| inspect | scroll: +515px in 13 wheel steps, 656 ms | 10 | 200 | 327–385 ms | 332–308762 ms | — |
+| inspect | step 1: goto /me | 8 | 200 | 399–555 ms | 2895–22335 ms | — |
+| inspect | step 7: click e1395 | 7 | 200 | 448–1144 ms | 7743–11678 ms | — |
+| inspect | step 8: wait 5s | 6 | 200 | 394–599 ms | 71675–371076 ms | — |
+| host | step 3: clickRole button "…" | 5 | 200 | 356–436 ms | 8233–9909 ms | — |
+| host | step 4: pageText | 2 | 200 | 360–384 ms | 2666–2974 ms | — |
+| host | step 6: goto /marketplace/status | 5 | 200 | 345–573 ms | 3026–3885 ms | — |
+| host | step 7: goto /me | 5 | 200 | 390–575 ms | 2267–5325 ms | — |
+| host | step 12: goto /me | 6 | 200 | 342–445 ms | 1838–4669 ms | — |
+| host | step 17: goto /me | 5 | 200 | 365–426 ms | 1489–4486 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 4 | 200 | 358–461 ms | 13305–180910 ms | — |
+| flow | step 2: setLocation Mountain Top, Pennsylvania | 22 | 200 | 453–803 ms | 1089–5962 ms | — |
+| flow | setLocation: 'Mountain Top, Pennsylvania' is suggestion 1 of 2 | 2 | 200 | 446–459 ms | 5568–7516 ms | — |
+| flow | scroll: container +87px in 3 steps | 1 | 200 | 582 ms | 1086 ms | — |
+| flow | step 15: clickRole button "…" | 5 | 200 | 390–765 ms | 14020–21637 ms | — |
+| host | step 1: goto /marketplace/selling/ | 4 | 200 | 347–508 ms | 5101–5522 ms | — |
+| host | signIn: password typed; submitting with Enter | 1 | 200 | 394 ms | 8350 ms | — |
+| host | step 28: clickRole button "…" | 4 | 200 | 366–510 ms | 7317–8462 ms | — |
+| host | step 31: goto /marketplace/status | 3 | 200 | 576–650 ms | 5660–5715 ms | — |
+| host | step 32: goto /me | 5 | 200 | 388–850 ms | 3905–5771 ms | — |
+| host | step 40: goto /marketplace/create/item | 2 | 200 | 505–724 ms | 4393–8164 ms | — |
+| host | step 41: sellLocation | 1 | 200 | 545 ms | 615875 ms | — |
+| host | step 42: setLocation Mountain Top, Pennsylvania | 6 | 200 | 439–509 ms | 4678–7934 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 23 | 200 | 446–1496 ms | 5219–658165 ms | — |
 
 <!-- facts:end -->
 

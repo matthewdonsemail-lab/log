@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_a3d9ca195e32d0df6bfa994a8c737586c0a2eb6dfe054fac378874b9462779b6` |
+| rea | `ev_480e657f62d9cc46e2cb52f5ec556694f73a87efb2ee8ee60688328ce58faaa5` |
 
-Seen 45 time(s) in 16 run(s).
+Seen 51 time(s) in 21 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -36,10 +36,10 @@ Seen 45 time(s) in 16 run(s).
 | inspect | step 27: click e1541 | 1 | 200 | 457 ms | 8217 ms | — |
 | inspect | step 5: wait 5s | 3 | 200 | 395–482 ms | 969–300966 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1026 ms | 16771 ms | — |
-| inspect | step 2: goto /marketplace/you/selling | 3 | 200 | 449–619 ms | 18731–34720 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 5 | 200 | 400–619 ms | 18175–34720 ms | — |
 | inspect | step 3: goto /marketplace/inbox | 6 | 200 | 503–1552 ms | 509982–1675374 ms | — |
 | inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 979 ms | 17064 ms | — |
-| inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 380 ms | 15668 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 2 | 200 | 380–410 ms | 15668–16331 ms | — |
 | inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 1026 ms | 21524 ms | — |
 | warmup | step 3: goto /marketplace/you/selling | 1 | 200 | 697 ms | 16142 ms | — |
 | warmup | step 17: dwell 2-4s | 2 | 200 | 370–458 ms | 638–50657 ms | — |
@@ -48,6 +48,9 @@ Seen 45 time(s) in 16 run(s).
 | inspect | step 18: dwell 19s | 1 | 200 | 1289 ms | 11038 ms | — |
 | inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 382 ms | 20872 ms | — |
 | inspect | step 2: snapshot | 1 | 200 | 358 ms | 45975 ms | — |
+| flow | expected useCometMarketplaceListingCreateMutation: sent | 1 | 200 | 527 ms | 6018 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 490 ms | 727989 ms | — |
+| flow | step 8: fillRole textbox "…" | 1 | 200 | 490 ms | 15750 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
@@ -101,7 +104,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261023T173652_61594063207669**, step 1: goto /marketplace/you/selling: 200, 382 ms
+**runs/inspect/20261025T065539_61593939852820**, step 2: goto /marketplace/you/selling: 200, 462 ms
 
 Sent:
 
@@ -112,27 +115,29 @@ Sent:
   },
   "body": {
     "local_storage[armadillo_msgr_data_loss_stats]": "2",
-    "local_storage[ps:100078448742456:e180158e-07ae-49d3-822e-2c6e7275eede]": "50",
+    "local_storage[ps:61593939852820:7b86f3b8-b8e9-4343-ad83-c4e326dbc4ef]": "50",
     "local_storage[CacheStorageVersion]": "2",
-    "local_storage[maw_eb_has_set_up_in_current_session]": "4",
     "local_storage[mw_encrypted_backups_restore_upsell_first_impression_time_key]": "13",
+    "local_storage[ps:61563581811736:7b86f3b8-b8e9-4343-ad83-c4e326dbc4ef]": "50",
     "local_storage[Session]": "20",
-    "local_storage[_oz_bandwidthEstimate]": "7",
+    "local_storage[ps:100090230649272:7b86f3b8-b8e9-4343-ad83-c4e326dbc4ef]": "50",
+    "local_storage[ps:61556607222082:7b86f3b8-b8e9-4343-ad83-c4e326dbc4ef]": "50",
+    "local_storage[ps:61589618765496:7b86f3b8-b8e9-4343-ad83-c4e326dbc4ef]": "50",
     "local_storage[banzai:last_storage_flush]": "15",
-    "local_storage[screen_time_period_logging_facebook]": "336",
-    "local_storage[last_headload_time]": "13",
-    "local_storage[RSTData]": "172",
+    "local_storage[screen_time_period_logging_facebook]": "333",
+    "local_storage[RSTData]": "2",
     "local_storage[bdz_playback_state]": "45",
     "local_storage[hb_timestamp]": "13",
-    "local_storage[_oz_bandwidthAndTTFBSamples]": "15",
     "local_storage[ares_last_signal_flush]": "13",
     "local_storage[signal_flush_timestamp]": "13",
+    "local_storage[ps:61590753790542:7b86f3b8-b8e9-4343-ad83-c4e326dbc4ef]": "50",
+    "local_storage[ps:61582320523522:7b86f3b8-b8e9-4343-ad83-c4e326dbc4ef]": "50",
     "session_storage[alcei]": "1",
     "session_storage[alcsid]": "9",
     "session_storage[TabId]": "6",
     "logtime": "1",
-    "cquick": "_r_31_",
-    "cquick_token": "AUdmRnUAYDZx6QpruXYYHJxPIpg",
+    "cquick": "_r_32_",
+    "cquick_token": "(taken out)",
     "ctarget": "https://www.facebook.com"
   }
 }
@@ -143,11 +148,11 @@ Answered:
 ```json
 {
   "__ar": 1,
-  "rid": "AZqKYm3ZHpFM-uZnkgEmlJj",
+  "rid": "Ao-0zgnAroJqz0_T11b6xaj",
   "payload": {
     "keys": []
   },
-  "lid": "7699918791720181693"
+  "lid": "7700495845213303004"
 }
 ```
 

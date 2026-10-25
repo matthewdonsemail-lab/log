@@ -13,7 +13,7 @@
 | Called from | `CometHomeContactsContainer.react` |
 | rea | `ev_1382c6aaad8caec306d87c00b9b241ef1e74ac91f09082d75f7694f794713881` |
 
-Seen 22 time(s) in 12 run(s).
+Seen 28 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -37,8 +37,13 @@ Seen 22 time(s) in 12 run(s).
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 950 ms | 1708112 ms | A server error field_exception occured. Check server logs for details. |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 829 ms | 15219 ms | A server error field_exception occured. Check server logs for details. |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 648 ms | 7202 ms | A server error field_exception occured. Check server logs for details. |
+| inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 953 ms | 18354 ms | A server error field_exception occured. Check server logs for details. |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 2 | 200 | 582–1109 ms | 45814–1773952 ms | A server error field_exception occured. Check server logs for details. |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 1077 ms | 219899 ms | A server error field_exception occured. Check server logs for details. |
+| inspect | step 1: goto /marketplace/status | 1 | 200 | 562 ms | 12047 ms | A server error field_exception occured. Check server logs for details. |
+| inspect | step 4: goto /marketplace/status | 1 | 200 | 928 ms | 9220 ms | A server error field_exception occured. Check server logs for details. |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -194,6 +199,85 @@ Answered:
     "server_metadata": {
       "request_start_time_ms": 1792742396620,
       "time_at_flush_ms": 1792742396653
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 562 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeContactsContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "numContactsToFetch": 17,
+    "scale": 1
+  },
+  "doc_id": "28451034771148738"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "actor": {
+        "__typename": "User",
+        "contacts_home_renderer": {
+          "__typename": "XFBContactsHomeDefaultRenderer",
+          "viewer": {
+            "chat_sidebar_is_collapsed": false,
+            "messenger_inbox_tray_contacts": [],
+            "chat_visibility": true
+          },
+          "__module_operation_CometHomeContactsContainerQuery": null,
+          "__module_component_CometHomeContactsContainerQuery": null
+        },
+        "id": "61593939852820"
+      }
+    }
+  },
+  "errors": [
+    {
+      "message": "A server error field_exception occured. Check server logs for details.",
+      "severity": "ERROR",
+      "mids": [
+        "001189db2a4071a04b876426152dd738"
+      ],
+      "debug_link": "https://www.meta.com/debug/?mid=001189db2a4071a04b876426152dd738",
+      "path": [
+        "viewer",
+        "actor",
+        "contacts_home_renderer",
+        "__module_operation_CometHomeContactsContainerQuery"
+      ]
+    },
+    {
+      "message": "A server error field_exception occured. Check server logs for details.",
+      "severity": "ERROR",
+      "mids": [
+        "38b7283558dc534b70b66c65fc1fcb18"
+      ],
+      "debug_link": "https://www.meta.com/debug/?mid=38b7283558dc534b70b66c65fc1fcb18",
+      "path": [
+        "viewer",
+        "actor",
+        "contacts_home_renderer",
+        "__module_component_CometHomeContactsContainerQuery"
+      ]
+    }
+  ],
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792911375721,
+      "time_at_flush_ms": 1792911375875
     },
     "is_final": true
   }

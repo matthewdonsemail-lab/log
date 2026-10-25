@@ -2,7 +2,7 @@ import { describe, expect, test } from 'bun:test'
 import { FIXTURE_CAMPAIGN, marketplaceFixture } from '../../twenty/graphql/index'
 import { getListing } from '../agencyListing/index'
 import { findAccount } from '../socialAccount/index'
-import { fillCampaign, healCampaign, recordAccountIssue, setStatusAndReplace } from './index'
+import { blockedListings, fillCampaign, healCampaign, recordAccountIssue, setStatusAndReplace, sweepBlockedListings } from './index'
 
 const statusOf = (twenty: ReturnType<typeof marketplaceFixture>, object: string, id: string) => twenty.rows[object].find((r) => r.id === id)!
 
@@ -88,5 +88,33 @@ describe("the daily cap counts the account's own day (rule 18)", () => {
     const now = new Date('2026-10-18T14:00:00Z')
     expect(countPostedToday(listings, now, new Map([['sydney', 'Australia/Sydney']])).get('sydney')).toBe(1)
     expect(countPostedToday(listings, now).get('sydney')).toBe(2)
+  })
+})
+
+describe('a blocked account takes its listings with it', () => {
+  test('a checkpoint is a loss: its listings go ACCOUNT_LOST', async () => {
+    const twenty = marketplaceFixture()
+    const report = await recordAccountIssue(twenty, await findAccount(twenty, 'galwayOne'), 'checkpointed', 'Facebook sent the page to /checkpoint/1501092823525282/')
+    expect(report?.status).toBe('checkpoint')
+    expect(statusOf(twenty, 'agencyListings', 'readyOne').status).not.toBe('READY')
+    expect(statusOf(twenty, 'agencyListings', 'soldOne').status).toBe('SOLD')
+  })
+
+  test('a wrong password leaves the account needing a login, and its listings are dead', async () => {
+    const twenty = marketplaceFixture()
+    const report = await recordAccountIssue(twenty, await findAccount(twenty, 'galwayOne'), 'wrongPassword', 'The password you entered is incorrect.')
+    expect(report?.status).toBe('needsLogin')
+    expect(report?.lost.map((l) => l.id).sort()).toEqual(['abroad', 'liveOne', 'readyOne'])
+  })
+
+  test('the sweep finds listings left on accounts already blocked, and only those', async () => {
+    const twenty = marketplaceFixture()
+    await twenty.update('socialAccounts', 'galwayOne', { accountStatus: 'NEEDS_LOGIN', statusReason: 'wrongPassword' })
+    const found = await blockedListings(twenty)
+    expect(found.map((r) => r.listing.id).sort()).toEqual(['abroad', 'liveOne', 'readyOne'])
+    const report = await sweepBlockedListings(twenty)
+    expect(report.lost).toHaveLength(3)
+    expect(statusOf(twenty, 'agencyListings', 'soldOne').status).toBe('SOLD')
+    expect(await blockedListings(twenty)).toEqual([])
   })
 })

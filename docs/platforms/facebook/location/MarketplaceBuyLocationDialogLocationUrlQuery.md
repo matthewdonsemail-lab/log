@@ -13,7 +13,7 @@
 | Called from | `MarketplaceBuyLocationDialog.react` |
 | rea | `ev_5c223465994e732643e6aa87f33963fe75a82b42cccf211f8169746b5944c30b` |
 
-Seen 4 time(s) in 3 run(s).
+Seen 8 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -21,6 +21,8 @@ Seen 4 time(s) in 3 run(s).
 | inspect | step 10: click e1174 | 1 | 200 | 405 ms | 1108 ms | — |
 | inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 412 ms | 17238 ms | — |
 | inspect | step 13: setLocation 18015 | 1 | 200 | 434 ms | 14917 ms | — |
+| flow | setLocation: 'Mountain Top, Pennsylvania' is suggestion 1 of 2 | 2 | 200 | 506–528 ms | 4500–6172 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 2 | 200 | 506–588 ms | 4540–644230 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

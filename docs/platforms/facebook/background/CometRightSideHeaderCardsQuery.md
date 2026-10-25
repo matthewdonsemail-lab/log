@@ -13,7 +13,7 @@
 | Called from | `CometRightSideHeaderCards.react` |
 | rea | `ev_0ca298c8c568c93036a5e8e8d989f3baf2a29fa5ca4d1fd7a8070819f4515962` |
 
-Seen 22 time(s) in 12 run(s).
+Seen 28 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -37,8 +37,13 @@ Seen 22 time(s) in 12 run(s).
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 970 ms | 1708103 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 876 ms | 15212 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 663 ms | 7195 ms | — |
+| inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 785 ms | 18344 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 2 | 200 | 563–777 ms | 45804–1773942 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 794 ms | 219890 ms | — |
+| inspect | step 1: goto /marketplace/status | 1 | 200 | 635 ms | 12040 ms | — |
+| inspect | step 4: goto /marketplace/status | 1 | 200 | 765 ms | 9215 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -604,6 +609,65 @@ Answered:
         }
       }
     }
+  }
+}
+```
+
+**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 635 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometRightSideHeaderCardsQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "refresh_num": 0,
+    "scale": 1,
+    "__relay_internal__pv__GHLShouldChangeRHCSideFeedFieldNamerelayprovider": true,
+    "__relay_internal__pv__GHLShouldChangeRHCAdsFieldNamerelayprovider": true,
+    "__relay_internal__pv__GHLShouldChangeRHCFieldNamerelayprovider": false
+  },
+  "doc_id": "29755211854079266"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "side_feed": {
+        "nodes": []
+      },
+      "auxColumnUnits": {
+        "nodes": []
+      },
+      "actor": {
+        "__typename": "User",
+        "id": "61593939852820",
+        "delegate_page_id": null,
+        "can_manage_classic_page_in_pages_tab": true
+      }
+    },
+    "logout_whitelist": [
+      "^CacheStorageVersion$",
+      "^RSTData$",
+      "^RTC_VIDEO_INPUT$",
+      "^RTC_AUDIO_INPUT$",
+      "^RTC_AUDIO_OUTPUT$",
+      "^RTC_IS_AUDIO_ONLY$",
+      "… 98 more"
+    ]
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792911375704,
+      "time_at_flush_ms": 1792911375943
+    },
+    "is_final": true
   }
 }
 ```

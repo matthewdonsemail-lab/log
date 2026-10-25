@@ -79,14 +79,14 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/481331896_638977285393891_3209968374649310659_n.jpg?stp=dst-jpg_tt6&cstp=mx1152x2048&ctp=s960x960&_nc_cat=102&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=7z4ThVaso4MQ7kNvwGoXB17&_nc_oc=Adq55W4ALAl_3jBxD5EQVHij95xJwzduDX0Bt4AaUGiiexcn6bcj9E_as8A-vfPBfPM&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=nKnRbLAnMvw_fP3PnB4eTA&_nc_ss=792a8&oh=00_AQMZwni_OGXqgUtQmvzprmt… (435 chars)",
+          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/481331896_638977285393891_3209968374649310659_n.jpg (435 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/481331896_638977285393891_3209968374649310659_n.jpg?stp=dst-jpg_fb50_s180x540_tt6&_nc_cat=102&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=7z4ThVaso4MQ7kNvwGoXB17&_nc_oc=Adq55W4ALAl_3jBxD5EQVHij95xJwzduDX0Bt4AaUGiiexcn6bcj9E_as8A-vfPBfPM&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=nKnRbLAnMvw_fP3PnB4eTA&_nc_ss=792a8&oh=00_AQNIitrv2uTbTZxVS1Nq1rG52ZynKMuztnnkvcW… (419 chars)",
+          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/481331896_638977285393891_3209968374649310659_n.jpg (419 chars)",
           "label": null,
           "width": null,
           "height": null,

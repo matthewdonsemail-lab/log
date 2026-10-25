@@ -73,7 +73,7 @@ Answered:
         "primary_listing_photo": {
           "__typename": "ProductImage",
           "image": {
-            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/856660594_2379535212790769_660742871528716392_n.jpg?stp=c0.24.64.64a_dst-jpg_p64x64_tt6&_nc_cat=111&ccb=1-7&_nc_sid=247b10&_nc_ohc=azfCRYsIeUMQ7kNvwGZmXcp&_nc_oc=AdrYIkopKXHPEEZazD1-Lmupbj-mFPKcmVAWcttXsHG4BXGTKFpWPu7PoTNvc8WgpWw&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=gRztmzhMazaseYE71lc5dQ&_nc_ss=792a8&oh=00_AQNP94sCNKK7FCeX3MEPI4aPqPlpfJSBZy… (424 chars)"
+            "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t45.5328-4/856660594_2379535212790769_660742871528716392_n.jpg (424 chars)"
           },
           "id": "2379535206124103"
         },

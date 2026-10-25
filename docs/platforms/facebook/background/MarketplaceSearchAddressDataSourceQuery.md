@@ -13,7 +13,7 @@
 | Called from | `MarketplaceSearchAddressDataSource.query` |
 | rea | `ev_419a0ebcddf76c934d343c10ff391a0b746b3baeb9644f33bc1850a30093eb4e` |
 
-Seen 102 time(s) in 4 run(s).
+Seen 239 time(s) in 8 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -28,6 +28,9 @@ Seen 102 time(s) in 4 run(s).
 | inspect | step 7: press a | 1 | 200 | 708 ms | 61 ms | — |
 | inspect | step 4: setLocation Bethlehem, PA | 15 | 200 | 727–1420 ms | 11130–12491 ms | — |
 | inspect | step 13: setLocation 18015 | 7 | 200 | 444–668 ms | 9754–10258 ms | — |
+| flow | step 2: setLocation Mountain Top, Pennsylvania | 82 | 200 | 439–3124 ms | 8700–15611 ms | — |
+| host | step 42: setLocation Mountain Top, Pennsylvania | 28 | 200 | 470–3016 ms | 10101–12820 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 27 | 200 | 453–721 ms | 634413–637145 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

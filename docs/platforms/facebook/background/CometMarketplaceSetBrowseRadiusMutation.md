@@ -13,7 +13,7 @@
 | Called from | `CometMarketplaceSetBrowseRadiusMutation` |
 | rea | `ev_de8df333d384b2ad1cb2aac17072e4f280e3ef041a7fecc4615138d38c3313f9` |
 
-Seen 4 time(s) in 3 run(s).
+Seen 8 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -21,6 +21,8 @@ Seen 4 time(s) in 3 run(s).
 | inspect | step 10: click e1174 | 1 | 200 | 680 ms | 1527 ms | — |
 | inspect | step 4: setLocation Bethlehem, PA | 1 | 200 | 751 ms | 17666 ms | — |
 | inspect | step 13: setLocation 18015 | 1 | 200 | 558 ms | 15364 ms | — |
+| flow | setLocation: 'Mountain Top, Pennsylvania' is suggestion 1 of 2 | 2 | 200 | 685–687 ms | 5017–6713 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 2 | 200 | 685–724 ms | 5144–644747 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

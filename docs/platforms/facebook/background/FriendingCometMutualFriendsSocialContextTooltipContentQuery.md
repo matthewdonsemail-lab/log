@@ -13,11 +13,64 @@
 | Called from | `FriendingCometMutualFriendsSocialContextTooltipContent.react` |
 | rea | `ev_d13924766ed06c4b36d0ad0ff5252538707118b04812f64831980744ac740c56` |
 
-Seen 1 time(s) in 1 run(s).
+Seen 2 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | host | page has 80 interactive element(s); snapshot: C:\Users\0\.logCli\runs\host\20261019T163027 | 1 | 200 | 539 ms | 25706 ms | — |
+| inspect | step 8: wait 5s | 1 | 200 | 417 ms | 122545 ms | — |
+
+### What it sent and what came back (the newest 1 from our runs)
+
+Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
+
+**runs/inspect/20261024T164523_61593843527201**, step 8: wait 5s: 200, 417 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "FriendingCometMutualFriendsSocialContextTooltipContentQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "count": 10,
+    "ordering": [
+      "importance"
+    ],
+    "userIDs": [
+      "61559438276167"
+    ]
+  },
+  "doc_id": "23890617217238423"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "nodes": [
+      {
+        "__typename": "User",
+        "mutual_friends": {
+          "count": 0,
+          "nodes": []
+        },
+        "id": "61559438276167"
+      }
+    ]
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792860621493,
+      "time_at_flush_ms": 1792860621530
+    },
+    "is_final": true
+  }
+}
+```
 
 <!-- facts:end -->
 

@@ -6,14 +6,14 @@
 | --- | --- |
 | Domain | background |
 | Kind | query |
-| doc_id | `28651572944522952` |
+| doc_id | `29152597714334312` |
 | Path | `/api/graphql/` |
 | Sends | `RELAY_INCREMENTAL_DELIVERY`, `connectionClass`, `experimentalValues`, `feedClientSession`, `feedEndCursor`, `feedInitialFetchSize`, `feedLocation`, `feedStyle`, `feedbackSource`, `focusCommentID`, `orderby`, `privacySelectorRenderLocation`, `recentVPVs`, `referringStoryRenderLocation`, `refreshMode`, `renderLocation`, `scale`, `shouldChangeBRSLabelFieldName`, `shouldObfuscateCategoryField`, `shouldUseBRSLabelFieldNameV1`, `shouldUseBRSLabelFieldNameV2`, `useDefaultActor`, `__relay_internal__pv__GHLShouldChangeSponsoredAuctionDistanceFieldNamerelayprovider`, `__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV1relayprovider`, `__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV2relayprovider`, `__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider`, `__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider`, `__relay_internal__pv__CometAdsSlotFillLoggingEnabledrelayprovider`, `__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider`, `__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider`, `__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider`, `__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider`, `__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider`, `__relay_internal__pv__IsWorkUserrelayprovider`, `__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider`, `__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider`, `__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider`, `__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider`, `__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider`, `__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider`, `__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider`, `__relay_internal__pv__IsMergQAPollsrelayprovider`, `__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider`, `__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider`, `__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider`, `__relay_internal__pv__CometUFIShareActionMigrationrelayprovider`, `__relay_internal__pv__CometUFISingleLineUFIrelayprovider`, `__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider`, `__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider`, `__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider`, `__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider`, `__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider`, `__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider` |
 | Reads | `viewer....CometNewsFeed_viewerConnection`, `viewer....CometNewsFeed_viewer` |
 | Called from | `CometModernHomeFeed.react` |
-| rea | `ev_1b460d553cf6534a2af5b25c753e1e08cf72dc0bc41987677951d9a3388a29e3` |
+| rea | `ev_115730b4ac8c47f6922201d9452d5fe5b45d8f0086285216bf40009f9303cb0a` |
 
-Seen 19 time(s) in 12 run(s).
+Seen 24 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -35,8 +35,13 @@ Seen 19 time(s) in 12 run(s).
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 4442 ms | 1708095 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 3647 ms | 15206 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 2362 ms | 7187 ms | — |
+| inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 3658 ms | 18334 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 1 | 200 | 4431 ms | 45795 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 3483 ms | 219881 ms | — |
+| inspect | step 1: goto /marketplace/status | 1 | 200 | 7960 ms | 12030 ms | — |
+| inspect | step 4: goto /marketplace/status | 1 | 200 | 3208 ms | 9206 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -132,14 +137,14 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/462209792_1682975165831226_6278810203753941575_n.jpg?stp=cp0_dst-jpg_tt6&cstp=mx943x960&ctp=s24x24&_nc_cat=100&ccb=1-7&_nc_sid=e99d92&_nc_ohc=87DnGcAiuIgQ7kNvwEwlbTw&_nc_oc=AdrlwDuB4MzCswEUIdlAJosoN8LPdbTXjHYu6zl-79xjJH1cQZyMqcPEnIF6d-u0-xM&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=eaXKiHlAjH6fVNiVk1jP_g&_nc_ss=792a8&oh=00_AQNKAb_uRgPq99a16wmZIg… (436 chars)",
+          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/462209792_1682975165831226_6278810203753941575_n.jpg (436 chars)",
           "label": null,
           "width": null,
           "height": null,
           "surface": null
         },
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/486386928_1805101740285234_8116276554609323478_n.jpg?stp=dst-jpg_tt6&cstp=mx665x660&ctp=p526x296&_nc_cat=106&ccb=1-7&_nc_sid=aa7b47&_nc_ohc=JuxsfWzUbPwQ7kNvwELgCy4&_nc_oc=AdqlCYnIUsLlKlmM64w44IqdJv1SYB47K5s4FUyVYKwwsvDoePN30bYwtXqdubKSWM0&_nc_zt=23&_nc_ht=scontent-phl2-1.xx&_nc_gid=eaXKiHlAjH6fVNiVk1jP_g&_nc_ss=792a8&oh=00_AQO9LYQl5ztdMLi6vGQnxTwa… (434 chars)",
+          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-6/486386928_1805101740285234_8116276554609323478_n.jpg (434 chars)",
           "label": null,
           "width": 680,
           "height": null,
@@ -401,7 +406,7 @@ Answered:
     "extensions": {
       "prefetch_uris_v2": [
         {
-          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/529746677_24667720239520157_119063301246289542_n.jpg?stp=c0.0.720.720a_cp0_dst-jpg_tt6&cstp=mx720x720&ctp=s24x24&_nc_cat=110&ccb=1-7&_nc_sid=e99d92&_nc_ohc=MsjEjb-BA18Q7kNvwF2Ce28&_nc_oc=AdoYT8f50sFlrlqsKmgX13HS-O8rE7Y0vZr9Cw3mIlO3pnodE1Q47tmWU7RuP-2PRq0&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=mZF80tCibFxm7uW2DUWLFw&_nc_ss=792a8&oh=00_AQOVsIc9… (450 chars)",
+          "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/529746677_24667720239520157_119063301246289542_n.jpg (450 chars)",
           "label": null,
           "width": null,
           "height": null,
@@ -573,6 +578,275 @@ Answered:
         "sr_payload": {
           "ddd": "(4 fields)"
         }
+      }
+    }
+  ]
+}
+```
+
+**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 7960 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometModernHomeFeedQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "RELAY_INCREMENTAL_DELIVERY": true,
+    "connectionClass": "EXCELLENT",
+    "feedbackSource": 1,
+    "feedInitialFetchSize": 4,
+    "feedLocation": "NEWSFEED",
+    "feedStyle": "DEFAULT",
+    "orderby": [
+      "TOP_STORIES"
+    ],
+    "privacySelectorRenderLocation": "COMET_STREAM",
+    "recentVPVs": [],
+    "refreshMode": "COLD_START",
+    "renderLocation": "homepage_stream",
+    "scale": 1,
+    "shouldChangeBRSLabelFieldName": false,
+    "shouldObfuscateCategoryField": true,
+    "shouldUseBRSLabelFieldNameV1": false,
+    "shouldUseBRSLabelFieldNameV2": false,
+    "useDefaultActor": false,
+    "__relay_internal__pv__GHLShouldChangeSponsoredAuctionDistanceFieldNamerelayprovider": true,
+    "__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV1relayprovider": true,
+    "__relay_internal__pv__GHLShouldUseSponsoredAuctionLabelFieldNameV2relayprovider": false,
+    "__relay_internal__pv__GHLShouldChangeSponsoredDataFieldNamerelayprovider": true,
+    "__relay_internal__pv__GHLShouldChangeAdIdFieldNamerelayprovider": true,
+    "__relay_internal__pv__CometAdsSlotFillLoggingEnabledrelayprovider": true,
+    "__relay_internal__pv__CometFeedStory_enable_reactor_facepilerelayprovider": false,
+    "__relay_internal__pv__CometFeedStory_enable_social_bubblesrelayprovider": false,
+    "__relay_internal__pv__CometFeedStory_enable_post_permalink_white_space_clickrelayprovider": false,
+    "__relay_internal__pv__CometUFICommentActionLinksRewriteEnabledrelayprovider": true,
+    "__relay_internal__pv__CometUFICommentAvatarStickerAnimatedImagerelayprovider": false,
+    "__relay_internal__pv__IsWorkUserrelayprovider": false,
+    "__relay_internal__pv__TestPilotShouldIncludeDemoAdUseCaserelayprovider": false,
+    "__relay_internal__pv__FBReels_deprecate_short_form_video_context_gkrelayprovider": true,
+    "__relay_internal__pv__CometUFI_dedicated_comment_routable_dialog_gkrelayprovider": true,
+    "__relay_internal__pv__FBReels_enable_view_dubbed_audio_type_gkrelayprovider": true,
+    "__relay_internal__pv__CometFeedShareMedia_shouldPrefetchShareImagerelayprovider": true,
+    "__relay_internal__pv__CometImmersivePhotoCanUserDisable3DMotionrelayprovider": false,
+    "__relay_internal__pv__WorkCometIsEmployeeGKProviderrelayprovider": false,
+    "__relay_internal__pv__IsMergQAPollsrelayprovider": false,
+    "__relay_internal__pv__FBReelsMediaFooter_comet_enable_reels_ads_gkrelayprovider": true,
+    "__relay_internal__pv__CometUFIReactionsEnableShortNamerelayprovider": false,
+    "__relay_internal__pv__CometUFICommentAutoTranslationTyperelayprovider": "ORIGINAL",
+    "__relay_internal__pv__CometUFIShareActionMigrationrelayprovider": true,
+    "__relay_internal__pv__CometUFISingleLineUFIrelayprovider": true,
+    "__relay_internal__pv__relay_provider_comet_ufi_ssr_seo_deferrelayprovider": true,
+    "__relay_internal__pv__FBReelsIFUTileContent_reelsIFUPlayOnHoverrelayprovider": true,
+    "__relay_internal__pv__GroupsCometGYSJFeedItemHeightrelayprovider": 206,
+    "__relay_internal__pv__StoriesShouldEnablePhotosensitiveContentWarningrelayprovider": false,
+    "__relay_internal__pv__ShouldEnableBakedInTextStoriesrelayprovider": false,
+    "__relay_internal__pv__StoriesShouldIncludeFbNotesrelayprovider": true
+  },
+  "doc_id": "29152597714334312"
+}
+```
+
+Answered:
+
+```json
+{
+  "first": {
+    "data": {
+      "viewer": {
+        "news_feed": {
+          "edges": "(1 items)"
+        },
+        "actor": {
+          "__typename": "User",
+          "name": "Uski Guvh",
+          "id": "61593939852820"
+        },
+        "can_have_friends": true,
+        "all_friends": {
+          "friend_count": 0
+        },
+        "is_fb_employee": false,
+        "rack_qrt_called_during_first_story": false,
+        "injected_stories": null
+      }
+    },
+    "extensions": {
+      "prefetch_uris_v2": [
+        {
+          "uri": "https://scontent.fagc3-1.fna.fbcdn.net/v/t39.30808-1/352511829_227291250077490_3984895517667165862_n.jpg (465 chars)",
+          "label": null,
+          "width": null,
+          "height": null,
+          "surface": null
+        },
+        {
+          "uri": "https://scontent.fagc3-2.fna.fbcdn.net/v/t39.99422-6/864234644_1046284328465586_7209937282587526595_n.png (466 chars)",
+          "label": null,
+          "width": 680,
+          "height": null,
+          "surface": "comet_home_feed_image"
+        }
+      ],
+      "server_metadata": {
+        "request_start_time_ms": 1792911375633,
+        "time_at_flush_ms": 1792911376854
+      },
+      "is_final": false,
+      "sr_payload": {
+        "ddd": {
+          "hsrp": "(2 fields)",
+          "jsmods": "(3 fields)",
+          "allResources": "(7 items)",
+          "tieredResources": "(3 fields)"
+        }
+      }
+    }
+  },
+  "followingParts": 10,
+  "parts": [
+    {
+      "label": "CometNewsFeed_viewerConnection$stream$CometNewsFeed_viewer_news_feed",
+      "path": [
+        "viewer",
+        "news_feed",
+        "edges",
+        1
+      ],
+      "data": {
+        "brs_content_label": null,
+        "cat_sensitive": {
+          "enc": null,
+          "cat": "FB_SHORTS"
+        },
+        "deduplication_key": "3610676349525585669",
+        "min_gap_type_index_string": "12",
+        "sposnsor_new_distac_action": null,
+        "top_story_cache_score": 0,
+        "is_ad_eligible_for_ad_pod": false,
+        "node": {
+          "__typename": "ShowcaseFeedUnit",
+          "__isNode": "ShowcaseFeedUnit",
+          "id": "UzpfSVNob3djYXNlX1NGVjoyOmVKeXRsMjlzRTNVWXgrOVA2ZGk2SVN6cmdUMmlZSkFvckhoLzJtdVBOeVlHR3NZTFg0aUpFVXpPMHJYU0JOYWxkQWh2bGlJd3NSNVZFY29VZ21NVUtIVFVNaEFDYm5PV01tQVpHOHc1L2cyRU9XWENQQmVFYmVJRWM5ZDd5b1pJekdiNzV2cjhmcy9kOTN1ZlBNL3pLeEdvV2RQUVVuOXhhK0dMSW5IendZbm1XMklIcnRjU0RhM2YxWDJhTUJMYll6ZjI1Y3pNdEZWTm1CRjVscmswRldrdC9pMXhvK3pnOFc5MmhkRzJZc2dJaVNqV1Y1QjFxQlhGeXJhaUdJbk5heWpERnM2bldWTStSNXQ1bG1kNXE1bXhN… (3200 chars)",
+          "__isFeedUnit": "ShowcaseFeedUnit",
+          "tracking": "{\"qid\":\"-5919276981512301733\",\"mf_story_key\":\"3610676349525585669\",\"filter\":\"h_nor\",\"sty\":1445,\"story_set_type\":25,\"mf_objid\":\"1046955671732213\",\"viewstate_id\":\"3610676349525585669\",\"pos\":2,\"partial_response_callsite_id\":-1,\"actrs\":\"100092533699747\",\"fb_shorts_surface\":\"FBShorts_SurfaceType::IFU_TRAY\",\"fb_shorts_ifu_tray_index\":1,\"fb_shorts_ifu_tray_position\":2,\"feed_unified_request_id\":\"-59192769… (443 chars)",
+          "debug_info": null,
+          "showcase_story_type": "SHOWCASE_SHORT_VIDEO",
+          "showcase_item": "(6 items)",
+          "__module_operation_CometFeedUnitContainerSection_feedUnit": "(1 fields)",
+          "__module_component_CometFeedUnitContainerSection_feedUnit": "(1 fields)",
+          "__isTrackableFeedUnit": "ShowcaseFeedUnit",
+          "trackingdata": "(1 fields)"
+        },
+        "feed_backend_data": {
+          "qid": "-5919276981512301733",
+          "original_qid": "-5919276981512301733",
+          "vsid": "3610676349525585669",
+          "vspos": 2,
+          "should_recent_vpv_fetch_tracking_data": false,
+          "serialized_payloads": "GwZGGur/xc7rjNwDxgGQyALsATL8AxjCAcoWtAMGGwFIwAEEbm9uZRsDSbbmAwbe5gMGhOcDBgA="
+        },
+        "cursor": "FQQVAhsBXAIVBBhcTVRjNU1qa3hNVE0zTlRveE56a3lPVEV4TXpjMU9qSTZNell4TURZM05qTTBPVFV5TlRVNE5UWTJPVG93T2kwMU9URTVNamMyT1RneE5URXlNekF4TnpNek9nPT0AGwJVAgIYBBUAAA=="
+      },
+      "extensions": {
+        "prefetch_uris_v2": [
+          "(5 fields)",
+          "(5 fields)",
+          "(5 fields)",
+          "(5 fields)",
+          "(5 fields)",
+          "(5 fields)"
+        ],
+        "all_video_dash_prefetch_representations": [
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)"
+        ],
+        "is_final": false,
+        "sr_payload": {
+          "ddd": "(4 fields)"
+        }
+      }
+    },
+    {
+      "label": "VideoPlayerRelay_video$defer$InstreamVideoAdBreaksPlayer_video",
+      "path": [
+        "viewer",
+        "news_feed",
+        "edges",
+        1,
+        "node",
+        "showcase_item",
+        "… 6 more"
+      ],
+      "data": {
+        "id": "1050922044600802",
+        "instream_extra_config": {
+          "instream_halo_delay_time_seconds": 15000
+        },
+        "instream_video_ad_breaks_comet": null
+      },
+      "extensions": {
+        "prefetch_uris_v2": [
+          "(5 fields)",
+          "(5 fields)",
+          "(5 fields)",
+          "(5 fields)",
+          "(5 fields)",
+          "(5 fields)"
+        ],
+        "all_video_dash_prefetch_representations": [
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)"
+        ],
+        "is_final": false
+      }
+    },
+    {
+      "label": "VideoPlayerRelay_video$defer$InstreamVideoAdBreaksPlayer_video",
+      "path": [
+        "viewer",
+        "news_feed",
+        "edges",
+        1,
+        "node",
+        "showcase_item",
+        "… 6 more"
+      ],
+      "data": {
+        "id": "2184037018830949",
+        "instream_extra_config": {
+          "instream_halo_delay_time_seconds": 9
+        },
+        "instream_video_ad_breaks_comet": null
+      },
+      "extensions": {
+        "prefetch_uris_v2": [
+          "(5 fields)",
+          "(5 fields)",
+          "(5 fields)",
+          "(5 fields)",
+          "(5 fields)",
+          "(5 fields)"
+        ],
+        "all_video_dash_prefetch_representations": [
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)",
+          "(4 fields)"
+        ],
+        "is_final": false
       }
     }
   ]

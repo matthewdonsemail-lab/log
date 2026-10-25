@@ -1,0 +1,50 @@
+{
+ "log": {
+  "entries": [
+   {
+    "request": {
+     "method": "POST",
+     "url": "https://www.facebook.com/api/graphql/",
+     "postData": {
+      "mimeType": "application/x-www-form-urlencoded",
+      "params": [
+       {
+        "name": "fb_api_req_friendly_name",
+        "value": "GroupsCometMembersPageNewMembersSectionRefetchQuery"
+       }
+      ]
+     }
+    },
+    "response": {
+     "status": 200,
+     "content": {
+      "mimeType": "text/html; charset=\"utf-8\"",
+      "text": "{\"data\":{\"node\":{\"__typename\":\"Group\",\"id\":\"3549906855288164\",\"new_members\":{\"edges\":[{\"join_status_text\":{\"text\":\"Joined on Tuesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"61588450821350\",\"name\":\"By4K\",\"url\":\"https://www.facebook.com/profile.php?id=61588450821350\",\"profile_plus_category_display_name\":\"Advertising/marketing\",\"follower_count\":0,\"bio_text\":null}},{\"join_status_text\":{\"text\":\"Joined on Tuesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"61570203305182\",\"name\":\"Carll Quiver\",\"url\":\"https://www.facebook.com/profile.php?id=61570203305182\",\"profile_plus_category_display_name\":\"Personal blog\",\"follower_count\":6518,\"bio_text\":null}},{\"join_status_text\":{\"text\":\"Joined on Tuesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"61595650612963\",\"name\":\"Michael Head\",\"url\":\"https://www.facebook.com/MichaelHeadProfile\",\"profile_plus_category_display_name\":null,\"follower_count\":0,\"bio_text\":{\"text\":\"Owner at Michael Head\"}}},{\"join_status_text\":{\"text\":\"Joined on Tuesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"1157335767\",\"name\":\"Dana Menser\",\"url\":\"https://www.facebook.com/dana.menser.9\",\"profile_plus_category_display_name\":null,\"follower_count\":0,\"bio_text\":{\"text\":\"Allegany College of Maryland\"}}},{\"join_status_text\":{\"text\":\"Joined on Tuesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"100024579391894\",\"name\":\"James Campbell\",\"url\":\"https://www.facebook.com/james.campbell.696215\",\"profile_plus_category_display_name\":null,\"follower_count\":0,\"bio_text\":null}},{\"join_status_text\":{\"text\":\"Joined on Tuesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"61595732692757\",\"name\":\"D&A junk removal \",\"url\":\"https://www.facebook.com/profile.php?id=61595732692757\",\"profile_plus_category_display_name\":\"Product/service\",\"follower_count\":2,\"bio_text\":null}},{\"join_status_text\":{\"text\":\"Joined on Tuesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"100022066870461\",\"name\":\"Serina Barry\",\"url\":\"https://www.facebook.com/serina.barry.180\",\"profile_plus_category_display_name\":\"Digital creator\",\"follower_count\":5976,\"bio_text\":{\"text\":\"Owner and CEO at Furever Home & Pet Sitting LLC \"}}},{\"join_status_text\":{\"text\":\"Joined on Tuesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"61590123817589\",\"name\":\"Ediwe Eunice\",\"url\":\"https://www.facebook.com/profile.php?id=61590123817589\",\"profile_plus_category_display_name\":null,\"follower_count\":0,\"bio_text\":null}},{\"join_status_text\":{\"text\":\"Joined on Tuesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"61595158149628\",\"name\":\"karla Brawn\",\"url\":\"https://www.facebook.com/karla.brawn\",\"profile_plus_category_display_name\":\"Shopping & retail\",\"follower_count\":1,\"bio_text\":null}},{\"join_status_text\":{\"text\":\"Joined on Tuesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"61588181441230\",\"name\":\"Lawal Ayomide\",\"url\":\"https://www.facebook.com/profile.php?id=61588181441230\",\"profile_plus_category_display_name\":null,\"follower_count\":0,\"bio_text\":{\"text\":\"Digital Marketing & Social Media Specialist at Bertsech contracting\"}}}],\"page_info\":{\"has_next_page\":true,\"end_cursor\":\"AQHTVH8aVA9LKHPT1vu1ot8i20GHCgiV68zG_amab8qi-R72ue5Fv75SlCNgu5rtkhFnHolm0mrX-GJL57N-cYAEvA\"}}}},\"extensions\":{\"is_final\":true}}"
+     }
+    }
+   },
+   {
+    "request": {
+     "method": "POST",
+     "url": "https://www.facebook.com/api/graphql/",
+     "postData": {
+      "mimeType": "application/x-www-form-urlencoded",
+      "params": [
+       {
+        "name": "fb_api_req_friendly_name",
+        "value": "GroupsCometMembersPageNewMembersSectionRefetchQuery"
+       }
+      ]
+     }
+    },
+    "response": {
+     "status": 200,
+     "content": {
+      "mimeType": "text/html; charset=\"utf-8\"",
+      "text": "{\"data\":{\"node\":{\"__typename\":\"Group\",\"id\":\"3549906855288164\",\"new_members\":{\"edges\":[{\"join_status_text\":{\"text\":\"Joined on Tuesday\"},\"node\":{\"__typename\":\"User\",\"id\":\"1641199172\",\"name\":\"Neto Marcelo Aplicars\",\"url\":\"https://www.facebook.com/marcelo.stefanochirico\",\"profile_plus_category_display_name\":null,\"follower_count\":0,\"bio_text\":{\"text\":\"São Paulo, Brazil\"}}},{\"join_status_text\":{\"text\":\"Joined on Monday\"},\"node\":{\"__typename\":\"User\",\"id\":\"100075373915195\",\"name\":\"Eldita Howland\",\"url\":\"https://www.facebook.com/profile.php?id=100075373915195\",\"profile_plus_category_display_name\":null,\"follower_count\":0,\"bio_text\":null}},{\"join_status_text\":{\"text\":\"Joined on Monday\"},\"node\":{\"__typename\":\"User\",\"id\":\"100057795934789\",\"name\":\"Jesse Adams\",\"url\":\"https://www.facebook.com/jesse.adams.721736\",\"profile_plus_category_display_name\":null,\"follower_count\":0,\"bio_text\":{\"text\":\"Hardin, Missouri\"}}},{\"join_status_text\":{\"text\":\"Joined on Monday\"},\"node\":{\"__typename\":\"User\",\"id\":\"61595392387171\",\"name\":\"Dillan Harris\",\"url\":\"https://www.facebook.com/profile.php?id=61595392387171\",\"profile_plus_category_display_name\":null,\"follower_count\":0,\"bio_text\":{\"text\":\"Albertville, Alabama\"}}},{\"join_status_text\":{\"text\":\"Joined on Monday\"},\"node\":{\"__typename\":\"User\",\"id\":\"1770717481\",\"name\":\"Aldwin Bangoy Capin\",\"url\":\"https://www.facebook.com/aldwincups\",\"profile_plus_category_display_name\":\"Digital creator\",\"follower_count\":6045,\"bio_text\":{\"text\":\"Davao City\"}}},{\"join_status_text\":{\"text\":\"Joined on Monday\"},\"node\":{\"__typename\":\"User\",\"id\":\"100066437523391\",\"name\":\"Abril Dyy\",\"url\":\"https://www.facebook.com/abril.dyy\",\"profile_plus_category_display_name\":null,\"follower_count\":0,\"bio_text\":null}},{\"join_status_text\":{\"text\":\"Joined on Monday\"},\"node\":{\"__typename\":\"User\",\"id\":\"100064234654665\",\"name\":\"Crawford Lawn Solutions\",\"url\":\"https://www.facebook.com/Crawford.Lawn.Solutions\",\"profile_plus_category_display_name\":\"Landscape company\",\"follower_count\":3419,\"bio_text\":null}},{\"join_status_text\":{\"text\":\"Joined on Monday\"},\"node\":{\"__typename\":\"User\",\"id\":\"61595076235196\",\"name\":\"Hardline Hauling\",\"url\":\"https://www.facebook.com/profile.php?id=61595076235196\",\"profile_plus_category_display_name\":null,\"follower_count\":0,\"bio_text\":{\"text\":\"Moultrie, Georgia\"}}},{\"join_status_text\":{\"text\":\"Joined on Monday\"},\"node\":{\"__typename\":\"User\",\"id\":\"100074450375350\",\"name\":\"Nora Alonso\",\"url\":\"https://www.facebook.com/profile.php?id=100074450375350\",\"profile_plus_category_display_name\":null,\"follower_count\":0,\"bio_text\":null}},{\"join_status_text\":{\"text\":\"Joined on Monday\"},\"node\":{\"__typename\":\"User\",\"id\":\"100000192362908\",\"name\":\"Erik Wiltjer\",\"url\":\"https://www.facebook.com/erik.wiltjer.3\",\"profile_plus_category_display_name\":\"Business\",\"follower_count\":56,\"bio_text\":{\"text\":\"Hanzehogeschool Groningen\"}}}],\"page_info\":{\"has_next_page\":true,\"end_cursor\":\"AQHTutPyyisAaASoIC8fKYLeBIXjsn2WzpNfWSW71Un8H_5Depu01xVYPGYB7q_Y84X8U8KvClLDYJRgqqKXwez6gQ\"}}}},\"extensions\":{\"is_final\":true}}"
+     }
+    }
+   }
+  ]
+ }
+}

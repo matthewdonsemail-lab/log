@@ -15,6 +15,7 @@ import type { FacebookAccount } from "../../marketplace/socialAccount/index.ts";
 import { loudText, readStep, timelineText } from "../../subq/stepReading/index.ts";
 import type { StepReading } from "../../subq/stepReading/index.ts";
 import type { CommandContext } from "../runner/types.ts";
+import { watchCheckpoint } from "./helpers/index.ts";
 
 export const INSPECT_USAGE = [
   "Usage: log inspect start --account <accountName> [--goal <text>] [--url <https://www.facebook.com/...>] [--bypass] [--now] [--noIdleMouse] [--detach]   (one session per account: two accounts can be open at once; --detach runs it as its own process and returns once it is open)",
@@ -217,6 +218,7 @@ export const inspectCommand: Command = {
         writeCurrentInspect(current);
         context.err(`Inspect session for ${account.accountName}: ${runDir}. Send steps from another terminal: bun bin/log.ts inspect do snapshot`);
         let code: number;
+        const checkpointWatch = watchCheckpoint(context, account, runDir);
         try {
           code = await context.inspectSession({
             accountId: account.id,
@@ -232,6 +234,7 @@ export const inspectCommand: Command = {
             browser: browserFor(account),
           });
         } finally {
+          await checkpointWatch.stop();
           clearCurrentInspect(undefined, account.accountName);
         }
         return { code: code === 0 ? 0 : 1, stdout: `Inspect session for ${account.accountName} ended (exit ${code}). Every step: ${join(runDir, "steps")}` };

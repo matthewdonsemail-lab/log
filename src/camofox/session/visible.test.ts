@@ -87,3 +87,25 @@ describe("no browser without the account's proxy (rule 12)", () => {
     expect(names).not.toContain("dbgCondition.py");
   });
 });
+
+describe("an attached browser's own exit is checked when the proxy hands it another (rule 17)", () => {
+  const run = (where: string) => {
+    const script = [
+      "import sys", 'sys.path.insert(0, ".")', "from browser import proxyGate",
+      'proxyGate._armed.update({"exitIp": "98.235.13.173", "country": "US", "timezone": "America/New_York"})',
+      `print(proxyGate.exit_checked("73.130.225.59", lambda ip: ${where}))`, 'print(proxyGate._armed["exitIp"])',
+    ].join("\n");
+    return require("node:child_process").spawnSync(process.env.LOG_PYTHON || "python", ["-c", script], { cwd: python, encoding: "utf8" }).stdout.trim().split(/\r?\n/).slice(-2);
+  };
+
+  test("same country and timezone: the browser's exit is pinned", () => {
+    expect(run('{"country": "US", "timezone": "America/New_York"}')).toEqual(["None", "73.130.225.59"]);
+  });
+
+  test("another timezone or country is refused and nothing is pinned", () => {
+    const [detail, pinned] = run('{"country": "US", "timezone": "America/Chicago"}');
+    expect(detail).toContain("the gate checked 98.235.13.173");
+    expect(pinned).toBe("98.235.13.173");
+    expect(run('{"country": "MX", "timezone": "America/New_York"}')[1]).toBe("98.235.13.173");
+  });
+});

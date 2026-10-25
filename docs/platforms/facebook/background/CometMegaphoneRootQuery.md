@@ -13,7 +13,7 @@
 | Called from | `CometMegaphoneRoot.react` |
 | rea | `ev_a2e1e82b09a10f9f97361e424dc787adb4a3a8c0a7bb15f7feb91de015e7d2fa` |
 
-Seen 19 time(s) in 12 run(s).
+Seen 24 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -35,8 +35,13 @@ Seen 19 time(s) in 12 run(s).
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 803 ms | 1708101 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 883 ms | 15210 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 622 ms | 7193 ms | — |
+| inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 902 ms | 18342 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 1 | 200 | 805 ms | 45801 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 861 ms | 219888 ms | — |
+| inspect | step 1: goto /marketplace/status | 1 | 200 | 851 ms | 12037 ms | — |
+| inspect | step 4: goto /marketplace/status | 1 | 200 | 723 ms | 9213 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -110,6 +115,44 @@ Answered:
     "server_metadata": {
       "request_start_time_ms": 1792742396554,
       "time_at_flush_ms": 1792742396610
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 851 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometMegaphoneRootQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "first": 1,
+    "scale": 1
+  },
+  "doc_id": "28541893478753857"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "megaphonePromotions": {
+        "edges": []
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792911375700,
+      "time_at_flush_ms": 1792911376157
     },
     "is_final": true
   }

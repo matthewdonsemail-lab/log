@@ -13,18 +13,18 @@
 | Called from | `CometMarketplaceInboxContentContainer.react` |
 | rea | `ev_4bc662aadf436f5bbfbb68090747cc344b4422b8b432341560b1e61402c05bcf` |
 
-Seen 2 time(s) in 2 run(s).
+Seen 3 time(s) in 3 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 3: click e156 | 1 | 200 | 466 ms | 711 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 1 | 200 | 538 ms | 489436 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 2 | 200 | 396–538 ms | 297776–489436 ms | — |
 
 ### What it sent and what came back (the newest 2 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261022T155857_61594063207669**, step 3: goto /marketplace/inbox: 200, 538 ms
+**runs/inspect/20261025T064655_61593981307720**, step 3: goto /marketplace/inbox: 200, 396 ms
 
 Sent:
 
@@ -46,14 +46,14 @@ Answered:
     "viewer": {
       "marketplace_settings": {
         "preferred_inbox_viewer_role": "SELLER",
-        "id": "TWFya2V0cGxhY2VTZXR0aW5nczo2MTU5NDA2MzIwNzY2OQ=="
+        "id": "TWFya2V0cGxhY2VTZXR0aW5nczo2MTU5Mzk4MTMwNzcyMA=="
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792685347265,
-      "time_at_flush_ms": 1792685347289
+      "request_start_time_ms": 1792911176074,
+      "time_at_flush_ms": 1792911176102
     },
     "is_final": true
   }
