@@ -121,7 +121,7 @@ Source: [`docs/diagrams/browsers.mmd`](docs/diagrams/browsers.mmd).
 
 - **The account's browser, through the driver:** `host`, `inspect`, `flow`, `warmup`, `join`, `read`, `poll`, `check`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
 - **Camoufox only, not on the driver yet:** `doctor`, `connect`, `profile`, `scan`, `status`, `watch`, `publish`, `campaign`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `listings`, `listing`, `accounts`, `account`, `adsPower`, `lifecycle`, `preflight`, `proxy`, `conversations`, `conversation`, `messenger`, `errors`, `graph`, `capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `session`, `follows`, `reply`, `quote`, `like`, `dm`, `queue`, `new`.
+- **No browser:** `launch`, `listings`, `listing`, `accounts`, `account`, `adsPower`, `lifecycle`, `preflight`, `proxy`, `conversations`, `conversation`, `messenger`, `errors`, `graph`, `capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `session`, `follows`, `reply`, `quote`, `like`, `dm`, `queue`, `new`, `session`.
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](docs/browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](docs/adsPower.md).
 
@@ -137,6 +137,7 @@ A command on the direct-API engine calls the platform's internal API with the ac
 - `log twitter like`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.favorite_tweet for the like; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
 - `log twitter dm`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, messages.send_dm for the dm; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
 - `log twitter queue`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.create_tweet for the queue run --live (each like and reply); no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
+- `log reddit session`: Engine: the direct-API engine only (rdvwr, account.ping for the session check; no browser). Reddit's own answer decides. Each account has its own governor under ~/.logCli/reddit/<account>, refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
 
 ### How a call reaches log-cli
 
@@ -147,9 +148,9 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 89 command tools + saved flows"]
+  mcp["MCP server log: 90 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 46 commands (COMMANDS)"]
+  runCli["runCli: 47 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   browser["The account's browser (one per day, rule 35)"]
   agent --> shell
@@ -187,14 +188,14 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log facebook listing`](#log-facebook-listing) | Show one Twenty listing, or create one for an account from a JSON file | `facebook` first | `--json` `--account <accountName>` `--file <listing.json>` `--apply` `--live` `--bypass` `--now` | none | none | `listing`, `listingCreate`, `listingRemove`, `listingRemoveLive`, `listingSweep`, `listingLint` | PreToolUse, PostToolUse · PostToolUse | no | 13, 71, 72, 30, 38, 39, 40, 41 |
 | [`log facebook accounts`](#log-facebook-accounts) | List the FACEBOOK accounts in Twenty: status, home, proxy, and whether each may run | `facebook` first | `--json` | none | none | `accounts` | PreToolUse, PostToolUse · PostToolUse | no | 13, 30, 38, 39, 40, 41 |
 | [`log facebook account`](#log-facebook-account) | Show one account, or set its status (banned/dead/restricted replace its campaign listings) | `facebook` first | `--json` `--from <folder>` `--reason <text>` `--detail <text>` | none | none | `accountShow`, `accountResave`, `accountResetOpens`, `accountStatus` | PreToolUse, PostToolUse · PostToolUse | no | 13, 37, 78, 30, 38, 39, 40, 41 |
-| [`log adsPower`](#log-adspower) | AdsPower: Local API status, its profiles, and one profile per Twenty account (sync) | any (none) | `--json` `--apply` `--account <accountName>` `--homes <US,IE>` | none | none | `adsPower` | PreToolUse, PostToolUse · PostToolUse | no | 42, 44, 78, 30, 38, 39, 40, 41 |
+| [`log adsPower`](#log-adspower) | AdsPower: Local API status, its profiles, and one profile per Twenty account (sync) | any (none) | `--json` `--apply` `--account <accountName>` `--homes <US,IE>` | none | none | `adsPower` | PreToolUse, PostToolUse · PostToolUse | no | 42, 44, 78, 84, 30, 38, 39, 40, 41 |
 | [`log facebook lifecycle`](#log-facebook-lifecycle) | Each account's place in its lifecycle (rule 35): status, state, what onboarding has left; `states` prints the machine | `facebook` first | `--account <name>` `--json` `--write` | none | none | `lifecycle` | PreToolUse, PostToolUse · PostToolUse | no | 35, 30, 38, 39, 40, 41 |
 | [`log facebook preflight`](#log-facebook-preflight) | Before any browser opens, check each account will get through: home timezone, hours, proxy speed and country, the account's browser and its kernel, launches and host opens left, no session left open, its picture on disk | `facebook` first | `--account <accountName>` `--homes <US,CA>` `--noProxy` `--apply` `--json` | none | none | `preflight` | PreToolUse, PostToolUse · PostToolUse | no | 12, 18, 24, 33, 35, 37, 79, 30, 38, 39, 40, 41 |
 | [`log facebook doctor`](#log-facebook-doctor) | Check python, facebook-camofox-client, Camoufox, Twenty, and which accounts may run | `facebook` first | `--json` | browser | Camoufox only | `doctor` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 30, 38, 39, 40, 41 |
 | [`log facebook connect`](#log-facebook-connect) | Sign a Facebook account in through its proxy (the connect machine), save its cookies to Twenty | `facebook` first | `--account <accountName>` `--noPrompt` `--wait <seconds>` `--bypass` `--now` | browser | Camoufox only | `connect` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 12, 18, 21, 23, 24, 73, 30, 38, 39, 40, 41 |
 | [`log facebook profile`](#log-facebook-profile) | Set an account's profile picture and cover photo from Twenty (dry run unless --live, rule 28) | `facebook` first | `--account <accountName>` `--live` `--bypass` `--json` | browser | Camoufox only | `profile`, `profileLive` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 28, 73, 30, 38, 39, 40, 41 |
 | [`log facebook host`](#log-facebook-host) | Run an account's lifecycle in ONE browser kept open for its day, resuming where it left (rule 35); send it events; read its progress | `facebook` first | `--account <accountName>` `--live` `--likes` `--bypass` `--now` `--gapSeconds <n>` `--watchMinutes <n>` | browser | the account's | `hostStart`, `hostStartLive`, `hostSend`, `hostStatus` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 18, 35, 73, 79, 30, 38, 39, 40, 41 |
-| [`log inspect`](#log-inspect) | Drive the account's browser, gated and headed, a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29) | any (none) | `--account <accountName>` `--goal <text>` `--url <https://www.facebook.com/...>` `--bypass` `--now` `--noIdleMouse` `--detach` `--all` `--live` `--timeout <s>` `--json` `--set <text>` `--step <step>` `--point <text>` `--explain <text>` `--evidence <text>` `--fixes <n>` `--fix <text>` | browser | the account's | `inspectStart`, `inspectDo`, `inspectDoLive`, `inspectRead`, `inspectMap`, `inspectGoal`, `inspectFinding`, `inspectSessions` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68, 72, 73, 74, 75, 82, 30, 38, 39, 40, 41 |
+| [`log inspect`](#log-inspect) | Drive the account's browser, gated and headed, a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29) | any (none) | `--account <accountName>` `--goal <text>` `--url <https://www.facebook.com/... or the platform's own page>` `--bypass` `--now` `--noIdleMouse` `--detach` `--all` `--live` `--timeout <s>` `--json` `--set <text>` `--step <step>` `--point <text>` `--explain <text>` `--evidence <text>` `--fixes <n>` `--fix <text>` | browser | the account's | `inspectStart`, `inspectDo`, `inspectDoLive`, `inspectRead`, `inspectMap`, `inspectGoal`, `inspectFinding`, `inspectSessions` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68, 72, 73, 74, 75, 82, 84, 30, 38, 39, 40, 41 |
 | [`log flow`](#log-flow) | Recorded inspect runs as flows: docs, an XState machine per flow, run on any account (rule 31) | any (none) | `--name <name>` `--summary <text>` `--rename` `--account <accountName>` `--set <param>` `--live` `--bypass` `--now` `--json` | browser | the account's | `flow`, `flowLive` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 29, 31, 68, 72, 73, 79, 30, 38, 39, 40, 41 |
 | [`log <platform> warmup`](#log-platform-warmup) | The warm-up, by platform and activity: `log facebook warmup reel\|feed\|stages` (the account's browser primed with the activity, each step checked, the outline written; rules 49, 60) | `<platform>` first | `--account <a>` `--live` `--likes` `--bypass` `--now` `--json` `--newPersona` `--seed <n>` `--reels` `--watch` `--skip` `--comments` `--profile` `--persona` `--trafficMb` `--posts` `--only` `--gapSeconds <n>` `--lines <n>` `--follow` `--seconds <n>` | browser | the account's | `warmup`, `warmupLive` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 18, 20, 25, 26, 29, 32, 35, 36, 49, 50, 51, 54, 55, 60, 64, 73, 30, 38, 39, 40, 41 |
 | [`log facebook join`](#log-facebook-join) | Join a Facebook group as one account, in its open browser: read the gate, --live presses Join; every step patches agencyGroups.joinSubmission (rule 45) | `facebook` first | `--account <accountName>` `--group <group url, id or name>` `--live` `--json` `--show` `--answer` `--set <n>` `--agree` `--fill` `--submit` `--bypass` | browser | the account's | `join`, `joinLive` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 8, 10, 18, 20, 25, 26, 29, 35, 45, 64, 73, 30, 38, 39, 40, 41 |
@@ -212,7 +213,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log facebook messenger`](#log-facebook-messenger) | Messenger's PIN for the account's encrypted chats: asked in a Clack prompt, kept in Twenty, never printed | `facebook` first | `--account <accountName>` `--show` | none | none | terminal only: asks matt for the Messenger PIN in a Clack prompt (masked). He runs `bun bin/log.ts facebook messenger pin --account <a>` in a terminal. | PreToolUse, PostToolUse · n/a | no | 8, 21, 29, 54, 63, 67, 30, 38, 39, 40, 41 |
 | [`log errors`](#log-errors) | List every error code: meaning, retryable, where each machine ends up | any (none) | `--layer <account|listing|photo|form|captcha|runtime|twenty|proxyVendor|auth|profile>` `--code <code>` `--json` `--markdown` | none | none | `errors` | PreToolUse, PostToolUse · PostToolUse | no | 25, 30, 38, 39, 40, 41 |
 | [`log graph`](#log-graph) | Print a machine's states and transitions as a Mermaid diagram | any (none) | none | none | none | `graph` | PreToolUse, PostToolUse · PostToolUse | no | 6, 25, 30, 38, 39, 40, 41 |
-| [`log facebook capture`](#log-facebook-capture) | Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds the Facebook client docs. No browser. | `facebook` first | `--har <path>` `--out <dir>` `--noRea` `--json` `--settle <runCaptureDir>` `--docs` | none | none | `capture` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 19, 22, 26, 27, 46, 48, 30, 38, 39, 40, 41 |
+| [`log facebook capture`](#log-facebook-capture) | Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds every platform's client docs, rea reading each request's code. No browser. | `facebook` first | `--har <path>` `--out <dir>` `--noRea` `--json` `--settle <runCaptureDir>` `--docs` | none | none | `capture` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 19, 22, 26, 27, 46, 48, 85, 30, 38, 39, 40, 41 |
 | [`log runs`](#log-runs) | The recorded runs on this machine, and pruning the ones rea settled and the request docs hold, keeping each one's findings and domains | any (none) | `--json` `--before <YYYY-MM-DD>` `--apply` | none | none | `runsList`, `runsExchanges`, `runsPrune`, `runsSpace` | PreToolUse, PostToolUse · PostToolUse | no | 19, 22, 25, 27, 66, 73, 30, 38, 39, 40, 41 |
 | [`log browsers`](#log-browsers) | Where every open browser is: its page, the known page state it sits on, the call that resolves it, and what only matt can clear (rules 54-55) | any (none) | `--json` | none | none | `browsers` | PreToolUse, PostToolUse · PostToolUse | no | 29, 35, 54, 55, 30, 38, 39, 40, 41 |
 | [`log job`](#log-job) | Follow or stop a long MCP run: each runs as a job when it outlasts its call's wait | any (none) | `--afterLine <n>` `--waitMs <ms>` `--json` | none | none | `jobStatus`, `jobCancel`, `jobList` | PreToolUse, PostToolUse · PostToolUse | no | 10, 26, 35, 30, 38, 39, 40, 41 |
@@ -227,7 +228,8 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log twitter like`](#log-twitter-like) | Like one post on X, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--tweet <postUrl>` `--approvedBy <who>` `--live` `--json` | direct API only | none | `twitterLike`, `twitterLikeLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 30, 38, 39, 40, 41 |
 | [`log twitter dm`](#log-twitter-dm) | Send one approved direct message on X, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--userId <id>` `--text` `--approvedBy <who>` `--skipStyleCheck` `--live` `--json` | direct API only | none | `twitterDm`, `twitterDmLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 30, 38, 39, 40, 41 |
 | [`log twitter queue`](#log-twitter-queue) | Build, approve, plan and run a queue of approved X replies, quotes or dms at random moments, on the direct-API engine | `twitter` first | `--targets <targets.json>` `--variations <a.json,b.json>` `--out <queue.json>` `--account <accountName>` `--action` `--seed <n>` `--json` `--by <who>` `--window <5h|90m>` `--limit <n>` `--start <time>` `--minGap <s>` `--like` `--likeChance <0-1>` `--alertChannel <uuid>` `--alertReplyTo <eventId>` `--alertMention <hex,hex>` `--live` `--replies <n>` | direct API only | none | `twitterQueueBuild`, `twitterQueueShow`, `twitterQueueCheck`, `twitterQueueStatus`, `twitterQueueApprove`, `twitterQueuePlan`, `twitterQueueRun`, `twitterQueueRunLive`, `twitterQueueNudge` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 6, 8, 26, 53, 63, 64, 73, 80, 81, 30, 38, 39, 40, 41 |
-| [`log new`](#log-new) | Make a new platform (session, command, MCP tool, engine, docs), wired into the repo through its syntax tree | any (none) | `--label <shown name>` `--twentyPlatform <ENUM>` `--library <vendor/folder>` `--sessionCookies <a,b>` `--cookieDomain <.site.com>` `--apply` `--json` | none | none | `newPlatform` | PreToolUse, PostToolUse · PostToolUse | no | 1, 2, 63, 64, 83, 30, 38, 39, 40, 41 |
+| [`log new`](#log-new) | Make a new platform (session, command, MCP tool, engine, docs), wired into the repo through its syntax tree | any (none) | `--label <shown name>` `--twentyPlatform <ENUM>` `--library <vendor/folder>` `--sessionCookies <a,b>` `--cookieDomain <.site.com>` `--hosts <a.com,b.com>` `--home <https://…>` `--noProxy` `--noBrowser` `--apply` `--json` | none | none | `newPlatform` | PreToolUse, PostToolUse · PostToolUse | no | 1, 2, 63, 64, 83, 30, 38, 39, 40, 41 |
+| [`log reddit session`](#log-reddit-session) | Check that Reddit still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `reddit` first | `--account <accountName>` `--json` | direct API only | none | `redditSessionCheck` | PreToolUse, PostToolUse · PostToolUse | no | 13, 63, 64, 73, 83, 30, 38, 39, 40, 41 |
 
 ### Saved flows: MCP tools of their own (rule 31)
 
@@ -236,6 +238,7 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | `flowDeletePost`, `flowDeletePostLive` | `log flow run deletePost` | Delete the newest post on the account's own profile: its Actions menu, Move to bin, Move (useCometTrashPostMutation; Facebook empties the bin after 30 days). Writes on Facebook (--live). | none | gotoprofilePhp → clickActionsForThisPost → clickMoveToBinItems → clickMove |
 | `flowFacebookLanguageEnglish`, `flowFacebookLanguageEnglishLive` | `log flow run facebookLanguageEnglish` | Switch the account's Facebook language to English (US): Settings, Language and region, Account language, English (US), OK; decided by useCometUSFScrollablePickerMutation answering en_US. Recorded on Scranton 2026-10-25 from Arabic. | none | gotosettings → click → clickEnglishUs → click |
 | `flowGroupHeaderMenus`, `flowGroupHeaderMenusLive` | `log flow run groupHeaderMenus` | Open and close the group header's search, More menu, Joined menu, Invite dialog and Share sheet; nothing inside them is picked | `groupId` | gotogroups → clickSearchWithinThisGroup → pressEscape → clickMore → pressEscape → clickJoined → pressEscape → clickInvite → pressEscape → clickShareGroup → pressEscape |
+| `flowGroupMembers`, `flowGroupMembersLive` | `log flow run groupMembers` | Open a group's People tab and scroll it read-only so Facebook loads the member list (bio line, page category) for extraction | none | gotogroupsJunkremovalwinners → gotogroupsJunkremovalwinnersMembers → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll → scroll |
 | `flowGroupPostComments`, `flowGroupPostCommentsLive` | `log flow run groupPostComments` | On a group's Open questions tab, open a post's comments, switch the sort to All comments and scroll them; read-only | `groupId` | gotogroupsQuestions → clickLeaveAComment → clickMostRelevant → clickAllCommentsShowAll → scroll |
 | `flowGroupPostDialog`, `flowGroupPostDialogLive` | `log flow run groupPostDialog` | On a group's Discussion feed, open a post in its dialog with Leave a comment (the comment box takes focus, nothing is typed) and close it | `groupId` | gotogroups → clickLeaveAComment → clickClose |
 | `flowGroupTabs`, `flowGroupTabsLive` | `log flow run groupTabs` | Open each tab of a group the account is in (Featured, Open questions, People, Events, Media, Files, About) and come back to Discussion; read-only | `groupId` | gotogroups → clickFeatured → clickOpenQuestions → clickPeople → clickEvents → clickMedia → clickFiles → clickAbout → clickDiscussion |
@@ -418,6 +421,9 @@ flowchart TB
   c_new["new"]
   cli --> c_new
   mcp --> c_new
+  c_session["session"]
+  cli --> c_session
+  mcp --> c_session
   f_deletePost["flowDeletePost: flow run deletePost"]
   mcp --> f_deletePost
   f_deletePost --> c_flow
@@ -427,6 +433,9 @@ flowchart TB
   f_groupHeaderMenus["flowGroupHeaderMenus: flow run groupHeaderMenus"]
   mcp --> f_groupHeaderMenus
   f_groupHeaderMenus --> c_flow
+  f_groupMembers["flowGroupMembers: flow run groupMembers"]
+  mcp --> f_groupMembers
+  f_groupMembers --> c_flow
   f_groupPostComments["flowGroupPostComments: flow run groupPostComments"]
   mcp --> f_groupPostComments
   f_groupPostComments --> c_flow
@@ -729,7 +738,7 @@ log facebook host status [--account <accountName>]
 Drive the account's browser, gated and headed, a step at a time: each step's snapshot, screenshot, HAR and rea, recorded as it happens (rule 29) MCP tools: `inspectStart`, `inspectDo`, `inspectDoLive`, `inspectRead`, `inspectMap`, `inspectGoal`, `inspectFinding`, `inspectSessions`, one per form, with named fields.
 
 ```text
-log inspect start --account <accountName> [--goal <text>] [--url <https://www.facebook.com/...>] [--bypass] [--now] [--noIdleMouse] [--detach]   (one session per account: two accounts can be open at once; --detach runs it as its own process and returns once it is open)
+log inspect start --account <accountName> [--goal <text>] [--url <https://www.facebook.com/... or the platform's own page>] [--bypass] [--now] [--noIdleMouse] [--detach]   (one session per account: two accounts can be open at once; --detach runs it as its own process and returns once it is open)
 log inspect map [<runDir>] [--all]  (the recorded steps as states and transitions: flow.md, machine.json; default the latest run; --all collates every run)
 log inspect do <goto <url>|snapshot|back|wait [s]|click <ref>|type <ref> <text>|press <key>|upload <ref> <file>|highlight <role> <name>|solve|signIn|code|pin|stop> [--live] [--goal <text>] [--timeout <s>] [--json] [--account <accountName>]   (--account picks the session when more than one is open; every step's internal API calls are read, and a step no known state names is read by SubQ against the goal, rules 73-74)
 log inspect read <stepFolder> --account <accountName> [--goal <text>] [--json]   (read a recorded step again: its internal API calls, the page and the earlier steps, by SubQ when no known state names it)
@@ -927,12 +936,12 @@ log graph <publish|monitor>
 
 #### log facebook capture
 
-Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds the Facebook client docs. No browser. MCP tool: `capture` (`args` takes the same arguments).
+Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds every platform's client docs, rea reading each request's code. No browser. MCP tool: `capture` (`args` takes the same arguments).
 
 ```text
 log facebook capture --har <path> [--out <dir>] [--noRea] [--json]
 log facebook capture --settle <runCaptureDir>  (what each run starts in the background: rea reads its capture, split per step)
-log facebook capture --docs [--noRea]  (every run's requests → docs/platforms/facebook/, one doc per request, rea reading each one's slice)
+log facebook capture --docs [--noRea]  (every run's requests → docs/platforms/<platform>/, one doc per request, rea reading each one's slice: Facebook's by its modules, every other platform with a browser path by the call sites its bundles hold for each request)
 The HAR is the one Playwright writes from Camoufox. It is copied raw, and rea reads it. No browser opens.
 ```
 
@@ -1085,9 +1094,19 @@ run walks the plan as an XState machine (planned, waiting, liking, replying, coo
 Make a new platform (session, command, MCP tool, engine, docs), wired into the repo through its syntax tree MCP tools: `newPlatform`, one per form, with named fields.
 
 ```text
-log new platform <name> [--label <shown name>] [--twentyPlatform <ENUM>] [--library <vendor/folder>] [--sessionCookies <a,b>] [--cookieDomain <.site.com>] [--apply] [--json]
+log new platform <name> [--label <shown name>] [--twentyPlatform <ENUM>] [--library <vendor/folder>] [--sessionCookies <a,b>] [--cookieDomain <.site.com>] [--hosts <a.com,b.com>] [--home <https://…>] [--noProxy] [--noBrowser] [--apply] [--json]
 Makes a new platform for log-cli: its account session on the shared platformKit, `log <name> session check` with its MCP tool, a direct-API engine in python/<name>Api on the shared Python kit, and docs/platforms/<name>. The repo is wired by editing each file through its syntax tree (PLATFORMS, PLATFORM_LABELS, COMMANDS, createContext, CommandContext, DIRECT_ROUTES, COMMAND_RULES), and every edit is checked to have landed before anything is written.
 Without --apply it lists what it would write and change, and writes nothing. Nothing is overwritten: an existing platform or file is refused. It says what Twenty is missing (the socialAccounts.platform option) but never changes Twenty. Then fill in the engine's actions and add the platform's families as commands (rule 83).
+```
+
+#### log reddit session
+
+Check that Reddit still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty MCP tools: `redditSessionCheck`, one per form, with named fields.
+
+```text
+log reddit session check --account <accountName> [--json]
+Checks that Reddit still accepts the account's saved session, on the direct-API engine (vendor/rdvwr on one curl_cffi session, no browser). Sends nothing.
+Reddit's own answer decides. The result goes to socialAccounts.sessionState, and refreshed cookies are merged back into the row.
 ```
 
 <!-- surface:end -->

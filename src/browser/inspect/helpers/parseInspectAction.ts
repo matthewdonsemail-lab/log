@@ -1,3 +1,4 @@
+import { hostOnPlatforms } from '../../../cli/runner/helpers/platforms'
 import { placeProblem } from '../../../facebook/marketplace/location/index'
 import type { InspectAction } from '../types'
 
@@ -10,7 +11,7 @@ export function parseInspectAction(argv: string[]): { ok: true; action: InspectA
   if (!name || !(name in ARITY)) return { ok: false, error: `unknown action "${name ?? ''}" (one of ${Object.keys(ARITY).join(', ')})` }
   const action = name as InspectAction
   if (args.length < ARITY[action]) return { ok: false, error: `${action} needs ${ARITY[action]} argument(s)` }
-  if (action === 'goto' && !/^https:\/\/([a-z0-9-]+\.)*facebook\.com(\/|$)/i.test(args[0])) return { ok: false, error: 'goto takes a https://*.facebook.com URL' }
+  if (action === 'goto' && !hostOnPlatforms(args[0])) return { ok: false, error: 'goto takes a https URL on a platform log-cli knows (facebook.com, x.com, …)' }
   if (action === 'setLocation') {
     const place = placeProblem(args.join(' '))
     if (place) return { ok: false, error: `${place.code}: ${place.detail}` }

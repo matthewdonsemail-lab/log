@@ -7436,3 +7436,187 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: src/scaffold/platform/platform.test.ts plans and applies a platform called scaffoldProbe instead of reddit, so the tests keep passing once reddit (or any real platform) is made.
 Why: the proof run below made reddit for real, and the two tests that planned reddit against copies of the real registration files then refused it as already a platform.
 Checked: the proof. log new platform reddit --sessionCookies reddit_session --apply wrote 8 files, made all 9 syntax-tree edits and rebuilt the docs (47 commands); bun run check then passed every gate on the repo with reddit in it (noComments 668 files, check:platforms facebook, twitter and reddit wired whole, naming, layout, browsers, agentHooks, docs, typecheck), and the 3 generated reddit tests passed, the generated Python engine answering engineNotBuilt; log reddit session check --account nobody ran against Twenty and refused with accountNotFound (no REDDIT socialAccount). The only failures were these two tests. Then the tree went back to the commit (reddit is not added). bun test src/scaffold: 6 pass.
+
+## 2026-10-25 12:41Z · feat/redditPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `python/browser/browserDriver.py`: added def carry_site_session_once · changed def open_ads_power, def carry_session_once
+- `python/browser/proxyGate.py`: changed def load_proxy, def twocaptcha_proxy, def exit_location, def check, def gate_attached
+- `python/session/inspectSession.py`: added def operation_of · changed def notable, class Inspector
+- `scripts/checks/checkPlatforms.ts`: no declaration changed (comments, formatting or line endings)
+- `src/browser/adsPower/client.ts`: changed function syncProfiles
+- `src/browser/adsPower/helpers/planSync.ts`: changed function planSync
+- `src/browser/adsPower/helpers/profileRequest.ts`: changed function profileRequest
+- `src/browser/inspect/helpers/parseInspectAction.ts`: changed function parseInspectAction
+- `src/browser/inspect/types.ts`: changed interface InspectSessionConfig
+- `src/browser/run/client.ts`: added function directHome · changed function prepareRun
+- `src/browser/run/directRun.test.ts`: added const account, test "a Facebook account still needs its proxy (rule 12)", test "an X account has no browser path; an unknown platform is refused", test "an account's platform and site come from its Twenty value", test "inspect goes only to the hosts of a platform log-cli knows", test "a call is named by Facebook's friendly name, else a GraphQL operation in its JSON body, else its path", test "the Python gate refuses a direct run for a Facebook account"
+- `src/cli/inspect/index.ts`: changed const INSPECT_USAGE, const INSPECT_INPUT, const inspectCommand
+- `src/cli/new/index.ts`: changed const NEW_USAGE, const NEW_INPUT, const newCommand
+- `src/cli/runner/helpers/platforms.ts`: added interface PlatformSite, const PLATFORM_SITES, function platformOfAccount, function siteOfAccount, function isKnownPlatformAccount, function hostOnPlatforms
+- `src/marketplace/socialAccount/client.ts`: added function listBrowserAccounts · changed function toFacebookAccount, function findAccount
+- `src/marketplace/socialAccount/helpers/checkRunnable.ts`: changed function checkRunnable
+- `src/marketplace/socialAccount/helpers/facebookCookies.ts`: changed function toFacebookCookies
+- `src/marketplace/socialAccount/types.ts`: changed interface RunProxy
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `src/platformKit/session/client.ts`: changed function findPlatformAccount
+- `src/scaffold/platform/client.ts`: changed function namesOf, function planNewPlatform
+- `src/scaffold/platform/types.ts`: changed interface NewPlatformOptions, interface PlatformNames
+- `src/subq/stepReading/helpers/exchangesOf.ts`: changed function nameOf
+
+What changed: log inspect and the account's AdsPower browser work on every platform with a browser path, not only Facebook. PLATFORM_SITES (platforms.ts) says, per platform, its Twenty value, cookie domain, hosts, home page, whether it needs a proxy and whether it has a browser (Facebook: proxy required, browser; X: no proxy, no browser). checkRunnable lets a known browser platform through and, when it needs no proxy, writes a direct run (proxy.json direct with its platform); an unset status is allowed; prepareRun gives a no-home direct account en-US on the machine's timezone (directHome) and keeps its cookies under the platform's own domain. The Python gate takes a direct run only for a platform other than Facebook (rule 12), reads this machine's own exit and skips the Facebook speed probe; the AdsPower opener sets no proxy for it and carries the account's own platform cookies in. Inspect's goto and --url take any known platform's hosts, it opens on the account's platform home, the session's notable list follows the platform's hosts, and each internal call is named by Facebook's friendly name, a GraphQL operationName or operation, else its path. adsPower sync lists every browser platform's accounts; a no-proxy one needs no home and gets an en-US profile on its platform's host. A row with an empty accountName is found by its name (findAccount and platformKit). log new platform writes the platform's PLATFORM_SITES row through the syntax tree (--hosts, --home, --noProxy, --noBrowser) and check:platforms refuses a platform without one. Rule 84, MCP instruction 23.
+Why: matt asked to make Reddit and explore it with log inspect in the account's AdsPower browser (Maleficent-Try-8338, cookies in Twenty, its handle in name), with no proxy, like X.
+Checked: 6 new tests (Facebook still needs its proxy, X has no browser path, an unknown platform is refused, sites by Twenty value, goto only to known hosts and https, call names by friendly name, operation or path, the Python gate refuses a direct Facebook run); bun run check 1071 pass.
+
+## 2026-10-25 12:58Z · feat/redditPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/platforms/reddit/README.md`: new file
+- `python/browser/proxyGate.py`: added def same_zone · changed def exit_checked, def compare
+- `python/redditApi/__init__.py`: new file, no top-level declarations
+- `python/redditApi/engine.py`: added const ROOT, const PLATFORM, const LIBRARY, def ping, const ACTIONS
+- `src/browser/run/directRun.test.ts`: added test "the self-check takes two names of one timezone as the same zone, and two zones apart as different"
+- `src/cli/reddit/index.ts`: added const REDDIT_SESSION_USAGE, const REDDIT_SESSION_INPUT, function render, const redditSessionCommand
+- `src/cli/reddit/reddit.test.ts`: added function fixture, function run, test "loggedIn: the engine's answer goes to Twenty", test "an account of another platform is refused before the engine is called", test "the generated engine answers engineNotBuilt until its client is wired in"
+- `src/cli/runner/helpers/platforms.ts`: changed const PLATFORMS, const PLATFORM_LABELS, const PLATFORM_SITES
+- `src/cli/runner/index.ts`: changed const COMMANDS, function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/reddit/account/index.ts`: added export from "./session/index.ts"
+- `src/reddit/account/session/client.ts`: added const REDDIT_PLATFORM, const REDDIT_COOKIE_DOMAIN, function findRedditAccount, function redditGate, function runRedditEngine, function recordRedditSession
+- `src/reddit/account/session/index.ts`: added export from "./client"
+- `src/twenty/graphql/generated/schema.ts`: changed type SocialAccountPlatformEnum, interface SocialAccount, interface SocialAccountConnection, interface SocialAccountGroupByConnection, interface SocialAccountGenqlSelection, interface SocialAccountConnectionGenqlSelection, interface SocialAccountGroupByConnectionGenqlSelection, interface SocialAccountCreateInput, interface SocialAccountUpdateInput, interface SocialAccountFilterInput, interface SocialAccountOrderByInput, interface SocialAccountOrderByWithGroupByInput, interface SocialAccountOrderByWithGroupByAggregateInput, interface SocialAccountGroupByInput, const enumSocialAccountPlatformEnum
+- `src/twenty/graphql/generated/types.ts`: no declaration changed (comments, formatting or line endings)
+
+What changed: Reddit is log-cli's third platform, made whole by `log new platform reddit --noProxy` over MCP (hosts reddit.com, redd.it, redditmedia.com; home https://www.reddit.com/; session cookie reddit_session): its account session, `log reddit session check` and MCP tool, a direct-API engine in python/redditApi (engineNotBuilt until a client is vendored) and docs/platforms/reddit, wired through the syntax tree. The Twenty client is regenerated and now has REDDIT. The gate's self-check compares timezones with `same_zone` (the same UTC offset through the year) instead of their names.
+Why: matt asked for Reddit as a new platform, with no proxy like X, to load Maleficent-Try-8338's AdsPower browser in `log inspect` and record Reddit's internal calls. The self-check refused the first no-proxy run because the browser said Asia/Saigon and the exit lookup said Asia/Ho_Chi_Minh, two names of one zone.
+Checked: a 12-step inspect run on Maleficent-Try-8338 (gate on this machine's exit, AdsPower profile with no proxy, self-check passed, logged in; goal met 86%, 0 findings); a test that same_zone takes Asia/Saigon and Asia/Ho_Chi_Minh as one and New York and Chicago as two; bun run check (every gate, 1075 tests).
+
+## 2026-10-25 13:04Z · feat/redditPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/operations.json`: edited
+
+What changed: the Facebook request docs' operations.json is rebuilt: its build time and run count only, every operation kept.
+Why: the pre-push docs gate refused the push because the two Reddit inspect runs were newer than the docs (rule 27). They hold no Facebook requests, and the docs builder reads only Facebook's calls, so no Reddit request doc is written yet.
+Checked: `log facebook capture --docs` (0 Facebook requests in the 2 runs, exit 0); git diff shows only builtAt and runs changed.
+
+## 2026-10-25 13:46Z · feat/redditPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/reddit/account/CreateCaptchaToken.md`: new file
+- `docs/platforms/reddit/account/svcShredditDataProtectionConsent.md`: new file
+- `docs/platforms/reddit/account/svcShredditPartialBannedUserBanner.md`: new file
+- `docs/platforms/reddit/account/svcShredditPartialUserDrawerMenu.md`: new file
+- `docs/platforms/reddit/account/svcShredditToken.md`: new file
+- `docs/platforms/reddit/account/svcShredditUpdateRecaptcha.md`: new file
+- `docs/platforms/reddit/account/svcShredditUserDrawerButtonLoggedIn.md`: new file
+- `docs/platforms/reddit/background/piP.md`: new file
+- `docs/platforms/reddit/background/svcShredditCompressionDictionariesBr.md`: new file
+- `docs/platforms/reddit/chat/ChatRedditors.md`: new file
+- `docs/platforms/reddit/chat/ChatSubredditStyles.md`: new file
+- `docs/platforms/reddit/chat/svcShredditHeaderActionItemChat.md`: new file
+- `docs/platforms/reddit/chat/svcShredditRedditChat.md`: new file
+- `docs/platforms/reddit/comments/svcShredditMoreComments.md`: new file
+- `docs/platforms/reddit/comments/svcShredditPostDetailModules.md`: new file
+- `docs/platforms/reddit/community/UserCommunityAchievements.md`: new file
+- `docs/platforms/reddit/community/svcShredditCommunityHoverCard.md`: new file
+- `docs/platforms/reddit/community/svcShredditPartialCrosspostDialog.md`: new file
+- `docs/platforms/reddit/community/svcShredditPartialModContentActions.md`: new file
+- `docs/platforms/reddit/community/svcShredditStylingOverrides.md`: new file
+- `docs/platforms/reddit/community/svcShredditSubredditPostingEligibilityModal.md`: new file
+- `docs/platforms/reddit/experiments/EnrollInStreaks.md`: new file
+- `docs/platforms/reddit/experiments/ExposeVariant.md`: new file
+- `docs/platforms/reddit/experiments/StoreUxtargetingAction.md`: new file
+- `docs/platforms/reddit/experiments/svcShredditDeferredExperiences.md`: new file
+- `docs/platforms/reddit/experiments/svcShredditDevvitLeftNavBadge.md`: new file
+- `docs/platforms/reddit/feed/svcShredditCommunityMorePostsBest.md`: new file
+- `docs/platforms/reddit/feed/svcShredditFeedsHomeFeed.md`: new file
+- `docs/platforms/reddit/feed/svcShredditFeedsPopularFeed.md`: new file
+- `docs/platforms/reddit/feed/svcShredditHamburgerMenu.md`: new file
+- `docs/platforms/reddit/inbox/UpdateInboxActivitySeenState.md`: new file
+- `docs/platforms/reddit/inbox/svcShredditHeaderActionItemInbox.md`: new file
+- `docs/platforms/reddit/inbox/svcShredditNotificationsInboxContentRoute.md`: new file
+- `docs/platforms/reddit/operations.json`: new file
+- `docs/platforms/reddit/profile/TrophyCategories.md`: new file
+- `docs/platforms/reddit/telemetry/svcEventsPreloadHead.md`: new file
+- `docs/platforms/reddit/telemetry/svcShredditEvents.md`: new file
+- `docs/platforms/reddit/telemetry/svcShredditPerfmetrics.md`: new file
+- `docs/platforms/reddit/telemetry/w3ReportingPolicy.md`: new file
+- `docs/platforms/reddit/telemetry/w3ReportingReports.md`: new file
+- `scripts/checks/checkFacebookClientDocs.mjs`: added const platformsDir
+- `src/cli/capture/index.ts`: added const platformClientDocs · changed const CAPTURE_USAGE, function runCapture, const captureCommand
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `src/rea/facebookClient/client.ts`: changed function writeOperationDocs, function buildClientMap
+- `src/rea/facebookClient/helpers/renderOperationDoc.ts`: added type ReasoningPrompts, const FACEBOOK_REASONING · changed function renderOperationDoc · removed const REASONING
+- `src/rea/facebookClient/types.ts`: changed interface ClientOperation
+- `src/rea/platformClient/client.ts`: added interface BuildPlatformMapOptions, interface SeenOn, function onHosts, function bodyOf, function variablesOf, function readsOf, function platformRequestsInRun, function bundleScripts, function stepEvidence, function mergePlatformOperations, function eachLimited, function readPlatformSlices, function platformFactsPath, function buildPlatformClientMap
+- `src/rea/platformClient/helpers/index.ts`: added export from "./requestName", export from "./sliceSources"
+- `src/rea/platformClient/helpers/requestName.ts`: added const PARAM_AFTER, const NAMED_AFTER, function camelOf, function stablePath, function requestNameOf, function operationOf, function needlesOf, function domainOfRequest
+- `src/rea/platformClient/helpers/sliceSources.ts`: added const parsed, function sourceOf, function forgetParsed, function literalText, function propertyName, function scoreOf, const isFunction, function functionName, function enclosingSlice, function slicesFor
+- `src/rea/platformClient/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/rea/platformClient/platformClient.test.ts`: added const bundle, test "a request is named by its GraphQL operation, else by its path without ids, subreddits or hashes", test "an operation is found where it is sent, never in a lookalike or an enum of names", test "an endpoint is found where its path is fetched", test "what an answer reads is its fields two levels down", test "a run's platform calls become docs, each with its code and rea's reading"
+- `src/rea/platformClient/types.ts`: added interface BundleScript, interface SourceSlice, interface PlatformClientRules, const MAX_SLICES, const MAX_SLICE_CHARS, const MIN_SLICE_CHARS, const MAX_LITERAL_CHARS, const GENERIC_REASONING, const PLATFORM_CLIENT_RULES
+
+What changed: `log facebook capture --docs` builds every browser platform's request docs, not only Facebook's. The new `src/rea/platformClient` takes each run's calls to a platform's hosts, names each by its GraphQL operation or its path without ids, subreddits or hashes, finds the code that sends it in that platform's own bundles by syntax tree (an operation by its exact name, a path where it is fetched, Reddit's faceplate-partial loader first), and has rea read each call's slices; a call with no code in the bundles keeps its step's rea reading. The doc writer takes a platform's own reasoning prompts and domains. The docs gate checks every platform's operations.json (doc listed, rea read, reasoning written). docs/platforms/reddit holds the first 39 Reddit requests, each with its reasoning written from rea's reading, the code and the recorded answers. Rule 85; the MCP instructions and the capture tool carry it.
+Why: matt: "THE WHOLE POINT IS TO GO THROUGH REA." The Reddit inspect run's steps had their network read by rea, but the docs build only took facebook.com calls and Facebook's __d modules, so none of Reddit's code reached rea (0 requests, 0 slices).
+Checked: `log facebook capture --docs` on the Reddit run: 39 requests, 33 with their code found and read by rea (about 4 s each), 6 from their step; the slices were looked at by hand (ExposeVariant's `ai()`, the token's `ln()`, the W3 reporter `Zh()`) and the generic needles and the r/iphone name fixed. platformClient tests (5) and bun run check: every gate, 1080 tests.
+
+## 2026-10-25 15:03Z · feat/redditPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `vendor/rdvwr/LICENSE`: new file
+- `vendor/rdvwr/rdvwr/__init__.py`: added const __all__
+- `vendor/rdvwr/rdvwr/actions.py`: added const IMAGE_TYPES, const VIDEO_TYPES, const MAX_IMAGE, const MAX_VIDEO, const UPLOAD_HOSTS, class Actions, def is_upload_url, def video_poster
+- `vendor/rdvwr/rdvwr/client.py`: added class RedditClient
+- `vendor/rdvwr/rdvwr/errors.py`: added class RedditError, class NotLoggedIn, class Forbidden, class RateLimited, class Refused, class ChallengeRequired, def raise_for
+- `vendor/rdvwr/rdvwr/gql.py`: added const HASHES_FILE, const CURSOR_PREFIX, const TOP_LEVEL_COUNT, const MAX_DEPTH, const MEDIA_REF_RE, def hashes, def encode_cursor, def decode_cursor, def epoch, def resolve_media, def comment_of, def tree_of, class Gql
+- `vendor/rdvwr/rdvwr/gql_hashes.json`: new file
+- `vendor/rdvwr/rdvwr/reads.py`: added const FEED_SORTS, const TIME_SORTS, def with_time, class Reads
+- `vendor/rdvwr/rdvwr/session.py`: added const TOKEN_MARGIN, def jwt_exp, class Session
+- `vendor/rdvwr/rdvwr/shreddit.py`: added const PARTIAL_HTML, const PARTIAL_OR_HTML, const HTML, const JSON_ACCEPT, const REFERER, const HOME_FEED_PATH, const POPULAR_FEED_PATH, const COMMUNITY_MORE_PREFIX, const SEARCH_PATH, const SEARCH_PARTIAL_PATH, const TYPEAHEAD_PATH, const FEED_SORTS, const COMMUNITY_SORTS, const TIME_SORTS, const TOP_TIMES, const COMMENT_SORTS, const SEARCH_KINDS, const COMMUNITY_MORE_PATH, const MORE_COMMENTS_PATH, const SUBREDDIT_NAME, const SUBREDDIT_PATH, const PERMALINK_SUBREDDIT, const POST_ID, const INTEGER, def _soup, def _text, def _text_or_none, def _attr, def _int, def _number, def _epoch, def _int_list, def _query, def _with_query, def _same_origin, def _is_url, def _absolute, def _cursor_of, def subreddit_name, def _short_post_id, def _normalized_query, def _subreddit_of, def _post_body, def parse_post_element, def _posts, def _feed_continuation, def parse_feed, def _more_comments, def _comments, def parse_comments, def parse_post, def _tracking_context, def _metric, def _community_permalink, def _community_name, def _resolved, def _bool_or_none, def _parse_community, def _tracked_posts, def _search_continuation, def parse_search, def parse_typeahead, def parse_flairs, class Shreddit
+- `vendor/rdvwr/rdvwr/state.py`: added const SNAPSHOT_VERSION, const AUTHENTICATED_COOKIE, const DEFAULT_REDDIT_ORIGIN, const DEFAULT_REDDIT_BROWSER_PROFILE, const DEFAULT_REDDIT_BROWSER_OS, const COOKIE_NAME, const COOKIE_CONTROL_CHARACTER, const JSON_START, class SessionStateError, class RedditSessionCookie, class RedditSessionState, def cookie_applies, def cookie_path, def normalize_reddit_origin, def normalize_cookies, def cookie_header_entries, def expiration, def raw_export_expiration, def raw_export_domain, def raw_boolean, def bool_or_none, def normalize_same_site, def finite_number, def parse_json, def string_or_none
+- `vendor/rdvwr/rdvwr/transport.py`: added const IMPERSONATE, const COOKIE_DOMAIN, const ORIGIN, const OAUTH, const GQL_FED, class Transport
+- `vendor/rdvwr/tests/conftest.py`: new file, no top-level declarations
+- `vendor/rdvwr/tests/fixtures/community-search.html`: new file
+- `vendor/rdvwr/tests/fixtures/home-feed.html`: new file
+- `vendor/rdvwr/tests/fixtures/post-flairs.json`: new file
+- `vendor/rdvwr/tests/fixtures/post-submit.html`: new file
+- `vendor/rdvwr/tests/fixtures/post.html`: new file
+- `vendor/rdvwr/tests/fixtures/search-typeahead.html`: new file
+- `vendor/rdvwr/tests/fixtures/subreddit-feed.html`: new file
+- `vendor/rdvwr/tests/test_core.py`: added def token, class Answer, class FakeTransport, def run, def test_jwt_exp_reads_the_token_expiry, def test_whoami_is_none_when_reddit_says_401, def test_whoami_returns_the_account, def test_access_token_mints_a_fresh_token_v2_from_the_home_page, def test_a_still_valid_token_v2_is_used_without_a_request, def test_no_token_v2_means_the_session_is_dead, def test_reads_retry_once_with_a_fresh_token_after_a_401, def test_reads_say_rate_limited, def test_an_action_reddit_refuses_raises_refused, def test_the_transport_is_one_pinned_curl_cffi_session_that_follows_no_redirects, def test_the_transport_reports_cookies_reddit_rotated
+- `vendor/rdvwr/tests/test_shreddit.py`: added const FIXTURES, const HOME_URL, const SUBREDDIT_URL, const SUBREDDIT_MORE_URL, const POST_URL, const MORE_URL, const SEARCH_URL, const SEARCH_MORE_URL, const SUGGEST_URL, const PARTIAL, const PARTIAL_OR_HTML, const REFERER, def fixture, class FakeTransport, class FakeSession, def client, def run, def test_home_feed_parses_posts_and_the_opaque_next_page_url, def test_home_feed_requests_the_partial_endpoint, def test_home_feed_builds_the_recorded_cursor_query, def test_home_feed_follows_only_same_origin_home_feed_page_urls, def test_home_feed_reports_http_errors_without_parsing_the_body, def test_popular_feed_requests_its_partial, def test_subreddit_feed_parses_posts_and_the_observed_continuation, def test_subreddit_feed_maps_every_sort_to_its_route, def test_subreddit_feed_follows_its_continuation_with_the_partial_accept, def test_subreddit_feed_builds_a_continuation_from_a_bare_cursor, def test_subreddit_feed_validates_names_top_windows_and_cursor_ownership, def test_post_parses_the_post_flat_comments_and_both_cursor_kinds, def test_post_requests_post_pages_and_comment_pages, def test_more_comments_sends_the_recorded_query_and_cursor_body, def test_post_accepts_post_ids, def test_post_reports_http_errors_and_changed_post_contracts, def test_comments_parse_standalone_fragments, def test_flairs_discovers_ids_and_display_text, def test_flairs_report_request_and_json_contract_errors, def test_search_parses_rich_community_results_and_their_continuation, def test_typeahead_parses_query_and_community_suggestions, def test_search_follows_community_continuations, def test_search_posts_requests_the_posts_tab, def test_typeahead_requests_suggestions, def test_search_rejects_empty_queries_and_reports_http_errors
+- `vendor/rdvwr/tests/test_state.py`: added const FUTURE_S, const PAST_S, def names, def test_cookie_header_imports_name_value_pairs, def test_name_value_map_imports, def test_chrome_playwright_export_imports_and_filters_expired, def test_firefox_raw_export_imports, def test_snapshot_round_trips_through_json, def test_snapshot_detected_from_json_object_with_cookies_key, def test_unsupported_version_is_refused, def test_invalid_cookie_name_is_refused, def test_control_character_in_value_is_refused, def test_to_json_requires_a_username, def test_origin_with_credentials_is_refused, def test_cookie_header_round_trips, def test_from_state_builds_a_client_with_the_restored_cookies, def test_export_session_snapshots_the_live_cookies, def test_authenticated_cookie_constant_is_reddit_session, def test_cookie_header_keeps_equals_signs_in_values, def test_browser_export_json_string_normalizes_like_the_reference, def test_firefox_export_with_zero_expiry_is_a_session_cookie, def test_snapshot_to_json_round_trips_exactly, def test_options_override_snapshot_metadata, def test_invalid_state_is_refused, def test_from_state_restores_domain_and_path_and_skips_other_hosts, def test_export_keeps_cookie_attributes_and_snapshot_metadata, def test_restored_cookies_are_not_reported_as_refreshed, class Closes, def test_resume_without_the_authentication_cookie_refuses_and_closes, def test_resume_refuses_and_closes_when_reddit_names_no_account, def test_resume_verifies_and_takes_the_account_name
+
+What changed: vendor/rdvwr, the Reddit client, is in the repo, with its session state finished. `RedditSessionState` (state.py, ported from reversechud's session-state.ts) reads a Cookie header, a name/value map, a Chrome/Playwright export, a Firefox Cookie Quick Manager export or its own versioned snapshot, drops expired cookies and refuses bad names, values, origins and versions (`SessionStateError`). `RedditClient.from_state` restores each cookie into the one curl_cffi session with its domain, path, expiry and secure flag, and skips cookies for other hosts (`Transport.restore`, `cookie_applies`); restored cookies don't count as refreshed. `RedditClient.resume` refuses a session without `reddit_session`, asks /api/me.json, takes the account name from Reddit's answer, and closes the client on any failure (`NotLoggedIn`). `export_session` keeps every cookie's attributes and the snapshot's origin, browser and os (`Transport.cookie_records`). capsolver.py was left out: it imported a missing `rdvwr.captcha` and opened a second unpinned AsyncSession, which check:rdvwrTransport refuses. Login, captcha and challenge are not ported.
+Why: matt asked to continue the Reddit client integration from where it stood and finish the session-state port into the Python client, keeping one HTTP session.
+Checked: `C:\Python312\python.exe -m pytest vendor/rdvwr/tests -q`: 72 passed (29 in test_state.py). `python/checks/rdvwrTransport.py --check`: ok. check:noComments clean. The engine wiring, check scripts and README rebuild stay uncommitted in the working tree; full `bun run check` not run.
+
+## 2026-10-25 15:26Z · feat/redditPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `lefthook.yml`: edited
+- `package.json`: edited
+- `python/checks/rdvwrTransport.py`: added const ROOT, const PACKAGE, const TRANSPORT, const FORBIDDEN, const SESSION_NAMES, def forbidden, def problems_in, def tracked, def main
+- `python/redditApi/engine.py`: added const VENDOR · changed const LIBRARY, def ping
+- `scripts/checks/checkRdvwrTransport.ts`: added const root, function python, const mode, const run
+- `src/browser/flow/definitions/groupMembers.json`: new file
+- `src/cli/reddit/index.ts`: changed const REDDIT_SESSION_USAGE, function render, const redditSessionCommand
+- `src/cli/reddit/reddit.test.ts`: added test "the engine runs on vendor/rdvwr and refuses an action it doesn't have, sending nothing" · removed test "the generated engine answers engineNotBuilt until its client is wired in"
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES
+
+What changed: `log reddit session check` runs on vendor/rdvwr. The Reddit engine's `ping` (python/redditApi/engine.py) opens a `RedditClient` on the account's cookies (and its proxy, if the row has one), reads /api/me.json, and answers loggedIn with the screen name, id, karma and inbox count, sessionDead on a 401 or no account, forbidden on 403, rateLimited on 429 and accountRestricted when Reddit marks it suspended; cookies Reddit rotated go back as refreshedCookies. DIRECT_ROUTES names rdvwr as the library, and the command's usage and messages say vendor/rdvwr instead of "no client vendored yet"; README.md and docs/diagrams/commands.mmd are rebuilt from that and from the groupMembers flow. New gate `check:rdvwrTransport` (python/checks/rdvwrTransport.py by syntax tree, run by scripts/checks/checkRdvwrTransport.ts, in lefthook pre-commit and pre-push and in `bun run check`): vendor/rdvwr makes exactly one curl_cffi AsyncSession, in transport.py, pinned to IMPERSONATE with allow_redirects=False, and imports no other HTTP library. The engine test now runs the real engine on vendor/rdvwr and checks it refuses an action it doesn't have. src/browser/flow/definitions/groupMembers.json is the recorded flow that opens a group's People tab and scrolls it read-only (its doc, docs/platforms/facebook/flows/groupMembers.md, was already in).
+Why: matt: "commit alll of the stuff now dont leave fiels uncommited". This is the wiring the rdvwr vendoring commit left in the working tree, and the groupMembers flow that was sitting untracked.
+Checked: `bun run check` with LOG_PYTHON=C:\Python312\python.exe: every gate ok, 1080 pass, 0 fail. Live: `log reddit session check --account Maleficent-Try-8338`: loggedIn, HTTP 200, sessionState written to Twenty, refreshed cookies merged. `RedditClient.resume` on that account's 7 real cookies: verified, restored with their domains, export round-trips. A live client's session is curl_cffi.requests.AsyncSession, impersonate chrome131, allow_redirects False. Without LOG_PYTHON the engine test uses the msys python, which lacks curl_cffi.

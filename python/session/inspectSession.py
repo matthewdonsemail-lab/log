@@ -86,18 +86,33 @@ def endpoint_name(url: str) -> str:
     return "".join(w.lower() if i == 0 else w[0].upper() + w[1:].lower() for i, w in enumerate(words)) or "root"
 
 
-def notable(entries: list[dict[str, Any]]) -> list[str]:
+def operation_of(body: str) -> str | None:
+    try:
+        sent = json.loads(body)
+    except Exception:
+        return None
+    if isinstance(sent, dict):
+        for key in ("operationName", "operation"):
+            if isinstance(sent.get(key), str) and sent[key]:
+                return sent[key]
+    return None
+
+
+def notable(entries: list[dict[str, Any]], hosts: tuple[str, ...] = ("facebook.com",)) -> list[str]:
     lines = []
     for e in entries:
         url = e["request"]["url"]
         host = url.split("/")[2] if "//" in url else ""
-        if not (host == "facebook.com" or host.endswith(".facebook.com")):
+        own = next((h for h in hosts if host == h or host.endswith("." + h)), None)
+        if not own:
             continue
         if "/static_resources/" in url or "rsrc.php" in url:
             continue
-        path = url.split("?", 1)[0].split("facebook.com", 1)[-1]
+        path = "/" + url.split("?", 1)[0].split("//", 1)[-1].split("/", 1)[-1]
         body = e["request"].get("postData", {}).get("text", "") or ""
-        name = re.search(r"(?:^|&)fb_api_req_friendly_name=([^&]+)", body)
+        friendly = re.search(r"(?:^|&)fb_api_req_friendly_name=([^&]+)", body)
+        operation = operation_of(body)
+        name = friendly or (re.match(r"(.+)", operation) if operation else None)
         status = e["response"]["status"]
         redirect = e["response"].get("redirectURL")
         if e["request"]["method"] == "GET" and not redirect and "html" not in e["response"]["content"].get("mimeType", ""):
@@ -328,7 +343,7 @@ class Inspector:
             title = await self.page.title()
         except Exception:
             title = ""
-        seen = notable(entries)
+        seen = notable(entries, tuple((self.config.get("site") or {}).get("hosts") or ("facebook.com",)))
         log(f"  now on {url} \"{title}\" after {round((time.monotonic() - started) * 1000)} ms; {len(entries)} request(s)")
         for line in seen[:15]:
             log(f"    {line}")

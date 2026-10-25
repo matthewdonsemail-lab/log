@@ -10205,18 +10205,17 @@ export interface KnowledgeEntryGroupByConnection {
     __typename: 'KnowledgeEntryGroupByConnection'
 }
 
-export type SocialAccountPlatformEnum = 'YOUTUBE' | 'TIKTOK' | 'INSTAGRAM' | 'LINKEDIN' | 'TWITTER' | 'FACEBOOK' | 'UPWORK'
-
 
 /** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
 export type SocialAccountAccountStatusEnum = 'ACTIVE' | 'WARMING' | 'LIMITED' | 'PAUSED' | 'NEEDS_LOGIN' | 'CHECKPOINT' | 'RESTRICTED' | 'BANNED' | 'DEAD' | 'DEACTIVATED'
+
+export type SocialAccountPlatformEnum = 'YOUTUBE' | 'TIKTOK' | 'INSTAGRAM' | 'LINKEDIN' | 'TWITTER' | 'FACEBOOK' | 'UPWORK' | 'REDDIT'
 
 
 /** Social media accounts */
 export interface SocialAccount {
     password?: Scalars['String']
     phoneNumber?: Scalars['String']
-    platform?: SocialAccountPlatformEnum
     email?: Scalars['String']
     emailPassword?: Scalars['String']
     linkedTo?: Scalars['String']
@@ -10316,6 +10315,7 @@ export interface SocialAccount {
     sessionState?: Scalars['String']
     /** log-cli: when sessionState was last read from Facebook by the direct-API engine */
     sessionCheckedAt?: Scalars['DateTime']
+    platform?: SocialAccountPlatformEnum
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: TimelineActivityConnection
     /** SocialAccounts tied to the Task Target */
@@ -10368,16 +10368,6 @@ export interface SocialAccountConnection {
     percentageEmptyPhoneNumber?: Scalars['Float']
     /** Percentage of non-empty values for phoneNumber */
     percentageNotEmptyPhoneNumber?: Scalars['Float']
-    /** Number of unique values for platform */
-    countUniqueValuesPlatform?: Scalars['Int']
-    /** Number of empty values for platform */
-    countEmptyPlatform?: Scalars['Int']
-    /** Number of non-empty values for platform */
-    countNotEmptyPlatform?: Scalars['Int']
-    /** Percentage of empty values for platform */
-    percentageEmptyPlatform?: Scalars['Float']
-    /** Percentage of non-empty values for platform */
-    percentageNotEmptyPlatform?: Scalars['Float']
     /** Number of unique values for email */
     countUniqueValuesEmail?: Scalars['Int']
     /** Number of empty values for email */
@@ -10974,6 +10964,16 @@ export interface SocialAccountConnection {
     minSessionCheckedAt?: Scalars['DateTime']
     /** Latest date contained in the field sessionCheckedAt */
     maxSessionCheckedAt?: Scalars['DateTime']
+    /** Number of unique values for platform */
+    countUniqueValuesPlatform?: Scalars['Int']
+    /** Number of empty values for platform */
+    countEmptyPlatform?: Scalars['Int']
+    /** Number of non-empty values for platform */
+    countNotEmptyPlatform?: Scalars['Int']
+    /** Percentage of empty values for platform */
+    percentageEmptyPlatform?: Scalars['Float']
+    /** Percentage of non-empty values for platform */
+    percentageNotEmptyPlatform?: Scalars['Float']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     __typename: 'SocialAccountConnection'
@@ -11004,16 +11004,6 @@ export interface SocialAccountGroupByConnection {
     percentageEmptyPhoneNumber?: Scalars['Float']
     /** Percentage of non-empty values for phoneNumber */
     percentageNotEmptyPhoneNumber?: Scalars['Float']
-    /** Number of unique values for platform */
-    countUniqueValuesPlatform?: Scalars['Int']
-    /** Number of empty values for platform */
-    countEmptyPlatform?: Scalars['Int']
-    /** Number of non-empty values for platform */
-    countNotEmptyPlatform?: Scalars['Int']
-    /** Percentage of empty values for platform */
-    percentageEmptyPlatform?: Scalars['Float']
-    /** Percentage of non-empty values for platform */
-    percentageNotEmptyPlatform?: Scalars['Float']
     /** Number of unique values for email */
     countUniqueValuesEmail?: Scalars['Int']
     /** Number of empty values for email */
@@ -11610,6 +11600,16 @@ export interface SocialAccountGroupByConnection {
     minSessionCheckedAt?: Scalars['DateTime']
     /** Latest date contained in the field sessionCheckedAt */
     maxSessionCheckedAt?: Scalars['DateTime']
+    /** Number of unique values for platform */
+    countUniqueValuesPlatform?: Scalars['Int']
+    /** Number of empty values for platform */
+    countEmptyPlatform?: Scalars['Int']
+    /** Number of non-empty values for platform */
+    countNotEmptyPlatform?: Scalars['Int']
+    /** Percentage of empty values for platform */
+    percentageEmptyPlatform?: Scalars['Float']
+    /** Percentage of non-empty values for platform */
+    percentageNotEmptyPlatform?: Scalars['Float']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -65313,7 +65313,6 @@ source?: (Scalars['Boolean'] | null)}
 export interface SocialAccountGenqlSelection{
     password?: boolean | number
     phoneNumber?: boolean | number
-    platform?: boolean | number
     email?: boolean | number
     emailPassword?: boolean | number
     linkedTo?: boolean | number
@@ -65413,6 +65412,7 @@ export interface SocialAccountGenqlSelection{
     sessionState?: boolean | number
     /** log-cli: when sessionState was last read from Facebook by the direct-API engine */
     sessionCheckedAt?: boolean | number
+    platform?: boolean | number
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
     /** SocialAccounts tied to the Task Target */
@@ -65467,16 +65467,6 @@ export interface SocialAccountConnectionGenqlSelection{
     percentageEmptyPhoneNumber?: boolean | number
     /** Percentage of non-empty values for phoneNumber */
     percentageNotEmptyPhoneNumber?: boolean | number
-    /** Number of unique values for platform */
-    countUniqueValuesPlatform?: boolean | number
-    /** Number of empty values for platform */
-    countEmptyPlatform?: boolean | number
-    /** Number of non-empty values for platform */
-    countNotEmptyPlatform?: boolean | number
-    /** Percentage of empty values for platform */
-    percentageEmptyPlatform?: boolean | number
-    /** Percentage of non-empty values for platform */
-    percentageNotEmptyPlatform?: boolean | number
     /** Number of unique values for email */
     countUniqueValuesEmail?: boolean | number
     /** Number of empty values for email */
@@ -66073,6 +66063,16 @@ export interface SocialAccountConnectionGenqlSelection{
     minSessionCheckedAt?: boolean | number
     /** Latest date contained in the field sessionCheckedAt */
     maxSessionCheckedAt?: boolean | number
+    /** Number of unique values for platform */
+    countUniqueValuesPlatform?: boolean | number
+    /** Number of empty values for platform */
+    countEmptyPlatform?: boolean | number
+    /** Number of non-empty values for platform */
+    countNotEmptyPlatform?: boolean | number
+    /** Percentage of empty values for platform */
+    percentageEmptyPlatform?: boolean | number
+    /** Percentage of non-empty values for platform */
+    percentageNotEmptyPlatform?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -66104,16 +66104,6 @@ export interface SocialAccountGroupByConnectionGenqlSelection{
     percentageEmptyPhoneNumber?: boolean | number
     /** Percentage of non-empty values for phoneNumber */
     percentageNotEmptyPhoneNumber?: boolean | number
-    /** Number of unique values for platform */
-    countUniqueValuesPlatform?: boolean | number
-    /** Number of empty values for platform */
-    countEmptyPlatform?: boolean | number
-    /** Number of non-empty values for platform */
-    countNotEmptyPlatform?: boolean | number
-    /** Percentage of empty values for platform */
-    percentageEmptyPlatform?: boolean | number
-    /** Percentage of non-empty values for platform */
-    percentageNotEmptyPlatform?: boolean | number
     /** Number of unique values for email */
     countUniqueValuesEmail?: boolean | number
     /** Number of empty values for email */
@@ -66710,6 +66700,16 @@ export interface SocialAccountGroupByConnectionGenqlSelection{
     minSessionCheckedAt?: boolean | number
     /** Latest date contained in the field sessionCheckedAt */
     maxSessionCheckedAt?: boolean | number
+    /** Number of unique values for platform */
+    countUniqueValuesPlatform?: boolean | number
+    /** Number of empty values for platform */
+    countEmptyPlatform?: boolean | number
+    /** Number of non-empty values for platform */
+    countNotEmptyPlatform?: boolean | number
+    /** Percentage of empty values for platform */
+    percentageEmptyPlatform?: boolean | number
+    /** Percentage of non-empty values for platform */
+    percentageNotEmptyPlatform?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -66735,7 +66735,7 @@ id?: (Scalars['ID'] | null)}
 
 
 /** Social media accounts */
-export interface SocialAccountCreateInput {password?: (Scalars['String'] | null),phoneNumber?: (Scalars['String'] | null),platform?: (SocialAccountPlatformEnum | null),email?: (Scalars['String'] | null),emailPassword?: (Scalars['String'] | null),linkedTo?: (Scalars['String'] | null),
+export interface SocialAccountCreateInput {password?: (Scalars['String'] | null),phoneNumber?: (Scalars['String'] | null),email?: (Scalars['String'] | null),emailPassword?: (Scalars['String'] | null),linkedTo?: (Scalars['String'] | null),
 /** Twitter/X session cookie dict for twikit auth */
 cookies?: (Scalars['JSON'] | null),
 /** Proxy URL pinned to this social account (e.g. http://user:pass@host:port) */
@@ -66829,11 +66829,11 @@ accountStatus?: (SocialAccountAccountStatusEnum | null),
 /** log-cli: the login state Facebook's own page gave the saved session on the last direct-API call (fbk's bootstrap: loggedIn, loggedOut, checkpoint, unknown, accountWarning). accountStatus stays the browser lifecycle */
 sessionState?: (Scalars['String'] | null),
 /** log-cli: when sessionState was last read from Facebook by the direct-API engine */
-sessionCheckedAt?: (Scalars['DateTime'] | null)}
+sessionCheckedAt?: (Scalars['DateTime'] | null),platform?: (SocialAccountPlatformEnum | null)}
 
 
 /** Social media accounts */
-export interface SocialAccountUpdateInput {password?: (Scalars['String'] | null),phoneNumber?: (Scalars['String'] | null),platform?: (SocialAccountPlatformEnum | null),email?: (Scalars['String'] | null),emailPassword?: (Scalars['String'] | null),linkedTo?: (Scalars['String'] | null),
+export interface SocialAccountUpdateInput {password?: (Scalars['String'] | null),phoneNumber?: (Scalars['String'] | null),email?: (Scalars['String'] | null),emailPassword?: (Scalars['String'] | null),linkedTo?: (Scalars['String'] | null),
 /** Twitter/X session cookie dict for twikit auth */
 cookies?: (Scalars['JSON'] | null),
 /** Proxy URL pinned to this social account (e.g. http://user:pass@host:port) */
@@ -66927,11 +66927,11 @@ accountStatus?: (SocialAccountAccountStatusEnum | null),
 /** log-cli: the login state Facebook's own page gave the saved session on the last direct-API call (fbk's bootstrap: loggedIn, loggedOut, checkpoint, unknown, accountWarning). accountStatus stays the browser lifecycle */
 sessionState?: (Scalars['String'] | null),
 /** log-cli: when sessionState was last read from Facebook by the direct-API engine */
-sessionCheckedAt?: (Scalars['DateTime'] | null)}
+sessionCheckedAt?: (Scalars['DateTime'] | null),platform?: (SocialAccountPlatformEnum | null)}
 
 
 /** Social media accounts */
-export interface SocialAccountFilterInput {password?: (StringFilter | null),phoneNumber?: (StringFilter | null),platform?: (SocialAccountPlatformEnumFilter | null),email?: (StringFilter | null),emailPassword?: (StringFilter | null),linkedTo?: (StringFilter | null),
+export interface SocialAccountFilterInput {password?: (StringFilter | null),phoneNumber?: (StringFilter | null),email?: (StringFilter | null),emailPassword?: (StringFilter | null),linkedTo?: (StringFilter | null),
 /** Twitter/X session cookie dict for twikit auth */
 cookies?: (RawJsonFilter | null),
 /** Proxy URL pinned to this social account (e.g. http://user:pass@host:port) */
@@ -67025,15 +67025,15 @@ accountStatus?: (SocialAccountAccountStatusEnumFilter | null),
 /** log-cli: the login state Facebook's own page gave the saved session on the last direct-API call (fbk's bootstrap: loggedIn, loggedOut, checkpoint, unknown, accountWarning). accountStatus stays the browser lifecycle */
 sessionState?: (StringFilter | null),
 /** log-cli: when sessionState was last read from Facebook by the direct-API engine */
-sessionCheckedAt?: (DateTimeFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
-
-export interface SocialAccountPlatformEnumFilter {eq?: (SocialAccountPlatformEnum | null),neq?: (SocialAccountPlatformEnum | null),in?: ((SocialAccountPlatformEnum | null)[] | null),containsAny?: ((SocialAccountPlatformEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (SocialAccountPlatformEnum | null),gte?: (SocialAccountPlatformEnum | null),lt?: (SocialAccountPlatformEnum | null),lte?: (SocialAccountPlatformEnum | null)}
+sessionCheckedAt?: (DateTimeFilter | null),platform?: (SocialAccountPlatformEnumFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
 
 export interface SocialAccountAccountStatusEnumFilter {eq?: (SocialAccountAccountStatusEnum | null),neq?: (SocialAccountAccountStatusEnum | null),in?: ((SocialAccountAccountStatusEnum | null)[] | null),containsAny?: ((SocialAccountAccountStatusEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (SocialAccountAccountStatusEnum | null),gte?: (SocialAccountAccountStatusEnum | null),lt?: (SocialAccountAccountStatusEnum | null),lte?: (SocialAccountAccountStatusEnum | null)}
 
+export interface SocialAccountPlatformEnumFilter {eq?: (SocialAccountPlatformEnum | null),neq?: (SocialAccountPlatformEnum | null),in?: ((SocialAccountPlatformEnum | null)[] | null),containsAny?: ((SocialAccountPlatformEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (SocialAccountPlatformEnum | null),gte?: (SocialAccountPlatformEnum | null),lt?: (SocialAccountPlatformEnum | null),lte?: (SocialAccountPlatformEnum | null)}
+
 
 /** Social media accounts */
-export interface SocialAccountOrderByInput {password?: (OrderByDirection | null),phoneNumber?: (OrderByDirection | null),platform?: (OrderByDirection | null),email?: (OrderByDirection | null),emailPassword?: (OrderByDirection | null),linkedTo?: (OrderByDirection | null),
+export interface SocialAccountOrderByInput {password?: (OrderByDirection | null),phoneNumber?: (OrderByDirection | null),email?: (OrderByDirection | null),emailPassword?: (OrderByDirection | null),linkedTo?: (OrderByDirection | null),
 /** Twitter/X session cookie dict for twikit auth */
 cookies?: (OrderByDirection | null),
 /** Proxy URL pinned to this social account (e.g. http://user:pass@host:port) */
@@ -67127,13 +67127,13 @@ accountStatus?: (OrderByDirection | null),
 /** log-cli: the login state Facebook's own page gave the saved session on the last direct-API call (fbk's bootstrap: loggedIn, loggedOut, checkpoint, unknown, accountWarning). accountStatus stays the browser lifecycle */
 sessionState?: (OrderByDirection | null),
 /** log-cli: when sessionState was last read from Facebook by the direct-API engine */
-sessionCheckedAt?: (OrderByDirection | null)}
+sessionCheckedAt?: (OrderByDirection | null),platform?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
 export interface SocialAccountOrderByWithGroupByInput {
 /** Order by aggregate values */
-aggregate?: (SocialAccountOrderByWithGroupByAggregateInput | null),password?: (OrderByDirection | null),phoneNumber?: (OrderByDirection | null),platform?: (OrderByDirection | null),email?: (OrderByDirection | null),emailPassword?: (OrderByDirection | null),linkedTo?: (OrderByDirection | null),
+aggregate?: (SocialAccountOrderByWithGroupByAggregateInput | null),password?: (OrderByDirection | null),phoneNumber?: (OrderByDirection | null),email?: (OrderByDirection | null),emailPassword?: (OrderByDirection | null),linkedTo?: (OrderByDirection | null),
 /** Twitter/X session cookie dict for twikit auth */
 cookies?: (OrderByDirection | null),
 /** Proxy URL pinned to this social account (e.g. http://user:pass@host:port) */
@@ -67227,7 +67227,7 @@ accountStatus?: (OrderByDirection | null),
 /** log-cli: the login state Facebook's own page gave the saved session on the last direct-API call (fbk's bootstrap: loggedIn, loggedOut, checkpoint, unknown, accountWarning). accountStatus stays the browser lifecycle */
 sessionState?: (OrderByDirection | null),
 /** log-cli: when sessionState was last read from Facebook by the direct-API engine */
-sessionCheckedAt?: (OrderByDateGranularityInput | null)}
+sessionCheckedAt?: (OrderByDateGranularityInput | null),platform?: (OrderByDirection | null)}
 
 
 /** Aggregate-based ordering */
@@ -67254,16 +67254,6 @@ countNotEmptyPhoneNumber?: (OrderByDirection | null),
 percentageEmptyPhoneNumber?: (OrderByDirection | null),
 /** Percentage of non-empty values for phoneNumber */
 percentageNotEmptyPhoneNumber?: (OrderByDirection | null),
-/** Number of unique values for platform */
-countUniqueValuesPlatform?: (OrderByDirection | null),
-/** Number of empty values for platform */
-countEmptyPlatform?: (OrderByDirection | null),
-/** Number of non-empty values for platform */
-countNotEmptyPlatform?: (OrderByDirection | null),
-/** Percentage of empty values for platform */
-percentageEmptyPlatform?: (OrderByDirection | null),
-/** Percentage of non-empty values for platform */
-percentageNotEmptyPlatform?: (OrderByDirection | null),
 /** Number of unique values for email */
 countUniqueValuesEmail?: (OrderByDirection | null),
 /** Number of empty values for email */
@@ -67859,11 +67849,21 @@ percentageNotEmptySessionCheckedAt?: (OrderByDirection | null),
 /** Earliest date contained in the field sessionCheckedAt */
 minSessionCheckedAt?: (OrderByDirection | null),
 /** Latest date contained in the field sessionCheckedAt */
-maxSessionCheckedAt?: (OrderByDirection | null)}
+maxSessionCheckedAt?: (OrderByDirection | null),
+/** Number of unique values for platform */
+countUniqueValuesPlatform?: (OrderByDirection | null),
+/** Number of empty values for platform */
+countEmptyPlatform?: (OrderByDirection | null),
+/** Number of non-empty values for platform */
+countNotEmptyPlatform?: (OrderByDirection | null),
+/** Percentage of empty values for platform */
+percentageEmptyPlatform?: (OrderByDirection | null),
+/** Percentage of non-empty values for platform */
+percentageNotEmptyPlatform?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
-export interface SocialAccountGroupByInput {password?: (Scalars['Boolean'] | null),phoneNumber?: (Scalars['Boolean'] | null),platform?: (Scalars['Boolean'] | null),email?: (Scalars['Boolean'] | null),emailPassword?: (Scalars['Boolean'] | null),linkedTo?: (Scalars['Boolean'] | null),
+export interface SocialAccountGroupByInput {password?: (Scalars['Boolean'] | null),phoneNumber?: (Scalars['Boolean'] | null),email?: (Scalars['Boolean'] | null),emailPassword?: (Scalars['Boolean'] | null),linkedTo?: (Scalars['Boolean'] | null),
 /** Proxy URL pinned to this social account (e.g. http://user:pass@host:port) */
 proxy?: (Scalars['Boolean'] | null),
 /** Name */
@@ -67939,7 +67939,7 @@ accountStatus?: (Scalars['Boolean'] | null),
 /** log-cli: the login state Facebook's own page gave the saved session on the last direct-API call (fbk's bootstrap: loggedIn, loggedOut, checkpoint, unknown, accountWarning). accountStatus stays the browser lifecycle */
 sessionState?: (Scalars['Boolean'] | null),
 /** log-cli: when sessionState was last read from Facebook by the direct-API engine */
-sessionCheckedAt?: (GroupByDateGranularityInput | null)}
+sessionCheckedAt?: (GroupByDateGranularityInput | null),platform?: (Scalars['Boolean'] | null)}
 
 
 /** Calendar events */
@@ -135398,16 +135398,6 @@ export const enumKnowledgeEntryCategoryEnum = {
    FAQ: 'FAQ' as const
 }
 
-export const enumSocialAccountPlatformEnum = {
-   YOUTUBE: 'YOUTUBE' as const,
-   TIKTOK: 'TIKTOK' as const,
-   INSTAGRAM: 'INSTAGRAM' as const,
-   LINKEDIN: 'LINKEDIN' as const,
-   TWITTER: 'TWITTER' as const,
-   FACEBOOK: 'FACEBOOK' as const,
-   UPWORK: 'UPWORK' as const
-}
-
 export const enumSocialAccountAccountStatusEnum = {
    ACTIVE: 'ACTIVE' as const,
    WARMING: 'WARMING' as const,
@@ -135419,6 +135409,17 @@ export const enumSocialAccountAccountStatusEnum = {
    BANNED: 'BANNED' as const,
    DEAD: 'DEAD' as const,
    DEACTIVATED: 'DEACTIVATED' as const
+}
+
+export const enumSocialAccountPlatformEnum = {
+   YOUTUBE: 'YOUTUBE' as const,
+   TIKTOK: 'TIKTOK' as const,
+   INSTAGRAM: 'INSTAGRAM' as const,
+   LINKEDIN: 'LINKEDIN' as const,
+   TWITTER: 'TWITTER' as const,
+   FACEBOOK: 'FACEBOOK' as const,
+   UPWORK: 'UPWORK' as const,
+   REDDIT: 'REDDIT' as const
 }
 
 export const enumCalendarEventParticipantResponseStatusEnum = {

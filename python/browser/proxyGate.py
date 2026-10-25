@@ -96,6 +96,10 @@ def load_proxy(path: str | None) -> dict[str, Any] | None:
         proxy = json.loads(Path(path).read_text(encoding="utf8"))
     except Exception as exc:
         raise GateError("proxyMalformed", f"{path}: {exc}") from None
+    if isinstance(proxy, dict) and proxy.get("direct") is True:
+        if str(proxy.get("platform") or "facebook") == "facebook":
+            raise GateError("noProxy", f"{path}: a Facebook account never opens without its proxy (rule 12)")
+        return proxy
     if not isinstance(proxy, dict) or not proxy.get("server") or len(str(proxy.get("country") or "")) != 2:
         raise GateError("proxyMalformed", f"{path}: needs server and a 2-letter country")
     username = str(proxy.get("username") or "")
@@ -133,7 +137,7 @@ def loaded_proxy() -> dict[str, Any] | None:
 
 def twocaptcha_proxy() -> dict[str, str] | None:
     proxy = _armed["proxy"]
-    if not proxy:
+    if not proxy or proxy.get("direct"):
         return None
     scheme, _, hostport = str(proxy["server"]).partition("://")
     if not hostport:
@@ -160,7 +164,7 @@ def exit_location(proxy: dict[str, Any]) -> dict[str, Any]:
     from camoufox.ip import public_ip
 
     try:
-        ip = public_ip(proxy_url(proxy))
+        ip = public_ip(None if proxy.get("direct") else proxy_url(proxy))
     except InvalidIP as exc:
         if "407" in str(exc):
             raise GateError("proxyAuthFailed", "the proxy answered 407: check username and password") from None
@@ -178,6 +182,12 @@ def check(proxy_path: str | None) -> dict[str, Any]:
     proxy = load_proxy(proxy_path)
     if proxy is None:
         raise GateError("noProxy", f"no proxy file at {proxy_path}")
+    if proxy.get("direct"):
+        where = exit_location(proxy)
+        if not where["timezone"]:
+            raise GateError("proxyCountryMismatch", f"this machine's exit {where['ip']} has no known timezone")
+        return {"ok": True, "direct": True, "exitIp": where["ip"], "exitCountry": where["country"], "country": where["country"], "timezone": where["timezone"],
+                "latitude": where["latitude"], "longitude": where["longitude"], "facebookMs": None}
     where = exit_location(proxy)
     ip, country, timezone = where["ip"], where["country"], where["timezone"]
     want = str(proxy["country"]).upper()
@@ -292,7 +302,10 @@ def gate_attached() -> dict[str, Any]:
         "languages": list(run["languages"]),
         "facebookLocale": run.get("facebookLocale"),
     })
-    log(f"Gate passed: exit {exit_['exitIp']} in {exit_['country']} ({exit_['timezone']}), proxy to Facebook {exit_.get('facebookMs')} ms")
+    if exit_.get("direct"):
+        log(f"Gate passed with no proxy ({proxy.get('platform')} runs direct): this machine's exit {exit_['exitIp']} in {exit_['country']} ({exit_['timezone']})")
+    else:
+        log(f"Gate passed: exit {exit_['exitIp']} in {exit_['country']} ({exit_['timezone']}), proxy to Facebook {exit_.get('facebookMs')} ms")
     return {"proxy": proxy, **exit_}
 
 
@@ -320,7 +333,7 @@ def exit_checked(ip: str, locate: Any = None) -> str | None:
         where = (locate or locate_ip)(ip)
     except Exception:
         where = {"country": "", "timezone": ""}
-    if where.get("country") != _armed["country"] or where.get("timezone") != _armed["timezone"]:
+    if where.get("country") != _armed["country"] or not same_zone(where.get("timezone"), _armed["timezone"]):
         return f"the browser exits at {ip} in {where.get('country') or 'an unknown country'} ({where.get('timezone') or 'no timezone'}), the gate checked {_armed['exitIp']} in {_armed['country']} ({_armed['timezone']})"
     log(f"The browser exits at {ip}, not the gate's {_armed['exitIp']}: checked it, {where['country']} on {where['timezone']}, the same as the account's")
     _armed["exitIp"] = ip
@@ -380,12 +393,32 @@ def expected() -> dict[str, Any]:
     return {"timezone": _armed["timezone"], "locale": _armed["locale"], "languages": _armed["languages"], "exitIp": _armed["exitIp"]}
 
 
+def same_zone(a: str | None, b: str | None) -> bool:
+    if not a or not b:
+        return False
+    if a == b:
+        return True
+    from datetime import datetime, timezone
+    from zoneinfo import ZoneInfo
+
+    try:
+        left, right = ZoneInfo(a), ZoneInfo(b)
+    except Exception:
+        return False
+    year = datetime.now(timezone.utc).year
+    for month in range(1, 13):
+        moment = datetime(year, month, 15, 12, tzinfo=timezone.utc)
+        if moment.astimezone(left).utcoffset() != moment.astimezone(right).utcoffset():
+            return False
+    return True
+
+
 def compare(observed: dict[str, Any], want: dict[str, Any]) -> tuple[str, str] | None:
     for realm in ("page", "worker"):
         values = observed.get(realm) or {}
         if values.get("error") or not values:
             return "selfCheckFailed", f"{realm}: {values.get('error') or 'no answer'}"
-        if values.get("timeZone") != want["timezone"]:
+        if not same_zone(values.get("timeZone"), want["timezone"]):
             return "browserTimezoneMismatch", f"the {realm} is on {values.get('timeZone')}, the exit IP is on {want['timezone']}"
     if (observed["page"].get("offset") != observed["worker"].get("offset")):
         return "browserTimezoneMismatch", f"page offset {observed['page'].get('offset')} != worker {observed['worker'].get('offset')}"

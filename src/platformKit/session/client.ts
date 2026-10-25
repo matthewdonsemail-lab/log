@@ -13,7 +13,8 @@ export type PlatformAccount = FacebookAccount
 
 export async function findPlatformAccount(twenty: TwentyClient, shape: PlatformShape, ref: string): Promise<PlatformAccount> {
   const key = ref.trim().replace(/^@/, '')
-  const rows = (await twenty.list(SOCIAL_ACCOUNTS, { accountName: { eq: key } })).filter((r) => String(r.platform) === shape.twentyPlatform)
+  const named = (await twenty.list(SOCIAL_ACCOUNTS, { accountName: { eq: key } })).filter((r) => String(r.platform) === shape.twentyPlatform)
+  const rows = named.length ? named : (await twenty.list(SOCIAL_ACCOUNTS, { name: { eq: key } })).filter((r) => String(r.platform) === shape.twentyPlatform && !r.accountName?.trim())
   if (rows.length === 0) throw new TwentyError('accountNotFound', `no ${shape.twentyPlatform} socialAccount "${key}"`)
   if (rows.length > 1) throw new TwentyError('accountNotFound', `${rows.length} ${shape.twentyPlatform} socialAccounts are called "${key}"`)
   return toFacebookAccount(rows[0] as SocialAccountRow)

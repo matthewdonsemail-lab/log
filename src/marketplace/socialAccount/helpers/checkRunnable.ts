@@ -1,3 +1,4 @@
+import { isKnownPlatformAccount, platformOfAccount, PLATFORM_LABELS, siteOfAccount } from '../../../cli/runner/helpers/platforms'
 import { USABLE_STATUSES } from '../types'
 import type { FacebookAccount, RunPurpose, RunProxy, RunnableCheck } from '../types'
 
@@ -46,7 +47,16 @@ export function maskProxyUrl(raw: string | null): string {
 
 export function checkRunnable(account: FacebookAccount, purpose: RunPurpose): RunnableCheck {
   if (account.platform !== 'FACEBOOK') {
-    return { ok: false, code: 'accountNotFacebook', detail: `${account.accountName} is ${account.platform ?? 'no platform'}` }
+    if (!isKnownPlatformAccount(account)) return { ok: false, code: 'accountNotFacebook', detail: `${account.accountName} is ${account.platform ?? 'no platform'}` }
+    const site = siteOfAccount(account)
+    const label = PLATFORM_LABELS[platformOfAccount(account)]
+    if (!site.browser) return { ok: false, code: 'accountNotFacebook', detail: `${account.accountName} is on ${label}, which runs on the direct-API engine only: it has no browser path` }
+    if (site.proxy === 'none') {
+      if (purpose !== 'check' && account.status && !USABLE_STATUSES[purpose].includes(account.status)) {
+        return { ok: false, code: 'accountNotUsable', detail: `${account.accountName} is ${account.status}; ${purpose === 'connect' ? 'signing in' : 'a run'} needs ${USABLE_STATUSES[purpose].join(', ')}` }
+      }
+      return { ok: true, proxy: { server: '', direct: true, platform: platformOfAccount(account), country: account.homeCountry ?? '' } }
+    }
   }
   if (purpose !== 'check' && (!account.status || !USABLE_STATUSES[purpose].includes(account.status))) {
     return {

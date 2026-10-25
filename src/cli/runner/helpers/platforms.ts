@@ -12,13 +12,53 @@ export function commandWordOfKey(key: string, platform: string): string {
   return rest[0].toLowerCase() + rest.slice(1);
 }
 
-export const PLATFORMS = ["facebook", "twitter"] as const;
+export const PLATFORMS = ["facebook", "twitter", "reddit"] as const;
 export type Platform = (typeof PLATFORMS)[number];
 
 export const PLATFORM_LABELS: Readonly<Record<Platform, string>> = {
   facebook: "Facebook",
   twitter: "X",
+  reddit: "Reddit",
 };
+
+export interface PlatformSite {
+  twenty: string;
+  domain: string;
+  hosts: readonly string[];
+  home: string;
+  proxy: "required" | "none";
+  browser: boolean;
+}
+
+export const PLATFORM_SITES: Readonly<Record<Platform, PlatformSite>> = {
+  facebook: { twenty: "FACEBOOK", domain: ".facebook.com", hosts: ["facebook.com"], home: "https://www.facebook.com/marketplace/", proxy: "required", browser: true },
+  twitter: { twenty: "TWITTER", domain: ".x.com", hosts: ["x.com", "twitter.com"], home: "https://x.com/home", proxy: "none", browser: false },
+  reddit: { twenty: "REDDIT", domain: ".reddit.com", hosts: ["reddit.com", "redd.it", "redditmedia.com"], home: "https://www.reddit.com/", proxy: "none", browser: true },
+};
+
+export function platformOfAccount(account: { platform?: string | null }): Platform {
+  const twenty = String(account.platform ?? "FACEBOOK").toUpperCase();
+  return PLATFORMS.find((p) => PLATFORM_SITES[p].twenty === twenty) ?? PLATFORMS[0];
+}
+
+export function siteOfAccount(account: { platform?: string | null }): PlatformSite {
+  return PLATFORM_SITES[platformOfAccount(account)];
+}
+
+export function isKnownPlatformAccount(account: { platform?: string | null }): boolean {
+  const twenty = String(account.platform ?? "").toUpperCase();
+  return PLATFORMS.some((p) => PLATFORM_SITES[p].twenty === twenty);
+}
+
+export function hostOnPlatforms(url: string): boolean {
+  let host: string;
+  try {
+    host = new URL(url).hostname.toLowerCase();
+  } catch {
+    return false;
+  }
+  return new URL(url).protocol === "https:" && PLATFORMS.some((p) => PLATFORM_SITES[p].hosts.some((h) => host === h || host.endsWith(`.${h}`)));
+}
 
 export function platformLabel(command: Pick<Command, "platform">): string {
   return isPlatform(command.platform) ? PLATFORM_LABELS[command.platform] : PLATFORM_LABELS[PLATFORMS[0]];

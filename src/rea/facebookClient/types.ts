@@ -39,7 +39,7 @@ export interface GraphqlDefinition {
 
 export interface ClientOperation {
   name: string
-  domain: ClientDomain
+  domain: string
   kind: OperationKind
   docId: string | null
   path: string

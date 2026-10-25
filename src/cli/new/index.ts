@@ -7,7 +7,7 @@ import type { Command, CommandInput } from "../runner/types.ts";
 const REPO = join(import.meta.dir, "..", "..", "..");
 
 export const NEW_USAGE = [
-  "Usage: log new platform <name> [--label <shown name>] [--twentyPlatform <ENUM>] [--library <vendor/folder>] [--sessionCookies <a,b>] [--cookieDomain <.site.com>] [--apply] [--json]",
+  "Usage: log new platform <name> [--label <shown name>] [--twentyPlatform <ENUM>] [--library <vendor/folder>] [--sessionCookies <a,b>] [--cookieDomain <.site.com>] [--hosts <a.com,b.com>] [--home <https://…>] [--noProxy] [--noBrowser] [--apply] [--json]",
   "Makes a new platform for log-cli: its account session on the shared platformKit, `log <name> session check` with its MCP tool, a direct-API engine in python/<name>Api on the shared Python kit, and docs/platforms/<name>. The repo is wired by editing each file through its syntax tree (PLATFORMS, PLATFORM_LABELS, COMMANDS, createContext, CommandContext, DIRECT_ROUTES, COMMAND_RULES), and every edit is checked to have landed before anything is written.",
   "Without --apply it lists what it would write and change, and writes nothing. Nothing is overwritten: an existing platform or file is refused. It says what Twenty is missing (the socialAccounts.platform option) but never changes Twenty. Then fill in the engine's actions and add the platform's families as commands (rule 83).",
 ].join("\n");
@@ -24,7 +24,11 @@ export const NEW_INPUT: CommandInput = {
         { name: "twentyPlatform", kind: "string", description: "Its socialAccounts.platform value in Twenty (default: the name in capitals)" },
         { name: "library", kind: "string", description: "Its vendored client's folder, vendor/<folder>" },
         { name: "sessionCookies", kind: "string", description: "The cookies a logged-in session must have, comma-separated" },
-        { name: "cookieDomain", kind: "string", description: "The domain refreshed cookies are saved under (default .<name>.com)" },
+        { name: "cookieDomain", kind: "string", description: "The domain its cookies are saved under (default: . and its first host)" },
+        { name: "hosts", kind: "string", description: "Its hosts, comma-separated (default <name>.com): log inspect may go to them" },
+        { name: "home", kind: "string", description: "The page its browser opens on (default https://www.<first host>/)" },
+        { name: "noProxy", kind: "boolean", description: "Its accounts open with no proxy, like X (default: a proxy in the home country is required)" },
+        { name: "noBrowser", kind: "boolean", description: "It has no browser path, only the direct-API engine (default: the account's AdsPower browser)" },
         { name: "apply", kind: "boolean", description: "Write it (without it, only list what it would do)" },
         JSON_FLAG,
       ],
@@ -48,7 +52,7 @@ export const newCommand: Command = {
     const str = (flag: string) => (typeof parsed.flags[flag] === "string" ? (parsed.flags[flag] as string) : undefined);
     let plan;
     try {
-      plan = planNewPlatform(REPO, { name, label: str("label"), twentyPlatform: str("twentyPlatform"), library: str("library"), cookieDomain: str("cookieDomain"), sessionCookies: str("sessionCookies")?.split(",").map((c) => c.trim()).filter(Boolean) });
+      plan = planNewPlatform(REPO, { name, label: str("label"), twentyPlatform: str("twentyPlatform"), library: str("library"), cookieDomain: str("cookieDomain"), hosts: str("hosts")?.split(",").map((h) => h.trim()).filter(Boolean), home: str("home"), noProxy: parsed.flags["noProxy"] === true, noBrowser: parsed.flags["noBrowser"] === true, sessionCookies: str("sessionCookies")?.split(",").map((c) => c.trim()).filter(Boolean) });
     } catch (error) {
       return { code: 1, stderr: `log new platform: ${error instanceof Error ? error.message : String(error)}` };
     }

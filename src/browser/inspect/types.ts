@@ -26,6 +26,7 @@ export interface InspectSessionConfig {
   loginPath: string | null
   idleMouse?: boolean
   startUrl: string | null
+  site?: { platform: string; domain: string; hosts: readonly string[] }
   browser?: { driver: BrowserDriverName; profileId: string | null }
 }
 

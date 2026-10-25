@@ -1,6 +1,7 @@
 import { AdsPowerError, DEFAULT_LOCAL_API_URL } from './types'
 import type { AdsPowerClient, AdsPowerProfile, CreateProfileBody, LocalApiConfig, LocalApiReply, StartedBrowser } from './types'
-import { listFacebookAccounts, saveAdsPowerProfileId } from '../../marketplace/socialAccount/index'
+import { listBrowserAccounts, saveAdsPowerProfileId } from '../../marketplace/socialAccount/index'
+import { PLATFORM_SITES, PLATFORMS } from '../../cli/runner/helpers/platforms'
 import type { FacebookAccount } from '../../marketplace/socialAccount/index'
 import type { TwentyClient } from '../../twenty/graphql/index'
 import type { BrowserDriver, BrowserEndpoint, GateResult } from '../driver/index'
@@ -192,7 +193,8 @@ export async function syncProfiles(
   options: { apply: boolean; account?: string; homes?: string[] | null; log?: (line: string) => void }
 ): Promise<ProfileSyncResult> {
   const log = options.log ?? (() => {})
-  const all = await listFacebookAccounts(twenty)
+  const browserPlatforms = PLATFORMS.filter((p) => PLATFORM_SITES[p].browser).map((p) => PLATFORM_SITES[p].twenty)
+  const all = await listBrowserAccounts(twenty, browserPlatforms)
   const accounts = options.account ? all.filter((a) => a.accountName === options.account || a.id === options.account) : all
   const homes = options.homes === undefined ? adsPowerHomes() : options.homes
   log(`adsPower: ${accounts.length} account(s) from Twenty${homes ? ` (homes ${homes.join(', ')})` : ''}; reading AdsPower's profiles`)

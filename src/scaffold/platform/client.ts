@@ -21,6 +21,7 @@ export function namesOf(options: NewPlatformOptions): PlatformNames {
   const pascal = name[0].toUpperCase() + name.slice(1);
   const constant = name.replace(/([a-z0-9])([A-Z])/g, "$1_$2").toUpperCase();
   const library = options.library?.replace(/\\/g, "/").replace(/\/$/, "") || null;
+  const hosts = options.hosts?.length ? options.hosts.map((h) => h.trim().toLowerCase().replace(/^\./, "")).filter(Boolean) : [`${name.toLowerCase()}.com`];
   return {
     name,
     pascal,
@@ -30,9 +31,13 @@ export function namesOf(options: NewPlatformOptions): PlatformNames {
     library,
     libraryText: library ? library.split("/").pop()! : "no client vendored yet",
     sessionCookies: options.sessionCookies ?? [],
-    cookieDomain: options.cookieDomain?.trim() || `.${name.toLowerCase()}.com`,
+    cookieDomain: options.cookieDomain?.trim() || `.${hosts[0]}`,
     seam: `direct${pascal}`,
     sessionKey: `${name}Session`,
+    hosts,
+    home: options.home?.trim() || `https://www.${hosts[0]}/`,
+    proxy: options.noProxy ? "none" : "required",
+    browser: !options.noBrowser,
   };
 }
 
@@ -53,6 +58,7 @@ export function planNewPlatform(root: string, options: NewPlatformOptions): Plat
   const platformsSource = read(root, FILES.platforms);
   if (arrayHasText(platformsSource, "PLATFORMS", `"${n.name}"`)) throw new Error(`${n.name} is already a platform`);
   if (n.library && !existsSync(join(root, n.library))) throw new Error(`--library ${n.library} doesn't exist: vendor the client there first, or leave it out`);
+  if (!/^https:\/\//.test(n.home) || !n.hosts.some((h) => new URL(n.home).hostname === h || new URL(n.home).hostname.endsWith(`.${h}`))) throw new Error(`--home ${n.home} must be a https URL on one of its hosts (${n.hosts.join(", ")})`);
   const files: PlannedFile[] = [
     { path: `src/${n.name}/account/session/client.ts`, content: sessionClient(n) },
     { path: `src/${n.name}/account/session/index.ts`, content: sessionIndex() },
@@ -68,6 +74,7 @@ export function planNewPlatform(root: string, options: NewPlatformOptions): Plat
   const edits: PlannedEdit[] = [
     { path: FILES.platforms, what: `PLATFORMS gains "${n.name}"`, apply: (s) => addToArray(s, "PLATFORMS", `"${n.name}"`), landed: (s) => arrayHasText(s, "PLATFORMS", `"${n.name}"`) },
     { path: FILES.platforms, what: `PLATFORM_LABELS gains ${n.name}: "${n.label}"`, apply: (s) => addToObject(s, "PLATFORM_LABELS", n.name, JSON.stringify(n.label)), landed: (s) => objectHasKey(s, "PLATFORM_LABELS", n.name) },
+    { path: FILES.platforms, what: `PLATFORM_SITES gains ${n.name} (${n.hosts.join(", ")}, proxy ${n.proxy}, ${n.browser ? "the account's browser" : "no browser"})`, apply: (s) => addToObject(s, "PLATFORM_SITES", n.name, `{ twenty: ${JSON.stringify(n.twentyPlatform)}, domain: ${JSON.stringify(n.cookieDomain)}, hosts: [${n.hosts.map((h) => JSON.stringify(h)).join(", ")}], home: ${JSON.stringify(n.home)}, proxy: ${JSON.stringify(n.proxy)}, browser: ${n.browser} }`), landed: (s) => objectHasKey(s, "PLATFORM_SITES", n.name) },
     { path: FILES.runner, what: `imports ${n.name}SessionCommand`, apply: (s) => addImport(s, `../${n.name}/index.ts`, `${n.name}SessionCommand`), landed: (s) => hasImport(s, `../${n.name}/index.ts`, `${n.name}SessionCommand`) },
     { path: FILES.runner, what: `imports run${n.pascal}Engine`, apply: (s) => addImport(s, `../../${n.name}/account/session/index.ts`, `run${n.pascal}Engine`), landed: (s) => hasImport(s, `../../${n.name}/account/session/index.ts`, `run${n.pascal}Engine`) },
     { path: FILES.runner, what: `COMMANDS gains ${n.name}SessionCommand`, apply: (s) => addToArray(s, "COMMANDS", `${n.name}SessionCommand`), landed: (s) => arrayHasText(s, "COMMANDS", `${n.name}SessionCommand`) },

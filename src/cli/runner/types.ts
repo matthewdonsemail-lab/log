@@ -38,6 +38,7 @@ export interface CommandContext {
   sleep?: (ms: number) => Promise<void>;
   directTwitter?: (account: import("../../marketplace/socialAccount/index.ts").FacebookAccount, spec: import("../../twitter/account/session/index.ts").TwitterEngineSpec) => import("../../twitter/account/session/index.ts").TwitterEngineRun;
   directRead?: (account: import("../../marketplace/socialAccount/index.ts").FacebookAccount, groupId: string) => import("../../directApi/engine/index.ts").DirectOutcome<{ id: string | null; text: string; creation_time: number | null }>;
+  directReddit?: (account: import("../../platformKit/session/index.ts").PlatformAccount, spec: import("../../platformKit/session/index.ts").PlatformEngineSpec) => import("../../platformKit/session/index.ts").PlatformEngineRun;
 }
 
 export interface FlagSpec {

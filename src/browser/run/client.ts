@@ -3,7 +3,9 @@ import { homedir, tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { hasStoredDevice, toDeviceProfile } from '../../camofox/device/index'
 import type { DeviceProfile, DeviceRunFile } from '../../camofox/device/index'
-import { homeOf, outsideActiveHours } from '../../marketplace/home/index'
+import { HOME_COUNTRIES, homeOf, outsideActiveHours } from '../../marketplace/home/index'
+import type { Home } from '../../marketplace/home/index'
+import { siteOfAccount } from '../../cli/runner/helpers/platforms'
 import { checkRunnable, toFacebookCookies } from '../../marketplace/socialAccount/index'
 import type { FacebookAccount, PlaywrightCookie, RunPurpose } from '../../marketplace/socialAccount/index'
 import { LAUNCH_LIMITS, listLaunches, overLaunchBudget } from './helpers/index'
@@ -44,17 +46,25 @@ export function runBrowserOf(account: { browserDriver: string | null; adsPowerPr
   return OPENER_ACTIONS.has(action) ? driverNameOf(account) : 'camoufox'
 }
 
+export function directHome(account: FacebookAccount): { ok: true; home: Home } {
+  const country = account.homeCountry && HOME_COUNTRIES[account.homeCountry] ? account.homeCountry : 'US'
+  const entry = HOME_COUNTRIES[country]
+  return { ok: true, home: { country, city: account.homeCity, locale: entry.locale, facebookLocale: entry.facebookLocale, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone, coordinates: null } }
+}
+
 export function prepareRun(account: FacebookAccount, purpose: RunPurpose, options: PrepareRunOptions = {}): PrepareRunResult {
   const check = checkRunnable(account, purpose)
   if (!check.ok) return check
-  const cookies = toFacebookCookies(account.cookies)
+  const cookies = toFacebookCookies(account.cookies, siteOfAccount(account).domain)
   if (purpose === 'run' && cookies.length === 0) {
     return { ok: false, code: 'neverConnected', detail: `${account.accountName} has no cookies in Twenty. Run: log facebook connect --account ${account.accountName}` }
   }
 
   let device: DeviceRunFile | null = null
   if (purpose !== 'check') {
-    const home = homeOf(account)
+    const direct = check.proxy.direct === true
+    const known = homeOf(account)
+    const home = known.ok || !direct ? known : directHome(account)
     if (!home.ok) return home
     const outside = options.bypassHours ? null : outsideActiveHours(account, home.home.timezone, options.now ?? new Date())
     if (outside) return { ok: false, code: 'outsideActiveHours', detail: outside }

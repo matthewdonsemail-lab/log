@@ -161,6 +161,9 @@ flowchart TB
   c_new["new"]
   cli --> c_new
   mcp --> c_new
+  c_session["session"]
+  cli --> c_session
+  mcp --> c_session
   f_deletePost["flowDeletePost: flow run deletePost"]
   mcp --> f_deletePost
   f_deletePost --> c_flow
@@ -170,6 +173,9 @@ flowchart TB
   f_groupHeaderMenus["flowGroupHeaderMenus: flow run groupHeaderMenus"]
   mcp --> f_groupHeaderMenus
   f_groupHeaderMenus --> c_flow
+  f_groupMembers["flowGroupMembers: flow run groupMembers"]
+  mcp --> f_groupMembers
+  f_groupMembers --> c_flow
   f_groupPostComments["flowGroupPostComments: flow run groupPostComments"]
   mcp --> f_groupPostComments
   f_groupPostComments --> c_flow

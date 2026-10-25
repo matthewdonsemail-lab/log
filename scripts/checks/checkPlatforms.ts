@@ -2,13 +2,15 @@ import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { COMMANDS } from "../../src/cli/runner/index.ts";
-import { commandKey, PLATFORM_LABELS, PLATFORMS } from "../../src/cli/runner/helpers/platforms.ts";
+import { commandKey, PLATFORM_LABELS, PLATFORM_SITES, PLATFORMS } from "../../src/cli/runner/helpers/platforms.ts";
 import { DIRECT_ROUTES } from "../../src/directApi/engine/index.ts";
 import { COMMAND_RULES } from "../../src/mcp/server/helpers/agentRules.ts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const problems: string[] = [];
 const has = (path: string) => existsSync(join(root, path));
+
+for (const platform of PLATFORMS) if (!PLATFORM_SITES[platform]) problems.push(`${platform}: no PLATFORM_SITES entry (its Twenty value, hosts, home, proxy and browser)`);
 
 for (const platform of PLATFORMS.filter((p) => p !== PLATFORMS[0])) {
   if (!PLATFORM_LABELS[platform]) problems.push(`${platform}: no PLATFORM_LABELS entry (src/cli/runner/helpers/platforms.ts)`);
@@ -31,4 +33,4 @@ if (problems.length) {
   console.error(`platforms: a platform is only half wired (rule 83; log new platform <name> wires one whole):\n${problems.map((p) => `  - ${p}`).join("\n")}`);
   process.exit(1);
 }
-console.log(`platforms: ${PLATFORMS.join(", ")} are each wired whole (label, src, command, engine, routes, rules, docs).`);
+console.log(`platforms: ${PLATFORMS.join(", ")} are each wired whole (label, site, src, command, engine, routes, rules, docs).`);

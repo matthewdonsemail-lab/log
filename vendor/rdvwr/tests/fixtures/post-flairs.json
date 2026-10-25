@@ -1,0 +1,20 @@
+[
+  {
+    "id": "9db8d3f2-7590-11ef-9354-3ada40f3344f",
+    "text": "C.AI complaint",
+    "text_editable": false,
+    "type": "text"
+  },
+  {
+    "id": "555d3a74-f007-11f0-bcf0-9e242efd211e",
+    "text": "Searching for Alternatives",
+    "text_editable": false,
+    "type": "text"
+  },
+  {
+    "id": "71336372-f007-11f0-a068-da335058ca6e",
+    "text": "Making a Recommendation",
+    "text_editable": false,
+    "type": "text"
+  }
+]

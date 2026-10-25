@@ -9,7 +9,7 @@ export interface PlaywrightCookie {
   sameSite?: 'Strict' | 'Lax' | 'None'
 }
 
-export function toFacebookCookies(raw: unknown): PlaywrightCookie[] {
+export function toFacebookCookies(raw: unknown, defaultDomain = '.facebook.com'): PlaywrightCookie[] {
   let value = raw
   if (typeof value === 'string') {
     const text = value.trim()
@@ -33,7 +33,7 @@ export function toFacebookCookies(raw: unknown): PlaywrightCookie[] {
         const cookie: PlaywrightCookie = {
           name: String(c.name),
           value: String(c.value ?? ''),
-          domain: typeof c.domain === 'string' && c.domain ? c.domain : '.facebook.com',
+          domain: typeof c.domain === 'string' && c.domain ? c.domain : defaultDomain,
           path: typeof c.path === 'string' && c.path ? c.path : '/'
         }
         const expires = Number(c.expires ?? c.expirationDate)
@@ -50,7 +50,7 @@ export function toFacebookCookies(raw: unknown): PlaywrightCookie[] {
   if (value && typeof value === 'object') {
     return Object.entries(value as Record<string, unknown>)
       .filter(([, v]) => v != null)
-      .map(([name, v]) => ({ name, value: String(v), domain: '.facebook.com', path: '/' }))
+      .map(([name, v]) => ({ name, value: String(v), domain: defaultDomain, path: '/' }))
   }
   return []
 }

@@ -48,8 +48,12 @@ async def open_ads_power(config: dict[str, Any], own_trajectory: bool) -> AsyncI
     gate = proxyGate.gate_attached()
     started = False
     try:
-        adsPowerBrowser.set_proxy(profile_id, adsPowerBrowser.user_proxy_config(gate["proxy"]))
-        proxyGate.log(f"AdsPower profile {profile_id}: proxy set; starting it headed")
+        if gate["proxy"].get("direct"):
+            adsPowerBrowser.set_proxy(profile_id, adsPowerBrowser.NO_PROXY)
+            proxyGate.log(f"AdsPower profile {profile_id}: no proxy ({gate['proxy'].get('platform')} runs direct); starting it headed")
+        else:
+            adsPowerBrowser.set_proxy(profile_id, adsPowerBrowser.user_proxy_config(gate["proxy"]))
+            proxyGate.log(f"AdsPower profile {profile_id}: proxy set; starting it headed")
         cdp = adsPowerBrowser.start(profile_id)
         started = True
         proxyGate.log(f"AdsPower profile {profile_id} started; attaching over CDP")
@@ -60,7 +64,7 @@ async def open_ads_power(config: dict[str, Any], own_trajectory: bool) -> AsyncI
             har.attach(context)
             try:
                 await proxyGate.check_attached(context)
-                await carry_session_once(context, Path(config["storageStatePath"]))
+                await carry_session_once(context, Path(config["storageStatePath"]), config.get("site"))
                 yield Opened(browser, context, "adsPower")
             finally:
                 written = await har.write()
@@ -79,9 +83,30 @@ async def open_ads_power(config: dict[str, Any], own_trajectory: bool) -> AsyncI
             proxyGate.log(f"AdsPower profile {profile_id}: clearing the proxy answered {exc.code} ({exc.detail})")
 
 
-async def carry_session_once(context: Any, state: Path) -> None:
+async def carry_site_session_once(context: Any, state: Path, site: dict[str, Any]) -> None:
     import json
 
+    domain = str(site.get("domain") or "").lstrip(".")
+    if not domain or not state.is_file():
+        return
+    if await context.cookies(f"https://www.{domain}"):
+        return
+    try:
+        cookies = json.loads(state.read_text(encoding="utf8")).get("cookies") or []
+    except Exception:
+        return
+    own = [c for c in cookies if domain in str(c.get("domain", ""))]
+    if own:
+        await context.add_cookies(own)
+        proxyGate.log(f"The profile had no {site.get('platform')} session: carried Twenty's cookies in once ({len(own)} cookies)")
+
+
+async def carry_session_once(context: Any, state: Path, site: dict[str, Any] | None = None) -> None:
+    import json
+
+    if site and site.get("platform") not in (None, "facebook"):
+        await carry_site_session_once(context, state, site)
+        return
     have = {c["name"] for c in await context.cookies("https://www.facebook.com")}
     if "c_user" in have or not state.is_file():
         return

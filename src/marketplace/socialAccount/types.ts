@@ -81,6 +81,8 @@ export interface RunProxy {
   username?: string
   password?: string
   country: string
+  direct?: true
+  platform?: string
 }
 
 export type RunnableCheck = { ok: true; proxy: RunProxy } | { ok: false; code: ErrorCode; detail: string }

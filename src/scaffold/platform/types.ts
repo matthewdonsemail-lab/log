@@ -5,6 +5,10 @@ export interface NewPlatformOptions {
   library?: string
   sessionCookies?: string[]
   cookieDomain?: string
+  hosts?: string[]
+  home?: string
+  noProxy?: boolean
+  noBrowser?: boolean
 }
 
 export interface PlatformNames {
@@ -19,6 +23,10 @@ export interface PlatformNames {
   cookieDomain: string
   seam: string
   sessionKey: string
+  hosts: string[]
+  home: string
+  proxy: 'required' | 'none'
+  browser: boolean
 }
 
 export interface PlannedFile {

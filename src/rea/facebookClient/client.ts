@@ -7,9 +7,9 @@ import { exportScripts, parseSteps, splitHarBySteps } from "../capture/helpers/i
 import type { ReaRunner } from "../capture/types";
 import { CAPTURE_FOLDERS } from "../../browser/driver/types";
 import { domainOf, factsFromDoc, foldOperation, importersOf, indexModules, readGraphqlDefinition, renderOperationDoc, renderStoredSightings, requestsInStep, sliceFor } from "./helpers/index";
-import type { StoredFacts } from "./helpers/index";
+import type { ReasoningPrompts, StoredFacts } from "./helpers/index";
 import type { RequestSeen } from "./helpers/index";
-import type { ClientDomain, ClientOperation, FacebookModule } from "./types";
+import type { ClientOperation, FacebookModule } from "./types";
 import { exchangesOf } from "../../subq/stepReading/helpers/exchangesOf";
 import type { StepExchange } from "../../subq/stepReading/types";
 
@@ -230,7 +230,7 @@ export function clientFactsPath(): string {
   return join(process.env.LOG_CAPTURES_ROOT || join(homedir(), ".logCli"), "rea", "clientFacts.json");
 }
 
-export function writeOperationDocs(operations: ClientOperation[], docsDir: string, runs: number, storePath = clientFactsPath()): { written: number; toWrite: number } {
+export function writeOperationDocs(operations: ClientOperation[], docsDir: string, runs: number, storePath = clientFactsPath(), reasoning?: ReasoningPrompts): { written: number; toWrite: number } {
   let toWrite = 0;
   let store: Record<string, StoredFacts> = {};
   try {
@@ -248,7 +248,7 @@ export function writeOperationDocs(operations: ClientOperation[], docsDir: strin
     seenBy.set(operation.name, facts.seen);
     kindBy.set(operation.name, facts.kind);
     const known = { ...operation, kind: facts.kind, sends: facts.sends, reads: facts.reads, calledFrom: facts.calledFrom, reaEvidenceId: facts.reaEvidenceId };
-    const doc = renderOperationDoc(known, oldText, renderStoredSightings(facts));
+    const doc = renderOperationDoc(known, oldText, renderStoredSightings(facts), reasoning);
     mkdirSync(join(docsDir, operation.domain), { recursive: true });
     writeFileSync(path, doc);
     if (old && resolve(old) !== resolve(path)) rmSync(old);
@@ -303,7 +303,7 @@ export async function buildClientMap(options: BuildClientMapOptions): Promise<st
     const sighting = operation.sightings.find((s) => evidenceByStep.has(`${s.run}\u0000${s.step}`));
     if (sighting) operation.reaEvidenceId = evidenceByStep.get(`${sighting.run}\u0000${sighting.step}`) ?? null;
   }
-  const byDomain = new Map<ClientDomain, number>();
+  const byDomain = new Map<string, number>();
   for (const o of operations) byDomain.set(o.domain, (byDomain.get(o.domain) ?? 0) + 1);
   log(`Requests: ${operations.length} (${[...byDomain].map(([d, n]) => `${d} ${n}`).join(", ")})`);
   mkdirSync(options.outDir, { recursive: true });
