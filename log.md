@@ -7253,3 +7253,16 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: vendor/twikit's Client.user_id() still asks X's v1.1 settings first, and when that fails (X answers it 404, code 34) it falls back to the account's own id in the twid cookie (u%3D<id>, _user_id_from_cookie), cached like before. With no twid cookie the original error is raised. client.py imports re and unquote for it. vendor/twikit/tests/test_user_id.py holds it.
 Why: matt asked to fix it as a vendor/twikit change (rule 81, we maintain twikit). user_id() is what get_dm_history and the other conversation calls build on, and it failed on every account because X 404s the settings read.
 Checked: 13 twikit tests pass (3 new: the 404 falls back to twid and is cached, no twid raises NotFound, a working settings answer is still used). Live: twikit's own get_dm_history on abelqxr's session, with no id seeded, returned message 2114318615877157235 from matthewsoldit (test dm from log cli). twikitTransport check ok, bun run check 1047 pass.
+
+## 2026-10-25 11:50Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/useCases/README.md`: new file
+- `docs/useCases/facebook/groups.md`: new file
+- `docs/useCases/facebook/marketplaceListings.md`: new file
+- `docs/useCases/twitter/recruiting.md`: new file
+
+What changed: docs/useCases/<platform>/ holds what log-cli has been used for, one page each, in plain words with a real run, every step's command and MCP tool, what decides each step worked, a Mermaid diagram and what isn't built. twitter/recruiting.md: matt's recruiting on X (treg search, the table in buzz, approval, queue plan --window 75m --like, queue run --live, buzz alerts), the 2026-10-24 run (14 replies from @matthewsoldit, 8 BDO and 6 cold caller), the people contacted left unnamed. facebook/marketplaceListings.md: bought account to proxy, AdsPower profile, host, sign-in, check, profile, location, warm-up, publish and the 12-minute check, Bethlehem's listing 1425935622848350 (23 clicks the first day, about $3.40 per live account). facebook/groups.md: join, read, poll, members. docs/useCases/README.md is the index and the shared parts; the README links it under Use cases.
+Why: matt asked for docs/useCases/{platform}/ explaining how he uses the twitter controller in buzz to recruit and the multiple-profiles-to-Marketplace-listings work, showing which parts do what, so people can get creative with it.
+Checked: every claim from the buzz workspace (GUIDES X outreach, sequencer and recruiter orders, RESEARCH sweeps of 2026-10-24, OUTBOX send logs and the rubbish removal update V10) or this repo (log.md, docs, skills/host); every Mermaid block parsed with the repo's mermaid and jsdom; bun run check 1047 pass.
