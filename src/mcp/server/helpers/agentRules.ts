@@ -1,4 +1,4 @@
-export const RULES_REVIEWED_THROUGH = 81;
+export const RULES_REVIEWED_THROUGH = 82;
 
 export const AGENTS_URI = "log://agents";
 
@@ -33,7 +33,7 @@ export const COMMAND_RULES: Readonly<Record<string, number[]>> = {
   join: [8, 10, 18, 20, 25, 26, 29, 35, 45, 64, 73],
   read: [8, 13, 18, 20, 22, 25, 26, 29, 35, 45, 54, 63, 64, 65, 73, 77],
   poll: [8, 13, 18, 22, 26, 35, 45, 63, 64, 65, 73],
-  inspect: [8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68, 72, 73, 74, 75],
+  inspect: [8, 12, 17, 22, 24, 26, 29, 30, 35, 48, 54, 55, 68, 72, 73, 74, 75, 82],
   connect: [12, 18, 21, 23, 24, 73],
   publish: [8, 10, 12, 18, 22, 24, 68, 72, 73],
   profile: [8, 28, 73],

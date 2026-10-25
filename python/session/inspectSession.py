@@ -757,6 +757,16 @@ class Inspector:
             return await self.step("press", args[0], lambda: page.keyboard.press(args[0]))
         return failure("badRequest", f"unknown or incomplete action: {action} {' '.join(args)}")
 
+    def watch_navigations(self, page: Any) -> None:
+        def navigated(frame: Any) -> None:
+            if frame != page.main_frame:
+                return
+            event = {"url": frame.url, "at": now_iso()}
+            with (self.run_dir / "navigations.jsonl").open("a", encoding="utf8") as out:
+                out.write(json.dumps(event) + "\n")
+
+        page.on("framenavigated", navigated)
+
     async def serve(self) -> int:
         commands = Path(self.config["commandsPath"])
         replies = Path(self.config["repliesPath"])
@@ -770,6 +780,8 @@ class Inspector:
             self.mouse = HumanMouse(self.page, log, busy=self.recorder.busy)
             self.closed = False
             self.page.on("close", lambda _page: setattr(self, "closed", True))
+            self.watch_navigations(self.page)
+            self.context.on("page", self.watch_navigations)
             if self.config.get("idleMouse", True):
                 self.mouse.start_idle()
             else:

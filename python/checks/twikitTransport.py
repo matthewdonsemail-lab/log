@@ -111,7 +111,8 @@ def scan_file(path, allowed):
 
 
 def python_files():
-    yield VENDOR / "setup.py"
+    if (VENDOR / "setup.py").exists():
+        yield VENDOR / "setup.py"
     yield from sorted(PACKAGE.rglob("*.py"))
 
 

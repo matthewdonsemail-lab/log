@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { summarize } from './astSummary.mjs';
 
@@ -73,7 +73,7 @@ export function replaceLastAstBlock(text, ast) {
 }
 
 function main() {
-  if (existsSync(join(root, '.git', 'MERGE_HEAD'))) return 0;
+  if (existsSync(resolve(root, git('rev-parse', '--git-path', 'MERGE_HEAD')))) return 0;
   const staged = git('diff', '--cached', '--name-only').split('\n').filter(Boolean);
   if (staged.length === 0) return 0;
   const ast = summarize();

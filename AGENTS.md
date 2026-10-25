@@ -966,6 +966,18 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     pre-commit and pre-push); `vendor/twikit/tests/test_transport.py` holds
     the behaviour.
 
+82. 2026-10-25 · matt: "we need to make it auto switch when that happens to
+    checkpointed", and later the same day "if I said it got checkpointed then
+    we just deactivate it". An open browser reports every page it lands on
+    (`navigations.jsonl` in its run), and the session behind it sets the
+    account to DEACTIVATED in Twenty, reason `checkpointed`, the moment one
+    is a `/checkpoint` page, between steps as well as during them, with the
+    page and the time as the detail; its listings are marked lost, as the
+    direct-API engine does. Its AdsPower profile is given back by the next
+    `log adsPower sync --apply` (rule 78), never from under the open browser.
+    An account already DEACTIVATED is left as it is.
+    `src/cli/inspect/helpers/watchCheckpoint.ts`.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.
