@@ -4,6 +4,10 @@ export function toolBaseName(command: Pick<Command, "name" | "platform">): strin
   return isPlatform(command.platform) && command.platform !== PLATFORMS[0] ? `${command.platform}${command.name[0].toUpperCase()}${command.name.slice(1)}` : command.name;
 }
 
+export function platformLabel(command: Pick<Command, "platform">): string {
+  return command.platform === "twitter" ? "X" : "Facebook";
+}
+
 export const PLATFORMS = ["facebook", "twitter"] as const;
 export type Platform = (typeof PLATFORMS)[number];
 
