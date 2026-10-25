@@ -1016,6 +1016,20 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     row (`--hosts`, `--home`, `--noProxy`, `--noBrowser`), and
     `check:platforms` refuses a platform without one.
 
+85. 2026-10-25 · matt: "THE WHOLE POINT IS TO GO THROUGH REA." Every
+    platform's internal calls go through rea, their code as well as their
+    network, never Facebook's alone. `log facebook capture --docs` builds
+    every browser platform's request docs (`docs/platforms/<platform>/`):
+    it takes each run's calls to that platform's hosts (`PLATFORM_SITES`),
+    names each by its GraphQL operation or its path without ids, finds the
+    code that sends it in the platform's own bundles by syntax tree (an
+    operation by its exact name, a path where it is fetched), and rea reads
+    each call's slice (`src/rea/platformClient`). A call whose code isn't in
+    the bundles keeps its step's rea reading. The docs gate
+    (`check:facebookClientDocs`) refuses a platform's doc that rea hasn't
+    read or whose reasoning isn't written. The first Reddit run: 39 calls,
+    33 read from their code, the other 6 from their step.
+
 ## Checks
 
 - Run `bun run check` before pushing: no comments (rule 70), naming gate, `tsc --noEmit`, `bun test`.

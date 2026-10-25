@@ -7506,3 +7506,67 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: the Facebook request docs' operations.json is rebuilt: its build time and run count only, every operation kept.
 Why: the pre-push docs gate refused the push because the two Reddit inspect runs were newer than the docs (rule 27). They hold no Facebook requests, and the docs builder reads only Facebook's calls, so no Reddit request doc is written yet.
 Checked: `log facebook capture --docs` (0 Facebook requests in the 2 runs, exit 0); git diff shows only builtAt and runs changed.
+
+## 2026-10-25 13:46Z · feat/redditPlatform
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/reddit/account/CreateCaptchaToken.md`: new file
+- `docs/platforms/reddit/account/svcShredditDataProtectionConsent.md`: new file
+- `docs/platforms/reddit/account/svcShredditPartialBannedUserBanner.md`: new file
+- `docs/platforms/reddit/account/svcShredditPartialUserDrawerMenu.md`: new file
+- `docs/platforms/reddit/account/svcShredditToken.md`: new file
+- `docs/platforms/reddit/account/svcShredditUpdateRecaptcha.md`: new file
+- `docs/platforms/reddit/account/svcShredditUserDrawerButtonLoggedIn.md`: new file
+- `docs/platforms/reddit/background/piP.md`: new file
+- `docs/platforms/reddit/background/svcShredditCompressionDictionariesBr.md`: new file
+- `docs/platforms/reddit/chat/ChatRedditors.md`: new file
+- `docs/platforms/reddit/chat/ChatSubredditStyles.md`: new file
+- `docs/platforms/reddit/chat/svcShredditHeaderActionItemChat.md`: new file
+- `docs/platforms/reddit/chat/svcShredditRedditChat.md`: new file
+- `docs/platforms/reddit/comments/svcShredditMoreComments.md`: new file
+- `docs/platforms/reddit/comments/svcShredditPostDetailModules.md`: new file
+- `docs/platforms/reddit/community/UserCommunityAchievements.md`: new file
+- `docs/platforms/reddit/community/svcShredditCommunityHoverCard.md`: new file
+- `docs/platforms/reddit/community/svcShredditPartialCrosspostDialog.md`: new file
+- `docs/platforms/reddit/community/svcShredditPartialModContentActions.md`: new file
+- `docs/platforms/reddit/community/svcShredditStylingOverrides.md`: new file
+- `docs/platforms/reddit/community/svcShredditSubredditPostingEligibilityModal.md`: new file
+- `docs/platforms/reddit/experiments/EnrollInStreaks.md`: new file
+- `docs/platforms/reddit/experiments/ExposeVariant.md`: new file
+- `docs/platforms/reddit/experiments/StoreUxtargetingAction.md`: new file
+- `docs/platforms/reddit/experiments/svcShredditDeferredExperiences.md`: new file
+- `docs/platforms/reddit/experiments/svcShredditDevvitLeftNavBadge.md`: new file
+- `docs/platforms/reddit/feed/svcShredditCommunityMorePostsBest.md`: new file
+- `docs/platforms/reddit/feed/svcShredditFeedsHomeFeed.md`: new file
+- `docs/platforms/reddit/feed/svcShredditFeedsPopularFeed.md`: new file
+- `docs/platforms/reddit/feed/svcShredditHamburgerMenu.md`: new file
+- `docs/platforms/reddit/inbox/UpdateInboxActivitySeenState.md`: new file
+- `docs/platforms/reddit/inbox/svcShredditHeaderActionItemInbox.md`: new file
+- `docs/platforms/reddit/inbox/svcShredditNotificationsInboxContentRoute.md`: new file
+- `docs/platforms/reddit/operations.json`: new file
+- `docs/platforms/reddit/profile/TrophyCategories.md`: new file
+- `docs/platforms/reddit/telemetry/svcEventsPreloadHead.md`: new file
+- `docs/platforms/reddit/telemetry/svcShredditEvents.md`: new file
+- `docs/platforms/reddit/telemetry/svcShredditPerfmetrics.md`: new file
+- `docs/platforms/reddit/telemetry/w3ReportingPolicy.md`: new file
+- `docs/platforms/reddit/telemetry/w3ReportingReports.md`: new file
+- `scripts/checks/checkFacebookClientDocs.mjs`: added const platformsDir
+- `src/cli/capture/index.ts`: added const platformClientDocs · changed const CAPTURE_USAGE, function runCapture, const captureCommand
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `src/rea/facebookClient/client.ts`: changed function writeOperationDocs, function buildClientMap
+- `src/rea/facebookClient/helpers/renderOperationDoc.ts`: added type ReasoningPrompts, const FACEBOOK_REASONING · changed function renderOperationDoc · removed const REASONING
+- `src/rea/facebookClient/types.ts`: changed interface ClientOperation
+- `src/rea/platformClient/client.ts`: added interface BuildPlatformMapOptions, interface SeenOn, function onHosts, function bodyOf, function variablesOf, function readsOf, function platformRequestsInRun, function bundleScripts, function stepEvidence, function mergePlatformOperations, function eachLimited, function readPlatformSlices, function platformFactsPath, function buildPlatformClientMap
+- `src/rea/platformClient/helpers/index.ts`: added export from "./requestName", export from "./sliceSources"
+- `src/rea/platformClient/helpers/requestName.ts`: added const PARAM_AFTER, const NAMED_AFTER, function camelOf, function stablePath, function requestNameOf, function operationOf, function needlesOf, function domainOfRequest
+- `src/rea/platformClient/helpers/sliceSources.ts`: added const parsed, function sourceOf, function forgetParsed, function literalText, function propertyName, function scoreOf, const isFunction, function functionName, function enclosingSlice, function slicesFor
+- `src/rea/platformClient/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/rea/platformClient/platformClient.test.ts`: added const bundle, test "a request is named by its GraphQL operation, else by its path without ids, subreddits or hashes", test "an operation is found where it is sent, never in a lookalike or an enum of names", test "an endpoint is found where its path is fetched", test "what an answer reads is its fields two levels down", test "a run's platform calls become docs, each with its code and rea's reading"
+- `src/rea/platformClient/types.ts`: added interface BundleScript, interface SourceSlice, interface PlatformClientRules, const MAX_SLICES, const MAX_SLICE_CHARS, const MIN_SLICE_CHARS, const MAX_LITERAL_CHARS, const GENERIC_REASONING, const PLATFORM_CLIENT_RULES
+
+What changed: `log facebook capture --docs` builds every browser platform's request docs, not only Facebook's. The new `src/rea/platformClient` takes each run's calls to a platform's hosts, names each by its GraphQL operation or its path without ids, subreddits or hashes, finds the code that sends it in that platform's own bundles by syntax tree (an operation by its exact name, a path where it is fetched, Reddit's faceplate-partial loader first), and has rea read each call's slices; a call with no code in the bundles keeps its step's rea reading. The doc writer takes a platform's own reasoning prompts and domains. The docs gate checks every platform's operations.json (doc listed, rea read, reasoning written). docs/platforms/reddit holds the first 39 Reddit requests, each with its reasoning written from rea's reading, the code and the recorded answers. Rule 85; the MCP instructions and the capture tool carry it.
+Why: matt: "THE WHOLE POINT IS TO GO THROUGH REA." The Reddit inspect run's steps had their network read by rea, but the docs build only took facebook.com calls and Facebook's __d modules, so none of Reddit's code reached rea (0 requests, 0 slices).
+Checked: `log facebook capture --docs` on the Reddit run: 39 requests, 33 with their code found and read by rea (about 4 s each), 6 from their step; the slices were looked at by hand (ExposeVariant's `ai()`, the token's `ln()`, the W3 reporter `Zh()`) and the generic needles and the r/iphone name fixed. platformClient tests (5) and bun run check: every gate, 1080 tests.

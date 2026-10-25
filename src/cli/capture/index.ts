@@ -3,6 +3,8 @@ import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildClientMap, capturesRoot } from "../../rea/facebookClient/index.ts";
 import { captureFromHar, defaultReaRunner, settleRunCapture } from "../../rea/capture/index.ts";
+import { buildPlatformClientMap } from "../../rea/platformClient/index.ts";
+import { PLATFORM_SITES, PLATFORMS } from "../runner/helpers/platforms.ts";
 import type { ReaRunner } from "../../rea/capture/index.ts";
 import { parseArgs } from "../runner/helpers/index.ts";
 import type { Command, CommandResult } from "../runner/types.ts";
@@ -10,11 +12,13 @@ import type { Command, CommandResult } from "../runner/types.ts";
 export const CAPTURE_USAGE = [
   "Usage: log facebook capture --har <path> [--out <dir>] [--noRea] [--json]",
   "       log facebook capture --settle <runCaptureDir>  (what each run starts in the background: rea reads its capture, split per step)",
-  "       log facebook capture --docs [--noRea]  (every run's requests → docs/platforms/facebook/, one doc per request, rea reading each one's slice)",
+  "       log facebook capture --docs [--noRea]  (every run's requests → docs/platforms/<platform>/, one doc per request, rea reading each one's slice: Facebook's by its modules, every other platform with a browser path by the call sites its bundles hold for each request)",
   "The HAR is the one Playwright writes from Camoufox. It is copied raw, and rea reads it. No browser opens.",
 ].join("\n");
 
 export const FACEBOOK_CLIENT_DOCS = fileURLToPath(new URL("../../../docs/platforms/facebook", import.meta.url));
+
+export const platformClientDocs = (platform: string): string => fileURLToPath(new URL(`../../../docs/platforms/${platform}`, import.meta.url));
 
 export async function runCapture(argv: string[], runner?: ReaRunner, log: (line: string) => void = () => {}): Promise<CommandResult> {
   const parsed = parseArgs(argv, { boolean: ["json", "noRea", "docs"], valued: ["har", "out", "settle"] });
@@ -28,7 +32,19 @@ export async function runCapture(argv: string[], runner?: ReaRunner, log: (line:
       runner: parsed.flags.noRea ? null : (runner ?? defaultReaRunner),
       log,
     });
-    return { code: 0, stdout: note };
+    const notes = [note];
+    for (const platform of PLATFORMS.filter((p) => p !== "facebook" && PLATFORM_SITES[p].browser)) {
+      log(`${platform}: its runs' calls, their code in its bundles, rea reading each`);
+      notes.push(await buildPlatformClientMap({
+        platform,
+        capturesRoot: root,
+        outDir: join(root, "rea", `${platform}Client`),
+        docsDir: platformClientDocs(platform),
+        runner: parsed.flags.noRea ? null : (runner ?? defaultReaRunner),
+        log,
+      }));
+    }
+    return { code: 0, stdout: notes.join("\n") };
   }
   if (typeof parsed.flags.settle === "string") {
     const dir = resolve(parsed.flags.settle);
@@ -56,7 +72,7 @@ export const captureCommand: Command = {
   platform: "facebook",
   name: "capture",
   effect: "write",
-  summary: "Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds the Facebook client docs. No browser.",
+  summary: "Read a run's raw HAR (any browser driver) and its scripts with offline rea; --docs builds every platform's client docs, rea reading each request's code. No browser.",
   args: "--har <path> [--out <dir>] [--noRea] [--json] | --settle <dir> | --docs [--noRea]",
   run(context, argv) {
     return runCapture(argv, undefined, context.err);

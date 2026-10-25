@@ -31,6 +31,25 @@ for (const domain of readdirSync(docsDir)) {
   }
 }
 
+const platformsDir = join(root, 'docs', 'platforms');
+for (const platform of readdirSync(platformsDir)) {
+  const platformIndex = join(platformsDir, platform, 'operations.json');
+  if (platform === 'facebook' || !existsSync(platformIndex)) continue;
+  const platformDocs = join(platformsDir, platform);
+  const platformOps = JSON.parse(readFileSync(platformIndex, 'utf8')).operations;
+  const platformListed = new Set(platformOps.map((o) => o.doc));
+  for (const operation of platformOps) {
+    const path = join(platformDocs, operation.doc);
+    if (!existsSync(path)) problems.push(`${platform}/${operation.doc}: listed in operations.json but the doc is missing`);
+    else if (readFileSync(path, 'utf8').includes('<!-- toWrite -->')) problems.push(`${platform}/${operation.doc}: reasoning not written yet (<!-- toWrite -->)`);
+    if (!operation.reaEvidenceId) problems.push(`${platform}/${operation.doc}: rea has not read this request's code or its step`);
+  }
+  for (const domain of readdirSync(platformDocs)) {
+    if (!statSync(join(platformDocs, domain)).isDirectory()) continue;
+    for (const file of readdirSync(join(platformDocs, domain))) if (file.endsWith('.md') && !platformListed.has(`${domain}/${file}`)) problems.push(`${platform}/${domain}/${file}: not in operations.json (rebuild the docs)`);
+  }
+}
+
 const flowsDir = join(root, 'src', 'camofox', 'flow', 'definitions');
 if (existsSync(flowsDir)) {
   for (const file of readdirSync(flowsDir).filter((f) => f.endsWith('.json'))) {

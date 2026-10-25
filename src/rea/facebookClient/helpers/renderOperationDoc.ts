@@ -5,11 +5,13 @@ export const FACTS_START = '<!-- facts:start · written by `log facebook capture
 export const FACTS_END = '<!-- facts:end -->'
 export const TO_WRITE = '<!-- toWrite -->'
 
-const REASONING = [
+export type ReasoningPrompts = readonly (readonly [string, string])[]
+
+export const FACEBOOK_REASONING: ReasoningPrompts = [
   ['What it does', 'What this request is for on Facebook\'s side, from its definition and the step it fires in.'],
   ['What our machine does with it', 'Which state of `marketplace/connect` or `marketplace/publish` waits for it, reads it, or ignores it, and why.'],
   ['What can go wrong', 'The errors and statuses it can return, what each means for the run, and the end or retry our machine takes.']
-] as const
+]
 
 export function stepLabel(step: string): string {
   return step
@@ -80,13 +82,13 @@ export function renderFacts(operation: ClientOperation, sightings = renderSighti
   ].join('\n')
 }
 
-export function renderOperationDoc(operation: ClientOperation, existing: string | null, sightings?: string): string {
+export function renderOperationDoc(operation: ClientOperation, existing: string | null, sightings?: string, reasoning: ReasoningPrompts = FACEBOOK_REASONING): string {
   const facts = renderFacts(operation, sightings)
   if (existing && existing.includes(FACTS_START) && existing.includes(FACTS_END)) {
     const before = existing.slice(0, existing.indexOf(FACTS_START))
     const after = existing.slice(existing.indexOf(FACTS_END) + FACTS_END.length)
     return `${before}${facts}${after}`
   }
-  const sections = REASONING.map(([title, prompt]) => `## ${title}\n\n${TO_WRITE} ${prompt}\n`)
+  const sections = reasoning.map(([title, prompt]) => `## ${title}\n\n${TO_WRITE} ${prompt}\n`)
   return `# ${operation.name}\n\n${facts}\n\n${sections.join('\n')}`
 }

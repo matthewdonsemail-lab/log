@@ -1,0 +1,357 @@
+{
+  "builtAt": "2026-10-25T13:32:57.719Z",
+  "runs": 1,
+  "operations": [
+    {
+      "name": "ChatRedditors",
+      "domain": "chat",
+      "kind": "query",
+      "docId": null,
+      "doc": "chat/ChatRedditors.md",
+      "reaEvidenceId": "ev_645fc274cdca39326bbbdc3ac6d53ff198750c564de9bdedf74beccfaceecbce",
+      "seen": 7
+    },
+    {
+      "name": "ChatSubredditStyles",
+      "domain": "chat",
+      "kind": "query",
+      "docId": null,
+      "doc": "chat/ChatSubredditStyles.md",
+      "reaEvidenceId": "ev_645fc274cdca39326bbbdc3ac6d53ff198750c564de9bdedf74beccfaceecbce",
+      "seen": 7
+    },
+    {
+      "name": "CreateCaptchaToken",
+      "domain": "account",
+      "kind": "mutation",
+      "docId": null,
+      "doc": "account/CreateCaptchaToken.md",
+      "reaEvidenceId": "ev_1487d2203e5198e4bbf7b178ae47731d1f00e8465d1e0b6f28430abba82e8d1a",
+      "seen": 7
+    },
+    {
+      "name": "EnrollInStreaks",
+      "domain": "experiments",
+      "kind": "mutation",
+      "docId": null,
+      "doc": "experiments/EnrollInStreaks.md",
+      "reaEvidenceId": "ev_5a641c4d57b5f35719fc15447c137bf3f5e5b0fbfc6acbb532f1a32c505b16ad",
+      "seen": 1
+    },
+    {
+      "name": "ExposeVariant",
+      "domain": "experiments",
+      "kind": "mutation",
+      "docId": null,
+      "doc": "experiments/ExposeVariant.md",
+      "reaEvidenceId": "ev_c479322079acc5e9705ab61a5e8726d5e92eaffedc0babbf6f5df7597c433dce",
+      "seen": 9
+    },
+    {
+      "name": "piP",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/piP.md",
+      "reaEvidenceId": "ev_f322b36dde9e0c8ddebceccd0a0499cc36b348e013d73890e4b742bdcb6f3863",
+      "seen": 7
+    },
+    {
+      "name": "StoreUxtargetingAction",
+      "domain": "experiments",
+      "kind": "mutation",
+      "docId": null,
+      "doc": "experiments/StoreUxtargetingAction.md",
+      "reaEvidenceId": "ev_1eabc44149f598f96afa3c84f9b0dd45c695eb446f0b569a4e6207cdee710c0f",
+      "seen": 1
+    },
+    {
+      "name": "svcEventsPreloadHead",
+      "domain": "telemetry",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "telemetry/svcEventsPreloadHead.md",
+      "reaEvidenceId": "ev_f322b36dde9e0c8ddebceccd0a0499cc36b348e013d73890e4b742bdcb6f3863",
+      "seen": 7
+    },
+    {
+      "name": "svcShredditCommunityHoverCard",
+      "domain": "community",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "community/svcShredditCommunityHoverCard.md",
+      "reaEvidenceId": "ev_b154a5253c10c124cb2d146a76adbd0bb403544f711fe383672a9ea7d22578c6",
+      "seen": 1
+    },
+    {
+      "name": "svcShredditCommunityMorePostsBest",
+      "domain": "feed",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "feed/svcShredditCommunityMorePostsBest.md",
+      "reaEvidenceId": "ev_ad5d2b5ae31e67fba3eba384fefae7ac9b47736ce7461d465da411eed3fdeecd",
+      "seen": 1
+    },
+    {
+      "name": "svcShredditCompressionDictionariesBr",
+      "domain": "background",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "background/svcShredditCompressionDictionariesBr.md",
+      "reaEvidenceId": "ev_f322b36dde9e0c8ddebceccd0a0499cc36b348e013d73890e4b742bdcb6f3863",
+      "seen": 1
+    },
+    {
+      "name": "svcShredditDataProtectionConsent",
+      "domain": "account",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "account/svcShredditDataProtectionConsent.md",
+      "reaEvidenceId": "ev_3856a20c3c6bc3c89bbc75074bee92f9a91af2d34b136bfa28b9f9f6238d4a73",
+      "seen": 7
+    },
+    {
+      "name": "svcShredditDeferredExperiences",
+      "domain": "experiments",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "experiments/svcShredditDeferredExperiences.md",
+      "reaEvidenceId": "ev_603dd49d172731420c2cafdefbaaebef224a86e2d6d576cd5f1df20f3469e219",
+      "seen": 8
+    },
+    {
+      "name": "svcShredditDevvitLeftNavBadge",
+      "domain": "experiments",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "experiments/svcShredditDevvitLeftNavBadge.md",
+      "reaEvidenceId": "ev_f322b36dde9e0c8ddebceccd0a0499cc36b348e013d73890e4b742bdcb6f3863",
+      "seen": 7
+    },
+    {
+      "name": "svcShredditEvents",
+      "domain": "telemetry",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "telemetry/svcShredditEvents.md",
+      "reaEvidenceId": "ev_d0bcf3bd9ec798afc82f6cb18dc4d9ad1cbc3600baab45465a5707b648682dd1",
+      "seen": 106
+    },
+    {
+      "name": "svcShredditFeedsHomeFeed",
+      "domain": "feed",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "feed/svcShredditFeedsHomeFeed.md",
+      "reaEvidenceId": "ev_b9eb871b431af374cafca8aa1692ff30df562901fa370db3483f0dc3ffa887e2",
+      "seen": 1
+    },
+    {
+      "name": "svcShredditFeedsPopularFeed",
+      "domain": "feed",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "feed/svcShredditFeedsPopularFeed.md",
+      "reaEvidenceId": "ev_b9eb871b431af374cafca8aa1692ff30df562901fa370db3483f0dc3ffa887e2",
+      "seen": 1
+    },
+    {
+      "name": "svcShredditHamburgerMenu",
+      "domain": "feed",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "feed/svcShredditHamburgerMenu.md",
+      "reaEvidenceId": "ev_f3e179f6ef54fb9b22663e4e58be10f0f0c4b81d293c565998a743f4094771b7",
+      "seen": 1
+    },
+    {
+      "name": "svcShredditHeaderActionItemChat",
+      "domain": "chat",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "chat/svcShredditHeaderActionItemChat.md",
+      "reaEvidenceId": "ev_f833e825dca67461f8aa08c2c541968a4e6a855f8c65037fa6bc3c368d9e5e68",
+      "seen": 7
+    },
+    {
+      "name": "svcShredditHeaderActionItemInbox",
+      "domain": "inbox",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "inbox/svcShredditHeaderActionItemInbox.md",
+      "reaEvidenceId": "ev_4fd054c78047e8b7fbb4b5c4a6f91280f44d90e4a4a2215e78067135123077cc",
+      "seen": 7
+    },
+    {
+      "name": "svcShredditMoreComments",
+      "domain": "comments",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "comments/svcShredditMoreComments.md",
+      "reaEvidenceId": "ev_b93f1f9518971a3d3c21a643e5d4652e977b4059195bbb83c385e0bdf74eb746",
+      "seen": 1
+    },
+    {
+      "name": "svcShredditNotificationsInboxContentRoute",
+      "domain": "inbox",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "inbox/svcShredditNotificationsInboxContentRoute.md",
+      "reaEvidenceId": "ev_871cf656c9e276b908e8b24ffabbf94776e9772226560746ce79ee8d90edb2da",
+      "seen": 2
+    },
+    {
+      "name": "svcShredditPartialBannedUserBanner",
+      "domain": "account",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "account/svcShredditPartialBannedUserBanner.md",
+      "reaEvidenceId": "ev_f322b36dde9e0c8ddebceccd0a0499cc36b348e013d73890e4b742bdcb6f3863",
+      "seen": 7
+    },
+    {
+      "name": "svcShredditPartialCrosspostDialog",
+      "domain": "community",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "community/svcShredditPartialCrosspostDialog.md",
+      "reaEvidenceId": "ev_a66b2f6f7c310d323a206587a0ec80388256e37f52c6091bbbf2ed991f69248c",
+      "seen": 6
+    },
+    {
+      "name": "svcShredditPartialModContentActions",
+      "domain": "community",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "community/svcShredditPartialModContentActions.md",
+      "reaEvidenceId": "ev_4c1dfe147153046e53653b9c88981be6a5d45a79138c0524afd2c003f8f79b8b",
+      "seen": 7
+    },
+    {
+      "name": "svcShredditPartialUserDrawerMenu",
+      "domain": "account",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "account/svcShredditPartialUserDrawerMenu.md",
+      "reaEvidenceId": "ev_b2785c18b89996e1adf431e9e29388c2d2e958e468cff70e1e9803810f522ce6",
+      "seen": 1
+    },
+    {
+      "name": "svcShredditPerfmetrics",
+      "domain": "telemetry",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "telemetry/svcShredditPerfmetrics.md",
+      "reaEvidenceId": "ev_bfd69ffb45d209342b7db55507bec06500072cc7055143f804bef4a9494612d6",
+      "seen": 10
+    },
+    {
+      "name": "svcShredditPostDetailModules",
+      "domain": "comments",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "comments/svcShredditPostDetailModules.md",
+      "reaEvidenceId": "ev_4a5dcfad32bab6b5f1ed63024ec8eed50aaaeab794ca2a0212b513cf3f6afb8e",
+      "seen": 1
+    },
+    {
+      "name": "svcShredditRedditChat",
+      "domain": "chat",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "chat/svcShredditRedditChat.md",
+      "reaEvidenceId": "ev_22cfdfe21aaaf45b90daa020b499149742e037f8be703fae2aa18cc211f098ca",
+      "seen": 7
+    },
+    {
+      "name": "svcShredditStylingOverrides",
+      "domain": "community",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "community/svcShredditStylingOverrides.md",
+      "reaEvidenceId": "ev_12bce587ea2b77c3b78c6903f14b7897a0e8b62e18d85f1a74650c915d8a117b",
+      "seen": 7
+    },
+    {
+      "name": "svcShredditSubredditPostingEligibilityModal",
+      "domain": "community",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "community/svcShredditSubredditPostingEligibilityModal.md",
+      "reaEvidenceId": "ev_9238b7d25c82cf90e4ef5d35f5be371c3a36c3a0f7571e7f0fabd623318a3661",
+      "seen": 2
+    },
+    {
+      "name": "svcShredditToken",
+      "domain": "account",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "account/svcShredditToken.md",
+      "reaEvidenceId": "ev_d0bcf3bd9ec798afc82f6cb18dc4d9ad1cbc3600baab45465a5707b648682dd1",
+      "seen": 5
+    },
+    {
+      "name": "svcShredditUpdateRecaptcha",
+      "domain": "account",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "account/svcShredditUpdateRecaptcha.md",
+      "reaEvidenceId": "ev_357a2e409e025af5104d5cd0035e0e370ac26175c4b396f871207a5b7d516267",
+      "seen": 7
+    },
+    {
+      "name": "svcShredditUserDrawerButtonLoggedIn",
+      "domain": "account",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "account/svcShredditUserDrawerButtonLoggedIn.md",
+      "reaEvidenceId": "ev_4fd054c78047e8b7fbb4b5c4a6f91280f44d90e4a4a2215e78067135123077cc",
+      "seen": 7
+    },
+    {
+      "name": "TrophyCategories",
+      "domain": "profile",
+      "kind": "query",
+      "docId": null,
+      "doc": "profile/TrophyCategories.md",
+      "reaEvidenceId": "ev_d76bbb733755c46c37d091c36af4b4c229bdc60c8ca31e5bcf43b2a22367837d",
+      "seen": 1
+    },
+    {
+      "name": "UpdateInboxActivitySeenState",
+      "domain": "inbox",
+      "kind": "mutation",
+      "docId": null,
+      "doc": "inbox/UpdateInboxActivitySeenState.md",
+      "reaEvidenceId": "ev_eb0bc10d733085edc2ae653118264942b37131707715a18ca6b93fa95c578d4b",
+      "seen": 1
+    },
+    {
+      "name": "UserCommunityAchievements",
+      "domain": "community",
+      "kind": "query",
+      "docId": null,
+      "doc": "community/UserCommunityAchievements.md",
+      "reaEvidenceId": "ev_7eb9479e35d54f913fc2f4a191e2f87153f3e03b997a57a40d4a11db3e670f67",
+      "seen": 2
+    },
+    {
+      "name": "w3ReportingPolicy",
+      "domain": "telemetry",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "telemetry/w3ReportingPolicy.md",
+      "reaEvidenceId": "ev_1ddeb397f20884912dd459f56cb60b625a63e5c7b684179cbbd83077dc74a11e",
+      "seen": 1
+    },
+    {
+      "name": "w3ReportingReports",
+      "domain": "telemetry",
+      "kind": "endpoint",
+      "docId": null,
+      "doc": "telemetry/w3ReportingReports.md",
+      "reaEvidenceId": "ev_a0900cc4da1ca39914046767a7b89709c1d1bec48228118e051e5982c6469e97",
+      "seen": 7
+    }
+  ]
+}
