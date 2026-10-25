@@ -7031,3 +7031,75 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: (1) The direct path is decided by Facebook's own page, not accountStatus. The engine bootstraps first and returns fbk's login state (loggedIn, loggedOut, checkpoint, unknown, plus account-warning banners). The new `src/directApi/engine` domain gates it (`directGate`: not deactivated, a c_user+xs session, a proxy exiting in the home country, inside the account's hours unless --bypass). It writes the state to two new additive Twenty fields, `socialAccounts.sessionState` and `sessionCheckedAt` (`twentySetup.mjs`, client regenerated). A checkpoint stops the run and deactivates the account with its listings marked lost (`setStatusAndReplace`). loggedOut or an account warning hands over to the browser path, and a governor block stops with the new error `governorBlocked`. (2) Each account has its own fbk governor and token cache under `~/.logCli/fbk/<account>`: the engine sets fbk's `state_dir` per account, and the vendored `Session` passes that folder to `default_governor`. `pacer.py` uses the same folder. (3) Which engine runs each command is code: `DIRECT_ROUTES` and `commandEngine` (`src/directApi/engine`). The catalog's Engine field, the README's Engine column and Engines section, and every MCP tool's description (`engineLine`) are generated from it. `check:docs` refuses a `context.direct*` call that isn't declared, a declared route its command never calls, a seam missing from CommandContext, and a direct-API command whose usage or summary doesn't say so. The read usage and summaries now say direct-API first. (4) A new `engines` hook (SessionStart, including compact, and UserPromptSubmit when something changed) puts the routes and each account's session state and governor use into the agent's context. (5) `bin/logMcp.ts` stamps its start (`src/mcp/freshness`), and the hook says loudly when the MCP server runs older code than the checkout.
 Why: matt: build all three. Decide the direct path from fbk's login state and write it back to Twenty, give each account its own governor and token cache, and make the engine a code declaration that feeds the MCP text, the README and the hooks, with check:docs refusing drift. Setting Plymouth to warming would have faked a lifecycle state. fbk's docs (03 §2, 09) say a session's state is read from each served page, which is rule 73. fbk's default governor was one counter for every account. The readGroup tool text still said browser only, and the MCP server keeps the code it started with.
 Checked: `bun run test` 1022 pass. New tests: the direct gate (needsLogin passes; deactivated, no session or a foreign exit don't), `outcomeOf` (checkpoint and governorBlocked stop; loggedOut and accountWarning hand over), the read tests (loggedIn writes sessionState; a needsLogin account still reads; a checkpoint deactivates with no browser; loggedOut goes to the browser path), readGroup's MCP description carrying the engine line and readGroupLive's not, the hook context with a 10-minute pause, and the freshness stamp. tsc, check:docs, check:agentHooks, check:noComments, check:naming and check:layout pass. Run from the terminal on Plymouth at 06:11 local: `direct-API engine not used: it is 06:11 in Plymouth`, then handed to the browser path (rule 18 held). The governor status reads offline from `~/.logCli/fbk/61594122755104`.
+
+## 2026-10-25 10:23Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/twitterPlatform.md`: new file
+- `vendor/twikit/.github/FUNDING.yml`: new file
+- `vendor/twikit/.gitignore`: new file
+- `vendor/twikit/.readthedocs.yaml`: new file
+- `vendor/twikit/CHANGES.md`: new file
+- `vendor/twikit/LICENSE`: new file
+- `vendor/twikit/README-ja.md`: new file
+- `vendor/twikit/README-zh.md`: new file
+- `vendor/twikit/README.md`: new file
+- `vendor/twikit/ToProtectYourAccount.md`: new file
+- `vendor/twikit/docs/Makefile`: new file
+- `vendor/twikit/docs/conf.py`: added const project, const copyright, const author, const extensions, const templates_path, const exclude_patterns, const language, const html_theme, const html_static_path, const todo_include_todos
+- `vendor/twikit/docs/index.rst`: new file
+- `vendor/twikit/docs/make.bat`: new file
+- `vendor/twikit/docs/requirements.txt`: new file
+- `vendor/twikit/docs/twikit.rst`: new file
+- `vendor/twikit/examples/delete_all_tweets.py`: added const AUTH_INFO_1, const AUTH_INFO_2, const PASSWORD, const client, def main
+- `vendor/twikit/examples/dm_auto_reply.py`: added const AUTH_INFO_1, const AUTH_INFO_2, const PASSWORD, const client, def main
+- `vendor/twikit/examples/download_tweet_media.py`: added const AUTH_INFO_1, const AUTH_INFO_2, const PASSWORD, const client, def main
+- `vendor/twikit/examples/example.py`: added const USERNAME, const EMAIL, const PASSWORD, const client, def main
+- `vendor/twikit/examples/guest.py`: added const client, def main
+- `vendor/twikit/examples/listen_for_new_tweets.py`: added const AUTH_INFO_1, const AUTH_INFO_2, const PASSWORD, const client, const USER_ID, const CHECK_INTERVAL, def callback, def get_latest_tweet, def main
+- `vendor/twikit/ratelimits.md`: new file
+- `vendor/twikit/requirements.txt`: new file
+- `vendor/twikit/twikit/__init__.py`: added const __version__
+- `vendor/twikit/twikit/_captcha/__init__.py`: new file, no top-level declarations
+- `vendor/twikit/twikit/_captcha/base.py`: added class UnlockHTML, class CaptchaSolver, def parse_unlock_html
+- `vendor/twikit/twikit/_captcha/capsolver.py`: added class Capsolver
+- `vendor/twikit/twikit/bookmark.py`: added class BookmarkFolder
+- `vendor/twikit/twikit/client/client.py`: added class Client
+- `vendor/twikit/twikit/client/gql.py`: added class Endpoint, class GQLClient
+- `vendor/twikit/twikit/client/v11.py`: added class Endpoint, class V11Client
+- `vendor/twikit/twikit/community.py`: added class CommunityCreator, class CommunityRule, class CommunityMember, class Community
+- `vendor/twikit/twikit/constants.py`: added const TOKEN, const DOMAIN, const FEATURES, const USER_FEATURES, const LIST_FEATURES, const COMMUNITY_NOTE_FEATURES, const COMMUNITY_TWEETS_FEATURES, const JOIN_COMMUNITY_FEATURES, const NOTE_TWEET_FEATURES, const SIMILAR_POSTS_FEATURES, const BOOKMARK_FOLDER_TIMELINE_FEATURES, const TWEET_RESULT_BY_REST_ID_FEATURES, const USER_HIGHLIGHTS_TWEETS_FEATURES, const TWEET_RESULTS_BY_REST_IDS_FEATURES
+- `vendor/twikit/twikit/errors.py`: added class TwitterException, class BadRequest, class Unauthorized, class Forbidden, class NotFound, class RequestTimeout, class TooManyRequests, class ServerError, class CouldNotTweet, class DuplicateTweet, class TweetNotAvailable, class InvalidMedia, class UserNotFound, class UserUnavailable, class AccountSuspended, class AccountLocked, def raise_exceptions_from_response
+- `vendor/twikit/twikit/geo.py`: added class Place, def _places_from_response
+- `vendor/twikit/twikit/group.py`: added class Group, class GroupMessage
+- `vendor/twikit/twikit/guest/__init__.py`: new file, no top-level declarations
+- `vendor/twikit/twikit/guest/client.py`: added def tweet_from_data, class GuestClient
+- `vendor/twikit/twikit/guest/tweet.py`: added class Tweet
+- `vendor/twikit/twikit/guest/user.py`: added class User
+- `vendor/twikit/twikit/list.py`: added class List
+- `vendor/twikit/twikit/media.py`: added class Media, class Photo, class Stream, class AnimatedGif, class Video, const MEDIA_TYPE, const MEDIA_TYPE_MAPPING, def _media_from_data
+- `vendor/twikit/twikit/message.py`: added class Message
+- `vendor/twikit/twikit/notification.py`: added class Notification
+- `vendor/twikit/twikit/streaming.py`: added class StreamingSession, def _event_from_data, def _payload_from_data, class Payload, class ConfigEvent, class SubscriptionsEvent, class TweetEngagementEvent, class DMUpdateEvent, class DMTypingEvent, const StreamEventType, class Topic
+- `vendor/twikit/twikit/trend.py`: added class Trend, class PlaceTrends, class PlaceTrend, class Location
+- `vendor/twikit/twikit/tweet.py`: added class Tweet, def tweet_from_data, class ScheduledTweet, class TweetTombstone, class Poll, class CommunityNote
+- `vendor/twikit/twikit/ui_metrics/__init__.py`: added const FUNCTION_PATTERN, const EQUAL_PATTERN, def solve_ui_metrics
+- `vendor/twikit/twikit/ui_metrics/dom.py`: added class MockElement, class MockDocument
+- `vendor/twikit/twikit/user.py`: added class User
+- `vendor/twikit/twikit/utils.py`: added const T, class Result, class Flow, def find_dict, def httpx_transport_to_url, def get_query_id, def timestamp_to_datetime, def build_tweet_data, def build_user_data, def flatten_params, def b64_to_str, def find_entry_by_type, const FILTERS, class SearchOptions, def build_query
+- `vendor/twikit/twikit/x_client_transaction/__init__.py`: new file, no top-level declarations
+- `vendor/twikit/twikit/x_client_transaction/cubic_curve.py`: added class Cubic
+- `vendor/twikit/twikit/x_client_transaction/interpolate.py`: added def interpolate, def interpolate_num
+- `vendor/twikit/twikit/x_client_transaction/rotation.py`: added def convert_rotation_to_matrix, def convertRotationToMatrix
+- `vendor/twikit/twikit/x_client_transaction/transaction.py`: added const ON_DEMAND_FILE_REGEX, const ON_DEMAND_HASH_PATTERN, const INDICES_REGEX, class ClientTransaction
+- `vendor/twikit/twikit/x_client_transaction/utils.py`: added def handle_x_migration, def float_to_hex, def is_odd, def base64_encode, def base64_decode
+- `vendor/twitterController/SKILL.md`: new file
+- `vendor/twitterController/random_run.py`: added const RNG, const LATE, const POLL, const COOL_BASE, const COOL_CAP, const MAX_COOLS, const DAY, class Run, def parse_span, def draw, def cmd_plan, def pick_kinds, def interleave, def cool_secs, def classify, def reset_at, def shift_rest, def requeue, def drop, def note, def nudge_path, def take_nudge, def wait_until, def cmd_nudge, def cmd_run, def halt, def main
+- `vendor/twitterController/send_approved_reply.py`: added const URL_RE, const SECRET_KEYS, def load_env_file, def secret_values, def redact, def check_style, def rest_base, def fetch_cookies, def twenty_get, def pick_account, def resolve_account_id, def normalize_cookies, def merge_for_storage, def unwrap, def _domain_rank, def merge_cookie_shape, def store_cookies, def own_user_id, def tweet_id_from_url, class SessionInvalid, def check_session, def run_send, def main
+- `vendor/twitterController/sequence.py`: added const HERE, const SENDER, const ACTIONS, def now, def load, def save, def log, def target, def fingerprint, def sender, def sent_id, def sender_args, def human_gap, def read_gap, def next_gap, def until_active, def cmd_plan, def cmd_build, def cmd_show, def cmd_check, def cmd_approve, def cmd_status, const THROTTLE_COOLDOWNS, const LIMIT_COOLDOWN, const FAIL_COOLDOWN, const MAX_STRIKES, def cooldown, def alert, def cmd_run, def main
+- `vendor/twitterController/tests/test_random_run.py`: added def test_draw_in_window_and_spaced, def test_draw_refuses_impossible, def test_interleave_keeps_like_before_reply, def make_queue, def args, def test_run_all_ok, const EMPTY, def no_wait, def test_block_cools_off_then_retries_and_carries_on, def test_post_failing_twice_is_skipped_not_halted, def test_halts_after_max_cool_offs_in_a_row, def test_auth_failure_still_halts_at_once, def test_gone_post_is_skipped_without_cooling, def test_cool_secs_uses_x_reset_time, def test_reset_at_reads_twikit_and_headers, def test_run_halts_when_behind, def test_pick_kinds_is_random_mix, def test_run_like_after_reply, def test_nudge_sends_next_replies_now, def test_nudge_needs_a_running_queue
+- `vendor/twitterController/tests/test_send_approved_reply.py`: added const HERE, const ROOT, const SCRIPT, def run_cli, class CookieShapeTests, class StyleTests, class RedactTests, class TwentyTests, class AccountLookupTests, class UrlTests, class CliGateTests, class FakeHttp, class FakeClient, class SessionCheckTests
+
+What changed: Twitter comes in as log-cli's second platform, as fbk did. `vendor/twikit` is unclecode's fork of twikit (MIT, commit 6a73ab9, 2026-05-17, the one twitter-controller installs), as plain files from GitHub's tarball of that commit. `vendor/twitterController` is the twitter-controller skill's scripts and tests as they were (send_approved_reply, sequence, random_run), the code to port. `docs/twitterPlatform.md` is the plan. It covers what the controller does, how it maps onto log-cli's three layers (`log twitter <command>`, `src/twitter/<area>/<domain>`, `python/twitterApi/engine.py` around twikit, a per-account governor, `sessionState`, `DIRECT_ROUTES` with a `directApiOnly` engine kind), its families (session, follows, reply/quote/like, dm, queue, copy style), the random runner as an XState machine, and the order of work. The warm-up and X listening are out for now.
+Why: matt: read twitter-controller, put its library in vendor, and plan to map it onto log-cli the way Facebook works through fbk. The use case differs from Facebook's and there's no warm-up yet. We build around platform clients instead of carrying over log's own.
+Checked: twikit 2.3.3 imports from vendor/twikit with LOG_PYTHON. The plan's Mermaid diagram parses with the repo's mermaid and jsdom, as check:docs does. Twenty has 2 TWITTER socialAccounts: cookies set, no proxy, home or status (counted, no values read out). check:naming, check:noComments and check:layout pass (vendor is skipped as before).
