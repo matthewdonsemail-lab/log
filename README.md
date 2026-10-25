@@ -117,7 +117,7 @@ Source: [`docs/diagrams/browsers.mmd`](docs/diagrams/browsers.mmd).
 
 - **The account's browser, through the driver:** `host`, `inspect`, `flow`, `warmup`, `join`, `read`, `poll`, `check`. They run on whichever browser the account uses: AdsPower when it has a linked profile (`socialAccounts.adsPowerProfileId`), Camoufox otherwise, or what `socialAccounts.browserDriver` says.
 - **Camoufox only, not on the driver yet:** `doctor`, `connect`, `profile`, `scan`, `status`, `watch`, `publish`, `campaign`. They launch Camoufox themselves (facebook-camofox-client's worker, or the publish, connect and profile sessions), so on an AdsPower account they don't open its AdsPower profile. Moving one onto the driver is moving it into `OPENER_ACTIONS` (`src/browser/run`).
-- **No browser:** `launch`, `listings`, `listing`, `accounts`, `account`, `adsPower`, `lifecycle`, `preflight`, `proxy`, `conversations`, `conversation`, `messenger`, `errors`, `graph`, `capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `session`.
+- **No browser:** `launch`, `listings`, `listing`, `accounts`, `account`, `adsPower`, `lifecycle`, `preflight`, `proxy`, `conversations`, `conversation`, `messenger`, `errors`, `graph`, `capture`, `runs`, `browsers`, `job`, `mcp`, `login`, `logout`, `whoami`, `session`, `follows`, `reply`, `quote`, `like`, `dm`, `queue`.
 
 Each browser's capabilities, built or not: [`docs/browsers.md`](docs/browsers.md) (generated, `bun run check:browsers`). AdsPower's setup: [`docs/adsPower.md`](docs/adsPower.md).
 
@@ -126,7 +126,13 @@ Each browser's capabilities, built or not: [`docs/browsers.md`](docs/browsers.md
 A command on the direct-API engine calls the platform's internal API with the account's saved session, paced by its own governor, and opens no browser: Facebook through fbk (`vendor/fbk`) and the account's proxy, X through twikit (`vendor/twikit`) directly (rule 80). Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it.
 
 - `log facebook read`: Engine: the direct-API engine first (fbk groups.feed_read, no browser) for read group without --live on a numeric group id, when the account has a saved c_user + xs session, a proxy in its home country and is inside its hours (--bypass skips the hours). Facebook's own page decides, not accountStatus: loggedIn reads; checkpoint stops and deactivates the account; loggedOut or accountWarning hands over to the browser path. Each account has its own governor (gaps of 4 s or more, 120 an hour, 500 a day, 40 writes a day, a 15-minute pause on a soft block, 6 hours on a checkpoint) and its result is written to socialAccounts.sessionState.
-- `log twitter session`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, account.ping; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status (401 or 403 is loggedOut, 200 or 404 loggedIn), then the account's profile read; a suspended or locked account is restricted. Each account has its own governor under ~/.logCli/twitter/<account>, refreshed cookies are merged back into its Twenty row, and the result is written to socialAccounts.sessionState.
+- `log twitter session`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, account.ping for the session check; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
+- `log twitter follows`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, friendships.show for the follows read; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
+- `log twitter reply`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.create_tweet for the reply; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
+- `log twitter quote`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.create_tweet for the quote; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
+- `log twitter like`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.favorite_tweet for the like; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
+- `log twitter dm`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, messages.send_dm for the dm; no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
+- `log twitter queue`: Engine: the direct-API engine only (twikit, vendored in vendor/twikit, tweets.create_tweet for the queue run --live (each like and reply); no browser and no proxy: X accounts call X directly, rule 80). X's own answer decides: the session check's HTTP status first (401 or 403 is loggedOut, 200 or 404 loggedIn), then the call's own answer, read into one event (sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted). Each account has its own governor under ~/.logCli/twitter/<account> (sends count as writes, 40 a day), refreshed cookies are merged back into its Twenty row, and the session state is written to socialAccounts.sessionState.
 
 ### How a call reaches log-cli
 
@@ -137,9 +143,9 @@ flowchart LR
   agent["Agent (Claude Code, Codex)"]
   matt["matt, in a terminal"]
   shell["Bash / PowerShell / Monitor"]
-  mcp["MCP server log: 70 command tools + saved flows"]
+  mcp["MCP server log: 88 command tools + saved flows"]
   bin["bin/log.ts"]
-  runCli["runCli: 39 commands (COMMANDS)"]
+  runCli["runCli: 45 commands (COMMANDS)"]
   live[("~/.logCli/mcp/day.log: the live log")]
   browser["The account's browser (one per day, rule 35)"]
   agent --> shell
@@ -211,6 +217,12 @@ Every command also takes `--proxyMs <ms>` (this run's proxy speed limit, rule 33
 | [`log logout`](#log-logout) | Forget the stored Twenty session | any (none) | `--apiUrl <url>` `--json` | none | none | `logout` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
 | [`log whoami`](#log-whoami) | Show who is signed in, refreshing the session if it expired | any (none) | `--apiUrl <url>` `--json` | none | none | `whoami` | PreToolUse, PostToolUse · PostToolUse | no | 30, 38, 39, 40, 41 |
 | [`log twitter session`](#log-twitter-session) | Check that X still accepts an account's saved session, on the direct-API engine, sending nothing; the answer goes to Twenty | `twitter` first | `--account <accountName>` `--json` | direct API only | none | `twitterSessionCheck` | PreToolUse, PostToolUse · PostToolUse | no | 13, 21, 26, 63, 64, 73, 80, 81, 30, 38, 39, 40, 41 |
+| [`log twitter follows`](#log-twitter-follows) | Read whether handles follow an X account and it follows them, on the direct-API engine, sending nothing | `twitter` first | `--account <accountName>` `--handles <handle,handle…>` `--json` | direct API only | none | `twitterFollows` | PreToolUse, PostToolUse · PostToolUse | no | 13, 53, 63, 64, 73, 80, 81, 30, 38, 39, 40, 41 |
+| [`log twitter reply`](#log-twitter-reply) | Reply to one post on X with approved copy, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--tweet <postUrl>` `--text` `--approvedBy <who>` `--skipStyleCheck` `--live` `--json` | direct API only | none | `twitterReply`, `twitterReplyLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 30, 38, 39, 40, 41 |
+| [`log twitter quote`](#log-twitter-quote) | Quote one post on X with approved copy, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--tweet <postUrl>` `--text` `--approvedBy <who>` `--skipStyleCheck` `--live` `--json` | direct API only | none | `twitterQuote`, `twitterQuoteLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 30, 38, 39, 40, 41 |
+| [`log twitter like`](#log-twitter-like) | Like one post on X, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--tweet <postUrl>` `--approvedBy <who>` `--live` `--json` | direct API only | none | `twitterLike`, `twitterLikeLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 30, 38, 39, 40, 41 |
+| [`log twitter dm`](#log-twitter-dm) | Send one approved direct message on X, on the direct-API engine; a dry run unless --live | `twitter` first | `--account <accountName>` `--userId <id>` `--text` `--approvedBy <who>` `--skipStyleCheck` `--live` `--json` | direct API only | none | `twitterDm`, `twitterDmLive` | PreToolUse, PostToolUse · PostToolUse | no | 8, 13, 53, 63, 64, 73, 80, 81, 30, 38, 39, 40, 41 |
+| [`log twitter queue`](#log-twitter-queue) | Build, approve, plan and run a queue of approved X replies, quotes or dms at random moments, on the direct-API engine | `twitter` first | `--targets <targets.json>` `--variations <a.json,b.json>` `--out <queue.json>` `--account <accountName>` `--action` `--seed <n>` `--json` `--by <who>` `--window <5h|90m>` `--limit <n>` `--start <time>` `--minGap <s>` `--like` `--likeChance <0-1>` `--alertChannel <uuid>` `--alertReplyTo <eventId>` `--alertMention <hex,hex>` `--live` `--replies <n>` | direct API only | none | `twitterQueueBuild`, `twitterQueueShow`, `twitterQueueCheck`, `twitterQueueStatus`, `twitterQueueApprove`, `twitterQueuePlan`, `twitterQueueRun`, `twitterQueueRunLive`, `twitterQueueNudge` | PreToolUse, PostToolUse · PostToolUse | yes: watch it | 6, 8, 26, 53, 63, 64, 73, 80, 81, 30, 38, 39, 40, 41 |
 
 ### Saved flows: MCP tools of their own (rule 31)
 
@@ -380,6 +392,25 @@ flowchart TB
   c_session["session"]
   cli --> c_session
   mcp --> c_session
+  c_follows["follows"]
+  cli --> c_follows
+  mcp --> c_follows
+  c_reply["reply"]
+  cli --> c_reply
+  mcp --> c_reply
+  c_quote["quote"]
+  cli --> c_quote
+  mcp --> c_quote
+  c_like["like"]
+  cli --> c_like
+  mcp --> c_like
+  c_dm["dm"]
+  cli --> c_dm
+  mcp --> c_dm
+  c_queue["queue"]
+  cli --> c_queue
+  mcp --> c_queue
+  c_queue --> live
   f_deletePost["flowDeletePost: flow run deletePost"]
   mcp --> f_deletePost
   f_deletePost --> c_flow
@@ -971,6 +1002,78 @@ Check that X still accepts an account's saved session, on the direct-API engine,
 log twitter session check --account <accountName> [--json]
 Checks that X still accepts the account's saved session, on the direct-API engine (twikit, no browser, no proxy: X accounts call X directly, rule 80). Sends nothing.
 X's own answer decides: the session check's HTTP status (401 or 403 loggedOut, 200 or 404 loggedIn), then the account's profile read (suspended or locked: restricted). The result goes to socialAccounts.sessionState, and X's refreshed cookies are merged back into the row.
+```
+
+#### log twitter follows
+
+Read whether handles follow an X account and it follows them, on the direct-API engine, sending nothing MCP tools: `twitterFollows`, one per form, with named fields.
+
+```text
+log twitter follows --account <accountName> --handles <handle,handle…> [--json]
+Reads, for each handle, whether it follows the account and whether the account follows it, on the direct-API engine (twikit, no browser, no proxy: X accounts call X directly, rule 80). Sends nothing.
+X's own answer decides: one friendships/show read per handle, 1.5 s apart, after the session check. Handles come from treg research or matt, never a guess (rule 53).
+```
+
+#### log twitter reply
+
+Reply to one post on X with approved copy, on the direct-API engine; a dry run unless --live MCP tools: `twitterReply`, `twitterReplyLive`, one per form, with named fields.
+
+```text
+log twitter reply --account <accountName> --tweet <postUrl> --text "<copy>" [--approvedBy <who>] [--skipStyleCheck] [--live] [--json]
+Reply to one post on X with approved copy, on the direct-API engine (twikit, no browser, no proxy: X accounts call X directly, rule 80).
+Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (40 a day).
+X's create answer decides: a tweet id is sent, an empty result is a drop (nothing posted, usually the author's reply limits). Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
+```
+
+#### log twitter quote
+
+Quote one post on X with approved copy, on the direct-API engine; a dry run unless --live MCP tools: `twitterQuote`, `twitterQuoteLive`, one per form, with named fields.
+
+```text
+log twitter quote --account <accountName> --tweet <postUrl> --text "<copy>" [--approvedBy <who>] [--skipStyleCheck] [--live] [--json]
+Quote one post on X with approved copy, on the direct-API engine (twikit, no browser, no proxy: X accounts call X directly, rule 80).
+Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (40 a day).
+X's create answer decides: a tweet id is sent, an empty result is a drop. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
+```
+
+#### log twitter like
+
+Like one post on X, on the direct-API engine; a dry run unless --live MCP tools: `twitterLike`, `twitterLikeLive`, one per form, with named fields.
+
+```text
+log twitter like --account <accountName> --tweet <postUrl> [--approvedBy <who>] [--live] [--json]
+Like one post on X, on the direct-API engine (twikit, no browser, no proxy: X accounts call X directly, rule 80).
+Without --live it is a dry run: the target are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (40 a day).
+X's favorite answer decides: Done (or already liked, code 139) is sent. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
+```
+
+#### log twitter dm
+
+Send one approved direct message on X, on the direct-API engine; a dry run unless --live MCP tools: `twitterDm`, `twitterDmLive`, one per form, with named fields.
+
+```text
+log twitter dm --account <accountName> --userId <id> --text "<copy>" [--approvedBy <who>] [--skipStyleCheck] [--live] [--json]
+Send one approved direct message on X, on the direct-API engine (twikit, no browser, no proxy: X accounts call X directly, rule 80).
+Without --live it is a dry run: the target, the text and its house style are checked and X is not contacted. --live sends it, only when matt asked, and needs --approvedBy (rule 8). The session is checked first, and the account's governor counts it as a write (40 a day).
+X's answer decides: a conversation id is sent, none is a drop. Every answer is one event: sent, dropped, throttled, dailyLimit (344), gone (385/433), automated (226), duplicate (187), sessionDead (401), restricted. The session state and X's refreshed cookies go back to Twenty.
+```
+
+#### log twitter queue
+
+Build, approve, plan and run a queue of approved X replies, quotes or dms at random moments, on the direct-API engine MCP tools: `twitterQueueBuild`, `twitterQueueShow`, `twitterQueueCheck`, `twitterQueueStatus`, `twitterQueueApprove`, `twitterQueuePlan`, `twitterQueueRun`, `twitterQueueRunLive`, `twitterQueueNudge`, one per form, with named fields.
+
+```text
+log twitter queue build --targets <targets.json> --variations <a.json,b.json> --out <queue.json> --account <accountName> [--action reply|quote|dm] [--seed <n>]
+log twitter queue show <queue.json> [--json]
+log twitter queue check <queue.json> [--json]
+log twitter queue status <queue.json> [--json]
+log twitter queue approve <queue.json> --by <who>
+log twitter queue plan <queue.json> --window <5h|90m> [--limit <n>] [--start <time>] [--minGap <s>] [--like] [--likeChance <0-1>]
+log twitter queue run <queue.json> [--alertChannel <uuid>] [--alertReplyTo <eventId>] [--alertMention <hex,hex>] [--live]
+log twitter queue nudge <queue.json> [--replies <n>]
+A queue of approved X replies, quotes or dms, sent one at a time at random moments inside a window, on the direct-API engine (twikit, no browser, no proxy: X accounts call X directly, rule 80). Targets come from treg research, never from X (rule 53).
+build pairs each target with one unique line from the variations, shuffled. show and status read it; check runs every pending item through the house style and target checks and contacts nothing. approve records who approved it as it stands: a fingerprint of the account and every item's action, target and copy, and any edit afterwards voids it. plan draws every like and reply a time with the system random source, at least --minGap apart (with --like, each post may get a like before or after its reply). nudge tells a running run to send the next replies now.
+run walks the plan as an XState machine (planned, waiting, liking, replying, cooling, finished, halted), every transition on the live log: without --live a dry run lists what it would send and when; --live sends, only when matt asked (rule 8). Each answer is X's own event: a block or throttle cools off (15 min doubling to 4 h, or X's reset time, 24 h on the daily limit 344) and retries the post once at the end; a deleted post or replies off (385/433) is skipped; a dead session or 5 cool-offs in a row halts it and, with --alertChannel, tags matt in buzz. It saves after every step, so running it again resumes.
 ```
 
 <!-- surface:end -->

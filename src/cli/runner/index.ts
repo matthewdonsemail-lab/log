@@ -1,5 +1,5 @@
 import { readGroupDirect } from "../read/helpers/directApi.ts";
-import { sessionCommand } from "../twitter/index.ts";
+import { dmCommand, followsCommand, likeCommand, queueCommand, quoteCommand, replyCommand, sessionCommand } from "../twitter/index.ts";
 import { runTwitterEngine } from "../../twitter/account/session/index.ts";
 import { runInspectSession, sendInspectCommand } from "../../browser/inspect/index.ts";
 import { startConnectSession, startProfileSession, startSession } from "../../camofox/session/index.ts";
@@ -82,6 +82,12 @@ export const COMMANDS: Command[] = [
   logoutCommand,
   whoamiCommand,
   sessionCommand,
+  followsCommand,
+  replyCommand,
+  quoteCommand,
+  likeCommand,
+  dmCommand,
+  queueCommand,
 ];
 
 const ALIASES: Record<string, string> = {
@@ -107,6 +113,7 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     out: overrides.out ?? ((line) => console.log(line)),
     err: overrides.err ?? ((line) => console.error(line)),
     now: overrides.now ?? (() => new Date()),
+    sleep: overrides.sleep,
     directRead: overrides.directRead ?? readGroupDirect,
     directTwitter: overrides.directTwitter ?? runTwitterEngine,
   };

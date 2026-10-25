@@ -7,7 +7,7 @@ import { rulesLine } from "./agentRules.ts";
 import { engineLine } from "../../../directApi/engine/index.ts";
 import { annotationsOf, LIVE_SUFFIX, titleOf } from "./toolAnnotations.ts";
 
-export const LONG_RUNNING = new Set(["inspect", "join", "read", "poll", "check", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign"]);
+export const LONG_RUNNING = new Set(["inspect", "join", "read", "poll", "check", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign", "queue"]);
 
 export const commandWords = (command: Command): string =>
   isPlatform(command.platform) ? `${command.platform} ${command.name}` : command.platform === "byArgument" ? `<platform> ${command.name}` : command.name;

@@ -52,7 +52,7 @@ export const sessionCommand: Command = {
       if (!gate.ok) return refuse("twitter session check", gate.code === "accountDeactivated" ? "accountNotUsable" : gate.code, gate.detail);
       if (!context.directTwitter) return { code: 1, stderr: "log twitter session check: the direct-API engine isn't wired in this context" };
       context.err(`${account.accountName}: session check on the direct-API engine (twikit), X called directly`);
-      const run = context.directTwitter(account, "ping");
+      const run = context.directTwitter(account, { action: "ping" });
       const lines = await recordTwitterSession(context.twenty, account, run, context.now?.() ?? new Date());
       for (const line of lines) context.err(line);
       const code = run.answer.ok ? 0 : 1;
@@ -63,3 +63,5 @@ export const sessionCommand: Command = {
     }
   },
 };
+
+export { dmCommand, followsCommand, likeCommand, queueCommand, quoteCommand, replyCommand } from "./helpers/index.ts";

@@ -1,6 +1,6 @@
 # Twitter as a log-cli platform: the plan
 
-Status: 2026-10-25. Step 1 is built: the engine (`python/twitterApi/engine.py`) and `log twitter session check` (`src/twitter/account/session`, rule 80). The rest is the plan. The library is in: `vendor/twikit` (unclecode's fork of twikit, MIT, commit `6a73ab9`, 2026-05-17, the same one the skill installs) and `vendor/twitterController` (the skill's scripts and tests as they were, the code being ported). We maintain `vendor/twikit` ourselves (rule 81): its transport is curl_cffi impersonating Safari, as fbk's is, not httpx, checked by `bun run check:twikitTransport` and `vendor/twikit/tests/test_transport.py`.
+Status: 2026-10-25. Steps 1 to 4 are built: the engine (`python/twitterApi/engine.py`: ping, follows, reply, quote, like, dm, each answer read into one event), `log twitter session check`, `follows`, `reply`, `quote`, `like`, `dm` and `queue`, each an MCP tool (the sends and `queue run` with their `…Live` twins). Step 5 (retiring the controller's skill) is left. The library is in: `vendor/twikit` (unclecode's fork of twikit, MIT, commit `6a73ab9`, 2026-05-17, the same one the skill installs) and `vendor/twitterController` (the skill's scripts and tests as they were, the code being ported). We maintain `vendor/twikit` ourselves (rule 81): its transport is curl_cffi impersonating Safari, as fbk's is, not httpx, checked by `bun run check:twikitTransport` and `vendor/twikit/tests/test_transport.py`.
 
 ## In one line
 
@@ -53,12 +53,14 @@ Twitter's families are what the controller does now, by area. Discovery stays tr
 | --- | --- | --- | --- |
 | `log twitter session check --account <a>` | `twitter/account/session` | `--action ping` | no |
 | `log twitter follows --account <a> --handles <h,…>` | `twitter/graph/follows` | `--action follows` | no |
-| `log twitter reply` / `quote` | `twitter/post/reply` | `--action reply / quote` | `replyLive` (rule 8) |
-| `log twitter dm --userId <id>` | `twitter/message/dm` | `--action dm` | `dmLive` |
-| `log twitter like` | `twitter/post/like` | `--action like` | `likeLive` |
-| `log twitter queue build / show / check / approve / status` | `twitter/queue/plan` | `sequence.py` | no |
-| `log twitter queue run / nudge` | `twitter/queue/run` (XState) | `sequence.py run`, `random_run.py` | `queueRunLive` |
+| `log twitter reply` / `quote` | `twitter/post/send` | `--action reply / quote` | `twitterReplyLive`, `twitterQuoteLive` (rule 8) |
+| `log twitter dm --userId <id>` | `twitter/post/send` | `--action dm` | `twitterDmLive` |
+| `log twitter like` | `twitter/post/send` | `--action like` | `twitterLikeLive` |
+| `log twitter queue build / show / check / approve / status / plan` | `twitter/queue/plan` | `sequence.py`, `random_run.py plan` | no |
+| `log twitter queue run / nudge` | `twitter/queue/run` (XState) | `random_run.py run / nudge` | `twitterQueueRunLive` |
 | the house style check | `twitter/copy/style` | `check_style` | no |
+
+Without `--live` a send is a dry run: the target, the text and its house style are checked and X is not contacted. `--live` needs `--approvedBy`, and the engine refuses a send without both too. A queue file keeps the controller's shape: its snake_case keys are read and written back in camelCase, and its approval fingerprint is computed the way the controller's Python computes it, so a queue the controller approved stays approved.
 
 What every platform's commands share stays shared: the copy rules beside `facebook/marketplace/copy`, and the governor.
 

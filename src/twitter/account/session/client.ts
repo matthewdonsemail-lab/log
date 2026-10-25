@@ -7,7 +7,7 @@ import type { TwentyClient } from '../../../twenty/graphql/index'
 import { SOCIAL_ACCOUNTS, toFacebookAccount } from '../../../marketplace/socialAccount/index'
 import type { FacebookAccount, SocialAccountRow } from '../../../marketplace/socialAccount/index'
 import { twitterStateRoot, writeLocalSession } from '../../../directApi/engine/index'
-import type { TwitterEngineRun, TwitterGate, TwitterSessionAnswer } from './types'
+import type { TwitterEngineRun, TwitterEngineSpec, TwitterGate, TwitterSessionAnswer } from './types'
 
 const ENGINE = join(import.meta.dir, '..', '..', '..', '..', 'python', 'twitterApi', 'engine.py')
 
@@ -68,14 +68,14 @@ export function mergeCookieShape(raw: unknown, refreshed: Record<string, string>
   return { ...base, ...refreshed }
 }
 
-export function runTwitterEngine(account: TwitterAccount, action: 'ping'): TwitterEngineRun {
+export function runTwitterEngine(account: TwitterAccount, request: TwitterEngineSpec): TwitterEngineRun {
   const dir = mkdtempSync(join(tmpdir(), 'twitterApi'))
   try {
     const cookiesPath = join(dir, 'cookies.json')
     const refreshedPath = join(dir, 'refreshed.json')
     writeFileSync(cookiesPath, JSON.stringify(account.cookies ?? {}), { mode: 0o600 })
     const spec = join(dir, 'spec.json')
-    writeFileSync(spec, JSON.stringify({ action, account: account.accountName, cookiesPath, refreshedPath }), { mode: 0o600 })
+    writeFileSync(spec, JSON.stringify({ ...request, account: account.accountName, cookiesPath, refreshedPath }), { mode: 0o600 })
     const run = spawnSync(process.env.LOG_PYTHON || 'python', [ENGINE, spec], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 })
     const line = (run.stdout || '').trim().split('\n').filter(Boolean).pop() || ''
     let answer: TwitterSessionAnswer

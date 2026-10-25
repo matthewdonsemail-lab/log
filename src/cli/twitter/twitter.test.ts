@@ -18,8 +18,8 @@ async function run(argv: string[], engine?: TwitterEngineRun, twenty = fixture()
     twenty,
     out: (l) => out.push(l),
     err: (l) => err.push(l),
-    directTwitter: (account, action) => {
-      calls.push(`${account.accountName}:${action}`);
+    directTwitter: (account, spec) => {
+      calls.push(`${account.accountName}:${spec.action}`);
       return engine ?? { answer: { ok: false, code: "notExpected" }, refreshed: null };
     },
   });

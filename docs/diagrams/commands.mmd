@@ -139,6 +139,25 @@ flowchart TB
   c_session["session"]
   cli --> c_session
   mcp --> c_session
+  c_follows["follows"]
+  cli --> c_follows
+  mcp --> c_follows
+  c_reply["reply"]
+  cli --> c_reply
+  mcp --> c_reply
+  c_quote["quote"]
+  cli --> c_quote
+  mcp --> c_quote
+  c_like["like"]
+  cli --> c_like
+  mcp --> c_like
+  c_dm["dm"]
+  cli --> c_dm
+  mcp --> c_dm
+  c_queue["queue"]
+  cli --> c_queue
+  mcp --> c_queue
+  c_queue --> live
   f_deletePost["flowDeletePost: flow run deletePost"]
   mcp --> f_deletePost
   f_deletePost --> c_flow

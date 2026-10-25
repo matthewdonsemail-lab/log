@@ -13,6 +13,7 @@ export type ErrorLayer =
   | 'adsPower'
   | 'group'
   | 'warmup'
+  | 'twitter'
 
 export type PublishEnd = 'failed' | 'blocked' | 'needsPerson' | 'unconfirmedId'
 
@@ -111,6 +112,76 @@ export const ERROR_CATALOG = {
     publish: 'blocked',
     monitor: 'blocked',
     action: "Save the account's cookies from a normal manual login into its socialAccounts row."
+  },
+  targetMissing: {
+    layer: 'twitter',
+    meaning: "A log twitter send or queue item names no target: a reply, quote or like needs the post's url, a dm the recipient's user id.",
+    retryable: false,
+    raisedIn: ['twitter/post/send'],
+    action: 'Give --tweet <post url> (reply, quote, like) or --userId <id> (dm), taken from treg research.'
+  },
+  tweetUrlInvalid: {
+    layer: 'twitter',
+    meaning: "The post given to a log twitter send isn't an x.com post url (https://x.com/<handle>/status/<id>).",
+    retryable: false,
+    raisedIn: ['twitter/post/send'],
+    action: "Give the post's own url, as treg research returned it."
+  },
+  userIdInvalid: {
+    layer: 'twitter',
+    meaning: "The dm recipient isn't an X user id (digits only); a handle is not an id.",
+    retryable: false,
+    raisedIn: ['twitter/post/send'],
+    action: "Give the recipient's numeric user id from treg research."
+  },
+  textMissing: {
+    layer: 'twitter',
+    meaning: 'A reply, quote or dm was given no text.',
+    retryable: false,
+    raisedIn: ['twitter/post/send'],
+    action: 'Give the approved copy with --text.'
+  },
+  notApproved: {
+    layer: 'twitter',
+    meaning: 'A send on X was asked for with --live but without who approved it (rule 8: nothing is sent without a named approver).',
+    retryable: false,
+    raisedIn: ['twitter/post/send'],
+    action: 'Add --approvedBy <who approved it>; only send what matt approved.'
+  },
+  styleFailed: {
+    layer: 'twitter',
+    meaning: 'The copy breaks the house style: lowercase only, no commas, semicolons, full stops, em or en dashes (urls are exempt).',
+    retryable: false,
+    raisedIn: ['twitter/post/send', 'twitter/queue/plan'],
+    action: 'Rewrite the copy in house style, or pass --skipStyleCheck when matt asked for it.'
+  },
+  queueInvalid: {
+    layer: 'twitter',
+    meaning: "The queue file can't be used: it is missing, isn't a queue, or a target or variations file is wrong.",
+    retryable: false,
+    raisedIn: ['twitter/queue/plan'],
+    action: 'Build it again with log twitter queue build, or fix the file it names.'
+  },
+  queueNotApproved: {
+    layer: 'twitter',
+    meaning: "The queue isn't approved, or it changed after it was approved: its fingerprint (the account and every item's action, target and copy) no longer matches.",
+    retryable: false,
+    raisedIn: ['twitter/queue/plan', 'twitter/queue/run'],
+    action: 'Review it with log twitter queue show, then log twitter queue approve --by <who>.'
+  },
+  queueNoPlan: {
+    layer: 'twitter',
+    meaning: 'The queue has no random plan to run.',
+    retryable: false,
+    raisedIn: ['twitter/queue/run'],
+    action: 'Draw one with log twitter queue plan <queue> --window <5h>.'
+  },
+  queueBusy: {
+    layer: 'twitter',
+    meaning: "Another run holds the queue's lock (<queue>.lock), or nudge was asked for with no run going.",
+    retryable: false,
+    raisedIn: ['twitter/queue/run'],
+    action: 'Wait for the run to end; delete the lock only if no run is going.'
   },
   governorBlocked: {
     layer: 'account',

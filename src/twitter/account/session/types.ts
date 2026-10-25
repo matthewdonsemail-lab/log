@@ -9,6 +9,30 @@ export interface TwitterGovernor {
   cooldown_remaining_s: number
 }
 
+export type TwitterAction = 'ping' | 'follows' | 'reply' | 'quote' | 'like' | 'dm'
+
+export const TWITTER_WRITES: readonly TwitterAction[] = ['reply', 'quote', 'like', 'dm']
+
+export type TwitterEvent = 'sent' | 'dropped' | 'throttled' | 'dailyLimit' | 'gone' | 'automated' | 'duplicate' | 'sessionDead' | 'restricted' | 'failed'
+
+export interface TwitterEngineSpec {
+  action: TwitterAction
+  live?: boolean
+  approvedBy?: string
+  text?: string
+  tweetUrl?: string
+  userId?: string
+  handles?: string[]
+}
+
+export interface TwitterFollow {
+  handle: string
+  followsYou?: boolean
+  youFollow?: boolean
+  error?: string
+  event?: TwitterEvent
+}
+
 export interface TwitterSessionAnswer {
   ok: boolean
   code?: string
@@ -20,6 +44,14 @@ export interface TwitterSessionAnswer {
   name?: string | null
   rateLimitReset?: number | null
   governor?: TwitterGovernor
+  event?: TwitterEvent
+  checked?: TwitterFollow[]
+  tweetId?: string
+  conversationId?: string
+  mode?: string
+  liked?: boolean
+  already?: boolean
+  limits?: Record<string, string>
 }
 
 export interface TwitterEngineRun {

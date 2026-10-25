@@ -35,7 +35,8 @@ export interface CommandContext {
   out: (line: string) => void;
   err: (line: string) => void;
   now?: () => Date;
-  directTwitter?: (account: import("../../marketplace/socialAccount/index.ts").FacebookAccount, action: "ping") => import("../../twitter/account/session/index.ts").TwitterEngineRun;
+  sleep?: (ms: number) => Promise<void>;
+  directTwitter?: (account: import("../../marketplace/socialAccount/index.ts").FacebookAccount, spec: import("../../twitter/account/session/index.ts").TwitterEngineSpec) => import("../../twitter/account/session/index.ts").TwitterEngineRun;
   directRead?: (account: import("../../marketplace/socialAccount/index.ts").FacebookAccount, groupId: string) => import("../../directApi/engine/index.ts").DirectOutcome<{ id: string | null; text: string; creation_time: number | null }>;
 }
 
