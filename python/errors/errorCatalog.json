@@ -70,6 +70,17 @@
     "monitor": "blocked",
     "action": "Log in by hand and clear the checkpoint, then `log facebook connect`. No solver can do it."
   },
+  "governorBlocked": {
+    "layer": "account",
+    "meaning": "The account's direct-API governor refused the call: a soft-block or checkpoint pause, the hourly or daily request cap, or the 40-a-day write budget (fbk's RequestGovernor, one per account under ~/.logCli/fbk/<account>).",
+    "retryable": false,
+    "raisedIn": [
+      "directApi/engine"
+    ],
+    "publish": "blocked",
+    "monitor": "blocked",
+    "action": "Stop for this account until the pause ends or the day rolls over; never retry into it."
+  },
   "wrongPassword": {
     "layer": "account",
     "meaning": "Facebook said the password is wrong, or found no account for the email, when `log facebook connect` signed in with Twenty's details.",

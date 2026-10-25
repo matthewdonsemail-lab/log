@@ -1,0 +1,60 @@
+export type LoginState = 'loggedIn' | 'loggedOut' | 'checkpoint' | 'unknown' | 'shadowSuspect'
+
+export type SessionState = LoginState | 'accountWarning'
+
+export interface GovernorStatus {
+  enabled: boolean
+  hour_count: number
+  hourly_cap: number
+  day_count: number
+  daily_cap: number
+  mutation_count: number
+  mutation_daily_cap: number
+  soft_blocks_seen: number
+  cooldown_active: boolean
+  cooldown_remaining_s: number
+  warmup_requests: number
+}
+
+export interface EngineAnswer<Row = unknown> {
+  ok: boolean
+  code?: string
+  detail?: string
+  loginState?: LoginState
+  accountWarnings?: string[]
+  governor?: GovernorStatus
+  rows?: Row[]
+  count?: number | null
+}
+
+export interface EngineSpec {
+  surface: string
+  method: string
+  args: unknown[]
+}
+
+export type DirectGate = { ok: true } | { ok: false; detail: string }
+
+export type DirectOutcome<Row> =
+  | { ok: true; rows: Row[]; sessionState: SessionState; governor?: GovernorStatus }
+  | { ok: false; code: string; detail: string; sessionState: SessionState | null; stop: boolean }
+
+export type CommandEngine = 'directApiFirst' | 'browser' | 'none'
+
+export interface DirectRoute {
+  surface: string
+  method: string
+  when: string
+  seam: string
+}
+
+export interface LocalEngineState {
+  account: string
+  sessionState: SessionState | null
+  checkedAt: string | null
+  day: string | null
+  today: number
+  mutations: number
+  cooldownSeconds: number
+  softBlocks: number
+}

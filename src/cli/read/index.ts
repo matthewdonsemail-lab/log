@@ -17,7 +17,8 @@ import { createInspector, formatTraceLine } from "../../observability/trace/inde
 import type { TwentyClient } from "../../twenty/graphql/index.ts";
 import { refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
-import { accountHasSession, parseReadArgs, READ_INPUT, renderDirectRead } from "./helpers/index.ts";
+import { directGate, recordSessionState } from "../../directApi/engine/index.ts";
+import { parseReadArgs, READ_INPUT, renderDirectRead } from "./helpers/index.ts";
 import type { ReadMembersArgs } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
@@ -25,12 +26,13 @@ export * from "./helpers/index.ts";
 export const READ_USAGE = [
   "Usage: log facebook read group --account <accountName> --group <group url or id> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json]",
   "       log facebook read group --account <accountName> --group <g> --show [--json]",
-  "Reads the group's new posts (since its cursor in Twenty) and the comments of the new posts that have some, in the account's open browser. Only the cursor is saved to Twenty (rule 65); --show prints it.",
+  "Reads the group's new posts (since its cursor in Twenty) and the comments of the new posts that have some. Only the cursor is saved to Twenty (rule 65); --show prints it.",
+  "Without --live, on a numeric group id, it runs on the direct-API engine first (fbk groups.feed_read, no browser) when the account has a saved session and a proxy in its home country: Facebook's own page decides, not accountStatus (loggedIn reads; checkpoint stops and deactivates; anything else hands over to the browser). The result goes to socialAccounts.sessionState.",
   "--scrolls: feed scrolls at most (default 6). --commentPosts: posts whose comments are read at most (default 5; 0 reads none).",
   "--worker (OpenMagpie's call) is refused here: it became its own command, log facebook poll (its usage).",
   "--live: each post's comments are switched to Newest first (two clicks, rule 8); without it nothing is clicked and the page's Most relevant comments are read.",
   "Every step in the browser runs inside the account's local hours (rule 18); --bypass skips that for one run, only when matt asked (rule 20).",
-  "The account's browser must be open (log inspect start --account <a>, or log facebook host start): a read is a step in it (rule 35).",
+  "On the browser path the account's browser must be open (log inspect start --account <a>, or log facebook host start): a read is a step in it (rule 35).",
   "log facebook read members --account <accountName> --group <group url or id> --count <n> [--secondsPerScroll <s>] [--maxScrolls <n>] [--owners] [--bypass] [--json]",
   "Reads the group's newest members from its People tab (/groups/<g>/members) in the account's open browser: the page's first 10, then a scroll at a time, each scroll's GroupsCometMembersPageNewMembersSectionRefetchQuery answers (about 10 members each, 2 a scroll). Nothing is clicked (rule 8).",
   "--count: members to read (1-5000). --secondsPerScroll: the wait before each scroll (default 15; matt: the time 40 scrolls take is a variable). --maxScrolls: scrolls at most (default twice the plan's, plus 2). It says up front: count N → ~S scrolls, ~M min at Xs per scroll.",
@@ -256,23 +258,35 @@ export async function runRead(context: CommandContext, argv: string[]): Promise<
     const ref = parseGroupRef(parsed.group);
     if (!ref.ok) return refuse("read", "groupRefInvalid", ref.error);
     const account = await findAccount(context.twenty, parsed.account);
-    const check = checkRunnable(account, "run");
-    if (!check.ok) return refuse("read", check.code, check.detail);
-    const group = await ensureGroup(context.twenty, account.id, ref.group);
-
     if (parsed.show) {
+      const check = checkRunnable(account, "check");
+      if (!check.ok) return refuse("read", check.code, check.detail);
+      const group = await ensureGroup(context.twenty, account.id, ref.group);
       const shown = await renderSaved(context.twenty, group.id, group.name ?? ref.group.key);
       return { code: 0, stdout: parsed.json ? JSON.stringify(shown.json, null, 2) : shown.text };
     }
 
-    if (!parsed.live && ref.group.numeric && context.directRead && accountHasSession(account) && account.proxy) {
-      const direct = context.directRead(account, ref.group.key);
-      if (direct.ok) {
-        await context.twenty.update("agencyGroups", group.id, { lastReadAt: new Date().toISOString(), lastReadReason: `directApi groups.feed_read: ${direct.rows.length} post(s)` } as never);
-        return { code: 0, stdout: parsed.json ? JSON.stringify({ engine: "directApi", posts: direct.rows }, null, 2) : renderDirectRead(direct.rows) };
+    const now = context.now?.() ?? new Date();
+    if (!parsed.live && ref.group.numeric && context.directRead) {
+      const gate = directGate(account, { bypass: parsed.bypass, now });
+      if (gate.ok) {
+        const direct = context.directRead(account, ref.group.key);
+        for (const line of await recordSessionState(context.twenty, account, direct.sessionState, now)) context.err(line);
+        if (direct.ok) {
+          const group = await ensureGroup(context.twenty, account.id, ref.group);
+          await context.twenty.update("agencyGroups", group.id, { lastReadAt: now.toISOString(), lastReadReason: `directApi groups.feed_read: ${direct.rows.length} post(s)` } as never);
+          return { code: 0, stdout: parsed.json ? JSON.stringify({ engine: "directApi", sessionState: direct.sessionState, posts: direct.rows }, null, 2) : renderDirectRead(direct.rows) };
+        }
+        if (direct.stop) return refuse("read", direct.sessionState === "checkpoint" ? "checkpointed" : "governorBlocked", direct.detail);
+        context.err(`direct-API read: ${direct.code} (${direct.detail}); the browser path decides next`);
+      } else {
+        context.err(`direct-API engine not used: ${gate.detail}`);
       }
-      context.err(`direct-API read unavailable (${direct.detail}); falling back to the browser`);
     }
+
+    const check = checkRunnable(account, "run");
+    if (!check.ok) return refuse("read", check.code, check.detail);
+    const group = await ensureGroup(context.twenty, account.id, ref.group);
 
     const read = await readInBrowser(context, account, group, ref.group, { scrolls: parsed.scrolls, commentPosts: parsed.commentPosts, live: parsed.live, bypass: parsed.bypass });
     if (!read.ok) return refuse("read", read.code, read.detail);
@@ -289,7 +303,7 @@ export const readCommand: Command = {
   platform: "facebook",
   name: "read",
   effect: "browser",
-  summary: "Read a Facebook group's new posts and their comments, or its newest members, as one account, in its open browser, by hand; only the group's cursor is saved to Twenty (#27, rule 65), the members to a file",
+  summary: "Read a Facebook group's new posts and their comments, or its newest members, as one account, by hand: posts on the direct-API engine first, else in its open browser; only the group's cursor is saved to Twenty (#27, rule 65), the members to a file",
   args: "group --account <a> --group <g> [--scrolls <n>] [--commentPosts <n>] [--live] [--bypass] [--json] | --show | members --account <a> --group <g> --count <n> [--secondsPerScroll <s>] [--maxScrolls <n>] [--owners] [--bypass] [--json]",
   input: READ_INPUT,
   run: runRead,

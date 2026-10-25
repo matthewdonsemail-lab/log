@@ -3,6 +3,7 @@ import type { AgentHook } from "../../agentHooks/registry/index.ts";
 import { GLOBAL_FLAGS, sessionHooks } from "../catalog/index.ts";
 import type { CommandEntry, Flag, FlowEntry } from "../catalog/index.ts";
 import type { Diagram } from "../diagrams/index.ts";
+import { engineLine } from "../../directApi/engine/index.ts";
 
 export const SURFACE_START = "<!-- surface:start · written by `bun run docs:build` from the code. Not edited by hand. -->";
 export const SURFACE_END = "<!-- surface:end -->";
@@ -10,6 +11,8 @@ export const SURFACE_END = "<!-- surface:end -->";
 const cell = (text: string) => text.replace(/\|/g, "\\|").replace(/\n/g, " ");
 
 const BROWSER_TEXT: Record<CommandEntry["browser"], string> = { accountBrowser: "the account's", camoufoxOnly: "Camoufox only", none: "none" };
+
+const ENGINE_TEXT: Record<CommandEntry["engine"], string> = { directApiFirst: "direct API first", browser: "browser", none: "none" };
 
 const PLATFORM_TEXT: Record<CommandEntry["platform"], string> = { facebook: "`facebook` first", any: "any (none)", byArgument: "`<platform>` first" };
 
@@ -53,6 +56,15 @@ export function renderSurface(entries: readonly CommandEntry[], flows: readonly 
       "",
     );
   }
+  const direct = entries.filter((e) => e.engine === "directApiFirst");
+  out.push(
+    "### Engines: the direct API first, the browser behind it",
+    "",
+    "A command on the direct-API engine calls Facebook's internal API with the account's saved session, through its proxy, paced by its own governor (fbk, vendored in `vendor/fbk`), and opens no browser. Which engine runs each command is code (`DIRECT_ROUTES` and `commandEngine` in `src/directApi/engine`), and this section, the Engine column and every MCP tool's description are generated from it.",
+    "",
+    ...direct.map((e) => `- \`log ${e.words}\`: ${engineLine(e.name) ?? ""}`),
+    "",
+  );
   const surface = pick("surface");
   if (surface) out.push(...diagramBlock(surface));
 
@@ -61,13 +73,13 @@ export function renderSurface(entries: readonly CommandEntry[], flows: readonly 
     "",
     `Every command also takes ${GLOBAL_FLAGS.map(flagText).join(", ")} (this run's proxy speed limit, rule 33). \`--live\` acts on Facebook and over MCP needs \`confirmLive: true\`; \`--bypass\` needs \`confirmBypass: true\` (rules 8, 10, 20).`,
     "",
-    "| Command | What it does | Platform | Flags | Browser | MCP tool | Hooks: shell · MCP | Live log | Rules |",
-    "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+    "| Command | What it does | Platform | Flags | Engine | Browser | MCP tool | Hooks: shell · MCP | Live log | Rules |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
   );
   for (const e of entries) {
     const tool = e.tool ? e.tool.split(", ").map((t) => `\`${t}\``).join(", ") : `terminal only: ${cell(e.terminalOnly ?? "")}`;
     const hooksText = `${e.hooks.cli.join(", ") || "none"} · ${e.tool ? e.hooks.mcp.join(", ") || "none" : "n/a"}`;
-    out.push(`| [\`log ${e.words}\`](#${anchorOf(e.words)}) | ${cell(e.summary)} | ${PLATFORM_TEXT[e.platform]} | ${e.flags.map(flagText).join(" ") || "none"} | ${BROWSER_TEXT[e.browser]} | ${tool} | ${hooksText} | ${e.longRunning ? "yes: watch it" : "no"} | ${e.rules.join(", ")} |`);
+    out.push(`| [\`log ${e.words}\`](#${anchorOf(e.words)}) | ${cell(e.summary)} | ${PLATFORM_TEXT[e.platform]} | ${e.flags.map(flagText).join(" ") || "none"} | ${ENGINE_TEXT[e.engine]} | ${BROWSER_TEXT[e.browser]} | ${tool} | ${hooksText} | ${e.longRunning ? "yes: watch it" : "no"} | ${e.rules.join(", ")} |`);
   }
   out.push("");
 

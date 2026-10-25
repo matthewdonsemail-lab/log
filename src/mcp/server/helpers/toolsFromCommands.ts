@@ -3,6 +3,7 @@ import type { Command, InputForm, ToolEffect } from "../../../cli/runner/types.t
 import type { LogTool } from "../types.ts";
 import { TERMINAL_ONLY, TOOL_RESULT_SCHEMA } from "../types.ts";
 import { rulesLine } from "./agentRules.ts";
+import { engineLine } from "../../../directApi/engine/index.ts";
 import { annotationsOf, LIVE_SUFFIX, titleOf } from "./toolAnnotations.ts";
 
 export const LONG_RUNNING = new Set(["inspect", "join", "read", "poll", "check", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign"]);
@@ -91,6 +92,11 @@ const NOTES: Readonly<Record<string, string[]>> = {
   profile: ["Without --live it only reads the profile and lists its controls in the run's profileFound.txt. profileLive with --live uploads socialAccounts.profilePhoto and coverPhoto in one run (rule 28): only when matt asked."],
 };
 
+function engineLines(command: string, live: boolean): string[] {
+  const line = live ? null : engineLine(command);
+  return line ? [line] : [];
+}
+
 const LIVE_LINE = "Live on Facebook: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).";
 
 function typedTool(entry: CommandTool, form: InputForm, options: ToolOptions): LogTool {
@@ -105,6 +111,7 @@ function typedTool(entry: CommandTool, form: InputForm, options: ToolOptions): L
       `${form.summary}.`,
       ...(entry.live ? [LIVE_LINE] : []),
       command.summary,
+      ...engineLines(command.name, entry.live),
       ...formUsage(command, form),
       ...(NOTES[entry.tool] ?? []),
       `Fill the named fields; each value goes through whole.${bypass ? " `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked." : ""}${!entry.live && entry.command.input?.forms.some((f) => f.words.join() === form.words.join() && f.flags.some((flag) => flag.live)) ? ` What acts on Facebook is \`${entry.tool}${LIVE_SUFFIX}\`.` : ""}`,
@@ -133,6 +140,7 @@ function argsTool(entry: CommandTool, options: ToolOptions): LogTool {
       `log ${commandWords(command)}${command.args ? ` ${command.args}` : ""}`,
       ...(entry.live ? [LIVE_LINE] : []),
       command.summary,
+      ...engineLines(command.name, entry.live),
       command.usage,
       ...(NOTES[command.name] ?? []),
       entry.live

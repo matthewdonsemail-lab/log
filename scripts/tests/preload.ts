@@ -11,3 +11,5 @@ process.env.LOG_MCP_JOBS_DIR ??= join(scratch, 'mcpJobs')
 process.env.LOG_INSPECT_CURRENT ??= join(scratch, 'inspect', 'current.json')
 process.env.LOG_MEMBERS_DIR ??= join(scratch, 'members')
 delete process.env.LOG_ADSPOWER_HOMES
+process.env.LOG_FBK_STATE = mkdtempSync(join(tmpdir(), "logFbkState"));
+process.env.LOG_MCP_STAMP_FILE ??= join(scratch, 'mcpServer.json')

@@ -11,7 +11,7 @@ if str(FBK_SRC) not in sys.path:
 
 from governor import GovernorBlockedError, GovernorConfig, RequestGovernor
 
-STATE_DIR = Path.home() / ".logCli" / "governor"
+STATE_DIR = Path.home() / ".logCli" / "fbk"
 _lock = threading.Lock()
 _governors: dict[str, RequestGovernor] = {}
 
@@ -20,8 +20,9 @@ def governor_for(account: str, config: GovernorConfig | None = None) -> RequestG
     with _lock:
         found = _governors.get(account)
         if found is None:
-            STATE_DIR.mkdir(parents=True, exist_ok=True)
-            found = RequestGovernor(config or GovernorConfig.from_env(), STATE_DIR / f"{account}.json")
+            folder = STATE_DIR / account
+            folder.mkdir(parents=True, exist_ok=True)
+            found = RequestGovernor(config or GovernorConfig.from_env(), folder / "governor_state.json")
             _governors[account] = found
         return found
 

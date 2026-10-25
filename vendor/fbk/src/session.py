@@ -158,7 +158,8 @@ class Session:
         self.transport = _resolve_transport()(
             cookies=self.cookies, profile=profile, journal=self.journal,
             timeout=self.config.timeout, impersonate=self.config.impersonate,
-            governor=default_governor(), proxy=self.config.proxy)
+            governor=default_governor(self.config.state_dir / "governor_state.json"),
+            proxy=self.config.proxy)
         self.dry_run = dry_run
         if dry_run:
             self._install_raw_seam_guard()

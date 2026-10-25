@@ -18,6 +18,7 @@ export interface CommandEntry {
   platform: "facebook" | "any" | "byArgument";
   words: string;
   browser: "accountBrowser" | "camoufoxOnly" | "none";
+  engine: "directApiFirst" | "browser" | "none";
   hooks: { cli: HookEvent[]; mcp: HookEvent[] };
 }
 

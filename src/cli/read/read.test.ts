@@ -33,7 +33,7 @@ async function run(argv: string[], replies: InspectStepResult[] = [], twenty = m
     sent.push({ action, args });
     return replies.shift() ?? null;
   };
-  const code = await runCli(argv, { twenty, sendInspect, out: (l) => out.push(l), err: (l) => err.push(l), directRead: () => ({ ok: false, detail: "disabled in tests" }) });
+  const code = await runCli(argv, { twenty, sendInspect, out: (l) => out.push(l), err: (l) => err.push(l), directRead: () => ({ ok: false, code: "disabledInTests", detail: "disabled in tests", sessionState: null, stop: false }) });
   return { code, out: out.join("\n"), err: err.join("\n"), sent, twenty };
 }
 
@@ -132,21 +132,55 @@ describe("log facebook read group", () => {
   });
 });
 
-describe("the direct-API engine serves read group when the account has a session", () => {
-  test("uses context.directRead, touches no browser, and updates Twenty's lastRead", async () => {
-    const twenty = marketplaceFixture();
-    const out: string[] = [];
-    const sent: { action: InspectAction; args: string[] }[] = [];
-    const code = await runCli(["facebook", "read", "group", "--account", "galwayOne", "--group", GROUP], {
-      twenty,
-      sendInspect: async (_c: unknown, action: InspectAction, args: string[]) => { sent.push({ action, args }); return null; },
-      out: (l) => out.push(l),
-      err: () => {},
-      directRead: () => ({ ok: true, rows: [{ id: "s1", text: "a free couch", creation_time: 1_700_000_000 }] }),
-    });
-    expect(code).toBe(0);
-    expect(sent).toEqual([]);
-    expect(out.join("\n")).toContain("direct-API engine");
-    expect(out.join("\n")).toContain("a free couch");
+type Direct = NonNullable<Parameters<typeof runCli>[1]>["directRead"];
+
+async function direct(answer: ReturnType<NonNullable<Direct>>, prepare?: (twenty: ReturnType<typeof marketplaceFixture>) => Promise<void>) {
+  const twenty = marketplaceFixture();
+  if (prepare) await prepare(twenty);
+  const out: string[] = [];
+  const err: string[] = [];
+  const sent: { action: InspectAction; args: string[] }[] = [];
+  const code = await runCli(["facebook", "read", "group", "--account", "galwayOne", "--group", GROUP, "--bypass"], {
+    twenty,
+    sendInspect: async (_c: unknown, action: InspectAction, args: string[]) => { sent.push({ action, args }); return null; },
+    out: (l) => out.push(l),
+    err: (l) => err.push(l),
+    directRead: () => answer,
   });
-})
+  const account = twenty.rows.socialAccounts!.find((r) => r.accountName === "galwayOne")!;
+  return { code, out: out.join("\n"), err: err.join("\n"), sent, account };
+}
+
+describe("the direct-API engine serves read group when Facebook's own page says the session is logged in", () => {
+  test("loggedIn: reads with no browser, writes sessionState to Twenty", async () => {
+    const r = await direct({ ok: true, rows: [{ id: "s1", text: "a free couch", creation_time: 1_700_000_000 }], sessionState: "loggedIn" });
+    expect(r.code).toBe(0);
+    expect(r.sent).toEqual([]);
+    expect(r.out).toContain("direct-API engine");
+    expect(r.out).toContain("a free couch");
+    expect(r.account).toMatchObject({ sessionState: "loggedIn" });
+  });
+
+  test("accountStatus doesn't gate it: a needsLogin account whose session Facebook accepts still reads", async () => {
+    const r = await direct({ ok: true, rows: [], sessionState: "loggedIn" }, async (twenty) => {
+      const row = twenty.rows.socialAccounts!.find((a) => a.accountName === "galwayOne")!;
+      await twenty.update("socialAccounts", row.id as string, { accountStatus: "NEEDS_LOGIN" } as never);
+    });
+    expect(r.code).toBe(0);
+    expect(r.out).toContain("0 post(s) via the direct-API engine");
+  });
+
+  test("checkpoint: stops, never opens the browser, and the account is deactivated", async () => {
+    const r = await direct({ ok: false, code: "loginCheckpoint", detail: "Facebook's page says is_checkpointed", sessionState: "checkpoint", stop: true });
+    expect(r.code).toBe(1);
+    expect(r.err).toContain("checkpointed");
+    expect(r.sent).toEqual([]);
+    expect(r.account).toMatchObject({ sessionState: "checkpoint", accountStatus: "DEACTIVATED" });
+  });
+
+  test("loggedOut: recorded, then the browser path decides", async () => {
+    const r = await direct({ ok: false, code: "loginLoggedOut", detail: "Facebook's page classified loggedOut", sessionState: "loggedOut", stop: false });
+    expect(r.err).toContain("the browser path decides next");
+    expect(r.account).toMatchObject({ sessionState: "loggedOut" });
+  });
+});

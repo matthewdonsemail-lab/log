@@ -25,5 +25,7 @@ flowchart LR
   turn1{{"UserPromptSubmit: pageState.ts"}} -.-> agent
   turn2{{"SessionStart: storage.ts"}} -.-> agent
   turn3{{"UserPromptSubmit: storage.ts"}} -.-> agent
-  turn4{{"Stop: pageState.ts"}} -.-> agent
+  turn4{{"SessionStart: engines.ts"}} -.-> agent
+  turn5{{"UserPromptSubmit: engines.ts"}} -.-> agent
+  turn6{{"Stop: pageState.ts"}} -.-> agent
   browser -.->|each step's snapshot| post0

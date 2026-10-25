@@ -66,6 +66,8 @@ export interface FacebookAccount {
   coverPhoto: string | null
   profileSetAt: string | null
   lifecycleState: string | null
+  sessionState: string | null
+  sessionCheckedAt: string | null
   profileNamedAt: string | null
   marketplaceLocationAt: string | null
   warmupStartedAt: string | null

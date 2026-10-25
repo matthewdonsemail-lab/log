@@ -5,6 +5,7 @@ import { COMMANDS } from "../../src/cli/runner/index.ts";
 import { savedFlows } from "../../src/mcp/server/index.ts";
 import { catalog, flagsOf, flowEntries, GLOBAL_FLAGS } from "../../src/surface/catalog/index.ts";
 import { diagrams } from "../../src/surface/diagrams/index.ts";
+import { DIRECT_ROUTES } from "../../src/directApi/engine/index.ts";
 import { renderSurface, withSurface } from "../../src/surface/readme/index.ts";
 
 const root = join(import.meta.dir, "..", "..");
@@ -118,6 +119,26 @@ for (const e of entries) {
     if (e.platform === "facebook" && named !== null && named !== "facebook") problems.push(`log ${e.name} is Facebook's, but "${line.slice(0, 80)}" starts with ${named} (rule 63)`);
     if (e.platform === "byArgument" && named !== null && named !== "<platform>" && !isPlatform(named)) problems.push(`log ${e.name}: "${line.slice(0, 80)}" starts with ${named}, which isn't a platform (rule 63)`);
   }
+}
+
+const contextType = readFileSync(join(root, "src", "cli", "runner", "types.ts"), "utf8");
+const cliRoot = join(root, "src", "cli");
+for (const dir of readdirSync(cliRoot)) {
+  const index = join(cliRoot, dir, "index.ts");
+  if (!existsSync(index)) continue;
+  const seams = new Set([...readFileSync(index, "utf8").matchAll(/context\.(direct\w+)/g)].map((m) => m[1]));
+  for (const seam of seams) {
+    const declared = Object.entries(DIRECT_ROUTES).find(([, r]) => r.seam === seam);
+    if (!declared) problems.push(`src/cli/${dir}: calls context.${seam}, a direct-API route DIRECT_ROUTES doesn't declare: the MCP text and README wouldn't say so (src/directApi/engine)`);
+  }
+}
+for (const [name, route] of Object.entries(DIRECT_ROUTES)) {
+  const index = join(cliRoot, name, "index.ts");
+  if (!existsSync(index) || !readFileSync(index, "utf8").includes(`context.${route.seam}`)) problems.push(`DIRECT_ROUTES.${name} says it runs on the direct-API engine through context.${route.seam}, but src/cli/${name}/index.ts never calls it`);
+  if (!new RegExp(`\\b${route.seam}\\??:`).test(contextType)) problems.push(`DIRECT_ROUTES.${name}: context.${route.seam} isn't on CommandContext (src/cli/runner/types.ts)`);
+  const entry = entries.find((e) => e.name === name);
+  if (entry && !entry.usage.some((line) => /direct-API engine/.test(line))) problems.push(`log ${name} runs on the direct-API engine first, but its usage never says so: name "the direct-API engine" in it`);
+  if (entry && /in (its|the account's) open browser/.test(entry.summary) && !/direct-API/.test(entry.summary)) problems.push(`log ${name}'s summary says it runs in the open browser only, but DIRECT_ROUTES runs it on the direct-API engine first`);
 }
 
 if (problems.length) {

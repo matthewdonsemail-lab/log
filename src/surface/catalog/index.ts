@@ -2,6 +2,7 @@ import { AGENT_HOOKS, MCP_SERVER_NAME } from "../../agentHooks/registry/index.ts
 import type { AgentHook, HookEvent } from "../../agentHooks/registry/index.ts";
 import { toolName } from "../../browser/flow/index.ts";
 import { commandBrowser } from "../../browser/run/index.ts";
+import { commandEngine } from "../../directApi/engine/index.ts";
 import type { FlowDefinition } from "../../browser/flow/index.ts";
 import type { Command } from "../../cli/runner/types.ts";
 import { COMMAND_RULES, EVERY_TOOL_RULES } from "../../mcp/server/helpers/agentRules.ts";
@@ -53,6 +54,7 @@ export function commandEntry(command: Command): CommandEntry {
     terminalOnly,
     longRunning: LONG_RUNNING.has(command.name),
     browser: commandBrowser(command.name),
+    engine: commandEngine(command.name),
     platform: command.platform,
     words: commandWords(command),
     rules: [...(COMMAND_RULES[command.name] ?? []), ...EVERY_TOOL_RULES],
