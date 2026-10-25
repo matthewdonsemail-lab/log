@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_b58c43b70d35241632190aee8935cd8eb8c620bc9f00a33fec5df4af92183149` |
+| rea | `ev_03dd59976ffbffa3f633595a9830f9a4e1c3a6e34beb6a3c9d6eaebff43ecccf` |
 
-Seen 123 time(s) in 36 run(s).
+Seen 168 time(s) in 46 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -68,19 +68,19 @@ Seen 123 time(s) in 36 run(s).
 | inspect | step 9: goto /marketplace/status | 1 | 200 | 502 ms | 895 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 1143 ms | 991 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 439 ms | 1028 ms | — |
-| inspect | step 1: goto /marketplace/status | 2 | 200 | 509–837 ms | 1776–5075 ms | — |
-| inspect | step 2: goto /marketplace/you/selling | 2 | 200 | 329–2434 ms | 771–2711 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 5 | 200 | 387–810 ms | 731–1339233 ms | — |
+| inspect | step 1: goto /marketplace/status | 4 | 200 | 410–837 ms | 1776–5075 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 4 | 200 | 329–2434 ms | 771–2711 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 7 | 200 | 387–2372 ms | 731–1339233 ms | — |
 | inspect | step 2: goto /marketplace/status | 1 | 200 | 886 ms | 1379 ms | — |
 | inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 1127 ms | 1009 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 1 | 200 | 670 ms | 1585 ms | — |
-| inspect | step 4: goto /marketplace/status | 1 | 200 | 880 ms | 2360 ms | — |
-| inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 439 ms | 785 ms | — |
-| inspect | step 6: goto /marketplace/inbox | 4 | 200 | 526–972 ms | 975–1512191 ms | — |
+| inspect | step 4: goto /marketplace/status | 2 | 200 | 461–880 ms | 2017–2360 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 2 | 200 | 439–465 ms | 785–850 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 5 | 200 | 515–972 ms | 708–1512191 ms | — |
 | inspect | step 2: goto /marketplace/ | 1 | 200 | 566 ms | 993 ms | — |
 | inspect | step 5: goto /messages/ | 1 | 200 | 471 ms | 793 ms | — |
-| flow | step 1: goto /marketplace/ | 1 | 200 | 869 ms | 1884 ms | — |
-| flow | step 3: goto /marketplace/create/item | 1 | 200 | 438 ms | 798 ms | — |
+| flow | step 1: goto /marketplace/ | 5 | 200 | 462–3595 ms | 949–5965 ms | — |
+| flow | step 3: goto /marketplace/create/item | 3 | 200 | 438–506 ms | 798–1336 ms | — |
 | warmup | step 1: goto /marketplace/ | 1 | 200 | 428 ms | 1756 ms | — |
 | warmup | step 3: goto /marketplace/you/selling | 1 | 200 | 427 ms | 1806 ms | — |
 | warmup | step 5: goto /messages/ | 1 | 200 | 438 ms | 1093 ms | — |
@@ -89,8 +89,31 @@ Seen 123 time(s) in 36 run(s).
 | warmup | step 18: goto /marketplace/ | 1 | 200 | 451 ms | 808 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 437 ms | 762 ms | — |
 | inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 493 ms | 1825 ms | — |
+| inspect | step 1: goto /groups/junkremovalwinners | 1 | 200 | 429 ms | 1926 ms | — |
 | inspect | step 3: goto /groups/junkremovalwinners/members | 1 | 200 | 3775 ms | 4210 ms | — |
 | inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 337 ms | 2114 ms | — |
+| inspect | scroll: +515px in 13 wheel steps, 656 ms | 1 | 200 | 2374 ms | 495125 ms | — |
+| inspect | step 1: goto /me | 1 | 200 | 533 ms | 2223 ms | — |
+| inspect | step 7: click e1395 | 1 | 200 | 1348 ms | 7448 ms | — |
+| inspect | step 8: wait 5s | 1 | 200 | 2507 ms | 1649309 ms | — |
+| host | step 1: goto /marketplace/selling/ | 2 | 200 | 346–388 ms | 1644–1974 ms | — |
+| host | step 3: clickRole button "…" | 2 | 200 | 367–3015 ms | 3836–8017 ms | — |
+| host | step 6: goto /marketplace/status | 1 | 200 | 1247 ms | 1819 ms | — |
+| host | step 7: goto /me | 1 | 200 | 6000 ms | 6610 ms | — |
+| host | step 12: goto /me | 1 | 200 | 406 ms | 1095 ms | — |
+| host | step 17: goto /me | 1 | 200 | 427 ms | 1101 ms | — |
+| flow | step 2: setLocation Mountain Top, Pennsylvania | 3 | 200 | 520–6407 ms | 742–6865 ms | — |
+| flow | step 15: clickRole button "…" | 1 | 200 | 892 ms | 10203 ms | — |
+| host | step 4: goto /login/ | 1 | 200 | 354 ms | 716 ms | — |
+| host | signIn: password typed; submitting with Enter | 1 | 200 | 3444 ms | 7794 ms | — |
+| host | code: typed the current authenticator code; submitting with Enter | 1 | 200 | 359 ms | 4355 ms | — |
+| host | step 28: clickRole button "…" | 2 | 200 | 365–9221 ms | 2882–12581 ms | — |
+| host | step 31: goto /marketplace/status | 1 | 200 | 462 ms | 1946 ms | — |
+| host | step 32: goto /me | 1 | 200 | 467 ms | 1066 ms | — |
+| host | step 40: goto /marketplace/create/item | 1 | 200 | 453 ms | 775 ms | — |
+| host | step 42: setLocation Mountain Top, Pennsylvania | 1 | 200 | 431 ms | 771 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 3 | 200 | 442–538 ms | 613466–655198 ms | — |
+| inspect | step 1: goto /login/ | 1 | 200 | 1042 ms | 2296 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

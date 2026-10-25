@@ -8,10 +8,12 @@ sequenceDiagram
   Agent->>Hook: SessionStart
   Note over Hook: where every open browser is, the moment a session starts or comes back from compaction
   Note over Hook: ~/.logCli/runs over 2 GB or the disk nearly full: said with `log runs prune` before AdsPower refuses to start
+  Note over Hook: which commands run on the direct-API engine (from DIRECT_ROUTES) and each account's session state and governor use, so a session coming back from compaction knows the engines#59; and, loudly, when the log MCP server runs older code than the checkout
   matt->>Agent: a prompt
   Agent->>Hook: UserPromptSubmit
   Note over Hook: where every open browser is, with each of matt's prompts
   Note over Hook: the same storage check with each of matt's prompts (measured at most every 15 minutes)
+  Note over Hook: the same engine line with matt's prompt, only when an account's session state, its governor use or the MCP server's freshness changed
   loop each tool call
     Agent->>Hook: PreToolUse
     Note over Hook: a log-cli run that would hide its lines (piped through tail or head) is refused before it starts#59; a long one off a Monitor is told to start one (rule 26)

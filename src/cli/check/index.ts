@@ -1,3 +1,4 @@
+import { recordAccountIssue } from "../../marketplace/replacement/index.ts";
 import { readCurrentInspect } from "../../browser/inspect/index.ts";
 import * as marketplaceCheck from "../../facebook/marketplace/check/index.ts";
 import { homeOf, outsideActiveHours } from "../../marketplace/home/index.ts";
@@ -53,6 +54,8 @@ export const checkCommand: Command = {
     context.err(`Checking ${account.accountName} in its open browser (${current.runDir}).`);
     const found = await marketplaceCheck.readMarketplace((action, args = []) => context.sendInspect(current, action, args, 240_000), context.err);
     const report = await marketplaceCheck.keepCheck(context.twenty, account.id, account.accountName, found, current.runDir, context.now?.() ?? new Date());
+    const lost = report.issue ? await recordAccountIssue(context.twenty, account, report.issue.code, report.issue.detail) : null;
+    if (lost) report.lines.push(`${account.accountName} is now ${lost.status} (${report.issue!.code}): ${lost.lost.length} listing(s) marked ACCOUNT_LOST, ${lost.replacements.filter((r) => r.next).length} handed to another account`);
     if (parsed.flags["json"]) return { code: report.issue ? 1 : 0, stdout: JSON.stringify({ ...found, report }, null, 2) };
     return { code: report.issue ? 1 : 0, stdout: [...report.lines, ...(report.issue ? [`Issue: ${report.issue.code}: ${report.issue.detail}`] : [])].join("\n") };
   },

@@ -16,6 +16,7 @@ const STATUS_FOR_ISSUE: Partial<Record<ErrorCode, AccountStatus>> = {
   unconfirmedUser: 'checkpoint',
   challengeInterstitial: 'checkpoint',
   suspended: 'restricted',
+  identityVerificationRequired: 'restricted',
   readOnlyLimited: 'restricted',
   restrictedPolicy: 'restricted',
   permissionDenied: 'restricted',

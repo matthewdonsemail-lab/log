@@ -82,3 +82,42 @@ from its step's own recording, nothing clicked:
 
 `log facebook check --account <a>` runs the same once.
 Code: `src/facebook/marketplace/check`.
+
+## Before the host opens (rule 79)
+
+Run `log facebook preflight [--homes US] [--account <a>]` first. It opens no
+browser and says, per account, what would stop it: no home timezone
+(`noHomeTimezone`), outside its hours, the proxy's country and speed against
+this run's `--proxyMs`, no AdsPower profile, the SunBrowser kernel the
+profile's own user agent needs not downloaded (`adsPowerKernelMissing`: ua_auto
+starts the Chrome version in the profile's user agent, read from AdsPower's
+`/browser-profile/ua`, so Scranton needs 154 while Exeter needs 156; `--apply`
+downloads each missing one once and waits), today's
+launches and host opens spent, a live session holding it (a session whose
+process is gone is dropped), and its profile picture not on this machine.
+Exit 1 when any account is blocked. The host itself waits for its profile's
+kernel while it is still downloading, before it opens, and `host start --now` skips the 10-minute
+launch gap only (rule 30).
+
+## Two-step when Facebook asks for a passkey
+
+Some accounts land on "Use face scan, fingerprint or screen lock to confirm
+it's you" (`twoStepPasskey`) instead of the code box. The host presses "Try
+another way", waits for `TwoStepVerificationChallengePickerDialogQuery`, and
+goes on only when its answer lists `TOTP` not disabled (`authAppOffered`; else
+`twoStepNoAuthApp`, for matt). On the picker (`twoStepMethodPicker`) it chooses
+"Authentication app", then Continue, and the code is typed from Twenty as
+usual (rule 21). Mountain Top, host 20261024T222706, steps 12-26.
+
+## The Marketplace location is the account's home
+
+The host's setLocation types the account's own home written out
+(`homePlace`: its city and the state or province from `CITY_REGIONS`,
+`src/marketplace/home/types.ts`, through `fullPlaceName`, so it passes the
+acronym check, rule 72): "Mountain Top, Pennsylvania", "Kamloops, British
+Columbia". A listing's `locationQuery` is used only for a home with no region.
+`log facebook preflight` shows each account's place and refuses one with no
+region (`noHomeRegion`). Mountain Top's was Pachuca, Mexico, until it was set
+this way (`CometMarketplaceSetBuyLocationMutation` answered city "Mountain
+Top", 2026-10-24).
+

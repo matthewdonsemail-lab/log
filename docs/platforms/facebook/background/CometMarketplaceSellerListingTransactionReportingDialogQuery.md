@@ -57,7 +57,7 @@ Answered:
         "primary_listing_photo": {
           "__typename": "ProductImage",
           "image": {
-            "uri": "https://scontent-ord5-1.xx.fbcdn.net/v/t45.5328-4/856660594_2379535212790769_660742871528716392_n.jpg?stp=c0.80.206.206a_dst-jpg_p206x206_tt6&_nc_cat=111&ccb=1-7&_nc_sid=247b10&_nc_ohc=azfCRYsIeUMQ7kNvwEf01u5&_nc_oc=Adq51ffsZjpWNPXgVHrMTJXqQm_KGHlLmFvws7hvrjiHqr-qWYYEEAu4-RB-29u58hY&_nc_zt=23&_nc_ht=scontent-ord5-1.xx&_nc_gid=3-iysstZ26UH5NNYyKs5_A&_nc_ss=792a8&oh=00_AQPEmmsmcKFBhbVVm-CO1XYa5al36o… (428 chars)"
+            "uri": "https://scontent-ord5-1.xx.fbcdn.net/v/t45.5328-4/856660594_2379535212790769_660742871528716392_n.jpg (428 chars)"
           },
           "id": "2379535206124103"
         },

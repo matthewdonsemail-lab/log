@@ -1,0 +1,10 @@
+- generic [ref=e3]:
+  - banner [ref=e5]:
+    - navigation [ref=e13]:
+      - button [ref=e26] [cursor=pointer]:
+        - img [ref=e27]
+  - main [ref=e33]:
+    - generic [ref=e42]:
+      - generic [ref=e46]: We suspect automated behavior on your account
+      - button [ref=e53] [cursor=pointer]:
+        - generic [ref=e56]: Dismiss

@@ -1,0 +1,15 @@
+- generic [ref=e12]:
+  - generic [ref=e19]:
+    - generic [ref=e21]:
+      - heading "Go to your authentication app" [level=2] [ref=e23]:
+        - generic [ref=e24]: Go to your authentication app
+    - generic [ref=e31]:
+      - generic [ref=e32]:
+        - generic [ref=e37]:
+          - textbox "Code" [active] [ref=e38]
+          - generic: Code
+        - button [ref=e39]
+      - button "Continue" [disabled] [ref=e42]:
+        - generic [ref=e45]: Continue
+      - button "Try another way" [ref=e48] [cursor=pointer]:
+        - generic [ref=e51]: Try another way

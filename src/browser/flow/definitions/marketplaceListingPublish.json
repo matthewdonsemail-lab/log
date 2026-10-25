@@ -44,8 +44,7 @@
           "says": [
             {
               "answer": "fields.buy_location.display_name",
-              "home": "city",
-              "code": "marketplaceLocationWrong"
+              "present": true
             }
           ]
         }

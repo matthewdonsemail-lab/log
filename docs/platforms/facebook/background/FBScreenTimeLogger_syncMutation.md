@@ -13,7 +13,7 @@
 | Called from | `FBScreenTimeLogger.react` |
 | rea | `ev_9c20c08fbf4c14d62fa5b772be9b8dc2f4b32b06aa445a78cfb8f8ea86ba73c3` |
 
-Seen 77 time(s) in 24 run(s).
+Seen 103 time(s) in 29 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -45,7 +45,7 @@ Seen 77 time(s) in 24 run(s).
 | inspect | type failed: TimeoutError: Locator.press_sequentially: Timeout 30000ms exceeded. | 1 | 200 | 1542 ms | 40440 ms | — |
 | inspect | step 5: wait 5s | 2 | 200 | 491–494 ms | 216260–516495 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 524 ms | 26832 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 9 | 200 | 497–1377 ms | 223677–1728919 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 10 | 200 | 430–1377 ms | 223677–1728919 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 6 | 200 | 572–2282 ms | 252472–1753170 ms | — |
 | inspect | step 6: goto /marketplace/inbox | 5 | 200 | 434–874 ms | 11719–1213257 ms | — |
 | inspect | step 6: wait 6s | 1 | 200 | 558 ms | 10373 ms | — |
@@ -53,7 +53,16 @@ Seen 77 time(s) in 24 run(s).
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 806 ms | 6666 ms | — |
 | inspect | step 8: goto /reel/<id> | 1 | 200 | 514 ms | 19383 ms | — |
 | inspect | step 20: dwell 2s | 2 | 200 | 497–801 ms | 171530–471647 ms | — |
+| inspect | scroll: +425px in 10 wheel steps, 360 ms | 1 | 200 | 419 ms | 937 ms | — |
+| inspect | scroll: +517px in 12 wheel steps, 500 ms | 1 | 200 | 417 ms | 3612 ms | — |
 | inspect | scroll: +315px in 8 wheel steps, 297 ms | 4 | 200 | 433–1378 ms | 278596–1179741 ms | — |
+| inspect | scroll: +515px in 13 wheel steps, 656 ms | 2 | 200 | 430–1366 ms | 96579–396929 ms | — |
+| inspect | step 8: wait 5s | 6 | 200 | 414–1661 ms | 144927–1646063 ms | error 1357053: Please review your account |
+| host | step 20: uploadRole button "…" | 1 | 200 | 695 ms | 277 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 6 | 200 | 684–794 ms | 274722–1776454 ms | — |
+| flow | step 13: fillRole textbox "…" | 1 | 200 | 615 ms | 12276 ms | — |
+| host | step 41: sellLocation | 5 | 200 | 543–621 ms | 149464–1350100 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 2 | 200 | 567–622 ms | 150003–450500 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
@@ -201,45 +210,45 @@ Answered:
 }
 ```
 
-**runs/inspect/20261024T060921_61594063207669**, scroll: +315px in 8 wheel steps, 297 ms: 200, 1329 ms
+**runs/inspect/20261025T064655_61593981307720**, step 3: goto /marketplace/inbox: 200, 430 ms
 
 Sent:
 
 ```json
 {
-  "qpl_active_flow_ids": "431626709",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "FBScreenTimeLogger_syncMutation",
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "actor_id": "61594063207669",
-      "client_mutation_id": "3",
-      "device_time_iso": "2026-10-24T06:24:49.512Z",
+      "actor_id": "61593981307720",
+      "client_mutation_id": "1",
+      "device_time_iso": "2026-10-25T06:52:22.337Z",
       "fb_web_fb_intervals_payload": {
-        "device_timestamp": "1792823089",
+        "device_timestamp": "1792911142",
         "device_timezone": "America/New_York",
         "intervals": [
           {
-            "end_timestamp": "1792823089",
-            "start_timestamp": "1792822188"
+            "end_timestamp": "1792884967",
+            "start_timestamp": "1792884675"
+          },
+          {
+            "end_timestamp": "1792911142",
+            "start_timestamp": "1792910839"
           }
         ],
-        "local_storage_id": "31802783",
+        "local_storage_id": "68236101",
         "version": "V1"
       },
       "screentime_snapshot_payload": {
         "l24h_s": -1,
-        "last_sync_timestamp": 1792822789,
-        "today_s": 601
+        "last_sync_timestamp": 1792910839,
+        "today_s": 2619
       },
       "trigger_reason": "REGULAR"
     }
   },
-  "doc_id": "28969188822673160",
-  "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=431626709"
-  ]
+  "doc_id": "28969188822673160"
 }
 ```
 
@@ -251,15 +260,15 @@ Answered:
     "screen_time_sync": {
       "aggs": {
         "__typename": "ScreenTimeSyncMutationOutput",
-        "today_s": 901,
+        "today_s": 303,
         "l24h_s": -1
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792823089839,
-      "time_at_flush_ms": 1792823089973
+      "request_start_time_ms": 1792911142327,
+      "time_at_flush_ms": 1792911142364
     },
     "is_final": true
   }

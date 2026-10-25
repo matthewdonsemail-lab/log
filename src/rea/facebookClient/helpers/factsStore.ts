@@ -28,12 +28,14 @@ export interface StoredFacts {
 export const MAX_SAMPLES = 3
 export const MAX_SAMPLE_CHARS = 6_000
 
-const SIGNED_URL = /^(https?:\/\/[^/?\s]*(?:fbcdn\.net|cdninstagram\.com)[^?\s]*)\?\S*$/
+const SIGNED_URL = /(https?:\/\/[^/?\s"]*(?:fbcdn\.net|cdninstagram\.com)[^?\s"]*)\?[^\s"]*/g
 
-function unsigned(value: unknown): unknown {
+const SECRET_KEY = /token|^serialized_state$|^fb_dtsg|^jazoest$|^lsd$/i
+
+export function unsigned(value: unknown): unknown {
   if (typeof value === 'string') return value.replace(SIGNED_URL, '$1')
   if (Array.isArray(value)) return value.map(unsigned)
-  if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([k, v]) => [k, unsigned(v)]))
+  if (value && typeof value === 'object') return Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([k, v]) => [k, SECRET_KEY.test(k) && v !== null && v !== '' ? '(taken out)' : unsigned(v)]))
   return value
 }
 
@@ -56,7 +58,8 @@ export function fitSample(value: unknown, limit = MAX_SAMPLE_CHARS): unknown {
 export function samplesOf(stored: OperationSample[], sightings: OperationSighting[]): OperationSample[] {
   const fresh = sightings.filter((s) => s.answer !== undefined).map((s) => ({ run: s.run, step: label(s), status: s.status, ms: s.ms, sent: fitSample(s.sent ?? null), answer: fitSample(s.answer ?? null) }))
   const byStep = new Map<string, OperationSample>()
-  for (const sample of [...stored, ...fresh].sort((a, b) => b.run.localeCompare(a.run))) if (!byStep.has(sample.step)) byStep.set(sample.step, sample)
+  const kept = stored.map((s) => ({ ...s, sent: unsigned(s.sent), answer: unsigned(s.answer) }))
+  for (const sample of [...kept, ...fresh].sort((a, b) => b.run.localeCompare(a.run))) if (!byStep.has(sample.step)) byStep.set(sample.step, sample)
   return [...byStep.values()].slice(0, MAX_SAMPLES)
 }
 

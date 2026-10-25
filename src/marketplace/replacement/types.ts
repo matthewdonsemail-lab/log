@@ -15,6 +15,16 @@ export interface LossReport {
   replacements: Replacement[]
 }
 
+export interface BlockedListing {
+  listing: AgencyListing
+  account: FacebookAccount
+}
+
+export interface SweepReport {
+  lost: BlockedListing[]
+  replacements: Replacement[]
+}
+
 export interface FillReport {
   created: { listing: AgencyListing; account: FacebookAccount }[]
   short: number

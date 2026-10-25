@@ -159,3 +159,16 @@ Record the decision and its evidence ids in the `log.md` entry.
   visible to rea).
 - Next: the first live capture run, then `docs/rea/findings/`, then the
   first SubQ matrix over it.
+
+## Every action's run feeds the request docs
+
+Every action (inspect, flow, host, warm-up, publish) records the session's
+`session.har` with Facebook's bundles in it, and `log facebook capture --docs`
+reads code slices from all of them: a run that isn't settled yet (a host still
+open) has its bundles taken from its `session.har` and kept as `scripts/`
+(`scriptsFromHar`). The recorder reads each body first, before any header round
+trip, keeps scripts and documents up to 16 MB (other bodies 2 MB), and writes
+`_bodyError` on a response whose body it couldn't keep; the build says how many
+were lost. A request whose slice no run has is read the next time a run loads
+its bundle.
+

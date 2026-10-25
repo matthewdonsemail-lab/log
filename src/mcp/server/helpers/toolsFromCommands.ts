@@ -1,14 +1,16 @@
 import { formToolName, inputSchemaOf } from "../../../cli/runner/helpers/commandInput.ts";
+import { isPlatform, platformLabel, toolBaseName } from "../../../cli/runner/helpers/platforms.ts";
 import type { Command, InputForm, ToolEffect } from "../../../cli/runner/types.ts";
 import type { LogTool } from "../types.ts";
 import { TERMINAL_ONLY, TOOL_RESULT_SCHEMA } from "../types.ts";
 import { rulesLine } from "./agentRules.ts";
+import { engineLine } from "../../../directApi/engine/index.ts";
 import { annotationsOf, LIVE_SUFFIX, titleOf } from "./toolAnnotations.ts";
 
-export const LONG_RUNNING = new Set(["inspect", "join", "read", "poll", "check", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign"]);
+export const LONG_RUNNING = new Set(["inspect", "join", "read", "poll", "check", "connect", "publish", "profile", "scan", "status", "watch", "warmup", "host", "flow", "capture", "doctor", "campaign", "queue"]);
 
 export const commandWords = (command: Command): string =>
-  command.platform === "facebook" ? `facebook ${command.name}` : command.platform === "byArgument" ? `<platform> ${command.name}` : command.name;
+  isPlatform(command.platform) ? `${command.platform} ${command.name}` : command.platform === "byArgument" ? `<platform> ${command.name}` : command.name;
 
 export interface CommandTool {
   tool: string;
@@ -41,8 +43,8 @@ export function commandTools(commands: readonly Command[]): CommandTool[] {
     .filter((command) => !(command.name in TERMINAL_ONLY))
     .flatMap((command): CommandTool[] => {
       if (command.input) return command.input.forms.flatMap((form) => formTools(command, form));
-      const plain: CommandTool = { tool: command.name, command, form: null, live: false, forced: [], effect: command.effect };
-      return argsLiveFlags(command).length ? [plain, { ...plain, tool: `${command.name}${LIVE_SUFFIX}`, live: true }] : [plain];
+      const plain: CommandTool = { tool: toolBaseName(command), command, form: null, live: false, forced: [], effect: command.effect };
+      return argsLiveFlags(command).length ? [plain, { ...plain, tool: `${toolBaseName(command)}${LIVE_SUFFIX}`, live: true }] : [plain];
     });
 }
 
@@ -64,7 +66,7 @@ export function longRunLine(options: ToolOptions, minutes = "seconds to minutes"
 
 export const WAIT_MS = { type: "integer", description: "How long this call waits for the run, in ms (default 20000, at most 50000). A run still going then comes back as a job: follow it with jobStatus" };
 
-const CONFIRM_LIVE = { type: "boolean", description: "Set true only when matt asked for this live run (it acts on Facebook)" };
+const CONFIRM_LIVE = (place: string) => ({ type: "boolean", description: `Set true only when matt asked for this live run (it acts on ${place})` });
 const CONFIRM_BYPASS = { type: "boolean", description: "Set true only when matt asked for a run outside the account's local waking hours (rule 20)" };
 
 function formUsage(command: Command, form: InputForm): string[] {
@@ -91,30 +93,36 @@ const NOTES: Readonly<Record<string, string[]>> = {
   profile: ["Without --live it only reads the profile and lists its controls in the run's profileFound.txt. profileLive with --live uploads socialAccounts.profilePhoto and coverPhoto in one run (rule 28): only when matt asked."],
 };
 
-const LIVE_LINE = "Live on Facebook: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).";
+function engineLines(command: string, live: boolean): string[] {
+  const line = live ? null : engineLine(command);
+  return line ? [line] : [];
+}
+
+const LIVE_LINE = (place: string) => `Live on ${place}: it acts there (posts, clicks, joins or changes something). Call it only when matt asked for this live run, with confirmLive: true (rules 8, 10).`;
 
 function typedTool(entry: CommandTool, form: InputForm, options: ToolOptions): LogTool {
   const { command } = entry;
   const { properties, required } = inputSchemaOf(form);
   const bypass = form.flags.some((f) => f.bypass);
-  const title = titleOf(form.summary, entry.live);
+  const title = titleOf(form.summary, entry.live, platformLabel(command));
   return {
     name: entry.tool,
     title,
     description: [
       `${form.summary}.`,
-      ...(entry.live ? [LIVE_LINE] : []),
+      ...(entry.live ? [LIVE_LINE(platformLabel(command))] : []),
       command.summary,
+      ...engineLines(command.name, entry.live),
       ...formUsage(command, form),
       ...(NOTES[entry.tool] ?? []),
-      `Fill the named fields; each value goes through whole.${bypass ? " `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked." : ""}${!entry.live && entry.command.input?.forms.some((f) => f.words.join() === form.words.join() && f.flags.some((flag) => flag.live)) ? ` What acts on Facebook is \`${entry.tool}${LIVE_SUFFIX}\`.` : ""}`,
+      `Fill the named fields; each value goes through whole.${bypass ? " `bypass` (outside the account's hours) needs confirmBypass: true, only when matt asked." : ""}${!entry.live && entry.command.input?.forms.some((f) => f.words.join() === form.words.join() && f.flags.some((flag) => flag.live)) ? ` What acts on ${platformLabel(command)} is \`${entry.tool}${LIVE_SUFFIX}\`.` : ""}`,
       ...(LONG_RUNNING.has(command.name) ? [longRunLine(options)] : []),
       rulesLine(command.name),
     ].join("\n"),
     annotations: annotationsOf(entry.effect, entry.live, title),
     inputSchema: {
       type: "object",
-      properties: { ...properties, ...(entry.live ? { confirmLive: CONFIRM_LIVE } : {}), ...(bypass ? { confirmBypass: CONFIRM_BYPASS } : {}), ...(LONG_RUNNING.has(command.name) ? { waitMs: WAIT_MS } : {}) },
+      properties: { ...properties, ...(entry.live ? { confirmLive: CONFIRM_LIVE(platformLabel(command)) } : {}), ...(bypass ? { confirmBypass: CONFIRM_BYPASS } : {}), ...(LONG_RUNNING.has(command.name) ? { waitMs: WAIT_MS } : {}) },
       ...(required.length || entry.live ? { required: [...required, ...(entry.live ? ["confirmLive"] : [])] } : {}),
       additionalProperties: false,
     },
@@ -125,14 +133,15 @@ function typedTool(entry: CommandTool, form: InputForm, options: ToolOptions): L
 function argsTool(entry: CommandTool, options: ToolOptions): LogTool {
   const { command } = entry;
   const liveFlags = argsLiveFlags(command).map((f) => `--${f}`).join(" or ");
-  const title = titleOf(command.summary, entry.live);
+  const title = titleOf(command.summary, entry.live, platformLabel(command));
   return {
     name: entry.tool,
     title,
     description: [
       `log ${commandWords(command)}${command.args ? ` ${command.args}` : ""}`,
-      ...(entry.live ? [LIVE_LINE] : []),
+      ...(entry.live ? [LIVE_LINE(platformLabel(command))] : []),
       command.summary,
+      ...engineLines(command.name, entry.live),
       command.usage,
       ...(NOTES[command.name] ?? []),
       entry.live
@@ -146,7 +155,7 @@ function argsTool(entry: CommandTool, options: ToolOptions): LogTool {
       type: "object",
       properties: {
         args: { type: "array", items: { type: "string" }, description: command.platform === "byArgument" ? `Arguments for \`log <platform> ${command.name}\`, the platform first (e.g. ["facebook", "reel"])` : `Arguments for \`log ${commandWords(command)}\`` },
-        ...(entry.live ? { confirmLive: CONFIRM_LIVE } : {}),
+        ...(entry.live ? { confirmLive: CONFIRM_LIVE(platformLabel(command)) } : {}),
         confirmBypass: CONFIRM_BYPASS,
         ...(LONG_RUNNING.has(command.name) ? { waitMs: WAIT_MS } : {}),
       },

@@ -13,7 +13,7 @@
 | Called from | `MarketplaceYouSellingUpsellCard.react` |
 | rea | `ev_00977e2ab70ca12a60a74cc135fd797089c7b462f9a8434a2065fcc5480f693a` |
 
-Seen 17 time(s) in 10 run(s).
+Seen 21 time(s) in 13 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -22,14 +22,15 @@ Seen 17 time(s) in 10 run(s).
 | inspect | step 4: goto /marketplace/you/selling | 2 | 200 | 442–460 ms | 4339–4602 ms | — |
 | inspect | step 7: goto /marketplace/you/selling | 1 | 200 | 797 ms | 1919 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 1 | 200 | 579 ms | 1845 ms | — |
-| inspect | step 2: goto /marketplace/you/selling | 2 | 200 | 713–769 ms | 3188–3423 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 4 | 200 | 502–769 ms | 2603–3423 ms | — |
 | inspect | step 3: goto /marketplace/inbox | 3 | 200 | 368–711 ms | 65288–1343361 ms | — |
 | inspect | step 3: goto /marketplace/you/selling | 1 | 200 | 1382 ms | 1687 ms | — |
-| inspect | step 5: goto /marketplace/you/selling | 1 | 200 | 1182 ms | 1644 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 2 | 200 | 442–1182 ms | 1644–1668 ms | — |
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 669 ms | 1503917 ms | — |
 | warmup | step 3: goto /marketplace/you/selling | 1 | 200 | 481 ms | 2837 ms | — |
 | warmup | step 16: goto /marketplace/you/selling | 1 | 200 | 455 ms | 4597 ms | — |
 | inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 560 ms | 5518 ms | — |
+| flow | step 15: clickRole button "…" | 1 | 200 | 761 ms | 20639 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
@@ -133,17 +134,21 @@ Answered:
 }
 ```
 
-**runs/inspect/20261023T173652_61594063207669**, step 1: goto /marketplace/you/selling: 200, 560 ms
+**runs/inspect/20261025T065539_61593939852820**, step 2: goto /marketplace/you/selling: 200, 538 ms
 
 Sent:
 
 ```json
 {
+  "qpl_active_flow_ids": "25305590",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "MarketplaceYouSellingUpsellCardQuery",
   "server_timestamps": "true",
   "variables": {},
-  "doc_id": "9626969840719635"
+  "doc_id": "9626969840719635",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=25305590"
+  ]
 }
 ```
 
@@ -174,8 +179,8 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792777032692,
-      "time_at_flush_ms": 1792777032898
+      "request_start_time_ms": 1792911388591,
+      "time_at_flush_ms": 1792911388791
     },
     "is_final": true
   }

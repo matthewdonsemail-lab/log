@@ -11,14 +11,46 @@
 | Sends | `count`, `cursor`, `groupID`, `id`, `recruitingGroupFilterNonCompliant`, `scale` |
 | Reads | `node....GroupsCometMembersPageNewMembersSection_group` |
 | Called from | `GroupsCometMembersPageNewMembersSection_group.graphql` |
-| rea | `ev_8e8cc2ec98a6467be97de3457ca6a4bef4c934527b159b1252e22b91ca6b76ae` |
+| rea | `ev_ba05f1e764b4aefc86c4411845621d8fe370f6ba3fbef251439af0342a6d3cc9` |
 
-Seen 6 time(s) in 1 run(s).
+Seen 38 time(s) in 1 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | scroll: +385px in 9 wheel steps, 344 ms | 1 | 200 | 832 ms | 3448 ms | — |
 | inspect | scroll: +381px in 9 wheel steps, 312 ms | 1 | 200 | 663 ms | 2342 ms | — |
+| inspect | step 6: scroll 3-5 x 300-600px | 1 | 200 | 576 ms | 758 ms | — |
+| inspect | scroll: +346px in 9 wheel steps, 500 ms | 1 | 200 | 622 ms | 2023 ms | — |
+| inspect | step 7: scroll 3-5 x 300-600px | 1 | 200 | 572 ms | 1758 ms | — |
+| inspect | scroll: +570px in 13 wheel steps, 469 ms | 1 | 200 | 627 ms | 1840 ms | — |
+| inspect | scroll: +534px in 12 wheel steps, 422 ms | 1 | 200 | 906 ms | 2647 ms | — |
+| inspect | scroll: +478px in 12 wheel steps, 625 ms | 1 | 200 | 584 ms | 559 ms | — |
+| inspect | scroll: +576px in 15 wheel steps, 828 ms | 1 | 200 | 654 ms | 3480 ms | — |
+| inspect | scroll: +400px in 9 wheel steps, 375 ms | 1 | 200 | 647 ms | 2695 ms | — |
+| inspect | scroll: +554px in 12 wheel steps, 453 ms | 1 | 200 | 634 ms | 3398 ms | — |
+| inspect | scroll: +311px in 8 wheel steps, 297 ms | 1 | 200 | 620 ms | 3616 ms | — |
+| inspect | step 11: scroll 3-5 x 300-600px | 1 | 200 | 618 ms | 105 ms | — |
+| inspect | scroll: +359px in 11 wheel steps, 734 ms | 1 | 200 | 617 ms | 1984 ms | — |
+| inspect | step 12: scroll 3-5 x 300-600px | 1 | 200 | 841 ms | 439 ms | — |
+| inspect | scroll: +567px in 15 wheel steps, 953 ms | 1 | 200 | 785 ms | 2880 ms | — |
+| inspect | scroll: +418px in 11 wheel steps, 531 ms | 1 | 200 | 581 ms | 3743 ms | — |
+| inspect | scroll: +400px in 9 wheel steps, 328 ms | 1 | 200 | 581 ms | 1911 ms | — |
+| inspect | scroll: +540px in 13 wheel steps, 641 ms | 1 | 200 | 869 ms | 489 ms | — |
+| inspect | scroll: +341px in 8 wheel steps, 281 ms | 1 | 200 | 1530 ms | 2122 ms | — |
+| inspect | step 15: scroll 3-5 x 300-600px | 1 | 200 | 571 ms | 1250 ms | — |
+| inspect | scroll: +314px in 9 wheel steps, 485 ms | 1 | 200 | 798 ms | 593 ms | — |
+| inspect | scroll: +326px in 8 wheel steps, 297 ms | 1 | 200 | 650 ms | 2941 ms | — |
+| inspect | scroll: +400px in 10 wheel steps, 500 ms | 1 | 200 | 753 ms | 448 ms | — |
+| inspect | scroll: +573px in 15 wheel steps, 750 ms | 1 | 200 | 561 ms | 1773 ms | — |
+| inspect | scroll: +578px in 13 wheel steps, 531 ms | 1 | 200 | 959 ms | 398 ms | — |
+| inspect | scroll: +485px in 11 wheel steps, 391 ms | 1 | 200 | 587 ms | 2145 ms | — |
+| inspect | step 19: scroll 3-5 x 300-600px | 1 | 200 | 1912 ms | 894 ms | — |
+| inspect | scroll: +568px in 14 wheel steps, 687 ms | 1 | 200 | 659 ms | 1869 ms | — |
+| inspect | scroll: +487px in 11 wheel steps, 391 ms | 1 | 200 | 566 ms | 1676 ms | — |
+| inspect | scroll: +510px in 12 wheel steps, 484 ms | 1 | 200 | 696 ms | 2294 ms | — |
+| inspect | scroll: +517px in 12 wheel steps, 500 ms | 1 | 200 | 730 ms | 540 ms | — |
+| inspect | scroll: +324px in 8 wheel steps, 312 ms | 1 | 200 | 660 ms | 2346 ms | — |
+| inspect | scroll: +315px in 8 wheel steps, 297 ms | 1 | 200 | 611 ms | 729 ms | — |
 | inspect | scroll: +323px in 9 wheel steps, 421 ms | 1 | 200 | 563 ms | 3040 ms | — |
 | inspect | step 24: scroll 3-5 x 300-600px | 2 | 200 | 510–555 ms | 142–796 ms | — |
 | inspect | scroll: +539px in 14 wheel steps, 906 ms | 1 | 200 | 608 ms | 2579 ms | — |
@@ -267,7 +299,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261024T060921_61594063207669**, scroll: +323px in 9 wheel steps, 421 ms: 200, 563 ms
+**runs/inspect/20261024T060921_61594063207669**, step 6: scroll 3-5 x 300-600px: 200, 576 ms
 
 Sent:
 
@@ -279,7 +311,7 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "count": 10,
-    "cursor": "AQHT8B1dRzleCIFUPFP21wBYh4FFlGUzBQBBGjZqCRUXhynD36mogS_w0zd0hvc5A2Wd5bqq7i7A150go3RSvVxqnw",
+    "cursor": "AQHTENtLJm078h7kgWIEr091XlmTtPx2NTOg0Kgxap0brxQNT24iwI_mpedfa-ckek_h-P9cGYpXUipp80RE-iY1Yg",
     "groupID": "3549906855288164",
     "recruitingGroupFilterNonCompliant": false,
     "scale": 1,
@@ -306,51 +338,51 @@ Answered:
             "invite_status_text": null,
             "join_status_text": "(7 fields)",
             "node": "(18 fields)",
-            "cursor": "AQHTQaZVQMu_xFTErqpUOGpmwFB9c7I86Sp3vnDRna1rrdTAl_ClG6lwG_i-cNKzJrvQfpdZuF51KiAapy7ht_sspw"
+            "cursor": "AQHTWiNApna-QKXS58D9jk7wHfj79nLmCglJ5Uhs7K50EeimsnrLF19lqKgI77JTdngzHtNcwCJge9-vFUza8hGrwg"
           },
           {
             "invite_status_text": null,
             "join_status_text": "(7 fields)",
             "node": "(18 fields)",
-            "cursor": "AQHT4w69ZDQmfiZdf7cIzkzOZZRDnoxuKdG4SU_3_u6d7m66dfWlMILbcoRup0l5pVmfFUyTgZAzF66d0Avgzvm0Qw"
+            "cursor": "AQHT0axL0xOUIpcf_TGscXUQ6J7NGNDkdaL3EWIkckETBjA25XHoNUlpaj4qaXe_lWtA0Dl5K3LD0xl1H2L6jg6N2Q"
           },
           {
             "invite_status_text": null,
             "join_status_text": "(7 fields)",
             "node": "(18 fields)",
-            "cursor": "AQHTR83wzu-XX28Ev_KmtRBNm4G4dKX6AZ8VCtiTDGiunjiNK-INZoXJIe9wTZlQRBsZYWz6_2GbyH9N9E8eXDVxFQ"
+            "cursor": "AQHTT5mmzS3ESIZmA_hJmH4CghNi1ZytSHkKHN7wD1A34aKt-2nYvs-g5WlUYhWmKQVc8eZGgYpH-WNZ_uuI02vpDw"
           },
           {
             "invite_status_text": null,
             "join_status_text": "(7 fields)",
             "node": "(18 fields)",
-            "cursor": "AQHTxm1VLjCpLVsc11v31RJMEHalNRLwktDddD8Wu62w3ksF4gmh3Frx2VVQduzaIGP5pZx6uifyBmE2f2pNNwc6sw"
+            "cursor": "AQHTNrwh1J-akJm6jRs3alORD7SDWDLPiPD5quz2xIsxqEBWRRBZnd5v3MgkJ8Jphqis"
           },
           {
             "invite_status_text": null,
             "join_status_text": "(7 fields)",
             "node": "(18 fields)",
-            "cursor": "AQHT9AeVo8Y7t-1QjDKtnkG1Gn5fC-ztlENSSsG_G8fVAsvJVmWJKSa0P1xJ_F_dNYAEB9DeQi98fKmWtIm55MsADg"
+            "cursor": "AQHTf7PKNk-dks6q7ImzHLJFHD3_nJRwh_EHtrgAUxeMzUFdQTb1GAoXmCinkAYaspS7hV-K7siry7jTJmjXbK9qNw"
           },
           {
             "invite_status_text": null,
             "join_status_text": "(7 fields)",
             "node": "(18 fields)",
-            "cursor": "AQHT4yonYbz6wml0YVdfYgEi1lRfOV2V_SCxE9jI2b0OI6i3WfYC4OvQK9Uukdx0PfcZs7Fp3DEpvtUs0NO9jiWl_w"
+            "cursor": "AQHTBp9ZZhTJFBgCG3czwHCmeQL4chEB5k0e06GxbD6asMWkwnMoSY5NVaQ8rK1L4AtzW2a1YoGscuWNUCVLD4eNUw"
           },
           "… 4 more"
         ],
         "page_info": {
           "has_next_page": true,
-          "end_cursor": "AQHT75uQyBlhpcam0pG0AzK7qrMoELSvwtauo2MryWqlJd38kmmcvjx46pCxp7WEBJrxWkbd8t8pRE7LOIMCuibD-w"
+          "end_cursor": "AQHTVH8aVA9LKHPT1vu1ot8i20GHCgiV68zG_amab8qi-R72ue5Fv75SlCNgu5rtkhFnHolm0mrX-GJL57N-cYAEvA"
         }
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792824160099,
-      "time_at_flush_ms": 1792824160349
+      "request_start_time_ms": 1792822386177,
+      "time_at_flush_ms": 1792822386422
     },
     "is_final": true,
     "sr_payload": {
@@ -372,11 +404,11 @@ Answered:
           ]
         },
         "allResources": [
-          "csr:_1a_0_bA"
+          "csr:_2v_0_7y"
         ],
         "tieredResources": {
           "r": [
-            "csr:_1a_0_bA"
+            "csr:_2v_0_7y"
           ],
           "rdfds": [],
           "rds": []

@@ -13,7 +13,7 @@
 | Called from | `useMarketplaceComposerPricePrediction` |
 | rea | `ev_e0d48b4c63f6347e0b108720f3b175a44c57110e43d648bf8fbb7d94c4d2e334` |
 
-Seen 14 time(s) in 13 run(s).
+Seen 18 time(s) in 16 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -22,6 +22,9 @@ Seen 14 time(s) in 13 run(s).
 | inspect | step 16: type e232 | 1 | 200 | 370 ms | 7263 ms | — |
 | inspect | scroll: container +87px in 3 steps | 1 | 200 | 1663 ms | 1091 ms | — |
 | inspect | step 10: type e232 | 1 | 200 | 380 ms | 6953 ms | — |
+| flow | step 7: fillRole textbox "…" | 2 | 200 | 434–1622 ms | 7866–7867 ms | — |
+| flow | scroll: container +87px in 3 steps | 1 | 200 | 659 ms | 963 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 1622 ms | 707185 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

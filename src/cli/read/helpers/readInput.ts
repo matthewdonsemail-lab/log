@@ -5,7 +5,7 @@ export const READ_INPUT: CommandInput = {
   forms: [
     {
       words: ["group"],
-      summary: "Read a Facebook group's new posts and the comments of the new posts, in the account's open browser; only the group's cursor is saved to Twenty",
+      summary: "Read a Facebook group's new posts and the comments of the new posts, on the direct-API engine first (no browser) or else in the account's open browser; only the group's cursor is saved to Twenty",
       positionals: [],
       flags: [
         { name: "account", kind: "string", required: true, description: "The account whose open browser reads" },

@@ -75,6 +75,8 @@ const SOCIAL_ACCOUNT_FIELDS = [
   { name: 'profileName', label: 'Profile name', type: 'TEXT', description: 'log-cli: the name `log facebook profile setup` gives the profile, e.g. Allentown Trash (rule 28). Facebook reviews name changes and allows about one per 60 days' },
   { name: 'profileSetAt', label: 'Profile set', type: 'DATE_TIME', description: 'log-cli: when `log facebook profile setup --live` last saved the profile and cover photo' },
   { name: 'lifecycleState', label: 'Lifecycle state', type: 'TEXT', description: 'log-cli: where the lifecycle machine has the account, e.g. onboarding.warming or host.watching (rule 35)' },
+  { name: 'sessionState', label: 'Session state', type: 'TEXT', description: "log-cli: the login state Facebook's own page gave the saved session on the last direct-API call (fbk's bootstrap: loggedIn, loggedOut, checkpoint, unknown, accountWarning). accountStatus stays the browser lifecycle" },
+  { name: 'sessionCheckedAt', label: 'Session checked', type: 'DATE_TIME', description: 'log-cli: when sessionState was last read from Facebook by the direct-API engine' },
   { name: 'profileNamedAt', label: 'Profile named', type: 'DATE_TIME', description: 'log-cli: when the profile was renamed to profileName' },
   { name: 'marketplaceLocationAt', label: 'Marketplace location set', type: 'DATE_TIME', description: "log-cli: when the account's Marketplace location was confirmed in its home city" },
   { name: 'warmupStartedAt', label: 'Warm-up started', type: 'DATE_TIME', description: "log-cli: when the account's day of warm-up began (rule 35)" },

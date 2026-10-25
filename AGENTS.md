@@ -904,6 +904,67 @@ facts, not suggestions. Newest at the bottom. Never delete one without matt.
     `groupMembersList`, which needs nothing: no resolver, no SubQ reading,
     and the Stop hook doesn't hold the turn on it. `src/facebook/group/members`,
     `docs/groupMembers.md`.
+78. 2026-10-24 · matt: a deactivated account gives its AdsPower profile
+    back, and another account takes the slot (AdsPower holds 22). When an
+    account is DEACTIVATED, by `log facebook account status <a> DEACTIVATED`
+    or in Twenty, its profile is deleted from AdsPower and
+    `adsPowerProfileId` cleared; the account's row stays (rule 13). The status
+    command does it at once and runs the sync, so an account waiting for a
+    profile is given the freed one. `log adsPower sync --apply` releases
+    first, then makes profiles, so a status set in Twenty is caught there.
+    matt: "I just want to do Pennsylvania": only accounts whose home is in
+    `LOG_ADSPOWER_HOMES` (`.env.local`, `US`; or `--homes`) hold a profile,
+    and the others give theirs back the same way. Nothing else about them
+    changes. `src/browser/adsPower`, `docs/adsPower.md`.
+79. 2026-10-25 · matt: "we can't do that in production, that's why we
+    need it deterministic." A flow step never depends on a page's exact
+    wording or a person stepping in. A control is picked by one scored match
+    (`python/browser/controlMatch.py`): its role, then its name as the
+    accessible name, aria-label, label, text or placeholder, case and
+    spacing ignored, inside the dialog the step names (`within`, taken from
+    the recording's snapshot) or an open dialog over the page behind it;
+    two equal matches are refused (`controlAmbiguous`), none is
+    `controlMissing`, a disabled one is waited for (`controlDisabled`). Every
+    step waits for the call it must cause (`expect`: a mutation, a plain
+    endpoint such as `profilePictureUpload`, or a dialog query) and checks
+    its answer (rule 73) before the next one fires. `log facebook preflight`
+    says before any browser opens what would stop each account (home
+    timezone, hours, proxy country and speed, the browser kernel, launches
+    and host opens left, a session left open, its picture on disk); `--apply`
+    downloads a missing kernel and the host waits for one. A session whose
+    process is gone is dropped. Snapshot excerpts of each page version are
+    test fixtures (`python/fixtures/controls/`). Before a flow's first click
+    it clears the known overlays with Escape, each checked: the
+    browser-notifications notice (gone from the page) and an ended "What
+    happened" notice (`useAccountStatusClearEnrollmentEntryPointActionMutation`
+    answers `xfb_ixt_gateway_clear_flow: true`); one that stays stops the
+    flow with `overlayNotCleared`.
+
+80. 2026-10-25 · matt: X (Twitter) is log-cli's second platform, built
+    around a vendored client the way Facebook's direct API is built around
+    fbk: twikit (`vendor/twikit`, unclecode's fork) and twitter-controller
+    (`vendor/twitterController`, the code being ported). Its commands are
+    `log twitter <command>` (`src/twitter/<area>/<domain>`,
+    `python/twitterApi/engine.py`), declared `directApiOnly` in
+    `DIRECT_ROUTES`. matt: "No: X accounts call X directly as the controller
+    does today": no proxy is required or used for an X account, and rule 12
+    stays Facebook's. X's own answer decides (`socialAccounts.sessionState`:
+    loggedIn, loggedOut, restricted), each account has its own governor under
+    `~/.logCli/twitter/<account>`, and X's refreshed cookies are merged back
+    into the row. Discovery stays treg's (rule 53). First command: `log
+    twitter session check`. Plan: `docs/twitterPlatform.md`.
+81. 2026-10-25 · matt: we own `vendor/twikit` and keep it up to date
+    ourselves, since nobody upstream maintains it. Its HTTP transport is
+    curl_cffi, the way `vendor/fbk` does it, never httpx: `self.http` is a
+    curl_cffi `AsyncSession` pinned to one impersonation target
+    (`IMPERSONATE`, `safari17_0`, matching twikit's Safari user agent),
+    redirects not followed (as httpx did), the proxy kept in the session's
+    `proxies`, media chunks sent as a `CurlMime`. Only the transport changed.
+    `python/checks/twikitTransport.py` finds every httpx touchpoint by syntax
+    tree (`--map`), rewrites the ones with a curl_cffi equivalent (`--apply`)
+    and refuses any left (`--check`, `bun run check:twikitTransport`,
+    pre-commit and pre-push); `vendor/twikit/tests/test_transport.py` holds
+    the behaviour.
 
 ## Checks
 

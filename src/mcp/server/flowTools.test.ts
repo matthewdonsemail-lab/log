@@ -36,6 +36,6 @@ describe("flows as MCP tools (rule 31)", () => {
     const dry = await runToolCall("flowProfileSetup", input as never);
     const text = (dry.content as { text: string }[]).map((c) => c.text).join("\n");
     expect(text).toContain("dry run: nothing opens");
-    expect(text).toContain('upload button "Upload Photo"');
+    expect(text).toContain('upload button "Upload photo"');
   });
 });

@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_b58c43b70d35241632190aee8935cd8eb8c620bc9f00a33fec5df4af92183149` |
+| rea | `ev_95f39d92db8680f6d825cf32ff4b82771362ce9522cc7ee4a68c07394ab73d39` |
 
-Seen 739 time(s) in 35 run(s).
+Seen 955 time(s) in 44 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -48,7 +48,7 @@ Seen 739 time(s) in 35 run(s).
 | inspect | scroll: +700px in 16 wheel steps, 985 ms | 2 | 200 | 362–585 ms | 1607–2609 ms | — |
 | inspect | step 8: goto /groups/<id>/permalink/<id>/ | 1 | 200 | 354 ms | 54 ms | — |
 | inspect | scroll: +800px in 18 wheel steps, 781 ms | 22 | 200 | 337–1538 ms | 2912–1778687 ms | — |
-| inspect | step 2: snapshot | 6 | 200 | 336–1482 ms | 6316–23691 ms | — |
+| inspect | step 2: snapshot | 7 | 200 | 336–1482 ms | 6316–23691 ms | — |
 | inspect | step 4: type e1681 | 1 | 200 | 1400 ms | 1138 ms | — |
 | inspect | step 6: wait 6s | 2 | 200 | 365–1548 ms | 16892–21607 ms | — |
 | inspect | step 8: clickRole button "…" | 1 | 200 | 363 ms | 10817 ms | — |
@@ -204,20 +204,20 @@ Seen 739 time(s) in 35 run(s).
 | inspect | step 9: goto /marketplace/status | 1 | 200 | 796 ms | 6060 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 3 | 200 | 452–751 ms | 52–7795 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 5 | 200 | 365–2921 ms | 4798–106788 ms | — |
-| inspect | step 1: goto /marketplace/status | 10 | 200 | 444–1225 ms | 8196–39898 ms | — |
-| inspect | step 2: goto /marketplace/you/selling | 4 | 200 | 332–988 ms | 45–34916 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 74 | 200 | 333–19123 ms | 54–1796951 ms | — |
+| inspect | step 1: goto /marketplace/status | 14 | 200 | 403–1225 ms | 8196–39898 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 8 | 200 | 332–988 ms | 45–34916 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 88 | 200 | 333–19123 ms | 49–1796951 ms | — |
 | inspect | step 2: goto /marketplace/status | 2 | 200 | 363–3802 ms | 57–4731 ms | — |
 | inspect | step 3: goto /marketplace/you/selling | 3 | 200 | 639–2373 ms | 42–7411 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 20 | 200 | 332–4167 ms | 51–1653991 ms | — |
-| inspect | step 4: goto /marketplace/status | 1 | 200 | 989 ms | 7277 ms | — |
-| inspect | step 5: goto /marketplace/you/selling | 3 | 200 | 345–1133 ms | 22–7892 ms | — |
-| inspect | step 6: goto /marketplace/inbox | 30 | 200 | 353–2153 ms | 46–1715204 ms | — |
+| inspect | step 4: goto /marketplace/status | 2 | 200 | 629–989 ms | 5661–7277 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 5 | 200 | 345–1133 ms | 22–7892 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 33 | 200 | 353–2153 ms | 46–1715204 ms | — |
 | inspect | step 2: goto /marketplace/ | 1 | 200 | 484 ms | 36511 ms | — |
 | inspect | post: "…", 123 words, 0 image(s), scrolled 53 px | 12 | 200 | 1126–20726 ms | 9012–99549 ms | — |
 | inspect | step 3: likePost Like | 2 | 200 | 352–669 ms | 3775–25195 ms | — |
-| flow | step 1: goto /marketplace/ | 4 | 200 | 413–874 ms | 7530–8893 ms | — |
-| flow | step 3: goto /marketplace/create/item | 4 | 200 | 346–2215 ms | 50–11825 ms | — |
+| flow | step 1: goto /marketplace/ | 16 | 200 | 395–1374 ms | 7530–15249 ms | — |
+| flow | step 3: goto /marketplace/create/item | 7 | 200 | 346–2215 ms | 39–11825 ms | — |
 | warmup | scroll: +314px in 8 wheel steps, 422 ms | 1 | 200 | 595 ms | 733 ms | — |
 | warmup | step 3: goto /marketplace/you/selling | 2 | 200 | 393–826 ms | 6665–7185 ms | — |
 | warmup | step 5: goto /messages/ | 2 | 200 | 371–661 ms | 390–8725 ms | — |
@@ -240,12 +240,54 @@ Seen 739 time(s) in 35 run(s).
 | inspect | step 1: goto /marketplace/you/selling | 1 | 200 | 1616 ms | 13401 ms | — |
 | inspect | step 3: click e356 | 2 | 200 | 343–359 ms | 12710–25470 ms | — |
 | inspect | step 6: click e602 | 1 | 200 | 1338 ms | 9892 ms | — |
+| inspect | step 2: pageText | 1 | 200 | 334 ms | 2745 ms | — |
 | inspect | step 3: goto /groups/junkremovalwinners/members | 3 | 200 | 329–683 ms | 57–34738 ms | — |
 | inspect | scroll: +376px in 9 wheel steps, 328 ms | 2 | 200 | 330–333 ms | 40256–50766 ms | — |
 | inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 330 ms | 3139 ms | — |
+| inspect | scroll: +491px in 11 wheel steps, 406 ms | 1 | 200 | 334 ms | 1966 ms | — |
+| inspect | scroll: +571px in 13 wheel steps, 594 ms | 1 | 200 | 508 ms | 310 ms | — |
+| inspect | scroll: +359px in 11 wheel steps, 734 ms | 1 | 200 | 343 ms | 2155 ms | — |
+| inspect | scroll: +595px in 14 wheel steps, 656 ms | 1 | 200 | 331 ms | 933 ms | — |
+| inspect | scroll: +445px in 11 wheel steps, 704 ms | 1 | 200 | 338 ms | 8053 ms | — |
+| inspect | step 21: scroll 3-5 x 300-600px | 1 | 200 | 319 ms | 202 ms | — |
 | inspect | scroll: +315px in 8 wheel steps, 297 ms | 14 | 200 | 312–1274 ms | 94383–1236974 ms | — |
 | inspect | step 22: goto /groups/junkremovalwinners/members | 1 | 200 | 1029 ms | 6367 ms | — |
 | inspect | scroll: +560px in 12 wheel steps, 547 ms | 1 | 200 | 313 ms | 2692 ms | — |
+| inspect | scroll: +515px in 13 wheel steps, 656 ms | 24 | 200 | 310–1617 ms | 31496–761489 ms | — |
+| inspect | step 25: pageText | 34 | 200 | 318–2388 ms | 40416–1770311 ms | — |
+| inspect | step 4: click e1211 | 1 | 200 | 419 ms | 3852 ms | — |
+| inspect | step 7: click e1395 | 6 | 200 | 371–411 ms | 6089–15238 ms | — |
+| inspect | step 8: wait 5s | 14 | 200 | 380–498 ms | 20915–1787348 ms | — |
+| host | step 1: goto /marketplace/selling/ | 2 | 200 | 339–1303 ms | 8402–9399 ms | — |
+| host | step 2: pageText | 2 | 200 | 346–626 ms | 1419–8922 ms | — |
+| host | step 3: clickRole button "…" | 1 | 200 | 392 ms | 3097 ms | — |
+| host | step 4: pageText | 1 | 200 | 778 ms | 3692 ms | — |
+| host | step 6: goto /marketplace/status | 2 | 200 | 364–653 ms | 43–6344 ms | — |
+| host | step 7: goto /me | 1 | 200 | 394 ms | 18 ms | — |
+| host | clickRole failed: RuntimeError: the element kept moving under the cursor: the point is on  | 2 | 200 | 373–409 ms | 9814–10335 ms | — |
+| host | step 17: goto /me | 2 | 200 | 336–339 ms | 43–5430 ms | — |
+| host | step 19: clickRole menuitem "…" | 2 | 200 | 334–367 ms | 2198–4199 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 5 | 200 | 337–383 ms | 55854–1436046 ms | — |
+| flow | step 2: setLocation Mountain Top, Pennsylvania | 5 | 200 | 414–479 ms | 50–14023 ms | — |
+| flow | upload: photo1.jpg handed to the file chooser | 1 | 200 | 431 ms | 4049 ms | — |
+| flow | step 9: clickRole combobox "…" | 1 | 200 | 505 ms | 3514 ms | — |
+| flow | step 12: clickRole option "…" | 1 | 200 | 511 ms | 7501 ms | — |
+| flow | step 15: clickRole button "…" | 2 | 200 | 387–663 ms | 8880–25915 ms | — |
+| flow | step 16: clickRole button "…" | 1 | 200 | 464 ms | 3221 ms | — |
+| host | step 27: pageText | 5 | 200 | 351–365 ms | 4818–10694 ms | — |
+| host | step 28: clickRole button "…" | 1 | 200 | 361 ms | 2312 ms | — |
+| host | step 31: goto /marketplace/status | 2 | 200 | 641–1625 ms | 47–8508 ms | — |
+| host | step 32: goto /me | 1 | 200 | 365 ms | 34 ms | — |
+| host | step 35: pageText | 1 | 200 | 476 ms | 736 ms | — |
+| host | step 36: clickRole button "…" | 1 | 200 | 1752 ms | 3940 ms | — |
+| host | expected ProfileCometProfilePictureEditDialogQuery: sent | 1 | 200 | 433 ms | 1093 ms | — |
+| host | step 40: goto /marketplace/create/item | 1 | 200 | 457 ms | 9933 ms | — |
+| host | step 41: sellLocation | 16 | 200 | 414–2683 ms | 84808–1398274 ms | — |
+| host | step 42: setLocation Mountain Top, Pennsylvania | 3 | 200 | 416–573 ms | 9423–10959 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 19 | 200 | 405–3253 ms | 20984–717971 ms | — |
+| flow | step 6: uploadRole button "…" | 1 | 200 | 437 ms | 104 ms | — |
+| flow | step 7: fillRole textbox "…" | 2 | 200 | 433–485 ms | 622–1628 ms | — |
+| flow | step 8: fillRole textbox "…" | 1 | 200 | 456 ms | 5732 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

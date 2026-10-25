@@ -6189,3 +6189,1080 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: a new read beside `read group`: `log facebook read members --account <a> --group <url|id> --count <n> [--secondsPerScroll <s>] [--maxScrolls <n>] [--owners] [--bypass] [--json]`, in the new domain `src/facebook/group/members`. `membersReadMachine` (XState) goes to `/groups/<g>/members` in the account's open browser, then waits `secondsPerScroll` (default 15) and sends a plain `scroll` until it has `--count` members, the list ends (`has_next_page` false) or `--maxScrolls` (default twice the plan's plus 2); it never clicks. Members come from each step's own HAR: the page's HTML (`data.group.new_members`, the first 10) and every `GroupsCometMembersPageNewMembersSectionRefetchQuery` answer (`data.node.new_members`), each a User with id, name, url, bio, page category, followers and when they joined, merged by id. `membersPlan` works out the scrolls (10 from the page, about 2 pages of 10 a scroll) and prints "count N → ~S scrolls, ~M min at Xs per scroll" up front; the owner filter keeps a bio naming owner, co-owner, founder, CEO, president, proprietor or self-employed, or a page (category set), and says which. The members go to `~/.logCli/members/<group>/<run time>.tsv` and `.json` (`LOG_MEMBERS_DIR`), never Twenty, and it prints members, with a bio, owners and pages, and the file. The read command now has typed input forms, so its MCP tools are `readGroup`, `readGroupLive` and `readMembers` (no live twin; bypass needs confirmBypass); they were `read` and `readLive`. A new page state `groupMembersList` (the members page whose refetch answered with members) is the first state that needs nothing (`needsNothing`): no resolver, the hook says it once and the Stop hook doesn't hold the turn, so inspect scrolls there are decided without SubQ. The refetch query and `UserSignalsHovercardQuery` are documented (rule 27), built by `capture --docs` from the step HARs of the open inspect run 20261024T060921 (its session.har doesn't exist until the session closes). AGENTS.md rule 77, the MCP instructions, `docs/groupMembers.md`.
 Why: matt approved the design on 2026-10-24: read a group's members with their bios to find owners. On the timing he said "the time it takes for 40 scrolls is interesting and should also be a variable", hence `--secondsPerScroll` and the plan line.
 Checked: fixtures trimmed from the recording (the members page HTML of step 03, the refetch answers of steps 05 and 06) test extraction, plan math, owners, the files and the machine (count, list end, maxScrolls, repeats, the wait, a checkpoint, an empty page, a failed scroll); the CLI end to end and the MCP tool's fields. `bun run check`: 944 pass, every gate green. Live on 61594063207669's open inspect session (steps 22-24), `--group junkremovalwinners --count 30 --secondsPerScroll 10 --bypass`: plan ~1 scroll, it took 2 scrolls in 84 s, 30 members, 15 with a bio, 15 owners (4 by bio, 11 as a page only), 14 pages, nothing clicked.
+
+## 2026-10-24 13:58Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `.env.example`: edited
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/accountsAndListings.md`: edited
+- `docs/adsPower.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `scripts/tests/preload.ts`: no declaration changed (comments, formatting or line endings)
+- `skills/adsPower/SKILL.md`: edited
+- `src/browser/adsPower/adsPower.test.ts`: added test "the plan releases the profile of a deactivated account, and one whose home is outside the chosen homes", test "applied, a release deletes the profile and unlinks it in Twenty before the freed slot goes to an account waiting for one", test "the homes come from LOG_ADSPOWER_HOMES, comma separated, any case" · changed function memoryAdsPower, test "sync is a dry run unless applied; applied, it makes the profiles and links each in Twenty, and a rerun only finds them linked"
+- `src/browser/adsPower/client.ts`: added function adsPowerHomes, function homesOf · changed function createAdsPowerClient, function syncProfiles
+- `src/browser/adsPower/helpers/planSync.ts`: changed function planSync
+- `src/browser/adsPower/types.ts`: added const RELEASE_STATUSES, const ADS_POWER_HOMES_ENV · changed interface AdsPowerClient, type ProfileSyncAction
+- `src/cli/account/deactivate.test.ts`: added function memoryAdsPower, test "the deactivated account's profile is deleted and unlinked, and an account waiting for one takes the slot"
+- `src/cli/account/index.ts`: added function giveProfileBack · changed const accountCommand
+- `src/cli/adsPower/index.ts`: changed const ADS_POWER_USAGE, const adsPowerCommand
+- `src/marketplace/socialAccount/client.ts`: changed function saveAdsPowerProfileId
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const COMMAND_RULES
+
+What changed: an AdsPower profile is now given back when its account stops using it. `planSync` has a new action, `release`: an account that is DEACTIVATED (`RELEASE_STATUSES`), or whose home country isn't in the chosen homes, has its profile (the stored link, or one found by its remark) deleted. With no profile it is skipped. `syncProfiles` runs every release first (AdsPower `/api/v2/browser-profile/delete`, then `adsPowerProfileId` cleared in Twenty), then makes and links profiles, so a freed slot goes straight to an account waiting for one. The homes come from `LOG_ADSPOWER_HOMES` (`.env.local`, comma separated) or `--homes` on `log adsPower sync`; empty means every country. `log facebook account status <a> DEACTIVATED` (MCP `accountStatus`) gives the profile back at once by running the sync and says which account took the slot; if AdsPower isn't up it says to run the sync later. `saveAdsPowerProfileId` takes null. Rule 78, `docs/adsPower.md`, `docs/accountsAndListings.md`, skills/adsPower, `.env.example`. Tests never read the real homes (preload).
+Why: AdsPower's plan holds 22 profiles, and on 2026-10-24 the sync could not make 10 of them because deactivated accounts still held 11. matt: "for the accounts that are deactivated, remove them from our part... if an account gets deactivated in Twenty or we deactivate it via the tool, it then removes it from our part. Then we need to load in another account", and "I don't want any of the British Columbia accounts in there. I just want to do Pennsylvania."
+Checked: unit tests for the plan (deactivated and out-of-home released, creates only in the homes), the applied sync (delete, unlink, then skip on a rerun), the homes parsing, and the status command end to end with a full AdsPower (the freed slot taken). `bun run check`: 948 pass, every gate green. Live with `LOG_ADSPOWER_HOMES=US`: the dry run planned 16 releases (10 DEACTIVATED, 6 British Columbia) and 5 creates; applied, all 16 profiles were deleted and unlinked, and the 5 Pennsylvania accounts that had no profile got one (k1ib91g4, k1ib91gl, k1ib91gs, k1ib91h0, k1ib91hl). AdsPower now holds 10 log-cli profiles, one per Pennsylvania account, and a rerun shows 10 linked, 21 skipped.
+
+## 2026-10-24 14:02Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometProfileVerificationBadgePopoverQuery.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometUnifiedShareSheetDialogQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWCatQuery.md`: new file
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/UnifiedShareSheetMessengerSectionQuery.md`: edited
+- `docs/platforms/facebook/background/UserSignalsHovercardQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/checkpoint/UFACAISupportChatExperienceQuery.md`: edited
+- `docs/platforms/facebook/checkpoint/useCometAISupportConversationLoggerMutation.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/checkpoint/useUFACSubmitActionMutation.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometFeedRegularStoriesPaginationQuery.md`: edited
+- `docs/platforms/facebook/groups/GroupsCometMembersPageNewMembersSectionRefetchQuery.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometVisitMutation.md`: edited
+- `docs/platforms/facebook/login/CometLogoutHandlerQuery.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+
+What changed: `log facebook capture --docs` rebuilt the Facebook client docs from the members-read inspect run 20261024T060921 (492 requests, 38 operations, rea had already read all 34 slices): the facts tables and the "What it sent and what came back" rows of 37 docs are updated, and one request is new, `MAWCatQuery` (background, the Messenger inbox's client access token rotation, `MAWRotateCAT`). Its reasoning is written: no machine waits on it, and its answer on 2026-10-24 was error 1357053 "Please review your account" with a redirect to `/checkpoint`, a checkpoint read from the internal API (rule 73).
+Why: the pre-push gate (rule 27, `check:facebookClientDocs`) refused the push of feat/adsPowerRelease because a run was newer than the docs.
+Checked: `bun run check:facebookClientDocs`: 226 requests documented, rea read every GraphQL slice.
+
+## 2026-10-24 21:07Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/platforms/facebook/flows/profileSetup.md`: edited
+- `python/browser/controlMatch.py`: added const CANDIDATES_JS, const NAME_FIELDS, def norm, def describe, def pick
+- `python/errors/errorCatalog.json`: edited
+- `python/fixtures/controls/README.md`: new file
+- `python/fixtures/controls/automatedBehaviour.yml`: new file
+- `python/fixtures/controls/choosePicture.yml`: new file
+- `python/fixtures/controls/cropPicture.yml`: new file
+- `python/fixtures/controls/twoStepCode.yml`: new file
+- `python/session/inspectSession.py`: added def endpoint_name · changed def request_names, class Inspector
+- `skills.md`: edited
+- `skills/flow/SKILL.md`: edited
+- `skills/host/SKILL.md`: edited
+- `src/browser/adsPower/adsPower.test.ts`: changed function memoryAdsPower
+- `src/browser/adsPower/client.ts`: added function newestKernel, function ensureKernel · changed function createAdsPowerClient
+- `src/browser/adsPower/types.ts`: added interface AdsPowerKernel, interface KernelDownload · changed interface AdsPowerClient
+- `src/browser/flow/answers.test.ts`: changed test "publishing: the create page stops the flow before the form when the account may not post, and Publish needs the listing id in the create answer"
+- `src/browser/flow/client.ts`: added function flowSections, function flowWithParams
+- `src/browser/flow/controlMatch.test.ts`: added const python, const fixture, const INTERACTIVE, interface Candidate, function candidatesOf, function pick, test "the two-step box is the textbox named Code, though it has none of CODE_FIELD's attributes", test "Dismiss is found by its text when the button has no accessible name", test ""Upload Photo" from the 2026-10-19 recording finds today's "Upload photo"", test "Save is the one inside the dialog the step names, not the page behind it", test "two equal matches are refused, never guessed", test "a disabled match is reported as disabled, a missing one as missing", test "dialogOf reads the dialog around a control from a snapshot", test "a step that sends no mutation is confirmed by its plain endpoint or its dialog query", test "profileSetup's picture steps each wait on Facebook's answer, inside the dialog they belong to", test "the dialog must be for this account, the upload must name it and return the photo's id", test "the session names a plain endpoint the way the readings do, so a step can wait on it"
+- `src/browser/flow/definitions/profileSetup.json`: edited
+- `src/browser/flow/flow.test.ts`: added test "only the profile picture when Twenty has no cover or name", test "every section when every param is given"
+- `src/browser/flow/helpers/dialogOf.ts`: added const indentOf, const sameName, function dialogAt, function dialogOf
+- `src/browser/flow/helpers/flowFromRecording.ts`: added const endpointOf · changed function confirmingRequest, function flowFromRecording
+- `src/browser/flow/helpers/index.ts`: added export from "./dialogOf"
+- `src/browser/flow/types.ts`: changed interface FlowStep
+- `src/browser/inspect/client.ts`: added function processAlive, const ownerGone · changed function openInspects, function writeCurrentInspect
+- `src/browser/inspect/types.ts`: changed interface CurrentInspect, interface InspectStepOptions
+- `src/cli/account/deactivate.test.ts`: changed function memoryAdsPower
+- `src/cli/flow/helpers/flowSession.ts`: changed function runFlowInSession
+- `src/cli/host/helpers/hostActors.ts`: changed function hostActors
+- `src/cli/host/index.ts`: changed const HOST_USAGE, const HOST_INPUT, const hostCommand
+- `src/cli/preflight/index.ts`: added const PREFLIGHT_USAGE, function proxyFact, function kernelFact, const onDisk, const preflightCommand
+- `src/cli/runner/index.ts`: changed const COMMANDS
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/marketplace/home/types.ts`: changed const CITY_TIMEZONES
+- `src/marketplace/preflight/client.ts`: added const pass, const fail, function preflightOf, function renderPreflight
+- `src/marketplace/preflight/index.ts`: added export from "./client", export from "./types"
+- `src/marketplace/preflight/preflight.test.ts`: added const EXETER, const GOOD, const NOON_EDT, const failed, test "an account with everything in place is ready", test "each of 2026-10-24's stops on Exeter is caught up front", test "the proxy limit is the run's, a wrong country and a missing profile are blocking too", test "yesterday's host opens and an earlier launch gap don't count against today", test "outside the waking hours is said up front"
+- `src/marketplace/preflight/types.ts`: added type PreflightName, interface PreflightCheck, interface ProxyFact, interface KernelFact, interface PreflightFacts, interface PreflightAccount, interface PreflightRow
+- `src/mcp/server/flowTools.test.ts`: changed test "the live tool without confirmLive never runs; the dry one lists the steps and opens nothing"
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+
+What changed: Flow steps pick their control with `controlMatch.pick`, one scored match by role and name (accessible name, aria-label, label, text or placeholder, case ignored) inside the step's dialog (`within`), refusing two equal matches (`controlAmbiguous`) and reporting `controlMissing` / `controlDisabled`; `by_role`, the code box and the clickRole `already` check use it. The session names plain endpoints like the readings do (`endpoint_name`), so `expect` can wait on `/profile/picture/upload/`. `flowFromRecording` records each control's dialog (`dialogOf`) and a confirming plain endpoint or dialog query when no mutation fires. profileSetup's picture steps now wait on the dialog query, the upload and the set mutation inside "Choose profile picture" and check their answers; the host runs only the sections Twenty has data for (`flowWithParams`), waits for a missing AdsPower kernel (`ensureKernel`) and takes `--now`. New `log facebook preflight [--account] [--homes] [--noProxy] [--apply] [--json]` checks timezone, hours, proxy country and speed, AdsPower profile and kernel, launches and host opens left, a live session and the picture on disk before anything opens. Inspect sessions record their process id and a dead one is dropped. Eight Pennsylvania towns join CITY_TIMEZONES. Nine error codes, rule 79, the MCP rules, skills and docs follow.
+Why: matt: "we can't do that in production, that's why we need it deterministic." On 2026-10-24 Exeter's run stopped on things that changed or weren't checked: "Upload Photo" had become "Upload photo", Dismiss had no accessible name, the two-step box matched none of CODE_FIELD, Save fired before the upload answered, and before that a missing timezone, a slow proxy, a kernel mid-download, the host's 2 opens and a stale session record each stopped it. Each step now either matches one control and gets its answer, or stops with a named code; the rest is caught by preflight before a browser opens.
+Checked: `bun run check` passes (968 tests, 0 fail), with fixtures of today's Exeter pages (`python/fixtures/controls/`) run through the Python matcher. Live: `log facebook preflight --homes US` measured all 10 Pennsylvania accounts (3 ready; 7 proxyTooSlow at 2.5-3.7 s; Exeter opensSpent), and the matcher's scan on Exeter's open profile resolved "Profile picture actions", "Account, your profile" and "Home" to one element each, read-only.
+
+## 2026-10-24 21:22Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `python/browser/controlMatch.py`: changed const CANDIDATES_JS, def pick
+- `python/fixtures/controls/README.md`: edited
+- `src/browser/flow/controlMatch.test.ts`: added test "a page wrapped in aria-hidden still has its controls, and one outside aria-hidden wins a tie"
+
+What changed: `CANDIDATES_JS` keeps controls under an `aria-hidden` ancestor and marks them `ariaHidden`; `pick` uses that only as a tie-breaker after enabled, so a control outside aria-hidden wins an otherwise equal match.
+Why: on Hazleton's live checkpoint page (2026-10-24 21:10Z) every control sits inside `div#scrollview[aria-hidden=true]` though the page is visible, so the matcher saw 0 controls and the host stopped on `controlMissing: no visible button "Dismiss"` 7 times. A snapshot doesn't show aria-hidden, so the fixture test passed while the live page failed.
+Checked: a read-only scan of Hazleton's open checkpoint page found 14 controls and picked Dismiss as one element; the rerun dismissed it on its own, signed in, passed the account check and set the persona picture through profileSetup's five picture steps, each answer seen. `bun run check`: 969 pass, 0 fail, with a new aria-hidden case in `controlMatch.test.ts`.
+
+## 2026-10-24 21:39Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/diagrams/pageStates.mmd`: edited
+- `python/errors/errorCatalog.json`: edited
+- `python/fixtures/controls/README.md`: edited
+- `python/fixtures/controls/browserNotificationsNotice.yml`: new file
+- `python/fixtures/controls/pastNoticeDialog.yml`: new file
+- `skills/flow/SKILL.md`: edited
+- `src/browser/flow/helpers/index.ts`: added export from "./overlays"
+- `src/browser/flow/helpers/overlays.ts`: added interface OverlayClear, const OVERLAY_CLEARS, const PRESSING_ACTIONS, function overlayOf
+- `src/browser/flow/helpers/pageState.ts`: changed const PAGE_STATES, const RESOLVE_CALLS
+- `src/cli/flow/helpers/flowSession.ts`: added function clearOverlays · changed function runFlowInSession
+- `src/cli/flow/overlays.test.ts`: added const fixture, const PROFILE, const NOTICE, const PAST, const CLEAN, const HAZLETON, const current, function scripted, test "the browser-notifications notice and an ended 'What happened' notice are named, each resolved with Escape", test "a 'What happened' that hasn't ended is not cleared: it stays unknown, for SubQ to read", test "the notice, then the past notice as they came on Hazleton: two Escapes, the second waits on its clear call", test "the past notice's clear call must answer true, and an overlay still there after Escape stops the flow", test "the run checks once, right before its first click, and a blocked one fails that step with overlayNotCleared"
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/mcp/server/helpers/agentRules.ts`: changed const SERVER_INSTRUCTIONS
+
+What changed: Two page states join PAGE_STATES with Escape as their resolver: `browserNotificationsNotice` ("To allow or block browser notifications from Facebook…") and `pastNoticeDialog` (a "What happened" dialog with an "Ended on" date). `runFlowInSession` calls the new `clearOverlays` once, right before the flow's first click, fill or upload: it reads the page, presses Escape for each overlay in `OVERLAY_CLEARS`, and checks the result, the notice by being gone from the page and the past notice by `useAccountStatusClearEnrollmentEntryPointActionMutation` answering `data.xfb_ixt_gateway_clear_flow: true`. One that stays, or a clear call that answers otherwise, fails that step with the new code `overlayNotCleared`. Rule 79, the MCP instructions, the flow skill and the page-state diagram say so.
+Why: matt asked for both to be known states cleared with Escape before a flow's first click and checked by their answers. On Hazleton (host 20261024T211541) the notice covered "Profile picture actions" and its own Close, so the profile step stopped and both overlays were cleared by hand; a "What happened" notice still in force is left unknown so SubQ reads it instead of it being pressed away.
+Checked: `src/cli/flow/overlays.test.ts` runs both states from Hazleton's step-09 snapshot excerpts (`python/fixtures/controls/`): the order they came in (notice, then the past notice, with the second Escape waiting on its clear call), a clear call answering false or not at all, a notice still there after Escape, a 'What happened' without "Ended on" left alone, and a flow that checks once before its first click and fails that step with overlayNotCleared. The answer shape is the one recorded at step 15. `bun run check`: 974 pass, 0 fail.
+
+## 2026-10-24 21:57Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `skills/host/SKILL.md`: edited
+- `src/browser/adsPower/adsPower.test.ts`: changed function memoryAdsPower
+- `src/browser/adsPower/client.ts`: added function kernelOfUserAgent, function profileKernels, function kernelReady, function ensureProfileKernel · changed function createAdsPowerClient, function ensureKernel · removed function newestKernel
+- `src/browser/adsPower/kernels.test.ts`: added const ua, function kernelClient, const LOCAL, test "the Chrome major version is read from the user agent", test "the Pennsylvania profiles as AdsPower answered on 2026-10-24, read 10 at a time", test "a profile on 154 waits for 154, not the newest kernel, and a ready one downloads nothing", test "a profile whose user agent names no version is refused, not guessed"
+- `src/browser/adsPower/types.ts`: changed interface AdsPowerClient
+- `src/cli/account/deactivate.test.ts`: changed function memoryAdsPower
+- `src/cli/host/helpers/hostActors.ts`: changed function hostActors
+- `src/cli/preflight/index.ts`: added function kernelFacts · changed const PREFLIGHT_USAGE, const preflightCommand · removed function kernelFact
+- `src/cli/preflight/preflight.test.ts`: added const ua, function contextWith, test "without --apply it only reports: Scranton and Pittston need 154, which isn't there", test "--apply downloads each missing version once, only the ones a profile needs", test "AdsPower not answering marks every profile unreachable"
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/marketplace/preflight/client.ts`: changed function preflightOf
+- `src/marketplace/preflight/preflight.test.ts`: added test "the kernel checked is the one the profile's own user agent needs, not the newest" · changed const GOOD, test "each of 2026-10-24's stops on Exeter is caught up front"
+- `src/marketplace/preflight/types.ts`: changed interface KernelFact, interface PreflightFacts
+
+What changed: The AdsPower client reads each profile's user agent (`profileUserAgents`, `POST /api/v2/browser-profile/ua`, 10 profiles a call) and `kernelOfUserAgent` takes the Chrome major version from it. `ensureKernel` now waits for a given version, and `ensureProfileKernel` waits for the one a profile's user agent names (refusing a user agent with no version). The host's open waits for its own profile's kernel; preflight's `kernelFacts` checks each account against its profile's kernel and `--apply` downloads each missing version once. `newestKernel` is gone, and the adsPowerKernelMissing meaning, the usage and the host skill say the profile's own kernel.
+Why: matt asked to prune AdsPower's old kernels; checking first showed ua_auto starts the Chrome version in each profile's user agent, not the newest: Scranton, Pittston and Nanticoke start 154, Wilkes-Barre and Shavertown 155, the other five 156. Only 153 was unused and was deleted. The preflight and host checked only 156, so a missing 154 or 155 would have passed preflight and failed at launch.
+Checked: `bun run check`: 982 pass, 0 fail, with `kernels.test.ts` (the Pennsylvania user agents as AdsPower answered, batching, a 154 profile waiting for 154 not 156, no version refused) and `src/cli/preflight/preflight.test.ts` (report only, --apply downloading 154 and 155 once each, AdsPower down). Live: `log facebook preflight --homes US --noProxy` read every profile's kernel from AdsPower: 154 for Scranton, Pittston, Nanticoke; 155 for Wilkes-Barre, Shavertown; 156 for the rest, all ready.
+
+## 2026-10-24 22:05Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometActorGatewayHandlerQuery.md`: new file
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuShortcutsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceNUXUpdateStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSellerListingTransactionReportingDialogQuery.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometTS2BitArrayLoggerMutation.md`: new file
+- `docs/platforms/facebook/background/CometUnifiedShareSheetDialogQuery.md`: edited
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/FeedComposerCometRootQuery.md`: edited
+- `docs/platforms/facebook/background/FriendingCometFriendRequestsRootQuery.md`: edited
+- `docs/platforms/facebook/background/FriendingCometMutualFriendsSocialContextTooltipContentQuery.md`: edited
+- `docs/platforms/facebook/background/MAWCatQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightContainerQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometBrowseFeedLightPaginationQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceCometPartnerListingDialogContentQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceDeleteUtilsQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplacePDPC2CMediaViewerWithImagesQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYourListingDialogQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/UserSignalsHovercardQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/ajaxRouteDefinition.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/sharedUserPreferences.md`: edited
+- `docs/platforms/facebook/background/useAccountStatusClearEnrollmentEntryPointActionMutation.md`: new file
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/checkpoint/FBScrapingWarningMutation.md`: edited
+- `docs/platforms/facebook/checkpoint/UFACAISupportChatExperienceQuery.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/groups/useGroupsCometVisitMutation.md`: edited
+- `docs/platforms/facebook/login/CometLogoutHandlerQuery.md`: edited
+- `docs/platforms/facebook/login/ajaxTimezoneUpdatePhp.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/photos/ajaxReactComposerAttachmentsPhotoUpload.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometHeaderQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometProfilePictureEditDialogQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometProfilePictureSetMutation.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTimelineFeedQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTimelineFeedRefetchQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfilePromptQuickPromotionMutation.md`: edited
+- `docs/platforms/facebook/profile/profilePictureUpload.md`: edited
+- `docs/platforms/facebook/publishing/CometMarketplaceBoostListingPostPublishNuxDialogQuery.md`: edited
+- `src/rea/facebookClient/factsStore.test.ts`: added test "a whole link, a shortened one with its length note, and one inside other text all lose their query", test "Facebook's one-time action tokens are taken out by their key, the rest of what was sent stays"
+- `src/rea/facebookClient/helpers/factsStore.ts`: added const SECRET_KEY · changed const SIGNED_URL, function unsigned, function samplesOf
+
+What changed: The Facebook request docs are rebuilt by `log facebook capture --docs` from today's Exeter inspect run and Hazleton's host run: 43 requests with what each sent and answered, three of them new (`useAccountStatusClearEnrollmentEntryPointActionMutation`, `CometActorGatewayHandlerQuery`, `CometTS2BitArrayLoggerMutation`) with their reasoning written. The facts store now strips the signature from every fbcdn/cdninstagram link inside a value, not only a whole-link value (a shortened `… (441 chars)` link slipped through), takes out values under token-like keys (`ixt_clear_token`, `serialized_state`, `fb_dtsg`, `jazoest`, `lsd`) as `(taken out)`, and cleans stored samples on the way through too. Sixteen older request docs that still carried signed image links were cleaned with the same rule.
+Why: matt asked to commit the rebuilt request docs. Reviewing them before committing showed the docs saying "secrets and signed link tokens taken out" while 9 lines still carried `oh=`/`_nc_ohc=` image signatures and the new clear mutation carried its one-time `ixt_clear_token` and `serialized_state`; the docs are committed, so they must say true.
+Checked: two new cases in `factsStore.test.ts` (a whole, a shortened and an embedded signed link; token keys taken out while the rest of what was sent stays); `bun run check`: 984 pass, 0 fail. After the rebuild no tracked doc under `docs/platforms/facebook` matches `oh=00_`, `_nc_ohc=` or the recorded tokens. Not yet passing: `check:facebookClientDocs` (pre-push) wants rea's reading of the three new requests' code slices, and the host run kept no Facebook bundles to cut them from, so the next inspect run that records them, then `capture --docs`, clears it.
+
+## 2026-10-24 22:11Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometHovercardQueryRendererQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/useAccountStatusClearEnrollmentEntryPointActionMutation.md`: edited
+- `docs/platforms/facebook/operations.json`: edited
+- `python/browser/harRecorder.py`: added const LARGE_BODY · changed class Recorder
+- `skills/reaCapture/SKILL.md`: edited
+- `src/browser/driver/harRecorder.test.ts`: added const python, const SCRIPT, test "the body is read first, before any header round trip, so a page that moves on can't drop it", test "a 2.3 MB script is kept whole: Hazleton's run lost one at the old 2 MB limit", test "a body that can't be read, or is over its limit, says why instead of vanishing"
+- `src/rea/facebookClient/client.ts`: added function scriptsFromHar · changed function indexRunModules
+- `src/rea/facebookClient/facebookClient.test.ts`: added test "the bundles come from its session.har, are kept as scripts/, and lost bodies are said"
+
+What changed: `capture --docs` takes a run's bundles from its own `session.har` when the run isn't settled yet (`scriptsFromHar`), keeps them as `scripts/`, and says how many response bodies the recording lost, so every action's run (a host still open included) feeds the request docs' code slices. The recorder (`harRecorder.py`) now reads each response body first, before the request and response header round trips, keeps scripts and documents up to 16 MB (other bodies still 2 MB), and writes `_bodyError` with the reason on a body it couldn't keep. The docs are rebuilt from Hazleton's host run with rea's reading of `useAccountStatusClearEnrollmentEntryPointActionMutation`, now documented as a mutation with its definition.
+Why: matt: "it should just do the capture across all actions." The docs gate refused a push because rea had read none of the three new requests: Hazleton's host run was never settled, so it had no `scripts/` and the build read no code from it, though its 158 MB `session.har` held 869 bundles. Of its 910 script responses, 41 had no body: one 2.3 MB bundle over the 2 MB limit, and 40 whose body was gone by the time the recorder asked for it after three header round trips.
+Checked: `harRecorder.test.ts` runs the real recorder on fake responses (body read right after the response, a 2.3 MB script kept whole, a lost body and an over-limit JSON each carrying `_bodyError`); `facebookClient.test.ts` builds modules from an unsettled run's `session.har` and reports the lost body. Live: the rebuild took 869 bundles from Hazleton's open run and rea read the clear mutation's slice. `bun run check`: 988 pass, 0 fail. Still unread: `CometActorGatewayHandlerQuery` and `CometTS2BitArrayLoggerMutation`, whose bundles were among the 41 lost in that recording; the next run with the new recorder keeps them.
+
+## 2026-10-24 22:38Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/pageStates.mmd`: edited
+- `docs/errorCatalog.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `python/fixtures/controls/twoStepMethodPicker.yml`: new file
+- `python/fixtures/controls/twoStepPasskey.yml`: new file
+- `skills/host/SKILL.md`: edited
+- `src/browser/flow/controlMatch.test.ts`: added test "the authentication app's radio is one match inside Facebook's method picker"
+- `src/browser/flow/helpers/pageState.ts`: added const TWO_STEP_PICKER, const AUTH_APP_RADIO, const authAppOffered · changed const PAGE_STATES, const RESOLVE_CALLS
+- `src/browser/flow/pageState.test.ts`: added test "the passkey prompt and the method picker are named before the code page, each with its press", test "the authentication app is chosen only when the picker's answer offers TOTP, not disabled"
+- `src/cli/host/helpers/hostActors.ts`: changed function hostActors
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+
+What changed: Two page states join the two-step ones: `twoStepPasskey` ("Use face scan, fingerprint or screen lock to confirm it's you", resolved with "Try another way") and `twoStepMethodPicker` ("Choose a way to confirm it's you", resolved with the Authentication app radio, then Continue). The host's sign-in handles both before the code: it presses Try another way, waits for `TwoStepVerificationChallengePickerDialogQuery` and goes on only when its answer lists `TOTP` not disabled (`authAppOffered`), else the new account issue `twoStepNoAuthApp`; on the picker it chooses the app and Continue, then types the code as before. Fixtures of both pages, the host skill, the error catalog and the page-state diagram follow.
+Why: matt: "new state". Mountain Top (host 20261024T222706) landed on a passkey prompt after its password; with no code box on it, `code` failed with `controlMissing` six times. Pressing Try another way opened the picker, whose answer listed `PASSKEY`, `TOTP`, `BACKUP_CODES`; choosing Authentication app gave the code box, the code signed it in, and the run went on to set its persona picture.
+Checked: `pageState.test.ts` names both pages from Mountain Top's snapshots, picks their presses (radio, then Continue once it is checked) and accepts TOTP only when offered and enabled; `controlMatch.test.ts` finds the app's radio as one match in the picker dialog. Live, the same presses by hand signed Mountain Top in, and its host then cleared the notifications notice by itself and saved its persona picture (`ProfileCometProfilePictureSetMutation` 200, profileSetAt 22:34:02Z in Twenty). `bun run check`: 992 pass, 0 fail.
+
+## 2026-10-24 23:01Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/errorCatalog.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `skills/host/SKILL.md`: edited
+- `src/cli/host/helpers/hostActors.ts`: changed function hostActors, function placeFor
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/facebook/marketplace/location/helpers/placeProblem.ts`: added function homePlace
+- `src/facebook/marketplace/location/location.test.ts`: added test "the Pennsylvania and British Columbia homes get "City, State" or "City, Province", and pass the acronym check", test "a home with no region is none, never a guess"
+- `src/facebook/marketplace/location/types.ts`: added const CA_PROVINCE_NAMES
+- `src/marketplace/home/types.ts`: added const CITY_REGIONS · changed const CITY_TIMEZONES
+- `src/marketplace/preflight/client.ts`: changed function preflightOf
+- `src/marketplace/preflight/preflight.test.ts`: added test "its Marketplace location is said up front: its home written out, or noHomeRegion"
+- `src/marketplace/preflight/types.ts`: changed type PreflightName
+
+What changed: `CITY_REGIONS` gives every home city its state or province code (the 21 Pennsylvania towns and cities, the other US cities in the tables, and the Canadian ones), `CA_PROVINCE_NAMES` writes provinces out, and `homePlace` builds the account's place through `fullPlaceName` ("Mountain Top, Pennsylvania", "Kamloops, British Columbia"). The host's setLocation types that place first and uses a listing's `locationQuery` only for a home with no region; its error now says to add the region. The ten British Columbia towns join `CITY_TIMEZONES` (America/Vancouver). `log facebook preflight` shows each account's place and refuses a home with no region (`noHomeRegion`).
+Why: matt: "all of the accounts need to be set relative to the state they're in". Mountain Top's host stopped at setLocation with `noPlaceName` because its Marketplace location was Pachuca, Mexico and it had no listing to take a place from, though the acronym tools (`placeProblem`, `fullPlaceName`) already write a state out; nothing told the host the account's state.
+Checked: `location.test.ts` builds six homes' places and runs each through `placeProblem`, and returns none for a home with no region; `preflight.test.ts` shows Exeter's place and refuses Galway (no region). Live: `log inspect do setLocation "Mountain Top, Pennsylvania" --live` in Mountain Top's open browser: Facebook's search offered "Mountain Top, Pennsylvania" first and `CometMarketplaceSetBuyLocationMutation` answered city "Mountain Top" at 41.135, -75.904; marketplaceLocationAt is in Twenty. `bun run check`: 996 pass, 0 fail.
+
+## 2026-10-24 23:38Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `python/browser/controlMatch.py`: added const TAG_ATTRIBUTE, const TAG_JS
+- `python/browser/proxyGate.py`: added def exit_checked · changed def check_attached
+- `python/session/inspectSession.py`: added def query_of, def answer_for · changed class Inspector
+- `src/browser/flow/controlMatch.test.ts`: added test "the form re-rendering after the title is typed still finds the Price box", test "a late answer for "Mont" is passed over for the one that searched "Mountain Top, Pennsylvania""
+- `src/camofox/session/visible.test.ts`: added test "same country and timezone: the browser's exit is pinned", test "another timezone or country is refused and nothing is pinned"
+
+What changed: `by_role` tags the control the matcher picked (`TAG_JS`, `data-log-control`) the moment it is picked and hands back a locator on that tag, so a step no longer holds a control by its nth-child path. setLocation records the query each `MarketplaceSearchAddressDataSourceQuery` sent (`query_of`) and waits up to 20 s for the answer to the whole place typed (`answer_for`) instead of taking whichever answer came last after 2.5 s. On an attached browser (AdsPower), when the browser's own exit differs from the gate's, `exit_checked` locates it and pins it if it is in the account's country and on its timezone, and refuses otherwise.
+Why: matt asked for Mountain Top's listing to go up. Four live runs of `marketplaceListingPublish` stopped short: at Price, typing the title re-rendered the form so the stored path pointed at nothing (a test shows it can point at the Title box instead) and Playwright waited 30 s; twice the self-check refused because AdsPower's browser left the 2Captcha proxy at 73.130.225.59 while the gate's own check left at 98.235.13.173, both US on America/New_York; and once setLocation read the answer to a prefix (Montreal, Montclair) because the proxy was slow.
+Checked: `controlMatch.test.ts` (15 pass) holds Price by its tag after a node is inserted before it, and picks the answer to "Mountain Top, Pennsylvania" over a later one for "Mont"; `visible.test.ts` (12 pass) pins a same-timezone exit and refuses another timezone or country. Live: `log flow run marketplaceListingPublish --account 61593981307720 --live` ran all 15 steps; `useCometMarketplaceListingCreateMutation` answered listing 28779899605000522, recorded on the agencyListing row in Twenty (active). `tsc --noEmit` clean.
+
+## 2026-10-25 03:12Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/platforms/facebook/flows/facebookLanguageEnglish.md`: new file
+- `python/browser/controlMatch.py`: changed def pick
+- `src/browser/flow/controlMatch.test.ts`: added test "Boost's "Close" beats "Close boost listing dialog", whose visible text is also Close"
+- `src/browser/flow/definitions/facebookLanguageEnglish.json`: new file
+- `src/browser/flow/definitions/marketplaceListingPublish.json`: edited
+- `src/browser/flow/helpers/pageState.ts`: changed const PAGE_STATES, const RESOLVE_CALLS
+- `src/browser/flow/pageState.test.ts`: added test "Scranton's page (its Facebook in Arabic) is automatedBehaviour and its resolver presses تجاهل"
+- `src/cli/host/helpers/hostActors.ts`: added const DISMISS_LABELS · changed function hostActors
+
+What changed: a new flow, `facebookLanguageEnglish` (MCP `flowFacebookLanguageEnglish`), opens Settings' Language and region, Account language, picks English (US) and presses OK; it waits on `CometUSFFDSDialogQuery` (node_id ACCOUNT_AND_APP_LANGUAGE) and `useCometUSFScrollablePickerMutation`, and the notifications notice in front of it is cleared by the flow's overlay step. `automatedBehaviour` and `browserNotificationsNotice` also match their Arabic text, and the host presses Dismiss by the label on the page (Dismiss or تجاهل). The matcher prefers the control whose accessible name (aria-label first) is the name asked for. `marketplaceListingPublish` step 1 only reads that a location is shown; step 2 sets it and checks Facebook's answer for the home city.
+Why: matt asked for the nine US listings now, then: "switch any account whose Facebook is in Arabic to English (US)" and "use the MCP inspect to change the language... now record that flow". Scranton's Facebook is in Arabic: the host's English Dismiss never matched (`controlMissing`) and the flows click English names. Hazleton's first run stopped at step 1 because its location was Antananarivo, Madagascar, before step 2 could set it. Hazleton's second run published but stopped at Boost's Close, where "Close" and "Close boost listing dialog" (text Close) both matched (`controlAmbiguous`).
+Checked: live on Scranton with `log inspect`: `useCometUSFScrollablePickerMutation` sent selected_id en_US, the page reloaded with Home, Friends and "Settings & privacy", and SubQ read the goal as reached; the flow is made from that recording (`log flow fromInspect`). Scranton's host pressed تجاهل and signed in (then `/marketplace/ineligible/`, restricted). Hazleton published listing 1789968938884830, recorded in Twenty. Tests: `pageState.test.ts` (the Arabic page is automatedBehaviour), `controlMatch.test.ts` (Close beats "Close boost listing dialog"); `src/browser/flow` 58 pass; `tsc --noEmit` clean.
+
+## 2026-10-25 04:27Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `python/session/inspectSession.py`: changed class Inspector
+- `src/browser/flow/helpers/overlays.ts`: changed const PRESSING_ACTIONS
+- `src/cli/flow/overlays.test.ts`: added test "Kingston's notice covered Location before any click"
+- `src/cli/host/helpers/hostActors.ts`: changed function hostActors
+
+What changed: `PRESSING_ACTIONS` includes `setLocation`, so a flow clears the known overlays (the browser-notifications notice) before the location step, the publish flow's first press. setLocation presses Escape after it reloads Marketplace, since the reload brings the notice back. The host's wrong-password check also matches "The password you entered is incorrect."
+Why: matt asked for the remaining US listings to go up. Kingston's and Wilkes-Barre's first publishes timed out at setLocation with the page greyed by the notice over the Location button (Kingston flow 20261025T041059 step 02, Wilkes-Barre 20261025T041433 step 05, after the flow's own Escape). Pittston's host signed in twice and ended signInNotFinished: the login page said "The password you entered is incorrect.", which the old pattern ("you've entered") missed.
+Checked: `overlays.test.ts` (6 pass) has setLocation among the pressing actions and goto not; Kingston's second run cleared the notice and reached the location save (`CometMarketplaceSetBuyLocationMutation` then answered 1675030, a separate issue); the wrong-password pattern matches both wordings. `tsc --noEmit` clean. Live runs after this were stopped by AdsPower refusing to start on a nearly full disk.
+
+## 2026-10-25 06:45Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `src/cli/flow/index.ts`: changed function runFlow
+- `src/cli/host/index.ts`: changed const hostCommand
+- `src/cli/listing/index.ts`: changed const LISTING_USAGE, const LISTING_INPUT, const listingCommand
+- `src/marketplace/replacement/client.ts`: added function blockedListings, function sweepBlockedListings · changed function setStatusAndReplace
+- `src/marketplace/replacement/replacement.test.ts`: added test "a checkpoint is a loss: its listings go ACCOUNT_LOST", test "a wrong password leaves the account needing a login, and its listings are dead", test "the sweep finds listings left on accounts already blocked, and only those"
+- `src/marketplace/replacement/types.ts`: added interface BlockedListing, interface SweepReport
+- `src/marketplace/socialAccount/types.ts`: added const BLOCKING_REASONS, function accountBlocked · changed const LOSING_STATUSES
+
+What changed: an account is blocked when its status is checkpoint, restricted, banned, dead or deactivated, or its reason is wrongPassword (`accountBlocked`, `LOSING_STATUSES` gains checkpoint, `BLOCKING_REASONS`). `setStatusAndReplace` marks every listing of a blocked account ACCOUNT_LOST and hands a campaign's copy to another account in the same country. The host and `log flow run` now record the account's issue when they end on one (`recordAccountIssue`), so a checkpoint or wrong password reaches the account and its listings. `log facebook listing sweep [--apply]` finds every listing still READY, ACTIVE or the like on a blocked account (`blockedListings`) and marks it (`sweepBlockedListings`).
+Why: matt: "if we are basically blocked on that account then all of the listings are dead... fix that". Twenty held 17 listings and only 4 were live: the host and flows reported an account issue (Scranton ineligible, Pittston and Nanticoke wrong password, Wilkes-Barre and Exeter checkpointed) without writing it to the account, so its listings stayed READY; a checkpoint and a wrong password weren't losses at all.
+Checked: `replacement.test.ts` (10 pass): a checkpoint and a wrong password each put the account's listings in ACCOUNT_LOST and leave SOLD alone; the sweep finds only listings on blocked accounts and finds none after it runs. Full `bun test`: 1006 pass. Live on Twenty: Scranton RESTRICTED (suspended), Pittston and Nanticoke needsLogin (wrongPassword), one listing each now ACCOUNT_LOST; `log facebook listing sweep` then finds 0. `tsc --noEmit` clean.
+
+## 2026-10-25 07:01Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/pageStates.mmd`: edited
+- `docs/errorCatalog.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `src/browser/flow/helpers/pageState.ts`: changed const PAGE_STATES, const RESOLVE_CALLS
+- `src/browser/flow/pageState.test.ts`: added test "from the Selling text, and from MarketplaceYourListingDialogQuery's INTEGRITY_NEEDS_VERIFICATION_VH notice"
+- `src/cli/check/index.ts`: changed const checkCommand
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/facebook/marketplace/check/check.test.ts`: added test "Mountain Top's "Confirm your identity to publish this and any future listings" is BLOCKED, never ACTIVE", test "Hazleton's held listing goes BLOCKED and the check raises identityVerificationRequired"
+- `src/facebook/marketplace/check/client.ts`: changed function keepCheck
+- `src/facebook/marketplace/check/helpers/sellingListings.ts`: added const IDENTITY_HOLD · changed function statusOfListing
+- `src/facebook/marketplace/check/types.ts`: changed interface CheckReport
+- `src/marketplace/socialAccount/helpers/statusForIssue.ts`: changed const STATUS_FOR_ISSUE
+
+What changed: the identity hold is a known state, `identityVerificationHold` (person only), matched from the page ("Confirm your identity to publish this and any future listings", "More Info Needed to Publish This Listing") and from Facebook's answer (MarketplaceYourListingDialogQuery's seller notice of type INTEGRITY_NEEDS_VERIFICATION_VH). On Selling a listing with that notice is BLOCKED, never ACTIVE (`IDENTITY_HOLD`, `statusOfListing`), and the check raises `identityVerificationRequired`, which `log facebook check` now records on the account (RESTRICTED), so all its listings go ACCOUNT_LOST. New error code `identityVerificationRequired`.
+Why: matt: Mountain Top never had a listing up, and the identity step is known from the session's recording, so seeing it on the page and in the internal API should set the account's listings automatically, since it is something we can't do. Mountain Top's and Hazleton's listings were ACTIVE in Twenty from their create answers alone; Selling and MarketplaceYourListingDialogQuery say both are held for identity.
+Checked: `check.test.ts` (Hazleton's held listing goes BLOCKED and raises identityVerificationRequired; without the notice it is ACTIVE) and `pageState.test.ts` (the state from the text, and from the answer); full `bun test` 1010 pass; `check:agentHooks` passes. Live: `log facebook check` on Mountain Top and Hazleton read both listings as blocked from Selling; both accounts are now RESTRICTED (identityVerificationRequired) and their listings ACCOUNT_LOST.
+
+## 2026-10-25 08:24Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `RESEARCH/facebookInternalApiCommunity/.gitignore`: new file
+- `RESEARCH/facebookInternalApiCommunity/FINDINGS.md`: new file
+- `RESEARCH/facebookInternalApiCommunity/allReposActivity.md`: new file
+- `RESEARCH/facebookInternalApiCommunity/allRequests.md`: new file
+- `RESEARCH/facebookInternalApiCommunity/burnMatrix.md`: new file
+- `RESEARCH/facebookInternalApiCommunity/fbkAssessment.md`: new file
+- `RESEARCH/facebookInternalApiCommunity/ghTable.md`: new file
+- `RESEARCH/facebookInternalApiCommunity/repos.md`: new file
+- `RESEARCH/facebookInternalApiCommunity/reposActivity.md`: new file
+- `python/directApi/__init__.py`: new file, no top-level declarations
+- `python/directApi/fbkTry.py`: added const ROOT, def log, def main
+- `python/pacing/__init__.py`: new file, no top-level declarations
+- `python/pacing/pacer.py`: added const FBK_SRC, const STATE_DIR, const _lock, def governor_for, def gate, def soft_block, def checkpoint, def status
+- `scripts/checks/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `scripts/checks/checkNoComments.ts`: changed const SKIPPED
+- `scripts/fbk/tryAccount.ts`: added function main
+- `vendor/fbk/.github/workflows/ci.yml`: new file
+- `vendor/fbk/.gitignore`: new file
+- `vendor/fbk/LICENSE`: new file
+- `vendor/fbk/README.md`: new file
+- `vendor/fbk/data/captured_comment_mutations.json`: new file
+- `vendor/fbk/data/captured_composer.json`: new file
+- `vendor/fbk/data/captured_mutations.json`: new file
+- `vendor/fbk/data/captured_real_deltas.json`: new file
+- `vendor/fbk/data/doc_id_registry_v2.json`: new file
+- `vendor/fbk/data/doc_id_registry_v3.json`: new file
+- `vendor/fbk/data/feed_page1_sample.json`: new file
+- `vendor/fbk/data/marketplace_fixture.json`: new file
+- `vendor/fbk/data/messenger_threads_fixture.json`: new file
+- `vendor/fbk/data/messenger_ws_full.json`: new file
+- `vendor/fbk/data/notifications_fixture.json`: new file
+- `vendor/fbk/data/profile_fixture.json`: new file
+- `vendor/fbk/data/search_page_sample.html`: new file
+- `vendor/fbk/data/search_response_SearchCometResultsInitialResultsQuery.json`: new file
+- `vendor/fbk/data/settings_fixture.json`: new file
+- `vendor/fbk/docs/01-getting-started.md`: new file
+- `vendor/fbk/docs/02-configuration.md`: new file
+- `vendor/fbk/docs/03-session-and-auth.md`: new file
+- `vendor/fbk/docs/04-reference-feed.md`: new file
+- `vendor/fbk/docs/05-reference-content.md`: new file
+- `vendor/fbk/docs/06-reference-people.md`: new file
+- `vendor/fbk/docs/07-reference-tooling.md`: new file
+- `vendor/fbk/docs/08-architecture.md`: new file
+- `vendor/fbk/docs/09-safety-and-opsec.md`: new file
+- `vendor/fbk/docs/10-extending-and-testing.md`: new file
+- `vendor/fbk/docs/11-troubleshooting.md`: new file
+- `vendor/fbk/docs/README.md`: new file
+- `vendor/fbk/pyproject.toml`: new file
+- `vendor/fbk/src/__main__.py`: new file, no top-level declarations
+- `vendor/fbk/src/app.py`: added const _COMMAND_MODULES, const _EPILOG, def _disallow_abbrev, def build_parser, def main
+- `vendor/fbk/src/auth/__init__.py`: added const __all__
+- `vendor/fbk/src/auth/bootstrap.py`: added const _RE_DTSG, const _RE_DTSG_INPUT, const _RE_DTSG_GENERIC, const _RE_LSD_ALL, const _RE_LSD_FALLBACK, const _RE_USER_ID, const _RE_LOGOUT_HASH, const _RE_BUNDLE, const _RE_REV, const _RE_PRELOAD_FULL, class BootstrapPageError, def _first, def extract_fb_dtsg, def extract_lsd_all, def extract_lsd, def extract_user_id, def extract_logout_hash, def extract_revision, def extract_bundles, class PreloadEntry, def extract_preload_registry, class Bootstrap, def classify_login_state, def extract_account_warnings, def bootstrap_homepage
+- `vendor/fbk/src/auth/login.py`: added const LOGIN_PAGE_URL, const LOGIN_POST_URL, const _RE_LSD_FRAME, const _RE_LSD_HIDDEN, const _RE_FORM, const _RE_INPUT, const _RE_ATTR, const _RE_APPROVAL, const _RE_SMS, const _RE_TOTP, const MAX_CHECKPOINT_STEPS, def derive_jazoest, class LoginError, class BadCredentialsError, class LoginUnrecognizedCheckpointError, class LoginTimeoutError, class CheckpointPage, def _absolute, def parse_checkpoint, class LoginResult, class LoginFlow
+- `vendor/fbk/src/auth/logout.py`: added def jazoest, def build_logout_request, class LogoutService
+- `vendor/fbk/src/auth/state.py`: added class LoginState
+- `vendor/fbk/src/commands/__init__.py`: new file, no top-level declarations
+- `vendor/fbk/src/commands/auth.py`: added def register, def cmd_whoami, def cmd_state, def cmd_logout
+- `vendor/fbk/src/commands/comments.py`: added const _REACTION_NAMES, def register, def _comment_payload, def cmd_read, def cmd_react, def cmd_unreact, def cmd_edit, def cmd_delete
+- `vendor/fbk/src/commands/common.py`: added const _EXIT_CODES, def add_common_args, def build_config, def new_session, def with_session, def emit, def run_command, def _exit_code, def _abspath
+- `vendor/fbk/src/commands/completions.py`: added const _HIDDEN_VERB, const _COMMON_FLAGS, const _EXCLUDED_FLAGS, def register, def cmd_complete, def cmd_completions, def _candidates, def _find_subparsers, def _flag_candidates, def _hide_from_help, const _BASH_TEMPLATE, const _ZSH_TEMPLATE, const _POWERSHELL_TEMPLATE
+- `vendor/fbk/src/commands/config.py`: added def register, def cmd_show
+- `vendor/fbk/src/commands/cookies.py`: added def register, def _taxonomy_rows, def cmd_inspect
+- `vendor/fbk/src/commands/doctor.py`: added const PASS, const WARN, const FAIL, const _CAPTURE_ASSETS, const _REGISTRY_V3, const _REGISTRY_V2, const _STATE_PROBE_NAME, const _GOVERNOR_STATE, const _HEALING_LOG, const _HEALING_WINDOW_S, const _HEALING_KINDS, class Check, def _registry_tier, def _check_registry, def _check_captures, def _check_profile, def _check_impersonate, def _check_cookies, def _probe_state_writable, def _check_state, def _check_journals, def _check_self_healing, def _check_version, def _quarantine, def _json_parseable, def _apply_fixes, def cmd_doctor, def register
+- `vendor/fbk/src/commands/drafts.py`: added const _PRIVACY_NAMES, def register, def _store, def _invalid_name, def _absent, def cmd_save, def cmd_list, def cmd_show, def cmd_publish, def cmd_delete
+- `vendor/fbk/src/commands/events.py`: added def register, def cmd_list, def cmd_feed, def cmd_delete, def cmd_create
+- `vendor/fbk/src/commands/feed.py`: added const _REACTION_NAMES, const _PRIVACY_NAMES, const _VIDEO_SUFFIXES, const _ENRICHMENT_FLAGS, def _tag_pair, def _resolve_feedback, def register, def _sleep_page_gap, def cmd_read, def cmd_paginate, def cmd_react, def cmd_unreact, def cmd_comment, def cmd_delete_comment, def _media_paths, def _story_id, def _publish_media, def cmd_publish, def _print_life_categories, def cmd_life_categories, def cmd_set_privacy, def _edit_flags_given, def _print_editable, def _sleep_upload_gap, def cmd_edit, def _batch_head, def _batch_post_id, def cmd_publish_batch, def cmd_share, def _viewer_saved_state, def cmd_save, def cmd_notify
+- `vendor/fbk/src/commands/fingerprint.py`: added const PROFILE_FILENAME, const FREEZE_RATIONALE, const _FIELD_ORDER, const _LABEL_W, def _profile_file, def _render_fields, def cmd_show, def cmd_freeze, def cmd_clear, def register
+- `vendor/fbk/src/commands/friends.py`: added def _one_level, def register, def cmd_list, def cmd_requests, def cmd_suggestions, def _emit_mutation, def cmd_request, def cmd_cancel, def cmd_accept, def cmd_decline, def cmd_unfriend, def cmd_clear_badge
+- `vendor/fbk/src/commands/governor.py`: added def register, def _governor, def cmd_status, def cmd_cooldown, def _audit_config, def _verdict_line, def cmd_audit
+- `vendor/fbk/src/commands/groups.py`: added const GROUP_POST_FEED_LOCATION, const GROUP_POST_RENDER_LOCATION, def register, def _split_ids, def _trim, def _first_id, def cmd_create, def cmd_join, def cmd_add_members, def cmd_request_join, def cmd_feed, def cmd_post, def cmd_members
+- `vendor/fbk/src/commands/journal.py`: added def register, def _journal_path, def _load_entries, def _fmt_ts, def _fmt_entry, def _has_torn_trailing_line, def _entry_surface, def cmd_list, def cmd_show, def cmd_stats, def _cell, def _export_row, def cmd_export
+- `vendor/fbk/src/commands/login.py`: added def _already_authed, def cmd_login, def register
+- `vendor/fbk/src/commands/marketplace.py`: added def register, def cmd_browse, def cmd_search, def cmd_item
+- `vendor/fbk/src/commands/measure.py`: added def register, def cmd_latency, def cmd_pace, def cmd_report
+- `vendor/fbk/src/commands/memories.py`: added def register, def _print_memories, def cmd_feed
+- `vendor/fbk/src/commands/messenger.py`: added def register, def _service, def _head, def _iso_utc, def cmd_history, def cmd_threads, def cmd_send, def cmd_listen
+- `vendor/fbk/src/commands/notifications.py`: added def register, def cmd_badge, def cmd_list, def _list_rows, def cmd_mark_seen
+- `vendor/fbk/src/commands/overview.py`: added def register, def _is_error, def _presence_line, def _count_line, def cmd_overview
+- `vendor/fbk/src/commands/pages.py`: added def register, def _trim, def _first_id, def cmd_create, def cmd_like, def cmd_follow, def cmd_feed
+- `vendor/fbk/src/commands/photos.py`: added def register, def cmd_albums, def cmd_photos
+- `vendor/fbk/src/commands/presence.py`: added def register, def cmd_status
+- `vendor/fbk/src/commands/profile.py`: added def register, def cmd_profile_me, def cmd_profile_view
+- `vendor/fbk/src/commands/registry.py`: added def register, def cmd_doc_ids, const _EXAMPLES, def cmd_registry_refresh, const _V2_NAME, const _V3_NAME_ON_DISK, def cmd_registry_diff, const _AUDIT_STATUSES, def cmd_audit
+- `vendor/fbk/src/commands/render.py`: added def story_payload, def print_stories, def print_story_page
+- `vendor/fbk/src/commands/saved.py`: added def register, def _save_state, def cmd_list, def cmd_save, def cmd_unsave
+- `vendor/fbk/src/commands/search.py`: added def register, def _print_response, def cmd_search
+- `vendor/fbk/src/commands/settings.py`: added def register, def _scrub_secret, def cmd_settings_show, def cmd_set_default_privacy, def cmd_verify_password, def cmd_send_reset_link
+- `vendor/fbk/src/commands/stories.py`: added const _AUDIENCE_NAMES, def register, def _story_id_of, def cmd_tray, def cmd_create, def cmd_viewers, def cmd_reply, def cmd_presets, def cmd_fonts, def cmd_audience
+- `vendor/fbk/src/commands/templates.py`: added const _ASSET_GLOB, const _TRACKING_MAX, def register, def _assets, def _parse_asset, def _is_mutations_asset, def _kind_of, def _shape_of, def _registry_ids, def _registry_state, def _truncate_tracking, def _clip_tracking, def cmd_list, def cmd_show, def cmd_verify
+- `vendor/fbk/src/commands/upload.py`: added const _PRIVACY_NAMES, def register, def _story_id, def cmd_photo
+- `vendor/fbk/src/commands/video.py`: added def register, def _print_videos, def cmd_feed, def cmd_badge
+- `vendor/fbk/src/commands/video_upload.py`: added const _PRIVACY_NAMES, def register, def _story_id, def cmd_video
+- `vendor/fbk/src/config.py`: new file
+- `vendor/fbk/src/constants.py`: added const GRAPHQL_ENDPOINT, const GRAPHQL_BATCH_ENDPOINT, const TELEMETRY_BZ, const TELEMETRY_BNZAI, const QM_ENDPOINT, const LOGIN_ENDPOINT, const LOGOUT_ENDPOINT, const IMPERSONATE_DEFAULT, const IMPERSONATE_FALLBACKS, const AUTH_COOKIES, const DEVICE_COOKIES, const INFO_COOKIES, const SECRET_COOKIE_NAMES, const SECRET_TOKEN_NAMES, const LOGGED_IN_MARKERS, const LOGGED_OUT_MARKERS, const CHECKPOINT_FLAG, const ACCOUNT_WARNING_MARKERS, const LEGACY_JSONP_PREFIX, const UFI_REACT_DOC_ID, const MESSENGER_MQTT_WS, const MQTT_PROTOCOL_NAME, const MQTT_PROTOCOL_LEVEL, const MQTT_CONNECT_FLAGS, const MQTT_KEEPALIVE_S, const MQTT_CLIENT_ID_PREFIX, const MQTT_TOPICS, const MQTT_OP_DISCONNECT, const MESSENGER_WEB_APP_ID, const MESSENGER_DGW_WS, const DGW_QUERY_PARAMS, const DGW_OP_CONTROL, const DGW_OP_DATA, const DGW_OP_ACK8, const DGW_OP_ACK3, const DGW_SERVER_FIRST_BYTE, const BURST_P95_GAP_S, const SPARSE_MEAN_GAP_S
+- `vendor/fbk/src/domain/__init__.py`: added const __all__
+- `vendor/fbk/src/domain/common.py`: added class UnknownNameError, class ReactionType, class Privacy, def _b64decode_pad, class FeedbackID, class CommentID, class StoryKey, class Cursor, class Actor, class Feedback, class Story, class FeedPage, class Comment, class User, class Profile, class ThreadSummary, class Message, class Group, class Page, class SearchResult, class SearchResponse, class NotificationCount, class Notification, class PrivacyState
+- `vendor/fbk/src/drafts.py`: added class DraftSpec, class DraftExistsError, def is_valid_draft_name, def _head, class DraftStore
+- `vendor/fbk/src/governor.py`: added class GovernorBlockedError, class GovernorConfig, class GovernorState, class RequestGovernor, const _GLOBAL_LOCK, def default_governor, def reset_governor_for_tests
+- `vendor/fbk/src/graphql/__init__.py`: added const __all__
+- `vendor/fbk/src/graphql/client.py`: added const _DTSG_REJECTION_CODES, class GraphQLClient
+- `vendor/fbk/src/graphql/errors.py`: added class FBGraphError, class NotLoggedInError, class CheckpointError, class RateLimitedError, class DocIdStaleError, class GraphQLProtocolError, class RegistryMissError, class RegistryLoadError, class DryRunComplete, class DryRunRawSeamError
+- `vendor/fbk/src/graphql/parsing.py`: added def strip_legacy_prefix, def parse_incremental, def merge_docs, def _deepmerge
+- `vendor/fbk/src/graphql/registry.py`: added const _PRIORITY, class DocIdRegistry
+- `vendor/fbk/src/graphql/registry_refresh.py`: added const RE_RELAY_OP, const RE_PARAMS, const _BUNDLE_HEADERS, const _FETCH_TIMEOUT, const _V3_NAME, const _V3_PREV_NAME, const _tl, class RegistryDiff, class HarvestStats, class RegistryRefreshError, def _absorb, def _resolve_fetcher, def harvest_pairs, def _build_transport, def _write_v3, def refresh_registry
+- `vendor/fbk/src/healing.py`: added const KIND_REGISTRY_REFRESH, const KIND_DOC_ID_RETRY, const KIND_TOKEN_CACHE_REBUILD, const KIND_TRANSPORT_RETRY, const KIND_GOVERNOR_STATE_REBUILD, const KIND_DOCTOR_FIX, const KIND_COOKIE_JAR_HEAL, const KIND_BOOTSTRAP_RETRY, const KIND_REALTIME_RECONNECT, const ENV_MASTER, const ENV_REGISTRY_HOURS, const ENV_MAX_BUNDLES, const ENV_TRANSPORT_RETRIES, const DEFAULT_REGISTRY_HOURS, const DEFAULT_MAX_BUNDLES, const DEFAULT_TRANSPORT_RETRIES, const DEFAULT_REALTIME_RECONNECTS, const MAX_REALTIME_RECONNECTS, const MIN_HARVEST_PAIRS, def _env_float, def _env_int, def healing_enabled, def transport_retry_limit, def realtime_reconnect_limit, class HealingEvent, class HealingLog, class HealingContext
+- `vendor/fbk/src/journal/__init__.py`: added const __all__
+- `vendor/fbk/src/journal/analysis.py`: added const METRONOMIC_CV_FLOOR, const METRONOMIC_MIN_GAPS, const DRIFT_LOW_FACTOR, const DRIFT_HIGH_FACTOR, class PacingAudit, def request_gaps, def audit_pacing
+- `vendor/fbk/src/journal/recorder.py`: added def redact_entry, class JSONLJournal, def iter_journals
+- `vendor/fbk/src/realtime/__init__.py`: added const __all__
+- `vendor/fbk/src/realtime/dgw/__init__.py`: new file, no top-level declarations
+- `vendor/fbk/src/realtime/dgw/client.py`: added class DGWError, class DGWClient
+- `vendor/fbk/src/realtime/dgw/frames.py`: added class DGWDecodeError, class DGWFrame
+- `vendor/fbk/src/realtime/dgw/requests.py`: added const DATA_FRAME_PREFIX, const ACK8_PAYLOAD, const RESPONSE_TYPE_NAME, const LIGHTSPEED_VERSION_ID, const THREAD_LIST_QUEUE, const THREAD_LIST_LABEL, const THREAD_QUEUE, const THREAD_LABEL, const THREAD_SYNC_GROUP, class DGWRequest, class DGWRequestError, def split_ws_frame, def _envelope_json, def _decode_payload_field, def decode_request_payload, def fresh_epoch_id, class LightspeedClient
+- `vendor/fbk/src/realtime/mqtt/__init__.py`: new file, no top-level declarations
+- `vendor/fbk/src/realtime/mqtt/client.py`: added def _capture_connect_bytes, class MQTTClientError, class Frame, class MQTTClient
+- `vendor/fbk/src/realtime/mqtt/connect.py`: added def build_identity_json, def build_fb_connect, def rewrite_connect_identity
+- `vendor/fbk/src/realtime/mqtt/frames.py`: added class MQTTDecodeError, def encode_remaining_length, def remaining_length, def build_connect, def decode_connect, def encode_subscribe, def encode_publish, def encode_pingreq, class Packet, def parse_packet, def decode_connack, def decode_suback
+- `vendor/fbk/src/realtime/mqtt/thrift.py`: added class ThriftError, class CompactReader
+- `vendor/fbk/src/realtime/ws.py`: added const _LAZY_CURL_EXPORTS, def __getattr__, class WSConnection, class CurlCffiWSAdapter, def ws_connect, def _legacy_ws_connect, const coherent_ws_connect, const __all__
+- `vendor/fbk/src/retry.py`: added const T, const _MIN_DELAY_S, class RetryPolicy, def run_with_retry
+- `vendor/fbk/src/session.py`: added def _bootstrap_degenerate, def _resolve_transport, class Session
+- `vendor/fbk/src/stats.py`: added def percentile
+- `vendor/fbk/src/surfaces/__init__.py`: added const __all__
+- `vendor/fbk/src/surfaces/base.py`: added def _data_dir, def _walk_preorder, def _is_reaction, def load_template, def _fill, def _attribution, def _mutation_id, class Surface
+- `vendor/fbk/src/surfaces/comments.py`: added const POST_CONTENT_QUERY, const REACT_MUTATION, const EDIT_MUTATION, const DELETE_MUTATION, const VOTE_MUTATION, const UNVOTE_MUTATION, const COMMENT_FEEDBACK_SOURCE, const _COMMENT_ID_PREFIX, def _load_template, def _normalize_feedback, def _normalize_comment, def _attribution, def parse_comments, class CommentsService
+- `vendor/fbk/src/surfaces/events.py`: added const EVENTS_URL, const LIST_QUERY, const LIST_DOC_ID, const FEED_QUERY, const FEED_DOC_ID, const DELETE_MUTATION, const DELETE_DOC_ID, const CREATE_MUTATION, const CREATE_DOC_ID, const EVENT_PRIVACY_TYPES, class EventRow, class EventFeedPage, def event_node_id, def _going_count, def _event_row, def parse_event_rows, class EventsService
+- `vendor/fbk/src/surfaces/feed.py`: added const FEED_QUERY, const FEED_PAGINATION_QUERY, const REACT_MUTATION, const CREATE_COMMENT_MUTATION, const DELETE_COMMENT_MUTATION, const COMPOSER_MUTATION, const PRIVACY_SAVE_MUTATION, const LIFE_EVENT_CATEGORIES_QUERY, const LIFE_EVENT_CATEGORIES_DOC_ID, const TYPING_START_MUTATION, const TYPING_STOP_MUTATION, const SHARE_TO_FEED_DIALOG_QUERY, const SHARE_TO_FEED_DIALOG_DOC_ID, const UNIFIED_SHARE_SHEET_QUERY, const UNIFIED_SHARE_SHEET_DOC_ID, const NOTIFY_SUBSCRIBE_MUTATION, const NOTIFY_UNSUBSCRIBE_MUTATION, const EDIT_MUTATION, const EDIT_DIALOG_QUERY, const EDIT_DIALOG_STORY_KEY, const _RE_END_CURSOR, const _RE_HAS_NEXT, const _STORY_KEY_PREFIX, def _first_typename, def _extract_feedback, def _extract_actor, def _extract_text, def _extract_permalink, def _extract_story, def parse_feed_page, def parse_life_event_categories, class EditablePost, def _extract_privacy_base_state, def _extract_edit_attachments, def _extract_target_id, def _extract_place_id, def parse_editable_post, def _set_by_path, def _load_template, def _normalize_feedback, def _normalize_comment, def feedback_for_post, class FeedService
+- `vendor/fbk/src/surfaces/friends.py`: added const ROOT_QUERY_NAME, const ROOT_DOC_ID, const UserList, const NodeList, const STATUS_INCOMING, const STATUS_OUTGOING, const STATUS_ARE_FRIENDS, const SEND_MUTATION, const CANCEL_MUTATION, const CONFIRM_MUTATION, const DELETE_MUTATION, const UNFRIEND_MUTATION, const CLEAR_BADGE_MUTATION, const FRIENDING_CHANNEL, class FriendsService
+- `vendor/fbk/src/surfaces/groups.py`: added const CREATE_MUTATION, const JOIN_MUTATION, const ADD_MEMBERS_MUTATION, const REQUEST_TO_PARTICIPATE_MUTATION, const GROUP_FEED_QUERY, const GROUP_POST_DOC_ID, const GROUP_MEMBERS_QUERY, const GROUP_MEMBERS_DOC_ID, const VISIBILITIES, const _MEMBERS_QUERY_RE, def _dedupe_stories, def _dedupe_page_stories, class GroupsService
+- `vendor/fbk/src/surfaces/marketplace.py`: added const MARKETPLACE_URL, const MARKETPLACE_SEARCH_URL, const MARKETPLACE_BROWSE_QUERY_NAME, const MARKETPLACE_BROWSE_DOC_ID, const MARKETPLACE_LISTING_TYPENAME, const MARKETPLACE_ITEM_URL, const MARKETPLACE_SEARCH_QUERY_NAME, const MARKETPLACE_ITEM_QUERY_NAME, const MARKETPLACE_ITEM_DOC_ID, const MARKETPLACE_ITEM_MEDIA_QUERY_NAME, const _LISTING_TYPENAMES, const _BROWSE_QUERY_RE, const _SEARCH_QUERY_RE, const _ITEM_QUERY_RE, class MarketplaceService
+- `vendor/fbk/src/surfaces/measurement.py`: added const CANARY_QUERY_NAME, const CANARY_DOC_ID, const DEFAULT_CV, const DEFAULT_SEED, class LatencyReport, class PacingReport, def lognormal_schedule, class MeasurementService
+- `vendor/fbk/src/surfaces/memories.py`: added const FEED_QUERY, const FEED_DOC_ID, class MemoryCard, class MemoriesFeed, def _card_text, def _card, def _throwback_units, def parse_memories_cards, def parse_memories_feed, class MemoriesService
+- `vendor/fbk/src/surfaces/messenger.py`: added const THREADLIST_QUERY, const LIGHTSPEED_QUERY, const SEND_MUTATION, const SEND_MUTATION_V2, const _SEND_RESPONSE_FIELDS, const REALTIME_RECONNECT_BACKOFF_S, const DGW_DEFAULT_THREAD_ID, const HISTORY_QUERY, const HISTORY_DIRECTION_BEFORE, def _history_thread_key, def _history_range_payload, class MessengerService, class _ListenAttempt, class _MQTTListenAttempt, class _DGWListenAttempt, def _dgw_payload_head, def _thread_snippet, def _thread_participants, def _looks_like_thread, def _walk_thread_nodes, def _message_timestamp_ms, def _message_sender, def _looks_like_message, def _walk_message_nodes, def _ls_find_ops, def _ls_int64s, def _ls_plain_strings, def _ls_snippet, def _lightspeed_thread_summaries
+- `vendor/fbk/src/surfaces/notifications.py`: added const BADGE_QUERY_NAME, const BADGE_DOC_ID, const LIST_QUERY_NAME, const LIST_DOC_ID, const _ROW_TYPENAME, const PAGINATION_QUERY_NAME, const PAGINATION_DOC_ID, const MAX_WALK_PAGES, const NotificationList, const EdgeList, const MARK_SEEN_MUTATION, const MARK_SEEN_DOC_ID, const _MARK_SEEN_LIST_COUNT, class NotificationsService
+- `vendor/fbk/src/surfaces/overview.py`: added const _FEED_HEAD_COUNT, const _THREAD_SAMPLE, const _HEAD_TEXT_LEN, const OVERVIEW_KEYS, class OverviewService
+- `vendor/fbk/src/surfaces/pages.py`: added const CREATE_MUTATION, const LIKE_MUTATION, const FOLLOW_MUTATION, const PAGE_FEED_QUERY, const PAGE_FEED_DOC_ID, def _parse_page_feed, class PagesService
+- `vendor/fbk/src/surfaces/photos.py`: added const PHOTOS_SECTION_QUERY, const PHOTOS_SECTION_DOC_ID, const ALBUM_VIEW_QUERY, const ALBUM_VIEW_DOC_ID, const PHOTOS_SECTION_ID, const OWN_PHOTOS_URL, const ALBUM_URL, def _text, class PhotosService
+- `vendor/fbk/src/surfaces/presence.py`: added const PRESENCE_QUERY, const PRESENCE_DOC_ID, class PresenceService
+- `vendor/fbk/src/surfaces/profile.py`: added const ME_URL, const PROFILE_URL, const DEFAULT_PROFILE_QUERY, const DEFAULT_PROFILE_DOC_ID, class ProfileView, def _trim, def _walk_profile_fields, class ProfileService
+- `vendor/fbk/src/surfaces/saved.py`: added const SAVED_URL, const DASHBOARD_QUERY, const DASHBOARD_FALLBACK_DOC_ID, const SAVE_MUTATION, const SAVE_MUTATION_DOC_ID, const UNSAVE_MUTATION, const UNSAVE_MUTATION_DOC_ID, def _savable_row, class SavedService
+- `vendor/fbk/src/surfaces/search.py`: added const SEARCH_URL, const SEARCH_QUERY_NAME, const SEARCH_FALLBACK_DOC_ID, const _RESULT_TYPENAMES, const _SNIPPET_KEYS, class SearchService
+- `vendor/fbk/src/surfaces/settings.py`: added const SETTINGS_URL, const SETTINGS_PRIVACY_URL, const SETTINGS_ROOT_QUERY, const SETTINGS_ROOT_DOC_ID, const SETTINGS_CATEGORIES_QUERY, const SETTINGS_CATEGORIES_DOC_ID, const PRIVACY_SAVE_MUTATION, const PRIVACY_WRITE_ID, const PRIVACY_RENDER_LOCATION, const PASSWORD_REAUTH_MUTATION, const SEND_RESET_LINK_MUTATION, def _trim, class SettingsService
+- `vendor/fbk/src/surfaces/stories.py`: added const TRAY_QUERY, const TRAY_DOC_ID, const STORY_CREATE_MUTATION, const STORY_CREATE_DOC_ID, const VIEWERS_QUERY, const VIEWERS_DOC_ID, const STORY_REPLY_MUTATION, const STORY_REPLY_DOC_ID, const STORY_MENU_QUERY, const COMPOSER_ROOT_QUERY, const COMPOSER_ROOT_DOC_ID, const STORY_PRIVACY_QUERY, const STORY_REPLY_TYPE_TEXT, def _story_create_base_input, def _story_privacy_audience, class StoryTile, def _thumbnail_head, def _tile, def parse_tray_tiles, def _dig, def _parse_viewers, class StoriesService
+- `vendor/fbk/src/surfaces/upload.py`: added const COMPOSER_MUTATION, const PHOTO_UPLOAD_ENDPOINT, const _UPLOAD_FIELDS, const _FILE_FIELD, const _UPLOAD_ID_COUNTER, class UploadError, def _next_upload_id, def _jazoest, def _guess_mime, def _inter_upload_gap, def _build_multipart, def _parse_async_payload, def _composer_template, class UploadService
+- `vendor/fbk/src/surfaces/video.py`: added const WATCH_URL, const FEED_ENTRY_RE, const FALLBACK_FEED_QUERY, const CHAINING_QUERY, const VIDEO_QUERY, const BADGE_QUERY, const WATCH_BOOKMARK_ID, const _RE_END_CURSOR, const _RE_HAS_NEXT, def _video_row, def _message_text, def _is_story_shape, def parse_video_feed, class VideoService
+- `vendor/fbk/src/surfaces/video_upload.py`: added const COMPOSER_MUTATION, const COMPOSER_CONFIG_QUERY, const COMPOSER_CONFIG_DOC_ID, const SERVER_CONFIG_QUERY, const SERVER_CONFIG_DOC_ID, const CONFIG_SOURCE_TYPE, const CONFIG_ENTRY_POINT, const START_URI_DEFAULT, const RECEIVE_URI_DEFAULT, const RUPLOAD_CONSUMER, const RUPLOAD_SERVICE_NAME_DEFAULT, const RUPLOAD_SERVICE_DOMAIN_DEFAULT, const DEFAULT_ENTRY_POINT_REF, class VideoUploadError, def _form_encode, def _video_attachment, def _rupload_session_key, class VideoUploadService
+- `vendor/fbk/src/token_cache.py`: added class CachedBootstrap, class _BootstrapSource, class TokenCache
+- `vendor/fbk/src/transport/__init__.py`: added const __all__
+- `vendor/fbk/src/transport/cookies.py`: added class CookieLoadError, def _tolerant_facebook_rows, def load_netscape, def save_netscape, def describe, def fingerprint, def redact
+- `vendor/fbk/src/transport/headers.py`: added def page_headers, def graphql_headers, def cookies_header
+- `vendor/fbk/src/transport/profile.py`: added class ClientProfile, def load_or_default, def sanitize_user_agent
+- `vendor/fbk/src/transport/session.py`: added class JournalLike, class FingerprintRejectedError, def resolve_impersonate, class FBTransport
+- `vendor/fbk/tests/conftest.py`: added const CLI_ROOT, const DATA_DIR, def pytest_configure, def pytest_collection_modifyitems, def load_asset, def assets_dir, def ws_capture, def captured_connect, def feed_page1, def captured_react_mutations, def captured_composer
+- `vendor/fbk/tests/fakes.py`: added const PROJECT_ROOT, const ASSETS, class StubGraphQLClient, class StubSession, class StubTransportResponse, class StubTransport
+- `vendor/fbk/tests/integration/conftest.py`: added const PACING_MEAN_GAP_S, const PACING_MAX_GAP_S, def pytest_collection_modifyitems, def human_pacing, def session, def public_permalink, def group_id
+- `vendor/fbk/tests/integration/test_live.py`: added const pytestmark, const PAGE_VANITY, const E2EE_THREAD_ID, def _head, def test_whoami_logged_in, def test_feed_read, def test_feed_paginate, def test_search, def test_notifications_badge, def test_profile_me, def test_messenger_threads, def test_friends_list, def test_stories_tray, def test_marketplace_browse, def test_saved_list, def test_comments_read, def test_video_feed_and_badge, def test_groups_feed, def test_presence, def test_pages_feed, def test_registry_loaded, def test_react_unreact_lifecycle, def test_profile_view_other, def test_marketplace_search, def test_marketplace_browse_and_search_distinct, def test_friends_suggestions, def test_memories_graceful_empty, def test_messenger_history_protocol_rejection, def test_messenger_send_guard_live, def test_measure_latency_small, def test_saved_and_comments_service_shapes, def test_video_feed_titles, def test_upload_service_module_loads, def test_group_feed_stories_deduped
+- `vendor/fbk/tests/unit/test_app_cli_wiring.py`: added const PYPROJECT, def pyproject_version, class TestMeasureWiring, class TestMeasurePaceRunsOffline, class TestFlagRenames, class TestVersion
+- `vendor/fbk/tests/unit/test_auth_login.py`: added const LOGIN_PAGE, const AUTHED, def checkpoint_page, def bad_credentials_page, def response, class StubTransport, def flow, class TestDerivations, class TestCheckpointParsing, class TestCredentialRejection, class TestTwoFactorVariants, class TestJarHandoff
+- `vendor/fbk/tests/unit/test_bootstrap.py`: added def logged_in_html, const COOKIES, class TestExtraction, class TestClassificationEdgeCases
+- `vendor/fbk/tests/unit/test_bootstrap_homepage.py`: added const COOKIES, const DTSG, def logged_in_html, class StubPageTransport, def page_transport, class TestMalformedHomepage, class TestBootstrapHomepageHarvest, class TestAccountWarningsSurface, class TestSafeDictRedaction, class TestClassifyCookiesOnlyPath
+- `vendor/fbk/tests/unit/test_command_feed_media.py`: added const COMPOSER_MUTATION, const PHOTO_UPLOAD_ENDPOINT, def _parser, def _stub, def _run, class DispatchRecorder, def _photo_result, def _album_result, def _video_result, class TestMediaFlagParsing, class TestMediaDispatch, class TestMediaRejection, class TestMediaComposerWire
+- `vendor/fbk/tests/unit/test_command_render.py`: added class TestRenderOwnership
+- `vendor/fbk/tests/unit/test_completions.py`: added def _root_sub, def _wired, def _visible, class TestWalkerRootDepth, class TestWalkerFamilyDepth, class TestWalkerVerbDepth, class TestWalkerFlagCompletion, class TestNeverDriftsFromTheParserTree, class TestHiddenFromHelp, class TestCompleteHandler, class TestBridgeScripts
+- `vendor/fbk/tests/unit/test_config.py`: added class TestConfig
+- `vendor/fbk/tests/unit/test_config_paths.py`: added class TestPathAliases, class TestProfileDetection, class TestDefaultsAndValidation, class TestGraphqlEndpointSingleSourcing
+- `vendor/fbk/tests/unit/test_config_show.py`: added const CLI_ROOT, def _clear_env, def _run, class TestConfigShow, class TestIntrospectionWiring
+- `vendor/fbk/tests/unit/test_cookies.py`: added def netscape_file, class TestLoadNetscape, class TestHygiene
+- `vendor/fbk/tests/unit/test_cookies_inspect.py`: added const JAR_FULL, const RAW_VALUES, def _clean_env, class TestCookiesInspect
+- `vendor/fbk/tests/unit/test_dgw_frames.py`: added def _sent_frames, class TestEncodeDecode, class TestJSONContract, class TestCapturedFrames, class TestErrors
+- `vendor/fbk/tests/unit/test_doctor.py`: added const CHECK_ORDER, const JAR_AUTHED, const JAR_NO_AUTH, def _parse, def _run, def _healthy_env, def _stub_probe, def _check, def _env, class TestDoctorHealthy, class TestDoctorRegistry, class TestDoctorCaptures, class TestDoctorProfile, class TestDoctorImpersonate, class TestDoctorState, class TestDoctorVersion, class TestDoctorWiring
+- `vendor/fbk/tests/unit/test_domain_ids.py`: added class TestFeedbackID, class TestCommentID, class TestReactionType, class TestPrivacy
+- `vendor/fbk/tests/unit/test_domain_validation.py`: added class TestEnumValueValidation, class TestFromNameLookup, class TestMissingRequiredFields, class TestModelStrictness, class TestGarbageIdsDegradeGracefully
+- `vendor/fbk/tests/unit/test_draft_commands.py`: added def _clear_env, def _env, def _parser, def _run, def _draft_file, class TestSaveListShowDelete, class TestPreconditions, class _RecordingService, class TestPublish, class TestWiring
+- `vendor/fbk/tests/unit/test_draft_store.py`: added def _spec, class TestNameValidation, class TestLifecycle, class TestAtomicWrite, class TestOverwriteRefusal, class TestCorruptFilesStayLoud
+- `vendor/fbk/tests/unit/test_dry_run.py`: added const CLI_ROOT, const REACT_MUTATION, const BADGE_QUERY, def make_bootstrap, def dry_client, class TestPlanContent, class TestFullPipeline, class TestRedactionPin, class ExplodingGovernor, class NoHTTPSession, class ExplodingStubTransport, class TestZeroSideEffects, def _ns, class TestExitContract, const COOKIES_TXT, def make_session, class TestSessionWiring, class TestCommonArgsWiring
+- `vendor/fbk/tests/unit/test_empty_dtsg_semantics.py`: added const T0, def make_empty_dtsg_bootstrap, class TestTheSecretStrTrap, class TestCachedBootstrapEmptySemantics, class TestBootstrapEmptySemantics, class TestTokenCacheRejectsEmptyDtsg
+- `vendor/fbk/tests/unit/test_exit_code_families.py`: added def _ns, def _raising, class TestSubclassResolution, class TestSecondBranchSubclassResolution, class TestFamilyCodesViaRunCommand, class TestExitCodeLookup
+- `vendor/fbk/tests/unit/test_feed_edit.py`: added const EDIT_MUTATION_DOC_ID, const EDIT_DIALOG_DOC_ID, const STUB_USER_ID, const POST_ID, def _last_call, def _get_by_path, def _captured_create_variables, class TestCandidateConstants, class TestFetchEditable, class TestEdit, def _clear_env, def _env, def _run, class _UploadRecorder, class TestEditParserWiring, class TestEditCLI
+- `vendor/fbk/tests/unit/test_feed_post_actions.py`: added const COMPOSER_MUTATION, const COMPOSER_DOC_ID, const SAVE_MUTATION_DOC_ID, const NOTIFY_SUBSCRIBE_DOC_ID, const NOTIFY_UNSUBSCRIBE_DOC_ID, const POST_ID, const FB_SAMPLE, const ACTOR_ID, const STUB_USER_ID, def _parser, def _run, def _last_call, class TestFeedbackCodec, class TestPostIdCliResolution, class TestShare, class TestFeedSaveConvenience, class TestNotify
+- `vendor/fbk/tests/unit/test_feed_publish_batch.py`: added def _clear_env, def _env, def _run, class _ScriptedService, def _install, def _batch_argv, class TestParserShape, class TestBatchSuccess, class TestFailSoft, class TestGovernorBlockedIsFatal, class TestBatchGap
+- `vendor/fbk/tests/unit/test_fingerprint.py`: added const CHROME_136_UA, const CHROME_135_UA, const HEADLESS_136_UA, const BROKEN_SEC_CH_UA, const CHROME_131_UA, const SEC_CH_UA_131, def _parse, def _run, def _env, class TestShowDefaults, class TestShowFrozen, class TestFreeze, class TestClear, class TestFingerprintWiring
+- `vendor/fbk/tests/unit/test_friends_dispatch.py`: added def build_parser, class TestVerbDispatch, class TestOtherSubcommands, class TestParserEdges
+- `vendor/fbk/tests/unit/test_governor.py`: added class FakeClock, def make_governor, class TestPacing, class TestCaps, class TestCooldownAndPersistence, class TestConfigEnv, class TestSanitizeUA, class TestWarningDetection, class TestTransportWiring, class TestGovernorCommand
+- `vendor/fbk/tests/unit/test_governor_audit.py`: added const T0, const _ENV_VARS, def _clean_governor_env, def _run, def _request_entry, def _stamps, def _write_journal, class TestAuditMathPinned, class TestRequestGapsFiltering, class TestPhase8MetronomicSignature, class TestCleanLognormalPass, class TestFloorViolations, class TestPreconditions, class TestTornTrailingLineTolerated, class TestAuditWiring
+- `vendor/fbk/tests/unit/test_governor_discipline.py`: added class FakeClock, def make_governor, def freeze_local_hour, class TestQuietHoursGating, class TestWarmup, class TestCooldownBoundaries, class TestPersistenceRobustness, class TestThreadSafety, class TestEnvOverrideBreadth, class TestGovernorStateRoll
+- `vendor/fbk/tests/unit/test_governor_mean_gap.py`: added class FakeClock, def draw_gaps, class TestLognormalMeanPreservation
+- `vendor/fbk/tests/unit/test_graphql_client.py`: added def make_bootstrap, class TestWireShape, class TestErrorTaxonomy, class TestAutoRefresh, class TestCallByName
+- `vendor/fbk/tests/unit/test_graphql_client_guards.py`: added def make_bootstrap, class TestEmptyDtsgGuard, class TestCallByNameWithoutRegistry
+- `vendor/fbk/tests/unit/test_graphql_error_wiring.py`: added class RecordingGovernor, def make_bootstrap, def client_with, class TestErrorGuardWiring, class TestStatusGuard
+- `vendor/fbk/tests/unit/test_healing_doctor.py`: added def _parse, def _run, def _healthy_env, def _stub_probe, def _check, def _human_line, def _env, class TestSelfHealingCheck, class TestHealingLogLastEvent
+- `vendor/fbk/tests/unit/test_healing_doctor_fix.py`: added def _parse, def _run, def _healthy_env, def _env, def _corrupt, class TestDoctorFix
+- `vendor/fbk/tests/unit/test_healing_engine.py`: added const FAKE_REGISTRY_REFRESH, def heal_env, def _ctx, class TestHealingEnabled, class TestHealingLog, class TestHealingContextGuards, def _write_registry, class TestRegistryRefreshHeal, class TestTokenCacheRebuildEvent
+- `vendor/fbk/tests/unit/test_healing_graphql.py`: added const FAKE_REFRESH, const OK, const STALE, def heal_env, def make_bootstrap, def make_healer, def stub_refresh, class TestCallByNameRegistryMissHeal, class TestCallDocIdStaleHeal
+- `vendor/fbk/tests/unit/test_healing_inputs.py`: added const FAKE_REFRESH, const GOOD_JAR, def heal_env, def make_bootstrap, class TestCookieJarHeal, class _AnyTransport, def make_session, class TestTokenCacheIdentityHeal, class TestDegenerateBootstrapRetry, class TestAdoptRegistryReachesClient, class TestWriteV3Backup
+- `vendor/fbk/tests/unit/test_healing_realtime.py`: added def heal_env, class FakeClock, class StubFrame, class StubResponse, class StubMQTT, class StubDGW, class RecordingGovernor, def mqtt_seam, def dgw_seam, def heal_log, def read_rows, def failing_scripts, class TestListenReconnectHeal, class TestListenDgwReconnectHeal
+- `vendor/fbk/tests/unit/test_healing_transport.py`: added const GRAPHQL_URL, const PAGE_URL, class RecordingGovernor, class ScriptedHTTPSession, def make_transport, def heal_rows, def default_heal_env, class TestTransportRetry
+- `vendor/fbk/tests/unit/test_healing_wiring.py`: added const FAKE_REFRESH, const COOKIES_TXT, def heal_env, def _corrupt_registry_env, class _SessionTransport, def make_session, class TestSessionRegistryCorruptionHeal, class TestSurfaceDocIdHeal, class TestGovernorCorruptStateEvent
+- `vendor/fbk/tests/unit/test_hygiene_contract.py`: added const CLI_ROOT, const DATA_DIR, def _dead_asset_names, def _removal_landed, class TestHygieneContract
+- `vendor/fbk/tests/unit/test_journal.py`: added class TestJournal
+- `vendor/fbk/tests/unit/test_journal_commands.py`: added def _clear_env, def _env, def _run, def _seed, def _entry, def _tear, class TestJournalList, class TestJournalShow, class TestJournalStats, class TestJournalWiring
+- `vendor/fbk/tests/unit/test_journal_export.py`: added const COLUMNS, def _clear_env, def _env, def _run, def _seed, def _entry, def _tear, def _csv_rows, class TestExportCsv, class TestExportJson, class TestExportOut, class TestExportSemantics, class TestExportWiring
+- `vendor/fbk/tests/unit/test_journal_recorder.py`: added class TestRecordShapes, class TestIterJournals, class TestTokenNameRedaction
+- `vendor/fbk/tests/unit/test_journal_recorder_edges.py`: added class TestValueCoercion, class TestPathHandling, class TestCorruptReads, class TestTornTrailingLine
+- `vendor/fbk/tests/unit/test_life_categories.py`: added const LIFE_CATEGORIES_DOC_ID, const LIFE_CATEGORIES_QUERY, def _last_call, class TestLifeEventCategories, class TestFeedLifeCategoriesWiring, class TestPublishFlagWiring
+- `vendor/fbk/tests/unit/test_logout.py`: added const UID, const DTSG, const LOGOUT_HASH, const LOGIN_URL, const DOCS_EXAMPLE, def craft_logout_bootstrap, def seeded_token_cache, class StubLogoutTransport, class StubLogoutSession, class TestJazoest, class TestBuildLogoutRequest, class TestLogoutService, class TestLogoutCommand
+- `vendor/fbk/tests/unit/test_messenger_teardown.py`: added class FakeMonoClock, class StubFrame, class StubMQTTClient, class StubDGWResponse, class StubLightspeedClient, def install, class TestListenTeardown, class TestListenDgwTeardown
+- `vendor/fbk/tests/unit/test_mqtt_frames.py`: added class TestVarint, class TestConnectCodec, class TestPackets
+- `vendor/fbk/tests/unit/test_mqtt_keepalive.py`: added const T0, const PINGREQ, const CONNACK_OK, class FakeTime, class StubWS, def ping_count, def connected_client, class TestSendTimeCadence, class TestConnectInitializesCadence
+- `vendor/fbk/tests/unit/test_mqtt_publish_frame.py`: added def build_dialect_publish, class TestPublishSkipByte
+- `vendor/fbk/tests/unit/test_parsing.py`: added class TestIncrementalParsing
+- `vendor/fbk/tests/unit/test_profile.py`: added const CHROME_131_UA, const SEC_CH_UA_131, class TestCoherence, class TestImpersonateAxis
+- `vendor/fbk/tests/unit/test_registry.py`: added def registry, class TestRegistry
+- `vendor/fbk/tests/unit/test_registry_audit.py`: added const CLI_ROOT, const _V3_NAME, const _MISSING_NAMES, const _MISMATCH_NAME, const _OK_COUNT, def _clear_env, def _env, def _run_json, def _write_registry, class TestAuditRealData, class TestAuditSynthetic, class TestAuditTypedFailure, class TestAuditWiring
+- `vendor/fbk/tests/unit/test_registry_diff.py`: added const CLI_ROOT, def _run, def _pairs, class TestRegistryDiff
+- `vendor/fbk/tests/unit/test_registry_from_file.py`: added const V3, const V2, const _V3_PAIRS, const _V2_PAIRS, const _V3_REVISION, const _V2_REVISION, def v3, def v2, def _write, def _registry_file, class TestRealRegistries, class TestFromFileMiss, class TestFromFileCorrupt, class TestRevisionProvenance
+- `vendor/fbk/tests/unit/test_registry_refresh.py`: added const U1, const U2, const U3, const RELAY, const PARAMS, const PARAMS_MUT, class StubBundleTransport, class TestHarvestPairs, const FRESH, const OLD, def _fake_harvest, def _patch_refresh, def _write_v2, class TestRefreshRegistry, class TestCommandHumanOutput
+- `vendor/fbk/tests/unit/test_registry_robustness.py`: added class TestFromAssetsMiss, class TestCorruptRegistryFiles, class TestFailSoftDescent, def _registry_file, class TestDiscoveryPriority, class TestFromPairsSource
+- `vendor/fbk/tests/unit/test_retry_overview.py`: added const STUB_USER_ID, def _ns, const PAGE2_PAYLOAD, const PAGE_LAST_PAYLOAD, class TestRetryPolicyDelay, class TestRunWithRetry, class TestRunCommandRetryWiring, class TestFeedReadPages, class TestFeedPaginateCommand, class TestOverviewCollect
+- `vendor/fbk/tests/unit/test_retry_policy.py`: added class TestDefaults, class TestDelayBoundaries, class TestRunWithRetryTaxonomy
+- `vendor/fbk/tests/unit/test_session_lifecycle.py`: added const CLI_ROOT, const COOKIES_TXT, class FakeUnderlyingSession, class CloseSpyTransport, def make_session, class TestSessionClose, class TestFBTransportClose
+- `vendor/fbk/tests/unit/test_stats.py`: added const CLI_ROOT, const SRC_DIR, class TestPercentile, class TestJournalAnalysisImportEdge
+- `vendor/fbk/tests/unit/test_surface_discovery.py`: added def load_asset, def search_fixture_payload, def search_fixture_html, def marketplace_fixture_html, def test_search_from_real_page_preload, def test_search_fallback_default_variables, def test_notifications_badge, def test_notifications_list_from_live_fixture, def test_marketplace_browse_crafted_preload, def test_marketplace_browse_fallback_defaults, def test_registry_doc_ids
+- `vendor/fbk/tests/unit/test_surface_events_stories_memories.py`: added const UID, const EVENT_ID, const EVENT_RELAY_ID, def craft_preload_html, def stub_fetch, def craft_bootstrap, def craft_events_list_payload, def craft_event_feed_payload, def craft_delete_payload, def craft_create_payload, def craft_tray_payload, def craft_memories_payload, class TestEventsList, class TestEventsFeed, class TestEventsDelete, class TestEventsCreate, class TestStoriesTray, class TestMemoriesFeed, class TestRegistryPresence
+- `vendor/fbk/tests/unit/test_surface_feed.py`: added const FEED_DOC_ID, const PAGINATION_DOC_ID, const REACT_DOC_ID, const CREATE_COMMENT_DOC_ID, const DELETE_COMMENT_DOC_ID, const COMPOSER_DOC_ID, const TYPING_START_DOC_ID, const TYPING_STOP_DOC_ID, const STUB_USER_ID, const FB_SAMPLE, const PAGE2_PAYLOAD, def _last_call, class TestRead, class TestPaginate, class TestReact, class TestUnreact, class TestComment, class TestDeleteComment, class TestPublish, class TestPublishEnrichment, class TestSetPrivacy, class TestTyping
+- `vendor/fbk/tests/unit/test_surface_friends.py`: added const UID, const ALICE, const BOB, const CAROL, const DAVE, def user_node, def root_payload, class TestFriendsList, class TestFriendsRequests, class TestFriendMutations, class TestRegistryGroundTruth
+- `vendor/fbk/tests/unit/test_surface_group_page_feed.py`: added const ACTOR_ID, const GROUP_FEED_DOC_ID, const PAGE_FEED_DOC_ID, const PAGE_TIMELINE_FEED_DOC_ID, const GROUP_PERMALINK_DOC_ID, const PRESENCE_DOC_ID, const PAIRS, const STORY_ID, const FB_SAMPLE, def stub, def build_parser, def _preload_html, def _group_page_html, def _page_html, def _story_node, const GROUP_FEED_PAYLOAD, def _highlight_unit, const PAGE_FEED_PAYLOAD, const PRESENCE_PAYLOAD, def _last_call, class TestRegistryPresence, class TestGroupsFeedRead, class TestGroupsPost, class TestPagesFeedRead, class TestPresenceService, class TestCommands
+- `vendor/fbk/tests/unit/test_surface_groups_pages.py`: added const ACTOR_ID, const PAIRS, const CREATE_RESPONSE, const JOIN_RESPONSE, const ADD_MEMBERS_RESPONSE, const REQUEST_RESPONSE, const PAGE_CREATE_RESPONSE, const LIKE_RESPONSE, const FOLLOW_RESPONSE, def stub, def build_parser, class TestRegistryPresence, class TestGroupsService, class TestPagesService, class TestCommands
+- `vendor/fbk/tests/unit/test_surface_measurement.py`: added const BADGE_RESPONSE, def test_pace_deterministic_same_seed, def test_pace_count_and_monotonic, def test_pace_mean_gap_matches_lognormal_mean, def test_pace_cv_zero_degenerates_to_constant_gaps, def test_pace_start_in_offsets_schedule, def test_pace_rejects_bad_params, def test_pace_service_method_delegates, def test_latency_ok_counts_and_journal, def test_latency_typed_failures_are_data_not_abort, def test_latency_zero_samples, def _stub_with_state_dir, def test_report_healthy_pacing, def test_report_burst_suspect, def test_report_missing_journal, def test_compat_reexports_pin_the_new_homes
+- `vendor/fbk/tests/unit/test_surface_messenger.py`: added const THREADLIST_DOC_ID, const LIGHTSPEED_DOC_ID, const SEND_DOC_ID, const SEND_V2_DOC_ID, const HISTORY_DOC_ID, const REGISTRY_PAIRS, const PROMOTIONS_ONLY_RESPONSE, def load_fixture, def canned_send_response, def canned_history_response, def make_service, class TestThreads, class TestHistory, class TestSend, class TestRegistry, class TestListen, const CATALOG_ENVELOPE_KEYS, const CATALOG_TASK_KEYS, const CATALOG_TASKS_KEYS, def _lightspeed_sock, def _lightspeed_opener, def _lightspeed_recv_data, class _FakeWS, class TestDGWSplitFrame, class TestDecodeRequestPayload, class TestSubscribeThreads
+- `vendor/fbk/tests/unit/test_surface_profile_settings.py`: added const UID, def craft_preload_html, def stub_fetch, class TestProfileSurface, class TestSettingsSurface
+- `vendor/fbk/tests/unit/test_surface_reads_expansion.py`: added const ACTOR_ID, const PROFILE_LIST_VIEW_DOC_ID, const FRIENDS_ROOT_DOC_ID, const NOTIFICATIONS_LIST_DOC_ID, const NOTIFICATIONS_BADGE_DOC_ID, const NOTIFICATIONS_PAGINATION_DOC_ID, const MARKETPLACE_SEARCH_DOC_ID, const PAIRS, const SAMPLE_PAGE_ID, def stub, def build_parser, def _preload_html, def _preloads_html, def _profile_page_html, def _highlight_unit, const PROFILE_VIEW_PAYLOAD, def _search_page_html, def _product_item, const SEARCH_PAYLOAD, def _user_node, def _root_payload, def _notif_row, def _last_call, class TestRegistryPresence, class TestProfileView, class TestFriendsSuggestions, class TestMarketplaceSearch, const ITEM_ID, const ITEM_URL, def _item_page_html, def _pdp_payload, def _item_media_payload, class TestMarketplaceItem, const GROUP_ID, def _members_page_html, def _members_payload, class TestGroupsMembers, const SECTION_TOKEN, const ALBUMS_NAV_TOKEN, def _nav_tiles, def _album_edge, def _photo_edge, def _section_payload, const ALBUMS_PAYLOAD, const PHOTOS_PAYLOAD, def _album_media_payload, class TestPhotosAlbums, class TestPhotosPhotos, class TestNotificationsMarkSeen, class _PageSequence, def _page_payload, class TestNotificationsPagination, class TestCommands
+- `vendor/fbk/tests/unit/test_surface_saved_comments_video.py`: added const ACTOR_ID, const BOOKMARK_BATCH_DOC_ID, const POST_CONTENT_DOC_ID, const EDIT_COMMENT_DOC_ID, const HOOK_DELETE_COMMENT_DOC_ID, const VOTE_COMMENT_DOC_ID, const UNVOTE_COMMENT_DOC_ID, const WATCH_VIDEO_DOC_ID, const WATCH_CHAINING_DOC_ID, const WATCH_BADGE_DOC_ID, const WATCH_FEED_DOC_ID, const SAVED_DASHBOARD_DOC_ID, const SAVE_MUTATION_DOC_ID, const UNSAVE_MUTATION_DOC_ID, const DELETE_COMMENT_DOC_ID, const FEEDBACK_SAMPLE_POST, const FEEDBACK_COMMENT, const COMMENT_SAMPLE_B64, const COMMENT_PERSON_E_B64, const STORY_KEY_B64, const PHOTO_SAVABLE_ID, def load_asset, def preload_html, def _last_call, const SAVED_HTML, const PERMALINK_HTML, const WATCH_HTML, class TestRegistryPresence, class TestSavedService, class TestCommentsRead, class TestCommentsReact, class TestCommentsEditDeleteVote, class TestVideoFeed, class TestVideoBadge, def build_parser, class TestCommands, class TestTemplateIntegrity
+- `vendor/fbk/tests/unit/test_surface_story_lifecycle.py`: added const UID, const STORY_ID, def _create_response, def _composer_root_payload, def _privacy_payload, class TestCreateText, class TestCreateMedia, class TestViewers, class TestReply, class TestCatalogs, class TestStoryCommands
+- `vendor/fbk/tests/unit/test_surface_upload.py`: added const COMPOSER_DOC_ID, const STUB_USER_ID, def _tiny_png, def _tiny_gif, class FakeRawResponse, const UPLOAD_OK, def _upload_ok, class RawRecorder, def _recorder, def _service, def _composer_calls, def _decode_multipart, class TestUploadPhoto, class TestPostPhoto, class TestPostAlbum, class TestMultipartBuilder, def test_async_payload_parser_prefixes, def test_tiny_png_is_valid
+- `vendor/fbk/tests/unit/test_surface_video_upload.py`: added const COMPOSER_DOC_ID, const STUB_USER_ID, const START_URI, const RECEIVE_URI, const RUPLOAD_HOST, const CONFIG_QUERY, const SERVER_CONFIG_QUERY, def _composer_config_response, def _server_config_response, class FakeRawResponse, const START_OK, const START_SKIP, const RUPLOAD_OFFSET_0, const RUPLOAD_OFFSET_3, const RUPLOAD_HANDLE, const RECEIVE_OK, class RawRecorder, def _service, def _stubbed, def _clip, def _parse_form, class TestFormEncode, class TestSessionKey, class TestUploadVideo, class TestPostVideo
+- `vendor/fbk/tests/unit/test_templates_commands.py`: added const CLI_ROOT, const DATA, const _SECRET, const _PLAIN, def _clear_env, def _parser, def _run, def _payload, def _asset, def _write_json, def _write_registry, class TestTemplatesList, class TestTemplatesShow, class TestTemplatesVerify, class TestTemplatesRegisterWiring
+- `vendor/fbk/tests/unit/test_thrift.py`: added def write_varint, def zigzag, def field_header, class TestCompactReader
+- `vendor/fbk/tests/unit/test_token_cache.py`: added class TestCachedBootstrap, class TestTokenCache, class TestSessionCacheWiring
+- `vendor/fbk/tests/unit/test_token_cache_atomic.py`: added const T0, def make_bootstrap, class TestAtomicSave
+- `vendor/fbk/tests/unit/test_token_cache_boundaries.py`: added const T0, def make_boot, class TestTTLBoundaries, class TestLoadRejection, class TestStatusReports, class TestSecretHandling, class TestInvalidate
+- `vendor/fbk/tests/unit/test_transport_offline.py`: added class TestHeaderSets, class RecordingGovernor, class BlockingGovernor, class FakeHTTPSession, def make_transport, class TestFBTransportWiring
+- `vendor/fbk/tests/unit/test_transport_raw_seam.py`: added class UngatedGovernor, class FakeHTTPSession, def make_transport, const RAW_URL, const CALLER_HEADERS, class TestRawGet, class TestRawPost, class TestRawSoftBlockObservation, class TestRawJournalShape
+- `vendor/fbk/tests/unit/test_with_session_contract.py`: added def _ns, class _StubSession, def _require_contract, class TestWithSessionContract
+- `vendor/fbk/tests/unit/test_ws_fallback_gate.py`: added class _StubSession, def _install, def _install_legacy, const COOKIES, const HEADERS, class TestFallbackGate
+
+What changed: vendored hopfian/fbk in-tree at `vendor/fbk` (228 files: its curl_cffi direct-API client for Facebook's GraphQL/MQTT/DGW, the request governor, the doc_id registry), no longer a submodule and ours to edit. Added a `proxy` parameter to fbk's `FBTransport` so every request exits through the account's own proxy. Wired fbk into log-cli: `python/pacing/pacer.py` (a per-account `RequestGovernor`, state under `~/.logCli/governor`, `gate`/`soft_block`/`checkpoint`/`status`), `python/directApi/fbkTry.py` (drives an account through fbk's login via its proxy and our governor), and `scripts/fbk/tryAccount.ts` (reads the account's proxy and login secrets from Twenty `socialAccounts` and runs the engine). `vendor/` is exempt from `check:noComments`; `data-log-control` is on the naming allowlist. Research under `RESEARCH/facebookInternalApiCommunity` (burn matrix, fbk assessment, the GitHub/community findings).
+Why: matt asked to bring fbk's approach into our project as a first-class part of the system — not a submodule, not left untouched — to use its governor (pacing discipline) and direct-API client, driven by our socialAccounts data. A live test showed fbk cannot onboard a fresh vendor account (it hits the first-login checkpoint and defers to a browser), so the role split is: AdsPower onboards and exports the session, fbk drives an already-logged-in account.
+Checked: imports resolve with fbk in-tree (`pacing.pacer` plus fbk `transport`/`login`/`governor`); the governor paces (39s between two gated calls, the 40/day mutation budget, soft-block → 15-min cooldown); a live run of a Canada account (Barriere) reached Facebook through its CA proxy (exit 206.116.113.223) and posted credentials before fbk's own flow hit an unrecognized checkpoint (`c_user`/`xs` not set). `check:naming`, `check:noComments`, `check:layout` pass.
+
+## 2026-10-25 08:30Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometActorGatewayHandlerQuery.md`: edited
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuShortcutsQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceInboxContentContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceInboxSellerTabThreadViewContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceNUXUpdateStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSetBrowseRadiusMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceStatusContentContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometTS2BitArrayLoggerMutation.md`: edited
+- `docs/platforms/facebook/background/ConversationalSupport2FAChatExperienceQuery.md`: new file
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MarketplaceSearchAddressDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYouSellingUpsellCardQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYourListingDialogQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxBz.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/ajaxRouteDefinition.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/notificationsClientPushXout.md`: new file
+- `docs/platforms/facebook/background/sharedUserPreferences.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/usePasskeyAuthOptionsQuery.md`: new file
+- `docs/platforms/facebook/checkpoint/FBScrapingWarningMutation.md`: edited
+- `docs/platforms/facebook/checkpoint/TwoStepVerificationChallengePickerDialogQuery.md`: new file
+- `docs/platforms/facebook/checkpoint/UFACAISupportChatExperienceQuery.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/flows/groupMembers.md`: new file
+- `docs/platforms/facebook/listingForm/MarketplaceComposerAIPricingDialogImplSimilarListingsQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useListingShippableEligibilityCheckQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerAttributesQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerBISNumberEligibilityRefetchQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerPricePredictionQuery.md`: edited
+- `docs/platforms/facebook/location/CometMarketplaceSetBuyLocationMutation.md`: edited
+- `docs/platforms/facebook/location/MarketplaceBuyLocationDialogLocationUrlQuery.md`: edited
+- `docs/platforms/facebook/location/MarketplaceBuyLocationDialogQuery.md`: edited
+- `docs/platforms/facebook/login/CometLogoutHandlerQuery.md`: edited
+- `docs/platforms/facebook/login/TwoFactorAuthWizTriggerNonceCreatorMutation.md`: new file
+- `docs/platforms/facebook/login/ajaxTimezoneUpdatePhp.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/login/useCDSWebLoginMutation.md`: edited
+- `docs/platforms/facebook/login/useTwoFactorLoginValidateCodeMutation.md`: new file
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/photos/ajaxReactComposerAttachmentsPhotoUpload.md`: edited
+- `docs/platforms/facebook/photos/useSherlockPhotoPredictionMutation.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometProfilePictureEditDialogQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometProfilePictureSetMutation.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTimelineFeedRefetchQuery.md`: edited
+- `docs/platforms/facebook/profile/profilePictureUpload.md`: edited
+- `docs/platforms/facebook/publishing/useCometMarketplaceListingCreateMutation.md`: edited
+
+What changed: folded tonight's four runs (Wilkes-Barre publish, Nanticoke/Mountain Top/Scranton inspect) into the Facebook request docs with `capture --docs`, and wrote the reasoning for six requests that were stubs: the two-step method picker (`TwoStepVerificationChallengePickerDialogQuery`), `useTwoFactorLoginValidateCodeMutation`, `TwoFactorAuthWizTriggerNonceCreatorMutation`, `usePasskeyAuthOptionsQuery`, `ConversationalSupport2FAChatExperienceQuery` and `notificationsClientPushXout`. 235 requests documented.
+Why: tonight's sign-ins hit the passkey/method-picker/TOTP path and the push gate (rule 27) refused while those docs had no reasoning and the four runs were newer than the docs. Writing them captures what each 2FA/checkpoint call does and how our sign-in reads it (pick TOTP, press Try another way on a passkey), so the knowledge is kept per rule 1/73.
+Checked: `check:facebookClientDocs` passes (235 requests documented, rea read every GraphQL slice, no `toWrite` left outside the README template).
+
+## 2026-10-25 08:45Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `RESEARCH/facebookInternalApiCommunity/demotionMatrix.md`: new file
+- `RESEARCH/facebookInternalApiCommunity/subqPortMatrix.md`: new file
+- `vendor/fbk/src/config.py`: edited
+- `vendor/fbk/src/session.py`: changed class Session
+
+What changed: fbk's `Config` gains a `proxy` field and `Session` passes it to `FBTransport`, so the direct-API engine exits through the account's own proxy end to end (foundation every post-login family port needs). Added `RESEARCH/facebookInternalApiCommunity/subqPortMatrix.md` (SubQ scored every command family's port tier) and `demotionMatrix.md`.
+Why: matt added a SubQ key and asked to score which Playwright families move to fbk. SubQ's tiers: port now where fbk ships it (group read/poll/members, inbox read, join, feed post/comment/delete), port from our held recordings (publish listing, setLocation), capture with Playwright first (check/scan/status/watch, profile setup, messengerPinCreate), and stay browser (warmup, connect, host). The proxy must reach fbk from `socialAccounts`, never the environment, so it is threaded through Config, not read from env.
+Checked: `proxy` is a `Config` field, `Session.__init__` passes `proxy=self.config.proxy`, and `FBTransport.__init__` accepts `proxy` (all asserted by import/inspect). SubQ ran over 20 families and wrote the matrix.
+
+## 2026-10-25 08:49Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `RESEARCH/facebookInternalApiCommunity/subqMechanismMatrix.md`: new file
+- `RESEARCH/facebookInternalApiCommunity/theBridge.md`: new file
+
+What changed: two research docs. `subqMechanismMatrix.md` scores eight log-cli mechanisms against their fbk counterparts with SubQ; `theBridge.md` reads the result: where to lean on fbk (governor, direct-API answers, capture→registry, family scoping), where we stay stronger (the AST commit-log gate is machine-enforced where fbk's doc-sync is manual; our page-state resolvers resolve where fbk disengages), and the port bridge.
+Why: matt asked to measure our own machinery (the AST hook, the session.har capture, the resolvers) against the fbk docs through a matrix, to find the leverage and name the method he has been using (scope by platform, then families). The matrix shows our capture pipeline (session.har + rea + request docs) produces exactly the (doc_id, variables, answer) triple fbk's extend workflow consumes — so making `capture --docs` emit an fbk-ready registry entry turns every browser exploration into a direct fbk port. The method is a reverse-engineering/live-calibration pipeline: a platform→family unit is a surface, calibration recovers its wire shape, capture→calibrate→map is the loop.
+Checked: SubQ scored all eight pairs (same-job 89–100%); governor 97% stronger/98% adopt, the AST gate 86% stronger/4% adopt, the answer-deciding and capture chain top the port-bridge score (97/94/91/87%). Written up, no code changed.
+
+## 2026-10-25 08:55Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `scripts/directApi/buildFlowMap.ts`: added const repo, const flowsDir, const docsDir, const factsPath, const outDir, function familyOf, function wireMap, function confirmingCalls, const wire, const registry, const templates, const flowMap, const flows, const mapped, const gaps
+- `vendor/fbk/data/logcliFlowMap.json`: new file
+- `vendor/fbk/data/logcliRegistry.json`: new file
+- `vendor/fbk/data/logcliTemplates.json`: new file
+
+What changed: `scripts/directApi/buildFlowMap.ts` maps our flows and captures into fbk's manner. From `clientFacts.json` it builds, per request, friendly_name -> doc_id + kind + the sent variables + its family (the docs domain), and over every `src/browser/flow/definitions/*.json` it lists each flow's confirming calls as fbk operations and the gaps (confirming calls with no captured doc_id). It writes `vendor/fbk/data/logcliRegistry.json` (friendly_name->doc_id), `logcliTemplates.json` (friendly_name->variables) and `logcliFlowMap.json` (flow->operations+gaps) — fbk's own data shapes, so our direct-API engine (and fbk) can replay them.
+Why: matt — when we do a run / capture / inspect flow, and backwards over the flows already built, map them to work in fbk's manner so we can extensibly build on it. The map is the bridge: forward, any new run refreshes clientFacts and re-running the generator updates the registry/templates/map; backward, all 19 existing flows are mapped now. The gaps it prints are exactly the confirming calls to go capture next (profileSetup picture/cover/name, postComment, profilePost, deletePost, the language switch).
+Checked: ran it — 19 flows, 120 wire operations with doc_ids, 14 flow confirming-ops mapped, 10 gaps named; `marketplaceListingPublish` maps to `CometMarketplaceSetBuyLocationMutation` (doc_id 27784133851221395, family location) and `useCometMarketplaceListingCreateMutation` (doc_id 9551550371629242, family publishing), both with variables. `check:layout` passes; artifacts live under vendor/ (exempt).
+
+## 2026-10-25 09:16Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `python/directApi/engine.py`: added const ROOT, const FBK, const DATA, def registry, def templates, def resolve, def run, def main
+- `scripts/directApi/engine.test.ts`: added const repo, const py, function resolve, test "a mapped Marketplace mutation resolves to its doc_id + variables", test "an unmapped operation is reported, not guessed"
+
+What changed: `python/directApi/engine.py` is the direct-API engine. `resolve(friendly)` reads `vendor/fbk/data/logcliRegistry.json` + `logcliTemplates.json` and returns the operation's doc_id + captured variables; `run(friendly, cookiesPath, proxy, variables, dryRun)` builds an fbk `Session` (cookies from the account, `Config.proxy` set, governor wired) and replays it with `session.graphql.call_raw(friendly, doc_id, variables)`. `scripts/directApi/engine.test.ts` covers resolve offline.
+Why: matt — wire the direct-API engine to load the registry/templates and replay a mapped operation through fbk, starting with a read. The mapper already emits the fbk-manner artifacts; this is the consumer that turns a mapped operation into a governed fbk call, so a ported family runs the right way. A live replay needs an onboarded account's session (fbk can't onboard), so it was verified offline up to that boundary.
+Checked: `engine.test.ts` (2 pass) — resolve returns doc_id 9551550371629242 + variables for the listing-create op, and reports an unmapped op instead of guessing. A dry run on a mapped read (CometClassicHomeLeftRailContainerQuery) loaded the registry, resolved the doc_id, built the Session with the proxy, loaded cookies and reached fbk's GraphQL bootstrap — stopping at NotLoggedInError because the jar was a dummy (the exact session floor). check:naming/noComments/layout pass.
+
+## 2026-10-25 09:31Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `python/directApi/engine.py`: added def run_surface · changed def main
+- `scripts/directApi/liveRead.ts`: added function netscape, function main
+
+What changed: `engine.run_surface(surface, method, args, cookiesPath, proxy)` builds an fbk `Session` from a saved account session (cookies), with `Config.proxy` set and the governor wired, and calls an fbk surface method directly. `scripts/directApi/liveRead.ts` reads an account's saved cookies + proxy from Twenty socialAccounts, writes a Netscape jar, and runs `marketplace.search` through the engine.
+Why: matt — don't onboard, use an account that already has a session to do real log-cli work through the direct-API engine. Plymouth and Kingston kept full 13-cookie sessions from tonight's sign-ins, so the browser is not needed for the read; this proves the cheap direct-API path does our Marketplace work end to end.
+Checked: `bun scripts/directApi/liveRead.ts 61594122755104 free` — fbk built the Session from Plymouth's cookies, routed through its proxy, the token cache self-healed and re-bootstrapped the dtsg, and `marketplace.search` returned 10 live listings (e.g. 'Free 6 month old Blue Heeler' 29254273650926682). No browser. check:noComments/naming pass.
+
+## 2026-10-25 09:45Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `python/directApi/engine.py`: added def _plain · changed def run_surface
+- `src/cli/read/helpers/directApi.ts`: added interface Cookie, interface DirectPost, type DirectRead, function cookiesOf, function accountHasSession, function netscape, function readGroupDirect, function renderDirectRead
+- `src/cli/read/helpers/index.ts`: added export from "./directApi.ts"
+- `src/cli/read/index.ts`: changed function runRead
+- `src/cli/read/read.test.ts`: added test "uses context.directRead, touches no browser, and updates Twenty's lastRead" · changed function run
+- `src/cli/runner/index.ts`: changed function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+
+What changed: `log facebook read group` now uses the direct-API engine when it can. `src/cli/read/helpers/directApi.ts` writes the account's saved cookies to a Netscape jar and runs fbk `groups.feed_read` through `engine.run_surface` (proxy from the account, governed); `createContext` injects it as `context.directRead` (CommandContext gains the optional seam). The read dispatch uses it when the run is not --live, the group id is numeric, the account has a c_user+xs session and a proxy; otherwise it falls back to the browser path unchanged. `engine.run_surface` now returns structured rows (`_plain` turns fbk dataclasses into dicts). The command, flags and MCP tool are unchanged.
+Why: matt — wire read to the direct-API engine (fbk groups.feed_read) when the account has a session, same command/MCP. This is the first family ported onto the proven engine: a logged-in account reads a group with no browser, while onboarding and --live stay on the browser. The seam is injectable so tests keep the browser path.
+Checked: `read.test.ts` (25 pass) — with a session it uses context.directRead, touches no browser (sendInspect empty) and renders the posts + updates Twenty's lastRead; without the seam it falls back and still refuses with groupBrowserNotOpen. Full `bun test` 1013 pass; tsc clean; check:naming/noComments/layout/agentHooks pass. Live engine path already proven on Plymouth.
+
+## 2026-10-25 10:12Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `.claude/settings.json`: edited
+- `.codex/hooks.json`: edited
+- `README.md`: edited
+- `bin/logMcp.ts`: no declaration changed (comments, formatting or line endings)
+- `docs/diagrams/hooks.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/errorCatalog.md`: edited
+- `python/directApi/engine.py`: added const STATE, def state_dir, def _session, def _camel, def _login, def governor_status · changed def run, def run_surface, def main
+- `python/errors/errorCatalog.json`: edited
+- `python/pacing/pacer.py`: changed const STATE_DIR, def governor_for
+- `scripts/docs/buildDocs.ts`: added const contextType, const cliRoot
+- `scripts/hooks/engines.ts`: added const raw, const event, const stale, const text, const root, const last, const changed
+- `scripts/tests/preload.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/twenty/twentySetup.mjs`: changed const SOCIAL_ACCOUNT_FIELDS
+- `src/agentHooks/registry/index.ts`: added const ENGINES · changed const AGENT_HOOKS
+- `src/cli/read/helpers/directApi.ts`: changed type DirectRead, function readGroupDirect · removed interface Cookie, function cookiesOf, function accountHasSession, function netscape
+- `src/cli/read/helpers/readInput.ts`: changed const READ_INPUT
+- `src/cli/read/index.ts`: changed const READ_USAGE, function runRead, const readCommand
+- `src/cli/read/read.test.ts`: added type Direct, function direct, test "loggedIn: reads with no browser, writes sessionState to Twenty", test "accountStatus doesn't gate it: a needsLogin account whose session Facebook accepts still reads", test "checkpoint: stops, never opens the browser, and the account is deactivated", test "loggedOut: recorded, then the browser path decides" · changed function run · removed test "uses context.directRead, touches no browser, and updates Twenty's lastRead"
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/directApi/engine/client.ts`: added const DIRECT_ROUTES, function commandEngine, function engineLine, function fbkStateRoot, function readJson, function writeLocalSession, function localEngineStates, function engineContext, const ENGINE, function python, function directGate, function spawnEngine, function runEngine, function governorStatus, function outcomeOf, function recordSessionState
+- `src/directApi/engine/engine.test.ts`: added const account, test "read runs on the direct API first, a browser command on the browser, and the rest on none", test "readGroup's MCP description carries the engine line, and readGroupLive doesn't", test "a needsLogin account with a session and a proxy in its country passes; deactivated, no session or a foreign exit does not", test "Facebook's answer decides: checkpoint and a governor block stop, loggedOut hands over", test "session state and governor use per account, a pause said loudly"
+- `src/directApi/engine/helpers/index.ts`: added interface Cookie, function cookiesOf, function accountHasSession, function netscape, function sessionStateOf, function lastJsonLine
+- `src/directApi/engine/index.ts`: added export from "./client", export from "./helpers/index", export from "./types"
+- `src/directApi/engine/types.ts`: added type LoginState, type SessionState, interface GovernorStatus, interface EngineAnswer, interface EngineSpec, type DirectGate, type DirectOutcome, type CommandEngine, interface DirectRoute, interface LocalEngineState
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/marketplace/socialAccount/client.ts`: changed function toFacebookAccount
+- `src/marketplace/socialAccount/types.ts`: changed interface FacebookAccount
+- `src/mcp/freshness/client.ts`: added const WATCHED, const CODE, function serverStampFile, function codeStamp, function recordServerStart, function alive, function staleServerLine
+- `src/mcp/freshness/freshness.test.ts`: added test "fresh at start, stale once a source file changes after it"
+- `src/mcp/freshness/index.ts`: added export from "./client.ts"
+- `src/mcp/server/helpers/toolsFromCommands.ts`: added function engineLines · changed function typedTool, function argsTool
+- `src/surface/catalog/index.ts`: changed function commandEntry
+- `src/surface/catalog/types.ts`: changed interface CommandEntry
+- `src/surface/readme/index.ts`: added const ENGINE_TEXT · changed function renderSurface
+- `src/twenty/graphql/client.ts`: changed const SOCIAL_ACCOUNT_FIELDS
+- `src/twenty/graphql/generated/schema.ts`: changed interface SocialAccount, interface SocialAccountConnection, interface SocialAccountGroupByConnection, type AgencyProspectLabelEnum, interface AgencyProspect, interface AgencyProspectConnection, interface AgencyProspectGroupByConnection, interface SocialAccountGenqlSelection, interface SocialAccountConnectionGenqlSelection, interface SocialAccountGroupByConnectionGenqlSelection, interface SocialAccountCreateInput, interface SocialAccountUpdateInput, interface SocialAccountFilterInput, interface SocialAccountOrderByInput, interface SocialAccountOrderByWithGroupByInput, interface SocialAccountOrderByWithGroupByAggregateInput, interface SocialAccountGroupByInput, interface AgencyProspectGenqlSelection, interface AgencyProspectConnectionGenqlSelection, interface AgencyProspectGroupByConnectionGenqlSelection, interface AgencyProspectCreateInput, interface AgencyProspectUpdateInput, interface AgencyProspectFilterInput, interface AgencyProspectOrderByInput, interface AgencyProspectOrderByWithGroupByInput, interface AgencyProspectOrderByWithGroupByAggregateInput, interface AgencyProspectGroupByInput, const enumAgencyProspectLabelEnum
+- `src/twenty/graphql/generated/types.ts`: no declaration changed (comments, formatting or line endings)
+- `vendor/fbk/src/session.py`: changed class Session
+
+What changed: (1) The direct path is decided by Facebook's own page, not accountStatus. The engine bootstraps first and returns fbk's login state (loggedIn, loggedOut, checkpoint, unknown, plus account-warning banners). The new `src/directApi/engine` domain gates it (`directGate`: not deactivated, a c_user+xs session, a proxy exiting in the home country, inside the account's hours unless --bypass). It writes the state to two new additive Twenty fields, `socialAccounts.sessionState` and `sessionCheckedAt` (`twentySetup.mjs`, client regenerated). A checkpoint stops the run and deactivates the account with its listings marked lost (`setStatusAndReplace`). loggedOut or an account warning hands over to the browser path, and a governor block stops with the new error `governorBlocked`. (2) Each account has its own fbk governor and token cache under `~/.logCli/fbk/<account>`: the engine sets fbk's `state_dir` per account, and the vendored `Session` passes that folder to `default_governor`. `pacer.py` uses the same folder. (3) Which engine runs each command is code: `DIRECT_ROUTES` and `commandEngine` (`src/directApi/engine`). The catalog's Engine field, the README's Engine column and Engines section, and every MCP tool's description (`engineLine`) are generated from it. `check:docs` refuses a `context.direct*` call that isn't declared, a declared route its command never calls, a seam missing from CommandContext, and a direct-API command whose usage or summary doesn't say so. The read usage and summaries now say direct-API first. (4) A new `engines` hook (SessionStart, including compact, and UserPromptSubmit when something changed) puts the routes and each account's session state and governor use into the agent's context. (5) `bin/logMcp.ts` stamps its start (`src/mcp/freshness`), and the hook says loudly when the MCP server runs older code than the checkout.
+Why: matt: build all three. Decide the direct path from fbk's login state and write it back to Twenty, give each account its own governor and token cache, and make the engine a code declaration that feeds the MCP text, the README and the hooks, with check:docs refusing drift. Setting Plymouth to warming would have faked a lifecycle state. fbk's docs (03 §2, 09) say a session's state is read from each served page, which is rule 73. fbk's default governor was one counter for every account. The readGroup tool text still said browser only, and the MCP server keeps the code it started with.
+Checked: `bun run test` 1022 pass. New tests: the direct gate (needsLogin passes; deactivated, no session or a foreign exit don't), `outcomeOf` (checkpoint and governorBlocked stop; loggedOut and accountWarning hand over), the read tests (loggedIn writes sessionState; a needsLogin account still reads; a checkpoint deactivates with no browser; loggedOut goes to the browser path), readGroup's MCP description carrying the engine line and readGroupLive's not, the hook context with a 10-minute pause, and the freshness stamp. tsc, check:docs, check:agentHooks, check:noComments, check:naming and check:layout pass. Run from the terminal on Plymouth at 06:11 local: `direct-API engine not used: it is 06:11 in Plymouth`, then handed to the browser path (rule 18 held). The governor status reads offline from `~/.logCli/fbk/61594122755104`.
+
+## 2026-10-25 10:23Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/twitterPlatform.md`: new file
+- `vendor/twikit/.github/FUNDING.yml`: new file
+- `vendor/twikit/.gitignore`: new file
+- `vendor/twikit/.readthedocs.yaml`: new file
+- `vendor/twikit/CHANGES.md`: new file
+- `vendor/twikit/LICENSE`: new file
+- `vendor/twikit/README-ja.md`: new file
+- `vendor/twikit/README-zh.md`: new file
+- `vendor/twikit/README.md`: new file
+- `vendor/twikit/ToProtectYourAccount.md`: new file
+- `vendor/twikit/docs/Makefile`: new file
+- `vendor/twikit/docs/conf.py`: added const project, const copyright, const author, const extensions, const templates_path, const exclude_patterns, const language, const html_theme, const html_static_path, const todo_include_todos
+- `vendor/twikit/docs/index.rst`: new file
+- `vendor/twikit/docs/make.bat`: new file
+- `vendor/twikit/docs/requirements.txt`: new file
+- `vendor/twikit/docs/twikit.rst`: new file
+- `vendor/twikit/examples/delete_all_tweets.py`: added const AUTH_INFO_1, const AUTH_INFO_2, const PASSWORD, const client, def main
+- `vendor/twikit/examples/dm_auto_reply.py`: added const AUTH_INFO_1, const AUTH_INFO_2, const PASSWORD, const client, def main
+- `vendor/twikit/examples/download_tweet_media.py`: added const AUTH_INFO_1, const AUTH_INFO_2, const PASSWORD, const client, def main
+- `vendor/twikit/examples/example.py`: added const USERNAME, const EMAIL, const PASSWORD, const client, def main
+- `vendor/twikit/examples/guest.py`: added const client, def main
+- `vendor/twikit/examples/listen_for_new_tweets.py`: added const AUTH_INFO_1, const AUTH_INFO_2, const PASSWORD, const client, const USER_ID, const CHECK_INTERVAL, def callback, def get_latest_tweet, def main
+- `vendor/twikit/ratelimits.md`: new file
+- `vendor/twikit/requirements.txt`: new file
+- `vendor/twikit/twikit/__init__.py`: added const __version__
+- `vendor/twikit/twikit/_captcha/__init__.py`: new file, no top-level declarations
+- `vendor/twikit/twikit/_captcha/base.py`: added class UnlockHTML, class CaptchaSolver, def parse_unlock_html
+- `vendor/twikit/twikit/_captcha/capsolver.py`: added class Capsolver
+- `vendor/twikit/twikit/bookmark.py`: added class BookmarkFolder
+- `vendor/twikit/twikit/client/client.py`: added class Client
+- `vendor/twikit/twikit/client/gql.py`: added class Endpoint, class GQLClient
+- `vendor/twikit/twikit/client/v11.py`: added class Endpoint, class V11Client
+- `vendor/twikit/twikit/community.py`: added class CommunityCreator, class CommunityRule, class CommunityMember, class Community
+- `vendor/twikit/twikit/constants.py`: added const TOKEN, const DOMAIN, const FEATURES, const USER_FEATURES, const LIST_FEATURES, const COMMUNITY_NOTE_FEATURES, const COMMUNITY_TWEETS_FEATURES, const JOIN_COMMUNITY_FEATURES, const NOTE_TWEET_FEATURES, const SIMILAR_POSTS_FEATURES, const BOOKMARK_FOLDER_TIMELINE_FEATURES, const TWEET_RESULT_BY_REST_ID_FEATURES, const USER_HIGHLIGHTS_TWEETS_FEATURES, const TWEET_RESULTS_BY_REST_IDS_FEATURES
+- `vendor/twikit/twikit/errors.py`: added class TwitterException, class BadRequest, class Unauthorized, class Forbidden, class NotFound, class RequestTimeout, class TooManyRequests, class ServerError, class CouldNotTweet, class DuplicateTweet, class TweetNotAvailable, class InvalidMedia, class UserNotFound, class UserUnavailable, class AccountSuspended, class AccountLocked, def raise_exceptions_from_response
+- `vendor/twikit/twikit/geo.py`: added class Place, def _places_from_response
+- `vendor/twikit/twikit/group.py`: added class Group, class GroupMessage
+- `vendor/twikit/twikit/guest/__init__.py`: new file, no top-level declarations
+- `vendor/twikit/twikit/guest/client.py`: added def tweet_from_data, class GuestClient
+- `vendor/twikit/twikit/guest/tweet.py`: added class Tweet
+- `vendor/twikit/twikit/guest/user.py`: added class User
+- `vendor/twikit/twikit/list.py`: added class List
+- `vendor/twikit/twikit/media.py`: added class Media, class Photo, class Stream, class AnimatedGif, class Video, const MEDIA_TYPE, const MEDIA_TYPE_MAPPING, def _media_from_data
+- `vendor/twikit/twikit/message.py`: added class Message
+- `vendor/twikit/twikit/notification.py`: added class Notification
+- `vendor/twikit/twikit/streaming.py`: added class StreamingSession, def _event_from_data, def _payload_from_data, class Payload, class ConfigEvent, class SubscriptionsEvent, class TweetEngagementEvent, class DMUpdateEvent, class DMTypingEvent, const StreamEventType, class Topic
+- `vendor/twikit/twikit/trend.py`: added class Trend, class PlaceTrends, class PlaceTrend, class Location
+- `vendor/twikit/twikit/tweet.py`: added class Tweet, def tweet_from_data, class ScheduledTweet, class TweetTombstone, class Poll, class CommunityNote
+- `vendor/twikit/twikit/ui_metrics/__init__.py`: added const FUNCTION_PATTERN, const EQUAL_PATTERN, def solve_ui_metrics
+- `vendor/twikit/twikit/ui_metrics/dom.py`: added class MockElement, class MockDocument
+- `vendor/twikit/twikit/user.py`: added class User
+- `vendor/twikit/twikit/utils.py`: added const T, class Result, class Flow, def find_dict, def httpx_transport_to_url, def get_query_id, def timestamp_to_datetime, def build_tweet_data, def build_user_data, def flatten_params, def b64_to_str, def find_entry_by_type, const FILTERS, class SearchOptions, def build_query
+- `vendor/twikit/twikit/x_client_transaction/__init__.py`: new file, no top-level declarations
+- `vendor/twikit/twikit/x_client_transaction/cubic_curve.py`: added class Cubic
+- `vendor/twikit/twikit/x_client_transaction/interpolate.py`: added def interpolate, def interpolate_num
+- `vendor/twikit/twikit/x_client_transaction/rotation.py`: added def convert_rotation_to_matrix, def convertRotationToMatrix
+- `vendor/twikit/twikit/x_client_transaction/transaction.py`: added const ON_DEMAND_FILE_REGEX, const ON_DEMAND_HASH_PATTERN, const INDICES_REGEX, class ClientTransaction
+- `vendor/twikit/twikit/x_client_transaction/utils.py`: added def handle_x_migration, def float_to_hex, def is_odd, def base64_encode, def base64_decode
+- `vendor/twitterController/SKILL.md`: new file
+- `vendor/twitterController/random_run.py`: added const RNG, const LATE, const POLL, const COOL_BASE, const COOL_CAP, const MAX_COOLS, const DAY, class Run, def parse_span, def draw, def cmd_plan, def pick_kinds, def interleave, def cool_secs, def classify, def reset_at, def shift_rest, def requeue, def drop, def note, def nudge_path, def take_nudge, def wait_until, def cmd_nudge, def cmd_run, def halt, def main
+- `vendor/twitterController/send_approved_reply.py`: added const URL_RE, const SECRET_KEYS, def load_env_file, def secret_values, def redact, def check_style, def rest_base, def fetch_cookies, def twenty_get, def pick_account, def resolve_account_id, def normalize_cookies, def merge_for_storage, def unwrap, def _domain_rank, def merge_cookie_shape, def store_cookies, def own_user_id, def tweet_id_from_url, class SessionInvalid, def check_session, def run_send, def main
+- `vendor/twitterController/sequence.py`: added const HERE, const SENDER, const ACTIONS, def now, def load, def save, def log, def target, def fingerprint, def sender, def sent_id, def sender_args, def human_gap, def read_gap, def next_gap, def until_active, def cmd_plan, def cmd_build, def cmd_show, def cmd_check, def cmd_approve, def cmd_status, const THROTTLE_COOLDOWNS, const LIMIT_COOLDOWN, const FAIL_COOLDOWN, const MAX_STRIKES, def cooldown, def alert, def cmd_run, def main
+- `vendor/twitterController/tests/test_random_run.py`: added def test_draw_in_window_and_spaced, def test_draw_refuses_impossible, def test_interleave_keeps_like_before_reply, def make_queue, def args, def test_run_all_ok, const EMPTY, def no_wait, def test_block_cools_off_then_retries_and_carries_on, def test_post_failing_twice_is_skipped_not_halted, def test_halts_after_max_cool_offs_in_a_row, def test_auth_failure_still_halts_at_once, def test_gone_post_is_skipped_without_cooling, def test_cool_secs_uses_x_reset_time, def test_reset_at_reads_twikit_and_headers, def test_run_halts_when_behind, def test_pick_kinds_is_random_mix, def test_run_like_after_reply, def test_nudge_sends_next_replies_now, def test_nudge_needs_a_running_queue
+- `vendor/twitterController/tests/test_send_approved_reply.py`: added const HERE, const ROOT, const SCRIPT, def run_cli, class CookieShapeTests, class StyleTests, class RedactTests, class TwentyTests, class AccountLookupTests, class UrlTests, class CliGateTests, class FakeHttp, class FakeClient, class SessionCheckTests
+
+What changed: Twitter comes in as log-cli's second platform, as fbk did. `vendor/twikit` is unclecode's fork of twikit (MIT, commit 6a73ab9, 2026-05-17, the one twitter-controller installs), as plain files from GitHub's tarball of that commit. `vendor/twitterController` is the twitter-controller skill's scripts and tests as they were (send_approved_reply, sequence, random_run), the code to port. `docs/twitterPlatform.md` is the plan. It covers what the controller does, how it maps onto log-cli's three layers (`log twitter <command>`, `src/twitter/<area>/<domain>`, `python/twitterApi/engine.py` around twikit, a per-account governor, `sessionState`, `DIRECT_ROUTES` with a `directApiOnly` engine kind), its families (session, follows, reply/quote/like, dm, queue, copy style), the random runner as an XState machine, and the order of work. The warm-up and X listening are out for now.
+Why: matt: read twitter-controller, put its library in vendor, and plan to map it onto log-cli the way Facebook works through fbk. The use case differs from Facebook's and there's no warm-up yet. We build around platform clients instead of carrying over log's own.
+Checked: twikit 2.3.3 imports from vendor/twikit with LOG_PYTHON. The plan's Mermaid diagram parses with the repo's mermaid and jsdom, as check:docs does. Twenty has 2 TWITTER socialAccounts: cookies set, no proxy, home or status (counted, no values read out). check:naming, check:noComments and check:layout pass (vendor is skipped as before).
+
+## 2026-10-25 10:35Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/errorCatalog.md`: edited
+- `docs/twitterPlatform.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `python/twitterApi/__init__.py`: new file, no top-level declarations
+- `python/twitterApi/engine.py`: added const ROOT, const VENDOR, const SECRET_KEYS, const ACTIONS, def state_root, def state_dir, def _domain_rank, def normalize_cookies, def has_session, def own_user_id, def redact, def governor_for, def governor_status, def session_answer, def page_title, def blocked_answer, def login_state_of, def ping, def run, def main
+- `scripts/checks/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `scripts/docs/buildDocs.ts`: no declaration changed (comments, formatting or line endings)
+- `scripts/tests/preload.ts`: no declaration changed (comments, formatting or line endings)
+- `src/cli/runner/helpers/commandInput.ts`: changed function formToolName
+- `src/cli/runner/helpers/platforms.ts`: added function toolBaseName · changed const PLATFORMS, function resolvePlatformForm
+- `src/cli/runner/index.ts`: changed const COMMANDS, function createContext, function dispatch
+- `src/cli/runner/types.ts`: changed interface CommandContext, interface Command
+- `src/cli/twitter/index.ts`: added const SESSION_USAGE, const SESSION_INPUT, function render, const sessionCommand
+- `src/cli/twitter/twitter.test.ts`: added function fixture, function run, test "loggedIn: on the direct-API engine with no proxy, sessionState and refreshed cookies go back to Twenty in the stored shape", test "loggedOut: exit 1, sessionState written, cookies left as they were", test "the gate: no auth_token + ct0 is refused before X is called; a Facebook account is refused", test "the platform comes first and must match", test "every shape Twenty may hold is read, and a merge keeps the stored shape"
+- `src/directApi/engine/client.ts`: added function twitterStateRoot, function allEngineStates · changed const DIRECT_ROUTES, function commandEngine, function engineLine, function writeLocalSession, function localEngineStates, function engineContext
+- `src/directApi/engine/types.ts`: changed type CommandEngine, interface DirectRoute, interface LocalEngineState
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `src/mcp/server/helpers/guardCall.ts`: changed function commandLine
+- `src/mcp/server/helpers/toolsFromCommands.ts`: changed const commandWords, function commandTools
+- `src/surface/catalog/types.ts`: changed interface CommandEntry
+- `src/surface/readme/index.ts`: added const platformText · changed const ENGINE_TEXT, function renderSurface · removed const PLATFORM_TEXT
+- `src/twitter/account/index.ts`: added export from "./session/index.ts"
+- `src/twitter/account/session/client.ts`: added const ENGINE, type TwitterAccount, function findTwitterAccount, function twitterCookies, function twitterGate, function mergeCookieShape, function runTwitterEngine, function recordTwitterSession
+- `src/twitter/account/session/index.ts`: added export from "./client", export from "./types"
+- `src/twitter/account/session/types.ts`: added type TwitterLoginState, interface TwitterGovernor, interface TwitterSessionAnswer, interface TwitterEngineRun, type TwitterGate
+
+What changed: Step 1 of X as a platform: the twikit engine and `log twitter session check` (MCP `twitterSessionCheck`). `python/twitterApi/engine.py` reads the account's cookies (every shape Twenty may hold, ported from twitter-controller) and calls X directly with no proxy. It gates on a per-account governor (`~/.logCli/twitter/<account>`). X's answer decides: the session check's HTTP status (401/403 loggedOut, 200/404 loggedIn), then the profile read (suspended or locked: restricted; 429: rateLimited). Cloudflare's block page is named `cloudflareBlocked`, never dumped as HTML, and pauses the governor. Refreshed cookies go to a private file, never stdout. `src/twitter/account/session` has the gate (TWITTER, not deactivated, auth_token + ct0), the run, and the write-back: `sessionState`, plus refreshed cookies merged in the row's own shape on success. Platforms are generalised: `PLATFORMS` gains `twitter`, a command is looked up by platform and refused under the wrong one, MCP tools of a non-Facebook platform are prefixed (`twitterSessionCheck`), and the README, guardCall and check:docs read any platform. `DIRECT_ROUTES.session` is `directApiOnly`. The engines hook shows X accounts and their governor. New error codes `accountNotTwitter` and `noTwitterSession`. Rule 80 is in AGENTS.md and the MCP instructions. The plan doc records matt's answers.
+Why: matt: "No: X accounts call X directly as the controller does today. Build step 1 (the twikit engine and log twitter session check)."
+Checked: `bun run check` passes: 1030 tests, naming, noComments, layout, browsers, agentHooks (108 MCP tools hooked), docs. New tests cover loggedIn writing sessionState and merging refreshed cookies in the stored shape, loggedOut writing the state but not the cookies, the gate refusing before X is called, the platform-first and wrong-platform refusals, and the cookie shapes. Live on both X accounts (read-only, nothing sent): the session check answered 404, so X accepts both sessions. Then the profile read (GraphQL UserByRestId) got Cloudflare's "Sorry, you have been blocked / unable to access x.com" page. The engine now reports `cloudflareBlocked (loggedIn)` and pauses that account for 15 minutes.
+
+## 2026-10-25 10:57Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `AGENTS.md`: edited
+- `README.md`: edited
+- `docs/twitterPlatform.md`: edited
+- `lefthook.yml`: edited
+- `package.json`: edited
+- `python/checks/twikitTransport.py`: added const ROOT, const VENDOR, const PACKAGE, const TARGET_MODULE, const RENAMED, const NO_EQUIVALENT, const DOC_NAMES, const REQUIREMENT, const REQUIREMENTS, def session_attributes, def is_httpx, class Touchpoints, def scan_file, def python_files, def scan, def splice, def replacement_text, def segment, def apply, def main
+- `scripts/checks/checkTwikitTransport.ts`: added const root, function python, const mode, const run
+- `src/mcp/server/helpers/agentRules.ts`: changed const RULES_REVIEWED_THROUGH, const SERVER_INSTRUCTIONS, const COMMAND_RULES
+- `vendor/twikit/docs/requirements.txt`: edited
+- `vendor/twikit/requirements.txt`: edited
+- `vendor/twikit/tests/test_transport.py`: added class Handler, def server, def offline_client, def run, def test_session_is_curl_cffi_with_pinned_impersonation, def test_impersonation_can_be_overridden, def test_proxy_round_trips, def test_set_cookies_are_sent_and_duplicate_ct0_keeps_the_first_as_with_httpx, def test_set_cookie_from_the_answer_lands_in_the_jar, def test_non_json_answer_falls_back_to_text, def test_redirects_are_not_followed, def test_error_carries_the_answer_headers, def test_media_append_goes_as_multipart, def test_stream_reads_lines
+- `vendor/twikit/twikit/_captcha/base.py`: no declaration changed (comments, formatting or line endings)
+- `vendor/twikit/twikit/_captcha/capsolver.py`: changed class Capsolver
+- `vendor/twikit/twikit/bookmark.py`: no declaration changed (comments, formatting or line endings)
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+- `vendor/twikit/twikit/client/v11.py`: changed class V11Client
+- `vendor/twikit/twikit/constants.py`: added const IMPERSONATE
+- `vendor/twikit/twikit/group.py`: changed class Group, class GroupMessage
+- `vendor/twikit/twikit/guest/client.py`: changed class GuestClient
+- `vendor/twikit/twikit/list.py`: changed class List
+- `vendor/twikit/twikit/message.py`: changed class Message
+- `vendor/twikit/twikit/tweet.py`: changed class Tweet, class ScheduledTweet
+- `vendor/twikit/twikit/user.py`: changed class User
+- `vendor/twikit/twikit/utils.py`: removed def httpx_transport_to_url
+
+What changed: vendor/twikit's HTTP transport is curl_cffi instead of httpx, and only the transport. `self.http` on Client and GuestClient is a curl_cffi AsyncSession pinned to `IMPERSONATE` (safari17_0, matching twikit's Safari user agent; `impersonate=` still overrides it) with redirects off as httpx had them. The proxy property reads and writes the session's `proxies` instead of httpx's private `_mounts`/`URLPattern`/`AsyncHTTPTransport`, so `httpx_transport_to_url` is gone. Media APPEND chunks go as a `CurlMime` part (curl_cffi refuses `files=`), closed after the call. Capsolver posts with `curl_cffi.requests.post`, every `Response` type and docstring names `curl_cffi.requests.Response`, and both requirements files ask for `curl_cffi>=0.15`. `python/checks/twikitTransport.py` maps every httpx touchpoint by syntax tree (imports, type names, `.http.<attr>` uses checked against AsyncSession, `files=` calls, text), applied the 115 rewrites that have a curl_cffi equivalent by node position, and refuses any left (`bun run check:twikitTransport`, pre-commit and pre-push). `vendor/twikit/tests/test_transport.py` covers it against a local server. Rule 81 in AGENTS.md, the MCP instructions and the README.
+Why: matt: we're taking ownership of vendor/twikit and maintaining it ourselves since nobody upstream does, with the transport on curl_cffi the way vendor/fbk does it (rule 81).
+Checked: the map found 154 touchpoints; the 26 with no curl_cffi type of the same name (proxy mounts, the transport-to-URL helper, files=) were edited by hand, then `--apply` did 115 and `--check` is ok, with no httpx left in vendor/twikit and `httpx` not in sys.modules after making a Client and a GuestClient. 10 transport tests pass: pinned impersonation, proxy round trip, cookies sent and a Set-Cookie landing in the jar, duplicate ct0 keeping the first, as httpx did (checked side by side), non-JSON falling back to text, a 302 not followed, a 429 carrying x-rate-limit-reset, multipart APPEND, stream lines. Live: `log twitter session check --account matthewsoldit` ok, loggedIn, profile read @matthewsoldit, refreshed cookies merged into Twenty. `bun run check`: 1030 tests pass.
+
+## 2026-10-25 11:22Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/commands.mmd`: edited
+- `docs/diagrams/surface.mmd`: edited
+- `docs/twitterPlatform.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `python/twitterApi/engine.py`: added const READS, const WRITES, def tweet_id_from_url, def limits_of, def reset_of, def event_of, def keep_create_answers, def follows, def send, def refusal_of, def act · changed const ACTIONS, def run
+- `scripts/checks/checkNamingConventions.mjs`: changed const ALLOWED_KEBAB
+- `src/cli/runner/index.ts`: changed const COMMANDS, function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+- `src/cli/twitter/families.test.ts`: added const POST_A, const POST_B, const POST_C, function fixture, type Script, function harness, function queueFiles, function builtAndPlanned, test "reads each handle once on the direct-API engine and sends nothing", test "without --live it is a dry run: checked, X not contacted", test "--live needs who approved it, and the style and target are checked before X is called", test "--live sends once with the approver, and X's answer decides", test "a dead session goes back to Twenty", test "build pairs each target with a unique line; an edit after approve voids it", test "check names every item that breaks the house style", test "run without --live lists what it would send; X is not contacted", test "run --live walks the machine: sent, gone, a throttle cools off and is retried once at the end", test "a dead session halts the run with exit 5 and the rest stays pending", test "nudge is refused with no run going", test "the fingerprint is the one the controller's Python computes, so an approved controller queue stays approved"
+- `src/cli/twitter/helpers/account.ts`: added type Engine, function openTwitterAccount, function governorLine
+- `src/cli/twitter/helpers/follows.ts`: added const FOLLOWS_USAGE, const FOLLOWS_INPUT, function render, const followsCommand
+- `src/cli/twitter/helpers/index.ts`: added export from "./account.ts", export from "./follows.ts", export from "./queue.ts", export from "./send.ts"
+- `src/cli/twitter/helpers/queue.ts`: added const QUEUE, const QUEUE_USAGE, const flag, const QUEUE_INPUT, const fail, function readJson, function load, function showQueue, function takeNudge, function buzz, function dryRunLines, function specFor, function runCommand, const queueCommand
+- `src/cli/twitter/helpers/send.ts`: added const ACCOUNT, const TWEET, const USER_ID, const TEXT, const APPROVED_BY, const SKIP_STYLE, const LIVE, interface SendShape, const SHAPES, function usageOf, function inputOf, function renderSent, function sendCommand, const replyCommand, const quoteCommand, const likeCommand, const dmCommand
+- `src/cli/twitter/index.ts`: added export from "./helpers/index.ts" · changed const sessionCommand
+- `src/cli/twitter/twitter.test.ts`: changed function run
+- `src/directApi/engine/client.ts`: changed const DIRECT_ROUTES, function engineLine
+- `src/errors/catalog/types.ts`: changed type ErrorLayer, const ERROR_CATALOG
+- `src/mcp/server/helpers/agentRules.ts`: changed const COMMAND_RULES
+- `src/mcp/server/helpers/toolsFromCommands.ts`: changed const LONG_RUNNING
+- `src/twitter/account/session/client.ts`: changed function runTwitterEngine
+- `src/twitter/account/session/types.ts`: added type TwitterAction, const TWITTER_WRITES, type TwitterEvent, interface TwitterEngineSpec, interface TwitterFollow · changed interface TwitterSessionAnswer
+- `src/twitter/copy/index.ts`: added export from "./style/index.ts"
+- `src/twitter/copy/style/client.ts`: added const URL, const BANNED, function styleProblems, const STYLE_HINT
+- `src/twitter/copy/style/index.ts`: added export from "./client"
+- `src/twitter/copy/style/style.test.ts`: added test "lowercase copy with no commas, full stops or dashes passes, and urls are exempt", test "each broken rule is named"
+- `src/twitter/post/index.ts`: added export from "./send/index.ts"
+- `src/twitter/post/send/client.ts`: added const TWEET_URL, const WITH_TEXT, function targetOf, function planSend
+- `src/twitter/post/send/index.ts`: added export from "./client", export from "./types"
+- `src/twitter/post/send/send.test.ts`: added const POST, test "a reply with house-style copy plans the engine spec, live only when asked", test "live needs who approved it; a dry run does not", test "the target, the text and the style are checked before X is called"
+- `src/twitter/post/send/types.ts`: added type SendAction, interface SendRequest, type SendProblemCode, interface SendProblem, type SendPlan
+- `src/twitter/queue/index.ts`: added export from "./plan/index.ts", export from "./run/index.ts"
+- `src/twitter/queue/plan/client.ts`: added const MIN_GAP_FLOOR, function systemRandom, function seededRandom, const CONTROLLER_KEYS, function fromController, function loadQueue, function saveQueue, const stem, const logPathOf, const lockPathOf, const nudgePathOf, function queueLog, function targetOfItem, function pyJson, function fingerprint, function approvalProblem, function shuffle, function buildQueue, function targetsOf, function linesOf, function itemProblems, function approveQueue, function statusCounts, function parseSpan, function drawTimes, function pickKinds, function interleave, function planQueue
+- `src/twitter/queue/plan/index.ts`: added export from "./client", export from "./types"
+- `src/twitter/queue/plan/types.ts`: added type QueueAction, const QUEUE_ACTIONS, type ItemStatus, const ITEM_STATUSES, interface QueueItem, interface QueueApproval, type EventKind, interface PlanEvent, interface RandomPlan, interface Queue, interface BuildTarget, interface PlanOptions, type Rng
+- `src/twitter/queue/run/client.ts`: added const uniform, const iso, const atSeconds, function coolSeconds, function failureOf, function succeeded, function shiftRest, function requeue, function dropPost, function waitUntil, function sentUrlOf, function runQueue
+- `src/twitter/queue/run/index.ts`: added export from "./client", export from "./machine", export from "./types"
+- `src/twitter/queue/run/machine.ts`: added const queueRunMachine
+- `src/twitter/queue/run/types.ts`: added const LATE_SECONDS, const POLL_SECONDS, const COOL_BASE_SECONDS, const COOL_CAP_SECONDS, const MAX_COOLS, const DAY_SECONDS, type RunEvent, interface RunDeps, type FailureKind, interface RunResult
+
+What changed: X's families from twitter-controller are log-cli commands on the twikit engine, each an MCP tool. The engine (`python/twitterApi/engine.py`) gains follows (friendships/show per handle), reply and quote (create_tweet, its raw answer and x-rate-limit headers kept), like (favorite_tweet, 139 already liked counts) and dm (send_dm); every non-ping action checks the session first, and every answer is one event: sent, dropped, throttled, dailyLimit, gone, automated, duplicate, sessionDead, restricted, failed. The engine refuses a send without live and an approver itself; sends count as governor writes, and a throttle, drop, automated or daily-limit answer feeds the governor's soft block. `directTwitter` takes a spec (action, target, text, live, approvedBy) instead of only ping. New domains: `twitter/copy/style` (the controller's house style check), `twitter/post/send` (target, text, style and approver checks into the engine spec), `twitter/queue/plan` (the controller's queue file, read from snake_case and saved camelCase, build, check, approve with a fingerprint computed as the controller's Python does, status, the random-window draw) and `twitter/queue/run` (random_run.py as an XState machine, planned, waiting, liking, replying, cooling, finished, halted, traced on the live log: cool-offs 15 min doubling to 4 h or X's reset time, 24 h on 344, one retry per post at the end, gone skipped, a dead session or 5 cool-offs in a row halts and tags buzz with --alertChannel, nudge, a lock per queue). Commands `log twitter follows`, `reply`, `quote`, `like`, `dm` and `queue build|show|check|status|approve|plan|run|nudge`; MCP tools twitterFollows, twitterReply(Live), twitterQuote(Live), twitterLike(Live), twitterDm(Live), twitterQueueBuild/Show/Check/Status/Approve/Plan/Run(Live)/Nudge. Without --live a send or a queue run is a dry run that contacts nothing. Ten twitter error codes in the catalog, DIRECT_ROUTES and COMMAND_RULES for each command, `sleep` on CommandContext for tests, X's x-rate-limit headers allowed by the naming gate.
+Why: matt: continue the family work on X the way it was done for fbk, families of the internal API each mapped onto the MCP (he picked the X families on twikit).
+Checked: 22 X tests (send dry runs and refusals before X is called, live sends with the approver against a scripted engine, a dead session back to Twenty, the queue built, voided by an edit after approve, style-checked, dry-run and run live on a fake clock: sent, gone and a throttle that cooled off and was retried once, a dead session halting with exit 5, nudge refused with no run, the fingerprint equal to the controller's Python). `bun run check`: 1047 pass. Live: `log twitter follows --account matthewsoldit --handles abelqxr` answered @abelqxr follows you, you follow them, sessionState loggedIn and refreshed cookies back to Twenty, 5/500 requests and 0 writes. Nothing was sent on X.
+
+## 2026-10-25 11:28Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `src/cli/runner/helpers/platforms.ts`: added function platformLabel
+- `src/mcp/server/helpers/guardCall.ts`: changed const LIVE_REFUSAL, function guardCall
+- `src/mcp/server/helpers/toolAnnotations.ts`: changed function titleOf
+- `src/mcp/server/helpers/toolsFromCommands.ts`: changed const CONFIRM_LIVE, const LIVE_LINE, function typedTool, function argsTool
+
+What changed: the MCP's live wording names the command's platform (platformLabel: X for twitter, Facebook otherwise): a live tool's title (live on X), its Live line, its confirmLive field, the plain tool's pointer to its Live twin, and guardCall's refusals. Facebook tools read as before.
+Why: after the restart matt asked to check the new X tools; twitterReply's description said What acts on Facebook is twitterReplyLive.
+Checked: over MCP twitterSessionCheck (loggedIn), twitterFollows (@abelqxr follows you, you follow them) and twitterReply as a dry run (X not contacted) all answered; the generated descriptions say X for twitterReply and twitterReplyLive and Facebook for publishLive; bun run check: 1047 pass.
+
+## 2026-10-25 11:33Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `python/twitterApi/engine.py`: changed def send
+- `src/twitter/account/session/types.ts`: changed interface TwitterSessionAnswer
+
+What changed: the engine's dm reads twikit's Message as X built it: a message id means sent (messageId), and the 1:1 conversation id is the two user ids, lower first (conversationId). It no longer looks for a conversation_id attribute twikit's Message never has. TwitterSessionAnswer gains messageId.
+Why: matt asked to check a dm from matthewsoldit to abel. It was sent, but the engine read it as dropped (no conversation id), exited 1 and fed a false soft block to matthewsoldit's governor (a 15-minute pause).
+Checked: live, twitterDmLive from matthewsoldit to abelqxr (2072692285829943296, from abelqxr's own session check), approved by matt: X answered with the message; abel's dm history read from abel's session shows message 2114318615877157235, from 1974596626342686720 to 2072692285829943296, text test dm from log cli. bun run check: 1047 pass.
+
+## 2026-10-25 11:36Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `vendor/twikit/tests/test_user_id.py`: added def settings_answers_404, def test_user_id_falls_back_to_the_twid_cookie_when_settings_answers_404, def test_user_id_raises_the_original_error_with_no_twid_cookie, def test_user_id_still_uses_settings_when_it_answers
+- `vendor/twikit/twikit/client/client.py`: changed class Client
+
+What changed: vendor/twikit's Client.user_id() still asks X's v1.1 settings first, and when that fails (X answers it 404, code 34) it falls back to the account's own id in the twid cookie (u%3D<id>, _user_id_from_cookie), cached like before. With no twid cookie the original error is raised. client.py imports re and unquote for it. vendor/twikit/tests/test_user_id.py holds it.
+Why: matt asked to fix it as a vendor/twikit change (rule 81, we maintain twikit). user_id() is what get_dm_history and the other conversation calls build on, and it failed on every account because X 404s the settings read.
+Checked: 13 twikit tests pass (3 new: the 404 falls back to twid and is cached, no twid raises NotFound, a working settings answer is still used). Live: twikit's own get_dm_history on abelqxr's session, with no id seeded, returned message 2114318615877157235 from matthewsoldit (test dm from log cli). twikitTransport check ok, bun run check 1047 pass.
+
+## 2026-10-25 11:50Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/useCases/README.md`: new file
+- `docs/useCases/facebook/groups.md`: new file
+- `docs/useCases/facebook/marketplaceListings.md`: new file
+- `docs/useCases/twitter/recruiting.md`: new file
+
+What changed: docs/useCases/<platform>/ holds what log-cli has been used for, one page each, in plain words with a real run, every step's command and MCP tool, what decides each step worked, a Mermaid diagram and what isn't built. twitter/recruiting.md: matt's recruiting on X (treg search, the table in buzz, approval, queue plan --window 75m --like, queue run --live, buzz alerts), the 2026-10-24 run (14 replies from @matthewsoldit, 8 BDO and 6 cold caller), the people contacted left unnamed. facebook/marketplaceListings.md: bought account to proxy, AdsPower profile, host, sign-in, check, profile, location, warm-up, publish and the 12-minute check, Bethlehem's listing 1425935622848350 (23 clicks the first day, about $3.40 per live account). facebook/groups.md: join, read, poll, members. docs/useCases/README.md is the index and the shared parts; the README links it under Use cases.
+Why: matt asked for docs/useCases/{platform}/ explaining how he uses the twitter controller in buzz to recruit and the multiple-profiles-to-Marketplace-listings work, showing which parts do what, so people can get creative with it.
+Checked: every claim from the buzz workspace (GUIDES X outreach, sequencer and recruiter orders, RESEARCH sweeps of 2026-10-24, OUTBOX send logs and the rubbish removal update V10) or this repo (log.md, docs, skills/host); every Mermaid block parsed with the repo's mermaid and jsdom; bun run check 1047 pass.

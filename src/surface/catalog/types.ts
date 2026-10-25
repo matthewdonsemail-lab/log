@@ -1,4 +1,5 @@
 import type { HookEvent } from "../../agentHooks/registry/index.ts";
+import type { Platform } from "../../cli/runner/helpers/platforms.ts";
 
 export interface Flag {
   name: string;
@@ -15,9 +16,10 @@ export interface CommandEntry {
   terminalOnly: string | null;
   longRunning: boolean;
   rules: number[];
-  platform: "facebook" | "any" | "byArgument";
+  platform: Platform | "any" | "byArgument";
   words: string;
   browser: "accountBrowser" | "camoufoxOnly" | "none";
+  engine: "directApiFirst" | "directApiOnly" | "browser" | "none";
   hooks: { cli: HookEvent[]; mcp: HookEvent[] };
 }
 

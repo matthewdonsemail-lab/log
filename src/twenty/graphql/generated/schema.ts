@@ -10312,6 +10312,10 @@ export interface SocialAccount {
     messengerPin?: Scalars['String']
     /** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
     accountStatus?: SocialAccountAccountStatusEnum
+    /** log-cli: the login state Facebook's own page gave the saved session on the last direct-API call (fbk's bootstrap: loggedIn, loggedOut, checkpoint, unknown, accountWarning). accountStatus stays the browser lifecycle */
+    sessionState?: Scalars['String']
+    /** log-cli: when sessionState was last read from Facebook by the direct-API engine */
+    sessionCheckedAt?: Scalars['DateTime']
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: TimelineActivityConnection
     /** SocialAccounts tied to the Task Target */
@@ -10946,6 +10950,30 @@ export interface SocialAccountConnection {
     percentageEmptyAccountStatus?: Scalars['Float']
     /** Percentage of non-empty values for accountStatus */
     percentageNotEmptyAccountStatus?: Scalars['Float']
+    /** Number of unique values for sessionState */
+    countUniqueValuesSessionState?: Scalars['Int']
+    /** Number of empty values for sessionState */
+    countEmptySessionState?: Scalars['Int']
+    /** Number of non-empty values for sessionState */
+    countNotEmptySessionState?: Scalars['Int']
+    /** Percentage of empty values for sessionState */
+    percentageEmptySessionState?: Scalars['Float']
+    /** Percentage of non-empty values for sessionState */
+    percentageNotEmptySessionState?: Scalars['Float']
+    /** Number of unique values for sessionCheckedAt */
+    countUniqueValuesSessionCheckedAt?: Scalars['Int']
+    /** Number of empty values for sessionCheckedAt */
+    countEmptySessionCheckedAt?: Scalars['Int']
+    /** Number of non-empty values for sessionCheckedAt */
+    countNotEmptySessionCheckedAt?: Scalars['Int']
+    /** Percentage of empty values for sessionCheckedAt */
+    percentageEmptySessionCheckedAt?: Scalars['Float']
+    /** Percentage of non-empty values for sessionCheckedAt */
+    percentageNotEmptySessionCheckedAt?: Scalars['Float']
+    /** Earliest date contained in the field sessionCheckedAt */
+    minSessionCheckedAt?: Scalars['DateTime']
+    /** Latest date contained in the field sessionCheckedAt */
+    maxSessionCheckedAt?: Scalars['DateTime']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     __typename: 'SocialAccountConnection'
@@ -11558,6 +11586,30 @@ export interface SocialAccountGroupByConnection {
     percentageEmptyAccountStatus?: Scalars['Float']
     /** Percentage of non-empty values for accountStatus */
     percentageNotEmptyAccountStatus?: Scalars['Float']
+    /** Number of unique values for sessionState */
+    countUniqueValuesSessionState?: Scalars['Int']
+    /** Number of empty values for sessionState */
+    countEmptySessionState?: Scalars['Int']
+    /** Number of non-empty values for sessionState */
+    countNotEmptySessionState?: Scalars['Int']
+    /** Percentage of empty values for sessionState */
+    percentageEmptySessionState?: Scalars['Float']
+    /** Percentage of non-empty values for sessionState */
+    percentageNotEmptySessionState?: Scalars['Float']
+    /** Number of unique values for sessionCheckedAt */
+    countUniqueValuesSessionCheckedAt?: Scalars['Int']
+    /** Number of empty values for sessionCheckedAt */
+    countEmptySessionCheckedAt?: Scalars['Int']
+    /** Number of non-empty values for sessionCheckedAt */
+    countNotEmptySessionCheckedAt?: Scalars['Int']
+    /** Percentage of empty values for sessionCheckedAt */
+    percentageEmptySessionCheckedAt?: Scalars['Float']
+    /** Percentage of non-empty values for sessionCheckedAt */
+    percentageNotEmptySessionCheckedAt?: Scalars['Float']
+    /** Earliest date contained in the field sessionCheckedAt */
+    minSessionCheckedAt?: Scalars['DateTime']
+    /** Latest date contained in the field sessionCheckedAt */
+    maxSessionCheckedAt?: Scalars['DateTime']
     edges: SocialAccountEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -26166,10 +26218,6 @@ export type AgencyProspectQualificationStatusEnum = 'QUALIFIED' | 'DISQUALIFIED'
 
 export type AgencyProspectUtmSourceEnum = 'OUTBOUND' | 'INBOUND' | 'BLENDED'
 
-
-/** Industry segment used to pick a template site */
-export type AgencyProspectLabelEnum = 'AUTO_PAINT_AND_BODY_SHOPS' | 'WINDOW_TINTING' | 'AUTO_DETAILING' | 'GENERAL_TRADES' | 'NURSERY_SCHOOL'
-
 export type AgencyProspectLeadSourceEnum = 'HIRING_SIGNAL' | 'LOVABLE_SITE' | 'WEAK_SITE' | 'REFERRAL' | 'MANUAL'
 
 export type AgencyProspectOfferEnum = 'MARKETING' | 'JOB_PLACEMENT' | 'BOTH'
@@ -26183,6 +26231,10 @@ export type AgencyProspectCompanySizeEnum = 'MICRO' | 'SMALL' | 'MID' | 'LARGE' 
 
 /** Call Now = 2+ sources agree, dial by name. Verify First = 1 source, confirm on the main line. US Importer = from our shipment data. Pennsylvania = found by the PA expansion. Warm Intro = ships with a company we know (named in the field note). Direct Phone = decision maker's own line. Verified Email = passed a deliverability check. Forwarder/3PL, Distributor, Manufacturer = business type. Full glossary: databrokering/gtm/docs/DATA_PLAY_TAGS.md */
 export type AgencyProspectDataPlayTagsEnum = 'CALL_NOW' | 'VERIFY_FIRST' | 'US_IMPORTER' | 'PENNSYLVANIA' | 'WARM_INTRO' | 'DIRECT_PHONE' | 'VERIFIED_EMAIL' | 'FORWARDER_3PL' | 'DISTRIBUTOR' | 'MANUFACTURER' | 'DIRECT_PHONE_LOCAL' | 'READY_TO_DIAL' | 'NEEDS_RESEARCH'
+
+
+/** Industry segment used to pick a template site */
+export type AgencyProspectLabelEnum = 'AUTO_PAINT_AND_BODY_SHOPS' | 'WINDOW_TINTING' | 'AUTO_DETAILING' | 'GENERAL_TRADES' | 'NURSERY_SCHOOL' | 'JUNK_REMOVAL'
 
 
 /** Local-service leads ingested for industry-labelled template sites */
@@ -26326,8 +26378,6 @@ export interface AgencyProspect {
     /** Link to prospect thread owner */
     messagesId?: Scalars['ID']
     utmSource?: AgencyProspectUtmSourceEnum
-    /** Industry segment used to pick a template site */
-    label: AgencyProspectLabelEnum
     createdByMemberId?: Scalars['String']
     notes?: Scalars['String']
     leadSource?: AgencyProspectLeadSourceEnum
@@ -26348,6 +26398,8 @@ export interface AgencyProspect {
     companySize?: AgencyProspectCompanySizeEnum
     /** Call Now = 2+ sources agree, dial by name. Verify First = 1 source, confirm on the main line. US Importer = from our shipment data. Pennsylvania = found by the PA expansion. Warm Intro = ships with a company we know (named in the field note). Direct Phone = decision maker's own line. Verified Email = passed a deliverability check. Forwarder/3PL, Distributor, Manufacturer = business type. Full glossary: databrokering/gtm/docs/DATA_PLAY_TAGS.md */
     dataPlayTags?: (AgencyProspectDataPlayTagsEnum | undefined)[]
+    /** Industry segment used to pick a template site */
+    label: AgencyProspectLabelEnum
     /** AgencyProspects tied to the Timeline Activity */
     timelineActivities?: TimelineActivityConnection
     /** AgencyProspects tied to the Attachment */
@@ -27135,16 +27187,6 @@ export interface AgencyProspectConnection {
     percentageEmptyUtmSource?: Scalars['Float']
     /** Percentage of non-empty values for utmSource */
     percentageNotEmptyUtmSource?: Scalars['Float']
-    /** Number of unique values for label */
-    countUniqueValuesLabel?: Scalars['Int']
-    /** Number of empty values for label */
-    countEmptyLabel?: Scalars['Int']
-    /** Number of non-empty values for label */
-    countNotEmptyLabel?: Scalars['Int']
-    /** Percentage of empty values for label */
-    percentageEmptyLabel?: Scalars['Float']
-    /** Percentage of non-empty values for label */
-    percentageNotEmptyLabel?: Scalars['Float']
     /** Number of unique values for createdByMemberId */
     countUniqueValuesCreatedByMemberId?: Scalars['Int']
     /** Number of empty values for createdByMemberId */
@@ -27295,6 +27337,16 @@ export interface AgencyProspectConnection {
     percentageEmptyDataPlayTags?: Scalars['Float']
     /** Percentage of non-empty values for dataPlayTags */
     percentageNotEmptyDataPlayTags?: Scalars['Float']
+    /** Number of unique values for label */
+    countUniqueValuesLabel?: Scalars['Int']
+    /** Number of empty values for label */
+    countEmptyLabel?: Scalars['Int']
+    /** Number of non-empty values for label */
+    countNotEmptyLabel?: Scalars['Int']
+    /** Percentage of empty values for label */
+    percentageEmptyLabel?: Scalars['Float']
+    /** Percentage of non-empty values for label */
+    percentageNotEmptyLabel?: Scalars['Float']
     edges: AgencyProspectEdge[]
     pageInfo: PageInfo
     __typename: 'AgencyProspectConnection'
@@ -28053,16 +28105,6 @@ export interface AgencyProspectGroupByConnection {
     percentageEmptyUtmSource?: Scalars['Float']
     /** Percentage of non-empty values for utmSource */
     percentageNotEmptyUtmSource?: Scalars['Float']
-    /** Number of unique values for label */
-    countUniqueValuesLabel?: Scalars['Int']
-    /** Number of empty values for label */
-    countEmptyLabel?: Scalars['Int']
-    /** Number of non-empty values for label */
-    countNotEmptyLabel?: Scalars['Int']
-    /** Percentage of empty values for label */
-    percentageEmptyLabel?: Scalars['Float']
-    /** Percentage of non-empty values for label */
-    percentageNotEmptyLabel?: Scalars['Float']
     /** Number of unique values for createdByMemberId */
     countUniqueValuesCreatedByMemberId?: Scalars['Int']
     /** Number of empty values for createdByMemberId */
@@ -28213,6 +28255,16 @@ export interface AgencyProspectGroupByConnection {
     percentageEmptyDataPlayTags?: Scalars['Float']
     /** Percentage of non-empty values for dataPlayTags */
     percentageNotEmptyDataPlayTags?: Scalars['Float']
+    /** Number of unique values for label */
+    countUniqueValuesLabel?: Scalars['Int']
+    /** Number of empty values for label */
+    countEmptyLabel?: Scalars['Int']
+    /** Number of non-empty values for label */
+    countNotEmptyLabel?: Scalars['Int']
+    /** Percentage of empty values for label */
+    percentageEmptyLabel?: Scalars['Float']
+    /** Percentage of non-empty values for label */
+    percentageNotEmptyLabel?: Scalars['Float']
     edges: AgencyProspectEdge[]
     pageInfo: PageInfo
     groupByDimensionValues: Scalars['JSON']
@@ -65357,6 +65409,10 @@ export interface SocialAccountGenqlSelection{
     messengerPin?: boolean | number
     /** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
     accountStatus?: boolean | number
+    /** log-cli: the login state Facebook's own page gave the saved session on the last direct-API call (fbk's bootstrap: loggedIn, loggedOut, checkpoint, unknown, accountWarning). accountStatus stays the browser lifecycle */
+    sessionState?: boolean | number
+    /** log-cli: when sessionState was last read from Facebook by the direct-API engine */
+    sessionCheckedAt?: boolean | number
     /** SocialAccounts tied to the Timeline Activity */
     timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
     /** SocialAccounts tied to the Task Target */
@@ -65993,6 +66049,30 @@ export interface SocialAccountConnectionGenqlSelection{
     percentageEmptyAccountStatus?: boolean | number
     /** Percentage of non-empty values for accountStatus */
     percentageNotEmptyAccountStatus?: boolean | number
+    /** Number of unique values for sessionState */
+    countUniqueValuesSessionState?: boolean | number
+    /** Number of empty values for sessionState */
+    countEmptySessionState?: boolean | number
+    /** Number of non-empty values for sessionState */
+    countNotEmptySessionState?: boolean | number
+    /** Percentage of empty values for sessionState */
+    percentageEmptySessionState?: boolean | number
+    /** Percentage of non-empty values for sessionState */
+    percentageNotEmptySessionState?: boolean | number
+    /** Number of unique values for sessionCheckedAt */
+    countUniqueValuesSessionCheckedAt?: boolean | number
+    /** Number of empty values for sessionCheckedAt */
+    countEmptySessionCheckedAt?: boolean | number
+    /** Number of non-empty values for sessionCheckedAt */
+    countNotEmptySessionCheckedAt?: boolean | number
+    /** Percentage of empty values for sessionCheckedAt */
+    percentageEmptySessionCheckedAt?: boolean | number
+    /** Percentage of non-empty values for sessionCheckedAt */
+    percentageNotEmptySessionCheckedAt?: boolean | number
+    /** Earliest date contained in the field sessionCheckedAt */
+    minSessionCheckedAt?: boolean | number
+    /** Latest date contained in the field sessionCheckedAt */
+    maxSessionCheckedAt?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -66606,6 +66686,30 @@ export interface SocialAccountGroupByConnectionGenqlSelection{
     percentageEmptyAccountStatus?: boolean | number
     /** Percentage of non-empty values for accountStatus */
     percentageNotEmptyAccountStatus?: boolean | number
+    /** Number of unique values for sessionState */
+    countUniqueValuesSessionState?: boolean | number
+    /** Number of empty values for sessionState */
+    countEmptySessionState?: boolean | number
+    /** Number of non-empty values for sessionState */
+    countNotEmptySessionState?: boolean | number
+    /** Percentage of empty values for sessionState */
+    percentageEmptySessionState?: boolean | number
+    /** Percentage of non-empty values for sessionState */
+    percentageNotEmptySessionState?: boolean | number
+    /** Number of unique values for sessionCheckedAt */
+    countUniqueValuesSessionCheckedAt?: boolean | number
+    /** Number of empty values for sessionCheckedAt */
+    countEmptySessionCheckedAt?: boolean | number
+    /** Number of non-empty values for sessionCheckedAt */
+    countNotEmptySessionCheckedAt?: boolean | number
+    /** Percentage of empty values for sessionCheckedAt */
+    percentageEmptySessionCheckedAt?: boolean | number
+    /** Percentage of non-empty values for sessionCheckedAt */
+    percentageNotEmptySessionCheckedAt?: boolean | number
+    /** Earliest date contained in the field sessionCheckedAt */
+    minSessionCheckedAt?: boolean | number
+    /** Latest date contained in the field sessionCheckedAt */
+    maxSessionCheckedAt?: boolean | number
     edges?: SocialAccountEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -66721,7 +66825,11 @@ browserDriver?: (Scalars['String'] | null),
 /** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
 messengerPin?: (Scalars['String'] | null),
 /** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
-accountStatus?: (SocialAccountAccountStatusEnum | null)}
+accountStatus?: (SocialAccountAccountStatusEnum | null),
+/** log-cli: the login state Facebook's own page gave the saved session on the last direct-API call (fbk's bootstrap: loggedIn, loggedOut, checkpoint, unknown, accountWarning). accountStatus stays the browser lifecycle */
+sessionState?: (Scalars['String'] | null),
+/** log-cli: when sessionState was last read from Facebook by the direct-API engine */
+sessionCheckedAt?: (Scalars['DateTime'] | null)}
 
 
 /** Social media accounts */
@@ -66815,7 +66923,11 @@ browserDriver?: (Scalars['String'] | null),
 /** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
 messengerPin?: (Scalars['String'] | null),
 /** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
-accountStatus?: (SocialAccountAccountStatusEnum | null)}
+accountStatus?: (SocialAccountAccountStatusEnum | null),
+/** log-cli: the login state Facebook's own page gave the saved session on the last direct-API call (fbk's bootstrap: loggedIn, loggedOut, checkpoint, unknown, accountWarning). accountStatus stays the browser lifecycle */
+sessionState?: (Scalars['String'] | null),
+/** log-cli: when sessionState was last read from Facebook by the direct-API engine */
+sessionCheckedAt?: (Scalars['DateTime'] | null)}
 
 
 /** Social media accounts */
@@ -66909,7 +67021,11 @@ browserDriver?: (StringFilter | null),
 /** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
 messengerPin?: (StringFilter | null),
 /** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
-accountStatus?: (SocialAccountAccountStatusEnumFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
+accountStatus?: (SocialAccountAccountStatusEnumFilter | null),
+/** log-cli: the login state Facebook's own page gave the saved session on the last direct-API call (fbk's bootstrap: loggedIn, loggedOut, checkpoint, unknown, accountWarning). accountStatus stays the browser lifecycle */
+sessionState?: (StringFilter | null),
+/** log-cli: when sessionState was last read from Facebook by the direct-API engine */
+sessionCheckedAt?: (DateTimeFilter | null),and?: ((SocialAccountFilterInput | null)[] | null),or?: ((SocialAccountFilterInput | null)[] | null),not?: (SocialAccountFilterInput | null)}
 
 export interface SocialAccountPlatformEnumFilter {eq?: (SocialAccountPlatformEnum | null),neq?: (SocialAccountPlatformEnum | null),in?: ((SocialAccountPlatformEnum | null)[] | null),containsAny?: ((SocialAccountPlatformEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (SocialAccountPlatformEnum | null),gte?: (SocialAccountPlatformEnum | null),lt?: (SocialAccountPlatformEnum | null),lte?: (SocialAccountPlatformEnum | null)}
 
@@ -67007,7 +67123,11 @@ browserDriver?: (OrderByDirection | null),
 /** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
 messengerPin?: (OrderByDirection | null),
 /** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
-accountStatus?: (OrderByDirection | null)}
+accountStatus?: (OrderByDirection | null),
+/** log-cli: the login state Facebook's own page gave the saved session on the last direct-API call (fbk's bootstrap: loggedIn, loggedOut, checkpoint, unknown, accountWarning). accountStatus stays the browser lifecycle */
+sessionState?: (OrderByDirection | null),
+/** log-cli: when sessionState was last read from Facebook by the direct-API engine */
+sessionCheckedAt?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
@@ -67103,7 +67223,11 @@ browserDriver?: (OrderByDirection | null),
 /** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
 messengerPin?: (OrderByDirection | null),
 /** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
-accountStatus?: (OrderByDirection | null)}
+accountStatus?: (OrderByDirection | null),
+/** log-cli: the login state Facebook's own page gave the saved session on the last direct-API call (fbk's bootstrap: loggedIn, loggedOut, checkpoint, unknown, accountWarning). accountStatus stays the browser lifecycle */
+sessionState?: (OrderByDirection | null),
+/** log-cli: when sessionState was last read from Facebook by the direct-API engine */
+sessionCheckedAt?: (OrderByDateGranularityInput | null)}
 
 
 /** Aggregate-based ordering */
@@ -67711,7 +67835,31 @@ countNotEmptyAccountStatus?: (OrderByDirection | null),
 /** Percentage of empty values for accountStatus */
 percentageEmptyAccountStatus?: (OrderByDirection | null),
 /** Percentage of non-empty values for accountStatus */
-percentageNotEmptyAccountStatus?: (OrderByDirection | null)}
+percentageNotEmptyAccountStatus?: (OrderByDirection | null),
+/** Number of unique values for sessionState */
+countUniqueValuesSessionState?: (OrderByDirection | null),
+/** Number of empty values for sessionState */
+countEmptySessionState?: (OrderByDirection | null),
+/** Number of non-empty values for sessionState */
+countNotEmptySessionState?: (OrderByDirection | null),
+/** Percentage of empty values for sessionState */
+percentageEmptySessionState?: (OrderByDirection | null),
+/** Percentage of non-empty values for sessionState */
+percentageNotEmptySessionState?: (OrderByDirection | null),
+/** Number of unique values for sessionCheckedAt */
+countUniqueValuesSessionCheckedAt?: (OrderByDirection | null),
+/** Number of empty values for sessionCheckedAt */
+countEmptySessionCheckedAt?: (OrderByDirection | null),
+/** Number of non-empty values for sessionCheckedAt */
+countNotEmptySessionCheckedAt?: (OrderByDirection | null),
+/** Percentage of empty values for sessionCheckedAt */
+percentageEmptySessionCheckedAt?: (OrderByDirection | null),
+/** Percentage of non-empty values for sessionCheckedAt */
+percentageNotEmptySessionCheckedAt?: (OrderByDirection | null),
+/** Earliest date contained in the field sessionCheckedAt */
+minSessionCheckedAt?: (OrderByDirection | null),
+/** Latest date contained in the field sessionCheckedAt */
+maxSessionCheckedAt?: (OrderByDirection | null)}
 
 
 /** Social media accounts */
@@ -67787,7 +67935,11 @@ browserDriver?: (Scalars['Boolean'] | null),
 /** log-cli: the 6-digit PIN for the account's encrypted chats (Messenger's Create a PIN), set by matt with log facebook messenger pin (a Clack prompt). A credential: never print it */
 messengerPin?: (Scalars['Boolean'] | null),
 /** log-cli: usable are ACTIVE and WARMING. BANNED and DEAD are terminal and never cleared. Rows are never deleted */
-accountStatus?: (Scalars['Boolean'] | null)}
+accountStatus?: (Scalars['Boolean'] | null),
+/** log-cli: the login state Facebook's own page gave the saved session on the last direct-API call (fbk's bootstrap: loggedIn, loggedOut, checkpoint, unknown, accountWarning). accountStatus stays the browser lifecycle */
+sessionState?: (Scalars['Boolean'] | null),
+/** log-cli: when sessionState was last read from Facebook by the direct-API engine */
+sessionCheckedAt?: (GroupByDateGranularityInput | null)}
 
 
 /** Calendar events */
@@ -96651,8 +96803,6 @@ export interface AgencyProspectGenqlSelection{
     /** Link to prospect thread owner */
     messagesId?: boolean | number
     utmSource?: boolean | number
-    /** Industry segment used to pick a template site */
-    label?: boolean | number
     createdByMemberId?: boolean | number
     notes?: boolean | number
     leadSource?: boolean | number
@@ -96673,6 +96823,8 @@ export interface AgencyProspectGenqlSelection{
     companySize?: boolean | number
     /** Call Now = 2+ sources agree, dial by name. Verify First = 1 source, confirm on the main line. US Importer = from our shipment data. Pennsylvania = found by the PA expansion. Warm Intro = ships with a company we know (named in the field note). Direct Phone = decision maker's own line. Verified Email = passed a deliverability check. Forwarder/3PL, Distributor, Manufacturer = business type. Full glossary: databrokering/gtm/docs/DATA_PLAY_TAGS.md */
     dataPlayTags?: boolean | number
+    /** Industry segment used to pick a template site */
+    label?: boolean | number
     /** AgencyProspects tied to the Timeline Activity */
     timelineActivities?: (TimelineActivityConnectionGenqlSelection & { __args?: {first?: (Scalars['Int'] | null), last?: (Scalars['Int'] | null), offset?: (Scalars['Int'] | null), before?: (Scalars['String'] | null), after?: (Scalars['String'] | null), filter?: (TimelineActivityFilterInput | null), orderBy?: ((TimelineActivityOrderByInput | null)[] | null)} })
     /** AgencyProspects tied to the Attachment */
@@ -97462,16 +97614,6 @@ export interface AgencyProspectConnectionGenqlSelection{
     percentageEmptyUtmSource?: boolean | number
     /** Percentage of non-empty values for utmSource */
     percentageNotEmptyUtmSource?: boolean | number
-    /** Number of unique values for label */
-    countUniqueValuesLabel?: boolean | number
-    /** Number of empty values for label */
-    countEmptyLabel?: boolean | number
-    /** Number of non-empty values for label */
-    countNotEmptyLabel?: boolean | number
-    /** Percentage of empty values for label */
-    percentageEmptyLabel?: boolean | number
-    /** Percentage of non-empty values for label */
-    percentageNotEmptyLabel?: boolean | number
     /** Number of unique values for createdByMemberId */
     countUniqueValuesCreatedByMemberId?: boolean | number
     /** Number of empty values for createdByMemberId */
@@ -97622,6 +97764,16 @@ export interface AgencyProspectConnectionGenqlSelection{
     percentageEmptyDataPlayTags?: boolean | number
     /** Percentage of non-empty values for dataPlayTags */
     percentageNotEmptyDataPlayTags?: boolean | number
+    /** Number of unique values for label */
+    countUniqueValuesLabel?: boolean | number
+    /** Number of empty values for label */
+    countEmptyLabel?: boolean | number
+    /** Number of non-empty values for label */
+    countNotEmptyLabel?: boolean | number
+    /** Percentage of empty values for label */
+    percentageEmptyLabel?: boolean | number
+    /** Percentage of non-empty values for label */
+    percentageNotEmptyLabel?: boolean | number
     edges?: AgencyProspectEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     __typename?: boolean | number
@@ -98381,16 +98533,6 @@ export interface AgencyProspectGroupByConnectionGenqlSelection{
     percentageEmptyUtmSource?: boolean | number
     /** Percentage of non-empty values for utmSource */
     percentageNotEmptyUtmSource?: boolean | number
-    /** Number of unique values for label */
-    countUniqueValuesLabel?: boolean | number
-    /** Number of empty values for label */
-    countEmptyLabel?: boolean | number
-    /** Number of non-empty values for label */
-    countNotEmptyLabel?: boolean | number
-    /** Percentage of empty values for label */
-    percentageEmptyLabel?: boolean | number
-    /** Percentage of non-empty values for label */
-    percentageNotEmptyLabel?: boolean | number
     /** Number of unique values for createdByMemberId */
     countUniqueValuesCreatedByMemberId?: boolean | number
     /** Number of empty values for createdByMemberId */
@@ -98541,6 +98683,16 @@ export interface AgencyProspectGroupByConnectionGenqlSelection{
     percentageEmptyDataPlayTags?: boolean | number
     /** Percentage of non-empty values for dataPlayTags */
     percentageNotEmptyDataPlayTags?: boolean | number
+    /** Number of unique values for label */
+    countUniqueValuesLabel?: boolean | number
+    /** Number of empty values for label */
+    countEmptyLabel?: boolean | number
+    /** Number of non-empty values for label */
+    countNotEmptyLabel?: boolean | number
+    /** Percentage of empty values for label */
+    percentageEmptyLabel?: boolean | number
+    /** Percentage of non-empty values for label */
+    percentageNotEmptyLabel?: boolean | number
     edges?: AgencyProspectEdgeGenqlSelection
     pageInfo?: PageInfoGenqlSelection
     groupByDimensionValues?: boolean | number
@@ -98714,9 +98866,7 @@ serviceArea?: (Scalars['JSON'] | null),
 /** Link to prospect thread owner */
 messagesId?: (Scalars['ID'] | null),
 /** Link to prospect thread owner */
-messages?: (AgencyMessageRelationInput | null),utmSource?: (AgencyProspectUtmSourceEnum | null),
-/** Industry segment used to pick a template site */
-label?: (AgencyProspectLabelEnum | null),createdByMemberId?: (Scalars['String'] | null),notes?: (Scalars['String'] | null),leadSource?: (AgencyProspectLeadSourceEnum | null),offer?: (AgencyProspectOfferEnum | null),hiringRole?: (Scalars['String'] | null),jobPostUrl?: (LinksCreateInput | null),decisionMaker?: (Scalars['String'] | null),decisionMakerTitle?: (Scalars['String'] | null),decisionMakerPhone?: (PhonesCreateInput | null),callOpener?: (Scalars['String'] | null),submittedBy?: (Scalars['String'] | null),
+messages?: (AgencyMessageRelationInput | null),utmSource?: (AgencyProspectUtmSourceEnum | null),createdByMemberId?: (Scalars['String'] | null),notes?: (Scalars['String'] | null),leadSource?: (AgencyProspectLeadSourceEnum | null),offer?: (AgencyProspectOfferEnum | null),hiringRole?: (Scalars['String'] | null),jobPostUrl?: (LinksCreateInput | null),decisionMaker?: (Scalars['String'] | null),decisionMakerTitle?: (Scalars['String'] | null),decisionMakerPhone?: (PhonesCreateInput | null),callOpener?: (Scalars['String'] | null),submittedBy?: (Scalars['String'] | null),
 /** AgencyProspects tied to the Workspace Member */
 assignedToId?: (Scalars['ID'] | null),
 /** AgencyProspects tied to the Workspace Member */
@@ -98726,7 +98876,9 @@ assignedById?: (Scalars['ID'] | null),
 /** AgencyProspects tied to the Workspace Member */
 assignedBy?: (WorkspaceMemberRelationInput | null),ownershipType?: (AgencyProspectOwnershipTypeEnum | null),decisionPath?: (AgencyProspectDecisionPathEnum | null),companySize?: (AgencyProspectCompanySizeEnum | null),
 /** Call Now = 2+ sources agree, dial by name. Verify First = 1 source, confirm on the main line. US Importer = from our shipment data. Pennsylvania = found by the PA expansion. Warm Intro = ships with a company we know (named in the field note). Direct Phone = decision maker's own line. Verified Email = passed a deliverability check. Forwarder/3PL, Distributor, Manufacturer = business type. Full glossary: databrokering/gtm/docs/DATA_PLAY_TAGS.md */
-dataPlayTags?: ((AgencyProspectDataPlayTagsEnum | null)[] | null)}
+dataPlayTags?: ((AgencyProspectDataPlayTagsEnum | null)[] | null),
+/** Industry segment used to pick a template site */
+label?: (AgencyProspectLabelEnum | null)}
 
 
 /** Local-service leads ingested for industry-labelled template sites */
@@ -98872,9 +99024,7 @@ serviceArea?: (Scalars['JSON'] | null),
 /** Link to prospect thread owner */
 messagesId?: (Scalars['ID'] | null),
 /** Link to prospect thread owner */
-messages?: (AgencyMessageRelationInput | null),utmSource?: (AgencyProspectUtmSourceEnum | null),
-/** Industry segment used to pick a template site */
-label?: (AgencyProspectLabelEnum | null),createdByMemberId?: (Scalars['String'] | null),notes?: (Scalars['String'] | null),leadSource?: (AgencyProspectLeadSourceEnum | null),offer?: (AgencyProspectOfferEnum | null),hiringRole?: (Scalars['String'] | null),jobPostUrl?: (LinksUpdateInput | null),decisionMaker?: (Scalars['String'] | null),decisionMakerTitle?: (Scalars['String'] | null),decisionMakerPhone?: (PhonesUpdateInput | null),callOpener?: (Scalars['String'] | null),submittedBy?: (Scalars['String'] | null),
+messages?: (AgencyMessageRelationInput | null),utmSource?: (AgencyProspectUtmSourceEnum | null),createdByMemberId?: (Scalars['String'] | null),notes?: (Scalars['String'] | null),leadSource?: (AgencyProspectLeadSourceEnum | null),offer?: (AgencyProspectOfferEnum | null),hiringRole?: (Scalars['String'] | null),jobPostUrl?: (LinksUpdateInput | null),decisionMaker?: (Scalars['String'] | null),decisionMakerTitle?: (Scalars['String'] | null),decisionMakerPhone?: (PhonesUpdateInput | null),callOpener?: (Scalars['String'] | null),submittedBy?: (Scalars['String'] | null),
 /** AgencyProspects tied to the Workspace Member */
 assignedToId?: (Scalars['ID'] | null),
 /** AgencyProspects tied to the Workspace Member */
@@ -98884,7 +99034,9 @@ assignedById?: (Scalars['ID'] | null),
 /** AgencyProspects tied to the Workspace Member */
 assignedBy?: (WorkspaceMemberRelationInput | null),ownershipType?: (AgencyProspectOwnershipTypeEnum | null),decisionPath?: (AgencyProspectDecisionPathEnum | null),companySize?: (AgencyProspectCompanySizeEnum | null),
 /** Call Now = 2+ sources agree, dial by name. Verify First = 1 source, confirm on the main line. US Importer = from our shipment data. Pennsylvania = found by the PA expansion. Warm Intro = ships with a company we know (named in the field note). Direct Phone = decision maker's own line. Verified Email = passed a deliverability check. Forwarder/3PL, Distributor, Manufacturer = business type. Full glossary: databrokering/gtm/docs/DATA_PLAY_TAGS.md */
-dataPlayTags?: ((AgencyProspectDataPlayTagsEnum | null)[] | null)}
+dataPlayTags?: ((AgencyProspectDataPlayTagsEnum | null)[] | null),
+/** Industry segment used to pick a template site */
+label?: (AgencyProspectLabelEnum | null)}
 
 
 /** Local-service leads ingested for industry-labelled template sites */
@@ -99030,9 +99182,7 @@ serviceArea?: (RawJsonFilter | null),
 /** Link to prospect thread owner */
 messagesId?: (UUIDFilter | null),
 /** Filter on fields of the related agencyMessage */
-messages?: (AgencyMessageFilterInput | null),utmSource?: (AgencyProspectUtmSourceEnumFilter | null),
-/** Industry segment used to pick a template site */
-label?: (AgencyProspectLabelEnumFilter | null),createdByMemberId?: (StringFilter | null),notes?: (StringFilter | null),leadSource?: (AgencyProspectLeadSourceEnumFilter | null),offer?: (AgencyProspectOfferEnumFilter | null),hiringRole?: (StringFilter | null),jobPostUrl?: (LinksFilterInput | null),decisionMaker?: (StringFilter | null),decisionMakerTitle?: (StringFilter | null),decisionMakerPhone?: (PhonesFilterInput | null),callOpener?: (StringFilter | null),submittedBy?: (StringFilter | null),
+messages?: (AgencyMessageFilterInput | null),utmSource?: (AgencyProspectUtmSourceEnumFilter | null),createdByMemberId?: (StringFilter | null),notes?: (StringFilter | null),leadSource?: (AgencyProspectLeadSourceEnumFilter | null),offer?: (AgencyProspectOfferEnumFilter | null),hiringRole?: (StringFilter | null),jobPostUrl?: (LinksFilterInput | null),decisionMaker?: (StringFilter | null),decisionMakerTitle?: (StringFilter | null),decisionMakerPhone?: (PhonesFilterInput | null),callOpener?: (StringFilter | null),submittedBy?: (StringFilter | null),
 /** AgencyProspects tied to the Workspace Member */
 assignedToId?: (UUIDFilter | null),
 /** Filter on fields of the related workspaceMember */
@@ -99042,7 +99192,9 @@ assignedById?: (UUIDFilter | null),
 /** Filter on fields of the related workspaceMember */
 assignedBy?: (WorkspaceMemberFilterInput | null),ownershipType?: (AgencyProspectOwnershipTypeEnumFilter | null),decisionPath?: (AgencyProspectDecisionPathEnumFilter | null),companySize?: (AgencyProspectCompanySizeEnumFilter | null),
 /** Call Now = 2+ sources agree, dial by name. Verify First = 1 source, confirm on the main line. US Importer = from our shipment data. Pennsylvania = found by the PA expansion. Warm Intro = ships with a company we know (named in the field note). Direct Phone = decision maker's own line. Verified Email = passed a deliverability check. Forwarder/3PL, Distributor, Manufacturer = business type. Full glossary: databrokering/gtm/docs/DATA_PLAY_TAGS.md */
-dataPlayTags?: (AgencyProspectDataPlayTagsEnumFilter | null),and?: ((AgencyProspectFilterInput | null)[] | null),or?: ((AgencyProspectFilterInput | null)[] | null),not?: (AgencyProspectFilterInput | null)}
+dataPlayTags?: (AgencyProspectDataPlayTagsEnumFilter | null),
+/** Industry segment used to pick a template site */
+label?: (AgencyProspectLabelEnumFilter | null),and?: ((AgencyProspectFilterInput | null)[] | null),or?: ((AgencyProspectFilterInput | null)[] | null),not?: (AgencyProspectFilterInput | null)}
 
 export interface AgencyProspectEnrichmentStatusEnumFilter {eq?: (AgencyProspectEnrichmentStatusEnum | null),neq?: (AgencyProspectEnrichmentStatusEnum | null),in?: ((AgencyProspectEnrichmentStatusEnum | null)[] | null),containsAny?: ((AgencyProspectEnrichmentStatusEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AgencyProspectEnrichmentStatusEnum | null),gte?: (AgencyProspectEnrichmentStatusEnum | null),lt?: (AgencyProspectEnrichmentStatusEnum | null),lte?: (AgencyProspectEnrichmentStatusEnum | null)}
 
@@ -99060,8 +99212,6 @@ export interface AgencyProspectQualificationStatusEnumFilter {eq?: (AgencyProspe
 
 export interface AgencyProspectUtmSourceEnumFilter {eq?: (AgencyProspectUtmSourceEnum | null),neq?: (AgencyProspectUtmSourceEnum | null),in?: ((AgencyProspectUtmSourceEnum | null)[] | null),containsAny?: ((AgencyProspectUtmSourceEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AgencyProspectUtmSourceEnum | null),gte?: (AgencyProspectUtmSourceEnum | null),lt?: (AgencyProspectUtmSourceEnum | null),lte?: (AgencyProspectUtmSourceEnum | null)}
 
-export interface AgencyProspectLabelEnumFilter {eq?: (AgencyProspectLabelEnum | null),neq?: (AgencyProspectLabelEnum | null),in?: ((AgencyProspectLabelEnum | null)[] | null),containsAny?: ((AgencyProspectLabelEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AgencyProspectLabelEnum | null),gte?: (AgencyProspectLabelEnum | null),lt?: (AgencyProspectLabelEnum | null),lte?: (AgencyProspectLabelEnum | null)}
-
 export interface AgencyProspectLeadSourceEnumFilter {eq?: (AgencyProspectLeadSourceEnum | null),neq?: (AgencyProspectLeadSourceEnum | null),in?: ((AgencyProspectLeadSourceEnum | null)[] | null),containsAny?: ((AgencyProspectLeadSourceEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AgencyProspectLeadSourceEnum | null),gte?: (AgencyProspectLeadSourceEnum | null),lt?: (AgencyProspectLeadSourceEnum | null),lte?: (AgencyProspectLeadSourceEnum | null)}
 
 export interface AgencyProspectOfferEnumFilter {eq?: (AgencyProspectOfferEnum | null),neq?: (AgencyProspectOfferEnum | null),in?: ((AgencyProspectOfferEnum | null)[] | null),containsAny?: ((AgencyProspectOfferEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AgencyProspectOfferEnum | null),gte?: (AgencyProspectOfferEnum | null),lt?: (AgencyProspectOfferEnum | null),lte?: (AgencyProspectOfferEnum | null)}
@@ -99073,6 +99223,8 @@ export interface AgencyProspectDecisionPathEnumFilter {eq?: (AgencyProspectDecis
 export interface AgencyProspectCompanySizeEnumFilter {eq?: (AgencyProspectCompanySizeEnum | null),neq?: (AgencyProspectCompanySizeEnum | null),in?: ((AgencyProspectCompanySizeEnum | null)[] | null),containsAny?: ((AgencyProspectCompanySizeEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AgencyProspectCompanySizeEnum | null),gte?: (AgencyProspectCompanySizeEnum | null),lt?: (AgencyProspectCompanySizeEnum | null),lte?: (AgencyProspectCompanySizeEnum | null)}
 
 export interface AgencyProspectDataPlayTagsEnumFilter {eq?: (AgencyProspectDataPlayTagsEnum | null),neq?: (AgencyProspectDataPlayTagsEnum | null),in?: ((AgencyProspectDataPlayTagsEnum | null)[] | null),containsAny?: ((AgencyProspectDataPlayTagsEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AgencyProspectDataPlayTagsEnum | null),gte?: (AgencyProspectDataPlayTagsEnum | null),lt?: (AgencyProspectDataPlayTagsEnum | null),lte?: (AgencyProspectDataPlayTagsEnum | null)}
+
+export interface AgencyProspectLabelEnumFilter {eq?: (AgencyProspectLabelEnum | null),neq?: (AgencyProspectLabelEnum | null),in?: ((AgencyProspectLabelEnum | null)[] | null),containsAny?: ((AgencyProspectLabelEnum | null)[] | null),is?: (FilterIs | null),isEmptyArray?: (Scalars['Boolean'] | null),gt?: (AgencyProspectLabelEnum | null),gte?: (AgencyProspectLabelEnum | null),lt?: (AgencyProspectLabelEnum | null),lte?: (AgencyProspectLabelEnum | null)}
 
 
 /** Local-service leads ingested for industry-labelled template sites */
@@ -99218,9 +99370,7 @@ serviceArea?: (OrderByDirection | null),
 /** Link to prospect thread owner */
 messagesId?: (OrderByDirection | null),
 /** Order by fields of the related agencyMessage */
-messages?: (AgencyMessageOrderByInput | null),utmSource?: (OrderByDirection | null),
-/** Industry segment used to pick a template site */
-label?: (OrderByDirection | null),createdByMemberId?: (OrderByDirection | null),notes?: (OrderByDirection | null),leadSource?: (OrderByDirection | null),offer?: (OrderByDirection | null),hiringRole?: (OrderByDirection | null),jobPostUrl?: (LinksOrderByInput | null),decisionMaker?: (OrderByDirection | null),decisionMakerTitle?: (OrderByDirection | null),decisionMakerPhone?: (PhonesOrderByInput | null),callOpener?: (OrderByDirection | null),submittedBy?: (OrderByDirection | null),
+messages?: (AgencyMessageOrderByInput | null),utmSource?: (OrderByDirection | null),createdByMemberId?: (OrderByDirection | null),notes?: (OrderByDirection | null),leadSource?: (OrderByDirection | null),offer?: (OrderByDirection | null),hiringRole?: (OrderByDirection | null),jobPostUrl?: (LinksOrderByInput | null),decisionMaker?: (OrderByDirection | null),decisionMakerTitle?: (OrderByDirection | null),decisionMakerPhone?: (PhonesOrderByInput | null),callOpener?: (OrderByDirection | null),submittedBy?: (OrderByDirection | null),
 /** AgencyProspects tied to the Workspace Member */
 assignedToId?: (OrderByDirection | null),
 /** Order by fields of the related workspaceMember */
@@ -99230,7 +99380,9 @@ assignedById?: (OrderByDirection | null),
 /** Order by fields of the related workspaceMember */
 assignedBy?: (WorkspaceMemberOrderByInput | null),ownershipType?: (OrderByDirection | null),decisionPath?: (OrderByDirection | null),companySize?: (OrderByDirection | null),
 /** Call Now = 2+ sources agree, dial by name. Verify First = 1 source, confirm on the main line. US Importer = from our shipment data. Pennsylvania = found by the PA expansion. Warm Intro = ships with a company we know (named in the field note). Direct Phone = decision maker's own line. Verified Email = passed a deliverability check. Forwarder/3PL, Distributor, Manufacturer = business type. Full glossary: databrokering/gtm/docs/DATA_PLAY_TAGS.md */
-dataPlayTags?: (OrderByDirection | null)}
+dataPlayTags?: (OrderByDirection | null),
+/** Industry segment used to pick a template site */
+label?: (OrderByDirection | null)}
 
 
 /** Local-service leads ingested for industry-labelled template sites */
@@ -99378,9 +99530,7 @@ serviceArea?: (OrderByDirection | null),
 /** Link to prospect thread owner */
 messagesId?: (OrderByDirection | null),
 /** Order by fields of the related agencyMessage */
-messages?: (AgencyMessageOrderByWithGroupByInput | null),utmSource?: (OrderByDirection | null),
-/** Industry segment used to pick a template site */
-label?: (OrderByDirection | null),createdByMemberId?: (OrderByDirection | null),notes?: (OrderByDirection | null),leadSource?: (OrderByDirection | null),offer?: (OrderByDirection | null),hiringRole?: (OrderByDirection | null),jobPostUrl?: (LinksOrderByInput | null),decisionMaker?: (OrderByDirection | null),decisionMakerTitle?: (OrderByDirection | null),decisionMakerPhone?: (PhonesOrderByInput | null),callOpener?: (OrderByDirection | null),submittedBy?: (OrderByDirection | null),
+messages?: (AgencyMessageOrderByWithGroupByInput | null),utmSource?: (OrderByDirection | null),createdByMemberId?: (OrderByDirection | null),notes?: (OrderByDirection | null),leadSource?: (OrderByDirection | null),offer?: (OrderByDirection | null),hiringRole?: (OrderByDirection | null),jobPostUrl?: (LinksOrderByInput | null),decisionMaker?: (OrderByDirection | null),decisionMakerTitle?: (OrderByDirection | null),decisionMakerPhone?: (PhonesOrderByInput | null),callOpener?: (OrderByDirection | null),submittedBy?: (OrderByDirection | null),
 /** AgencyProspects tied to the Workspace Member */
 assignedToId?: (OrderByDirection | null),
 /** Order by fields of the related workspaceMember */
@@ -99390,7 +99540,9 @@ assignedById?: (OrderByDirection | null),
 /** Order by fields of the related workspaceMember */
 assignedBy?: (WorkspaceMemberOrderByWithGroupByInput | null),ownershipType?: (OrderByDirection | null),decisionPath?: (OrderByDirection | null),companySize?: (OrderByDirection | null),
 /** Call Now = 2+ sources agree, dial by name. Verify First = 1 source, confirm on the main line. US Importer = from our shipment data. Pennsylvania = found by the PA expansion. Warm Intro = ships with a company we know (named in the field note). Direct Phone = decision maker's own line. Verified Email = passed a deliverability check. Forwarder/3PL, Distributor, Manufacturer = business type. Full glossary: databrokering/gtm/docs/DATA_PLAY_TAGS.md */
-dataPlayTags?: (OrderByDirection | null)}
+dataPlayTags?: (OrderByDirection | null),
+/** Industry segment used to pick a template site */
+label?: (OrderByDirection | null)}
 
 
 /** Aggregate-based ordering */
@@ -100153,16 +100305,6 @@ countNotEmptyUtmSource?: (OrderByDirection | null),
 percentageEmptyUtmSource?: (OrderByDirection | null),
 /** Percentage of non-empty values for utmSource */
 percentageNotEmptyUtmSource?: (OrderByDirection | null),
-/** Number of unique values for label */
-countUniqueValuesLabel?: (OrderByDirection | null),
-/** Number of empty values for label */
-countEmptyLabel?: (OrderByDirection | null),
-/** Number of non-empty values for label */
-countNotEmptyLabel?: (OrderByDirection | null),
-/** Percentage of empty values for label */
-percentageEmptyLabel?: (OrderByDirection | null),
-/** Percentage of non-empty values for label */
-percentageNotEmptyLabel?: (OrderByDirection | null),
 /** Number of unique values for createdByMemberId */
 countUniqueValuesCreatedByMemberId?: (OrderByDirection | null),
 /** Number of empty values for createdByMemberId */
@@ -100320,7 +100462,17 @@ countNotEmptyDataPlayTags?: (OrderByDirection | null),
 /** Percentage of empty values for dataPlayTags */
 percentageEmptyDataPlayTags?: (OrderByDirection | null),
 /** Percentage of non-empty values for dataPlayTags */
-percentageNotEmptyDataPlayTags?: (OrderByDirection | null)}
+percentageNotEmptyDataPlayTags?: (OrderByDirection | null),
+/** Number of unique values for label */
+countUniqueValuesLabel?: (OrderByDirection | null),
+/** Number of empty values for label */
+countEmptyLabel?: (OrderByDirection | null),
+/** Number of non-empty values for label */
+countNotEmptyLabel?: (OrderByDirection | null),
+/** Percentage of empty values for label */
+percentageEmptyLabel?: (OrderByDirection | null),
+/** Percentage of non-empty values for label */
+percentageNotEmptyLabel?: (OrderByDirection | null)}
 
 
 /** Local-service leads ingested for industry-labelled template sites */
@@ -100442,15 +100594,15 @@ qualificationStatus?: (Scalars['Boolean'] | null),
 /** Quiz currency symbol for this prospect (e.g. €). Set at enrichment, never guessed at render. */
 quizCurrency?: (Scalars['Boolean'] | null),
 /** Group by fields of the related agencyMessage */
-messages?: (AgencyMessageGroupByInput | null),utmSource?: (Scalars['Boolean'] | null),
-/** Industry segment used to pick a template site */
-label?: (Scalars['Boolean'] | null),createdByMemberId?: (Scalars['Boolean'] | null),notes?: (Scalars['Boolean'] | null),leadSource?: (Scalars['Boolean'] | null),offer?: (Scalars['Boolean'] | null),hiringRole?: (Scalars['Boolean'] | null),jobPostUrl?: (LinksGroupByInput | null),decisionMaker?: (Scalars['Boolean'] | null),decisionMakerTitle?: (Scalars['Boolean'] | null),decisionMakerPhone?: (PhonesGroupByInput | null),callOpener?: (Scalars['Boolean'] | null),submittedBy?: (Scalars['Boolean'] | null),
+messages?: (AgencyMessageGroupByInput | null),utmSource?: (Scalars['Boolean'] | null),createdByMemberId?: (Scalars['Boolean'] | null),notes?: (Scalars['Boolean'] | null),leadSource?: (Scalars['Boolean'] | null),offer?: (Scalars['Boolean'] | null),hiringRole?: (Scalars['Boolean'] | null),jobPostUrl?: (LinksGroupByInput | null),decisionMaker?: (Scalars['Boolean'] | null),decisionMakerTitle?: (Scalars['Boolean'] | null),decisionMakerPhone?: (PhonesGroupByInput | null),callOpener?: (Scalars['Boolean'] | null),submittedBy?: (Scalars['Boolean'] | null),
 /** Group by fields of the related workspaceMember */
 assignedTo?: (WorkspaceMemberGroupByInput | null),
 /** Group by fields of the related workspaceMember */
 assignedBy?: (WorkspaceMemberGroupByInput | null),ownershipType?: (Scalars['Boolean'] | null),decisionPath?: (Scalars['Boolean'] | null),companySize?: (Scalars['Boolean'] | null),
 /** Call Now = 2+ sources agree, dial by name. Verify First = 1 source, confirm on the main line. US Importer = from our shipment data. Pennsylvania = found by the PA expansion. Warm Intro = ships with a company we know (named in the field note). Direct Phone = decision maker's own line. Verified Email = passed a deliverability check. Forwarder/3PL, Distributor, Manufacturer = business type. Full glossary: databrokering/gtm/docs/DATA_PLAY_TAGS.md */
-dataPlayTags?: (Scalars['Boolean'] | null)}
+dataPlayTags?: (Scalars['Boolean'] | null),
+/** Industry segment used to pick a template site */
+label?: (Scalars['Boolean'] | null)}
 
 
 /** Marketing-agency competitor for Agency Build (AEO, GEO, PPC, websites, CRM, intent-based and digital marketing), tagged by industry */
@@ -135588,14 +135740,6 @@ export const enumAgencyProspectUtmSourceEnum = {
    BLENDED: 'BLENDED' as const
 }
 
-export const enumAgencyProspectLabelEnum = {
-   AUTO_PAINT_AND_BODY_SHOPS: 'AUTO_PAINT_AND_BODY_SHOPS' as const,
-   WINDOW_TINTING: 'WINDOW_TINTING' as const,
-   AUTO_DETAILING: 'AUTO_DETAILING' as const,
-   GENERAL_TRADES: 'GENERAL_TRADES' as const,
-   NURSERY_SCHOOL: 'NURSERY_SCHOOL' as const
-}
-
 export const enumAgencyProspectLeadSourceEnum = {
    HIRING_SIGNAL: 'HIRING_SIGNAL' as const,
    LOVABLE_SITE: 'LOVABLE_SITE' as const,
@@ -135648,6 +135792,15 @@ export const enumAgencyProspectDataPlayTagsEnum = {
    DIRECT_PHONE_LOCAL: 'DIRECT_PHONE_LOCAL' as const,
    READY_TO_DIAL: 'READY_TO_DIAL' as const,
    NEEDS_RESEARCH: 'NEEDS_RESEARCH' as const
+}
+
+export const enumAgencyProspectLabelEnum = {
+   AUTO_PAINT_AND_BODY_SHOPS: 'AUTO_PAINT_AND_BODY_SHOPS' as const,
+   WINDOW_TINTING: 'WINDOW_TINTING' as const,
+   AUTO_DETAILING: 'AUTO_DETAILING' as const,
+   GENERAL_TRADES: 'GENERAL_TRADES' as const,
+   NURSERY_SCHOOL: 'NURSERY_SCHOOL' as const,
+   JUNK_REMOVAL: 'JUNK_REMOVAL' as const
 }
 
 export const enumAgencyCompetitorCompetitiveLevelEnum = {

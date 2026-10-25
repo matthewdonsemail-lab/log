@@ -66,7 +66,7 @@ Answered:
               "name": "Tadele Azmeraw",
               "url": "https://www.facebook.com/profile.php?id=61556829712306",
               "profile_picture": {
-                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840406481_122351384084227657_2181478911876956811_n.jpg?stp=c0.0.736.736a_cp0_dst-jpg_tt6&cstp=mx736x736&ctp=s60x60&_nc_cat=102&ccb=1-7&_nc_sid=e99d92&_nc_ohc=dWRATbNp6I8Q7kNvwEGQ49a&_nc_oc=Adrlwp_BnR4s3q_jF96kRTz5bpTmpjidFscmDGOQyeRCh2nNQSE1pZ4fsCC_6TRZNRA&_nc_zt=24&_nc_ht=scontent-phl2-1.xx&_nc_gid=w9O2SW9AMFnxzcwM8-uxQA&_nc_ss=792a8&oh=00_AQOVZz… (452 chars)"
+                "uri": "https://scontent-phl2-1.xx.fbcdn.net/v/t39.30808-1/840406481_122351384084227657_2181478911876956811_n.jpg (452 chars)"
               },
               "__isFriendNode": "User",
               "social_context": {

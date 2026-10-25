@@ -38,6 +38,6 @@ export interface MarketplaceCheck {
 
 export interface CheckReport {
   lines: string[]
-  issue: { code: 'suspended'; detail: string } | null
+  issue: { code: 'suspended' | 'identityVerificationRequired'; detail: string } | null
   threads: number
 }

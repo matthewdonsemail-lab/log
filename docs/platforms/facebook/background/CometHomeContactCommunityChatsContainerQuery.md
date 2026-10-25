@@ -13,7 +13,7 @@
 | Called from | `CometHomeContactCommunityChatsContainer.react` |
 | rea | `ev_38a62071407b1d580cabfa2361b5d2c8ad31a9bb9fb9fefb54b7b887fa2b16aa` |
 
-Seen 22 time(s) in 12 run(s).
+Seen 28 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -37,8 +37,13 @@ Seen 22 time(s) in 12 run(s).
 | inspect | step 6: goto /marketplace/inbox | 1 | 200 | 927 ms | 1708107 ms | — |
 | inspect | openAny: read /marketplace/item/<id>/ | 1 | 200 | 829 ms | 15216 ms | — |
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 650 ms | 7198 ms | — |
+| inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 620 ms | 18350 ms | — |
+| host | expected ProfileCometProfilePictureSetMutation: sent | 2 | 200 | 470–515 ms | 45809–1773947 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 793 ms | 219894 ms | — |
+| inspect | step 1: goto /marketplace/status | 1 | 200 | 465 ms | 12044 ms | — |
+| inspect | step 4: goto /marketplace/status | 1 | 200 | 629 ms | 9218 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -128,6 +133,52 @@ Answered:
     "server_metadata": {
       "request_start_time_ms": 1792742396594,
       "time_at_flush_ms": 1792742396615
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 465 ms
+
+Sent:
+
+```json
+{
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometHomeContactCommunityChatsContainerQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "numChatsToFetch": 3
+  },
+  "doc_id": "26941462065448526"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "actor": {
+        "__typename": "User",
+        "should_hide_group_conversations_list": false,
+        "id": "61593939852820"
+      },
+      "chat_sidebar_is_collapsed": false,
+      "chat_visibility": true,
+      "community_messaging": {
+        "recent_channels": {
+          "nodes": []
+        }
+      }
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792911375712,
+      "time_at_flush_ms": 1792911375766
     },
     "is_final": true
   }

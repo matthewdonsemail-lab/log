@@ -46,6 +46,8 @@ export const SOCIAL_ACCOUNT_FIELDS = {
   coverPhoto: true,
   profileSetAt: true,
   lifecycleState: true,
+  sessionState: true,
+  sessionCheckedAt: true,
   profileNamedAt: true,
   marketplaceLocationAt: true,
   warmupStartedAt: true,

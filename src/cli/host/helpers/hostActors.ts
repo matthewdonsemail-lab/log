@@ -1,5 +1,7 @@
 import { fromPromise } from "xstate";
-import { answersIssue, answerWait, loadFlow, pageProblem } from "../../../browser/flow/index.ts";
+import { createAdsPowerClient, ensureProfileKernel } from "../../../browser/adsPower/index.ts";
+import { answersIssue, answerWait, flowWithParams, loadFlow, pageProblem } from "../../../browser/flow/index.ts";
+import { AUTH_APP_RADIO, authAppOffered, pageStateOf, TWO_STEP_PICKER } from "../../../browser/flow/helpers/pageState.ts";
 import { stepExchangesAt } from "../../../subq/stepReading/helpers/stepExchanges.ts";
 import type { FlowStep } from "../../../browser/flow/index.ts";
 import type { InspectAction, InspectStepResult } from "../../../browser/inspect/index.ts";
@@ -13,7 +15,7 @@ import { join } from "node:path";
 import type { FacebookAccount } from "../../../marketplace/socialAccount/index.ts";
 import { ACTIVITY_SCRIPTS, NOTED_ISSUES } from "../../../facebook/warmup/stages/index.ts";
 import * as marketplaceCheck from "../../../facebook/marketplace/check/index.ts";
-import { placeProblem } from "../../../facebook/marketplace/location/index.ts";
+import { homePlace, placeProblem } from "../../../facebook/marketplace/location/index.ts";
 import { runFlowInSession, openInspectSession } from "../../flow/helpers/index.ts";
 import type { OpenSession } from "../../flow/helpers/index.ts";
 import { keepNewDevice, keepSession, openAccount } from "../../live/index.ts";
@@ -21,6 +23,8 @@ import { settleInBackground } from "../../../rea/capture/client.ts";
 import type { CommandContext } from "../../runner/types.ts";
 
 const FB = "https://www.facebook.com";
+
+const DISMISS_LABELS = ["Dismiss", "تجاهل"];
 
 export interface HostBrowser {
   run: PreparedRun | null;
@@ -39,7 +43,7 @@ export function dayOf(account: FacebookAccount, now = new Date()): { today: stri
   return { today: clock.date, over, msUntilOpen: over ? Math.round(hoursUntilOpen(clock.hour, activeWindow(account)) * 3_600_000) : 0 };
 }
 
-export function hostActors(context: CommandContext, account: FacebookAccount, browser: HostBrowser, options: { bypassHours: boolean; likes?: boolean; log: (line: string) => void }) {
+export function hostActors(context: CommandContext, account: FacebookAccount, browser: HostBrowser, options: { bypassHours: boolean; now?: boolean; likes?: boolean; log: (line: string) => void }) {
   const log = options.log;
   const send = async (action: InspectAction, args: string[] = [], timeoutMs = 240_000, expect?: { name: string; ms?: number }): Promise<InspectStepResult | null> => {
     if (!browser.session) return null;
@@ -67,12 +71,16 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
     checkProxy: fromPromise<StepOutcome, LifecycleActorInputs["checkProxy"]>(async () => (account.proxy ? ok() : error("noProxy", "no proxy in Twenty (rule 12)"))),
 
     openBrowser: fromPromise<StepOutcome, LifecycleActorInputs["openBrowser"]>(async () => {
-      let opened = await openAccount(context, "host", "log facebook host start --account <a>", account.accountName, "connect", options.bypassHours, true);
+      if (account.adsPowerProfileId) {
+        const kernel = await ensureProfileKernel(context.adsPower ?? createAdsPowerClient(), account.adsPowerProfileId, log).catch((e: unknown) => ({ ok: false as const, detail: e instanceof Error ? e.message : String(e) }));
+        if (!kernel.ok) return error("adsPowerKernelMissing", kernel.detail);
+      }
+      let opened = await openAccount(context, "host", "log facebook host start --account <a>", account.accountName, "connect", options.bypassHours, true, Boolean(options.now));
       if (!("run" in opened) && /launchTooSoon/.test(opened.stderr ?? "")) {
         const minutes = Number((opened.stderr ?? "").match(/wait (\d+) min/)?.[1] ?? 10);
         log(`host ${account.accountName}: the last launch was under 10 minutes ago (rule 24): opening in ${minutes} min`);
         await new Promise((r) => setTimeout(r, (minutes * 60 + 15) * 1000));
-        opened = await openAccount(context, "host", "log facebook host start --account <a>", account.accountName, "connect", options.bypassHours, true);
+        opened = await openAccount(context, "host", "log facebook host start --account <a>", account.accountName, "connect", options.bypassHours, true, Boolean(options.now));
       }
       if (!("run" in opened)) return error((opened.stderr ?? "").match(/: (\w+):/)?.[1] ?? "openRefused", opened.stderr);
       browser.run = opened.run;
@@ -118,13 +126,27 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
         if (!page) return error("browserGone");
         const url = page.url ?? "";
         const text = (page as InspectStepResult & { text?: string }).text ?? "";
-        if (/checkpoint\/601051028565049/.test(url) || /suspect automated behaviou?r/i.test(text)) {
-          log(`host ${account.accountName}: "We suspect automated behaviour": Dismiss`);
-          await send("clickRole", ["button", "Dismiss"]);
+        if (pageStateOf(url, text)?.id === "automatedBehaviour" || /checkpoint\/601051028565049/.test(url)) {
+          const label = DISMISS_LABELS.find((name) => text.includes(name)) ?? DISMISS_LABELS[0];
+          log(`host ${account.accountName}: "We suspect automated behaviour": ${label}`);
+          await send("clickRole", ["button", label]);
           continue;
         }
         if (/\/checkpoint\//.test(url)) return issue("checkpointed", `${url}: ${text.slice(0, 120)}`);
-        if (/wrong password|incorrect password|password you.ve entered is incorrect/i.test(text)) return issue("wrongPassword");
+        if (/wrong password|incorrect password|password you.?(ve )?entered is incorrect/i.test(text)) return issue("wrongPassword");
+        const twoStep = pageStateOf(url, text)?.id;
+        if (twoStep === "twoStepPasskey") {
+          log(`host ${account.accountName}: Facebook asks for a passkey: Try another way`);
+          const picker = await send("clickRole", ["button", "Try another way"], 240_000, { name: TWO_STEP_PICKER, ms: 30_000 });
+          if (!picker?.folder || !authAppOffered(stepExchangesAt(picker.folder))) return issue("twoStepNoAuthApp", `${TWO_STEP_PICKER} did not offer the authentication app (TOTP)`);
+          continue;
+        }
+        if (twoStep === "twoStepMethodPicker") {
+          log(`host ${account.accountName}: two-step method picker: Authentication app, then Continue`);
+          await send("clickRole", ["radio", AUTH_APP_RADIO]);
+          await send("clickRole", ["button", "Continue"]);
+          continue;
+        }
         if (/two_step|approvals_code/i.test(url) || /enter the code|authentication app|6-digit code/i.test(text)) {
           await send("code");
           continue;
@@ -165,15 +187,18 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
 
     setProfile: fromPromise<StepOutcome, LifecycleActorInputs["setProfile"]>(async ({ input }) => {
       if (!input.live) return error("needsLive", "the profile changes Facebook: run the host with --live when matt asks (rule 8)");
-      const flow = loadFlow("profileSetup");
-      if (!flow || !browser.session) return error("flowNotRecorded", "profileSetup");
-      if (!account.profilePhoto || !account.coverPhoto || !account.profileName) return error("noProfileInTwenty", "profilePhoto, coverPhoto and profileName are needed in Twenty");
-      const [firstName, ...rest] = account.profileName.split(" ");
-      const photos = await preparePhotos([account.profilePhoto, account.coverPhoto], { dir: join(browser.session.current.runDir, "photos"), proxy: fetchProxyUrl(account.proxy) });
+      const recorded = loadFlow("profileSetup");
+      if (!recorded || !browser.session) return error("flowNotRecorded", "profileSetup");
+      if (!account.profilePhoto) return error("noProfileInTwenty", "profilePhoto is needed in Twenty");
+      const [firstName, ...rest] = (account.profileName ?? "").split(" ");
+      const sources = [account.profilePhoto, account.coverPhoto].filter((p): p is string => Boolean(p));
+      const photos = await preparePhotos(sources, { dir: join(browser.session.current.runDir, "photos"), proxy: fetchProxyUrl(account.proxy) });
       if (!photos.ok) return error(photos.code, photos.detail);
-      const output = await runFlowInSession(context, browser.session.current, flow, { uid: account.accountName, profilePhoto: photos.photos[0].path, coverPhoto: photos.photos[1].path, firstName, lastName: rest.join(" ") }, { account: home });
+      const params = { uid: account.accountName, profilePhoto: photos.photos[0].path, coverPhoto: photos.photos[1]?.path, firstName: firstName || undefined, lastName: rest.join(" ") || undefined };
+      const flow = flowWithParams(recorded, params);
+      const output = await runFlowInSession(context, browser.session.current, flow, Object.fromEntries(Object.entries(params).filter(([, v]) => v)) as Record<string, string>, { account: home });
       const last = output.steps.at(-1);
-      if (output.result === "done") return ok("profile photo, cover and name saved");
+      if (output.result === "done") return ok(["profile photo", account.coverPhoto && "cover", account.profileName && "name"].filter(Boolean).join(", ") + " saved");
       if (last?.issue && last.issue !== "pageNotReached") return issue(last.issue, last.error);
       return error("profileNotSaved", `${output.failedAt}: ${last?.error ?? ""}`);
     }),
@@ -189,7 +214,7 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
       const home = (account.homeCity ?? "").toLowerCase();
       if (where && where.city.toLowerCase() === home) return ok(`${where.city} ${where.postalCode}`);
       const place = await placeFor(context, account);
-      if (!place) return error("noPlaceName", `the Marketplace location is ${where?.city ?? "unknown"}; give a listing of this account in ${account.homeCity ?? "its home city"} a locationQuery, "City, State" written out`);
+      if (!place) return error("noPlaceName", `the Marketplace location is ${where?.city ?? "unknown"}; its home ${account.homeCity ?? "city"} (${account.homeCountry ?? "?"}) has no region in CITY_REGIONS, and no listing of this account has a locationQuery: add the city's state to CITY_REGIONS (src/marketplace/home/types.ts)`);
       const problem = placeProblem(place);
       if (problem) return error(problem.code, problem.detail);
       if (!input.live) return error("needsLive", `the Marketplace location is ${where?.city ?? "unknown"}, not ${account.homeCity}: --live sets it to ${place}`);
@@ -253,6 +278,8 @@ export function hostActors(context: CommandContext, account: FacebookAccount, br
 }
 
 async function placeFor(context: CommandContext, account: FacebookAccount): Promise<string | null> {
+  const fromHome = homePlace(account);
+  if (fromHome) return fromHome;
   const rows = await context.twenty.list("agencyListings", { socialAccountId: { eq: account.id } });
   const home = (account.homeCity ?? "").toLowerCase();
   const queries = rows.map((r) => r.locationQuery?.trim()).filter((q): q is string => Boolean(q));

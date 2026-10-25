@@ -1,4 +1,5 @@
 import type { Command, CommandInput, FlagSpec, InputForm, PositionalSpec } from "../types.ts";
+import { toolBaseName } from "./platforms.ts";
 
 export type TypedInput = Record<string, unknown>;
 
@@ -20,8 +21,8 @@ export function parserSpecOf(input: CommandInput): { boolean: string[]; valued: 
   return { boolean: [...boolean], valued: [...valued] };
 }
 
-export function formToolName(command: Pick<Command, "name">, form: InputForm): string {
-  return command.name + form.words.map((w) => w[0].toUpperCase() + w.slice(1)).join("");
+export function formToolName(command: Pick<Command, "name" | "platform">, form: InputForm): string {
+  return toolBaseName(command) + form.words.map((w) => w[0].toUpperCase() + w.slice(1)).join("");
 }
 
 function propertyOf(spec: FlagSpec | PositionalSpec): Record<string, unknown> {

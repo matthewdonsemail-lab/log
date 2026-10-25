@@ -1,4 +1,5 @@
 import { readScreen } from '../../../rea/inspectMap/helpers/readScreen'
+import { dialogOf } from './dialogOf'
 import type { FlowAction, FlowDefinition, FlowParam, FlowStep } from '../types'
 
 export interface RecordedCommand {
@@ -15,10 +16,21 @@ export interface RecordedCommand {
 
 const NOT_CONFIRMING = /Logger|ScreenTime|_syncMutation|relay-ef|webstorage|Prompt|QuickPromotion|CIXLog|LiveTyping/i
 
+const endpointOf = (path: string): string =>
+  path.split(/[^A-Za-z0-9]+/).filter(Boolean).map((w, i) => (i === 0 ? w.toLowerCase() : w[0].toUpperCase() + w.slice(1).toLowerCase())).join('')
+
 export function confirmingRequest(lines: string[]): string | null {
   for (const line of lines) {
     const name = line.match(/^POST 200 ([A-Za-z0-9_]+Mutation)\b/)?.[1]
     if (name && !NOT_CONFIRMING.test(name)) return name
+  }
+  for (const line of lines) {
+    const path = line.match(/^POST 200 (\/(?!ajax\/)[a-z0-9_/]+\/)/)?.[1]
+    if (path) return endpointOf(path)
+  }
+  for (const line of lines) {
+    const name = line.match(/^POST 200 ([A-Za-z0-9_]+DialogQuery)\b/)?.[1]
+    if (name) return name
   }
   return null
 }
@@ -82,14 +94,18 @@ export function flowFromRecording(
       steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_scrollIn${camel(command.args[0] ?? '')[0]?.toUpperCase() ?? ''}${camel(command.args[0] ?? '').slice(1)}`, action, args: command.args, recorded })
       return
     }
+    const within = (role: string, name: string): { within?: string } => {
+      const dialog = i > 0 ? dialogOf(commands[i - 1].snapshot, role, name) : null
+      return dialog ? { within: dialog } : {}
+    }
     if (command.action === 'clickRole') {
       const [role, name] = command.args
-      steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_click${camel(name)[0]?.toUpperCase() ?? ''}${camel(name).slice(1)}`, action, role, name: named(name), ...(expect ? { expect } : {}), recorded })
+      steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_click${camel(name)[0]?.toUpperCase() ?? ''}${camel(name).slice(1)}`, action, role, name: named(name), ...within(role, name), ...(expect ? { expect } : {}), recorded })
       return
     }
     if (command.action === 'uploadRole') {
       const [role, name] = command.args
-      steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_upload${camel(name)[0]?.toUpperCase() ?? ''}${camel(name).slice(1)}`, action: 'upload', role, name: named(name), value: param('file', `uploaded through ${role} "${name}"`), ...(expect ? { expect } : {}), recorded })
+      steps.push({ id: `s${String(steps.length + 1).padStart(2, '0')}_upload${camel(name)[0]?.toUpperCase() ?? ''}${camel(name).slice(1)}`, action: 'upload', role, name: named(name), ...within(role, name), value: param('file', `uploaded through ${role} "${name}"`), ...(expect ? { expect } : {}), recorded })
       return
     }
     if (action === 'setLocation') {
@@ -111,6 +127,7 @@ export function flowFromRecording(
       action,
       role: element.role,
       name: element.name,
+      ...within(element.role, element.name),
       ...(value ? { value } : {}),
       ...(expect ? { expect } : {}),
       recorded

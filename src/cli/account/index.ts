@@ -2,12 +2,25 @@ import { ACCOUNT_STATUSES, findAccount, fromTwentyEnum, listFacebookAccounts, to
 import type { AccountStatus } from "../../marketplace/socialAccount/index.ts";
 import { setStatusAndReplace } from "../../marketplace/replacement/index.ts";
 import { isErrorCode } from "../../errors/catalog/index.ts";
+import { createAdsPowerClient, syncProfiles } from "../../browser/adsPower/index.ts";
 import { renderLoss } from "../live/helpers/index.ts";
 import { JSON_FLAG, parseArgs, parserSpecOf, refuseError } from "../runner/helpers/index.ts";
 import type { Command, CommandInput } from "../runner/types.ts";
 import { renderAccountDetail, renderAccountsTable, resaveKeptRun, resetAccountOpens, safeAccount } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
+async function giveProfileBack(context: Parameters<Command["run"]>[0], accountName: string): Promise<string[]> {
+  try {
+    const result = await syncProfiles(context.twenty, context.adsPower ?? createAdsPowerClient(), { apply: true, log: (line) => context.err(line) });
+    const released = result.entries.filter((e) => e.action === "release").map((e) => `AdsPower: released ${e.accountName}'s profile ${e.profileId ?? "-"} (${e.note}).`);
+    const made = result.entries.filter((e) => e.action === "create" && e.profileId).map((e) => `AdsPower: ${e.accountName} took the freed slot, profile ${e.profileId}.`);
+    const waiting = result.entries.filter((e) => e.action === "create" && !e.profileId).length;
+    return [...released, ...made, ...(waiting ? [`AdsPower: ${waiting} account(s) still wait for a profile (log adsPower sync).`] : [])];
+  } catch (error) {
+    return [`AdsPower: ${accountName}'s profile is still there (${error instanceof Error ? error.message : String(error)}); run log adsPower sync --apply once AdsPower is up.`];
+  }
+}
+
 export const ACCOUNTS_USAGE = "Usage: log facebook accounts [--json]";
 export const ACCOUNT_USAGE = [
   "Usage: log facebook account show <accountName> [--json]",
@@ -98,7 +111,9 @@ export const accountCommand: Command = {
       if (reason !== "setByHand" && !isErrorCode(reason)) return { code: 1, stderr: `log facebook account status: --reason must be an error code (log errors --layer account)` };
       const detail = typeof parsed.flags["detail"] === "string" ? parsed.flags["detail"] : null;
       const loss = await setStatusAndReplace(context.twenty, account, status as AccountStatus, reason, detail);
-      return { code: 0, stdout: renderLoss(loss) };
+      const lines = [renderLoss(loss)];
+      if (status === "deactivated" && account.adsPowerProfileId) lines.push(...(await giveProfileBack(context, account.accountName)));
+      return { code: 0, stdout: lines.filter(Boolean).join("\n") };
     } catch (error) {
       return refuseError("account", error);
     }

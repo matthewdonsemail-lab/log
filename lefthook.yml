@@ -3,6 +3,9 @@ pre-commit:
     noComments:
       run: bun run check:noComments
 
+    twikitTransport:
+      run: bun run check:twikitTransport
+
     layout:
       run: bun run check:layout
 
@@ -23,6 +26,9 @@ pre-push:
   commands:
     noComments:
       run: bun run check:noComments
+
+    twikitTransport:
+      run: bun run check:twikitTransport
 
     naming:
       run: bun run check:naming

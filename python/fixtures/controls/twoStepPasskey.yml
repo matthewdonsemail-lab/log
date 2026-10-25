@@ -1,0 +1,12 @@
+- generic [ref=e12]:
+  - generic [ref=e16]:
+    - generic [ref=e22]:
+      - heading "Use face scan, fingerprint or screen lock to confirm it's you" [level=2] [ref=e24]:
+        - generic [ref=e25]: Use face scan, fingerprint or screen lock to confirm it's you
+      - generic [ref=e26]: Your saved passkey securely and quickly confirms it's you, the same way you unlock your device.
+    - generic [ref=e30]:
+      - button "Continue" [ref=e39] [cursor=pointer]:
+        - generic [ref=e42]: Continue
+      - button "Try another way" [ref=e45] [cursor=pointer]:
+        - generic [ref=e48]: Try another way
+  - generic:
