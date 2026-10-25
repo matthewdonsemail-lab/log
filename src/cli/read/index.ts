@@ -17,7 +17,7 @@ import { createInspector, formatTraceLine } from "../../observability/trace/inde
 import type { TwentyClient } from "../../twenty/graphql/index.ts";
 import { refuse, refuseError } from "../runner/helpers/index.ts";
 import type { Command, CommandContext, CommandResult } from "../runner/types.ts";
-import { parseReadArgs, READ_INPUT } from "./helpers/index.ts";
+import { accountHasSession, parseReadArgs, READ_INPUT, renderDirectRead } from "./helpers/index.ts";
 import type { ReadMembersArgs } from "./helpers/index.ts";
 
 export * from "./helpers/index.ts";
@@ -263,6 +263,15 @@ export async function runRead(context: CommandContext, argv: string[]): Promise<
     if (parsed.show) {
       const shown = await renderSaved(context.twenty, group.id, group.name ?? ref.group.key);
       return { code: 0, stdout: parsed.json ? JSON.stringify(shown.json, null, 2) : shown.text };
+    }
+
+    if (!parsed.live && ref.group.numeric && context.directRead && accountHasSession(account) && account.proxy) {
+      const direct = context.directRead(account, ref.group.key);
+      if (direct.ok) {
+        await context.twenty.update("agencyGroups", group.id, { lastReadAt: new Date().toISOString(), lastReadReason: `directApi groups.feed_read: ${direct.rows.length} post(s)` } as never);
+        return { code: 0, stdout: parsed.json ? JSON.stringify({ engine: "directApi", posts: direct.rows }, null, 2) : renderDirectRead(direct.rows) };
+      }
+      context.err(`direct-API read unavailable (${direct.detail}); falling back to the browser`);
     }
 
     const read = await readInBrowser(context, account, group, ref.group, { scrolls: parsed.scrolls, commentPosts: parsed.commentPosts, live: parsed.live, bypass: parsed.bypass });

@@ -1,3 +1,4 @@
+import { readGroupDirect } from "../read/helpers/directApi.ts";
 import { runInspectSession, sendInspectCommand } from "../../browser/inspect/index.ts";
 import { startConnectSession, startProfileSession, startSession } from "../../camofox/session/index.ts";
 import { runWorker } from "../../camofox/worker/index.ts";
@@ -103,6 +104,7 @@ export function createContext(overrides: Partial<CommandContext> = {}): CommandC
     out: overrides.out ?? ((line) => console.log(line)),
     err: overrides.err ?? ((line) => console.error(line)),
     now: overrides.now ?? (() => new Date()),
+    directRead: overrides.directRead ?? readGroupDirect,
   };
 }
 

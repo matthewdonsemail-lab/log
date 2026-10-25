@@ -33,7 +33,7 @@ async function run(argv: string[], replies: InspectStepResult[] = [], twenty = m
     sent.push({ action, args });
     return replies.shift() ?? null;
   };
-  const code = await runCli(argv, { twenty, sendInspect, out: (l) => out.push(l), err: (l) => err.push(l) });
+  const code = await runCli(argv, { twenty, sendInspect, out: (l) => out.push(l), err: (l) => err.push(l), directRead: () => ({ ok: false, detail: "disabled in tests" }) });
   return { code, out: out.join("\n"), err: err.join("\n"), sent, twenty };
 }
 
@@ -131,3 +131,22 @@ describe("log facebook read group", () => {
     expect(result.err).toContain("--worker became its own command: log facebook poll --request <request json>");
   });
 });
+
+describe("the direct-API engine serves read group when the account has a session", () => {
+  test("uses context.directRead, touches no browser, and updates Twenty's lastRead", async () => {
+    const twenty = marketplaceFixture();
+    const out: string[] = [];
+    const sent: { action: InspectAction; args: string[] }[] = [];
+    const code = await runCli(["facebook", "read", "group", "--account", "galwayOne", "--group", GROUP], {
+      twenty,
+      sendInspect: async (_c: unknown, action: InspectAction, args: string[]) => { sent.push({ action, args }); return null; },
+      out: (l) => out.push(l),
+      err: () => {},
+      directRead: () => ({ ok: true, rows: [{ id: "s1", text: "a free couch", creation_time: 1_700_000_000 }] }),
+    });
+    expect(code).toBe(0);
+    expect(sent).toEqual([]);
+    expect(out.join("\n")).toContain("direct-API engine");
+    expect(out.join("\n")).toContain("a free couch");
+  });
+})

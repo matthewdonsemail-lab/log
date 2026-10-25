@@ -34,6 +34,7 @@ export interface CommandContext {
   out: (line: string) => void;
   err: (line: string) => void;
   now?: () => Date;
+  directRead?: (account: import("../../marketplace/socialAccount/index.ts").FacebookAccount, groupId: string) => { ok: true; rows: { id: string | null; text: string; creation_time: number | null }[] } | { ok: false; detail: string };
 }
 
 export interface FlagSpec {

@@ -6969,3 +6969,18 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: `engine.run_surface(surface, method, args, cookiesPath, proxy)` builds an fbk `Session` from a saved account session (cookies), with `Config.proxy` set and the governor wired, and calls an fbk surface method directly. `scripts/directApi/liveRead.ts` reads an account's saved cookies + proxy from Twenty socialAccounts, writes a Netscape jar, and runs `marketplace.search` through the engine.
 Why: matt — don't onboard, use an account that already has a session to do real log-cli work through the direct-API engine. Plymouth and Kingston kept full 13-cookie sessions from tonight's sign-ins, so the browser is not needed for the read; this proves the cheap direct-API path does our Marketplace work end to end.
 Checked: `bun scripts/directApi/liveRead.ts 61594122755104 free` — fbk built the Session from Plymouth's cookies, routed through its proxy, the token cache self-healed and re-bootstrapped the dtsg, and `marketplace.search` returned 10 live listings (e.g. 'Free 6 month old Blue Heeler' 29254273650926682). No browser. check:noComments/naming pass.
+
+## 2026-10-25 09:45Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `python/directApi/engine.py`: added def _plain · changed def run_surface
+- `src/cli/read/helpers/directApi.ts`: added interface Cookie, interface DirectPost, type DirectRead, function cookiesOf, function accountHasSession, function netscape, function readGroupDirect, function renderDirectRead
+- `src/cli/read/helpers/index.ts`: added export from "./directApi.ts"
+- `src/cli/read/index.ts`: changed function runRead
+- `src/cli/read/read.test.ts`: added test "uses context.directRead, touches no browser, and updates Twenty's lastRead" · changed function run
+- `src/cli/runner/index.ts`: changed function createContext
+- `src/cli/runner/types.ts`: changed interface CommandContext
+
+What changed: `log facebook read group` now uses the direct-API engine when it can. `src/cli/read/helpers/directApi.ts` writes the account's saved cookies to a Netscape jar and runs fbk `groups.feed_read` through `engine.run_surface` (proxy from the account, governed); `createContext` injects it as `context.directRead` (CommandContext gains the optional seam). The read dispatch uses it when the run is not --live, the group id is numeric, the account has a c_user+xs session and a proxy; otherwise it falls back to the browser path unchanged. `engine.run_surface` now returns structured rows (`_plain` turns fbk dataclasses into dicts). The command, flags and MCP tool are unchanged.
+Why: matt — wire read to the direct-API engine (fbk groups.feed_read) when the account has a session, same command/MCP. This is the first family ported onto the proven engine: a logged-in account reads a group with no browser, while onboarding and --live stay on the browser. The seam is injectable so tests keep the browser path.
+Checked: `read.test.ts` (25 pass) — with a session it uses context.directRead, touches no browser (sendInspect empty) and renders the posts + updates Twenty's lastRead; without the seam it falls back and still refuses with groupBrowserNotOpen. Full `bun test` 1013 pass; tsc clean; check:naming/noComments/layout/agentHooks pass. Live engine path already proven on Plymouth.

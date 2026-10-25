@@ -61,6 +61,18 @@ def run(friendly: str, cookies_path: str, *, proxy: str | None = None, account: 
     return {"ok": True, "friendly": friendly, "docId": doc_id, "isMutation": is_mutation, "docs": len(docs), "answer": docs[0] if docs else None}
 
 
+def _plain(x: Any) -> Any:
+    import dataclasses
+
+    if dataclasses.is_dataclass(x) and not isinstance(x, type):
+        return {k: _plain(v) for k, v in dataclasses.asdict(x).items()}
+    if isinstance(x, (list, tuple)):
+        return [_plain(i) for i in x]
+    if hasattr(x, "__dict__"):
+        return {k: _plain(v) for k, v in vars(x).items()}
+    return x
+
+
 def run_surface(surface: str, method: str, args: list[Any], cookies_path: str, *, proxy: str | None = None) -> dict[str, Any]:
     import importlib
 
@@ -74,9 +86,10 @@ def run_surface(surface: str, method: str, args: list[Any], cookies_path: str, *
         module = importlib.import_module(f"surfaces.{surface}")
         service_cls = next(getattr(module, n) for n in dir(module) if n.endswith("Service"))
         result = getattr(service_cls(session), method)(*args)
-        rows = result if isinstance(result, list) else getattr(result, "stories", None) or getattr(result, "__dict__", result)
+        raw = result if isinstance(result, list) else getattr(result, "stories", None)
+        rows = [_plain(r) for r in raw] if isinstance(raw, list) else _plain(result)
         count = len(rows) if isinstance(rows, list) else None
-        return {"ok": True, "surface": surface, "method": method, "count": count, "sample": (rows[:3] if isinstance(rows, list) else rows)}
+        return {"ok": True, "surface": surface, "method": method, "count": count, "rows": rows}
     except GovernorBlockedError as e:
         return {"ok": False, "code": "governorBlocked", "detail": str(e)}
     except Exception as e:
