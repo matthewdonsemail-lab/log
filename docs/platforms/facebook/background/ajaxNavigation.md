@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_1f2efc84d7328617553804a0b324fa57be90f6d575258bd012fdfe013be31ab0` |
+| rea | `ev_97c9b95af3c6df9f48922c119a56eb765f69a4164d9153aef5a12b884211cda8` |
 
-Seen 50 time(s) in 15 run(s).
+Seen 58 time(s) in 19 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -50,13 +50,17 @@ Seen 50 time(s) in 15 run(s).
 | inspect | step 13: setLocation 18015 | 1 | 200 | 412 ms | 15969 ms | — |
 | inspect | step 1: goto /marketplace/inbox | 2 | 200 | 365–878 ms | 20925–22722 ms | — |
 | inspect | step 3: click e156 | 1 | 200 | 469 ms | 884 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 9 | 200 | 390–795 ms | 471777–1354663 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 11 | 200 | 390–1394 ms | 294477–1354663 ms | — |
 | inspect | scroll: +161px in 5 wheel steps, 250 ms | 1 | 200 | 923 ms | 2074 ms | — |
 | inspect | scroll: -161px in 5 wheel steps, 172 ms | 1 | 200 | 565 ms | 833 ms | — |
 | warmup | scroll: -1034px in 22 wheel steps, 1032 ms | 1 | 200 | 450 ms | 971 ms | — |
 | warmup | scroll: +981px in 24 wheel steps, 1672 ms | 1 | 200 | 465 ms | 2215 ms | — |
 | inspect | step 6: clickAny 1 x link /see owner profile$/ | 1 | 200 | 813 ms | 2807 ms | — |
 | host | step 21: clickRole button "…" | 1 | 200 | 423 ms | 8414 ms | — |
+| flow | setLocation: 'Mountain Top, Pennsylvania' is suggestion 1 of 2 | 2 | 200 | 462–463 ms | 5545–7471 ms | — |
+| flow | step 14: clickRole button "…" | 1 | 200 | 2852 ms | 1138 ms | — |
+| host | step 39: clickRole button "…" | 1 | 200 | 483 ms | 4414 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 2 | 200 | 462–709 ms | 7053–645275 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 

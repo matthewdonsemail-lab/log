@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_eb4e6fa8742e9ad786748859ae836e12036ec2a8cc8c1bd662da3df39f3228fe` |
+| rea | `ev_97c9b95af3c6df9f48922c119a56eb765f69a4164d9153aef5a12b884211cda8` |
 
-Seen 1215 time(s) in 35 run(s).
+Seen 1357 time(s) in 41 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -273,22 +273,22 @@ Seen 1215 time(s) in 35 run(s).
 | inspect | step 9: goto /marketplace/status | 3 | 200 | 729–1016 ms | 2091–2097 ms | — |
 | inspect | step 10: goto /marketplace/you/selling | 3 | 200 | 1212–1587 ms | 2001–2565 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 4 | 200 | 422–497 ms | 1332–2147 ms | — |
-| inspect | step 1: goto /marketplace/status | 7 | 200 | 384–3129 ms | 5260–8942 ms | — |
-| inspect | step 2: goto /marketplace/you/selling | 6 | 200 | 330–832 ms | 3629–4331 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 32 | 200 | 351–1150 ms | 3092–1366917 ms | — |
+| inspect | step 1: goto /marketplace/status | 14 | 200 | 384–3129 ms | 5260–8942 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 11 | 200 | 330–832 ms | 3278–4610 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 43 | 200 | 351–1150 ms | 2137–1366917 ms | — |
 | inspect | step 2: goto /marketplace/status | 3 | 200 | 690–1037 ms | 2483–2489 ms | — |
 | inspect | step 3: goto /marketplace/you/selling | 3 | 200 | 2107–2335 ms | 1919–3089 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 5 | 200 | 390–1862 ms | 1933–355258 ms | — |
-| inspect | step 4: goto /marketplace/status | 3 | 200 | 748–865 ms | 4123–4187 ms | — |
-| inspect | step 5: goto /marketplace/you/selling | 3 | 200 | 494–1062 ms | 1850–2864 ms | — |
-| inspect | step 6: goto /marketplace/inbox | 14 | 200 | 507–1131 ms | 1381–1514910 ms | — |
+| inspect | step 4: goto /marketplace/status | 6 | 200 | 429–865 ms | 3065–4187 ms | — |
+| inspect | step 5: goto /marketplace/you/selling | 6 | 200 | 390–1062 ms | 1850–2864 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 18 | 200 | 401–1131 ms | 1210–1514910 ms | — |
 | inspect | step 2: goto /marketplace/ | 9 | 200 | 387–512 ms | 4947–9931 ms | — |
 | inspect | step 5: goto /messages/ | 3 | 200 | 731–972 ms | 7814–9430 ms | — |
 | inspect | post: "…", 123 words, 0 image(s), scrolled 53 px | 8 | 200 | 378–5777 ms | 173–98970 ms | — |
 | inspect | post: "…", 39 words, 0 image(s), scrolled 1157 px | 1 | 200 | 418 ms | 12503 ms | — |
 | inspect | step 5: likePost Like | 1 | 200 | 393 ms | 3103 ms | — |
-| flow | step 1: goto /marketplace/ | 5 | 200 | 408–620 ms | 2535–3474 ms | — |
-| flow | step 3: goto /marketplace/create/item | 5 | 200 | 397–625 ms | 1585–3735 ms | — |
+| flow | step 1: goto /marketplace/ | 27 | 200 | 408–1496 ms | 1717–6001 ms | — |
+| flow | step 3: goto /marketplace/create/item | 13 | 200 | 397–669 ms | 1585–6146 ms | — |
 | warmup | step 1: goto /marketplace/ | 6 | 200 | 389–448 ms | 2152–3091 ms | — |
 | warmup | step 3: goto /marketplace/you/selling | 3 | 200 | 411–473 ms | 3246–3432 ms | — |
 | warmup | step 5: goto /messages/ | 2 | 200 | 523–697 ms | 5111–5589 ms | — |
@@ -366,6 +366,19 @@ Seen 1215 time(s) in 35 run(s).
 | host | step 12: goto /me | 6 | 200 | 342–445 ms | 1838–4669 ms | — |
 | host | step 17: goto /me | 5 | 200 | 365–426 ms | 1489–4486 ms | — |
 | host | expected ProfileCometProfilePictureSetMutation: sent | 4 | 200 | 358–461 ms | 13305–180910 ms | — |
+| flow | step 2: setLocation Mountain Top, Pennsylvania | 22 | 200 | 453–803 ms | 1089–5962 ms | — |
+| flow | setLocation: 'Mountain Top, Pennsylvania' is suggestion 1 of 2 | 2 | 200 | 446–459 ms | 5568–7516 ms | — |
+| flow | scroll: container +87px in 3 steps | 1 | 200 | 582 ms | 1086 ms | — |
+| flow | step 15: clickRole button "…" | 5 | 200 | 390–765 ms | 14020–21637 ms | — |
+| host | step 1: goto /marketplace/selling/ | 4 | 200 | 347–508 ms | 5101–5522 ms | — |
+| host | signIn: password typed; submitting with Enter | 1 | 200 | 394 ms | 8350 ms | — |
+| host | step 28: clickRole button "…" | 4 | 200 | 366–510 ms | 7317–8462 ms | — |
+| host | step 31: goto /marketplace/status | 3 | 200 | 576–650 ms | 5660–5715 ms | — |
+| host | step 32: goto /me | 5 | 200 | 388–850 ms | 3905–5771 ms | — |
+| host | step 40: goto /marketplace/create/item | 2 | 200 | 505–724 ms | 4393–8164 ms | — |
+| host | step 41: sellLocation | 1 | 200 | 545 ms | 615875 ms | — |
+| host | step 42: setLocation Mountain Top, Pennsylvania | 6 | 200 | 439–509 ms | 4678–7934 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 23 | 200 | 446–1496 ms | 5219–658165 ms | — |
 
 <!-- facts:end -->
 

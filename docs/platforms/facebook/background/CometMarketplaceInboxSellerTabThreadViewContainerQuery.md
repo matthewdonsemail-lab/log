@@ -13,27 +13,28 @@
 | Called from | `CometMarketplaceInboxSellerTabThreadViewContainer.react` |
 | rea | `ev_fc63e98f46e063737ab32b1a0cc16802e92ec469b6ff41b72407ec3fa04b31f8` |
 
-Seen 10 time(s) in 4 run(s).
+Seen 13 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 1: goto /marketplace/inbox | 2 | 200 | 659–1209 ms | 6540–20812 ms | — |
 | inspect | step 8: goto /marketplace/inbox | 1 | 200 | 753 ms | 4340 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 635 ms | 2167 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 3 | 200 | 531–833 ms | 3978–70619 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 5 | 200 | 531–868 ms | 3154–70619 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 1 | 200 | 2088 ms | 2644 ms | — |
-| inspect | step 6: goto /marketplace/inbox | 2 | 200 | 693–1205 ms | 2233–1514806 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 3 | 200 | 525–1205 ms | 1806–1514806 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/inspect/20261023T000744_61594063207669**, step 3: goto /marketplace/inbox: 200, 531 ms
+**runs/inspect/20261025T065539_61593939852820**, step 3: goto /marketplace/inbox: 200, 868 ms
 
 Sent:
 
 ```json
 {
+  "__jssesw": "341",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "CometMarketplaceInboxSellerTabThreadViewContainerQuery",
   "server_timestamps": "true",
@@ -66,15 +67,15 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792714134991,
-      "time_at_flush_ms": 1792714135203
+      "request_start_time_ms": 1792911408676,
+      "time_at_flush_ms": 1792911409211
     },
     "is_final": true
   }
 }
 ```
 
-**runs/inspect/20261023T000744_61594063207669**, step 6: goto /marketplace/inbox: 200, 693 ms
+**runs/inspect/20261025T064655_61593981307720**, step 6: goto /marketplace/inbox: 200, 525 ms
 
 Sent:
 
@@ -112,8 +113,8 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792715282647,
-      "time_at_flush_ms": 1792715282890
+      "request_start_time_ms": 1792911301642,
+      "time_at_flush_ms": 1792911301803
     },
     "is_final": true
   }

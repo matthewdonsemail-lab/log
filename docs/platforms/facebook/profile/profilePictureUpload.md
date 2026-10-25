@@ -13,7 +13,7 @@
 | Called from | — |
 | rea | `ev_77f49a499f9c045a2c0a4763fb2749925e8804774203e978a1a8c47464af4aa1` |
 
-Seen 5 time(s) in 5 run(s).
+Seen 6 time(s) in 6 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -21,8 +21,9 @@ Seen 5 time(s) in 5 run(s).
 | inspect | step 4: upload e1180 | 1 | 200 | 3399 ms | 630 ms | — |
 | inspect | step 5: upload e1313 | 1 | 200 | 4784 ms | 1954 ms | — |
 | host | step 20: uploadRole button "…" | 1 | 200 | 4065 ms | 2509 ms | — |
+| host | step 38: uploadRole button "…" | 1 | 200 | 1924 ms | 1887 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -54,6 +55,37 @@ Answered:
     "imageWidth": 896
   },
   "lid": "7700276948195363920"
+}
+```
+
+**runs/host/20261024T222706_61593981307720**, step 38: uploadRole button "…": 200, 1924 ms
+
+Sent:
+
+```json
+{
+  "query": {
+    "photo_source": "57",
+    "profile_id": "61593981307720"
+  },
+  "body": null
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "A1EZzlb4YhcsUHjOuD5GoYV",
+  "payload": {
+    "fbid": "122128629399466043",
+    "profileID": "61593981307720",
+    "imageURI": "https://scontent.fagc1-1.fna.fbcdn.net/v/t39.30808-6/864257525_122128629405466043_8971047615363713674_n.jpg (442 chars)",
+    "imageHeight": 1110,
+    "imageWidth": 815
+  },
+  "lid": "7700366227710634764"
 }
 ```
 

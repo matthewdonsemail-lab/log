@@ -13,7 +13,7 @@
 | Called from | `CometFeedInlineComposer.react` |
 | rea | `ev_3e02863ff58798e0b4e157f2227e5ceed62786408d21a22ae2d4cce84f7332b8` |
 
-Seen 25 time(s) in 14 run(s).
+Seen 28 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -39,6 +39,9 @@ Seen 25 time(s) in 14 run(s).
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 616 ms | 7184 ms | — |
 | inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 482 ms | 18331 ms | — |
 | host | expected ProfileCometProfilePictureSetMutation: sent | 2 | 200 | 418–467 ms | 45791–1773905 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 592 ms | 219879 ms | — |
+| inspect | step 1: goto /marketplace/status | 1 | 200 | 389 ms | 12028 ms | — |
+| inspect | step 4: goto /marketplace/status | 1 | 200 | 479 ms | 9204 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
@@ -522,23 +525,19 @@ Answered:
 }
 ```
 
-**runs/inspect/20261024T060921_61594063207669**, scroll: +386px in 10 wheel steps, 531 ms: 200, 482 ms
+**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 389 ms
 
 Sent:
 
 ```json
 {
-  "qpl_active_flow_ids": "431626709",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "CometFeedInlineComposerQuery",
   "server_timestamps": "true",
   "variables": {
     "scale": 1
   },
-  "doc_id": "38525622117053498",
-  "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=431626709"
-  ]
+  "doc_id": "38525622117053498"
 }
 ```
 
@@ -550,16 +549,16 @@ Answered:
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "61594063207669",
+        "id": "61593939852820",
         "__isActor": "User",
-        "short_name": "Bethlehem",
+        "short_name": "Uski",
         "__isProfile": "User",
         "__isEntity": "User",
-        "url": "https://www.facebook.com/profile.php?id=61594063207669",
+        "url": "https://www.facebook.com/profile.php?id=61593939852820",
         "profile_picture": {
-          "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)"
+          "uri": "https://scontent.fagc3-2.fna.fbcdn.net/v/t39.30808-1/863325433_122127029211464661_923216486577496458_n.jpg (483 chars)"
         },
-        "name": "Bethlehem Trash",
+        "name": "Uski Guvh",
         "has_professional_features_for_watch": false
       },
       "feed_comet_composer": {
@@ -614,13 +613,6 @@ Answered:
   "extensions": {
     "prefetch_uris_v2": [
       {
-        "uri": "https://scontent-xxc1-1.xx.fbcdn.net/v/t39.30808-1/854235004_122126440527468773_6121991966981932868_n.jpg (454 chars)",
-        "label": null,
-        "width": null,
-        "height": null,
-        "surface": null
-      },
-      {
         "uri": "https://static.xx.fbcdn.net/rsrc.php/yE/r/f0XMdTi7eQy.webp",
         "label": null,
         "width": null,
@@ -640,11 +632,18 @@ Answered:
         "width": null,
         "height": null,
         "surface": null
+      },
+      {
+        "uri": "https://scontent.fagc3-2.fna.fbcdn.net/v/t39.30808-1/863325433_122127029211464661_923216486577496458_n.jpg (483 chars)",
+        "label": null,
+        "width": null,
+        "height": null,
+        "surface": null
       }
     ],
     "server_metadata": {
-      "request_start_time_ms": 1792822379544,
-      "time_at_flush_ms": 1792822379614
+      "request_start_time_ms": 1792911375622,
+      "time_at_flush_ms": 1792911375669
     },
     "is_final": true,
     "sr_payload": {
@@ -654,60 +653,95 @@ Answered:
             "qexData": {
               "4917": {
                 "r": false,
-                "l": "J{\"qeid\":\"61594063207669\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
+                "l": "J{\"qeid\":\"61593939852820\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
               },
               "5648": {
                 "r": null,
-                "l": "J{\"qeid\":\"61594063207669\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
+                "l": "J{\"qeid\":\"61593939852820\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
               },
               "5702": {
                 "r": null,
-                "l": "J{\"qeid\":\"61594063207669\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
+                "l": "J{\"qeid\":\"61593939852820\",\"u\":\"\",\"t\":\"fb_acting_account\",\"gks\":[],\"qe\":null}"
               }
             }
           },
           "hblp": {
             "consistency": {
-              "rev": 1051577552
+              "rev": 1051645477
             },
             "rsrcMap": {
-              "csr:_2k_0_dV": {
+              "csr:_p_0_Jo": {
                 "type": "csr",
-                "src": ":1,373,12,221,14,2,9,11,25,16,15,7,49,6,44,58,41,48,5,33,13,24,3",
+                "src": ":1,398,11,8,203,7,2,9,24,4,6,5,63,10,58,47,29,50,3,22,15,27,13",
                 "c": 1
               },
-              "csr:_2k_1_HC": {
+              "csr:_p_1_ct": {
                 "type": "csr",
-                "src": ":35",
+                "src": ":23",
                 "c": 1
               },
               "4ELVBtO": {
                 "type": "js",
-                "src": "https://static.xx.fbcdn.net/rsrc.php/v4icmD4/y9/l/en_GB-j/-sekXR_lQTM.js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4icmD4/y9/l/en_US-j/-sekXR_lQTM.js",
                 "c": 1,
-                "p": ":764",
-                "m": "1051577552_main"
+                "p": ":816",
+                "m": "1051645477_main"
+              },
+              "FI4g3/A": {
+                "type": "js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4iMzS4/yW/l/en_US-j/I32hMZJHio9.js",
+                "c": 1,
+                "p": ":486",
+                "m": "1051645477_main"
+              },
+              "cKshYeT": {
+                "type": "js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4imXC4/yi/l/en_US-j/wQUTfrWFlVq.js",
+                "c": 1,
+                "p": ":966",
+                "m": "1051645477_main"
               },
               "nWze+I9": {
                 "type": "js",
-                "src": "https://static.xx.fbcdn.net/rsrc.php/v4iPvu4/yM/l/en_GB-j/KXk65ncraD7.js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4iPvu4/y-/l/en_US-j/KXk65ncraD7.js",
                 "c": 1,
-                "p": ":446",
-                "m": "1051577552_main"
+                "p": ":335",
+                "m": "1051645477_main"
               },
-              "csr:_2k_2_AH": {
+              "4aRLxJj": {
+                "type": "css",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v5/yV/l/0,cross/gJvYo_zF64n.css",
+                "c": 1,
+                "p": ":934",
+                "m": "1051645477_main"
+              },
+              "/mTsGG6": {
+                "type": "js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4iu_P4/y6/l/en_US-j/ZwSR1BLUZvv.js",
+                "c": 1,
+                "p": ":763",
+                "m": "1051645477_main"
+              },
+              "csr:_p_2_IR": {
                 "type": "csr",
-                "src": ":12,221,14,171,546,396,2,108,254,77,34,218,363,216,33,13,9,357,215,944,11,117,25,222,915,24,258,166,35,8,173,19,142,375,16,15,191,7,6,118,120,182,172,3,1,23,835,44,219,48,58,41,5,126,210,146,141,87,72,10,127,32,236,28",
+                "src": ":11,8,203,139,276,51,16,196,364,278,22,15,10,7,2,427,199,9,175,24,154,27,338,282,189,12,157,37,136,386,4,6,5,242,155,99,23,97,174,205,13,1,41,58,179,50,47,29,3,90,162,96,112,108,44,14,83,30,206,20",
                 "c": 1
               },
-              "csr:_2k_3_ho": {
+              "csr:_p_3_WI": {
                 "type": "csr",
-                "src": ":22,188,18,110,111,109,93,50,112,136",
+                "src": ":40,171,36,133,119,138,129,142,132,210",
                 "c": 1
               },
-              "csr:_2k_4_qb": {
+              "hJy9YfN": {
+                "type": "js",
+                "src": "https://static.xx.fbcdn.net/rsrc.php/v4iuLy4/yf/l/en_US-j/xzXdfiV9Kbz.js",
+                "c": 1,
+                "p": ":972",
+                "m": "1051645477_main"
+              },
+              "csr:_p_4_Qf": {
                 "type": "csr",
-                "src": ":921,242,60,130,114,415,526,125,199,52,232,181,327",
+                "src": ":217,116,76,125,366,101,198,528,71,223,167,250",
                 "c": 1
               }
             },
@@ -715,8 +749,12 @@ Answered:
               "CometComposerMediaAttachmentArea.react": {
                 "r": [
                   "4ELVBtO",
+                  "FI4g3/A",
+                  "cKshYeT",
                   "nWze+I9",
-                  "csr:_2k_2_AH"
+                  "4aRLxJj",
+                  "/mTsGG6",
+                  "… 1 more"
                 ],
                 "rdfds": {
                   "m": [
@@ -740,6 +778,7 @@ Answered:
                     "… 10 more"
                   ],
                   "r": [
+                    "…",
                     "…"
                   ]
                 },
@@ -747,8 +786,8 @@ Answered:
               }
             },
             "indexUpgrades": {
-              "__hblp": ":3170",
-              "__hsdp": ":1030,1029,974,975,1230,1231"
+              "__hblp": ":3203",
+              "__hsdp": ":1046,1045,974,973,1208,1207"
             }
           }
         },
@@ -851,19 +890,19 @@ Answered:
             ],
             "… 10 more"
           ],
-          "phd2_indexes": ":1030,1029,974,975,1230,1231"
+          "phd2_indexes": ":1046,1045,974,973,1208,1207"
         },
         "allResources": [
-          "csr:_2k_0_dV",
-          "csr:_2k_1_HC"
+          "csr:_p_0_Jo",
+          "csr:_p_1_ct"
         ],
         "tieredResources": {
           "r": [
-            "csr:_2k_0_dV"
+            "csr:_p_0_Jo"
           ],
           "rdfds": [],
           "rds": [
-            "csr:_2k_1_HC"
+            "csr:_p_1_ct"
           ]
         }
       }

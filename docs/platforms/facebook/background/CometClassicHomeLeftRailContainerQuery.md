@@ -13,7 +13,7 @@
 | Called from | `CometClassicHomeLeftRailContainer.react` |
 | rea | `ev_344ab74ba79925e4c65e7d7e1baed54ed21b8b5516428816c330a8a229cfc2b5` |
 
-Seen 25 time(s) in 14 run(s).
+Seen 28 time(s) in 17 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -39,6 +39,9 @@ Seen 25 time(s) in 14 run(s).
 | warmup | step 14: goto /marketplace/ | 1 | 200 | 657 ms | 7192 ms | — |
 | inspect | scroll: +386px in 10 wheel steps, 531 ms | 1 | 200 | 591 ms | 18339 ms | — |
 | host | expected ProfileCometProfilePictureSetMutation: sent | 2 | 200 | 736–764 ms | 45799–1773939 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 774 ms | 219886 ms | — |
+| inspect | step 1: goto /marketplace/status | 1 | 200 | 685 ms | 12035 ms | — |
+| inspect | step 4: goto /marketplace/status | 1 | 200 | 725 ms | 9211 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
@@ -364,13 +367,12 @@ Answered:
 }
 ```
 
-**runs/inspect/20261024T060921_61594063207669**, scroll: +386px in 10 wheel steps, 531 ms: 200, 591 ms
+**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 685 ms
 
 Sent:
 
 ```json
 {
-  "qpl_active_flow_ids": "431626709",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "CometClassicHomeLeftRailContainerQuery",
   "server_timestamps": "true",
@@ -381,10 +383,7 @@ Sent:
     "scale": 1,
     "useNucleusIcon": false
   },
-  "doc_id": "37551561817767907",
-  "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=431626709"
-  ]
+  "doc_id": "37551561817767907"
 }
 ```
 
@@ -406,37 +405,14 @@ Answered:
       },
       "shortcut_bookmarks": {
         "shortcut_bookmark": {
-          "count": 3,
-          "edges": [
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            },
-            {
-              "__typename": "FolderBookmarksEdge"
-            }
-          ]
+          "count": 0,
+          "edges": []
         },
         "id": "1592249071005526",
         "bookmarks": {
-          "edges": [
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            },
-            {
-              "node": "(18 fields)",
-              "cursor": null
-            }
-          ],
+          "edges": [],
           "page_info": {
-            "end_cursor": "Ym9va21hcms6MjQ3ODMzMjAxNTgxMDM5Mzow",
+            "end_cursor": null,
             "has_next_page": false
           }
         }
@@ -520,8 +496,8 @@ Answered:
       }
     ],
     "server_metadata": {
-      "request_start_time_ms": 1792822379571,
-      "time_at_flush_ms": 1792822379769
+      "request_start_time_ms": 1792911375698,
+      "time_at_flush_ms": 1792911375985
     },
     "is_final": true
   }

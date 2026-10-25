@@ -13,7 +13,7 @@
 | Called from | `CometNotificationsDropdown.react` |
 | rea | `ev_ab1965911932cb7fcf25b222bf92e0487c624ad5aa06bc6a0e5e7860bc09d85a` |
 
-Seen 148 time(s) in 30 run(s).
+Seen 204 time(s) in 36 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -53,11 +53,11 @@ Seen 148 time(s) in 30 run(s).
 | inspect | step 5: wait 5s | 1 | 200 | 826 ms | 519978 ms | — |
 | inspect | step 8: goto /marketplace/inbox | 1 | 200 | 1394 ms | 10331 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 1177 ms | 7157 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 23 | 200 | 814–21715 ms | 5436–1410350 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 30 | 200 | 814–21715 ms | 3233–1410350 ms | — |
 | inspect | step 1: goto /marketplace/ | 2 | 200 | 1158–1484 ms | 18023–18294 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 1 | 200 | 684 ms | 354420 ms | — |
-| inspect | step 1: goto /marketplace/status | 1 | 200 | 1520 ms | 5189 ms | — |
-| inspect | step 6: goto /marketplace/inbox | 13 | 200 | 846–2695 ms | 25003–1792588 ms | — |
+| inspect | step 1: goto /marketplace/status | 2 | 200 | 1520–2853 ms | 5189–5609 ms | — |
+| inspect | step 6: goto /marketplace/inbox | 15 | 200 | 846–2695 ms | 3017–1792588 ms | — |
 | inspect | step 1: goto /marketplace/create/item | 1 | 200 | 2060 ms | 5602 ms | — |
 | inspect | step 2: goto /marketplace/ | 1 | 200 | 905 ms | 6083 ms | — |
 | inspect | step 4: goto /marketplace/you/selling | 1 | 200 | 1230 ms | 4876 ms | — |
@@ -77,6 +77,14 @@ Seen 148 time(s) in 30 run(s).
 | host | step 7: goto /me | 1 | 200 | 1237 ms | 3982 ms | — |
 | host | step 12: goto /me | 1 | 200 | 1304 ms | 3137 ms | — |
 | host | step 17: goto /me | 1 | 200 | 1270 ms | 3098 ms | — |
+| flow | step 1: goto /marketplace/ | 3 | 200 | 888–953 ms | 2495–3545 ms | — |
+| flow | step 2: setLocation Mountain Top, Pennsylvania | 3 | 200 | 827–994 ms | 1979–4824 ms | — |
+| flow | step 3: goto /marketplace/create/item | 3 | 200 | 842–1749 ms | 1991–3800 ms | — |
+| flow | step 15: clickRole button "…" | 1 | 200 | 1959 ms | 13692 ms | — |
+| host | step 41: sellLocation | 30 | 200 | 874–2595 ms | 128649–614569 ms | — |
+| host | step 42: setLocation Mountain Top, Pennsylvania | 1 | 200 | 1164 ms | 5748 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 4 | 200 | 827–926 ms | 615012–657625 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 1495 ms | 2924 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
@@ -362,13 +370,12 @@ Answered:
 }
 ```
 
-**runs/inspect/20261024T164523_61593843527201**, step 1: goto /me: 200, 1200 ms
+**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 2853 ms
 
 Sent:
 
 ```json
 {
-  "qpl_active_flow_ids": "25305590",
   "fb_api_caller_class": "RelayModern",
   "fb_api_req_friendly_name": "CometNotificationsDropdownQuery",
   "server_timestamps": "true",
@@ -377,10 +384,7 @@ Sent:
     "environment": "MAIN_SURFACE",
     "scale": 1
   },
-  "doc_id": "29240849615602606",
-  "fb_api_analytics_tags": [
-    "qpl_active_flow_ids=25305590"
-  ]
+  "doc_id": "29240849615602606"
 }
 ```
 
@@ -392,32 +396,53 @@ Answered:
     "viewer": {
       "actor": {
         "__typename": "User",
-        "id": "61593843527201",
+        "id": "61593939852820",
         "__isActor": "User",
-        "name": "Bariye Dao"
+        "name": "Uski Guvh"
       },
       "notifications_page": {
         "filter_config": {
           "selected_filter_tokens": "(taken out)",
-          "filters": "(2 items)"
+          "filters": [
+            "(3 fields)",
+            "(3 fields)"
+          ]
         },
-        "query_id": "Cg8BdAZq3OC3DwNlbnYPDE1BSU5fU1VSRkFDRQ8CZnQKAQ8CcXQPBWZpcnN0DwJxZgoCAA8ISVNfQ09NRVQCAQ8VSU5DTFVERV9XQV9QMkJfTk9USUZTAQ8DZWZ0DgE=",
+        "query_id": "Cg8BdAZq3agJDwNlbnYPDE1BSU5fU1VSRkFDRQ8CZnQKAQ8CcXQPBWZpcnN0DwJxZgoCAA8ISVNfQ09NRVQCAQ8VSU5DTFVERV9XQV9QMkJfTk9USUZTAQ8DZWZ0DgE=",
         "edges": [
-          "(2 fields)",
-          "(2 fields)",
-          "(2 fields)",
-          "(2 fields)",
-          "(2 fields)",
-          "(2 fields)",
-          "… 1 more"
+          {
+            "node": "(6 fields)",
+            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":0,\"rc\":1,\"nc\":0,\"rt\":\"bucket_header\",\"ah\":35,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[]}"
+          },
+          {
+            "node": "(5 fields)",
+            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":1,\"rc\":2,\"nc\":1,\"rt\":\"notification\",\"ah\":127,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[],\"fr\":[61594307126888,61594290297531],\"nid\":[1788763333642799,1788763359717652],\"ts\":1788763359}"
+          },
+          {
+            "node": "(5 fields)",
+            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":2,\"rc\":3,\"nc\":2,\"rt\":\"notification\",\"ah\":219,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[],\"fr\":[61594307126888,61594290297531,61584856640511],\"nid\":[1788763333642799,1788763359717652,1788763402791959],\"ts\":1788763402}"
+          },
+          {
+            "node": "(5 fields)",
+            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":3,\"rc\":4,\"nc\":3,\"rt\":\"notification\",\"ah\":311,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[],\"fr\":[61594307126888,61594290297531,61584856640511,61594126804562,61594277998313],\"nid\":[1788763333642799,1788763359717652,1788763402791959,1788763559150493,1788… (430 chars)"
+          },
+          {
+            "node": "(5 fields)",
+            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":4,\"rc\":5,\"nc\":4,\"rt\":\"notification\",\"ah\":403,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[],\"fr\":[61594307126888,61594290297531,61584856640511,61594126804562,61594277998313,61594209991091],\"nid\":[1788763333642799,1788763359717652,1788763402791959,178876… (479 chars)"
+          },
+          {
+            "node": "(5 fields)",
+            "cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":5,\"rc\":6,\"nc\":5,\"rt\":\"notification\",\"ah\":495,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\",\"hdr\"],\"erd\":[],\"fr\":[61594307126888,61594290297531,61584856640511,61594126804562,61594277998313,61594209991091,61594307126888],\"nid\":[1788763333642799,1788763359717652,17887634… (528 chars)"
+          },
+          "… 4 more"
         ],
         "page_info": {
-          "end_cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":0,\"rc\":7,\"nc\":6,\"rt\":\"notification\",\"ah\":587,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\"],\"erd\":[],\"ts\":1788769929,\"nid\":[1788850999366609,1792656848779196,1788769933380469,1792859794950673,1790725307301869,1789363032587216,1788769929984193],\"pymk\":[61578755576207,6… (415 chars)",
+          "end_cursor": "{\"bl\":[\"priority_inbox\"],\"bic\":0,\"rc\":10,\"nc\":9,\"rt\":\"notification\",\"ah\":863,\"bc\":\"comet_today_bucket_friending_before_today\",\"nf\":[\"Cg8CZnQPA2FsbAE=\"],\"qf\":[\"IS_COMET\",\"INCLUDE_WA_P2B_NOTIFS\"],\"f\":[\"has_attempted_ad_fetch\"],\"erd\":[],\"fr\":[61594307126888,61594290297531,61584856640511,61594126804562,61594277998313,61594209991091,61594307126888],\"nid\":[1788763333642799,1788763359717652,1788763402791… (608 chars)",
           "has_next_page": false
         }
       },
-      "notifications_unseen_count": 6,
-      "last_update_timestamp": 1792860343,
+      "notifications_unseen_count": 9,
+      "last_update_timestamp": 1792911369,
       "notifications_sound_path": [
         "https://static.xx.fbcdn.net/rsrc.php/yQ/r/EE3t4uwM6Gd.ogg",
         "https://static.xx.fbcdn.net/rsrc.php/yF/r/NJ17yOPKZOV.mp3"
@@ -442,66 +467,109 @@ Answered:
         "surface": null
       },
       {
-        "uri": "https://scontent.fagc1-2.fna.fbcdn.net/v/t39.30808-1/789612368_122183023436958519_3332789394171988718_n.jpg (457 chars)",
+        "uri": "https://static.xx.fbcdn.net/rsrc.php/ym/r/ZfYoJCs7kVW.webp",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent.fagc1-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (403 chars)",
+        "uri": "https://scontent.fagc3-2.fna.fbcdn.net/v/t39.30808-1/863325433_122127029211464661_923216486577496458_n.jpg (483 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent.fagc1-2.fna.fbcdn.net/v/t39.30808-1/469985361_122117877044594116_2545226766575407811_n.jpg (442 chars)",
+        "uri": "https://scontent.fagc3-2.fna.fbcdn.net/v/t39.30808-1/853582536_122150707779161888_647311438129383443_n.jpg (481 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent.fagc1-1.fna.fbcdn.net/v/t39.30808-6/228404359_221888706500070_4752941740139851899_n.jpg (455 chars)",
+        "uri": "https://scontent.fagc3-1.fna.fbcdn.net/v/t1.30497-1/453178253_471506465671661_2781666950760530985_n.png (431 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
       },
       {
-        "uri": "https://scontent.fagc1-2.fna.fbcdn.net/v/t39.30808-6/313193381_835157594199815_5174173905379448492_n.jpg (455 chars)",
+        "uri": "https://scontent.fagc3-2.fna.fbcdn.net/v/t39.30808-1/799171017_122095281129476343_5621487743282889452_n.jpg (483 chars)",
         "label": null,
         "width": null,
         "height": null,
         "surface": null
-      }
+      },
+      "… 1 more"
     ],
     "server_metadata": {
-      "request_start_time_ms": 1792860343195,
-      "time_at_flush_ms": 1792860343885
+      "request_start_time_ms": 1792911369228,
+      "time_at_flush_ms": 1792911371642
     },
     "is_final": true,
     "sr_payload": {
       "ddd": {
         "hsrp": {
-          "hsdp": "(4 fields)",
-          "hblp": "(3 fields)"
+          "hsdp": {
+            "clpData": "(3 fields)",
+            "gkxData": "(1 fields)",
+            "ixData": "(6 fields)",
+            "metaconfigData": "(1 fields)",
+            "qexData": "(1 fields)",
+            "qplData": "(1 fields)"
+          },
+          "hblp": {
+            "consistency": "(1 fields)",
+            "rsrcMap": "(25 fields)",
+            "compMap": "(4 fields)",
+            "indexUpgrades": "(2 fields)"
+          }
         },
         "jsmods": {
-          "define": "(7 items)",
-          "require": "(7 items)",
-          "phd2_indexes": ":140,139,1857,1858"
+          "define": [
+            "(4 items)",
+            "(4 items)",
+            "(4 items)",
+            "(4 items)",
+            "(4 items)",
+            "(4 items)",
+            "… 53 more"
+          ],
+          "require": [
+            "(1 items)",
+            "(1 items)",
+            "(1 items)",
+            "(1 items)",
+            "(4 items)",
+            "(1 items)",
+            "… 14 more"
+          ],
+          "phd2_indexes": ":2294,2295,142,143,1606,532,823,824,825,826,150"
         },
         "allResources": [
+          "f94yn+O",
+          "27aiPPU",
+          "w0WEQPq",
+          "qo0X/QJ",
           "4YfkVO4",
-          "YG5p7TX",
-          "csr:_8_0_s8"
+          "rckwxCD",
+          "… 2 more"
         ],
         "tieredResources": {
-          "r": "(3 items)",
-          "rdfds": "(0 items)",
-          "rds": "(0 items)"
+          "r": [
+            "f94yn+O",
+            "27aiPPU",
+            "w0WEQPq",
+            "qo0X/QJ",
+            "4YfkVO4",
+            "rckwxCD",
+            "… 1 more"
+          ],
+          "rdfds": [],
+          "rds": [
+            "csr:_4_1_2b"
+          ]
         }
       }
     }

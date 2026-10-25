@@ -6836,3 +6836,82 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: vendored hopfian/fbk in-tree at `vendor/fbk` (228 files: its curl_cffi direct-API client for Facebook's GraphQL/MQTT/DGW, the request governor, the doc_id registry), no longer a submodule and ours to edit. Added a `proxy` parameter to fbk's `FBTransport` so every request exits through the account's own proxy. Wired fbk into log-cli: `python/pacing/pacer.py` (a per-account `RequestGovernor`, state under `~/.logCli/governor`, `gate`/`soft_block`/`checkpoint`/`status`), `python/directApi/fbkTry.py` (drives an account through fbk's login via its proxy and our governor), and `scripts/fbk/tryAccount.ts` (reads the account's proxy and login secrets from Twenty `socialAccounts` and runs the engine). `vendor/` is exempt from `check:noComments`; `data-log-control` is on the naming allowlist. Research under `RESEARCH/facebookInternalApiCommunity` (burn matrix, fbk assessment, the GitHub/community findings).
 Why: matt asked to bring fbk's approach into our project as a first-class part of the system — not a submodule, not left untouched — to use its governor (pacing discipline) and direct-API client, driven by our socialAccounts data. A live test showed fbk cannot onboard a fresh vendor account (it hits the first-login checkpoint and defers to a browser), so the role split is: AdsPower onboards and exports the session, fbk drives an already-logged-in account.
 Checked: imports resolve with fbk in-tree (`pacing.pacer` plus fbk `transport`/`login`/`governor`); the governor paces (39s between two gated calls, the 40/day mutation budget, soft-block → 15-min cooldown); a live run of a Canada account (Barriere) reached Facebook through its CA proxy (exit 206.116.113.223) and posted credentials before fbk's own flow hit an unrecognized checkpoint (`c_user`/`xs` not set). `check:naming`, `check:noComments`, `check:layout` pass.
+
+## 2026-10-25 08:30Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `docs/platforms/facebook/background/CometActorGatewayHandlerQuery.md`: edited
+- `docs/platforms/facebook/background/CometClassicHomeLeftRailContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometFeedInlineComposerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactChannelsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactCommunityChatsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactGroupsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContactsContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeCreateMenuContentQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuAllProductsQuery.md`: edited
+- `docs/platforms/facebook/background/CometHomeMegaMenuShortcutsQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceInboxContentContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceInboxSellerTabThreadViewContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceNUXUpdateStateMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceSetBrowseRadiusMutation.md`: edited
+- `docs/platforms/facebook/background/CometMarketplaceStatusContentContainerQuery.md`: edited
+- `docs/platforms/facebook/background/CometMegaphoneRootQuery.md`: edited
+- `docs/platforms/facebook/background/CometModernHomeFeedQuery.md`: edited
+- `docs/platforms/facebook/background/CometNotificationsDropdownQuery.md`: edited
+- `docs/platforms/facebook/background/CometRightSideHeaderCardsQuery.md`: edited
+- `docs/platforms/facebook/background/CometSearchBootstrapKeywordsDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/CometTS2BitArrayLoggerMutation.md`: edited
+- `docs/platforms/facebook/background/ConversationalSupport2FAChatExperienceQuery.md`: new file
+- `docs/platforms/facebook/background/FBScreenTimeLogger_syncMutation.md`: edited
+- `docs/platforms/facebook/background/FBYRPTimeLimitsEnforcementQuery.md`: edited
+- `docs/platforms/facebook/background/MAWVerifyThreadCutover_ContactCapabilities2Query.md`: edited
+- `docs/platforms/facebook/background/MarketplaceSearchAddressDataSourceQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYouSellingUpsellCardQuery.md`: edited
+- `docs/platforms/facebook/background/MarketplaceYourListingDialogQuery.md`: edited
+- `docs/platforms/facebook/background/OhaiWebPublicKeyConfigQuery.md`: edited
+- `docs/platforms/facebook/background/RTWebCallBlockSettingHooksQuery.md`: edited
+- `docs/platforms/facebook/background/StoriesTrayRectangularRootQuery.md`: edited
+- `docs/platforms/facebook/background/ajaxBnzai.md`: edited
+- `docs/platforms/facebook/background/ajaxBulkRouteDefinitions.md`: edited
+- `docs/platforms/facebook/background/ajaxBz.md`: edited
+- `docs/platforms/facebook/background/ajaxNavigation.md`: edited
+- `docs/platforms/facebook/background/ajaxQm.md`: edited
+- `docs/platforms/facebook/background/ajaxRelayEf.md`: edited
+- `docs/platforms/facebook/background/ajaxRouteDefinition.md`: edited
+- `docs/platforms/facebook/background/fetchMWChatVideoAutoplaySettingQuery.md`: edited
+- `docs/platforms/facebook/background/notificationsClientPushXout.md`: new file
+- `docs/platforms/facebook/background/sharedUserPreferences.md`: edited
+- `docs/platforms/facebook/background/useMWEncryptedBackupsFetchBackupIdsV2Query.md`: edited
+- `docs/platforms/facebook/background/usePasskeyAuthOptionsQuery.md`: new file
+- `docs/platforms/facebook/checkpoint/FBScrapingWarningMutation.md`: edited
+- `docs/platforms/facebook/checkpoint/TwoStepVerificationChallengePickerDialogQuery.md`: new file
+- `docs/platforms/facebook/checkpoint/UFACAISupportChatExperienceQuery.md`: edited
+- `docs/platforms/facebook/checkpoint/usePseudoBlockedUserInterstitialF3Query.md`: edited
+- `docs/platforms/facebook/flows/groupMembers.md`: new file
+- `docs/platforms/facebook/listingForm/MarketplaceComposerAIPricingDialogImplSimilarListingsQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useListingShippableEligibilityCheckQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerAttributesQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerBISNumberEligibilityRefetchQuery.md`: edited
+- `docs/platforms/facebook/listingForm/useMarketplaceComposerPricePredictionQuery.md`: edited
+- `docs/platforms/facebook/location/CometMarketplaceSetBuyLocationMutation.md`: edited
+- `docs/platforms/facebook/location/MarketplaceBuyLocationDialogLocationUrlQuery.md`: edited
+- `docs/platforms/facebook/location/MarketplaceBuyLocationDialogQuery.md`: edited
+- `docs/platforms/facebook/login/CometLogoutHandlerQuery.md`: edited
+- `docs/platforms/facebook/login/TwoFactorAuthWizTriggerNonceCreatorMutation.md`: new file
+- `docs/platforms/facebook/login/ajaxTimezoneUpdatePhp.md`: edited
+- `docs/platforms/facebook/login/ajaxWebstorageProcessKeys.md`: edited
+- `docs/platforms/facebook/login/useCDSWebLoginMutation.md`: edited
+- `docs/platforms/facebook/login/useTwoFactorLoginValidateCodeMutation.md`: new file
+- `docs/platforms/facebook/operations.json`: edited
+- `docs/platforms/facebook/photos/ajaxReactComposerAttachmentsPhotoUpload.md`: edited
+- `docs/platforms/facebook/photos/useSherlockPhotoPredictionMutation.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometProfilePictureEditDialogQuery.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometProfilePictureSetMutation.md`: edited
+- `docs/platforms/facebook/profile/ProfileCometTimelineFeedRefetchQuery.md`: edited
+- `docs/platforms/facebook/profile/profilePictureUpload.md`: edited
+- `docs/platforms/facebook/publishing/useCometMarketplaceListingCreateMutation.md`: edited
+
+What changed: folded tonight's four runs (Wilkes-Barre publish, Nanticoke/Mountain Top/Scranton inspect) into the Facebook request docs with `capture --docs`, and wrote the reasoning for six requests that were stubs: the two-step method picker (`TwoStepVerificationChallengePickerDialogQuery`), `useTwoFactorLoginValidateCodeMutation`, `TwoFactorAuthWizTriggerNonceCreatorMutation`, `usePasskeyAuthOptionsQuery`, `ConversationalSupport2FAChatExperienceQuery` and `notificationsClientPushXout`. 235 requests documented.
+Why: tonight's sign-ins hit the passkey/method-picker/TOTP path and the push gate (rule 27) refused while those docs had no reasoning and the four runs were newer than the docs. Writing them captures what each 2FA/checkpoint call does and how our sign-in reads it (pick TOTP, press Try another way on a passkey), so the knowledge is kept per rule 1/73.
+Checked: `check:facebookClientDocs` passes (235 requests documented, rea read every GraphQL slice, no `toWrite` left outside the README template).

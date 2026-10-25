@@ -11,9 +11,9 @@
 | Sends | — |
 | Reads | — |
 | Called from | — |
-| rea | `ev_eb4e6fa8742e9ad786748859ae836e12036ec2a8cc8c1bd662da3df39f3228fe` |
+| rea | `ev_97c9b95af3c6df9f48922c119a56eb765f69a4164d9153aef5a12b884211cda8` |
 
-Seen 29 time(s) in 8 run(s).
+Seen 36 time(s) in 11 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -33,6 +33,10 @@ Seen 29 time(s) in 8 run(s).
 | host | step 12: goto /me | 2 | 200 | 984–1034 ms | 3870–3877 ms | — |
 | host | step 17: goto /me | 2 | 200 | 990–1063 ms | 3028–3031 ms | — |
 | host | step 21: clickRole button "…" | 1 | 200 | 1032 ms | 7865 ms | — |
+| flow | setLocation: 'Mountain Top, Pennsylvania' is suggestion 1 of 2 | 2 | 200 | 2195–3050 ms | 5012–6707 ms | — |
+| host | step 32: goto /me | 2 | 200 | 538–1419 ms | 5716–5753 ms | — |
+| host | step 39: clickRole button "…" | 1 | 200 | 857 ms | 3823 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 2 | 200 | 2195–4545 ms | 5140–644742 ms | — |
 
 <!-- facts:end -->
 

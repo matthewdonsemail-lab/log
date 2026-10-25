@@ -9,9 +9,9 @@
 | doc_id | `27762484350095071` |
 | Path | `/api/graphql/` |
 | Sends | `scale` |
-| Reads | — |
-| Called from | — |
-| rea | not read yet |
+| Reads | `xfb_actor_gateway_open_experience.screen`, `xfb_actor_gateway_open_experience.presentation_style`, `xfb_actor_gateway_open_experience.tab_id` |
+| Called from | `CometActorGatewayHandler` |
+| rea | `ev_c0102a67d2d053b67129b5c971d1c93594f18142e73a08022eddd9cd8888ae0b` |
 
 Seen 1 time(s) in 1 run(s).
 

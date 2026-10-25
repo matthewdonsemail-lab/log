@@ -13,7 +13,7 @@
 | Called from | `FBScreenTimeLogger.react` |
 | rea | `ev_9c20c08fbf4c14d62fa5b772be9b8dc2f4b32b06aa445a78cfb8f8ea86ba73c3` |
 
-Seen 94 time(s) in 26 run(s).
+Seen 103 time(s) in 29 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -45,7 +45,7 @@ Seen 94 time(s) in 26 run(s).
 | inspect | type failed: TimeoutError: Locator.press_sequentially: Timeout 30000ms exceeded. | 1 | 200 | 1542 ms | 40440 ms | — |
 | inspect | step 5: wait 5s | 2 | 200 | 491–494 ms | 216260–516495 ms | — |
 | inspect | step 11: goto /marketplace/inbox | 1 | 200 | 524 ms | 26832 ms | — |
-| inspect | step 3: goto /marketplace/inbox | 9 | 200 | 497–1377 ms | 223677–1728919 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 10 | 200 | 430–1377 ms | 223677–1728919 ms | — |
 | inspect | step 4: goto /marketplace/inbox | 6 | 200 | 572–2282 ms | 252472–1753170 ms | — |
 | inspect | step 6: goto /marketplace/inbox | 5 | 200 | 434–874 ms | 11719–1213257 ms | — |
 | inspect | step 6: wait 6s | 1 | 200 | 558 ms | 10373 ms | — |
@@ -60,6 +60,9 @@ Seen 94 time(s) in 26 run(s).
 | inspect | step 8: wait 5s | 6 | 200 | 414–1661 ms | 144927–1646063 ms | error 1357053: Please review your account |
 | host | step 20: uploadRole button "…" | 1 | 200 | 695 ms | 277 ms | — |
 | host | expected ProfileCometProfilePictureSetMutation: sent | 6 | 200 | 684–794 ms | 274722–1776454 ms | — |
+| flow | step 13: fillRole textbox "…" | 1 | 200 | 615 ms | 12276 ms | — |
+| host | step 41: sellLocation | 5 | 200 | 543–621 ms | 149464–1350100 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 2 | 200 | 567–622 ms | 150003–450500 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
@@ -207,7 +210,7 @@ Answered:
 }
 ```
 
-**runs/inspect/20261024T164523_61593843527201**, step 8: wait 5s: 200, 482 ms
+**runs/inspect/20261025T064655_61593981307720**, step 3: goto /marketplace/inbox: 200, 430 ms
 
 Sent:
 
@@ -218,31 +221,31 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "input": {
-      "actor_id": "61593843527201",
+      "actor_id": "61593981307720",
       "client_mutation_id": "1",
-      "device_time_iso": "2026-10-24T16:50:44.663Z",
+      "device_time_iso": "2026-10-25T06:52:22.337Z",
       "fb_web_fb_intervals_payload": {
-        "device_timestamp": "1792860644",
+        "device_timestamp": "1792911142",
         "device_timezone": "America/New_York",
         "intervals": [
           {
-            "end_timestamp": "1792860180",
-            "start_timestamp": "1792860028"
+            "end_timestamp": "1792884967",
+            "start_timestamp": "1792884675"
           },
           {
-            "end_timestamp": "1792860644",
-            "start_timestamp": "1792860343"
+            "end_timestamp": "1792911142",
+            "start_timestamp": "1792910839"
           }
         ],
-        "local_storage_id": "67411138",
+        "local_storage_id": "68236101",
         "version": "V1"
       },
       "screentime_snapshot_payload": {
         "l24h_s": -1,
-        "last_sync_timestamp": 1792860343,
-        "today_s": 0
+        "last_sync_timestamp": 1792910839,
+        "today_s": 2619
       },
-      "trigger_reason": "EMPTY_STATE"
+      "trigger_reason": "REGULAR"
     }
   },
   "doc_id": "28969188822673160"
@@ -257,15 +260,15 @@ Answered:
     "screen_time_sync": {
       "aggs": {
         "__typename": "ScreenTimeSyncMutationOutput",
-        "today_s": 453,
+        "today_s": 303,
         "l24h_s": -1
       }
     }
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792860643900,
-      "time_at_flush_ms": 1792860643986
+      "request_start_time_ms": 1792911142327,
+      "time_at_flush_ms": 1792911142364
     },
     "is_final": true
   }

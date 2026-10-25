@@ -5,15 +5,15 @@
 | | |
 | --- | --- |
 | Domain | background |
-| Kind | query |
+| Kind | mutation |
 | doc_id | `25967579919558378` |
 | Path | `/api/graphql` |
 | Sends | `app_id`, `end_time`, `start_time` |
-| Reads | — |
-| Called from | — |
-| rea | not read yet |
+| Reads | `xfb_time_spent_bit_array.success` |
+| Called from | `CometTS2BitArrayLogger` |
+| rea | `ev_d253369048e91a1f311233968c4c1126ff89c73db7729307f69ee65b3bf42713` |
 
-Seen 36 time(s) in 1 run(s).
+Seen 39 time(s) in 2 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -26,12 +26,15 @@ Seen 36 time(s) in 1 run(s).
 | host | step 16: snapshot | 1 | 200 | 391 ms | 5583 ms | — |
 | host | step 17: goto /me | 1 | 200 | 388 ms | 9318 ms | — |
 | host | expected ProfileCometProfilePictureSetMutation: sent | 28 | 200 | 347–1145 ms | 6303–1734301 ms | — |
+| inspect | step 1: goto /marketplace/status | 1 | 200 | 394 ms | 13007 ms | — |
+| inspect | step 2: goto /marketplace/you/selling | 1 | 200 | 418 ms | 10335 ms | — |
+| inspect | step 3: goto /marketplace/inbox | 1 | 200 | 374 ms | 9995 ms | — |
 
 ### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
-**runs/host/20261024T211541_61593939852820**, step 2: pageText: 200, 398 ms
+**runs/inspect/20261025T065539_61593939852820**, step 1: goto /marketplace/status: 200, 394 ms
 
 Sent:
 
@@ -42,37 +45,8 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "app_id": "2220391788200892",
-    "end_time": 1792876565,
-    "start_time": 1792876557
-  },
-  "doc_id": "25967579919558378"
-}
-```
-
-Answered:
-
-```json
-{
-  "__ar": 1,
-  "rid": "ANShEo3O4HYUWoUtq9xa9pL",
-  "payload": {},
-  "lid": "7700346212494473024"
-}
-```
-
-**runs/host/20261024T211541_61593939852820**, step 4: pageText: 200, 395 ms
-
-Sent:
-
-```json
-{
-  "fb_api_caller_class": "RelayModern",
-  "fb_api_req_friendly_name": "CometTS2BitArrayLoggerMutation",
-  "server_timestamps": "true",
-  "variables": {
-    "app_id": "2220391788200892",
-    "end_time": 1792876591,
-    "start_time": 1792876583
+    "end_time": 1792911376,
+    "start_time": 1792911368
   },
   "doc_id": "25967579919558378"
 }
@@ -89,15 +63,15 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792876591463,
-      "time_at_flush_ms": 1792876591534
+      "request_start_time_ms": 1792911376601,
+      "time_at_flush_ms": 1792911376671
     },
     "is_final": true
   }
 }
 ```
 
-**runs/host/20261024T211541_61593939852820**, step 6: goto /marketplace/status: 200, 430 ms
+**runs/inspect/20261025T065539_61593939852820**, step 2: goto /marketplace/you/selling: 200, 418 ms
 
 Sent:
 
@@ -108,8 +82,8 @@ Sent:
   "server_timestamps": "true",
   "variables": {
     "app_id": "2220391788200892",
-    "end_time": 1792876623,
-    "start_time": 1792876615
+    "end_time": 1792911396,
+    "start_time": 1792911388
   },
   "doc_id": "25967579919558378"
 }
@@ -126,8 +100,46 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792876623132,
-      "time_at_flush_ms": 1792876623233
+      "request_start_time_ms": 1792911396328,
+      "time_at_flush_ms": 1792911396407
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/inspect/20261025T065539_61593939852820**, step 3: goto /marketplace/inbox: 200, 374 ms
+
+Sent:
+
+```json
+{
+  "__jssesw": "341",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "CometTS2BitArrayLoggerMutation",
+  "server_timestamps": "true",
+  "variables": {
+    "app_id": "2220391788200892",
+    "end_time": 1792911415,
+    "start_time": 1792911407
+  },
+  "doc_id": "25967579919558378"
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "xfb_time_spent_bit_array": {
+      "success": true
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792911415514,
+      "time_at_flush_ms": 1792911415548
     },
     "is_final": true
   }

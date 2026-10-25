@@ -13,15 +13,16 @@
 | Called from | — |
 | rea | `ev_36a106d5c6a349aaffd95d75400fb9370c5a8d58bad30e5c86f25c40aa5bf643` |
 
-Seen 3 time(s) in 3 run(s).
+Seen 4 time(s) in 4 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
 | inspect | step 1: goto / | 1 | 200 | 975 ms | 19172 ms | — |
 | inspect | step 1: goto /marketplace/status | 1 | 200 | 887 ms | 15895 ms | — |
 | host | step 4: pageText | 1 | 200 | 633 ms | 8959 ms | — |
+| host | step 28: clickRole button "…" | 1 | 200 | 888 ms | 17939 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -43,6 +44,27 @@ Answered:
   "rid": "Ae7OC83RspaUO2p68eZxGjc",
   "payload": null,
   "lid": "7699648432146207398"
+}
+```
+
+**runs/host/20261024T222706_61593981307720**, step 28: clickRole button "…": 200, 888 ms
+
+Sent:
+
+```json
+{
+  "data": "eyJldmVudCI6InNjYW5fcmVzdWx0IiwibG9jYWxfc3RvcmFnZSI6WyJzY3JlZW5fdGltZV9wZXJpb2RfbG9nZ2luZ19mYWNlYm9vayIsImxhc3RfaGVhZGxvYWRfdGltZSIsIlJTVERhdGEiLCJoYl90aW1lc3RhbXAiLCJiZHpfcGxheWJhY2tfc3RhdGUiLCJtd19lbmNyeXB0ZWRfYmFja3Vwc19yZXN0b3JlX3Vwc2VsbF9maXJzdF9pbXByZXNzaW9uX3RpbWVfa2V5IiwiYXJlc19sYXN0X3NpZ25hbF9mbHVzaCIsInNpZ25hbF9mbHVzaF90aW1lc3RhbXAiLCJTZXNzaW9uIiwiYmFuemFpOmxhc3Rfc3RvcmFnZV9mbHVzaCJdLCJy… (62164 chars)"
+}
+```
+
+Answered:
+
+```json
+{
+  "__ar": 1,
+  "rid": "AekL8IPWB7O4fgtBRABdith",
+  "payload": null,
+  "lid": "7700365811079541636"
 }
 ```
 

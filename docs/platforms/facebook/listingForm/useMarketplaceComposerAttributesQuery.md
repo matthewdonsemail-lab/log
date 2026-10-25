@@ -10,10 +10,10 @@
 | Path | `/api/graphql/` |
 | Sends | `categoryID` |
 | Reads | `viewer.definitions` |
-| Called from | `useMarketplaceComposerAttributes`, `MarketplacePDPC2CAttributesComponent.react` |
+| Called from | `MarketplacePDPC2CAttributesComponent.react`, `useMarketplaceComposerAttributes` |
 | rea | `ev_77c7779c2f652629c0ecb2787f18ef1624a32701bd6a431132af84b1503bb8df` |
 
-Seen 9 time(s) in 7 run(s).
+Seen 14 time(s) in 10 run(s).
 
 | Action | Our step | Times | Status | Took | After step start | Errors |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -22,9 +22,12 @@ Seen 9 time(s) in 7 run(s).
 | inspect | scroll: container +87px in 3 steps | 1 | 200 | 1709 ms | 1077 ms | — |
 | inspect | step 1: goto /marketplace/create/item | 2 | 200 | 425–545 ms | 5315–8980 ms | — |
 | inspect | step 5: goto /marketplace/create/item | 1 | 200 | 382 ms | 2487 ms | — |
-| flow | step 3: goto /marketplace/create/item | 1 | 200 | 359 ms | 2389 ms | — |
+| flow | step 3: goto /marketplace/create/item | 3 | 200 | 359–500 ms | 2389–4380 ms | — |
+| flow | scroll: container +87px in 3 steps | 1 | 200 | 640 ms | 953 ms | — |
+| host | step 40: goto /marketplace/create/item | 1 | 200 | 510 ms | 7021 ms | — |
+| host | setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9 | 1 | 200 | 500 ms | 656908 ms | — |
 
-### What it sent and what came back (the newest 2 from our runs)
+### What it sent and what came back (the newest 3 from our runs)
 
 Read from each run's own recording (rule 73), secrets and signed link tokens taken out. Kept in `~/.logCli/rea/clientFacts.json`, so it stays after the run is pruned.
 
@@ -63,7 +66,7 @@ Answered:
 }
 ```
 
-**runs/flow/20261023T064309_61594063207669**, step 3: goto /marketplace/create/item: 200, 359 ms
+**runs/host/20261024T222706_61593981307720**, step 40: goto /marketplace/create/item: 200, 510 ms
 
 Sent:
 
@@ -90,8 +93,47 @@ Answered:
   },
   "extensions": {
     "server_metadata": {
-      "request_start_time_ms": 1792737838323,
-      "time_at_flush_ms": 1792737838347
+      "request_start_time_ms": 1792881249837,
+      "time_at_flush_ms": 1792881249865
+    },
+    "is_final": true
+  }
+}
+```
+
+**runs/host/20261024T222706_61593981307720**, setLocation: 'Mountain Top, Pennsylvania' is suggestion 2 of 9: 200, 500 ms
+
+Sent:
+
+```json
+{
+  "qpl_active_flow_ids": "25305590",
+  "fb_api_caller_class": "RelayModern",
+  "fb_api_req_friendly_name": "useMarketplaceComposerAttributesQuery",
+  "server_timestamps": "true",
+  "variables": {
+    "categoryID": null
+  },
+  "doc_id": "24482075174793922",
+  "fb_api_analytics_tags": [
+    "qpl_active_flow_ids=25305590"
+  ]
+}
+```
+
+Answered:
+
+```json
+{
+  "data": {
+    "viewer": {
+      "definitions": []
+    }
+  },
+  "extensions": {
+    "server_metadata": {
+      "request_start_time_ms": 1792883427280,
+      "time_at_flush_ms": 1792883427302
     },
     "is_final": true
   }
