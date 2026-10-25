@@ -139,6 +139,15 @@ export const ERROR_CATALOG = {
     monitor: 'blocked',
     action: reconnect
   },
+  identityVerificationRequired: {
+    layer: 'account',
+    meaning: 'Facebook holds the account\'s listings until a person confirms their identity: Selling says "Confirm your identity to publish this and any future listings", and MarketplaceYourListingDialogQuery answers a seller notice of type INTEGRITY_NEEDS_VERIFICATION_VH ("More Info Needed to Publish This Listing", "Please confirm your mobile number before selling on Marketplace").',
+    retryable: false,
+    raisedIn: ['marketplace/check', 'flow.marketplaceListingPublish'],
+    publish: 'blocked',
+    monitor: 'blocked',
+    action: tellMatt
+  },
   suspended: {
     layer: 'account',
     meaning: 'Marketplace is restricted or the account is disabled ("can\'t buy or sell").',

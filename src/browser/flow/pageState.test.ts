@@ -144,3 +144,13 @@ describe('"We suspect automated behaviour" in Arabic is the same state, dismisse
     expect(pageStateOf('https://www.facebook.com/checkpoint/601051028565049/', text)?.id).toBe('automatedBehaviour')
   })
 })
+
+describe('the identity hold is a known state only a person clears', () => {
+  test('from the Selling text, and from MarketplaceYourListingDialogQuery\'s INTEGRITY_NEEDS_VERIFICATION_VH notice', () => {
+    const fromText = pageStateOf('https://www.facebook.com/marketplace/you/selling', 'Confirm your identity to publish this and any future listings Junk Removal Hazleton $99')
+    expect(fromText?.id).toBe('identityVerificationHold')
+    expect(fromText?.person).toBe(true)
+    const notice = { name: 'MarketplaceYourListingDialogQuery', answer: { listing_seller_notices: [{ type: 'INTEGRITY_NEEDS_VERIFICATION_VH' }] } } as unknown as StepExchange
+    expect(pageStateOf('https://www.facebook.com/marketplace/you/selling', 'More Info Needed to Publish This Listing', { exchanges: [notice] })?.id).toBe('identityVerificationHold')
+  })
+})

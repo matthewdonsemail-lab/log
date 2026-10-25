@@ -6563,3 +6563,24 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: an account is blocked when its status is checkpoint, restricted, banned, dead or deactivated, or its reason is wrongPassword (`accountBlocked`, `LOSING_STATUSES` gains checkpoint, `BLOCKING_REASONS`). `setStatusAndReplace` marks every listing of a blocked account ACCOUNT_LOST and hands a campaign's copy to another account in the same country. The host and `log flow run` now record the account's issue when they end on one (`recordAccountIssue`), so a checkpoint or wrong password reaches the account and its listings. `log facebook listing sweep [--apply]` finds every listing still READY, ACTIVE or the like on a blocked account (`blockedListings`) and marks it (`sweepBlockedListings`).
 Why: matt: "if we are basically blocked on that account then all of the listings are dead... fix that". Twenty held 17 listings and only 4 were live: the host and flows reported an account issue (Scranton ineligible, Pittston and Nanticoke wrong password, Wilkes-Barre and Exeter checkpointed) without writing it to the account, so its listings stayed READY; a checkpoint and a wrong password weren't losses at all.
 Checked: `replacement.test.ts` (10 pass): a checkpoint and a wrong password each put the account's listings in ACCOUNT_LOST and leave SOLD alone; the sweep finds only listings on blocked accounts and finds none after it runs. Full `bun test`: 1006 pass. Live on Twenty: Scranton RESTRICTED (suspended), Pittston and Nanticoke needsLogin (wrongPassword), one listing each now ACCOUNT_LOST; `log facebook listing sweep` then finds 0. `tsc --noEmit` clean.
+
+## 2026-10-25 07:01Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `README.md`: edited
+- `docs/diagrams/pageStates.mmd`: edited
+- `docs/errorCatalog.md`: edited
+- `python/errors/errorCatalog.json`: edited
+- `src/browser/flow/helpers/pageState.ts`: changed const PAGE_STATES, const RESOLVE_CALLS
+- `src/browser/flow/pageState.test.ts`: added test "from the Selling text, and from MarketplaceYourListingDialogQuery's INTEGRITY_NEEDS_VERIFICATION_VH notice"
+- `src/cli/check/index.ts`: changed const checkCommand
+- `src/errors/catalog/types.ts`: changed const ERROR_CATALOG
+- `src/facebook/marketplace/check/check.test.ts`: added test "Mountain Top's "Confirm your identity to publish this and any future listings" is BLOCKED, never ACTIVE", test "Hazleton's held listing goes BLOCKED and the check raises identityVerificationRequired"
+- `src/facebook/marketplace/check/client.ts`: changed function keepCheck
+- `src/facebook/marketplace/check/helpers/sellingListings.ts`: added const IDENTITY_HOLD · changed function statusOfListing
+- `src/facebook/marketplace/check/types.ts`: changed interface CheckReport
+- `src/marketplace/socialAccount/helpers/statusForIssue.ts`: changed const STATUS_FOR_ISSUE
+
+What changed: the identity hold is a known state, `identityVerificationHold` (person only), matched from the page ("Confirm your identity to publish this and any future listings", "More Info Needed to Publish This Listing") and from Facebook's answer (MarketplaceYourListingDialogQuery's seller notice of type INTEGRITY_NEEDS_VERIFICATION_VH). On Selling a listing with that notice is BLOCKED, never ACTIVE (`IDENTITY_HOLD`, `statusOfListing`), and the check raises `identityVerificationRequired`, which `log facebook check` now records on the account (RESTRICTED), so all its listings go ACCOUNT_LOST. New error code `identityVerificationRequired`.
+Why: matt: Mountain Top never had a listing up, and the identity step is known from the session's recording, so seeing it on the page and in the internal API should set the account's listings automatically, since it is something we can't do. Mountain Top's and Hazleton's listings were ACTIVE in Twenty from their create answers alone; Selling and MarketplaceYourListingDialogQuery say both are held for identity.
+Checked: `check.test.ts` (Hazleton's held listing goes BLOCKED and raises identityVerificationRequired; without the notice it is ACTIVE) and `pageState.test.ts` (the state from the text, and from the answer); full `bun test` 1010 pass; `check:agentHooks` passes. Live: `log facebook check` on Mountain Top and Hazleton read both listings as blocked from Selling; both accounts are now RESTRICTED (identityVerificationRequired) and their listings ACCOUNT_LOST.

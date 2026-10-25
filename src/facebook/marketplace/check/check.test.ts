@@ -3,7 +3,7 @@ import { mkdtempSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { marketplaceFixture } from '../../../twenty/graphql/index.ts'
-import { accessProblem, keepCheck, marketplaceAccessOf, sellerInboxOf, sellingListingsOf } from './index.ts'
+import { accessProblem, keepCheck, marketplaceAccessOf, sellerInboxOf, sellingListingsOf, statusOfListing } from './index.ts'
 
 const graphql = (name: string, body: unknown) => ({
   log: { entries: [{ request: { postData: { text: `av=1&fb_api_req_friendly_name=${name}&variables=%7B%7D` } }, response: { content: { text: JSON.stringify(body) } } }] }
@@ -80,5 +80,25 @@ describe('the status page opened directly', () => {
     expect(access).toMatchObject({ title: 'You have full access to Marketplace', banned: false, profileStatus: 'GOOD', sell: 'ELIGIBLE' })
     expect(accessProblem(access)).toBeNull()
     expect(accessProblem({ ...access, sell: 'INELIGIBLE' })).toContain('INELIGIBLE')
+  })
+})
+
+describe('a listing held for an identity check is not live', () => {
+  test("Mountain Top's \"Confirm your identity to publish this and any future listings\" is BLOCKED, never ACTIVE", () => {
+    const held = { listingId: '28779899605000522', title: 'Junk Removal Mountain Top – Free Quote From a Photo', price: '$99', onMarketplace: true, sold: false, pending: false, draft: false, rejected: false, duplicate: false, notice: 'Confirm your identity to publish this and any future listings', clicks: 0 }
+    expect(statusOfListing(held)).toBe('blocked')
+    expect(statusOfListing({ ...held, notice: null })).toBe('active')
+  })
+})
+
+describe('the identity hold is an account issue, not a live listing', () => {
+  test("Hazleton's held listing goes BLOCKED and the check raises identityVerificationRequired", async () => {
+    const twenty = marketplaceFixture()
+    const account = (await twenty.list('socialAccounts')).find((a) => a.accountName === 'galwayOne')!
+    await twenty.create('agencyListings', { title: 'Junk Removal Hazleton', socialAccountId: account.id, listingId: '1789968938884830', status: 'ACTIVE' } as never)
+    const held = { listingId: '1789968938884830', title: 'Junk Removal Hazleton', price: '$99', onMarketplace: true, sold: false, pending: false, draft: false, rejected: false, duplicate: false, notice: 'Confirm your identity to publish this and any future listings', clicks: 0, status: 'blocked' as const }
+    const report = await keepCheck(twenty, account.id, 'galwayOne', { access: marketplaceAccessOf(status()), listings: [held], inbox: sellerInboxOf(inbox([])) }, mkdtempSync(join(tmpdir(), 'logCheck')))
+    expect(report.issue?.code).toBe('identityVerificationRequired')
+    expect((await twenty.list('agencyListings')).find((r) => r.listingId === '1789968938884830')?.status).toBe('BLOCKED')
   })
 })

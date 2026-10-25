@@ -47,6 +47,14 @@ const PIN_FROM_MATT = 'matt gives the account\'s 6-digit PIN once: `log facebook
 export const PAGE_STATES: readonly StateRule[] = [
   { id: 'disabled', url: /checkpoint\/disabled|account\/disabled/i, what: 'the account is disabled', resolve: 'a person: the account is lost or appealed (rule 13: keep its record)', person: true },
   { id: 'videoSelfie', text: /video selfie|record a video|upload a video|take a video|verify with video|video verification/i, what: "Facebook's video selfie check", resolve: 'a person on camera (rules 10, 23): stop the account, tell matt', person: true },
+  {
+    id: 'identityVerificationHold',
+    text: /confirm your identity to publish|more info needed to publish this listing|confirm your mobile number before selling on marketplace/i,
+    answer: (exchanges) => exchanges.some((x) => x.name === 'MarketplaceYourListingDialogQuery' && JSON.stringify(x.answer ?? '').includes('INTEGRITY_NEEDS_VERIFICATION')),
+    what: 'Facebook holds the listings until a person confirms their identity (Selling: "Confirm your identity to publish this and any future listings"; MarketplaceYourListingDialogQuery: INTEGRITY_NEEDS_VERIFICATION_VH)',
+    resolve: 'a person: only matt can confirm the identity; `log facebook check --account <a>` records identityVerificationRequired, so the account is RESTRICTED and its listings ACCOUNT_LOST',
+    person: true
+  },
   { id: 'textCaptcha', text: /enter the text from the image/i, what: 'a text captcha ("Enter the text from the image")', resolve: '`log inspect do solve --live --account <a>` (2Captcha image solver, types the answer, presses Continue), then a snapshot for the next state', person: false },
   {
     id: 'checkpointStart',
@@ -207,6 +215,7 @@ const clickLabel = (label: RegExp) => (at: StateAt): ResolveCall => {
 export const RESOLVE_CALLS: Readonly<Record<string, (at: StateAt) => ResolveCall | null>> = {
   disabled: () => null,
   videoSelfie: () => null,
+  identityVerificationHold: () => null,
   textCaptcha: (at) => liveStep(at.account, 'solve'),
   checkpointStart: clickLabel(/(:\s*|")Continue"?\s*$/),
   automatedBehaviour: clickLabel(/(:\s*|")(Dismiss|Continue|تجاهل)"?\s*$/),

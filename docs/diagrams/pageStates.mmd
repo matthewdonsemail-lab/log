@@ -9,6 +9,9 @@ flowchart LR
   videoSelfie["videoSelfie: Facebook's video selfie check"]
   page --> videoSelfie
   videoSelfie --> person
+  identityVerificationHold["identityVerificationHold: Facebook holds the listings until a person confirms their identity (Selling: #quot;Confirm your identity to publish this and any future listings#quot;#59; MarketplaceYourListingDialogQuery: INTEGRITY_NEEDS_VERIFICATION_VH)"]
+  page --> identityVerificationHold
+  identityVerificationHold --> person
   textCaptcha["textCaptcha: a text captcha (#quot;Enter the text from the image#quot;)"]
   page --> textCaptcha
   textCaptcha -->|"log inspect do solve --live --account #lt;a#gt;"| nexttextCaptcha(["next state"])
