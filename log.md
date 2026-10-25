@@ -6915,3 +6915,15 @@ AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't e
 What changed: folded tonight's four runs (Wilkes-Barre publish, Nanticoke/Mountain Top/Scranton inspect) into the Facebook request docs with `capture --docs`, and wrote the reasoning for six requests that were stubs: the two-step method picker (`TwoStepVerificationChallengePickerDialogQuery`), `useTwoFactorLoginValidateCodeMutation`, `TwoFactorAuthWizTriggerNonceCreatorMutation`, `usePasskeyAuthOptionsQuery`, `ConversationalSupport2FAChatExperienceQuery` and `notificationsClientPushXout`. 235 requests documented.
 Why: tonight's sign-ins hit the passkey/method-picker/TOTP path and the push gate (rule 27) refused while those docs had no reasoning and the four runs were newer than the docs. Writing them captures what each 2FA/checkpoint call does and how our sign-in reads it (pick TOTP, press Try another way on a passkey), so the knowledge is kept per rule 1/73.
 Checked: `check:facebookClientDocs` passes (235 requests documented, rea read every GraphQL slice, no `toWrite` left outside the README template).
+
+## 2026-10-25 08:45Z · feat/adsPowerRelease
+
+AST (generated from the staged code by scripts/commitLog/astSummary.mjs, don't edit):
+- `RESEARCH/facebookInternalApiCommunity/demotionMatrix.md`: new file
+- `RESEARCH/facebookInternalApiCommunity/subqPortMatrix.md`: new file
+- `vendor/fbk/src/config.py`: edited
+- `vendor/fbk/src/session.py`: changed class Session
+
+What changed: fbk's `Config` gains a `proxy` field and `Session` passes it to `FBTransport`, so the direct-API engine exits through the account's own proxy end to end (foundation every post-login family port needs). Added `RESEARCH/facebookInternalApiCommunity/subqPortMatrix.md` (SubQ scored every command family's port tier) and `demotionMatrix.md`.
+Why: matt added a SubQ key and asked to score which Playwright families move to fbk. SubQ's tiers: port now where fbk ships it (group read/poll/members, inbox read, join, feed post/comment/delete), port from our held recordings (publish listing, setLocation), capture with Playwright first (check/scan/status/watch, profile setup, messengerPinCreate), and stay browser (warmup, connect, host). The proxy must reach fbk from `socialAccounts`, never the environment, so it is threaded through Config, not read from env.
+Checked: `proxy` is a `Config` field, `Session.__init__` passes `proxy=self.config.proxy`, and `FBTransport.__init__` accepts `proxy` (all asserted by import/inspect). SubQ ran over 20 families and wrote the matrix.

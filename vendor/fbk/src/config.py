@@ -73,6 +73,9 @@ class Config(BaseModel):
     timeout: float = Field(
         default=30.0, gt=0,
         description="Per-request HTTP timeout in seconds; strictly positive.")
+    proxy: str | None = Field(
+        default=None,
+        description="HTTP(S) proxy URL every request exits through; log-cli sets it per account from Twenty socialAccounts, never from the environment.")
     graphql_endpoint: str = Field(
         default=GRAPHQL_ENDPOINT,
         description="The persisted-query POST endpoint (docs/04 §1); the "
